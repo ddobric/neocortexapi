@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeoCortexApi.Utility;
 
 namespace UnitTestsProject
 {
@@ -25,5 +26,28 @@ namespace UnitTestsProject
             }
             return dimensionMultiples;
         }
+
+
+        [TestMethod]
+        public void TestMethod2()
+        {
+            Topology t = new Topology(new int[] { 2048, 40});
+            int[] coords = new int[] { 200,10};
+            var indx = t.indexFromCoordinates(coords);
+        }
+
+
+        [TestMethod]
+        public void TestMethod3()
+        {
+            Topology t = new Topology(new int[] { 2048, 40 });
+            int[] coords = new int[] { 200, 10 };
+            var indx = t.indexFromCoordinates(coords);
+            var coords2 = t.computeCoordinates(indx);
+
+            Assert.AreEqual(coords[0], coords2[0]);
+            Assert.AreEqual(coords[1], coords2[1]);
+        }
+
     }
 }

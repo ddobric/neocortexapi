@@ -4,4 +4,14 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Entities\Connection.cs" />
+    <Compile Remove="SpatialPooler.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Entities\Connection.cs" />
+    <None Include="SpatialPooler.cs" />
+  </ItemGroup>
+
 </Project>
