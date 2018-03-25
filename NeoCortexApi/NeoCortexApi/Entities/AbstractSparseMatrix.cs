@@ -5,299 +5,231 @@ using System.Text;
 namespace NeoCortexApi.Entities
 {
     /**
- * Base class for flat {@link Matrix} implementations.
+ * Allows storage of array data in sparse form, meaning that the indexes
+ * of the data stored are maintained while empty indexes are not. This allows
+ * savings in memory and computational efficiency because iterative algorithms
+ * need only query indexes containing valid data. The dimensions of matrix defined
+ * at construction time and immutable - matrix fixed size data structure.
  * 
  * @author David Ray
  * @author Jose Luis Martin
- * 
- * @param <T> element type
+ *
+ * @param <T>
  */
-    public abstract class AbstractFlatMatrix<T> : IFlatMatrix<T> {
-
-    private static long serialVersionUID = 1L;
-
-    protected int[] dimensions;
-    protected int[] dimensionMultiples;
-    protected bool isColumnMajor;
-    protected int numDimensions;
-
-    /**
-     * Constructs a new {@link AbstractFlatMatrix} object to be configured with specified
-     * dimensions and major ordering.
-     * @param dimensions  the dimensions of this matrix	
-     */
-    public AbstractFlatMatrix(int[] dimensions): this(dimensions, false)
+    public abstract class AbstractSparseMatrix<T> : AbstractFlatMatrix<T>, ISparseMatrix<T> where T : class
     {
-       
-    }
 
-    /**
-     * Constructs a new {@link AbstractFlatMatrix} object to be configured with specified
-     * dimensions and major ordering.
-     * 
-     * @param dimensions				the dimensions of this sparse array	
-     * @param useColumnMajorOrdering	flag indicating whether to use column ordering or
-     * 									row major ordering. if false (the default), then row
-     * 									major ordering will be used. If true, then column major
-     * 									ordering will be used.
-     */
-    public AbstractFlatMatrix(int[] dimensions, bool useColumnMajorOrdering)
-    {
-        this.dimensions = dimensions;
-        this.numDimensions = dimensions.Length;
-        this.dimensionMultiples = initDimensionMultiples(
-                useColumnMajorOrdering ? reverse(dimensions) : dimensions);
-        isColumnMajor = useColumnMajorOrdering;
-    }
+        private static readonly long serialVersionUID = 1L;
 
-    /**
-     * Compute the flat index of a multidimensional array.
-     * @param indexes multidimensional indexes
-     * @return the flat array index;
-     */
-    public int computeIndex(int[] indexes)
-    {
-        return computeIndex(indexes, true);
-    }
-
-    /**
-     * Returns a flat index computed from the specified coordinates
-     * which represent a "dimensioned" index.
-     * 
-     * @param   coordinates     an array of coordinates
-     * @param   doCheck         enforce validated comparison to locally stored dimensions
-     * @return  a flat index
-     */
-    public int computeIndex(int[] coordinates, bool doCheck)
-    {
-        if (doCheck) checkDims(coordinates);
-
-        int[] localMults = isColumnMajor ? reverse(dimensionMultiples) : dimensionMultiples;
-        int @base = 0;
-        for (int i = 0; i < coordinates.Length; i++)
+        /**
+         * Constructs a new {@code AbstractSparseMatrix} with the specified
+         * dimensions (defaults to row major ordering)
+         * 
+         * @param dimensions    each indexed value is a dimension size
+         */
+        public AbstractSparseMatrix(int[] dimensions) : this(dimensions, false)
         {
-            @base += (localMults[i] * coordinates[i]);
+
         }
-        return @base;
-    }
 
-    /**
-     * Checks the indexes specified to see whether they are within the
-     * configured bounds and size parameters of this array configuration.
-     * 
-     * @param index the array dimensions to check
-     */
-    protected void checkDims(int[] index)
-    {
-        if (index.Length != numDimensions)
+        /**
+         * Constructs a new {@code AbstractSparseMatrix} with the specified dimensions,
+         * allowing the specification of column major ordering if desired. 
+         * (defaults to row major ordering)
+         * 
+         * @param dimensions                each indexed value is a dimension size
+         * @param useColumnMajorOrdering    if true, indicates column first iteration, otherwise
+         *                                  row first iteration is the default (if false).
+         */
+        public AbstractSparseMatrix(int[] dimensions, bool useColumnMajorOrdering) : base(dimensions, useColumnMajorOrdering)
         {
-            throw new ArgumentException("Specified coordinates exceed the configured array dimensions " +
-                    "input dimensions: " + index.Length + " > number of configured dimensions: " + numDimensions);
+
         }
-        for (int i = 0; i < index.Length - 1; i++)
+
+        /**
+         * Sets the object to occupy the specified index.
+         * 
+         * @param index     the index the object will occupy
+         * @param value     the value to be indexed.
+         * 
+         * @return this {@code SparseMatrix} implementation
+         */
+        // protected <S extends AbstractSparseMatrix<T>> S set(int index, int value) { return null; }
+        protected virtual AbstractSparseMatrix<T> Set(int index, int value)
+        { return null; }
+
+        /**
+         * Sets the object to occupy the specified index.
+         * 
+         * @param index     the index the object will occupy
+         * @param value     the value to be indexed.
+         * 
+         * @return this {@code SparseMatrix} implementation
+         */
+        protected virtual AbstractSparseMatrix<T> Set(int index, double value)
+        { return null; }
+
+        /**
+         * Sets the specified object to be indexed at the index
+         * computed from the specified coordinates.
+         * @param object        the object to be indexed.
+         * @param coordinates   the row major coordinates [outer --> ,...,..., inner]
+         * 
+         * @return this {@code SparseMatrix} implementation
+         */
+
+        public AbstractSparseMatrix<T> Set(int[] coordinates, T obj) { return null; }
+
+        /**
+         * Sets the specified object to be indexed at the index
+         * computed from the specified coordinates.
+         * @param value         the value to be indexed.
+         * @param coordinates   the row major coordinates [outer --> ,...,..., inner]
+         * 
+         * @return this {@code SparseMatrix} implementation
+         */
+        protected virtual AbstractSparseMatrix<T> set(int value, int[] coordinates) { return null; }
+
+        /**
+         * Sets the specified object to be indexed at the index
+         * computed from the specified coordinates.
+         * @param value         the value to be indexed.
+         * @param coordinates   the row major coordinates [outer --> ,...,..., inner]
+         * 
+         * @return this {@code SparseMatrix} implementation
+         */
+        protected virtual AbstractSparseMatrix<T> Set(double value, int[] coordinates) { return null; }
+
+        /**
+         * Returns the T at the specified index.
+         * 
+         * @param index     the index of the T to return
+         * @return  the T at the specified index.
+         */
+        protected T getObject(int index)
+        { return null; }
+
+        /**
+         * Returns the T at the specified index.
+         * 
+         * @param index     the index of the T to return
+         * @return  the T at the specified index.
+         */
+        protected int getIntValue(int index) { return -1; }
+
+        /**
+         * Returns the T at the specified index.
+         * 
+         * @param index     the index of the T to return
+         * @return  the T at the specified index.
+         */
+        protected double getDoubleValue(int index) { return -1.0; }
+
+        /**
+         * Returns the T at the index computed from the specified coordinates
+         * @param coordinates   the coordinates from which to retrieve the indexed object
+         * @return  the indexed object
+         */
+        public T get(int[] coordinates) { return null; }
+
+        /**
+         * Returns the int value at the index computed from the specified coordinates
+         * @param coordinates   the coordinates from which to retrieve the indexed object
+         * @return  the indexed object
+         */
+        protected int getIntValue(int[] coordinates) { return -1; }
+
+        /**
+         * Returns the double value at the index computed from the specified coordinates
+         * @param coordinates   the coordinates from which to retrieve the indexed object
+         * @return  the indexed object
+         */
+        protected double getDoubleValue(int[] coordinates) { return -1.0; }
+
+        // @Override
+        public override int[] getSparseIndices()
         {
-            if (index[i] >= dimensions[i])
+            return null;
+        }
+
+        //  @Override
+        public override int[] get1DIndexes()
+        {
+            List<int> results = new List<int>(getMaxIndex() + 1);
+            visit(getDimensions(), 0, new int[getNumDimensions()], results);
+            return results.ToArray();
+        }
+
+        /**
+         * Recursively loops through the matrix dimensions to fill the results
+         * array with flattened computed array indexes.
+         * 
+         * @param bounds
+         * @param currentDimension
+         * @param p
+         * @param results
+         */
+        private void visit(int[] bounds, int currentDimension, int[] p, List<int> results)
+        {
+            for (int i = 0; i < bounds[currentDimension]; i++)
             {
-                throw new ArgumentException("Specified coordinates exceed the configured array dimensions " +
-                        print1DArray(index) + " > " + print1DArray(dimensions));
+                p[currentDimension] = i;
+                if (currentDimension == p.Length - 1)
+                {
+                    results.Add(computeIndex(p));
+                }
+                else visit(bounds, currentDimension + 1, p, results);
             }
         }
-    }
 
-    /**
-     * Returns an array of coordinates calculated from
-     * a flat index.
-     * 
-     * @param   index   specified flat index
-     * @return  a coordinate array
-     */
-    //@Override
-    public int[] computeCoordinates(int index)
-    {
-        int[] returnVal = new int[getNumDimensions()];
-        int @base = index;
-        for (int i = 0; i < dimensionMultiples.Length; i++)
+
+        public override T[] asDense(ITypeFactory<T> factory)
         {
-            int quotient = @base / dimensionMultiples[i];
-            @base %= dimensionMultiples[i];
-            returnVal[i] = quotient;
-        }
-        return isColumnMajor ? reverse(returnVal) : returnVal;
-    }
 
-    /**
-     * Initializes internal helper array which is used for multidimensional
-     * index computation.
-     * @param dimensions matrix dimensions
-     * @return array for use in coordinates to flat index computation.
-     */
-    protected int[] initDimensionMultiples(int[] dimensions)
-    {
-        int holder = 1;
-        int len = dimensions.Length;
-        int[] dimensionMultiples = new int[getNumDimensions()];
-        for (int i = 0; i < len; i++)
+            int[] dimensions = getDimensions();
+            // T[] retVal = (T[])Array.newInstance(factory.typeClass(), dimensions);
+            T[] retVal = (T[])Array.CreateInstance(typeof(T), dimensions);
+
+            fill(factory, 0, dimensions, dimensions[0], retVal);
+
+            return retVal;
+        }
+
+        /**
+         * Uses reflection to create and fill a dynamically created multidimensional array.
+         * 
+         * @param f                 the {@link TypeFactory}
+         * @param dimensionIndex    the current index into <em>this class's</em> configured dimensions array
+         *                          <em>*NOT*</em> the dimensions used as this method's argument    
+         * @param dimensions        the array specifying remaining dimensions to create
+         * @param count             the current dimensional size
+         * @param arr               the array to fill
+         * @return a dynamically created multidimensional array
+         */
+        //@SuppressWarnings("unchecked")
+        protected Object[] fill(ITypeFactory<T> f, int dimensionIndex, int[] dimensions, int count, Object[] arr)
         {
-            holder *= (i == 0 ? 1 : dimensions[len - i]);
-            dimensionMultiples[len - 1 - i] = holder;
-        }
-        return dimensionMultiples;
-    }
-
-    /**
-     * Utility method to shrink a single dimension array by one index.
-     * @param array the array to shrink
-     * @return
-     */
-    protected int[] copyInnerArray(int[] array)
-    {
-        if (array.Length == 1) return array;
-
-        int[] retVal = new int[array.Length - 1];
-        Array.Copy(array, 1, retVal, 0, array.Length - 1);
-        return retVal;
-    }
-
-    /**
-     * Reverses the specified array.
-     * @param input
-     * @return
-     */
-    public static int[] reverse(int[] input)
-    {
-        int[] retVal = new int[input.Length];
-        for (int i = input.Length - 1, j = 0; i >= 0; i--, j++)
-        {
-            retVal[j] = input[i];
-        }
-        return retVal;
-    }
-
-    /**
-     * Prints the specified array to a returned String.
-     * 
-     * @param aObject   the array object to print.
-     * @return  the array in string form suitable for display.
-     */
-    public static String print1DArray(Object aObject)
-    {
-        if (aObject is Array)
-        {
-            if (!typeof(T).IsValueType) // can we cast to Object[]
-                return aObject.ToString();
-            else {  // we can't cast to Object[] - case of primitive arrays
-                int length = ((Array)aObject).Length;
-                Object[] objArr = new Object[length];
-                for (int i = 0; i < length; i++)
-                    objArr[i] = ((Array)aObject).GetValue(i);
-                return objArr.ToString();
-            }
-        }
-        return "[]";
-    }
-
-    //@Override
-    public abstract T get(int index);
-
-    //@Override
-    public abstract AbstractFlatMatrix<T> set(int index, T value);
-
-    //@Override
-    //public virtual T get(int indexes)
-    //{
-    //    return get(computeIndex(indexes));
-    //}
-
-    //@Override
-    public virtual AbstractFlatMatrix<T> set(int[] indexes, T value)
-    {
-        set(computeIndex(indexes), value);
-        return this;
-    }
-
-    public int getSize()
-    {
-            int partialResult = 0;
-
-            foreach (var dim in dimensions)
+            if (dimensions.Length == 1)
             {
-                partialResult = partialResult * dim;
+                for (int i = 0; i < count; i++)
+                {
+                    arr[i] = f.make(getDimensions());
+                   // arr[i] = new 
+                }
+                return arr;
             }
+            else
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    int[] inner = copyInnerArray(dimensions);
+                    //T[] r = (T[])Array.newInstance(f.typeClass(), inner);
+                    T[] r = (T[])Array.CreateInstance(typeof(T), inner);
+                    arr[i] = fill(f, dimensionIndex + 1, inner, getDimensions()[dimensionIndex + 1], r);
+                }
+                return arr;
+            }
+        }
 
-            return partialResult;
-            //return Arrays.stream(this.dimensions).reduce((n, i)->n * i).getAsInt();
     }
-
-    //@Override
-    public virtual int getMaxIndex()
-    {
-        return getDimensions()[0] * Math.Max(1, getDimensionMultiples()[0]) - 1;
-    }
-
-    //@Override
-    public virtual int[] getDimensions()
-    {
-        return this.dimensions;
-    }
-
-    public void setDimensions(int[] dimensions)
-    {
-        this.dimensions = dimensions;
-    }
-
-    //@Override
-    public virtual int getNumDimensions()
-    {
-        return this.dimensions.Length;
-    }
-
-    //@Override
-    public int[] getDimensionMultiples()
-    {
-        return this.dimensionMultiples;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    //@Override
-    public int hashCode()
-    {
-        int prime = 31;
-        int result = 1;
-        result = prime * result + dimensionMultiples.GetHashCode();
-        result = prime * result + dimensions.GetHashCode(); 
-        result = prime * result + (isColumnMajor ? 1231 : 1237);
-        result = prime * result + numDimensions;
-        return result;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    //@SuppressWarnings("rawtypes")
-    //@Override
-    public virtual bool equals(Object obj)
-    {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        //if (getClass() != obj.getClass())
-        if((obj.GetType() != this.GetType()))
-            return false;
-        AbstractFlatMatrix<T> other = (AbstractFlatMatrix<T>)obj;
-       
-        if (!Array.Equals(dimensionMultiples, other.dimensionMultiples))
-            return false;
-        if (!Array.Equals(dimensions, other.dimensions))
-            return false;
-        if (isColumnMajor != other.isColumnMajor)
-            return false;
-        if (numDimensions != other.numDimensions)
-            return false;
-        return true;
-    }
-
-}
 }

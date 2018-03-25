@@ -201,11 +201,17 @@ namespace NeoCortexApi.Entities
          * 
          * <em> Note: All comparisons use the segment's index only </em>
          */
-        @Override
-    public int compareTo(Synapse arg0)
-        {
-            return boxedIndex.compareTo(arg0.boxedIndex);
-        }
+      //  @Override
+    //public int CompareTo(Synapse arg0)
+    //    {
+    //        if (this.segment.Equals(arg0.segment))
+    //        {
+
+    //        }
+    //        else
+    //            return false;
+    //        return boxedIndex.CompareTo(arg0.boxedIndex);
+    //    }
 
         /* (non-Javadoc)
          * @see java.lang.Object#hashCode()
@@ -226,14 +232,14 @@ namespace NeoCortexApi.Entities
         /* (non-Javadoc)
          * @see java.lang.Object#equals(java.lang.Object)
          */
-        @Override
-    public boolean equals(Object obj)
+       // @Override
+    public bool Equals(Object obj)
         {
             if (this == obj)
                 return true;
             if (obj == null)
                 return false;
-            if (getClass() != obj.getClass())
+            if (typeof(Synapse) != obj.GetType())
                 return false;
             Synapse other = (Synapse)obj;
             if (inputIndex != other.inputIndex)
@@ -243,14 +249,14 @@ namespace NeoCortexApi.Entities
                 if (other.segment != null)
                     return false;
             }
-            else if (!segment.equals(other.segment))
+            else if (!segment.Equals(other.segment))
                 return false;
             if (sourceCell == null)
             {
                 if (other.sourceCell != null)
                     return false;
             }
-            else if (!sourceCell.equals(other.sourceCell))
+            else if (!sourceCell.Equals(other.sourceCell))
                 return false;
             if (synapseIndex != other.synapseIndex)
                 return false;
@@ -281,14 +287,14 @@ namespace NeoCortexApi.Entities
 
             if (sourceCell == null)
             {
-                if (other.sourceCell != null)
+                if (obj.sourceCell != null)
                     return false;
             }
-            else if (!sourceCell.equals(other.sourceCell))
+            else if (!sourceCell.Equals(obj.sourceCell))
                 return false;
-            if (synapseIndex != other.synapseIndex)
+            if (synapseIndex != obj.synapseIndex)
                 return false;
-            if (permanence != other.permanence)
+            if (permanence != obj.permanence)
                 return false;
             return true;
         }

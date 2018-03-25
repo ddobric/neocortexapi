@@ -130,7 +130,7 @@ namespace NeoCortexApi.Entities
     {
         double[] retVal = new double[c.getNumInputs()];
         int[] keys = synapsesBySourceIndex.keys();
-        for (int inputIndex : keys)
+        foreach (int inputIndex in keys)
         {
             retVal[inputIndex] = synapsesBySourceIndex.get(inputIndex).getPermanence();
         }
@@ -203,10 +203,10 @@ namespace NeoCortexApi.Entities
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
-    @Override
-    public int hashCode()
+    //@Override
+    public override int GetHashCode()
     {
-        final int prime = 31;
+        int prime = 31;
         int result = 1;
         result = prime * result + size;
         result = prime * result + ((synapseConnections == null) ? 0 : synapseConnections.toString().hashCode());
@@ -217,14 +217,14 @@ namespace NeoCortexApi.Entities
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
-    @Override
-    public boolean equals(Object obj)
+    //@Override
+    public bool Equals(Object obj)
     {
         if (this == obj)
             return true;
         if (obj == null)
             return false;
-        if (getClass() != obj.getClass())
+        if (typeof(Pool) != obj.GetType())
             return false;
         Pool other = (Pool)obj;
         if (size != other.size)

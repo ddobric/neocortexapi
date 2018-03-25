@@ -6,6 +6,7 @@ using NeoCortexApi.Entities;
 using NeoCortexApi.Types;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Linq;
 
 namespace NeoCortexApi.Entities
 {
@@ -189,7 +190,7 @@ namespace NeoCortexApi.Entities
         /** Global counter incremented for each DD synapse creation*/
         protected int nextSynapseOrdinal;
         /** Total number of synapses */
-        protected long numSynapses;
+        protected long m_NumSynapses;
         /** Used for recycling {@link DistalDendrite} indexes */
         //protected TIntArrayList freeFlatIdxs = new TIntArrayList();
         protected List<int> freeFlatIdxs = new List<int>();
@@ -329,10 +330,10 @@ namespace NeoCortexApi.Entities
          * @param cellIndexes   indexes of the Cells to return
          * @return
          */
-        public Cell[] getCells(int... cellIndexes)
+        public Cell[] getCells(int[] cellIndexes)
         {
-            Cell[] retVal = new Cell[cellIndexes.length];
-            for (int i = 0; i < cellIndexes.length; i++)
+            Cell[] retVal = new Cell[cellIndexes.Length];
+            for (int i = 0; i < cellIndexes.Length; i++)
             {
                 retVal[i] = cells[cellIndexes[i]];
             }
@@ -346,12 +347,12 @@ namespace NeoCortexApi.Entities
          * @param cellIndexes   indexes of the Cells to return
          * @return
          */
-        public LinkedHashSet<Cell> getCellSet(int... cellIndexes)
+        public LinkedHashSet<Cell> getCellSet(int[] cellIndexes)
         {
-            HashSet<Cell> retVal = new HashSet<Cell>(cellIndexes.length);
-            for (int i = 0; i < cellIndexes.length; i++)
+            LinkedHashSet<Cell> retVal = new LinkedHashSet<Cell>();
+            for (int i = 0; i < cellIndexes.Length; i++)
             {
-                retVal.add(cells[cellIndexes[i]]);
+                retVal.Add(cells[cellIndexes[i]]);
             }
             return retVal;
         }
@@ -1305,16 +1306,16 @@ namespace NeoCortexApi.Entities
          * @param connectedPermanence
          * @return
          */
-        public Activity computeActivity(Collection<Cell> activePresynapticCells, double connectedPermanence)
+        public Activity computeActivity(ICollection<Cell> activePresynapticCells, double connectedPermanence)
         {
             int[] numActiveConnectedSynapsesForSegment = new int[nextFlatIdx];
             int[] numActivePotentialSynapsesForSegment = new int[nextFlatIdx];
 
             double threshold = connectedPermanence - EPSILON;
 
-            for (Cell cell : activePresynapticCells)
+            foreach (Cell cell in activePresynapticCells)
             {
-                for (Synapse synapse : getReceptorSynapses(cell))
+                foreach (Synapse synapse in getReceptorSynapses(cell))
                 {
                     int flatIdx = synapse.getSegment().getIndex();
                     ++numActivePotentialSynapsesForSegment[flatIdx];
@@ -1604,13 +1605,13 @@ namespace NeoCortexApi.Entities
          */
         public Synapse createSynapse(DistalDendrite segment, Cell presynapticCell, double permanence)
         {
-            while (numSynapses(segment) >= maxSynapsesPerSegment)
+            while (NumSynapses(segment) >= maxSynapsesPerSegment)
             {
                 destroySynapse(minPermanenceSynapse(segment));
             }
 
             Synapse synapse = null;
-            getSynapses(segment).add(
+            getSynapses(segment).Add(
                 synapse = new Synapse(
                     presynapticCell, segment, nextSynapseOrdinal, permanence));
 
@@ -1664,11 +1665,12 @@ namespace NeoCortexApi.Entities
          */
         private Synapse minPermanenceSynapse(DistalDendrite dd)
         {
-            List<Synapse> synapses = getSynapses(dd).stream().sorted().collect(Collectors.toList());
+            //List<Synapse> synapses = getSynapses(dd).stream().sorted().collect(Collectors.toList());
+            List<Synapse> synapses = getSynapses(dd);
             Synapse min = null;
-            double minPermanence = Double.MAX_VALUE;
+            double minPermanence = Double.MaxValue;
 
-            for (Synapse synapse : synapses)
+            foreach (Synapse synapse in synapses)
             {
                 if (!synapse.destroyed() && synapse.getPermanence() < minPermanence - EPSILON)
                 {
@@ -1685,11 +1687,12 @@ namespace NeoCortexApi.Entities
          * 
          * @return  either the total number of synapses
          */
-        public long numSynapses()
+        public long NumSynapses()
         {
-            return numSynapses(null);
+            return NumSynapses(null);
         }
 
+      
         /**
          * Returns the number of {@link Synapse}s on a given {@link DistalDendrite}
          * if specified, or the total number if the "optionalSegmentArg" is null.
@@ -1697,14 +1700,14 @@ namespace NeoCortexApi.Entities
          * @param optionalSegmentArg    an optional Segment to specify the context of the synapse count.
          * @return  either the total number of synapses or the number on a specified segment.
          */
-        public long numSynapses(DistalDendrite optionalSegmentArg)
+        public long NumSynapses(DistalDendrite optionalSegmentArg)
         {
             if (optionalSegmentArg != null)
             {
-                return getSynapses(optionalSegmentArg).size();
+                return getSynapses(optionalSegmentArg).Count;
             }
 
-            return numSynapses;
+            return m_NumSynapses;
         }
 
         /**
@@ -1715,7 +1718,7 @@ namespace NeoCortexApi.Entities
          * @return          the mapping of {@link Cell}s to their reverse mapped
          *                  {@link Synapse}s.
          */
-        public Set<Synapse> getReceptorSynapses(Cell cell)
+        public HashSet<Synapse> getReceptorSynapses(Cell cell)
         {
             return getReceptorSynapses(cell, false);
         }
@@ -2456,14 +2459,14 @@ namespace NeoCortexApi.Entities
             result = prime * result + ((connectedCounts == null) ? 0 : connectedCounts.hashCode());
             long temp;
             temp = Double.doubleToLongBits(connectedPermanence);
-            result = prime * result + (int)(temp ^ (temp >>> 32));
+            result = prime * result + (int)(temp ^ (temp >> 32));//it was temp >>> 32
             result = prime * result + dutyCyclePeriod;
             result = prime * result + (globalInhibition ? 1231 : 1237);
             result = prime * result + inhibitionRadius;
             temp = Double.doubleToLongBits(initConnectedPct);
-            result = prime * result + (int)(temp ^ (temp >>> 32));
+            result = prime * result + (int)(temp ^ (temp >> 32));
             temp = Double.doubleToLongBits(initialPermanence);
-            result = prime * result + (int)(temp ^ (temp >>> 32));
+            result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + Arrays.hashCode(inputDimensions);
             result = prime * result + ((inputMatrix == null) ? 0 : inputMatrix.hashCode());
             result = prime * result + spIterationLearnNum;
@@ -2471,56 +2474,56 @@ namespace NeoCortexApi.Entities
             result = prime * result + (new Long(tmIteration)).intValue();
             result = prime * result + learningRadius;
             temp = Double.doubleToLongBits(localAreaDensity);
-            result = prime * result + (int)(temp ^ (temp >>> 32));
+            result = prime * result + (int)(temp ^ (temp >> 32));
             temp = Double.doubleToLongBits(maxBoost);
-            result = prime * result + (int)(temp ^ (temp >>> 32));
+            result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + maxNewSynapseCount;
             result = prime * result + ((memory == null) ? 0 : memory.hashCode());
             result = prime * result + Arrays.hashCode(minActiveDutyCycles);
             result = prime * result + Arrays.hashCode(minOverlapDutyCycles);
             temp = Double.doubleToLongBits(minPctActiveDutyCycles);
-            result = prime * result + (int)(temp ^ (temp >>> 32));
+            result = prime * result + (int)(temp ^ (temp >> 32));
             temp = Double.doubleToLongBits(minPctOverlapDutyCycles);
-            result = prime * result + (int)(temp ^ (temp >>> 32));
+            result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + minThreshold;
             temp = Double.doubleToLongBits(numActiveColumnsPerInhArea);
-            result = prime * result + (int)(temp ^ (temp >>> 32));
+            result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + numColumns;
             result = prime * result + numInputs;
             temp = numSynapses;
-            result = prime * result + (int)(temp ^ (temp >>> 32));
+            result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + Arrays.hashCode(overlapDutyCycles);
             temp = Double.doubleToLongBits(permanenceDecrement);
-            result = prime * result + (int)(temp ^ (temp >>> 32));
+            result = prime * result + (int)(temp ^ (temp >> 32));
             temp = Double.doubleToLongBits(permanenceIncrement);
             result = prime * result + (int)(temp ^ (temp >>> 32));
             temp = Double.doubleToLongBits(potentialPct);
-            result = prime * result + (int)(temp ^ (temp >>> 32));
+            result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + ((potentialPools == null) ? 0 : potentialPools.hashCode());
             result = prime * result + potentialRadius;
             temp = Double.doubleToLongBits(predictedSegmentDecrement);
-            result = prime * result + (int)(temp ^ (temp >>> 32));
+            result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + ((predictiveCells == null) ? 0 : predictiveCells.hashCode());
             result = prime * result + ((random == null) ? 0 : random.hashCode());
             result = prime * result + ((receptorSynapses == null) ? 0 : receptorSynapses.hashCode());
             result = prime * result + seed;
             result = prime * result + ((segments == null) ? 0 : segments.hashCode());
             temp = Double.doubleToLongBits(stimulusThreshold);
-            result = prime * result + (int)(temp ^ (temp >>> 32));
+            result = prime * result + (int)(temp ^ (temp >> 32));
             temp = Double.doubleToLongBits(synPermActiveInc);
-            result = prime * result + (int)(temp ^ (temp >>> 32));
+            result = prime * result + (int)(temp ^ (temp >> 32));
             temp = Double.doubleToLongBits(synPermBelowStimulusInc);
-            result = prime * result + (int)(temp ^ (temp >>> 32));
+            result = prime * result + (int)(temp ^ (temp >> 32));
             temp = Double.doubleToLongBits(synPermConnected);
-            result = prime * result + (int)(temp ^ (temp >>> 32));
+            result = prime * result + (int)(temp ^ (temp >> 32));
             temp = Double.doubleToLongBits(synPermInactiveDec);
-            result = prime * result + (int)(temp ^ (temp >>> 32));
+            result = prime * result + (int)(temp ^ (temp >> 32));
             temp = Double.doubleToLongBits(synPermMax);
-            result = prime * result + (int)(temp ^ (temp >>> 32));
+            result = prime * result + (int)(temp ^ (temp >> 32));
             temp = Double.doubleToLongBits(synPermMin);
-            result = prime * result + (int)(temp ^ (temp >>> 32));
+            result = prime * result + (int)(temp ^ (temp >> 32));
             temp = Double.doubleToLongBits(synPermTrimThreshold);
-            result = prime * result + (int)(temp ^ (temp >>> 32));
+            result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + proximalSynapseCounter;
             result = prime * result + ((proximalSynapses == null) ? 0 : proximalSynapses.hashCode());
             result = prime * result + ((distalSynapses == null) ? 0 : distalSynapses.hashCode());
@@ -2535,8 +2538,8 @@ namespace NeoCortexApi.Entities
         /**
          * {@inheritDoc}
          */
-        @Override
-    public boolean equals(Object obj)
+        //@Override
+    public override bool Equals(Object obj)
         {
             if (this == obj)
                 return true;

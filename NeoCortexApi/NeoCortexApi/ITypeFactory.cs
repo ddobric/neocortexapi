@@ -4,7 +4,8 @@ using System.Text;
 
 namespace NeoCortexApi
 {
-    public class TypeFactory<T>
+    public interface ITypeFactory<T>
     {
+        T make(int[] args);
     }
 }

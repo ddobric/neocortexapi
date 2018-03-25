@@ -4,7 +4,12 @@ using System.Text;
 
 namespace NeoCortexApi.Entities
 {
-    public interface ISparseMatrix<T>
+    public interface ISparseMatrix 
+    {
+
+    }
+
+    public interface ISparseMatrix<T> : ISparseMatrix
     {
         /**
             * Returns a sorted array of occupied indexes.
@@ -27,7 +32,7 @@ namespace NeoCortexApi.Entities
          * @param factory   a factory to make a specific type
          * @return  the dense array
          */
-        T[] asDense(TypeFactory<T> factory);
+        T[] asDense(ITypeFactory<T> factory);
 
     }
 }
