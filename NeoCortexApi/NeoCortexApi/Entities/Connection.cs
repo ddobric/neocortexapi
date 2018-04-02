@@ -70,7 +70,7 @@ namespace NeoCortexApi.Entities
         /** Manages column neighborhood transformations */
         private Topology columnTopology;
         /** A matrix representing the shape of the input. */
-        protected ISparseMatrix<?> inputMatrix;
+        protected ISparseMatrix<T> inputMatrix;
         /**
          * Store the set of all inputs that are within each column's potential pool.
          * 'potentialPools' is a matrix, whose rows represent cortical columns, and
@@ -420,7 +420,7 @@ namespace NeoCortexApi.Entities
         /**
          * Returns the input column mapping
          */
-        public ISparseMatrix<?> getInputMatrix()
+        public ISparseMatrix<T> getInputMatrix()
         {
             return inputMatrix;
         }
@@ -684,7 +684,7 @@ namespace NeoCortexApi.Entities
          */
         public void setConnectedCounts(int[] counts)
         {
-            for (int i = 0; i < counts.length; i++)
+            for (int i = 0; i < counts.Length; i++)
             {
                 connectedCounts.setTrueCount(i, counts[i]);
             }
