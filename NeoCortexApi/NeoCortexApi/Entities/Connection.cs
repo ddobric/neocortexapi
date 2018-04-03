@@ -7,6 +7,7 @@ using NeoCortexApi.Types;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Linq;
+using System.Collections.ObjectModel;
 
 namespace NeoCortexApi.Entities
 {
@@ -36,9 +37,9 @@ namespace NeoCortexApi.Entities
         private double numActiveColumnsPerInhArea;
         private double stimulusThreshold = 0;
         private double synPermInactiveDec = 0.008;
-        private const double synPermActiveInc = 0.05;
-        private const double synPermConnected = 0.10;
-        private double synPermBelowStimulusInc = synPermConnected / 10.0;
+        private double synPermActiveInc = 0.05;
+        private double synPermConnected = 0.10;
+        private double synPermBelowStimulusInc;// = synPermConnected / 10.0;
         private double minPctOverlapDutyCycles = 0.001;
         private double minPctActiveDutyCycles = 0.001;
         private double predictedSegmentDecrement = 0.0;
@@ -52,7 +53,7 @@ namespace NeoCortexApi.Entities
         //Extra parameter settings
         private double synPermMin = 0.0;
         private double synPermMax = 1.0;
-        private double synPermTrimThreshold = synPermActiveInc / 2.0;
+        private double synPermTrimThreshold;// = synPermActiveInc / 2.0;
         private int updatePeriod = 50;
         private double initConnectedPct = 0.5;
 
@@ -70,7 +71,7 @@ namespace NeoCortexApi.Entities
         /** Manages column neighborhood transformations */
         private Topology columnTopology;
         /** A matrix representing the shape of the input. */
-        protected ISparseMatrix<T> inputMatrix;
+        protected ISparseMatrix<object> inputMatrix;
         /**
          * Store the set of all inputs that are within each column's potential pool.
          * 'potentialPools' is a matrix, whose rows represent cortical columns, and
@@ -190,29 +191,30 @@ namespace NeoCortexApi.Entities
         /** Global counter incremented for each DD synapse creation*/
         protected int nextSynapseOrdinal;
         /** Total number of synapses */
-        protected long m_NumSynapses;
+        protected long NumSynapses { get; set; }
         /** Used for recycling {@link DistalDendrite} indexes */
         //protected TIntArrayList freeFlatIdxs = new TIntArrayList();
         protected List<int> freeFlatIdxs = new List<int>();
 
         /** Indexed segments by their global index (can contain nulls) */
-        protected List<DistalDendrite> segmentForFlatIdx = new List<DistalDendrite>();
+        protected List<DistalDendrite> m_SegmentForFlatIdx = new List<DistalDendrite>();
 
         /** Stores each cycle's most recent activity */
         public Activity lastActivity;
 
         /** The default random number seed */
         protected int seed = 42;
-        /** The random number generator */
-        public Random random = new Random(seed);
 
-        /** Sorting Lambda used for sorting active and matching segments */
-        public IComparer<DistalDendrite> segmentPositionSortKey = (s1, s2) =>
-                {
-                    double c1 = s1.getParentCell().getIndex() + ((double)(s1.getOrdinal() / (double)nextSegmentOrdinal));
-                    double c2 = s2.getParentCell().getIndex() + ((double)(s2.getOrdinal() / (double)nextSegmentOrdinal));
-                    return c1 == c2 ? 0 : c1 > c2 ? 1 : -1;
-                };
+        /** The random number generator */
+        public Random random ;
+
+        ///** Sorting Lambda used for sorting active and matching segments */
+        //public IComparer<DistalDendrite> segmentPositionSortKey = (s1, s2) =>
+        //        {
+        //            double c1 = s1.getParentCell().getIndex() + ((double)(s1.getOrdinal() / (double)nextSegmentOrdinal));
+        //            double c2 = s2.getParentCell().getIndex() + ((double)(s2.getOrdinal() / (double)nextSegmentOrdinal));
+        //            return c1 == c2 ? 0 : c1 > c2 ? 1 : -1;
+        //        };
 
 
         ////////////////////////////////////////
@@ -223,7 +225,12 @@ namespace NeoCortexApi.Entities
          * is usually configured via the {@link Parameters#apply(Object)}
          * method.
          */
-        public Connections() { }
+        public Connections() {
+
+            synPermTrimThreshold = synPermActiveInc / 2.0;
+            synPermBelowStimulusInc = synPermConnected / 10.0;
+            random = new Random(seed);
+        }
 
         /**
          * Returns a deep copy of this {@code Connections} object.
@@ -420,7 +427,7 @@ namespace NeoCortexApi.Entities
         /**
          * Returns the input column mapping
          */
-        public ISparseMatrix<T> getInputMatrix()
+        public ISparseMatrix<object> getInputMatrix()
         {
             return inputMatrix;
         }
@@ -429,7 +436,7 @@ namespace NeoCortexApi.Entities
          * Sets the input column mapping matrix
          * @param matrix
          */
-        public void setInputMatrix(ISparseMatrix<?> matrix)
+        public void setInputMatrix(ISparseMatrix<object> matrix)
         {
             this.inputMatrix = matrix;
         }
@@ -612,7 +619,7 @@ namespace NeoCortexApi.Entities
          */
         public void setProximalPermanences(SparseObjectMatrix<double[]> s)
         {
-            for (int idx : s.getSparseIndices())
+            foreach (int idx in s.getSparseIndices())
             {
                 memory.getObject(idx).setProximalPermanences(this, s.getObject(idx));
             }
@@ -742,7 +749,7 @@ namespace NeoCortexApi.Entities
          *
          * @see setGlobalInhibition
          */
-        public boolean getGlobalInhibition()
+        public bool getGlobalInhibition()
         {
             return globalInhibition;
         }
@@ -865,9 +872,9 @@ namespace NeoCortexApi.Entities
          *
          * @param synPermActiveInc
          */
-        public void setSynPermActiveInc(double synPermActiveInc)
+        public void setSynPermActiveInc(double synPermActiveIncValue)
         {
-            this.synPermActiveInc = synPermActiveInc;
+            synPermActiveInc = synPermActiveIncValue;
         }
 
         /**
@@ -888,9 +895,9 @@ namespace NeoCortexApi.Entities
          *
          * @param synPermConnected
          */
-        public void setSynPermConnected(double synPermConnected)
+        public void setSynPermConnected(double synPermConnectedValue)
         {
-            this.synPermConnected = synPermConnected;
+            this.synPermConnected = synPermConnectedValue;
         }
 
         /**
@@ -1045,7 +1052,7 @@ namespace NeoCortexApi.Entities
          * borders wrap around to the other side.
          * @param b
          */
-        public void setWrapAround(boolean b)
+        public void setWrapAround(bool b)
         {
             this.wrapAround = b;
         }
@@ -1056,7 +1063,7 @@ namespace NeoCortexApi.Entities
          * side.
          * @return
          */
-        public boolean isWrapAround()
+        public bool isWrapAround()
         {
             return wrapAround;
         }
@@ -1123,7 +1130,7 @@ namespace NeoCortexApi.Entities
          *
          * @param pools		{@link FlatMatrix} which holds the pools.
          */
-        public void setPotentialPools(FlatMatrix<Pool> pools)
+        public void setPotentialPools(IFlatMatrix<Pool> pools)
         {
             this.potentialPools = pools;
         }
@@ -1133,7 +1140,7 @@ namespace NeoCortexApi.Entities
          * of column indexes to their lists of potential inputs.
          * @return	the potential pools
          */
-        public FlatMatrix<Pool> getPotentialPools()
+        public IFlatMatrix<Pool> getPotentialPools()
         {
             return this.potentialPools;
         }
@@ -1211,7 +1218,7 @@ namespace NeoCortexApi.Entities
          */
         public void updateActiveDutyCycles(double[] denseActiveDutyCycles)
         {
-            for (int i = 0; i < denseActiveDutyCycles.length; i++)
+            for (int i = 0; i < denseActiveDutyCycles.Length; i++)
             {
                 if (denseActiveDutyCycles[i] != -1)
                 {
@@ -1383,15 +1390,15 @@ namespace NeoCortexApi.Entities
 
             int flatIdx;
             int len;
-            if ((len = freeFlatIdxs.size()) > 0)
+            if ((len = freeFlatIdxs.Count()) > 0)
             {
-                flatIdx = freeFlatIdxs.get(len - 1);
-                freeFlatIdxs.remove(len - 1, 1);
+                flatIdx = freeFlatIdxs[len - 1];
+                freeFlatIdxs.RemoveRange(len - 1, 1);
             }
             else
             {
                 flatIdx = nextFlatIdx;
-                segmentForFlatIdx.add(null);
+                m_SegmentForFlatIdx.Add(null);
                 ++nextFlatIdx;
             }
 
@@ -1399,8 +1406,8 @@ namespace NeoCortexApi.Entities
             ++nextSegmentOrdinal;
 
             DistalDendrite segment = new DistalDendrite(cell, flatIdx, tmIteration, ordinal);
-            getSegments(cell, true).add(segment);
-            segmentForFlatIdx.set(flatIdx, segment);
+            getSegments(cell, true).Add(segment);
+            m_SegmentForFlatIdx[flatIdx]= segment;
 
             return segment;
         }
@@ -1413,20 +1420,26 @@ namespace NeoCortexApi.Entities
         {
             // Remove the synapses from all data structures outside this Segment.
             List<Synapse> synapses = getSynapses(segment);
-            int len = synapses.size();
-            getSynapses(segment).stream().forEach(s->removeSynapseFromPresynapticMap(s));
-            numSynapses -= len;
+            int len = synapses.Count;
+
+            //getSynapses(segment).stream().forEach(s->removeSynapseFromPresynapticMap(s));
+            foreach (var s in getSynapses(segment))
+            {
+                removeSynapseFromPresynapticMap(s);
+            }
+
+            NumSynapses -= len;
 
             // Remove the segment from the cell's list.
-            getSegments(segment.getParentCell()).remove(segment);
+            getSegments(segment.getParentCell()).Remove(segment);
 
             // Remove the segment from the map
-            distalSynapses.remove(segment);
+            distalSynapses.Remove(segment);
 
             // Free the flatIdx and remove the final reference so the Segment can be
             // garbage-collected.
-            freeFlatIdxs.add(segment.getIndex());
-            segmentForFlatIdx.set(segment.getIndex(), null);
+            freeFlatIdxs.Add(segment.getIndex());
+            m_SegmentForFlatIdx[segment.getIndex()] =null;
         }
 
         /**
@@ -1441,14 +1454,14 @@ namespace NeoCortexApi.Entities
         {
             List<DistalDendrite> segments = getSegments(cell, false);
             DistalDendrite minSegment = null;
-            long minIteration = Long.MAX_VALUE;
+            long minIteration = long.MaxValue;
 
-            for (DistalDendrite dd : segments)
+            foreach (DistalDendrite dd in segments)
             {
-                if (dd.lastUsedIteration() < minIteration)
+                if (dd.getLastUsedIteration() < minIteration)
                 {
                     minSegment = dd;
-                    minIteration = dd.lastUsedIteration();
+                    minIteration = dd.getLastUsedIteration();
                 }
             }
 
@@ -1476,10 +1489,10 @@ namespace NeoCortexApi.Entities
         {
             if (optionalCellArg != null)
             {
-                return getSegments(optionalCellArg).size();
+                return getSegments(optionalCellArg).Count;
             }
 
-            return nextFlatIdx - freeFlatIdxs.size();
+            return nextFlatIdx - freeFlatIdxs.Count;
         }
 
         /**
@@ -1505,19 +1518,19 @@ namespace NeoCortexApi.Entities
         {
             if (cell == null)
             {
-                throw new IllegalArgumentException("Cell was null");
+                throw new ArgumentException("Cell was null");
             }
 
             if (segments == null)
             {
-                segments = new LinkedHashMap<Cell, List<DistalDendrite>>();
+                segments = new Dictionary<Cell, List<DistalDendrite>>();
             }
 
             List<DistalDendrite> retVal = null;
-            if ((retVal = segments.get(cell)) == null)
+            if ((retVal = segments[cell]) == null)
             {
-                if (!doLazyCreate) return Collections.emptyList();
-                segments.put(cell, retVal = new ArrayList<DistalDendrite>());
+                if (!doLazyCreate) return new List<DistalDendrite>();
+                segments.Add(cell, retVal = new List<DistalDendrite>());
             }
 
             return retVal;
@@ -1528,9 +1541,9 @@ namespace NeoCortexApi.Entities
          * @param index		The segment's flattened list index.
          * @return	the {@link DistalDendrite} who's index matches.
          */
-        public DistalDendrite segmentForFlatIdx(int index)
+        public DistalDendrite GetSegmentForFlatIdx(int index)
         {
-            return segmentForFlatIdx.get(index);
+            return m_SegmentForFlatIdx[index];
         }
 
         /**
@@ -1548,9 +1561,9 @@ namespace NeoCortexApi.Entities
          * <b>FOR TEST USE ONLY</b>
          * @return
          */
-        public Map<Cell, List<DistalDendrite>> getSegmentMapping()
+        public Dictionary<Cell, List<DistalDendrite>> getSegmentMapping()
         {
-            return new LinkedHashMap<>(segments);
+            return new Dictionary<Cell, List<DistalDendrite>>(segments);
         }
 
         /**
@@ -1605,7 +1618,7 @@ namespace NeoCortexApi.Entities
          */
         public Synapse createSynapse(DistalDendrite segment, Cell presynapticCell, double permanence)
         {
-            while (NumSynapses(segment) >= maxSynapsesPerSegment)
+            while (GetNumSynapses(segment) >= maxSynapsesPerSegment)
             {
                 destroySynapse(minPermanenceSynapse(segment));
             }
@@ -1615,11 +1628,11 @@ namespace NeoCortexApi.Entities
                 synapse = new Synapse(
                     presynapticCell, segment, nextSynapseOrdinal, permanence));
 
-            getReceptorSynapses(presynapticCell, true).add(synapse);
+            getReceptorSynapses(presynapticCell, true).Add(synapse);
 
             ++nextSynapseOrdinal;
 
-            ++numSynapses;
+            ++NumSynapses;
 
             return synapse;
         }
@@ -1630,11 +1643,11 @@ namespace NeoCortexApi.Entities
          */
         public void destroySynapse(Synapse synapse)
         {
-            --numSynapses;
+            --NumSynapses;
 
             removeSynapseFromPresynapticMap(synapse);
 
-            getSynapses((DistalDendrite)synapse.getSegment()).remove(synapse);
+            getSynapses((DistalDendrite)synapse.getSegment()).Remove(synapse);
         }
 
         /**
@@ -1646,13 +1659,13 @@ namespace NeoCortexApi.Entities
          */
         public void removeSynapseFromPresynapticMap(Synapse synapse)
         {
-            Set<Synapse> presynapticSynapses;
+            LinkedHashSet<Synapse> presynapticSynapses;
             Cell cell = synapse.getPresynapticCell();
-            (presynapticSynapses = getReceptorSynapses(cell, false)).remove(synapse);
+            (presynapticSynapses = getReceptorSynapses(cell, false)).Remove(synapse);
 
-            if (presynapticSynapses.isEmpty())
+            if (presynapticSynapses.Count == 0)
             {
-                receptorSynapses.remove(cell);
+                receptorSynapses.Remove(cell);
             }
         }
 
@@ -1687,9 +1700,9 @@ namespace NeoCortexApi.Entities
          * 
          * @return  either the total number of synapses
          */
-        public long NumSynapses()
+        public long GetNumSynapses()
         {
-            return NumSynapses(null);
+            return GetNumSynapses(null);
         }
 
       
@@ -1700,14 +1713,14 @@ namespace NeoCortexApi.Entities
          * @param optionalSegmentArg    an optional Segment to specify the context of the synapse count.
          * @return  either the total number of synapses or the number on a specified segment.
          */
-        public long NumSynapses(DistalDendrite optionalSegmentArg)
+        public long GetNumSynapses(DistalDendrite optionalSegmentArg)
         {
             if (optionalSegmentArg != null)
             {
                 return getSynapses(optionalSegmentArg).Count;
             }
 
-            return m_NumSynapses;
+            return NumSynapses;
         }
 
         /**
@@ -1718,7 +1731,7 @@ namespace NeoCortexApi.Entities
          * @return          the mapping of {@link Cell}s to their reverse mapped
          *                  {@link Synapse}s.
          */
-        public HashSet<Synapse> getReceptorSynapses(Cell cell)
+        public LinkedHashSet<Synapse> getReceptorSynapses(Cell cell)
         {
             return getReceptorSynapses(cell, false);
         }
@@ -1733,23 +1746,23 @@ namespace NeoCortexApi.Entities
          * @return          the mapping of {@link Cell}s to their reverse mapped
          *                  {@link Synapse}s.
          */
-        public Set<Synapse> getReceptorSynapses(Cell cell, bool doLazyCreate)
+        public LinkedHashSet<Synapse> getReceptorSynapses(Cell cell, bool doLazyCreate)
         {
             if (cell == null)
             {
-                throw new IllegalArgumentException("Cell was null");
+                throw new ArgumentException("Cell was null");
             }
 
             if (receptorSynapses == null)
             {
-                receptorSynapses = new LinkedHashMap<>();
+                receptorSynapses = new Dictionary<Cell, LinkedHashSet<Synapse>>();
             }
 
             LinkedHashSet<Synapse> retVal = null;
-            if ((retVal = receptorSynapses.get(cell)) == null)
+            if ((retVal = receptorSynapses[cell]) == null)
             {
-                if (!doLazyCreate) return Collections.emptySet();
-                receptorSynapses.put(cell, retVal = new LinkedHashSet<>());
+                if (!doLazyCreate) return new LinkedHashSet<Synapse>();
+                receptorSynapses.Add(cell, retVal = new LinkedHashSet<Synapse>());
             }
 
             return retVal;
@@ -1765,18 +1778,18 @@ namespace NeoCortexApi.Entities
         {
             if (segment == null)
             {
-                throw new IllegalArgumentException("Segment was null");
+                throw new ArgumentException("Segment was null");
             }
 
             if (distalSynapses == null)
             {
-                distalSynapses = new LinkedHashMap<Segment, List<Synapse>>();
+                distalSynapses = new Dictionary<Segment, List<Synapse>>();
             }
 
             List<Synapse> retVal = null;
-            if ((retVal = distalSynapses.get(segment)) == null)
+            if ((retVal = distalSynapses[segment]) == null)
             {
-                distalSynapses.put(segment, retVal = new ArrayList<Synapse>());
+                distalSynapses.Add(segment, retVal = new List<Synapse>());
             }
 
             return retVal;
@@ -1792,18 +1805,18 @@ namespace NeoCortexApi.Entities
         {
             if (segment == null)
             {
-                throw new IllegalArgumentException("Segment was null");
+                throw new ArgumentException("Segment was null");
             }
 
             if (proximalSynapses == null)
             {
-                proximalSynapses = new LinkedHashMap<Segment, List<Synapse>>();
+                proximalSynapses = new Dictionary<Segment, List<Synapse>>();
             }
 
             List<Synapse> retVal = null;
-            if ((retVal = proximalSynapses.get(segment)) == null)
+            if ((retVal = proximalSynapses[segment]) == null)
             {
-                proximalSynapses.put(segment, retVal = new ArrayList<Synapse>());
+                proximalSynapses.Add(segment, retVal = new List<Synapse>());
             }
 
             return retVal;
@@ -1813,9 +1826,9 @@ namespace NeoCortexApi.Entities
          * <b>FOR TEST USE ONLY<b>
          * @return
          */
-        public Map<Cell, HashSet<Synapse>> getReceptorSynapseMapping()
+        public Dictionary<Cell, LinkedHashSet<Synapse>> getReceptorSynapseMapping()
         {
-            return new LinkedHashMap<>(receptorSynapses);
+            return new Dictionary<Cell, LinkedHashSet<Synapse>>(receptorSynapses);
         }
 
         /**
@@ -1823,9 +1836,9 @@ namespace NeoCortexApi.Entities
          */
         public void clear()
         {
-            activeCells.clear();
-            winnerCells.clear();
-            predictiveCells.clear();
+            activeCells.Clear();
+            winnerCells.Clear();
+            predictiveCells.Clear();
         }
 
         /**
@@ -1833,7 +1846,7 @@ namespace NeoCortexApi.Entities
          *
          * @return  the current {@link Set} of active {@link Cell}s
          */
-        public Set<Cell> getActiveCells()
+        public ISet<Cell> getActiveCells()
         {
             return activeCells;
         }
@@ -1842,7 +1855,7 @@ namespace NeoCortexApi.Entities
          * Sets the current {@link Set} of active {@link Cell}s
          * @param cells
          */
-        public void setActiveCells(Set<Cell> cells)
+        public void setActiveCells(ISet<Cell> cells)
         {
             this.activeCells = cells;
         }
@@ -1852,7 +1865,7 @@ namespace NeoCortexApi.Entities
          *
          * @return  the current {@link Set} of winner cells
          */
-        public Set<Cell> getWinnerCells()
+        public ISet<Cell> getWinnerCells()
         {
             return winnerCells;
         }
@@ -1861,7 +1874,7 @@ namespace NeoCortexApi.Entities
          * Sets the current {@link Set} of winner {@link Cell}s
          * @param cells
          */
-        public void setWinnerCells(Set<Cell> cells)
+        public void setWinnerCells(ISet<Cell> cells)
         {
             this.winnerCells = cells;
         }
@@ -1870,19 +1883,19 @@ namespace NeoCortexApi.Entities
          * Returns the {@link Set} of predictive cells.
          * @return
          */
-        public Set<Cell> getPredictiveCells()
+        public ISet<Cell> getPredictiveCells()
         {
-            if (predictiveCells.isEmpty())
+            if (predictiveCells.Count == 0)
             {
                 Cell previousCell = null;
                 Cell currCell = null;
 
-                List<DistalDendrite> temp = new ArrayList<>(activeSegments);
-                for (DistalDendrite activeSegment : temp)
+                List<DistalDendrite> temp = new List<DistalDendrite>(activeSegments);
+                foreach (DistalDendrite activeSegment in temp)
                 {
                     if ((currCell = activeSegment.getParentCell()) != previousCell)
                     {
-                        predictiveCells.add(previousCell = currCell);
+                        predictiveCells.Add(previousCell = currCell);
                     }
                 }
             }
@@ -1894,7 +1907,7 @@ namespace NeoCortexApi.Entities
          */
         public void clearPredictiveCells()
         {
-            this.predictiveCells.clear();
+            this.predictiveCells.Clear();
         }
 
         /**
@@ -2201,10 +2214,10 @@ namespace NeoCortexApi.Entities
          */
         public static List<Integer> asCellIndexes(Collection<Cell> cells)
         {
-            List<Integer> ints = new ArrayList<Integer>();
-            for (Cell cell : cells)
+            List<Integer> ints = new List<Integer>();
+            foreach (Cell cell in cells)
             {
-                ints.add(cell.getIndex());
+                ints.Add(cell.getIndex());
             }
 
             return ints;
@@ -2219,10 +2232,10 @@ namespace NeoCortexApi.Entities
          */
         public static List<Integer> asColumnIndexes(Collection<Column> columns)
         {
-            List<Integer> ints = new ArrayList<Integer>();
-            for (Column col : columns)
+            List<Integer> ints = new List<Integer>();
+            foreach (Column col in columns)
             {
-                ints.add(col.getIndex());
+                ints.Add(col.getIndex());
             }
 
             return ints;
@@ -2235,10 +2248,10 @@ namespace NeoCortexApi.Entities
          */
         public List<Cell> asCellObjects(Collection<Integer> cells)
         {
-            List<Cell> objs = new ArrayList<Cell>();
-            for (int i : cells)
+            List<Cell> objs = new List<Cell>();
+            foreach (int i in cells)
             {
-                objs.add(this.cells[i]);
+                objs.Add(this.cells[i]);
             }
             return objs;
         }
@@ -2250,10 +2263,10 @@ namespace NeoCortexApi.Entities
          */
         public List<Column> asColumnObjects(Collection<Integer> cols)
         {
-            List<Column> objs = new ArrayList<Column>();
-            for (int i : cols)
+            List<Column> objs = new List<Column>();
+            foreach (int i in cols)
             {
-                objs.add(this.memory.getObject(i));
+                objs.Add(this.memory.getObject(i));
             }
             return objs;
         }
@@ -2268,9 +2281,9 @@ namespace NeoCortexApi.Entities
         public LinkedHashSet<Column> getColumnSet(int[] indexes)
         {
             LinkedHashSet<Column> retVal = new LinkedHashSet<Column>();
-            for (int i = 0; i < indexes.length; i++)
+            for (int i = 0; i < indexes.Length; i++)
             {
-                retVal.add(memory.getObject(indexes[i]));
+                retVal.Add(memory.getObject(indexes[i]));
             }
             return retVal;
         }
@@ -2284,10 +2297,10 @@ namespace NeoCortexApi.Entities
          */
         public List<Column> getColumnList(int[] indexes)
         {
-            List<Column> retVal = new ArrayList<Column>();
-            for (int i = 0; i < indexes.length; i++)
+            List<Column> retVal = new List<Column>();
+            for (int i = 0; i < indexes.Length; i++)
             {
-                retVal.add(memory.getObject(indexes[i]));
+                retVal.Add(memory.getObject(indexes[i]));
             }
             return retVal;
         }
@@ -2451,87 +2464,88 @@ namespace NeoCortexApi.Entities
             int result = 1;
             result = prime * result + activationThreshold;
             result = prime * result + ((activeCells == null) ? 0 : activeCells.GetHashCode());
-            result = prime * result + Array.hashCode(activeDutyCycles);
-            result = prime * result + Arrays.hashCode(boostFactors);
-            result = prime * result + Arrays.hashCode(cells);
+            result = prime * result + activeDutyCycles.GetHashCode();
+            result = prime * result + boostFactors.GetHashCode();
+            result = prime * result + cells.GetHashCode();
             result = prime * result + cellsPerColumn;
-            result = prime * result + Arrays.hashCode(columnDimensions);
-            result = prime * result + ((connectedCounts == null) ? 0 : connectedCounts.hashCode());
+            result = prime * result + columnDimensions.GetHashCode();
+            result = prime * result + ((connectedCounts == null) ? 0 : connectedCounts.GetHashCode());
             long temp;
-            temp = Double.doubleToLongBits(connectedPermanence);
+            temp = BitConverter.DoubleToInt64Bits(connectedPermanence);
             result = prime * result + (int)(temp ^ (temp >> 32));//it was temp >>> 32
             result = prime * result + dutyCyclePeriod;
             result = prime * result + (globalInhibition ? 1231 : 1237);
             result = prime * result + inhibitionRadius;
-            temp = Double.doubleToLongBits(initConnectedPct);
+            temp = BitConverter.DoubleToInt64Bits(initConnectedPct);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            temp = Double.doubleToLongBits(initialPermanence);
+            temp = BitConverter.DoubleToInt64Bits(initialPermanence);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            result = prime * result + Arrays.hashCode(inputDimensions);
-            result = prime * result + ((inputMatrix == null) ? 0 : inputMatrix.hashCode());
+            result = prime * result + inputDimensions.GetHashCode();
+            result = prime * result + ((inputMatrix == null) ? 0 : inputMatrix.GetHashCode());
             result = prime * result + spIterationLearnNum;
             result = prime * result + spIterationNum;
-            result = prime * result + (new Long(tmIteration)).intValue();
+            //result = prime * result + (new Long(tmIteration)).intValue();
+            result = prime * result + (int)tmIteration;
             result = prime * result + learningRadius;
-            temp = Double.doubleToLongBits(localAreaDensity);
+            temp = BitConverter.DoubleToInt64Bits(localAreaDensity);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            temp = Double.doubleToLongBits(maxBoost);
+            temp = BitConverter.DoubleToInt64Bits(maxBoost);
             result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + maxNewSynapseCount;
             result = prime * result + ((memory == null) ? 0 : memory.hashCode());
-            result = prime * result + Arrays.hashCode(minActiveDutyCycles);
-            result = prime * result + Arrays.hashCode(minOverlapDutyCycles);
-            temp = Double.doubleToLongBits(minPctActiveDutyCycles);
+            result = prime * result + minActiveDutyCycles.GetHashCode();
+            result = prime * result + minOverlapDutyCycles.GetHashCode();
+            temp = BitConverter.DoubleToInt64Bits(minPctActiveDutyCycles);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            temp = Double.doubleToLongBits(minPctOverlapDutyCycles);
+            temp = BitConverter.DoubleToInt64Bits(minPctOverlapDutyCycles);
             result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + minThreshold;
-            temp = Double.doubleToLongBits(numActiveColumnsPerInhArea);
+            temp = BitConverter.DoubleToInt64Bits(numActiveColumnsPerInhArea);
             result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + numColumns;
             result = prime * result + numInputs;
-            temp = numSynapses;
+            temp = NumSynapses;
             result = prime * result + (int)(temp ^ (temp >> 32));
-            result = prime * result + Arrays.hashCode(overlapDutyCycles);
-            temp = Double.doubleToLongBits(permanenceDecrement);
+            result = prime * result + overlapDutyCycles.GetHashCode();
+            temp = permanenceDecrement.GetHashCode();
             result = prime * result + (int)(temp ^ (temp >> 32));
-            temp = Double.doubleToLongBits(permanenceIncrement);
-            result = prime * result + (int)(temp ^ (temp >>> 32));
-            temp = Double.doubleToLongBits(potentialPct);
+            temp = BitConverter.DoubleToInt64Bits(permanenceIncrement);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            result = prime * result + ((potentialPools == null) ? 0 : potentialPools.hashCode());
+            temp = BitConverter.DoubleToInt64Bits(potentialPct);
+            result = prime * result + (int)(temp ^ (temp >> 32));
+            result = prime * result + ((potentialPools == null) ? 0 : potentialPools.GetHashCode());
             result = prime * result + potentialRadius;
-            temp = Double.doubleToLongBits(predictedSegmentDecrement);
+            temp = BitConverter.DoubleToInt64Bits(predictedSegmentDecrement);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            result = prime * result + ((predictiveCells == null) ? 0 : predictiveCells.hashCode());
-            result = prime * result + ((random == null) ? 0 : random.hashCode());
-            result = prime * result + ((receptorSynapses == null) ? 0 : receptorSynapses.hashCode());
+            result = prime * result + ((predictiveCells == null) ? 0 : predictiveCells.GetHashCode());
+            result = prime * result + ((random == null) ? 0 : random.GetHashCode());
+            result = prime * result + ((receptorSynapses == null) ? 0 : receptorSynapses.GetHashCode());
             result = prime * result + seed;
-            result = prime * result + ((segments == null) ? 0 : segments.hashCode());
-            temp = Double.doubleToLongBits(stimulusThreshold);
+            result = prime * result + ((segments == null) ? 0 : segments.GetHashCode());
+            temp = BitConverter.DoubleToInt64Bits(stimulusThreshold);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            temp = Double.doubleToLongBits(synPermActiveInc);
+            temp = BitConverter.DoubleToInt64Bits(synPermActiveInc);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            temp = Double.doubleToLongBits(synPermBelowStimulusInc);
+            temp = BitConverter.DoubleToInt64Bits(synPermBelowStimulusInc);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            temp = Double.doubleToLongBits(synPermConnected);
+            temp = BitConverter.DoubleToInt64Bits(synPermConnected);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            temp = Double.doubleToLongBits(synPermInactiveDec);
+            temp = BitConverter.DoubleToInt64Bits(synPermInactiveDec);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            temp = Double.doubleToLongBits(synPermMax);
+            temp = BitConverter.DoubleToInt64Bits(synPermMax);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            temp = Double.doubleToLongBits(synPermMin);
+            temp = BitConverter.DoubleToInt64Bits(synPermMin);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            temp = Double.doubleToLongBits(synPermTrimThreshold);
+            temp = BitConverter.DoubleToInt64Bits(synPermTrimThreshold);
             result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + proximalSynapseCounter;
-            result = prime * result + ((proximalSynapses == null) ? 0 : proximalSynapses.hashCode());
-            result = prime * result + ((distalSynapses == null) ? 0 : distalSynapses.hashCode());
-            result = prime * result + Arrays.hashCode(tieBreaker);
+            result = prime * result + ((proximalSynapses == null) ? 0 : proximalSynapses.GetHashCode());
+            result = prime * result + ((distalSynapses == null) ? 0 : distalSynapses.GetHashCode());
+            result = prime * result + tieBreaker.GetHashCode();
             result = prime * result + updatePeriod;
-            temp = Double.doubleToLongBits(version);
-            result = prime * result + (int)(temp ^ (temp >>> 32));
-            result = prime * result + ((winnerCells == null) ? 0 : winnerCells.hashCode());
+            temp = BitConverter.DoubleToInt64Bits(version);
+            result = prime * result + (int)(temp ^ (temp >> 32));
+            result = prime * result + ((winnerCells == null) ? 0 : winnerCells.GetHashCode());
             return result;
         }
 
@@ -2545,8 +2559,9 @@ namespace NeoCortexApi.Entities
                 return true;
             if (obj == null)
                 return false;
-            if (getClass() != obj.getClass())
+            if ((obj.GetType() != this.GetType()))
                 return false;
+        
             Connections other = (Connections)obj;
             if (activationThreshold != other.activationThreshold)
                 return false;
@@ -2555,26 +2570,26 @@ namespace NeoCortexApi.Entities
                 if (other.activeCells != null)
                     return false;
             }
-            else if (!activeCells.equals(other.activeCells))
+            else if (!activeCells.Equals(other.activeCells))
                 return false;
-            if (!Arrays.equals(activeDutyCycles, other.activeDutyCycles))
+            if (!Array.Equals(activeDutyCycles, other.activeDutyCycles))
                 return false;
-            if (!Arrays.equals(boostFactors, other.boostFactors))
+            if (!Array.Equals(boostFactors, other.boostFactors))
                 return false;
-            if (!Arrays.equals(cells, other.cells))
+            if (!Array.Equals(cells, other.cells))
                 return false;
             if (cellsPerColumn != other.cellsPerColumn)
                 return false;
-            if (!Arrays.equals(columnDimensions, other.columnDimensions))
+            if (!Array.Equals(columnDimensions, other.columnDimensions))
                 return false;
             if (connectedCounts == null)
             {
                 if (other.connectedCounts != null)
                     return false;
             }
-            else if (!connectedCounts.equals(other.connectedCounts))
+            else if (!connectedCounts.Equals(other.connectedCounts))
                 return false;
-            if (Double.doubleToLongBits(connectedPermanence) != Double.doubleToLongBits(other.connectedPermanence))
+            if (BitConverter.DoubleToInt64Bits(connectedPermanence) != BitConverter.DoubleToInt64Bits(other.connectedPermanence))
                 return false;
             if (dutyCyclePeriod != other.dutyCyclePeriod)
                 return false;
@@ -2582,18 +2597,18 @@ namespace NeoCortexApi.Entities
                 return false;
             if (inhibitionRadius != other.inhibitionRadius)
                 return false;
-            if (Double.doubleToLongBits(initConnectedPct) != Double.doubleToLongBits(other.initConnectedPct))
+            if (BitConverter.DoubleToInt64Bits(initConnectedPct) != BitConverter.DoubleToInt64Bits(other.initConnectedPct))
                 return false;
-            if (Double.doubleToLongBits(initialPermanence) != Double.doubleToLongBits(other.initialPermanence))
+            if (BitConverter.DoubleToInt64Bits(initialPermanence) != BitConverter.DoubleToInt64Bits(other.initialPermanence))
                 return false;
-            if (!Arrays.equals(inputDimensions, other.inputDimensions))
+            if (!Array.Equals(inputDimensions, other.inputDimensions))
                 return false;
             if (inputMatrix == null)
             {
                 if (other.inputMatrix != null)
                     return false;
             }
-            else if (!inputMatrix.equals(other.inputMatrix))
+            else if (!inputMatrix.Equals(other.inputMatrix))
                 return false;
             if (spIterationLearnNum != other.spIterationLearnNum)
                 return false;
@@ -2603,9 +2618,9 @@ namespace NeoCortexApi.Entities
                 return false;
             if (learningRadius != other.learningRadius)
                 return false;
-            if (Double.doubleToLongBits(localAreaDensity) != Double.doubleToLongBits(other.localAreaDensity))
+            if (BitConverter.DoubleToInt64Bits(localAreaDensity) != BitConverter.DoubleToInt64Bits(other.localAreaDensity))
                 return false;
-            if (Double.doubleToLongBits(maxBoost) != Double.doubleToLongBits(other.maxBoost))
+            if (BitConverter.DoubleToInt64Bits(maxBoost) != BitConverter.DoubleToInt64Bits(other.maxBoost))
                 return false;
             if (maxNewSynapseCount != other.maxNewSynapseCount)
                 return false;
@@ -2614,58 +2629,58 @@ namespace NeoCortexApi.Entities
                 if (other.memory != null)
                     return false;
             }
-            else if (!memory.equals(other.memory))
+            else if (!memory.Equals(other.memory))
                 return false;
-            if (!Arrays.equals(minActiveDutyCycles, other.minActiveDutyCycles))
+            if (!Array.Equals(minActiveDutyCycles, other.minActiveDutyCycles))
                 return false;
-            if (!Arrays.equals(minOverlapDutyCycles, other.minOverlapDutyCycles))
+            if (!Array.Equals(minOverlapDutyCycles, other.minOverlapDutyCycles))
                 return false;
-            if (Double.doubleToLongBits(minPctActiveDutyCycles) != Double.doubleToLongBits(other.minPctActiveDutyCycles))
+            if (BitConverter.DoubleToInt64Bits(minPctActiveDutyCycles) != BitConverter.DoubleToInt64Bits(other.minPctActiveDutyCycles))
                 return false;
-            if (Double.doubleToLongBits(minPctOverlapDutyCycles) != Double.doubleToLongBits(other.minPctOverlapDutyCycles))
+            if (BitConverter.DoubleToInt64Bits(minPctOverlapDutyCycles) != BitConverter.DoubleToInt64Bits(other.minPctOverlapDutyCycles))
                 return false;
             if (minThreshold != other.minThreshold)
                 return false;
-            if (Double.doubleToLongBits(numActiveColumnsPerInhArea) != Double.doubleToLongBits(other.numActiveColumnsPerInhArea))
+            if (BitConverter.DoubleToInt64Bits(numActiveColumnsPerInhArea) != BitConverter.DoubleToInt64Bits(other.numActiveColumnsPerInhArea))
                 return false;
             if (numColumns != other.numColumns)
                 return false;
             if (numInputs != other.numInputs)
                 return false;
-            if (numSynapses != other.numSynapses)
+            if (NumSynapses != other.NumSynapses)
                 return false;
-            if (!Arrays.equals(overlapDutyCycles, other.overlapDutyCycles))
+            if (!Array.Equals(overlapDutyCycles, other.overlapDutyCycles))
                 return false;
-            if (Double.doubleToLongBits(permanenceDecrement) != Double.doubleToLongBits(other.permanenceDecrement))
+            if (BitConverter.DoubleToInt64Bits(permanenceDecrement) != BitConverter.DoubleToInt64Bits(other.permanenceDecrement))
                 return false;
-            if (Double.doubleToLongBits(permanenceIncrement) != Double.doubleToLongBits(other.permanenceIncrement))
+            if (BitConverter.DoubleToInt64Bits(permanenceIncrement) != BitConverter.DoubleToInt64Bits(other.permanenceIncrement))
                 return false;
-            if (Double.doubleToLongBits(potentialPct) != Double.doubleToLongBits(other.potentialPct))
+            if (BitConverter.DoubleToInt64Bits(potentialPct) != BitConverter.DoubleToInt64Bits(other.potentialPct))
                 return false;
             if (potentialPools == null)
             {
                 if (other.potentialPools != null)
                     return false;
             }
-            else if (!potentialPools.equals(other.potentialPools))
+            else if (!potentialPools.Equals(other.potentialPools))
                 return false;
             if (potentialRadius != other.potentialRadius)
                 return false;
-            if (Double.doubleToLongBits(predictedSegmentDecrement) != Double.doubleToLongBits(other.predictedSegmentDecrement))
+            if (BitConverter.DoubleToInt64Bits(predictedSegmentDecrement) != BitConverter.DoubleToInt64Bits(other.predictedSegmentDecrement))
                 return false;
             if (predictiveCells == null)
             {
                 if (other.predictiveCells != null)
                     return false;
             }
-            else if (!getPredictiveCells().equals(other.getPredictiveCells()))
+            else if (!getPredictiveCells().Equals(other.getPredictiveCells()))
                 return false;
             if (receptorSynapses == null)
             {
                 if (other.receptorSynapses != null)
                     return false;
             }
-            else if (!receptorSynapses.toString().equals(other.receptorSynapses.toString()))
+            else if (!receptorSynapses.ToString().Equals(other.receptorSynapses.ToString()))
                 return false;
             if (seed != other.seed)
                 return false;
@@ -2674,23 +2689,23 @@ namespace NeoCortexApi.Entities
                 if (other.segments != null)
                     return false;
             }
-            else if (!segments.equals(other.segments))
+            else if (!segments.Equals(other.segments))
                 return false;
-            if (Double.doubleToLongBits(stimulusThreshold) != Double.doubleToLongBits(other.stimulusThreshold))
+            if (BitConverter.DoubleToInt64Bits(stimulusThreshold) != BitConverter.DoubleToInt64Bits(other.stimulusThreshold))
                 return false;
-            if (Double.doubleToLongBits(synPermActiveInc) != Double.doubleToLongBits(other.synPermActiveInc))
+            if (BitConverter.DoubleToInt64Bits(synPermActiveInc) != BitConverter.DoubleToInt64Bits(other.synPermActiveInc))
                 return false;
-            if (Double.doubleToLongBits(synPermBelowStimulusInc) != Double.doubleToLongBits(other.synPermBelowStimulusInc))
+            if (BitConverter.DoubleToInt64Bits(synPermBelowStimulusInc) != BitConverter.DoubleToInt64Bits(other.synPermBelowStimulusInc))
                 return false;
-            if (Double.doubleToLongBits(synPermConnected) != Double.doubleToLongBits(other.synPermConnected))
+            if (BitConverter.DoubleToInt64Bits(synPermConnected) != BitConverter.DoubleToInt64Bits(other.synPermConnected))
                 return false;
-            if (Double.doubleToLongBits(synPermInactiveDec) != Double.doubleToLongBits(other.synPermInactiveDec))
+            if (BitConverter.DoubleToInt64Bits(synPermInactiveDec) != BitConverter.DoubleToInt64Bits(other.synPermInactiveDec))
                 return false;
-            if (Double.doubleToLongBits(synPermMax) != Double.doubleToLongBits(other.synPermMax))
+            if (BitConverter.DoubleToInt64Bits(synPermMax) != BitConverter.DoubleToInt64Bits(other.synPermMax))
                 return false;
-            if (Double.doubleToLongBits(synPermMin) != Double.doubleToLongBits(other.synPermMin))
+            if (BitConverter.DoubleToInt64Bits(synPermMin) != BitConverter.DoubleToInt64Bits(other.synPermMin))
                 return false;
-            if (Double.doubleToLongBits(synPermTrimThreshold) != Double.doubleToLongBits(other.synPermTrimThreshold))
+            if (BitConverter.DoubleToInt64Bits(synPermTrimThreshold) != BitConverter.DoubleToInt64Bits(other.synPermTrimThreshold))
                 return false;
             if (proximalSynapseCounter != other.proximalSynapseCounter)
                 return false;
@@ -2699,27 +2714,27 @@ namespace NeoCortexApi.Entities
                 if (other.proximalSynapses != null)
                     return false;
             }
-            else if (!proximalSynapses.equals(other.proximalSynapses))
+            else if (!proximalSynapses.Equals(other.proximalSynapses))
                 return false;
             if (distalSynapses == null)
             {
                 if (other.distalSynapses != null)
                     return false;
             }
-            else if (!distalSynapses.equals(other.distalSynapses))
+            else if (!distalSynapses.Equals(other.distalSynapses))
                 return false;
-            if (!Arrays.equals(tieBreaker, other.tieBreaker))
+            if (!Array.Equals(tieBreaker, other.tieBreaker))
                 return false;
             if (updatePeriod != other.updatePeriod)
                 return false;
-            if (Double.doubleToLongBits(version) != Double.doubleToLongBits(other.version))
+            if (BitConverter.DoubleToInt64Bits(version) != BitConverter.DoubleToInt64Bits(other.version))
                 return false;
             if (winnerCells == null)
             {
                 if (other.winnerCells != null)
                     return false;
             }
-            else if (!winnerCells.equals(other.winnerCells))
+            else if (!winnerCells.Equals(other.winnerCells))
                 return false;
             return true;
         }
