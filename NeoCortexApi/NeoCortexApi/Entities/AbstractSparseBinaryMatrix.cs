@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace NeoCortexApi.Entities
 {
     //TODO see type object
-    public abstract class AbstractSparseBinaryMatrix : AbstractSparseMatrix<object>
+    public abstract class AbstractSparseBinaryMatrix : AbstractSparseMatrix<object>, IEquatable<object>
     {
         /** keep it simple */
         private static readonly long serialVersionUID = 1L;
@@ -286,16 +287,17 @@ namespace NeoCortexApi.Entities
         //@Override
         public override int[] getSparseIndices()
         {
-            TIntList indexes = new TIntArrayList();
+            List<int> indexes = new List<int>();
+            //TIntList indexes = new TIntArrayList();
             for (int i = 0; i <= getMaxIndex(); i++)
             {
                 if (Get(i) > 0)
                 {
-                    indexes.add(i);
+                    indexes.Add(i);
                 }
             }
 
-            return indexes.toArray();
+            return indexes.ToArray();
         }
 
         /**
@@ -309,8 +311,8 @@ namespace NeoCortexApi.Entities
         public AbstractSparseBinaryMatrix or(AbstractSparseBinaryMatrix inputMatrix)
         {
             int[] mask = inputMatrix.getSparseIndices();
-            int[] ones = new int[mask.length];
-            Arrays.fill(ones, 1);
+            int[] ones = new int[mask.Length];
+            Utility.ArrayUtils.Fill(ones, 1);
             return set(mask, ones);
         }
 
@@ -322,11 +324,11 @@ namespace NeoCortexApi.Entities
          * @param onBitIndexes  the matrix containing the "on" bits to or
          * @return  this matrix
          */
-        public AbstractSparseBinaryMatrix or(TIntCollection onBitIndexes)
+        public AbstractSparseBinaryMatrix or(List<int> onBitIndexes)
         {
-            int[] ones = new int[onBitIndexes.size()];
-            Arrays.fill(ones, 1);
-            return set(onBitIndexes.toArray(), ones);
+            int[] ones = new int[onBitIndexes.Count];
+            Utility.ArrayUtils.Fill(ones, 1);
+            return set(onBitIndexes.ToArray(), ones);
         }
 
         /**
@@ -339,14 +341,14 @@ namespace NeoCortexApi.Entities
          */
         public AbstractSparseBinaryMatrix or(int[] onBitIndexes)
         {
-            int[] ones = new int[onBitIndexes.length];
-            Arrays.fill(ones, 1);
+            int[] ones = new int[onBitIndexes.Length];
+            Utility.ArrayUtils.Fill(ones, 1);
             return set(onBitIndexes, ones);
         }
 
-        protected TIntSet getSparseSet()
+        protected HashSet<int> getSparseSet()
         {
-            return new TIntHashSet(getSparseIndices());
+            return new HashSet<int>(getSparseIndices());
         }
 
         /**
@@ -357,9 +359,13 @@ namespace NeoCortexApi.Entities
          * @param matrix
          * @return
          */
-        public boolean all(AbstractSparseBinaryMatrix matrix)
+        public bool All(AbstractSparseBinaryMatrix matrix)
         {
-            return getSparseSet().containsAll(matrix.getSparseIndices());
+            var sparseSet = getSparseSet();
+            bool hasAll = matrix.getSparseIndices().All(itm2 => sparseSet.Contains(itm2));
+            return hasAll;
+            //return getSparseSet().Contains(
+            //    containsAll(matrix.getSparseIndices());
         }
 
         /**
@@ -370,9 +376,12 @@ namespace NeoCortexApi.Entities
          * @param matrix
          * @return
          */
-        public boo all(TIntCollection onBits)
+        public bool All(List<int> onBits)
         {
-            return getSparseSet().containsAll(onBits);
+            var sparseSet = getSparseSet();
+            bool hasAll = onBits.All(itm2 => sparseSet.Contains(itm2));
+            return hasAll;
+            //return getSparseSet().containsAll(onBits);
         }
 
         /**
@@ -383,9 +392,12 @@ namespace NeoCortexApi.Entities
          * @param matrix
          * @return
          */
-        public boolean all(int[] onBits)
+        public bool All(int[] onBits)
         {
-            return getSparseSet().containsAll(onBits);
+            var sparseSet = getSparseSet();
+            bool hasAll = onBits.All(itm2 => sparseSet.Contains(itm2));
+            return hasAll;
+            //return getSparseSet().containsAll(onBits);
         }
 
         /**
@@ -396,14 +408,15 @@ namespace NeoCortexApi.Entities
          * @param matrix
          * @return
          */
-        public boolean any(AbstractSparseBinaryMatrix matrix)
+        public bool any(AbstractSparseBinaryMatrix matrix)
         {
-            TIntSet keySet = getSparseSet();
+            var keySet = getSparseSet();
 
-            for (int i : matrix.getSparseIndices())
+            foreach (int i in matrix.getSparseIndices())
             {
-                if (keySet.contains(i)) return true;
+                if (keySet.Contains(i)) return true;
             }
+
             return false;
         }
 
@@ -415,14 +428,18 @@ namespace NeoCortexApi.Entities
          * @param matrix
          * @return
          */
-        public boolean any(TIntList onBits)
+        public bool any(HashSet<int> onBits)
         {
-            TIntSet keySet = getSparseSet();
+            var keySet = getSparseSet();
 
-            for (TIntIterator i = onBits.iterator(); i.hasNext();)
+            foreach (var i in onBits)
             {
-                if (keySet.contains(i.next())) return true;
+                if (keySet.Contains(i)) return true;
             }
+            //for (TIntIterator i = onBits.iterator(); i.hasNext();)
+            //{
+            //    if (keySet.contains(i.next())) return true;
+            //}
             return false;
         }
 
@@ -434,13 +451,13 @@ namespace NeoCortexApi.Entities
          * @param matrix
          * @return
          */
-        public boolean any(int[] onBits)
+        public bool any(int[] onBits)
         {
-            TIntSet keySet = getSparseSet();
+            var keySet = getSparseSet();
 
-            for (int i : onBits)
+            foreach (int i in onBits)
             {
-                if (keySet.contains(i)) return true;
+                if (keySet.Contains(i)) return true;
             }
             return false;
         }
@@ -448,29 +465,28 @@ namespace NeoCortexApi.Entities
         /* (non-Javadoc)
          * @see java.lang.Object#hashCode()
          */
-        @Override
-    public int hashCode()
+
+   
+        public override int GetHashCode()
         {
-            final int prime = 31;
-            int result = super.hashCode();
-            result = prime * result + Arrays.hashCode(trueCounts);
+            const int prime = 31;
+            int result = base.GetHashCode();
+            result = prime * result + trueCounts.GetHashCode();
             return result;
         }
 
-        /* (non-Javadoc)
-         * @see java.lang.Object#equals(java.lang.Object)
-         */
-        @Override
-    public boolean equals(Object obj)
+
+
+        public override bool Equals(object obj)
         {
             if (this == obj)
                 return true;
-            if (!super.equals(obj))
+            if (!base.Equals(obj))
                 return false;
-            if (getClass() != obj.getClass())
+            if ((obj.GetType() != this.GetType()))
                 return false;
             AbstractSparseBinaryMatrix other = (AbstractSparseBinaryMatrix)obj;
-            if (!Arrays.equals(trueCounts, other.trueCounts))
+            if (!Array.Equals(trueCounts, other.trueCounts))
                 return false;
             return true;
         }

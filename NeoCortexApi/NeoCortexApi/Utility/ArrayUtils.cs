@@ -2449,6 +2449,25 @@ namespace NeoCortexApi.Utility
             }
         }
 
+        public static void Fill(Array array, int value)
+        {
+            if (array is int[] || array is object[])
+            {
+                for (int i = 0; i < ((int[])array).Length; i++)
+                {
+                    ((int[])array)[i] = value;
+                }
+            }
+            else
+            {
+                //forea (Object agr in (Object[])array)
+                //{
+                //    fillArray(agr, value);
+                //}
+                throw new NotSupportedException();
+            }
+        }
+
         /**
         * Aggregates all element of multi dimensional array of ints
         * @param array
@@ -2518,23 +2537,23 @@ namespace NeoCortexApi.Utility
          *
          * http://stackoverflow.com/a/784842
          */
-     
-    //public static <T> T[] concatAll(T[] first, T[]... rest)
-    //    {
-    //        int totalLength = first.length;
-    //        for (T[] array : rest)
-    //        {
-    //            totalLength += array.length;
-    //        }
-    //        T[] result = Arrays.copyOf(first, totalLength);
-    //        int offset = first.length;
-    //        for (T[] array : rest)
-    //        {
-    //            System.arraycopy(array, 0, result, offset, array.length);
-    //            offset += array.length;
-    //        }
-    //        return result;
-    //    }
+
+        //public static <T> T[] concatAll(T[] first, T[]... rest)
+        //    {
+        //        int totalLength = first.length;
+        //        for (T[] array : rest)
+        //        {
+        //            totalLength += array.length;
+        //        }
+        //        T[] result = Arrays.copyOf(first, totalLength);
+        //        int offset = first.length;
+        //        for (T[] array : rest)
+        //        {
+        //            System.arraycopy(array, 0, result, offset, array.length);
+        //            offset += array.length;
+        //        }
+        //        return result;
+        //    }
 
         /**
          * Concat int arrays
