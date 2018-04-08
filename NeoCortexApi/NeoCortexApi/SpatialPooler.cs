@@ -1,6 +1,9 @@
 ﻿using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Linq;
 
 /**
  * Handles the relationships between the columns of a region 
@@ -24,479 +27,548 @@ public class SpatialPooler
     /** Default Serial Version  */
     private static readonly long serialVersionUID = 1L;
 
-/**
- * Constructs a new {@code SpatialPooler}
- */
-public SpatialPooler() { }
+    /**
+     * Constructs a new {@code SpatialPooler}
+     */
+    public SpatialPooler() { }
 
-/**
- * Initializes the specified {@link Connections} object which contains
- * the memory and structural anatomy this spatial pooler uses to implement
- * its algorithms.
- * 
- * @param c     a {@link Connections} object
- */
-public void init(Connections c)
-{
-    if (c.getNumActiveColumnsPerInhArea() == 0 && (c.getLocalAreaDensity() == 0 ||
-        c.getLocalAreaDensity() > 0.5))
+    /**
+     * Initializes the specified {@link Connections} object which contains
+     * the memory and structural anatomy this spatial pooler uses to implement
+     * its algorithms.
+     * 
+     * @param c     a {@link Connections} object
+     */
+    public void init(Connections c)
     {
-        throw new ArgumentException("Inhibition parameters are invalid");
-    }
-
-    c.doSpatialPoolerPostInit();
-    initMatrices(c);
-    connectAndConfigureInputs(c);
-}
-
-/**
- * Called to initialize the structural anatomy with configured values and prepare
- * the anatomical entities for activation.
- * 
- * @param c
- */
-public void initMatrices(Connections c)
-{
-    SparseObjectMatrix<Column> mem = c.getMemory();
-    c.setMemory(mem == null ?
-        mem = new SparseObjectMatrix<Column>(c.getColumnDimensions()) : mem);
-
-    c.setInputMatrix(new SparseBinaryMatrix(c.getInputDimensions()));
-
-    // Initiate the topologies
-    c.setColumnTopology(new Topology(c.getColumnDimensions()));
-    c.setInputTopology(new Topology(c.getInputDimensions()));
-
-    //Calculate numInputs and numColumns
-    int numInputs = c.getInputMatrix().getMaxIndex() + 1;
-    int numColumns = c.getMemory().getMaxIndex() + 1;
-    if (numColumns <= 0)
-    {
-        throw new ArgumentException("Invalid number of columns: " + numColumns);
-    }
-    if (numInputs <= 0)
-    {
-        throw new ArgumentException("Invalid number of inputs: " + numInputs);
-    }
-    c.setNumInputs(numInputs);
-    c.setNumColumns(numColumns);
-
-    //Fill the sparse matrix with column objects
-    for (int i = 0; i < numColumns; i++) { mem.set(i, new Column(c.getCellsPerColumn(), i)); }
-
-    c.setPotentialPools(new SparseObjectMatrix<Pool>(c.getMemory().getDimensions()));
-
-    c.setConnectedMatrix(new SparseBinaryMatrix(new int[] { numColumns, numInputs }));
-
-    //Initialize state meta-management statistics
-    c.setOverlapDutyCycles(new double[numColumns]);
-    c.setActiveDutyCycles(new double[numColumns]);
-    c.setMinOverlapDutyCycles(new double[numColumns]);
-    c.setMinActiveDutyCycles(new double[numColumns]);
-    c.setBoostFactors(new double[numColumns]);
-    Array.fill(c.getBoostFactors(), 1);
-}
-
-/**
- * Step two of pooler initialization kept separate from initialization
- * of static members so that they may be set at a different point in 
- * the initialization (as sometimes needed by tests).
- * 
- * This step prepares the proximal dendritic synapse pools with their 
- * initial permanence values and connected inputs.
- * 
- * @param c     the {@link Connections} memory
- */
-public void connectAndConfigureInputs(Connections c)
-{
-    // Initialize the set of permanence values for each column. Ensure that
-    // each column is connected to enough input bits to allow it to be
-    // activated.
-    int numColumns = c.getNumColumns();
-    for (int i = 0; i < numColumns; i++)
-    {
-        int[] potential = mapPotential(c, i, c.isWrapAround());
-        Column column = c.getColumn(i);
-        c.getPotentialPools().set(i, column.createPotentialPool(c, potential));
-        double[] perm = initPermanence(c, potential, i, c.getInitConnectedPct());
-        updatePermanencesForColumn(c, perm, column, potential, true);
-    }
-
-    // The inhibition radius determines the size of a column's local
-    // neighborhood.  A cortical column must overcome the overlap score of
-    // columns in its neighborhood in order to become active. This radius is
-    // updated every learning round. It grows and shrinks with the average
-    // number of connected synapses per column.
-    updateInhibitionRadius(c);
-}
-
-/**
- * This is the primary public method of the SpatialPooler class. This
- * function takes a input vector and outputs the indices of the active columns.
- * If 'learn' is set to True, this method also updates the permanences of the
- * columns. 
- * @param inputVector       An array of 0's and 1's that comprises the input to
- *                          the spatial pooler. The array will be treated as a one
- *                          dimensional array, therefore the dimensions of the array
- *                          do not have to match the exact dimensions specified in the
- *                          class constructor. In fact, even a list would suffice.
- *                          The number of input bits in the vector must, however,
- *                          match the number of bits specified by the call to the
- *                          constructor. Therefore there must be a '0' or '1' in the
- *                          array for every input bit.
- * @param activeArray       An array whose size is equal to the number of columns.
- *                          Before the function returns this array will be populated
- *                          with 1's at the indices of the active columns, and 0's
- *                          everywhere else.
- * @param learn             A boolean value indicating whether learning should be
- *                          performed. Learning entails updating the  permanence
- *                          values of the synapses, and hence modifying the 'state'
- *                          of the model. Setting learning to 'off' freezes the SP
- *                          and has many uses. For example, you might want to feed in
- *                          various inputs and examine the resulting SDR's.
- */
-public void compute(Connections c, int[] inputVector, int[] activeArray, boolean learn)
-{
-    if (inputVector.length != c.getNumInputs())
-    {
-        throw new InvalidSPParamValueException(
-                "Input array must be same size as the defined number of inputs: From Params: " + c.getNumInputs() +
-                ", From Input Vector: " + inputVector.length);
-    }
-
-    updateBookeepingVars(c, learn);
-    int[] overlaps = c.setOverlaps(calculateOverlap(c, inputVector));
-
-    double[] boostedOverlaps;
-    if (learn)
-    {
-        boostedOverlaps = ArrayUtils.multiply(c.getBoostFactors(), overlaps);
-    }
-    else
-    {
-        boostedOverlaps = ArrayUtils.toDoubleArray(overlaps);
-    }
-
-    int[] activeColumns = inhibitColumns(c, c.setBoostedOverlaps(boostedOverlaps));
-
-    if (learn)
-    {
-        adaptSynapses(c, inputVector, activeColumns);
-        updateDutyCycles(c, overlaps, activeColumns);
-        bumpUpWeakColumns(c);
-        updateBoostFactors(c);
-        if (isUpdateRound(c))
+        if (c.getNumActiveColumnsPerInhArea() == 0 && (c.getLocalAreaDensity() == 0 ||
+            c.getLocalAreaDensity() > 0.5))
         {
-            updateInhibitionRadius(c);
-            updateMinDutyCycles(c);
+            throw new ArgumentException("Inhibition parameters are invalid");
+        }
+
+        c.doSpatialPoolerPostInit();
+        initMatrices(c);
+        connectAndConfigureInputs(c);
+    }
+
+    /**
+     * Called to initialize the structural anatomy with configured values and prepare
+     * the anatomical entities for activation.
+     * 
+     * @param c
+     */
+    public void initMatrices(Connections c)
+    {
+        SparseObjectMatrix<Column> mem = c.getMemory();
+        c.setMemory(mem == null ?
+            mem = new SparseObjectMatrix<Column>(c.getColumnDimensions()) : mem);
+
+        c.setInputMatrix(new SparseBinaryMatrix(c.getInputDimensions()));
+
+        // Initiate the topologies
+        c.setColumnTopology(new Topology(c.getColumnDimensions()));
+        c.setInputTopology(new Topology(c.getInputDimensions()));
+
+        //Calculate numInputs and numColumns
+        int numInputs = c.getInputMatrix().getMaxIndex() + 1;
+        int numColumns = c.getMemory().getMaxIndex() + 1;
+        if (numColumns <= 0)
+        {
+            throw new ArgumentException("Invalid number of columns: " + numColumns);
+        }
+        if (numInputs <= 0)
+        {
+            throw new ArgumentException("Invalid number of inputs: " + numInputs);
+        }
+        c.setNumInputs(numInputs);
+        c.setNumColumns(numColumns);
+
+        //Fill the sparse matrix with column objects
+        for (int i = 0; i < numColumns; i++) { mem.set(i, new Column(c.getCellsPerColumn(), i)); }
+
+        c.setPotentialPools(new SparseObjectMatrix<Pool>(c.getMemory().getDimensions()));
+
+        c.setConnectedMatrix(new SparseBinaryMatrix(new int[] { numColumns, numInputs }));
+
+        //Initialize state meta-management statistics
+        c.setOverlapDutyCycles(new double[numColumns]);
+        c.setActiveDutyCycles(new double[numColumns]);
+        c.setMinOverlapDutyCycles(new double[numColumns]);
+        c.setMinActiveDutyCycles(new double[numColumns]);
+        c.setBoostFactors(new double[numColumns]);
+        ArrayUtils.fillArray(c.getBoostFactors(), 1);
+    }
+
+    /**
+     * Step two of pooler initialization kept separate from initialization
+     * of static members so that they may be set at a different point in 
+     * the initialization (as sometimes needed by tests).
+     * 
+     * This step prepares the proximal dendritic synapse pools with their 
+     * initial permanence values and connected inputs.
+     * 
+     * @param c     the {@link Connections} memory
+     */
+    public void connectAndConfigureInputs(Connections c)
+    {
+        // Initialize the set of permanence values for each column. Ensure that
+        // each column is connected to enough input bits to allow it to be
+        // activated.
+        int numColumns = c.getNumColumns();
+        for (int i = 0; i < numColumns; i++)
+        {
+            int[] potential = mapPotential(c, i, c.isWrapAround());
+            Column column = c.getColumn(i);
+            c.getPotentialPools().set(i, column.createPotentialPool(c, potential));
+            double[] perm = initPermanence(c, potential, i, c.getInitConnectedPct());
+            updatePermanencesForColumn(c, perm, column, potential, true);
+        }
+
+        // The inhibition radius determines the size of a column's local
+        // neighborhood.  A cortical column must overcome the overlap score of
+        // columns in its neighborhood in order to become active. This radius is
+        // updated every learning round. It grows and shrinks with the average
+        // number of connected synapses per column.
+        updateInhibitionRadius(c);
+    }
+
+    /**
+     * This is the primary public method of the SpatialPooler class. This
+     * function takes a input vector and outputs the indices of the active columns.
+     * If 'learn' is set to True, this method also updates the permanences of the
+     * columns. 
+     * @param inputVector       An array of 0's and 1's that comprises the input to
+     *                          the spatial pooler. The array will be treated as a one
+     *                          dimensional array, therefore the dimensions of the array
+     *                          do not have to match the exact dimensions specified in the
+     *                          class constructor. In fact, even a list would suffice.
+     *                          The number of input bits in the vector must, however,
+     *                          match the number of bits specified by the call to the
+     *                          constructor. Therefore there must be a '0' or '1' in the
+     *                          array for every input bit.
+     * @param activeArray       An array whose size is equal to the number of columns.
+     *                          Before the function returns this array will be populated
+     *                          with 1's at the indices of the active columns, and 0's
+     *                          everywhere else.
+     * @param learn             A boolean value indicating whether learning should be
+     *                          performed. Learning entails updating the  permanence
+     *                          values of the synapses, and hence modifying the 'state'
+     *                          of the model. Setting learning to 'off' freezes the SP
+     *                          and has many uses. For example, you might want to feed in
+     *                          various inputs and examine the resulting SDR's.
+     */
+    public void compute(Connections c, int[] inputVector, int[] activeArray, bool learn)
+    {
+        if (inputVector.Length != c.getNumInputs())
+        {
+            throw new ArgumentException(
+                    "Input array must be same size as the defined number of inputs: From Params: " + c.getNumInputs() +
+                    ", From Input Vector: " + inputVector.Length);
+        }
+
+        updateBookeepingVars(c, learn);
+        int[] overlaps = c.setOverlaps(calculateOverlap(c, inputVector));
+
+        double[] boostedOverlaps;
+        if (learn)
+        {
+            boostedOverlaps = ArrayUtils.multiply(c.getBoostFactors(), overlaps);
+        }
+        else
+        {
+            boostedOverlaps = ArrayUtils.toDoubleArray(overlaps);
+        }
+
+        int[] activeColumns = inhibitColumns(c, c.setBoostedOverlaps(boostedOverlaps));
+
+        if (learn)
+        {
+            adaptSynapses(c, inputVector, activeColumns);
+            updateDutyCycles(c, overlaps, activeColumns);
+            bumpUpWeakColumns(c);
+            updateBoostFactors(c);
+            if (isUpdateRound(c))
+            {
+                updateInhibitionRadius(c);
+                updateMinDutyCycles(c);
+            }
+        }
+
+        ArrayUtils.fillArray(activeArray, 0);
+        if (activeColumns.Length > 0)
+        {
+            ArrayUtils.setIndexesTo(activeArray, activeColumns, 1);
         }
     }
 
-    Arrays.fill(activeArray, 0);
-    if (activeColumns.length > 0)
+    /**
+     * Removes the set of columns who have never been active from the set of
+     * active columns selected in the inhibition round. Such columns cannot
+     * represent learned pattern and are therefore meaningless if only inference
+     * is required. This should not be done when using a random, unlearned SP
+     * since you would end up with no active columns.
+     *  
+     * @param activeColumns An array containing the indices of the active columns
+     * @return  a list of columns with a chance of activation
+     */
+    public int[] stripUnlearnedColumns(Connections c, int[] activeColumns)
     {
-        ArrayUtils.setIndexesTo(activeArray, activeColumns, 1);
-    }
-}
+        //TIntHashSet active = new TIntHashSet(activeColumns);
+        //TIntHashSet aboveZero = new TIntHashSet();
+        //int numCols = c.getNumColumns();
+        //double[] colDutyCycles = c.getActiveDutyCycles();
+        //for (int i = 0; i < numCols; i++)
+        //{
+        //    if (colDutyCycles[i] <= 0)
+        //    {
+        //        aboveZero.add(i);
+        //    }
+        //}
+        //active.removeAll(aboveZero);
+        //TIntArrayList l = new TIntArrayList(active);
+        //l.sort();
 
-/**
- * Removes the set of columns who have never been active from the set of
- * active columns selected in the inhibition round. Such columns cannot
- * represent learned pattern and are therefore meaningless if only inference
- * is required. This should not be done when using a random, unlearned SP
- * since you would end up with no active columns.
- *  
- * @param activeColumns An array containing the indices of the active columns
- * @return  a list of columns with a chance of activation
- */
-public int[] stripUnlearnedColumns(Connections c, int[] activeColumns)
-{
-    TIntHashSet active = new TIntHashSet(activeColumns);
-    TIntHashSet aboveZero = new TIntHashSet();
-    int numCols = c.getNumColumns();
-    double[] colDutyCycles = c.getActiveDutyCycles();
-    for (int i = 0; i < numCols; i++)
+        //return Arrays.stream(activeColumns).filter(i->c.getActiveDutyCycles()[i] > 0).toArray();
+
+
+
+        ////TINTHashSet 
+        //HashSet<int> active = new HashSet<int>(activeColumns);
+        //HashSet<int> aboveZero = new HashSet<int>();
+
+        //int numCols = c.getNumColumns();
+        //double[] colDutyCycles = c.getActiveDutyCycles();
+        //for (int i = 0; i < numCols; i++)
+        //{
+        //    if (colDutyCycles[i] <= 0)
+        //    {
+        //        aboveZero.Add(i);
+        //    }
+        //}
+
+        //foreach (var inactiveColumn in aboveZero)
+        //{
+        //    active.Remove(inactiveColumn);
+        //}
+        ////active.Remove(aboveZero);
+        ////List<int> l = new List<int>(active);
+        ////l.sort();
+
+        var res = activeColumns.Where(i => c.getActiveDutyCycles()[i] > 0).ToArray();
+        return res;
+        //return Arrays.stream(activeColumns).filter(i->c.getActiveDutyCycles()[i] > 0).toArray();
+    }
+
+    /**
+     * Updates the minimum duty cycles defining normal activity for a column. A
+     * column with activity duty cycle below this minimum threshold is boosted.
+     *  
+     * @param c
+     */
+    public void updateMinDutyCycles(Connections c)
     {
-        if (colDutyCycles[i] <= 0)
+        if (c.getGlobalInhibition() || c.getInhibitionRadius() > c.getNumInputs())
         {
-            aboveZero.add(i);
+            updateMinDutyCyclesGlobal(c);
+        }
+        else
+        {
+            updateMinDutyCyclesLocal(c);
         }
     }
-    active.removeAll(aboveZero);
-    TIntArrayList l = new TIntArrayList(active);
-    l.sort();
 
-    return Arrays.stream(activeColumns).filter(i->c.getActiveDutyCycles()[i] > 0).toArray();
-}
-
-/**
- * Updates the minimum duty cycles defining normal activity for a column. A
- * column with activity duty cycle below this minimum threshold is boosted.
- *  
- * @param c
- */
-public void updateMinDutyCycles(Connections c)
-{
-    if (c.getGlobalInhibition() || c.getInhibitionRadius() > c.getNumInputs())
+    /**
+     * Updates the minimum duty cycles in a global fashion. Sets the minimum duty
+     * cycles for the overlap and activation of all columns to be a percent of the
+     * maximum in the region, specified by {@link Connections#getMinOverlapDutyCycles()} and
+     * minPctActiveDutyCycle respectively. Functionality it is equivalent to
+     * {@link #updateMinDutyCyclesLocal(Connections)}, but this function exploits the globalness of the
+     * computation to perform it in a straightforward, and more efficient manner.
+     * 
+     * @param c
+     */
+    public void updateMinDutyCyclesGlobal(Connections c)
     {
-        updateMinDutyCyclesGlobal(c);
-    }
-    else
-    {
-        updateMinDutyCyclesLocal(c);
-    }
-}
+        ArrayUtils.fillArray(c.getMinOverlapDutyCycles(),
+               (int)(c.getMinPctOverlapDutyCycles() * ArrayUtils.max(c.getOverlapDutyCycles())));
 
-/**
- * Updates the minimum duty cycles in a global fashion. Sets the minimum duty
- * cycles for the overlap and activation of all columns to be a percent of the
- * maximum in the region, specified by {@link Connections#getMinOverlapDutyCycles()} and
- * minPctActiveDutyCycle respectively. Functionality it is equivalent to
- * {@link #updateMinDutyCyclesLocal(Connections)}, but this function exploits the globalness of the
- * computation to perform it in a straightforward, and more efficient manner.
+        ArrayUtils.fillArray(c.getMinActiveDutyCycles(),
+                (int)(c.getMinPctActiveDutyCycles() * ArrayUtils.max(c.getActiveDutyCycles())));
+    }
+
+    /**
+ * Gets a neighborhood of columns.
  * 
- * @param c
- */
-public void updateMinDutyCyclesGlobal(Connections c)
-{
-    Arrays.fill(c.getMinOverlapDutyCycles(),
-            c.getMinPctOverlapDutyCycles() * ArrayUtils.max(c.getOverlapDutyCycles()));
-    Arrays.fill(c.getMinActiveDutyCycles(),
-            c.getMinPctActiveDutyCycles() * ArrayUtils.max(c.getActiveDutyCycles()));
-}
-
-/**
- * Updates the minimum duty cycles. The minimum duty cycles are determined
- * locally. Each column's minimum duty cycles are set to be a percent of the
- * maximum duty cycles in the column's neighborhood. Unlike
- * {@link #updateMinDutyCyclesGlobal(Connections)}, here the values can be 
- * quite different for different columns.
+ * Simply calls topology.neighborhood or topology.wrappingNeighborhood
  * 
- * @param c
- */
-public void updateMinDutyCyclesLocal(Connections c)
-{
-    int len = c.getNumColumns();
-    int inhibitionRadius = c.getInhibitionRadius();
-    double[] activeDutyCycles = c.getActiveDutyCycles();
-    double minPctActiveDutyCycles = c.getMinPctActiveDutyCycles();
-    double[] overlapDutyCycles = c.getOverlapDutyCycles();
-    double minPctOverlapDutyCycles = c.getMinPctOverlapDutyCycles();
-
-    // Parallelize for speed up
-    IntStream.range(0, len).forEach(i-> {
-        int[] neighborhood = getColumnNeighborhood(c, i, inhibitionRadius);
-
-        double maxActiveDuty = ArrayUtils.max(
-            ArrayUtils.sub(activeDutyCycles, neighborhood));
-        double maxOverlapDuty = ArrayUtils.max(
-            ArrayUtils.sub(overlapDutyCycles, neighborhood));
-
-        c.getMinActiveDutyCycles()[i] = maxActiveDuty * minPctActiveDutyCycles;
-
-        c.getMinOverlapDutyCycles()[i] = maxOverlapDuty * minPctOverlapDutyCycles;
-    });
-}
-
-/**
- * Updates the duty cycles for each column. The OVERLAP duty cycle is a moving
- * average of the number of inputs which overlapped with each column. The
- * ACTIVITY duty cycles is a moving average of the frequency of activation for
- * each column.
+ * A subclass can insert different topology behavior by overriding this method.
  * 
- * @param c                 the {@link Connections} (spatial pooler memory)
- * @param overlaps          an array containing the overlap score for each column.
- *                          The overlap score for a column is defined as the number
- *                          of synapses in a "connected state" (connected synapses)
- *                          that are connected to input bits which are turned on.
- * @param activeColumns     An array containing the indices of the active columns,
- *                          the sparse set of columns which survived inhibition
+ * @param c                     the {@link Connections} memory encapsulation
+ * @param centerColumn          The center of the neighborhood.
+ * @param inhibitionRadius      Span of columns included in each neighborhood
+ * @return                      The columns in the neighborhood (1D)
  */
-public void updateDutyCycles(Connections c, int[] overlaps, int[] activeColumns)
-{
-    double[] overlapArray = new double[c.getNumColumns()];
-    double[] activeArray = new double[c.getNumColumns()];
-    ArrayUtils.greaterThanXThanSetToYInB(overlaps, overlapArray, 0, 1);
-    if (activeColumns.length > 0)
+    public int[] getColumnNeighborhood(Connections c, int centerColumn, int inhibitionRadius)
     {
-        ArrayUtils.setIndexesTo(activeArray, activeColumns, 1);
+        return c.isWrapAround() ?
+            c.getColumnTopology().wrappingNeighborhood(centerColumn, inhibitionRadius) :
+                c.getColumnTopology().neighborhood(centerColumn, inhibitionRadius);
     }
 
-    int period = c.getDutyCyclePeriod();
-    if (period > c.getIterationNum())
+    /**
+     * Updates the minimum duty cycles. The minimum duty cycles are determined
+     * locally. Each column's minimum duty cycles are set to be a percent of the
+     * maximum duty cycles in the column's neighborhood. Unlike
+     * {@link #updateMinDutyCyclesGlobal(Connections)}, here the values can be 
+     * quite different for different columns.
+     * 
+     * @param c
+     */
+    public void updateMinDutyCyclesLocal(Connections c)
     {
-        period = c.getIterationNum();
+        int len = c.getNumColumns();
+        int inhibitionRadius = c.getInhibitionRadius();
+        double[] activeDutyCycles = c.getActiveDutyCycles();
+        double minPctActiveDutyCycles = c.getMinPctActiveDutyCycles();
+        double[] overlapDutyCycles = c.getOverlapDutyCycles();
+        double minPctOverlapDutyCycles = c.getMinPctOverlapDutyCycles();
+
+        Parallel.For(0, len, (i) =>
+        {
+            int[] neighborhood = getColumnNeighborhood(c, i, inhibitionRadius);
+
+            double maxActiveDuty = ArrayUtils.max(
+                ArrayUtils.sub(activeDutyCycles, neighborhood));
+            double maxOverlapDuty = ArrayUtils.max(
+                ArrayUtils.sub(overlapDutyCycles, neighborhood));
+
+            c.getMinActiveDutyCycles()[i] = maxActiveDuty * minPctActiveDutyCycles;
+
+            c.getMinOverlapDutyCycles()[i] = maxOverlapDuty * minPctOverlapDutyCycles;
+        });
+
+        //// Parallelize for speed up
+        //IntStream.range(0, len).forEach(i-> {
+        //    int[] neighborhood = getColumnNeighborhood(c, i, inhibitionRadius);
+
+        //    double maxActiveDuty = ArrayUtils.max(
+        //        ArrayUtils.sub(activeDutyCycles, neighborhood));
+        //    double maxOverlapDuty = ArrayUtils.max(
+        //        ArrayUtils.sub(overlapDutyCycles, neighborhood));
+
+        //    c.getMinActiveDutyCycles()[i] = maxActiveDuty * minPctActiveDutyCycles;
+
+        //    c.getMinOverlapDutyCycles()[i] = maxOverlapDuty * minPctOverlapDutyCycles;
+        //});
     }
 
-    c.setOverlapDutyCycles(
-            updateDutyCyclesHelper(c, c.getOverlapDutyCycles(), overlapArray, period));
-
-    c.setActiveDutyCycles(
-            updateDutyCyclesHelper(c, c.getActiveDutyCycles(), activeArray, period));
-}
-
-/**
- * Updates a duty cycle estimate with a new value. This is a helper
- * function that is used to update several duty cycle variables in
- * the Column class, such as: overlapDutyCucle, activeDutyCycle,
- * minPctDutyCycleBeforeInh, minPctDutyCycleAfterInh, etc. returns
- * the updated duty cycle. Duty cycles are updated according to the following
- * formula:
- * 
- *  
- *                (period - 1)*dutyCycle + newValue
- *  dutyCycle := ----------------------------------
- *                        period
- *
- * @param c             the {@link Connections} (spatial pooler memory)
- * @param dutyCycles    An array containing one or more duty cycle values that need
- *                      to be updated
- * @param newInput      A new numerical value used to update the duty cycle
- * @param period        The period of the duty cycle
- * @return
- */
-public double[] updateDutyCyclesHelper(Connections c, double[] dutyCycles, double[] newInput, double period)
-{
-    return ArrayUtils.divide(ArrayUtils.d_add(ArrayUtils.multiply(dutyCycles, period - 1), newInput), period);
-}
-
-/**
- * Update the inhibition radius. The inhibition radius is a measure of the
- * square (or hypersquare) of columns that each a column is "connected to"
- * on average. Since columns are are not connected to each other directly, we
- * determine this quantity by first figuring out how many *inputs* a column is
- * connected to, and then multiplying it by the total number of columns that
- * exist for each input. For multiple dimension the aforementioned
- * calculations are averaged over all dimensions of inputs and columns. This
- * value is meaningless if global inhibition is enabled.
- * 
- * @param c     the {@link Connections} (spatial pooler memory)
- */
-public void updateInhibitionRadius(Connections c)
-{
-    if (c.getGlobalInhibition())
+    /**
+     * Updates the duty cycles for each column. The OVERLAP duty cycle is a moving
+     * average of the number of inputs which overlapped with each column. The
+     * ACTIVITY duty cycles is a moving average of the frequency of activation for
+     * each column.
+     * 
+     * @param c                 the {@link Connections} (spatial pooler memory)
+     * @param overlaps          an array containing the overlap score for each column.
+     *                          The overlap score for a column is defined as the number
+     *                          of synapses in a "connected state" (connected synapses)
+     *                          that are connected to input bits which are turned on.
+     * @param activeColumns     An array containing the indices of the active columns,
+     *                          the sparse set of columns which survived inhibition
+     */
+    public void updateDutyCycles(Connections c, int[] overlaps, int[] activeColumns)
     {
-        c.setInhibitionRadius(ArrayUtils.max(c.getColumnDimensions()));
-        return;
+        double[] overlapArray = new double[c.getNumColumns()];
+        double[] activeArray = new double[c.getNumColumns()];
+        ArrayUtils.greaterThanXThanSetToYInB(overlaps, overlapArray, 0, 1);
+        if (activeColumns.Length > 0)
+        {
+            ArrayUtils.setIndexesTo(activeArray, activeColumns, 1);
+        }
+
+        int period = c.getDutyCyclePeriod();
+        if (period > c.getIterationNum())
+        {
+            period = c.getIterationNum();
+        }
+
+        c.setOverlapDutyCycles(
+                updateDutyCyclesHelper(c, c.getOverlapDutyCycles(), overlapArray, period));
+
+        c.setActiveDutyCycles(
+                updateDutyCyclesHelper(c, c.getActiveDutyCycles(), activeArray, period));
     }
 
-    TDoubleArrayList avgCollected = new TDoubleArrayList();
-    int len = c.getNumColumns();
-    for (int i = 0; i < len; i++)
+    /**
+     * Updates a duty cycle estimate with a new value. This is a helper
+     * function that is used to update several duty cycle variables in
+     * the Column class, such as: overlapDutyCucle, activeDutyCycle,
+     * minPctDutyCycleBeforeInh, minPctDutyCycleAfterInh, etc. returns
+     * the updated duty cycle. Duty cycles are updated according to the following
+     * formula:
+     * 
+     *  
+     *                (period - 1)*dutyCycle + newValue
+     *  dutyCycle := ----------------------------------
+     *                        period
+     *
+     * @param c             the {@link Connections} (spatial pooler memory)
+     * @param dutyCycles    An array containing one or more duty cycle values that need
+     *                      to be updated
+     * @param newInput      A new numerical value used to update the duty cycle
+     * @param period        The period of the duty cycle
+     * @return
+     */
+    public double[] updateDutyCyclesHelper(Connections c, double[] dutyCycles, double[] newInput, double period)
     {
-        avgCollected.add(avgConnectedSpanForColumnND(c, i));
+        return ArrayUtils.divide(ArrayUtils.d_add(ArrayUtils.multiply(dutyCycles, period - 1), newInput), period);
     }
-    double avgConnectedSpan = ArrayUtils.average(avgCollected.toArray());
-    double diameter = avgConnectedSpan * avgColumnsPerInput(c);
-    double radius = (diameter - 1) / 2.0d;
-    radius = Math.max(1, radius);
-    c.setInhibitionRadius((int)(radius + 0.5));
-}
 
-/**
- * The average number of columns per input, taking into account the topology
- * of the inputs and columns. This value is used to calculate the inhibition
- * radius. This function supports an arbitrary number of dimensions. If the
- * number of column dimensions does not match the number of input dimensions,
- * we treat the missing, or phantom dimensions as 'ones'.
- *  
- * @param c     the {@link Connections} (spatial pooler memory)
- * @return
- */
-public double avgColumnsPerInput(Connections c)
-{
-    int[] colDim = Arrays.copyOf(c.getColumnDimensions(), c.getColumnDimensions().length);
-    int[] inputDim = Arrays.copyOf(c.getInputDimensions(), c.getInputDimensions().length);
-    double[] columnsPerInput = ArrayUtils.divide(
-        ArrayUtils.toDoubleArray(colDim), ArrayUtils.toDoubleArray(inputDim), 0, 0);
-    return ArrayUtils.average(columnsPerInput);
-}
-
-/**
- * The range of connectedSynapses per column, averaged for each dimension.
- * This value is used to calculate the inhibition radius. This variation of
- * the function supports arbitrary column dimensions.
- *  
- * @param c             the {@link Connections} (spatial pooler memory)
- * @param columnIndex   the current column for which to avg.
- * @return
- */
-public double avgConnectedSpanForColumnND(Connections c, int columnIndex)
-{
-    int[] dimensions = c.getInputDimensions();
-    int[] connected = c.getColumn(columnIndex).getProximalDendrite().getConnectedSynapsesSparse(c);
-    if (connected == null || connected.length == 0) return 0;
-
-    int[] maxCoord = new int[c.getInputDimensions().length];
-    int[] minCoord = new int[c.getInputDimensions().length];
-    Arrays.fill(maxCoord, -1);
-    Arrays.fill(minCoord, ArrayUtils.max(dimensions));
-    SparseMatrix <?> inputMatrix = c.getInputMatrix();
-    for (int i = 0; i < connected.length; i++)
+    /**
+     * Update the inhibition radius. The inhibition radius is a measure of the
+     * square (or hypersquare) of columns that each a column is "connected to"
+     * on average. Since columns are are not connected to each other directly, we
+     * determine this quantity by first figuring out how many *inputs* a column is
+     * connected to, and then multiplying it by the total number of columns that
+     * exist for each input. For multiple dimension the aforementioned
+     * calculations are averaged over all dimensions of inputs and columns. This
+     * value is meaningless if global inhibition is enabled.
+     * 
+     * @param c     the {@link Connections} (spatial pooler memory)
+     */
+    public void updateInhibitionRadius(Connections c)
     {
-        maxCoord = ArrayUtils.maxBetween(maxCoord, inputMatrix.computeCoordinates(connected[i]));
-        minCoord = ArrayUtils.minBetween(minCoord, inputMatrix.computeCoordinates(connected[i]));
+        if (c.getGlobalInhibition())
+        {
+            c.setInhibitionRadius(ArrayUtils.max(c.getColumnDimensions()));
+            return;
+        }
+
+        List<double> avgCollected = new List<double>();
+        int len = c.getNumColumns();
+        for (int i = 0; i < len; i++)
+        {
+            avgCollected.Add(avgConnectedSpanForColumnND(c, i));
+        }
+        double avgConnectedSpan = ArrayUtils.average(avgCollected.ToArray());
+        double diameter = avgConnectedSpan * avgColumnsPerInput(c);
+        double radius = (diameter - 1) / 2.0d;
+        radius = Math.Max(1, radius);
+        c.setInhibitionRadius((int)(radius + 0.5));
     }
-    return ArrayUtils.average(ArrayUtils.add(ArrayUtils.subtract(maxCoord, minCoord), 1));
-}
 
-/**
- * The primary method in charge of learning. Adapts the permanence values of
- * the synapses based on the input vector, and the chosen columns after
- * inhibition round. Permanence values are increased for synapses connected to
- * input bits that are turned on, and decreased for synapses connected to
- * inputs bits that are turned off.
- * 
- * @param c                 the {@link Connections} (spatial pooler memory)
- * @param inputVector       a integer array that comprises the input to
- *                          the spatial pooler. There exists an entry in the array
- *                          for every input bit.
- * @param activeColumns     an array containing the indices of the columns that
- *                          survived inhibition.
- */
-public void adaptSynapses(Connections c, int[] inputVector, int[] activeColumns)
-{
-    int[] inputIndices = ArrayUtils.where(inputVector, ArrayUtils.INT_GREATER_THAN_0);
-
-    double[] permChanges = new double[c.getNumInputs()];
-    Arrays.fill(permChanges, -1 * c.getSynPermInactiveDec());
-    ArrayUtils.setIndexesTo(permChanges, inputIndices, c.getSynPermActiveInc());
-    for (int i = 0; i < activeColumns.length; i++)
+    /**
+     * The average number of columns per input, taking into account the topology
+     * of the inputs and columns. This value is used to calculate the inhibition
+     * radius. This function supports an arbitrary number of dimensions. If the
+     * number of column dimensions does not match the number of input dimensions,
+     * we treat the missing, or phantom dimensions as 'ones'.
+     *  
+     * @param c     the {@link Connections} (spatial pooler memory)
+     * @return
+     */
+    public double avgColumnsPerInput(Connections c)
     {
-        Pool pool = c.getPotentialPools().get(activeColumns[i]);
-        double[] perm = pool.getDensePermanences(c);
-        int[] indexes = pool.getSparsePotential();
-        ArrayUtils.raiseValuesBy(permChanges, perm);
-        Column col = c.getColumn(activeColumns[i]);
-        updatePermanencesForColumn(c, perm, col, indexes, true);
-    }
-}
+        //int[] colDim = Array.Copy(c.getColumnDimensions(), c.getColumnDimensions().Length);
+        int[] colDim = new int[c.getColumnDimensions().Length];
+        Array.Copy(c.getColumnDimensions(), colDim, c.getColumnDimensions().Length);
 
-/**
- * This method increases the permanence values of synapses of columns whose
- * activity level has been too low. Such columns are identified by having an
- * overlap duty cycle that drops too much below those of their peers. The
- * permanence values for such columns are increased.
- *  
- * @param c
- */
-public void bumpUpWeakColumns(final Connections c)
-{
-    int[] weakColumns = ArrayUtils.where(c.getMemory().get1DIndexes(), new Condition.Adapter<Integer>() {
+        int[] inputDim = new int[c.getInputDimensions().Length];
+        Array.Copy(c.getInputDimensions(), inputDim, c.getInputDimensions().Length);
+
+        double[] columnsPerInput = ArrayUtils.divide(
+            ArrayUtils.toDoubleArray(colDim), ArrayUtils.toDoubleArray(inputDim), 0, 0);
+        return ArrayUtils.average(columnsPerInput);
+    }
+
+    /**
+     * The range of connectedSynapses per column, averaged for each dimension.
+     * This value is used to calculate the inhibition radius. This variation of
+     * the function supports arbitrary column dimensions.
+     *  
+     * @param c             the {@link Connections} (spatial pooler memory)
+     * @param columnIndex   the current column for which to avg.
+     * @return
+     */
+    public double avgConnectedSpanForColumnND(Connections c, int columnIndex)
+    {
+        int[] dimensions = c.getInputDimensions();
+        int[] connected = c.getColumn(columnIndex).getProximalDendrite().getConnectedSynapsesSparse(c);
+        if (connected == null || connected.Length == 0) return 0;
+
+        int[] maxCoord = new int[c.getInputDimensions().Length];
+        int[] minCoord = new int[c.getInputDimensions().Length];
+        ArrayUtils.fillArray(maxCoord, -1);
+        ArrayUtils.fillArray(minCoord, ArrayUtils.max(dimensions));
+        ISparseMatrix<object> inputMatrix = c.getInputMatrix();
+        for (int i = 0; i < connected.Length; i++)
+        {
+            maxCoord = ArrayUtils.maxBetween(maxCoord, inputMatrix.computeCoordinates(connected[i]));
+            minCoord = ArrayUtils.minBetween(minCoord, inputMatrix.computeCoordinates(connected[i]));
+        }
+        return ArrayUtils.average(ArrayUtils.add(ArrayUtils.subtract(maxCoord, minCoord), 1));
+    }
+
+    /**
+     * The primary method in charge of learning. Adapts the permanence values of
+     * the synapses based on the input vector, and the chosen columns after
+     * inhibition round. Permanence values are increased for synapses connected to
+     * input bits that are turned on, and decreased for synapses connected to
+     * inputs bits that are turned off.
+     * 
+     * @param c                 the {@link Connections} (spatial pooler memory)
+     * @param inputVector       a integer array that comprises the input to
+     *                          the spatial pooler. There exists an entry in the array
+     *                          for every input bit.
+     * @param activeColumns     an array containing the indices of the columns that
+     *                          survived inhibition.
+     */
+    public void adaptSynapses(Connections c, int[] inputVector, int[] activeColumns)
+    {
+        //int[] inputIndices = ArrayUtils.where(inputVector, ArrayUtils.INT_GREATER_THAN_0);
+
+        int[] inputIndices = inputVector.Where(i => i > 0).ToArray();
+
+        double[] permChanges = new double[c.getNumInputs()];
+        Arrays.fill(permChanges, -1 * c.getSynPermInactiveDec());
+        ArrayUtils.setIndexesTo(permChanges, inputIndices, c.getSynPermActiveInc());
+        for (int i = 0; i < activeColumns.length; i++)
+        {
+            Pool pool = c.getPotentialPools().get(activeColumns[i]);
+            double[] perm = pool.getDensePermanences(c);
+            int[] indexes = pool.getSparsePotential();
+            ArrayUtils.raiseValuesBy(permChanges, perm);
+            Column col = c.getColumn(activeColumns[i]);
+            updatePermanencesForColumn(c, perm, col, indexes, true);
+        }
+    }
+
+    /**
+     * This method increases the permanence values of synapses of columns whose
+     * activity level has been too low. Such columns are identified by having an
+     * overlap duty cycle that drops too much below those of their peers. The
+     * permanence values for such columns are increased.
+     *  
+     * @param c
+     */
+    public void bumpUpWeakColumns(final Connections c)
+    {
+        int[] weakColumns = ArrayUtils.where(c.getMemory().get1DIndexes(), new Condition.Adapter<Integer>() {
             @Override public boolean eval(int i)
-    {
-        return c.getOverlapDutyCycles()[i] < c.getMinOverlapDutyCycles()[i];
-    }
-});
+        {
+            return c.getOverlapDutyCycles()[i] < c.getMinOverlapDutyCycles()[i];
+        }
+    });
 
         for(int i = 0;i<weakColumns.length;i++) {
             Pool pool = c.getPotentialPools().get(weakColumns[i]);
-double[] perm = pool.getSparsePermanences();
-ArrayUtils.raiseValuesBy(c.getSynPermBelowStimulusInc(), perm);
+    double[] perm = pool.getSparsePermanences();
+    ArrayUtils.raiseValuesBy(c.getSynPermBelowStimulusInc(), perm);
             int[] indexes = pool.getSparsePotential();
-Column col = c.getColumn(weakColumns[i]);
-updatePermanencesForColumnSparse(c, perm, col, indexes, true);
-        }
+    Column col = c.getColumn(weakColumns[i]);
+    updatePermanencesForColumnSparse(c, perm, col, indexes, true);
+}
     }
     
     /**
@@ -761,14 +833,14 @@ public int mapColumn(Connections c, int columnIndex)
  *                      ignored.
  * @return
  */
-public int[] mapPotential(Connections c, int columnIndex, boolean wrapAround)
+public int[] mapPotential(Connections c, int columnIndex, bool wrapAround)
 {
     int centerInput = mapColumn(c, columnIndex);
     int[] columnInputs = getInputNeighborhood(c, centerInput, c.getPotentialRadius());
 
     // Select a subset of the receptive field to serve as the
     // the potential pool
-    int numPotential = (int)(columnInputs.length * c.getPotentialPct() + 0.5);
+    int numPotential = (int)(columnInputs.Length * c.getPotentialPct() + 0.5);
     int[] retVal = new int[numPotential];
     return ArrayUtils.sample(columnInputs, retVal, c.getRandom());
 }
@@ -1079,24 +1151,7 @@ public void updateBookeepingVars(Connections c, bool learn)
     if (learn) c.spIterationLearnNum += 1;
 }
 
-/**
- * Gets a neighborhood of columns.
- * 
- * Simply calls topology.neighborhood or topology.wrappingNeighborhood
- * 
- * A subclass can insert different topology behavior by overriding this method.
- * 
- * @param c                     the {@link Connections} memory encapsulation
- * @param centerColumn          The center of the neighborhood.
- * @param inhibitionRadius      Span of columns included in each neighborhood
- * @return                      The columns in the neighborhood (1D)
- */
-public int[] getColumnNeighborhood(Connections c, int centerColumn, int inhibitionRadius)
-{
-    return c.isWrapAround() ?
-        c.getColumnTopology().wrappingNeighborhood(centerColumn, inhibitionRadius) :
-            c.getColumnTopology().neighborhood(centerColumn, inhibitionRadius);
-}
+
 
 /**
  * Gets a neighborhood of inputs.

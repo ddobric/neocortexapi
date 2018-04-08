@@ -1602,20 +1602,22 @@ namespace NeoCortexApi.Utility
          * @param random     a random number generator
          * @return a sample of numbers of the specified size
          */
-        //public static int[] sample(int[] choices, int[] selectedIndices, Random random)
-        //{
-        //    TIntArrayList choiceSupply = new TIntArrayList(choices);
-        //    int upperBound = choices.length;
-        //    for (int i = 0; i < selectedIndices.length; i++)
-        //    {
-        //        int randomIdx = random.nextInt(upperBound);
-        //        selectedIndices[i] = (choiceSupply.removeAt(randomIdx));
-        //        upperBound--;
-        //    }
-        //    Arrays.sort(selectedIndices);
-        //    //System.out.println("sample: " + Arrays.toString(selectedIndices));
-        //    return selectedIndices;
-        //}
+        public static int[] sample(int[] choices, int[] selectedIndices, Random random)
+        {
+           // TIntArrayList choiceSupply = new TIntArrayList(choices);
+            List<int> choiceSupply = new List<int>(choices);
+            int upperBound = choices.Length;
+            for (int i = 0; i < selectedIndices.Length; i++)
+            {
+                int randomIdx = random.Next(upperBound);
+                selectedIndices[i] = choiceSupply[randomIdx];
+                choiceSupply.RemoveAt(randomIdx);
+                upperBound--;
+            }
+            selectedIndices.OrderBy(i => i);
+            //System.out.println("sample: " + Arrays.toString(selectedIndices));
+            return selectedIndices;
+        }
 
         /**
          * Returns a double[] filled with random doubles of the specified size.
