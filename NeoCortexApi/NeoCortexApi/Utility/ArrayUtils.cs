@@ -438,8 +438,9 @@ namespace NeoCortexApi.Utility
          * given bounds (start=inclusive, end=exclusive)
          * <p>
          * int[] args = argsort(new int[] { 11, 2, 3, 7, 0 }, 0, 3);
+         * sorted = {0,2,3,7,11}
          * contains:
-         * [4, 1, 2]
+         * [4, 1, 2], which are indexes of [0, 2 and 3]
          * 
          * @param in
          * @return  the indexes of input elements filtered in the way specified
@@ -448,15 +449,31 @@ namespace NeoCortexApi.Utility
          */
         public static int[] argsort(int[] inp, int start, int end)
         {
-            if (start == -1 || end == -1)
+            var sorted = inp.OrderBy(e => e).ToArray();
+            var final = new int[end - start];
+            if (start == -1)
+                start = 0;
+
+            if (end == -1)
+                end = inp.Length;
+
+            for (int i = start; i < end; i++)
             {
-                return IntStream.of(inp).sorted().map(i->
-                    Arrays.stream(inp).boxed().collect(Collectors.toList()).indexOf(i)).toArray();
+                final[i] = Array.IndexOf(sorted, sorted[i]);
             }
 
-            return IntStream.of(inp).sorted().map(i->
-                Arrays.stream(inp).boxed().collect(Collectors.toList()).indexOf(i))
-                    .skip(start).limit(end).toArray();
+            return final;
+            //if (start == -1 || end == -1)
+            //{
+            //    Array.IndexOf()
+            //    inp.OrderBy(e=>e).Select(e=> inp)
+            //    return IntStream.of(inp).sorted().map(i->
+            //        Arrays.stream(inp).boxed().collect(Collectors.toList()).indexOf(i)).toArray();
+            //}
+
+            //return IntStream.of(inp).sorted().map(i->
+            //    Arrays.stream(inp).boxed().collect(Collectors.toList()).indexOf(i))
+            //        .skip(start).limit(end).toArray();
         }
 
         /**
