@@ -427,10 +427,10 @@ namespace NeoCortexApi.Utility
          * @param in
          * @return
          */
-        //public static int[] argsort(int[] in)
-        //{
-        //    return argsort(in, -1, -1);
-        //}
+        public static int[] argsort(int[] inp)
+        {
+            return argsort(inp, -1, -1);
+        }
 
         /**
          * Sorts the array, then returns an array containing the indexes of
@@ -446,18 +446,18 @@ namespace NeoCortexApi.Utility
          * 
          * @see #argsort(int[])
          */
-        //public static int[] argsort(int[] in, int start, int end)
-        //{
-        //    if (start == -1 || end == -1)
-        //    {
-        //        return IntStream.of(in).sorted().map(i->
-        //            Arrays.stream(in).boxed().collect(Collectors.toList()).indexOf(i)).toArray();
-        //    }
+        public static int[] argsort(int[] inp, int start, int end)
+        {
+            if (start == -1 || end == -1)
+            {
+                return IntStream.of(inp).sorted().map(i->
+                    Arrays.stream(inp).boxed().collect(Collectors.toList()).indexOf(i)).toArray();
+            }
 
-        //    return IntStream.of(in).sorted().map(i->
-        //        Arrays.stream(in).boxed().collect(Collectors.toList()).indexOf(i))
-        //            .skip(start).limit(end).toArray();
-        //}
+            return IntStream.of(inp).sorted().map(i->
+                Arrays.stream(inp).boxed().collect(Collectors.toList()).indexOf(i))
+                    .skip(start).limit(end).toArray();
+        }
 
         /**
         * Transforms 2D matrix of doubles to 1D by concatenation
@@ -1230,7 +1230,7 @@ namespace NeoCortexApi.Utility
         //        return EMPTY_ARRAY;
         //    }
 
-        
+
         //    TIntSet retVal = new TIntHashSet(ar2);
         //    retVal.retainAll(ar1);
         //    return retVal.toArray();
@@ -1263,7 +1263,7 @@ namespace NeoCortexApi.Utility
         //public static int[] sparseBinaryOr(int[] arg1, int[] arg2)
         //{
         //    HashSet<int> set = new HashSet<int>(arg1);
-            
+
         //    TIntArrayList t = new TIntArrayList(arg1);
         //    t.addAll(arg2);
         //    return unique(t.toArray());
@@ -1439,7 +1439,7 @@ namespace NeoCortexApi.Utility
             HashSet<int> set = new HashSet<int>(nums);
             int[] result = new int[set.Count];
             set.CopyTo(result);
-            
+
             Array.Sort(result);
             return result;
         }
@@ -2384,10 +2384,12 @@ namespace NeoCortexApi.Utility
          * @param original the array from which a tail is taken
          * @return a new array containing the tail from the original array
          */
-        //public static int[] tail(int[] original)
-        //{
-        //    return Array.Cop(original, 1, original.Length);
-        //}
+        public static int[] tail(int[] original)
+        {
+            int[] destination = new int[original.Length - 1];
+            Array.Copy(original, 1, destination, 0, destination.Length);
+            return destination;
+        }
 
         /**
          * Set <tt></tt>value for <tt>array</tt> at specified position <tt>indexes</tt>
@@ -2396,17 +2398,18 @@ namespace NeoCortexApi.Utility
          * @param value
          * @param indexes
          */
-        //public static void setValue(Object array, int value, int... indexes)
-        //{
-        //    if (indexes.length == 1)
-        //    {
-        //        ((int[])array)[indexes[0]] = value;
-        //    }
-        //    else
-        //    {
-        //        setValue(Array.get(array, indexes[0]), value, tail(indexes));
-        //    }
-        //}
+        public static void setValue(Array array, int value, params int[] indexes)
+        {
+            array.SetValue(value, indexes);
+            //if (indexes.Length == 1)
+            //{
+            //    ((int[])array)[indexes[0]] = value;
+            //}
+            //else
+            //{
+            //    setValue(Array.get(array, indexes[0]), value, tail(indexes));
+            //}
+        }
 
         /**
          * Get <tt>value</tt> for <tt>array</tt> at specified position <tt>indexes</tt>
@@ -2414,16 +2417,17 @@ namespace NeoCortexApi.Utility
          * @param array
          * @param indexes
          */
-        //public static Object getValue(Object array, int... indexes)
-        //{
-        //    Object slice = array;
-        //    for (int i = 0; i < indexes.length; i++)
-        //    {
-        //        slice = Array.get(slice, indexes[i]);
-        //    }
+        public static Object getValue(Array array, params int[] indexes)
+        {
+            return array.GetValue(indexes);
+            //Array slice = array;
+            //for (int i = 0; i < indexes.Length; i++)
+            //{       
+            //    slice = Array.get(slice, indexes[i]);
+            //}
 
-        //    return slice;
-        //}
+            //return slice;
+        }
 
 
         /**
@@ -2434,13 +2438,16 @@ namespace NeoCortexApi.Utility
          */
         public static void fillArray(Object array, int value)
         {
-            if (array is int[]) {
+            if (array is int[])
+            {
                 for (int i = 0; i < ((int[])array).Length; i++)
                 {
                     ((int[])array)[i] = value;
                 }
-              
-            } else {
+
+            }
+            else
+            {
                 //forea (Object agr in (Object[])array)
                 //{
                 //    fillArray(agr, value);
@@ -2473,26 +2480,31 @@ namespace NeoCortexApi.Utility
         * @param array
         * @return sum of all array elements
 */
-        //public static int aggregateArray(Object array)
-        //{
-        //    int sum = 0;
-        //    if (array instanceof Integer){
-        //        return (int)array;
-        //    } else if (array instanceof int[]) {
-        //        int[] set = (int[])array;
-        //        for (int element : set)
-        //        {
-        //            sum += element;
-        //        }
-        //        return sum;
-        //    } else {
-        //        for (Object agr : (Object[])array)
-        //        {
-        //            sum += aggregateArray(agr);
-        //        }
-        //        return sum;
-        //    }
-        //}
+        public static int aggregateArray(Object array)
+        {
+            int sum = 0;
+            if (array.GetType() == typeof(int))
+            {
+                return (int)array;
+            }
+            else if (array.GetType() == typeof(int[]))
+            {
+                int[] set = (int[])array;
+                foreach (int element in set)
+                {
+                    sum += element;
+                }
+                return sum;
+            }
+            else
+            {
+                foreach (Object agr in (Object[])array)
+                {
+                    sum += aggregateArray(agr);
+                }
+                return sum;
+            }
+        }
 
         /**
          * Convert multidimensional array to readable String

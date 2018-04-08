@@ -2314,7 +2314,7 @@ namespace NeoCortexApi.Entities
             Console.WriteLine("numInputs                  = " + getNumInputs());
             Console.WriteLine("numColumns                 = " + getNumColumns());
             Console.WriteLine("cellsPerColumn             = " + getCellsPerColumn());
-            Console.WriteLine("columnDimensions           = " + getColumnDimensions().ToString();
+            Console.WriteLine("columnDimensions           = " + getColumnDimensions().ToString());
             Console.WriteLine("numActiveColumnsPerInhArea = " + getNumActiveColumnsPerInhArea());
             Console.WriteLine("potentialPct               = " + getPotentialPct());
             Console.WriteLine("potentialRadius            = " + getPotentialRadius());
@@ -2492,7 +2492,7 @@ namespace NeoCortexApi.Entities
             temp = BitConverter.DoubleToInt64Bits(maxBoost);
             result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + maxNewSynapseCount;
-            result = prime * result + ((memory == null) ? 0 : memory.hashCode());
+            result = prime * result + ((memory == null) ? 0 : memory.GetHashCode());
             result = prime * result + minActiveDutyCycles.GetHashCode();
             result = prime * result + minOverlapDutyCycles.GetHashCode();
             temp = BitConverter.DoubleToInt64Bits(minPctActiveDutyCycles);

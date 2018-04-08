@@ -305,5 +305,20 @@ namespace NeoCortexApi.Entities
         public abstract int[] get1DIndexes();
 
         public abstract T[] asDense(ITypeFactory<T> factory);
+
+        IFlatMatrix<T> IFlatMatrix<T>.set(int index, T value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T get(int[] index)
+        {
+            throw new NotImplementedException();
+        }
+
+        IMatrix<T> IMatrix<T>.set(int[] index, T value)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

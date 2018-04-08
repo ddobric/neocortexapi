@@ -49,7 +49,7 @@ namespace NeoCortexApi.Entities
          * @throws	IllegalArgumentException if the specified coordinates address
          * 			an actual value instead of the array holding it.
          */
-        public abstract Object getSlice(int[] coordinates);
+        public abstract Object getSlice(params int[] coordinates);
 
         /**
          * Launch getSlice error, to share it with subclass {@link #getSlice(int...)}
@@ -160,7 +160,7 @@ namespace NeoCortexApi.Entities
          * @param object        the object to be indexed.
          */
 
-        public abstract AbstractSparseBinaryMatrix set(int value, int[] coordinates);
+        public abstract AbstractSparseBinaryMatrix set(int value, params int[] coordinates);
 
         /**
          * Sets the specified values at the specified indexes.

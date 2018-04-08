@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
+
 
 namespace NeoCortexApi.Entities
 {
@@ -14,146 +16,157 @@ namespace NeoCortexApi.Entities
    *
    * @param <T>
    */
-    public class SparseObjectMatrix<T> : AbstractSparseMatrix<T>, IEquatable<T>  {
-    /** keep it simple */
-    private static final long serialVersionUID = 1L;
-
-    private TIntObjectMap<T> sparseMap = new TIntObjectHashMap<T>();
-
-    /**
-     * Constructs a new {@code SparseObjectMatrix}
-     * @param dimensions	the dimensions of this array
-     */
-    public SparseObjectMatrix(int[] dimensions)
+    public class SparseObjectMatrix<T> : AbstractSparseMatrix<T>, IEquatable<T> where T : class
     {
-        super(dimensions, false);
-    }
+        /** keep it simple */
+        private static readonly long serialVersionUID = 1L;
 
-    /**
-     * Constructs a new {@code SparseObjectMatrix}
-     * @param dimensions					the dimensions of this array
-     * @param useColumnMajorOrdering		where inner index increments most frequently
-     */
-    public SparseObjectMatrix(int[] dimensions, boolean useColumnMajorOrdering)
-    {
-        super(dimensions, useColumnMajorOrdering);
-    }
+        private Dictionary<int, T> sparseMap = new Dictionary<int, T>();
 
-    /**
-     * Sets the object to occupy the specified index.
-     * 
-     * @param index     the index the object will occupy
-     * @param object    the object to be indexed.
-     */
-    @Override
-    public SparseObjectMatrix<T> set(int index, T object)
-    {
-        sparseMap.put(index, (T)object);
-        return this;
-    }
-
-    /**
-     * Sets the specified object to be indexed at the index
-     * computed from the specified coordinates.
-     * @param object        the object to be indexed.
-     * @param coordinates   the row major coordinates [outer --> ,...,..., inner]
-     */
-    @Override
-    public SparseObjectMatrix<T> set(int[] coordinates, T object)
-    {
-        set(computeIndex(coordinates), object);
-        return this;
-    }
-
-    /**
-     * Returns the T at the specified index.
-     * 
-     * @param index     the index of the T to return
-     * @return  the T at the specified index.
-     */
-    @Override
-    public T getObject(int index)
-    {
-        return get(index);
-    }
-
-    /**
-     * Returns the T at the index computed from the specified coordinates
-     * @param coordinates   the coordinates from which to retrieve the indexed object
-     * @return  the indexed object
-     */
-    @Override
-    public T get(int... coordinates)
-    {
-        return get(computeIndex(coordinates));
-    }
-
-    /**
-     * Returns the T at the specified index.
-     * 
-     * @param index     the index of the T to return
-     * @return  the T at the specified index.
-     */
-    @Override
-    public T get(int index)
-    {
-        return this.sparseMap.get(index);
-    }
-
-    /**
-     * Returns a sorted array of occupied indexes.
-     * @return  a sorted array of occupied indexes.
-     */
-    @Override
-    public int[] getSparseIndices()
-    {
-        return reverse(sparseMap.keys());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString()
-    {
-        return Arrays.toString(getDimensions());
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode()
-    {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((sparseMap == null) ? 0 : sparseMap.hashCode());
-        return result;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-   //SuppressWarnings("rawtypes")
-   // @Override
-    public bool Equals(Object obj)
-    {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        SparseObjectMatrix other = (SparseObjectMatrix)obj;
-        if (sparseMap == null)
+        /**
+         * Constructs a new {@code SparseObjectMatrix}
+         * @param dimensions	the dimensions of this array
+         */
+        public SparseObjectMatrix(int[] dimensions) : base(dimensions, false)
         {
-            if (other.sparseMap != null)
-                return false;
-        }
-        else if (!sparseMap.equals(other.sparseMap))
-            return false;
-        return true;
-    }
 
-}
+        }
+
+        /**
+         * Constructs a new {@code SparseObjectMatrix}
+         * @param dimensions					the dimensions of this array
+         * @param useColumnMajorOrdering		where inner index increments most frequently
+         */
+        public SparseObjectMatrix(int[] dimensions, bool useColumnMajorOrdering) : base(dimensions, useColumnMajorOrdering)
+        {
+
+        }
+
+        /**
+         * Sets the object to occupy the specified index.
+         * 
+         * @param index     the index the object will occupy
+         * @param object    the object to be indexed.
+         */
+        //  @Override
+
+        public override AbstractFlatMatrix<T> set(int index, T obj)
+        {
+            sparseMap.Add(index, (T)obj);
+            return this;
+        }
+
+        /**
+         * Sets the specified object to be indexed at the index
+         * computed from the specified coordinates.
+         * @param object        the object to be indexed.
+         * @param coordinates   the row major coordinates [outer --> ,...,..., inner]
+         */
+        //@Override
+        public override AbstractFlatMatrix<T> set(int[] coordinates, T obj)
+        {
+            set(computeIndex(coordinates), obj);
+            return this;
+        }
+
+        /**
+         * Returns the T at the specified index.
+         * 
+         * @param index     the index of the T to return
+         * @return  the T at the specified index.
+         */
+        // @Override
+        public T getObject(int index)
+        {
+            return get(index);
+        }
+
+        /**
+         * Returns the T at the index computed from the specified coordinates
+         * @param coordinates   the coordinates from which to retrieve the indexed object
+         * @return  the indexed object
+         */
+        // @Override
+        public T get(int[] coordinates)
+        {
+            return get(computeIndex(coordinates));
+        }
+
+
+        /**
+         * Returns the T at the specified index.
+         * 
+         * @param index     the index of the T to return
+         * @return  the T at the specified index.
+         */
+        // @Override
+        public override T get(int index)
+        {
+            return this.sparseMap[index];
+        }
+
+        /**
+         * Returns a sorted array of occupied indexes.
+         * @return  a sorted array of occupied indexes.
+         */
+       // @Override
+    public int[] getSparseIndices()
+        {
+            return reverse(sparseMap.Keys.ToArray());
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+       // @Override
+    public override String ToString()
+        {
+            return getDimensions().ToString();
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Object#hashCode()
+         */
+    //    @Override
+    public override int GetHashCode()
+        {
+            int prime = 31;
+            int result = base.GetHashCode();
+            result = prime * result + ((sparseMap == null) ? 0 : sparseMap.GetHashCode());
+            return result;
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Object#equals(java.lang.Object)
+         */
+        //SuppressWarnings("rawtypes")
+        // @Override
+        public override bool Equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (!base.Equals(obj))
+                return false;
+            if (this.GetType() != obj.GetType())
+                return false;
+            SparseObjectMatrix<T> other = obj as SparseObjectMatrix<T>;
+            if (other == null)
+                return false;
+
+            if (sparseMap == null)
+            {
+                if (other.sparseMap != null)
+                    return false;
+            }
+            else if (!sparseMap.Equals(other.sparseMap))
+                return false;
+
+            return true;
+        }
+
+        public bool Equals(T other)
+        {
+            return this.Equals((object)other);
+        }
+    }
 }

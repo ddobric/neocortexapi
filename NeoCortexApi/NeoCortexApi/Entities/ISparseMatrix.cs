@@ -9,7 +9,7 @@ namespace NeoCortexApi.Entities
 
     }
 
-    public interface ISparseMatrix<T> : ISparseMatrix
+    public interface ISparseMatrix<T> : ISparseMatrix, IFlatMatrix<T>
     {
         /**
             * Returns a sorted array of occupied indexes.
