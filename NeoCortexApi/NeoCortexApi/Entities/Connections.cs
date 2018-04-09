@@ -217,6 +217,35 @@ namespace NeoCortexApi.Entities
         //        };
 
 
+
+        /** Sorting Lambda used for SpatialPooler inhibition */
+
+        //public Comparator<Pair<Integer, Double>> inhibitionComparator = (Comparator<Pair<Integer, Double>> & Serializable)
+
+        //    (p1, p2)-> { 
+
+        //    int p1key = p1.getFirst();
+
+        //int p2key = p2.getFirst();
+
+        //double p1val = p1.getSecond();
+
+        //double p2val = p2.getSecond();
+
+        //    if(Math.abs(p2val - p1val) < 0.000000001) {
+
+        //        return Math.abs(p2key - p1key) < 0.000000001 ? 0 : p2key > p1key? -1 : 1;
+
+        //    } else {
+
+        //        return p2val > p1val? -1 : 1;
+
+        //    }
+
+        //};
+
+    
+
         ////////////////////////////////////////
         //       Connections Constructor      //
         ////////////////////////////////////////

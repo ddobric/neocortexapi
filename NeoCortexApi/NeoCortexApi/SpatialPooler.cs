@@ -531,9 +531,9 @@ public class SpatialPooler
         int[] inputIndices = inputVector.Where(i => i > 0).ToArray();
 
         double[] permChanges = new double[c.getNumInputs()];
-        Arrays.fill(permChanges, -1 * c.getSynPermInactiveDec());
+        ArrayUtils.fillArray(permChanges, -1 * (int)c.getSynPermInactiveDec());
         ArrayUtils.setIndexesTo(permChanges, inputIndices, c.getSynPermActiveInc());
-        for (int i = 0; i < activeColumns.length; i++)
+        for (int i = 0; i < activeColumns.Length; i++)
         {
             Pool pool = c.getPotentialPools().get(activeColumns[i]);
             double[] perm = pool.getDensePermanences(c);
@@ -552,25 +552,28 @@ public class SpatialPooler
      *  
      * @param c
      */
-    public void bumpUpWeakColumns(final Connections c)
+    public void bumpUpWeakColumns(Connections c)
     {
-        int[] weakColumns = ArrayUtils.where(c.getMemory().get1DIndexes(), new Condition.Adapter<Integer>() {
-            @Override public boolean eval(int i)
-        {
-            return c.getOverlapDutyCycles()[i] < c.getMinOverlapDutyCycles()[i];
-        }
-    });
+        //    int[] weakColumns = ArrayUtils.where(c.getMemory().get1DIndexes(), new Condition.Adapter<Integer>() {
+        //        @Override public boolean eval(int i)
+        //    {
+        //        return c.getOverlapDutyCycles()[i] < c.getMinOverlapDutyCycles()[i];
+        //    }
+        //});
 
-        for(int i = 0;i<weakColumns.length;i++) {
+        var weakColumns = c.getMemory().get1DIndexes().Where(i => c.getOverlapDutyCycles()[i] < c.getMinOverlapDutyCycles()[i]).ToArray();
+
+        for (int i = 0; i < weakColumns.Length; i++)
+        {
             Pool pool = c.getPotentialPools().get(weakColumns[i]);
-    double[] perm = pool.getSparsePermanences();
-    ArrayUtils.raiseValuesBy(c.getSynPermBelowStimulusInc(), perm);
+            double[] perm = pool.getSparsePermanences();
+            ArrayUtils.raiseValuesBy(c.getSynPermBelowStimulusInc(), perm);
             int[] indexes = pool.getSparsePotential();
-    Column col = c.getColumn(weakColumns[i]);
-    updatePermanencesForColumnSparse(c, perm, col, indexes, true);
-}
+            Column col = c.getColumn(weakColumns[i]);
+            updatePermanencesForColumnSparse(c, perm, col, indexes, true);
+        }
     }
-    
+
     /**
      * This method ensures that each column has enough connections to input bits
      * to allow it to become active. Since a column must have at least
@@ -585,463 +588,473 @@ public class SpatialPooler
      * @param maskPotential         
      */
     public void raisePermanenceToThreshold(Connections c, double[] perm, int[] maskPotential)
-{
-    if (maskPotential.length < c.getStimulusThreshold())
     {
-        throw new IllegalStateException("This is likely due to a " +
-            "value of stimulusThreshold that is too large relative " +
-            "to the input size. [len(mask) < self._stimulusThreshold]");
-    }
-
-    ArrayUtils.clip(perm, c.getSynPermMin(), c.getSynPermMax());
-    while (true)
-    {
-        int numConnected = ArrayUtils.valueGreaterCountAtIndex(c.getSynPermConnected(), perm, maskPotential);
-        if (numConnected >= c.getStimulusThreshold()) return;
-        ArrayUtils.raiseValuesBy(c.getSynPermBelowStimulusInc(), perm, maskPotential);
-    }
-}
-
-/**
- * This method ensures that each column has enough connections to input bits
- * to allow it to become active. Since a column must have at least
- * 'stimulusThreshold' overlaps in order to be considered during the
- * inhibition phase, columns without such minimal number of connections, even
- * if all the input bits they are connected to turn on, have no chance of
- * obtaining the minimum threshold. For such columns, the permanence values
- * are increased until the minimum number of connections are formed.
- * 
- * Note: This method services the "sparse" versions of corresponding methods
- * 
- * @param c         The {@link Connections} memory
- * @param perm      permanence values
- */
-public void raisePermanenceToThresholdSparse(Connections c, double[] perm)
-{
-    ArrayUtils.clip(perm, c.getSynPermMin(), c.getSynPermMax());
-    while (true)
-    {
-        int numConnected = ArrayUtils.valueGreaterCount(c.getSynPermConnected(), perm);
-        if (numConnected >= c.getStimulusThreshold()) return;
-        ArrayUtils.raiseValuesBy(c.getSynPermBelowStimulusInc(), perm);
-    }
-}
-
-/**
- * This method updates the permanence matrix with a column's new permanence
- * values. The column is identified by its index, which reflects the row in
- * the matrix, and the permanence is given in 'sparse' form, i.e. an array
- * whose members are associated with specific indexes. It is in
- * charge of implementing 'clipping' - ensuring that the permanence values are
- * always between 0 and 1 - and 'trimming' - enforcing sparseness by zeroing out
- * all permanence values below 'synPermTrimThreshold'. It also maintains
- * the consistency between 'permanences' (the matrix storing the
- * permanence values), 'connectedSynapses', (the matrix storing the bits
- * each column is connected to), and 'connectedCounts' (an array storing
- * the number of input bits each column is connected to). Every method wishing
- * to modify the permanence matrix should do so through this method.
- * 
- * @param c                 the {@link Connections} which is the memory model.
- * @param perm              An array of permanence values for a column. The array is
- *                          "dense", i.e. it contains an entry for each input bit, even
- *                          if the permanence value is 0.
- * @param column            The column in the permanence, potential and connectivity matrices
- * @param maskPotential     The indexes of inputs in the specified {@link Column}'s pool.
- * @param raisePerm         a boolean value indicating whether the permanence values
- */
-public void updatePermanencesForColumn(Connections c, double[] perm, Column column, int[] maskPotential, boolean raisePerm)
-{
-    if (raisePerm)
-    {
-        raisePermanenceToThreshold(c, perm, maskPotential);
-    }
-
-    ArrayUtils.lessThanOrEqualXThanSetToY(perm, c.getSynPermTrimThreshold(), 0);
-    ArrayUtils.clip(perm, c.getSynPermMin(), c.getSynPermMax());
-    column.setProximalPermanences(c, perm);
-}
-
-/**
- * This method updates the permanence matrix with a column's new permanence
- * values. The column is identified by its index, which reflects the row in
- * the matrix, and the permanence is given in 'sparse' form, (i.e. an array
- * whose members are associated with specific indexes). It is in
- * charge of implementing 'clipping' - ensuring that the permanence values are
- * always between 0 and 1 - and 'trimming' - enforcing sparseness by zeroing out
- * all permanence values below 'synPermTrimThreshold'. Every method wishing
- * to modify the permanence matrix should do so through this method.
- * 
- * @param c                 the {@link Connections} which is the memory model.
- * @param perm              An array of permanence values for a column. The array is
- *                          "sparse", i.e. it contains an entry for each input bit, even
- *                          if the permanence value is 0.
- * @param column            The column in the permanence, potential and connectivity matrices
- * @param raisePerm         a boolean value indicating whether the permanence values
- */
-public void updatePermanencesForColumnSparse(Connections c, double[] perm, Column column, int[] maskPotential, boolean raisePerm)
-{
-    if (raisePerm)
-    {
-        raisePermanenceToThresholdSparse(c, perm);
-    }
-
-    ArrayUtils.lessThanOrEqualXThanSetToY(perm, c.getSynPermTrimThreshold(), 0);
-    ArrayUtils.clip(perm, c.getSynPermMin(), c.getSynPermMax());
-    column.setProximalPermanencesSparse(c, perm, maskPotential);
-}
-
-/**
- * Returns a randomly generated permanence value for a synapse that is
- * initialized in a connected state. The basic idea here is to initialize
- * permanence values very close to synPermConnected so that a small number of
- * learning steps could make it disconnected or connected.
- *
- * Note: experimentation was done a long time ago on the best way to initialize
- * permanence values, but the history for this particular scheme has been lost.
- * 
- * @return  a randomly generated permanence value
- */
-public static double initPermConnected(Connections c)
-{
-    double p = c.getSynPermConnected() + (c.getSynPermMax() - c.getSynPermConnected()) * c.random.nextDouble();
-
-    // Note from Python implementation on conditioning below:
-    // Ensure we don't have too much unnecessary precision. A full 64 bits of
-    // precision causes numerical stability issues across platforms and across
-    // implementations
-    p = ((int)(p * 100000)) / 100000.0d;
-    return p;
-}
-
-/**
- * Returns a randomly generated permanence value for a synapses that is to be
- * initialized in a non-connected state.
- * 
- * @return  a randomly generated permanence value
- */
-public static double initPermNonConnected(Connections c)
-{
-    double p = c.getSynPermConnected() * c.getRandom().nextDouble();
-
-    // Note from Python implementation on conditioning below:
-    // Ensure we don't have too much unnecessary precision. A full 64 bits of
-    // precision causes numerical stability issues across platforms and across
-    // implementations
-    p = ((int)(p * 100000)) / 100000.0d;
-    return p;
-}
-
-/**
- * Initializes the permanences of a column. The method
- * returns a 1-D array the size of the input, where each entry in the
- * array represents the initial permanence value between the input bit
- * at the particular index in the array, and the column represented by
- * the 'index' parameter.
- * 
- * @param c                 the {@link Connections} which is the memory model
- * @param potentialPool     An array specifying the potential pool of the column.
- *                          Permanence values will only be generated for input bits
- *                          corresponding to indices for which the mask value is 1.
- *                          WARNING: potentialPool is sparse, not an array of "1's"
- * @param index             the index of the column being initialized
- * @param connectedPct      A value between 0 or 1 specifying the percent of the input
- *                          bits that will start off in a connected state.
- * @return
- */
-public double[] initPermanence(Connections c, int[] potentialPool, int index, double connectedPct)
-{
-    double[] perm = new double[c.getNumInputs()];
-    for (int idx : potentialPool)
-    {
-        if (c.random.nextDouble() <= connectedPct)
+        if (maskPotential.Length < c.getStimulusThreshold())
         {
-            perm[idx] = initPermConnected(c);
+            throw new ArgumentException("This is likely due to a " +
+                "value of stimulusThreshold that is too large relative " +
+                "to the input size. [len(mask) < self._stimulusThreshold]");
+        }
+
+        ArrayUtils.clip(perm, c.getSynPermMin(), c.getSynPermMax());
+        while (true)
+        {
+            int numConnected = ArrayUtils.valueGreaterCountAtIndex(c.getSynPermConnected(), perm, maskPotential);
+            if (numConnected >= c.getStimulusThreshold()) return;
+            ArrayUtils.raiseValuesBy(c.getSynPermBelowStimulusInc(), perm, maskPotential);
+        }
+    }
+
+    /**
+     * This method ensures that each column has enough connections to input bits
+     * to allow it to become active. Since a column must have at least
+     * 'stimulusThreshold' overlaps in order to be considered during the
+     * inhibition phase, columns without such minimal number of connections, even
+     * if all the input bits they are connected to turn on, have no chance of
+     * obtaining the minimum threshold. For such columns, the permanence values
+     * are increased until the minimum number of connections are formed.
+     * 
+     * Note: This method services the "sparse" versions of corresponding methods
+     * 
+     * @param c         The {@link Connections} memory
+     * @param perm      permanence values
+     */
+    public void raisePermanenceToThresholdSparse(Connections c, double[] perm)
+    {
+        ArrayUtils.clip(perm, c.getSynPermMin(), c.getSynPermMax());
+        while (true)
+        {
+            int numConnected = ArrayUtils.valueGreaterCount(c.getSynPermConnected(), perm);
+            if (numConnected >= c.getStimulusThreshold()) return;
+            ArrayUtils.raiseValuesBy(c.getSynPermBelowStimulusInc(), perm);
+        }
+    }
+
+    /**
+     * This method updates the permanence matrix with a column's new permanence
+     * values. The column is identified by its index, which reflects the row in
+     * the matrix, and the permanence is given in 'sparse' form, i.e. an array
+     * whose members are associated with specific indexes. It is in
+     * charge of implementing 'clipping' - ensuring that the permanence values are
+     * always between 0 and 1 - and 'trimming' - enforcing sparseness by zeroing out
+     * all permanence values below 'synPermTrimThreshold'. It also maintains
+     * the consistency between 'permanences' (the matrix storing the
+     * permanence values), 'connectedSynapses', (the matrix storing the bits
+     * each column is connected to), and 'connectedCounts' (an array storing
+     * the number of input bits each column is connected to). Every method wishing
+     * to modify the permanence matrix should do so through this method.
+     * 
+     * @param c                 the {@link Connections} which is the memory model.
+     * @param perm              An array of permanence values for a column. The array is
+     *                          "dense", i.e. it contains an entry for each input bit, even
+     *                          if the permanence value is 0.
+     * @param column            The column in the permanence, potential and connectivity matrices
+     * @param maskPotential     The indexes of inputs in the specified {@link Column}'s pool.
+     * @param raisePerm         a boolean value indicating whether the permanence values
+     */
+    public void updatePermanencesForColumn(Connections c, double[] perm, Column column, int[] maskPotential, bool raisePerm)
+    {
+        if (raisePerm)
+        {
+            raisePermanenceToThreshold(c, perm, maskPotential);
+        }
+
+        ArrayUtils.lessThanOrEqualXThanSetToY(perm, c.getSynPermTrimThreshold(), 0);
+        ArrayUtils.clip(perm, c.getSynPermMin(), c.getSynPermMax());
+        column.setProximalPermanences(c, perm);
+    }
+
+    /**
+     * This method updates the permanence matrix with a column's new permanence
+     * values. The column is identified by its index, which reflects the row in
+     * the matrix, and the permanence is given in 'sparse' form, (i.e. an array
+     * whose members are associated with specific indexes). It is in
+     * charge of implementing 'clipping' - ensuring that the permanence values are
+     * always between 0 and 1 - and 'trimming' - enforcing sparseness by zeroing out
+     * all permanence values below 'synPermTrimThreshold'. Every method wishing
+     * to modify the permanence matrix should do so through this method.
+     * 
+     * @param c                 the {@link Connections} which is the memory model.
+     * @param perm              An array of permanence values for a column. The array is
+     *                          "sparse", i.e. it contains an entry for each input bit, even
+     *                          if the permanence value is 0.
+     * @param column            The column in the permanence, potential and connectivity matrices
+     * @param raisePerm         a boolean value indicating whether the permanence values
+     */
+    public void updatePermanencesForColumnSparse(Connections c, double[] perm, Column column, int[] maskPotential, bool raisePerm)
+    {
+        if (raisePerm)
+        {
+            raisePermanenceToThresholdSparse(c, perm);
+        }
+
+        ArrayUtils.lessThanOrEqualXThanSetToY(perm, c.getSynPermTrimThreshold(), 0);
+        ArrayUtils.clip(perm, c.getSynPermMin(), c.getSynPermMax());
+        column.setProximalPermanencesSparse(c, perm, maskPotential);
+    }
+
+    /**
+     * Returns a randomly generated permanence value for a synapse that is
+     * initialized in a connected state. The basic idea here is to initialize
+     * permanence values very close to synPermConnected so that a small number of
+     * learning steps could make it disconnected or connected.
+     *
+     * Note: experimentation was done a long time ago on the best way to initialize
+     * permanence values, but the history for this particular scheme has been lost.
+     * 
+     * @return  a randomly generated permanence value
+     */
+    public static double initPermConnected(Connections c)
+    {
+        double p = c.getSynPermConnected() + (c.getSynPermMax() - c.getSynPermConnected()) * c.random.NextDouble();
+
+        // Note from Python implementation on conditioning below:
+        // Ensure we don't have too much unnecessary precision. A full 64 bits of
+        // precision causes numerical stability issues across platforms and across
+        // implementations
+        p = ((int)(p * 100000)) / 100000.0d;
+        return p;
+    }
+
+    /**
+     * Returns a randomly generated permanence value for a synapses that is to be
+     * initialized in a non-connected state.
+     * 
+     * @return  a randomly generated permanence value
+     */
+    public static double initPermNonConnected(Connections c)
+    {
+        double p = c.getSynPermConnected() * c.getRandom().NextDouble();
+
+        // Note from Python implementation on conditioning below:
+        // Ensure we don't have too much unnecessary precision. A full 64 bits of
+        // precision causes numerical stability issues across platforms and across
+        // implementations
+        p = ((int)(p * 100000)) / 100000.0d;
+        return p;
+    }
+
+    /**
+     * Initializes the permanences of a column. The method
+     * returns a 1-D array the size of the input, where each entry in the
+     * array represents the initial permanence value between the input bit
+     * at the particular index in the array, and the column represented by
+     * the 'index' parameter.
+     * 
+     * @param c                 the {@link Connections} which is the memory model
+     * @param potentialPool     An array specifying the potential pool of the column.
+     *                          Permanence values will only be generated for input bits
+     *                          corresponding to indices for which the mask value is 1.
+     *                          WARNING: potentialPool is sparse, not an array of "1's"
+     * @param index             the index of the column being initialized
+     * @param connectedPct      A value between 0 or 1 specifying the percent of the input
+     *                          bits that will start off in a connected state.
+     * @return
+     */
+    public double[] initPermanence(Connections c, int[] potentialPool, int index, double connectedPct)
+    {
+        double[] perm = new double[c.getNumInputs()];
+        foreach (int idx in potentialPool)
+        {
+            if (c.random.NextDouble() <= connectedPct)
+            {
+                perm[idx] = initPermConnected(c);
+            }
+            else
+            {
+                perm[idx] = initPermNonConnected(c);
+            }
+
+            perm[idx] = perm[idx] < c.getSynPermTrimThreshold() ? 0 : perm[idx];
+        }
+        c.getColumn(index).setProximalPermanences(c, perm);
+        return perm;
+    }
+
+    /**
+     * Maps a column to its respective input index, keeping to the topology of
+     * the region. It takes the index of the column as an argument and determines
+     * what is the index of the flattened input vector that is to be the center of
+     * the column's potential pool. It distributes the columns over the inputs
+     * uniformly. The return value is an integer representing the index of the
+     * input bit. Examples of the expected output of this method:
+     * * If the topology is one dimensional, and the column index is 0, this
+     *   method will return the input index 0. If the column index is 1, and there
+     *   are 3 columns over 7 inputs, this method will return the input index 3.
+     * * If the topology is two dimensional, with column dimensions [3, 5] and
+     *   input dimensions [7, 11], and the column index is 3, the method
+     *   returns input index 8. 
+     *   
+     * @param columnIndex   The index identifying a column in the permanence, potential
+     *                      and connectivity matrices.
+     * @return              A boolean value indicating that boundaries should be
+     *                      ignored.
+     */
+    public int mapColumn(Connections c, int columnIndex)
+    {
+        int[] columnCoords = c.getMemory().computeCoordinates(columnIndex);
+        double[] colCoords = ArrayUtils.toDoubleArray(columnCoords);
+        double[] ratios = ArrayUtils.divide(
+            colCoords, ArrayUtils.toDoubleArray(c.getColumnDimensions()), 0, 0);
+        double[] inputCoords = ArrayUtils.multiply(
+            ArrayUtils.toDoubleArray(c.getInputDimensions()), ratios, 0, 0);
+        inputCoords = ArrayUtils.d_add(
+            inputCoords,
+            ArrayUtils.multiply(
+                ArrayUtils.divide(
+                    ArrayUtils.toDoubleArray(c.getInputDimensions()),
+                    ArrayUtils.toDoubleArray(c.getColumnDimensions()), 0, 0),
+                0.5));
+        int[] inputCoordInts = ArrayUtils.clip(ArrayUtils.toIntArray(inputCoords), c.getInputDimensions(), -1);
+        return c.getInputMatrix().computeIndex(inputCoordInts);
+    }
+
+    /**
+     * Maps a column to its input bits. This method encapsulates the topology of
+     * the region. It takes the index of the column as an argument and determines
+     * what are the indices of the input vector that are located within the
+     * column's potential pool. The return value is a list containing the indices
+     * of the input bits. The current implementation of the base class only
+     * supports a 1 dimensional topology of columns with a 1 dimensional topology
+     * of inputs. To extend this class to support 2-D topology you will need to
+     * override this method. Examples of the expected output of this method:
+     * * If the potentialRadius is greater than or equal to the entire input
+     *   space, (global visibility), then this method returns an array filled with
+     *   all the indices
+     * * If the topology is one dimensional, and the potentialRadius is 5, this
+     *   method will return an array containing 5 consecutive values centered on
+     *   the index of the column (wrapping around if necessary).
+     * * If the topology is two dimensional (not implemented), and the
+     *   potentialRadius is 5, the method should return an array containing 25
+     *   '1's, where the exact indices are to be determined by the mapping from
+     *   1-D index to 2-D position.
+     * 
+     * @param c             {@link Connections} the main memory model
+     * @param columnIndex   The index identifying a column in the permanence, potential
+     *                      and connectivity matrices.
+     * @param wrapAround    A boolean value indicating that boundaries should be
+     *                      ignored.
+     * @return
+     */
+    public int[] mapPotential(Connections c, int columnIndex, bool wrapAround)
+    {
+        int centerInput = mapColumn(c, columnIndex);
+        int[] columnInputs = getInputNeighborhood(c, centerInput, c.getPotentialRadius());
+
+        // Select a subset of the receptive field to serve as the
+        // the potential pool
+        int numPotential = (int)(columnInputs.Length * c.getPotentialPct() + 0.5);
+        int[] retVal = new int[numPotential];
+        return ArrayUtils.sample(columnInputs, retVal, c.getRandom());
+    }
+
+    /**
+     * Performs inhibition. This method calculates the necessary values needed to
+     * actually perform inhibition and then delegates the task of picking the
+     * active columns to helper functions.
+     * 
+     * @param c             the {@link Connections} matrix
+     * @param overlaps      an array containing the overlap score for each  column.
+     *                      The overlap score for a column is defined as the number
+     *                      of synapses in a "connected state" (connected synapses)
+     *                      that are connected to input bits which are turned on.
+     * @return
+     */
+    public int[] inhibitColumns(Connections c, double[] initialOverlaps)
+    {
+        double[] overlaps = new double[initialOverlaps.Length];
+        Array.Copy(initialOverlaps, overlaps, overlaps.Length);
+
+        double density;
+        double inhibitionArea;
+        if ((density = c.getLocalAreaDensity()) <= 0)
+        {
+            inhibitionArea = Math.Pow(2 * c.getInhibitionRadius() + 1, c.getColumnDimensions().Length);
+            inhibitionArea = Math.Min(c.getNumColumns(), inhibitionArea);
+            density = c.getNumActiveColumnsPerInhArea() / inhibitionArea;
+            density = Math.Min(density, 0.5);
+        }
+
+        //Add our fixed little bit of random noise to the scores to help break ties.
+        //ArrayUtils.d_add(overlaps, c.getTieBreaker());
+
+        if (c.getGlobalInhibition() || c.getInhibitionRadius() > ArrayUtils.max(c.getColumnDimensions()))
+        {
+            return inhibitColumnsGlobal(c, overlaps, density);
+        }
+
+        return inhibitColumnsLocal(c, overlaps, density);
+    }
+
+    /**
+     * Perform global inhibition. Performing global inhibition entails picking the
+     * top 'numActive' columns with the highest overlap score in the entire
+     * region. At most half of the columns in a local neighborhood are allowed to
+     * be active.
+     * 
+     * @param c             the {@link Connections} matrix
+     * @param overlaps      an array containing the overlap score for each  column.
+     *                      The overlap score for a column is defined as the number
+     *                      of synapses in a "connected state" (connected synapses)
+     *                      that are connected to input bits which are turned on.
+     * @param density       The fraction of columns to survive inhibition.
+     * 
+     * @return
+     */
+    public int[] inhibitColumnsGlobal(Connections c, double[] overlaps, double density)
+    {
+        int numCols = c.getNumColumns();
+        int numActive = (int)(density * numCols);
+
+        Dictionary<int, double> indices = new Dictionary<int, double>();
+        for (int i = 0; i < overlaps.Length; i++)
+        {
+            indices.Add(i, overlaps[i]);
+        }
+
+        var sortedWinnerIndices = indices.OrderByDescending(k => k.Value).ToArray();
+
+        //int[] sortedWinnerIndices = IntStream.range(0, overlaps.Length)
+        //    .mapToObj(i-> new Pair<>(i, overlaps[i]))
+        //    .sorted(c.inhibitionComparator)
+        //    .mapToInt(Pair < Integer, Double >::getFirst)
+        //   .toArray();
+
+        // Enforce the stimulus threshold
+        double stimulusThreshold = c.getStimulusThreshold();
+        int start = sortedWinnerIndices.Count() - numActive;
+        while (start < sortedWinnerIndices.Count())
+        {
+            int i = sortedWinnerIndices[start].Key;
+            if (overlaps[i] >= stimulusThreshold) break;
+            ++start;
+        }
+
+        return sortedWinnerIndices.Skip(start).Cast<int>().ToArray();
+    }
+
+    /**
+     * Performs inhibition. This method calculates the necessary values needed to
+     * actually perform inhibition and then delegates the task of picking the
+     * active columns to helper functions.
+     * 
+     * @param c         the {@link Connections} matrix
+     * @param overlaps  an array containing the overlap score for each  column.
+     *                  The overlap score for a column is defined as the number
+     *                  of synapses in a "connected state" (connected synapses)
+     *                  that are connected to input bits which are turned on.
+     * @param density   The fraction of columns to survive inhibition. This
+     *                  value is only an intended target. Since the surviving
+     *                  columns are picked in a local fashion, the exact fraction
+     *                  of surviving columns is likely to vary.
+     * @return  indices of the winning columns
+     */
+    public int[] inhibitColumnsLocal(Connections c, double[] overlaps, double density)
+    {
+        double addToWinners = ArrayUtils.max(overlaps) / 1000.0d;
+        if (addToWinners == 0)
+        {
+            addToWinners = 0.001;
+        }
+        double[] tieBrokenOverlaps = new double[overlaps.Length];
+        Array.Copy(overlaps, tieBrokenOverlaps, overlaps.Length);
+
+        TIntList winners = new TIntArrayList();
+        double stimulusThreshold = c.getStimulusThreshold();
+        int inhibitionRadius = c.getInhibitionRadius();
+        for (int i = 0; i < overlaps.length; i++)
+        {
+            int column = i;
+            if (overlaps[column] >= stimulusThreshold)
+            {
+                int[] neighborhood = getColumnNeighborhood(c, column, inhibitionRadius);
+                double[] neighborhoodOverlaps = ArrayUtils.sub(tieBrokenOverlaps, neighborhood);
+
+                long numBigger = Arrays.stream(neighborhoodOverlaps)
+                    .parallel()
+                    .filter(d->d > overlaps[column])
+                    .count();
+
+                int numActive = (int)(0.5 + density * neighborhood.length);
+                if (numBigger < numActive)
+                {
+                    winners.add(column);
+                    tieBrokenOverlaps[column] += addToWinners;
+                }
+            }
+        }
+
+        return winners.toArray();
+    }
+
+    /**
+     * Update the boost factors for all columns. The boost factors are used to
+     * increase the overlap of inactive columns to improve their chances of
+     * becoming active. and hence encourage participation of more columns in the
+     * learning process. This is a line defined as: y = mx + b boost =
+     * (1-maxBoost)/minDuty * dutyCycle + maxFiringBoost. Intuitively this means
+     * that columns that have been active enough have a boost factor of 1, meaning
+     * their overlap is not boosted. Columns whose active duty cycle drops too much
+     * below that of their neighbors are boosted depending on how infrequently they
+     * have been active. The more infrequent, the more they are boosted. The exact
+     * boost factor is linearly interpolated between the points (dutyCycle:0,
+     * boost:maxFiringBoost) and (dutyCycle:minDuty, boost:1.0).
+     * 
+     *         boostFactor
+     *             ^
+     * maxBoost _  |
+     *             |\
+     *             | \
+     *       1  _  |  \ _ _ _ _ _ _ _
+     *             |
+     *             +--------------------> activeDutyCycle
+     *                |
+     *         minActiveDutyCycle
+     */
+    public void updateBoostFactors(Connections c)
+    {
+        double[] activeDutyCycles = c.getActiveDutyCycles();
+        double[] minActiveDutyCycles = c.getMinActiveDutyCycles();
+
+        //Indexes of values > 0
+        int[] mask = ArrayUtils.where(minActiveDutyCycles, ArrayUtils.GREATER_THAN_0);
+
+        double[] boostInterim;
+        if (mask.length < 1)
+        {
+            boostInterim = c.getBoostFactors();
         }
         else
         {
-            perm[idx] = initPermNonConnected(c);
+            double[] numerator = new double[c.getNumColumns()];
+            Arrays.fill(numerator, 1 - c.getMaxBoost());
+            boostInterim = ArrayUtils.divide(numerator, minActiveDutyCycles, 0, 0);
+            boostInterim = ArrayUtils.multiply(boostInterim, activeDutyCycles, 0, 0);
+            boostInterim = ArrayUtils.d_add(boostInterim, c.getMaxBoost());
         }
 
-        perm[idx] = perm[idx] < c.getSynPermTrimThreshold() ? 0 : perm[idx];
-    }
-    c.getColumn(index).setProximalPermanences(c, perm);
-    return perm;
-}
-
-/**
- * Maps a column to its respective input index, keeping to the topology of
- * the region. It takes the index of the column as an argument and determines
- * what is the index of the flattened input vector that is to be the center of
- * the column's potential pool. It distributes the columns over the inputs
- * uniformly. The return value is an integer representing the index of the
- * input bit. Examples of the expected output of this method:
- * * If the topology is one dimensional, and the column index is 0, this
- *   method will return the input index 0. If the column index is 1, and there
- *   are 3 columns over 7 inputs, this method will return the input index 3.
- * * If the topology is two dimensional, with column dimensions [3, 5] and
- *   input dimensions [7, 11], and the column index is 3, the method
- *   returns input index 8. 
- *   
- * @param columnIndex   The index identifying a column in the permanence, potential
- *                      and connectivity matrices.
- * @return              A boolean value indicating that boundaries should be
- *                      ignored.
- */
-public int mapColumn(Connections c, int columnIndex)
-{
-    int[] columnCoords = c.getMemory().computeCoordinates(columnIndex);
-    double[] colCoords = ArrayUtils.toDoubleArray(columnCoords);
-    double[] ratios = ArrayUtils.divide(
-        colCoords, ArrayUtils.toDoubleArray(c.getColumnDimensions()), 0, 0);
-    double[] inputCoords = ArrayUtils.multiply(
-        ArrayUtils.toDoubleArray(c.getInputDimensions()), ratios, 0, 0);
-    inputCoords = ArrayUtils.d_add(
-        inputCoords,
-        ArrayUtils.multiply(
-            ArrayUtils.divide(
-                ArrayUtils.toDoubleArray(c.getInputDimensions()),
-                ArrayUtils.toDoubleArray(c.getColumnDimensions()), 0, 0),
-            0.5));
-    int[] inputCoordInts = ArrayUtils.clip(ArrayUtils.toIntArray(inputCoords), c.getInputDimensions(), -1);
-    return c.getInputMatrix().computeIndex(inputCoordInts);
-}
-
-/**
- * Maps a column to its input bits. This method encapsulates the topology of
- * the region. It takes the index of the column as an argument and determines
- * what are the indices of the input vector that are located within the
- * column's potential pool. The return value is a list containing the indices
- * of the input bits. The current implementation of the base class only
- * supports a 1 dimensional topology of columns with a 1 dimensional topology
- * of inputs. To extend this class to support 2-D topology you will need to
- * override this method. Examples of the expected output of this method:
- * * If the potentialRadius is greater than or equal to the entire input
- *   space, (global visibility), then this method returns an array filled with
- *   all the indices
- * * If the topology is one dimensional, and the potentialRadius is 5, this
- *   method will return an array containing 5 consecutive values centered on
- *   the index of the column (wrapping around if necessary).
- * * If the topology is two dimensional (not implemented), and the
- *   potentialRadius is 5, the method should return an array containing 25
- *   '1's, where the exact indices are to be determined by the mapping from
- *   1-D index to 2-D position.
- * 
- * @param c             {@link Connections} the main memory model
- * @param columnIndex   The index identifying a column in the permanence, potential
- *                      and connectivity matrices.
- * @param wrapAround    A boolean value indicating that boundaries should be
- *                      ignored.
- * @return
- */
-public int[] mapPotential(Connections c, int columnIndex, bool wrapAround)
-{
-    int centerInput = mapColumn(c, columnIndex);
-    int[] columnInputs = getInputNeighborhood(c, centerInput, c.getPotentialRadius());
-
-    // Select a subset of the receptive field to serve as the
-    // the potential pool
-    int numPotential = (int)(columnInputs.Length * c.getPotentialPct() + 0.5);
-    int[] retVal = new int[numPotential];
-    return ArrayUtils.sample(columnInputs, retVal, c.getRandom());
-}
-
-/**
- * Performs inhibition. This method calculates the necessary values needed to
- * actually perform inhibition and then delegates the task of picking the
- * active columns to helper functions.
- * 
- * @param c             the {@link Connections} matrix
- * @param overlaps      an array containing the overlap score for each  column.
- *                      The overlap score for a column is defined as the number
- *                      of synapses in a "connected state" (connected synapses)
- *                      that are connected to input bits which are turned on.
- * @return
- */
-public int[] inhibitColumns(Connections c, double[] overlaps)
-{
-    overlaps = Arrays.copyOf(overlaps, overlaps.length);
-
-    double density;
-    double inhibitionArea;
-    if ((density = c.getLocalAreaDensity()) <= 0)
-    {
-        inhibitionArea = Math.pow(2 * c.getInhibitionRadius() + 1, c.getColumnDimensions().length);
-        inhibitionArea = Math.min(c.getNumColumns(), inhibitionArea);
-        density = c.getNumActiveColumnsPerInhArea() / inhibitionArea;
-        density = Math.min(density, 0.5);
-    }
-
-    //Add our fixed little bit of random noise to the scores to help break ties.
-    //ArrayUtils.d_add(overlaps, c.getTieBreaker());
-
-    if (c.getGlobalInhibition() || c.getInhibitionRadius() > ArrayUtils.max(c.getColumnDimensions()))
-    {
-        return inhibitColumnsGlobal(c, overlaps, density);
-    }
-
-    return inhibitColumnsLocal(c, overlaps, density);
-}
-
-/**
- * Perform global inhibition. Performing global inhibition entails picking the
- * top 'numActive' columns with the highest overlap score in the entire
- * region. At most half of the columns in a local neighborhood are allowed to
- * be active.
- * 
- * @param c             the {@link Connections} matrix
- * @param overlaps      an array containing the overlap score for each  column.
- *                      The overlap score for a column is defined as the number
- *                      of synapses in a "connected state" (connected synapses)
- *                      that are connected to input bits which are turned on.
- * @param density       The fraction of columns to survive inhibition.
- * 
- * @return
- */
-public int[] inhibitColumnsGlobal(Connections c, double[] overlaps, double density)
-{
-    int numCols = c.getNumColumns();
-    int numActive = (int)(density * numCols);
-
-    int[] sortedWinnerIndices = IntStream.range(0, overlaps.length)
-        .mapToObj(i-> new Pair<>(i, overlaps[i]))
-        .sorted(c.inhibitionComparator)
-        .mapToInt(Pair < Integer, Double >::getFirst)
-        .toArray();
-
-    // Enforce the stimulus threshold
-    double stimulusThreshold = c.getStimulusThreshold();
-    int start = sortedWinnerIndices.length - numActive;
-    while (start < sortedWinnerIndices.length)
-    {
-        int i = sortedWinnerIndices[start];
-        if (overlaps[i] >= stimulusThreshold) break;
-        ++start;
-    }
-
-    return IntStream.of(sortedWinnerIndices).skip(start).toArray();
-}
-
-/**
- * Performs inhibition. This method calculates the necessary values needed to
- * actually perform inhibition and then delegates the task of picking the
- * active columns to helper functions.
- * 
- * @param c         the {@link Connections} matrix
- * @param overlaps  an array containing the overlap score for each  column.
- *                  The overlap score for a column is defined as the number
- *                  of synapses in a "connected state" (connected synapses)
- *                  that are connected to input bits which are turned on.
- * @param density   The fraction of columns to survive inhibition. This
- *                  value is only an intended target. Since the surviving
- *                  columns are picked in a local fashion, the exact fraction
- *                  of surviving columns is likely to vary.
- * @return  indices of the winning columns
- */
-public int[] inhibitColumnsLocal(Connections c, double[] overlaps, double density)
-{
-    double addToWinners = ArrayUtils.max(overlaps) / 1000.0d;
-    if (addToWinners == 0)
-    {
-        addToWinners = 0.001;
-    }
-    double[] tieBrokenOverlaps = Arrays.copyOf(overlaps, overlaps.length);
-
-    TIntList winners = new TIntArrayList();
-    double stimulusThreshold = c.getStimulusThreshold();
-    int inhibitionRadius = c.getInhibitionRadius();
-    for (int i = 0; i < overlaps.length; i++)
-    {
-        int column = i;
-        if (overlaps[column] >= stimulusThreshold)
-        {
-            int[] neighborhood = getColumnNeighborhood(c, column, inhibitionRadius);
-            double[] neighborhoodOverlaps = ArrayUtils.sub(tieBrokenOverlaps, neighborhood);
-
-            long numBigger = Arrays.stream(neighborhoodOverlaps)
-                .parallel()
-                .filter(d->d > overlaps[column])
-                .count();
-
-            int numActive = (int)(0.5 + density * neighborhood.length);
-            if (numBigger < numActive)
-            {
-                winners.add(column);
-                tieBrokenOverlaps[column] += addToWinners;
-            }
-        }
-    }
-
-    return winners.toArray();
-}
-
-/**
- * Update the boost factors for all columns. The boost factors are used to
- * increase the overlap of inactive columns to improve their chances of
- * becoming active. and hence encourage participation of more columns in the
- * learning process. This is a line defined as: y = mx + b boost =
- * (1-maxBoost)/minDuty * dutyCycle + maxFiringBoost. Intuitively this means
- * that columns that have been active enough have a boost factor of 1, meaning
- * their overlap is not boosted. Columns whose active duty cycle drops too much
- * below that of their neighbors are boosted depending on how infrequently they
- * have been active. The more infrequent, the more they are boosted. The exact
- * boost factor is linearly interpolated between the points (dutyCycle:0,
- * boost:maxFiringBoost) and (dutyCycle:minDuty, boost:1.0).
- * 
- *         boostFactor
- *             ^
- * maxBoost _  |
- *             |\
- *             | \
- *       1  _  |  \ _ _ _ _ _ _ _
- *             |
- *             +--------------------> activeDutyCycle
- *                |
- *         minActiveDutyCycle
- */
-public void updateBoostFactors(Connections c)
-{
-    double[] activeDutyCycles = c.getActiveDutyCycles();
-    double[] minActiveDutyCycles = c.getMinActiveDutyCycles();
-
-    //Indexes of values > 0
-    int[] mask = ArrayUtils.where(minActiveDutyCycles, ArrayUtils.GREATER_THAN_0);
-
-    double[] boostInterim;
-    if (mask.length < 1)
-    {
-        boostInterim = c.getBoostFactors();
-    }
-    else
-    {
-        double[] numerator = new double[c.getNumColumns()];
-        Arrays.fill(numerator, 1 - c.getMaxBoost());
-        boostInterim = ArrayUtils.divide(numerator, minActiveDutyCycles, 0, 0);
-        boostInterim = ArrayUtils.multiply(boostInterim, activeDutyCycles, 0, 0);
-        boostInterim = ArrayUtils.d_add(boostInterim, c.getMaxBoost());
-    }
-
-    ArrayUtils.setIndexesTo(boostInterim, ArrayUtils.where(activeDutyCycles, new Condition.Adapter<Object>() {
+        ArrayUtils.setIndexesTo(boostInterim, ArrayUtils.where(activeDutyCycles, new Condition.Adapter<Object>() {
             int i = 0;
-    @Override public boolean eval(double d) { return d > minActiveDutyCycles[i++]; }
-}), 1.0d);
+        @Override public boolean eval(double d) { return d > minActiveDutyCycles[i++]; }
+    }), 1.0d);
 
         c.setBoostFactors(boostInterim);
     }
-    
-    /**
-     * This function determines each column's overlap with the current input
-     * vector. The overlap of a column is the number of synapses for that column
-     * that are connected (permanence value is greater than '_synPermConnected')
-     * to input bits which are turned on. Overlap values that are lower than
-     * the 'stimulusThreshold' are ignored. The implementation takes advantage of
-     * the SpraseBinaryMatrix class to perform this calculation efficiently.
-     *  
-     * @param c             the {@link Connections} memory encapsulation
-     * @param inputVector   an input array of 0's and 1's that comprises the input to
-     *                      the spatial pooler.
-     * @return
-     */
-    public int[] calculateOverlap(Connections c, int[] inputVector)
+
+/**
+ * This function determines each column's overlap with the current input
+ * vector. The overlap of a column is the number of synapses for that column
+ * that are connected (permanence value is greater than '_synPermConnected')
+ * to input bits which are turned on. Overlap values that are lower than
+ * the 'stimulusThreshold' are ignored. The implementation takes advantage of
+ * the SpraseBinaryMatrix class to perform this calculation efficiently.
+ *  
+ * @param c             the {@link Connections} memory encapsulation
+ * @param inputVector   an input array of 0's and 1's that comprises the input to
+ *                      the spatial pooler.
+ * @return
+ */
+public int[] calculateOverlap(Connections c, int[] inputVector)
 {
     int[] overlaps = new int[c.getNumColumns()];
     c.getConnectedCounts().rightVecSumAtNZ(inputVector, overlaps, c.getStimulusThreshold());
