@@ -2475,6 +2475,25 @@ namespace NeoCortexApi.Utility
             }
         }
 
+        public static void fillArray(Object array, double value)
+        {
+            if (array is double[])
+            {
+                for (int i = 0; i < ((int[])array).Length; i++)
+                {
+                    ((double[])array)[i] = value;
+                }
+            }
+            else
+            {
+                //forea (Object agr in (Object[])array)
+                //{
+                //    fillArray(agr, value);
+                //}
+                throw new NotSupportedException();
+            }
+        }
+
         public static void Fill(Array array, int value)
         {
             if (array is int[] || array is object[])
