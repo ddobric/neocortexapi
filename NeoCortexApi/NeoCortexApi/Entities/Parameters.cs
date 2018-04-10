@@ -823,30 +823,30 @@ namespace NeoCortexApi.Entities
          *
          * @param r the generator to use.
          */
-        //public void setRandom(Random r)
-        //{
-        //    paramMap.put(KEY.RANDOM, r);
-        //}
+        public void setRandom(Random r)
+        {
+            paramMap.Add(KEY.RANDOM, r);
+        }
 
         /**
          * Sets the number of {@link Column}.
          *
          * @param columnDimensions
          */
-        //public void setColumnDimensions(int[] columnDimensions)
-        //{
-        //    paramMap.put(KEY.COLUMN_DIMENSIONS, columnDimensions);
-        //}
+        public void setColumnDimensions(int[] columnDimensions)
+        {
+            paramMap.Add(KEY.COLUMN_DIMENSIONS, columnDimensions);
+        }
 
         ///**
         // * Sets the number of {@link Cell}s per {@link Column}
         // *
         // * @param cellsPerColumn
         // */
-        //public void setCellsPerColumn(int cellsPerColumn)
-        //{
-        //    paramMap.put(KEY.CELLS_PER_COLUMN, cellsPerColumn);
-        //}
+        public void setCellsPerColumn(int cellsPerColumn)
+        {
+            paramMap.Add(KEY.CELLS_PER_COLUMN, cellsPerColumn);
+        }
 
         ///**
         // * <p>
@@ -857,10 +857,10 @@ namespace NeoCortexApi.Entities
         // *
         // * @param activationThreshold
         // */
-        //public void setActivationThreshold(int activationThreshold)
-        //{
-        //    paramMap.put(KEY.ACTIVATION_THRESHOLD, activationThreshold);
-        //}
+        public void setActivationThreshold(int activationThreshold)
+        {
+            paramMap.Add(KEY.ACTIVATION_THRESHOLD, activationThreshold);
+        }
 
         ///**
         // * Radius around cell from which it can
@@ -868,10 +868,10 @@ namespace NeoCortexApi.Entities
         // *
         // * @param learningRadius
         // */
-        //public void setLearningRadius(int learningRadius)
-        //{
-        //    paramMap.put(KEY.LEARNING_RADIUS, learningRadius);
-        //}
+        public void setLearningRadius(int learningRadius)
+        {
+            paramMap.Add(KEY.LEARNING_RADIUS, learningRadius);
+        }
 
         ///**
         // * If the number of synapses active on a segment is at least this
@@ -880,59 +880,59 @@ namespace NeoCortexApi.Entities
         // *
         // * @param minThreshold
         // */
-        //public void setMinThreshold(int minThreshold)
-        //{
-        //    paramMap.put(KEY.MIN_THRESHOLD, minThreshold);
-        //}
+        public void setMinThreshold(int minThreshold)
+        {
+            paramMap.Add(KEY.MIN_THRESHOLD, minThreshold);
+        }
 
         ///**
         // * The maximum number of synapses added to a segment during learning.
         // *
         // * @param maxSynapsesPerSegment
         // */
-        //public void setMaxSynapsesPerSegment(int maxSynapsesPerSegment)
-        //{
-        //    paramMap.put(KEY.MAX_SYNAPSES_PER_SEGMENT, maxSynapsesPerSegment);
-        //}
+        public void setMaxSynapsesPerSegment(int maxSynapsesPerSegment)
+        {
+            paramMap.Add(KEY.MAX_SYNAPSES_PER_SEGMENT, maxSynapsesPerSegment);
+        }
 
         ///**
         // * The maximum number of {@link Segment}s a {@link Cell} can have.
         // *
         // * @param maxSegmentsPerCell
         // */
-        //public void setMaxSegmentsPerCell(int maxSegmentsPerCell)
-        //{
-        //    paramMap.put(KEY.MAX_SEGMENTS_PER_CELL, maxSegmentsPerCell);
-        //}
+        public void setMaxSegmentsPerCell(int maxSegmentsPerCell)
+        {
+            paramMap.Add(KEY.MAX_SEGMENTS_PER_CELL, maxSegmentsPerCell);
+        }
 
         ///**
         // * The maximum number of new synapses
         // * @param count
         // */
-        //public void setMaxNewSynapseCount(int count)
-        //{
-        //    paramMap.put(KEY.MAX_NEW_SYNAPSE_COUNT, count);
-        //}
+        public void setMaxNewSynapseCount(int count)
+        {
+            paramMap.Add(KEY.MAX_NEW_SYNAPSE_COUNT, count);
+        }
 
         ///**
         // * Seed for random number generator
         // *
         // * @param seed
         // */
-        //public void setSeed(int seed)
-        //{
-        //    paramMap.put(KEY.SEED, seed);
-        //}
+        public void setSeed(int seed)
+        {
+            paramMap.Add(KEY.SEED, seed);
+        }
 
         ///**
         // * Initial permanence of a new synapse
         // *
         // * @param   initialPermanence
         // */
-        //public void setInitialPermanence(double initialPermanence)
-        //{
-        //    paramMap.put(KEY.INITIAL_PERMANENCE, initialPermanence);
-        //}
+        public void setInitialPermanence(double initialPermanence)
+        {
+            paramMap.Add(KEY.INITIAL_PERMANENCE, initialPermanence);
+        }
 
         ///**
         // * If the permanence value for a synapse
@@ -941,10 +941,10 @@ namespace NeoCortexApi.Entities
         // *
         // * @param connectedPermanence
         // */
-        //public void setConnectedPermanence(double connectedPermanence)
-        //{
-        //    paramMap.put(KEY.CONNECTED_PERMANENCE, connectedPermanence);
-        //}
+        public void setConnectedPermanence(double connectedPermanence)
+        {
+            paramMap.Add(KEY.CONNECTED_PERMANENCE, connectedPermanence);
+        }
 
         ///**
         // * Amount by which permanences of synapses
@@ -952,10 +952,10 @@ namespace NeoCortexApi.Entities
         // *
         // * @param permanenceIncrement
         // */
-        //public void setPermanenceIncrement(double permanenceIncrement)
-        //{
-        //    paramMap.put(KEY.PERMANENCE_INCREMENT, permanenceIncrement);
-        //}
+        public void setPermanenceIncrement(double permanenceIncrement)
+        {
+            paramMap.Add(KEY.PERMANENCE_INCREMENT, permanenceIncrement);
+        }
 
         ///**
         // * Amount by which permanences of synapses
@@ -963,10 +963,10 @@ namespace NeoCortexApi.Entities
         // *
         // * @param permanenceDecrement
         // */
-        //public void setPermanenceDecrement(double permanenceDecrement)
-        //{
-        //    paramMap.put(KEY.PERMANENCE_DECREMENT, permanenceDecrement);
-        //}
+        public void setPermanenceDecrement(double permanenceDecrement)
+        {
+            paramMap.Add(KEY.PERMANENCE_DECREMENT, permanenceDecrement);
+        }
 
         ////////////////////////////// SPACIAL POOLER PARAMS //////////////////////////////////
 
@@ -980,10 +980,10 @@ namespace NeoCortexApi.Entities
          *
          * @param inputDimensions
          */
-        //public void setInputDimensions(int[] inputDimensions)
-        //{
-        //    paramMap.put(KEY.INPUT_DIMENSIONS, inputDimensions);
-        //}
+        public void setInputDimensions(int[] inputDimensions)
+        {
+            paramMap.Add(KEY.INPUT_DIMENSIONS, inputDimensions);
+        }
 
         ///**
         // * This parameter determines the extent of the input
@@ -1004,10 +1004,10 @@ namespace NeoCortexApi.Entities
         // *
         // * @param potentialRadius
         // */
-        //public void setPotentialRadius(int potentialRadius)
-        //{
-        //    paramMap.put(KEY.POTENTIAL_RADIUS, potentialRadius);
-        //}
+        public void setPotentialRadius(int potentialRadius)
+        {
+            paramMap.Add(KEY.POTENTIAL_RADIUS, potentialRadius);
+        }
 
         ///**
         // * The inhibition radius determines the size of a column's local
@@ -1018,10 +1018,10 @@ namespace NeoCortexApi.Entities
         // *
         // * @param inhibitionRadius the local group size
         // */
-        //public void setInhibitionRadius(int inhibitionRadius)
-        //{
-        //    paramMap.put(KEY.INHIBITION_RADIUS, inhibitionRadius);
-        //}
+        public void setInhibitionRadius(int inhibitionRadius)
+        {
+            paramMap.Add(KEY.INHIBITION_RADIUS, inhibitionRadius);
+        }
 
         ///**
         // * The percent of the inputs, within a column's
@@ -1037,10 +1037,10 @@ namespace NeoCortexApi.Entities
         // *
         // * @param potentialPct
         // */
-        //public void setPotentialPct(double potentialPct)
-        //{
-        //    paramMap.put(KEY.POTENTIAL_PCT, potentialPct);
-        //}
+        public void setPotentialPct(double potentialPct)
+        {
+            paramMap.Add(KEY.POTENTIAL_PCT, potentialPct);
+        }
 
         ///**
         // * If true, then during inhibition phase the winning
@@ -1052,10 +1052,10 @@ namespace NeoCortexApi.Entities
         // *
         // * @param globalInhibition
         // */
-        //public void setGlobalInhibition(boolean globalInhibition)
-        //{
-        //    paramMap.put(KEY.GLOBAL_INHIBITION, globalInhibition);
-        //}
+        public void setGlobalInhibition(bool globalInhibition)
+        {
+            paramMap.Add(KEY.GLOBAL_INHIBITION, globalInhibition);
+        }
 
         ///**
         // * The desired density of active columns within a local
@@ -1070,10 +1070,10 @@ namespace NeoCortexApi.Entities
         // *
         // * @param localAreaDensity
         // */
-        //public void setLocalAreaDensity(double localAreaDensity)
-        //{
-        //    paramMap.put(KEY.LOCAL_AREA_DENSITY, localAreaDensity);
-        //}
+        public void setLocalAreaDensity(double localAreaDensity)
+        {
+            paramMap.Add(KEY.LOCAL_AREA_DENSITY, localAreaDensity);
+        }
 
         ///**
         // * An alternate way to control the density of the active
@@ -1095,10 +1095,10 @@ namespace NeoCortexApi.Entities
         // *
         // * @param numActiveColumnsPerInhArea
         // */
-        //public void setNumActiveColumnsPerInhArea(double numActiveColumnsPerInhArea)
-        //{
-        //    paramMap.put(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, numActiveColumnsPerInhArea);
-        //}
+        public void setNumActiveColumnsPerInhArea(double numActiveColumnsPerInhArea)
+        {
+            paramMap.Add(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, numActiveColumnsPerInhArea);
+        }
 
         ///**
         // * This is a number specifying the minimum number of
@@ -1109,10 +1109,10 @@ namespace NeoCortexApi.Entities
         // *
         // * @param stimulusThreshold
         // */
-        //public void setStimulusThreshold(double stimulusThreshold)
-        //{
-        //    paramMap.put(KEY.STIMULUS_THRESHOLD, stimulusThreshold);
-        //}
+        public void setStimulusThreshold(double stimulusThreshold)
+        {
+            paramMap.Add(KEY.STIMULUS_THRESHOLD, stimulusThreshold);
+        }
 
         ///**
         // * The amount by which an inactive synapse is
@@ -1121,10 +1121,10 @@ namespace NeoCortexApi.Entities
         // *
         // * @param synPermInactiveDec
         // */
-        //public void setSynPermInactiveDec(double synPermInactiveDec)
-        //{
-        //    paramMap.put(KEY.SYN_PERM_INACTIVE_DEC, synPermInactiveDec);
-        //}
+        public void setSynPermInactiveDec(double synPermInactiveDec)
+        {
+            paramMap.Add(KEY.SYN_PERM_INACTIVE_DEC, synPermInactiveDec);
+        }
 
         ///**
         // * The amount by which an active synapse is incremented
@@ -1133,10 +1133,10 @@ namespace NeoCortexApi.Entities
         // *
         // * @param synPermActiveInc
         // */
-        //public void setSynPermActiveInc(double synPermActiveInc)
-        //{
-        //    paramMap.put(KEY.SYN_PERM_ACTIVE_INC, synPermActiveInc);
-        //}
+        public void setSynPermActiveInc(double synPermActiveInc)
+        {
+            paramMap.Add(KEY.SYN_PERM_ACTIVE_INC, synPermActiveInc);
+        }
 
         ///**
         // * The default connected threshold. Any synapse whose
@@ -1146,10 +1146,10 @@ namespace NeoCortexApi.Entities
         // *
         // * @param synPermConnected
         // */
-        //public void setSynPermConnected(double synPermConnected)
-        //{
-        //    paramMap.put(KEY.SYN_PERM_CONNECTED, synPermConnected);
-        //}
+        public void setSynPermConnected(double synPermConnected)
+        {
+            paramMap.Add(KEY.SYN_PERM_CONNECTED, synPermConnected);
+        }
 
         ///**
         // * Sets the increment of synapse permanences below the stimulus
@@ -1157,18 +1157,18 @@ namespace NeoCortexApi.Entities
         // *
         // * @param synPermBelowStimulusInc
         // */
-        //public void setSynPermBelowStimulusInc(double synPermBelowStimulusInc)
-        //{
-        //    paramMap.put(KEY.SYN_PERM_BELOW_STIMULUS_INC, synPermBelowStimulusInc);
-        //}
+        public void setSynPermBelowStimulusInc(double synPermBelowStimulusInc)
+        {
+            paramMap.Add(KEY.SYN_PERM_BELOW_STIMULUS_INC, synPermBelowStimulusInc);
+        }
 
         ///**
         // * @param synPermTrimThreshold
         // */
-        //public void setSynPermTrimThreshold(double synPermTrimThreshold)
-        //{
-        //    paramMap.put(KEY.SYN_PERM_TRIM_THRESHOLD, synPermTrimThreshold);
-        //}
+        public void setSynPermTrimThreshold(double synPermTrimThreshold)
+        {
+            paramMap.Add(KEY.SYN_PERM_TRIM_THRESHOLD, synPermTrimThreshold);
+        }
 
         ///**
         // * A number between 0 and 1.0, used to set a floor on
@@ -1191,10 +1191,10 @@ namespace NeoCortexApi.Entities
         // *
         // * @param minPctOverlapDutyCycles
         // */
-        //public void setMinPctOverlapDutyCycles(double minPctOverlapDutyCycles)
-        //{
-        //    paramMap.put(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, minPctOverlapDutyCycles);
-        //}
+        public void setMinPctOverlapDutyCycles(double minPctOverlapDutyCycles)
+        {
+            paramMap.Add(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, minPctOverlapDutyCycles);
+        }
 
         ///**
         // * A number between 0 and 1.0, used to set a floor on
@@ -1211,10 +1211,10 @@ namespace NeoCortexApi.Entities
         // *
         // * @param minPctActiveDutyCycles
         // */
-        //public void setMinPctActiveDutyCycles(double minPctActiveDutyCycles)
-        //{
-        //    paramMap.put(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, minPctActiveDutyCycles);
-        //}
+        public void setMinPctActiveDutyCycles(double minPctActiveDutyCycles)
+        {
+            paramMap.Add(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, minPctActiveDutyCycles);
+        }
 
         ///**
         // * The period used to calculate duty cycles. Higher
@@ -1224,10 +1224,10 @@ namespace NeoCortexApi.Entities
         // *
         // * @param dutyCyclePeriod
         // */
-        //public void setDutyCyclePeriod(int dutyCyclePeriod)
-        //{
-        //    paramMap.put(KEY.DUTY_CYCLE_PERIOD, dutyCyclePeriod);
-        //}
+        public void setDutyCyclePeriod(int dutyCyclePeriod)
+        {
+            paramMap.Add(KEY.DUTY_CYCLE_PERIOD, dutyCyclePeriod);
+        }
 
         ///**
         // * The maximum overlap boost factor. Each column's
@@ -1242,10 +1242,10 @@ namespace NeoCortexApi.Entities
         // *
         // * @param maxBoost
         // */
-        //public void setMaxBoost(double maxBoost)
-        //{
-        //    paramMap.put(KEY.MAX_BOOST, maxBoost);
-        //}
+        public void setMaxBoost(double maxBoost)
+        {
+            paramMap.Add(KEY.MAX_BOOST, maxBoost);
+        }
 
         /**
          * {@inheritDoc}

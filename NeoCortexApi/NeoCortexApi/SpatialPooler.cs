@@ -863,7 +863,7 @@ namespace NeoCortexApi
          *                      that are connected to input bits which are turned on.
          * @return
          */
-        public int[] inhibitColumns(Connections c, double[] initialOverlaps)
+        public virtual int[] inhibitColumns(Connections c, double[] initialOverlaps)
         {
             double[] overlaps = new double[initialOverlaps.Length];
             Array.Copy(initialOverlaps, overlaps, overlaps.Length);
@@ -904,7 +904,7 @@ namespace NeoCortexApi
          * 
          * @return
          */
-        public int[] inhibitColumnsGlobal(Connections c, double[] overlaps, double density)
+        public virtual int[] inhibitColumnsGlobal(Connections c, double[] overlaps, double density)
         {
             int numCols = c.getNumColumns();
             int numActive = (int)(density * numCols);

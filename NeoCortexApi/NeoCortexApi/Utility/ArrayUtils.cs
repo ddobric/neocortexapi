@@ -1339,15 +1339,15 @@ namespace NeoCortexApi.Utility
          * @param upperBounds
          * @return
          */
-        //public static int[] range(int lowerBounds, int upperBounds)
-        //{
-        //    TIntList ints = new TIntArrayList();
-        //    for (int i = lowerBounds; i < upperBounds; i++)
-        //    {
-        //        ints.add(i);
-        //    }
-        //    return ints.toArray();
-        //}
+        public static int[] range(int lowerBounds, int upperBounds)
+        {
+            List<int> ints = new List<int>();
+            for (int i = lowerBounds; i < upperBounds; i++)
+            {
+                ints.Add(i);
+            }
+            return ints.ToArray();
+        }
 
         /**
          * Returns an array which starts from lowerBounds (inclusive) and

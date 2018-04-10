@@ -1,9 +1,11 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
+using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace UnitTestsProject
 {
@@ -72,26 +74,28 @@ namespace UnitTestsProject
 
             initSP();
 
-            assertEquals(5, mem.getInputDimensions()[0]);
-            assertEquals(5, mem.getColumnDimensions()[0]);
-            assertEquals(5, mem.getPotentialRadius());
-            assertEquals(0.5, mem.getPotentialPct(), 0);
-            assertEquals(false, mem.getGlobalInhibition());
-            assertEquals(-1.0, mem.getLocalAreaDensity(), 0);
-            assertEquals(3, mem.getNumActiveColumnsPerInhArea(), 0);
-            assertEquals(1, mem.getStimulusThreshold(), 1);
-            assertEquals(0.01, mem.getSynPermInactiveDec(), 0);
-            assertEquals(0.1, mem.getSynPermActiveInc(), 0);
-            assertEquals(0.1, mem.getSynPermConnected(), 0);
-            assertEquals(0.1, mem.getMinPctOverlapDutyCycles(), 0);
-            assertEquals(0.1, mem.getMinPctActiveDutyCycles(), 0);
-            assertEquals(10, mem.getDutyCyclePeriod(), 0);
-            assertEquals(10.0, mem.getMaxBoost(), 0);
-            assertEquals(42, mem.getSeed());
+            Assert.Equals(5, mem.getInputDimensions()[0]);
+            Assert.Equals(5, mem.getColumnDimensions()[0]);
+            Assert.Equals(5, mem.getPotentialRadius());
+            Assert.Equals(0.5, mem.getPotentialPct());//, 0);
+            Assert.Equals(false, mem.getGlobalInhibition());
+            Assert.Equals(-1.0, mem.getLocalAreaDensity());//, 0);
+            Assert.Equals(3, mem.getNumActiveColumnsPerInhArea());//, 0);
+            Assert.IsTrue(Math.Abs(1 - mem.getStimulusThreshold()) < 1);
+            Assert.Equals(0.01, mem.getSynPermInactiveDec());//, 0);
+            Assert.Equals(0.1, mem.getSynPermActiveInc());//, 0);
+            Assert.Equals(0.1, mem.getSynPermConnected());//, 0);
+            Assert.Equals(0.1, mem.getMinPctOverlapDutyCycles());//, 0);
+            Assert.Equals(0.1, mem.getMinPctActiveDutyCycles());//, 0);
+            Assert.Equals(10, mem.getDutyCyclePeriod());//, 0);
+            Assert.Equals(10.0, mem.getMaxBoost());//, 0);
+            Assert.Equals(42, mem.getSeed());
 
-            assertEquals(5, mem.getNumInputs());
-            assertEquals(5, mem.getNumColumns());
+            Assert.Equals(5, mem.getNumInputs());
+            Assert.Equals(5, mem.getNumColumns());
         }
+
+
 
         /**
          * Checks that feeding in the same input vector leads to polarized
@@ -102,7 +106,7 @@ namespace UnitTestsProject
         {
             setupParameters();
             parameters.set(KEY.INPUT_DIMENSIONS, new int[] { 9 });
-            parameters.setColumnDimensions(new int[] { 5 });
+            parameters.set(KEY.COLUMN_DIMENSIONS, new int[] { 5 });
             parameters.setPotentialRadius(5);
 
             //This is 0.3 in Python version due to use of dense 
@@ -129,260 +133,248 @@ namespace UnitTestsProject
 
             initSP();
 
-            SpatialPooler mock = new SpatialPooler()
+            SpatialPoolerMock mock = new SpatialPoolerMock(new int[] { 0, 1, 2, 3, 4 });
+
+            int[] inputVector = new int[] { 1, 0, 1, 0, 1, 0, 0, 1, 1 };
+            int[] activeArray = new int[] { 0, 0, 0, 0, 0 };
+            for (int i = 0; i < 20; i++)
             {
-            private static long serialVersionUID = 1L;
+                mock.compute(mem, inputVector, activeArray, true);
+            }
 
-        public int[] inhibitColumns(Connections c, double[] overlaps)
+            for (int i = 0; i < mem.getNumColumns(); i++)
+            {
+                int[] permanences = ArrayUtils.toIntArray(mem.getPotentialPools().get(i).getDensePermanences(mem));
+                Assert.IsTrue(Array.Equals(inputVector, permanences));
+            }
+        }
+
+        /**
+         * Checks that columns only change the permanence values for 
+         * inputs that are within their potential pool
+         */
+        [TestMethod]
+        public void testCompute2()
         {
-            return new int[] { 0, 1, 2, 3, 4 };
-        }
-    };
+            setupParameters();
+            parameters.setInputDimensions(new int[] { 10 });
+            parameters.setColumnDimensions(new int[] { 5 });
+            parameters.setPotentialRadius(3);
+            parameters.setPotentialPct(0.3);
+            parameters.setGlobalInhibition(false);
+            parameters.setLocalAreaDensity(-1.0);
+            parameters.setNumActiveColumnsPerInhArea(3);
+            parameters.setStimulusThreshold(1);
+            parameters.setSynPermInactiveDec(0.01);
+            parameters.setSynPermActiveInc(0.1);
+            parameters.setMinPctOverlapDutyCycles(0.1);
+            parameters.setMinPctActiveDutyCycles(0.1);
+            parameters.setDutyCyclePeriod(10);
+            parameters.setMaxBoost(10);
+            parameters.setSynPermConnected(0.1);
 
-    int[] inputVector = new int[] { 1, 0, 1, 0, 1, 0, 0, 1, 1 };
-    int[] activeArray = new int[] { 0, 0, 0, 0, 0 };
-        for(int i = 0;i< 20;i++) {
-            mock.compute(mem, inputVector, activeArray, true);
-        }
+            initSP();
 
-        for(int i = 0;i<mem.getNumColumns();i++) {
-            int[] permanences = ArrayUtils.toIntArray(mem.getPotentialPools().get(i).getDensePermanences(mem));
-assertTrue(Arrays.equals(inputVector, permanences));
-        }
-    }
-    
-    /**
-     * Checks that columns only change the permanence values for 
-     * inputs that are within their potential pool
-     */
-          [TestMethod]
-public void testCompute2()
-{
-    setupParameters();
-    parameters.setInputDimensions(new int[] { 10 });
-    parameters.setColumnDimensions(new int[] { 5 });
-    parameters.setPotentialRadius(3);
-    parameters.setPotentialPct(0.3);
-    parameters.setGlobalInhibition(false);
-    parameters.setLocalAreaDensity(-1.0);
-    parameters.setNumActiveColumnsPerInhArea(3);
-    parameters.setStimulusThreshold(1);
-    parameters.setSynPermInactiveDec(0.01);
-    parameters.setSynPermActiveInc(0.1);
-    parameters.setMinPctOverlapDutyCycles(0.1);
-    parameters.setMinPctActiveDutyCycles(0.1);
-    parameters.setDutyCyclePeriod(10);
-    parameters.setMaxBoost(10);
-    parameters.setSynPermConnected(0.1);
+            SpatialPoolerMock mock = new SpatialPoolerMock(new int[] { 0, 1, 2, 3, 4 });
 
-    initSP();
+            int[] inputVector = new int[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+            int[] activeArray = new int[] { 0, 0, 0, 0, 0 };
+            for (int i = 0; i < 20; i++)
+            {
+                mock.compute(mem, inputVector, activeArray, true);
+            }
 
-    SpatialPooler mock = new SpatialPooler()
-    {
-            private static long serialVersionUID = 1L;
-
-public int[] inhibitColumns(Connections c, double[] overlaps)
-{
-    return new int[] { 0, 1, 2, 3, 4 };
-}
-        };
-
-        int[] inputVector = new int[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
-int[] activeArray = new int[] { 0, 0, 0, 0, 0 };
-        for(int i = 0;i< 20;i++) {
-            mock.compute(mem, inputVector, activeArray, true);
+            for (int i = 0; i < mem.getNumColumns(); i++)
+            {
+                int[] permanences = ArrayUtils.toIntArray(mem.getPotentialPools().get(i).getDensePermanences(mem));
+                int[] potential = (int[])mem.getConnectedCounts().getSlice(i);
+                Assert.IsTrue(Array.Equals(permanences, potential));
+            }
         }
 
-        for(int i = 0;i<mem.getNumColumns();i++) {
-            int[] permanences = ArrayUtils.toIntArray(mem.getPotentialPools().get(i).getDensePermanences(mem));
-int[] potential = (int[])mem.getConnectedCounts().getSlice(i);
-assertTrue(Arrays.equals(permanences, potential));
+        /**
+         * When stimulusThreshold is 0, allow columns without any overlap to become
+         * active. This test focuses on the global inhibition code path.
+         */
+        [TestMethod]
+        public void testZeroOverlap_NoStimulusThreshold_GlobalInhibition()
+        {
+            int inputSize = 10;
+            int nColumns = 20;
+            parameters = Parameters.getSpatialDefaultParameters();
+            parameters.set(KEY.INPUT_DIMENSIONS, new int[] { inputSize });
+            parameters.set(KEY.COLUMN_DIMENSIONS, new int[] { nColumns });
+            parameters.set(KEY.POTENTIAL_RADIUS, 10);
+            parameters.set(KEY.GLOBAL_INHIBITION, true);
+            parameters.set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 3.0);
+            parameters.set(KEY.STIMULUS_THRESHOLD, 0.0);
+            parameters.set(KEY.RANDOM, new Random(42));
+            parameters.set(KEY.SEED, 42);
+
+            SpatialPooler sp = new SpatialPooler();
+            Connections cn = new Connections();
+            parameters.apply(cn);
+            sp.init(cn);
+
+            int[] activeArray = new int[nColumns];
+            sp.compute(cn, new int[inputSize], activeArray, true);
+
+            Assert.Equals(3, activeArray.Count(i => i > 0));//, ArrayUtils.INT_GREATER_THAN_0).length);
         }
-    }
-    
-    /**
-     * When stimulusThreshold is 0, allow columns without any overlap to become
-     * active. This test focuses on the global inhibition code path.
-     */
-          [TestMethod]
-public void testZeroOverlap_NoStimulusThreshold_GlobalInhibition()
-{
-    int inputSize = 10;
-    int nColumns = 20;
-    parameters = Parameters.getSpatialDefaultParameters();
-    parameters.set(KEY.INPUT_DIMENSIONS, new int[] { inputSize });
-    parameters.set(KEY.COLUMN_DIMENSIONS, new int[] { nColumns });
-    parameters.set(KEY.POTENTIAL_RADIUS, 10);
-    parameters.set(KEY.GLOBAL_INHIBITION, true);
-    parameters.set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 3.0);
-    parameters.set(KEY.STIMULUS_THRESHOLD, 0.0);
-    parameters.set(KEY.RANDOM, new UniversalRandom(42));
-    parameters.set(KEY.SEED, 42);
 
-    SpatialPooler sp = new SpatialPooler();
-    Connections cn = new Connections();
-    parameters.apply(cn);
-    sp.init(cn);
+        /**
+         * When stimulusThreshold is > 0, don't allow columns without any overlap to
+         * become active. This test focuses on the global inhibition code path.
+         */
+        [TestMethod]
+        public void testZeroOverlap_StimulusThreshold_GlobalInhibition()
+        {
+            int inputSize = 10;
+            int nColumns = 20;
+            parameters = Parameters.getSpatialDefaultParameters();
+            parameters.set(KEY.INPUT_DIMENSIONS, new int[] { inputSize });
+            parameters.set(KEY.COLUMN_DIMENSIONS, new int[] { nColumns });
+            parameters.set(KEY.POTENTIAL_RADIUS, 10);
+            parameters.set(KEY.GLOBAL_INHIBITION, true);
+            parameters.set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 3.0);
+            parameters.set(KEY.STIMULUS_THRESHOLD, 1.0);
+            parameters.set(KEY.RANDOM, new Random(42));
+            parameters.set(KEY.SEED, 42);
 
-    int[] activeArray = new int[nColumns];
-    sp.compute(cn, new int[inputSize], activeArray, true);
+            SpatialPooler sp = new SpatialPooler();
+            Connections cn = new Connections();
+            parameters.apply(cn);
+            sp.init(cn);
 
-    assertEquals(3, ArrayUtils.where(activeArray, ArrayUtils.INT_GREATER_THAN_0).length);
-}
+            int[] activeArray = new int[nColumns];
+            sp.compute(cn, new int[inputSize], activeArray, true);
 
-/**
- * When stimulusThreshold is > 0, don't allow columns without any overlap to
- * become active. This test focuses on the global inhibition code path.
- */
-[TestMethod]
-public void testZeroOverlap_StimulusThreshold_GlobalInhibition()
-{
-    int inputSize = 10;
-    int nColumns = 20;
-    parameters = Parameters.getSpatialDefaultParameters();
-    parameters.set(KEY.INPUT_DIMENSIONS, new int[] { inputSize });
-    parameters.set(KEY.COLUMN_DIMENSIONS, new int[] { nColumns });
-    parameters.set(KEY.POTENTIAL_RADIUS, 10);
-    parameters.set(KEY.GLOBAL_INHIBITION, true);
-    parameters.set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 3.0);
-    parameters.set(KEY.STIMULUS_THRESHOLD, 1.0);
-    parameters.set(KEY.RANDOM, new UniversalRandom(42));
-    parameters.set(KEY.SEED, 42);
+            Assert.Equals(3, activeArray.Count(i => i > 0));//, ArrayUtils.INT_GREATER_THAN_0).length);
+        }
 
-    SpatialPooler sp = new SpatialPooler();
-    Connections cn = new Connections();
-    parameters.apply(cn);
-    sp.init(cn);
+        [TestMethod]
+        public void testZeroOverlap_NoStimulusThreshold_LocalInhibition()
+        {
+            int inputSize = 10;
+            int nColumns = 20;
+            parameters = Parameters.getSpatialDefaultParameters();
+            parameters.set(KEY.INPUT_DIMENSIONS, new int[] { inputSize });
+            parameters.set(KEY.COLUMN_DIMENSIONS, new int[] { nColumns });
+            parameters.set(KEY.POTENTIAL_RADIUS, 5);
+            parameters.set(KEY.GLOBAL_INHIBITION, false);
+            parameters.set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 1.0);
+            parameters.set(KEY.STIMULUS_THRESHOLD, 0.0);
+            parameters.set(KEY.RANDOM, new Random(42));
+            parameters.set(KEY.SEED, 42);
 
-    int[] activeArray = new int[nColumns];
-    sp.compute(cn, new int[inputSize], activeArray, true);
+            SpatialPooler sp = new SpatialPooler();
+            Connections cn = new Connections();
+            parameters.apply(cn);
+            sp.init(cn);
 
-    assertEquals(0, ArrayUtils.where(activeArray, ArrayUtils.INT_GREATER_THAN_0).length);
-}
+            // This exact number of active columns is determined by the inhibition
+            // radius, which changes based on the random synapses (i.e. weird math).
+            // Force it to a known number.
+            cn.setInhibitionRadius(2);
 
-[TestMethod]
-public void testZeroOverlap_NoStimulusThreshold_LocalInhibition()
-{
-    int inputSize = 10;
-    int nColumns = 20;
-    parameters = Parameters.getSpatialDefaultParameters();
-    parameters.set(KEY.INPUT_DIMENSIONS, new int[] { inputSize });
-    parameters.set(KEY.COLUMN_DIMENSIONS, new int[] { nColumns });
-    parameters.set(KEY.POTENTIAL_RADIUS, 5);
-    parameters.set(KEY.GLOBAL_INHIBITION, false);
-    parameters.set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 1.0);
-    parameters.set(KEY.STIMULUS_THRESHOLD, 0.0);
-    parameters.set(KEY.RANDOM, new UniversalRandom(42));
-    parameters.set(KEY.SEED, 42);
+            int[] activeArray = new int[nColumns];
+            sp.compute(cn, new int[inputSize], activeArray, true);
 
-    SpatialPooler sp = new SpatialPooler();
-    Connections cn = new Connections();
-    parameters.apply(cn);
-    sp.init(cn);
+            Assert.Equals(3, activeArray.Count(i => i > 0));//, ArrayUtils.INT_GREATER_THAN_0).length);
+        }
 
-    // This exact number of active columns is determined by the inhibition
-    // radius, which changes based on the random synapses (i.e. weird math).
-    // Force it to a known number.
-    cn.setInhibitionRadius(2);
+        /**
+         * When stimulusThreshold is > 0, don't allow columns without any overlap to
+         * become active. This test focuses on the local inhibition code path.
+         */
+        [TestMethod]
+        public void testZeroOverlap_StimulusThreshold_LocalInhibition()
+        {
+            int inputSize = 10;
+            int nColumns = 20;
+            parameters = Parameters.getSpatialDefaultParameters();
+            parameters.set(KEY.INPUT_DIMENSIONS, new int[] { inputSize });
+            parameters.set(KEY.COLUMN_DIMENSIONS, new int[] { nColumns });
+            parameters.set(KEY.POTENTIAL_RADIUS, 10);
+            parameters.set(KEY.GLOBAL_INHIBITION, false);
+            parameters.set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 3.0);
+            parameters.set(KEY.STIMULUS_THRESHOLD, 1.0);
+            parameters.set(KEY.RANDOM, new Random(42));
+            parameters.set(KEY.SEED, 42);
 
-    int[] activeArray = new int[nColumns];
-    sp.compute(cn, new int[inputSize], activeArray, true);
+            SpatialPooler sp = new SpatialPooler();
+            Connections cn = new Connections();
+            parameters.apply(cn);
+            sp.init(cn);
 
-    assertEquals(6, ArrayUtils.where(activeArray, ArrayUtils.INT_GREATER_THAN_0).length);
-}
+            int[] activeArray = new int[nColumns];
+            sp.compute(cn, new int[inputSize], activeArray, true);
 
-/**
- * When stimulusThreshold is > 0, don't allow columns without any overlap to
- * become active. This test focuses on the local inhibition code path.
- */
-[TestMethod]
-public void testZeroOverlap_StimulusThreshold_LocalInhibition()
-{
-    int inputSize = 10;
-    int nColumns = 20;
-    parameters = Parameters.getSpatialDefaultParameters();
-    parameters.set(KEY.INPUT_DIMENSIONS, new int[] { inputSize });
-    parameters.set(KEY.COLUMN_DIMENSIONS, new int[] { nColumns });
-    parameters.set(KEY.POTENTIAL_RADIUS, 10);
-    parameters.set(KEY.GLOBAL_INHIBITION, false);
-    parameters.set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 3.0);
-    parameters.set(KEY.STIMULUS_THRESHOLD, 1.0);
-    parameters.set(KEY.RANDOM, new UniversalRandom(42));
-    parameters.set(KEY.SEED, 42);
+            Assert.Equals(3, activeArray.Count(i => i > 0));//, ArrayUtils.INT_GREATER_THAN_0).length);
+        }
 
-    SpatialPooler sp = new SpatialPooler();
-    Connections cn = new Connections();
-    parameters.apply(cn);
-    sp.init(cn);
+        [TestMethod]
+        public void testOverlapsOutput()
+        {
+            parameters = Parameters.getSpatialDefaultParameters();
+            parameters.setColumnDimensions(new int[] { 3 });
+            parameters.setInputDimensions(new int[] { 5 });
+            parameters.setPotentialRadius(5);
+            parameters.setNumActiveColumnsPerInhArea(5);
+            parameters.setGlobalInhibition(true);
+            parameters.setSynPermActiveInc(0.1);
+            parameters.setSynPermInactiveDec(0.1);
+            parameters.setSeed(42);
+            parameters.setRandom(new Random(42));
 
-    int[] activeArray = new int[nColumns];
-    sp.compute(cn, new int[inputSize], activeArray, true);
+            SpatialPooler sp = new SpatialPooler();
+            Connections cn = new Connections();
+            parameters.apply(cn);
+            sp.init(cn);
 
-    assertEquals(0, ArrayUtils.where(activeArray, ArrayUtils.INT_GREATER_THAN_0).length);
-}
+            cn.setBoostFactors(new double[] { 2.0, 2.0, 2.0 });
+            int[] inputVector = { 1, 1, 1, 1, 1 };
+            int[] activeArray = { 0, 0, 0 };
+            int[] expOutput = { 2, 1, 0 };
+            sp.compute(cn, inputVector, activeArray, true);
 
-[TestMethod]
-public void testOverlapsOutput()
-{
-    parameters = Parameters.getSpatialDefaultParameters();
-    parameters.setColumnDimensions(new int[] { 3 });
-    parameters.setInputDimensions(new int[] { 5 });
-    parameters.setPotentialRadius(5);
-    parameters.setNumActiveColumnsPerInhArea(5);
-    parameters.setGlobalInhibition(true);
-    parameters.setSynPermActiveInc(0.1);
-    parameters.setSynPermInactiveDec(0.1);
-    parameters.setSeed(42);
-    parameters.setRandom(new UniversalRandom(42));
+            double[] boostedOverlaps = cn.getBoostedOverlaps();
+            int[] overlaps = cn.getOverlaps();
 
-    SpatialPooler sp = new SpatialPooler();
-    Connections cn = new Connections();
-    parameters.apply(cn);
-    sp.init(cn);
+            for (int i = 0; i < cn.getNumColumns(); i++)
+            {
+                Assert.Equals(expOutput[i], overlaps[i]);
+                Assert.IsTrue(Math.Abs(expOutput[i] * 2 - boostedOverlaps[i]) <= 0.01);
+            }
+        }
 
-    cn.setBoostFactors(new double[] { 2.0, 2.0, 2.0 });
-    int[] inputVector = { 1, 1, 1, 1, 1 };
-    int[] activeArray = { 0, 0, 0 };
-    int[] expOutput = { 2, 1, 0 };
-    sp.compute(cn, inputVector, activeArray, true);
+        /**
+         * Given a specific input and initialization params the SP should return this
+         * exact output.
+         *
+         * Previously output varied between platforms (OSX/Linux etc) == (in Python)
+         */
+        [TestMethod]
+        public void testExactOutput()
+        {
+            setupParameters();
+            parameters.setInputDimensions(new int[] { 1, 188 });
+            parameters.setColumnDimensions(new int[] { 2048, 1 });
+            parameters.setPotentialRadius(94);
+            parameters.setPotentialPct(0.5);
+            parameters.setGlobalInhibition(true);
+            parameters.setLocalAreaDensity(-1.0);
+            parameters.setNumActiveColumnsPerInhArea(40);
+            parameters.setStimulusThreshold(0);
+            parameters.setSynPermInactiveDec(0.01);
+            parameters.setSynPermActiveInc(0.1);
+            parameters.setMinPctOverlapDutyCycles(0.001);
+            parameters.setMinPctActiveDutyCycles(0.001);
+            parameters.setDutyCyclePeriod(1000);
+            parameters.setMaxBoost(10);
+            initSP();
 
-    double[] boostedOverlaps = cn.getBoostedOverlaps();
-    int[] overlaps = cn.getOverlaps();
-
-    for (int i = 0; i < cn.getNumColumns(); i++)
-    {
-        assertEquals(expOutput[i], overlaps[i]);
-        assertEquals(expOutput[i] * 2, boostedOverlaps[i], 0.01);
-    }
-}
-
-/**
- * Given a specific input and initialization params the SP should return this
- * exact output.
- *
- * Previously output varied between platforms (OSX/Linux etc) == (in Python)
- */
-[TestMethod]
-public void testExactOutput()
-{
-    setupParameters();
-    parameters.setInputDimensions(new int[] { 1, 188 });
-    parameters.setColumnDimensions(new int[] { 2048, 1 });
-    parameters.setPotentialRadius(94);
-    parameters.setPotentialPct(0.5);
-    parameters.setGlobalInhibition(true);
-    parameters.setLocalAreaDensity(-1.0);
-    parameters.setNumActiveColumnsPerInhArea(40);
-    parameters.setStimulusThreshold(0);
-    parameters.setSynPermInactiveDec(0.01);
-    parameters.setSynPermActiveInc(0.1);
-    parameters.setMinPctOverlapDutyCycles(0.001);
-    parameters.setMinPctActiveDutyCycles(0.001);
-    parameters.setDutyCyclePeriod(1000);
-    parameters.setMaxBoost(10);
-    initSP();
-
-    int[] inputVector = {
+            int[] inputVector = {
                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -401,471 +393,475 @@ public void testExactOutput()
                 0, 0, 0, 0, 0, 0, 0, 0
         };
 
-    int[] activeArray = new int[2048];
+            int[] activeArray = new int[2048];
 
-    sp.compute(mem, inputVector, activeArray, true);
+            sp.compute(mem, inputVector, activeArray, true);
 
-    int[] real = ArrayUtils.where(activeArray, new Condition.Adapter<Object>()
-    {
-            public boolean eval(int n)
-    {
-        return n > 0;
-    }
-});
+            int[] real = activeArray.Where(i => i > 0).ToArray();
 
-        int[] expected = new int[] {
+            //    int[] real = ArrayUtils.where(activeArray, new Condition.Adapter<Object>()
+            //    {
+            //    public boolean eval(int n)
+            //    {
+            //        return n > 0;
+            //    }
+            //});
+
+            int[] expected = new int[] {
              74, 203, 237, 270, 288, 317, 479, 529, 530, 622, 659, 720, 757, 790, 924, 956, 1033,
              1041, 1112, 1332, 1386, 1430, 1500, 1517, 1578, 1584, 1651, 1664, 1717, 1735, 1747,
              1748, 1775, 1779, 1788, 1813, 1888, 1911, 1938, 1958 };
 
-assertTrue(Arrays.equals(expected, real));
-    }
-    
-    @Test
-    public void testStripNeverLearned()
-{
-    setupParameters();
-    parameters.setColumnDimensions(new int[] { 6 });
-    parameters.setInputDimensions(new int[] { 9 });
-    initSP();
+            Assert.IsTrue(Array.Equals(expected, real));
+        }
 
-    mem.updateActiveDutyCycles(new double[] { 0.5, 0.1, 0, 0.2, 0.4, 0 });
-    int[] activeColumns = new int[] { 0, 1, 2, 4 };
-    int[] stripped = sp.stripUnlearnedColumns(mem, activeColumns);
-    int[] trueStripped = new int[] { 0, 1, 4 };
-    assertTrue(Arrays.equals(trueStripped, stripped));
+        [TestMethod]
+        public void testStripNeverLearned()
+        {
+            setupParameters();
+            parameters.setColumnDimensions(new int[] { 6 });
+            parameters.setInputDimensions(new int[] { 9 });
+            initSP();
 
-    mem.updateActiveDutyCycles(new double[] { 0.9, 0, 0, 0, 0.4, 0.3 });
-    activeColumns = ArrayUtils.range(0, 6);
-    stripped = sp.stripUnlearnedColumns(mem, activeColumns);
-    trueStripped = new int[] { 0, 4, 5 };
-    assertTrue(Arrays.equals(trueStripped, stripped));
+            mem.updateActiveDutyCycles(new double[] { 0.5, 0.1, 0, 0.2, 0.4, 0 });
+            int[] activeColumns = new int[] { 0, 1, 2, 4 };
+            int[] stripped = sp.stripUnlearnedColumns(mem, activeColumns);
+            int[] trueStripped = new int[] { 0, 1, 4 };
+            Assert.IsTrue(Array.Equals(trueStripped, stripped));
 
-    mem.updateActiveDutyCycles(new double[] { 0, 0, 0, 0, 0, 0 });
-    activeColumns = ArrayUtils.range(0, 6);
-    stripped = sp.stripUnlearnedColumns(mem, activeColumns);
-    trueStripped = new int[] { };
-    assertTrue(Arrays.equals(trueStripped, stripped));
+            mem.updateActiveDutyCycles(new double[] { 0.9, 0, 0, 0, 0.4, 0.3 });
+            activeColumns = ArrayUtils.range(0, 6);
+            stripped = sp.stripUnlearnedColumns(mem, activeColumns);
+            trueStripped = new int[] { 0, 4, 5 };
+            Assert.IsTrue(Array.Equals(trueStripped, stripped));
 
-    mem.updateActiveDutyCycles(new double[] { 1, 1, 1, 1, 1, 1 });
-    activeColumns = ArrayUtils.range(0, 6);
-    stripped = sp.stripUnlearnedColumns(mem, activeColumns);
-    trueStripped = ArrayUtils.range(0, 6);
-    assertTrue(Arrays.equals(trueStripped, stripped));
-}
+            mem.updateActiveDutyCycles(new double[] { 0, 0, 0, 0, 0, 0 });
+            activeColumns = ArrayUtils.range(0, 6);
+            stripped = sp.stripUnlearnedColumns(mem, activeColumns);
+            trueStripped = new int[] { };
+            Assert.IsTrue(Array.Equals(trueStripped, stripped));
 
-[TestMethod]
-public void testMapColumn()
-{
-    // Test 1D
-    setupParameters();
-    parameters.setColumnDimensions(new int[] { 4 });
-    parameters.setInputDimensions(new int[] { 12 });
-    initSP();
+            mem.updateActiveDutyCycles(new double[] { 1, 1, 1, 1, 1, 1 });
+            activeColumns = ArrayUtils.range(0, 6);
+            stripped = sp.stripUnlearnedColumns(mem, activeColumns);
+            trueStripped = ArrayUtils.range(0, 6);
+            Assert.IsTrue(Array.Equals(trueStripped, stripped));
+        }
 
-    assertEquals(1, sp.mapColumn(mem, 0));
-    assertEquals(4, sp.mapColumn(mem, 1));
-    assertEquals(7, sp.mapColumn(mem, 2));
-    assertEquals(10, sp.mapColumn(mem, 3));
+        [TestMethod]
+        public void testMapColumn()
+        {
+            // Test 1D
+            setupParameters();
+            parameters.setColumnDimensions(new int[] { 4 });
+            parameters.setInputDimensions(new int[] { 12 });
+            initSP();
 
-    // Test 1D with same dimension of columns and inputs
-    setupParameters();
-    parameters.setColumnDimensions(new int[] { 4 });
-    parameters.setInputDimensions(new int[] { 4 });
-    initSP();
+            Assert.Equals(1, sp.mapColumn(mem, 0));
+            Assert.Equals(4, sp.mapColumn(mem, 1));
+            Assert.Equals(7, sp.mapColumn(mem, 2));
+            Assert.Equals(10, sp.mapColumn(mem, 3));
 
-    assertEquals(0, sp.mapColumn(mem, 0));
-    assertEquals(1, sp.mapColumn(mem, 1));
-    assertEquals(2, sp.mapColumn(mem, 2));
-    assertEquals(3, sp.mapColumn(mem, 3));
+            // Test 1D with same dimension of columns and inputs
+            setupParameters();
+            parameters.setColumnDimensions(new int[] { 4 });
+            parameters.setInputDimensions(new int[] { 4 });
+            initSP();
 
-    // Test 1D with dimensions of length 1
-    setupParameters();
-    parameters.setColumnDimensions(new int[] { 1 });
-    parameters.setInputDimensions(new int[] { 1 });
-    initSP();
+            Assert.Equals(0, sp.mapColumn(mem, 0));
+            Assert.Equals(1, sp.mapColumn(mem, 1));
+            Assert.Equals(2, sp.mapColumn(mem, 2));
+            Assert.Equals(3, sp.mapColumn(mem, 3));
 
-    assertEquals(0, sp.mapColumn(mem, 0));
+            // Test 1D with dimensions of length 1
+            setupParameters();
+            parameters.setColumnDimensions(new int[] { 1 });
+            parameters.setInputDimensions(new int[] { 1 });
+            initSP();
 
-    // Test 2D
-    setupParameters();
-    parameters.setColumnDimensions(new int[] { 12, 4 });
-    parameters.setInputDimensions(new int[] { 36, 12 });
-    initSP();
+            Assert.Equals(0, sp.mapColumn(mem, 0));
 
-    assertEquals(13, sp.mapColumn(mem, 0));
-    assertEquals(49, sp.mapColumn(mem, 4));
-    assertEquals(52, sp.mapColumn(mem, 5));
-    assertEquals(58, sp.mapColumn(mem, 7));
-    assertEquals(418, sp.mapColumn(mem, 47));
+            // Test 2D
+            setupParameters();
+            parameters.setColumnDimensions(new int[] { 12, 4 });
+            parameters.setInputDimensions(new int[] { 36, 12 });
+            initSP();
 
-    // Test 2D with some input dimensions smaller than column dimensions.
-    setupParameters();
-    parameters.setColumnDimensions(new int[] { 4, 4 });
-    parameters.setInputDimensions(new int[] { 3, 5 });
-    initSP();
+            Assert.Equals(13, sp.mapColumn(mem, 0));
+            Assert.Equals(49, sp.mapColumn(mem, 4));
+            Assert.Equals(52, sp.mapColumn(mem, 5));
+            Assert.Equals(58, sp.mapColumn(mem, 7));
+            Assert.Equals(418, sp.mapColumn(mem, 47));
 
-    assertEquals(0, sp.mapColumn(mem, 0));
-    assertEquals(4, sp.mapColumn(mem, 3));
-    assertEquals(14, sp.mapColumn(mem, 15));
-}
+            // Test 2D with some input dimensions smaller than column dimensions.
+            setupParameters();
+            parameters.setColumnDimensions(new int[] { 4, 4 });
+            parameters.setInputDimensions(new int[] { 3, 5 });
+            initSP();
 
-[TestMethod]
-public void testMapPotential1D()
-{
-    setupParameters();
-    parameters.setInputDimensions(new int[] { 12 });
-    parameters.setColumnDimensions(new int[] { 4 });
-    parameters.setPotentialRadius(2);
-    parameters.setPotentialPct(1);
-    parameters.set(KEY.WRAP_AROUND, false);
-    initSP();
+            Assert.Equals(0, sp.mapColumn(mem, 0));
+            Assert.Equals(4, sp.mapColumn(mem, 3));
+            Assert.Equals(14, sp.mapColumn(mem, 15));
+        }
 
-    assertEquals(12, mem.getInputDimensions()[0]);
-    assertEquals(4, mem.getColumnDimensions()[0]);
-    assertEquals(2, mem.getPotentialRadius());
+        [TestMethod]
+        public void testMapPotential1D()
+        {
+            setupParameters();
+            parameters.setInputDimensions(new int[] { 12 });
+            parameters.setColumnDimensions(new int[] { 4 });
+            parameters.setPotentialRadius(2);
+            parameters.setPotentialPct(1);
+            parameters.set(KEY.WRAP_AROUND, false);
+            initSP();
 
-    // Test without wrapAround and potentialPct = 1
-    int[] expected = new int[] { 0, 1, 2, 3 };
-    int[] mask = sp.mapPotential(mem, 0, false);
-    assertTrue(Arrays.equals(expected, mask));
+            Assert.Equals(12, mem.getInputDimensions()[0]);
+            Assert.Equals(4, mem.getColumnDimensions()[0]);
+            Assert.Equals(2, mem.getPotentialRadius());
 
-    expected = new int[] { 5, 6, 7, 8, 9 };
-    mask = sp.mapPotential(mem, 2, false);
-    assertTrue(Arrays.equals(expected, mask));
+            // Test without wrapAround and potentialPct = 1
+            int[] expected = new int[] { 0, 1, 2, 3 };
+            int[] mask = sp.mapPotential(mem, 0, false);
+            Assert.IsTrue(Array.Equals(expected, mask));
 
-    // Test with wrapAround and potentialPct = 1
-    mem.setWrapAround(true);
-    expected = new int[] { 0, 1, 2, 3, 11 };
-    mask = sp.mapPotential(mem, 0, true);
-    assertTrue(Arrays.equals(expected, mask));
+            expected = new int[] { 5, 6, 7, 8, 9 };
+            mask = sp.mapPotential(mem, 2, false);
+            Assert.IsTrue(Array.Equals(expected, mask));
 
-    expected = new int[] { 0, 8, 9, 10, 11 };
-    mask = sp.mapPotential(mem, 3, true);
-    assertTrue(Arrays.equals(expected, mask));
+            // Test with wrapAround and potentialPct = 1
+            mem.setWrapAround(true);
+            expected = new int[] { 0, 1, 2, 3, 11 };
+            mask = sp.mapPotential(mem, 0, true);
+            Assert.IsTrue(Array.Equals(expected, mask));
 
-    // Test with wrapAround and potentialPct < 1
-    parameters.setPotentialPct(0.5);
-    parameters.set(KEY.WRAP_AROUND, true);
-    initSP();
+            expected = new int[] { 0, 8, 9, 10, 11 };
+            mask = sp.mapPotential(mem, 3, true);
+            Assert.IsTrue(Array.Equals(expected, mask));
 
-    int[] supersetMask = new int[] { 0, 1, 2, 3, 11 };
-    mask = sp.mapPotential(mem, 0, true);
-    assertEquals(mask.length, 3);
-    TIntArrayList unionList = new TIntArrayList(supersetMask);
-    unionList.addAll(mask);
-    int[] unionMask = ArrayUtils.unique(unionList.toArray());
-    assertTrue(Arrays.equals(unionMask, supersetMask));
-}
+            // Test with wrapAround and potentialPct < 1
+            parameters.setPotentialPct(0.5);
+            parameters.set(KEY.WRAP_AROUND, true);
+            initSP();
 
-[TestMethod]
-public void testMapPotential2D()
-{
-    setupParameters();
-    parameters.setInputDimensions(new int[] { 6, 12 });
-    parameters.setColumnDimensions(new int[] { 2, 4 });
-    parameters.setPotentialRadius(1);
-    parameters.setPotentialPct(1);
-    initSP();
+            int[] supersetMask = new int[] { 0, 1, 2, 3, 11 };
+            mask = sp.mapPotential(mem, 0, true);
+            Assert.IsTrue(Array.Equals(mask.Length, 3));
+            List<int> unionList = new List<int>(supersetMask);
+            unionList.AddRange(mask);
+            int[] unionMask = ArrayUtils.unique(unionList.ToArray());
+            Assert.IsTrue(Array.Equals(unionMask, supersetMask));
+        }
 
-    //Test without wrapAround
-    int[] mask = sp.mapPotential(mem, 0, false);
-    TIntHashSet trueIndices = new TIntHashSet(new int[] { 0, 1, 2, 12, 13, 14, 24, 25, 26 });
-    TIntHashSet maskSet = new TIntHashSet(mask);
-    assertTrue(trueIndices.equals(maskSet));
+        [TestMethod]
+        public void testMapPotential2D()
+        {
+            setupParameters();
+            parameters.setInputDimensions(new int[] { 6, 12 });
+            parameters.setColumnDimensions(new int[] { 2, 4 });
+            parameters.setPotentialRadius(1);
+            parameters.setPotentialPct(1);
+            initSP();
 
-    trueIndices.clear();
-    maskSet.clear();
-    trueIndices.addAll(new int[] { 6, 7, 8, 18, 19, 20, 30, 31, 32 });
-    mask = sp.mapPotential(mem, 2, false);
-    maskSet.addAll(mask);
-    assertTrue(trueIndices.equals(maskSet));
+            //Test without wrapAround
+            int[] mask = sp.mapPotential(mem, 0, false);
+            List<int> trueIndices = new List<int>(new int[] { 0, 1, 2, 12, 13, 14, 24, 25, 26 });
+            List<int> maskSet = new List<int>(mask);
+            Assert.IsTrue(trueIndices.Equals(maskSet));
 
-    //Test with wrapAround
-    trueIndices.clear();
-    maskSet.clear();
-    parameters.setPotentialRadius(2);
-    initSP();
-    trueIndices.addAll(
-            new int[] { 0, 1, 2, 3, 11,
+            trueIndices.Clear();
+            maskSet.Clear();
+            trueIndices.AddRange(new int[] { 6, 7, 8, 18, 19, 20, 30, 31, 32 });
+            mask = sp.mapPotential(mem, 2, false);
+            maskSet.AddRange(mask);
+            Assert.IsTrue(trueIndices.Equals(maskSet));
+
+            //Test with wrapAround
+            trueIndices.Clear();
+            maskSet.Clear();
+            parameters.setPotentialRadius(2);
+            initSP();
+            trueIndices.AddRange(
+                    new int[] { 0, 1, 2, 3, 11,
                         12, 13, 14, 15, 23,
                         24, 25, 26, 27, 35,
                         36, 37, 38, 39, 47,
                         60, 61, 62, 63, 71 });
-    mask = sp.mapPotential(mem, 0, true);
-    maskSet.addAll(mask);
-    assertTrue(trueIndices.equals(maskSet));
+            mask = sp.mapPotential(mem, 0, true);
+            maskSet.AddRange(mask);
+            Assert.IsTrue(trueIndices.Equals(maskSet));
 
-    trueIndices.clear();
-    maskSet.clear();
-    trueIndices.addAll(
-            new int[] { 0, 8, 9, 10, 11,
+            trueIndices.Clear();
+            maskSet.Clear();
+            trueIndices.AddRange(
+                    new int[] { 0, 8, 9, 10, 11,
                         12, 20, 21, 22, 23,
                         24, 32, 33, 34, 35,
                         36, 44, 45, 46, 47,
                         60, 68, 69, 70, 71 });
-    mask = sp.mapPotential(mem, 3, true);
-    maskSet.addAll(mask);
-    assertTrue(trueIndices.equals(maskSet));
-}
+            mask = sp.mapPotential(mem, 3, true);
+            maskSet.AddRange(mask);
+            Assert.IsTrue(trueIndices.Equals(maskSet));
+        }
 
-[TestMethod]
-public void testMapPotential1Column1Input()
-{
-    setupParameters();
-    parameters.setInputDimensions(new int[] { 1 });
-    parameters.setColumnDimensions(new int[] { 1 });
-    parameters.setPotentialRadius(2);
-    parameters.setPotentialPct(1);
-    parameters.set(KEY.WRAP_AROUND, false);
-    initSP();
-
-    //Test without wrapAround and potentialPct = 1
-    int[] expectedMask = new int[] { 0 };
-    int[] mask = sp.mapPotential(mem, 0, false);
-    TIntHashSet trueIndices = new TIntHashSet(expectedMask);
-    TIntHashSet maskSet = new TIntHashSet(mask);
-    // The *position* of the one "on" bit expected. 
-    // Python version returns [1] which is the on bit in the zero'th position
-    assertTrue(trueIndices.equals(maskSet));
-}
-
-//////////////////////////////////////////////////////////////
-/**
- * Local test apparatus for {@link #testInhibitColumns()}
- */
-bool globalCalled = false;
-bool localCalled = false;
-double _density = 0;
-public void reset()
-{
-    this.globalCalled = false;
-    this.localCalled = false;
-    this._density = 0;
-}
-public void setGlobalCalled(boolean b)
-{
-    this.globalCalled = b;
-}
-public void setLocalCalled(boolean b)
-{
-    this.localCalled = b;
-}
-//////////////////////////////////////////////////////////////
-
-[TestMethod]
-public void testInhibitColumns()
-{
-    setupParameters();
-    parameters.setColumnDimensions(new int[] { 5 });
-    parameters.setInhibitionRadius(10);
-    initSP();
-
-    //Mocks to test which method gets called
-    SpatialPooler inhibitColumnsGlobal = new SpatialPooler()
-    {
-            private static final long serialVersionUID = 1L;
-
-@Override public int[] inhibitColumnsGlobal(Connections c, double[] overlap, double density)
-{
-    setGlobalCalled(true);
-    _density = density;
-    return new int[] { 1 };
-}
-        };
-        SpatialPooler inhibitColumnsLocal = new SpatialPooler()
+        [TestMethod]
+        public void testMapPotential1Column1Input()
         {
-            private static final long serialVersionUID = 1L;
-@Override public int[] inhibitColumnsLocal(Connections c, double[] overlap, double density)
-{
-    setLocalCalled(true);
-    _density = density;
-    return new int[] { 2 };
-}
-        };
+            setupParameters();
+            parameters.setInputDimensions(new int[] { 1 });
+            parameters.setColumnDimensions(new int[] { 1 });
+            parameters.setPotentialRadius(2);
+            parameters.setPotentialPct(1);
+            parameters.set(KEY.WRAP_AROUND, false);
+            initSP();
 
-        double[] overlaps = ArrayUtils.sample(mem.getNumColumns(), mem.getRandom());
-mem.setNumActiveColumnsPerInhArea(5);
-        mem.setLocalAreaDensity(0.1);
-        mem.setGlobalInhibition(true);
-        mem.setInhibitionRadius(5);
-        double trueDensity = mem.getLocalAreaDensity();
-inhibitColumnsGlobal.inhibitColumns(mem, overlaps);
-        assertTrue(globalCalled);
-assertTrue(!localCalled);
-assertEquals(trueDensity, _density, .01d);
+            //Test without wrapAround and potentialPct = 1
+            int[] expectedMask = new int[] { 0 };
+            int[] mask = sp.mapPotential(mem, 0, false);
+            List<int> trueIndices = new List<int>(expectedMask);
+            List<int> maskSet = new List<int>(mask);
+            // The *position* of the one "on" bit expected. 
+            // Python version returns [1] which is the on bit in the zero'th position
+            Assert.IsTrue(trueIndices.Equals(maskSet));
+        }
 
-//////
-reset();
-mem.setColumnDimensions(new int[] { 50, 10 });
-        //Internally calculated during init, to overwrite we put after init
-        mem.setGlobalInhibition(false);
-        mem.setInhibitionRadius(7);
+        //////////////////////////////////////////////////////////////
+        /**
+         * Local test apparatus for {@link #testInhibitColumns()}
+         */
+        bool globalCalled = false;
+        bool localCalled = false;
+        double _density = 0;
+        public void reset()
+        {
+            this.globalCalled = false;
+            this.localCalled = false;
+            this._density = 0;
+        }
+        public void setGlobalCalled(bool b)
+        {
+            this.globalCalled = b;
+        }
+        public void setLocalCalled(bool b)
+        {
+            this.localCalled = b;
+        }
+        //////////////////////////////////////////////////////////////
 
-        double[] tieBreaker = new double[500];
-Arrays.fill(tieBreaker, 0);
-        mem.setTieBreaker(tieBreaker);
-        overlaps = ArrayUtils.sample(mem.getNumColumns(), mem.getRandom());
-        inhibitColumnsLocal.inhibitColumns(mem, overlaps);
-        trueDensity = mem.getLocalAreaDensity();
-        assertTrue(!globalCalled);
-assertTrue(localCalled);
-assertEquals(trueDensity, _density, .01d);
 
-//////
-reset();
-parameters.setInputDimensions(new int[] { 100, 10 });
-        parameters.setColumnDimensions(new int[] { 100, 10 });
-        parameters.setGlobalInhibition(false);
-        parameters.setLocalAreaDensity(-1);
-        parameters.setNumActiveColumnsPerInhArea(3);
-        initSP();
+        [TestMethod]
+        public void testInhibitColumns()
+        {
+            setupParameters();
+            parameters.setColumnDimensions(new int[] { 5 });
+            parameters.setInhibitionRadius(10);
+            initSP();
 
-//Internally calculated during init, to overwrite we put after init
-mem.setInhibitionRadius(4);
-        tieBreaker = new double[1000];
-        Arrays.fill(tieBreaker, 0);
-        mem.setTieBreaker(tieBreaker);
-        overlaps = ArrayUtils.sample(mem.getNumColumns(), mem.getRandom());
-        inhibitColumnsLocal.inhibitColumns(mem, overlaps);
-        trueDensity = 3.0 / 81.0;
-        assertTrue(!globalCalled);
-assertTrue(localCalled);
-assertEquals(trueDensity, _density, .01d);
+            SpatialPoolerMock2 mock = new SpatialPoolerMock2((density) =>
+            {
+                setGlobalCalled(true);
+                _density = density;
+            });
 
-//////
-reset();
-mem.setNumActiveColumnsPerInhArea(7);
+            //        //Mocks to test which method gets called
+            //        SpatialPooler inhibitColumnsGlobal = new SpatialPooler()
+            //        {
+            //        private static final long serialVersionUID = 1L;
 
-        //Internally calculated during init, to overwrite we put after init
-        mem.setInhibitionRadius(1);
-        tieBreaker = new double[1000];
-        Arrays.fill(tieBreaker, 0);
-        mem.setTieBreaker(tieBreaker);
-        overlaps = ArrayUtils.sample(mem.getNumColumns(), mem.getRandom());
-        inhibitColumnsLocal.inhibitColumns(mem, overlaps);
-        trueDensity = 0.5;
-        assertTrue(!globalCalled);
-assertTrue(localCalled);
-assertEquals(trueDensity, _density, .01d);
+            //    @Override public int[] inhibitColumnsGlobal(Connections c, double[] overlap, double density)
+            //    {
+            //        setGlobalCalled(true);
+            //        _density = density;
+            //        return new int[] { 1 };
+            //    }
+            //};
 
-    }
-    
-    @Test
-    public void testUpdateBoostFactors()
-{
-    setupParameters();
-    parameters.setInputDimensions(new int[] { 5/*Don't care*/ });
-    parameters.setColumnDimensions(new int[] { 5 });
-    parameters.setMaxBoost(10.0);
-    parameters.setRandom(new UniversalRandom(42));
-    initSP();
 
-    mem.setNumColumns(6);
+            double[] overlaps = ArrayUtils.sample(mem.getNumColumns(), mem.getRandom());
+            mem.setNumActiveColumnsPerInhArea(5);
+            mem.setLocalAreaDensity(0.1);
+            mem.setGlobalInhibition(true);
+            mem.setInhibitionRadius(5);
+            double trueDensity = mem.getLocalAreaDensity();
+            //inhibitColumnsGlobal.inhibitColumns(mem, overlaps);
+            mock.inhibitColumns(mem, overlaps);
+            Assert.IsTrue(globalCalled);
+            Assert.IsTrue(!localCalled);
+            Assert.IsTrue(Math.Abs(trueDensity - _density) <= .01d);
 
-    double[] minActiveDutyCycles = new double[6];
-    Arrays.fill(minActiveDutyCycles, 0.000001D);
-    mem.setMinActiveDutyCycles(minActiveDutyCycles);
+            //////
+            reset();
+            mem.setColumnDimensions(new int[] { 50, 10 });
+            //Internally calculated during init, to overwrite we put after init
+            mem.setGlobalInhibition(false);
+            mem.setInhibitionRadius(7);
 
-    double[] activeDutyCycles = new double[] { 0.1, 0.3, 0.02, 0.04, 0.7, 0.12 };
-    mem.setActiveDutyCycles(activeDutyCycles);
+            double[] tieBreaker = new double[500];
+            ArrayUtils.fillArray(tieBreaker, 0);
+            mem.setTieBreaker(tieBreaker);
+            overlaps = ArrayUtils.sample(mem.getNumColumns(), mem.getRandom());
+            //inhibitColumnsLocal.inhibitColumns(mem, overlaps);
+            mock.inhibitColumns(mem, overlaps);
+            trueDensity = mem.getLocalAreaDensity();
+            Assert.IsTrue(!globalCalled);
+            Assert.IsTrue(localCalled);
+            Assert.IsTrue(Math.Abs(trueDensity - _density) <= .01d));
 
-    double[] trueBoostFactors = new double[] { 1, 1, 1, 1, 1, 1 };
-    sp.updateBoostFactors(mem);
-    double[] boostFactors = mem.getBoostFactors();
-    for (int i = 0; i < boostFactors.length; i++)
-    {
-        assertEquals(trueBoostFactors[i], boostFactors[i], 0.1D);
-    }
+            //////
+            reset();
+            parameters.setInputDimensions(new int[] { 100, 10 });
+            parameters.setColumnDimensions(new int[] { 100, 10 });
+            parameters.setGlobalInhibition(false);
+            parameters.setLocalAreaDensity(-1);
+            parameters.setNumActiveColumnsPerInhArea(3);
+            initSP();
 
-    ////////////////
-    minActiveDutyCycles = new double[] { 0.1, 0.3, 0.02, 0.04, 0.7, 0.12 };
-    mem.setMinActiveDutyCycles(minActiveDutyCycles);
-    Arrays.fill(mem.getBoostFactors(), 0);
-    sp.updateBoostFactors(mem);
-    boostFactors = mem.getBoostFactors();
-    for (int i = 0; i < boostFactors.length; i++)
-    {
-        assertEquals(trueBoostFactors[i], boostFactors[i], 0.1D);
-    }
+            //Internally calculated during init, to overwrite we put after init
+            mem.setInhibitionRadius(4);
+            tieBreaker = new double[1000];
+            ArrayUtils.fillArray(tieBreaker, 0);
+            mem.setTieBreaker(tieBreaker);
+            overlaps = ArrayUtils.sample(mem.getNumColumns(), mem.getRandom());
+            //inhibitColumnsLocal.inhibitColumns(mem, overlaps);
+            mock.inhibitColumns(mem, overlaps);
+            trueDensity = 3.0 / 81.0;
+            Assert.IsTrue(!globalCalled);
+            Assert.IsTrue(localCalled);
+            Assert.IsTrue(Math.Abs(trueDensity - _density) <= .01d);
 
-    ////////////////
-    minActiveDutyCycles = new double[] { 0.1, 0.2, 0.02, 0.03, 0.7, 0.12 };
-    mem.setMinActiveDutyCycles(minActiveDutyCycles);
-    activeDutyCycles = new double[] { 0.01, 0.02, 0.002, 0.003, 0.07, 0.012 };
-    mem.setActiveDutyCycles(activeDutyCycles);
-    trueBoostFactors = new double[] { 9.1, 9.1, 9.1, 9.1, 9.1, 9.1 };
-    sp.updateBoostFactors(mem);
-    boostFactors = mem.getBoostFactors();
-    for (int i = 0; i < boostFactors.length; i++)
-    {
-        assertEquals(trueBoostFactors[i], boostFactors[i], 0.1D);
-    }
+            //////
+            reset();
+            mem.setNumActiveColumnsPerInhArea(7);
 
-    ////////////////
-    minActiveDutyCycles = new double[] { 0.1, 0.2, 0.02, 0.03, 0.7, 0.12 };
-    mem.setMinActiveDutyCycles(minActiveDutyCycles);
-    Arrays.fill(activeDutyCycles, 0);
-    mem.setActiveDutyCycles(activeDutyCycles);
-    Arrays.fill(trueBoostFactors, 10.0);
-    sp.updateBoostFactors(mem);
-    boostFactors = mem.getBoostFactors();
-    for (int i = 0; i < boostFactors.length; i++)
-    {
-        assertEquals(trueBoostFactors[i], boostFactors[i], 0.1D);
-    }
-}
+            //Internally calculated during init, to overwrite we put after init
+            mem.setInhibitionRadius(1);
+            tieBreaker = new double[1000];
+            ArrayUtils.fillArray(tieBreaker, 0);
+            mem.setTieBreaker(tieBreaker);
+            overlaps = ArrayUtils.sample(mem.getNumColumns(), mem.getRandom());
+            //inhibitColumnsLocal.inhibitColumns(mem, overlaps);
+            mock.inhibitColumns(mem, overlaps);
+            trueDensity = 0.5;
+            Assert.IsTrue(!globalCalled);
+            Assert.IsTrue(localCalled);
+            Assert.IsTrue(Math.Abs(trueDensity - _density) <= .01d);
 
-@Test
+        }
+
+        [TestMethod]
+        public void testUpdateBoostFactors()
+        {
+            setupParameters();
+            parameters.setInputDimensions(new int[] { 5/*Don't care*/ });
+            parameters.setColumnDimensions(new int[] { 5 });
+            parameters.setMaxBoost(10.0);
+            parameters.setRandom(new Random(42));
+            initSP();
+
+            mem.setNumColumns(6);
+
+            double[] minActiveDutyCycles = new double[6];
+            ArrayUtils.fillArray(minActiveDutyCycles, 0.000001D);
+            mem.setMinActiveDutyCycles(minActiveDutyCycles);
+
+            double[] activeDutyCycles = new double[] { 0.1, 0.3, 0.02, 0.04, 0.7, 0.12 };
+            mem.setActiveDutyCycles(activeDutyCycles);
+
+            double[] trueBoostFactors = new double[] { 1, 1, 1, 1, 1, 1 };
+            sp.updateBoostFactors(mem);
+            double[] boostFactors = mem.getBoostFactors();
+            for (int i = 0; i < boostFactors.Length; i++)
+            {
+                Assert.IsTrue(Math.Abs(trueBoostFactors[i]- boostFactors[i])<= 0.1D);
+            }
+
+            ////////////////
+            minActiveDutyCycles = new double[] { 0.1, 0.3, 0.02, 0.04, 0.7, 0.12 };
+            mem.setMinActiveDutyCycles(minActiveDutyCycles);
+            ArrayUtils.fillArray(mem.getBoostFactors(), 0);
+            sp.updateBoostFactors(mem);
+            boostFactors = mem.getBoostFactors();
+            for (int i = 0; i < boostFactors.Length; i++)
+            {
+                Assert.IsTrue(Math.Abs(trueBoostFactors[i]- boostFactors[i]) <= 0.1D);
+            }
+
+            ////////////////
+            minActiveDutyCycles = new double[] { 0.1, 0.2, 0.02, 0.03, 0.7, 0.12 };
+            mem.setMinActiveDutyCycles(minActiveDutyCycles);
+            activeDutyCycles = new double[] { 0.01, 0.02, 0.002, 0.003, 0.07, 0.012 };
+            mem.setActiveDutyCycles(activeDutyCycles);
+            trueBoostFactors = new double[] { 9.1, 9.1, 9.1, 9.1, 9.1, 9.1 };
+            sp.updateBoostFactors(mem);
+            boostFactors = mem.getBoostFactors();
+            for (int i = 0; i < boostFactors.length; i++)
+            {
+                assertEquals(trueBoostFactors[i], boostFactors[i], 0.1D);
+            }
+
+            ////////////////
+            minActiveDutyCycles = new double[] { 0.1, 0.2, 0.02, 0.03, 0.7, 0.12 };
+            mem.setMinActiveDutyCycles(minActiveDutyCycles);
+            Arrays.fill(activeDutyCycles, 0);
+            mem.setActiveDutyCycles(activeDutyCycles);
+            Arrays.fill(trueBoostFactors, 10.0);
+            sp.updateBoostFactors(mem);
+            boostFactors = mem.getBoostFactors();
+            for (int i = 0; i < boostFactors.length; i++)
+            {
+                assertEquals(trueBoostFactors[i], boostFactors[i], 0.1D);
+            }
+        }
+
+        @Test
     public void testUpdateInhibitionRadius()
-{
-    setupParameters();
-    initSP();
+        {
+            setupParameters();
+            initSP();
 
-    //Test global inhibition case
-    mem.setGlobalInhibition(true);
-    mem.setColumnDimensions(new int[] { 57, 31, 2 });
-    sp.updateInhibitionRadius(mem);
-    assertEquals(57, mem.getInhibitionRadius());
+            //Test global inhibition case
+            mem.setGlobalInhibition(true);
+            mem.setColumnDimensions(new int[] { 57, 31, 2 });
+            sp.updateInhibitionRadius(mem);
+            assertEquals(57, mem.getInhibitionRadius());
 
-    ////////////
+            ////////////
 
-    // ((3 * 4) - 1) / 2 => round up
-    SpatialPooler mock = new SpatialPooler()
-    {
+            // ((3 * 4) - 1) / 2 => round up
+            SpatialPooler mock = new SpatialPooler()
+            {
             private static final long serialVersionUID = 1L;
-public double avgConnectedSpanForColumnND(Connections c, int columnIndex)
-{
-    return 3;
-}
+        public double avgConnectedSpanForColumnND(Connections c, int columnIndex)
+        {
+            return 3;
+        }
 
-public double avgColumnsPerInput(Connections c)
-{
-    return 4;
-}
-        };
-        mem.setGlobalInhibition(false);
+        public double avgColumnsPerInput(Connections c)
+        {
+            return 4;
+        }
+    };
+    mem.setGlobalInhibition(false);
         sp = mock;
         sp.updateInhibitionRadius(mem);
         assertEquals(6, mem.getInhibitionRadius());
 
-//////////////
+    //////////////
 
-//Test clipping at 1.0
-mock = new SpatialPooler()
-{
+    //Test clipping at 1.0
+    mock = new SpatialPooler()
+    {
             private static final long serialVersionUID = 1L;
-public double avgConnectedSpanForColumnND(Connections c, int columnIndex)
-{
-    return 0.5;
-}
+    public double avgConnectedSpanForColumnND(Connections c, int columnIndex)
+    {
+        return 0.5;
+    }
 
-public double avgColumnsPerInput(Connections c)
-{
-    return 1.2;
-}
-        };
-        mem.setGlobalInhibition(false);
+    public double avgColumnsPerInput(Connections c)
+    {
+        return 1.2;
+    }
+};
+mem.setGlobalInhibition(false);
         sp = mock;
         sp.updateInhibitionRadius(mem);
         assertEquals(1, mem.getInhibitionRadius());
