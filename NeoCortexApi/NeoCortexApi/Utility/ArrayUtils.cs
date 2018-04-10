@@ -2552,8 +2552,8 @@ namespace NeoCortexApi.Utility
         //public static String intArrayToString(Object array)
         //{
         //    StringBuilder result = new StringBuilder();
-        //    if (array instanceof Object[]){
-        //        result.append(Arrays.deepToString((Object[])array));
+        //    if (array is Object[]){
+        //        result.Append(Arrays.deepToString((Object[])array));
         //    } else {
         //        //One dimension
         //        result.append(Arrays.toString((int[])array));
