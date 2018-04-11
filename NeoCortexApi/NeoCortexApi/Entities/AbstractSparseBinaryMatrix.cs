@@ -263,7 +263,7 @@ namespace NeoCortexApi.Entities
          * @param coordinates   the coordinates from which to retrieve the indexed object
          * @return  the indexed object
          */
-        public new int getIntValue(int[] coordinates)
+        public new int getIntValue(params int[] coordinates)
         {
             return Get(computeIndex(coordinates));
         }

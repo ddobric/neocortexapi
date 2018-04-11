@@ -11,11 +11,22 @@ namespace NeoCortexApi.Utility
      * Utilities to match some of the functionality found in Python's Numpy.
      * @author David Ray
      */
-    public class ArrayUtils
+    public static class ArrayUtils
     {
         /** Empty array constant */
         private static int[] EMPTY_ARRAY = new int[0];
 
+        public static string ArrToString(this int[] arr)
+        {
+            var value = string.Join(",", arr.Select(x => x.ToString()).ToArray());
+            return value;
+        }
+
+        public static string ArrToString(this int[][] arr)
+        {           
+            var value = string.Join(" [ ", arr.Select(x => x.ArrToString()).ToArray(), " ] ");
+            return value;
+        }
         //public static Condition<Integer> WHERE_1 = new Condition.Adapter<Integer>()
         //{
         //    public bool eval(int i)
@@ -43,6 +54,7 @@ namespace NeoCortexApi.Utility
         //public static Condition<Integer> GREATER_OR_EQUAL_0 = new Condition.Adapter<Integer>() {
         //        @Override public boolean eval(int n) { return n >= 0; }
         //    };
+
 
 
         /**
@@ -1604,7 +1616,7 @@ namespace NeoCortexApi.Utility
          */
         public static int[] sample(int[] choices, int[] selectedIndices, Random random)
         {
-           // TIntArrayList choiceSupply = new TIntArrayList(choices);
+            // TIntArrayList choiceSupply = new TIntArrayList(choices);
             List<int> choiceSupply = new List<int>(choices);
             int upperBound = choices.Length;
             for (int i = 0; i < selectedIndices.Length; i++)

@@ -45,4 +45,49 @@ namespace UnitTestsProject
         }
     };
 
+
+
+    public class SpatialPoolerMock3 : SpatialPooler
+    {
+        private static long serialVersionUID = 1L;
+
+        private double m_avgConnectedSpanForColumnND;
+
+        private double m_avgColumnsPerInput;
+
+        public SpatialPoolerMock3(double avgConnectedSpanForColumnND, double avgColumnsPerInput)
+        {
+            this.m_avgConnectedSpanForColumnND = avgConnectedSpanForColumnND;
+            this.m_avgColumnsPerInput = avgColumnsPerInput;
+
+        }
+
+        public override double avgConnectedSpanForColumnND(Connections c, int columnIndex)
+        {
+            return 3;
+        }
+
+        public override double avgColumnsPerInput(Connections c)
+        {
+            return 4;
+        }
+    };
+
+
+    public class SpatialPoolerMock4 : SpatialPooler
+    {
+        private static long serialVersionUID = 1L;
+
+
+        public SpatialPoolerMock4()
+        {
+           
+
+        }
+
+        public override void raisePermanenceToThreshold(Connections c, double[] perm, int[] maskPotential)
+        {
+            //Mock out
+        }
+    };
 }

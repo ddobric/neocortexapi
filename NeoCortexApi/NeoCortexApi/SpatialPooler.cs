@@ -471,7 +471,7 @@ namespace NeoCortexApi
          * @param c     the {@link Connections} (spatial pooler memory)
          * @return
          */
-        public double avgColumnsPerInput(Connections c)
+        public virtual double avgColumnsPerInput(Connections c)
         {
             //int[] colDim = Array.Copy(c.getColumnDimensions(), c.getColumnDimensions().Length);
             int[] colDim = new int[c.getColumnDimensions().Length];
@@ -494,7 +494,7 @@ namespace NeoCortexApi
          * @param columnIndex   the current column for which to avg.
          * @return
          */
-        public double avgConnectedSpanForColumnND(Connections c, int columnIndex)
+        public virtual double avgConnectedSpanForColumnND(Connections c, int columnIndex)
         {
             int[] dimensions = c.getInputDimensions();
             int[] connected = c.getColumn(columnIndex).getProximalDendrite().getConnectedSynapsesSparse(c);
@@ -590,7 +590,7 @@ namespace NeoCortexApi
          * @param perm              the permanence values
          * @param maskPotential         
          */
-        public void raisePermanenceToThreshold(Connections c, double[] perm, int[] maskPotential)
+        public virtual void raisePermanenceToThreshold(Connections c, double[] perm, int[] maskPotential)
         {
             if (maskPotential.Length < c.getStimulusThreshold())
             {
