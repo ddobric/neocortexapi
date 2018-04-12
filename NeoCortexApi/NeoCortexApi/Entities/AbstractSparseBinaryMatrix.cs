@@ -6,7 +6,7 @@ using System.Text;
 namespace NeoCortexApi.Entities
 {
     //TODO see type object
-    public abstract class AbstractSparseBinaryMatrix : AbstractSparseMatrix<object>, IEquatable<object>
+    public abstract class AbstractSparseBinaryMatrix : AbstractSparseMatrix<Integer>, IEquatable<object>
     {
         /** keep it simple */
         private static readonly long serialVersionUID = 1L;
@@ -147,7 +147,7 @@ namespace NeoCortexApi.Entities
          */
 
 
-        protected override AbstractSparseMatrix<object> Set(int index, int value)
+        protected override AbstractSparseMatrix<Integer> set(int index, int value)
         {
             int[] coordinates = computeCoordinates(index);
             return set(value, coordinates);
@@ -182,10 +182,15 @@ namespace NeoCortexApi.Entities
 
         public Integer get(int[] coordinates)
         {
-            return Get(computeIndex(coordinates));
+            return get(computeIndex(coordinates));
         }
 
-        public abstract Integer Get(int index);
+
+#pragma warning disable IDE1006 // Naming Styles
+       // public abstract Integer get(int index);
+#pragma warning restore IDE1006 // Naming Styles
+
+
 
         /**
          * Sets the value at the specified index skipping the automatic
@@ -265,7 +270,7 @@ namespace NeoCortexApi.Entities
          */
         public new int getIntValue(params int[] coordinates)
         {
-            return Get(computeIndex(coordinates));
+            return get(computeIndex(coordinates));
         }
 
         /**
@@ -277,7 +282,7 @@ namespace NeoCortexApi.Entities
         //@Override
         public new int getIntValue(int index)
         {
-            return Get(index);
+            return get(index);
         }
 
         /**
@@ -291,7 +296,7 @@ namespace NeoCortexApi.Entities
             //TIntList indexes = new TIntArrayList();
             for (int i = 0; i <= getMaxIndex(); i++)
             {
-                if (Get(i) > 0)
+                if (get(i) > 0)
                 {
                     indexes.Add(i);
                 }

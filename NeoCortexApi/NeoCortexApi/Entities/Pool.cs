@@ -71,7 +71,7 @@ namespace NeoCortexApi.Entities
         public void updatePool(Connections c, Synapse s, double permanence)
         {
             int inputIndex = s.getInputIndex();
-            if (synapsesBySourceIndex[inputIndex] == null)
+            if (synapsesBySourceIndex.ContainsKey(inputIndex) == false)
             {
                 synapsesBySourceIndex.Add(inputIndex, s);
             }

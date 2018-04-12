@@ -46,6 +46,7 @@ namespace NeoCortexApi.Entities
 
         }
 
+
         /**
          * Sets the object to occupy the specified index.
          * 
@@ -55,7 +56,9 @@ namespace NeoCortexApi.Entities
          * @return this {@code SparseMatrix} implementation
          */
         // protected <S extends AbstractSparseMatrix<T>> S set(int index, int value) { return null; }
-        protected virtual AbstractSparseMatrix<T> Set(int index, int value)
+#pragma warning disable IDE1006 // Naming Styles
+        protected virtual AbstractSparseMatrix<T> set(int index, int value)
+#pragma warning restore IDE1006 // Naming Styles
         { return null; }
 
         /**
@@ -130,7 +133,7 @@ namespace NeoCortexApi.Entities
          * @param coordinates   the coordinates from which to retrieve the indexed object
          * @return  the indexed object
          */
-        public T get(int[] coordinates) { return null; }
+        public override T get(int[] coordinates) { return null; }
 
         /**
          * Returns the int value at the index computed from the specified coordinates

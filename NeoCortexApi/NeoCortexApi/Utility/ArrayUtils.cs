@@ -2475,7 +2475,13 @@ namespace NeoCortexApi.Utility
                 {
                     ((int[])array)[i] = value;
                 }
-
+            }
+            else if (array is double[])
+            {
+                for (int i = 0; i < ((double[])array).Length; i++)
+                {
+                    ((double[])array)[i] = value;
+                }
             }
             else
             {

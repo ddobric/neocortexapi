@@ -32,7 +32,7 @@ namespace NeoCortexApi.Entities
          * @param index index to retrieve.
          * @return element at index.
          */
-        T get(int[] index);
+        T get(params int[] index);
 
         /**
          * Puts an element to supplied index.

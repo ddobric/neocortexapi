@@ -27,6 +27,7 @@ namespace NeoCortexApi.Entities
         /////////// Universal Parameters ///////////
         static Parameters()
         {
+            DEFAULTS_ALL = new Dictionary<string, Object>();
             defaultParams = new Dictionary<string, Object>();
             defaultParams.Add(KEY.SEED, 42);
             defaultParams.Add(KEY.RANDOM, new Random((int)defaultParams[KEY.SEED]));// new MersenneTwister((int) defaultParams.get(KEY.SEED)));
@@ -193,12 +194,12 @@ namespace NeoCortexApi.Entities
          */
         public void apply(Object cn)
         {
-            var methods = cn.GetType().GetMethods(System.Reflection.BindingFlags.Public);
+            var methods = cn.GetType().GetMethods(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
 
             // BeanUtil beanUtil = BeanUtil.getInstance();
             //Set<KEY> presentKeys = paramMap.keySet();
             //synchronized(paramMap) {
-            foreach (var key in paramMap.Keys)
+            foreach (var key in new List<string>(paramMap.Keys))
             {
                 if ((cn is Connections) &&
                      (key == KEY.SYN_PERM_BELOW_STIMULUS_INC || key == KEY.SYN_PERM_TRIM_THRESHOLD))
@@ -207,12 +208,15 @@ namespace NeoCortexApi.Entities
                 }
                 if (key == KEY.RANDOM)
                 {
-
-                    paramMap[key] = new Random((int)paramMap[KEY.SEED]);
+                    if(paramMap.ContainsKey(KEY.SEED))
+                        paramMap[key] = new Random((int)paramMap[KEY.SEED]);
+                    else
+                        paramMap[key] = new Random(42);
                     // ((Random)get(key)).setSeed(Long.valueOf(((int)get(KEY.SEED))));
                 }
 
-                var method = methods.FirstOrDefault(m => m.Name == $"set{key}");
+                string methodName = $"set{key.First().ToString().ToUpper()}{key.Substring(1)}";
+                var method = methods.FirstOrDefault(m => m.Name == methodName);
                 if (method != null)
                     method.Invoke(cn, new object[] { paramMap[key] });
 

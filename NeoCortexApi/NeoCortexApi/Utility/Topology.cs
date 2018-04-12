@@ -149,7 +149,8 @@ namespace NeoCortexApi.Utility
 
                     for (int y = 0; y < pool.size(); y++)
                     {
-                        int py = pool.next() % dimensions[k];
+                        int py = ArrayUtils.modulo(pool.next(), dimensions[k]);
+                        //int py = pool.next() % dimensions[k];
 
                         List<int> tl = new List<int>();
                         tl.AddRange(lx);

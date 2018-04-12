@@ -190,14 +190,14 @@ namespace NeoCortexApi.Entities
         }
              
 
-        public override Integer Get(int index)
-        {
-            return (Integer)get(index);
-        }
+        //public override Integer Get(int index)
+        //{
+        //    return (Integer)get(index);
+        //}
 
 
         // @Override
-        public override object get(int index)
+        public override Integer get(int index)
         {
             int[] coordinates = computeCoordinates(index);
             if (coordinates.Length == 1)
@@ -209,16 +209,21 @@ namespace NeoCortexApi.Entities
             else return (Integer)ArrayUtils.getValue(this.backingArray, coordinates);
         }
 
-        //public AbstractSparseBinaryMatrix set(int index, Object value)
+        //public override AbstractFlatMatrix<Integer> set(int index, Integer value)
         //{
-        //    set(index, ((Integer)value).Value);
-        //    return this;
+        //    throw new NotImplementedException();
         //}
-
-        public override AbstractFlatMatrix<object> set(int index, object value)
+        public AbstractSparseBinaryMatrix set(int index, Object value)
         {
             set(index, ((Integer)value).Value);
             return this;
         }
+
+        public override AbstractFlatMatrix<Integer> set(int index, Integer value)
+        {
+            throw new NotImplementedException();
+        }
+
+       
     }
 }

@@ -49,5 +49,27 @@ namespace UnitTestsProject
             Assert.AreEqual(coords[1], coords2[1]);
         }
 
+        [TestMethod]
+        public void ModuloTest()
+        {
+            int r = ArrayUtils.modulo(2,7);
+            r = ArrayUtils.modulo(3, 7);
+            r = ArrayUtils.modulo(6, 7);
+            r = ArrayUtils.modulo(7, 7);
+
+            r = ArrayUtils.modulo(14, 7);
+            r = ArrayUtils.modulo(-14, 7);
+            r = ArrayUtils.modulo(15, 7);
+            Assert.IsTrue(r==1);
+
+            r = ArrayUtils.modulo(-15, 7);
+            Assert.IsTrue(r == 6);
+
+            r = ArrayUtils.modulo(20, 7);
+            Assert.IsTrue(r == 6);
+
+            r = ArrayUtils.modulo(-20, 7);
+            Assert.IsTrue(r == 1);
+        }
     }
 }
