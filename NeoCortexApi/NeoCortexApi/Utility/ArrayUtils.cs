@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace NeoCortexApi.Utility
 {
@@ -2529,6 +2530,55 @@ namespace NeoCortexApi.Utility
                 //}
                 throw new NotSupportedException();
             }
+        }
+
+
+        /// <summary>
+        /// Gets the access to a row inside of multidimensional array.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="array"></param>
+        /// <param name="row"></param>
+        /// <returns></returns>
+        public static T[] GetRow<T>(this T[,] array, int row)
+        {
+            if (array == null)
+                throw new ArgumentNullException("array");
+
+            int cols = array.GetUpperBound(1) + 1;
+            T[] result = new T[cols];
+
+            for (int i = 0; i < cols; i++)
+            {
+                result[i] = array[row, i];
+            }
+            
+            return result;
+        }
+
+
+        /// <summary>
+        /// Gets the access to a row inside of multidimensional array.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="array"></param>
+        /// <param name="row"></param>
+        /// <returns></returns>
+        public static T[] GetRowNotUsed<T>(this T[,] array, int row)
+        {
+            if (!typeof(T).IsPrimitive)
+                throw new InvalidOperationException("Not supported for managed types.");
+
+            if (array == null)
+                throw new ArgumentNullException("array");
+
+            int cols = array.GetUpperBound(1) + 1;
+            T[] result = new T[cols];
+            int size = Marshal.SizeOf<T>();
+
+            Buffer.BlockCopy(array, row * cols * size, result, 0, cols * size);
+
+            return result;
         }
 
         /**

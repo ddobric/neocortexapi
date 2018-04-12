@@ -52,9 +52,20 @@ namespace NeoCortexApi.Entities
          */
         private void back(int val, params int[] coordinates)
         {
-            ArrayUtils.setValue(this.backingArray, val, coordinates);
             //update true counts
-            setTrueCount(coordinates[0], ArrayUtils.aggregateArray(((Object[])this.backingArray)[coordinates[0]]));
+            ArrayUtils.setValue(this.backingArray, val, coordinates);
+            int aggVal = -1;
+            //int aggregateVal = ArrayUtils.aggregateArray(((System.Int32[,])this.backingArray)[coordinates[0],1]);
+            if (this.backingArray is System.Int32[,])
+            {
+                var row = ArrayUtils.GetRow<Int32>((System.Int32[,])this.backingArray, 0);
+                aggVal = ArrayUtils.aggregateArray(row);
+            }
+            else
+                throw new NotSupportedException();
+
+            setTrueCount(coordinates[0], aggVal);
+            // setTrueCount(coordinates[0], ArrayUtils.aggregateArray(((Object[])this.backingArray)[coordinates[0]]));
         }
 
         /**
@@ -170,12 +181,21 @@ namespace NeoCortexApi.Entities
          * Clears the true counts prior to a cycle where they're
          * being set
          */
-        public new void clearStatistics(int row)
+        public override void clearStatistics(int row)
         {
+            if (backingArray.Rank != 2)
+                throw new InvalidOperationException("Currently supported 2D arrays only");
+
+            var cols = backingArray.GetLength(1);
+            for (int i = 0; i < cols; i++)
+            {
+                backingArray.SetValue(0, row, i);
+            }
+
             this.setTrueCount(row, 0);
-            int[] slice = (int[])backingArray.GetValue(row);
+            //int[] slice = (int[])backingArray.GetValue(row);
             //    int[] slice = (int[])Array.get(backingArray, row);
-            ArrayUtils.Fill(slice, 0);
+            //ArrayUtils.Fill(slice, 0);
             // Array.fill(slice, 0);
         }
 

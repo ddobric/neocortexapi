@@ -74,25 +74,25 @@ namespace UnitTestsProject
 
             initSP();
 
-            Assert.Equals(5, mem.getInputDimensions()[0]);
-            Assert.Equals(5, mem.getColumnDimensions()[0]);
-            Assert.Equals(5, mem.getPotentialRadius());
-            Assert.Equals(0.5, mem.getPotentialPct());//, 0);
-            Assert.Equals(false, mem.getGlobalInhibition());
-            Assert.Equals(-1.0, mem.getLocalAreaDensity());//, 0);
-            Assert.Equals(3, mem.getNumActiveColumnsPerInhArea());//, 0);
-            Assert.IsTrue(Math.Abs(1 - mem.getStimulusThreshold()) < 1);
-            Assert.Equals(0.01, mem.getSynPermInactiveDec());//, 0);
-            Assert.Equals(0.1, mem.getSynPermActiveInc());//, 0);
-            Assert.Equals(0.1, mem.getSynPermConnected());//, 0);
-            Assert.Equals(0.1, mem.getMinPctOverlapDutyCycles());//, 0);
-            Assert.Equals(0.1, mem.getMinPctActiveDutyCycles());//, 0);
-            Assert.Equals(10, mem.getDutyCyclePeriod());//, 0);
-            Assert.Equals(10.0, mem.getMaxBoost());//, 0);
-            Assert.Equals(42, mem.getSeed());
+            Assert.AreEqual(5, mem.getInputDimensions()[0]);
+            Assert.AreEqual(5, mem.getColumnDimensions()[0]);
+            Assert.AreEqual(5, mem.getPotentialRadius());
+            Assert.AreEqual(0.5, mem.getPotentialPct());//, 0);
+            Assert.AreEqual(false, mem.getGlobalInhibition());
+            Assert.AreEqual(-1.0, mem.getLocalAreaDensity());//, 0);
+            Assert.AreEqual(3, mem.getNumActiveColumnsPerInhArea());//, 0);
+            Assert.IsTrue(Math.Abs(1 - mem.getStimulusThreshold()) <= 1);
+            Assert.AreEqual(0.01, mem.getSynPermInactiveDec());//, 0);
+            Assert.AreEqual(0.1, mem.getSynPermActiveInc());//, 0);
+            Assert.AreEqual(0.1, mem.getSynPermConnected());//, 0);
+            Assert.AreEqual(0.1, mem.getMinPctOverlapDutyCycles());//, 0);
+            Assert.AreEqual(0.1, mem.getMinPctActiveDutyCycles());//, 0);
+            Assert.AreEqual(10, mem.getDutyCyclePeriod());//, 0);
+            Assert.AreEqual(10.0, mem.getMaxBoost());//, 0);
+            Assert.AreEqual(42, mem.getSeed());
 
-            Assert.Equals(5, mem.getNumInputs());
-            Assert.Equals(5, mem.getNumColumns());
+            Assert.AreEqual(5, mem.getNumInputs());
+            Assert.AreEqual(5, mem.getNumColumns());
         }
 
 

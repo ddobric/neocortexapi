@@ -253,7 +253,7 @@ namespace NeoCortexApi.Entities
          * Clears the true counts prior to a cycle where they're
          * being set
          */
-        public void clearStatistics(int row)
+        public virtual void clearStatistics(int row)
         {
             trueCounts[row] = 0;
 
