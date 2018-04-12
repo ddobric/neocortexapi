@@ -145,7 +145,8 @@ namespace UnitTestsProject
             for (int i = 0; i < mem.getNumColumns(); i++)
             {
                 int[] permanences = ArrayUtils.toIntArray(mem.getPotentialPools().get(i).getDensePermanences(mem));
-                Assert.IsTrue(Array.Equals(inputVector, permanences));
+                
+                Assert.IsTrue(inputVector.SequenceEqual(permanences));
             }
         }
 

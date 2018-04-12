@@ -82,9 +82,17 @@ namespace NeoCortexApi.Entities
 
         public override Object getSlice(params int[] coordinates)
         {
-            Object slice = ArrayUtils.getValue(this.backingArray, coordinates);
-            //Ensure return value is of type Array
-            if (!slice.GetType().IsArray)
+            //Object slice = ArrayUtils.getValue(this.backingArray, coordinates);
+            Object slice;
+            if (coordinates.Length == 1)
+                slice = ArrayUtils.GetRow<int>((int[,])this.backingArray, coordinates[0]);
+            //else if (coordinates.Length == 1)
+            //    slice = ((int[])this.backingArray)[coordinates[0]];
+            else
+                throw new ArgumentException();
+
+                //Ensure return value is of type Array
+                if (!slice.GetType().IsArray)
             {
                 sliceError(coordinates);
             }
@@ -128,6 +136,8 @@ namespace NeoCortexApi.Entities
                     results[i] += (inputVector[j] * slice[j]);
                     if (j == slice.Length - 1)
                     {
+                        // If the stimulus is 0 then results[i] is never less than 0 and it remains unchanged.
+                        // If the stimulus is > 0 then results[i] is also never less then results[i]. This is strange.
                         results[i] -= results[i] < stimulusThreshold ? results[i] : 0;
                     }
                 }

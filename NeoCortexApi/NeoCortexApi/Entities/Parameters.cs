@@ -7,6 +7,33 @@ using NeoCortexApi.Utility;
 
 namespace NeoCortexApi.Entities
 {
+    public class MyDictionary<K, V> : Dictionary<K, V>
+    {
+        public new V this[K key]
+        {
+            get
+            {
+                return base[key];
+            }
+            set
+            {
+                addOrSet(key, value);
+            }
+        }
+        public new void Add(K key, V value)
+        {
+            addOrSet(key, value);
+        }
+
+        private void addOrSet(K key, V value)
+        {
+            if (base.ContainsKey(key))
+                base[key] = value;
+            else
+                base.Add(key, value);
+        }
+    }
+
     public class Parameters
     {
         /** keep it simple */
@@ -14,12 +41,12 @@ namespace NeoCortexApi.Entities
         /**
              Map of parameters to their values
         */
-        private readonly Dictionary<string, Object> paramMap = new Dictionary<string, object>();
+        private readonly MyDictionary<string, Object> paramMap = new MyDictionary<string, object>();
 
-        private static readonly Dictionary<string, Object> DEFAULTS_ALL;
-        private static readonly Dictionary<string, Object> DEFAULTS_TEMPORAL;
-        private static readonly Dictionary<string, Object> DEFAULTS_SPATIAL;
-        private static readonly Dictionary<string, Object> DEFAULTS_ENCODER;
+        private static readonly MyDictionary<string, Object> DEFAULTS_ALL;
+        private static readonly MyDictionary<string, Object> DEFAULTS_TEMPORAL;
+        private static readonly MyDictionary<string, Object> DEFAULTS_SPATIAL;
+        private static readonly MyDictionary<string, Object> DEFAULTS_ENCODER;
 
 
         static Dictionary<string, Object> defaultParams;
@@ -27,13 +54,13 @@ namespace NeoCortexApi.Entities
         /////////// Universal Parameters ///////////
         static Parameters()
         {
-            DEFAULTS_ALL = new Dictionary<string, Object>();
-            defaultParams = new Dictionary<string, Object>();
+            DEFAULTS_ALL = new MyDictionary<string, Object>();
+            defaultParams = new MyDictionary<string, Object>();
             defaultParams.Add(KEY.SEED, 42);
             defaultParams.Add(KEY.RANDOM, new Random((int)defaultParams[KEY.SEED]));// new MersenneTwister((int) defaultParams.get(KEY.SEED)));
 
             /////////// Temporal Memory Parameters ///////////
-            Dictionary<string, Object> defaultTemporalParams = new Dictionary<string, object>();
+            MyDictionary<string, Object> defaultTemporalParams = new MyDictionary<string, object>();
             defaultTemporalParams.Add(KEY.COLUMN_DIMENSIONS, new int[] { 2048 });
             defaultTemporalParams.Add(KEY.CELLS_PER_COLUMN, 32);
             defaultTemporalParams.Add(KEY.ACTIVATION_THRESHOLD, 13);
@@ -55,7 +82,7 @@ namespace NeoCortexApi.Entities
             //defaultParams.putAll(DEFAULTS_TEMPORAL);
 
             //////////// Spatial Pooler Parameters ///////////
-            Dictionary<string, Object> defaultSpatialParams = new Dictionary<string, object>();
+            MyDictionary<string, Object> defaultSpatialParams = new MyDictionary<string, object>();
             defaultSpatialParams.Add(KEY.INPUT_DIMENSIONS, new int[] { 64 });
             defaultSpatialParams.Add(KEY.POTENTIAL_RADIUS, -1);
             defaultSpatialParams.Add(KEY.POTENTIAL_PCT, 0.5);
@@ -82,7 +109,7 @@ namespace NeoCortexApi.Entities
             //defaultParams.putAll(DEFAULTS_SPATIAL);
 
             ///////////  Encoder Parameters ///////////
-            Dictionary<string, Object> defaultEncoderParams = new Dictionary<string, object>();
+            MyDictionary<string, Object> defaultEncoderParams = new MyDictionary<string, object>();
             defaultEncoderParams.Add(KEY.N, 500);
             defaultEncoderParams.Add(KEY.W, 21);
             defaultEncoderParams.Add(KEY.MIN_VAL, 0.0);
@@ -208,7 +235,7 @@ namespace NeoCortexApi.Entities
                 }
                 if (key == KEY.RANDOM)
                 {
-                    if(paramMap.ContainsKey(KEY.SEED))
+                    if (paramMap.ContainsKey(KEY.SEED))
                         paramMap[key] = new Random((int)paramMap[KEY.SEED]);
                     else
                         paramMap[key] = new Random(42);
@@ -1010,7 +1037,10 @@ namespace NeoCortexApi.Entities
         // */
         public void setPotentialRadius(int potentialRadius)
         {
-            paramMap.Add(KEY.POTENTIAL_RADIUS, potentialRadius);
+            if (!paramMap.ContainsKey(KEY.POTENTIAL_RADIUS))
+                paramMap.Add(KEY.POTENTIAL_RADIUS, potentialRadius);
+            else
+                paramMap[KEY.POTENTIAL_RADIUS] = potentialRadius;
         }
 
         ///**
@@ -1348,68 +1378,68 @@ namespace NeoCortexApi.Entities
     }
 }
 
-        /**
-         * This implementation skips over any native comparisons (i.e. "==")
-         * because their hashcodes will not be equal.
-         */
-        //@Override
-    //    public bool Equals(Object obj)
-    //    {
-    //        if (this == obj)
-    //            return true;
-    //        if (obj == null)
-    //            return false;
-    //        if (this.GetType() != obj.GetType())
-    //            return false;
+/**
+ * This implementation skips over any native comparisons (i.e. "==")
+ * because their hashcodes will not be equal.
+ */
+//@Override
+//    public bool Equals(Object obj)
+//    {
+//        if (this == obj)
+//            return true;
+//        if (obj == null)
+//            return false;
+//        if (this.GetType() != obj.GetType())
+//            return false;
 
-    //        Parameters other = (Parameters)obj;
-    //        if (paramMap == null)
-    //        {
-    //            if (other.paramMap != null)
-    //                return false;
-    //        }
-    //        else
-    //        {
-    //            Class <?>[] classArray = new Class[] { Object.class };
-    //        try {
-    //            for(KEY key : paramMap.keySet()) {
-    //                if(paramMap.get(key) == null || other.paramMap.get(key) == null) continue;
-                    
-    //                Class<?> thisValueClass = paramMap.get(key).getClass();
-    //Class<?> otherValueClass = other.paramMap.get(key).getClass();
-    //boolean isSpecial = isSpecial(key, thisValueClass);
-    //                if(!isSpecial && (thisValueClass.getMethod("equals", classArray).getDeclaringClass() != thisValueClass ||
-    //                    otherValueClass.getMethod("equals", classArray).getDeclaringClass() != otherValueClass)) {
-    //                        continue;
-    //                }else if(isSpecial) {
-    //                    if(int[].class.isAssignableFrom(thisValueClass)) {
-    //                        if(!Arrays.equals((int[]) paramMap.get(key), (int[]) other.paramMap.get(key))) return false;
-    //                    }else if(key == KEY.FIELD_ENCODING_MAP) {
-    //                        if(!DeepEquals.deepEquals(paramMap.get(key), other.paramMap.get(key))) {
-    //                            return false;
-    //                        }
-    //                    }
-    //                }else if(!other.paramMap.containsKey(key) || !paramMap.get(key).equals(other.paramMap.get(key))) {
-    //                    return false;
-    //                }
-    //            }
-    //        }catch(Exception e) { return false; }
-    //    }
-    //    return true;
-    //}
-    
-    /**
-     * Returns a flag indicating whether the type is an equality
-     * special case.
-     * @param key       the {@link KEY}
-     * @param klazz     the class of the type being considered.
-     * @return
-     */
+//        Parameters other = (Parameters)obj;
+//        if (paramMap == null)
+//        {
+//            if (other.paramMap != null)
+//                return false;
+//        }
+//        else
+//        {
+//            Class <?>[] classArray = new Class[] { Object.class };
+//        try {
+//            for(KEY key : paramMap.keySet()) {
+//                if(paramMap.get(key) == null || other.paramMap.get(key) == null) continue;
+
+//                Class<?> thisValueClass = paramMap.get(key).getClass();
+//Class<?> otherValueClass = other.paramMap.get(key).getClass();
+//boolean isSpecial = isSpecial(key, thisValueClass);
+//                if(!isSpecial && (thisValueClass.getMethod("equals", classArray).getDeclaringClass() != thisValueClass ||
+//                    otherValueClass.getMethod("equals", classArray).getDeclaringClass() != otherValueClass)) {
+//                        continue;
+//                }else if(isSpecial) {
+//                    if(int[].class.isAssignableFrom(thisValueClass)) {
+//                        if(!Arrays.equals((int[]) paramMap.get(key), (int[]) other.paramMap.get(key))) return false;
+//                    }else if(key == KEY.FIELD_ENCODING_MAP) {
+//                        if(!DeepEquals.deepEquals(paramMap.get(key), other.paramMap.get(key))) {
+//                            return false;
+//                        }
+//                    }
+//                }else if(!other.paramMap.containsKey(key) || !paramMap.get(key).equals(other.paramMap.get(key))) {
+//                    return false;
+//                }
+//            }
+//        }catch(Exception e) { return false; }
+//    }
+//    return true;
+//}
+
+/**
+ * Returns a flag indicating whether the type is an equality
+ * special case.
+ * @param key       the {@link KEY}
+ * @param klazz     the class of the type being considered.
+ * @return
+ */
 //    private bool isSpecial(KEY key, Class<?> klazz)
 //{
 //    if (int[].class.isAssignableFrom(klazz) ||
 //            key == KEY.FIELD_ENCODING_MAP) {
-            
+
 //            return true;
 //        }
 //        return false;

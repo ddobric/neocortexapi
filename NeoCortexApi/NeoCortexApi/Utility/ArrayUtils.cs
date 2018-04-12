@@ -2498,10 +2498,14 @@ namespace NeoCortexApi.Utility
         {
             if (array is double[])
             {
-                for (int i = 0; i < ((int[])array).Length; i++)
+                for (int i = 0; i < ((double[])array).Length; i++)
                 {
                     ((double[])array)[i] = value;
                 }
+            }
+            else if (array is int[])
+            {
+                throw new NotSupportedException();
             }
             else
             {

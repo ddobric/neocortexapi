@@ -171,7 +171,8 @@ namespace NeoCortexApi
             }
 
             updateBookeepingVars(c, learn);
-            int[] overlaps = c.setOverlaps(calculateOverlap(c, inputVector));
+            var overlaps = calculateOverlap(c, inputVector);
+            overlaps = c.setOverlaps(overlaps);
 
             double[] boostedOverlaps;
             if (learn)
@@ -531,11 +532,18 @@ namespace NeoCortexApi
         {
             //int[] inputIndices = ArrayUtils.where(inputVector, ArrayUtils.INT_GREATER_THAN_0);
 
-            int[] inputIndices = inputVector.Where(i => i > 0).ToArray();
+            List<int> inputIndices = new List<int>();
+            for (int i = 0; i < inputVector.Length; i++)
+            {
+                if (inputVector[i] > 0)
+                    inputIndices.Add(i);
+            }
+
+            //int[] inputIndices = inputVector.Where(i => i > 0).ToArray();
 
             double[] permChanges = new double[c.getNumInputs()];
             ArrayUtils.fillArray(permChanges, -1 * c.getSynPermInactiveDec());
-            ArrayUtils.setIndexesTo(permChanges, inputIndices, c.getSynPermActiveInc());
+            ArrayUtils.setIndexesTo(permChanges, inputIndices.ToArray(), c.getSynPermActiveInc());
             for (int i = 0; i < activeColumns.Length; i++)
             {
                 Pool pool = c.getPotentialPools().get(activeColumns[i]);
