@@ -542,7 +542,12 @@ namespace NeoCortexApi
             //int[] inputIndices = inputVector.Where(i => i > 0).ToArray();
 
             double[] permChanges = new double[c.getNumInputs()];
+
+            // First we initialize all permChanges to minimum decrement values,
+            // which are used in a case of none-connections to input.
             ArrayUtils.fillArray(permChanges, -1 * c.getSynPermInactiveDec());
+
+            // Then we update all connected permChanges to increment vaues for connected values.
             ArrayUtils.setIndexesTo(permChanges, inputIndices.ToArray(), c.getSynPermActiveInc());
             for (int i = 0; i < activeColumns.Length; i++)
             {

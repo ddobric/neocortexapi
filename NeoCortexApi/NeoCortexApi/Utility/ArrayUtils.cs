@@ -1652,11 +1652,15 @@ namespace NeoCortexApi.Utility
          * Ensures that each entry in the specified array has a min value
          * equal to or greater than the specified min and a maximum value less
          * than or equal to the specified max.
+         * For example, if min = 0, then negative permanence values will be rounded to 0.
+         * Similarly, high permanences will be rounded by maximal value.
          *
          * @param values the values to clip
          * @param min    the minimum value
          * @param max    the maximum value
          */
+
+        
         public static double[] clip(double[] values, double min, double max)
         {
             for (int i = 0; i < values.Length; i++)
