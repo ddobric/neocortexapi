@@ -12,6 +12,8 @@ namespace UnitTestsProject
         public void TestMethod1(int[] data)
         {
             var res = initDimensionMultiples(data, 3);
+
+            res = initDimensionMultiples(data, 2);
         }
 
         protected int[] initDimensionMultiples(int[] dimensions, int numDimensions)

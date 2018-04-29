@@ -28,7 +28,10 @@ namespace NeoCortexApi.Entities
 
         int size;
 
-        /** Allows fast removal of connected synapse indexes. */
+        /** Allows fast removal of connected synapse indexes. List of connected synapses. These
+         are synapses with permanence value greather than permanence connected threshold. See synPermConnected*/
+
+        ///
         private HashSet<int> synapseConnections = new HashSet<int>();
         /** 
          * Indexed according to the source Input Vector Bit (for ProximalDendrites),
@@ -147,7 +150,9 @@ namespace NeoCortexApi.Entities
          */
         public int[] getSparsePotential()
         {
-            return ArrayUtils.reverse(synapsesBySourceIndex.Keys.Select(i => i).ToArray());
+            // Original requires reverse, because JAVA keys() methode returns keys reversed.
+            //return ArrayUtils.reverse(synapsesBySourceIndex.Keys.Select(i => i).ToArray());
+            return synapsesBySourceIndex.Keys.Select(i => i).ToArray();
         }
 
         /**
@@ -271,6 +276,11 @@ namespace NeoCortexApi.Entities
             else if (!synapsesBySourceIndex.ToString().Equals(other.synapsesBySourceIndex.ToString()))
                 return false;
             return true;
+        }
+
+        public override string ToString()
+        {
+            return $"Conns={this.synapseConnections.Count} - ConnsBySrc= {this.synapsesBySourceIndex.Count}";
         }
     }
 }

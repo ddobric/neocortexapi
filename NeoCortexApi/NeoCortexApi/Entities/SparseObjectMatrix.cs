@@ -52,7 +52,11 @@ namespace NeoCortexApi.Entities
 
         public override AbstractFlatMatrix<T> set(int index, T obj)
         {
-            sparseMap.Add(index, (T)obj);
+            if (!sparseMap.ContainsKey(index))
+                sparseMap.Add(index, (T)obj);
+            else
+                sparseMap[index] = obj;
+
             return this;
         }
 
@@ -109,8 +113,8 @@ namespace NeoCortexApi.Entities
          * Returns a sorted array of occupied indexes.
          * @return  a sorted array of occupied indexes.
          */
-       // @Override
-    public int[] getSparseIndices()
+        // @Override
+        public int[] getSparseIndices()
         {
             return reverse(sparseMap.Keys.ToArray());
         }
@@ -118,8 +122,8 @@ namespace NeoCortexApi.Entities
         /**
          * {@inheritDoc}
          */
-       // @Override
-    public override String ToString()
+        // @Override
+        public override String ToString()
         {
             return getDimensions().ToString();
         }
@@ -127,8 +131,8 @@ namespace NeoCortexApi.Entities
         /* (non-Javadoc)
          * @see java.lang.Object#hashCode()
          */
-    //    @Override
-    public override int GetHashCode()
+        //    @Override
+        public override int GetHashCode()
         {
             int prime = 31;
             int result = base.GetHashCode();

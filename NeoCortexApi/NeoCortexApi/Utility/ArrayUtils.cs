@@ -996,6 +996,30 @@ namespace NeoCortexApi.Utility
             return product;
         }
 
+
+        /// <summary>
+        /// Gets index of item in array, which satisfies specified condition.
+        /// </summary>
+        /// <typeparam name="TSource"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public static int[] IndexWhere<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
+        {
+            List<int> retVal = new List<int>();
+            int len = source.Count();
+            int indx = 0;
+            foreach (var item in source)
+            {
+                if (predicate(item))
+                    retVal.Add(indx);
+
+                indx++;
+            }
+
+            return retVal.ToArray();
+        }
+
         /**
          * Returns an array whose members are the product of the multiplicand array
          * values and the factor array values.

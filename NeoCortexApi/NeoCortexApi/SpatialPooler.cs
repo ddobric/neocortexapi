@@ -532,14 +532,8 @@ namespace NeoCortexApi
         {
             //int[] inputIndices = ArrayUtils.where(inputVector, ArrayUtils.INT_GREATER_THAN_0);
 
-            List<int> inputIndices = new List<int>();
-            for (int i = 0; i < inputVector.Length; i++)
-            {
-                if (inputVector[i] > 0)
-                    inputIndices.Add(i);
-            }
-
-            //int[] inputIndices = inputVector.Where(i => i > 0).ToArray();
+            // Get all indicies of input vector, which are set on '1'.
+            var inputIndices = ArrayUtils.IndexWhere(inputVector, inpBit => inpBit > 0);
 
             double[] permChanges = new double[c.getNumInputs()];
 
@@ -810,18 +804,21 @@ namespace NeoCortexApi
         {
             int[] columnCoords = c.getMemory().computeCoordinates(columnIndex);
             double[] colCoords = ArrayUtils.toDoubleArray(columnCoords);
+
             double[] ratios = ArrayUtils.divide(
                 colCoords, ArrayUtils.toDoubleArray(c.getColumnDimensions()), 0, 0);
+
             double[] inputCoords = ArrayUtils.multiply(
                 ArrayUtils.toDoubleArray(c.getInputDimensions()), ratios, 0, 0);
-            inputCoords = ArrayUtils.d_add(
-                inputCoords,
-                ArrayUtils.multiply(
-                    ArrayUtils.divide(
+
+            var divideResult = ArrayUtils.divide(
                         ArrayUtils.toDoubleArray(c.getInputDimensions()),
-                        ArrayUtils.toDoubleArray(c.getColumnDimensions()), 0, 0),
-                    0.5));
+                        ArrayUtils.toDoubleArray(c.getColumnDimensions()), 0, 0);
+
+            inputCoords = ArrayUtils.d_add(inputCoords, ArrayUtils.multiply(divideResult, 0.5));
+
             int[] inputCoordInts = ArrayUtils.clip(ArrayUtils.toIntArray(inputCoords), c.getInputDimensions(), -1);
+
             return c.getInputMatrix().computeIndex(inputCoordInts);
         }
 

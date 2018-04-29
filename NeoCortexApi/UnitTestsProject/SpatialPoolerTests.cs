@@ -1289,7 +1289,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < mem.getNumColumns(); i++)
             {
-                int[] indexes = potentialPools[i].Where(n => n == 1).ToArray();
+                int[] indexes = ArrayUtils.IndexWhere(potentialPools[i], (n)=>(n == 1));
                 //    int[] indexes = ArrayUtils.where(potentialPools[i], cond);
                 mem.getColumn(i).setProximalConnectedSynapsesForTest(mem, indexes);
                 mem.getColumn(i).setProximalPermanences(mem, permanences[i]);

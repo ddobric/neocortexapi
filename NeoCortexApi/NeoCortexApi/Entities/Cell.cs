@@ -39,7 +39,7 @@ namespace NeoCortexApi.Entities {
     * @author Chetan Surpur
     * @author David Ray
 */
-    public class Cell : IEquatable<Cell> {
+    public class  Cell   : IEquatable<Cell> {
         /** keep it simple */
         private static readonly long serialVersionUID = 1L;
 
