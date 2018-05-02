@@ -45,6 +45,7 @@ namespace NeoCortexApi.Entities
         }
 
         /**
+         * Sets the value on specified call in array and automattically calculates number of '1' bits as TrueCount.
          * Called during mutation operations to simultaneously set the value
          * on the backing array dynamically.
          * @param val
@@ -58,7 +59,7 @@ namespace NeoCortexApi.Entities
             //int aggregateVal = ArrayUtils.aggregateArray(((System.Int32[,])this.backingArray)[coordinates[0],1]);
             if (this.backingArray is System.Int32[,])
             {
-                var row = ArrayUtils.GetRow<Int32>((System.Int32[,])this.backingArray, 0);
+                var row = ArrayUtils.GetRow<Int32>((System.Int32[,])this.backingArray, coordinates[0]);
                 aggVal = ArrayUtils.aggregateArray(row);
             }
             else
@@ -78,7 +79,7 @@ namespace NeoCortexApi.Entities
          * @throws	IllegalArgumentException if the specified coordinates address
          * 			an actual value instead of the array holding it.
          */
-       // @Override
+        // @Override
 
         public override Object getSlice(params int[] coordinates)
         {
@@ -91,8 +92,8 @@ namespace NeoCortexApi.Entities
             else
                 throw new ArgumentException();
 
-                //Ensure return value is of type Array
-                if (!slice.GetType().IsArray)
+            //Ensure return value is of type Array
+            if (!slice.GetType().IsArray)
             {
                 sliceError(coordinates);
             }
@@ -130,32 +131,59 @@ namespace NeoCortexApi.Entities
         {
             for (int i = 0; i < dimensions[0]; i++)
             {
+                // Gets the synapse mapping between column-i with input vector.
                 int[] slice = (int[])(dimensions.Length > 1 ? getSlice(i) : backingArray);
+
+                // Go through all connections (synapses) between column-i and input vector.
                 for (int j = 0; j < slice.Length; j++)
                 {
+                    // Result (overlapp) is 1 if 
                     results[i] += (inputVector[j] * slice[j]);
                     if (j == slice.Length - 1)
                     {
-                        // If the stimulus is 0 then results[i] is never less than 0 and it remains unchanged.
-                        // If the stimulus is > 0 then results[i] is also never less then results[i]. This is strange.
+                        // If the overlap (num of connected synapses to TRUE input) is less than stimulusThreshold then we set result on 0.
+                        //  If the overlap (num of connected synapses to TRUE input) is greather than stimulusThreshold then result remains as calculated.
                         results[i] -= results[i] < stimulusThreshold ? results[i] : 0;
                     }
                 }
             }
         }
 
-        /**
-         * Sets the value at the specified index.
-         * 
-         * @param index     the index the object will occupy
-         * @param object    the object to be indexed.
-         */
-       // @Override
-    public  AbstractSparseBinaryMatrix set(int index, int value)
+
+        //public AbstractSparseBinaryMatrix set(int index, Object value)
+        //{
+        //    set(index, ((Integer)value).Value);
+        //    return this;
+        //}
+
+        public override AbstractFlatMatrix<int> set(int index, int value)
         {
-            int[] coordinates = computeCoordinates(index);
-            return set(value, coordinates);
+            set(index, value);
+            return (AbstractFlatMatrix<int>)this;
         }
+
+
+        //protected override AbstractSparseMatrix<int> set(int index, int value)
+        //{
+        //    int[] coordinates = computeCoordinates(index);
+        //    return set(value, coordinates);
+        //}
+
+
+        //        /**
+        //         * Sets the value at the specified index.
+        //         * 
+        //         * @param index     the index the object will occupy
+        //         * @param object    the object to be indexed.
+        //         */
+        //        // @Override
+        //#pragma warning disable CS0114 // Member hides inherited member; missing override keyword
+        //        public AbstractSparseBinaryMatrix set(int index, int value)
+        //#pragma warning restore CS0114 // Member hides inherited member; missing override keyword
+        //        {
+        //            int[] coordinates = computeCoordinates(index);
+        //            return set(value, coordinates);
+        //        }
 
         /**
          * Sets the value to be indexed at the index
@@ -164,7 +192,7 @@ namespace NeoCortexApi.Entities
          * @param object        the object to be indexed.
          */
         //@Override
-    public override AbstractSparseBinaryMatrix set(int value, params int[] coordinates)
+        public override AbstractSparseBinaryMatrix set(int value, params int[] coordinates)
         {
             back(value, coordinates);
             return this;
@@ -209,16 +237,16 @@ namespace NeoCortexApi.Entities
             // Array.fill(slice, 0);
         }
 
-  
 
 
-      //  @Override
-    public override AbstractSparseBinaryMatrix setForTest(int index, int value)
+
+        //  @Override
+        public override AbstractSparseBinaryMatrix setForTest(int index, int value)
         {
             ArrayUtils.setValue(this.backingArray, value, computeCoordinates(index));
             return this;
         }
-             
+
 
         //public override Integer Get(int index)
         //{
@@ -227,7 +255,7 @@ namespace NeoCortexApi.Entities
 
 
         // @Override
-        public override Integer get(int index)
+        public override int get(int index)
         {
             int[] coordinates = computeCoordinates(index);
             if (coordinates.Length == 1)
@@ -236,24 +264,11 @@ namespace NeoCortexApi.Entities
                 // return Array.getInt(this.backingArray, index);
             }
 
-            else return (Integer)ArrayUtils.getValue(this.backingArray, coordinates);
+            else return (int)ArrayUtils.getValue(this.backingArray, coordinates);
         }
 
-        //public override AbstractFlatMatrix<Integer> set(int index, Integer value)
-        //{
-        //    throw new NotImplementedException();
-        //}
-        public AbstractSparseBinaryMatrix set(int index, Object value)
-        {
-            set(index, ((Integer)value).Value);
-            return this;
-        }
+   
+     
 
-        public override AbstractFlatMatrix<Integer> set(int index, Integer value)
-        {
-            throw new NotImplementedException();
-        }
-
-       
     }
 }

@@ -71,7 +71,7 @@ namespace NeoCortexApi.Entities
         /** Manages column neighborhood transformations */
         private Topology columnTopology;
         /** A matrix representing the shape of the input. */
-        protected ISparseMatrix<Integer> inputMatrix;
+        protected ISparseMatrix<int> inputMatrix;
         /**
          * Store the set of all inputs that are within each column's potential pool.
          * 'potentialPools' is a matrix, whose rows represent cortical columns, and
@@ -456,7 +456,7 @@ namespace NeoCortexApi.Entities
         /**
          * Returns the input column mapping
          */
-        public ISparseMatrix<Integer> getInputMatrix()
+        public ISparseMatrix<int> getInputMatrix()
         {
             return inputMatrix;
         }
@@ -465,7 +465,7 @@ namespace NeoCortexApi.Entities
          * Sets the input column mapping matrix
          * @param matrix
          */
-        public void setInputMatrix(ISparseMatrix<Integer> matrix)
+        public void setInputMatrix(ISparseMatrix<int> matrix)
         {
             this.inputMatrix = matrix;
         }
@@ -727,7 +727,8 @@ namespace NeoCortexApi.Entities
         }
 
         /**
-         * Sets the connected count {@link AbstractSparseBinaryMatrix}
+         * Sets the connected count {@link AbstractSparseBinaryMatrix}, 
+         * which defines how synapses are connected to input.
          * @param columnIndex
          * @param count
          */

@@ -16,7 +16,7 @@ namespace NeoCortexApi.Entities
  *
  * @param <T>
  */
-    public abstract class AbstractSparseMatrix<T> : AbstractFlatMatrix<T>, ISparseMatrix<T> where T : class
+    public abstract class AbstractSparseMatrix<T> : AbstractFlatMatrix<T>, ISparseMatrix<T>
     {
 
         private static readonly long serialVersionUID = 1L;
@@ -56,10 +56,14 @@ namespace NeoCortexApi.Entities
          * @return this {@code SparseMatrix} implementation
          */
         // protected <S extends AbstractSparseMatrix<T>> S set(int index, int value) { return null; }
-#pragma warning disable IDE1006 // Naming Styles
-        protected virtual AbstractSparseMatrix<T> set(int index, int value)
-#pragma warning restore IDE1006 // Naming Styles
-        { return null; }
+
+        public override AbstractFlatMatrix<T> set(int index, T value)
+        {
+            return null;
+        }
+//        public override AbstractFlatMatrix<T> set(int index, int value)
+//#pragma warning restore IDE1006 // Naming Styles
+//        { return null; }
 
         /**
          * Sets the object to occupy the specified index.
@@ -110,7 +114,7 @@ namespace NeoCortexApi.Entities
          * @return  the T at the specified index.
          */
         protected T getObject(int index)
-        { return null; }
+        { return default(T); }
 
         /**
          * Returns the T at the specified index.
@@ -133,7 +137,7 @@ namespace NeoCortexApi.Entities
          * @param coordinates   the coordinates from which to retrieve the indexed object
          * @return  the indexed object
          */
-        public override T get(int[] coordinates) { return null; }
+        public override T get(int[] coordinates) { return default(T); }
 
         /**
          * Returns the int value at the index computed from the specified coordinates
@@ -193,7 +197,7 @@ namespace NeoCortexApi.Entities
             // T[] retVal = (T[])Array.newInstance(factory.typeClass(), dimensions);
             T[] retVal = (T[])Array.CreateInstance(typeof(T), dimensions);
 
-            fill(factory, 0, dimensions, dimensions[0], retVal);
+            fill(factory, 0, dimensions, dimensions[0], (object[])(object)retVal);
 
             return retVal;
         }
@@ -228,7 +232,7 @@ namespace NeoCortexApi.Entities
                     int[] inner = copyInnerArray(dimensions);
                     //T[] r = (T[])Array.newInstance(f.typeClass(), inner);
                     T[] r = (T[])Array.CreateInstance(typeof(T), inner);
-                    arr[i] = fill(f, dimensionIndex + 1, inner, getDimensions()[dimensionIndex + 1], r);
+                    arr[i] = fill(f, dimensionIndex + 1, inner, getDimensions()[dimensionIndex + 1], (object[])(object)r);
                 }
                 return arr;
             }

@@ -899,32 +899,32 @@ namespace UnitTestsProject
 
             mem.setColumnDimensions(new int[] { 2, 2, 2, 2 });
             mem.setInputDimensions(new int[] { 4, 4, 4, 4 });
-            Assert.Equals(0.5, sp.avgColumnsPerInput(mem));
+            Assert.IsTrue(0.5== sp.avgColumnsPerInput(mem));
 
             mem.setColumnDimensions(new int[] { 2, 2, 2, 2 });
             mem.setInputDimensions(new int[] { 7, 5, 1, 3 });
             double trueAvgColumnPerInput = (2.0 / 7 + 2.0 / 5 + 2.0 / 1 + 2 / 3.0) / 4.0d;
-            Assert.Equals(trueAvgColumnPerInput, sp.avgColumnsPerInput(mem));
+            Assert.IsTrue(trueAvgColumnPerInput == sp.avgColumnsPerInput(mem));
 
             mem.setColumnDimensions(new int[] { 3, 3 });
             mem.setInputDimensions(new int[] { 3, 3 });
             trueAvgColumnPerInput = 1;
-            Assert.Equals(trueAvgColumnPerInput, sp.avgColumnsPerInput(mem));
+            Assert.IsTrue(trueAvgColumnPerInput == sp.avgColumnsPerInput(mem));
 
             mem.setColumnDimensions(new int[] { 25 });
             mem.setInputDimensions(new int[] { 5 });
             trueAvgColumnPerInput = 5;
-            Assert.Equals(trueAvgColumnPerInput, sp.avgColumnsPerInput(mem));
+            Assert.IsTrue(trueAvgColumnPerInput == sp.avgColumnsPerInput(mem));
 
             mem.setColumnDimensions(new int[] { 3, 3, 3, 5, 5, 6, 6 });
             mem.setInputDimensions(new int[] { 3, 3, 3, 5, 5, 6, 6 });
             trueAvgColumnPerInput = 1;
-            Assert.Equals(trueAvgColumnPerInput, sp.avgColumnsPerInput(mem));
+            Assert.IsTrue(trueAvgColumnPerInput == sp.avgColumnsPerInput(mem));
 
             mem.setColumnDimensions(new int[] { 3, 6, 9, 12 });
             mem.setInputDimensions(new int[] { 3, 3, 3, 3 });
             trueAvgColumnPerInput = 2.5;
-            Assert.Equals(trueAvgColumnPerInput, sp.avgColumnsPerInput(mem));
+            Assert.IsTrue(trueAvgColumnPerInput == sp.avgColumnsPerInput(mem));
         }
 
         [TestMethod]
@@ -1001,7 +1001,7 @@ namespace UnitTestsProject
             for (int i = 0; i < mem.getNumColumns(); i++)
             {
                 double connectedSpan = sp.avgConnectedSpanForColumnND(mem, i);
-                Assert.Equals(trueAvgConnectedSpan[i], connectedSpan);
+                Assert.IsTrue(trueAvgConnectedSpan[i] == connectedSpan);
             }
         }
 
@@ -1054,7 +1054,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < mem.getNumColumns(); i++)
             {
-                int[] indexes = potentialPools[i].Where(n => n == 1).ToArray();
+                int[] indexes = ArrayUtils.IndexWhere( potentialPools[i],n => n == 1);
 
                 // int[] indexes = ArrayUtils.where(potentialPools[i], cond);
                 mem.getColumn(i).setProximalConnectedSynapsesForTest(mem, indexes);
@@ -1334,7 +1334,9 @@ namespace UnitTestsProject
 
             for (int i = 0; i < mem.getNumColumns(); i++)
             {
-                int[] indexes = potentialPools[i].Where(n => n == 1).ToArray();
+                //int[] indexes = potentialPools[i].Where(n => n == 1).ToArray();
+                int[] indexes = ArrayUtils.IndexWhere(potentialPools[i], (n) => (n == 1));
+
                 //int[] indexes = ArrayUtils.where(potentialPools[i], cond);
                 mem.getColumn(i).setProximalConnectedSynapsesForTest(mem, indexes);
                 mem.getColumn(i).setProximalPermanences(mem, permanences[i]);
@@ -1489,7 +1491,7 @@ namespace UnitTestsProject
             {
                 for (int j = 0; j < 10; j++)
                 {
-                    Assert.Equals(connectedSynapses[i][j], sm.getIntValue(i, j));
+                    Assert.IsTrue(connectedSynapses[i][j] == sm.getIntValue(i, j));
                 }
             }
 
@@ -1498,8 +1500,8 @@ namespace UnitTestsProject
             int[] trueOverlaps = new int[5];
             double[] overlapsPct = sp.calculateOverlapPct(mem, overlaps);
             double[] trueOverlapsPct = new double[5];
-            Assert.IsTrue(Array.Equals(trueOverlaps, overlaps));
-            Assert.IsTrue(Array.Equals(trueOverlapsPct, overlapsPct));
+            Assert.IsTrue(trueOverlaps.SequenceEqual(overlaps));
+            Assert.IsTrue(trueOverlapsPct.SequenceEqual(overlapsPct));
 
             /////////////
 
@@ -1525,7 +1527,7 @@ namespace UnitTestsProject
             {
                 for (int j = 0; j < 10; j++)
                 {
-                    Assert.Equals(connectedSynapses[i][j], sm.getIntValue(i, j));
+                    Assert.IsTrue(connectedSynapses[i][j] == sm.getIntValue(i, j));
                 }
             }
 
@@ -1534,8 +1536,8 @@ namespace UnitTestsProject
             trueOverlaps = new int[] { 10, 8, 6, 4, 2 };
             overlapsPct = sp.calculateOverlapPct(mem, overlaps);
             trueOverlapsPct = new double[] { 1, 1, 1, 1, 1 };
-            Assert.IsTrue(Array.Equals(trueOverlaps, overlaps));
-            Assert.IsTrue(Array.Equals(trueOverlapsPct, overlapsPct));
+            Assert.IsTrue(trueOverlaps.SequenceEqual(overlaps));
+            Assert.IsTrue(trueOverlapsPct.SequenceEqual(overlapsPct));
 
             //////////////////
 
@@ -1561,7 +1563,7 @@ namespace UnitTestsProject
             {
                 for (int j = 0; j < 10; j++)
                 {
-                    Assert.Equals(connectedSynapses[i][j], sm.getIntValue(i, j));
+                    Assert.IsTrue(connectedSynapses[i][j] == sm.getIntValue(i, j));
                 }
             }
 
@@ -1569,10 +1571,11 @@ namespace UnitTestsProject
             inputVector[9] = 1;
             overlaps = sp.calculateOverlap(mem, inputVector);
             trueOverlaps = new int[] { 1, 1, 1, 1, 1 };
+            Assert.IsTrue(trueOverlaps.SequenceEqual(overlaps));
+
             overlapsPct = sp.calculateOverlapPct(mem, overlaps);
-            trueOverlapsPct = new double[] { 0.1, 0.125, 1.0 / 6, 0.25, 0.5 };
-            Assert.IsTrue(Array.Equals(trueOverlaps, overlaps));
-            Assert.IsTrue(Array.Equals(trueOverlapsPct, overlapsPct));
+            trueOverlapsPct = new double[] { 0.1, 0.125, 1.0 / 6, 0.25, 0.5 };           
+            Assert.IsTrue(trueOverlapsPct.SequenceEqual(overlapsPct));
 
             ///////////////////
 
@@ -1598,7 +1601,7 @@ namespace UnitTestsProject
             {
                 for (int j = 0; j < 10; j++)
                 {
-                    Assert.Equals(connectedSynapses[i][j], sm.getIntValue(i, j));
+                    Assert.IsTrue(connectedSynapses[i][j] == sm.getIntValue(i, j));
                 }
             }
 
@@ -1607,8 +1610,8 @@ namespace UnitTestsProject
             trueOverlaps = new int[] { 1, 1, 1, 1, 1 };
             overlapsPct = sp.calculateOverlapPct(mem, overlaps);
             trueOverlapsPct = new double[] { 0.5, 0.5, 0.5, 0.5, 0.5 };
-            Assert.IsTrue(Array.Equals(trueOverlaps, overlaps));
-            Assert.IsTrue(Array.Equals(trueOverlapsPct, overlapsPct));
+            Assert.IsTrue(trueOverlaps.SequenceEqual(overlaps));
+            Assert.IsTrue(trueOverlapsPct.SequenceEqual(overlapsPct));
         }
 
         /**
@@ -2178,8 +2181,8 @@ namespace UnitTestsProject
             }
             catch (Exception e)
             {
-                Assert.Equals("Inhibition parameters are invalid", e.Message);
-                Assert.Equals(typeof(ArgumentException), e.GetType());
+                Assert.IsTrue("Inhibition parameters are invalid" == e.Message);
+                Assert.IsTrue( e is ArgumentException);
             }
 
             // Local Area Density can't be above 0.5
@@ -2194,8 +2197,8 @@ namespace UnitTestsProject
             }
             catch (Exception e)
             {
-                Assert.Equals("Inhibition parameters are invalid", e.Message);
-                Assert.Equals(typeof(ArgumentException), e.GetType());
+                Assert.IsTrue("Inhibition parameters are invalid" == e.Message);
+                Assert.IsTrue(e is ArgumentException);
                 //assertEquals("Inhibition parameters are invalid", e.getMessage());
                 //assertEquals(InvalidSPParamValueException.class, e.getClass());
             }
@@ -2228,8 +2231,9 @@ namespace UnitTestsProject
             {
                 //     assertEquals("Invalid number of columns: 0", e.getMessage());
                 //assertEquals(InvalidSPParamValueException.class, e.getClass());
-                Assert.Equals("Invalid number of columns: 0", e.Message);
-                Assert.Equals(typeof(ArgumentException), e.GetType());
+                Assert.IsTrue("Invalid number of columns: 0" == e.Message);
+                Assert.IsTrue(e is ArgumentException);
+              
             }
 
             // Reset column dims
@@ -2250,8 +2254,8 @@ namespace UnitTestsProject
                 //assertEquals("Invalid number of inputs: 0", e.getMessage());
                 //assertEquals(InvalidSPParamValueException.class, e.getClass());
 
-                Assert.Equals("Invalid number of inputs: 0", e.Message);
-                Assert.Equals(typeof(ArgumentException), e.GetType());
+                Assert.IsTrue("Invalid number of inputs: 0" == e.Message);
+                Assert.IsTrue(e is ArgumentException);                
             }
         }
 

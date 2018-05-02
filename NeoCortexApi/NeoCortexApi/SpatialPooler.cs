@@ -505,7 +505,7 @@ namespace NeoCortexApi
             int[] minCoord = new int[c.getInputDimensions().Length];
             ArrayUtils.fillArray(maxCoord, -1);
             ArrayUtils.fillArray(minCoord, ArrayUtils.max(dimensions));
-            ISparseMatrix<Integer> inputMatrix = c.getInputMatrix();
+            ISparseMatrix<int> inputMatrix = c.getInputMatrix();
             for (int i = 0; i < connected.Length; i++)
             {
                 maxCoord = ArrayUtils.maxBetween(maxCoord, inputMatrix.computeCoordinates(connected[i]));

@@ -116,14 +116,32 @@ namespace NeoCortexApi.Entities
         public double[] getSparsePermanences()
         {
             double[] retVal = new double[size];
-            //int[] keys = synapsesBySourceIndex.Keys;
+            int[] keys = getSynapseKeys();// synapsesBySourceIndex.Keys;
             for (int x = 0, j = size - 1; x < size; x++, j--)
             {
-                retVal[j] = synapsesBySourceIndex[x].getPermanence();
+                retVal[j] = synapsesBySourceIndex[keys[size-x-1]].getPermanence();
             }
+
+            //for (int x = size-1, j = 0; x >= 0; x--, j++)
+            //{
+            //    retVal[j] = synapsesBySourceIndex[x].getPermanence();
+            //}
 
             return retVal;
         }
+
+        private int[] getSynapseKeys()
+        {
+            List<int> keys = new List<int>();
+
+            foreach (var keyVal in synapsesBySourceIndex)
+            {
+                keys.Add(keyVal.Key);
+            }
+
+            return keys.ToArray();
+        }
+
 
         /**
          * Returns a dense array representing the potential pool permanences

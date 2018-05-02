@@ -6,7 +6,7 @@ using System.Text;
 namespace NeoCortexApi.Entities
 {
     //TODO see type object
-    public abstract class AbstractSparseBinaryMatrix : AbstractSparseMatrix<Integer>, IEquatable<object>
+    public abstract class AbstractSparseBinaryMatrix : AbstractSparseMatrix<int>, IEquatable<object>
     {
         /** keep it simple */
         private static readonly long serialVersionUID = 1L;
@@ -147,7 +147,7 @@ namespace NeoCortexApi.Entities
          */
 
 
-        protected override AbstractSparseMatrix<Integer> set(int index, int value)
+        public override AbstractFlatMatrix<int> set(int index, int value)
         {
             int[] coordinates = computeCoordinates(index);
             return set(value, coordinates);
@@ -264,7 +264,8 @@ namespace NeoCortexApi.Entities
         }
 
         /**
-         * Returns the int value at the index computed from the specified coordinates
+         * Returns the int value at the index computed from the specified coordinates.
+         * For example value {7, 21} is TRU if the column 7 is connected to input bit 21.
          * @param coordinates   the coordinates from which to retrieve the indexed object
          * @return  the indexed object
          */
