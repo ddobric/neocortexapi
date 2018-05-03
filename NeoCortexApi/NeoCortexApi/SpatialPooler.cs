@@ -899,21 +899,16 @@ namespace NeoCortexApi
             return inhibitColumnsLocal(c, overlaps, density);
         }
 
-        /**
-         * Perform global inhibition. Performing global inhibition entails picking the
-         * top 'numActive' columns with the highest overlap score in the entire
-         * region. At most half of the columns in a local neighborhood are allowed to
-         * be active.
-         * 
-         * @param c             the {@link Connections} matrix
-         * @param overlaps      an array containing the overlap score for each  column.
-         *                      The overlap score for a column is defined as the number
-         *                      of synapses in a "connected state" (connected synapses)
-         *                      that are connected to input bits which are turned on.
-         * @param density       The fraction of columns to survive inhibition.
-         * 
-         * @return
-         */
+
+        /// <summary>
+        ///  Perform global inhibition. Performing global inhibition entails picking the
+        ///  top 'numActive' columns with the highest overlap score in the entire</summary>
+        ///  region. At most half of the columns in a local neighborhood are allowed to
+        ///  be active.
+        /// <param name="c">Connections (memory)</param>
+        /// <param name="overlaps">An array containing the overlap score for each  column.</param>
+        /// <param name="density"> The fractioThe overlap score for a column is defined as the numbern of columns to survive inhibition.</param>
+        /// <returns>We return all columns, whof synapses in a "connected state" (connected synapses)ich have overlap greather than stimulusThreshold.</returns>
         public virtual int[] inhibitColumnsGlobal(Connections c, double[] overlaps, double density)
         {
             int numCols = c.getNumColumns();
@@ -925,7 +920,7 @@ namespace NeoCortexApi
                 indices.Add(i, overlaps[i]);
             }
 
-            var sortedWinnerIndices = indices.OrderByDescending(k => k.Value).ToArray();
+            var sortedWinnerIndices = indices.OrderBy(k => k.Value).ToArray();//TODO potential sorting bug.
 
             //int[] sortedWinnerIndices = IntStream.range(0, overlaps.Length)
             //    .mapToObj(i-> new Pair<>(i, overlaps[i]))
@@ -933,9 +928,14 @@ namespace NeoCortexApi
             //    .mapToInt(Pair < Integer, Double >::getFirst)
             //   .toArray();
 
-            // Enforce the stimulus threshold
+            // Enforce the stimulus threshold. This is a minimum number of synapses that must be on in order for a columns to turn ON. 
+            // The purpose of this is to prevent noise input from activating columns. Specified as a percent of a fully grown synapse.
             double stimulusThreshold = c.getStimulusThreshold();
+
+            // Calculate difference between num of columns and num of active. Num of active is less than 
+            // num of columns, because of specified density.
             int start = sortedWinnerIndices.Count() - numActive;
+
             while (start < sortedWinnerIndices.Count())
             {
                 int i = sortedWinnerIndices[start].Key;
@@ -943,7 +943,8 @@ namespace NeoCortexApi
                 ++start;
             }
 
-            return sortedWinnerIndices.Skip(start).Cast<int>().ToArray();
+            // We return all columns, which have overlap greather than stimulusThreshold.
+            return sortedWinnerIndices.Skip(start).Select(p => (int)p.Key).ToArray();
         }
 
         /**
@@ -1199,7 +1200,8 @@ namespace NeoCortexApi
         public void updateBookeepingVars(Connections c, bool learn)
         {
             c.spIterationNum += 1;
-            if (learn) c.spIterationLearnNum += 1;
+            if (learn)
+                c.spIterationLearnNum += 1;
         }
 
 

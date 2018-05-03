@@ -142,7 +142,7 @@ namespace NeoCortexApi.Entities
                     if (j == slice.Length - 1)
                     {
                         // If the overlap (num of connected synapses to TRUE input) is less than stimulusThreshold then we set result on 0.
-                        //  If the overlap (num of connected synapses to TRUE input) is greather than stimulusThreshold then result remains as calculated.
+                        // If the overlap (num of connected synapses to TRUE input) is greather than stimulusThreshold then result remains as calculated.
                         results[i] -= results[i] < stimulusThreshold ? results[i] : 0;
                     }
                 }

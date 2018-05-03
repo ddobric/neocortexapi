@@ -1118,7 +1118,8 @@ namespace NeoCortexApi.Entities
         }
 
         /**
-         * Sets and Returns the overlap score for each column
+         * Sets and Returns the overlap score for each column.
+         * Overlap is calculated by SpatialPooler and then set here.
          * @param overlaps
          * @return
          */

@@ -189,7 +189,7 @@ namespace UnitTestsProject
             {
                 int[] permanences = ArrayUtils.toIntArray(mem.getPotentialPools().get(i).getDensePermanences(mem));
                 int[] potential = (int[])mem.getConnectedCounts().getSlice(i);
-                Assert.IsTrue(Array.Equals(permanences, potential));
+                Assert.IsTrue(permanences.SequenceEqual(potential));
             }
         }
 
@@ -1798,11 +1798,13 @@ namespace UnitTestsProject
             //Internally calculated during init, to overwrite we put after init
             parameters.setInhibitionRadius(2);
             double density = 0.3;
-            double[] overlaps = new double[] { 1, 2, 1, 4, 8, 3, 12, 5, 4, 1 };
+            double[] overlaps = new double[] { 1, 2, 1, 4, 8/*i=4*/, 3, 12/*i=6*/, 5/*i=7*/, 4, 1 };
             int[] active = sp.inhibitColumnsGlobal(mem, overlaps, density);
+
+            // See overlaps comments (i=k) above.
             int[] trueActive = new int[] { 4, 6, 7 };
             active = active.OrderBy(i => i).ToArray();
-            Assert.IsTrue(Array.Equals(trueActive, active));
+            Assert.IsTrue(trueActive.SequenceEqual(active));
 
             density = 0.5;
             mem.setNumColumns(10);
@@ -1814,12 +1816,11 @@ namespace UnitTestsProject
 
             active = sp.inhibitColumnsGlobal(mem, overlaps, density);
 
-            for (int i = 0; i < 5; i++)
-
-                trueActive[i + 5] = i;
-            //trueActive = IntStream.range(5, 10).toArray();
-
-            Assert.IsTrue(Array.Equals(trueActive, active));
+            trueActive = new int[5];
+            for (int i = 5; i < 10; i++)
+                trueActive[i-5] = i;
+            
+            Assert.IsTrue(trueActive.SequenceEqual(active));
         }
 
         [TestMethod]
