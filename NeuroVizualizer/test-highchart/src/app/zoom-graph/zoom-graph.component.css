@@ -1,0 +1,7 @@
+#container {
+    height: 100px !important; 
+    min-width: 200px !important; 
+    max-height: 300px !important;
+    max-width: 200px !important;
+
+}
