@@ -498,7 +498,10 @@ namespace NeoCortexApi
         public virtual double avgConnectedSpanForColumnND(Connections c, int columnIndex)
         {
             int[] dimensions = c.getInputDimensions();
+           
+            // Gets synapses connected to input bits.(from pool of the column)
             int[] connected = c.getColumn(columnIndex).getProximalDendrite().getConnectedSynapsesSparse(c);
+
             if (connected == null || connected.Length == 0) return 0;
 
             int[] maxCoord = new int[c.getInputDimensions().Length];
@@ -782,6 +785,7 @@ namespace NeoCortexApi
         }
 
         /**
+         * Uniform Column Mapping 
          * Maps a column to its respective input index, keeping to the topology of
          * the region. It takes the index of the column as an argument and determines
          * what is the index of the flattened input vector that is to be the center of
@@ -797,19 +801,18 @@ namespace NeoCortexApi
          *   
          * @param columnIndex   The index identifying a column in the permanence, potential
          *                      and connectivity matrices.
-         * @return              A boolean value indicating that boundaries should be
-         *                      ignored.
+         * @return              Flat index of mapped column.
          */
         public int mapColumn(Connections c, int columnIndex)
         {
             int[] columnCoords = c.getMemory().computeCoordinates(columnIndex);
             double[] colCoords = ArrayUtils.toDoubleArray(columnCoords);
 
-            double[] ratios = ArrayUtils.divide(
+            double[] columnRatios = ArrayUtils.divide(
                 colCoords, ArrayUtils.toDoubleArray(c.getColumnDimensions()), 0, 0);
 
             double[] inputCoords = ArrayUtils.multiply(
-                ArrayUtils.toDoubleArray(c.getInputDimensions()), ratios, 0, 0);
+                ArrayUtils.toDoubleArray(c.getInputDimensions()), columnRatios, 0, 0);
 
             var divideResult = ArrayUtils.divide(
                         ArrayUtils.toDoubleArray(c.getInputDimensions()),
@@ -817,6 +820,7 @@ namespace NeoCortexApi
 
             inputCoords = ArrayUtils.d_add(inputCoords, ArrayUtils.multiply(divideResult, 0.5));
 
+            // Makes sure that inputCoords are in range [0, inpDims]
             int[] inputCoordInts = ArrayUtils.clip(ArrayUtils.toIntArray(inputCoords), c.getInputDimensions(), -1);
 
             return c.getInputMatrix().computeIndex(inputCoordInts);
@@ -907,7 +911,7 @@ namespace NeoCortexApi
         ///  be active.
         /// <param name="c">Connections (memory)</param>
         /// <param name="overlaps">An array containing the overlap score for each  column.</param>
-        /// <param name="density"> The fractioThe overlap score for a column is defined as the numbern of columns to survive inhibition.</param>
+        /// <param name="density"> The fraction of the overlap score for a column is defined as the numbern of columns to survive inhibition.</param>
         /// <returns>We return all columns, whof synapses in a "connected state" (connected synapses)ich have overlap greather than stimulusThreshold.</returns>
         public virtual int[] inhibitColumnsGlobal(Connections c, double[] overlaps, double density)
         {

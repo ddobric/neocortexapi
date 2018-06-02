@@ -220,7 +220,7 @@ namespace UnitTestsProject
             int[] activeArray = new int[nColumns];
             sp.compute(cn, new int[inputSize], activeArray, true);
 
-            Assert.Equals(3, activeArray.Count(i => i > 0));//, ArrayUtils.INT_GREATER_THAN_0).length);
+            Assert.IsTrue(3== activeArray.Count(i => i > 0));//, ArrayUtils.INT_GREATER_THAN_0).length);
         }
 
         /**
@@ -250,7 +250,7 @@ namespace UnitTestsProject
             int[] activeArray = new int[nColumns];
             sp.compute(cn, new int[inputSize], activeArray, true);
 
-            Assert.Equals(3, activeArray.Count(i => i > 0));//, ArrayUtils.INT_GREATER_THAN_0).length);
+            Assert.IsTrue(0== activeArray.Count(i => i > 0));//, ArrayUtils.INT_GREATER_THAN_0).length);
         }
 
         [TestMethod]
@@ -281,7 +281,7 @@ namespace UnitTestsProject
             int[] activeArray = new int[nColumns];
             sp.compute(cn, new int[inputSize], activeArray, true);
 
-            Assert.Equals(3, activeArray.Count(i => i > 0));//, ArrayUtils.INT_GREATER_THAN_0).length);
+            Assert.IsTrue(6 == activeArray.Count(i => i > 0));//, ArrayUtils.INT_GREATER_THAN_0).length);
         }
 
         /**
@@ -311,7 +311,7 @@ namespace UnitTestsProject
             int[] activeArray = new int[nColumns];
             sp.compute(cn, new int[inputSize], activeArray, true);
 
-            Assert.Equals(3, activeArray.Count(i => i > 0));//, ArrayUtils.INT_GREATER_THAN_0).length);
+            Assert.IsTrue(0 == activeArray.Count(i => i > 0));//, ArrayUtils.INT_GREATER_THAN_0).length);
         }
 
         [TestMethod]
@@ -449,6 +449,7 @@ namespace UnitTestsProject
             Assert.IsTrue(Array.Equals(trueStripped, stripped));
         }
 
+
         [TestMethod]
         public void testMapColumn()
         {
@@ -458,10 +459,10 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 12 });
             initSP();
 
-            Assert.Equals(1, sp.mapColumn(mem, 0));
-            Assert.Equals(4, sp.mapColumn(mem, 1));
-            Assert.Equals(7, sp.mapColumn(mem, 2));
-            Assert.Equals(10, sp.mapColumn(mem, 3));
+            Assert.IsTrue(1 == sp.mapColumn(mem, 0));
+            Assert.IsTrue(4 == sp.mapColumn(mem, 1));
+            Assert.IsTrue(7 == sp.mapColumn(mem, 2));
+            Assert.IsTrue(10 == sp.mapColumn(mem, 3));
 
             // Test 1D with same dimension of columns and inputs
             setupParameters();
@@ -469,10 +470,10 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 4 });
             initSP();
 
-            Assert.Equals(0, sp.mapColumn(mem, 0));
-            Assert.Equals(1, sp.mapColumn(mem, 1));
-            Assert.Equals(2, sp.mapColumn(mem, 2));
-            Assert.Equals(3, sp.mapColumn(mem, 3));
+            Assert.IsTrue(0== sp.mapColumn(mem, 0));
+            Assert.IsTrue(1== sp.mapColumn(mem, 1));
+            Assert.IsTrue(2== sp.mapColumn(mem, 2));
+            Assert.IsTrue(3== sp.mapColumn(mem, 3));
 
             // Test 1D with dimensions of length 1
             setupParameters();
@@ -480,7 +481,7 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 1 });
             initSP();
 
-            Assert.Equals(0, sp.mapColumn(mem, 0));
+            Assert.IsTrue(0== sp.mapColumn(mem, 0));
 
             // Test 2D
             setupParameters();
@@ -488,11 +489,11 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 36, 12 });
             initSP();
 
-            Assert.Equals(13, sp.mapColumn(mem, 0));
-            Assert.Equals(49, sp.mapColumn(mem, 4));
-            Assert.Equals(52, sp.mapColumn(mem, 5));
-            Assert.Equals(58, sp.mapColumn(mem, 7));
-            Assert.Equals(418, sp.mapColumn(mem, 47));
+            Assert.IsTrue(13== sp.mapColumn(mem, 0));
+            Assert.IsTrue(49== sp.mapColumn(mem, 4));
+            Assert.IsTrue(52== sp.mapColumn(mem, 5));
+            Assert.IsTrue(58== sp.mapColumn(mem, 7));
+            Assert.IsTrue(418== sp.mapColumn(mem, 47));
 
             // Test 2D with some input dimensions smaller than column dimensions.
             setupParameters();
@@ -500,9 +501,9 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 3, 5 });
             initSP();
 
-            Assert.Equals(0, sp.mapColumn(mem, 0));
-            Assert.Equals(4, sp.mapColumn(mem, 3));
-            Assert.Equals(14, sp.mapColumn(mem, 15));
+            Assert.IsTrue(0== sp.mapColumn(mem, 0));
+            Assert.IsTrue(4== sp.mapColumn(mem, 3));
+            Assert.IsTrue(14== sp.mapColumn(mem, 15));
         }
 
         [TestMethod]
@@ -620,9 +621,11 @@ namespace UnitTestsProject
             int[] mask = sp.mapPotential(mem, 0, false);
             List<int> trueIndices = new List<int>(expectedMask);
             List<int> maskSet = new List<int>(mask);
+
+            Assert.IsTrue(trueIndices.SequenceEqual(maskSet));
             // The *position* of the one "on" bit expected. 
             // Python version returns [1] which is the on bit in the zero'th position
-            Assert.IsTrue(trueIndices.Equals(maskSet));
+            //Assert.IsTrue(trueIndices.Equals(maskSet));
         }
 
         //////////////////////////////////////////////////////////////
@@ -822,8 +825,9 @@ namespace UnitTestsProject
             //Test global inhibition case
             mem.setGlobalInhibition(true);
             mem.setColumnDimensions(new int[] { 57, 31, 2 });
+            // If global inhibition is set, then all columns in the row are inhibited.
             sp.updateInhibitionRadius(mem);
-            Assert.Equals(57, mem.getInhibitionRadius());
+            Assert.IsTrue(57== mem.getInhibitionRadius());
 
             ////////////
             SpatialPoolerMock3 mock = new SpatialPoolerMock3(3, 4);
@@ -844,7 +848,7 @@ namespace UnitTestsProject
             mem.setGlobalInhibition(false);
             sp = mock;
             sp.updateInhibitionRadius(mem);
-            Assert.Equals(6, mem.getInhibitionRadius());
+            Assert.IsTrue(6== mem.getInhibitionRadius());
 
             //////////////
 
@@ -866,7 +870,7 @@ namespace UnitTestsProject
             mem.setGlobalInhibition(false);
             sp = mock;
             sp.updateInhibitionRadius(mem);
-            Assert.Equals(1, mem.getInhibitionRadius());
+            Assert.IsTrue(1 == mem.getInhibitionRadius());
 
             /////////////
             mock = new SpatialPoolerMock3(2.4, 2);
@@ -888,7 +892,24 @@ namespace UnitTestsProject
             sp = mock;
             //((2 * 2.4) - 1) / 2.0 => round up
             sp.updateInhibitionRadius(mem);
-            Assert.Equals(2, mem.getInhibitionRadius());
+            Assert.IsTrue(2== mem.getInhibitionRadius());
+
+            //...
+            sp = new SpatialPooler();
+
+            mem.setGlobalInhibition(true);
+           
+            sp.updateInhibitionRadius(mem);
+
+            // max dim of columns
+            Assert.IsTrue(57 == mem.getInhibitionRadius());
+
+            // TODO..
+            sp = new SpatialPooler();
+            mem.setGlobalInhibition(false);
+       
+            mem.setInputDimensions(new int[] { 5,10,2}); 
+            sp.updateInhibitionRadius(mem);
         }
 
         [TestMethod]
