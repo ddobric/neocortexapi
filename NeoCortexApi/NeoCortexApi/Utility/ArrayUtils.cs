@@ -1651,9 +1651,7 @@ namespace NeoCortexApi.Utility
                 choiceSupply.RemoveAt(randomIdx);
                 upperBound--;
             }
-            selectedIndices.OrderBy(i => i);
-            //System.out.println("sample: " + Arrays.toString(selectedIndices));
-            return selectedIndices;
+            return selectedIndices.OrderBy(i => i).ToArray();     
         }
 
         /**

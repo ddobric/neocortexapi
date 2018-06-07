@@ -171,10 +171,15 @@ namespace NeoCortexApi
             }
 
             updateBookeepingVars(c, learn);
+
+            // Gets overlap ove every single olumn.
             var overlaps = calculateOverlap(c, inputVector);
             overlaps = c.setOverlaps(overlaps);
 
             double[] boostedOverlaps;
+
+            //
+            // We perform boosting here and right after that, we will recalculate bossted factors for next cycle.
             if (learn)
             {
                 boostedOverlaps = ArrayUtils.multiply(c.getBoostFactors(), overlaps);
@@ -383,11 +388,19 @@ namespace NeoCortexApi
          */
         public void updateDutyCycles(Connections c, int[] overlaps, int[] activeColumns)
         {
+            // All columns with overlap are set to 1. Otherwise 0.
             double[] overlapArray = new double[c.getNumColumns()];
+
+            // All active columns are set on 1, otherwise 0.
             double[] activeArray = new double[c.getNumColumns()];
+
+            //
+            // if (sourceA[i] > 0) then targetB[i] = 1;
+            // This ensures that all values in overlapArray are set to 1, if column has some overlap.
             ArrayUtils.greaterThanXThanSetToYInB(overlaps, overlapArray, 0, 1);
             if (activeColumns.Length > 0)
             {
+                // After this step, all rows in activeArray are set to 1 at the index of active column.
                 ArrayUtils.setIndexesTo(activeArray, activeColumns, 1);
             }
 
@@ -420,7 +433,7 @@ namespace NeoCortexApi
          * @param c             the {@link Connections} (spatial pooler memory)
          * @param dutyCycles    An array containing one or more duty cycle values that need
          *                      to be updated
-         * @param newInput      A new numerical value used to update the duty cycle
+         * @param newInput      A new numerical value used to update the duty cycle. Typically 1 or 0
          * @param period        The period of the duty cycle
          * @return
          */
@@ -814,11 +827,11 @@ namespace NeoCortexApi
             double[] inputCoords = ArrayUtils.multiply(
                 ArrayUtils.toDoubleArray(c.getInputDimensions()), columnRatios, 0, 0);
 
-            var divideResult = ArrayUtils.divide(
+            var colSpanOverInputs = ArrayUtils.divide(
                         ArrayUtils.toDoubleArray(c.getInputDimensions()),
                         ArrayUtils.toDoubleArray(c.getColumnDimensions()), 0, 0);
 
-            inputCoords = ArrayUtils.d_add(inputCoords, ArrayUtils.multiply(divideResult, 0.5));
+            inputCoords = ArrayUtils.d_add(inputCoords, ArrayUtils.multiply(colSpanOverInputs, 0.5));
 
             // Makes sure that inputCoords are in range [0, inpDims]
             int[] inputCoordInts = ArrayUtils.clip(ArrayUtils.toIntArray(inputCoords), c.getInputDimensions(), -1);
