@@ -1,0 +1,22 @@
+<h1>
+  Arranged 3d chart 
+</h1>
+<chart [options]="chartOpts"></chart>
+<div id="sliders">
+  <table>
+      <tr>
+        <td>X</td>
+        <td><input id="x" type="range" min="-27" max="9" value="45" [(ngModel)]="x" (ngModelChange)="onInputChange(x)"/> <span id="x-value" class="value">{{x}}</span></td>
+      </tr>
+      <tr>
+        <td>Y</td>
+        <td><input  id="y" type="range" min="-180" max="180" value="15" [(ngModel)]="y" (ngModelChange)="onInputChange(y)"/> <span id="y" class="value">{{y}}</span></td>
+      </tr>
+      <tr>
+        <td>Z</td>
+        <td><input id="z" type="range" min="252" max="500" value="30"  [(ngModel)]="z" (ngModelChange)="onInputChange(z)"/> <span id="z-value" class="value">{{z}}</span></td>
+      </tr>
+  </table>
+</div>
+
+
