@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Diagnostics;
 
 /**
  * Handles the relationships between the columns of a region 
@@ -121,10 +122,16 @@ namespace NeoCortexApi
             int numColumns = c.getNumColumns();
             for (int i = 0; i < numColumns; i++)
             {
+                // Gets RF
                 int[] potential = mapPotential(c, i, c.isWrapAround());
                 Column column = c.getColumn(i);
+
+                // This line initializes all synased in the potential pool of synapces.
+                // After initialization permancences are set to zero.
                 c.getPotentialPools().set(i, column.createPotentialPool(c, potential));
+
                 double[] perm = initPermanence(c, potential, i, c.getInitConnectedPct());
+
                 updatePermanencesForColumn(c, perm, column, potential, true);
             }
 
@@ -777,7 +784,7 @@ namespace NeoCortexApi
          *                          bits that will start off in a connected state.
          * @return
          */
-        public double[] initPermanence(Connections c, int[] potentialPool, int index, double connectedPct)
+        public double[] initPermanence(Connections c, int[] potentialPool, int colIndx, double connectedPct)
         {
             double[] perm = new double[c.getNumInputs()];
             foreach (int idx in potentialPool)
@@ -792,8 +799,9 @@ namespace NeoCortexApi
                 }
 
                 perm[idx] = perm[idx] < c.getSynPermTrimThreshold() ? 0 : perm[idx];
+                Debug.WriteLine(perm[idx]);
             }
-            c.getColumn(index).setProximalPermanences(c, perm);
+            c.getColumn(colIndx).setProximalPermanences(c, perm);
             return perm;
         }
 
@@ -869,10 +877,11 @@ namespace NeoCortexApi
         public int[] mapPotential(Connections c, int columnIndex, bool wrapAround)
         {
             int centerInput = mapColumn(c, columnIndex);
+
+            // Here we have Receptive Field (RF)
             int[] columnInputs = getInputNeighborhood(c, centerInput, c.getPotentialRadius());
 
-            // Select a subset of the receptive field to serve as the
-            // the potential pool
+            // Select a subset of the receptive field to serve as the the potential pool.
             int numPotential = (int)(columnInputs.Length * c.getPotentialPct() + 0.5);
             int[] retVal = new int[numPotential];
             return ArrayUtils.sample(columnInputs, retVal, c.getRandom());

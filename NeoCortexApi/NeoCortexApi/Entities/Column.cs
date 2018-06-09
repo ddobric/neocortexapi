@@ -148,7 +148,8 @@ namespace NeoCortexApi.Entities
         }
 
         /**
-         * Delegates the potential synapse creation to the one {@link ProximalDendrite}.
+         * This method creates connections between columns and inputs.
+         * It delegates the potential synapse creation to the one {@link ProximalDendrite}.
          * 
          * @param c						the {@link Connections} memory
          * @param inputVectorIndexes	indexes specifying the input vector bit

@@ -1,5 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi.Utility;
+using System;
 
 namespace UnitTestsProject
 {
@@ -28,6 +29,17 @@ namespace UnitTestsProject
             }
             return dimensionMultiples;
         }
+
+
+        [TestMethod]
+        [DataRow(42)]
+        public void RandomSeed(int seed)
+        {
+            Random x = new Random(seed);
+            var res = x.NextDouble();
+            Assert.AreEqual(res, 0.668, 0.01);
+        }
+
 
 
         [TestMethod]
