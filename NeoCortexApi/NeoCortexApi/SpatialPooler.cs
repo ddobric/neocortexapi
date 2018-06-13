@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Diagnostics;
 
 /**
  * Handles the relationships between the columns of a region 
@@ -121,10 +122,16 @@ namespace NeoCortexApi
             int numColumns = c.getNumColumns();
             for (int i = 0; i < numColumns; i++)
             {
+                // Gets RF
                 int[] potential = mapPotential(c, i, c.isWrapAround());
                 Column column = c.getColumn(i);
+
+                // This line initializes all synased in the potential pool of synapces.
+                // After initialization permancences are set to zero.
                 c.getPotentialPools().set(i, column.createPotentialPool(c, potential));
+
                 double[] perm = initPermanence(c, potential, i, c.getInitConnectedPct());
+
                 updatePermanencesForColumn(c, perm, column, potential, true);
             }
 
@@ -171,10 +178,15 @@ namespace NeoCortexApi
             }
 
             updateBookeepingVars(c, learn);
+
+            // Gets overlap ove every single olumn.
             var overlaps = calculateOverlap(c, inputVector);
             overlaps = c.setOverlaps(overlaps);
 
             double[] boostedOverlaps;
+
+            //
+            // We perform boosting here and right after that, we will recalculate bossted factors for next cycle.
             if (learn)
             {
                 boostedOverlaps = ArrayUtils.multiply(c.getBoostFactors(), overlaps);
@@ -383,11 +395,19 @@ namespace NeoCortexApi
          */
         public void updateDutyCycles(Connections c, int[] overlaps, int[] activeColumns)
         {
+            // All columns with overlap are set to 1. Otherwise 0.
             double[] overlapArray = new double[c.getNumColumns()];
+
+            // All active columns are set on 1, otherwise 0.
             double[] activeArray = new double[c.getNumColumns()];
+
+            //
+            // if (sourceA[i] > 0) then targetB[i] = 1;
+            // This ensures that all values in overlapArray are set to 1, if column has some overlap.
             ArrayUtils.greaterThanXThanSetToYInB(overlaps, overlapArray, 0, 1);
             if (activeColumns.Length > 0)
             {
+                // After this step, all rows in activeArray are set to 1 at the index of active column.
                 ArrayUtils.setIndexesTo(activeArray, activeColumns, 1);
             }
 
@@ -420,7 +440,7 @@ namespace NeoCortexApi
          * @param c             the {@link Connections} (spatial pooler memory)
          * @param dutyCycles    An array containing one or more duty cycle values that need
          *                      to be updated
-         * @param newInput      A new numerical value used to update the duty cycle
+         * @param newInput      A new numerical value used to update the duty cycle. Typically 1 or 0
          * @param period        The period of the duty cycle
          * @return
          */
@@ -498,7 +518,10 @@ namespace NeoCortexApi
         public virtual double avgConnectedSpanForColumnND(Connections c, int columnIndex)
         {
             int[] dimensions = c.getInputDimensions();
+           
+            // Gets synapses connected to input bits.(from pool of the column)
             int[] connected = c.getColumn(columnIndex).getProximalDendrite().getConnectedSynapsesSparse(c);
+
             if (connected == null || connected.Length == 0) return 0;
 
             int[] maxCoord = new int[c.getInputDimensions().Length];
@@ -761,7 +784,7 @@ namespace NeoCortexApi
          *                          bits that will start off in a connected state.
          * @return
          */
-        public double[] initPermanence(Connections c, int[] potentialPool, int index, double connectedPct)
+        public double[] initPermanence(Connections c, int[] potentialPool, int colIndx, double connectedPct)
         {
             double[] perm = new double[c.getNumInputs()];
             foreach (int idx in potentialPool)
@@ -776,12 +799,14 @@ namespace NeoCortexApi
                 }
 
                 perm[idx] = perm[idx] < c.getSynPermTrimThreshold() ? 0 : perm[idx];
+                Debug.WriteLine(perm[idx]);
             }
-            c.getColumn(index).setProximalPermanences(c, perm);
+            c.getColumn(colIndx).setProximalPermanences(c, perm);
             return perm;
         }
 
         /**
+         * Uniform Column Mapping 
          * Maps a column to its respective input index, keeping to the topology of
          * the region. It takes the index of the column as an argument and determines
          * what is the index of the flattened input vector that is to be the center of
@@ -797,26 +822,26 @@ namespace NeoCortexApi
          *   
          * @param columnIndex   The index identifying a column in the permanence, potential
          *                      and connectivity matrices.
-         * @return              A boolean value indicating that boundaries should be
-         *                      ignored.
+         * @return              Flat index of mapped column.
          */
         public int mapColumn(Connections c, int columnIndex)
         {
             int[] columnCoords = c.getMemory().computeCoordinates(columnIndex);
             double[] colCoords = ArrayUtils.toDoubleArray(columnCoords);
 
-            double[] ratios = ArrayUtils.divide(
+            double[] columnRatios = ArrayUtils.divide(
                 colCoords, ArrayUtils.toDoubleArray(c.getColumnDimensions()), 0, 0);
 
             double[] inputCoords = ArrayUtils.multiply(
-                ArrayUtils.toDoubleArray(c.getInputDimensions()), ratios, 0, 0);
+                ArrayUtils.toDoubleArray(c.getInputDimensions()), columnRatios, 0, 0);
 
-            var divideResult = ArrayUtils.divide(
+            var colSpanOverInputs = ArrayUtils.divide(
                         ArrayUtils.toDoubleArray(c.getInputDimensions()),
                         ArrayUtils.toDoubleArray(c.getColumnDimensions()), 0, 0);
 
-            inputCoords = ArrayUtils.d_add(inputCoords, ArrayUtils.multiply(divideResult, 0.5));
+            inputCoords = ArrayUtils.d_add(inputCoords, ArrayUtils.multiply(colSpanOverInputs, 0.5));
 
+            // Makes sure that inputCoords are in range [0, inpDims]
             int[] inputCoordInts = ArrayUtils.clip(ArrayUtils.toIntArray(inputCoords), c.getInputDimensions(), -1);
 
             return c.getInputMatrix().computeIndex(inputCoordInts);
@@ -852,10 +877,11 @@ namespace NeoCortexApi
         public int[] mapPotential(Connections c, int columnIndex, bool wrapAround)
         {
             int centerInput = mapColumn(c, columnIndex);
+
+            // Here we have Receptive Field (RF)
             int[] columnInputs = getInputNeighborhood(c, centerInput, c.getPotentialRadius());
 
-            // Select a subset of the receptive field to serve as the
-            // the potential pool
+            // Select a subset of the receptive field to serve as the the potential pool.
             int numPotential = (int)(columnInputs.Length * c.getPotentialPct() + 0.5);
             int[] retVal = new int[numPotential];
             return ArrayUtils.sample(columnInputs, retVal, c.getRandom());
@@ -907,7 +933,7 @@ namespace NeoCortexApi
         ///  be active.
         /// <param name="c">Connections (memory)</param>
         /// <param name="overlaps">An array containing the overlap score for each  column.</param>
-        /// <param name="density"> The fractioThe overlap score for a column is defined as the numbern of columns to survive inhibition.</param>
+        /// <param name="density"> The fraction of the overlap score for a column is defined as the numbern of columns to survive inhibition.</param>
         /// <returns>We return all columns, whof synapses in a "connected state" (connected synapses)ich have overlap greather than stimulusThreshold.</returns>
         public virtual int[] inhibitColumnsGlobal(Connections c, double[] overlaps, double density)
         {

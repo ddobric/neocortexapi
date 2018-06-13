@@ -29,7 +29,7 @@ namespace NeoCortexApi.Entities
         private static readonly long serialVersionUID = 1L;
 
         /// <summary>
-        /// Cell which activates this synapse.
+        /// Cell which activates this synapse. On proximal dendrite is this set on NULL. That means proximal dentrites have no presynaptic cell.
         /// </summary>
         private Cell sourceCell;
 

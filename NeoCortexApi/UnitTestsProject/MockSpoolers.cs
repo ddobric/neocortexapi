@@ -64,12 +64,12 @@ namespace UnitTestsProject
 
         public override double avgConnectedSpanForColumnND(Connections c, int columnIndex)
         {
-            return 3;
+            return this.m_avgConnectedSpanForColumnND;
         }
 
         public override double avgColumnsPerInput(Connections c)
         {
-            return 4;
+            return this.m_avgColumnsPerInput;
         }
     };
 

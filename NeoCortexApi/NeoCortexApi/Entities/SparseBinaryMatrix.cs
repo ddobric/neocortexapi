@@ -17,6 +17,9 @@ namespace NeoCortexApi.Entities
         /** keep it simple */
         private static readonly long serialVersionUID = 1L;
 
+        /// <summary>
+        /// Holds the matrix with connections between columns and inputs.
+        /// </summary>
         private Array backingArray;
 
         /**
@@ -143,6 +146,7 @@ namespace NeoCortexApi.Entities
                     {
                         // If the overlap (num of connected synapses to TRUE input) is less than stimulusThreshold then we set result on 0.
                         // If the overlap (num of connected synapses to TRUE input) is greather than stimulusThreshold then result remains as calculated.
+                        // This ensures that only overlaps are calculated, which are over the stimulusThreshold. All less than stimulusThreshold are set on 0.
                         results[i] -= results[i] < stimulusThreshold ? results[i] : 0;
                     }
                 }
