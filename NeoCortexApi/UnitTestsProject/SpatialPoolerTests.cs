@@ -336,7 +336,7 @@ namespace UnitTestsProject
             cn.setBoostFactors(new double[] { 2.0, 2.0, 2.0 });
             int[] inputVector = { 1, 1, 1, 1, 1 };
             int[] activeArray = { 0, 0, 0 };
-            int[] expOutput = { 2, 1, 0 };
+            int[] expOutput = { 1, 1, 1 };// { 2, 1, 0 }; This was used originally on Linux with JAVA and Pyhton
             sp.compute(cn, inputVector, activeArray, true);
 
             double[] boostedOverlaps = cn.getBoostedOverlaps();
@@ -344,7 +344,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < cn.getNumColumns(); i++)
             {
-                Assert.Equals(expOutput[i], overlaps[i]);
+                Assert.AreEqual(expOutput[i], overlaps[i]);
                 Assert.IsTrue(Math.Abs(expOutput[i] * 2 - boostedOverlaps[i]) <= 0.01);
             }
         }
