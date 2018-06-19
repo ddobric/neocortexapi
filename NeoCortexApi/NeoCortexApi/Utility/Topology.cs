@@ -121,6 +121,7 @@ namespace NeoCortexApi.Utility
         {
             int[] cp = coordinatesFromIndex(centerIndex);
 
+            // Dims of columns
             IntGenerator[] igs2 = new IntGenerator[dimensions.Length];
             for (int i = 0; i < dimensions.Length; i++)
             {
@@ -137,8 +138,6 @@ namespace NeoCortexApi.Utility
             int k = 0;
             foreach (IntGenerator pool in igs2)
             {
-                int size = result.Count();
-
                 interim.Clear();
                 interim.AddRange(result);
                 result.Clear();

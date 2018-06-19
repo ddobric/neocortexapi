@@ -27,18 +27,27 @@ namespace UnitTestsProject
     {
         private static long serialVersionUID = 1L;
 
-        private Action<double> m_CallBack;
+        private Func<double, int[]> m_CallBackGlobal;
+        private Func<double, int[]> m_CallBackLocal;
 
-        public SpatialPoolerMock2( Action<double> callBack)
+        public SpatialPoolerMock2( Func<double, int[]> callBackGlobal, Func<double, int[]> callBackLocal)
         {
-            m_CallBack = callBack;
-         
+            m_CallBackGlobal = callBackGlobal;
+            m_CallBackLocal = callBackLocal;
         }
         
 
         public override int[] inhibitColumnsGlobal(Connections c, double[] overlap, double density)
         {
-            m_CallBack?.Invoke(density);
+            m_CallBackGlobal?.Invoke(density);
+            //setGlobalCalled(true);
+            //_density = density;
+            return new int[] { 1 };
+        }
+
+        public override int[] inhibitColumnsLocal(Connections c, double[] overlap, double density)
+        {
+            m_CallBackLocal?.Invoke(density);
             //setGlobalCalled(true);
             //_density = density;
             return new int[] { 1 };

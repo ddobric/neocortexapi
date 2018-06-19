@@ -671,6 +671,13 @@ namespace UnitTestsProject
             {
                 setGlobalCalled(true);
                 _density = density;
+                return new int[1];
+            },
+            (density) =>
+            {
+                setLocalCalled(true);
+                _density = density;
+                return new int[2];
             });
 
             //        //Mocks to test which method gets called
@@ -1661,7 +1668,7 @@ namespace UnitTestsProject
             //    }
             //};
 
-            SpatialPoolerMock4 mock = new SpatialPoolerMock4();
+            sp = new SpatialPoolerMock4();
 
             mem = new Connections();
             parameters.apply(mem);
@@ -1671,21 +1678,23 @@ namespace UnitTestsProject
             mem.setPotentialRadius(2);
             double connectedPct = 1;
             int[] mask = new int[] { 0, 1, 2, 8, 9 };
-            double[] perm = sp.initPermanence(mem, mask, 0, connectedPct);
+            double[] perm = this.sp.initPermanence(mem, mask, 0, connectedPct);
             int numcon = ArrayUtils.valueGreaterCount(mem.getSynPermConnected(), perm);
-            Assert.Equals(5, numcon);
+
+            // Because of connectedPct=1 all 5 specified synapses have to be connected.
+            Assert.AreEqual(5, numcon);
 
             connectedPct = 0;
-            perm = sp.initPermanence(mem, mask, 0, connectedPct);
+            perm = this.sp.initPermanence(mem, mask, 0, connectedPct);
             numcon = ArrayUtils.valueGreaterCount(mem.getSynPermConnected(), perm);
-            Assert.Equals(0, numcon);
+            Assert.AreEqual(0, numcon);
 
             connectedPct = 0.5;
             mem.setPotentialRadius(100);
             mem.setNumInputs(100);
             mask = new int[100];
             for (int i = 0; i < 100; i++) mask[i] = i;
-            double[] perma = sp.initPermanence(mem, mask, 0, connectedPct);
+            double[] perma = this.sp.initPermanence(mem, mask, 0, connectedPct);
             numcon = ArrayUtils.valueGreaterOrEqualCount(mem.getSynPermConnected(), perma);
             Assert.IsTrue(numcon > 0);
             Assert.IsTrue(numcon < mem.getNumInputs());
@@ -1869,12 +1878,12 @@ namespace UnitTestsProject
             mem.setWrapAround(true);
             int[] trueActive = new int[] { 1, 2, 5, 6, 8, 9 };
             int[] active = sp.inhibitColumnsLocal(mem, overlaps, density);
-            Assert.IsTrue(Array.Equals(trueActive, active));
+            Assert.IsTrue(trueActive.SequenceEqual(active));
 
             mem.setWrapAround(false);
             trueActive = new int[] { 1, 2, 5, 6, 9 };
             active = sp.inhibitColumnsLocal(mem, overlaps, density);
-            Assert.IsTrue(Array.Equals(trueActive, active));
+            Assert.IsTrue(trueActive.SequenceEqual(active));
 
             density = 0.5;
             mem.setInhibitionRadius(3);
@@ -1885,12 +1894,12 @@ namespace UnitTestsProject
             mem.setWrapAround(true);
             trueActive = new int[] { 1, 2, 4, 5, 6, 9 };
             active = sp.inhibitColumnsLocal(mem, overlaps, density);
-            Assert.IsTrue(Array.Equals(trueActive, active));
+            Assert.IsTrue(trueActive.SequenceEqual(active));
 
             mem.setWrapAround(false);
             trueActive = new int[] { 1, 2, 4, 5, 6, 9 };
             active = sp.inhibitColumnsLocal(mem, overlaps, density);
-            Assert.IsTrue(Array.Equals(trueActive, active));
+            Assert.IsTrue(trueActive.SequenceEqual(active));
 
             // Test add to winners
             density = 0.3333;
@@ -1902,12 +1911,12 @@ namespace UnitTestsProject
             mem.setWrapAround(true);
             trueActive = new int[] { 0, 1, 4, 5 };
             active = sp.inhibitColumnsLocal(mem, overlaps, density);
-            Assert.IsTrue(Array.Equals(trueActive, active));
+            Assert.IsTrue(trueActive.SequenceEqual(active));
 
             mem.setWrapAround(false);
             trueActive = new int[] { 0, 1, 4, 5, 8 };
             active = sp.inhibitColumnsLocal(mem, overlaps, density);
-            Assert.IsTrue(Array.Equals(trueActive, active));
+            Assert.IsTrue(trueActive.SequenceEqual(active));
         }
 
         //    /**
