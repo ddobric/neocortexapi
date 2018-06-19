@@ -307,10 +307,10 @@ namespace NeoCortexApi
         public void updateMinDutyCyclesGlobal(Connections c)
         {
             ArrayUtils.fillArray(c.getMinOverlapDutyCycles(),
-                   (int)(c.getMinPctOverlapDutyCycles() * ArrayUtils.max(c.getOverlapDutyCycles())));
+                   (double)(c.getMinPctOverlapDutyCycles() * ArrayUtils.max(c.getOverlapDutyCycles())));
 
             ArrayUtils.fillArray(c.getMinActiveDutyCycles(),
-                    (int)(c.getMinPctActiveDutyCycles() * ArrayUtils.max(c.getActiveDutyCycles())));
+                    (double)(c.getMinPctActiveDutyCycles() * ArrayUtils.max(c.getActiveDutyCycles())));
         }
 
         /**

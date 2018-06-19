@@ -1142,7 +1142,7 @@ namespace UnitTestsProject
 
             for (var i = 0; i < expected1.Length; i++)
             {
-                Assert.IsTrue(Math.Abs(expected1[i] - resultMinActiveDutyCycles[i]) <= 0.01);
+                Assert.IsTrue(Math.Abs(expected1[i] - resultMinOverlapDutyCycles[i]) <= 0.01);
             }
 
             //IntStream.range(0, expected1.length)
@@ -1167,7 +1167,7 @@ namespace UnitTestsProject
 
             for (var i = 0; i < expected2.Length; i++)
             {
-                Assert.IsTrue(Math.Abs(expected2[i] - resultMinActiveDutyCycles[i]) <= 0.01);
+                Assert.IsTrue(Math.Abs(expected2[i] - resultMinActiveDutyCycles2[i]) <= 0.01);
             }
 
             //IntStream.range(0, expected2.length)
@@ -1178,7 +1178,7 @@ namespace UnitTestsProject
 
             for (var i = 0; i < expected3.Length; i++)
             {
-                Assert.IsTrue(Math.Abs(expected3[i] - resultMinActiveDutyCycles[i]) <= 0.01);
+                Assert.IsTrue(Math.Abs(expected3[i] - resultMinOverlapDutyCycles2[i]) <= 0.01);
             }
 
             //IntStream.range(0, expected3.length)
