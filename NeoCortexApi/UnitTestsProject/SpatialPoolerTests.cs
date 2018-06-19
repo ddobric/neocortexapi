@@ -427,29 +427,30 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 9 });
             initSP();
 
+            // Column [2] has dutycycle=0. It means it has never learned anything.
             mem.updateActiveDutyCycles(new double[] { 0.5, 0.1, 0, 0.2, 0.4, 0 });
             int[] activeColumns = new int[] { 0, 1, 2, 4 };
             int[] stripped = sp.stripUnlearnedColumns(mem, activeColumns);
             int[] trueStripped = new int[] { 0, 1, 4 };
-            Assert.IsTrue(Array.Equals(trueStripped, stripped));
+            Assert.IsTrue(trueStripped.SequenceEqual(stripped));
 
             mem.updateActiveDutyCycles(new double[] { 0.9, 0, 0, 0, 0.4, 0.3 });
             activeColumns = ArrayUtils.range(0, 6);
             stripped = sp.stripUnlearnedColumns(mem, activeColumns);
             trueStripped = new int[] { 0, 4, 5 };
-            Assert.IsTrue(Array.Equals(trueStripped, stripped));
+            Assert.IsTrue(trueStripped.SequenceEqual(stripped));
 
             mem.updateActiveDutyCycles(new double[] { 0, 0, 0, 0, 0, 0 });
             activeColumns = ArrayUtils.range(0, 6);
             stripped = sp.stripUnlearnedColumns(mem, activeColumns);
             trueStripped = new int[] { };
-            Assert.IsTrue(Array.Equals(trueStripped, stripped));
+            Assert.IsTrue(trueStripped.SequenceEqual(stripped));
 
             mem.updateActiveDutyCycles(new double[] { 1, 1, 1, 1, 1, 1 });
             activeColumns = ArrayUtils.range(0, 6);
             stripped = sp.stripUnlearnedColumns(mem, activeColumns);
             trueStripped = ArrayUtils.range(0, 6);
-            Assert.IsTrue(Array.Equals(trueStripped, stripped));
+            Assert.IsTrue(trueStripped.SequenceEqual(stripped));
         }
 
 
@@ -919,7 +920,7 @@ namespace UnitTestsProject
             Assert.IsTrue(57 == mem.getInhibitionRadius());
 
             // TODO..
-            sp = new SpatialPooler();
+            sp = mock;
             mem.setGlobalInhibition(false);
 
             mem.setInputDimensions(new int[] { 5, 10, 2 });
