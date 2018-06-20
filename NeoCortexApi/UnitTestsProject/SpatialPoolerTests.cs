@@ -1490,10 +1490,10 @@ namespace UnitTestsProject
                 mem.getColumn(i).setProximalPermanences(mem, permanences[i]);
                 sp.updatePermanencesForColumn(mem, permanences[i], mem.getColumn(i), connectedDense[i], true);
                 int[] dense = mem.getColumn(i).getProximalDendrite().getConnectedSynapsesDense(mem);
-                Assert.Equals(trueConnectedSynapses[i].ArrToString(), dense.ArrToString());
+                trueConnectedSynapses[i].ArrToString().SequenceEqual(dense.ArrToString());
             }
 
-            Assert.Equals(trueConnectedCounts.ArrToString(), mem.getConnectedCounts().getTrueCounts().ArrToString());
+            trueConnectedCounts.ArrToString().SequenceEqual(mem.getConnectedCounts().getTrueCounts().ArrToString());
         }
 
         [TestMethod]
@@ -1731,7 +1731,7 @@ namespace UnitTestsProject
         {
             setupParameters();
 
-            var mock = new SpatialPoolerMock4();
+            sp = new SpatialPoolerMock4();
             //    sp = new SpatialPooler()
             //    {
             //            private static  long serialVersionUID = 1L;
@@ -1757,25 +1757,25 @@ namespace UnitTestsProject
             //    return d > 0;
             //}
             //        };
-            Assert.IsTrue(Array.Equals(trueConnected, perm.Where(d => d > 0)));
+            ArrayUtils.toDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
 
             connectedPct = 1;
             mask = new int[] { 4, 5, 6 };
             perm = sp.initPermanence(mem, mask, 0, connectedPct);
             trueConnected = new int[] { 4, 5, 6 };
-            Assert.IsTrue(Array.Equals(trueConnected, perm.Where(d => d > 0)));
+            ArrayUtils.toDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
 
             connectedPct = 1;
             mask = new int[] { 8, 9 };
             perm = sp.initPermanence(mem, mask, 0, connectedPct);
             trueConnected = new int[] { 8, 9 };
-            Assert.IsTrue(Array.Equals(trueConnected, perm.Where(d => d > 0)));
+            ArrayUtils.toDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
 
             connectedPct = 1;
             mask = new int[] { 0, 1, 2, 3, 4, 5, 6, 8, 9 };
             perm = sp.initPermanence(mem, mask, 0, connectedPct);
             trueConnected = new int[] { 0, 1, 2, 3, 4, 5, 6, 8, 9 };
-            Assert.IsTrue(Array.Equals(trueConnected, perm.Where(d => d > 0)));
+            ArrayUtils.toDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
         }
 
         /**
@@ -1797,7 +1797,7 @@ namespace UnitTestsProject
             int period = 1000;
             double[] newDc = sp.updateDutyCyclesHelper(mem, dc, newvals, period);
             double[] trueNewDc = new double[] { 999, 999, 999, 999, 999 };
-            Assert.IsTrue(Array.Equals(trueNewDc, newDc));
+            Assert.IsTrue(trueNewDc.SequenceEqual(newDc));
 
             dc = new double[5];
             ArrayUtils.fillArray(dc, 1000.0);
@@ -1807,9 +1807,9 @@ namespace UnitTestsProject
             newDc = sp.updateDutyCyclesHelper(mem, dc, newvals, period);
 
             trueNewDc = new double[5];
-            dc.CopyTo(trueNewDc, 5);
-
-            Assert.IsTrue(Array.Equals(trueNewDc, newDc));
+            Array.Copy(dc, trueNewDc, trueNewDc.Length);
+            
+            Assert.IsTrue(trueNewDc.SequenceEqual(newDc));
 
             dc = new double[5];
             ArrayUtils.fillArray(dc, 1000.0);
@@ -1817,14 +1817,14 @@ namespace UnitTestsProject
             period = 1000;
             newDc = sp.updateDutyCyclesHelper(mem, dc, newvals, period);
             trueNewDc = new double[] { 1001, 1003, 1004, 1005, 1006 };
-            Assert.IsTrue(Array.Equals(trueNewDc, newDc));
+            Assert.IsTrue(trueNewDc.SequenceEqual(newDc));
 
             dc = new double[] { 1000, 800, 600, 400, 2000 };
             newvals = new double[5];
             period = 2;
             newDc = sp.updateDutyCyclesHelper(mem, dc, newvals, period);
             trueNewDc = new double[] { 500, 400, 300, 200, 1000 };
-            Assert.IsTrue(Array.Equals(trueNewDc, newDc));
+            Assert.IsTrue(trueNewDc.SequenceEqual(newDc));
         }
 
         [TestMethod]
