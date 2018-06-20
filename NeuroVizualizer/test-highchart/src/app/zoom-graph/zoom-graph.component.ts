@@ -24,7 +24,8 @@ export class ZoomGraphComponent implements OnInit {
   msg: any ="test";
   public location = '' ;
   fn:any;
-  newData:any=[];
+  data1:any=[];
+  data2:any=[];
 
   constructor(private router: Router) {
     this.location= router.url; 
@@ -112,13 +113,24 @@ export class ZoomGraphComponent implements OnInit {
             height: 30
           
         },
-        data: this.newData
-    
+        
+        data: this.data1    
     },
+    [{
+        name: 'Reading',
+        colorByPoint: true,
+        allowPointSelect: true,
+        marker: {
+            radius: 12,
+            symbol: 'url(../../../assets/images/dbCylinder.png)',
+            width: 20,
+            height: 20
+          
+        },
+        
+        data: this.data2
     
- {
-    
-}
+    }    
 ]
 });
 
@@ -170,7 +182,7 @@ export class ZoomGraphComponent implements OnInit {
      for (x = 0; x < xDim; x += 1) {
          for (y = 0; y < yDim; y += 1) { 
             for (z = 0; z < zDim; z += 1) {           
-             this.newData.push([
+             this.data1.push([
                  x,
                  y,
                  z
@@ -186,7 +198,8 @@ export class ZoomGraphComponent implements OnInit {
   onDrawClicked(): void{
     console.log("blah blah"); 
      // this.newData = [[0, 8, 0], [8, 4, 2], [3, 1, 3], [2, 1, 9], [4, 6, 1], [8, 12, 9]];
-     this.newData = this.insertData(5, 5, 5);
+     this.data1 = this.insertData(5, 5, 5);
+     this.data2 = this.insertData(3, 3, 3);
      
   }
 }
