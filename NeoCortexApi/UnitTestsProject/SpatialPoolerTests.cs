@@ -336,7 +336,7 @@ namespace UnitTestsProject
             cn.setBoostFactors(new double[] { 2.0, 2.0, 2.0 });
             int[] inputVector = { 1, 1, 1, 1, 1 };
             int[] activeArray = { 0, 0, 0 };
-            int[] expOutput = { 2, 1, 0 };
+            int[] expOutput = { 1, 1, 1 };// { 2, 1, 0 }; This was used originally on Linux with JAVA and Pyhton
             sp.compute(cn, inputVector, activeArray, true);
 
             double[] boostedOverlaps = cn.getBoostedOverlaps();
@@ -344,7 +344,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < cn.getNumColumns(); i++)
             {
-                Assert.Equals(expOutput[i], overlaps[i]);
+                Assert.AreEqual(expOutput[i], overlaps[i]);
                 Assert.IsTrue(Math.Abs(expOutput[i] * 2 - boostedOverlaps[i]) <= 0.01);
             }
         }
@@ -427,29 +427,30 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 9 });
             initSP();
 
+            // Column [2] has dutycycle=0. It means it has never learned anything.
             mem.updateActiveDutyCycles(new double[] { 0.5, 0.1, 0, 0.2, 0.4, 0 });
             int[] activeColumns = new int[] { 0, 1, 2, 4 };
             int[] stripped = sp.stripUnlearnedColumns(mem, activeColumns);
             int[] trueStripped = new int[] { 0, 1, 4 };
-            Assert.IsTrue(Array.Equals(trueStripped, stripped));
+            Assert.IsTrue(trueStripped.SequenceEqual(stripped));
 
             mem.updateActiveDutyCycles(new double[] { 0.9, 0, 0, 0, 0.4, 0.3 });
             activeColumns = ArrayUtils.range(0, 6);
             stripped = sp.stripUnlearnedColumns(mem, activeColumns);
             trueStripped = new int[] { 0, 4, 5 };
-            Assert.IsTrue(Array.Equals(trueStripped, stripped));
+            Assert.IsTrue(trueStripped.SequenceEqual(stripped));
 
             mem.updateActiveDutyCycles(new double[] { 0, 0, 0, 0, 0, 0 });
             activeColumns = ArrayUtils.range(0, 6);
             stripped = sp.stripUnlearnedColumns(mem, activeColumns);
             trueStripped = new int[] { };
-            Assert.IsTrue(Array.Equals(trueStripped, stripped));
+            Assert.IsTrue(trueStripped.SequenceEqual(stripped));
 
             mem.updateActiveDutyCycles(new double[] { 1, 1, 1, 1, 1, 1 });
             activeColumns = ArrayUtils.range(0, 6);
             stripped = sp.stripUnlearnedColumns(mem, activeColumns);
             trueStripped = ArrayUtils.range(0, 6);
-            Assert.IsTrue(Array.Equals(trueStripped, stripped));
+            Assert.IsTrue(trueStripped.SequenceEqual(stripped));
         }
 
 
@@ -671,6 +672,13 @@ namespace UnitTestsProject
             {
                 setGlobalCalled(true);
                 _density = density;
+                return new int[1];
+            },
+            (density) =>
+            {
+                setLocalCalled(true);
+                _density = density;
+                return new int[2];
             });
 
             //        //Mocks to test which method gets called
@@ -912,7 +920,7 @@ namespace UnitTestsProject
             Assert.IsTrue(57 == mem.getInhibitionRadius());
 
             // TODO..
-            sp = new SpatialPooler();
+            sp = mock;
             mem.setGlobalInhibition(false);
 
             mem.setInputDimensions(new int[] { 5, 10, 2 });
@@ -1134,7 +1142,7 @@ namespace UnitTestsProject
 
             for (var i = 0; i < expected1.Length; i++)
             {
-                Assert.IsTrue(Math.Abs(expected1[i] - resultMinActiveDutyCycles[i]) <= 0.01);
+                Assert.IsTrue(Math.Abs(expected1[i] - resultMinOverlapDutyCycles[i]) <= 0.01);
             }
 
             //IntStream.range(0, expected1.length)
@@ -1159,7 +1167,7 @@ namespace UnitTestsProject
 
             for (var i = 0; i < expected2.Length; i++)
             {
-                Assert.IsTrue(Math.Abs(expected2[i] - resultMinActiveDutyCycles[i]) <= 0.01);
+                Assert.IsTrue(Math.Abs(expected2[i] - resultMinActiveDutyCycles2[i]) <= 0.01);
             }
 
             //IntStream.range(0, expected2.length)
@@ -1170,7 +1178,7 @@ namespace UnitTestsProject
 
             for (var i = 0; i < expected3.Length; i++)
             {
-                Assert.IsTrue(Math.Abs(expected3[i] - resultMinActiveDutyCycles[i]) <= 0.01);
+                Assert.IsTrue(Math.Abs(expected3[i] - resultMinOverlapDutyCycles2[i]) <= 0.01);
             }
 
             //IntStream.range(0, expected3.length)
@@ -1482,10 +1490,10 @@ namespace UnitTestsProject
                 mem.getColumn(i).setProximalPermanences(mem, permanences[i]);
                 sp.updatePermanencesForColumn(mem, permanences[i], mem.getColumn(i), connectedDense[i], true);
                 int[] dense = mem.getColumn(i).getProximalDendrite().getConnectedSynapsesDense(mem);
-                Assert.Equals(trueConnectedSynapses[i].ArrToString(), dense.ArrToString());
+                trueConnectedSynapses[i].ArrToString().SequenceEqual(dense.ArrToString());
             }
 
-            Assert.Equals(trueConnectedCounts.ArrToString(), mem.getConnectedCounts().getTrueCounts().ArrToString());
+            trueConnectedCounts.ArrToString().SequenceEqual(mem.getConnectedCounts().getTrueCounts().ArrToString());
         }
 
         [TestMethod]
@@ -1661,7 +1669,7 @@ namespace UnitTestsProject
             //    }
             //};
 
-            SpatialPoolerMock4 mock = new SpatialPoolerMock4();
+            sp = new SpatialPoolerMock4();
 
             mem = new Connections();
             parameters.apply(mem);
@@ -1671,21 +1679,23 @@ namespace UnitTestsProject
             mem.setPotentialRadius(2);
             double connectedPct = 1;
             int[] mask = new int[] { 0, 1, 2, 8, 9 };
-            double[] perm = sp.initPermanence(mem, mask, 0, connectedPct);
+            double[] perm = this.sp.initPermanence(mem, mask, 0, connectedPct);
             int numcon = ArrayUtils.valueGreaterCount(mem.getSynPermConnected(), perm);
-            Assert.Equals(5, numcon);
+
+            // Because of connectedPct=1 all 5 specified synapses have to be connected.
+            Assert.AreEqual(5, numcon);
 
             connectedPct = 0;
-            perm = sp.initPermanence(mem, mask, 0, connectedPct);
+            perm = this.sp.initPermanence(mem, mask, 0, connectedPct);
             numcon = ArrayUtils.valueGreaterCount(mem.getSynPermConnected(), perm);
-            Assert.Equals(0, numcon);
+            Assert.AreEqual(0, numcon);
 
             connectedPct = 0.5;
             mem.setPotentialRadius(100);
             mem.setNumInputs(100);
             mask = new int[100];
             for (int i = 0; i < 100; i++) mask[i] = i;
-            double[] perma = sp.initPermanence(mem, mask, 0, connectedPct);
+            double[] perma = this.sp.initPermanence(mem, mask, 0, connectedPct);
             numcon = ArrayUtils.valueGreaterOrEqualCount(mem.getSynPermConnected(), perma);
             Assert.IsTrue(numcon > 0);
             Assert.IsTrue(numcon < mem.getNumInputs());
@@ -1721,7 +1731,7 @@ namespace UnitTestsProject
         {
             setupParameters();
 
-            var mock = new SpatialPoolerMock4();
+            sp = new SpatialPoolerMock4();
             //    sp = new SpatialPooler()
             //    {
             //            private static  long serialVersionUID = 1L;
@@ -1747,25 +1757,25 @@ namespace UnitTestsProject
             //    return d > 0;
             //}
             //        };
-            Assert.IsTrue(Array.Equals(trueConnected, perm.Where(d => d > 0)));
+            ArrayUtils.toDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
 
             connectedPct = 1;
             mask = new int[] { 4, 5, 6 };
             perm = sp.initPermanence(mem, mask, 0, connectedPct);
             trueConnected = new int[] { 4, 5, 6 };
-            Assert.IsTrue(Array.Equals(trueConnected, perm.Where(d => d > 0)));
+            ArrayUtils.toDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
 
             connectedPct = 1;
             mask = new int[] { 8, 9 };
             perm = sp.initPermanence(mem, mask, 0, connectedPct);
             trueConnected = new int[] { 8, 9 };
-            Assert.IsTrue(Array.Equals(trueConnected, perm.Where(d => d > 0)));
+            ArrayUtils.toDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
 
             connectedPct = 1;
             mask = new int[] { 0, 1, 2, 3, 4, 5, 6, 8, 9 };
             perm = sp.initPermanence(mem, mask, 0, connectedPct);
             trueConnected = new int[] { 0, 1, 2, 3, 4, 5, 6, 8, 9 };
-            Assert.IsTrue(Array.Equals(trueConnected, perm.Where(d => d > 0)));
+            ArrayUtils.toDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
         }
 
         /**
@@ -1787,7 +1797,7 @@ namespace UnitTestsProject
             int period = 1000;
             double[] newDc = sp.updateDutyCyclesHelper(mem, dc, newvals, period);
             double[] trueNewDc = new double[] { 999, 999, 999, 999, 999 };
-            Assert.IsTrue(Array.Equals(trueNewDc, newDc));
+            Assert.IsTrue(trueNewDc.SequenceEqual(newDc));
 
             dc = new double[5];
             ArrayUtils.fillArray(dc, 1000.0);
@@ -1797,9 +1807,9 @@ namespace UnitTestsProject
             newDc = sp.updateDutyCyclesHelper(mem, dc, newvals, period);
 
             trueNewDc = new double[5];
-            dc.CopyTo(trueNewDc, 5);
-
-            Assert.IsTrue(Array.Equals(trueNewDc, newDc));
+            Array.Copy(dc, trueNewDc, trueNewDc.Length);
+            
+            Assert.IsTrue(trueNewDc.SequenceEqual(newDc));
 
             dc = new double[5];
             ArrayUtils.fillArray(dc, 1000.0);
@@ -1807,14 +1817,14 @@ namespace UnitTestsProject
             period = 1000;
             newDc = sp.updateDutyCyclesHelper(mem, dc, newvals, period);
             trueNewDc = new double[] { 1001, 1003, 1004, 1005, 1006 };
-            Assert.IsTrue(Array.Equals(trueNewDc, newDc));
+            Assert.IsTrue(trueNewDc.SequenceEqual(newDc));
 
             dc = new double[] { 1000, 800, 600, 400, 2000 };
             newvals = new double[5];
             period = 2;
             newDc = sp.updateDutyCyclesHelper(mem, dc, newvals, period);
             trueNewDc = new double[] { 500, 400, 300, 200, 1000 };
-            Assert.IsTrue(Array.Equals(trueNewDc, newDc));
+            Assert.IsTrue(trueNewDc.SequenceEqual(newDc));
         }
 
         [TestMethod]
@@ -1869,12 +1879,12 @@ namespace UnitTestsProject
             mem.setWrapAround(true);
             int[] trueActive = new int[] { 1, 2, 5, 6, 8, 9 };
             int[] active = sp.inhibitColumnsLocal(mem, overlaps, density);
-            Assert.IsTrue(Array.Equals(trueActive, active));
+            Assert.IsTrue(trueActive.SequenceEqual(active));
 
             mem.setWrapAround(false);
             trueActive = new int[] { 1, 2, 5, 6, 9 };
             active = sp.inhibitColumnsLocal(mem, overlaps, density);
-            Assert.IsTrue(Array.Equals(trueActive, active));
+            Assert.IsTrue(trueActive.SequenceEqual(active));
 
             density = 0.5;
             mem.setInhibitionRadius(3);
@@ -1885,12 +1895,12 @@ namespace UnitTestsProject
             mem.setWrapAround(true);
             trueActive = new int[] { 1, 2, 4, 5, 6, 9 };
             active = sp.inhibitColumnsLocal(mem, overlaps, density);
-            Assert.IsTrue(Array.Equals(trueActive, active));
+            Assert.IsTrue(trueActive.SequenceEqual(active));
 
             mem.setWrapAround(false);
             trueActive = new int[] { 1, 2, 4, 5, 6, 9 };
             active = sp.inhibitColumnsLocal(mem, overlaps, density);
-            Assert.IsTrue(Array.Equals(trueActive, active));
+            Assert.IsTrue(trueActive.SequenceEqual(active));
 
             // Test add to winners
             density = 0.3333;
@@ -1902,12 +1912,12 @@ namespace UnitTestsProject
             mem.setWrapAround(true);
             trueActive = new int[] { 0, 1, 4, 5 };
             active = sp.inhibitColumnsLocal(mem, overlaps, density);
-            Assert.IsTrue(Array.Equals(trueActive, active));
+            Assert.IsTrue(trueActive.SequenceEqual(active));
 
             mem.setWrapAround(false);
             trueActive = new int[] { 0, 1, 4, 5, 8 };
             active = sp.inhibitColumnsLocal(mem, overlaps, density);
-            Assert.IsTrue(Array.Equals(trueActive, active));
+            Assert.IsTrue(trueActive.SequenceEqual(active));
         }
 
         //    /**

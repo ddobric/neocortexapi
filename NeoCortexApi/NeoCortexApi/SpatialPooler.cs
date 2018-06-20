@@ -307,10 +307,10 @@ namespace NeoCortexApi
         public void updateMinDutyCyclesGlobal(Connections c)
         {
             ArrayUtils.fillArray(c.getMinOverlapDutyCycles(),
-                   (int)(c.getMinPctOverlapDutyCycles() * ArrayUtils.max(c.getOverlapDutyCycles())));
+                   (double)(c.getMinPctOverlapDutyCycles() * ArrayUtils.max(c.getOverlapDutyCycles())));
 
             ArrayUtils.fillArray(c.getMinActiveDutyCycles(),
-                    (int)(c.getMinPctActiveDutyCycles() * ArrayUtils.max(c.getActiveDutyCycles())));
+                    (double)(c.getMinPctActiveDutyCycles() * ArrayUtils.max(c.getActiveDutyCycles())));
         }
 
         /**
@@ -781,7 +781,8 @@ namespace NeoCortexApi
          *                          WARNING: potentialPool is sparse, not an array of "1's"
          * @param index             the index of the column being initialized
          * @param connectedPct      A value between 0 or 1 specifying the percent of the input
-         *                          bits that will start off in a connected state.
+         *                          bits that might maximally start off in a connected state.
+         *                          0.7 means, maximally 70% of potential might be connected
          * @return
          */
         public double[] initPermanence(Connections c, int[] potentialPool, int colIndx, double connectedPct)
@@ -799,7 +800,7 @@ namespace NeoCortexApi
                 }
 
                 perm[idx] = perm[idx] < c.getSynPermTrimThreshold() ? 0 : perm[idx];
-                Debug.WriteLine(perm[idx]);
+               
             }
             c.getColumn(colIndx).setProximalPermanences(c, perm);
             return perm;
@@ -962,6 +963,8 @@ namespace NeoCortexApi
             // num of columns, because of specified density.
             int start = sortedWinnerIndices.Count() - numActive;
 
+            //
+            // Here we peek columns with highest overlap
             while (start < sortedWinnerIndices.Count())
             {
                 int i = sortedWinnerIndices[start].Key;
@@ -989,7 +992,7 @@ namespace NeoCortexApi
          *                  of surviving columns is likely to vary.
          * @return  indices of the winning columns
          */
-        public int[] inhibitColumnsLocal(Connections c, double[] overlaps, double density)
+        public virtual int[] inhibitColumnsLocal(Connections c, double[] overlaps, double density)
         {
             double addToWinners = ArrayUtils.max(overlaps) / 1000.0d;
             if (addToWinners == 0)
@@ -1012,6 +1015,7 @@ namespace NeoCortexApi
                     // Take neighborhood columns only
                     double[] neighborhoodOverlaps = ArrayUtils.sub(tieBrokenOverlaps, neighborhood);
 
+                    // Filter neighbor overlaps bigger than column overlap
                     long numBigger = neighborhoodOverlaps.Count(d => d > overlaps[column]);
 
                     //long numBigger=
@@ -1020,6 +1024,7 @@ namespace NeoCortexApi
                     //    .filter(d->d > overlaps[column])
                     //    .count();
 
+                    // density will reduce radius
                     int numActive = (int)(0.5 + density * neighborhood.Length);
                     if (numBigger < numActive)
                     {
