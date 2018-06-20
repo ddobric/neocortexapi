@@ -55,6 +55,7 @@ export class ZoomGraphComponent implements OnInit {
         //zoomType: 'xy',
        // height: '110%',
         animation: false,
+        //zoomType: 'xy',
         options3d: {
             enabled: true,
             alpha: 10,
