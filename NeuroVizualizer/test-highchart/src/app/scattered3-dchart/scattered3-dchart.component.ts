@@ -59,6 +59,7 @@ export class Scattered3DchartComponent implements OnInit {
     credits: { enabled: false },
       chart: {
         //renderTo: 'container',
+        
         height: 600,
         zoomType: 'xy',
         margin: 100,

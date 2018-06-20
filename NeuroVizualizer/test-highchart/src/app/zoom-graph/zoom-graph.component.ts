@@ -24,7 +24,8 @@ export class ZoomGraphComponent implements OnInit {
   msg: any ="test";
   public location = '' ;
   fn:any;
-  newData:any=[];
+  Data1:any=[];
+  Data2:any=[];
 
   constructor(private router: Router) {
     this.location= router.url; 
@@ -55,6 +56,7 @@ export class ZoomGraphComponent implements OnInit {
        // height: '110%',
         animation: false,
         //zoomType: 'xy',
+       
         options3d: {
             enabled: true,
             alpha: 10,
@@ -103,18 +105,27 @@ export class ZoomGraphComponent implements OnInit {
         enabled: false
     },
     series: [{
-        name: 'Reading',
-        colorByPoint: true,
-        allowPointSelect: true,
+        name: 'Ist Data',
+        //colorByPoint: true,
+        //allowPointSelect: true,
+        data: this.Data1,
         marker: {
             radius: 12,
             symbol: 'url(../../../assets/images/cylinder.png)',
             width: 30,
             height: 30
           
-        },
-        data: this.newData
-    
+        }
+
+    },
+    {
+        name: '2nd Data',
+        data: this.Data2,
+        marker: {
+            symbol: 'url(../../../assets/images/dbCylinder.png)',
+            width: 20,
+            height: 20
+        }
     },
     
  {
@@ -122,6 +133,7 @@ export class ZoomGraphComponent implements OnInit {
 }
 ]
 });
+
 
 (function (H) {
   function dragStart(eStart) {
@@ -160,9 +172,17 @@ export class ZoomGraphComponent implements OnInit {
    }
 
   ngOnInit() {
-    this.insertData(10,10,10);
+    this.insertData1(10,10,10);
+    this.insertData2(15.5,15.5,15.5);
   }
-  insertData(xDim,zDim,yDim){
+  update(){
+    //this.chart.series[0].data1[0].update(this.x = 10);
+
+    //this.chart.series[0].data[3].update({ y: 0 });
+
+
+  }
+  insertData1(xDim,zDim,yDim){
     //this.chartOpts.series[0].data = [];
     var x;
     var y;
@@ -171,11 +191,12 @@ export class ZoomGraphComponent implements OnInit {
      for (x = 0; x < xDim; x += 1) {
          for (y = 0; y < yDim; y += 1) { 
             for (z = 0; z < zDim; z += 1) {           
-             this.newData.push([
+             this.Data1.push([
                  x,
                  y,
                  z
-             ]);     
+             ]);   
+             
          }
          
      }
@@ -183,12 +204,35 @@ export class ZoomGraphComponent implements OnInit {
    }
   
    }
-
+   insertData2(x2,z2,y2){
+    //this.chartOpts.series[0].data = [];
+    var x;
+    var y;
+    var z;
+    
+     for (x = 0.5; x < x2; x += 1) {
+         for (y = 0.5; y < y2; y += 1) { 
+            for (z = 0.5; z < z2; z += 1) {           
+             this.Data2.push([
+                 x,
+                 y,
+                 z
+             ]);   
+             
+         }
+         
+     }
+     
+   }
+  
+   }
+/*
   onDrawClicked(): void{
     console.log("blah blah"); 
      // this.newData = [[0, 8, 0], [8, 4, 2], [3, 1, 3], [2, 1, 9], [4, 6, 1], [8, 12, 9]];
      this.newData = this.insertData(5, 5, 5);
      
   }
+  */
 }
 
