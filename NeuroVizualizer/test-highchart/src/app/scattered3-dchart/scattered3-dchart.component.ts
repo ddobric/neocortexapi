@@ -26,8 +26,12 @@ export class Scattered3DchartComponent implements OnInit {
   n:any = 10000;
   i: any;
   //redraw: boolean;
-  
     me: any;
+    posX: any;
+    posY: any;
+    alpha: any;
+    beta: any;
+    sensitivity: any;
 
   sampledata: any =  [
       [0, 0, 0]
@@ -121,6 +125,30 @@ export class Scattered3DchartComponent implements OnInit {
       
   };
   }
+
+  dragStart(eStart){
+    eStart = this.chartOpts.pointer.normalize(eStart);
+    this.posX = eStart.chartX,
+    this.posY = eStart.chartY,
+    this.alpha = this.chartOpts.options.chart.options3d.alpha,
+    this.beta = this.chartOpts.options.chart.options3d.beta,
+    this.sensitivity = 5;
+
+  }
+  drag(e) {
+    e = this.chartOpts.pointer.normalize(e);
+
+    this.chartOpts.update({
+        chart: {
+            options3d: {
+                alpha: this.alpha + (e.chartY - this.posY) / this.sensitivity,
+                beta: this.beta + (this.posX - e.chartX) / this.sensitivity
+            }
+        }
+    });
+   
+  }
+ 
  
 
 initData(xDim,zDim,yDim){
