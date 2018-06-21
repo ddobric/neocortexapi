@@ -34,6 +34,8 @@ scheiss:any;
   constructor(private router: Router) {
     this.insertData1(5,5,5);
     this.insertData2(3.5,45.5,5.5);
+    //this.insertData1(10,10,10);
+   // this.insertData2(15.5,15.5,15.5);
     
     this.location= router.url; 
 
@@ -48,12 +50,15 @@ scheiss:any;
             // Edit chart spacing
             spacingBottom: 15,
             spacingTop: 10,
-            spacingLeft: 10,
+            spacingLeft: 50,
             spacingRight: 10,
+            marginLeft: 170,
             
             // Explicitly tell the width and height of a chart
-            width: null,
-            height: null,
+            //width: null,
+            width: 1200,
+            height: 450,
+            
     
       renderTo: container,
        // margin: 50,

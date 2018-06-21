@@ -8,6 +8,7 @@
 */
 .container{
     margin-left: 150px !important;
+    
 }
 
 .chart{
@@ -15,3 +16,9 @@
 }
 
 
+#container {
+    width: 1200px;
+     max-width: 1200px;
+     height: 300px;
+     margin: 1em auto;
+ }
