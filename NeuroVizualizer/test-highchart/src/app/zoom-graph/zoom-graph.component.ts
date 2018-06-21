@@ -28,11 +28,12 @@ export class ZoomGraphComponent implements OnInit {
   Data1:any=[];
   Data2:any=[];
   updatedData:any=[9, 9 ,0];
-  chart: any;
+  chart: any={};
+scheiss:any;
 
   constructor(private router: Router) {
-    this.insertData1(10,10,10);
-    this.insertData2(15.5,15.5,15.5);
+    this.insertData1(5,5,5);
+    this.insertData2(3.5,45.5,5.5);
     
     this.location= router.url; 
 
@@ -188,6 +189,7 @@ export class ZoomGraphComponent implements OnInit {
   ngOnInit() {
     this.updateData();
   }
+
   updateData(){
     //this.chart.series[0].data1[0].update(this.x = 10);
 
@@ -208,12 +210,9 @@ export class ZoomGraphComponent implements OnInit {
         
             }]
         }});
-
-
-
-    
-
   }
+
+
   insertData1(xDim,zDim,yDim){
     //this.chartOpts.series[0].data = [];
     var x;
@@ -246,9 +245,9 @@ export class ZoomGraphComponent implements OnInit {
          for (y = 0.5; y < y2; y += 1) { 
             for (z = 0.5; z < z2; z += 1) {           
              this.Data2.push([
-                 x,
-                 y,
-                 z
+                 x+1,
+                 y+1,
+                 z+1
              ]);   
              
          }
