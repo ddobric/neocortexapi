@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Testability } from '@angular/core';
 import { Container } from '@angular/compiler/src/i18n/i18n_ast';
 import { Router} from '@angular/router';
+import { TestingCompilerFactory } from '@angular/core/testing/src/test_compiler';
 
 declare var require: any;
 const Highcharts = require('highcharts');
@@ -26,8 +27,13 @@ export class ZoomGraphComponent implements OnInit {
   fn:any;
   Data1:any=[];
   Data2:any=[];
+  updatedData:any=[9, 9 ,0];
+  chart: any;
 
   constructor(private router: Router) {
+    this.insertData1(10,10,10);
+    this.insertData2(15.5,15.5,15.5);
+    
     this.location= router.url; 
 
     let container = document.createElement('chart');
@@ -53,7 +59,7 @@ export class ZoomGraphComponent implements OnInit {
         
         type: 'scatter',
         //zoomType: 'xy',
-       // height: '110%',
+        //height: '110%',
         animation: false,
         //zoomType: 'xy',
        
@@ -80,6 +86,11 @@ export class ZoomGraphComponent implements OnInit {
         text: ''
     },
     plotOptions: {
+        point: {
+            events: {
+                update: this.updateData
+            }
+        },
         scatter: {
             width: 10,
             height: 10,
@@ -135,6 +146,7 @@ export class ZoomGraphComponent implements OnInit {
 });
 
 
+
 (function (H) {
   function dragStart(eStart) {
       eStart = chart.pointer.normalize(eStart);
@@ -168,18 +180,38 @@ export class ZoomGraphComponent implements OnInit {
   H.addEvent(chart.container, 'mousedown', dragStart);
   H.addEvent(chart.container, 'touchstart', dragStart);
 }(Highcharts));
+
+
  
    }
 
   ngOnInit() {
-    this.insertData1(10,10,10);
-    this.insertData2(15.5,15.5,15.5);
+    this.updateData();
   }
-  update(){
+  updateData(){
     //this.chart.series[0].data1[0].update(this.x = 10);
 
-    //this.chart.series[0].data[3].update({ y: 0 });
+    //let chart = new Highcharts.Chart({});
+    //chart.series[0].data[3].update({ y: 0 });
+    this.chart.update({
+        chart: {
+            series: [{
+                name: 'Changed Data',
+                data: this.updatedData,
+                marker: {
+                    radius: 12,
+                    symbol: 'url(../../../assets/images/dbCylinder.png)',
+                    width: 30,
+                    height: 30
+                  
+                }
+        
+            }]
+        }});
 
+
+
+    
 
   }
   insertData1(xDim,zDim,yDim){
