@@ -1,7 +1,8 @@
 <h1>
   Arranged 3d chart 
 </h1>
-<chart (dragstart)="dragStart($event)"  draggable="true" [options]="chartOpts"></chart>
+<!--<chart [options]="chartOpts"></chart>-->
+<chart  [options]="options" (load)="saveInstance($event.context)"></chart>
 <!--<div id="container"></div>-->
 <div  id="sliders">
   <table>

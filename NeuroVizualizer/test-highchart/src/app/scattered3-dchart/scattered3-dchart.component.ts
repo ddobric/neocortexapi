@@ -18,43 +18,51 @@ Highcharts.setOptions({
   styleUrls: ['./scattered3-dchart.component.css']
 })
 export class Scattered3DchartComponent implements OnInit {
-  chartOpts: any={};
+  //chartOpts: any={};
+  options: any= {};
+  chart:any ={};
+  editedData:any=[[2, 4, 0]];
   data:any=[];
   x: any= 9;
   y: any= 30;
   z: any=252;
   n:any = 10000;
   i: any;
+  Data2:any=[];
+  series: any = [];
   //redraw: boolean;
-    me: any;
+    //me: any;
+    chartInstance: Object;
     posX: any;
     posY: any;
     alpha: any;
     beta: any;
-    sensitivity: any;
-
-  sampledata: any =  [
-      [0, 0, 0]
-    ]; 
+   
   constructor() { 
      
-    this.me = this.chartOpts;
+    //this.me = this.chartOpts;
+    
+    this.initData(5.5,6.2,5.8);
+    this.insertData2(6.4, 7.2, 5.9);
+    this.options = Object;
+    this.generateChart(null);  
+    this.saveInstance(this.chartInstance);
+   // this.updateData();
      // this.chartOpts.chart.redraw = false;
+     
+    
   }
 
   ngOnInit() {
 
-    this.initData(10,10,10);
-    this.setOptions(null);   
-  
     }
 
     onInputChange(event): void {
-        this.setOptions(event);
+        this.generateChart(event);
     }
 
-    setOptions(event): void {
-    this.chartOpts = {
+    generateChart(event): void {
+    this.options = {
     exporting: { enabled: false },
     credits: { enabled: false },
       chart: {
@@ -90,6 +98,7 @@ export class Scattered3DchartComponent implements OnInit {
             width: 10,
             height: 10,
             depth: 10,
+            lineWidth:4
             //groupPadding: 0
         }
     },
@@ -122,11 +131,78 @@ export class Scattered3DchartComponent implements OnInit {
         }
        , 
        data:this.data,
-    }]
+    },
+    {
+        name: '2nd Data',
+        data: this.Data2,
+        marker: {
+            symbol: 'url(../../../assets/images/dbCylinder.png)',
+            width: 20,
+            height: 20
+        }
+    },]
       
   };
   }
+  saveInstance(chartInstance) {
+    this.chart = chartInstance;
+}
+/*updateData(){
+    this.chart.series.push({
+        name: 'Clicked Data',
+            data: this.editedData,
+            marker: {
+                symbol: 'url(../../../assets/images/edited.png)',
+                width: 60,
+                height: 60
+            }
 
+    });
+  }*/
+insertData2(x2,z2,y2){
+    //this.chartOpts.series[0].data = [];
+    var x;
+    var y;
+    var z;
+    
+     for (x = 0.5; x < x2; x += 1) {
+         for (y = 0.5; y < y2; y += 1) { 
+            for (z = 0.5; z < z2; z += 1) {           
+             this.Data2.push([
+                 x,
+                 y,
+                 z
+             ]);   
+             
+         }
+         
+     }
+     
+   }
+  
+   }
+  initData(xDim,zDim,yDim){
+    //this.chartOpts.series[0].data = [];
+    var x;
+    var y;
+    var z;
+    for (z = 0; z < zDim; z += 1) { 
+     for (x = 0; x < xDim; x += 1) {
+         for (y = 0; y < yDim; y += 1) {           
+             this.data.push([
+                 x,
+                 y,
+                 z
+             ]);     
+         }
+         
+     }
+     
+   }
+  
+   }
+
+/*
   dragStart(eStart){
     eStart = this.chartOpts.pointer.normalize(eStart);
     this.posX = eStart.chartX,
@@ -149,29 +225,9 @@ export class Scattered3DchartComponent implements OnInit {
     });
    
   }
- 
+ */
  
 
-initData(xDim,zDim,yDim){
-    //this.chartOpts.series[0].data = [];
-    var x;
-    var y;
-    var z;
-    for (z = 0; z < zDim; z += 1) { 
-     for (x = 0; x < xDim; x += 1) {
-         for (y = 0; y < yDim; y += 1) {           
-             this.data.push([
-                 x,
-                 y,
-                 z
-             ]);     
-         }
-         
-     }
-     
-   }
-  
-   }
 
 }
 

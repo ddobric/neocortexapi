@@ -1,7 +1,6 @@
 import { Component, OnInit, Testability } from '@angular/core';
-import { Container } from '@angular/compiler/src/i18n/i18n_ast';
 import { Router} from '@angular/router';
-import { TestingCompilerFactory } from '@angular/core/testing/src/test_compiler';
+//import { Chart }            from 'angular2-highcharts'; 
 
 declare var require: any;
 const Highcharts = require('highcharts');
@@ -27,25 +26,23 @@ export class ZoomGraphComponent implements OnInit {
   fn:any;
   Data1:any=[];
   Data2:any=[];
-  updatedData:any=[9, 9 ,0];
-  chart: any={};
-scheiss:any;
+  editedData:any=[[0, 4, 0]];
+  chart: any = {};
+
+
 
   constructor(private router: Router) {
-    this.insertData1(5,5,5);
-    this.insertData2(3.5,45.5,5.5);
+    
+    this.insertData1(7, 7, 7);
+    this.insertData2(3.5, 4.5, 5.5);
     //this.insertData1(10,10,10);
    // this.insertData2(15.5,15.5,15.5);
-    
     this.location= router.url; 
-
     let container = document.createElement('chart');
     document.activeElement.appendChild(container);
-
     let chart = new Highcharts.Chart({
       exporting: { enabled: false },
       credits: { enabled: false },
-    
         chart: {
             // Edit chart spacing
             spacingBottom: 15,
@@ -53,22 +50,18 @@ scheiss:any;
             spacingLeft: 50,
             spacingRight: 10,
             marginLeft: 170,
-            
+            margin: [70, 50, 60, 80],
             // Explicitly tell the width and height of a chart
             //width: null,
             width: 1200,
             height: 450,
-            
-    
       renderTo: container,
        // margin: 50,
-        
         type: 'scatter',
         //zoomType: 'xy',
         //height: '110%',
         animation: false,
         //zoomType: 'xy',
-       
         options3d: {
             enabled: true,
             alpha: 10,
@@ -76,7 +69,6 @@ scheiss:any;
             depth: 250,
             viewDistance: 5,
             fitToPlot: false,
-            
             frame: {
                 bottom: { size: 2, color: 'rgba(0,0,0,0.02)' },
                 back: { size: 15, color: 'rgba(0,0,0,0.04)' },
@@ -94,45 +86,48 @@ scheiss:any;
     plotOptions: {
         point: {
             events: {
-                update: this.updateData
+               // update: this.updateData
             }
         },
         scatter: {
-            width: 10,
-            height: 10,
-            depth: 10
+           name: 'Clicked Data',
+            lineWidth:4
         }
-    },
-    yAxis: {
-        min: 0,
-        max: 10,
-        title: null
     },
     xAxis: {
         min: 0,
-        max: 10,
-        gridLineWidth: 1
+        max: 15,
+        gridLineWidth: 3
+    },
+    yAxis: {
+        min: 0,
+        max: 15,
+        title: null
     },
     zAxis: {
         min: 0,
-        max: 10,
+        max: 15,
         showFirstLabel: false
     },
     legend: {
         enabled: false
     },
-    series: [{
+    series: [{  
         name: 'Ist Data',
         //colorByPoint: true,
         //allowPointSelect: true,
         data: this.Data1,
-        marker: {
-            radius: 12,
+               marker: {
             symbol: 'url(../../../assets/images/cylinder.png)',
-            width: 30,
-            height: 30
-          
-        }
+            width: 25,
+            height: 25 
+        },
+        // to changes the color of the reading bulbble
+        //zoneAxis: 'y',
+       // zones: [{
+           // value: 5,
+          ////  color: 'red',
+       // }],
 
     },
     {
@@ -144,15 +139,21 @@ scheiss:any;
             height: 20
         }
     },
+    {
+        name: 'Clicked Data',
+        data: this.editedData,
+        marker: {
+            symbol: 'url(../../../assets/images/edited.png)',
+            width: 30,
+            height: 30
+        }
+    },
     
  {
     
     }    
 ]
 });
-
-
-
 (function (H) {
   function dragStart(eStart) {
       eStart = chart.pointer.normalize(eStart);
@@ -188,38 +189,48 @@ scheiss:any;
 }(Highcharts));
 
 
- 
-   }
+ /*
+ // This works fine
+chart.series[0].update({
+    marker: {
+        radius:30,
+        symbol: 'url(../../../assets/images/cylinder.png)',
+        width: 70,
+        height: 70
+        
+    }
+});
+*/
 
+/*
+// this works too fine to add a single point in graph
+chart.series[0].data[0].update({
+    x:20,
+    marker: {
+        symbol: 'url(../../../assets/images/cylinder.png)',
+        width: 40,
+        height: 40
+        
+    }
+});
+*/
+   }
   ngOnInit() {
     this.updateData();
   }
-
   updateData(){
-    //this.chart.series[0].data1[0].update(this.x = 10);
+    this.chart.series.push({
+        name: 'Clicked Data',
+            data: this.editedData,
+            marker: {
+                symbol: 'url(../../../assets/images/edited.png)',
+                width: 60,
+                height: 60
+            }
 
-    //let chart = new Highcharts.Chart({});
-    //chart.series[0].data[3].update({ y: 0 });
-    this.chart.update({
-        chart: {
-            series: [{
-                name: 'Changed Data',
-                data: this.updatedData,
-                marker: {
-                    radius: 12,
-                    symbol: 'url(../../../assets/images/dbCylinder.png)',
-                    width: 30,
-                    height: 30
-                  
-                }
-        
-            }]
-        }});
+    });
   }
-
-
   insertData1(xDim,zDim,yDim){
-    //this.chartOpts.series[0].data = [];
     var x;
     var y;
     var z;
@@ -262,14 +273,7 @@ scheiss:any;
    }
   
    }
-/*
-  onDrawClicked(): void{
-    console.log("blah blah"); 
-     // this.newData = [[0, 8, 0], [8, 4, 2], [3, 1, 3], [2, 1, 9], [4, 6, 1], [8, 12, 9]];
-     this.data1 = this.insertData(5, 5, 5);
-     this.data2 = this.insertData(3, 3, 3);
-     
-  }
-  */
+ 
+
 }
 

@@ -11,6 +11,7 @@ import { ZoomGraphComponent } from './zoom-graph/zoom-graph.component';
 import { HomeComponent } from './home/home.component';
 import { AppRoutingModule } from './app-routing-module';
 import { ScatterPointsComponent } from './scatter-points/scatter-points.component';
+
 declare var require: any;
 
 @NgModule({
@@ -21,13 +22,16 @@ declare var require: any;
     Scattered3DchartComponent,
     ZoomGraphComponent,
     HomeComponent,
-    ScatterPointsComponent
+    ScatterPointsComponent,
+    
+
   ],
   imports: [
     BrowserModule,
     FormsModule,
     AppRoutingModule,
     RouterModule,
+    //ChartModule,
     ChartModule.forRoot(
     require('highcharts'),
     require('highcharts/modules/exporting'),
