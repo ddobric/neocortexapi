@@ -1,8 +1,13 @@
 <h1>
   Arranged 3d chart 
 </h1>
+<pre>
+  <input type="text"  #pointsInput>
+  <button type="submit" (click) = 'addPoints(pointsInput.value)'>Add</button>
+</pre>
 <!--<chart [options]="chartOpts"></chart>-->
-<chart  [options]="options" (load)="saveInstance($event.context)"></chart>
+<!--<chart id="container" [options]="options" (load)="saveInstance($event.context, chart)"></chart>-->
+<chart  [options]="options" (load)="saveInstance($event.context, chart)"></chart>
 <!--<div id="container"></div>-->
 <div  id="sliders">
   <table>
@@ -20,5 +25,6 @@
       </tr>
   </table>
 </div>
+
 
 

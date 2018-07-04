@@ -11,9 +11,13 @@ import { ZoomGraphComponent } from './zoom-graph/zoom-graph.component';
 import { HomeComponent } from './home/home.component';
 import { AppRoutingModule } from './app-routing-module';
 import { ScatterPointsComponent } from './scatter-points/scatter-points.component';
+import { HighchartsStatic } from 'angular2-highcharts/dist/HighchartsService';
 
+//declare var require: any;
 declare var require: any;
-
+export function highchartsFactory() {
+  return require('highcharts');
+}
 @NgModule({
   declarations: [
     AppComponent,
@@ -40,7 +44,8 @@ declare var require: any;
     
   )
   ],
-  providers: [],
+  providers: [{provide: HighchartsStatic,
+    useFactory: highchartsFactory,}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

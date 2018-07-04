@@ -3,15 +3,13 @@ import { HighchartsStatic, HighchartsService } from 'angular2-highcharts/dist/Hi
 
 declare var require: any;
 
+/*
 const Highcharts = require('highcharts');
- 
 Highcharts.setOptions({
   //colors: ['#50B432'],
   redraw: false,
-
-  
 });
-
+*/
 @Component({
   selector: 'app-scattered3-dchart',
   templateUrl: './scattered3-dchart.component.html',
@@ -22,54 +20,62 @@ export class Scattered3DchartComponent implements OnInit {
   options: any= {};
   chart:any ={};
   editedData:any=[[2, 4, 0]];
-  data:any=[];
+  dataSer1:any=[];
   x: any= 9;
   y: any= 30;
   z: any=252;
-  n:any = 10000;
-  i: any;
-  Data2:any=[];
-  series: any = [];
-  //redraw: boolean;
+  dataSer2:any=[];
     //me: any;
     chartInstance: Object;
     posX: any;
     posY: any;
     alpha: any;
     beta: any;
-   
+    points: any;
+    abc:any = [[7, 3, 5]];
+    test: any = [];
+    symbol:any;
   constructor() { 
-     
+    this.initData(3,3,3);
+    this.insertData2(4, 4, 5);
+    this.generateChart(null); 
     //this.me = this.chartOpts;
-    
-    this.initData(5.5,6.2,5.8);
-    this.insertData2(6.4, 7.2, 5.9);
-    this.options = Object;
-    this.generateChart(null);  
-    this.saveInstance(this.chartInstance);
-   // this.updateData();
+    //this.options = Object;
+   // this.saveInstance(this.chartInstance, this.chart);
      // this.chartOpts.chart.redraw = false;
-     
-    
   }
+ngOnInit() {
+    //this.ngAfterViewInit();
+;
+}
 
-  ngOnInit() {
-
-    }
 
     onInputChange(event): void {
         this.generateChart(event);
     }
 
+        addPoints(points:String) {
+           this.dataSer1[0] = eval("[" + points + "]"); 
+           this.chart.nativeChart.series[0].setData(this.dataSer1);
+           //this.chart.nativeChart.series.dataSer1[0].marker.symbol.width= 80;
+           this.chart.nativeChart.series[0].setData(this.dataSer1.marker.symbol.width= 80);
+
+           this.chart.nativeChart.update(this.options);
+ 
+           //this.chart.nativeChart.series.dataSer1[0].marker.symbol.width= 80;
+         
+          }
+        
     generateChart(event): void {
     this.options = {
+    nativeChart: null ,
     exporting: { enabled: false },
     credits: { enabled: false },
       chart: {
         //renderTo: 'container',
         
         height: 600,
-        zoomType: 'xy',
+        //zoomType: 'xy',
         margin: 100,
         type: 'scatter',
         animation: false,
@@ -121,20 +127,19 @@ export class Scattered3DchartComponent implements OnInit {
         enabled: false
     },
     series: [{
-        name: 'Reading',
+        name: 'Ist Data',
         colorByPoint: true,
         redraw: false,
         marker:{
             symbol: 'url(../../../assets/images/cylinder.png)',
             width: 30,
             height: 30
-        }
-       , 
-       data:this.data,
+        }, 
+       data:this.dataSer1,
     },
     {
         name: '2nd Data',
-        data: this.Data2,
+        data: this.dataSer2,
         marker: {
             symbol: 'url(../../../assets/images/dbCylinder.png)',
             width: 20,
@@ -144,31 +149,20 @@ export class Scattered3DchartComponent implements OnInit {
       
   };
   }
-  saveInstance(chartInstance) {
-    this.chart = chartInstance;
+  saveInstance(chartInstance, chart) {
+    chart.nativeChart = chartInstance;
 }
-/*updateData(){
-    this.chart.series.push({
-        name: 'Clicked Data',
-            data: this.editedData,
-            marker: {
-                symbol: 'url(../../../assets/images/edited.png)',
-                width: 60,
-                height: 60
-            }
 
-    });
-  }*/
-insertData2(x2,z2,y2){
+insertData2(xDim,yDim,zDim){
     //this.chartOpts.series[0].data = [];
     var x;
     var y;
     var z;
     
-     for (x = 0.5; x < x2; x += 1) {
-         for (y = 0.5; y < y2; y += 1) { 
-            for (z = 0.5; z < z2; z += 1) {           
-             this.Data2.push([
+     for (x = 0.5; x < xDim; x += 1) {
+         for (y = 0.5; y < yDim; y += 1) { 
+            for (z = 0.5; z < zDim; z += 1) {           
+             this.dataSer2.push([
                  x,
                  y,
                  z
@@ -189,7 +183,7 @@ insertData2(x2,z2,y2){
     for (z = 0; z < zDim; z += 1) { 
      for (x = 0; x < xDim; x += 1) {
          for (y = 0; y < yDim; y += 1) {           
-             this.data.push([
+             this.dataSer1.push([
                  x,
                  y,
                  z
@@ -202,6 +196,20 @@ insertData2(x2,z2,y2){
   
    }
 
+   
+
+/*updateData(){
+    this.chart.series.push({
+        name: 'Clicked Data',
+            data: this.editedData,
+            marker: {
+                symbol: 'url(../../../assets/images/edited.png)',
+                width: 60,
+                height: 60
+            }
+
+    });
+  }*/
 /*
   dragStart(eStart){
     eStart = this.chartOpts.pointer.normalize(eStart);

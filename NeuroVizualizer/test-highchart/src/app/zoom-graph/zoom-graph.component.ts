@@ -154,6 +154,7 @@ export class ZoomGraphComponent implements OnInit {
     }    
 ]
 });
+/*
 (function (H) {
   function dragStart(eStart) {
       eStart = chart.pointer.normalize(eStart);
@@ -188,7 +189,7 @@ export class ZoomGraphComponent implements OnInit {
   H.addEvent(chart.container, 'touchstart', dragStart);
 }(Highcharts));
 
-
+*/
  /*
  // This works fine
 chart.series[0].update({
