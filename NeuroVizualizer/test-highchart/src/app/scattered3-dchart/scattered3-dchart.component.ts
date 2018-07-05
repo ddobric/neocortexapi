@@ -34,6 +34,7 @@ export class Scattered3DchartComponent implements OnInit {
     xCoordinate : any;
     yCoordinate : any;
     zCoordinate : any;
+    //lineColour: any = "red";
     constructor() {
         this.initData(3, 3, 3);
         this.insertData2(4, 4, 5);
@@ -51,6 +52,17 @@ export class Scattered3DchartComponent implements OnInit {
 
     onInputChange(event): void {
         this.generateChart(event);
+    }
+    xAxisColour(xAxisColor: String){
+       // this.lineColour = colour;
+        //this.chart.nativeChart.options.xAxis.gridLineColor= "red";
+        this.options.xAxis.gridLineColor = xAxisColor;
+        this.chart.nativeChart.update(this.options);
+
+    }
+    yAxisColour(yAxisColor: string){
+        this.options.yAxis.gridLineColor = yAxisColor;
+        this.chart.nativeChart.update(this.options);
     }
 
     addPoints(points: String) {
@@ -128,19 +140,22 @@ export class Scattered3DchartComponent implements OnInit {
                     //groupPadding: 0
                 }
             },
-            yAxis: {
-                min: 0,
-                max: 10,
-                title: null
-            },
             xAxis: {
                 min: 0,
                 max: 10,
-                gridLineWidth: 1
+                gridLineWidth: 3,
+                //gridLineColor: this.lineColour
+            },
+            yAxis: {
+                min: 0,
+                max: 10,
+                gridLineWidth: 3,
+                title: null
             },
             zAxis: {
                 min: 0,
                 max: 10,
+                gridLineWidth: 3,
                 showFirstLabel: false
             },
             legend: {
