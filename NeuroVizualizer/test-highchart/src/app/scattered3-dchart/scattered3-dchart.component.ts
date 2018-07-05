@@ -31,6 +31,9 @@ export class Scattered3DchartComponent implements OnInit {
     posY: any;
     alpha: any;
     beta: any;
+    xCoordinate : any;
+    yCoordinate : any;
+    zCoordinate : any;
     constructor() {
         this.initData(3, 3, 3);
         this.insertData2(4, 4, 5);
@@ -53,47 +56,19 @@ export class Scattered3DchartComponent implements OnInit {
     addPoints(points: String) {
 
 
-        // this.dataSer1[0] = eval("[" + points + "]");
-        this.dataSer1[3] = [6,6, 6];
+         this.dataSer1[0] = eval("[" + points + "]");
 
-        // ,
-        //     marker: {
-        //         enabled: true,
-        //         symbol: 'url(../../../assets/images/edited.png)',
-        //         width: 40,
-        //         height: 40
-        //     }
-
-        this.chart.nativeChart.series[0].data[3].update({y:6, marker:{color: 'rgba(0,0,0,0.02)', width:100}});
-
+        var str = this.dataSer1[0]; 
+        var xCoordinateStr = str.slice(0, 1)//x
+        var yCoordinateStr = str.slice(1, 2); //y
+        var zCoordinateStr = str.slice(2, 3)//z
+        this.xCoordinate = parseInt(xCoordinateStr);
+        this.yCoordinate = parseInt(yCoordinateStr);
+        this.zCoordinate = parseInt(zCoordinateStr);
+        //this.chart.nativeChart.series[0].data[0].update({y:this.yCoordinate, marker:{symbol:'url(../../../assets/images/edited.png)', width:10}});
+        this.chart.nativeChart.series[0].data[0].update({x:this.xCoordinate, y:this.yCoordinate, z:this.zCoordinate,marker:{symbol:'url(../../../assets/images/edited.png)', width:50, height:50}});
         //this.chart.nativeChart.series[0].setData(this.dataSer1);
-        //this.options.series[0].marker.width = 80;
         this.chart.nativeChart.update(this.options);
-        //this.chart.nativeChart.series.dataSer1[0].marker.width= 80;
-        // this.chart.nativeChart.series[0].setData(this.options.data.marker.width= 80);
-        //this.chart.nativeChart.series.SVGRenderer.symbol.width= 80;
-        /*
-        //doesnt change the size
-        this.options.series[this.dataSer1[0]]= [{
-          marker:{width : 80}
-        }];
-        */
-        /*
-         this.options.series[0]= [{
-             data: this.dataSer1[0],
-             marker:{width : 80}
-           }];
-           */
-        /*
-      this.options.series[0]= [{
-          dataSer1: {
-          marker : {
-            enabled: true,
-              width : 80
-            }
-        }
-        }];*/
-
 
         //this.chart.nativeChart.series.dataSer1[0].marker.width= 80;
         /* this woks fine for whole series
