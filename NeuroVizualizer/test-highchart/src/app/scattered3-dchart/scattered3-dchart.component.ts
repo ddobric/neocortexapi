@@ -31,10 +31,6 @@ export class Scattered3DchartComponent implements OnInit {
     posY: any;
     alpha: any;
     beta: any;
-    points: any;
-    abc:any = [[7, 3, 5]];
-    test: any = [];
-    symbol:any;
   constructor() { 
     this.initData(3,3,3);
     this.insertData2(4, 4, 5);
@@ -57,13 +53,43 @@ ngOnInit() {
         addPoints(points:String) {
            this.dataSer1[0] = eval("[" + points + "]"); 
            this.chart.nativeChart.series[0].setData(this.dataSer1);
-           //this.chart.nativeChart.series.dataSer1[0].marker.symbol.width= 80;
-           this.chart.nativeChart.series[0].setData(this.dataSer1.marker.symbol.width= 80);
-
+           this.options.series[0].marker.width = 80;
            this.chart.nativeChart.update(this.options);
- 
-           //this.chart.nativeChart.series.dataSer1[0].marker.symbol.width= 80;
+           //this.chart.nativeChart.series.dataSer1[0].marker.width= 80;
+          // this.chart.nativeChart.series[0].setData(this.options.data.marker.width= 80);
+          //this.chart.nativeChart.series.SVGRenderer.symbol.width= 80;
+          /*
+          //doesnt change the size
+          this.options.series[this.dataSer1[0]]= [{
+            marker:{width : 80}
+          }];
+          */
+         /*
+          this.options.series[0]= [{
+              data: this.dataSer1[0],
+              marker:{width : 80}
+            }];
+            */
+            /*
+          this.options.series[0]= [{
+              dataSer1: {
+              marker : {
+                enabled: true,
+                  width : 80
+                }
+            }
+            }];*/
          
+ 
+           //this.chart.nativeChart.series.dataSer1[0].marker.width= 80;
+         /* this woks fine for whole series
+           this.options.series = [{
+            marker:{
+                width: 80
+              }}];
+              */
+                      //works fine fora series
+         // this.options.series[0].marker.width = 80;
           }
         
     generateChart(event): void {
@@ -100,6 +126,11 @@ ngOnInit() {
         text: ''
     },
     plotOptions: {
+        series: {
+            marker: {
+                enabled: true
+            }
+        },
         scatter: {
             width: 10,
             height: 10,
@@ -131,6 +162,7 @@ ngOnInit() {
         colorByPoint: true,
         redraw: false,
         marker:{
+            enabled: true,
             symbol: 'url(../../../assets/images/cylinder.png)',
             width: 30,
             height: 30
@@ -141,6 +173,7 @@ ngOnInit() {
         name: '2nd Data',
         data: this.dataSer2,
         marker: {
+            enabled: true,
             symbol: 'url(../../../assets/images/dbCylinder.png)',
             width: 20,
             height: 20
