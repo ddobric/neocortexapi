@@ -16,25 +16,17 @@ Highcharts.setOptions({
     styleUrls: ['./scattered3-dchart.component.css']
 })
 export class Scattered3DchartComponent implements OnInit {
-    //chartOpts: any={};
     options: any = {};
     chart: any = {};
-    editedData: any = [[2, 4, 0]];
     dataSer1: any = [];
     x: any = 9;
     y: any = 30;
     z: any = 252;
     dataSer2: any = [];
-    //me: any;
     chartInstance: Object;
-    posX: any;
-    posY: any;
-    alpha: any;
-    beta: any;
     xCoordinate : any;
     yCoordinate : any;
     zCoordinate : any;
-    //lineColour: any = "red";
     constructor() {
         this.initData(3, 3, 3);
         this.insertData2(4, 4, 5);
@@ -45,10 +37,7 @@ export class Scattered3DchartComponent implements OnInit {
         // this.chartOpts.chart.redraw = false;
     }
     ngOnInit() {
-        //this.ngAfterViewInit();
-        ;
     }
-
 
     onInputChange(event): void {
         this.generateChart(event);
@@ -66,10 +55,7 @@ export class Scattered3DchartComponent implements OnInit {
     }
 
     addPoints(points: String) {
-
-
          this.dataSer1[0] = eval("[" + points + "]");
-
         var str = this.dataSer1[0]; 
         var xCoordinateStr = str.slice(0, 1)//x
         var yCoordinateStr = str.slice(1, 2); //y
@@ -100,7 +86,7 @@ export class Scattered3DchartComponent implements OnInit {
             credits: { enabled: false },
             chart: {
                 //renderTo: 'container',
-
+                // when you render the chart to container then container should be added in chart tag in html file
                 height: 600,
                 //zoomType: 'xy',
                 margin: 100,
