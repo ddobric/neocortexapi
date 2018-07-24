@@ -11,7 +11,7 @@ namespace NeoCortexApi.Utility
      * 
      * @author 
      */
-    public class IntGenerator : Random{
+    public class IntGenerator{
     /** serial version */
     private static readonly long serialVersionUID = 1L;
 

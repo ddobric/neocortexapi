@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi.Utility;
 using System;
+using System.Collections.Generic;
 
 namespace UnitTestsProject
 {
@@ -8,7 +9,7 @@ namespace UnitTestsProject
     public class UnitTest1
     {
         [TestMethod]
-        [DataRow(new int[] { 2048, 6})]
+        [DataRow(new int[] { 2048, 6 })]
         [DataRow(new int[] { 100, 20 })]
         public void TestMethod1(int[] data)
         {
@@ -45,8 +46,8 @@ namespace UnitTestsProject
         [TestMethod]
         public void TestMethod2()
         {
-            Topology t = new Topology(new int[] { 2048, 40});
-            int[] coords = new int[] { 200,10};
+            Topology t = new Topology(new int[] { 2048, 40 });
+            int[] coords = new int[] { 200, 10 };
             var indx = t.indexFromCoordinates(coords);
         }
 
@@ -66,7 +67,7 @@ namespace UnitTestsProject
         [TestMethod]
         public void ModuloTest()
         {
-            int r = ArrayUtils.modulo(2,7);
+            int r = ArrayUtils.modulo(2, 7);
             r = ArrayUtils.modulo(3, 7);
             r = ArrayUtils.modulo(6, 7);
             r = ArrayUtils.modulo(7, 7);
@@ -74,7 +75,7 @@ namespace UnitTestsProject
             r = ArrayUtils.modulo(14, 7);
             r = ArrayUtils.modulo(-14, 7);
             r = ArrayUtils.modulo(15, 7);
-            Assert.IsTrue(r==1);
+            Assert.IsTrue(r == 1);
 
             r = ArrayUtils.modulo(-15, 7);
             Assert.IsTrue(r == 6);
@@ -84,6 +85,23 @@ namespace UnitTestsProject
 
             r = ArrayUtils.modulo(-20, 7);
             Assert.IsTrue(r == 1);
+        }
+
+
+        [TestMethod]
+        public void GroupByTest()
+        {
+            Func<int,int> fnc = (e) => e + 1;
+
+            var grp = new GroupBy<int, int>(new List<int>(new int[] { 1, 2, 3, 4, 5, 6, 7 }), fnc);
+
+            int i = 1;
+            do
+            {
+                Assert.IsTrue(grp.Current.Value.Key == i);
+                Assert.IsTrue(grp.Current.Value.Value == fnc(i));
+                i++;
+            }while(grp.MoveNext());
         }
     }
 }
