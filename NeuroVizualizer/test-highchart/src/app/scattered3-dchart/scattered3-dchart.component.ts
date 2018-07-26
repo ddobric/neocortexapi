@@ -3,13 +3,13 @@ import { HighchartsStatic, HighchartsService } from 'angular2-highcharts/dist/Hi
 
 declare var require: any;
 
-/*
+
 const Highcharts = require('highcharts');
 Highcharts.setOptions({
   //colors: ['#50B432'],
   redraw: false,
 });
-*/
+
 @Component({
     selector: 'app-scattered3-dchart',
     templateUrl: './scattered3-dchart.component.html',
@@ -27,20 +27,25 @@ export class Scattered3DchartComponent implements OnInit {
     xCoordinate : any;
     yCoordinate : any;
     zCoordinate : any;
+    posX: any;  posY: any;  alpha: any;  beta: any; sensitivity: any; eStart: any; e: any; 
     constructor() {
         this.initData(3, 3, 3);
         this.insertData2(4, 4, 5);
         this.generateChart(null);
-        //this.me = this.chartOpts;
-        //this.options = Object;
-        // this.saveInstance(this.chartInstance, this.chart);
-        // this.chartOpts.chart.redraw = false;
-    }
-    ngOnInit() {
+       
     }
 
-    onInputChange(event): void {
+
+    ngOnInit() {
+
+        // Highcharts.addEvent(this.options.chart.renderTo, 'mousedown', this.dragStart(this.eStart));
+       // Highcharts.addEvent(this.options.chart, 'mousedown', this.dragStart);
+        
+    }
+
+    onInputChange(event): any {
         this.generateChart(event);
+
     }
     xAxisColour(xAxisColor: String){
        // this.lineColour = colour;
@@ -68,6 +73,21 @@ export class Scattered3DchartComponent implements OnInit {
         //this.chart.nativeChart.series[0].setData(this.dataSer1);
         this.chart.nativeChart.update(this.options);
 
+        document.addEventListener("mouseup", (event)=> {
+            this.onInputChange("");
+            this.alpha = this.chart.nativeChart.pointer.normalize(event);
+    
+            this.chart.nativeChart.update({
+                chart: {
+                    options3d: {
+                        alpha:  this.alpha,
+                        beta:  this.beta 
+                    }
+                }
+            });
+        
+        });
+
         //this.chart.nativeChart.series.dataSer1[0].marker.width= 80;
         /* this woks fine for whole series
           this.options.series = [{
@@ -80,12 +100,15 @@ export class Scattered3DchartComponent implements OnInit {
     }
 
     generateChart(event): void {
+        let container = document.createElement("container");
+        document.body.appendChild(container);
+
         this.options = {
             nativeChart: null,
             exporting: { enabled: false },
             credits: { enabled: false },
             chart: {
-                //renderTo: 'container',
+                renderTo : container,
                 // when you render the chart to container then container should be added in chart tag in html file
                 height: 600,
                 //zoomType: 'xy',
@@ -171,9 +194,16 @@ export class Scattered3DchartComponent implements OnInit {
             },]
 
         };
+
+       
     }
+
     saveInstance(chartInstance, chart) {
-        chart.nativeChart = chartInstance;
+        this.chart.nativeChart = chartInstance;
+        chartInstance.container.nativeChart = chartInstance;
+        chartInstance.container.options = this.options;
+        chartInstance.container.dragFnc = this.drag;
+        Highcharts.addEvent(chartInstance.container, 'mousedown', this.dragStart);
     }
 
     insertData2(xDim, yDim, zDim) {
@@ -219,7 +249,36 @@ export class Scattered3DchartComponent implements OnInit {
 
     }
 
+    dragStart(eStart): any {
+      
+        eStart = this.nativeChart.pointer.normalize(eStart);
+        this.posX = eStart.chartX;
+        this.posY = eStart.chartY;
+        this.alpha = this.options.chart.options3d.alpha;
+        this.beta = this.options.chart.options3d.beta;
+        this.sensitivity = 5; // lower is more sensitive
+        this.dragFnc(this.e);
 
+        var unbindDragMouse = Highcharts.addEvent(document, 'mousemove', this.dragFnc);
+        Highcharts.addEvent(document, 'mouseup', this.options.chart.unbindDragMouse);
+        eStart= this.eStart;
+       // return this.eStart;
+    }
+     drag(e): any{
+        // Get e.chartX and e.chartY
+        e = this.nativeChart.pointer.normalize(e);
+
+        this.nativeChart.update({
+            chart: {
+                options3d: {
+                    alpha: this.alpha + (e.chartY - this.posY) / this.sensitivity,
+                    beta: this.beta + (this.posX - e.chartX) / this.sensitivity
+                }
+            }
+        }, undefined, undefined, false);
+        this.e = e;
+        //return this.e;
+    }
 
     /*updateData(){
         this.chart.series.push({
