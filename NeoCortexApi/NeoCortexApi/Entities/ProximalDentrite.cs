@@ -5,7 +5,9 @@ using System.Text;
 namespace NeoCortexApi.Entities
 {
 
-
+    /// <summary>
+    /// Defines th eproximal dentritte segment.
+    /// </summary>
     public class ProximalDendrite : Segment
     {
         /** keep it simple */

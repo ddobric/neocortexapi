@@ -196,26 +196,7 @@ namespace NeoCortexApi.Entities
             return sb.ToString();
         }
 
-        /**
-         * {@inheritDoc}
-         * 
-         * <em> Note: All comparisons use the segment's index only </em>
-         */
-      //  @Override
-    //public int CompareTo(Synapse arg0)
-    //    {
-    //        if (this.segment.Equals(arg0.segment))
-    //        {
-
-    //        }
-    //        else
-    //            return false;
-    //        return boxedIndex.CompareTo(arg0.boxedIndex);
-    //    }
-
-        /* (non-Javadoc)
-         * @see java.lang.Object#hashCode()
-         */
+    
 
         public override int GetHashCode()
         {

@@ -179,7 +179,7 @@ namespace NeoCortexApi
 
             updateBookeepingVars(c, learn);
 
-            // Gets overlap ove every single olumn.
+            // Gets overlap ove every single column.
             var overlaps = calculateOverlap(c, inputVector);
             overlaps = c.setOverlaps(overlaps);
 
@@ -564,7 +564,8 @@ namespace NeoCortexApi
             // which are used in a case of none-connections to input.
             ArrayUtils.fillArray(permChanges, -1 * c.getSynPermInactiveDec());
 
-            // Then we update all connected permChanges to increment vaues for connected values.
+            // Then we update all connected permChanges to increment values for connected values.
+            // Permanences are set in conencted input bits to default incremental value.
             ArrayUtils.setIndexesTo(permChanges, inputIndices.ToArray(), c.getSynPermActiveInc());
             for (int i = 0; i < activeColumns.Length; i++)
             {

@@ -1775,8 +1775,7 @@ namespace NeoCortexApi.Utility
         }
 
         /**
-         * Returns the count of values in the specified array that are
-         * greater than the specified compare value
+         * Returns the number of values in the specified array that are greater than the specified 'compare' value.
          *
          * @param compare the value to compare to
          * @param array   the values being compared
