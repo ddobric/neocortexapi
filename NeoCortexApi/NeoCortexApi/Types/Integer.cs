@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NeoCortexApi.Entities
 {
-    public class Integer
+    public class Integer : IEquatable<Integer>
     {
         public int Value { get; set; }
         public static int MaxValue { get { return int.MaxValue; } }
@@ -12,6 +12,7 @@ namespace NeoCortexApi.Entities
         public static int MinValue { get { return int.MinValue; } }
 
         public Integer() { }
+
         public Integer(int value) { Value = value; }
 
 
@@ -27,5 +28,19 @@ namespace NeoCortexApi.Entities
             return string.Format("Integer({0})", Value);
         }
 
+        public static bool operator ==(Integer x, Integer y)
+        {
+            return x.Value == y.Value;
+        }
+
+        public static bool operator !=(Integer x, Integer y)
+        {
+            return x.Value != y.Value;
+        }
+
+        public bool Equals(Integer other)
+        {
+            return this.Value == other.Value;
+        }
     }
 }

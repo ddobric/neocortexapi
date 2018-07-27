@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NeoCortexApi.Entities;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -44,21 +45,23 @@ namespace NeoCortexApi.Utility
      * @param <T>
      * @param <R>
      */
-    public class GroupBy<T, R> : IEnumerator<KeyValuePair<T, R>?>
+    public class GroupBy<T, R> : IEnumerable<Pair<T, R>>, IEnumerator<Pair<T, R>>
     {
 
         /** serial version */
         //private static readonly long serialVersionUID = 1L;
 
+        private bool m_IsStarted;
+
         private List<T> m_ElementList;
         private Func<T, R> m_Func;
         private IntGenerator m_IntegerGenerator;
-        private KeyValuePair<T, R>? m_next;
+        private Pair<T, R> m_CurrentElement;
 
 
-        public KeyValuePair<T, R>? Current => this.m_next;
+        public Pair<T, R> Current => this.m_CurrentElement;
 
-        object IEnumerator.Current => this.m_next;
+        object IEnumerator.Current => this.m_CurrentElement;
 
 
         #region Constructors and Initialization
@@ -80,8 +83,9 @@ namespace NeoCortexApi.Utility
 
             if (m_IntegerGenerator.hasNext())
             {
-                T t = m_ElementList[m_IntegerGenerator.next()];
-                m_next = new KeyValuePair<T, R>(t, func(t));
+                T t = m_ElementList[m_IntegerGenerator.get()];
+                m_IsStarted = false;
+                m_CurrentElement = new Pair<T, R>(t, func(t));
             }
         }
 
@@ -107,9 +111,9 @@ namespace NeoCortexApi.Utility
          * {@inheritDoc}
          */
         // @Override
-        public KeyValuePair<T, R> peek()
+        public Pair<T, R> peek()
         {
-            return m_next.Value;
+            return m_CurrentElement;
         }
 
         /**
@@ -118,34 +122,40 @@ namespace NeoCortexApi.Utility
         // @Override
         public bool hasNext()
         {
-            return m_next != null;
+            return m_CurrentElement != null;
         }
 
-        /**
-         * {@inheritDoc}
-         */
-        //@Override
-        public KeyValuePair<T, R>? next()
-        {
-            // T t = range.hasNext() ? iter[range.next()] : null;
-            //m_next = t != null ? new KeyValuePair<T, R>(t, fn(t)) : null;
-
-            return MoveNext() ? m_next : null;
-        }
-
+    
+        /// <summary>
+        /// Moves to the nex pair.
+        /// </summary>
+        /// <returns></returns>
         public bool MoveNext()
         {
-            KeyValuePair<T, R>? ret = m_next;
+            Pair<T, R> ret = m_CurrentElement;
 
             if (m_IntegerGenerator.hasNext())
             {
-                T t = m_ElementList[m_IntegerGenerator.next()];
-                m_next = new KeyValuePair<T, R>(t, m_Func(t));
+                T t;
+
+                if (m_IsStarted)
+                {
+                    m_IntegerGenerator.next();
+                    t = m_ElementList[m_IntegerGenerator.get()];
+                }
+                else
+                {
+                    t = m_ElementList[m_IntegerGenerator.get()];
+                    m_IsStarted = true;
+                }
+
+                m_CurrentElement = new Pair<T, R>(t, m_Func(t));
+
                 return true;
             }
             else
             {
-                m_next = null;
+                m_CurrentElement = null;
                 return false;
             }
         }
@@ -155,12 +165,23 @@ namespace NeoCortexApi.Utility
         {
             m_IntegerGenerator.reset();
             m_IntegerGenerator.next();
-            m_next = null;
+            m_CurrentElement = null;
+            m_IsStarted = false;
         }
 
         public void Dispose()
         {
            
+        }
+
+        public IEnumerator<Pair<T, R>> GetEnumerator()
+        {
+            return this;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this;
         }
     }
 

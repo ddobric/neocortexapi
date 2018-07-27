@@ -24,7 +24,7 @@ namespace NeoCortexApi.Utility
         }
 
         public static string ArrToString(this int[][] arr)
-        {           
+        {
             var value = string.Join(" [ ", arr.Select(x => x.ArrToString()).ToArray(), " ] ");
             return value;
         }
@@ -1651,7 +1651,7 @@ namespace NeoCortexApi.Utility
                 choiceSupply.RemoveAt(randomIdx);
                 upperBound--;
             }
-            return selectedIndices.OrderBy(i => i).ToArray();     
+            return selectedIndices.OrderBy(i => i).ToArray();
         }
 
         /**
@@ -1682,7 +1682,7 @@ namespace NeoCortexApi.Utility
          * @param max    the maximum value
          */
 
-        
+
         public static double[] clip(double[] values, double min, double max)
         {
             for (int i = 0; i < values.Length; i++)
@@ -2542,6 +2542,21 @@ namespace NeoCortexApi.Utility
             }
         }
 
+
+        /// <summary>
+        /// Fills the array with specified value.
+        /// </summary>
+        /// <param name="array"></param>
+        /// <param name="value"></param>
+        public static void Fill(Array array, object value)
+        {
+            for (int i = 0; i < ((int[])array).Length; i++)
+            {
+                array.SetValue(value, i);
+            }
+        }
+
+
         public static void Fill(Array array, int value)
         {
             if (array is int[] || array is object[])
@@ -2581,7 +2596,7 @@ namespace NeoCortexApi.Utility
             {
                 result[i] = array[row, i];
             }
-            
+
             return result;
         }
 

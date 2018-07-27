@@ -6,12 +6,10 @@
 
   <ItemGroup>
     <Compile Remove="TemporalMemory.cs" />
-    <Compile Remove="Utility\GroupBy2.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="TemporalMemory.cs" />
-    <None Include="Utility\GroupBy2.cs" />
   </ItemGroup>
 
 </Project>
