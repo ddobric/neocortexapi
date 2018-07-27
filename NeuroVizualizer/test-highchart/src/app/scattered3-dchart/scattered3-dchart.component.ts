@@ -3,13 +3,13 @@ import { HighchartsStatic, HighchartsService } from 'angular2-highcharts/dist/Hi
 
 declare var require: any;
 
-/*
+
 const Highcharts = require('highcharts');
 Highcharts.setOptions({
   //colors: ['#50B432'],
   redraw: false,
 });
-*/
+
 @Component({
     selector: 'app-scattered3-dchart',
     templateUrl: './scattered3-dchart.component.html',
@@ -19,29 +19,27 @@ export class Scattered3DchartComponent implements OnInit {
     options: any = {};
     chart: any = {};
     dataSer1: any = [];
-    x: any = 9;
-    y: any = 30;
-    z: any = 252;
     dataSer2: any = [];
     chartInstance: Object;
     xCoordinate : any;
     yCoordinate : any;
     zCoordinate : any;
+
     constructor() {
-        this.initData(3, 3, 3);
-        this.insertData2(4, 4, 5);
+        // initData function will initialize the data series 1 
+        this.initData1(3, 3, 3);
+        // initData function will initialize the data series 2 
+        this.initData2(4, 4, 5);
+        // generateData function will draw the chart
         this.generateChart(null);
-        //this.me = this.chartOpts;
-        //this.options = Object;
-        // this.saveInstance(this.chartInstance, this.chart);
-        // this.chartOpts.chart.redraw = false;
-    }
-    ngOnInit() {
     }
 
-    onInputChange(event): void {
-        this.generateChart(event);
+
+    ngOnInit() {
+        
     }
+
+
     xAxisColour(xAxisColor: String){
        // this.lineColour = colour;
         //this.chart.nativeChart.options.xAxis.gridLineColor= "red";
@@ -78,15 +76,60 @@ export class Scattered3DchartComponent implements OnInit {
         //works fine fora series
         // this.options.series[0].marker.width = 80;
     }
+    initData2(xDim, yDim, zDim) {
+        //this.chartOpts.series[0].data = [];
+        var x;
+        var y;
+        var z;
+
+        for (x = 0.5; x < xDim; x += 1) {
+            for (y = 0.5; y < yDim; y += 1) {
+                for (z = 0.5; z < zDim; z += 1) {
+                    this.dataSer2.push([
+                        x,
+                        y,
+                        z
+                    ]);
+
+                }
+
+            }
+
+        }
+
+    }
+    initData1(xDim, zDim, yDim) {
+        //this.chartOpts.series[0].data = [];
+        var x;
+        var y;
+        var z;
+        for (z = 0; z < zDim; z += 1) {
+            for (x = 0; x < xDim; x += 1) {
+                for (y = 0; y < yDim; y += 1) {
+                    this.dataSer1.push([
+                        x,
+                        y,
+                        z
+                    ]);
+                }
+
+            }
+
+        }
+
+    }
+
 
     generateChart(event): void {
+        let container = document.createElement("container");
+        document.body.appendChild(container);
+
         this.options = {
             nativeChart: null,
             exporting: { enabled: false },
             credits: { enabled: false },
             chart: {
-                //renderTo: 'container',
-                // when you render the chart to container then container should be added in chart tag in html file
+                renderTo : container,
                 height: 600,
                 //zoomType: 'xy',
                 margin: 100,
@@ -94,9 +137,9 @@ export class Scattered3DchartComponent implements OnInit {
                 animation: false,
                 options3d: {
                     enabled: true,
-                    alpha: this.x,
-                    beta: this.y,
-                    depth: this.z,
+                    alpha: 10,
+                    beta: 30,
+                    depth: 250,
                     viewDistance: 5,
                     fitToPlot: false,
                     frame: {
@@ -171,95 +214,61 @@ export class Scattered3DchartComponent implements OnInit {
             },]
 
         };
-    }
-    saveInstance(chartInstance, chart) {
-        chart.nativeChart = chartInstance;
-    }
 
-    insertData2(xDim, yDim, zDim) {
-        //this.chartOpts.series[0].data = [];
-        var x;
-        var y;
-        var z;
-
-        for (x = 0.5; x < xDim; x += 1) {
-            for (y = 0.5; y < yDim; y += 1) {
-                for (z = 0.5; z < zDim; z += 1) {
-                    this.dataSer2.push([
-                        x,
-                        y,
-                        z
-                    ]);
-
-                }
-
-            }
-
-        }
-
-    }
-    initData(xDim, zDim, yDim) {
-        //this.chartOpts.series[0].data = [];
-        var x;
-        var y;
-        var z;
-        for (z = 0; z < zDim; z += 1) {
-            for (x = 0; x < xDim; x += 1) {
-                for (y = 0; y < yDim; y += 1) {
-                    this.dataSer1.push([
-                        x,
-                        y,
-                        z
-                    ]);
-                }
-
-            }
-
-        }
-
-    }
-
-
-
-    /*updateData(){
-        this.chart.series.push({
-            name: 'Clicked Data',
-                data: this.editedData,
-                marker: {
-                    symbol: 'url(../../../assets/images/edited.png)',
-                    width: 60,
-                    height: 60
-                }
-    
-        });
-      }*/
-    /*
-      dragStart(eStart){
-        eStart = this.chartOpts.pointer.normalize(eStart);
-        this.posX = eStart.chartX,
-        this.posY = eStart.chartY,
-        this.alpha = this.chartOpts.options.chart.options3d.alpha,
-        this.beta = this.chartOpts.options.chart.options3d.beta,
-        this.sensitivity = 5;
-    
-      }
-      drag(e) {
-        e = this.chartOpts.pointer.normalize(e);
-    
-        this.chartOpts.update({
-            chart: {
-                options3d: {
-                    alpha: this.alpha + (e.chartY - this.posY) / this.sensitivity,
-                    beta: this.beta + (this.posX - e.chartX) / this.sensitivity
-                }
-            }
-        });
        
-      }
+    }
+
+    saveInstance(chartInstance, chart) {
+        this.chart.nativeChart = chartInstance;
+        chartInstance.container.nativeChart = chartInstance;
+        chartInstance.container.options = this.options;
+     
+        document.nativeChart = chartInstance;
+         //calling mouse events to rotate the container/chart with mouse
+        Highcharts.addEvent(chartInstance.container, 'mousedown', this.dragStart);
+        //calling touch events to rotate the container/chart with touch
+        Highcharts.addEvent(chartInstance.container, 'touchstart', this.dragStart);
+
+    }
+
+    /**
+     * 
+     * @param eStart mouse and touch events for chart/container rotation
+     * 
      */
+    dragStart(eStart): any {
+      
+        eStart = document.nativeChart.pointer.normalize(eStart);
+        var posX = eStart.chartX;
+        var posY = eStart.chartY;
+        var alpha = this.options.chart.options3d.alpha;
+        var beta = this.options.chart.options3d.beta;
+        var sensitivity = 5; // lower is more sensitive
 
+        var unbindDragMouse = Highcharts.addEvent(document, 'mousemove', dragFnc);
+        Highcharts.addEvent(document, 'mouseup', unbindDragMouse);
 
-
+        var unbindDragTouch = Highcharts.addEvent(document, 'touchmove', dragFnc);
+        Highcharts.addEvent(document, 'touchend', unbindDragTouch);
+        
+       
+        function dragFnc(e): any{
+            // Get e.chartX and e.chartY
+            e = this.nativeChart.pointer.normalize(e);
+    
+            this.nativeChart.update({
+                chart: {
+                    options3d: {
+                        alpha: alpha + (e.chartY - posY) / sensitivity,
+                        beta: beta + (posX - e.chartX) / sensitivity
+                    }
+                }
+            }, undefined, undefined, false);
+        }
+    
+    }
+    
+    
 }
 
 
