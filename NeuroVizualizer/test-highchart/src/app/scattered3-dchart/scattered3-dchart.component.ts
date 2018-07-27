@@ -224,13 +224,17 @@ export class Scattered3DchartComponent implements OnInit {
         chartInstance.container.options = this.options;
      
         document.nativeChart = chartInstance;
+         //calling mouse events to rotate the container/chart with mouse
         Highcharts.addEvent(chartInstance.container, 'mousedown', this.dragStart);
+        //calling touch events to rotate the container/chart with touch
+        Highcharts.addEvent(chartInstance.container, 'touchstart', this.dragStart);
 
     }
 
     /**
      * 
-     * @param eStart 
+     * @param eStart mouse and touch events for chart/container rotation
+     * 
      */
     dragStart(eStart): any {
       
@@ -243,6 +247,9 @@ export class Scattered3DchartComponent implements OnInit {
 
         var unbindDragMouse = Highcharts.addEvent(document, 'mousemove', dragFnc);
         Highcharts.addEvent(document, 'mouseup', unbindDragMouse);
+
+        var unbindDragTouch = Highcharts.addEvent(document, 'touchmove', dragFnc);
+        Highcharts.addEvent(document, 'touchend', unbindDragTouch);
         
        
         function dragFnc(e): any{
