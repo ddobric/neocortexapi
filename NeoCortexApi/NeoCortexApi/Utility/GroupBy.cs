@@ -111,6 +111,8 @@ namespace NeoCortexApi.Utility
          * {@inheritDoc}
          */
         // @Override
+
+        [Obsolete("Use .Current instead")]
         public Pair<T, R> peek()
         {
             return m_CurrentElement;
@@ -120,12 +122,12 @@ namespace NeoCortexApi.Utility
          * {@inheritDoc}
          */
         // @Override
-        public bool hasNext()
-        {
-            return m_CurrentElement != null;
-        }
+        //public bool hasNext()
+        //{
+        //    return m_CurrentElement != null;
+        //}
 
-    
+
         /// <summary>
         /// Moves to the nex pair.
         /// </summary>
@@ -160,6 +162,32 @@ namespace NeoCortexApi.Utility
             }
         }
 
+        /// <summary>
+        /// Shows the next pair, but it does not move internal pointer to it.
+        /// </summary>
+        /// <returns></returns>
+        public Pair<T, R> NextPair
+        {
+            get
+            {
+                Pair<T, R> ret;
+
+                if (m_IntegerGenerator.hasNext())
+                {
+                    var nextVal = m_IntegerGenerator.NextValue;
+
+                    T t = m_ElementList[nextVal];
+
+                    ret = new Pair<T, R>(t, m_Func(t));
+                }
+                else
+                {
+                    ret = null;
+                }
+
+                return ret;
+            }
+        }
 
         public void Reset()
         {
@@ -171,7 +199,7 @@ namespace NeoCortexApi.Utility
 
         public void Dispose()
         {
-           
+
         }
 
         public IEnumerator<Pair<T, R>> GetEnumerator()

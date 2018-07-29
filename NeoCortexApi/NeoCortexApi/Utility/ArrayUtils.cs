@@ -2550,7 +2550,7 @@ namespace NeoCortexApi.Utility
         /// <param name="value"></param>
         public static void Fill(Array array, object value)
         {
-            for (int i = 0; i < ((int[])array).Length; i++)
+            for (int i = 0; i < array.Length; i++)
             {
                 array.SetValue(value, i);
             }

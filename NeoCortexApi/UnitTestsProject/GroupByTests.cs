@@ -19,8 +19,7 @@ namespace UnitTestsProject
         {
             var i1 = new Integer(1);
             var i2 = new Integer(1);
-
-         
+                     
             Assert.IsTrue(i1 ==  i2);
             Assert.IsTrue(i1.Equals(i2));
         }
@@ -42,9 +41,9 @@ namespace UnitTestsProject
 
             List<Pair<Integer, Integer>> expected = new List<Pair<Integer, Integer>>(
                 new Pair<Integer, Integer>[] {
-                new Pair<Integer, Integer>(7, 7),
-                new Pair<Integer, Integer>(12, 12),
-                new Pair<Integer, Integer>(16, 16)
+                    new Pair<Integer, Integer>(7, 7),
+                    new Pair<Integer, Integer>(12, 12),
+                    new Pair<Integer, Integer>(16, 16)
                 });
 
             GroupBy<Integer, Integer> grouper = GroupBy<Integer, Integer>.From(l, (el) => el);
@@ -66,10 +65,10 @@ namespace UnitTestsProject
 
             List<Pair<Integer, Integer>> expected2 = new List<Pair<Integer, Integer>>(
                 new Pair<Integer, Integer>[] {
-                new Pair<Integer, Integer>(2, 6),
-                new Pair<Integer, Integer>(4, 12),
-                new Pair<Integer, Integer>(4, 12),
-                new Pair<Integer, Integer>(5, 15)
+                    new Pair<Integer, Integer>(2, 6),
+                    new Pair<Integer, Integer>(4, 12),
+                    new Pair<Integer, Integer>(4, 12),
+                    new Pair<Integer, Integer>(5, 15)
                 });
 
             grouper = GroupBy<Integer, Integer>.From(l, (n) => n * 3);

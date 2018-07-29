@@ -6,6 +6,15 @@ namespace NeoCortexApi.Entities
 {
     public class Pair<TKey, TValue> : IEquatable<Pair<TKey, TValue>>
     {
+        /// <summary>
+        /// Creates an empty key-pair.
+        /// </summary>
+       
+        public Pair()
+        {
+           
+        }
+
         //
         // Summary:
         //     Initializes a new instance of the System.Collections.Generic.KeyValuePair`2 structure
@@ -41,12 +50,34 @@ namespace NeoCortexApi.Entities
 
         public static bool operator ==(Pair<TKey, TValue> x, Pair<TKey, TValue> y)
         {
+            if (EqualityComparer<Pair<TKey, TValue>>.Default.Equals(null, x)
+                && EqualityComparer<Pair<TKey, TValue>>.Default.Equals(null, y))
+                return true;
+
+            else if (!EqualityComparer<Pair<TKey, TValue>>.Default.Equals(null, x)
+               && EqualityComparer<Pair<TKey, TValue>>.Default.Equals(null, y))
+                return false;
+            else if (EqualityComparer<Pair<TKey, TValue>>.Default.Equals(null, x)
+               && !EqualityComparer<Pair<TKey, TValue>>.Default.Equals(null, y))
+                return false;
+
             return EqualityComparer<TKey>.Default.Equals(x.Key, y.Key) && EqualityComparer<TValue>.Default.Equals(x.Value, y.Value);
         }
 
         public static bool operator !=(Pair<TKey, TValue> x, Pair<TKey, TValue> y)
         {
-            return !x.Key.Equals(y.Key) || !x.Value.Equals(y.Value);
+            if (EqualityComparer<Pair<TKey, TValue>>.Default.Equals(null, x) 
+                && EqualityComparer<Pair<TKey, TValue>>.Default.Equals(null, y))
+                return false;
+            else if (EqualityComparer<Pair<TKey, TValue>>.Default.Equals(null, x)
+              && !EqualityComparer<Pair<TKey, TValue>>.Default.Equals(null, y))
+                return true;
+            else if (!EqualityComparer<Pair<TKey, TValue>>.Default.Equals(null, x)
+              && EqualityComparer<Pair<TKey, TValue>>.Default.Equals(null, y))
+                return true;
+
+            return !EqualityComparer<TKey>.Default.Equals(x.Key, y.Key) ||
+                !EqualityComparer<TValue>.Default.Equals(x.Value, y.Value);
         }
 
         //

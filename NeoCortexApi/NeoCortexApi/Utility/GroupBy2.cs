@@ -18,8 +18,8 @@ namespace NeoCortexApi.Utility
      * @author cogmission
      * @param <R>   The return type of the user-provided {@link Function}s
      */
-    public class GroupBy2<R>  //, Generator<Tuple> 
-       // where R : IComparable<R>
+    public class GroupBy2<R> : IEnumerable<Pair<Object, List<R>>>, IEnumerator<Pair<Object, List<R>>> //, Generator<Tuple> 
+                                                                                                      // where R : IComparable<R>
     {
         /** serial version */
         private static long serialVersionUID = 1L;
@@ -41,7 +41,17 @@ namespace NeoCortexApi.Utility
 
         private Slot<Pair<object, R>>[] nextList;
 
-       // private int numEntries;
+        public Pair<object, List<R>> Current { get; set; }
+
+        object IEnumerator.Current
+        {
+            get
+            {
+                return this.Current;
+            }
+        }
+
+        // private int numEntries;
 
         /**
          * Private internally used constructor. To instantiate objects of this
@@ -110,11 +120,11 @@ namespace NeoCortexApi.Utility
 
 
 
- 
+
         //  @SuppressWarnings("unchecked")
 
         /// <summary>
-        /// Populates generator list with entries and fills the nextList with empty elements.
+        /// Populates generator list with entries and fills the next(List with empty elements.
         /// </summary>
         public void reset()
         {
@@ -123,9 +133,11 @@ namespace NeoCortexApi.Utility
             for (int i = 0; i < entries.Length; i++)
             {
                 generatorList.Add(GroupBy<Object, R>.From(entries[i].Key, entries[i].Value));
+                generatorList[i].MoveNext();
             }
 
-         
+
+
             //numEntries = generatorList.Count;
 
             //        for(int i = 0;i < numEntries;i++) {
@@ -150,19 +162,21 @@ namespace NeoCortexApi.Utility
             ArrayUtils.Fill(nextList, Slot<Pair<Object, R>>.NONE);
         }
 
-        /**
-         * {@inheritDoc}
-         */
-        //public Iterator<Tuple> iterator() { return this; }
-            
-        public R this[int index]
-        {
-            get
-            {
-                return this[index];
-            }
-            set { }
-        }
+
+
+        ///**
+        // * {@inheritDoc}
+        // */
+        ////public Iterator<Tuple> iterator() { return this; }
+
+        //public R this[int index]
+        //{
+        //    get
+        //    {
+        //        return this[index];
+        //    }
+        //    set { }
+        //}
 
         /**
          * Returns a flag indicating that at least one {@link Generator} has
@@ -172,16 +186,39 @@ namespace NeoCortexApi.Utility
          * a matching key for the current "smallest" key generated.
          */
         //    @Override
-        public bool hasNext()
+        //public bool hasNext()
+        //{
+
+        //}
+
+
+        public bool MoveNext()
         {
             if (generatorList == null)
             {
                 reset();
             }
 
-            advanceSequences();
+            for (int i = 0; i < entries.Length; i++)
+            {
+                if (advanceList[i])
+                {
+                    if (generatorList[i].NextPair == null)
+                        return false;
 
-            return nextMinKey();
+                    //nextList[i] = generatorList[i].NextPair != null ?
+                    //    Slot<Pair<object, R>>.of((Pair<object, R>)(object)generatorList[i].Current) :
+                    //    Slot<Pair<object, R>>.empty();
+                    nextList[i] =
+                    Slot<Pair<object, R>>.of((Pair<object, R>)(object)generatorList[i].Current);
+                }
+            }
+
+            var res = nextMinKey();
+
+            this.Current = (Pair<Object, List<R>>)next();
+
+            return res;
         }
 
         /**
@@ -193,59 +230,34 @@ namespace NeoCortexApi.Utility
          */
         //    @SuppressWarnings("unchecked")
         //@Override
-        public Pair<R, List<object>> next()
+        public Pair<object, List<R>> next()
         {
+            List<Pair<R, List<R>>> objs = new List<Pair<R, List<R>>>();
 
-            //Object[] objs = IntStream
-            //    .range(0, numEntries + 1)
-            //    .mapToObj(i->i == 0 ? minKeyVal : new ArrayList<R>())
-            //    .toArray();
-            List<Pair<R, List<object>>> objs = new List<Pair<R, List<object>>>();
-
-
-            //Tuple retVal = new Tuple((Object[])objs);
-            Pair<R, List<object>> retVal = null;// = new Pair<R, List<object>>();
-
+            Pair<object, List<R>> retVal = null;
 
             for (int i = 0; i < entries.Length; i++)
             {
-                retVal = objs[i];
-
                 if (isEligibleList(i, minKeyVal))
-                {   
-                    retVal.Value.Add(nextList[i]);
+                {
+                    retVal = new Pair<object, List<R>>((R)nextList[i].get().Key, 
+                        new List<R> { (R)nextList[i].get().Value });
+
                     drainKey(retVal, i, minKeyVal);
-                    //((List<Object>)retVal.get(i + 1)).add(nextList[i].get().getFirst());
-                    //drainKey(retVal, i, minKeyVal);
 
                     advanceList[i] = true;
                 }
                 else
                 {
                     advanceList[i] = false;
-                    retVal.Value.Add(Slot<Pair<object, R>>.empty());
-                    //((List<Object>)retVal.get(i + 1)).add(Slot<R>.empty());
+                    retVal = new Pair<object, List<R>>((R)nextList[i].get().Key, new List<R>() { Slot<Pair<object, R>>.empty().get().Value });
                 }
             }
 
             return retVal;
         }
 
-        /**
-         * Internal method which advances index of the current
-         * {@link GroupBy}s for each group present.
-         */
-        private void advanceSequences()
-        {
-            for (int i = 0; i < entries.Length; i++)
-            {
-                if (advanceList[i])
-                {
-                    nextList[i] = generatorList[i].hasNext() ?
-                        Slot<Pair<object, R>>.of((Pair<object, R>)(object)generatorList[i].Current) : Slot<Pair<object, R>>.empty();
-                }
-            }
-        }
+
 
         /**
          * Returns the next smallest generated key.
@@ -253,20 +265,12 @@ namespace NeoCortexApi.Utility
          * @return  the next smallest generated key.
          */
         private bool nextMinKey()
-        {            
-            var filtered = nextList.Where(opt => opt.isPresent());
-
-            var minSlot = nextList.Min(slot=>slot);
+        {
+            var minSlot = nextList.Min(slot => slot);
 
             minKeyVal = minSlot.get().Value;
 
             return minSlot.isPresent();
-            //return Arrays.stream(nextList)
-            //    .filter(opt->opt.isPresent())
-            //    .map(opt->opt.get().getSecond())
-            //    .min((k, k2)->k.compareTo(k2))
-            //    .map(k-> { minKeyVal = k; return k; } )
-            //.isPresent();
         }
 
         /**
@@ -296,26 +300,50 @@ namespace NeoCortexApi.Utility
          * @param targetVal     the value to match in order to be an added member
          */
         // @SuppressWarnings("unchecked")
-        private void drainKey(Pair<R, List<object>> retVal, int listIdx, R targetVal)
+        private void drainKey(Pair<object, List<R>> retVal, int listIdx, R targetVal)
         {
-            while (generatorList[listIdx].hasNext())
+            while (generatorList[listIdx].NextPair != null)
             {
-                if (EqualityComparer<R>.Default.Equals(generatorList[listIdx].peek().Value, targetVal))
+                if (EqualityComparer<R>.Default.Equals(generatorList[listIdx].NextPair.Value, targetVal))
                 {
                     var elm = generatorList[listIdx].Current;
                     nextList[listIdx] = Slot<Pair<object, R>>.of((Pair<object, R>)(object)elm);
-                    retVal.Value.Add(nextList[listIdx]);
+                    retVal.Value.Add(nextList[listIdx].get().Value);
+                    generatorList[listIdx].MoveNext();
                     //((List<Object>)retVal.get(listIdx + 1)).add(nextList[listIdx].get().getFirst());
                 }
                 else
                 {
                     nextList[listIdx] = Slot<Pair<object, R>>.empty();
+                    generatorList[listIdx].MoveNext();
                     break;
                 }
             }
         }
 
-    
+
+
+        public void Reset()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+
+        }
+
+
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return (IEnumerator<Pair<Object, List<R>>>)this;
+        }
+
+        IEnumerator<Pair<object, List<R>>> IEnumerable<Pair<object, List<R>>>.GetEnumerator()
+        {
+            return this;
+        }
 
         public class Slot
         {
@@ -333,16 +361,28 @@ namespace NeoCortexApi.Utility
             private static readonly long serialVersionUID = 1L;
 
             /**
-             * Common instance for {@code empty()}.
-             */
+         * Common instance for {@code empty()}.
+         */
             public static readonly Slot<T> NONE = new Slot<T>();
+
+            /**
+            * Returns an empty {@code Slot} instance.  No value is present for this
+            * Slot.
+            *
+            * @param <T> Type of the non-existent value
+            * @return an empty {@code Slot}
+            */
+            public static Slot<T> empty()
+            {
+                return NONE;
+            }
 
             /**
              * If non-null, the value; if null, indicates no value is present
              */
             private readonly T value;
 
-            private Slot() { this.value = null; }
+            internal Slot() { this.value = null; }
 
             /**
              * Constructs an instance with the value present.
@@ -403,19 +443,7 @@ namespace NeoCortexApi.Utility
                 return value;
             }
 
-            /**
-             * Returns an empty {@code Slot} instance.  No value is present for this
-             * Slot.
-             *
-             * @param <T> Type of the non-existent value
-             * @return an empty {@code Slot}
-             */
-            public static Slot<T> empty()
-            {
-                //@SuppressWarnings("unchecked")
-                Slot<T> t = (Slot<T>)NONE;
-                return t;
-            }
+
 
             /**
              * Return {@code true} if there is a value present, otherwise {@code false}.
@@ -489,10 +517,10 @@ namespace NeoCortexApi.Utility
                 return value != null ? $"Slot[{value}s]" : "NONE";
             }
 
-          
+
         }
 
-       
+
     }
 
 }
