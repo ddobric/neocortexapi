@@ -28,9 +28,6 @@ export class Area {
       this.minicolumns = minicolumns;
   }
   
-  greet() {
-   
-  }
 }
 
 
@@ -71,9 +68,6 @@ export class Synapse {
       this.postSynaptic = postSynaptic;
   }
   
-  greet() {
-    
-  }
 }
 
 

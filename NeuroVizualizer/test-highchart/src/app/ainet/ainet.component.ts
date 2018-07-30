@@ -4,7 +4,6 @@ import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, neocortexSettings } fr
 
 declare var require: any;
 
-
 const Highcharts = require('highcharts');
 Highcharts.setOptions({
   //colors: ['#50B432'],
@@ -17,6 +16,7 @@ Highcharts.setOptions({
     styleUrls: ['./ainet.component.css']
 })
 export class AiNetComponent implements OnInit {
+   
     options: any = {};
     chart: any = {};
     dataSer1: any = [];
@@ -30,7 +30,7 @@ export class AiNetComponent implements OnInit {
         // initData function will initialize the data series 1 
         this.initData1(3, 3, 3);
         // initData function will initialize the data series 2 
-        this.initData2(4, 4, 5);
+        this.initData2(10, 6, 4);
         // generateData function will draw the chart
         this.generateChart(null);
     }
@@ -223,8 +223,11 @@ export class AiNetComponent implements OnInit {
         this.chart.nativeChart = chartInstance;
         chartInstance.container.nativeChart = chartInstance;
         chartInstance.container.options = this.options;
-    
+      
+
         document.nativeChart = chartInstance;
+        
+
          //calling mouse events to rotate the container/chart with mouse
         Highcharts.addEvent(chartInstance.container, 'mousedown', this.dragStart);
         //calling touch events to rotate the container/chart with touch
@@ -238,7 +241,7 @@ export class AiNetComponent implements OnInit {
      * 
      */
     dragStart(eStart): any {
-       
+
         eStart = document.nativeChart.pointer.normalize(eStart);
         var posX = eStart.chartX;
         var posY = eStart.chartY;
@@ -269,7 +272,7 @@ export class AiNetComponent implements OnInit {
     
     }
     
-    public static createChart(ncModel: NeoCortexModel)  { 
+    public static fillupChart(ncModel: NeoCortexModel)  { 
 
       
       }

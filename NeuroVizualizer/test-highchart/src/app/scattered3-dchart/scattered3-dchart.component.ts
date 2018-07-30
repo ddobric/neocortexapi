@@ -224,7 +224,7 @@ export class Scattered3DchartComponent implements OnInit {
         chartInstance.container.nativeChart = chartInstance;
         chartInstance.container.options = this.options;
      
-        document.nativeChart = chartInstance;
+       // document.nativeChart = chartInstance;
          //calling mouse events to rotate the container/chart with mouse
         Highcharts.addEvent(chartInstance.container, 'mousedown', this.dragStart);
         //calling touch events to rotate the container/chart with touch
@@ -239,7 +239,7 @@ export class Scattered3DchartComponent implements OnInit {
      */
     dragStart(eStart): any {
       
-        eStart = document.nativeChart.pointer.normalize(eStart);
+       // eStart = document.nativeChart.pointer.normalize(eStart);
         var posX = eStart.chartX;
         var posY = eStart.chartY;
         var alpha = this.options.chart.options3d.alpha;
@@ -269,7 +269,7 @@ export class Scattered3DchartComponent implements OnInit {
     
     }
     
-    public static createChart(ncModel: NeoCortexModel)  { 
+    public static fillChart(ncModel: NeoCortexModel)  { 
 
       
     }
