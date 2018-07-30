@@ -6,7 +6,6 @@ import { neoCortexUtils} from '../neocortexutils';
 
 declare var require: any;
 
-
 const Highcharts = require('highcharts');
 Highcharts.setOptions({
   //colors: ['#50B432'],
@@ -19,6 +18,7 @@ Highcharts.setOptions({
     styleUrls: ['./ainet.component.css']
 })
 export class AiNetComponent implements OnInit {
+   
     options: any = {};
     chart: any = {};
     dataSer1: any = [];
@@ -35,7 +35,7 @@ export class AiNetComponent implements OnInit {
         // initData function will initialize the data series 1 
         this.initData1(3, 3, 3);
         // initData function will initialize the data series 2 
-        this.initData2(4, 4, 5);
+        this.initData2(10, 6, 4);
         // generateData function will draw the chart
         this.generateChart(null);
     }

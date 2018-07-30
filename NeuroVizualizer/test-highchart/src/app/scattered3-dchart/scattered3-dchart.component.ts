@@ -269,7 +269,7 @@ export class Scattered3DchartComponent implements OnInit {
     
     }
     
-    public static createChart(ncModel: NeoCortexModel)  { 
+    public static fillChart(ncModel: NeoCortexModel)  { 
 
       
     }
