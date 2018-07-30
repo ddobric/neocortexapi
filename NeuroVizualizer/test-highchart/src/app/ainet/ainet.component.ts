@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { HighchartsStatic, HighchartsService } from 'angular2-highcharts/dist/HighchartsService';
 import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, neocortexSettings } from '../neocortexmodel';
+import { neoCortexUtils} from '../neocortexutils';
+
 
 declare var require: any;
 
@@ -27,6 +29,9 @@ export class AiNetComponent implements OnInit {
     zCoordinate : any;
 
     constructor() {
+
+        this.createChart();
+
         // initData function will initialize the data series 1 
         this.initData1(3, 3, 3);
         // initData function will initialize the data series 2 
@@ -224,7 +229,7 @@ export class AiNetComponent implements OnInit {
         chartInstance.container.nativeChart = chartInstance;
         chartInstance.container.options = this.options;
      
-        document.nativeChart = chartInstance;
+        (<any>document).nativeChart = chartInstance;
          //calling mouse events to rotate the container/chart with mouse
         Highcharts.addEvent(chartInstance.container, 'mousedown', this.dragStart);
         //calling touch events to rotate the container/chart with touch
@@ -239,7 +244,7 @@ export class AiNetComponent implements OnInit {
      */
     dragStart(eStart): any {
       
-        eStart = document.nativeChart.pointer.normalize(eStart);
+        eStart = (<any>document).nativeChart.pointer.normalize(eStart);
         var posX = eStart.chartX;
         var posY = eStart.chartY;
         var alpha = this.options.chart.options3d.alpha;
@@ -269,10 +274,10 @@ export class AiNetComponent implements OnInit {
     
     }
     
-    public static createChart(ncModel: NeoCortexModel)  { 
+    public createChart()  { 
 
-      
-      }
+      var model  = neoCortexUtils.createModel(2, [10,3], 6);
+    }
 }
 
 

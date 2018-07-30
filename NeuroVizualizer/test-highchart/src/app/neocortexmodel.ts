@@ -24,8 +24,8 @@ export class Area {
 
   public minicolumns: Minicolumn[];
   
-  constructor(minicolumns: Minicolumn[]) {
-      this.minicolumns = minicolumns;
+  constructor(minicolumns: number[]= [1000,3]) {
+      this.minicolumns = new Array[3];
   }
   
   greet() {

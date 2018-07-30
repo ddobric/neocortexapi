@@ -266,11 +266,17 @@ namespace NeoCortexApi.Utility
          */
         private bool nextMinKey()
         {
-            var minSlot = nextList.Min(slot => slot);
+            //foreach (Slot<Pair<object, R>> item in nextList)
+            //{
+            //    item.get().
+            //}
 
-            minKeyVal = minSlot.get().Value;
+            var minSlot = nextList.Min(slot => slot.get().Key);
 
-            return minSlot.isPresent();
+            minKeyVal = minSlot;
+
+            //return minSlot.isPresent();
+            return !EqualityComparer<R>.Default.Equals(minSlot, default(R));
         }
 
         /**
@@ -354,7 +360,7 @@ namespace NeoCortexApi.Utility
          * A minimal {@link Serializable} version of an {@link Slot}
          * @param <T>   the value held within this {@code Slot}
          */
-        public class Slot<T> : Slot, IEquatable<object>
+        public class Slot<T> : Slot, IEquatable<object>,  IComparer<T>, IComparable<T>
             where T : class
         {
             /** Default Serial */
@@ -517,10 +523,23 @@ namespace NeoCortexApi.Utility
                 return value != null ? $"Slot[{value}s]" : "NONE";
             }
 
+            
+            /// <summary>
+            /// Compares two slots.
+            /// </summary>
+            /// <param name="x"></param>
+            /// <param name="y"></param>
+            /// <returns></returns>
+            public int Compare(T x, T y)
+            {
+                return Comparer<T>.Default.Compare(x, y);
+            }
 
+            public int CompareTo(T other)
+            {
+                return Comparer<T>.Default.Compare(this.value, other);
+            }
         }
-
-
     }
 
 }

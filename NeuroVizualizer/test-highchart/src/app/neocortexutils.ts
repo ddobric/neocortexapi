@@ -1,15 +1,11 @@
 import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, neocortexSettings } from './neocortexmodel';
-import { areAllEquivalent } from '@angular/compiler/src/output/output_ast';
 
 
 
-class neoCortex {
 
-  public bla: NeoCortexModel;
+export class neoCortexUtils {
 
-  constructor(message: string) {
-
-  }
+ 
 
   public static createModel(areas: number=1, minicolumns: number[]= [1000,3], cellsInMinicolumn: number=6) : NeoCortexModel { 
 
