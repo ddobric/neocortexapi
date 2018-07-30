@@ -223,7 +223,7 @@ export class AiNetComponent implements OnInit {
         this.chart.nativeChart = chartInstance;
         chartInstance.container.nativeChart = chartInstance;
         chartInstance.container.options = this.options;
-     
+    
         document.nativeChart = chartInstance;
          //calling mouse events to rotate the container/chart with mouse
         Highcharts.addEvent(chartInstance.container, 'mousedown', this.dragStart);
@@ -238,7 +238,7 @@ export class AiNetComponent implements OnInit {
      * 
      */
     dragStart(eStart): any {
-      
+       
         eStart = document.nativeChart.pointer.normalize(eStart);
         var posX = eStart.chartX;
         var posY = eStart.chartY;
