@@ -12,6 +12,7 @@ import { HomeComponent } from './home/home.component';
 import { AppRoutingModule } from './app-routing-module';
 import { ScatterPointsComponent } from './scatter-points/scatter-points.component';
 import { HighchartsStatic } from 'angular2-highcharts/dist/HighchartsService';
+import { AiNetComponent } from './ainet/ainet.component';
 
 //declare var require: any;
 declare var require: any;
@@ -27,8 +28,7 @@ export function highchartsFactory() {
     ZoomGraphComponent,
     HomeComponent,
     ScatterPointsComponent,
-    
-
+    AiNetComponent
   ],
   imports: [
     BrowserModule,

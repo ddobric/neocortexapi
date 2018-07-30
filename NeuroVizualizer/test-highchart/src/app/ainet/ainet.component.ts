@@ -12,11 +12,11 @@ Highcharts.setOptions({
 });
 
 @Component({
-    selector: 'app-scattered3-dchart',
-    templateUrl: './scattered3-dchart.component.html',
-    styleUrls: ['./scattered3-dchart.component.css']
+    selector: 'ainet',
+    templateUrl: './ainet.component.html',
+    styleUrls: ['./ainet.component.css']
 })
-export class Scattered3DchartComponent implements OnInit {
+export class AiNetComponent implements OnInit {
     options: any = {};
     chart: any = {};
     dataSer1: any = [];
@@ -272,7 +272,7 @@ export class Scattered3DchartComponent implements OnInit {
     public static createChart(ncModel: NeoCortexModel)  { 
 
       
-    }
+      }
 }
 
 
