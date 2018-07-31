@@ -56,15 +56,27 @@ export class Area {
 
 
 
-export class Minicolumn {
+export class Minicolumn extends Location{
 
   public cells: Array<Cell> = new Array();
   
   constructor(numCells: number) {
-
+    super();
     //todo. create cells and push them to the list.
-    let cell : Cell = new Cell(1);
-    this.cells.push(cell);
+   // let cell : Cell = new Cell(1);
+    //this.cells.push(cell);
+    for (let x = 0; x < 1000; x++) {
+      for (let y = 0; y < 6; y++) {
+        for (let z = 0; z < 3; z++) {
+          let cell : Cell = new Cell(x, y, z)
+          this.cells.push(cell);
+          
+        }
+        
+      }
+      
+    }
+    
   }
   
 }
@@ -76,6 +88,7 @@ export class location{
   posZ:number;
 
   constructor(posX:number = 0, posY:number=0, posZ:number=0) {
+ 
     
   }  
 
@@ -102,7 +115,7 @@ export class Cell extends location {
  * @param posZ 
  */
   constructor(layer:number=0,posX:number = 0, posY:number=0, posZ:number=0) {
-       super(posX, posY, posY);
+       super(posX, posY, posZ);
        this.Layer=layer;
   }    
 }
