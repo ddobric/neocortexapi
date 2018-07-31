@@ -1,19 +1,22 @@
 import { NgModule }             from '@angular/core';
 
 
+
 export class neocortexSettings{
 
-  public areas: number;
-  public minicolumns: number[];
-  public cellsInMinicolumn: number;
+  public numAreas: number;
+  public minicolumnDims: number[];
+  public numCellsInMinicolumn: number;
 }
 
 export class NeoCortexModel {
 
-  public areas: Area[];
+  public areas: Array<Area>;
   
   constructor(settings:neocortexSettings ) {
-     
+     this.areas = new Array(settings.numAreas);
+     for(var i=0;i<settings.numAreas;i++)
+      this.areas[i] = new Area(settings.minicolumnDims, settings.numCellsInMinicolumn);
   } 
 
 }
@@ -22,12 +25,24 @@ export class NeoCortexModel {
 
 export class Area {
 
-  public minicolumns: Minicolumn[];
+  public minicolumns: Minicolumn[][] = new Array();
   
-  constructor(minicolumns: number[]= [1000,3]) {
-      this.minicolumns = new Array[3];
-  }
-  
+  constructor(minicolumns: number[]= [3,2048], cellsInMinicolumn:number) {
+
+    //this.minicolumns = new Minicolumn[minicolumns[0]][minicolumns[1]];
+    this.minicolumns = new Array();
+
+    for (var i = 0; i < minicolumns[0]; i++) {
+
+      let row : Array<Minicolumn> = new Array();
+      
+      for (var j = 0; j < minicolumns[1]; j++) {
+        row.push(new Minicolumn(cellsInMinicolumn));       
+      }
+
+      this.minicolumns.push(row);
+    }
+  }  
 }
 
 
@@ -36,7 +51,7 @@ export class Minicolumn {
 
   public Cells: Cell[];
   
-  constructor(message: string) {
+  constructor(numCells: number) {
      
   }
   

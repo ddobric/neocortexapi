@@ -19,7 +19,7 @@ namespace NeoCortexApi.Utility
      * @param <R>   The return type of the user-provided {@link Function}s
      */
     public class GroupBy2<R> : IEnumerable<Pair<Object, List<R>>>, IEnumerator<Pair<Object, List<R>>> //, Generator<Tuple> 
-                                                                                                      // where R : IComparable<R>
+     where R : IComparable<R>
     {
         /** serial version */
         private static long serialVersionUID = 1L;
@@ -266,14 +266,7 @@ namespace NeoCortexApi.Utility
          */
         private bool nextMinKey()
         {
-            //foreach (Slot<Pair<object, R>> item in nextList)
-            //{
-            //    item.get().
-            //}
-
-            var minSlot = nextList.Min(slot => slot.get().Key);
-
-            minKeyVal = minSlot;
+            var minSlot = nextList.Min(slot => slot.get().Value);
 
             //return minSlot.isPresent();
             return !EqualityComparer<R>.Default.Equals(minSlot, default(R));
@@ -444,7 +437,7 @@ namespace NeoCortexApi.Utility
             {
                 if (value == null)
                 {
-                    throw new ArgumentException("No value present");
+                  //  throw new ArgumentException("No value present");
                 }
                 return value;
             }

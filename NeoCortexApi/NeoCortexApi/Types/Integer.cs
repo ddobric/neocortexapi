@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NeoCortexApi.Entities
 {
-    public class Integer : IEquatable<Integer>, IComparer<Integer>
+    public class Integer : IEquatable<Integer>, IComparable<Integer>
     {
         public int Value { get; set; }
         public static int MaxValue { get { return int.MaxValue; } }
@@ -43,9 +43,9 @@ namespace NeoCortexApi.Entities
             return this.Value == other.Value;
         }
 
-        public int Compare(Integer x, Integer y)
+        public int CompareTo(Integer other)
         {
-            return Comparer<int>.Default.Compare(x.Value, y.Value);
+            return Comparer<int>.Default.Compare(this.Value, other.Value);
         }
     }
 }
