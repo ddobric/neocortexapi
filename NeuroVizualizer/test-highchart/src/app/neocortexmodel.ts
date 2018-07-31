@@ -57,18 +57,28 @@ export class Minicolumn {
   
 }
 
+export class location{
 
+  posX:number;
+  posY:number;
+  posZ:number;
 
-export class Cell {
+  constructor(posX:number = 0, posY:number=0, posZ:number=0) {
+    
+  }  
+
+  
+}
+
+export class Cell extends location {
 
   public Synapses: Synapse[];
   
   public Layer: number;
 
-  constructor(message: string) {
-   
-  }  
-  
+  constructor(posX:number = 0, posY:number=0, posZ:number=0) {
+   super(posX, posY, posY);
+  }    
 }
 
 
@@ -84,5 +94,7 @@ export class Synapse {
   }
   
 }
+
+
 
 
