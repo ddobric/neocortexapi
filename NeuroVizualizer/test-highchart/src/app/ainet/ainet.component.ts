@@ -277,6 +277,7 @@ export class AiNetComponent implements OnInit {
     public createChart()  { 
 
       var model  = neoCortexUtils.createModel(2, [10,3], 6);
+      
     }
 }
 

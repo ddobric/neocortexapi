@@ -90,6 +90,8 @@ export class Cell extends location {
 
   public Synapses: Synapse[];
   
+  public id: number;
+  
   public Layer: number;
 
 /**

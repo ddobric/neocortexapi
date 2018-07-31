@@ -14,13 +14,31 @@ export class neoCortexUtils {
    */
   public static createModel(areas: number = 1, minicolumns: number[] = [1000, 3], cellsInMinicolumn: number = 6): NeoCortexModel {
 
+    const sensoryLayer = 3;
+
     let inpModel : InputModel = new InputModel([3,3]);
 
     let sett: neocortexSettings = {numAreas: areas, minicolumnDims: minicolumns, numCellsInMinicolumn: cellsInMinicolumn, inputModel: inpModel };
 
     var model: NeoCortexModel = new NeoCortexModel(sett);
 
-   // this.addSynapse
+    let idCnt :number = 0;
+
+    for (let arrIndx = 0; arrIndx < sett.numAreas; arrIndx++) {
+      const element = sett.numAreas[arrIndx];
+      model.areas[arrIndx].minicolumns.forEach(miniColRow => {
+        miniColRow.forEach(miniCol => {
+
+          // Selecting random input cell to cennect.
+          let rndInpRowIndx = Math.floor(Math.random() * inpModel.cells.length);
+          let rndInpCellIndx = Math.floor(Math.random() * inpModel.cells[rndInpRowIndx].length);
+
+         // this.addSynapse(model, ++idCnt, model.areas[arrIndx].id, model.input.cells[rndInpRowIndx][rndInpCellIndx].id, miniCol.cells[sensoryLayer], 0 )
+        });
+      });
+      
+    }
+   
     return model;
   }
 
