@@ -27,7 +27,6 @@ export class NeocortexSettings{
   public numAreas: number;
   public minicolumnDims: number[];
   public numLayers: number;
-  public inputModel : InputModel;
 
   public cellHeightInMiniColumn: number = 5;
   public miniColumnWidth: number = 5;
@@ -43,12 +42,12 @@ export class NeoCortexModel {
   
   public input: InputModel;
 
-  constructor(settings:NeocortexSettings ) {
+  constructor(settings:NeocortexSettings,   input : InputModel ) {
      this.areas = new Array(settings.numAreas);
+     this.input = input;
      for(var i=0;i<settings.numAreas;i++)
       this.areas[i] = new Area(settings, i);
   } 
-
 }
 
 
@@ -158,7 +157,7 @@ export class InputModel {
   
   public id:number;
 
-  constructor(cellDims: number[]= [1,2048]) {
+  constructor(settings:NeocortexSettings, cellDims: number[]= [1,2048]) {
 
     this.cells = new Array();
 
@@ -166,11 +165,10 @@ export class InputModel {
 
       let row : Array<Cell> = new Array();
       
-      // for (var j = 0; j < cellDims[1]; j++) {
-      //   let id:CellId = { area:areaId, minicolumn:miniColId, layer:layer};
+      for (var j = 0; j < cellDims[1]; j++) {
 
-      //   row.push(new Cell(null, -1, ));       
-      // }
+        row.push(new Cell(settings, 0, [i, j], 0 ));       
+      }
 
       this.cells.push(row);
     }
