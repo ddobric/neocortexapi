@@ -1,4 +1,4 @@
-import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, neocortexSettings, InputModel } from './neocortexmodel';
+import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, NeocortexSettings, InputModel } from './neocortexmodel';
 
 
 
@@ -6,19 +6,39 @@ import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, neocortexSettings, Inp
 export class neoCortexUtils {
 
 
+  // public static createId(settings:neocortexSettings, areaIndx:number = 0, miniColIndx:number[], layer:number) : number
+  // {
+  //   let cellSegmentSz = 1;
+  //   for (let i = 0; i < settings.minicolumnDims.length; i++) {
+  //     cellSegmentSz = cellSegmentSz * settings.minicolumnDims[i];      
+  //   }
+
+  //   let multiDimSegmentSize = settings.numAreas * cellSegmentSz * settings.numLayers;
+
+  //   let flatIndx = 0;
+  //   for (let i = 0; i < miniColIndx.length -1; i++) {
+
+  //     flatIndx = flatIndx + settings.minicolumnDims[i] * miniColIndx[i];    
+  //   }
+  //    let id = areaIndx * multiDimSegmentSize +  cellSegmentSz * 
+
+  //    return id;
+  // }
+
   /**
    * 
    * @param areas 
-   * @param minicolumns 
-   * @param cellsInMinicolumn 
+   * @param miniColDims 
+   * @param numLayers 
    */
-  public static createModel(areas: number = 1, minicolumns: number[] = [1000, 3], cellsInMinicolumn: number = 6): NeoCortexModel {
+  public static createModel(areas: number = 1, miniColDims: number[] = [1000, 3], numLayers: number = 6): NeoCortexModel {
 
     const sensoryLayer = 3;
 
     let inpModel : InputModel = new InputModel([3,3]);
 
-    let sett: neocortexSettings = {numAreas: areas, minicolumnDims: minicolumns, numCellsInMinicolumn: cellsInMinicolumn, inputModel: inpModel };
+    let sett: NeocortexSettings = {numAreas: areas, minicolumnDims: miniColDims, numLayers: numLayers, inputModel: inpModel,
+       cellHeightInMiniColumn:5, miniColumnWidth:5 };
 
     var model: NeoCortexModel = new NeoCortexModel(sett);
 

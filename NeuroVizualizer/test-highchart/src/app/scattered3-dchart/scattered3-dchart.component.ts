@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HighchartsStatic, HighchartsService } from 'angular2-highcharts/dist/HighchartsService';
-import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, neocortexSettings } from '../neocortexmodel';
+import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, NeocortexSettings } from '../neocortexmodel';
 
 declare var require: any;
 
