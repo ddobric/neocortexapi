@@ -77,7 +77,7 @@ export class Cell extends location {
   public Layer: number;
 
   constructor(posX:number = 0, posY:number=0, posZ:number=0) {
-   super(posX, posY, posY);
+   super(posX, posY, posZ);
   }    
 }
 
