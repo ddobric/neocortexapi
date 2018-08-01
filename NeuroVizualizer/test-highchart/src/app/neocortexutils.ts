@@ -1,4 +1,4 @@
-import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, NeocortexSettings, InputModel } from './neocortexmodel';
+import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, NeocortexSettings, InputModel, CellId } from './neocortexmodel';
 
 
 export class neoCortexUtils {
@@ -63,7 +63,7 @@ export class neoCortexUtils {
   }
 
 
-  public static addSynapse(model: NeoCortexModel, synapseId: number, areaId: number = -1, preCellId: number, postCellId: number, weight: number) {
+  public static addSynapse(model: NeoCortexModel, synapseId: number, areaId: number = -1, preCellId: CellId, postCellId: CellId, weight: number) {
 
     let synapse = this.lookupSynapse(model, synapseId, areaId);
     if (synapse != null) {
@@ -92,10 +92,10 @@ export class neoCortexUtils {
 
 
   /**
-   * 
+   *  Search for synapse with specified id.
    * @param model 
    * @param synapseId 
-   * @param [optional] areaId.
+   * @param [optional] areaId.If >= 0 then restricts search for area. If not specified, the it search for synapse in all areas.
    */
   public static lookupSynapse(model: NeoCortexModel, synapseId: number, areaId: number = -1): Synapse {
 
@@ -113,10 +113,10 @@ export class neoCortexUtils {
 
 
   /**
-   * 
-   * @param model 
-   * @param synapseId 
-   * @param areaId 
+   * Search for synapse with specified id.
+   * @param model Model of AI network.
+   * @param synapseId Identifier of the synapse.
+   * @param areaId Restricts the search in specified area to increase performance.
    */
   private static lookupSynapseInArea(model: NeoCortexModel, synapseId: number, areaId: number): Synapse {
 
@@ -132,6 +132,26 @@ export class neoCortexUtils {
     });
 
     return null;
+  }
+
+  
+  /**
+   * Search for synapse with specified id.
+   * @param model Model of AI network.
+   * @param synapseId Identifier of the synapse.
+   * @param areaId Restricts the search in specified area to increase performance.
+   */
+  private static getCell(model: NeoCortexModel, cellId:CellId): Cell {
+
+    let area : Area = model.areas[cellId.area];
+    
+    let obj:any[] =  area.minicolumns[0];
+    
+    for (let i = 1; i < area.minicolumns.length-1; i++) {
+      obj =  obj[cellId.minicolumn[i]];
+    }
+
+    return obj[area.minicolumns.length-1] as Cell;
   }
 }
 
