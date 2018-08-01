@@ -130,11 +130,20 @@ namespace NeoCortexApi.Utility
         {
             generatorList = new List<GroupBy<Object, R>>();
 
+            int i = 0;
+            foreach (var item in entries)
+            {
+                generatorList.Add(GroupBy<Object, R>.From(item.Key, item.Value));
+                generatorList[i].MoveNext();
+                i++;
+            }
+            /*
             for (int i = 0; i < entries.Length; i++)
             {
                 generatorList.Add(GroupBy<Object, R>.From(entries[i].Key, entries[i].Value));
                 generatorList[i].MoveNext();
             }
+            */
 
 
 
@@ -209,8 +218,7 @@ namespace NeoCortexApi.Utility
                     //nextList[i] = generatorList[i].NextPair != null ?
                     //    Slot<Pair<object, R>>.of((Pair<object, R>)(object)generatorList[i].Current) :
                     //    Slot<Pair<object, R>>.empty();
-                    nextList[i] =
-                    Slot<Pair<object, R>>.of((Pair<object, R>)(object)generatorList[i].Current);
+                    nextList[i] = Slot<Pair<object, R>>.of((Pair<object, R>)(object)generatorList[i].Current);
                 }
             }
 
@@ -234,14 +242,13 @@ namespace NeoCortexApi.Utility
         {
             List<Pair<R, List<R>>> objs = new List<Pair<R, List<R>>>();
 
-            Pair<object, List<R>> retVal = null;
+            Pair<object, List<R>> retVal = new Pair<object, List<R>>(minKeyVal, new List<R>());
 
             for (int i = 0; i < entries.Length; i++)
             {
                 if (isEligibleList(i, minKeyVal))
                 {
-                    retVal = new Pair<object, List<R>>((R)nextList[i].get().Key, 
-                        new List<R> { (R)nextList[i].get().Value });
+                    retVal.Value.Add((R)nextList[i].get().Key);
 
                     drainKey(retVal, i, minKeyVal);
 
@@ -250,7 +257,9 @@ namespace NeoCortexApi.Utility
                 else
                 {
                     advanceList[i] = false;
-                    retVal = new Pair<object, List<R>>((R)nextList[i].get().Key, new List<R>() { Slot<Pair<object, R>>.empty().get().Value });
+                    retVal.Value.Add(default(R));
+                    //retVal = new Pair<object, List<R>>((R)nextList[i].get().Key, new List<R>() { Slot<Pair<object, R>>.empty().get().Value });
+                    //retVal = new Pair<object, List<R>>((R)nextList[i].get().Key, new List<R>() { default(R) });
                 }
             }
 
@@ -266,10 +275,10 @@ namespace NeoCortexApi.Utility
          */
         private bool nextMinKey()
         {
-            var minSlot = nextList.Min(slot => slot.get().Value);
+            minKeyVal = nextList.Min(slot => slot.get().Value);
 
             //return minSlot.isPresent();
-            return !EqualityComparer<R>.Default.Equals(minSlot, default(R));
+            return !EqualityComparer<R>.Default.Equals(minKeyVal, default(R));
         }
 
         /**
@@ -284,8 +293,9 @@ namespace NeoCortexApi.Utility
          */
         private bool isEligibleList(int listIdx, Object targetKey)
         {
-            return nextList[listIdx].isPresent() && nextList[listIdx].get().Key.Equals(targetKey);
-            //return nextList[listIdx].isPresent() && nextList[listIdx].equals(targetKey);
+            //return nextList[listIdx].isPresent() && nextList[listIdx].get().Value.Equals((R)targetKey);
+
+            return nextList[listIdx].isPresent() && EqualityComparer<R>.Default.Equals(nextList[listIdx].get().Value, (R)targetKey);
         }
 
         /**

@@ -14,7 +14,7 @@ namespace UnitTestsProject
         //private List<Slot> none = new List<Slot>(new Slot[] { Slot.empty() });
 
 
-        private List<Object> m_None = new List<Object>(new Object[] { null });
+        private Integer m_None = default(Integer);
 
         private Func<Object, Integer> m_Times1Fnc = x => (Integer)x;
 
@@ -79,7 +79,7 @@ namespace UnitTestsProject
 
             List<Pair<List<Object>, Func<Object, Integer>>> list = new List<Pair<List<object>, Func<object, Integer>>>();
             list.Add(new Pair<List<Object>, Func<Object, Integer>>(sequence0, m_Times1Fnc));
-            list.Add(new Pair<List<Object>, Func<Object, Integer>>(sequence0, m_Times3Fnc));
+            list.Add(new Pair<List<Object>, Func<Object, Integer>>(sequence1, m_Times3Fnc));
             GroupBy2<Integer> m = GroupBy2<Integer>.of(list.ToArray());
 
             List<Pair<Object, List<Object>>> expectedValues = new List<Pair<Object, List<Object>>>(
@@ -87,8 +87,8 @@ namespace UnitTestsProject
             {
                     new Pair<Object, List<Object>>(7, new List<Object>(new Object[] {new Integer(7), m_None })),
                     new Pair<Object, List<Object>>(9, new List<Object>(new Object[] {m_None, new Integer(3)})),
-                    new Pair<Object, List<Object>>(12, new List<Object>(new Object[] {new Integer(12), new Object[] {new Integer(4)}})),
-                    new Pair<Object, List<Object>>(15, new List<Object>(new Object[] {m_None, new Object[] {new Integer(5)}})),
+                    new Pair<Object, List<Object>>(12, new List<Object>(new Object[] {new Integer(12), new Integer(4)})),
+                    new Pair<Object, List<Object>>(15, new List<Object>(new Object[] {m_None, new Integer(5)})),
                     new Pair<Object, List<Object>>(16, new List<Object>(new Object[] {16, m_None})),
             });
     
