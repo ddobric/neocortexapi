@@ -171,7 +171,7 @@ export class AiNetComponent implements OnInit {
                     width: 10,
                     height: 10,
                     depth: 10,
-                    lineWidth: 4
+                    //lineWidth: 4
                     //groupPadding: 0
                 }
             },
@@ -198,19 +198,22 @@ export class AiNetComponent implements OnInit {
             },
             series: [{
                 name: 'Ist Data',
-                colorByPoint: true,
-                redraw: false,
+                data: this.dataSer1,
+                color: "black",
+                lineWidth: 5,
                 marker: {
                     enabled: true,
                     symbol: 'url(../../../assets/images/cylinder.png)',
                     width: 30,
                     height: 30
                 },
-                data: this.dataSer1,
+                
             },
             {
                 name: '2nd Data',
                 data: this.dataSer2,
+                color: "orange",
+                lineWidth: 5,
                 marker: {
                     enabled: true,
                     symbol: 'url(../../../assets/images/dbCylinder.png)',
