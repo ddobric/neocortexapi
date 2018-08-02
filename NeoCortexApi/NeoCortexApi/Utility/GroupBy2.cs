@@ -18,7 +18,7 @@ namespace NeoCortexApi.Utility
      * @author cogmission
      * @param <R>   The return type of the user-provided {@link Function}s
      */
-    public class GroupBy2<R> : IEnumerable<Pair<Object, List<R>>>, IEnumerator<Pair<Object, List<R>>> //, Generator<Tuple> 
+    public class GroupBy2<R> : IEnumerable<Pair<Object, List<List<R>>>>, IEnumerator<Pair<Object, List<List<R>>>> //, Generator<Tuple> 
      where R : IComparable<R>
     {
         /** serial version */
@@ -41,7 +41,7 @@ namespace NeoCortexApi.Utility
 
         private Slot<Pair<object, R>>[] nextList;
 
-        public Pair<object, List<R>> Current { get; set; }
+        public Pair<object, List<List<R>>> Current { get; set; }
 
         object IEnumerator.Current
         {
@@ -118,15 +118,10 @@ namespace NeoCortexApi.Utility
             return new GroupBy2<R>(entries);
         }
 
-
-
-
-        //  @SuppressWarnings("unchecked")
-
         /// <summary>
         /// Populates generator list with entries and fills the next(List with empty elements.
         /// </summary>
-        public void reset()
+        private void reset()
         {
             generatorList = new List<GroupBy<Object, R>>();
 
@@ -137,31 +132,7 @@ namespace NeoCortexApi.Utility
                 generatorList[i].MoveNext();
                 i++;
             }
-            /*
-            for (int i = 0; i < entries.Length; i++)
-            {
-                generatorList.Add(GroupBy<Object, R>.From(entries[i].Key, entries[i].Value));
-                generatorList[i].MoveNext();
-            }
-            */
-
-
-
-            //numEntries = generatorList.Count;
-
-            //        for(int i = 0;i < numEntries;i++) {
-            //            for(Pair<Object, R> p : generatorList.get(i)) {
-            //                System.out.println("generator " + i + ": " + p.getKey() + ",  " + p.getValue());
-            //            }
-            //            System.out.println("");
-            //        }
-            //        
-            //        generatorList = new ArrayList<>();
-            //        
-            //        for(int i = 0;i < entries.length;i++) {
-            //            generatorList.add(GroupBy.of(entries[i].getKey(), entries[i].getValue()));
-            //        }
-
+        
             advanceList = new bool[entries.Length];
 
             ArrayUtils.Fill(advanceList, true);
@@ -170,35 +141,6 @@ namespace NeoCortexApi.Utility
 
             ArrayUtils.Fill(nextList, Slot<Pair<Object, R>>.NONE);
         }
-
-
-
-        ///**
-        // * {@inheritDoc}
-        // */
-        ////public Iterator<Tuple> iterator() { return this; }
-
-        //public R this[int index]
-        //{
-        //    get
-        //    {
-        //        return this[index];
-        //    }
-        //    set { }
-        //}
-
-        /**
-         * Returns a flag indicating that at least one {@link Generator} has
-         * a matching key for the current "smallest" key generated.
-         * 
-         * @return a flag indicating that at least one {@link Generator} has
-         * a matching key for the current "smallest" key generated.
-         */
-        //    @Override
-        //public bool hasNext()
-        //{
-
-        //}
 
 
         public bool MoveNext()
@@ -224,7 +166,7 @@ namespace NeoCortexApi.Utility
 
             var res = nextMinKey();
 
-            this.Current = (Pair<Object, List<R>>)next();
+            this.Current = (Pair<Object, List<List<R>>>)next();
 
             return res;
         }
@@ -238,28 +180,29 @@ namespace NeoCortexApi.Utility
          */
         //    @SuppressWarnings("unchecked")
         //@Override
-        public Pair<object, List<R>> next()
+        private Pair<object, List<List<R>>> next()
         {
-            List<Pair<R, List<R>>> objs = new List<Pair<R, List<R>>>();
+            List<Pair<R, List<List<R>>>> objs = new List<Pair<R, List<List<R>>>>();
 
-            Pair<object, List<R>> retVal = new Pair<object, List<R>>(minKeyVal, new List<R>());
+            Pair<object, List<List<R>>> retVal = new Pair<object, List<List<R>>>(minKeyVal, new List<List<R>>());
 
             for (int i = 0; i < entries.Length; i++)
             {
+                List<R> list = new List<R>();
+                retVal.Value.Add(list);
+
                 if (isEligibleList(i, minKeyVal))
                 {
-                    retVal.Value.Add((R)nextList[i].get().Key);
+                    list.Add((R)nextList[i].get().Key);
 
-                    drainKey(retVal, i, minKeyVal);
+                    drainKey(list, i, minKeyVal);
 
                     advanceList[i] = true;
                 }
                 else
                 {
                     advanceList[i] = false;
-                    retVal.Value.Add(default(R));
-                    //retVal = new Pair<object, List<R>>((R)nextList[i].get().Key, new List<R>() { Slot<Pair<object, R>>.empty().get().Value });
-                    //retVal = new Pair<object, List<R>>((R)nextList[i].get().Key, new List<R>() { default(R) });
+                    list.Add(default(R));
                 }
             }
 
@@ -309,7 +252,7 @@ namespace NeoCortexApi.Utility
          * @param targetVal     the value to match in order to be an added member
          */
         // @SuppressWarnings("unchecked")
-        private void drainKey(Pair<object, List<R>> retVal, int listIdx, R targetVal)
+        private void drainKey(List<R> list, int listIdx, R targetVal)
         {
             while (generatorList[listIdx].NextPair != null)
             {
@@ -317,9 +260,8 @@ namespace NeoCortexApi.Utility
                 {
                     var elm = generatorList[listIdx].Current;
                     nextList[listIdx] = Slot<Pair<object, R>>.of((Pair<object, R>)(object)elm);
-                    retVal.Value.Add(nextList[listIdx].get().Value);
+                    list.Add((R)nextList[listIdx].get().Key);
                     generatorList[listIdx].MoveNext();
-                    //((List<Object>)retVal.get(listIdx + 1)).add(nextList[listIdx].get().getFirst());
                 }
                 else
                 {
@@ -349,7 +291,7 @@ namespace NeoCortexApi.Utility
             return (IEnumerator<Pair<Object, List<R>>>)this;
         }
 
-        IEnumerator<Pair<object, List<R>>> IEnumerable<Pair<object, List<R>>>.GetEnumerator()
+        IEnumerator<Pair<object, List<List<R>>>> IEnumerable<Pair<object, List<List<R>>>>.GetEnumerator()
         {
             return this;
         }
