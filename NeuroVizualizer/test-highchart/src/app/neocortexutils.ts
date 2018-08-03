@@ -31,6 +31,7 @@ export class neoCortexUtils {
    */
   public static createModel(areas: number = 1, miniColDims: number[] = [1000, 3], numLayers: number = 6): NeoCortexModel {
 
+    const sensoryAreaId = 0;
     const sensoryLayer = 3;
 
     let sett: NeocortexSettings = {
@@ -45,7 +46,7 @@ export class neoCortexUtils {
     let idCnt: number = 0;
 
     for (let arrIndx = 0; arrIndx < sett.numAreas; arrIndx++) {
-      const element = sett.numAreas[arrIndx];
+      
       model.areas[arrIndx].minicolumns.forEach(miniColRow => {
         miniColRow.forEach(miniCol => {
 
@@ -53,7 +54,10 @@ export class neoCortexUtils {
           let rndInpRowIndx = Math.floor(Math.random() * inpModel.cells.length);
           let rndInpCellIndx = Math.floor(Math.random() * inpModel.cells[rndInpRowIndx].length);
 
-          // this.addSynapse(model, ++idCnt, model.areas[arrIndx].id, model.input.cells[rndInpRowIndx][rndInpCellIndx].id, miniCol.cells[sensoryLayer], 0 )
+          for (let miniColIndx = 0; miniColIndx < inpModel.cells[rndInpRowIndx].length * 0.2; miniColIndx++) {
+            this.addSynapse(model, ++idCnt, model.areas[arrIndx].id, model.input.cells[rndInpRowIndx][rndInpCellIndx], miniCol.cells[sensoryLayer], 0)
+          }        
+           
         });
       });
 
@@ -63,15 +67,10 @@ export class neoCortexUtils {
   }
 
 
-  public static addSynapse(model: NeoCortexModel, synapseId: number, areaId: number = -1, preCellId: CellId, postCellId: CellId, weight: number) {
+  public static addSynapse(model: NeoCortexModel, id: number, areaId: number = -1, preCell: Cell, postCell: Cell, weight: number) {
 
-    let synapse = this.lookupSynapse(model, synapseId, areaId);
-    if (synapse != null) {
-      synapse.permanence = weight;
-    }
-    else
-      throw "Synapse cannot be found!";
-
+    model.synapses.push(new Synapse(id, weight, preCell, postCell));
+    
   }
 
   public static updateSynapse(model: NeoCortexModel, synapseId: number, areaId: number = -1, weight: number) {
