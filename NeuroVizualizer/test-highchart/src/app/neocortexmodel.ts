@@ -30,8 +30,8 @@ export class NeocortexSettings {
   public minicolumnDims: number[];
   public numLayers: number;
 
-  public cellHeightInMiniColumn: number = 5;
-  public miniColumnWidth: number = 5;
+ // public cellHeightInMiniColumn: number = 5;
+ // public miniColumnWidth: number = 5;
 }
 
 export class NeoCortexModel {
@@ -112,7 +112,8 @@ export class Minicolumn extends Location {
 
     for (let layer = 0; layer < settings.numLayers; layer++) {
 
-      let cell: Cell = new Cell(settings, areaId, miniColId, layer, this.posX, this.posY + layer * this.settings.cellHeightInMiniColumn, this.posZ)
+      //let cell: Cell = new Cell(settings, areaId, miniColId, layer, this.posX, this.posY + layer * this.settings.cellHeightInMiniColumn, this.posZ)
+      let cell: Cell = new Cell(settings, areaId, miniColId, layer, this.posX, this.posY + layer, this.posZ)
       this.cells.push(cell);
     }
   }
