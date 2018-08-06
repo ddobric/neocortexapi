@@ -33,7 +33,7 @@ export class AiNetComponent implements OnInit {
         this.createChart();
 
         // initData function will initialize the data series 1 
-        this.initData1(100, 6, 3);
+       // this.initData1(100, 6, 3);
         // initData function will initialize the data series 2 
         //this.initData2(10, 6, 4);
         // generateData function will draw the chart
@@ -288,6 +288,8 @@ export class AiNetComponent implements OnInit {
 
       var model  = neoCortexUtils.createModel(1, [100, 3], 6); // createModel (numberOfAreas/DataSeries, [xAxis, zAxis], yAxis)
     // this.dataSer1 = getDataFromModel(model);
+    
+
     
     }
 }

@@ -12,13 +12,17 @@ export class CellId {
 
 export class Location {
 
-  public posX: number;
-  public posY: number;
-  public posZ: number;
+  posX: number;
+  posY: number;
+  posZ: number;
 
   public isVisible: boolean;
 
   constructor(posX: number = 0, posY: number = 0, posZ: number = 0) {
+    this.posX=posX;
+    this.posY=posY;
+    this.posZ=posZ;
+
 
 
   }
