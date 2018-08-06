@@ -37,7 +37,7 @@ export class neoCortexUtils {
 
     let sett: NeocortexSettings = {
       numAreas: numOfAreas, minicolumnDims: miniColDims, numLayers: numLayers,
-      //cellHeightInMiniColumn: 5, miniColumnWidth: 5
+      cellHeightInMiniColumn: 5, miniColumnWidth: 5
     };
 
     let inpModel: InputModel = new InputModel(sett, [3, 3]);

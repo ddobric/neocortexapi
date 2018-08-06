@@ -33,9 +33,9 @@ export class AiNetComponent implements OnInit {
         this.createChart();
 
         // initData function will initialize the data series 1 
-        this.initData1(10, 6, 3);
+        this.initData1(100, 6, 3);
         // initData function will initialize the data series 2 
-        this.initData2(10, 6, 4);
+        //this.initData2(10, 6, 4);
         // generateData function will draw the chart
         this.generateChart(null);
     }
@@ -139,6 +139,8 @@ export class AiNetComponent implements OnInit {
             chart: {
                 renderTo : container,
                 height: 600,
+               // height: 800,
+                //width: 1000,
                 //zoomType: 'xy',
                 margin: 100,
                 type: 'scatter',
@@ -156,6 +158,9 @@ export class AiNetComponent implements OnInit {
                         side: { size: 3, color: 'rgba(0,0,0,0.06)' }
                     }
                 }
+            },
+            boost: {
+                useGPUTranslations: true
             },
             title: {
                 text: '3D'
@@ -179,19 +184,19 @@ export class AiNetComponent implements OnInit {
             },
             xAxis: {
                 min: 0,
-                max: 10,
+                max: 100,
                 gridLineWidth: 3,
                 //gridLineColor: this.lineColour
             },
             yAxis: {
                 min: 0,
-                max: 10,
+                max: 6,
                 gridLineWidth: 3,
                 title: null
             },
             zAxis: {
                 min: 0,
-                max: 10,
+                max: 4,
                 gridLineWidth: 3,
                 showFirstLabel: false
             },
@@ -202,12 +207,12 @@ export class AiNetComponent implements OnInit {
                 name: 'Ist Data',
                 data: this.dataSer1,
                 color: "black",
-                lineWidth: 5,
+                lineWidth: 1,
                 marker: {
                     enabled: true,
                     symbol: 'url(../../../assets/images/cylinder.png)',
-                    width: 15,
-                    height: 15
+                    width: 25,
+                    height: 25
                 },
                 
             },
@@ -281,7 +286,9 @@ export class AiNetComponent implements OnInit {
     
     public createChart()  { 
 
-      var model  = neoCortexUtils.createModel(3, [1000,6], 6); // createModel (numberOfAreas/DataSeries, [xAxis, zAxis], yAxis)
+      var model  = neoCortexUtils.createModel(1, [100, 3], 6); // createModel (numberOfAreas/DataSeries, [xAxis, zAxis], yAxis)
+    // this.dataSer1 = getDataFromModel(model);
+    
     }
 }
 
