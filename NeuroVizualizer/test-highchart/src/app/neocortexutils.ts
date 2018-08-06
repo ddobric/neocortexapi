@@ -24,7 +24,7 @@ export class neoCortexUtils {
   // }
 
   /**
-   * // createModel (numberOfAreas/DataSeries, [xAxis, zAxis], yAxis)
+   * createModel (numberOfAreas/DataSeries, [xAxis, zAxis], yAxis)
    * @param areas 
    * @param miniColDims 
    * @param numLayers 

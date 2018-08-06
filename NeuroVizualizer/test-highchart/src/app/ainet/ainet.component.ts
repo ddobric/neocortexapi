@@ -289,8 +289,6 @@ export class AiNetComponent implements OnInit {
       var model  = neoCortexUtils.createModel(1, [100, 3], 6); // createModel (numberOfAreas/DataSeries, [xAxis, zAxis], yAxis)
     // this.dataSer1 = getDataFromModel(model);
     
-
-    
     }
 }
 
