@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HighchartsStatic, HighchartsService } from 'angular2-highcharts/dist/HighchartsService';
 import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, NeocortexSettings } from '../neocortexmodel';
 import { neoCortexUtils} from '../neocortexutils';
+import { modelGroupProvider } from '../../../node_modules/@angular/forms/src/directives/ng_model_group';
 
 
 declare var require: any;
@@ -22,6 +23,7 @@ export class AiNetComponent implements OnInit {
     options: any = {};
     chart: any = {};
     dataSer1: any = [];
+    dataArea: any = [];
     dataSer2: any = [];
     chartInstance: Object;
     xCoordinate : any;
@@ -205,8 +207,8 @@ export class AiNetComponent implements OnInit {
             },
             series: [{
                 name: 'Ist Data',
-                data: this.dataSer1,
-                color: "black",
+                data: this.dataArea[0],
+                color: "green",
                 lineWidth: 1,
                 marker: {
                     enabled: true,
@@ -230,6 +232,7 @@ export class AiNetComponent implements OnInit {
             },]
 
         };
+        
 
        
     }
@@ -284,12 +287,29 @@ export class AiNetComponent implements OnInit {
     
     }
     
-    public createChart()  { 
+  createChart()  { 
+    let model  = neoCortexUtils.createModel(2, [100, 3], 6); // createModel (numberOfAreas/DataSeries, [xAxis, zAxis], yAxis)
+    let i; let j; let k;
+    for ( i = 0; i < model.settings.minicolumnDims[0]; i++) {
+        for ( j = 0; j < model.settings.numLayers; j ++) {
+            for ( k = 0; k < model.settings.minicolumnDims[1]; k ++) {
+                this.dataSer1.push([i, j, k]);
+            }
 
-      var model  = neoCortexUtils.createModel(1, [100, 3], 6); // createModel (numberOfAreas/DataSeries, [xAxis, zAxis], yAxis)
-    // this.dataSer1 = getDataFromModel(model);
-    
+        }
+
     }
+    for (var a = 0; a < model.settings.numAreas; a++) {
+      this.dataArea.push(this.dataSer1);
+    }
+    }
+
+addAllSerieas(){
+for(let i = 0; i < this.dataArea.length; i ++ ) {
+    this.chart.nativeChart.addSeries( i, false );
+}
+
+}
 }
 
 
