@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HighchartsStatic, HighchartsService } from 'angular2-highcharts/dist/HighchartsService';
 import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, NeocortexSettings } from '../neocortexmodel';
-import { neoCortexUtils} from '../neocortexutils';
+import { neoCortexUtils } from '../neocortexutils';
 import { modelGroupProvider } from '../../../node_modules/@angular/forms/src/directives/ng_model_group';
 
 
@@ -9,8 +9,8 @@ declare var require: any;
 
 const Highcharts = require('highcharts');
 Highcharts.setOptions({
-  //colors: ['#50B432'],
-  redraw: false,
+    //colors: ['#50B432'],
+    redraw: false,
 });
 
 @Component({
@@ -19,58 +19,58 @@ Highcharts.setOptions({
     styleUrls: ['./ainet.component.css']
 })
 export class AiNetComponent implements OnInit {
-   
+
     options: any = {};
     chart: any = {};
     dataSer1: any = [];
     dataArea: any = [];
     dataSer2: any = [];
     chartInstance: Object;
-    xCoordinate : any;
-    yCoordinate : any;
-    zCoordinate : any;
+    xCoordinate: any;
+    yCoordinate: any;
+    zCoordinate: any;
 
     constructor() {
 
         this.createChart();
 
         // initData function will initialize the data series 1 
-       // this.initData1(100, 6, 3);
+        // this.initData1(100, 6, 3);
         // initData function will initialize the data series 2 
         //this.initData2(10, 6, 4);
         // generateData function will draw the chart
         this.generateChart(null);
+        this.addAllSeries();
     }
 
 
     ngOnInit() {
-        
+
     }
 
 
-    xAxisColour(xAxisColor: String){
-       // this.lineColour = colour;
+    xAxisColour(xAxisColor: String) {
+        // this.lineColour = colour;
         //this.chart.nativeChart.options.xAxis.gridLineColor= "red";
         this.options.xAxis.gridLineColor = xAxisColor;
         this.chart.nativeChart.update(this.options);
 
     }
-    yAxisColour(yAxisColor: string){
+    yAxisColour(yAxisColor: string) {
         this.options.yAxis.gridLineColor = yAxisColor;
         this.chart.nativeChart.update(this.options);
     }
 
     addPoints(points: String) {
-         this.dataSer1[0] = eval("[" + points + "]");
-        var str = this.dataSer1[0]; 
-        var xCoordinateStr = str.slice(0, 1)//x
-        var yCoordinateStr = str.slice(1, 2); //y
-        var zCoordinateStr = str.slice(2, 3)//z
-        this.xCoordinate = parseInt(xCoordinateStr);
-        this.yCoordinate = parseInt(yCoordinateStr);
-        this.zCoordinate = parseInt(zCoordinateStr);
+        this.dataSer1[0] = eval("[" + points + "]");
+        //this.dataArea[0][0] = eval("[" + points + "]");
+        let str = this.dataSer1[0];
+       // let str = this.dataArea[0][0];
+        let xCoordinate = parseInt(str.slice(0, 1));//x
+        let yCoordinate = parseInt(str.slice(1, 2));//y
+        let zCoordinate = parseInt(str.slice(2, 3));//z
         //this.chart.nativeChart.series[0].data[0].update({y:this.yCoordinate, marker:{symbol:'url(../../../assets/images/edited.png)', width:10}});
-        this.chart.nativeChart.series[0].data[0].update({x:this.xCoordinate, y:this.yCoordinate, z:this.zCoordinate,marker:{symbol:'url(../../../assets/images/edited.png)', width:50, height:50}});
+        this.chart.nativeChart.series[0].data[0].update({ x: xCoordinate, y: yCoordinate, z: zCoordinate, marker: { symbol: 'url(../../../assets/images/edited.png)', width: 50, height: 50 } });
         //this.chart.nativeChart.series[0].setData(this.dataSer1);
         this.chart.nativeChart.update(this.options);
 
@@ -113,7 +113,7 @@ export class AiNetComponent implements OnInit {
         let z;
         for (x = 0; x < xPos; x += 1) {
             for (y = 0; y < yPos; y += 1) {
-                for ( z = 0; z < zPos; z += 1) {
+                for (z = 0; z < zPos; z += 1) {
                     this.dataSer1.push([
                         x,
                         y,
@@ -138,10 +138,11 @@ export class AiNetComponent implements OnInit {
             nativeChart: null,
             exporting: { enabled: false },
             credits: { enabled: false },
+            tooltip: { enabled: false },
             chart: {
-                renderTo : container,
+                renderTo: container,
                 height: 600,
-               // height: 800,
+                // height: 800,
                 //width: 1000,
                 //zoomType: 'xy',
                 margin: 100,
@@ -205,45 +206,47 @@ export class AiNetComponent implements OnInit {
             legend: {
                 enabled: false
             },
-            series: [{
-                name: 'Ist Data',
-                data: this.dataArea[0],
-                color: "green",
-                lineWidth: 1,
-                marker: {
-                    enabled: true,
-                    symbol: 'url(../../../assets/images/cylinder.png)',
-                    width: 25,
-                    height: 25
+            series: [
+/*                 {
+                    name: 'Ist Data',
+                    data: this.dataArea[0],
+                    color: "green",
+                    lineWidth: 1,
+                    marker: {
+                        enabled: true,
+                        symbol: 'url(../../../assets/images/cylinder.png)',
+                        width: 25,
+                        height: 25
+                    },
+
                 },
-                
-            },
-            {
-                name: '2nd Data',
-                data: this.dataSer2,
-                color: "orange",
-                lineWidth: 5,
-                marker: {
-                    enabled: true,
-                    symbol: 'url(../../../assets/images/dbCylinder.png)',
-                    width: 20,
-                    height: 20
-                }
-            },]
+                {
+                    name: '2nd Data',
+                    data: this.dataSer2,
+                    color: "orange",
+                    lineWidth: 5,
+                    marker: {
+                        enabled: true,
+                        symbol: 'url(../../../assets/images/dbCylinder.png)',
+                        width: 20,
+                        height: 20
+                    }
+                }, */
+            ]
 
         };
-        
 
-       
+
+
     }
 
-    saveInstance(chartInstance, chart) {
+    saveInstance(chartInstance) {
         this.chart.nativeChart = chartInstance;
         chartInstance.container.nativeChart = chartInstance;
         chartInstance.container.options = this.options;
-     
+
         (<any>document).nativeChart = chartInstance;
-         //calling mouse events to rotate the container/chart with mouse
+        //calling mouse events to rotate the container/chart with mouse
         Highcharts.addEvent(chartInstance.container, 'mousedown', this.dragStart);
         //calling touch events to rotate the container/chart with touch
         Highcharts.addEvent(chartInstance.container, 'touchstart', this.dragStart);
@@ -256,7 +259,7 @@ export class AiNetComponent implements OnInit {
      * 
      */
     dragStart(eStart): any {
-      
+
         eStart = (<any>document).nativeChart.pointer.normalize(eStart);
         var posX = eStart.chartX;
         var posY = eStart.chartY;
@@ -269,12 +272,12 @@ export class AiNetComponent implements OnInit {
 
         var unbindDragTouch = Highcharts.addEvent(document, 'touchmove', dragFnc);
         Highcharts.addEvent(document, 'touchend', unbindDragTouch);
-        
-       
-        function dragFnc(e): any{
+
+
+        function dragFnc(e): any {
             // Get e.chartX and e.chartY
             e = this.nativeChart.pointer.normalize(e);
-    
+
             this.nativeChart.update({
                 chart: {
                     options3d: {
@@ -284,32 +287,58 @@ export class AiNetComponent implements OnInit {
                 }
             }, undefined, undefined, false);
         }
-    
+
     }
-    
-  createChart()  { 
-    let model  = neoCortexUtils.createModel(2, [100, 3], 6); // createModel (numberOfAreas/DataSeries, [xAxis, zAxis], yAxis)
-    let i; let j; let k;
-    for ( i = 0; i < model.settings.minicolumnDims[0]; i++) {
-        for ( j = 0; j < model.settings.numLayers; j ++) {
-            for ( k = 0; k < model.settings.minicolumnDims[1]; k ++) {
-                this.dataSer1.push([i, j, k]);
+
+    createChart() {
+        let model = neoCortexUtils.createModel(2, [100, 3], 6); // createModel (numberOfAreas/DataSeries, [xAxis, zAxis], yAxis)
+        let i; let j; let k;
+        for (i = 0; i < model.settings.minicolumnDims[0]; i++) {
+            for (j = 0; j < model.settings.numLayers; j++) {
+                for (k = 0; k < model.settings.minicolumnDims[1]; k++) {
+                    this.dataSer1.push([i, j, k]);
+                }
+
             }
 
         }
-
-    }
-    for (var a = 0; a < model.settings.numAreas; a++) {
-      this.dataArea.push(this.dataSer1);
-    }
+        for (var a = 0; a < model.settings.numAreas; a++) {
+            this.dataArea.push(this.dataSer1);
+        }
     }
 
-addAllSerieas(){
-for(let i = 0; i < this.dataArea.length; i ++ ) {
-    this.chart.nativeChart.addSeries( i, false );
-}
+    addAllSeries() {
+        this.dataArea.forEach(dataSeries => {
+            this.options.series = [
+                {
+                name: "Data",
+                data: dataSeries,
+                color: "green",
+                lineWidth: 1,
+                marker: {
+                    enabled: true,
+                    symbol: 'url(../../../assets/images/cylinder.png)',
+                    width: 25,
+                    height: 25
+                },
+            },
+            {
+                name: "Data 2",
+                data: dataSeries,
+                color: "red",
+                lineWidth: 1,
+                marker: {
+                    enabled: true,
+                    symbol: 'url(../../../assets/images/edited.png)',
+                    width: 25,
+                    height: 25
+                },
+            },
+        ]
 
-}
+        });
+
+    }
 }
 
 

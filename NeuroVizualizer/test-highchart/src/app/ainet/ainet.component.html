@@ -1,29 +1,26 @@
 <h1>
-  Ainet 
+    Ainet
 </h1>
-<div class= "container form-inline">
+<div class="container form-inline">
     <div calss="row form-group">
         <div class="container col-sm-4">
-  <input class="form-control" type="text" placeholder="x, y, z Coordinates" #pointsInput>
-  <button class="btn btn-success" type="submit" (click) = 'addPoints(pointsInput.value)'>Add Coordinates</button>
-    </div>
-    </div>
-    <div calss="row form-group">
-        <div class="container col-sm-4">
-          <input class="form-control" type="text" placeholder="yAxis Lines Colour" #colourInputx>
-          <button class="btn btn-success" type="submit" (click) = 'yAxisColour(colourInputx.value)'>yAxis Colour</button>
+            <input class="form-control" type="text" placeholder="x, y, z Coordinates" #pointsInput>
+            <button class="btn btn-success" type="submit" (click)='addPoints(pointsInput.value)'>Add Coordinates</button>
         </div>
     </div>
-<div calss="row form-group">
-   <div class="container col-sm-4">
-    <input class="form-control" type="text" placeholder="xAxis Lines Colour" #colourInputy>
-    <button class="btn btn-success" type="submit" (click) = 'xAxisColour(colourInputy.value)'>xAxis Colour</button>
-</div>
-</div>
+    <div calss="row form-group">
+        <div class="container col-sm-4">
+            <input class="form-control" type="text" placeholder="yAxis Lines Colour" #colourInputx>
+            <button class="btn btn-success" type="submit" (click)='yAxisColour(colourInputx.value)'>yAxis Colour</button>
+        </div>
+    </div>
+    <div calss="row form-group">
+        <div class="container col-sm-4">
+            <input class="form-control" type="text" placeholder="xAxis Lines Colour" #colourInputy>
+            <button class="btn btn-success" type="submit" (click)='xAxisColour(colourInputy.value)'>xAxis Colour</button>
+        </div>
+    </div>
 
 </div>
 
-<chart id="container" [options]="options" (load)="saveInstance($event.context, chart)"></chart>
-
-
-
+<chart id="container" [options]="options" (load)="saveInstance($event.context)"></chart>
