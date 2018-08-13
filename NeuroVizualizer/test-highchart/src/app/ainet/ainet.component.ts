@@ -5,7 +5,7 @@ import { neoCortexUtils } from '../neocortexutils';
 import { modelGroupProvider } from '../../../node_modules/@angular/forms/src/directives/ng_model_group';
 
 
-declare var require: any;
+declare let require: any;
 
 const Highcharts = require('highcharts');
 Highcharts.setOptions({
@@ -62,14 +62,11 @@ export class AiNetComponent implements OnInit {
     }
 
     addPoints(points: String) {
-        this.dataSer1[0] = eval("[" + points + "]");
-        //this.dataArea[0][0] = eval("[" + points + "]");
-        let str = this.dataSer1[0];
-       // let str = this.dataArea[0][0];
-        let xCoordinate = parseInt(str.slice(0, 1));//x
-        let yCoordinate = parseInt(str.slice(1, 2));//y
-        let zCoordinate = parseInt(str.slice(2, 3));//z
-        //this.chart.nativeChart.series[0].data[0].update({y:this.yCoordinate, marker:{symbol:'url(../../../assets/images/edited.png)', width:10}});
+        let coordStr = eval("[" + points + "]");
+        let xCoordinate = parseInt(coordStr.slice(0, 1));//x
+        let yCoordinate = parseInt(coordStr.slice(1, 2));//y
+        let zCoordinate = parseInt(coordStr.slice(2, 3));//z
+
         this.chart.nativeChart.series[0].data[0].update({ x: xCoordinate, y: yCoordinate, z: zCoordinate, marker: { symbol: 'url(../../../assets/images/edited.png)', width: 50, height: 50 } });
         //this.chart.nativeChart.series[0].setData(this.dataSer1);
         this.chart.nativeChart.update(this.options);
@@ -144,7 +141,7 @@ export class AiNetComponent implements OnInit {
                 height: 600,
                 // height: 800,
                 //width: 1000,
-                //zoomType: 'xy',
+                zoomType: 'xy',
                 margin: 100,
                 type: 'scatter',
                 animation: false,
@@ -172,15 +169,11 @@ export class AiNetComponent implements OnInit {
                 text: ''
             },
             plotOptions: {
-                series: {
-                    marker: {
-                        enabled: true
-                    }
-                },
                 scatter: {
                     width: 10,
                     height: 10,
                     depth: 10,
+                    turboThreshold: 0, //opt used for update a point in large data series more than 1000 points
                     //lineWidth: 4
                     //groupPadding: 0
                 }
@@ -207,31 +200,31 @@ export class AiNetComponent implements OnInit {
                 enabled: false
             },
             series: [
-/*                 {
-                    name: 'Ist Data',
-                    data: this.dataArea[0],
-                    color: "green",
-                    lineWidth: 1,
-                    marker: {
-                        enabled: true,
-                        symbol: 'url(../../../assets/images/cylinder.png)',
-                        width: 25,
-                        height: 25
-                    },
-
-                },
-                {
-                    name: '2nd Data',
-                    data: this.dataSer2,
-                    color: "orange",
-                    lineWidth: 5,
-                    marker: {
-                        enabled: true,
-                        symbol: 'url(../../../assets/images/dbCylinder.png)',
-                        width: 20,
-                        height: 20
-                    }
-                }, */
+                /*                 {
+                                    name: 'Ist Data',
+                                    data: this.dataArea[0],
+                                    color: "green",
+                                    lineWidth: 1,
+                                    marker: {
+                                        enabled: true,
+                                        symbol: 'url(../../../assets/images/cylinder.png)',
+                                        width: 25,
+                                        height: 25
+                                    },
+                
+                                },
+                                {
+                                    name: '2nd Data',
+                                    data: this.dataSer2,
+                                    color: "orange",
+                                    lineWidth: 5,
+                                    marker: {
+                                        enabled: true,
+                                        symbol: 'url(../../../assets/images/dbCylinder.png)',
+                                        width: 20,
+                                        height: 20
+                                    }
+                                }, */
             ]
 
         };
@@ -261,16 +254,16 @@ export class AiNetComponent implements OnInit {
     dragStart(eStart): any {
 
         eStart = (<any>document).nativeChart.pointer.normalize(eStart);
-        var posX = eStart.chartX;
-        var posY = eStart.chartY;
-        var alpha = this.options.chart.options3d.alpha;
-        var beta = this.options.chart.options3d.beta;
-        var sensitivity = 5; // lower is more sensitive
+        let posX = eStart.chartX;
+        let posY = eStart.chartY;
+        let alpha = this.options.chart.options3d.alpha;
+        let beta = this.options.chart.options3d.beta;
+        let sensitivity = 5; // lower is more sensitive
 
-        var unbindDragMouse = Highcharts.addEvent(document, 'mousemove', dragFnc);
+        let unbindDragMouse = Highcharts.addEvent(document, 'mousemove', dragFnc);
         Highcharts.addEvent(document, 'mouseup', unbindDragMouse);
 
-        var unbindDragTouch = Highcharts.addEvent(document, 'touchmove', dragFnc);
+        let unbindDragTouch = Highcharts.addEvent(document, 'touchmove', dragFnc);
         Highcharts.addEvent(document, 'touchend', unbindDragTouch);
 
 
@@ -302,7 +295,7 @@ export class AiNetComponent implements OnInit {
             }
 
         }
-        for (var a = 0; a < model.settings.numAreas; a++) {
+        for (let a = 0; a < model.settings.numAreas; a++) {
             this.dataArea.push(this.dataSer1);
         }
     }
@@ -311,30 +304,30 @@ export class AiNetComponent implements OnInit {
         this.dataArea.forEach(dataSeries => {
             this.options.series = [
                 {
-                name: "Data",
-                data: dataSeries,
-                color: "green",
-                lineWidth: 1,
-                marker: {
-                    enabled: true,
-                    symbol: 'url(../../../assets/images/cylinder.png)',
-                    width: 25,
-                    height: 25
+                    name: "Data",
+                    data: dataSeries,
+                    color: "green",
+                    lineWidth: 1,
+                    marker: {
+                        enabled: true,
+                        symbol: 'url(../../../assets/images/cylinder.png)',
+                        width: 25,
+                        height: 25
+                    },
                 },
-            },
-            {
-                name: "Data 2",
-                data: dataSeries,
-                color: "red",
-                lineWidth: 1,
-                marker: {
-                    enabled: true,
-                    symbol: 'url(../../../assets/images/edited.png)',
-                    width: 25,
-                    height: 25
+                {
+                    name: "Data 2",
+                    data: dataSeries,
+                    color: "red",
+                    lineWidth: 1,
+                    marker: {
+                        enabled: true,
+                        symbol: 'url(../../../assets/images/edited.png)',
+                        width: 25,
+                        height: 25
+                    },
                 },
-            },
-        ]
+            ]
 
         });
 
