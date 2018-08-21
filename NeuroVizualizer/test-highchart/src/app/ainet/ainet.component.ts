@@ -31,30 +31,35 @@ export class AinetComponent implements OnInit, AfterViewInit {
       x: this.xCoordinate,
       y: this.yCoordinate,
       z: this.zCoordinate,
-      name: 'Data 1',
-      mode: 'markers',
+      name: 'Artificial neural network',
+      mode: 'lines+markers',
+      connectgaps: true,
+      line: {
+        width: 4,
+        color: '#7CFC00'
+      },
       marker: {
-        size: 12,
-
-        //color: '#00FFFF',
+        size: 18,
+        color: '#00BFFF',
         symbol: 'circle',
-        line: {
-          color: '#00FFFF',
+         line: {
+          color: '#7B68EE',
           width: 2
-        },
-        opacity: 0.8
+        }, 
+        opacity: 10
       },
       type: 'scatter3d'
 
     };
-    const trace2 = {
+/*     const trace2 = {
       x: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],
       y: [0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2],
       z: [0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2],
+  
       name: 'Data 2',
       mode: 'markers',
       marker: {
-        size: 12,
+        size: 17,
 
         //color: '#00FFFF',
         symbol: 'circle',
@@ -66,25 +71,42 @@ export class AinetComponent implements OnInit, AfterViewInit {
       },
       type: 'scatter3d'
 
-    };
+    }; */
 
-    this.data = [trace1, trace2];
+    this.data = [trace1];
     this.layout = {
+      scene:{
+        aspectmode: "manual",
+        aspectratio: {
+          x: 7, y: 1, z: 0.5,
+         },
+      /*    xaxis: {
+          range: [0, 100],
+        },
+        yaxis: {
+          range: [0, 6],
+        },
+        zaxis: {
+          range: [0, 4],
+        }, */
+        },
+      title:'3D Chart',
       dragmode: false,
-      autosize: false,
+      autosize: true,
       showlegend: true,
       legend: {
         x: 0.5,
         y: 1
       },
-      width: 800,
-      height: 800,
+       width: 2000,
+      height: 650, 
       margin: {
-        l: 0,
+         l: 0,
         r: 0,
         b: 0,
         t: 0,
-        pad: 4
+        pad: 4 
+     
       }
     };
     const config = {
@@ -94,7 +116,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     Plotlyjs.newPlot(graph, this.data, this.layout, config);
   }
   fillChart() {
-    let model = neoCortexUtils.createModel(2, [100, 3], 6); // createModel (numberOfAreas/DataSeries, [xAxis, zAxis], yAxis)
+    let model = neoCortexUtils.createModel(2, [100, 4], 6); // createModel (numberOfAreas/DataSeries, [xAxis, zAxis], yAxis)
     let x; let y; let z;
     for (x = 0; x < model.settings.minicolumnDims[0]; x++) {
         for (y = 0; y < model.settings.numLayers; y++) {
