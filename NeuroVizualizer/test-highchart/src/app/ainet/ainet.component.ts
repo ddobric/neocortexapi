@@ -28,9 +28,6 @@ export class AinetComponent implements OnInit, AfterViewInit {
   createChart() {
     let graph = document.getElementById('graph');
     const trace1 = {
-      /*       x: [0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2],
-            y: [0,0,0,1,2,1,2,1,2,0,0,0,1,2,1,2,1,2,0,0,0,1,2,1,2,1,2],
-            z: [0,1,2,0,0,1,1,2,2,0,1,2,0,0,1,1,2,2,0,1,2,0,0,1,1,2,2], */
       x: this.xCoordinate,
       y: this.yCoordinate,
       z: this.zCoordinate,
@@ -112,7 +109,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
     }
 /*     for (let a = 0; a < model.settings.numAreas; a++) {
-        this.dataArea.push(this.dataSer1);
+        
     } */
 }
 
