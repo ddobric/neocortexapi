@@ -4,13 +4,9 @@ import { FormsModule } from '@angular/forms';
 import {ChartModule} from 'angular2-highcharts';
 import { AppComponent } from './app.component';
 import { RouterModule, Routes } from '@angular/router';
-import { GraphComponent } from './graph/graph.component';
-import { Rotation3DComponent } from './rotation3-d/rotation3-d.component';
 import { Scattered3DchartComponent } from './scattered3-dchart/scattered3-dchart.component';
-import { ZoomGraphComponent } from './zoom-graph/zoom-graph.component';
 import { HomeComponent } from './home/home.component';
 import { AppRoutingModule } from './app-routing-module';
-import { ScatterPointsComponent } from './scatter-points/scatter-points.component';
 import { HighchartsStatic } from 'angular2-highcharts/dist/HighchartsService';
 import { AiNetComponent } from './ainet/ainet.component';
 import { PlotlyComponent } from './plotly/plotly.component';
@@ -24,12 +20,8 @@ export function highchartsFactory() {
 @NgModule({
   declarations: [
     AppComponent,
-    GraphComponent,
-    Rotation3DComponent,
     Scattered3DchartComponent,
-    ZoomGraphComponent,
     HomeComponent,
-    ScatterPointsComponent,
     AiNetComponent,
     PlotlyComponent
   ],
