@@ -10,6 +10,7 @@ import { Scattered3DchartComponent } from './scattered3-dchart/scattered3-dchart
 import { ZoomGraphComponent } from './zoom-graph/zoom-graph.component';
 import { ScatterPointsComponent } from './scatter-points/scatter-points.component';
 import { AiNetComponent } from './ainet/ainet.component';
+import { PlotlyComponent } from './plotly/plotly.component';
 
 const appRoutes: Routes = [
   { path: 'home', component: HomeComponent },
@@ -18,7 +19,8 @@ const appRoutes: Routes = [
     { path: 'app-scattered3-dchart', component: Scattered3DchartComponent},
     { path: 'app-zoom-graph', component: ZoomGraphComponent},
     { path: 'app-scatter-points', component: ScatterPointsComponent},
-    { path: 'ainet', component: AiNetComponent}
+    { path: 'ainet', component: AiNetComponent},
+    { path: 'app-plotly', component: PlotlyComponent}
   ];
   
   @NgModule({

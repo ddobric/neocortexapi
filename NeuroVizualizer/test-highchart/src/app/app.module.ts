@@ -13,10 +13,12 @@ import { AppRoutingModule } from './app-routing-module';
 import { ScatterPointsComponent } from './scatter-points/scatter-points.component';
 import { HighchartsStatic } from 'angular2-highcharts/dist/HighchartsService';
 import { AiNetComponent } from './ainet/ainet.component';
+import { PlotlyComponent } from './plotly/plotly.component';
 
 //declare var require: any;
 declare var require: any;
 export function highchartsFactory() {
+  //return require('highcharts/highmaps');
   return require('highcharts');
 }
 @NgModule({
@@ -28,7 +30,8 @@ export function highchartsFactory() {
     ZoomGraphComponent,
     HomeComponent,
     ScatterPointsComponent,
-    AiNetComponent
+    AiNetComponent,
+    PlotlyComponent
   ],
   imports: [
     BrowserModule,
@@ -38,6 +41,7 @@ export function highchartsFactory() {
     //ChartModule,
     ChartModule.forRoot(
     require('highcharts'),
+   // require('highcharts/modules/map'),
     require('highcharts/modules/exporting'),
     require('highcharts/highcharts-3d')
     

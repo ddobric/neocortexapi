@@ -32,7 +32,7 @@ export class AiNetComponent implements OnInit {
 
     constructor() {
 
-        this.createChart();
+      //  this.createChart();
 
         // initData function will initialize the data series 1 
         // this.initData1(100, 6, 3);
@@ -306,6 +306,7 @@ export class AiNetComponent implements OnInit {
                 {
                     name: "Data",
                     data: dataSeries,
+                    //gapsAsNulls: true,
                     color: "green",
                     lineWidth: 1,
                     marker: {
