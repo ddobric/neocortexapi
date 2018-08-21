@@ -8,8 +8,8 @@ import { Scattered3DchartComponent } from './scattered3-dchart/scattered3-dchart
 import { HomeComponent } from './home/home.component';
 import { AppRoutingModule } from './app-routing-module';
 import { HighchartsStatic } from 'angular2-highcharts/dist/HighchartsService';
-import { AiNetComponent } from './ainet/ainet.component';
-import { PlotlyComponent } from './plotly/plotly.component';
+import { AiNetHighchartComponent } from './ainetHighchart/ainetHighChart.component';
+import { AinetComponent } from './ainet/ainet.component';
 
 //declare var require: any;
 declare var require: any;
@@ -22,8 +22,8 @@ export function highchartsFactory() {
     AppComponent,
     Scattered3DchartComponent,
     HomeComponent,
-    AiNetComponent,
-    PlotlyComponent
+    AiNetHighchartComponent,
+    AinetComponent
   ],
   imports: [
     BrowserModule,
