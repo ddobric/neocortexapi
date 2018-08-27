@@ -1,0 +1,17 @@
+
+chart {
+    display: block;
+  }
+  #container, #sliders {
+    height: 200px; 
+    min-width: 200px; 
+    max-width: 200px;
+    margin: 0 auto;
+}
+
+#container {
+    height: 400px; 
+    min-width: 310px; 
+    max-width: 800px;
+    margin: 0 auto;
+}

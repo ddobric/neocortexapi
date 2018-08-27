@@ -24,18 +24,19 @@ export class neoCortexUtils {
   // }
 
   /**
-   * 
+   * createModel (numberOfAreas/DataSeries, [xAxis, zAxis], yAxis)
    * @param areas 
    * @param miniColDims 
    * @param numLayers 
    */
-  public static createModel(areas: number = 1, miniColDims: number[] = [1000, 3], numLayers: number = 6): NeoCortexModel {
+  //public static createModel(areas: number = 1, miniColDims: number[] = [1000, 3], numLayers: number = 6): NeoCortexModel {
+  public static createModel(numOfAreas, miniColDims, numLayers): NeoCortexModel {
 
     const sensoryAreaId = 0;
     const sensoryLayer = 3;
 
     let sett: NeocortexSettings = {
-      numAreas: areas, minicolumnDims: miniColDims, numLayers: numLayers,
+      numAreas: numOfAreas, minicolumnDims: miniColDims, numLayers: numLayers,
       cellHeightInMiniColumn: 5, miniColumnWidth: 5
     };
 

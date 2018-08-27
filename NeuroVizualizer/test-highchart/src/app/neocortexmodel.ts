@@ -12,13 +12,17 @@ export class CellId {
 
 export class Location {
 
-  public posX: number;
-  public posY: number;
-  public posZ: number;
+  posX: number;
+  posY: number;
+  posZ: number;
 
   public isVisible: boolean;
 
   constructor(posX: number = 0, posY: number = 0, posZ: number = 0) {
+    this.posX=posX;
+    this.posY=posY;
+    this.posZ=posZ;
+
 
 
   }
@@ -113,6 +117,7 @@ export class Minicolumn extends Location {
     for (let layer = 0; layer < settings.numLayers; layer++) {
 
       let cell: Cell = new Cell(settings, areaId, miniColId, layer, this.posX, this.posY + layer * this.settings.cellHeightInMiniColumn, this.posZ)
+      //let cell: Cell = new Cell(settings, areaId, miniColId, layer, this.posX, this.posY + layer, this.posZ)
       this.cells.push(cell);
     }
   }
