@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using NeoCortexApi.Utility;
+using static NeoCortexApi.Entities.Connections;
 
 namespace NeoCortexApi
 {
@@ -13,7 +15,7 @@ namespace NeoCortexApi
      * @author Numenta
      * @author cogmission
      */
-    public class TemporalMemory : IComputeDecorator
+    public class TemporalMemory //: IComputeDecorator
     {
         /** simple serial version id */
         private static readonly long serialVersionUID = 1L;
@@ -106,10 +108,6 @@ namespace NeoCortexApi
             ISet<Cell> prevActiveCells = conn.getActiveCells();
             ISet<Cell> prevWinnerCells = conn.getWinnerCells();
 
-            //List<Column> activeColumns = Arrays.stream(activeColumnIndices)
-            //    .sorted()
-            //    .mapToObj(i->conn.getColumn(i))
-            //    .collect(Collectors.toList());
 
             // The list of active columns.
             List<Column> activeColumns = new List<Column>();
@@ -119,29 +117,30 @@ namespace NeoCortexApi
                 activeColumns.Add(conn.getColumn(indx));
             }
 
+            Func<Object, Column> segToCol = segment => ((DistalDendrite)segment).getParentCell().getColumn();
 
-            //Function<Column, Column> identity = Function.identity();
-            //Function<DistalDendrite, Column> segToCol = segment->segment.getParentCell().getColumn();
+            Func<object, Column> times1Fnc = x => (Column)x;
 
-            @SuppressWarnings({ "rawtypes" })
-        GroupBy2<Column> grouper = GroupBy2.< Column > of(
-            new Pair(activeColumns, identity),
-            new Pair(new ArrayList<>(conn.getActiveSegments()), segToCol),
-            new Pair(new ArrayList<>(conn.getMatchingSegments()), segToCol));
+            var list = new Pair<List<object>, Func<object, Column>>[3];
+            list[0] = new Pair<List<object>, Func<object, Column>>(Array.ConvertAll(activeColumns.ToArray(), item => (object)item).ToList(), times1Fnc);
+            list[1] = new Pair<List<object>, Func<object, Column>>(Array.ConvertAll(conn.getActiveSegments().ToArray(), item => (object)item).ToList(), times1Fnc);
+            list[2] = new Pair<List<object>, Func<object, Column>>(Array.ConvertAll(conn.getMatchingSegments().ToArray(), item => (object)item).ToList(), times1Fnc);
+
+            GroupBy2<Column> grouper = GroupBy2<Column>.of(list);
 
             double permanenceIncrement = conn.getPermanenceIncrement();
             double permanenceDecrement = conn.getPermanenceDecrement();
 
-            for (Tuple t : grouper)
+            foreach (var t in grouper)
             {
                 columnData = columnData.set(t);
 
                 if (columnData.isNotNone(ACTIVE_COLUMNS))
                 {
                     //if (!columnData.activeSegments().isEmpty())
-                    if (!columnData.activeSegments() == null)
+                    if (columnData.activeSegments != null && columnData.activeSegments.Count > 0)
                     {
-                        List<Cell> cellsToAdd = activatePredictedColumn(conn, columnData.activeSegments(),
+                        List<Cell> cellsToAdd = activatePredictedColumn(conn, columnData.activeSegments,
                             columnData.matchingSegments(), prevActiveCells, prevWinnerCells,
                                 permanenceIncrement, permanenceDecrement, learn);
 
@@ -150,7 +149,7 @@ namespace NeoCortexApi
                     }
                     else
                     {
-                        Tuple cellsXwinnerCell = burstColumn(conn, columnData.column(), columnData.matchingSegments(),
+                        BurstingTupple cellsXwinnerCell = burstColumn(conn, columnData.column(), columnData.matchingSegments(),
                             prevActiveCells, prevWinnerCells, permanenceIncrement, permanenceDecrement, conn.getRandom(),
                                learn);
 
@@ -189,17 +188,19 @@ namespace NeoCortexApi
         {
             Activity activity = conn.computeActivity(cycle.activeCells, conn.getConnectedPermanence());
 
-            //List<DistalDendrite> activeSegments = IntStream.range(0, activity.numActiveConnected.length)
-            //    .filter(i->activity.numActiveConnected[i] >= conn.getActivationThreshold())
-            //    .mapToObj(i->conn.segmentForFlatIdx(i))
-            //    .collect(Collectors.toList());
+            //
+            // Step through all synapses on active cells and find involved segments.         
+            var activeSegments = activity.numActiveConnected.Where(
+                i => activity.numActiveConnected[i] >= conn.getActivationThreshold()).
+                    Select(indx => conn.GetSegmentForFlatIdx(indx));
 
-            List<DistalDendrite> activeSegments = activity.whe
+            //
+            // Step through all synapses on active cells with permanence over threshold (conencted synapses)
+            // and find involved segments.         
+            var matchingSegments = activity.numActiveConnected.Where(
+                i => activity.numActivePotential[i] >= conn.getMinThreshold()).
+                    Select(indx => conn.GetSegmentForFlatIdx(indx));
 
-            List<DistalDendrite> matchingSegments = IntStream.range(0, activity.numActiveConnected.length)
-                .filter(i->activity.numActivePotential[i] >= conn.getMinThreshold())
-                .mapToObj(i->conn.segmentForFlatIdx(i))
-                .collect(Collectors.toList());
 
             Collections.sort(activeSegments, conn.segmentPositionSortKey);
             Collections.sort(matchingSegments, conn.segmentPositionSortKey);
@@ -227,13 +228,13 @@ namespace NeoCortexApi
          * Indicates the start of a new sequence. Clears any predictions and makes sure
          * synapses don't grow to the currently active cells in the next time step.
          */
-        @Override
-    public void reset(Connections connections)
+
+        public void reset(Connections connections)
         {
-            connections.getActiveCells().clear();
-            connections.getWinnerCells().clear();
-            connections.getActiveSegments().clear();
-            connections.getMatchingSegments().clear();
+            connections.getActiveCells().Clear();
+            connections.getWinnerCells().Clear();
+            connections.getActiveSegments().Clear();
+            connections.getMatchingSegments().Clear();
         }
 
         /**
@@ -262,18 +263,18 @@ namespace NeoCortexApi
          *         cells.
          */
         public List<Cell> activatePredictedColumn(Connections conn, List<DistalDendrite> activeSegments,
-            List<DistalDendrite> matchingSegments, Set<Cell> prevActiveCells, Set<Cell> prevWinnerCells,
-                double permanenceIncrement, double permanenceDecrement, boolean learn)
+            List<DistalDendrite> matchingSegments, List<Cell> prevActiveCells, List<Cell> prevWinnerCells,
+                double permanenceIncrement, double permanenceDecrement, bool learn)
         {
 
-            List<Cell> cellsToAdd = new ArrayList<>();
+            List<Cell> cellsToAdd = new List<Cell>();
             Cell previousCell = null;
             Cell currCell;
-            for (DistalDendrite segment : activeSegments)
+            foreach (DistalDendrite segment in activeSegments)
             {
                 if ((currCell = segment.getParentCell()) != previousCell)
                 {
-                    cellsToAdd.add(currCell);
+                    cellsToAdd.Add(currCell);
                     previousCell = currCell;
                 }
 
@@ -334,27 +335,35 @@ namespace NeoCortexApi
          *                  cells       list of the processed column's cells
          *                  bestCell    the best cell
          */
-        public Tuple burstColumn(Connections conn, Column column, List<DistalDendrite> matchingSegments,
-            Set<Cell> prevActiveCells, Set<Cell> prevWinnerCells, double permanenceIncrement, double permanenceDecrement,
-                Random random, boolean learn)
+        public BurstingTupple BurstColumn(Connections conn, Column column, List<DistalDendrite> matchingSegments,
+            List<Cell> prevActiveCells, List<Cell> prevWinnerCells, double permanenceIncrement, double permanenceDecrement,
+                Random random, bool learn)
         {
 
-            List<Cell> cells = column.getCells();
+            IList<Cell> cells = column.getCells();
             Cell bestCell = null;
 
-            if (!matchingSegments.isEmpty())
+            if (matchingSegments != null && matchingSegments.Count > 0)
             {
-                int[] numPoten = conn.getLastActivity().numActivePotential;
-                Comparator<DistalDendrite> cmp = (dd1, dd2)->numPoten[dd1.getIndex()] - numPoten[dd2.getIndex()];
+                int[] numPotential = conn.getLastActivity().numActivePotential;
+                //Comparator<DistalDendrite> cmp = (dd1, dd2)->numPoten[dd1.getIndex()] - numPoten[dd2.getIndex()];
+                //DistalDendrite bestSegment = matchingSegments.stream().max(cmp).get();
+                //    matchingSegments.Where((dd1, dd2) => numPotential[dd1.getIndex()] - numPotential[dd2.getIndex()]);
 
-                DistalDendrite bestSegment = matchingSegments.stream().max(cmp).get();
+                DistalDendrite bestSegment = getSegmentwithHighesPotential(conn, matchingSegments);
+
+                for (int i = 0; i < matchingSegments.Count; i++)
+                {
+                    matchingSegments[i].getIndex();
+                }
+
                 bestCell = bestSegment.getParentCell();
 
                 if (learn)
                 {
                     adaptSegment(conn, bestSegment, prevActiveCells, permanenceIncrement, permanenceDecrement);
 
-                    int nGrowDesired = conn.getMaxNewSynapseCount() - numPoten[bestSegment.getIndex()];
+                    int nGrowDesired = conn.getMaxNewSynapseCount() - numPotential[bestSegment.getIndex()];
 
                     if (nGrowDesired > 0)
                     {
@@ -368,7 +377,7 @@ namespace NeoCortexApi
                 bestCell = leastUsedCell(conn, cells, random);
                 if (learn)
                 {
-                    int nGrowExact = Math.min(conn.getMaxNewSynapseCount(), prevWinnerCells.size());
+                    int nGrowExact = Math.Min(conn.getMaxNewSynapseCount(), prevWinnerCells.Count);
                     if (nGrowExact > 0)
                     {
                         DistalDendrite bestSegment = conn.createSegment(bestCell);
@@ -378,7 +387,28 @@ namespace NeoCortexApi
                 }
             }
 
-            return new Tuple(cells, bestCell);
+            return new BurstingTupple(cells, bestCell);
+        }
+
+
+        /// <summary>
+        /// Gets the segment with maximal potential.
+        /// </summary>
+        /// <param name="conn"></param>
+        /// <param name="matchingSegments"></param>
+        /// <returns></returns>
+        private DistalDendrite getSegmentwithHighesPotential(Connections conn, List<DistalDendrite> matchingSegments)
+        {
+            int[] numActPotential = conn.getLastActivity().numActivePotential;
+
+            DistalDendrite maxSeg = matchingSegments[0];
+
+            for (int i = 0; i < matchingSegments.Count - 1; i++)
+            {
+                if (numActPotential[matchingSegments[i + 1].getIndex()] > numActPotential[matchingSegments[i].getIndex()])
+                    maxSeg = matchingSegments[i + 1];
+            }
+            return maxSeg;
         }
 
         /**
@@ -431,28 +461,28 @@ namespace NeoCortexApi
          * 
          * @return  the least used {@code Cell}
          */
-        public Cell leastUsedCell(Connections conn, List<Cell> cells, Random random)
+        public Cell leastUsedCell(Connections conn, IList<Cell> cells, Random random)
         {
-            List<Cell> leastUsedCells = new ArrayList<>();
-            int minNumSegments = Integer.MAX_VALUE;
-            for (Cell cell : cells)
+            List<Cell> leastUsedCells = new List<Cell>();
+            int minNumSegments = Integer.MaxValue;
+            foreach (Cell cell in cells)
             {
                 int numSegments = conn.numSegments(cell);
 
                 if (numSegments < minNumSegments)
                 {
                     minNumSegments = numSegments;
-                    leastUsedCells.clear();
+                    leastUsedCells.Clear();
                 }
 
                 if (numSegments == minNumSegments)
                 {
-                    leastUsedCells.add(cell);
+                    leastUsedCells.Add(cell);
                 }
             }
 
-            int i = random.nextInt(leastUsedCells.size());
-            return leastUsedCells.get(i);
+            int i = random.Next(leastUsedCells.Count);
+            return leastUsedCells[i];
         }
 
         /**
@@ -473,31 +503,40 @@ namespace NeoCortexApi
          * @param random                    Tm object used to generate random
          *                                  numbers
          */
-        public void growSynapses(Connections conn, Set<Cell> prevWinnerCells, DistalDendrite segment,
+        public void growSynapses(Connections conn, List<Cell> prevWinnerCells, DistalDendrite segment,
             double initialPermanence, int nDesiredNewSynapses, Random random)
         {
 
-            List<Cell> candidates = new ArrayList<>(prevWinnerCells);
-            Collections.sort(candidates);
+            List<Cell> removingCandidates = new List<Cell>(prevWinnerCells);
+            removingCandidates = removingCandidates.OrderBy(c => c).ToList();
 
-            for (Synapse synapse : conn.getSynapses(segment))
+            //
+            // Enumarates all synapses in a segment and remove winner-cells from
+            // list of removingCandidates if they are presynaptic winners cells.
+            // So, we will recreate only synapses on cells, which are not winners.
+            foreach (Synapse synapse in conn.getSynapses(segment))
             {
                 Cell presynapticCell = synapse.getPresynapticCell();
-                int index = candidates.indexOf(presynapticCell);
+                int index = removingCandidates.IndexOf(presynapticCell);
                 if (index != -1)
                 {
-                    candidates.remove(index);
+                    removingCandidates.RemoveAt(index);
                 }
             }
 
-            int candidatesLength = candidates.size();
+            int candidatesLength = removingCandidates.Count();
+
+            // We take here eather wanted growing number of desired synapes of num of candidates
+            // if too many growing synapses requested.
             int nActual = nDesiredNewSynapses < candidatesLength ? nDesiredNewSynapses : candidatesLength;
 
+            //
+            // Finally we randomly create new synapses. 
             for (int i = 0; i < nActual; i++)
             {
-                int rand = random.nextInt(candidates.size());
-                conn.createSynapse(segment, candidates.get(rand), initialPermanence);
-                candidates.remove(rand);
+                int rndIndex = random.Next(removingCandidates.Count());
+                conn.createSynapse(segment, removingCandidates[rndIndex], initialPermanence);
+                removingCandidates.RemoveAt(rndIndex);
             }
         }
 
@@ -511,14 +550,14 @@ namespace NeoCortexApi
          * @param permanenceIncrement       Amount to increment active synapses    
          * @param permanenceDecrement       Amount to decrement inactive synapses
          */
-        public void adaptSegment(Connections conn, DistalDendrite segment, Set<Cell> prevActiveCells,
+        public void adaptSegment(Connections conn, DistalDendrite segment, List<Cell> prevActiveCells,
             double permanenceIncrement, double permanenceDecrement)
         {
 
             // Destroying a synapse modifies the set that we're iterating through.
             List<Synapse> synapsesToDestroy = new List<Synapse>();
 
-            for (Synapse synapse : conn.getSynapses(segment))
+            foreach (Synapse synapse in conn.getSynapses(segment))
             {
                 double permanence = synapse.getPermanence();
 
@@ -571,26 +610,30 @@ namespace NeoCortexApi
             /** Default Serial */
             private static readonly long serialVersionUID = 1L;
 
-            TemporalTuple t = new TemporalTuple();
+            Pair<object, List<List<Column>>> m_Pair;
 
             public ColumnData() { }
 
-            public ColumnData(TemporalTuple t)
+
+            public ColumnData set(Pair<object, List<List<Column>>> t)
             {
-                this.t = t;
+                m_Pair = t;
+
+                return this;
             }
 
-            public Column column() { return (Column)t.Column; }
+
+            public Column column() { return (Column)m_Pair.Key; }
 
             //public List<Column> activeColumns() { return (List<Column>)t.ac(1); }
-            public List<Column> activeColumns() { return (List<Column>)t.ActiveColumns; }
+            public List<Column> activeColumns() { return (List<Column>)m_Pair.Value; }
 
             public List<DistalDendrite> activeSegments
             {
                 get
                 {
-                   
-                    t.ActiveColumns.SequenceEqual()
+
+                    //   t.ActiveColumns.SequenceEqual()
 
 
                     return ((List<Column>)t.get(2)).get(0).equals(Slot.empty()) ?
@@ -605,7 +648,6 @@ namespace NeoCortexApi
                          (List<DistalDendrite>)t.get(3);
             }
 
-            public ColumnData set(Tuple<Column> t) { this.t = t; return this; }
 
             /**
              * Returns a boolean flag indicating whether the slot contained by the

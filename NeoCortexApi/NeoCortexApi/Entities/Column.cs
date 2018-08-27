@@ -16,7 +16,7 @@ namespace NeoCortexApi.Entities
      * @author David Ray
      *
      */
-    public class Column : IEquatable<Column>
+    public class Column : IEquatable<Column>, IComparable<Column>
     {
         /** keep it simple */
         private static readonly long serialVersionUID = 1L;
@@ -237,6 +237,16 @@ namespace NeoCortexApi.Entities
                 return false;
             else
                 return true;
+        }
+
+        public int CompareTo(Column other)
+        {
+            if (this.index < other.index)
+                return -1;
+            else if (this.index > other.index)
+                return 1;
+            else
+                return 0;
         }
     }
 }

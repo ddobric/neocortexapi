@@ -14,7 +14,7 @@ namespace NeoCortexApi.Entities
      * @author Chetan Surpur
      * @author David Ray
      */
-    public class DistalDendrite : Segment //implements Persistable
+    public class DistalDendrite : Segment, IComparable<DistalDendrite> 
     {
         /** keep it simple */
         private static readonly long serialVersionUID = 1L;
@@ -49,38 +49,36 @@ namespace NeoCortexApi.Entities
             return cell;
         }
 
-        /**
-         * Returns all {@link Synapse}s
-         * 
-         * @param c     the connections state of the temporal memory
-         * @return
-         */
+       
+        /// <summary>
+        /// Gets all synapses owned by this distal dentrite segment.
+        /// </summary>
+        /// <param name="c"></param>
+        /// <returns>Synapses.</returns>
         public List<Synapse> getAllSynapses(Connections c)
         {
             return c.getSynapses(this);
         }
 
-        /**
-         * Returns the synapses on a segment that are active due to lateral input
-         * from active cells.
-         * 
-         * @param c                 the layer connectivity
-         * @param activeCells       the active cells
-         * @return  Set of {@link Synapse}s connected to active presynaptic cells.
-         */
+       /// <summary>
+       /// Gets all active synapses of this segment, which have presynaptic cell as active one.
+       /// </summary>
+       /// <param name="c"></param>
+       /// <param name="activeCells"></param>
+       /// <returns></returns>
         public ISet<Synapse> getActiveSynapses(Connections c, ISet<Cell> activeCells)
         {
-            ISet<Synapse> synapses = new LinkedHashSet<Synapse>();
+            ISet<Synapse> activeSynapses = new LinkedHashSet<Synapse>();
             
             foreach (var synapse in c.getSynapses(this))
             {
                 if (activeCells.Contains(synapse.getPresynapticCell()))
                 {
-                    synapses.Add(synapse);
+                    activeSynapses.Add(synapse);
                 }
             }
 
-            return synapses;
+            return activeSynapses;
         }
 
         /**
@@ -159,6 +157,22 @@ namespace NeoCortexApi.Entities
                 return false;
 
             return true;
+        }
+
+
+        /// <summary>
+        /// Compares by index.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public int CompareTo(DistalDendrite other)
+        {
+            if (this.getIndex() > other.getIndex())
+                return 1;
+            else if (this.getIndex() < other.getIndex())
+                return -1;
+            else
+                return 0;
         }
     }
 }
