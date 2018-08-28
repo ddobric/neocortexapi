@@ -1,7 +1,7 @@
 html, body {
     height: 100%;
   }
-  .container {
+  .chart {
     justify-content: center;
     align-items: center;
     display: flex !important;
@@ -12,4 +12,9 @@ html, body {
     top: 0;
     bottom: 0;
     /*background-color: rgb(145, 99, 99);*/
+}
+.js-plotly-plot .plotly .modebar {
+  left: 50% !important;
+  transform: translateX(-50%);
+  
 }

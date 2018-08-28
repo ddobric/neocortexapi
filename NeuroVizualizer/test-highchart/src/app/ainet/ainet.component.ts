@@ -10,11 +10,12 @@ import { neoCortexUtils } from '../neocortexutils';
 })
 export class AinetComponent implements OnInit, AfterViewInit {
 
-  data: any;
+  data = [];
   layout: any;
   xCoordinate = [];
   yCoordinate = [];
   zCoordinate = [];
+  model: any;
 
   constructor() {
 
@@ -49,6 +50,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       connectgaps: true,
       line: {
         width: 4,
+        colorscale: 'Viridis',
         color: '#7CFC00'
       },
       marker: {
@@ -62,85 +64,111 @@ export class AinetComponent implements OnInit, AfterViewInit {
         opacity: 10
       },
       type: 'scatter3d',
-      scene: "scene1",
+      //scene: "scene1",
 
     };
     const trace2 = {
 
-      x: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+      /* x: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],
       y: [0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2],
-      z: [0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2],
+      z: [0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2], */
+      x: this.xCoordinate,
+      y: this.yCoordinate,
+      z: this.zCoordinate,
 
       name: 'Data 2',
       mode: 'lines+markers',
+      symbol: 'circle',
+      line: {
+        width: 4,
+        color: '#7CFC00'
+      },
       marker: {
-        size: 17,
-
-        //color: '#00FFFF',
+        size: 18,
+        color: '#00BFFF',
         symbol: 'circle',
         line: {
-          color: 'green',
+          color: '#7B68EE',
           width: 2
         },
-        opacity: 0.8
+        opacity: 10
       },
       type: 'scatter3d',
       scene: "scene2",
 
     };
     const trace3 = {
-      x: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-      y: [0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2],
-      z: [0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2],
+      /*       x: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+            y: [0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2],
+            z: [0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2], */
+      x: this.xCoordinate,
+      y: this.yCoordinate,
+      z: this.zCoordinate,
 
       name: 'Data 3',
       mode: 'lines+markers',
+      symbol: 'circle',
+      line: {
+        width: 4,
+        color: '#7CFC00'
+      },
       marker: {
-        size: 17,
-
-        //color: '#00FFFF',
+        size: 18,
+        color: '#00BFFF',
         symbol: 'circle',
         line: {
-          color: 'green',
+          color: '#7B68EE',
           width: 2
         },
-        opacity: 0.8
+        opacity: 10
       },
       type: 'scatter3d',
       scene: "scene3",
 
     };
+    // get all areas
+    for (let a = 0; a < this.model.settings.numAreas; a++) {
+      this.data.push(trace1);
 
-    this.data = [trace1];
+   }
+
+    //this.data = [trace1];
     this.layout = {
-      //scene1: {
       scene: {
         aspectmode: "manual",
         aspectratio: {
           x: 7, y: 1, z: 0.5,
         },
+       /*  domain: {
+          x: [0.0, 0.5],
+          y: [0.5, 1.0]
+        } */
+      },
+     /*  scene2: {
+        aspectmode: "manual",
+        aspectratio: {
+          x: 7, y: 1, z: 0.5,
+        },
         domain: {
-          x: [0, 1],
+          x: [0.5, 1],
           y: [0.5, 1.0]
         }
       },
-      /*  scene2: {
-           domain: {
-             x: [2, 3],
-             y: [0.1, 0.9]
-           }
-       },
-       scene3: {
-         domain: {
-           x: [0.5, 1.5],
-           y: [0.3, 0.7]
-         }
-     }, */
+      scene3: {
+        aspectmode: "manual",
+        aspectratio: {
+          x: 7, y: 1, z: 0.5,
+        },
+        domain: {
+          x: [0.33, 0.66],
+          y: [0, 0.5]
+        }
+      }, */
 
       title: '3D Chart',
       //dragmode: false,
       //autosize: false,
-      showlegend: true,
+      //showlegend: true,
       legend: {
         x: 0.5,
         y: 1
@@ -158,20 +186,23 @@ export class AinetComponent implements OnInit, AfterViewInit {
     };
     const config = {
       displaylogo: false,
+      showLink: false,
+      showlegend: false
 
     };
+
     Plotlyjs.newPlot(gd, this.data, this.layout, config);
+ 
     window.onresize = function () {
       Plotlyjs.Plots.resize(gd);
     };
-
   }
   fillChart() {
-    let model = neoCortexUtils.createModel(2, [100, 4], 6); // createModel (numberOfAreas/DataSeries, [xAxis, zAxis], yAxis)
+    this.model = neoCortexUtils.createModel(1, [100, 4], 6); // createModel (numberOfAreas/DataSeries, [xAxis, zAxis], yAxis)
     let x; let y; let z;
-    for (x = 0; x < model.settings.minicolumnDims[0]; x++) {
-      for (y = 0; y < model.settings.numLayers; y++) {
-        for (z = 0; z < model.settings.minicolumnDims[1]; z++) {
+    for (x = 0; x < this.model.settings.minicolumnDims[0]; x++) {
+      for (y = 0; y < this.model.settings.numLayers; y++) {
+        for (z = 0; z < this.model.settings.minicolumnDims[1]; z++) {
           this.xCoordinate.push(x);
           this.yCoordinate.push(y);
           this.zCoordinate.push(z);
@@ -179,9 +210,6 @@ export class AinetComponent implements OnInit, AfterViewInit {
         }
 
       }
-
-    }
-    for (let a = 0; a < model.settings.numAreas; a++) {
 
     }
   }
