@@ -10,12 +10,11 @@ import { neoCortexUtils } from '../neocortexutils';
 })
 export class AinetComponent implements OnInit, AfterViewInit {
 
-  data = [];
   layout: any;
   xCoordinate = [];
   yCoordinate = [];
   zCoordinate = [];
-  model: any;
+ 
 
   constructor() {
 
@@ -46,7 +45,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       y: this.yCoordinate,
       z: this.zCoordinate,
       name: 'Artificial neural network',
-      mode: 'lines+markers',
+      mode: 'markers',
       connectgaps: true,
       line: {
         width: 4,
@@ -66,6 +65,20 @@ export class AinetComponent implements OnInit, AfterViewInit {
       type: 'scatter3d',
       //scene: "scene1",
 
+    };
+    const synapses = {
+      type: 'scatter3d',
+      mode: 'lines',
+      name: 'Synapses',
+      x: this.xCoordinate,
+      y:this.yCoordinate,
+      z: this.zCoordinate,
+      opacity: 1.0,
+      line: {
+        width: 4,
+        color: '#7CFC00',
+        colorscale: 'Viridis'
+      }
     };
     const trace2 = {
 
@@ -126,13 +139,6 @@ export class AinetComponent implements OnInit, AfterViewInit {
       scene: "scene3",
 
     };
-    // get all areas
-    for (let a = 0; a < this.model.settings.numAreas; a++) {
-      this.data.push(trace1);
-
-   }
-
-    //this.data = [trace1];
     this.layout = {
       scene: {
         aspectmode: "manual",
@@ -191,18 +197,18 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
     };
 
-    Plotlyjs.newPlot(gd, this.data, this.layout, config);
+    Plotlyjs.newPlot(gd, [trace1, synapses ], this.layout, config);
  
     window.onresize = function () {
       Plotlyjs.Plots.resize(gd);
     };
   }
   fillChart() {
-    this.model = neoCortexUtils.createModel(1, [100, 4], 6); // createModel (numberOfAreas/DataSeries, [xAxis, zAxis], yAxis)
+    let model = neoCortexUtils.createModel(2, [100, 4], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
     let x; let y; let z;
-    for (x = 0; x < this.model.settings.minicolumnDims[0]; x++) {
-      for (y = 0; y < this.model.settings.numLayers; y++) {
-        for (z = 0; z < this.model.settings.minicolumnDims[1]; z++) {
+    for (x = 0; x < model.settings.minicolumnDims[0]; x++) {
+      for (y = 0; y < model.settings.numLayers; y++) {
+        for (z = 0; z < model.settings.minicolumnDims[1]; z++) {
           this.xCoordinate.push(x);
           this.yCoordinate.push(y);
           this.zCoordinate.push(z);
