@@ -46,7 +46,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
       z: this.zCoordinate,
       name: 'Artificial neural network',
       mode: 'markers',
-      connectgaps: true,
+      //connectgaps: true,
+     /*  visible: true,
+      legendgroup: true, */
       line: {
         width: 4,
         colorscale: 'Viridis',
@@ -140,41 +142,15 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
     };
     this.layout = {
+      displayModeBar: false,
+      //showlegend: false, Thgis option is to show the name of legend/DataSeries 
       scene: {
         aspectmode: "manual",
         aspectratio: {
           x: 7, y: 1, z: 0.5,
-        },
-       /*  domain: {
-          x: [0.0, 0.5],
-          y: [0.5, 1.0]
-        } */
-      },
-     /*  scene2: {
-        aspectmode: "manual",
-        aspectratio: {
-          x: 7, y: 1, z: 0.5,
-        },
-        domain: {
-          x: [0.5, 1],
-          y: [0.5, 1.0]
         }
       },
-      scene3: {
-        aspectmode: "manual",
-        aspectratio: {
-          x: 7, y: 1, z: 0.5,
-        },
-        domain: {
-          x: [0.33, 0.66],
-          y: [0, 0.5]
-        }
-      }, */
-
       title: '3D Chart',
-      //dragmode: false,
-      //autosize: false,
-      //showlegend: true,
       legend: {
         x: 0.5,
         y: 1
@@ -190,6 +166,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
       }
     };
+
     const config = {
       displaylogo: false,
       showLink: false,
