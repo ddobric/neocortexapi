@@ -1,9 +1,20 @@
 html, body {
-    height: 100%
-  }
-  .container {
     height: 100%;
-    display: flex;
+  }
+  .chart {
     justify-content: center;
     align-items: center;
+    display: flex !important;
+    max-width: 100% !important;
+    /*height: auto !important;*/
+    /*height:100vh !important;*/
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    /*background-color: rgb(145, 99, 99);*/
+}
+.js-plotly-plot .plotly .modebar {
+  left: 50% !important;
+  transform: translateX(-50%);
+  
 }
