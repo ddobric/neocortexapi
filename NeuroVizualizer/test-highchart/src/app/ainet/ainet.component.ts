@@ -10,11 +10,11 @@ import { neoCortexUtils } from '../neocortexutils';
 })
 export class AinetComponent implements OnInit, AfterViewInit {
 
-  layout: any;
+
   xCoordinate = [];
   yCoordinate = [];
   zCoordinate = [];
- 
+
 
   constructor() {
 
@@ -23,6 +23,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
   }
   ngAfterViewInit() {
     this.fillChart();
+    this.dellInvisiblepoints();
     this.createChart();
   }
   createChart() {
@@ -47,8 +48,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
       name: 'Artificial neural network',
       mode: 'markers',
       //connectgaps: true,
-     /*  visible: true,
-      legendgroup: true, */
+      /*  visible: true,
+       legendgroup: true, */
       line: {
         width: 4,
         colorscale: 'Viridis',
@@ -73,7 +74,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       mode: 'lines',
       name: 'Synapses',
       x: this.xCoordinate,
-      y:this.yCoordinate,
+      y: this.yCoordinate,
       z: this.zCoordinate,
       opacity: 1.0,
       line: {
@@ -141,8 +142,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       scene: "scene3",
 
     };
-    this.layout = {
-      displayModeBar: false,
+    const layout = {
       //showlegend: false, Thgis option is to show the name of legend/DataSeries 
       scene: {
         aspectmode: "manual",
@@ -150,7 +150,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
           x: 7, y: 1, z: 0.5,
         }
       },
-      title: '3D Chart',
+
       legend: {
         x: 0.5,
         y: 1
@@ -168,14 +168,27 @@ export class AinetComponent implements OnInit, AfterViewInit {
     };
 
     const config = {
+      //displayModeBar: false,
+      title: '3DChart',
       displaylogo: false,
       showLink: false,
       showlegend: false
 
     };
+    /*    const update = {
+         opacity: 0.8,
+         marker:{
+           color: 'red',
+           size: 25
+         },
+         x: [[41.5]],
+         y: [[0.5]],
+         z: [[3.5]]
+       }; */
 
-    Plotlyjs.newPlot(gd, [trace1, synapses ], this.layout, config);
- 
+    Plotlyjs.newPlot(gd, [trace1, synapses], layout, config);
+    //Plotlyjs.restyle(gd,  update, [0]);
+
     window.onresize = function () {
       Plotlyjs.Plots.resize(gd);
     };
@@ -196,5 +209,29 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
     }
   }
+  dellInvisiblepoints() {
+    let removePointsByIndex = [];
+    function getRandomInt(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min)) + min; 
+    }
+    for (let i = 0; i < 200; i++) {
+      let randomNum = getRandomInt(0, 100);
+      removePointsByIndex.push(randomNum);
+    }
+    for (let j = removePointsByIndex.length - 1; j >= 0; j--) {
+      this.xCoordinate.splice(removePointsByIndex[j], 1);
 
+    }
+    for (let k = removePointsByIndex.length - 1; k >= 0; k--) {
+      this.yCoordinate.splice(removePointsByIndex[k], 1);
+
+    }
+    for (let l = removePointsByIndex.length - 1; l >= 0; l--) {
+      this.zCoordinate.splice(removePointsByIndex[l], 1);
+
+    }
+
+  }
 }
