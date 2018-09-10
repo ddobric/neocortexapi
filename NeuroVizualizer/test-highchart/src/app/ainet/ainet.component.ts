@@ -11,9 +11,12 @@ import { neoCortexUtils } from '../neocortexutils';
 export class AinetComponent implements OnInit, AfterViewInit {
 
 
-  xCoordinate = [];
-  yCoordinate = [];
-  zCoordinate = [];
+  xCoord = [];
+  yCoord = [];
+  zCoord = [];
+  colour = [];
+  opacityValues = [];
+
 
 
   constructor() {
@@ -42,28 +45,31 @@ export class AinetComponent implements OnInit, AfterViewInit {
     let gd = gd3.node();
 
     const trace1 = {
-      x: this.xCoordinate,
-      y: this.yCoordinate,
-      z: this.zCoordinate,
+      x: this.xCoord,
+      y: this.yCoord,
+      z: this.zCoord,
       name: 'Artificial neural network',
       mode: 'markers',
+
       //connectgaps: true,
       /*  visible: true,
        legendgroup: true, */
-      line: {
+      /* line: {
         width: 4,
         colorscale: 'Viridis',
         color: '#7CFC00'
-      },
+      }, */
       marker: {
+        opacity: 10,
         size: 18,
-        color: '#00BFFF',
+        // color: '#00BFFF',
+        color:'#00BFFF',
         symbol: 'circle',
         line: {
           color: '#7B68EE',
           width: 2
         },
-        opacity: 10
+
       },
       type: 'scatter3d',
       //scene: "scene1",
@@ -73,9 +79,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
       type: 'scatter3d',
       mode: 'lines',
       name: 'Synapses',
-      x: this.xCoordinate,
-      y: this.yCoordinate,
-      z: this.zCoordinate,
+      x: this.xCoord,
+      y: this.yCoord,
+      z: this.zCoord,
       opacity: 1.0,
       line: {
         width: 4,
@@ -88,9 +94,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
       /* x: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],
       y: [0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2],
       z: [0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2], */
-      x: this.xCoordinate,
-      y: this.yCoordinate,
-      z: this.zCoordinate,
+      x: this.xCoord,
+      y: this.yCoord,
+      z: this.zCoord,
 
       name: 'Data 2',
       mode: 'lines+markers',
@@ -117,9 +123,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
       /*       x: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],
             y: [0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2],
             z: [0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2], */
-      x: this.xCoordinate,
-      y: this.yCoordinate,
-      z: this.zCoordinate,
+      x: this.xCoord,
+      y: this.yCoord,
+      z: this.zCoord,
 
       name: 'Data 3',
       mode: 'lines+markers',
@@ -172,7 +178,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       title: '3DChart',
       displaylogo: false,
       showLink: false,
-      showlegend: false
+      // showlegend: false
 
     };
     /*    const update = {
@@ -194,19 +200,40 @@ export class AinetComponent implements OnInit, AfterViewInit {
     };
   }
   fillChart() {
-    let model = neoCortexUtils.createModel(2, [100, 4], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
-    let x; let y; let z;
-    for (x = 0; x < model.settings.minicolumnDims[0]; x++) {
-      for (y = 0; y < model.settings.numLayers; y++) {
-        for (z = 0; z < model.settings.minicolumnDims[1]; z++) {
-          this.xCoordinate.push(x);
-          this.yCoordinate.push(y);
-          this.zCoordinate.push(z);
+    let model = neoCortexUtils.createModel(3, [100, 4], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
+    // this.opacityValues = new Array(areaSection).fill(0.5, 0, 1200).fill(1.8, 1200, 2400);
+    //this.colour = new Array(areaSection).fill('#00BFFF', 0, 800).fill('#48afd1', 800, 1600).fill('#236d86', 1600, 2499);
 
+
+    let x; let y; let z; let ai;
+
+    for (ai = 0; ai < model.areas.length; ai++) {
+      for (x = 0; x < model.areas[ai].minicolumns.length; x++) {
+        for (y = 0; x < model.areas[ai].minicolumns[x].length; x++) {
+          for (z = 0; x < model.areas[ai].minicolumns[x][y].cells.length; x++) {
+            this.xCoord.push(model.areas[ai].minicolumns[x][y].cells[z].posX);
+            this.yCoord.push(model.areas[ai].minicolumns[x][y].cells[z].posY);
+            this.zCoord.push(model.areas[ai].minicolumns[x][y].cells[z].posZ);
+          }
         }
 
-      }
 
+        /*
+            for (x = 0; x < model.areas[ai].minicolumns[0]; x++) {
+              for (y = 0; y < model.settings.numLayers; y++) {
+                for (z = 0; z < model.settings.minicolumnDims[1]; z++) {
+        
+                  this.xCoord.push(x);
+                  this.yCoord.push(y);
+                  this.zCoord.push(z);
+        
+                }
+        
+              }
+        
+            }
+            */
+      }
     }
   }
   dellInvisiblepoints() {
@@ -214,22 +241,22 @@ export class AinetComponent implements OnInit, AfterViewInit {
     function getRandomInt(min, max) {
       min = Math.ceil(min);
       max = Math.floor(max);
-      return Math.floor(Math.random() * (max - min)) + min; 
+      return Math.floor(Math.random() * (max - min)) + min;
     }
     for (let i = 0; i < 200; i++) {
       let randomNum = getRandomInt(0, 100);
       removePointsByIndex.push(randomNum);
     }
     for (let j = removePointsByIndex.length - 1; j >= 0; j--) {
-      this.xCoordinate.splice(removePointsByIndex[j], 1);
+      this.xCoord.splice(removePointsByIndex[j], 1);
 
     }
     for (let k = removePointsByIndex.length - 1; k >= 0; k--) {
-      this.yCoordinate.splice(removePointsByIndex[k], 1);
+      this.yCoord.splice(removePointsByIndex[k], 1);
 
     }
     for (let l = removePointsByIndex.length - 1; l >= 0; l--) {
-      this.zCoordinate.splice(removePointsByIndex[l], 1);
+      this.zCoord.splice(removePointsByIndex[l], 1);
 
     }
 

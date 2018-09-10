@@ -1,5 +1,6 @@
 html, body {
     height: 100%;
+    color: #00BFFF;
   }
   .chart {
     justify-content: center;
@@ -11,10 +12,11 @@ html, body {
     position: absolute;
     top: 0;
     bottom: 0;
+    
     /*background-color: rgb(145, 99, 99);*/
 }
 .js-plotly-plot .plotly .modebar {
   left: 50% !important;
   transform: translateX(-50%);
-  
+   
 }
