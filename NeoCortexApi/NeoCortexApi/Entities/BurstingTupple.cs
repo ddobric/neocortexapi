@@ -8,7 +8,7 @@ namespace NeoCortexApi.Entities
     /// <summary>
     /// Helper entity for column cursting.
     /// </summary>
-    internal class BurstingTupple
+    public class BurstingTupple
     {
         
         public BurstingTupple(IList<Cell> cells, Cell bestCell)

@@ -144,24 +144,36 @@ namespace NeoCortexApi
                             columnData.matchingSegments(), prevActiveCells, prevWinnerCells,
                                 permanenceIncrement, permanenceDecrement, learn);
 
-                        cycle.activeCells.addAll(cellsToAdd);
-                        cycle.winnerCells.addAll(cellsToAdd);
+                        foreach (var item in cellsToAdd)
+                        {
+                            cycle.activeCells.Add(item);
+                        }
+
+                        foreach (var item in cellsToAdd)
+                        {
+                            cycle.winnerCells.Add(item);
+                        }                        
                     }
                     else
                     {
-                        BurstingTupple cellsXwinnerCell = burstColumn(conn, columnData.column(), columnData.matchingSegments(),
+                        BurstingTupple cellsXwinnerCell = BurstColumn(conn, columnData.column(), columnData.matchingSegments(),
                             prevActiveCells, prevWinnerCells, permanenceIncrement, permanenceDecrement, conn.getRandom(),
                                learn);
 
-                        cycle.activeCells.addAll((List<Cell>)cellsXwinnerCell.get(0));
-                        cycle.winnerCells.add((Cell)cellsXwinnerCell.get(1));
+                        //cycle.activeCells.addAll((List<Cell>)cellsXwinnerCell.get(0));
+                        foreach (var item in cellsXwinnerCell.Cells)
+                        {
+                            cycle.activeCells.Add(item);
+                        }
+                                                
+                        cycle.winnerCells.Add((Cell)cellsXwinnerCell.BestCell);
                     }
                 }
                 else
                 {
                     if (learn)
                     {
-                        punishPredictedColumn(conn, columnData.activeSegments(), columnData.matchingSegments(),
+                        punishPredictedColumn(conn, columnData.activeSegments, columnData.matchingSegments(),
                             prevActiveCells, prevWinnerCells, conn.getPredictedSegmentDecrement());
                     }
                 }
@@ -263,7 +275,7 @@ namespace NeoCortexApi
          *         cells.
          */
         public List<Cell> activatePredictedColumn(Connections conn, List<DistalDendrite> activeSegments,
-            List<DistalDendrite> matchingSegments, List<Cell> prevActiveCells, List<Cell> prevWinnerCells,
+            List<DistalDendrite> matchingSegments, ICollection<Cell> prevActiveCells, ICollection<Cell> prevWinnerCells,
                 double permanenceIncrement, double permanenceDecrement, bool learn)
         {
 
@@ -336,7 +348,7 @@ namespace NeoCortexApi
          *                  bestCell    the best cell
          */
         public BurstingTupple BurstColumn(Connections conn, Column column, List<DistalDendrite> matchingSegments,
-            List<Cell> prevActiveCells, List<Cell> prevWinnerCells, double permanenceIncrement, double permanenceDecrement,
+            ICollection<Cell> prevActiveCells, ICollection<Cell> prevWinnerCells, double permanenceIncrement, double permanenceDecrement,
                 Random random, bool learn)
         {
 
@@ -433,13 +445,13 @@ namespace NeoCortexApi
          * @param predictedSegmentDecrement         Amount by which segments are punished for incorrect predictions
          */
         public void punishPredictedColumn(Connections conn, List<DistalDendrite> activeSegments,
-            List<DistalDendrite> matchingSegments, Set<Cell> prevActiveCells, Set<Cell> prevWinnerCells,
+            List<DistalDendrite> matchingSegments, ICollection<Cell> prevActiveCells, ICollection<Cell> prevWinnerCells,
                double predictedSegmentDecrement)
         {
 
             if (predictedSegmentDecrement > 0)
             {
-                for (DistalDendrite segment : matchingSegments)
+                foreach (DistalDendrite segment in matchingSegments)
                 {
                     adaptSegment(conn, segment, prevActiveCells, -conn.getPredictedSegmentDecrement(), 0);
                 }
@@ -550,7 +562,7 @@ namespace NeoCortexApi
          * @param permanenceIncrement       Amount to increment active synapses    
          * @param permanenceDecrement       Amount to decrement inactive synapses
          */
-        public void adaptSegment(Connections conn, DistalDendrite segment, List<Cell> prevActiveCells,
+        public void adaptSegment(Connections conn, DistalDendrite segment, ICollection<Cell> prevActiveCells,
             double permanenceIncrement, double permanenceDecrement)
         {
 
