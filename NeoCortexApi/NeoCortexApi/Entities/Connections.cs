@@ -1325,6 +1325,9 @@ namespace NeoCortexApi.Entities
             /** default serial */
             private static readonly long serialVersionUID = 1L;
 
+            /// <summary>
+            /// numActiveConnectedSynapsesForSegment
+            /// </summary>
             public int[] numActiveConnected;
             public int[] numActivePotential;
 
@@ -1335,24 +1338,40 @@ namespace NeoCortexApi.Entities
             }
         }
 
+
         /**
-         * Compute each segment's number of active synapses for a given input.
-         * In the returned lists, a segment's active synapse count is stored at index
-         * `segment.flatIdx`.
-         * 
-         * @param activePresynapticCells
-         * @param connectedPermanence
-         * @return
-         */
+  //* Compute each segment's number of active synapses for a given input.
+  //* In the returned lists, a segment's active synapse count is stored at index
+  //* `segment.flatIdx`.
+  //* 
+  //* @param activePresynapticCells
+  //* @param connectedPermanence
+  //* @return
+  //*/
+
+
+
+        /// <summary>
+        /// Compute each segment's number of active synapses for a given input.
+        /// 
+        /// </summary>
+        /// <param name="activePresynapticCells"></param>
+        /// <param name="connectedPermanence"></param>
+        /// <returns></returns>
         public Activity computeActivity(ICollection<Cell> activePresynapticCells, double connectedPermanence)
         {
+            // Every receptor synapse on active cell, which has permanence over threshold is by default connected.
             int[] numActiveConnectedSynapsesForSegment = new int[nextFlatIdx];
+
+            // Every receptor synapse on active cell is active-potential one.
             int[] numActivePotentialSynapsesForSegment = new int[nextFlatIdx];
 
             double threshold = connectedPermanence - EPSILON;
 
+            // Step through all presynaptic cells.
             foreach (Cell cell in activePresynapticCells)
             {
+                // Then step through all receptor synapses on presynaptic cell.
                 foreach (Synapse synapse in getReceptorSynapses(cell))
                 {
                     int flatIdx = synapse.getSegment().getIndex();
@@ -1799,17 +1818,18 @@ namespace NeoCortexApi.Entities
             return retVal;
         }
 
-        /**
-         * Returns the mapping of {@link DistalDendrite}s to their {@link Synapse}s.
-         *
-         * @param segment   the {@link DistalDendrite} used as a key.
-         * @return          the mapping of {@link DistalDendrite}s to their {@link Synapse}s.
-         */
+
+
+        /// <summary>
+        /// Returns synapeses of specified dentrite segment.
+        /// </summary>
+        /// <param name="segment">Distal Dentrite segment.</param>
+        /// <returns>List of segment synapeses.</returns>
         public List<Synapse> getSynapses(DistalDendrite segment)
         {
             if (segment == null)
             {
-                throw new ArgumentException("Segment was null");
+                throw new ArgumentException("Segment cannot be null");
             }
 
             if (distalSynapses == null)

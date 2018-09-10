@@ -1,7 +1,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace UnitTestsProject
 {
@@ -88,21 +90,32 @@ namespace UnitTestsProject
         }
 
 
-    
         [TestMethod]
-        public void GroupByTest2()
+        public void ColumnCompareTest()
         {
-            Func<int, int> fnc = (e) => e + 1;
+            Column c1 = new Column(10, 0);
+            Column c2 = new Column(10, 1);
 
-            var grp = new GroupBy<int, int>(new List<int>(new int[] { 1, 2, 2, 4, 5, 5, 5, 6, 7 }), fnc);
+            List<Column> l = new List<Column>(new Column[] { c1, c2});
 
-            //int i = 1;
-            //do
-            //{
-            //    Assert.IsTrue(grp.Current.Value.Key == i);
-            //    Assert.IsTrue(grp.Current.Value.Value == fnc(i));
-            //    i++;
-            //} while (grp.MoveNext());
+            Assert.IsTrue(l.Min(i=>i) == c1);
+
+        }
+
+
+        [TestMethod]
+        public void CastTest()
+        {
+            int[] a = new int[] { 1, 2, 3, 4, 5 };
+            object[] b = Array.ConvertAll(a, item => (object)item);
+        }
+
+
+        [TestMethod]
+        public void CompareDentrites()
+        {
+            DistalDendrite d1 = new DistalDendrite()
+            DistalDendrite bestSegment = matchingSegments.Max();
         }
     }
 }

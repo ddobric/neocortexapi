@@ -33,12 +33,12 @@ using System.Collections.Generic;
 using NeoCortexApi.Entities;
 
 namespace NeoCortexApi.Entities {
-    /**
-    * Software implementation of a neuron in the neocortical region.
-    * 
-    * @author Chetan Surpur
-    * @author David Ray
-*/
+
+ 
+
+    /// <summary>
+    /// Defines a single cell (neuron).
+    /// </summary>
     public class  Cell   : IEquatable<Cell> {
         /** keep it simple */
         private static readonly long serialVersionUID = 1L;

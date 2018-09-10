@@ -117,6 +117,25 @@ namespace UnitTestsProject
             assertResults(m, expectedValues);
         }
 
+
+        /// <summary>
+        /// { 7, 12, 16}    with x=>x gives keys { 7, 12, 16 }
+        /// { 3, 4, 5 }     with x=>x*3 gives keys { 9, 12, 15 }
+        /// { 3, 3, 4, 5}   with x=>x*4 gives keys { 12, 12, 16, 20 }
+        /// 
+        /// 
+        /// Result:
+        /// 
+        /// Keys: 7,9,12,15,16,20
+        /// Groups:
+        /// 7   - 7 - null, null
+        /// 9   - null - 3, null
+        /// 12  - 12 - 4, [3,3]
+        /// 15  - null, 5, null
+        /// 16  - 16, null, 4
+        /// 20  - null, null, 5
+        /// 
+        /// </summary>
         [TestMethod]
         public void TestThreeSequences()
         {
@@ -198,7 +217,7 @@ namespace UnitTestsProject
            });
 
             assertResults(m, expectedValues);
-        }     
+        }
     }
 }
 
