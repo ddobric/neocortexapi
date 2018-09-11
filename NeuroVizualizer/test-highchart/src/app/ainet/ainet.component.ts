@@ -63,7 +63,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
         opacity: 10,
         size: 18,
         // color: '#00BFFF',
-        color:'#00BFFF',
+        color: '#00BFFF',
         symbol: 'circle',
         line: {
           color: '#7B68EE',
@@ -204,9 +204,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     // this.opacityValues = new Array(areaSection).fill(0.5, 0, 1200).fill(1.8, 1200, 2400);
     //this.colour = new Array(areaSection).fill('#00BFFF', 0, 800).fill('#48afd1', 800, 1600).fill('#236d86', 1600, 2499);
 
-
     let x; let y; let z; let ai;
-
     for (ai = 0; ai < model.areas.length; ai++) {
       for (x = 0; x < model.areas[ai].minicolumns.length; x++) {
         for (y = 0; x < model.areas[ai].minicolumns[x].length; x++) {
@@ -261,4 +259,6 @@ export class AinetComponent implements OnInit, AfterViewInit {
     }
 
   }
+
+  
 }

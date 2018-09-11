@@ -30,7 +30,7 @@ export class Location {
 
 export class NeocortexSettings {
 
-  public numAreas: number;
+  public areaLocations: Location[];
   public minicolumnDims: number[];
   public numLayers: number;
 
@@ -56,8 +56,8 @@ export class NeoCortexModel {
     this.synapses = new Array();
     this.settings = settings;
     this.input = input;
-    this.areas = new Array(settings.numAreas);
-    for (var i = 0; i < settings.numAreas; i++)
+    this.areas = new Array(settings.areaLocations.length);
+    for (var i = 0; i < settings.areaLocations.length; i++)
       this.areas[i] = new Area(settings, i);
   }
 }
