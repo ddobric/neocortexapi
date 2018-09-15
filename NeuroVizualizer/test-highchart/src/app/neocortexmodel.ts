@@ -30,7 +30,7 @@ export class Location {
 
 export class NeocortexSettings {
 
-  public numAreas: number;
+  public areaLocations: Location[];
   public minicolumnDims: number[];
   public numLayers: number;
 
@@ -56,15 +56,15 @@ export class NeoCortexModel {
     this.synapses = new Array();
     this.settings = settings;
     this.input = input;
-    this.areas = new Array(settings.numAreas);
-    for (var i = 0; i < settings.numAreas; i++)
+    this.areas = new Array(settings.areaLocations.length);
+    for (var i = 0; i < settings.areaLocations.length; i++)
       this.areas[i] = new Area(settings, i);
   }
 }
 
 
 
-export class Area {
+export class Area extends Location {
 
   public minicolumns: Minicolumn[][] = new Array();
 
@@ -72,7 +72,8 @@ export class Area {
 
   private settings: NeocortexSettings;
 
-  constructor(settings: NeocortexSettings, areaId: number) {
+  constructor(settings: NeocortexSettings, areaId: number, posX: number = 0, posY: number = 0, posZ: number = 0) {
+    super(posX, posY, posZ); {
 
     this.id = areaId;
 
@@ -85,14 +86,14 @@ export class Area {
       let row: Array<Minicolumn> = new Array();
 
       for (var j = 0; j < settings.minicolumnDims[0]; j++) {
-        row.push(new Minicolumn(settings, areaId, [i, j]));
+        row.push(new Minicolumn(settings, areaId, [i, j], posX * i * this.settings.miniColumnWidth, j ));
       }
 
       this.minicolumns.push(row);
     }
   }
 }
-
+}
 
 
 export class Minicolumn extends Location {
