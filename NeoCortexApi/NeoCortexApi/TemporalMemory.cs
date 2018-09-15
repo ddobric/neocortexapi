@@ -204,25 +204,27 @@ namespace NeoCortexApi
             // Step through all synapses on active cells and find involved segments.         
             var activeSegments = activity.numActiveConnected.Where(
                 i => activity.numActiveConnected[i] >= conn.getActivationThreshold()).
-                    Select(indx => conn.GetSegmentForFlatIdx(indx));
+                    Select(indx => conn.GetSegmentForFlatIdx(indx)).ToList();
 
             //
             // Step through all synapses on active cells with permanence over threshold (conencted synapses)
             // and find involved segments.         
             var matchingSegments = activity.numActiveConnected.Where(
                 i => activity.numActivePotential[i] >= conn.getMinThreshold()).
-                    Select(indx => conn.GetSegmentForFlatIdx(indx));
+                    Select(indx => conn.GetSegmentForFlatIdx(indx)).ToList();
 
 
-            Collections.sort(activeSegments, conn.segmentPositionSortKey);
-            Collections.sort(matchingSegments, conn.segmentPositionSortKey);
+            activeSegments.Sort(conn.GetComparer());
+            //Collections.sort(activeSegments, conn.segmentPositionSortKey);
+            matchingSegments.Sort(conn.GetComparer());
+            //Collections.sort(matchingSegments, conn.segmentPositionSortKey);
 
             cycle.activeSegments = activeSegments;
             cycle.matchingSegments = matchingSegments;
 
             conn.lastActivity = activity;
-            conn.setActiveCells(new LinkedHashSet<>(cycle.activeCells));
-            conn.setWinnerCells(new LinkedHashSet<>(cycle.winnerCells));
+            conn.setActiveCells(new HashSet<Cell>(cycle.activeCells));
+            conn.setWinnerCells(new HashSet<Cell>(cycle.winnerCells));
             conn.setActiveSegments(activeSegments);
             conn.setMatchingSegments(matchingSegments);
             // Forces generation of the predictive cells from the above active segments
@@ -231,7 +233,11 @@ namespace NeoCortexApi
 
             if (learn)
             {
-                activeSegments.stream().forEach(s->conn.recordSegmentActivity(s));
+                foreach (var segment  in activeSegments)
+                {
+                    conn.recordSegmentActivity(segment);
+                }
+               
                 conn.startNewIteration();
             }
         }

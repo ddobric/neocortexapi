@@ -208,6 +208,11 @@ namespace NeoCortexApi.Entities
         /** The random number generator */
         public Random random ;
 
+        public DentriteComparer GetComparer()
+        {
+            return new DentriteComparer(nextSegmentOrdinal);
+        }
+
         ///** Sorting Lambda used for sorting active and matching segments */
         //public IComparer<DistalDendrite> segmentPositionSortKey = (s1, s2) =>
         //        {
