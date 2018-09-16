@@ -114,8 +114,22 @@ namespace UnitTestsProject
         [TestMethod]
         public void CompareDentrites()
         {
-            DistalDendrite d1 = new DistalDendrite()
-            DistalDendrite bestSegment = matchingSegments.Max();
+            var empty1 = (NeoCortexApi.Utility.GroupBy2<object>.Slot < Pair<object, List<object>> > )NeoCortexApi.Utility.GroupBy2<object>.Slot<Pair<object, List<object>>>.empty();
+            var empty2 = (NeoCortexApi.Utility.GroupBy2<object>.Slot < Pair<object, List<object>> > )NeoCortexApi.Utility.GroupBy2<object>.Slot<Pair<object, List<object>>>.empty();
+
+            var slot2 = NeoCortexApi.Utility.GroupBy2<object>.Slot<object>.of(7);
+            Assert.AreNotEqual(empty1, slot2);
+
+            Assert.AreEqual(empty1, empty2);
         }
+
+        //[TestMethod]
+        //public void CompareDentrites()
+        //{
+        //    DistalDendrite d1 = new DistalDendrite();
+        //    DistalDendrite bestSegment = matchingSegments.Max();
+        //}
+
+       
     }
 }
