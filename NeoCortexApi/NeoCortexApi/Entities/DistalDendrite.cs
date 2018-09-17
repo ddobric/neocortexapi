@@ -174,6 +174,14 @@ namespace NeoCortexApi.Entities
             else
                 return 0;
         }
+
+        ///** Sorting Lambda used for sorting active and matching segments */
+        //public IComparer<DistalDendrite> segmentPositionSortKey = (s1, s2) =>
+        //        {
+        //            double c1 = s1.getParentCell().getIndex() + ((double)(s1.getOrdinal() / (double)nextSegmentOrdinal));
+        //            double c2 = s2.getParentCell().getIndex() + ((double)(s2.getOrdinal() / (double)nextSegmentOrdinal));
+        //            return c1 == c2 ? 0 : c1 > c2 ? 1 : -1;
+        //        };
     }
 }
 

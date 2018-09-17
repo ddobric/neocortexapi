@@ -6,6 +6,7 @@ using System.Linq;
 using NeoCortexApi.Utility;
 using static NeoCortexApi.Entities.Connections;
 
+
 namespace NeoCortexApi
 {
 
@@ -121,12 +122,12 @@ namespace NeoCortexApi
 
             Func<object, Column> times1Fnc = x => (Column)x;
 
-            var list = new Pair<List<object>, Func<object, Column>>[3];
-            list[0] = new Pair<List<object>, Func<object, Column>>(Array.ConvertAll(activeColumns.ToArray(), item => (object)item).ToList(), times1Fnc);
-            list[1] = new Pair<List<object>, Func<object, Column>>(Array.ConvertAll(conn.getActiveSegments().ToArray(), item => (object)item).ToList(), times1Fnc);
-            list[2] = new Pair<List<object>, Func<object, Column>>(Array.ConvertAll(conn.getMatchingSegments().ToArray(), item => (object)item).ToList(), times1Fnc);
+            var list = new Pair<List<object>, Func<object, object>>[3];
+            list[0] = new Pair<List<object>, Func<object, object>>(Array.ConvertAll(activeColumns.ToArray(), item => (object)item).ToList(), times1Fnc);
+            list[1] = new Pair<List<object>, Func<object, object>>(Array.ConvertAll(conn.getActiveSegments().ToArray(), item => (object)item).ToList(), times1Fnc);
+            list[2] = new Pair<List<object>, Func<object, object>>(Array.ConvertAll(conn.getMatchingSegments().ToArray(), item => (object)item).ToList(), times1Fnc);
 
-            GroupBy2<Column> grouper = GroupBy2<Column>.of(list);
+            GroupBy2<object> grouper = GroupBy2<object>.of(list);
 
             double permanenceIncrement = conn.getPermanenceIncrement();
             double permanenceDecrement = conn.getPermanenceDecrement();
@@ -152,11 +153,11 @@ namespace NeoCortexApi
                         foreach (var item in cellsToAdd)
                         {
                             cycle.winnerCells.Add(item);
-                        }                        
+                        }
                     }
                     else
                     {
-                        BurstingTupple cellsXwinnerCell = BurstColumn(conn, columnData.column(), columnData.matchingSegments(),
+                        BurstingTupple cellsXwinnerCell = BurstColumn(conn, columnData.Column(), columnData.matchingSegments(),
                             prevActiveCells, prevWinnerCells, permanenceIncrement, permanenceDecrement, conn.getRandom(),
                                learn);
 
@@ -165,7 +166,7 @@ namespace NeoCortexApi
                         {
                             cycle.activeCells.Add(item);
                         }
-                                                
+
                         cycle.winnerCells.Add((Cell)cellsXwinnerCell.BestCell);
                     }
                 }
@@ -204,25 +205,27 @@ namespace NeoCortexApi
             // Step through all synapses on active cells and find involved segments.         
             var activeSegments = activity.numActiveConnected.Where(
                 i => activity.numActiveConnected[i] >= conn.getActivationThreshold()).
-                    Select(indx => conn.GetSegmentForFlatIdx(indx));
+                    Select(indx => conn.GetSegmentForFlatIdx(indx)).ToList();
 
             //
             // Step through all synapses on active cells with permanence over threshold (conencted synapses)
             // and find involved segments.         
             var matchingSegments = activity.numActiveConnected.Where(
                 i => activity.numActivePotential[i] >= conn.getMinThreshold()).
-                    Select(indx => conn.GetSegmentForFlatIdx(indx));
+                    Select(indx => conn.GetSegmentForFlatIdx(indx)).ToList();
 
 
-            Collections.sort(activeSegments, conn.segmentPositionSortKey);
-            Collections.sort(matchingSegments, conn.segmentPositionSortKey);
+            activeSegments.Sort(conn.GetComparer());
+            //Collections.sort(activeSegments, conn.segmentPositionSortKey);
+            matchingSegments.Sort(conn.GetComparer());
+            //Collections.sort(matchingSegments, conn.segmentPositionSortKey);
 
             cycle.activeSegments = activeSegments;
             cycle.matchingSegments = matchingSegments;
 
             conn.lastActivity = activity;
-            conn.setActiveCells(new LinkedHashSet<>(cycle.activeCells));
-            conn.setWinnerCells(new LinkedHashSet<>(cycle.winnerCells));
+            conn.setActiveCells(new HashSet<Cell>(cycle.activeCells));
+            conn.setWinnerCells(new HashSet<Cell>(cycle.winnerCells));
             conn.setActiveSegments(activeSegments);
             conn.setMatchingSegments(matchingSegments);
             // Forces generation of the predictive cells from the above active segments
@@ -231,7 +234,11 @@ namespace NeoCortexApi
 
             if (learn)
             {
-                activeSegments.stream().forEach(s->conn.recordSegmentActivity(s));
+                foreach (var segment in activeSegments)
+                {
+                    conn.recordSegmentActivity(segment);
+                }
+
                 conn.startNewIteration();
             }
         }
@@ -515,7 +522,7 @@ namespace NeoCortexApi
          * @param random                    Tm object used to generate random
          *                                  numbers
          */
-        public void growSynapses(Connections conn, List<Cell> prevWinnerCells, DistalDendrite segment,
+        public void growSynapses(Connections conn, ICollection<Cell> prevWinnerCells, DistalDendrite segment,
             double initialPermanence, int nDesiredNewSynapses, Random random)
         {
 
@@ -573,7 +580,7 @@ namespace NeoCortexApi
             {
                 double permanence = synapse.getPermanence();
 
-                if (prevActiveCells.contains(synapse.getPresynapticCell()))
+                if (prevActiveCells.Contains(synapse.getPresynapticCell()))
                 {
                     permanence += permanenceIncrement;
                 }
@@ -622,42 +629,53 @@ namespace NeoCortexApi
             /** Default Serial */
             private static readonly long serialVersionUID = 1L;
 
-            Pair<object, List<List<Column>>> m_Pair;
+            private Pair<object, List<List<object>>> m_Pair;
 
             public ColumnData() { }
 
 
-            public ColumnData set(Pair<object, List<List<Column>>> t)
+            public ColumnData set(Pair<object, List<List<object>>> t)
             {
                 m_Pair = t;
 
                 return this;
             }
 
-
-            public Column column() { return (Column)m_Pair.Key; }
+            public Column Column() { return (Column)m_Pair.Key; }
 
             //public List<Column> activeColumns() { return (List<Column>)t.ac(1); }
-            public List<Column> activeColumns() { return (List<Column>)m_Pair.Value; }
+            public List<Column> activeColumns() { return (List<Column>)m_Pair.Value[0].Cast<Column>(); }
 
+            //public List<DistalDendrite> activeSegments()
+            //{
+            //    List <?> x = ((List <?>)t.get(2));
+            //}
             public List<DistalDendrite> activeSegments
             {
                 get
                 {
+                    if (m_Pair.Value[1][0] == NeoCortexApi.Utility.GroupBy2<object>.Slot<Pair<object, List<Column>>>.empty())
+                        return new List<DistalDendrite>();
+                    else
+                        return m_Pair.Value[1].Cast<DistalDendrite>().ToList();
 
-                    //   t.ActiveColumns.SequenceEqual()
+                   
 
-
-                    return ((List<Column>)t.get(2)).get(0).equals(Slot.empty()) ?
-                         Collections.emptyList() :
-                             (List<DistalDendrite>)t.get(2);
+                    //return ((List<Column>)m_Pair.get(2)).get(0).equals(Slot<Pair<object, List<Column>>>.empty()) ?
+                    //     Collections.emptyList() :
+                    //         (List<DistalDendrite>)m_Pair.Key;
                 }
             }
             public List<DistalDendrite> matchingSegments()
             {
-                return ((List <?>)t.get(3)).get(0).equals(Slot.empty()) ?
-                     Collections.emptyList() :
-                         (List<DistalDendrite>)t.get(3);
+                if (m_Pair.Value[2][0] == NeoCortexApi.Utility.GroupBy2<object>.Slot<Pair<object, List<Column>>>.empty())
+                    return new List<DistalDendrite>();
+                else
+                    return m_Pair.Value[2].Cast<DistalDendrite>().ToList();
+
+                //return ((List <?>)t.get(3)).get(0).equals(Slot.empty()) ?
+                //     Collections.emptyList() :
+                //         (List<DistalDendrite>)t.get(3);
             }
 
 
@@ -671,7 +689,12 @@ namespace NeoCortexApi
              */
             public bool isNotNone(int memberIndex)
             {
-                return !((List<Column>)t.get(memberIndex)).get(0).equals(NONE);
+                if (m_Pair.Value[memberIndex][0] == NeoCortexApi.Utility.GroupBy2<object>.Slot<Pair<object, List<Column>>>.empty())
+                    return false;
+                else
+                    return true;
+
+                  //  return !((List<Column>)t.get(memberIndex)).get(0).equals(NONE);
             }
         }
     }

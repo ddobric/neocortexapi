@@ -19,7 +19,7 @@ namespace NeoCortexApi.Utility
      * @param <R>   The return type of the user-provided {@link Function}s
      */
     public class GroupBy2<R> : IEnumerable<Pair<Object, List<List<R>>>>, IEnumerator<Pair<Object, List<List<R>>>> //, Generator<Tuple> 
-     where R : IComparable<R>
+   //  where R : IComparable<R>
     {
         /** serial version */
         private static long serialVersionUID = 1L;
