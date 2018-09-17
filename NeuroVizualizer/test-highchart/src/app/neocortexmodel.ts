@@ -18,10 +18,12 @@ export class Location {
 
   public isVisible: boolean;
 
-  constructor(posX: number = 0, posY: number = 0, posZ: number = 0) {
-    this.posX=posX;
-    this.posY=posY;
-    this.posZ=posZ;
+  constructor(posX: number, posY: number, posZ: number) {
+    this.posX = posX;
+    this.posY = posY;
+    this.posZ = posZ;
+
+
 
 
 
@@ -30,12 +32,12 @@ export class Location {
 
 export class NeocortexSettings {
 
+  public cellHeightInMiniColumn: number = 5;
+  public miniColumnWidth: number = 5;
   public areaLocations: Location[];
   public minicolumnDims: number[];
   public numLayers: number;
 
-  public cellHeightInMiniColumn: number = 5;
-  public miniColumnWidth: number = 5;
 }
 
 export class NeoCortexModel {
@@ -45,7 +47,7 @@ export class NeoCortexModel {
   public synapses: Array<Synapse>;
 
   public settings: NeocortexSettings;
-  
+
   /**
    * Multidimensional sensory input.
    */
@@ -75,24 +77,24 @@ export class Area extends Location {
   constructor(settings: NeocortexSettings, areaId: number, posX: number = 0, posY: number = 0, posZ: number = 0) {
     super(posX, posY, posZ); {
 
-    this.id = areaId;
+      this.id = areaId;
 
-    this.settings = settings;
+      this.settings = settings;
 
-    this.minicolumns = new Array();
+      this.minicolumns = new Array();
 
-    for (var i = 0; i < settings.minicolumnDims[1]; i++) {
+      for (var i = 0; i < settings.minicolumnDims[1]; i++) {
 
-      let row: Array<Minicolumn> = new Array();
+        let row: Array<Minicolumn> = new Array();
 
-      for (var j = 0; j < settings.minicolumnDims[0]; j++) {
-        row.push(new Minicolumn(settings, areaId, [i, j], posX * i * this.settings.miniColumnWidth, j ));
+        for (var j = 0; j < settings.minicolumnDims[0]; j++) {
+          row.push(new Minicolumn(settings, areaId, [i, j], (posX + i * this.settings.miniColumnWidth), (posY + i * this.settings.cellHeightInMiniColumn), (posZ + j * this.settings.miniColumnWidth)));
+        }
+
+        this.minicolumns.push(row);
       }
-
-      this.minicolumns.push(row);
     }
   }
-}
 }
 
 
@@ -106,7 +108,7 @@ export class Minicolumn extends Location {
 
   private settings: NeocortexSettings;
 
-  constructor(settings: NeocortexSettings, areaId: number, miniColId: number[], posX: number = 0, posY: number = 0, posZ: number = 0) {
+  constructor(settings: NeocortexSettings, areaId: number, miniColId: number[], posX: number, posY: number, posZ: number) {
     super(posX, posY, posZ);
 
     this.areaId = areaId;
@@ -117,7 +119,7 @@ export class Minicolumn extends Location {
 
     for (let layer = 0; layer < settings.numLayers; layer++) {
 
-      let cell: Cell = new Cell(settings, areaId, miniColId, layer, this.posX, this.posY + layer * this.settings.cellHeightInMiniColumn, this.posZ)
+      let cell: Cell = new Cell(settings, areaId, miniColId, layer, this.posX + this.settings.miniColumnWidth, this.posY + layer * this.settings.cellHeightInMiniColumn, this.posZ)
       //let cell: Cell = new Cell(settings, areaId, miniColId, layer, this.posX, this.posY + layer, this.posZ)
       this.cells.push(cell);
     }

@@ -295,9 +295,9 @@ export class AiNetHighchartComponent implements OnInit {
             }
 
         }
-        for (let a = 0; a < model.settings.numAreas; a++) {
+       /*  for (let a = 0; a < model.settings.numAreas; a++) {
             this.dataArea.push(this.dataSer1);
-        }
+        } */
     }
 
     addAllSeries() {

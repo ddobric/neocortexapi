@@ -36,8 +36,8 @@ export class neoCortexUtils {
     const sensoryLayer = 3;
 
     let sett: NeocortexSettings = {
-      areaLocations: [new Location(0,0,0), new Location(5,3,5), new Location(6,7,8) ],
-      minicolumnDims: miniColDims, 
+      areaLocations: [new Location(0, 0, 0), new Location(5, 3, 5), new Location(6, 7, 8)],
+      minicolumnDims: miniColDims,
       numLayers: numLayers,
       cellHeightInMiniColumn: 5, miniColumnWidth: 5
     };
@@ -49,18 +49,18 @@ export class neoCortexUtils {
     let idCnt: number = 0;
 
     for (let arrIndx = 0; arrIndx < sett.areaLocations.length; arrIndx++) {
-      
+
       model.areas[arrIndx].minicolumns.forEach(miniColRow => {
         miniColRow.forEach(miniCol => {
 
           // Selecting random input cell to cennect.
-          let rndInpRowIndx = Math.floor(Math.random() * inpModel.cells.length);
-          let rndInpCellIndx = Math.floor(Math.random() * inpModel.cells[rndInpRowIndx].length);
+          /*    let rndInpRowIndx = Math.floor(Math.random() * inpModel.cells.length);
+             let rndInpCellIndx = Math.floor(Math.random() * inpModel.cells[rndInpRowIndx].length);
+   
+             for (let miniColIndx = 0; miniColIndx < inpModel.cells[rndInpRowIndx].length * 0.2; miniColIndx++) {
+               this.addSynapse(model, ++idCnt, model.areas[arrIndx].id, model.input.cells[rndInpRowIndx][rndInpCellIndx], miniCol.cells[sensoryLayer], 0)
+             }     */
 
-          for (let miniColIndx = 0; miniColIndx < inpModel.cells[rndInpRowIndx].length * 0.2; miniColIndx++) {
-            this.addSynapse(model, ++idCnt, model.areas[arrIndx].id, model.input.cells[rndInpRowIndx][rndInpCellIndx], miniCol.cells[sensoryLayer], 0)
-          }        
-           
         });
       });
 
@@ -73,7 +73,7 @@ export class neoCortexUtils {
   public static addSynapse(model: NeoCortexModel, id: number, areaId: number = -1, preCell: Cell, postCell: Cell, weight: number) {
 
     model.synapses.push(new Synapse(id, weight, preCell, postCell));
-    
+
   }
 
   public static updateSynapse(model: NeoCortexModel, synapseId: number, areaId: number = -1, weight: number) {
@@ -136,24 +136,24 @@ export class neoCortexUtils {
     return null;
   }
 
-  
+
   /**
    * Search for synapse with specified id.
    * @param model Model of AI network.
    * @param synapseId Identifier of the synapse.
    * @param areaId Restricts the search in specified area to increase performance.
    */
-  private static getCell(model: NeoCortexModel, cellId:CellId): Cell {
+  private static getCell(model: NeoCortexModel, cellId: CellId): Cell {
 
-    let area : Area = model.areas[cellId.area];
-    
-    let obj:any[] =  area.minicolumns[0];
-    
-    for (let i = 1; i < area.minicolumns.length-1; i++) {
-      obj =  obj[cellId.minicolumn[i]];
+    let area: Area = model.areas[cellId.area];
+
+    let obj: any[] = area.minicolumns[0];
+
+    for (let i = 1; i < area.minicolumns.length - 1; i++) {
+      obj = obj[cellId.minicolumn[i]];
     }
 
-    return obj[area.minicolumns.length-1] as Cell;
+    return obj[area.minicolumns.length - 1] as Cell;
   }
 }
 

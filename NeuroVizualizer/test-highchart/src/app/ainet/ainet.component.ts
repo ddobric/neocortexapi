@@ -200,15 +200,15 @@ export class AinetComponent implements OnInit, AfterViewInit {
     };
   }
   fillChart() {
-    let model = neoCortexUtils.createModel(3, [100, 4], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
+    let model = neoCortexUtils.createModel(5, [100, 5], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
     // this.opacityValues = new Array(areaSection).fill(0.5, 0, 1200).fill(1.8, 1200, 2400);
     //this.colour = new Array(areaSection).fill('#00BFFF', 0, 800).fill('#48afd1', 800, 1600).fill('#236d86', 1600, 2499);
 
     let x; let y; let z; let ai;
     for (ai = 0; ai < model.areas.length; ai++) {
       for (x = 0; x < model.areas[ai].minicolumns.length; x++) {
-        for (y = 0; x < model.areas[ai].minicolumns[x].length; x++) {
-          for (z = 0; x < model.areas[ai].minicolumns[x][y].cells.length; x++) {
+        for (y = 0; y < model.areas[ai].minicolumns[x].length; y++) {
+          for (z = 0; z < model.areas[ai].minicolumns[x][y].cells.length; z++) {
             this.xCoord.push(model.areas[ai].minicolumns[x][y].cells[z].posX);
             this.yCoord.push(model.areas[ai].minicolumns[x][y].cells[z].posY);
             this.zCoord.push(model.areas[ai].minicolumns[x][y].cells[z].posZ);
@@ -260,5 +260,5 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   }
 
-  
+
 }
