@@ -22,11 +22,6 @@ export class Location {
     this.posX = posX;
     this.posY = posY;
     this.posZ = posZ;
-
-
-
-
-
   }
 }
 
@@ -83,12 +78,13 @@ export class Area extends Location {
 
       this.minicolumns = new Array();
 
-      for (var i = 0; i < settings.minicolumnDims[1]; i++) {
+      for (var i = 0; i < settings.minicolumnDims[0]; i++) {
 
         let row: Array<Minicolumn> = new Array();
 
-        for (var j = 0; j < settings.minicolumnDims[0]; j++) {
-          row.push(new Minicolumn(settings, areaId, [i, j], (posX + i * this.settings.miniColumnWidth), (posY + i * this.settings.cellHeightInMiniColumn), (posZ + j * this.settings.miniColumnWidth)));
+        for (var j = 0; j < settings.minicolumnDims[1]; j++) {
+          // row.push(new Minicolumn(settings, areaId, [i, j], (posX + i * this.settings.miniColumnWidth), (posY + i * this.settings.cellHeightInMiniColumn), (posZ + j * this.settings.miniColumnWidth)));
+          row.push(new Minicolumn(settings, areaId, [i, j], (posX + i * this.settings.miniColumnWidth), (posY * i + this.settings.cellHeightInMiniColumn), (posZ + j)));
         }
 
         this.minicolumns.push(row);
