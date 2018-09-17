@@ -36,7 +36,8 @@ export class neoCortexUtils {
     const sensoryLayer = 3;
 
     let sett: NeocortexSettings = {
-      areaLocations: [new Location(0, 0, 0), new Location(5, 3, 5), new Location(6, 7, 8)],
+      //areaLocations: [new Location(0, 0, 0), new Location(5, 3, 5), new Location(6, 7, 8)],
+      areaLocations:[numOfAreas],
       minicolumnDims: miniColDims,
       numLayers: numLayers,
       cellHeightInMiniColumn: 5, miniColumnWidth: 5
