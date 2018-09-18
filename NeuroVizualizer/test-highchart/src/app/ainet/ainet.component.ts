@@ -42,9 +42,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
       height: HEIGHT_IN_PERCENT_OF_PARENT + 'vh',
       'margin-top': (100 - HEIGHT_IN_PERCENT_OF_PARENT) / 2 + 'vh'
     });
-    let gd = gd3.node();
+    let graphDOM = gd3.node();
 
-    const trace1 = {
+    const neurons = {
       x: this.xCoord,
       y: this.yCoord,
       z: this.zCoord,
@@ -148,7 +148,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       scene: "scene3",
 
     };
-    const layout = {
+    const neuralChartLayout = {
       //showlegend: false, Thgis option is to show the name of legend/DataSeries 
       scene: {
         aspectmode: "manual",
@@ -173,7 +173,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       }
     };
 
-    const config = {
+    const neuralChartConfig = {
       //displayModeBar: false,
       title: '3DChart',
       displaylogo: false,
@@ -192,11 +192,11 @@ export class AinetComponent implements OnInit, AfterViewInit {
          z: [[3.5]]
        }; */
 
-    Plotlyjs.newPlot(gd, [trace1, synapses], layout, config);
+    Plotlyjs.newPlot(graphDOM, [neurons, synapses], neuralChartLayout, neuralChartConfig);
     //Plotlyjs.restyle(gd,  update, [0]);
 
     window.onresize = function () {
-      Plotlyjs.Plots.resize(gd);
+      Plotlyjs.Plots.resize(graphDOM);
     };
   }
   fillChart() {
@@ -206,6 +206,12 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
     let x; let y; let z; let ai;
     for (ai = 0; ai < model.areas.length; ai++) {
+      if (ai >= 1) {
+        x = x+50;
+        y = y+50;
+        z = z +50;
+        
+      }
       for (x = 0; x < model.areas[ai].minicolumns.length; x++) {
         for (y = 0; y < model.areas[ai].minicolumns[x].length; y++) {
           for (z = 0; z < model.areas[ai].minicolumns[x][y].cells.length; z++) {
