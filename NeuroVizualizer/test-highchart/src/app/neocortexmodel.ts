@@ -84,7 +84,12 @@ export class Area extends Location {
 
         for (var j = 0; j < settings.minicolumnDims[1]; j++) {
           // row.push(new Minicolumn(settings, areaId, [i, j], (posX + i * this.settings.miniColumnWidth), (posY + i * this.settings.cellHeightInMiniColumn), (posZ + j * this.settings.miniColumnWidth)));
-          row.push(new Minicolumn(settings, areaId, [i, j], (posX + i * this.settings.miniColumnWidth), (posY * i + this.settings.cellHeightInMiniColumn), (posZ + j)));
+          //row.push(new Minicolumn(settings, areaId, [i, j], (posX + i * this.settings.miniColumnWidth), (posY + i + this.settings.cellHeightInMiniColumn), (posZ + j)));
+          for (let k = 0; k < settings.areaLocations.length; k++) {
+            row.push(new Minicolumn(settings, areaId, [i, j], (posX + (k*i * this.settings.miniColumnWidth)), (posY * k+i + this.settings.cellHeightInMiniColumn), (posZ + j+k)));
+            
+          }
+          //row.push(new Minicolumn(settings, areaId, [i, j], (posX + i * this.settings.miniColumnWidth), (posY * i + this.settings.cellHeightInMiniColumn), (posZ + j)));
         }
 
         this.minicolumns.push(row);
