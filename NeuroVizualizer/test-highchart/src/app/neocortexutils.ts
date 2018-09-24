@@ -48,7 +48,7 @@ export class neoCortexUtils {
       cellHeightInMiniColumn: 5, miniColumnWidth: 5
     };
 
-    let inpModel: InputModel = new InputModel(sett, [3, 3]);
+    let inpModel: InputModel = new InputModel(sett);
 
     var model: NeoCortexModel = new NeoCortexModel(sett, inpModel);
 

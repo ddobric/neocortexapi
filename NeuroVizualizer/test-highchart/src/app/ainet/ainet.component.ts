@@ -16,6 +16,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
   zCoord = [];
   colour = [];
   opacityValues = [];
+  col: any;
 
 
 
@@ -25,7 +26,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
   ngOnInit() {
   }
   ngAfterViewInit() {
+
     this.fillChart();
+    this.gradient('#0000ff','#ff0000', 100);
     //this.dellInvisiblepoints();
     this.createChart();
   }
@@ -63,10 +66,11 @@ export class AinetComponent implements OnInit, AfterViewInit {
         opacity: 10,
         size: 18,
         // color: '#00BFFF',
-        color: '#00BFFF',
+        color: this.colour,
         symbol: 'circle',
         line: {
-          color: '#7B68EE',
+          //color: '#7B68EE',
+         // color: '#7B68EE',
           width: 2
         },
 
@@ -85,8 +89,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
       opacity: 1.0,
       line: {
         width: 4,
-        color: '#7CFC00',
-        colorscale: 'Viridis'
+        color: this.colour,
+        //color: '#7CFC00'
+        //colorscale: 'Viridis'
       }
     };
     const trace2 = {
@@ -206,16 +211,6 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
     let x; let y; let z; let ai;
     for (ai = 0; ai < model.areas.length; ai++) {
-       if (ai >= 1) {
-        /* x = x*20;
-        y = y*2;
-        z = z *20; */
-        
-        /* x = 100 *(this.xCoord[this.xCoord.length-1])
-        y = 15 *(this.yCoord[this.yCoord.length-1])
-        z = 11 *(this.zCoord[this.zCoord.length-1])
-         */
-      } 
       for (x = 0; x < model.areas[ai].minicolumns.length; x++) {
         for (y = 0; y < model.areas[ai].minicolumns[x].length; y++) {
           for (z = 0; z < model.areas[ai].minicolumns[x][y].cells.length; z++) {
@@ -242,9 +237,60 @@ export class AinetComponent implements OnInit, AfterViewInit {
             }
             */
       }
+      
     }
+          //if (ai >= 0) {
+       /*  x = x*20;
+        y = y*2;
+        z = z *20; */
+        
+        /* x = 100 +(this.xCoord[this.xCoord.length-1])
+        y = 15 *(this.yCoord[this.yCoord.length-1])
+        z = 11 *(this.zCoord[this.zCoord.length-1]) */
+        
+     // } 
     console.log(this.xCoord);
   }
+
+ gradient(startColor, endColor, steps) {
+    var start = {
+            'Hex'   : startColor,
+            'R'     : parseInt(startColor.slice(1,3), 16),
+            'G'     : parseInt(startColor.slice(3,5), 16),
+            'B'     : parseInt(startColor.slice(5,7), 16)
+    }
+    var end = {
+            'Hex'   : endColor,
+            'R'     : parseInt(endColor.slice(1,3), 16),
+            'G'     : parseInt(endColor.slice(3,5), 16),
+            'B'     : parseInt(endColor.slice(5,7), 16)
+    }
+    let diffR = end['R'] - start['R'];
+    let diffG = end['G'] - start['G'];
+    let diffB = end['B'] - start['B'];
+
+    let stepsHex  = new Array();
+    let stepsR    = new Array();
+    let stepsG    = new Array();
+    let stepsB    = new Array();
+
+    for(var i = 0; i <= steps; i++) {
+            stepsR[i] = start['R'] + ((diffR / steps) * i);
+            stepsG[i] = start['G'] + ((diffG / steps) * i);
+            stepsB[i] = start['B'] + ((diffB / steps) * i);
+            stepsHex[i] = '#' + Math.round(stepsR[i]).toString(16) + '' + Math.round(stepsG[i]).toString(16) + '' + Math.round(stepsB[i]).toString(16);
+    }
+   // this.col = stepsHex;
+    for (let index = 0; index < (this.xCoord.length)/100; index++) {
+      for (let hexCol = 0; hexCol < stepsHex.length; hexCol++) {
+        this.colour.push(stepsHex[hexCol]);
+      }
+
+    }
+    console.log(this.colour);
+
+
+}
   dellInvisiblepoints() {
     let removePointsByIndex = [];
     function getRandomInt(min, max) {
