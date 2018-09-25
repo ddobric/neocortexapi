@@ -1,6 +1,14 @@
 <h1>
   Connectionist System
 </h1>
+<div class="container form-inline">
+  <div calss="row form-group">
+      <div class="container col-sm-4">
+          <input class="form-control" type="text" placeholder="Neurons weight 1 or 2" #weightInput>
+      <button class="btn btn-danger" type="submit" (click)='showNeuronsByWeight(weightInput.value)'>Show specific neurons</button>
+      </div>
+  </div>
+</div>
 <!-- Plotly chart will be drawn inside this div -->
 <div class="chart"  id="graph"></div>
 
