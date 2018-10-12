@@ -48,14 +48,24 @@ export class NeoCortexModel {
    */
   public input: InputModel;
 
-  constructor(settings: NeocortexSettings, input: InputModel, posX=0, posY=0, posZ=0) {
+  constructor(settings: NeocortexSettings, input: InputModel, posX = 0, posY = 0, posZ = 0) {
 
     this.synapses = new Array();
     this.settings = settings;
     this.input = input;
     this.areas = new Array(settings.areaLocations.length);
-    for (var i = 0; i < settings.areaLocations.length; i++)
-      this.areas[i] = new Area(settings, i, posX,posY, posZ);/// change at this position to chnage the area
+    for (var i = 0; i < settings.areaLocations.length; i++) {
+      if (i >= 1) {
+        posX = posX+50;
+        posY = posY+10;
+        posZ = posZ+7;
+        this.areas[i] = new Area(settings, i, posX, posY, posZ);/// change at this position to chnage the area
+      }
+      else {
+        this.areas[i] = new Area(settings, i, posX, posY, posZ);/// change at this position to chnage the area
+      }
+
+    }
   }
 }
 
@@ -77,33 +87,33 @@ export class Area extends Location {
       this.settings = settings;
 
       this.minicolumns = new Array();
-   /*    for (var i = 0; i < settings.minicolumnDims[0]; i++) {
-
-        let row: Array<Minicolumn> = new Array();
-
-        for (var j = 0; j < settings.minicolumnDims[1]; j++) {
-
-          for (let k = 0; k < settings.areaLocations.length; k++) {
-            row.push(new Minicolumn(settings, areaId, [i, j], (posX+i+j + (k*i * this.settings.miniColumnWidth)), (posY * k+i + this.settings.cellHeightInMiniColumn), (posZ + j+k)));
-            
-          }
-          
-        }
-
-        this.minicolumns.push(row);
-      } */
+      /*    for (var i = 0; i < settings.minicolumnDims[0]; i++) {
+   
+           let row: Array<Minicolumn> = new Array();
+   
+           for (var j = 0; j < settings.minicolumnDims[1]; j++) {
+   
+             for (let k = 0; k < settings.areaLocations.length; k++) {
+               row.push(new Minicolumn(settings, areaId, [i, j], (posX+i+j + (k*i * this.settings.miniColumnWidth)), (posY * k+i + this.settings.cellHeightInMiniColumn), (posZ + j+k)));
+               
+             }
+             
+           }
+   
+           this.minicolumns.push(row);
+         } */
       let row: Array<Minicolumn> = new Array();
       let i; let j; let k;
       for (i = 0; i < settings.minicolumnDims[0]; i++) {
         for (j = 0; j < settings.numLayers; j++) {
-          for ( k = 0; k < settings.minicolumnDims[1]; k++) {
-            row.push(new Minicolumn(settings, areaId, [0], (posX+i), (posY+j), (posZ+k) ));
-            
+          for (k = 0; k < settings.minicolumnDims[1]; k++) {
+            row.push(new Minicolumn(settings, areaId, [0], (posX + i), (posY + j), (posZ + k)));
+
           }
-          
+
         }
 
-        
+
       }
       this.minicolumns.push(row);
     }
@@ -132,7 +142,7 @@ export class Minicolumn extends Location {
 
     for (let layer = 0; layer < settings.numLayers; layer++) {
 
-      let cell: Cell = new Cell(settings, areaId, miniColId, layer, this.posX , this.posY , this.posZ)
+      let cell: Cell = new Cell(settings, areaId, miniColId, layer, this.posX, this.posY, this.posZ)
       //let cell: Cell = new Cell(settings, areaId, miniColId, layer, this.posX, this.posY + layer, this.posZ)
       this.cells.push(cell);
     }
@@ -194,7 +204,7 @@ export class InputModel {
 
     this.cells = new Array();
 
-     for (var i = 0; i < cellDims[0]; i++) {
+    for (var i = 0; i < cellDims[0]; i++) {
 
       let row: Array<Cell> = new Array();
 
@@ -204,7 +214,7 @@ export class InputModel {
       }
 
       this.cells.push(row);
-    } 
+    }
   }
 }
 
