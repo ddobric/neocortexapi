@@ -77,23 +77,35 @@ export class Area extends Location {
       this.settings = settings;
 
       this.minicolumns = new Array();
-
-      for (var i = 0; i < settings.minicolumnDims[0]; i++) {
+   /*    for (var i = 0; i < settings.minicolumnDims[0]; i++) {
 
         let row: Array<Minicolumn> = new Array();
 
         for (var j = 0; j < settings.minicolumnDims[1]; j++) {
-          // row.push(new Minicolumn(settings, areaId, [i, j], (posX + i * this.settings.miniColumnWidth), (posY + i * this.settings.cellHeightInMiniColumn), (posZ + j * this.settings.miniColumnWidth)));
-          //row.push(new Minicolumn(settings, areaId, [i, j], (posX + i * this.settings.miniColumnWidth), (posY + i + this.settings.cellHeightInMiniColumn), (posZ + j)));
+
           for (let k = 0; k < settings.areaLocations.length; k++) {
             row.push(new Minicolumn(settings, areaId, [i, j], (posX+i+j + (k*i * this.settings.miniColumnWidth)), (posY * k+i + this.settings.cellHeightInMiniColumn), (posZ + j+k)));
             
           }
-          //row.push(new Minicolumn(settings, areaId, [i, j], (posX + i * this.settings.miniColumnWidth), (posY * i + this.settings.cellHeightInMiniColumn), (posZ + j)));
+          
         }
 
         this.minicolumns.push(row);
+      } */
+      let row: Array<Minicolumn> = new Array();
+      let i; let j; let k;
+      for (i = 0; i < settings.minicolumnDims[0]; i++) {
+        for (j = 0; j < settings.numLayers; j++) {
+          for ( k = 0; k < settings.minicolumnDims[1]; k++) {
+            row.push(new Minicolumn(settings, areaId, [0], (posX+i), (posY+j), (posZ+k) ));
+            
+          }
+          
+        }
+
+        
       }
+      this.minicolumns.push(row);
     }
   }
 }
@@ -120,7 +132,7 @@ export class Minicolumn extends Location {
 
     for (let layer = 0; layer < settings.numLayers; layer++) {
 
-      let cell: Cell = new Cell(settings, areaId, miniColId, layer, this.posX , this.posY + layer , this.posZ)
+      let cell: Cell = new Cell(settings, areaId, miniColId, layer, this.posX , this.posY , this.posZ)
       //let cell: Cell = new Cell(settings, areaId, miniColId, layer, this.posX, this.posY + layer, this.posZ)
       this.cells.push(cell);
     }

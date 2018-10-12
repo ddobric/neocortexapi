@@ -36,7 +36,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     let xCoordinates = getCoordinates[0];
     let yCoordinates = getCoordinates[1];
     let zCoordinates = getCoordinates[2];
-    console.log(xCoordinates,"X");
+    console.log(xCoordinates, "X");
 
     let colourArray = this.getHeatColor();
 
@@ -212,7 +212,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     };
   }
   fillChart() {
-    let model = neoCortexUtils.createModel(4, [100, 4], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
+    let model = neoCortexUtils.createModel(1, [100, 4], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
     // this.opacityValues = new Array(areaSection).fill(0.5, 0, 1200).fill(1.8, 1200, 2400);
     //this.colour = new Array(areaSection).fill('#00BFFF', 0, 800).fill('#48afd1', 800, 1600).fill('#236d86', 1600, 2499);
     let xCoord = [];
@@ -220,80 +220,72 @@ export class AinetComponent implements OnInit, AfterViewInit {
     let zCoord = [];
     let x; let y; let z; let ai;
     for (ai = 0; ai < model.areas.length; ai++) {
-      for (x = 0; x < model.areas[ai].minicolumns.length; x++) {
-        for (y = 0; y < model.areas[ai].minicolumns[x].length; y++) {
-          for (z = 0; z < model.areas[ai].minicolumns[x][y].cells.length; z++) {
-            xCoord.push(model.areas[ai].minicolumns[x][y].cells[z].posX);
-            yCoord.push(model.areas[ai].minicolumns[x][y].cells[z].posY);
-            zCoord.push(model.areas[ai].minicolumns[x][y].cells[z].posZ);
-          }
-        }
+      for (let i = 0; i < model.areas[ai].minicolumns[0].length; i++) {
+        xCoord.push(model.areas[ai].minicolumns[0][i].posX);
+        yCoord.push(model.areas[ai].minicolumns[0][i].posY);
+        zCoord.push(model.areas[ai].minicolumns[0][i].posZ);
       }
-
     }
 
-
-
-
+    /*         for (x = 0; x < model.areas[ai].minicolumns.length; x++) {
+          for (y = 0; y < model.areas[ai].minicolumns[x].length; y++) {
+            for (z = 0; z < model.areas[ai].minicolumns[x][y].cells.length; z++) {
+               xCoord.push(model.areas[ai].minicolumns[x][y].cells[z].posX);
+              yCoord.push(model.areas[ai].minicolumns[x][y].cells[z].posY);
+              zCoord.push(model.areas[ai].minicolumns[x][y].cells[z].posZ); 
+            
+ 
+            }
+          }
+        } */
     /*
         for (x = 0; x < model.areas[ai].minicolumns[0]; x++) {
           for (y = 0; y < model.settings.numLayers; y++) {
             for (z = 0; z < model.settings.minicolumnDims[1]; z++) {
-    
               this.xCoord.push(x);
               this.yCoord.push(y);
               this.zCoord.push(z);
-    
             }
-    
           }
-    
         }
         */
-
-    //if (ai >= 0) {
-    /*  x = x*20;
-     y = y*2;
-     z = z *20; */
-
     /* x = 100 +(this.xCoord[this.xCoord.length-1])
     y = 15 *(this.yCoord[this.yCoord.length-1])
     z = 11 *(this.zCoord[this.zCoord.length-1]) */
-
-    // } 
     return [xCoord, yCoord, zCoord];
 
   }
 
   getHeatColor() {
     let colour = [];
-    let colourValues0 = [];
-    let colourValues1 = [];
+    let colourValues = [];
+    //let colourValues1 = [];
     let getCoordLength = this.fillChart();
     let xCoordLen = getCoordLength[0].length;
-    for (let i = 0.1; i < 1; i += 0.01) {
+    for (let i = 0.1; i < 1; i += 0.1) {
       let colorWeight = parseFloat(i.toFixed(1));
       let h = (1.0 - colorWeight) * 240;
-      colourValues0.push("hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)");
-      colourValues0.push("hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)");
-      colourValues0.push("hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)");
-      colourValues0.push("hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)");
-      colourValues0.push("hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)");
-      colourValues0.push("hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)");
-      colourValues0.push("hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)");
-      colourValues0.push("hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)");
-      colourValues0.push("hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)");
-      colourValues0.push("hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)");
+      colourValues.push("hsl(" + h + ", 100%, 50%)");
+      /*    colourValues0.push("hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)");
+       colourValues0.push("hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)");
+        colourValues0.push("hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)");
+        colourValues0.push("hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)");
+        colourValues0.push("hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)");
+        colourValues0.push("hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)");
+        colourValues0.push("hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)");
+        colourValues0.push("hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)");
+        colourValues0.push("hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)");
+        colourValues0.push("hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)"); */
       //colourValues0 = colourValues1.concat(colourValues1, colourValues1);
     }
 
-    for (let j = 0; j < (xCoordLen / colourValues0.length); j++) {
-      for (let k = 0; k < colourValues0.length; k++) {
-        colour.push(colourValues0[k] );
+    for (let j = 0; j < (xCoordLen / colourValues.length); j++) {
+      for (let k = 0; k < colourValues.length; k++) {
+        colour.push(colourValues[k]);
       }
     }
-    console.log(colourValues1, 'colourValues1');
-    console.log(colourValues0, 'colourValues0');
+    // console.log(colourValues1, 'colourValues1');
+    console.log(colourValues, 'colourValues0');
     console.log(colour);
     return colour;
   }
