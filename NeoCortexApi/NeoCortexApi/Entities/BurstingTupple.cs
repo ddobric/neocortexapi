@@ -6,7 +6,7 @@ namespace NeoCortexApi.Entities
 {
 
     /// <summary>
-    /// Helper entity for column cursting.
+    /// Helper entity for column bursting.
     /// </summary>
     public class BurstingTupple
     {

@@ -179,21 +179,27 @@ namespace NeoCortexApi.Entities
          */
         public override String ToString()
         {
-            StringBuilder sb = new StringBuilder("synapse: [ synIndx=")
-                .Append(synapseIndex)
-                .Append(", inIndx=")
-                .Append(inputIndex)
-                .Append(", segIndx=")
-                .Append(segment.getIndex());
+            //StringBuilder sb = new StringBuilder("synapse: [ synIndx=")
+            //    .Append(synapseIndex)
+            //    .Append(", inIndx=")
+            //    .Append(inputIndex)
+            //    .Append(", segIndx=")
+            //    .Append(segment.getIndex());
 
+            //if (sourceCell != null)
+            //{
+            //    sb.Append(", srcCellIndx=").Append(sourceCell.getIndex());
+            //}
+
+            //sb.Append(" ]");
+
+            string srcCell = String.Empty;
             if (sourceCell != null)
             {
-                sb.Append(", srcCellIndx=").Append(sourceCell.getIndex());
+                srcCell = $"[SrcCell: {sourceCell.ToString()}]";
             }
 
-            sb.Append(" ]");
-
-            return sb.ToString();
+            return $"Syn: synIndx:{synapseIndex}, inpIndx:{inputIndex}, [{segment}]";
         }
 
     

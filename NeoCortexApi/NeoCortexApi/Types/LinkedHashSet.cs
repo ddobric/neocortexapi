@@ -297,8 +297,12 @@ namespace NeoCortexApi.Types
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.list.GetEnumerator();
-        }       
+        }
 
+        public override string ToString()
+        {
+            return $"{this.Count}";
+        }
     }
 
 }

@@ -95,7 +95,7 @@ namespace UnitTestsProject
         /// Result: 7-[7], 9-[none, 3], 12-[12,4], 15-[none,5], 16-[16, none].
         /// </summary>
         [TestMethod]
-        public void TestTwoSequences()
+        public void TestTwoSequences1()
         {
             List<Object> sequence0 = new List<Object>(new Object[] { new Integer(7), new Integer(12), new Integer(16) });
             List<Object> sequence1 = new List<Object>(new Object[] { new Integer(3), new Integer(4), new Integer(5) });
@@ -113,6 +113,39 @@ namespace UnitTestsProject
                     new Pair<Object, List<List<Object>>>(12, getListOfList(getList(12), getList(4))),
                     new Pair<Object, List<List<Object>>>(15, getListOfList(getList(m_None), getList(5))),
                     new Pair<Object, List<List<Object>>>(16, getListOfList(getList(16), getList(m_None))),
+            });
+
+            assertResults(group, expectedValues);
+        }
+
+
+        /// <summary>
+        /// We take two lists: 
+        /// L1 = {9,}
+        /// L2 = {3, 4}
+        /// Specified functions are x => x for list 1 and x => x * 3 for list 2.
+        /// This means, we expect following key values 
+        /// for list1: 9 
+        /// for list2  9, 12.
+        /// Sorted keys: 9, 12
+        /// Result: 9-[9, 3], 12-[none,4]
+        /// </summary>
+        [TestMethod]
+        public void TestTwoSequences2()
+        {
+            List<Object> sequence0 = new List<Object>(new Object[] { new Integer(9) });
+            List<Object> sequence1 = new List<Object>(new Object[] { new Integer(3), new Integer(4) });
+
+            List<Pair<List<Object>, Func<Object, Integer>>> list = new List<Pair<List<object>, Func<object, Integer>>>();
+            list.Add(new Pair<List<Object>, Func<Object, Integer>>(sequence0, m_Times1Fnc));
+            list.Add(new Pair<List<Object>, Func<Object, Integer>>(sequence1, m_Times3Fnc));
+            GroupBy2<Integer> group = GroupBy2<Integer>.of(list.ToArray());
+
+            List<Pair<Object, List<List<Object>>>> expectedValues = new List<Pair<Object, List<List<Object>>>>(
+            new Pair<Object, List<List<Object>>>[]
+            {
+                   new Pair<Object, List<List<Object>>>(9, getListOfList(getList(new Integer(9)), getList(3))),
+                   new Pair<Object, List<List<Object>>>(12, getListOfList(getList(m_None), getList(4))),
             });
 
             assertResults(group, expectedValues);
@@ -159,7 +192,7 @@ namespace UnitTestsProject
                        new Pair<Object,List<List<Object>>>(12, new List<List<Object>>(getListOfList(getList(12), getList(4), getList(3,3)))),
                        new Pair<Object,List<List<Object>>>(15, new List<List<Object>>(getListOfList(getList(m_None), getList(5), getList(m_None)))),
                        new Pair<Object,List<List<Object>>>(16, new List<List<Object>>(getListOfList(getList(16), getList(m_None), getList(4)))),
-                       new Pair<Object,List<List<Object>>>(16, new List<List<Object>>(getListOfList(getList(m_None), getList(m_None), getList(5)))),
+                       new Pair<Object,List<List<Object>>>(20, new List<List<Object>>(getListOfList(getList(m_None), getList(m_None), getList(5)))),
            });
 
             assertResults(group, expectedValues);
@@ -170,6 +203,9 @@ namespace UnitTestsProject
             int i = 0;
             foreach (var t in grp)
             {
+                if (t.Key is Integer)
+                    Assert.IsTrue(((Integer)t.Key).Value == (int)expectedValues[i].Key);
+    
                 int j = 0;
                 foreach (var o in t.Value)
                 {
