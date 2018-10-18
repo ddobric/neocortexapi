@@ -45,7 +45,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     let synapsColours = colourArray[1];
     //colourArray1.splice(-1, 1);
     console.log("color synapse", synapsColours);
-    
+
 
     //let graph = document.getElementById('graph');
     // to make the chart responsive 
@@ -104,13 +104,13 @@ export class AinetComponent implements OnInit, AfterViewInit {
       opacity: 1.0,
       line: {
         width: 4,
-        color: synapsColours,
-        
+        color: cellColours,
+
         //color: '#7CFC00'
         //colorscale: 'Viridis'
       }
     };
-    console.log( "second");
+    console.log("second");
     const trace2 = {
 
       /* x: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],
@@ -222,12 +222,13 @@ export class AinetComponent implements OnInit, AfterViewInit {
     };
   }
   fillChart() {
-    let model = neoCortexUtils.createModel(1, [100, 3], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
+    let model = neoCortexUtils.createModel(4, [100, 4], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
     // this.opacityValues = new Array(areaSection).fill(0.5, 0, 1200).fill(1.8, 1200, 2400);
     //this.colour = new Array(areaSection).fill('#00BFFF', 0, 800).fill('#48afd1', 800, 1600).fill('#236d86', 1600, 2499);
     let xCoord = [];
     let yCoord = [];
     let zCoord = [];
+    let numOfAreas = model.areas;
     let ai;
     for (ai = 0; ai < model.areas.length; ai++) {
       for (let i = 0; i < model.areas[ai].minicolumns[0].length; i++) {
@@ -262,7 +263,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     /* x = 100 +(this.xCoord[this.xCoord.length-1])
     y = 15 *(this.yCoord[this.yCoord.length-1])
     z = 11 *(this.zCoord[this.zCoord.length-1]) */
-    return [xCoord, yCoord, zCoord];
+    return [xCoord, yCoord, zCoord, numOfAreas];
 
   }
 
@@ -273,31 +274,69 @@ export class AinetComponent implements OnInit, AfterViewInit {
     //let colourValues1 = [];
     let getCoordLength = this.fillChart();
     let xCoordLen = getCoordLength[0].length;
+    let totalAreas = getCoordLength[3].length;
     let neuronsWeight = [0, 0.25, 0.5, 0.75, 1];
+
+    let zeroWeightNeurons = ((xCoordLen / totalAreas) / 100) * 30;
+    let quarterWeightNeurons = ((xCoordLen / totalAreas) / 100) * 7.5;
+    let halfWeightNeurons = ((xCoordLen / totalAreas) / 100) * 25;
+    let quarterThirdWeightNeurons = ((xCoordLen / totalAreas) / 100) * 7.5;
+    let oneWeightNeurons = ((xCoordLen / totalAreas) / 100) * 30;
 
     neuronsWeight.forEach(weight => {
       let h = (1.0 - weight) * 240;
-      
-        colourValues.push("hsl(" + h + ", 100%, 50%)");
-      
-     
+      if (h == 240) {
+        // colour =  Array(zeroWeightNeurons).fill("hsl(" + h + ", 100%, 50%)");
+        for (let i = 0; i < zeroWeightNeurons; i++) {
+          colourValues.push("hsl(" + h + ", 100%, 50%)")
+
+        }
+      }
+      if (h == 180) {
+        for (let j = 0; j < quarterWeightNeurons; j++) {
+          colourValues.push("hsl(" + h + ", 100%, 50%)")
+
+        }
+      }
+      if (h == 120) {
+        for (let k = 0; k < halfWeightNeurons; k++) {
+          colourValues.push("hsl(" + h + ", 100%, 50%)")
+
+        }
+      }
+      if (h == 60) {
+        for (let l = 0; l < quarterThirdWeightNeurons; l++) {
+          colourValues.push("hsl(" + h + ", 100%, 50%)")
+
+        }
+      }
+      if (h == 0) {
+        for (let m = 0; m < oneWeightNeurons; m++) {
+          colourValues.push("hsl(" + h + ", 100%, 50%)")
+
+        }
+      }
+
+      //colourValues.push("hsl(" + h + ", 100%, 50%)");
+
+
     });
 
-    for (let j = 0; j < (xCoordLen / colourValues.length); j++) {
+     for (let j = 0; j < (xCoordLen / colourValues.length); j++) {
       for (let k = 0; k < colourValues.length; k++) {
         colour.push(colourValues[k]);
-        
-      }
-    }
 
-    for (let l = 0; l < (xCoordLen / (colourValues.length+colourValues.length)); l++) {
-      for (let m = 0; m < colourValues.length; m++) {
-        synapseColour.push(colourValues[m],colourValues[m]);
       }
-    }
-    
+    } 
+
+    /*  for (let l = 0; l < (xCoordLen / (colourValues.length + colourValues.length)); l++) {
+       for (let m = 0; m < colourValues.length; m++) {
+         synapseColour.push(colourValues[m], colourValues[m]);
+       }
+     } */
+
     // console.log(colourValues1, 'colourValues1');
-    console.log(colourValues, 'colourValues0');
+    console.log(colourValues, 'colourValues new');
     console.log(colour);
     //let staticColor = ["hsl(216, 100%, 50%)","hsl(168, 100%, 50%)","hsl(120, 100%, 50%)","hsl(47, 100%, 50%)","hsl(0, 100%, 50%)"];
     return [colour, synapseColour];
