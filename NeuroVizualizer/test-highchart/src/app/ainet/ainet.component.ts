@@ -37,8 +37,15 @@ export class AinetComponent implements OnInit, AfterViewInit {
     let yCoordinates = getCoordinates[1];
     let zCoordinates = getCoordinates[2];
     console.log(xCoordinates, "X");
+    console.log(yCoordinates, "Y");
+    console.log(zCoordinates, "Z");
 
     let colourArray = this.getHeatColor();
+    let cellColours = colourArray[0];
+    let synapsColours = colourArray[1];
+    //colourArray1.splice(-1, 1);
+    console.log("color synapse", synapsColours);
+    
 
     //let graph = document.getElementById('graph');
     // to make the chart responsive 
@@ -73,7 +80,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
         opacity: 10,
         size: 18,
         // color: '#00BFFF',
-        color: colourArray,
+        color: cellColours,
         symbol: 'circle',
         line: {
           //color: '#7B68EE',
@@ -87,6 +94,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
     };
     const synapses = {
+      //the first point in the array will be joined with a line with the next one in the array ans so on...
       type: 'scatter3d',
       mode: 'lines',
       name: 'Synapses',
@@ -96,11 +104,13 @@ export class AinetComponent implements OnInit, AfterViewInit {
       opacity: 1.0,
       line: {
         width: 4,
-        color: colourArray,
+        color: synapsColours,
+        
         //color: '#7CFC00'
         //colorscale: 'Viridis'
       }
     };
+    console.log( "second");
     const trace2 = {
 
       /* x: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],
@@ -212,13 +222,13 @@ export class AinetComponent implements OnInit, AfterViewInit {
     };
   }
   fillChart() {
-    let model = neoCortexUtils.createModel(3, [100, 4], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
+    let model = neoCortexUtils.createModel(1, [100, 3], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
     // this.opacityValues = new Array(areaSection).fill(0.5, 0, 1200).fill(1.8, 1200, 2400);
     //this.colour = new Array(areaSection).fill('#00BFFF', 0, 800).fill('#48afd1', 800, 1600).fill('#236d86', 1600, 2499);
     let xCoord = [];
     let yCoord = [];
     let zCoord = [];
-    let x; let y; let z; let ai;
+    let ai;
     for (ai = 0; ai < model.areas.length; ai++) {
       for (let i = 0; i < model.areas[ai].minicolumns[0].length; i++) {
         xCoord.push(model.areas[ai].minicolumns[0][i].posX);
@@ -258,36 +268,39 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   getHeatColor() {
     let colour = [];
+    let synapseColour = [];
     let colourValues = [];
     //let colourValues1 = [];
     let getCoordLength = this.fillChart();
     let xCoordLen = getCoordLength[0].length;
-    for (let i = 0.1; i < 1; i += 0.2) {
-      let colorWeight = parseFloat(i.toFixed(1));
-      let h = (1.0 - colorWeight) * 240;
-      colourValues.push("hsl(" + h + ", 100%, 50%)");
-      /*    colourValues0.push("hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)");
-       colourValues0.push("hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)");
-        colourValues0.push("hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)");
-        colourValues0.push("hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)");
-        colourValues0.push("hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)");
-        colourValues0.push("hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)");
-        colourValues0.push("hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)");
-        colourValues0.push("hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)");
-        colourValues0.push("hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)");
-        colourValues0.push("hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)","hsl(" + h + ", 100%, 50%)"); */
-      //colourValues0 = colourValues1.concat(colourValues1, colourValues1);
-    }
+    let neuronsWeight = [0, 0.25, 0.5, 0.75, 1];
+
+    neuronsWeight.forEach(weight => {
+      let h = (1.0 - weight) * 240;
+      
+        colourValues.push("hsl(" + h + ", 100%, 50%)");
+      
+     
+    });
 
     for (let j = 0; j < (xCoordLen / colourValues.length); j++) {
       for (let k = 0; k < colourValues.length; k++) {
         colour.push(colourValues[k]);
+        
       }
     }
+
+    for (let l = 0; l < (xCoordLen / (colourValues.length+colourValues.length)); l++) {
+      for (let m = 0; m < colourValues.length; m++) {
+        synapseColour.push(colourValues[m],colourValues[m]);
+      }
+    }
+    
     // console.log(colourValues1, 'colourValues1');
     console.log(colourValues, 'colourValues0');
     console.log(colour);
-    return colour;
+    //let staticColor = ["hsl(216, 100%, 50%)","hsl(168, 100%, 50%)","hsl(120, 100%, 50%)","hsl(47, 100%, 50%)","hsl(0, 100%, 50%)"];
+    return [colour, synapseColour];
   }
 
   gradient(startColor, endColor, steps) {
