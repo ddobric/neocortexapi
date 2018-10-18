@@ -106,7 +106,12 @@ namespace NeoCortexApi.Entities
         // @Override
         public override T get(int index)
         {
-            return this.sparseMap[index];
+            T val = null;
+
+            this.sparseMap.TryGetValue(index, out val);
+
+            return val;
+            //return this.sparseMap[index];
         }
 
         /**

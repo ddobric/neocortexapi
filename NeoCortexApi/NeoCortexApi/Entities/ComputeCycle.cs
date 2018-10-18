@@ -19,13 +19,21 @@ namespace NeoCortexApi.Entities
 
         private static readonly long serialVersionUID = 1L;
 
-        //public ISet<Cell> m_activeCells = new LinkedHashSet<Cell>();
-        //public ISet<Cell> winnerCells = new LinkedHashSet<Cell>();
-
         public List<DistalDendrite> activeSegments = new List<DistalDendrite>();
+
         public List<DistalDendrite> matchingSegments = new List<DistalDendrite>();
+
         public ISet<Cell> m_predictiveCells = new LinkedHashSet<Cell>();
 
+        /// <summary>
+        /// Gets the list of active cells.
+        /// </summary>
+        public ISet<Cell> activeCells { get; set; } = new LinkedHashSet<Cell>();
+
+        /// <summary>
+        /// Gets the list of winner cells.
+        /// </summary>
+        public ISet<Cell> winnerCells { get; set; } = new LinkedHashSet<Cell>();
 
         /**
          * Constructs a new {@code ComputeCycle}
@@ -54,15 +62,7 @@ namespace NeoCortexApi.Entities
          * 
          * @return  the current {@link Set} of active cells
          */
-        public ISet<Cell> activeCells { get; set; }
 
-
-        /**
-         * Returns the current {@link Set} of winner cells
-         * 
-         * @return  the current {@link Set} of winner cells
-         */
-        public ISet<Cell> winnerCells { get; set; }
 
 
         /**
@@ -96,8 +96,8 @@ namespace NeoCortexApi.Entities
         /* (non-Javadoc)
          * @see java.lang.Object#hashCode()
          */
-      
-    public override int GetHashCode()
+
+        public override int GetHashCode()
         {
             int prime = 31;
             int result = 1;
@@ -112,8 +112,8 @@ namespace NeoCortexApi.Entities
         /* (non-Javadoc)
          * @see java.lang.Object#equals(java.lang.Object)
          */
-      
-    public bool Equals(Object obj)
+
+        public bool Equals(Object obj)
         {
             if (this == obj)
                 return true;

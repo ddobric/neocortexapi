@@ -248,5 +248,14 @@ namespace NeoCortexApi.Entities
             else
                 return 0;
         }
+
+        /// <summary>
+        /// Gets readable version of cell.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return $"Col: Indx:{this.getIndex()}, Cells:{this.cells.Length}";
+        }
     }
 }

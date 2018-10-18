@@ -66,10 +66,10 @@ namespace NeoCortexApi.Entities
         /// source cell, permanence, and index.
         /// </summary>
         /// <param name="c">Memory instance.</param>
-        /// <param name="syns">List of synapses, where th ene one has to be added.</param>
+        /// <param name="synapses">List of synapses, where one has to be added.</param>
         /// <param name="sourceCell"></param>
         /// <param name="pool"></param>
-        /// <param name="index"></param>
+        /// <param name="index">Sequence within gthe pool.</param>
         /// <param name="inputIndex"></param>
         /// <remarks>
         /// This method is only called for Proximal Synapses. For ProximalDendrites, 
@@ -77,10 +77,10 @@ namespace NeoCortexApi.Entities
         /// specifies the synapse's sequence order within the pool object, and may be referenced by that index</remarks>
         /// <returns>Instance of the new synapse.</returns>
         /// <seealso cref="Synapse"/>
-        public Synapse createSynapse(Connections c, List<Synapse> syns, Cell sourceCell, Pool pool, int index, int inputIndex)
+        public Synapse createSynapse(Connections c, List<Synapse> synapses, Cell sourceCell, Pool pool, int index, int inputIndex)
         {
             Synapse s = new Synapse(c, sourceCell, this, pool, index, inputIndex);
-            syns.Add(s);
+            synapses.Add(s);
             return s;
         }
 
@@ -115,7 +115,10 @@ namespace NeoCortexApi.Entities
                 return true;
         }
 
-
+        public override string ToString()
+        {
+            return base.ToString();
+        }
     }
 }
 

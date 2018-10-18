@@ -143,13 +143,13 @@ namespace NeoCortexApi.Utility
                 if (m_IsStarted)
                 {
                     m_IntegerGenerator.next();
-                    t = m_ElementList[m_IntegerGenerator.get()];
                 }
                 else
-                {
-                    t = m_ElementList[m_IntegerGenerator.get()];
+                {                   
                     m_IsStarted = true;
                 }
+
+                t = m_ElementList[m_IntegerGenerator.get()];
 
                 m_CurrentElement = new Pair<T, R>(t, m_Func(t));
 

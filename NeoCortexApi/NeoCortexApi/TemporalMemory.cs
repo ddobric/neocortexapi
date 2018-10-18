@@ -47,7 +47,7 @@ namespace NeoCortexApi
             SparseObjectMatrix<Column> matrix = c.getMemory() == null ?
                 new SparseObjectMatrix<Column>(c.getColumnDimensions()) :
                     c.getMemory();
-            c.setMemory(matrix);
+            c.setMemory(matrix); 
 
             int numColumns = matrix.getMaxIndex() + 1;
             c.setNumColumns(numColumns);
@@ -58,14 +58,14 @@ namespace NeoCortexApi
             Column colZero = matrix.getObject(0);
             for (int i = 0; i < numColumns; i++)
             {
-                Column column = colZero == null ?
-                    new Column(cellsPerColumn, i) : matrix.getObject(i);
+                Column column = colZero == null ? new Column(cellsPerColumn, i) : matrix.getObject(i);
                 for (int j = 0; j < cellsPerColumn; j++)
                 {
                     cells[i * cellsPerColumn + j] = column.getCell(j);
                 }
                 //If columns have not been previously configured
-                if (colZero == null) matrix.set(i, column);
+                if (colZero == null)
+                    matrix.set(i, column);
             }
             //Only the TemporalMemory initializes cells so no need to test for redundancy
             c.setCells(cells);
@@ -124,8 +124,8 @@ namespace NeoCortexApi
 
             var list = new Pair<List<object>, Func<object, object>>[3];
             list[0] = new Pair<List<object>, Func<object, object>>(Array.ConvertAll(activeColumns.ToArray(), item => (object)item).ToList(), times1Fnc);
-            list[1] = new Pair<List<object>, Func<object, object>>(Array.ConvertAll(conn.getActiveSegments().ToArray(), item => (object)item).ToList(), times1Fnc);
-            list[2] = new Pair<List<object>, Func<object, object>>(Array.ConvertAll(conn.getMatchingSegments().ToArray(), item => (object)item).ToList(), times1Fnc);
+            list[1] = new Pair<List<object>, Func<object, object>>(Array.ConvertAll(conn.getActiveSegments().ToArray(), item => (object)item).ToList(), segToCol);
+            list[2] = new Pair<List<object>, Func<object, object>>(Array.ConvertAll(conn.getMatchingSegments().ToArray(), item => (object)item).ToList(), segToCol);
 
             GroupBy2<object> grouper = GroupBy2<object>.of(list);
 
@@ -157,11 +157,14 @@ namespace NeoCortexApi
                     }
                     else
                     {
+                        //
+                        // If no active segments are detected (start of learning) then all cells are activated
+                        // and a random single cell is chosen as a winner.
+                        //
                         BurstingTupple cellsXwinnerCell = BurstColumn(conn, columnData.Column(), columnData.matchingSegments(),
                             prevActiveCells, prevWinnerCells, permanenceIncrement, permanenceDecrement, conn.getRandom(),
                                learn);
 
-                        //cycle.activeCells.addAll((List<Cell>)cellsXwinnerCell.get(0));
                         foreach (var item in cellsXwinnerCell.Cells)
                         {
                             cycle.activeCells.Add(item);
@@ -654,7 +657,8 @@ namespace NeoCortexApi
             {
                 get
                 {
-                    if (m_Pair.Value[1][0] == NeoCortexApi.Utility.GroupBy2<object>.Slot<Pair<object, List<Column>>>.empty())
+                    // if (m_Pair.Value[1][0] == NeoCortexApi.Utility.GroupBy2<object>.Slot<Pair<object, List<Column>>>.empty())
+                    if (m_Pair.Value[1][0] == null)
                         return new List<DistalDendrite>();
                     else
                         return m_Pair.Value[1].Cast<DistalDendrite>().ToList();
@@ -666,9 +670,11 @@ namespace NeoCortexApi
                     //         (List<DistalDendrite>)m_Pair.Key;
                 }
             }
+
             public List<DistalDendrite> matchingSegments()
             {
-                if (m_Pair.Value[2][0] == NeoCortexApi.Utility.GroupBy2<object>.Slot<Pair<object, List<Column>>>.empty())
+                //if (m_Pair.Value[2][0] == NeoCortexApi.Utility.GroupBy2<object>.Slot<Pair<object, List<Column>>>.empty())
+                if (m_Pair.Value[2][0] == null)
                     return new List<DistalDendrite>();
                 else
                     return m_Pair.Value[2].Cast<DistalDendrite>().ToList();

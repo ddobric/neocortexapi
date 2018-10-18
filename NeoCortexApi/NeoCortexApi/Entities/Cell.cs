@@ -139,13 +139,7 @@ namespace NeoCortexApi.Entities {
             return c.getSegments(this, doLazyCreate);
         }
 
-        /**
-         * {@inheritDoc}
-         */
-        public String toString()
-        {
-            return index.ToString();
-        }
+     
 
         ///**
         // * {@inheritDoc}
@@ -183,6 +177,11 @@ namespace NeoCortexApi.Entities {
                 return false;
             else
                 return true;
+        }
+
+        public override string ToString()
+        {
+            return $"Cell: Indx={this.getIndex()}, [{this.column}]";
         }
     }
 }

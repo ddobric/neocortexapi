@@ -1537,14 +1537,14 @@ namespace NeoCortexApi.Entities
          * Returns the number of {@link DistalDendrite}s on a given {@link Cell}
          * if specified, or the total number if the "optionalCellArg" is null.
          * 
-         * @param optionalCellArg   an optional Cell to specify the context of the segment count.
+         * @param cell   an optional Cell to specify the context of the segment count.
          * @return  either the total number of segments or the number on a specified cell.
          */
-        public int numSegments(Cell optionalCellArg)
+        public int numSegments(Cell cell)
         {
-            if (optionalCellArg != null)
+            if (cell != null)
             {
-                return getSegments(optionalCellArg).Count;
+                return getSegments(cell).Count;
             }
 
             return nextFlatIdx - freeFlatIdxs.Count;
@@ -1582,7 +1582,7 @@ namespace NeoCortexApi.Entities
             }
 
             List<DistalDendrite> retVal = null;
-            if ((retVal = segments[cell]) == null)
+            if ((segments.ContainsKey(cell)) == false)
             {
                 if (!doLazyCreate) return new List<DistalDendrite>();
                 segments.Add(cell, retVal = new List<DistalDendrite>());
@@ -1814,7 +1814,7 @@ namespace NeoCortexApi.Entities
             }
 
             LinkedHashSet<Synapse> retVal = null;
-            if ((retVal = receptorSynapses[cell]) == null)
+            if (receptorSynapses.TryGetValue(cell, out retVal) == false)
             {
                 if (!doLazyCreate) return new LinkedHashSet<Synapse>();
                 receptorSynapses.Add(cell, retVal = new LinkedHashSet<Synapse>());
@@ -1843,7 +1843,7 @@ namespace NeoCortexApi.Entities
             }
 
             List<Synapse> retVal = null;
-            if ((retVal = distalSynapses[segment]) == null)
+            if (distalSynapses.TryGetValue(segment, out retVal) == false)
             {
                 distalSynapses.Add(segment, retVal = new List<Synapse>());
             }
