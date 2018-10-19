@@ -69,11 +69,18 @@ namespace UnitTestsProject
 
             int[] previousActiveColumns = { 0 };
             int[] activeColumns = { 1 };
+
+            // Cell4 belongs to column with index 1.
             Cell cell4 = cn.getCell(4);
+
             // ISet<Cell> expectedActiveCells = Stream.of(cell4).collect(Collectors.toSet());
             ISet<Cell> expectedActiveCells = new HashSet<Cell>(new Cell[] { cell4 });           
 
+            // We add distal dentrite at column1.cell4
             DistalDendrite activeSegment = cn.createSegment(cell4);
+
+            //
+            // We add here synapses between column0.cells[0-3] and segment.
             cn.createSynapse(activeSegment, cn.getCell(0), 0.5);
             cn.createSynapse(activeSegment, cn.getCell(1), 0.5);
             cn.createSynapse(activeSegment, cn.getCell(2), 0.5);

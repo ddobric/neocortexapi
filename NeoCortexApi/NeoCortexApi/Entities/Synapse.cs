@@ -37,6 +37,10 @@ namespace NeoCortexApi.Entities
         private Pool pool;
         private int synapseIndex;
         private Integer boxedIndex;
+
+        /// <summary>
+        /// Index of pre-synaptic cell.
+        /// </summary>
         private int inputIndex;
         private double permanence;
         private bool m_Isdestroyed;
@@ -199,7 +203,7 @@ namespace NeoCortexApi.Entities
                 srcCell = $"[SrcCell: {sourceCell.ToString()}]";
             }
 
-            return $"Syn: synIndx:{synapseIndex}, inpIndx:{inputIndex}, [{segment}]";
+            return $"Syn: synIndx:{synapseIndex}, inpIndx:{inputIndex}, [{segment}], {srcCell}";
         }
 
     

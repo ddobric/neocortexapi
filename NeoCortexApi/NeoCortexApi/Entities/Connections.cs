@@ -179,7 +179,12 @@ namespace NeoCortexApi.Entities
         public Dictionary<Cell, LinkedHashSet<Synapse>> receptorSynapses;
 
         protected Dictionary<Cell, List<DistalDendrite>> segments;
+
+        /// <summary>
+        /// Synapses, which belong to some distal dentrite segment.
+        /// </summary>
         public Dictionary<Segment, List<Synapse>> distalSynapses;
+
         protected Dictionary<Segment, List<Synapse>> proximalSynapses;
 
         /** Helps index each new proximal Synapse */
@@ -192,11 +197,15 @@ namespace NeoCortexApi.Entities
         protected int nextSynapseOrdinal;
         /** Total number of synapses */
         protected long NumSynapses { get; set; }
-        /** Used for recycling {@link DistalDendrite} indexes */
-        //protected TIntArrayList freeFlatIdxs = new TIntArrayList();
+
+        /// <summary>
+        /// Used for destroying of indexes.
+        /// </summary>
         protected List<int> freeFlatIdxs = new List<int>();
 
-        /** Indexed segments by their global index (can contain nulls) */
+        /// <summary>
+        /// Indexed segments by their global index (can contain nulls)
+        /// </summary>
         protected List<DistalDendrite> m_SegmentForFlatIdx = new List<DistalDendrite>();
 
         /** Stores each cycle's most recent activity */
@@ -1333,14 +1342,27 @@ namespace NeoCortexApi.Entities
             /// <summary>
             /// numActiveConnectedSynapsesForSegment
             /// </summary>
-            public int[] numActiveConnected;
-            public int[] numActivePotential;
+            //public int[] numActiveConnected;
+            //public int[] numActivePotential;
 
-            public Activity(int[] numConnected, int[] numPotential)
+            /// <summary>
+            /// Contains the index of segment with number of synapses with permanence higher than threshold,
+            /// which makes synapse active.
+            /// </summary>
+            public Dictionary<int, int> Active = new Dictionary<int, int>();
+
+            public Dictionary<int, int> Potential = new Dictionary<int, int>();
+
+            public Activity()
             {
-                this.numActiveConnected = numConnected;
-                this.numActivePotential = numPotential;
+               
             }
+
+            //public Activity(int[] numConnected, int[] numPotential)
+            //{
+            //    this.numActiveConnected = numConnected;
+            //    this.numActivePotential = numPotential;
+            //}
         }
 
 
@@ -1365,6 +1387,9 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public Activity computeActivity(ICollection<Cell> activePresynapticCells, double connectedPermanence)
         {
+            Dictionary<int, int> active = new Dictionary<int, int>();
+            Dictionary<int, int> potential = new Dictionary<int, int>();
+
             // Every receptor synapse on active cell, which has permanence over threshold is by default connected.
             int[] numActiveConnectedSynapsesForSegment = new int[nextFlatIdx];
 
@@ -1380,17 +1405,28 @@ namespace NeoCortexApi.Entities
                 foreach (Synapse synapse in getReceptorSynapses(cell))
                 {
                     int flatIdx = synapse.getSegment().getIndex();
+                    if (potential.ContainsKey(flatIdx) == false)
+                        potential.Add(flatIdx, 0);
+
+                    potential[flatIdx] = potential[flatIdx] + 1;
+
                     ++numActivePotentialSynapsesForSegment[flatIdx];
+
                     if (synapse.getPermanence() > threshold)
                     {
+                        if (active.ContainsKey(flatIdx) == false)
+                            active.Add(flatIdx, 0);
+
+                        active[flatIdx] = active[flatIdx] + 1;
                         ++numActiveConnectedSynapsesForSegment[flatIdx];
                     }
                 }
             }
 
-            return lastActivity = new Activity(
-                numActiveConnectedSynapsesForSegment,
-                    numActivePotentialSynapsesForSegment);
+            //return lastActivity = new Activity(
+            //    numActiveConnectedSynapsesForSegment,
+            //        numActivePotentialSynapsesForSegment);
+            return new Activity() { Active = active, Potential = potential };
         }
 
         /**
@@ -1581,8 +1617,8 @@ namespace NeoCortexApi.Entities
                 segments = new Dictionary<Cell, List<DistalDendrite>>();
             }
 
-            List<DistalDendrite> retVal = null;
-            if ((segments.ContainsKey(cell)) == false)
+            List<DistalDendrite> retVal;
+            if ((segments.TryGetValue(cell, out retVal)) == false)
             {
                 if (!doLazyCreate) return new List<DistalDendrite>();
                 segments.Add(cell, retVal = new List<DistalDendrite>());

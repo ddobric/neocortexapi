@@ -117,7 +117,7 @@ namespace NeoCortexApi.Entities
 
         public override string ToString()
         {
-            return base.ToString();
+            return $"Seg: {this.index}";
         }
     }
 }

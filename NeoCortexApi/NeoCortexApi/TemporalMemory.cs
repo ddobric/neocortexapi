@@ -165,6 +165,7 @@ namespace NeoCortexApi
                             prevActiveCells, prevWinnerCells, permanenceIncrement, permanenceDecrement, conn.getRandom(),
                                learn);
 
+                        // Here we activate all cells by putting them to list of active cells.
                         foreach (var item in cellsXwinnerCell.Cells)
                         {
                             cycle.activeCells.Add(item);
@@ -203,19 +204,32 @@ namespace NeoCortexApi
         public void activateDendrites(Connections conn, ComputeCycle cycle, bool learn)
         {
             Activity activity = conn.computeActivity(cycle.activeCells, conn.getConnectedPermanence());
+            
+            var activeSegments = new List<DistalDendrite>();
+            foreach (var item in activity.Active)
+            {
+                if (item.Value >= conn.getActivationThreshold())
+                    activeSegments.Add(conn.GetSegmentForFlatIdx(item.Key));
+            }
 
             //
             // Step through all synapses on active cells and find involved segments.         
-            var activeSegments = activity.numActiveConnected.Where(
-                i => activity.numActiveConnected[i] >= conn.getActivationThreshold()).
-                    Select(indx => conn.GetSegmentForFlatIdx(indx)).ToList();
+            //var activeSegments = activity.numActiveConnected.Where(i => i >= conn.getActivationThreshold()).
+            //        Select(indx => conn.GetSegmentForFlatIdx(indx)).ToList();
+
+            var matchingSegments = new List<DistalDendrite>();
+            foreach (var item in activity.Potential)
+            {
+                if (item.Value >= conn.getMinThreshold())
+                    matchingSegments.Add(conn.GetSegmentForFlatIdx(item.Key));
+            }
 
             //
             // Step through all synapses on active cells with permanence over threshold (conencted synapses)
             // and find involved segments.         
-            var matchingSegments = activity.numActiveConnected.Where(
-                i => activity.numActivePotential[i] >= conn.getMinThreshold()).
-                    Select(indx => conn.GetSegmentForFlatIdx(indx)).ToList();
+            //var matchingSegments = activity.numActiveConnected.Where(
+            //    i => activity.numActivePotential[i] >= conn.getMinThreshold()).
+            //        Select(indx => conn.GetSegmentForFlatIdx(indx)).ToList();
 
 
             activeSegments.Sort(conn.GetComparer());
@@ -304,7 +318,7 @@ namespace NeoCortexApi
                 {
                     adaptSegment(conn, segment, prevActiveCells, permanenceIncrement, permanenceDecrement);
 
-                    int numActive = conn.getLastActivity().numActivePotential[segment.getIndex()];
+                    int numActive = conn.getLastActivity().Potential[segment.getIndex()];
                     int nGrowDesired = conn.getMaxNewSynapseCount() - numActive;
 
                     if (nGrowDesired > 0)
@@ -363,11 +377,11 @@ namespace NeoCortexApi
         {
 
             IList<Cell> cells = column.getCells();
-            Cell bestCell = null;
+            Cell leastUsedCell = null;
 
             if (matchingSegments != null && matchingSegments.Count > 0)
             {
-                int[] numPotential = conn.getLastActivity().numActivePotential;
+                //int[] numPotential = conn.getLastActivity().numActivePotential;
                 //Comparator<DistalDendrite> cmp = (dd1, dd2)->numPoten[dd1.getIndex()] - numPoten[dd2.getIndex()];
                 //DistalDendrite bestSegment = matchingSegments.stream().max(cmp).get();
                 //    matchingSegments.Where((dd1, dd2) => numPotential[dd1.getIndex()] - numPotential[dd2.getIndex()]);
@@ -379,13 +393,13 @@ namespace NeoCortexApi
                     matchingSegments[i].getIndex();
                 }
 
-                bestCell = bestSegment.getParentCell();
+                leastUsedCell = bestSegment.getParentCell();
 
                 if (learn)
                 {
                     adaptSegment(conn, bestSegment, prevActiveCells, permanenceIncrement, permanenceDecrement);
 
-                    int nGrowDesired = conn.getMaxNewSynapseCount() - numPotential[bestSegment.getIndex()];
+                    int nGrowDesired = conn.getMaxNewSynapseCount() - conn.getLastActivity().Potential[bestSegment.getIndex()];
 
                     if (nGrowDesired > 0)
                     {
@@ -396,20 +410,20 @@ namespace NeoCortexApi
             }
             else
             {
-                bestCell = leastUsedCell(conn, cells, random);
+                leastUsedCell = this.leastUsedCell(conn, cells, random);
                 if (learn)
                 {
                     int nGrowExact = Math.Min(conn.getMaxNewSynapseCount(), prevWinnerCells.Count);
                     if (nGrowExact > 0)
                     {
-                        DistalDendrite bestSegment = conn.createSegment(bestCell);
+                        DistalDendrite bestSegment = conn.createSegment(leastUsedCell);
                         growSynapses(conn, prevWinnerCells, bestSegment, conn.getInitialPermanence(),
                             nGrowExact, random);
                     }
                 }
             }
 
-            return new BurstingTupple(cells, bestCell);
+            return new BurstingTupple(cells, leastUsedCell);
         }
 
 
@@ -421,13 +435,13 @@ namespace NeoCortexApi
         /// <returns></returns>
         private DistalDendrite getSegmentwithHighesPotential(Connections conn, List<DistalDendrite> matchingSegments)
         {
-            int[] numActPotential = conn.getLastActivity().numActivePotential;
+           // int[] numActPotential = conn.getLastActivity().numActivePotential;
 
             DistalDendrite maxSeg = matchingSegments[0];
 
             for (int i = 0; i < matchingSegments.Count - 1; i++)
             {
-                if (numActPotential[matchingSegments[i + 1].getIndex()] > numActPotential[matchingSegments[i].getIndex()])
+                if (conn.getLastActivity().Potential[matchingSegments[i + 1].getIndex()] > conn.getLastActivity().Potential[matchingSegments[i].getIndex()])
                     maxSeg = matchingSegments[i + 1];
             }
             return maxSeg;
