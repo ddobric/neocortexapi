@@ -73,10 +73,6 @@ namespace NeoCortexApi.Entities
         {
             get
             {
-                return m_predictiveCells;
-            }
-            set
-            {
                 if (m_predictiveCells == null || m_predictiveCells.Count == 0)
                 {
                     Cell previousCell = null;
@@ -90,6 +86,8 @@ namespace NeoCortexApi.Entities
                         }
                     }
                 }
+
+                return m_predictiveCells;
             }
         }
 
