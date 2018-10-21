@@ -21,14 +21,12 @@ namespace NeoCortexApi.Utility
     public class GroupBy2<R> : IEnumerable<Pair<Object, List<List<R>>>>, IEnumerator<Pair<Object, List<List<R>>>> where R : class//, Generator<Tuple> 
                                                                                                                                  //  where R : IComparable<R>
     {
-        /** serial version */
-        private static long serialVersionUID = 1L;
 
         /** stores the user inputted pairs */
         private Pair<List<Object>, Func<Object, R>>[] entries;
 
         /** stores the {@link GroupBy} {@link Generator}s created from the supplied lists */
-        private List<GroupBy<Object, R>> generatorList;
+        //private List<GroupBy<Object, R>> generatorList;
 
         /** the current interation's minimum key value */
         //private R minKeyVal;
@@ -39,7 +37,7 @@ namespace NeoCortexApi.Utility
         ///////////////////////
         private bool[] advanceList;
 
-        private Slot<Pair<object, R>>[] nextList;
+        // private Slot<Pair<object, R>>[] nextList;
 
         public Pair<object, List<List<R>>> Current { get; set; }
 
@@ -118,7 +116,7 @@ namespace NeoCortexApi.Utility
             return new GroupBy2<R>(entries);
         }
 
-        private List<R> m_Keys = new List<R>();
+        private List<R> m_Keys;
 
         private int m_CurrentKey = 0;
 
@@ -128,13 +126,15 @@ namespace NeoCortexApi.Utility
         /// </summary>
         private void reset()
         {
-            generatorList = new List<GroupBy<Object, R>>();
+            //generatorList = new List<GroupBy<Object, R>>();
+            m_Keys = new List<R>();
 
             int i = 0;
+
             foreach (var item in entries)
             {
-                generatorList.Add(GroupBy<Object, R>.From(item.Key, item.Value));
-                generatorList[i].MoveNext();
+                //generatorList.Add(GroupBy<Object, R>.From(item.Key, item.Value));
+                //generatorList[i].MoveNext();
 
                 foreach (var item1 in item.Key)
                 {
@@ -147,49 +147,25 @@ namespace NeoCortexApi.Utility
 
             m_Keys = m_Keys.OrderBy(k => k).ToList();
 
-            advanceList = new bool[entries.Length];
+            //   advanceList = new bool[entries.Length];
 
-            ArrayUtils.Fill(advanceList, true);
+            //  ArrayUtils.Fill(advanceList, true);
 
-            nextList = new Slot<Pair<Object, R>>[entries.Length];
+            // nextList = new Slot<Pair<Object, R>>[entries.Length];
 
-            ArrayUtils.Fill(nextList, Slot<Pair<Object, R>>.NONE);
+            // ArrayUtils.Fill(nextList, Slot<Pair<Object, R>>.NONE);
         }
-
-        //private bool m_IsLastElementReached = false;
 
         public bool MoveNext()
         {
-            //if (m_IsLastElementReached)
-            //    return false;
-
-            if (generatorList == null)
+            if (m_Keys == null)
             {
                 reset();
             }
-
-            //for (int i = 0; i < entries.Length; i++)
-            //{
-            //    if (advanceList[i])
-            //    {
-            //        // Indicates that we are on the end of the pair list.
-            //        // if (generatorList[i].NextPair == null)
-            //        //  nextList[i] = Slot<Pair<object, R>>.of(null);
-            //        // Add current pair.
-            //        //else
-            //        nextList[i] = Slot<Pair<object, R>>.of((Pair<object, R>)(object)generatorList[i].Current);
-            //    }
-            //}
-
-            //R minKeyVal = getNextMinKey();
             if (m_CurrentKey >= m_Keys.Count)
                 return false;
 
             R minKeyVal = m_Keys[m_CurrentKey++];
-            //if (minKeyVal == null)
-            //{
-            //    m_IsLastElementReached = true;            
-            //}
 
             this.Current = (Pair<Object, List<List<R>>>)next(minKeyVal);
 
@@ -207,76 +183,20 @@ namespace NeoCortexApi.Utility
         //@Override
         private Pair<object, List<List<R>>> next(R minKeyVal)
         {
-            //List<Pair<R, List<List<R>>>> objs = new List<Pair<R, List<List<R>>>>();
-
-            // If minKeyVal is null, means we have reached end of the list and KEY of current any element  in gnerator list can be returned.
             Pair<object, List<List<R>>> retVal = new Pair<object, List<List<R>>>(minKeyVal, new List<List<R>>());
 
             for (int i = 0; i < entries.Length; i++)
             {
                 List<R> list;
                 list = getEntries(i, minKeyVal);
-                //R key = getKeyFromList(i, minKeyVal);
-                //if (key != null)
-                //{
-                //    list = getEntries(i, minKeyVal);
-                //}
-                //else
-                //{
-                //    list = new List<R>();
-                //}
-                
+
                 retVal.Value.Add(list);
-                /*
-                //if (minKeyVal != null)
-                //{
-                R key = getKeyFromList(i, minKeyVal);
-                if (key != null)
-                //if (isEligibleList(i, minKeyVal))
-                {
-                    //list.Add((R)nextList[i].get().Key);
-                    list.Add(key);
 
-                    drainKey(list, i, minKeyVal);
-                }
-                else
-                {
-                    list.Add(default(R));
-                }*/
-
-                //if (generatorList[i].NextPair == null)
-                //    advanceList[i] = false;
-                //else
-                //    advanceList[i] = true;
-                //}
-                //else
-                //{
-                //    // Append last record.
-                //    list.Add(generatorList[i].Current.Value);
-                //}
             }
 
             return retVal;
         }
 
-
-
-        /**
-         * Returns the next smallest generated key.
-         * 
-         * @return  the next smallest generated key.
-         */
-        //private R getNextMinKey()
-        //{
-        //    // Get min key of all of none-null slots.
-        //    return nextList.Where(slot => slot != null).Min(slot => slot.get() == null ? null : slot.get().Value);
-
-        //    // return minKeyVal != null;
-        //    //minKeyVal = nextList.Min(slot => slot.get() == null? null : slot.get().Value);
-
-        //    //return minSlot.isPresent();
-        //    //return !EqualityComparer<R>.Default.Equals(minKeyVal, default(R));
-        //}
 
         private R getKeyFromList(int listIdx, Object targetKey)
         {
@@ -305,56 +225,6 @@ namespace NeoCortexApi.Utility
             return list;
         }
 
-        /**
-         * Returns a flag indicating whether the list currently pointed
-         * to by the specified index contains a key which matches the
-         * specified "targetKey".
-         * 
-         * @param listIdx       the index pointing to the {@link GroupBy} being
-         *                      processed.
-         * @param targetKey     the specified key to match.
-         * @return  true if so, false if not
-         */
-        //private bool isEligibleList(int listIdx, Object targetKey)
-        //{
-        //    //return nextList[listIdx].isPresent() && nextList[listIdx].get().Value.Equals((R)targetKey);
-
-        //    return nextList[listIdx].isPresent() && EqualityComparer<R>.Default.Equals(nextList[listIdx].get().Value, (R)targetKey);
-        //}
-
-        /**
-         * Each input grouper may generate multiple members which match the
-         * specified "targetVal". This method guarantees that all members 
-         * are added to the list residing at the specified Tuple index.
-         * 
-         * @param retVal        the Tuple being added to
-         * @param listIdx       the index specifying the list within the 
-         *                      tuple which will have members added to it
-         * @param targetVal     the value to match in order to be an added member
-         */
-        // @SuppressWarnings("unchecked")
-        private void drainKey(List<R> list, int listIdx, R targetVal)
-        {
-            while (generatorList[listIdx].NextPair != null)
-            //while (generatorList[listIdx].Current != null)
-            {
-                if (EqualityComparer<R>.Default.Equals(generatorList[listIdx].NextPair.Value, targetVal))
-                {
-                    var elm = generatorList[listIdx].Current;
-                    //nextList[listIdx] = Slot<Pair<object, R>>.of((Pair<object, R>)(object)elm);
-                    //list.Add((R)nextList[listIdx].get().Key);
-                    list.Add((R)generatorList[listIdx].Current.Key);
-                    generatorList[listIdx].MoveNext();
-                }
-                else
-                {
-                    //nextList[listIdx] = Slot<Pair<object, R>>.empty();
-                    generatorList[listIdx].MoveNext();
-                    break;
-                }
-            }
-        }
-
 
 
         public void Reset()
@@ -366,7 +236,6 @@ namespace NeoCortexApi.Utility
         {
 
         }
-
 
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -391,8 +260,7 @@ namespace NeoCortexApi.Utility
         public class Slot<T> : Slot, IEquatable<object>, IComparer<T>, IComparable<T>
             where T : class
         {
-            /** Default Serial */
-            private static readonly long serialVersionUID = 1L;
+
 
             /**
          * Common instance for {@code empty()}.
@@ -488,7 +356,6 @@ namespace NeoCortexApi.Utility
             {
                 return value != null;
             }
-
 
 
 

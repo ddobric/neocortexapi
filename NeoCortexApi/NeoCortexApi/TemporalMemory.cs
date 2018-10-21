@@ -136,7 +136,7 @@ namespace NeoCortexApi
             {
                 columnData = columnData.set(t);
 
-                if (columnData.isNotNone(cIndexofACTIVE_COLUMNS))
+                if (columnData.isNotEmpty(cIndexofACTIVE_COLUMNS))
                 {
                     //if (!columnData.activeSegments().isEmpty())
                     if (columnData.activeSegments != null && columnData.activeSegments.Count > 0)
@@ -709,7 +709,7 @@ namespace NeoCortexApi
              * @param memberIndex   the index of the tuple to assess.
              * @return  true if <em><b>not</b></em> none, false if it <em><b>is none</b></em>.
              */
-            public bool isNotNone(int memberIndex)
+            public bool isNotEmpty(int memberIndex)
             {
                 if (m_Pair.Value.Count == 0 ||
                     m_Pair.Value[memberIndex].Count == 0 ||
