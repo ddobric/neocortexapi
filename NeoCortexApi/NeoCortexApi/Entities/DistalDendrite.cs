@@ -120,7 +120,7 @@ namespace NeoCortexApi.Entities
 
         public override String ToString()
         {
-            return index.ToString();
+            return $"DistalDendrite: Indx:{this.getIndex()}";
         }
 
         /* (non-Javadoc)

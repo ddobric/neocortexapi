@@ -207,16 +207,27 @@ namespace NeoCortexApi.Utility
         //@Override
         private Pair<object, List<List<R>>> next(R minKeyVal)
         {
-            List<Pair<R, List<List<R>>>> objs = new List<Pair<R, List<List<R>>>>();
+            //List<Pair<R, List<List<R>>>> objs = new List<Pair<R, List<List<R>>>>();
 
             // If minKeyVal is null, means we have reached end of the list and KEY of current any element  in gnerator list can be returned.
-            Pair<object, List<List<R>>> retVal = new Pair<object, List<List<R>>>(minKeyVal != null ? minKeyVal : generatorList.First().Current.Key, new List<List<R>>());
+            Pair<object, List<List<R>>> retVal = new Pair<object, List<List<R>>>(minKeyVal, new List<List<R>>());
 
             for (int i = 0; i < entries.Length; i++)
             {
-                List<R> list = new List<R>();
+                List<R> list;
+                list = getEntries(i, minKeyVal);
+                //R key = getKeyFromList(i, minKeyVal);
+                //if (key != null)
+                //{
+                //    list = getEntries(i, minKeyVal);
+                //}
+                //else
+                //{
+                //    list = new List<R>();
+                //}
+                
                 retVal.Value.Add(list);
-
+                /*
                 //if (minKeyVal != null)
                 //{
                 R key = getKeyFromList(i, minKeyVal);
@@ -231,7 +242,7 @@ namespace NeoCortexApi.Utility
                 else
                 {
                     list.Add(default(R));
-                }
+                }*/
 
                 //if (generatorList[i].NextPair == null)
                 //    advanceList[i] = false;
@@ -255,17 +266,17 @@ namespace NeoCortexApi.Utility
          * 
          * @return  the next smallest generated key.
          */
-        private R getNextMinKey()
-        {
-            // Get min key of all of none-null slots.
-            return nextList.Where(slot => slot != null).Min(slot => slot.get() == null ? null : slot.get().Value);
+        //private R getNextMinKey()
+        //{
+        //    // Get min key of all of none-null slots.
+        //    return nextList.Where(slot => slot != null).Min(slot => slot.get() == null ? null : slot.get().Value);
 
-            // return minKeyVal != null;
-            //minKeyVal = nextList.Min(slot => slot.get() == null? null : slot.get().Value);
+        //    // return minKeyVal != null;
+        //    //minKeyVal = nextList.Min(slot => slot.get() == null? null : slot.get().Value);
 
-            //return minSlot.isPresent();
-            //return !EqualityComparer<R>.Default.Equals(minKeyVal, default(R));
-        }
+        //    //return minSlot.isPresent();
+        //    //return !EqualityComparer<R>.Default.Equals(minKeyVal, default(R));
+        //}
 
         private R getKeyFromList(int listIdx, Object targetKey)
         {
@@ -279,6 +290,21 @@ namespace NeoCortexApi.Utility
             return null;
         }
 
+
+        private List<R> getEntries(int listIdx, Object targetKey)
+        {
+            List<R> list = new List<R>();
+
+            foreach (var elem in entries[listIdx].Key)
+            {
+                var key = entries[listIdx].Value(elem);
+                if (EqualityComparer<R>.Default.Equals(key, (R)targetKey))
+                    list.Add((R)elem);
+            }
+
+            return list;
+        }
+
         /**
          * Returns a flag indicating whether the list currently pointed
          * to by the specified index contains a key which matches the
@@ -289,12 +315,12 @@ namespace NeoCortexApi.Utility
          * @param targetKey     the specified key to match.
          * @return  true if so, false if not
          */
-        private bool isEligibleList(int listIdx, Object targetKey)
-        {
-            //return nextList[listIdx].isPresent() && nextList[listIdx].get().Value.Equals((R)targetKey);
+        //private bool isEligibleList(int listIdx, Object targetKey)
+        //{
+        //    //return nextList[listIdx].isPresent() && nextList[listIdx].get().Value.Equals((R)targetKey);
 
-            return nextList[listIdx].isPresent() && EqualityComparer<R>.Default.Equals(nextList[listIdx].get().Value, (R)targetKey);
-        }
+        //    return nextList[listIdx].isPresent() && EqualityComparer<R>.Default.Equals(nextList[listIdx].get().Value, (R)targetKey);
+        //}
 
         /**
          * Each input grouper may generate multiple members which match the
