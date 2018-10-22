@@ -23,7 +23,7 @@ namespace NeoCortexApi
 
         private static readonly double EPSILON = 0.00001;
 
-        private static readonly int ACTIVE_COLUMNS = 1;
+        private static readonly int cIndexofACTIVE_COLUMNS = 0;
 
         /**
          * Uses the specified {@link Connections} object to Build the structural 
@@ -47,7 +47,7 @@ namespace NeoCortexApi
             SparseObjectMatrix<Column> matrix = c.getMemory() == null ?
                 new SparseObjectMatrix<Column>(c.getColumnDimensions()) :
                     c.getMemory();
-            c.setMemory(matrix); 
+            c.setMemory(matrix);
 
             int numColumns = matrix.getMaxIndex() + 1;
             c.setNumColumns(numColumns);
@@ -136,7 +136,7 @@ namespace NeoCortexApi
             {
                 columnData = columnData.set(t);
 
-                if (columnData.isNotNone(ACTIVE_COLUMNS))
+                if (columnData.isNotEmpty(cIndexofACTIVE_COLUMNS))
                 {
                     //if (!columnData.activeSegments().isEmpty())
                     if (columnData.activeSegments != null && columnData.activeSegments.Count > 0)
@@ -204,7 +204,7 @@ namespace NeoCortexApi
         public void activateDendrites(Connections conn, ComputeCycle cycle, bool learn)
         {
             Activity activity = conn.computeActivity(cycle.activeCells, conn.getConnectedPermanence());
-            
+
             var activeSegments = new List<DistalDendrite>();
             foreach (var item in activity.Active)
             {
@@ -435,7 +435,7 @@ namespace NeoCortexApi
         /// <returns></returns>
         private DistalDendrite getSegmentwithHighesPotential(Connections conn, List<DistalDendrite> matchingSegments)
         {
-           // int[] numActPotential = conn.getLastActivity().numActivePotential;
+            // int[] numActPotential = conn.getLastActivity().numActivePotential;
 
             DistalDendrite maxSeg = matchingSegments[0];
 
@@ -672,12 +672,13 @@ namespace NeoCortexApi
                 get
                 {
                     // if (m_Pair.Value[1][0] == NeoCortexApi.Utility.GroupBy2<object>.Slot<Pair<object, List<Column>>>.empty())
-                    if (m_Pair.Value[1][0] == null)
+                    if (m_Pair.Value.Count == 0 ||
+                        m_Pair.Value[1].Count == 0)
                         return new List<DistalDendrite>();
                     else
                         return m_Pair.Value[1].Cast<DistalDendrite>().ToList();
 
-                   
+
 
                     //return ((List<Column>)m_Pair.get(2)).get(0).equals(Slot<Pair<object, List<Column>>>.empty()) ?
                     //     Collections.emptyList() :
@@ -688,7 +689,8 @@ namespace NeoCortexApi
             public List<DistalDendrite> matchingSegments()
             {
                 //if (m_Pair.Value[2][0] == NeoCortexApi.Utility.GroupBy2<object>.Slot<Pair<object, List<Column>>>.empty())
-                if (m_Pair.Value[2][0] == null)
+                if (m_Pair.Value.Count == 0 ||
+                    m_Pair.Value[2].Count == 0)
                     return new List<DistalDendrite>();
                 else
                     return m_Pair.Value[2].Cast<DistalDendrite>().ToList();
@@ -707,14 +709,14 @@ namespace NeoCortexApi
              * @param memberIndex   the index of the tuple to assess.
              * @return  true if <em><b>not</b></em> none, false if it <em><b>is none</b></em>.
              */
-            public bool isNotNone(int memberIndex)
+            public bool isNotEmpty(int memberIndex)
             {
-                if (m_Pair.Value[memberIndex][0] == NeoCortexApi.Utility.GroupBy2<object>.Slot<Pair<object, List<Column>>>.empty())
+                if (m_Pair.Value.Count == 0 ||
+                    m_Pair.Value[memberIndex].Count == 0 ||
+                    m_Pair.Value[memberIndex][0] == NeoCortexApi.Utility.GroupBy2<object>.Slot<Pair<object, List<Column>>>.empty() )
                     return false;
                 else
                     return true;
-
-                  //  return !((List<Column>)t.get(memberIndex)).get(0).equals(NONE);
             }
         }
     }

@@ -92,7 +92,7 @@ namespace UnitTestsProject
         /// for list1: 7, 12, 16 and
         /// for list2  9, 12, 15.
         /// Sorted keys: 7, 9, 12, 15, 16.
-        /// Result: 7-[7], 9-[none, 3], 12-[12,4], 15-[none,5], 16-[16, none].
+        /// Result: 7-[7,none], 9-[none, 3], 12-[12,4], 15-[none,5], 16-[16, none].
         /// </summary>
         [TestMethod]
         public void TestTwoSequences1()
