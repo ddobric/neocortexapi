@@ -5,11 +5,13 @@ using System.Text;
 
 namespace NeoCortexApi.Types
 {
-
+    [Serializable]
     public class LinkedHashSet<T> : ISet<T>
     {
-
+        [field: NonSerializedAttribute()]
         private readonly IDictionary<T, LinkedListNode<T>> dict;
+
+        [field: NonSerializedAttribute()]
         private readonly LinkedList<T> list;
 
         public LinkedHashSet(int initialCapacity)

@@ -212,7 +212,7 @@ namespace UnitTestsProject
                     for (int k = 0; k < o.Count; k++)
                     {
                         if (o[k] is Integer)
-                            Assert.IsTrue(o[k] == (Integer)expectedValues[i].Value[j][k]);
+                            Assert.IsTrue((Integer)o[k] == (Integer)expectedValues[i].Value[j][k]);
                         else
                             Assert.IsTrue(o[k] == (Object)expectedValues[i].Value[j][k]);
                     }

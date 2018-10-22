@@ -34,12 +34,13 @@ using NeoCortexApi.Entities;
 
 namespace NeoCortexApi.Entities {
 
- 
+
 
     /// <summary>
     /// Defines a single cell (neuron).
     /// </summary>
-    public class  Cell   : IEquatable<Cell> {
+    [Serializable]
+    public class  Cell   : IEquatable<Cell>, IComparable<Cell> {
         /** keep it simple */
         private static readonly long serialVersionUID = 1L;
 
@@ -182,6 +183,22 @@ namespace NeoCortexApi.Entities {
         public override string ToString()
         {
             return $"Cell: Indx={this.getIndex()}, [{this.column}]";
+        }
+
+
+        /// <summary>
+        /// Compares two cells.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public int CompareTo(Cell other)
+        {
+            if (this.index < other.index)
+                return -1;
+            else if (this.index > other.index)
+                return 1;
+            else
+                return 0;
         }
     }
 }

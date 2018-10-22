@@ -122,12 +122,12 @@ namespace NeoCortexApi
 
             Func<object, Column> times1Fnc = x => (Column)x;
 
-            var list = new Pair<List<object>, Func<object, object>>[3];
-            list[0] = new Pair<List<object>, Func<object, object>>(Array.ConvertAll(activeColumns.ToArray(), item => (object)item).ToList(), times1Fnc);
-            list[1] = new Pair<List<object>, Func<object, object>>(Array.ConvertAll(conn.getActiveSegments().ToArray(), item => (object)item).ToList(), segToCol);
-            list[2] = new Pair<List<object>, Func<object, object>>(Array.ConvertAll(conn.getMatchingSegments().ToArray(), item => (object)item).ToList(), segToCol);
+            var list = new Pair<List<object>, Func<object, Column>>[3];
+            list[0] = new Pair<List<object>, Func<object, Column>>(Array.ConvertAll(activeColumns.ToArray(), item => (object)item).ToList(), times1Fnc);
+            list[1] = new Pair<List<object>, Func<object, Column>>(Array.ConvertAll(conn.getActiveSegments().ToArray(), item => (object)item).ToList(), segToCol);
+            list[2] = new Pair<List<object>, Func<object, Column>>(Array.ConvertAll(conn.getMatchingSegments().ToArray(), item => (object)item).ToList(), segToCol);
 
-            GroupBy2<object> grouper = GroupBy2<object>.of(list);
+            GroupBy2<Column> grouper = GroupBy2<Column>.of(list);
 
             double permanenceIncrement = conn.getPermanenceIncrement();
             double permanenceDecrement = conn.getPermanenceDecrement();
@@ -136,7 +136,7 @@ namespace NeoCortexApi
             {
                 columnData = columnData.set(t);
 
-                if (columnData.isNotEmpty(cIndexofACTIVE_COLUMNS))
+                if (columnData.isNotNone(cIndexofACTIVE_COLUMNS))
                 {
                     //if (!columnData.activeSegments().isEmpty())
                     if (columnData.activeSegments != null && columnData.activeSegments.Count > 0)
@@ -646,12 +646,12 @@ namespace NeoCortexApi
             /** Default Serial */
             private static readonly long serialVersionUID = 1L;
 
-            private Pair<object, List<List<object>>> m_Pair;
+            private Pair<Column, List<List<Object>>> m_Pair;
 
             public ColumnData() { }
 
 
-            public ColumnData set(Pair<object, List<List<object>>> t)
+            public ColumnData set(Pair<Column, List<List<Object>>> t)
             {
                 m_Pair = t;
 
@@ -709,11 +709,11 @@ namespace NeoCortexApi
              * @param memberIndex   the index of the tuple to assess.
              * @return  true if <em><b>not</b></em> none, false if it <em><b>is none</b></em>.
              */
-            public bool isNotEmpty(int memberIndex)
+            public bool isNotNone(int memberIndex)
             {
                 if (m_Pair.Value.Count == 0 ||
-                    m_Pair.Value[memberIndex].Count == 0 ||
-                    m_Pair.Value[memberIndex][0] == NeoCortexApi.Utility.GroupBy2<object>.Slot<Pair<object, List<Column>>>.empty() )
+                    m_Pair.Value[memberIndex].Count == 0 )
+                   // m_Pair.Value[memberIndex][0] == NeoCortexApi.Utility.GroupBy2<Column>.Slot<Pair<object, List<Column>>>.empty() )
                     return false;
                 else
                     return true;
