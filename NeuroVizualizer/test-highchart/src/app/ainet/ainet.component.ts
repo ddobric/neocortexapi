@@ -3,6 +3,8 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import * as Plotlyjs from 'plotly.js/dist/plotly';
 import { neoCortexUtils } from '../neocortexutils';
 import { color } from 'd3';
+import { environment as env } from "../environments/environment";
+
 
 @Component({
   selector: 'app-ainet',
@@ -42,6 +44,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
     let colourArray = this.getHeatColor();
     let cellColours = colourArray[0];
+    let weights = colourArray[1];
     //colourArray1.splice(-1, 1);
 
     //let graph = document.getElementById('graph');
@@ -62,7 +65,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
       x: xCoordinates,
       y: yCoordinates,
       z: zCoordinates,
-      name: 'Artificial neural network',
+      text: weights,
+      name: 'Neuron',
       mode: 'markers',
 
       //connectgaps: true,
@@ -74,15 +78,14 @@ export class AinetComponent implements OnInit, AfterViewInit {
         color: '#7CFC00'
       }, */
       marker: {
-        opacity: 10,
+        opacity: 1,
         size: 18,
         // color: '#00BFFF',
         color: cellColours,
         symbol: 'circle',
         line: {
           //color: '#7B68EE',
-          // color: '#7B68EE',
-          width: 2
+          // width:10
         },
 
       },
@@ -94,10 +97,11 @@ export class AinetComponent implements OnInit, AfterViewInit {
       //the first point in the array will be joined with a line with the next one in the array ans so on...
       type: 'scatter3d',
       mode: 'lines',
-      name: 'Synapses',
+      name: 'Synapse',
       x: xCoordinates,
       y: yCoordinates,
       z: zCoordinates,
+      text: weights,
       opacity: 1.0,
       line: {
         width: 4,
@@ -172,7 +176,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       scene: {
         aspectmode: "manual",
         aspectratio: {
-          x: 7, y: 1, z: 0.5,
+          x: env.xRatio, y: env.yRatio, z: env.zRatio,
         }
       },
 
@@ -219,7 +223,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     };
   }
   fillChart() {
-    let model = neoCortexUtils.createModel(3, [100, 6], 10); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
+    let model = neoCortexUtils.createModel(2, [100, 6], 10); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
     // this.opacityValues = new Array(areaSection).fill(0.5, 0, 1200).fill(1.8, 1200, 2400);
     //this.colour = new Array(areaSection).fill('#00BFFF', 0, 800).fill('#48afd1', 800, 1600).fill('#236d86', 1600, 2499);
     let xCoord = [];
@@ -267,33 +271,70 @@ export class AinetComponent implements OnInit, AfterViewInit {
   getHeatColor() {
 
     let colourScheme = [];
+    let colourCodingSegment = [];
     let colourCoding = [];
-    
+    let weights = [];
+    let neuronsWeightSegment = [];
+    let allNeuronsWeight = [];
+
     let getCoordLength = this.fillChart();
     let xCoordLen = getCoordLength[0].length;
     let totalAreas = getCoordLength[3].length;
 
-    for (let neuronWeight = 0; neuronWeight < 1; neuronWeight = neuronWeight + (1 / (xCoordLen / totalAreas)) ) {
-      let H = (1.0 - neuronWeight) * 240;
-          colourScheme.push("hsl(" + H + ", 100%, 50%)")
-    }
-    for (let hsl = 0; hsl < (xCoordLen / colourScheme.length); hsl++) {
-      for (let colourCode = 0; colourCode < colourScheme.length; colourCode++) {
-        colourCoding.push(colourScheme[colourCode]);
+    /*   for (let neuronWeight = 0; neuronWeight < 1; neuronWeight = neuronWeight + (1 / (xCoordLen / totalAreas)) ) {
+        let H = (1.0 - neuronWeight) * 240;
+            colourScheme.push("hsl(" + H + ", 100%, 50%)")
+      }
+      for (let hsl = 0; hsl < (xCoordLen / colourScheme.length); hsl++) {
+        for (let colourCode = 0; colourCode < colourScheme.length; colourCode++) {
+          colourCoding.push(colourScheme[colourCode]);
+  
+        }
+      } */
+    for (let nW = 0; nW < 1; nW = nW + (1 / (env.numberOfColours))) {
+      let H = (1.0 - nW) * 240;
 
+      colourScheme = Array((xCoordLen / totalAreas) / (env.numberOfColours)).fill("hsl(" + H + ", 100%, 50%)");
+      weights = Array((xCoordLen / totalAreas) / (env.numberOfColours)).fill(nW);
+
+      for (let hsl = 0; hsl < (colourScheme.length); hsl++) {
+        colourCodingSegment.push(colourScheme[hsl]);
+
+      }
+
+      for (let w = 0; w < (weights.length); w++) {
+       // allNeuronsWeight.push(neuronsWeightSegment[w]);
+        neuronsWeightSegment.push(weights[w]);
       }
     }
 
+    for (let i = 0; i < totalAreas; i++) {
+      for (let j = 0; j < colourCodingSegment.length; j++) {
+        colourCoding.push(colourCodingSegment[j]);
+      }
+
+      for (let k = 0; k < totalAreas; k++) {
+        for (let l = 0; l < neuronsWeightSegment.length; l++) {
+          allNeuronsWeight.push(neuronsWeightSegment[l]);
+        }
+
+      }
+
+
+    }
+    console.log("neuronsWeightArray", allNeuronsWeight);
+
+    console.log("ColorCodingSegment", colourCodingSegment);
     console.log("ColorCoding", colourCoding);
-   /*  let neuronsWeight = [0, 0.25, 0.5, 0.75, 1];
+    /*  let neuronsWeight = [0, 0.25, 0.5, 0.75, 1];
+ 
+     let zeroWeightNeurons = ((xCoordLen / totalAreas) / 100) * 23;
+     let quarterWeightNeurons = ((xCoordLen / totalAreas) / 100) * 8;
+     let halfWeightNeurons = ((xCoordLen / totalAreas) / 100) * 14;
+     let quarterThirdWeightNeurons = ((xCoordLen / totalAreas) / 100) * 24;
+     let oneWeightNeurons = ((xCoordLen / totalAreas) / 100) * 28; */
 
-    let zeroWeightNeurons = ((xCoordLen / totalAreas) / 100) * 23;
-    let quarterWeightNeurons = ((xCoordLen / totalAreas) / 100) * 8;
-    let halfWeightNeurons = ((xCoordLen / totalAreas) / 100) * 14;
-    let quarterThirdWeightNeurons = ((xCoordLen / totalAreas) / 100) * 24;
-    let oneWeightNeurons = ((xCoordLen / totalAreas) / 100) * 28; */
 
-    
 
     /* let segmentA = Math.round(zeroWeightNeurons / (240 / 5));
     let segmentB = Math.round(quarterWeightNeurons / (240 / 5));;
@@ -355,44 +396,44 @@ export class AinetComponent implements OnInit, AfterViewInit {
         } 
         console.log("segmentWiseColors", segmentWiseColors);
         */
-       
 
-   /*  neuronsWeight.forEach(weight => {
-      let h = (1.0 - weight) * 240;
-      if (h == 240) {
-        // colour =  Array(zeroWeightNeurons).fill("hsl(" + h + ", 100%, 50%)");
-        for (let i = 0; i < zeroWeightNeurons; i++) {
-          colourCoding.push("hsl(" + h + ", 100%, 50%)")
 
-        }
-      }
-      if (h == 180) {
-        for (let j = 0; j < quarterWeightNeurons; j++) {
-          colourCoding.push("hsl(" + h + ", 100%, 50%)")
-
-        }
-      }
-      if (h == 120) {
-        for (let k = 0; k < halfWeightNeurons; k++) {
-          colourCoding.push("hsl(" + h + ", 100%, 50%)")
-
-        }
-      }
-      if (h == 60) {
-        for (let l = 0; l < quarterThirdWeightNeurons; l++) {
-          colourCoding.push("hsl(" + h + ", 100%, 50%)")
-
-        }
-      }
-      if (h == 0) {
-        for (let m = 0; m < oneWeightNeurons; m++) {
-          colourCoding.push("hsl(" + h + ", 100%, 50%)")
-
-        }
-      }
-    }); */
-
+    /*  neuronsWeight.forEach(weight => {
+       let h = (1.0 - weight) * 240;
+       if (h == 240) {
+         // colour =  Array(zeroWeightNeurons).fill("hsl(" + h + ", 100%, 50%)");
+         for (let i = 0; i < zeroWeightNeurons; i++) {
+           colourCoding.push("hsl(" + h + ", 100%, 50%)")
  
+         }
+       }
+       if (h == 180) {
+         for (let j = 0; j < quarterWeightNeurons; j++) {
+           colourCoding.push("hsl(" + h + ", 100%, 50%)")
+ 
+         }
+       }
+       if (h == 120) {
+         for (let k = 0; k < halfWeightNeurons; k++) {
+           colourCoding.push("hsl(" + h + ", 100%, 50%)")
+ 
+         }
+       }
+       if (h == 60) {
+         for (let l = 0; l < quarterThirdWeightNeurons; l++) {
+           colourCoding.push("hsl(" + h + ", 100%, 50%)")
+ 
+         }
+       }
+       if (h == 0) {
+         for (let m = 0; m < oneWeightNeurons; m++) {
+           colourCoding.push("hsl(" + h + ", 100%, 50%)")
+ 
+         }
+       }
+     }); */
+
+
 
     /*  for (let l = 0; l < (xCoordLen / (colourValues.length + colourValues.length)); l++) {
        for (let m = 0; m < colourValues.length; m++) {
@@ -400,9 +441,18 @@ export class AinetComponent implements OnInit, AfterViewInit {
        }
      } */
 
-    // console.log(colourValues1, 'colourValues1');
-    //let staticColor = ["hsl(216, 100%, 50%)","hsl(168, 100%, 50%)","hsl(120, 100%, 50%)","hsl(47, 100%, 50%)","hsl(0, 100%, 50%)"];
-    return [colourCoding];
+    /*  for (let neuronWeight = 1; neuronWeight > 0; neuronWeight = neuronWeight - (1 / (xCoordLen / totalAreas)) ) {
+      let H = (1.0 - neuronWeight) * 240;
+          colourSchemeA.push("hsl(" + H + ", 100%, 50%)")
+    }
+    for (let hsl = 0; hsl < (xCoordLen / colourSchemeA.length); hsl++) {
+      for (let colourCode = 0; colourCode < colourSchemeA.length; colourCode++) {
+        colourCodingA.push(colourSchemeA[colourCode]);
+
+      }
+    } */
+
+    return [colourCoding, allNeuronsWeight, colourCodingSegment,];
   }
 
   gradient(startColor, endColor, steps) {
