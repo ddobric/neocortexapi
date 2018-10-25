@@ -30,6 +30,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     //this.createChartinternal(getCord(), getColors());
     this.createChart();
     //this.showNeuronsByWeight(null);
+    this.reCreatChart();
   }
   //createChart(cords:any[][], color:any[]) {
   // createChart() {
@@ -78,8 +79,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
         color: '#7CFC00'
       }, */
       marker: {
-        opacity: 1,
-        size: 18,
+        opacity: env.opacityOfNeuron,
+        size: env.sizeOfNeuron,
         // color: '#00BFFF',
         color: cellColours,
         symbol: 'circle',
@@ -102,75 +103,16 @@ export class AinetComponent implements OnInit, AfterViewInit {
       y: yCoordinates,
       z: zCoordinates,
       text: weights,
-      opacity: 1.0,
+      opacity: env.opacityOfSynapse,
       line: {
-        width: 4,
+        width: env.lineWidthOfSynapse,
         color: cellColours,
 
         //color: '#7CFC00'
         //colorscale: 'Viridis'
       }
     };
-    console.log("second");
-    const trace2 = {
 
-      /* x: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-      y: [0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2],
-      z: [0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2], */
-      /*   x: this.xCoord,
-        y: this.yCoord,
-        z: this.zCoord, */
-
-      name: 'Data 2',
-      mode: 'lines+markers',
-      symbol: 'circle',
-      line: {
-        width: 4,
-        color: '#7CFC00'
-      },
-      marker: {
-        size: 18,
-        color: '#00BFFF',
-        symbol: 'circle',
-        line: {
-          color: '#7B68EE',
-          width: 2
-        },
-        opacity: 10
-      },
-      type: 'scatter3d',
-      scene: "scene2",
-
-    };
-    const trace3 = {
-      /*       x: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-            y: [0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2],
-            z: [0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2], */
-      /*     x: this.xCoord,
-          y: this.yCoord,
-          z: this.zCoord, */
-
-      name: 'Data 3',
-      mode: 'lines+markers',
-      symbol: 'circle',
-      line: {
-        width: 4,
-        color: '#7CFC00'
-      },
-      marker: {
-        size: 18,
-        color: '#00BFFF',
-        symbol: 'circle',
-        line: {
-          color: '#7B68EE',
-          width: 2
-        },
-        opacity: 10
-      },
-      type: 'scatter3d',
-      scene: "scene3",
-
-    };
     const neuralChartLayout = {
       //showlegend: false, Thgis option is to show the name of legend/DataSeries 
       scene: {
@@ -222,8 +164,17 @@ export class AinetComponent implements OnInit, AfterViewInit {
       Plotlyjs.Plots.resize(graphDOM);
     };
   }
+
+  reCreatChart(){
+    let getNewCoordinates = this.showNeuronsByWeightGreater;
+    let filteredXCoordinates = getNewCoordinates[0];
+    let filteredYCoordinates = getNewCoordinates[1];
+    let filteredZCoordinates = getNewCoordinates[2];
+console.log( filteredXCoordinates, "filtered")
+
+  }
   fillChart() {
-    let model = neoCortexUtils.createModel(2, [100, 6], 10); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
+    let model = neoCortexUtils.createModel(1, [100, 6], 10); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
     // this.opacityValues = new Array(areaSection).fill(0.5, 0, 1200).fill(1.8, 1200, 2400);
     //this.colour = new Array(areaSection).fill('#00BFFF', 0, 800).fill('#48afd1', 800, 1600).fill('#236d86', 1600, 2499);
     let xCoord = [];
@@ -295,7 +246,11 @@ export class AinetComponent implements OnInit, AfterViewInit {
       let H = (1.0 - nW) * 240;
 
       colourScheme = Array((xCoordLen / totalAreas) / (env.numberOfColours)).fill("hsl(" + H + ", 100%, 50%)");
-      weights = Array((xCoordLen / totalAreas) / (env.numberOfColours)).fill(nW);
+      /* var b = 124.7485;
+      var c = b.toFixed(3);
+      console.log(parseFloat(c)); */
+      let fixedNW = nW.toFixed(3);
+      weights = Array((xCoordLen / totalAreas) / (env.numberOfColours)).fill(parseFloat(fixedNW));
 
       for (let hsl = 0; hsl < (colourScheme.length); hsl++) {
         colourCodingSegment.push(colourScheme[hsl]);
@@ -303,7 +258,6 @@ export class AinetComponent implements OnInit, AfterViewInit {
       }
 
       for (let w = 0; w < (weights.length); w++) {
-       // allNeuronsWeight.push(neuronsWeightSegment[w]);
         neuronsWeightSegment.push(weights[w]);
       }
     }
@@ -452,7 +406,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       }
     } */
 
-    return [colourCoding, allNeuronsWeight, colourCodingSegment,];
+    return [colourCoding, allNeuronsWeight, colourCodingSegment];
   }
 
   gradient(startColor, endColor, steps) {
@@ -516,20 +470,37 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   }
 
-  showNeuronsByWeight(weightInput) {
+  showNeuronsByWeightGreater(weightInput: string) {
 
-    let neuronWeight = parseInt(weightInput);
+    let getCoordinates = this.fillChart();
+    let xCoordinates = getCoordinates[0];
+    let yCoordinates = getCoordinates[1];
+    let zCoordinates = getCoordinates[2];
+    
+    let filteredXCoordinates = [];
+    let filteredYCoordinates = [];
+    let filteredZCoordinates = [];
 
-    if (neuronWeight == 1) {
+    let neuronWeight = parseFloat(weightInput);
 
+    if (neuronWeight > 1) {
+      throw "Weight can't be greater than 1";
     }
-    else if (neuronWeight == 2) {
 
-    }
-    else {
-      throw "Invalid Input";
+    let heatColourArray = this.getHeatColor();
+    let weights = heatColourArray[1];
+    let findIndexOfNeuron = weights.indexOf(neuronWeight);
+    console.log(findIndexOfNeuron, neuronWeight);
 
+    if (findIndexOfNeuron == -1) {
+      throw "Given weight is not present"
     }
+
+    filteredXCoordinates = xCoordinates.slice(findIndexOfNeuron);
+    filteredYCoordinates = yCoordinates.slice(findIndexOfNeuron);
+    filteredZCoordinates = zCoordinates.slice(findIndexOfNeuron);
+
+    return [filteredXCoordinates, filteredYCoordinates, filteredZCoordinates]
   }
 
 

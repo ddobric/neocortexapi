@@ -3,7 +3,66 @@ import { HighchartsStatic, HighchartsService } from 'angular2-highcharts/dist/Hi
 import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, NeocortexSettings } from '../neocortexmodel';
 import { neoCortexUtils } from '../neocortexutils';
 import { modelGroupProvider } from '@angular/forms/src/directives/ng_model_group';
+/* 
+const trace2 = { */
 
+    /* x: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+    y: [0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2],
+    z: [0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2], */
+    /*   x: this.xCoord,
+      y: this.yCoord,
+      z: this.zCoord, */
+/* 
+    name: 'Data 2',
+    mode: 'lines+markers',
+    symbol: 'circle',
+    line: {
+      width: 4,
+      color: '#7CFC00'
+    },
+    marker: {
+      size: 20,
+      color: '#00BFFF',
+      symbol: 'circle',
+      line: {
+        color: '#7B68EE',
+        width: 2
+      },
+      opacity: 10
+    },
+    type: 'scatter3d',
+    scene: "scene2",
+
+  };
+  const trace3 = { */
+    /*       x: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+          y: [0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2],
+          z: [0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2], */
+    /*     x: this.xCoord,
+        y: this.yCoord,
+        z: this.zCoord, */
+
+  /*   name: 'Data 3',
+    mode: 'lines+markers',
+    symbol: 'circle',
+    line: {
+      width: 4,
+      color: '#7CFC00'
+    },
+    marker: {
+      size: 18,
+      color: '#00BFFF',
+      symbol: 'circle',
+      line: {
+        color: '#7B68EE',
+        width: 2
+      },
+      opacity: 10
+    },
+    type: 'scatter3d',
+    scene: "scene3",
+
+  }; */
 
 declare let require: any;
 

@@ -20,3 +20,6 @@ html, body {
   transform: translateX(-50%);
    
 }
+.form-control{
+  width: 300px;
+}
