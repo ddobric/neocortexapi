@@ -18,7 +18,7 @@ namespace NeoCortexApi.Utility
      * @author cogmission
      * @param <R>   The return type of the user-provided {@link Function}s
      */
-    public class GroupBy2<R> : IEnumerable<Pair<Object, List<List<R>>>>, IEnumerator<Pair<Object, List<List<R>>>> where R : class//, Generator<Tuple> 
+    public class GroupBy2<R> : IEnumerable<Pair<R, List<List<Object>>>>, IEnumerator<Pair<R, List<List<Object>>>> where R : class//, Generator<Tuple> 
                                                                                                                                  //  where R : IComparable<R>
     {
 
@@ -39,7 +39,7 @@ namespace NeoCortexApi.Utility
 
         // private Slot<Pair<object, R>>[] nextList;
 
-        public Pair<object, List<List<R>>> Current { get; set; }
+        public Pair<R, List<List<Object>>> Current { get; set; }
 
         object IEnumerator.Current
         {
@@ -126,16 +126,12 @@ namespace NeoCortexApi.Utility
         /// </summary>
         private void reset()
         {
-            //generatorList = new List<GroupBy<Object, R>>();
             m_Keys = new List<R>();
 
             int i = 0;
 
             foreach (var item in entries)
             {
-                //generatorList.Add(GroupBy<Object, R>.From(item.Key, item.Value));
-                //generatorList[i].MoveNext();
-
                 foreach (var item1 in item.Key)
                 {
                     var key = item.Value(item1);
@@ -145,15 +141,8 @@ namespace NeoCortexApi.Utility
                 i++;
             }
 
-            m_Keys = m_Keys.OrderBy(k => k).ToList();
-
-            //   advanceList = new bool[entries.Length];
-
-            //  ArrayUtils.Fill(advanceList, true);
-
-            // nextList = new Slot<Pair<Object, R>>[entries.Length];
-
-            // ArrayUtils.Fill(nextList, Slot<Pair<Object, R>>.NONE);
+            m_Keys = m_Keys.ConvertAll<R>(item=>(R)item).OrderBy(k => (R)k).ToList();
+     
         }
 
         public bool MoveNext()
@@ -167,7 +156,7 @@ namespace NeoCortexApi.Utility
 
             R minKeyVal = m_Keys[m_CurrentKey++];
 
-            this.Current = (Pair<Object, List<List<R>>>)next(minKeyVal);
+            this.Current = (Pair<R, List<List<Object>>>)next(minKeyVal);
 
             return true;
         }
@@ -181,13 +170,13 @@ namespace NeoCortexApi.Utility
          */
         //    @SuppressWarnings("unchecked")
         //@Override
-        private Pair<object, List<List<R>>> next(R minKeyVal)
+        private Pair<R, List<List<Object>>> next(R minKeyVal)
         {
-            Pair<object, List<List<R>>> retVal = new Pair<object, List<List<R>>>(minKeyVal, new List<List<R>>());
+            Pair<R, List<List<Object>>> retVal = new Pair<R, List<List<Object>>>(minKeyVal, new List<List<Object>>());
 
             for (int i = 0; i < entries.Length; i++)
             {
-                List<R> list;
+                List<Object> list;
                 list = getEntries(i, minKeyVal);
 
                 retVal.Value.Add(list);
@@ -211,15 +200,15 @@ namespace NeoCortexApi.Utility
         }
 
 
-        private List<R> getEntries(int listIdx, Object targetKey)
+        private List<Object> getEntries(int listIdx, Object targetKey)
         {
-            List<R> list = new List<R>();
+            List<Object> list = new List<Object>();
 
             foreach (var elem in entries[listIdx].Key)
             {
                 var key = entries[listIdx].Value(elem);
                 if (EqualityComparer<R>.Default.Equals(key, (R)targetKey))
-                    list.Add((R)elem);
+                    list.Add((Object)elem);
             }
 
             return list;
@@ -240,10 +229,10 @@ namespace NeoCortexApi.Utility
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return (IEnumerator<Pair<Object, List<R>>>)this;
+            return (IEnumerator<Pair<R, List<Object>>>)this;
         }
 
-        IEnumerator<Pair<object, List<List<R>>>> IEnumerable<Pair<object, List<List<R>>>>.GetEnumerator()
+        IEnumerator<Pair<R, List<List<Object>>>> IEnumerable<Pair<R, List<List<Object>>>>.GetEnumerator()
         {
             return this;
         }

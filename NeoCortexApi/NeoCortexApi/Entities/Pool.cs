@@ -21,10 +21,11 @@ namespace NeoCortexApi.Entities
      * @see Synapse
      * @see Connections
      */
+
+    [Serializable]
     public class Pool
     {
-        /** keep it simple */
-        private static readonly long serialVersionUID = 1L;
+
 
         int size;
 

@@ -4,6 +4,8 @@ using System.Text;
 
 namespace NeoCortexApi.Entities
 {
+
+    [Serializable]
     public class Integer : IEquatable<Integer>, IComparable<Integer>
     {
         public int Value { get; set; }

@@ -24,10 +24,9 @@ namespace NeoCortexApi.Entities
   * @see DistalDendrite
   * @see Connections
   */
-    public class Synapse : IEquatable<Synapse>
+    [Serializable]
+    public class Synapse : IEquatable<Synapse>, IComparable<Synapse>
     {
-        private static readonly long serialVersionUID = 1L;
-
         /// <summary>
         /// Cell which activates this synapse. On proximal dendrite is this set on NULL. That means proximal dentrites have no presynaptic cell.
         /// </summary>
@@ -288,6 +287,16 @@ namespace NeoCortexApi.Entities
             if (permanence != obj.permanence)
                 return false;
             return true;
+        }
+
+        public int CompareTo(Synapse other)
+        {
+            if (this.getIndex() < other.getIndex())
+                return -1;
+            if (this.getIndex() > other.getIndex())
+                return 1;
+            else
+                return 0;
         }
     }
 }

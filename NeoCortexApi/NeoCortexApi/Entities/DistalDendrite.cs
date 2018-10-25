@@ -14,7 +14,8 @@ namespace NeoCortexApi.Entities
      * @author Chetan Surpur
      * @author David Ray
      */
-    public class DistalDendrite : Segment, IComparable<DistalDendrite> 
+    [Serializable]
+    public class DistalDendrite : Segment, IComparable<DistalDendrite>
     {
         /** keep it simple */
         private static readonly long serialVersionUID = 1L;
@@ -49,7 +50,7 @@ namespace NeoCortexApi.Entities
             return cell;
         }
 
-       
+
         /// <summary>
         /// Gets all synapses owned by this distal dentrite segment.
         /// </summary>
@@ -60,16 +61,16 @@ namespace NeoCortexApi.Entities
             return c.getSynapses(this);
         }
 
-       /// <summary>
-       /// Gets all active synapses of this segment, which have presynaptic cell as active one.
-       /// </summary>
-       /// <param name="c"></param>
-       /// <param name="activeCells"></param>
-       /// <returns></returns>
+        /// <summary>
+        /// Gets all active synapses of this segment, which have presynaptic cell as active one.
+        /// </summary>
+        /// <param name="c"></param>
+        /// <param name="activeCells"></param>
+        /// <returns></returns>
         public ISet<Synapse> getActiveSynapses(Connections c, ISet<Cell> activeCells)
         {
             ISet<Synapse> activeSynapses = new LinkedHashSet<Synapse>();
-            
+
             foreach (var synapse in c.getSynapses(this))
             {
                 if (activeCells.Contains(synapse.getPresynapticCell()))
