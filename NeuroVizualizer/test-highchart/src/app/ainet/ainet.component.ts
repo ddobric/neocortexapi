@@ -12,8 +12,7 @@ import { environment as env } from "../environments/environment";
   styleUrls: ['./ainet.component.css']
 })
 export class AinetComponent implements OnInit, AfterViewInit {
-
-  colour = [];
+  str: string;
   constructor() {
 
   }
@@ -29,11 +28,24 @@ export class AinetComponent implements OnInit, AfterViewInit {
     //this.dellInvisiblepoints();
     //this.createChartinternal(getCord(), getColors());
     this.createChart();
-    //this.showNeuronsByWeight(null);
-    this.reCreatChart();
   }
   //createChart(cords:any[][], color:any[]) {
   // createChart() {
+  makeChartResponsive() {
+    let d3 = Plotlyjs.d3;
+    let WIDTH_IN_PERCENT_OF_PARENT = 90;
+    let HEIGHT_IN_PERCENT_OF_PARENT = 90;
+    let gd3 = d3.select('body').append('div').style({
+      width: WIDTH_IN_PERCENT_OF_PARENT + '%',
+      'margin-left': (100 - WIDTH_IN_PERCENT_OF_PARENT) / 2 + '%',
+
+      height: HEIGHT_IN_PERCENT_OF_PARENT + 'vh',
+      'margin-top': (100 - HEIGHT_IN_PERCENT_OF_PARENT) / 2 + 'vh'
+    });
+    let graphDOM = gd3.node();
+    return graphDOM;
+
+  }
   createChart() {
     let getCoordinates = this.fillChart();
     let xCoordinates = getCoordinates[0];
@@ -50,7 +62,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
     //let graph = document.getElementById('graph');
     // to make the chart responsive 
-    let d3 = Plotlyjs.d3;
+    /* let d3 = Plotlyjs.d3;
     let WIDTH_IN_PERCENT_OF_PARENT = 90;
     let HEIGHT_IN_PERCENT_OF_PARENT = 90;
     let gd3 = d3.select('body').append('div').style({
@@ -60,7 +72,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       height: HEIGHT_IN_PERCENT_OF_PARENT + 'vh',
       'margin-top': (100 - HEIGHT_IN_PERCENT_OF_PARENT) / 2 + 'vh'
     });
-    let graphDOM = gd3.node();
+    let graphDOM = gd3.node(); */
 
     const neurons = {
       x: xCoordinates,
@@ -112,6 +124,36 @@ export class AinetComponent implements OnInit, AfterViewInit {
         //colorscale: 'Viridis'
       }
     };
+    const test1 = {
+      
+    x: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+    y: [0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2],
+    z: [0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2], 
+    name: 'Neuron',
+    mode: 'markers',
+    marker: {
+      opacity: env.opacityOfNeuron,
+      size: env.sizeOfNeuron,
+      color: cellColours,
+      symbol: 'circle',
+    },
+    type: 'scatter3d',
+    }
+
+    const test2 = {
+      //the first point in the array will be joined with a line with the next one in the array ans so on...
+      type: 'scatter3d',
+      mode: 'lines',
+      name: 'Synapse',
+      x: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+      y: [0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2],
+      z: [0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2], 
+      opacity: env.opacityOfSynapse,
+      line: {
+        width: env.lineWidthOfSynapse,
+        color: cellColours,
+      }
+    };
 
     const neuralChartLayout = {
       //showlegend: false, Thgis option is to show the name of legend/DataSeries 
@@ -156,23 +198,23 @@ export class AinetComponent implements OnInit, AfterViewInit {
          y: [[0.5]],
          z: [[3.5]]
        }; */
+    let graphDOM = this.makeChartResponsive();
 
     Plotlyjs.newPlot(graphDOM, [neurons, synapses], neuralChartLayout, neuralChartConfig);
+   // Plotlyjs.newPlot(graphDOM, [test1, test2]);
     //Plotlyjs.restyle(gd,  update, [0]);
+    this.replotChart = function (){
+      Plotlyjs.newPlot(graphDOM, [test1, test2]);
+    }
+    
 
     window.onresize = function () {
       Plotlyjs.Plots.resize(graphDOM);
     };
   }
+replotChart(){
 
-  reCreatChart(){
-    let getNewCoordinates = this.showNeuronsByWeightGreater;
-    let filteredXCoordinates = getNewCoordinates[0];
-    let filteredYCoordinates = getNewCoordinates[1];
-    let filteredZCoordinates = getNewCoordinates[2];
-console.log( filteredXCoordinates, "filtered")
-
-  }
+}
   fillChart() {
     let model = neoCortexUtils.createModel(1, [100, 6], 10); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
     // this.opacityValues = new Array(areaSection).fill(0.5, 0, 1200).fill(1.8, 1200, 2400);
@@ -409,6 +451,84 @@ console.log( filteredXCoordinates, "filtered")
     return [colourCoding, allNeuronsWeight, colourCodingSegment];
   }
 
+  showNeuronsByWeightGreater(weightInput: string) {
+
+    let getCoordinates = this.fillChart();
+    let xCoordinates = getCoordinates[0];
+    let yCoordinates = getCoordinates[1];
+    let zCoordinates = getCoordinates[2];
+
+    let filteredXCoordinates = [];
+    let filteredYCoordinates = [];
+    let filteredZCoordinates = [];
+
+    let neuronWeight = parseFloat(weightInput);
+
+    if (neuronWeight > 1) {
+      throw "Weight can't be greater than 1";
+    }
+
+    let heatColourArray = this.getHeatColor();
+    let weights = heatColourArray[1];
+    let cellColours = heatColourArray[0];
+    let indexOfNeuron = weights.indexOf(neuronWeight);
+    console.log(indexOfNeuron, neuronWeight);
+
+    if (indexOfNeuron == -1) {
+      throw "Given weight is not present"
+    }
+
+    filteredXCoordinates = xCoordinates.slice(indexOfNeuron);
+    filteredYCoordinates = yCoordinates.slice(indexOfNeuron);
+    filteredZCoordinates = zCoordinates.slice(indexOfNeuron);
+
+    const updateNeurons = {
+      x: filteredXCoordinates,
+      y: filteredYCoordinates,
+      z: filteredZCoordinates,
+      text: weights,
+      name: 'Neuron',
+      mode: 'markers',
+      marker: {
+        opacity: env.opacityOfNeuron,
+        size: env.sizeOfNeuron,
+        color: cellColours,
+        symbol: 'circle',
+      },
+      type: 'scatter3d',
+    };
+    const updateSynapses = {
+      //the first point in the array will be joined with a line with the next one in the array ans so on...
+      type: 'scatter3d',
+      mode: 'lines',
+      name: 'Synapse',
+      x: filteredXCoordinates,
+      y: filteredYCoordinates,
+      z: filteredZCoordinates,
+      text: weights,
+      opacity: env.opacityOfSynapse,
+      line: {
+        width: env.lineWidthOfSynapse,
+        color: cellColours,
+      }
+    };
+
+    let graphDOM = this.makeChartResponsive();
+    Plotlyjs.newPlot(graphDOM, [updateNeurons, updateSynapses]);
+
+    window.onresize = function () {
+      Plotlyjs.Plots.resize(graphDOM);
+    };
+
+    
+
+    //return [filteredXCoordinates, filteredYCoordinates, filteredZCoordinates]
+  }
+  showNeuronsByWeightSmaller(){
+    console.log(this.str);
+  }
+
+
   gradient(startColor, endColor, steps) {
     var start = {
       'Hex': startColor,
@@ -470,38 +590,6 @@ console.log( filteredXCoordinates, "filtered")
 
   }
 
-  showNeuronsByWeightGreater(weightInput: string) {
-
-    let getCoordinates = this.fillChart();
-    let xCoordinates = getCoordinates[0];
-    let yCoordinates = getCoordinates[1];
-    let zCoordinates = getCoordinates[2];
-    
-    let filteredXCoordinates = [];
-    let filteredYCoordinates = [];
-    let filteredZCoordinates = [];
-
-    let neuronWeight = parseFloat(weightInput);
-
-    if (neuronWeight > 1) {
-      throw "Weight can't be greater than 1";
-    }
-
-    let heatColourArray = this.getHeatColor();
-    let weights = heatColourArray[1];
-    let findIndexOfNeuron = weights.indexOf(neuronWeight);
-    console.log(findIndexOfNeuron, neuronWeight);
-
-    if (findIndexOfNeuron == -1) {
-      throw "Given weight is not present"
-    }
-
-    filteredXCoordinates = xCoordinates.slice(findIndexOfNeuron);
-    filteredYCoordinates = yCoordinates.slice(findIndexOfNeuron);
-    filteredZCoordinates = zCoordinates.slice(findIndexOfNeuron);
-
-    return [filteredXCoordinates, filteredYCoordinates, filteredZCoordinates]
-  }
-
+ 
 
 }

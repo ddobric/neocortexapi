@@ -4,11 +4,12 @@
 <div class="container form-inline">
   <div calss="row form-group">
       <div class="container col-sm-12">
-          <input class="form-control" type="text" placeholder="Neurons weight in between 0 and 1" #weightInput>
-      <button class="btn btn-primary" type="submit" (click)='showNeuronsByWeightSmaller(weightInputsmaller)'>Smaller than or equal</button>
+          <input class="form-control" id="str" [(ngModel)]="str" type="text" placeholder="Neurons weight in between 0 and 1" #weightInput>
+      <button class="btn btn-primary" type="submit" (click)='showNeuronsByWeightSmaller()'>Smaller than or equal</button>
       <button class="btn btn-danger" type="submit" (click)='showNeuronsByWeightGreater(weightInput.value)'>Greater than or equal</button>
+      <button class="btn btn-success" (click)="replotChart()">Replot</button>
       </div>
-  </div>
+  </div>id="str" [(ngModel)]="str"
 </div>
 <!-- Plotly chart will be drawn inside this div -->
 <div class="chart"  id="graph"></div>
