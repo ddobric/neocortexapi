@@ -125,19 +125,19 @@ export class AinetComponent implements OnInit, AfterViewInit {
       }
     };
     const test1 = {
-      
-    x: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-    y: [0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2],
-    z: [0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2], 
-    name: 'Neuron',
-    mode: 'markers',
-    marker: {
-      opacity: env.opacityOfNeuron,
-      size: env.sizeOfNeuron,
-      color: cellColours,
-      symbol: 'circle',
-    },
-    type: 'scatter3d',
+
+      x: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+      y: [0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2],
+      z: [0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2],
+      name: 'Neuron',
+      mode: 'markers',
+      marker: {
+        opacity: env.opacityOfNeuron,
+        size: env.sizeOfNeuron,
+        color: cellColours,
+        symbol: 'circle',
+      },
+      type: 'scatter3d',
     }
 
     const test2 = {
@@ -147,7 +147,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       name: 'Synapse',
       x: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],
       y: [0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2],
-      z: [0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2], 
+      z: [0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2],
       opacity: env.opacityOfSynapse,
       line: {
         width: env.lineWidthOfSynapse,
@@ -201,20 +201,78 @@ export class AinetComponent implements OnInit, AfterViewInit {
     let graphDOM = this.makeChartResponsive();
 
     Plotlyjs.newPlot(graphDOM, [neurons, synapses], neuralChartLayout, neuralChartConfig);
-   // Plotlyjs.newPlot(graphDOM, [test1, test2]);
+    // Plotlyjs.newPlot(graphDOM, [test1, test2]);
     //Plotlyjs.restyle(gd,  update, [0]);
-    this.replotChart = function (){
+    this.replotChart = function () {
       Plotlyjs.newPlot(graphDOM, [test1, test2]);
     }
-    
+    this.showNeuronsByWeightSmaller = function () {
+
+      let filteredXCoordinates = [];
+      let filteredYCoordinates = [];
+      let filteredZCoordinates = [];
+
+      let neuronWeight = parseFloat(this.str);
+
+      if (neuronWeight > 1) {
+        throw "Weight can't be greater than 1";
+      }
+
+      let heatColourArray = this.getHeatColor();
+      let weights = heatColourArray[1];
+      let cellColours = heatColourArray[0];
+      let indexOfNeuron = weights.indexOf(neuronWeight);
+      console.log(indexOfNeuron, neuronWeight);
+
+      if (indexOfNeuron == -1) {
+        throw "Given weight is not present"
+      }
+
+      filteredXCoordinates = xCoordinates.slice(indexOfNeuron);
+      filteredYCoordinates = yCoordinates.slice(indexOfNeuron);
+      filteredZCoordinates = zCoordinates.slice(indexOfNeuron);
+
+      const updateNeurons = {
+        x: filteredXCoordinates,
+        y: filteredYCoordinates,
+        z: filteredZCoordinates,
+        text: weights,
+        name: 'Neuron',
+        mode: 'markers',
+        marker: {
+          opacity: env.opacityOfNeuron,
+          size: env.sizeOfNeuron,
+          color: cellColours,
+          symbol: 'circle',
+        },
+        type: 'scatter3d',
+      };
+      const updateSynapses = {
+        //the first point in the array will be joined with a line with the next one in the array ans so on...
+        type: 'scatter3d',
+        mode: 'lines',
+        name: 'Synapse',
+        x: filteredXCoordinates,
+        y: filteredYCoordinates,
+        z: filteredZCoordinates,
+        text: weights,
+        opacity: env.opacityOfSynapse,
+        line: {
+          width: env.lineWidthOfSynapse,
+          color: cellColours,
+        }
+      };
+      Plotlyjs.newPlot(graphDOM, [updateNeurons, updateSynapses], neuralChartLayout, neuralChartConfig);
+    }
+
 
     window.onresize = function () {
       Plotlyjs.Plots.resize(graphDOM);
     };
   }
-replotChart(){
+  replotChart() {
 
-}
+  }
   fillChart() {
     let model = neoCortexUtils.createModel(1, [100, 6], 10); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
     // this.opacityValues = new Array(areaSection).fill(0.5, 0, 1200).fill(1.8, 1200, 2400);
@@ -520,12 +578,13 @@ replotChart(){
       Plotlyjs.Plots.resize(graphDOM);
     };
 
-    
+
 
     //return [filteredXCoordinates, filteredYCoordinates, filteredZCoordinates]
   }
-  showNeuronsByWeightSmaller(){
+  showNeuronsByWeightSmaller() {
     console.log(this.str);
+    //return this.str;
   }
 
 
@@ -590,6 +649,6 @@ replotChart(){
 
   }
 
- 
+
 
 }
