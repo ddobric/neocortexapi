@@ -209,7 +209,7 @@ namespace NeoCortexApi.Entities
         protected List<DistalDendrite> m_SegmentForFlatIdx = new List<DistalDendrite>();
 
         /** Stores each cycle's most recent activity */
-        public Activity lastActivity;
+        public SegmentActivity lastActivity;
 
         /** The default random number seed */
         protected int seed = 42;
@@ -1331,40 +1331,6 @@ namespace NeoCortexApi.Entities
         //       TemporalMemory Methods       //
         ////////////////////////////////////////
 
-        /**
-         * Return type from {@link Connections#computeActivity(Set, double, int, double, int, boolean)}
-         */
-        public class Activity
-        {
-            /** default serial */
-            private static readonly long serialVersionUID = 1L;
-
-            /// <summary>
-            /// numActiveConnectedSynapsesForSegment
-            /// </summary>
-            //public int[] numActiveConnected;
-            //public int[] numActivePotential;
-
-            /// <summary>
-            /// Contains the index of segment with number of synapses with permanence higher than threshold,
-            /// which makes synapse active.
-            /// </summary>
-            public Dictionary<int, int> Active = new Dictionary<int, int>();
-
-            public Dictionary<int, int> Potential = new Dictionary<int, int>();
-
-            public Activity()
-            {
-               
-            }
-
-            //public Activity(int[] numConnected, int[] numPotential)
-            //{
-            //    this.numActiveConnected = numConnected;
-            //    this.numActivePotential = numPotential;
-            //}
-        }
-
 
         /**
   //* Compute each segment's number of active synapses for a given input.
@@ -1385,7 +1351,7 @@ namespace NeoCortexApi.Entities
         /// <param name="activePresynapticCells"></param>
         /// <param name="connectedPermanence"></param>
         /// <returns></returns>
-        public Activity computeActivity(ICollection<Cell> activePresynapticCells, double connectedPermanence)
+        public SegmentActivity computeActivity(ICollection<Cell> activePresynapticCells, double connectedPermanence)
         {
             Dictionary<int, int> active = new Dictionary<int, int>();
             Dictionary<int, int> potential = new Dictionary<int, int>();
@@ -1426,7 +1392,7 @@ namespace NeoCortexApi.Entities
             //return lastActivity = new Activity(
             //    numActiveConnectedSynapsesForSegment,
             //        numActivePotentialSynapsesForSegment);
-            return new Activity() { Active = active, Potential = potential };
+            return new SegmentActivity() { Active = active, Potential = potential };
         }
 
         /**
@@ -1435,7 +1401,7 @@ namespace NeoCortexApi.Entities
          * 
          * @return  the last activity to be computed.
          */
-        public Activity getLastActivity()
+        public SegmentActivity getLastActivity()
         {
             return lastActivity;
         }

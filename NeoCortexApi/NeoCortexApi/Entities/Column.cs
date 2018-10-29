@@ -36,12 +36,13 @@ namespace NeoCortexApi.Entities
 
         private readonly int hashcode;
 
-        /**
-         * Constructs a new {@code Column}
-         * 
-         * @param numCells      number of cells per column
-         * @param index         the index of this column
-         */
+
+
+        /// <summary>
+        /// Creates a new collumn with specified number of cells and a single proximal dendtrite segment.
+        /// </summary>
+        /// <param name="numCells">Number of cells in the column.</param>
+        /// <param name="index">Colun index.</param>
         public Column(int numCells, int index)
         {
             this.numCells = numCells;
