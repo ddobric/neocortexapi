@@ -12,6 +12,12 @@ export const environment = {
     xRatio: 7,
     yRatio: 1,
     zRatio: 0.5,
+    sizeOfNeuron: 15,
+    opacityOfNeuron: 1,
+    opacityOfSynapse: 1,
+    lineWidthOfSynapse: 4,
+
+
 
 
 }
