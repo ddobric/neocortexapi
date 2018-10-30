@@ -34,7 +34,7 @@ namespace NeoCortexApi.Entities
         private double potentialPct = 0.5;
         private bool globalInhibition = false;
         private double m_LocalAreaDensity = -1.0;
-        private double numActiveColumnsPerInhArea;
+        private double m_NumActiveColumnsPerInhArea;
         private double stimulusThreshold = 0;
         private double synPermInactiveDec = 0.008;
         private double synPermActiveInc = 0.05;
@@ -834,41 +834,33 @@ namespace NeoCortexApi.Entities
         }
 
         /**
-         * An alternate way to control the density of the active
-         * columns. If numActivePerInhArea is specified then
-         * localAreaDensity must be less than 0, and vice versa.
-         * When using numActivePerInhArea, the inhibition logic
-         * will insure that at most 'numActivePerInhArea'
-         * columns remain ON within a local inhibition area (the
-         * size of which is set by the internally calculated
-         * inhibitionRadius, which is in turn determined from
-         * the average size of the connected receptive fields of
-         * all columns). When using this method, as columns
-         * learn and grow their effective receptive fields, the
-         * inhibitionRadius will grow, and hence the net density
-         * of the active columns will *decrease*. This is in
-         * contrast to the localAreaDensity method, which keeps
-         * the density of active columns the same regardless of
-         * the size of their receptive fields.
-         *
-         * @param numActiveColumnsPerInhArea
-         */
-        public void setNumActiveColumnsPerInhArea(double numActiveColumnsPerInhArea)
-        {
-            this.numActiveColumnsPerInhArea = numActiveColumnsPerInhArea;
-        }
-
-        /**
          * Returns the configured number of active columns per
          * inhibition area.
          * @return  the configured number of active columns per
          * inhibition area.
          * @see setNumActiveColumnsPerInhArea
          */
-        public double getNumActiveColumnsPerInhArea()
-        {
-            return numActiveColumnsPerInhArea;
-        }
+        /**
+ * An alternate way to control the density of the active
+ * columns. If numActivePerInhArea is specified then
+ * localAreaDensity must be less than 0, and vice versa.
+ * When using numActivePerInhArea, the inhibition logic
+ * will insure that at most 'numActivePerInhArea'
+ * columns remain ON within a local inhibition area (the
+ * size of which is set by the internally calculated
+ * inhibitionRadius, which is in turn determined from
+ * the average size of the connected receptive fields of
+ * all columns). When using this method, as columns
+ * learn and grow their effective receptive fields, the
+ * inhibitionRadius will grow, and hence the net density
+ * of the active columns will *decrease*. This is in
+ * contrast to the localAreaDensity method, which keeps
+ * the density of active columns the same regardless of
+ * the size of their receptive fields.
+ *
+ * @param numActiveColumnsPerInhArea
+ */
+        public double NumActiveColumnsPerInhArea { get => m_NumActiveColumnsPerInhArea; set => this.m_NumActiveColumnsPerInhArea = value; }
 
         /**
          * This is a number specifying the minimum number of
@@ -2360,7 +2352,7 @@ namespace NeoCortexApi.Entities
             Console.WriteLine("numColumns                 = " + getNumColumns());
             Console.WriteLine("cellsPerColumn             = " + getCellsPerColumn());
             Console.WriteLine("columnDimensions           = " + getColumnDimensions().ToString());
-            Console.WriteLine("numActiveColumnsPerInhArea = " + getNumActiveColumnsPerInhArea());
+            Console.WriteLine("numActiveColumnsPerInhArea = " + NumActiveColumnsPerInhArea);
             Console.WriteLine("potentialPct               = " + getPotentialPct());
             Console.WriteLine("potentialRadius            = " + getPotentialRadius());
             Console.WriteLine("globalInhibition           = " + getGlobalInhibition());
@@ -2545,7 +2537,7 @@ namespace NeoCortexApi.Entities
             temp = BitConverter.DoubleToInt64Bits(minPctOverlapDutyCycles);
             result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + minThreshold;
-            temp = BitConverter.DoubleToInt64Bits(numActiveColumnsPerInhArea);
+            temp = BitConverter.DoubleToInt64Bits(m_NumActiveColumnsPerInhArea);
             result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + numColumns;
             result = prime * result + numInputs;
@@ -2686,7 +2678,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (minThreshold != other.minThreshold)
                 return false;
-            if (BitConverter.DoubleToInt64Bits(numActiveColumnsPerInhArea) != BitConverter.DoubleToInt64Bits(other.numActiveColumnsPerInhArea))
+            if (BitConverter.DoubleToInt64Bits(m_NumActiveColumnsPerInhArea) != BitConverter.DoubleToInt64Bits(other.m_NumActiveColumnsPerInhArea))
                 return false;
             if (numColumns != other.numColumns)
                 return false;

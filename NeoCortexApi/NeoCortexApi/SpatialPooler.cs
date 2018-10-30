@@ -45,7 +45,7 @@ namespace NeoCortexApi
          */
         public void init(Connections c)
         {
-            if (c.getNumActiveColumnsPerInhArea() == 0 && (c.LocalAreaDensity== 0 ||
+            if (c.NumActiveColumnsPerInhArea== 0 && (c.LocalAreaDensity== 0 ||
                 c.LocalAreaDensity> 0.5))
             {
                 throw new ArgumentException("Inhibition parameters are invalid");
@@ -912,7 +912,7 @@ namespace NeoCortexApi
             {
                 inhibitionArea = Math.Pow(2 * c.getInhibitionRadius() + 1, c.getColumnDimensions().Length);
                 inhibitionArea = Math.Min(c.getNumColumns(), inhibitionArea);
-                density = c.getNumActiveColumnsPerInhArea() / inhibitionArea;
+                density = c.NumActiveColumnsPerInhArea/ inhibitionArea;
                 density = Math.Min(density, 0.5);
             }
 
