@@ -196,7 +196,9 @@ namespace NeoCortexApi
                 boostedOverlaps = ArrayUtils.toDoubleArray(overlaps);
             }
 
-            int[] activeColumns = inhibitColumns(c, c.setBoostedOverlaps(boostedOverlaps));
+            c.BoostedOverlaps = boostedOverlaps;
+
+            int[] activeColumns = inhibitColumns(c, boostedOverlaps);
 
             if (learn)
             {

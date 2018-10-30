@@ -339,7 +339,7 @@ namespace UnitTestsProject
             int[] expOutput = { 1, 1, 1 };// { 2, 1, 0 }; This was used originally on Linux with JAVA and Pyhton
             sp.compute(cn, inputVector, activeArray, true);
 
-            double[] boostedOverlaps = cn.getBoostedOverlaps();
+            double[] boostedOverlaps = cn.BoostedOverlaps;
             int[] overlaps = cn.Overlaps;
 
             for (int i = 0; i < cn.getNumColumns(); i++)

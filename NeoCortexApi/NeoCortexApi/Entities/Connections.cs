@@ -63,7 +63,7 @@ namespace NeoCortexApi.Entities
         public int spIterationLearnNum = 0;
         public long tmIteration = 0;
 
-        public double[] boostedOverlaps;
+        public double[] m_BoostedmOverlaps;
         public int[] m_Overlaps;
 
         /** Manages input neighborhood transformations */
@@ -215,7 +215,7 @@ namespace NeoCortexApi.Entities
         protected int seed = 42;
 
         /** The random number generator */
-        public Random random ;
+        public Random random;
 
         public DentriteComparer GetComparer()
         {
@@ -258,7 +258,7 @@ namespace NeoCortexApi.Entities
 
         //};
 
-    
+
 
         ////////////////////////////////////////
         //       Connections Constructor      //
@@ -268,7 +268,8 @@ namespace NeoCortexApi.Entities
          * is usually configured via the {@link Parameters#apply(Object)}
          * method.
          */
-        public Connections() {
+        public Connections()
+        {
 
             synPermTrimThreshold = synPermActiveInc / 2.0;
             synPermBelowStimulusInc = synPermConnected / 10.0;
@@ -829,7 +830,7 @@ namespace NeoCortexApi.Entities
             }
             set
             {
-                 m_LocalAreaDensity = value;
+                m_LocalAreaDensity = value;
             }
         }
 
@@ -1112,25 +1113,17 @@ namespace NeoCortexApi.Entities
         }
 
         /**
-         * Sets and Returns the boosted overlap score for each column
-         * @param boostedOverlaps
-         * @return
-         */
-        public double[] setBoostedOverlaps(double[] boostedOverlaps)
-        {
-            return this.boostedOverlaps = boostedOverlaps;
-        }
-
-        /**
          * Returns the boosted overlap score for each column
          * @return the boosted overlaps
          */
-        public double[] getBoostedOverlaps()
-        {
-            return boostedOverlaps;
-        }
+        /**
+ * Sets and Returns the boosted overlap score for each column
+ * @param boostedOverlaps
+ * @return
+ */
+        public double[] BoostedOverlaps { get => m_BoostedmOverlaps; set => this.m_BoostedmOverlaps = value; }
 
-              
+
         /// <summary>
         /// Set/Get ovrlapps for each column.
         /// </summary>
@@ -1441,7 +1434,7 @@ namespace NeoCortexApi.Entities
 
             DistalDendrite segment = new DistalDendrite(cell, flatIdx, tmIteration, ordinal);
             getSegments(cell, true).Add(segment);
-            m_SegmentForFlatIdx[flatIdx]= segment;
+            m_SegmentForFlatIdx[flatIdx] = segment;
 
             return segment;
         }
@@ -1473,7 +1466,7 @@ namespace NeoCortexApi.Entities
             // Free the flatIdx and remove the final reference so the Segment can be
             // garbage-collected.
             freeFlatIdxs.Add(segment.getIndex());
-            m_SegmentForFlatIdx[segment.getIndex()] =null;
+            m_SegmentForFlatIdx[segment.getIndex()] = null;
         }
 
         /**
@@ -1739,7 +1732,7 @@ namespace NeoCortexApi.Entities
             return GetNumSynapses(null);
         }
 
-      
+
         /**
          * Returns the number of {@link Synapse}s on a given {@link DistalDendrite}
          * if specified, or the total number if the "optionalSegmentArg" is null.
@@ -2590,7 +2583,7 @@ namespace NeoCortexApi.Entities
          * {@inheritDoc}
          */
         //@Override
-    public override bool Equals(Object obj)
+        public override bool Equals(Object obj)
         {
             if (this == obj)
                 return true;
@@ -2598,7 +2591,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if ((obj.GetType() != this.GetType()))
                 return false;
-        
+
             Connections other = (Connections)obj;
             if (activationThreshold != other.activationThreshold)
                 return false;
