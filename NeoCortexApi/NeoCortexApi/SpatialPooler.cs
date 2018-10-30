@@ -286,7 +286,7 @@ namespace NeoCortexApi
          */
         public void updateMinDutyCycles(Connections c)
         {
-            if (c.getGlobalInhibition() || c.getInhibitionRadius() > c.getNumInputs())
+            if (c.getGlobalInhibition() || c.InhibitionRadius> c.getNumInputs())
             {
                 updateMinDutyCyclesGlobal(c);
             }
@@ -346,7 +346,7 @@ namespace NeoCortexApi
         public void updateMinDutyCyclesLocal(Connections c)
         {
             int len = c.getNumColumns();
-            int inhibitionRadius = c.getInhibitionRadius();
+            int inhibitionRadius = c.InhibitionRadius;
             double[] activeDutyCycles = c.getActiveDutyCycles();
             double minPctActiveDutyCycles = c.getMinPctActiveDutyCycles();
             double[] overlapDutyCycles = c.getOverlapDutyCycles();
@@ -467,7 +467,7 @@ namespace NeoCortexApi
         {
             if (c.getGlobalInhibition())
             {
-                c.setInhibitionRadius(ArrayUtils.max(c.getColumnDimensions()));
+                c.InhibitionRadius = ArrayUtils.max(c.getColumnDimensions());
                 return;
             }
 
@@ -481,7 +481,7 @@ namespace NeoCortexApi
             double diameter = avgConnectedSpan * avgColumnsPerInput(c);
             double radius = (diameter - 1) / 2.0d;
             radius = Math.Max(1, radius);
-            c.setInhibitionRadius((int)(radius + 0.5));
+            c.InhibitionRadius = (int)(radius + 0.5);
         }
 
         /**
@@ -905,14 +905,16 @@ namespace NeoCortexApi
          */
         public virtual int[] inhibitColumns(Connections c, double[] initialOverlaps)
         {
-            double[] overlaps = new double[initialOverlaps.Length];
-            Array.Copy(initialOverlaps, overlaps, overlaps.Length);
+            //double[] overlaps = new double[initialOverlaps.Length];
+            //Array.Copy(initialOverlaps, overlaps, overlaps.Length);
+
+            double[] overlaps = new List<double>(initialOverlaps).ToArray();
 
             double density = c.LocalAreaDensity;
             double inhibitionArea;
             if (density <= 0)
             {
-                inhibitionArea = Math.Pow(2 * c.getInhibitionRadius() + 1, c.getColumnDimensions().Length);
+                inhibitionArea = Math.Pow(2 * c.InhibitionRadius+ 1, c.getColumnDimensions().Length);
                 inhibitionArea = Math.Min(c.getNumColumns(), inhibitionArea);
                 density = c.NumActiveColumnsPerInhArea/ inhibitionArea;
                 density = Math.Min(density, 0.5);
@@ -921,7 +923,7 @@ namespace NeoCortexApi
             //Add our fixed little bit of random noise to the scores to help break ties.
             //ArrayUtils.d_add(overlaps, c.getTieBreaker());
 
-            if (c.getGlobalInhibition() || c.getInhibitionRadius() > ArrayUtils.max(c.getColumnDimensions()))
+            if (c.getGlobalInhibition() || c.InhibitionRadius> ArrayUtils.max(c.getColumnDimensions()))
             {
                 return inhibitColumnsGlobal(c, overlaps, density);
             }
@@ -1007,7 +1009,7 @@ namespace NeoCortexApi
 
             List<int> winners = new List<int>();
             double stimulusThreshold = c.getStimulusThreshold();
-            int inhibitionRadius = c.getInhibitionRadius();
+            int inhibitionRadius = c.InhibitionRadius;
             for (int i = 0; i < overlaps.Length; i++)
             {
                 int column = i;

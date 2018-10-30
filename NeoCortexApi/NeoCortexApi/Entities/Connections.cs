@@ -106,7 +106,7 @@ namespace NeoCortexApi.Entities
          * radius is updated every learning round. It grows and shrinks with the
          * average number of connected synapses per column.
          */
-        private int inhibitionRadius = 0;
+        private int m_InhibitionRadius = 0;
 
         private double[] overlapDutyCycles;
         private double[] activeDutyCycles;
@@ -538,19 +538,11 @@ namespace NeoCortexApi.Entities
          * Returns the inhibition radius
          * @return
          */
-        public int getInhibitionRadius()
-        {
-            return inhibitionRadius;
-        }
-
         /**
-         * Sets the inhibition radius
-         * @param radius
-         */
-        public void setInhibitionRadius(int radius)
-        {
-            this.inhibitionRadius = radius;
-        }
+ * Sets the inhibition radius
+ * @param radius
+ */
+        public int InhibitionRadius { get => m_InhibitionRadius; set => this.m_InhibitionRadius = value; }
 
         /**
          * Returns the product of the input dimensions
@@ -2350,7 +2342,7 @@ namespace NeoCortexApi.Entities
             Console.WriteLine("potentialRadius            = " + getPotentialRadius());
             Console.WriteLine("globalInhibition           = " + getGlobalInhibition());
             Console.WriteLine("localAreaDensity           = " + LocalAreaDensity);
-            Console.WriteLine("inhibitionRadius           = " + getInhibitionRadius());
+            Console.WriteLine("inhibitionRadius           = " + InhibitionRadius);
             Console.WriteLine("stimulusThreshold          = " + getStimulusThreshold());
             Console.WriteLine("synPermActiveInc           = " + getSynPermActiveInc());
             Console.WriteLine("synPermInactiveDec         = " + getSynPermInactiveDec());
@@ -2505,7 +2497,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + (int)(temp ^ (temp >> 32));//it was temp >>> 32
             result = prime * result + dutyCyclePeriod;
             result = prime * result + (globalInhibition ? 1231 : 1237);
-            result = prime * result + inhibitionRadius;
+            result = prime * result + m_InhibitionRadius;
             temp = BitConverter.DoubleToInt64Bits(initConnectedPct);
             result = prime * result + (int)(temp ^ (temp >> 32));
             temp = BitConverter.DoubleToInt64Bits(initialPermanence);
@@ -2625,7 +2617,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (globalInhibition != other.globalInhibition)
                 return false;
-            if (inhibitionRadius != other.inhibitionRadius)
+            if (m_InhibitionRadius != other.m_InhibitionRadius)
                 return false;
             if (BitConverter.DoubleToInt64Bits(initConnectedPct) != BitConverter.DoubleToInt64Bits(other.initConnectedPct))
                 return false;
