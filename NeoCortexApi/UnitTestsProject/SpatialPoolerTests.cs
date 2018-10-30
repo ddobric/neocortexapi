@@ -79,7 +79,7 @@ namespace UnitTestsProject
             Assert.AreEqual(5, mem.getPotentialRadius());
             Assert.AreEqual(0.5, mem.getPotentialPct());//, 0);
             Assert.AreEqual(false, mem.getGlobalInhibition());
-            Assert.AreEqual(-1.0, mem.getLocalAreaDensity());//, 0);
+            Assert.AreEqual(-1.0, mem.LocalAreaDensity);//, 0);
             Assert.AreEqual(3, mem.getNumActiveColumnsPerInhArea());//, 0);
             Assert.IsTrue(Math.Abs(1 - mem.getStimulusThreshold()) <= 1);
             Assert.AreEqual(0.01, mem.getSynPermInactiveDec());//, 0);
@@ -697,10 +697,10 @@ namespace UnitTestsProject
 
             double[] overlaps = ArrayUtils.sample(mem.getNumColumns(), mem.getRandom());
             mem.setNumActiveColumnsPerInhArea(5);
-            mem.setLocalAreaDensity(0.1);
+            mem.LocalAreaDensity = 0.1;
             mem.setGlobalInhibition(true);
             mem.setInhibitionRadius(5);
-            double trueDensity = mem.getLocalAreaDensity();
+            double trueDensity = mem.LocalAreaDensity;
             //inhibitColumnsGlobal.inhibitColumns(mem, overlaps);
             mock.inhibitColumns(mem, overlaps);
             Assert.IsTrue(globalCalled);
@@ -720,7 +720,7 @@ namespace UnitTestsProject
             overlaps = ArrayUtils.sample(mem.getNumColumns(), mem.getRandom());
             //inhibitColumnsLocal.inhibitColumns(mem, overlaps);
             mock.inhibitColumns(mem, overlaps);
-            trueDensity = mem.getLocalAreaDensity();
+            trueDensity = mem.LocalAreaDensity;
             Assert.IsTrue(!globalCalled);
             Assert.IsTrue(localCalled);
             Assert.IsTrue(Math.Abs(trueDensity - _density) <= .01d);

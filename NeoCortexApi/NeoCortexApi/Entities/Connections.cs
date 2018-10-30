@@ -33,7 +33,7 @@ namespace NeoCortexApi.Entities
         private int potentialRadius = 16;
         private double potentialPct = 0.5;
         private bool globalInhibition = false;
-        private double localAreaDensity = -1.0;
+        private double m_LocalAreaDensity = -1.0;
         private double numActiveColumnsPerInhArea;
         private double stimulusThreshold = 0;
         private double synPermInactiveDec = 0.008;
@@ -811,19 +811,26 @@ namespace NeoCortexApi.Entities
          *
          * @param localAreaDensity
          */
-        public void setLocalAreaDensity(double localAreaDensity)
-        {
-            this.localAreaDensity = localAreaDensity;
-        }
+        //public void setLocalAreaDensity(double localAreaDensity)
+        //{
+        //    this.m_LocalAreaDensity = localAreaDensity;
+        //}
 
         /**
          * Returns the configured local area density
          * @return  the configured local area density
          * @see setLocalAreaDensity
          */
-        public double getLocalAreaDensity()
+        public double LocalAreaDensity
         {
-            return localAreaDensity;
+            get
+            {
+                return m_LocalAreaDensity;
+            }
+            set
+            {
+                 m_LocalAreaDensity = value;
+            }
         }
 
         /**
@@ -2379,7 +2386,7 @@ namespace NeoCortexApi.Entities
             Console.WriteLine("potentialPct               = " + getPotentialPct());
             Console.WriteLine("potentialRadius            = " + getPotentialRadius());
             Console.WriteLine("globalInhibition           = " + getGlobalInhibition());
-            Console.WriteLine("localAreaDensity           = " + getLocalAreaDensity());
+            Console.WriteLine("localAreaDensity           = " + LocalAreaDensity);
             Console.WriteLine("inhibitionRadius           = " + getInhibitionRadius());
             Console.WriteLine("stimulusThreshold          = " + getStimulusThreshold());
             Console.WriteLine("synPermActiveInc           = " + getSynPermActiveInc());
@@ -2547,7 +2554,7 @@ namespace NeoCortexApi.Entities
             //result = prime * result + (new Long(tmIteration)).intValue();
             result = prime * result + (int)tmIteration;
             result = prime * result + learningRadius;
-            temp = BitConverter.DoubleToInt64Bits(localAreaDensity);
+            temp = BitConverter.DoubleToInt64Bits(m_LocalAreaDensity);
             result = prime * result + (int)(temp ^ (temp >> 32));
             temp = BitConverter.DoubleToInt64Bits(maxBoost);
             result = prime * result + (int)(temp ^ (temp >> 32));
@@ -2678,7 +2685,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (learningRadius != other.learningRadius)
                 return false;
-            if (BitConverter.DoubleToInt64Bits(localAreaDensity) != BitConverter.DoubleToInt64Bits(other.localAreaDensity))
+            if (BitConverter.DoubleToInt64Bits(m_LocalAreaDensity) != BitConverter.DoubleToInt64Bits(other.m_LocalAreaDensity))
                 return false;
             if (BitConverter.DoubleToInt64Bits(maxBoost) != BitConverter.DoubleToInt64Bits(other.maxBoost))
                 return false;

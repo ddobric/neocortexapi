@@ -45,8 +45,8 @@ namespace NeoCortexApi
          */
         public void init(Connections c)
         {
-            if (c.getNumActiveColumnsPerInhArea() == 0 && (c.getLocalAreaDensity() == 0 ||
-                c.getLocalAreaDensity() > 0.5))
+            if (c.getNumActiveColumnsPerInhArea() == 0 && (c.LocalAreaDensity== 0 ||
+                c.LocalAreaDensity> 0.5))
             {
                 throw new ArgumentException("Inhibition parameters are invalid");
             }
@@ -906,9 +906,9 @@ namespace NeoCortexApi
             double[] overlaps = new double[initialOverlaps.Length];
             Array.Copy(initialOverlaps, overlaps, overlaps.Length);
 
-            double density;
+            double density = c.LocalAreaDensity;
             double inhibitionArea;
-            if ((density = c.getLocalAreaDensity()) <= 0)
+            if (density <= 0)
             {
                 inhibitionArea = Math.Pow(2 * c.getInhibitionRadius() + 1, c.getColumnDimensions().Length);
                 inhibitionArea = Math.Min(c.getNumColumns(), inhibitionArea);
