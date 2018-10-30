@@ -340,7 +340,7 @@ namespace UnitTestsProject
             sp.compute(cn, inputVector, activeArray, true);
 
             double[] boostedOverlaps = cn.getBoostedOverlaps();
-            int[] overlaps = cn.getOverlaps();
+            int[] overlaps = cn.Overlaps;
 
             for (int i = 0; i < cn.getNumColumns(); i++)
             {

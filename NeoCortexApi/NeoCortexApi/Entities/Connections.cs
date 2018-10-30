@@ -64,7 +64,7 @@ namespace NeoCortexApi.Entities
         public long tmIteration = 0;
 
         public double[] boostedOverlaps;
-        public int[] overlaps;
+        public int[] m_Overlaps;
 
         /** Manages input neighborhood transformations */
         private Topology inputTopology;
@@ -1138,25 +1138,11 @@ namespace NeoCortexApi.Entities
             return boostedOverlaps;
         }
 
-        /**
-         * Sets and Returns the overlap score for each column.
-         * Overlap is calculated by SpatialPooler and then set here.
-         * @param overlaps
-         * @return
-         */
-        public int[] setOverlaps(int[] overlaps)
-        {
-            return this.overlaps = overlaps;
-        }
-
-        /**
-         * Returns the overlap score for each column
-         * @return the overlaps
-         */
-        public int[] getOverlaps()
-        {
-            return overlaps;
-        }
+              
+        /// <summary>
+        /// Set/Get ovrlapps for each column.
+        /// </summary>
+        public int[] Overlaps { get => m_Overlaps; set => this.m_Overlaps = value; }
 
         /**
          * Sets the synPermTrimThreshold

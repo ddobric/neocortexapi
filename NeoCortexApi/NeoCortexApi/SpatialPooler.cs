@@ -181,7 +181,7 @@ namespace NeoCortexApi
 
             // Gets overlap ove every single column.
             var overlaps = calculateOverlap(c, inputVector);
-            overlaps = c.setOverlaps(overlaps);
+            c.Overlaps = overlaps;
 
             double[] boostedOverlaps;
 
