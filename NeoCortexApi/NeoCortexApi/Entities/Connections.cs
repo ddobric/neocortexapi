@@ -112,7 +112,7 @@ namespace NeoCortexApi.Entities
         private double[] activeDutyCycles;
         private volatile double[] minOverlapDutyCycles;
         private volatile double[] minActiveDutyCycles;
-        private double[] boostFactors;
+        private double[] m_BoostFactors;
 
         /////////////////////////////////////// Temporal Memory Vars ///////////////////////////////////////////
 
@@ -1305,19 +1305,11 @@ namespace NeoCortexApi.Entities
          * Returns the array of boost factors
          * @return	the array of boost factors
          */
-        public double[] getBoostFactors()
-        {
-            return boostFactors;
-        }
-
         /**
-         * Sets the array of boost factors
-         * @param boostFactors	the array of boost factors
-         */
-        public void setBoostFactors(double[] boostFactors)
-        {
-            this.boostFactors = boostFactors;
-        }
+ * Sets the array of boost factors
+ * @param boostFactors	the array of boost factors
+ */
+        public double[] BoostFactors { get => m_BoostFactors; set => this.m_BoostFactors = value; }
 
 
         ////////////////////////////////////////
@@ -2518,7 +2510,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + activationThreshold;
             result = prime * result + ((activeCells == null) ? 0 : activeCells.GetHashCode());
             result = prime * result + activeDutyCycles.GetHashCode();
-            result = prime * result + boostFactors.GetHashCode();
+            result = prime * result + m_BoostFactors.GetHashCode();
             result = prime * result + cells.GetHashCode();
             result = prime * result + cellsPerColumn;
             result = prime * result + columnDimensions.GetHashCode();
@@ -2627,7 +2619,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (!Array.Equals(activeDutyCycles, other.activeDutyCycles))
                 return false;
-            if (!Array.Equals(boostFactors, other.boostFactors))
+            if (!Array.Equals(m_BoostFactors, other.m_BoostFactors))
                 return false;
             if (!Array.Equals(cells, other.cells))
                 return false;

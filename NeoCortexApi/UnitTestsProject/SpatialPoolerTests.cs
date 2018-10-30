@@ -333,7 +333,7 @@ namespace UnitTestsProject
             parameters.apply(cn);
             sp.init(cn);
 
-            cn.setBoostFactors(new double[] { 2.0, 2.0, 2.0 });
+            cn.BoostFactors = (new double[] { 2.0, 2.0, 2.0 });
             int[] inputVector = { 1, 1, 1, 1, 1 };
             int[] activeArray = { 0, 0, 0 };
             int[] expOutput = { 1, 1, 1 };// { 2, 1, 0 }; This was used originally on Linux with JAVA and Pyhton
@@ -787,7 +787,7 @@ namespace UnitTestsProject
 
             double[] trueBoostFactors = new double[] { 1, 1, 1, 1, 1, 1 };
             sp.updateBoostFactors(mem);
-            double[] boostFactors = mem.getBoostFactors();
+            double[] boostFactors = mem.BoostFactors;
             for (int i = 0; i < boostFactors.Length; i++)
             {
                 Assert.IsTrue(Math.Abs(trueBoostFactors[i] - boostFactors[i]) <= 0.1D);
@@ -796,9 +796,9 @@ namespace UnitTestsProject
             ////////////////
             minActiveDutyCycles = new double[] { 0.1, 0.3, 0.02, 0.04, 0.7, 0.12 };
             mem.setMinActiveDutyCycles(minActiveDutyCycles);
-            ArrayUtils.fillArray(mem.getBoostFactors(), 0);
+            ArrayUtils.fillArray(mem.BoostFactors, 0);
             sp.updateBoostFactors(mem);
-            boostFactors = mem.getBoostFactors();
+            boostFactors = mem.BoostFactors;
             for (int i = 0; i < boostFactors.Length; i++)
             {
                 Assert.IsTrue(Math.Abs(trueBoostFactors[i] - boostFactors[i]) <= 0.1D);
@@ -811,7 +811,7 @@ namespace UnitTestsProject
             mem.setActiveDutyCycles(activeDutyCycles);
             trueBoostFactors = new double[] { 9.1, 9.1, 9.1, 9.1, 9.1, 9.1 };
             sp.updateBoostFactors(mem);
-            boostFactors = mem.getBoostFactors();
+            boostFactors = mem.BoostFactors;
             for (int i = 0; i < boostFactors.Length; i++)
             {
                 Assert.IsTrue(Math.Abs(trueBoostFactors[i] - boostFactors[i]) <= 0.1D);
@@ -824,7 +824,7 @@ namespace UnitTestsProject
             mem.setActiveDutyCycles(activeDutyCycles);
             ArrayUtils.fillArray(trueBoostFactors, 10.0);
             sp.updateBoostFactors(mem);
-            boostFactors = mem.getBoostFactors();
+            boostFactors = mem.BoostFactors;
             for (int i = 0; i < boostFactors.Length; i++)
             {
                 Assert.IsTrue(Math.Abs(trueBoostFactors[i] - boostFactors[i]) <= 0.1D);

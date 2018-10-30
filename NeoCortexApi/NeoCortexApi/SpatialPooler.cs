@@ -100,8 +100,8 @@ namespace NeoCortexApi
             c.setActiveDutyCycles(new double[numColumns]);
             c.setMinOverlapDutyCycles(new double[numColumns]);
             c.setMinActiveDutyCycles(new double[numColumns]);
-            c.setBoostFactors(new double[numColumns]);
-            ArrayUtils.fillArray(c.getBoostFactors(), 1);
+            c.BoostFactors = (new double[numColumns]);
+            ArrayUtils.fillArray(c.BoostFactors, 1);
         }
 
         /**
@@ -189,7 +189,7 @@ namespace NeoCortexApi
             // We perform boosting here and right after that, we will recalculate bossted factors for next cycle.
             if (learn)
             {
-                boostedOverlaps = ArrayUtils.multiply(c.getBoostFactors(), overlaps);
+                boostedOverlaps = ArrayUtils.multiply(c.BoostFactors, overlaps);
             }
             else
             {
@@ -1081,7 +1081,7 @@ namespace NeoCortexApi
             double[] boostInterim;
             if (mask.Count < 1)
             {
-                boostInterim = c.getBoostFactors();
+                boostInterim = c.BoostFactors;
             }
             else
             {
@@ -1109,7 +1109,7 @@ namespace NeoCortexApi
             //    @Override public boolean eval(double d) { return d > minActiveDutyCycles[i++]; }
             //}), 1.0d);
 
-            c.setBoostFactors(boostInterim);
+            c.BoostFactors = boostInterim;
         }
 
         /**
