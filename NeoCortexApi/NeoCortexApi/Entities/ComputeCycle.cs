@@ -49,7 +49,7 @@ namespace NeoCortexApi.Entities
          */
         public ComputeCycle(Connections c)
         {
-            this.activeCells = new LinkedHashSet<Cell>(c.getWinnerCells());
+            this.activeCells = new LinkedHashSet<Cell>(c.getWinnerCells());//TODO potential bug. activeCells or winnerCells?!
             this.winnerCells = new LinkedHashSet<Cell>(c.getWinnerCells());
             this.m_predictiveCells = new LinkedHashSet<Cell>(c.getPredictiveCells());
             this.activeSegments = new List<DistalDendrite>(c.getActiveSegments());

@@ -33,8 +33,8 @@ namespace NeoCortexApi.Entities
         private int potentialRadius = 16;
         private double potentialPct = 0.5;
         private bool globalInhibition = false;
-        private double localAreaDensity = -1.0;
-        private double numActiveColumnsPerInhArea;
+        private double m_LocalAreaDensity = -1.0;
+        private double m_NumActiveColumnsPerInhArea;
         private double stimulusThreshold = 0;
         private double synPermInactiveDec = 0.008;
         private double synPermActiveInc = 0.05;
@@ -63,8 +63,8 @@ namespace NeoCortexApi.Entities
         public int spIterationLearnNum = 0;
         public long tmIteration = 0;
 
-        public double[] boostedOverlaps;
-        public int[] overlaps;
+        public double[] m_BoostedmOverlaps;
+        public int[] m_Overlaps;
 
         /** Manages input neighborhood transformations */
         private Topology inputTopology;
@@ -106,13 +106,13 @@ namespace NeoCortexApi.Entities
          * radius is updated every learning round. It grows and shrinks with the
          * average number of connected synapses per column.
          */
-        private int inhibitionRadius = 0;
+        private int m_InhibitionRadius = 0;
 
         private double[] overlapDutyCycles;
         private double[] activeDutyCycles;
         private volatile double[] minOverlapDutyCycles;
         private volatile double[] minActiveDutyCycles;
-        private double[] boostFactors;
+        private double[] m_BoostFactors;
 
         /////////////////////////////////////// Temporal Memory Vars ///////////////////////////////////////////
 
@@ -209,13 +209,13 @@ namespace NeoCortexApi.Entities
         protected List<DistalDendrite> m_SegmentForFlatIdx = new List<DistalDendrite>();
 
         /** Stores each cycle's most recent activity */
-        public Activity lastActivity;
+        public SegmentActivity lastActivity;
 
         /** The default random number seed */
         protected int seed = 42;
 
         /** The random number generator */
-        public Random random ;
+        public Random random;
 
         public DentriteComparer GetComparer()
         {
@@ -258,7 +258,7 @@ namespace NeoCortexApi.Entities
 
         //};
 
-    
+
 
         ////////////////////////////////////////
         //       Connections Constructor      //
@@ -268,7 +268,8 @@ namespace NeoCortexApi.Entities
          * is usually configured via the {@link Parameters#apply(Object)}
          * method.
          */
-        public Connections() {
+        public Connections()
+        {
 
             synPermTrimThreshold = synPermActiveInc / 2.0;
             synPermBelowStimulusInc = synPermConnected / 10.0;
@@ -537,19 +538,11 @@ namespace NeoCortexApi.Entities
          * Returns the inhibition radius
          * @return
          */
-        public int getInhibitionRadius()
-        {
-            return inhibitionRadius;
-        }
-
         /**
-         * Sets the inhibition radius
-         * @param radius
-         */
-        public void setInhibitionRadius(int radius)
-        {
-            this.inhibitionRadius = radius;
-        }
+ * Sets the inhibition radius
+ * @param radius
+ */
+        public int InhibitionRadius { get => m_InhibitionRadius; set => this.m_InhibitionRadius = value; }
 
         /**
          * Returns the product of the input dimensions
@@ -811,44 +804,26 @@ namespace NeoCortexApi.Entities
          *
          * @param localAreaDensity
          */
-        public void setLocalAreaDensity(double localAreaDensity)
-        {
-            this.localAreaDensity = localAreaDensity;
-        }
+        //public void setLocalAreaDensity(double localAreaDensity)
+        //{
+        //    this.m_LocalAreaDensity = localAreaDensity;
+        //}
 
         /**
          * Returns the configured local area density
          * @return  the configured local area density
          * @see setLocalAreaDensity
          */
-        public double getLocalAreaDensity()
+        public double LocalAreaDensity
         {
-            return localAreaDensity;
-        }
-
-        /**
-         * An alternate way to control the density of the active
-         * columns. If numActivePerInhArea is specified then
-         * localAreaDensity must be less than 0, and vice versa.
-         * When using numActivePerInhArea, the inhibition logic
-         * will insure that at most 'numActivePerInhArea'
-         * columns remain ON within a local inhibition area (the
-         * size of which is set by the internally calculated
-         * inhibitionRadius, which is in turn determined from
-         * the average size of the connected receptive fields of
-         * all columns). When using this method, as columns
-         * learn and grow their effective receptive fields, the
-         * inhibitionRadius will grow, and hence the net density
-         * of the active columns will *decrease*. This is in
-         * contrast to the localAreaDensity method, which keeps
-         * the density of active columns the same regardless of
-         * the size of their receptive fields.
-         *
-         * @param numActiveColumnsPerInhArea
-         */
-        public void setNumActiveColumnsPerInhArea(double numActiveColumnsPerInhArea)
-        {
-            this.numActiveColumnsPerInhArea = numActiveColumnsPerInhArea;
+            get
+            {
+                return m_LocalAreaDensity;
+            }
+            set
+            {
+                m_LocalAreaDensity = value;
+            }
         }
 
         /**
@@ -858,10 +833,27 @@ namespace NeoCortexApi.Entities
          * inhibition area.
          * @see setNumActiveColumnsPerInhArea
          */
-        public double getNumActiveColumnsPerInhArea()
-        {
-            return numActiveColumnsPerInhArea;
-        }
+        /**
+ * An alternate way to control the density of the active
+ * columns. If numActivePerInhArea is specified then
+ * localAreaDensity must be less than 0, and vice versa.
+ * When using numActivePerInhArea, the inhibition logic
+ * will insure that at most 'numActivePerInhArea'
+ * columns remain ON within a local inhibition area (the
+ * size of which is set by the internally calculated
+ * inhibitionRadius, which is in turn determined from
+ * the average size of the connected receptive fields of
+ * all columns). When using this method, as columns
+ * learn and grow their effective receptive fields, the
+ * inhibitionRadius will grow, and hence the net density
+ * of the active columns will *decrease*. This is in
+ * contrast to the localAreaDensity method, which keeps
+ * the density of active columns the same regardless of
+ * the size of their receptive fields.
+ *
+ * @param numActiveColumnsPerInhArea
+ */
+        public double NumActiveColumnsPerInhArea { get => m_NumActiveColumnsPerInhArea; set => this.m_NumActiveColumnsPerInhArea = value; }
 
         /**
          * This is a number specifying the minimum number of
@@ -1113,43 +1105,21 @@ namespace NeoCortexApi.Entities
         }
 
         /**
-         * Sets and Returns the boosted overlap score for each column
-         * @param boostedOverlaps
-         * @return
-         */
-        public double[] setBoostedOverlaps(double[] boostedOverlaps)
-        {
-            return this.boostedOverlaps = boostedOverlaps;
-        }
-
-        /**
          * Returns the boosted overlap score for each column
          * @return the boosted overlaps
          */
-        public double[] getBoostedOverlaps()
-        {
-            return boostedOverlaps;
-        }
-
         /**
-         * Sets and Returns the overlap score for each column.
-         * Overlap is calculated by SpatialPooler and then set here.
-         * @param overlaps
-         * @return
-         */
-        public int[] setOverlaps(int[] overlaps)
-        {
-            return this.overlaps = overlaps;
-        }
+ * Sets and Returns the boosted overlap score for each column
+ * @param boostedOverlaps
+ * @return
+ */
+        public double[] BoostedOverlaps { get => m_BoostedmOverlaps; set => this.m_BoostedmOverlaps = value; }
 
-        /**
-         * Returns the overlap score for each column
-         * @return the overlaps
-         */
-        public int[] getOverlaps()
-        {
-            return overlaps;
-        }
+
+        /// <summary>
+        /// Set/Get ovrlapps for each column.
+        /// </summary>
+        public int[] Overlaps { get => m_Overlaps; set => this.m_Overlaps = value; }
 
         /**
          * Sets the synPermTrimThreshold
@@ -1312,58 +1282,16 @@ namespace NeoCortexApi.Entities
          * Returns the array of boost factors
          * @return	the array of boost factors
          */
-        public double[] getBoostFactors()
-        {
-            return boostFactors;
-        }
-
         /**
-         * Sets the array of boost factors
-         * @param boostFactors	the array of boost factors
-         */
-        public void setBoostFactors(double[] boostFactors)
-        {
-            this.boostFactors = boostFactors;
-        }
+ * Sets the array of boost factors
+ * @param boostFactors	the array of boost factors
+ */
+        public double[] BoostFactors { get => m_BoostFactors; set => this.m_BoostFactors = value; }
 
 
         ////////////////////////////////////////
         //       TemporalMemory Methods       //
         ////////////////////////////////////////
-
-        /**
-         * Return type from {@link Connections#computeActivity(Set, double, int, double, int, boolean)}
-         */
-        public class Activity
-        {
-            /** default serial */
-            private static readonly long serialVersionUID = 1L;
-
-            /// <summary>
-            /// numActiveConnectedSynapsesForSegment
-            /// </summary>
-            //public int[] numActiveConnected;
-            //public int[] numActivePotential;
-
-            /// <summary>
-            /// Contains the index of segment with number of synapses with permanence higher than threshold,
-            /// which makes synapse active.
-            /// </summary>
-            public Dictionary<int, int> Active = new Dictionary<int, int>();
-
-            public Dictionary<int, int> Potential = new Dictionary<int, int>();
-
-            public Activity()
-            {
-               
-            }
-
-            //public Activity(int[] numConnected, int[] numPotential)
-            //{
-            //    this.numActiveConnected = numConnected;
-            //    this.numActivePotential = numPotential;
-            //}
-        }
 
 
         /**
@@ -1385,7 +1313,7 @@ namespace NeoCortexApi.Entities
         /// <param name="activePresynapticCells"></param>
         /// <param name="connectedPermanence"></param>
         /// <returns></returns>
-        public Activity computeActivity(ICollection<Cell> activePresynapticCells, double connectedPermanence)
+        public SegmentActivity computeActivity(ICollection<Cell> activePresynapticCells, double connectedPermanence)
         {
             Dictionary<int, int> active = new Dictionary<int, int>();
             Dictionary<int, int> potential = new Dictionary<int, int>();
@@ -1426,7 +1354,7 @@ namespace NeoCortexApi.Entities
             //return lastActivity = new Activity(
             //    numActiveConnectedSynapsesForSegment,
             //        numActivePotentialSynapsesForSegment);
-            return new Activity() { Active = active, Potential = potential };
+            return new SegmentActivity() { Active = active, Potential = potential };
         }
 
         /**
@@ -1435,7 +1363,7 @@ namespace NeoCortexApi.Entities
          * 
          * @return  the last activity to be computed.
          */
-        public Activity getLastActivity()
+        public SegmentActivity getLastActivity()
         {
             return lastActivity;
         }
@@ -1498,7 +1426,7 @@ namespace NeoCortexApi.Entities
 
             DistalDendrite segment = new DistalDendrite(cell, flatIdx, tmIteration, ordinal);
             getSegments(cell, true).Add(segment);
-            m_SegmentForFlatIdx[flatIdx]= segment;
+            m_SegmentForFlatIdx[flatIdx] = segment;
 
             return segment;
         }
@@ -1530,7 +1458,7 @@ namespace NeoCortexApi.Entities
             // Free the flatIdx and remove the final reference so the Segment can be
             // garbage-collected.
             freeFlatIdxs.Add(segment.getIndex());
-            m_SegmentForFlatIdx[segment.getIndex()] =null;
+            m_SegmentForFlatIdx[segment.getIndex()] = null;
         }
 
         /**
@@ -1796,7 +1724,7 @@ namespace NeoCortexApi.Entities
             return GetNumSynapses(null);
         }
 
-      
+
         /**
          * Returns the number of {@link Synapse}s on a given {@link DistalDendrite}
          * if specified, or the total number if the "optionalSegmentArg" is null.
@@ -2409,12 +2337,12 @@ namespace NeoCortexApi.Entities
             Console.WriteLine("numColumns                 = " + getNumColumns());
             Console.WriteLine("cellsPerColumn             = " + getCellsPerColumn());
             Console.WriteLine("columnDimensions           = " + getColumnDimensions().ToString());
-            Console.WriteLine("numActiveColumnsPerInhArea = " + getNumActiveColumnsPerInhArea());
+            Console.WriteLine("numActiveColumnsPerInhArea = " + NumActiveColumnsPerInhArea);
             Console.WriteLine("potentialPct               = " + getPotentialPct());
             Console.WriteLine("potentialRadius            = " + getPotentialRadius());
             Console.WriteLine("globalInhibition           = " + getGlobalInhibition());
-            Console.WriteLine("localAreaDensity           = " + getLocalAreaDensity());
-            Console.WriteLine("inhibitionRadius           = " + getInhibitionRadius());
+            Console.WriteLine("localAreaDensity           = " + LocalAreaDensity);
+            Console.WriteLine("inhibitionRadius           = " + InhibitionRadius);
             Console.WriteLine("stimulusThreshold          = " + getStimulusThreshold());
             Console.WriteLine("synPermActiveInc           = " + getSynPermActiveInc());
             Console.WriteLine("synPermInactiveDec         = " + getSynPermInactiveDec());
@@ -2559,7 +2487,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + activationThreshold;
             result = prime * result + ((activeCells == null) ? 0 : activeCells.GetHashCode());
             result = prime * result + activeDutyCycles.GetHashCode();
-            result = prime * result + boostFactors.GetHashCode();
+            result = prime * result + m_BoostFactors.GetHashCode();
             result = prime * result + cells.GetHashCode();
             result = prime * result + cellsPerColumn;
             result = prime * result + columnDimensions.GetHashCode();
@@ -2569,7 +2497,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + (int)(temp ^ (temp >> 32));//it was temp >>> 32
             result = prime * result + dutyCyclePeriod;
             result = prime * result + (globalInhibition ? 1231 : 1237);
-            result = prime * result + inhibitionRadius;
+            result = prime * result + m_InhibitionRadius;
             temp = BitConverter.DoubleToInt64Bits(initConnectedPct);
             result = prime * result + (int)(temp ^ (temp >> 32));
             temp = BitConverter.DoubleToInt64Bits(initialPermanence);
@@ -2581,7 +2509,7 @@ namespace NeoCortexApi.Entities
             //result = prime * result + (new Long(tmIteration)).intValue();
             result = prime * result + (int)tmIteration;
             result = prime * result + learningRadius;
-            temp = BitConverter.DoubleToInt64Bits(localAreaDensity);
+            temp = BitConverter.DoubleToInt64Bits(m_LocalAreaDensity);
             result = prime * result + (int)(temp ^ (temp >> 32));
             temp = BitConverter.DoubleToInt64Bits(maxBoost);
             result = prime * result + (int)(temp ^ (temp >> 32));
@@ -2594,7 +2522,7 @@ namespace NeoCortexApi.Entities
             temp = BitConverter.DoubleToInt64Bits(minPctOverlapDutyCycles);
             result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + minThreshold;
-            temp = BitConverter.DoubleToInt64Bits(numActiveColumnsPerInhArea);
+            temp = BitConverter.DoubleToInt64Bits(m_NumActiveColumnsPerInhArea);
             result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + numColumns;
             result = prime * result + numInputs;
@@ -2647,7 +2575,7 @@ namespace NeoCortexApi.Entities
          * {@inheritDoc}
          */
         //@Override
-    public override bool Equals(Object obj)
+        public override bool Equals(Object obj)
         {
             if (this == obj)
                 return true;
@@ -2655,7 +2583,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if ((obj.GetType() != this.GetType()))
                 return false;
-        
+
             Connections other = (Connections)obj;
             if (activationThreshold != other.activationThreshold)
                 return false;
@@ -2668,7 +2596,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (!Array.Equals(activeDutyCycles, other.activeDutyCycles))
                 return false;
-            if (!Array.Equals(boostFactors, other.boostFactors))
+            if (!Array.Equals(m_BoostFactors, other.m_BoostFactors))
                 return false;
             if (!Array.Equals(cells, other.cells))
                 return false;
@@ -2689,7 +2617,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (globalInhibition != other.globalInhibition)
                 return false;
-            if (inhibitionRadius != other.inhibitionRadius)
+            if (m_InhibitionRadius != other.m_InhibitionRadius)
                 return false;
             if (BitConverter.DoubleToInt64Bits(initConnectedPct) != BitConverter.DoubleToInt64Bits(other.initConnectedPct))
                 return false;
@@ -2712,7 +2640,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (learningRadius != other.learningRadius)
                 return false;
-            if (BitConverter.DoubleToInt64Bits(localAreaDensity) != BitConverter.DoubleToInt64Bits(other.localAreaDensity))
+            if (BitConverter.DoubleToInt64Bits(m_LocalAreaDensity) != BitConverter.DoubleToInt64Bits(other.m_LocalAreaDensity))
                 return false;
             if (BitConverter.DoubleToInt64Bits(maxBoost) != BitConverter.DoubleToInt64Bits(other.maxBoost))
                 return false;
@@ -2735,7 +2663,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (minThreshold != other.minThreshold)
                 return false;
-            if (BitConverter.DoubleToInt64Bits(numActiveColumnsPerInhArea) != BitConverter.DoubleToInt64Bits(other.numActiveColumnsPerInhArea))
+            if (BitConverter.DoubleToInt64Bits(m_NumActiveColumnsPerInhArea) != BitConverter.DoubleToInt64Bits(other.m_NumActiveColumnsPerInhArea))
                 return false;
             if (numColumns != other.numColumns)
                 return false;

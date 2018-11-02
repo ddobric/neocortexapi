@@ -132,17 +132,19 @@ namespace NeoCortexApi
             double permanenceIncrement = conn.getPermanenceIncrement();
             double permanenceDecrement = conn.getPermanenceDecrement();
 
+            //
+            // Grouping by active columns.
             foreach (var t in grouper)
             {
                 columnData = columnData.set(t);
 
-                if (columnData.isNotNone(cIndexofACTIVE_COLUMNS))
+                if (columnData.isExistsAnyActiveCol(cIndexofACTIVE_COLUMNS))
                 {
-                    //if (!columnData.activeSegments().isEmpty())
+                    // If there some active segment already...
                     if (columnData.activeSegments != null && columnData.activeSegments.Count > 0)
                     {
                         List<Cell> cellsToAdd = activatePredictedColumn(conn, columnData.activeSegments,
-                            columnData.matchingSegments(), prevActiveCells, prevWinnerCells,
+                            columnData.matchingSegments, prevActiveCells, prevWinnerCells,
                                 permanenceIncrement, permanenceDecrement, learn);
 
                         foreach (var item in cellsToAdd)
@@ -161,24 +163,24 @@ namespace NeoCortexApi
                         // If no active segments are detected (start of learning) then all cells are activated
                         // and a random single cell is chosen as a winner.
                         //
-                        BurstingTupple cellsXwinnerCell = BurstColumn(conn, columnData.Column(), columnData.matchingSegments(),
+                        BurstingTupple burstingResult = BurstColumn(conn, columnData.Column(), columnData.matchingSegments,
                             prevActiveCells, prevWinnerCells, permanenceIncrement, permanenceDecrement, conn.getRandom(),
                                learn);
 
                         // Here we activate all cells by putting them to list of active cells.
-                        foreach (var item in cellsXwinnerCell.Cells)
+                        foreach (var item in burstingResult.Cells)
                         {
                             cycle.activeCells.Add(item);
                         }
 
-                        cycle.winnerCells.Add((Cell)cellsXwinnerCell.BestCell);
+                        cycle.winnerCells.Add((Cell)burstingResult.BestCell);
                     }
                 }
                 else
                 {
                     if (learn)
                     {
-                        punishPredictedColumn(conn, columnData.activeSegments, columnData.matchingSegments(),
+                        punishPredictedColumn(conn, columnData.activeSegments, columnData.matchingSegments,
                             prevActiveCells, prevWinnerCells, conn.getPredictedSegmentDecrement());
                     }
                 }
@@ -203,7 +205,7 @@ namespace NeoCortexApi
          */
         public void activateDendrites(Connections conn, ComputeCycle cycle, bool learn)
         {
-            Activity activity = conn.computeActivity(cycle.activeCells, conn.getConnectedPermanence());
+            SegmentActivity activity = conn.computeActivity(cycle.activeCells, conn.getConnectedPermanence());
 
             var activeSegments = new List<DistalDendrite>();
             foreach (var item in activity.Active)
@@ -660,44 +662,30 @@ namespace NeoCortexApi
 
             public Column Column() { return (Column)m_Pair.Key; }
 
-            //public List<Column> activeColumns() { return (List<Column>)t.ac(1); }
             public List<Column> activeColumns() { return (List<Column>)m_Pair.Value[0].Cast<Column>(); }
 
-            //public List<DistalDendrite> activeSegments()
-            //{
-            //    List <?> x = ((List <?>)t.get(2));
-            //}
             public List<DistalDendrite> activeSegments
             {
                 get
                 {
-                    // if (m_Pair.Value[1][0] == NeoCortexApi.Utility.GroupBy2<object>.Slot<Pair<object, List<Column>>>.empty())
                     if (m_Pair.Value.Count == 0 ||
                         m_Pair.Value[1].Count == 0)
                         return new List<DistalDendrite>();
                     else
                         return m_Pair.Value[1].Cast<DistalDendrite>().ToList();
-
-
-
-                    //return ((List<Column>)m_Pair.get(2)).get(0).equals(Slot<Pair<object, List<Column>>>.empty()) ?
-                    //     Collections.emptyList() :
-                    //         (List<DistalDendrite>)m_Pair.Key;
                 }
             }
 
-            public List<DistalDendrite> matchingSegments()
+            public List<DistalDendrite> matchingSegments
             {
-                //if (m_Pair.Value[2][0] == NeoCortexApi.Utility.GroupBy2<object>.Slot<Pair<object, List<Column>>>.empty())
-                if (m_Pair.Value.Count == 0 ||
-                    m_Pair.Value[2].Count == 0)
-                    return new List<DistalDendrite>();
-                else
-                    return m_Pair.Value[2].Cast<DistalDendrite>().ToList();
-
-                //return ((List <?>)t.get(3)).get(0).equals(Slot.empty()) ?
-                //     Collections.emptyList() :
-                //         (List<DistalDendrite>)t.get(3);
+                get
+                {
+                    if (m_Pair.Value.Count == 0 ||
+                         m_Pair.Value[2].Count == 0)
+                        return new List<DistalDendrite>();
+                    else
+                        return m_Pair.Value[2].Cast<DistalDendrite>().ToList();
+                }
             }
 
 
@@ -709,7 +697,7 @@ namespace NeoCortexApi
              * @param memberIndex   the index of the tuple to assess.
              * @return  true if <em><b>not</b></em> none, false if it <em><b>is none</b></em>.
              */
-            public bool isNotNone(int memberIndex)
+            public bool isExistsAnyActiveCol(int memberIndex)
             {
                 if (m_Pair.Value.Count == 0 ||
                     m_Pair.Value[memberIndex].Count == 0 )

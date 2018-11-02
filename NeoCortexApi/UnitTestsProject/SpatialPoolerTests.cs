@@ -79,8 +79,8 @@ namespace UnitTestsProject
             Assert.AreEqual(5, mem.getPotentialRadius());
             Assert.AreEqual(0.5, mem.getPotentialPct());//, 0);
             Assert.AreEqual(false, mem.getGlobalInhibition());
-            Assert.AreEqual(-1.0, mem.getLocalAreaDensity());//, 0);
-            Assert.AreEqual(3, mem.getNumActiveColumnsPerInhArea());//, 0);
+            Assert.AreEqual(-1.0, mem.LocalAreaDensity);//, 0);
+            Assert.AreEqual(3, mem.NumActiveColumnsPerInhArea);//, 0);
             Assert.IsTrue(Math.Abs(1 - mem.getStimulusThreshold()) <= 1);
             Assert.AreEqual(0.01, mem.getSynPermInactiveDec());//, 0);
             Assert.AreEqual(0.1, mem.getSynPermActiveInc());//, 0);
@@ -276,7 +276,7 @@ namespace UnitTestsProject
             // This exact number of active columns is determined by the inhibition
             // radius, which changes based on the random synapses (i.e. weird math).
             // Force it to a known number.
-            cn.setInhibitionRadius(2);
+            cn.InhibitionRadius = 2;
 
             int[] activeArray = new int[nColumns];
             sp.compute(cn, new int[inputSize], activeArray, true);
@@ -333,14 +333,14 @@ namespace UnitTestsProject
             parameters.apply(cn);
             sp.init(cn);
 
-            cn.setBoostFactors(new double[] { 2.0, 2.0, 2.0 });
+            cn.BoostFactors = (new double[] { 2.0, 2.0, 2.0 });
             int[] inputVector = { 1, 1, 1, 1, 1 };
             int[] activeArray = { 0, 0, 0 };
             int[] expOutput = { 1, 1, 1 };// { 2, 1, 0 }; This was used originally on Linux with JAVA and Pyhton
             sp.compute(cn, inputVector, activeArray, true);
 
-            double[] boostedOverlaps = cn.getBoostedOverlaps();
-            int[] overlaps = cn.getOverlaps();
+            double[] boostedOverlaps = cn.BoostedOverlaps;
+            int[] overlaps = cn.Overlaps;
 
             for (int i = 0; i < cn.getNumColumns(); i++)
             {
@@ -696,11 +696,11 @@ namespace UnitTestsProject
 
 
             double[] overlaps = ArrayUtils.sample(mem.getNumColumns(), mem.getRandom());
-            mem.setNumActiveColumnsPerInhArea(5);
-            mem.setLocalAreaDensity(0.1);
+            mem.NumActiveColumnsPerInhArea = 5;
+            mem.LocalAreaDensity = 0.1;
             mem.setGlobalInhibition(true);
-            mem.setInhibitionRadius(5);
-            double trueDensity = mem.getLocalAreaDensity();
+            mem.InhibitionRadius = 5;
+            double trueDensity = mem.LocalAreaDensity;
             //inhibitColumnsGlobal.inhibitColumns(mem, overlaps);
             mock.inhibitColumns(mem, overlaps);
             Assert.IsTrue(globalCalled);
@@ -712,7 +712,7 @@ namespace UnitTestsProject
             mem.setColumnDimensions(new int[] { 50, 10 });
             //Internally calculated during init, to overwrite we put after init
             mem.setGlobalInhibition(false);
-            mem.setInhibitionRadius(7);
+            mem.InhibitionRadius = 7;
 
             double[] tieBreaker = new double[500];
             ArrayUtils.fillArray(tieBreaker, 0);
@@ -720,7 +720,7 @@ namespace UnitTestsProject
             overlaps = ArrayUtils.sample(mem.getNumColumns(), mem.getRandom());
             //inhibitColumnsLocal.inhibitColumns(mem, overlaps);
             mock.inhibitColumns(mem, overlaps);
-            trueDensity = mem.getLocalAreaDensity();
+            trueDensity = mem.LocalAreaDensity;
             Assert.IsTrue(!globalCalled);
             Assert.IsTrue(localCalled);
             Assert.IsTrue(Math.Abs(trueDensity - _density) <= .01d);
@@ -735,7 +735,7 @@ namespace UnitTestsProject
             initSP();
 
             //Internally calculated during init, to overwrite we put after init
-            mem.setInhibitionRadius(4);
+            mem.InhibitionRadius = 4;
             tieBreaker = new double[1000];
             ArrayUtils.fillArray(tieBreaker, 0);
             mem.setTieBreaker(tieBreaker);
@@ -749,10 +749,10 @@ namespace UnitTestsProject
 
             //////
             reset();
-            mem.setNumActiveColumnsPerInhArea(7);
+            mem.NumActiveColumnsPerInhArea = 7;
 
             //Internally calculated during init, to overwrite we put after init
-            mem.setInhibitionRadius(1);
+            mem.InhibitionRadius = 1;
             tieBreaker = new double[1000];
             ArrayUtils.fillArray(tieBreaker, 0);
             mem.setTieBreaker(tieBreaker);
@@ -787,7 +787,7 @@ namespace UnitTestsProject
 
             double[] trueBoostFactors = new double[] { 1, 1, 1, 1, 1, 1 };
             sp.updateBoostFactors(mem);
-            double[] boostFactors = mem.getBoostFactors();
+            double[] boostFactors = mem.BoostFactors;
             for (int i = 0; i < boostFactors.Length; i++)
             {
                 Assert.IsTrue(Math.Abs(trueBoostFactors[i] - boostFactors[i]) <= 0.1D);
@@ -796,9 +796,9 @@ namespace UnitTestsProject
             ////////////////
             minActiveDutyCycles = new double[] { 0.1, 0.3, 0.02, 0.04, 0.7, 0.12 };
             mem.setMinActiveDutyCycles(minActiveDutyCycles);
-            ArrayUtils.fillArray(mem.getBoostFactors(), 0);
+            ArrayUtils.fillArray(mem.BoostFactors, 0);
             sp.updateBoostFactors(mem);
-            boostFactors = mem.getBoostFactors();
+            boostFactors = mem.BoostFactors;
             for (int i = 0; i < boostFactors.Length; i++)
             {
                 Assert.IsTrue(Math.Abs(trueBoostFactors[i] - boostFactors[i]) <= 0.1D);
@@ -811,7 +811,7 @@ namespace UnitTestsProject
             mem.setActiveDutyCycles(activeDutyCycles);
             trueBoostFactors = new double[] { 9.1, 9.1, 9.1, 9.1, 9.1, 9.1 };
             sp.updateBoostFactors(mem);
-            boostFactors = mem.getBoostFactors();
+            boostFactors = mem.BoostFactors;
             for (int i = 0; i < boostFactors.Length; i++)
             {
                 Assert.IsTrue(Math.Abs(trueBoostFactors[i] - boostFactors[i]) <= 0.1D);
@@ -824,7 +824,7 @@ namespace UnitTestsProject
             mem.setActiveDutyCycles(activeDutyCycles);
             ArrayUtils.fillArray(trueBoostFactors, 10.0);
             sp.updateBoostFactors(mem);
-            boostFactors = mem.getBoostFactors();
+            boostFactors = mem.BoostFactors;
             for (int i = 0; i < boostFactors.Length; i++)
             {
                 Assert.IsTrue(Math.Abs(trueBoostFactors[i] - boostFactors[i]) <= 0.1D);
@@ -842,7 +842,7 @@ namespace UnitTestsProject
             mem.setColumnDimensions(new int[] { 57, 31, 2 });
             // If global inhibition is set, then all columns in the row are inhibited.
             sp.updateInhibitionRadius(mem);
-            Assert.IsTrue(57 == mem.getInhibitionRadius());
+            Assert.IsTrue(57 == mem.InhibitionRadius);
 
             ////////////
             SpatialPoolerMock3 mock = new SpatialPoolerMock3(3, 4);
@@ -863,7 +863,7 @@ namespace UnitTestsProject
             mem.setGlobalInhibition(false);
             sp = mock;
             sp.updateInhibitionRadius(mem);
-            Assert.IsTrue(6 == mem.getInhibitionRadius());
+            Assert.IsTrue(6 == mem.InhibitionRadius);
 
             //////////////
 
@@ -885,7 +885,7 @@ namespace UnitTestsProject
             mem.setGlobalInhibition(false);
             sp = mock;
             sp.updateInhibitionRadius(mem);
-            Assert.IsTrue(1 == mem.getInhibitionRadius());
+            Assert.IsTrue(1 == mem.InhibitionRadius);
 
             /////////////
             mock = new SpatialPoolerMock3(2.4, 2);
@@ -907,7 +907,7 @@ namespace UnitTestsProject
             sp = mock;
             //((2 * 2.4) - 1) / 2.0 => round up
             sp.updateInhibitionRadius(mem);
-            Assert.IsTrue(2 == mem.getInhibitionRadius());
+            Assert.IsTrue(2 == mem.InhibitionRadius);
 
             //...
             sp = new SpatialPooler();
@@ -917,7 +917,7 @@ namespace UnitTestsProject
             sp.updateInhibitionRadius(mem);
 
             // max dim of columns
-            Assert.IsTrue(57 == mem.getInhibitionRadius());
+            Assert.IsTrue(57 == mem.InhibitionRadius);
 
             // TODO..
             sp = mock;
@@ -1119,7 +1119,7 @@ namespace UnitTestsProject
             parameters.set(KEY.WRAP_AROUND, false);
             initSP();
 
-            mem.setInhibitionRadius(1);
+            mem.InhibitionRadius = 1;
             mem.setOverlapDutyCycles(new double[] { 0.7, 0.1, 0.5, 0.01, 0.78, 0.55, 0.1, 0.001 });
             mem.setActiveDutyCycles(new double[] { 0.9, 0.3, 0.5, 0.7, 0.1, 0.01, 0.08, 0.12 });
             mem.setMinPctActiveDutyCycles(0.1);
@@ -1155,7 +1155,7 @@ namespace UnitTestsProject
             parameters.set(KEY.WRAP_AROUND, true);
             initSP();
 
-            mem.setInhibitionRadius(1);
+            mem.InhibitionRadius = 1;
             mem.setOverlapDutyCycles(new double[] { 0.7, 0.1, 0.5, 0.01, 0.78, 0.55, 0.1, 0.001 });
             mem.setActiveDutyCycles(new double[] { 0.9, 0.3, 0.5, 0.7, 0.1, 0.01, 0.08, 0.12 });
             mem.setMinPctActiveDutyCycles(0.1);
@@ -1870,7 +1870,7 @@ namespace UnitTestsProject
             initSP();
 
             //Internally calculated during init, to overwrite we put after init
-            mem.setInhibitionRadius(2);
+            mem.InhibitionRadius = 2;
             double density = 0.5;
             double[] overlaps = new double[] { 1, 2, 7, 0, 3, 4, 16, 1, 1.5, 1.7 };
             //  L  W  W  L  L  W  W   L   W    W (wrapAround=true)
@@ -1887,7 +1887,7 @@ namespace UnitTestsProject
             Assert.IsTrue(trueActive.SequenceEqual(active));
 
             density = 0.5;
-            mem.setInhibitionRadius(3);
+            mem.InhibitionRadius = 3;
             overlaps = new double[] { 1, 2, 7, 0, 3, 4, 16, 1, 1.5, 1.7 };
             //  L  W  W  L  W  W  W   L   L    W (wrapAround=true)
             //  L  W  W  L  W  W  W   L   L    L (wrapAround=false)
@@ -1904,7 +1904,7 @@ namespace UnitTestsProject
 
             // Test add to winners
             density = 0.3333;
-            mem.setInhibitionRadius(3);
+            mem.InhibitionRadius = 3;
             overlaps = new double[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
             //  W  W  L  L  W  W  L  L  L  L (wrapAround=true)
             //  W  W  L  L  W  W  L  L  W  L (wrapAround=false)

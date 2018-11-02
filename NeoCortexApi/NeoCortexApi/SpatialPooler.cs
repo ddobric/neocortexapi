@@ -45,8 +45,8 @@ namespace NeoCortexApi
          */
         public void init(Connections c)
         {
-            if (c.getNumActiveColumnsPerInhArea() == 0 && (c.getLocalAreaDensity() == 0 ||
-                c.getLocalAreaDensity() > 0.5))
+            if (c.NumActiveColumnsPerInhArea== 0 && (c.LocalAreaDensity== 0 ||
+                c.LocalAreaDensity> 0.5))
             {
                 throw new ArgumentException("Inhibition parameters are invalid");
             }
@@ -100,8 +100,8 @@ namespace NeoCortexApi
             c.setActiveDutyCycles(new double[numColumns]);
             c.setMinOverlapDutyCycles(new double[numColumns]);
             c.setMinActiveDutyCycles(new double[numColumns]);
-            c.setBoostFactors(new double[numColumns]);
-            ArrayUtils.fillArray(c.getBoostFactors(), 1);
+            c.BoostFactors = (new double[numColumns]);
+            ArrayUtils.fillArray(c.BoostFactors, 1);
         }
 
         /**
@@ -181,7 +181,7 @@ namespace NeoCortexApi
 
             // Gets overlap ove every single column.
             var overlaps = calculateOverlap(c, inputVector);
-            overlaps = c.setOverlaps(overlaps);
+            c.Overlaps = overlaps;
 
             double[] boostedOverlaps;
 
@@ -189,14 +189,16 @@ namespace NeoCortexApi
             // We perform boosting here and right after that, we will recalculate bossted factors for next cycle.
             if (learn)
             {
-                boostedOverlaps = ArrayUtils.multiply(c.getBoostFactors(), overlaps);
+                boostedOverlaps = ArrayUtils.multiply(c.BoostFactors, overlaps);
             }
             else
             {
                 boostedOverlaps = ArrayUtils.toDoubleArray(overlaps);
             }
 
-            int[] activeColumns = inhibitColumns(c, c.setBoostedOverlaps(boostedOverlaps));
+            c.BoostedOverlaps = boostedOverlaps;
+
+            int[] activeColumns = inhibitColumns(c, boostedOverlaps);
 
             if (learn)
             {
@@ -284,7 +286,7 @@ namespace NeoCortexApi
          */
         public void updateMinDutyCycles(Connections c)
         {
-            if (c.getGlobalInhibition() || c.getInhibitionRadius() > c.getNumInputs())
+            if (c.getGlobalInhibition() || c.InhibitionRadius> c.getNumInputs())
             {
                 updateMinDutyCyclesGlobal(c);
             }
@@ -344,7 +346,7 @@ namespace NeoCortexApi
         public void updateMinDutyCyclesLocal(Connections c)
         {
             int len = c.getNumColumns();
-            int inhibitionRadius = c.getInhibitionRadius();
+            int inhibitionRadius = c.InhibitionRadius;
             double[] activeDutyCycles = c.getActiveDutyCycles();
             double minPctActiveDutyCycles = c.getMinPctActiveDutyCycles();
             double[] overlapDutyCycles = c.getOverlapDutyCycles();
@@ -465,7 +467,7 @@ namespace NeoCortexApi
         {
             if (c.getGlobalInhibition())
             {
-                c.setInhibitionRadius(ArrayUtils.max(c.getColumnDimensions()));
+                c.InhibitionRadius = ArrayUtils.max(c.getColumnDimensions());
                 return;
             }
 
@@ -479,7 +481,7 @@ namespace NeoCortexApi
             double diameter = avgConnectedSpan * avgColumnsPerInput(c);
             double radius = (diameter - 1) / 2.0d;
             radius = Math.Max(1, radius);
-            c.setInhibitionRadius((int)(radius + 0.5));
+            c.InhibitionRadius = (int)(radius + 0.5);
         }
 
         /**
@@ -903,23 +905,25 @@ namespace NeoCortexApi
          */
         public virtual int[] inhibitColumns(Connections c, double[] initialOverlaps)
         {
-            double[] overlaps = new double[initialOverlaps.Length];
-            Array.Copy(initialOverlaps, overlaps, overlaps.Length);
+            //double[] overlaps = new double[initialOverlaps.Length];
+            //Array.Copy(initialOverlaps, overlaps, overlaps.Length);
 
-            double density;
+            double[] overlaps = new List<double>(initialOverlaps).ToArray();
+
+            double density = c.LocalAreaDensity;
             double inhibitionArea;
-            if ((density = c.getLocalAreaDensity()) <= 0)
+            if (density <= 0)
             {
-                inhibitionArea = Math.Pow(2 * c.getInhibitionRadius() + 1, c.getColumnDimensions().Length);
+                inhibitionArea = Math.Pow(2 * c.InhibitionRadius+ 1, c.getColumnDimensions().Length);
                 inhibitionArea = Math.Min(c.getNumColumns(), inhibitionArea);
-                density = c.getNumActiveColumnsPerInhArea() / inhibitionArea;
+                density = c.NumActiveColumnsPerInhArea/ inhibitionArea;
                 density = Math.Min(density, 0.5);
             }
 
             //Add our fixed little bit of random noise to the scores to help break ties.
             //ArrayUtils.d_add(overlaps, c.getTieBreaker());
 
-            if (c.getGlobalInhibition() || c.getInhibitionRadius() > ArrayUtils.max(c.getColumnDimensions()))
+            if (c.getGlobalInhibition() || c.InhibitionRadius> ArrayUtils.max(c.getColumnDimensions()))
             {
                 return inhibitColumnsGlobal(c, overlaps, density);
             }
@@ -1005,7 +1009,7 @@ namespace NeoCortexApi
 
             List<int> winners = new List<int>();
             double stimulusThreshold = c.getStimulusThreshold();
-            int inhibitionRadius = c.getInhibitionRadius();
+            int inhibitionRadius = c.InhibitionRadius;
             for (int i = 0; i < overlaps.Length; i++)
             {
                 int column = i;
@@ -1081,7 +1085,7 @@ namespace NeoCortexApi
             double[] boostInterim;
             if (mask.Count < 1)
             {
-                boostInterim = c.getBoostFactors();
+                boostInterim = c.BoostFactors;
             }
             else
             {
@@ -1109,7 +1113,7 @@ namespace NeoCortexApi
             //    @Override public boolean eval(double d) { return d > minActiveDutyCycles[i++]; }
             //}), 1.0d);
 
-            c.setBoostFactors(boostInterim);
+            c.BoostFactors = boostInterim;
         }
 
         /**

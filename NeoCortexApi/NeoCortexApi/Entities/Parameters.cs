@@ -246,7 +246,11 @@ namespace NeoCortexApi.Entities
                 var method = methods.FirstOrDefault(m => m.Name == methodName);
                 if (method != null)
                     method.Invoke(cn, new object[] { paramMap[key] });
-
+                               
+                var properties = cn.GetType().GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                var prop = properties.FirstOrDefault(m => m.Name == $"{key.First().ToString().ToUpper()}{key.Substring(1)}");
+                if (prop != null && prop.CanWrite)
+                    prop.SetValue(cn, paramMap[key] );
                 //beanUtil.setSimpleProperty(cn, key.fieldName, get(key));
                 //}
             }
