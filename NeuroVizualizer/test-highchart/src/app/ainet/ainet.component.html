@@ -4,10 +4,9 @@
 <div class="container form-inline">
   <div calss="row form-group">
       <div class="container col-sm-12">
-          <input class="form-control" id="str" [(ngModel)]="str" type="text" placeholder="Neurons weight in between 0 and 1" #weightInput>
+          <input class="form-control" id="weightGivenByUser" [(ngModel)]="weightGivenByUser" type="text" placeholder="Neurons weight in between 0 and 1" #weightInput>
       <button class="btn btn-primary" type="submit" (click)='showNeuronsByWeightSmaller()'>Smaller than or equal</button>
-      <button class="btn btn-danger" type="submit" (click)='showNeuronsByWeightGreater(weightInput.value)'>Greater than or equal</button>
-      <button class="btn btn-success" (click)="replotChart()">Replot</button>
+      <button class="btn btn-danger" type="submit" (click)='showNeuronsByWeightGreater()'>Greater than or equal</button>
       </div>
   </div>
 </div>
