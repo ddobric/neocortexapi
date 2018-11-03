@@ -5,7 +5,6 @@ import { neoCortexUtils } from '../neocortexutils';
 import { color } from 'd3';
 import { environment as env } from "../environments/environment";
 
-
 @Component({
   selector: 'app-ainet',
   templateUrl: './ainet.component.html',
@@ -22,17 +21,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
   }
   ngAfterViewInit() {
 
-    // model = createModel();
-    // crateChart(model);
-
-    // this.fillChart();
-    // this.gradient('#E92517', '#2AEE44', 100);
-    //this.dellInvisiblepoints();
-    //this.createChartinternal(getCord(), getColors());
     this.createChart();
   }
-  //createChart(cords:any[][], color:any[]) {
-
+  
   createChart() {
     let getCoordinates = this.fillChart();
     let xCoordinates = getCoordinates[0];
@@ -211,12 +202,12 @@ export class AinetComponent implements OnInit, AfterViewInit {
       Plotlyjs.newPlot(graphDOM, [updateNeurons, updateSynapses], neuralChartLayout, neuralChartConfig);
     }
 
-// this function gives the selected neurons by weight 
-    this.showNeuronsByWeightGreater = function(){
-      
-      let filteredXCoordinates = [];
-      let filteredYCoordinates = [];
-      let filteredZCoordinates = [];
+    // this function gives the selected neurons by weight 
+    this.showNeuronsByWeightGreater = function () {
+
+      let selectedXCoordinates = [];
+      let selectedYCoordinates = [];
+      let selectedZCoordinates = [];
       let selectedWeights = [];
       let selectedColours = [];
 
@@ -236,16 +227,16 @@ export class AinetComponent implements OnInit, AfterViewInit {
         throw "Given weight is not present"
       }
 
-      filteredXCoordinates = xCoordinates.slice(indexOfNeuron);
-      filteredYCoordinates = yCoordinates.slice(indexOfNeuron);
-      filteredZCoordinates = zCoordinates.slice(indexOfNeuron);
+      selectedXCoordinates = xCoordinates.slice(indexOfNeuron);
+      selectedYCoordinates = yCoordinates.slice(indexOfNeuron);
+      selectedZCoordinates = zCoordinates.slice(indexOfNeuron);
       selectedWeights = weights.slice(indexOfNeuron);
       selectedColours = cellColours.slice(indexOfNeuron);
 
       const updateNeurons = {
-        x: filteredXCoordinates,
-        y: filteredYCoordinates,
-        z: filteredZCoordinates,
+        x: selectedXCoordinates,
+        y: selectedYCoordinates,
+        z: selectedZCoordinates,
         text: selectedWeights,
         name: 'Neuron',
         mode: 'markers',
@@ -262,9 +253,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
         type: 'scatter3d',
         mode: 'lines',
         name: 'Synapse',
-        x: filteredXCoordinates,
-        y: filteredYCoordinates,
-        z: filteredZCoordinates,
+        x: selectedXCoordinates,
+        y: selectedYCoordinates,
+        z: selectedZCoordinates,
         text: selectedWeights,
         opacity: env.opacityOfSynapse,
         line: {
@@ -274,7 +265,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       };
       Plotlyjs.newPlot(graphDOM, [updateNeurons, updateSynapses], neuralChartLayout, neuralChartConfig);
 
-    } 
+    }
 
 
     window.onresize = function () {
@@ -313,31 +304,6 @@ export class AinetComponent implements OnInit, AfterViewInit {
       }
     }
 
-    /*         for (x = 0; x < model.areas[ai].minicolumns.length; x++) {
-          for (y = 0; y < model.areas[ai].minicolumns[x].length; y++) {
-            for (z = 0; z < model.areas[ai].minicolumns[x][y].cells.length; z++) {
-               xCoord.push(model.areas[ai].minicolumns[x][y].cells[z].posX);
-              yCoord.push(model.areas[ai].minicolumns[x][y].cells[z].posY);
-              zCoord.push(model.areas[ai].minicolumns[x][y].cells[z].posZ); 
-            
- 
-            }
-          }
-        } */
-    /*
-        for (x = 0; x < model.areas[ai].minicolumns[0]; x++) {
-          for (y = 0; y < model.settings.numLayers; y++) {
-            for (z = 0; z < model.settings.minicolumnDims[1]; z++) {
-              this.xCoord.push(x);
-              this.yCoord.push(y);
-              this.zCoord.push(z);
-            }
-          }
-        }
-        */
-    /* x = 100 +(this.xCoord[this.xCoord.length-1])
-    y = 15 *(this.yCoord[this.yCoord.length-1])
-    z = 11 *(this.zCoord[this.zCoord.length-1]) */
     return [xCoord, yCoord, zCoord, numOfAreas];
 
   }
@@ -394,214 +360,17 @@ export class AinetComponent implements OnInit, AfterViewInit {
         for (let l = 0; l < neuronsWeightSegment.length; l++) {
           allNeuronsWeight.push(neuronsWeightSegment[l]);
         }
-
       }
-
-
     }
-    console.log("neuronsWeightArray", allNeuronsWeight);
-
-    console.log("ColorCodingSegment", colourCodingSegment);
-    console.log("ColorCoding", colourCoding);
-    /*  let neuronsWeight = [0, 0.25, 0.5, 0.75, 1];
- 
-     let zeroWeightNeurons = ((xCoordLen / totalAreas) / 100) * 23;
-     let quarterWeightNeurons = ((xCoordLen / totalAreas) / 100) * 8;
-     let halfWeightNeurons = ((xCoordLen / totalAreas) / 100) * 14;
-     let quarterThirdWeightNeurons = ((xCoordLen / totalAreas) / 100) * 24;
-     let oneWeightNeurons = ((xCoordLen / totalAreas) / 100) * 28; */
-
-
-
-    /* let segmentA = Math.round(zeroWeightNeurons / (240 / 5));
-    let segmentB = Math.round(quarterWeightNeurons / (240 / 5));;
-    let segmentC = Math.round(halfWeightNeurons / (240 / 5));
-    let segmentD = Math.round(quarterThirdWeightNeurons / (240 / 5));
-    let segmentE = Math.round(oneWeightNeurons / (240 / 5)); */
-    /* 
-        let segmentA = zeroWeightNeurons / (240 / 5);
-        let segA = segmentA.toFixed(0);
-        let segmentB = quarterWeightNeurons / (240 / 5);
-        let segB = segmentB.toFixed(0);
-        let segmentC = halfWeightNeurons / (240 / 5);
-        let segC = segmentC.toFixed(0);
-        //parseInt(segmentC);
-        let segmentD = quarterThirdWeightNeurons / (240 / 5);
-        let segD = segmentD.toFixed(0);
-        let segmentE = oneWeightNeurons / (240 / 5);
-        let segE = segmentE.toFixed(0); 
-    
-        
-        let segmentWiseColors = [];
-       
-    
-        for (let a = 0; a < 0.20; a = a + (1 / 240)) {
-          let newH = (1.0 - a) * 240;
-          segmentWiseColors.push("hsl(" + newH + ", 100%, 50%)")
-          segmentWiseColors = Array(parseInt(segA)).fill("hsl(" + newH + ", 100%, 50%)");
-          for (let b = 0; b < segmentWiseColors.length; b++) {
-            allSegmentColors.push(segmentWiseColors[b]);
-          }
-        }
-        for (let ab = 0.20; ab < 0.40; ab = ab + (1 / 240)) {
-          let newH = (1.0 - ab) * 240;
-          segmentWiseColors = Array(parseInt(segB)).fill("hsl(" + newH + ", 100%, 50%)");
-          for (let bc = 0; bc < segmentWiseColors.length; bc++) {
-            allSegmentColors.push(segmentWiseColors[bc]);
-          }
-        }
-        for (let c = 0.40; c < 0.60; c = c + (1 / 240)) {
-          let newH = (1.0 - c) * 240;
-          segmentWiseColors = Array(parseInt(segC)).fill("hsl(" + newH + ", 100%, 50%)");
-          for (let d = 0; d < segmentWiseColors.length; d++) {
-            allSegmentColors.push(segmentWiseColors[d]);
-          }
-        }
-        for (let e = 0.60; e < 0.80; e = e + (1 / 240)) {
-          let newH = (1.0 - e) * 240;
-          segmentWiseColors = Array(parseInt(segD)).fill("hsl(" + newH + ", 100%, 50%)");
-          for (let f = 0; f < segmentWiseColors.length; f++) {
-            allSegmentColors.push(segmentWiseColors[f]);
-          }
-        }
-        for (let g = 0.80; g < 1; g = g + (1 / 240)) {
-          let newH = (1.0 - g) * 240;
-          segmentWiseColors = Array(parseInt(segE)).fill("hsl(" + newH + ", 100%, 50%)");
-          for (let hi = 0; hi < segmentWiseColors.length; hi++) {
-            allSegmentColors.push(segmentWiseColors[hi]);
-          }
-        } 
-        console.log("segmentWiseColors", segmentWiseColors);
-        */
-
-
-    /*  neuronsWeight.forEach(weight => {
-       let h = (1.0 - weight) * 240;
-       if (h == 240) {
-         // colour =  Array(zeroWeightNeurons).fill("hsl(" + h + ", 100%, 50%)");
-         for (let i = 0; i < zeroWeightNeurons; i++) {
-           colourCoding.push("hsl(" + h + ", 100%, 50%)")
- 
-         }
-       }
-       if (h == 180) {
-         for (let j = 0; j < quarterWeightNeurons; j++) {
-           colourCoding.push("hsl(" + h + ", 100%, 50%)")
- 
-         }
-       }
-       if (h == 120) {
-         for (let k = 0; k < halfWeightNeurons; k++) {
-           colourCoding.push("hsl(" + h + ", 100%, 50%)")
- 
-         }
-       }
-       if (h == 60) {
-         for (let l = 0; l < quarterThirdWeightNeurons; l++) {
-           colourCoding.push("hsl(" + h + ", 100%, 50%)")
- 
-         }
-       }
-       if (h == 0) {
-         for (let m = 0; m < oneWeightNeurons; m++) {
-           colourCoding.push("hsl(" + h + ", 100%, 50%)")
- 
-         }
-       }
-     }); */
-
-
-
-    /*  for (let l = 0; l < (xCoordLen / (colourValues.length + colourValues.length)); l++) {
-       for (let m = 0; m < colourValues.length; m++) {
-         synapseColour.push(colourValues[m], colourValues[m]);
-       }
-     } */
-
-    /*  for (let neuronWeight = 1; neuronWeight > 0; neuronWeight = neuronWeight - (1 / (xCoordLen / totalAreas)) ) {
-      let H = (1.0 - neuronWeight) * 240;
-          colourSchemeA.push("hsl(" + H + ", 100%, 50%)")
-    }
-    for (let hsl = 0; hsl < (xCoordLen / colourSchemeA.length); hsl++) {
-      for (let colourCode = 0; colourCode < colourSchemeA.length; colourCode++) {
-        colourCodingA.push(colourSchemeA[colourCode]);
-
-      }
-    } */
 
     return [colourCoding, allNeuronsWeight, colourCodingSegment];
   }
 
   showNeuronsByWeightGreater() {
   }
+
   showNeuronsByWeightSmaller() {
-    console.log(this.weightGivenByUser);
-    //return this.str;
-  }
- 
-
-
-  gradient(startColor, endColor, steps) {
-    var start = {
-      'Hex': startColor,
-      'R': parseInt(startColor.slice(1, 3), 16),
-      'G': parseInt(startColor.slice(3, 5), 16),
-      'B': parseInt(startColor.slice(5, 7), 16)
-    }
-    var end = {
-      'Hex': endColor,
-      'R': parseInt(endColor.slice(1, 3), 16),
-      'G': parseInt(endColor.slice(3, 5), 16),
-      'B': parseInt(endColor.slice(5, 7), 16)
-    }
-    let diffR = end['R'] - start['R'];
-    let diffG = end['G'] - start['G'];
-    let diffB = end['B'] - start['B'];
-
-    let stepsHex = new Array();
-    let stepsR = new Array();
-    let stepsG = new Array();
-    let stepsB = new Array();
-
-    for (var i = 0; i <= steps; i++) {
-      stepsR[i] = start['R'] + ((diffR / steps) * i);
-      stepsG[i] = start['G'] + ((diffG / steps) * i);
-      stepsB[i] = start['B'] + ((diffB / steps) * i);
-      stepsHex[i] = '#' + Math.round(stepsR[i]).toString(16) + '' + Math.round(stepsG[i]).toString(16) + '' + Math.round(stepsB[i]).toString(16);
-    }
-    // this.col = stepsHex;
-    /* for (let index = 0; index < (this.xCoord.length/100) ; index++) {
-      for (let hexCol = 0; hexCol < stepsHex.length; hexCol++) {
-        this.colour.push(stepsHex[hexCol]);
-      } */
 
   }
-  dellInvisiblepoints() {
-    let removePointsByIndex = [];
-    function getRandomInt(min, max) {
-      min = Math.ceil(min);/*  */
-      max = Math.floor(max);
-      return Math.floor(Math.random() * (max - min)) + min;
-    }
-    for (let i = 0; i < 200; i++) {
-      let randomNum = getRandomInt(0, 100);
-      removePointsByIndex.push(randomNum);
-    }
-    for (let j = removePointsByIndex.length - 1; j >= 0; j--) {
-      //this.xCoord.splice(removePointsByIndex[j], 1);
-
-    }
-    for (let k = removePointsByIndex.length - 1; k >= 0; k--) {
-      //this.yCoord.splice(removePointsByIndex[k], 1);
-
-    }
-    for (let l = removePointsByIndex.length - 1; l >= 0; l--) {
-      // this.zCoord.splice(removePointsByIndex[l], 1);
-
-    }
-
-  }
-
-
 
 }
