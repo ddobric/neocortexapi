@@ -71,7 +71,7 @@ namespace UnitTestsProject
 
         }
 
-        public override double avgConnectedSpanForColumnND(Connections c, int columnIndex)
+        public override double getAvgSpanOfConnectedSynapsesForColumn(Connections c, int columnIndex)
         {
             return this.m_avgConnectedSpanForColumnND;
         }

@@ -69,10 +69,10 @@ namespace NeoCortexApi.Utility
         {
             centerPosition = coordinatesFromIndex(centerIndex);
 
-            IntGenerator[] igs2 = new IntGenerator[dimensions.Length];
+            IntGenerator[] intGens = new IntGenerator[dimensions.Length];
             for (int i = 0; i < dimensions.Length; i++)
             {
-                igs2[i] = new IntGenerator(Math.Max(0, centerPosition[i] - radius),
+                intGens[i] = new IntGenerator(Math.Max(0, centerPosition[i] - radius),
                     Math.Min(dimensions[i] - 1, centerPosition[i] + radius) + 1);
             }
 
@@ -82,7 +82,7 @@ namespace NeoCortexApi.Utility
 
             List<List<int>> interim = new List<List<int>>();
 
-            foreach (IntGenerator pool in igs2)
+            foreach (IntGenerator gen in intGens)
             {
                 interim.Clear();
                 interim.AddRange(result);
@@ -90,11 +90,11 @@ namespace NeoCortexApi.Utility
 
                 foreach (var lx in interim)
                 {
-                    pool.reset();
+                    gen.reset();
 
-                    for (int y = 0; y < pool.size(); y++)
+                    for (int y = 0; y < gen.size(); y++)
                     {
-                        int py = pool.next();
+                        int py = gen.next();
                         List<int> tl = new List<int>();
                         tl.AddRange(lx);
                         tl.Add(py);
@@ -122,10 +122,10 @@ namespace NeoCortexApi.Utility
             int[] cp = coordinatesFromIndex(centerIndex);
 
             // Dims of columns
-            IntGenerator[] igs2 = new IntGenerator[dimensions.Length];
+            IntGenerator[] intGens = new IntGenerator[dimensions.Length];
             for (int i = 0; i < dimensions.Length; i++)
             {
-                igs2[i] = new IntGenerator(cp[i] - radius,
+                intGens[i] = new IntGenerator(cp[i] - radius,
                     Math.Min((cp[i] - radius) + dimensions[i] - 1, cp[i] + radius) + 1);
             }
 
@@ -136,7 +136,7 @@ namespace NeoCortexApi.Utility
             List<List<int>> interim = new List<List<int>>();
 
             int k = 0;
-            foreach (IntGenerator pool in igs2)
+            foreach (IntGenerator gen in intGens)
             {
                 interim.Clear();
                 interim.AddRange(result);
@@ -144,12 +144,12 @@ namespace NeoCortexApi.Utility
 
                 foreach (var lx in interim)
                 {
-                    pool.reset();
+                    gen.reset();
 
-                    for (int y = 0; y < pool.size(); y++)
+                    for (int y = 0; y < gen.size(); y++)
                     {
-                        int py = ArrayUtils.modulo(pool.next(), dimensions[k]);
-                        //int py = pool.next() % dimensions[k];
+                        int py = ArrayUtils.modulo(gen.next(), dimensions[k]);
+                        //int py = gen.next() % dimensions[k];
 
                         List<int> tl = new List<int>();
                         tl.AddRange(lx);
