@@ -10,6 +10,8 @@ import { AppRoutingModule } from './app-routing-module';
 import { HighchartsStatic } from 'angular2-highcharts/dist/HighchartsService';
 import { AiNetHighchartComponent } from './ainetHighchart/ainetHighChart.component';
 import { AinetComponent } from './ainet/ainet.component';
+import { SimpleNotificationsModule } from 'angular2-notifications';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 //declare var require: any;
 declare var require: any;
@@ -23,21 +25,20 @@ export function highchartsFactory() {
     Scattered3DchartComponent,
     HomeComponent,
     AiNetHighchartComponent,
-    AinetComponent
+    AinetComponent,
+    
   ],
   imports: [
     BrowserModule,
     FormsModule,
     AppRoutingModule,
     RouterModule,
-    //ChartModule,
+    SimpleNotificationsModule.forRoot(),
+    BrowserAnimationsModule,
     ChartModule.forRoot(
     require('highcharts'),
-   // require('highcharts/modules/map'),
     require('highcharts/modules/exporting'),
-    require('highcharts/highcharts-3d')
-    
-    
+    require('highcharts/highcharts-3d')  
   )
   ],
   providers: [{provide: HighchartsStatic,

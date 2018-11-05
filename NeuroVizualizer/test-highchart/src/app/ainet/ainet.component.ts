@@ -4,6 +4,7 @@ import * as Plotlyjs from 'plotly.js/dist/plotly';
 import { neoCortexUtils } from '../neocortexutils';
 import { color } from 'd3';
 import { environment as env } from "../environments/environment";
+import { NotificationsService } from 'angular2-notifications';
 
 @Component({
   selector: 'app-ainet',
@@ -13,17 +14,41 @@ import { environment as env } from "../environments/environment";
 export class AinetComponent implements OnInit, AfterViewInit {
 
   weightGivenByUser: string;
+  error: string;
 
-  constructor() {
+  constructor( private _service: NotificationsService) {
 
   }
+ /*  types = ['alert', 'error', 'info', 'warn', 'success'];
+	animationTypes = ['fromRight', 'fromLeft', 'scale', 'rotate']; */
+
   ngOnInit() {
   }
   ngAfterViewInit() {
 
     this.createChart();
   }
-  
+
+  displayError(){
+    this.options;
+    this._service.error(
+      "Error",
+      this.error,
+      {
+          timeOut: 3000,
+          showProgressBar: true,
+          pauseOnHover: false,
+          clickToClose: true,
+          maxLength: 30
+      }
+  )
+  }
+
+   public options = {
+    position: ["top", "right"],
+    timeOut: 3000,
+} 
+
   createChart() {
     let getCoordinates = this.fillChart();
     let xCoordinates = getCoordinates[0];
@@ -138,7 +163,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     //Plotlyjs.restyle(gd,  update, [0]);
 
     // this function gives the selected neurons by weight 
-    this.showNeuronsByWeightSmaller = function () {
+    this.showNeuronsSmallerByWeight = function () {
 
       let filteredXCoordinates = [];
       let filteredYCoordinates = [];
@@ -146,10 +171,12 @@ export class AinetComponent implements OnInit, AfterViewInit {
       let selectedWeights = [];
       let selectedColours = [];
 
+
       let neuronWeight = parseFloat(this.weightGivenByUser);
 
       if (neuronWeight > 1) {
-        throw "Weight can't be greater than 1";
+        this.error = "Weight could not be greater than 1";
+        throw this.displayError();
       }
 
       let heatColourArray = this.getHeatColor();
@@ -159,7 +186,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
       console.log(indexOfNeuron, neuronWeight);
 
       if (indexOfNeuron == -1) {
-        throw "Given weight is not present"
+        this.error = "Given weight is not present";
+        throw this.displayError();
       }
 
       filteredXCoordinates = xCoordinates.slice(0, indexOfNeuron);
@@ -203,7 +231,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     }
 
     // this function gives the selected neurons by weight 
-    this.showNeuronsByWeightGreater = function () {
+    this.showNeuronsGreaterByWeight = function () {
 
       let selectedXCoordinates = [];
       let selectedYCoordinates = [];
@@ -214,7 +242,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
       let neuronWeight = parseFloat(this.weightGivenByUser);
 
       if (neuronWeight > 1) {
-        throw "Weight can't be greater than 1";
+        this.error = "Weight could not be greater than 1";
+       throw this.displayError();
       }
 
       let heatColourArray = this.getHeatColor();
@@ -224,7 +253,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
       console.log(indexOfNeuron, neuronWeight);
 
       if (indexOfNeuron == -1) {
-        throw "Given weight is not present"
+        this.error = "Given weight is not present";
+        throw this.displayError();
       }
 
       selectedXCoordinates = xCoordinates.slice(indexOfNeuron);
@@ -366,10 +396,10 @@ export class AinetComponent implements OnInit, AfterViewInit {
     return [colourCoding, allNeuronsWeight, colourCodingSegment];
   }
 
-  showNeuronsByWeightGreater() {
+  showNeuronsGreaterByWeight() {
   }
 
-  showNeuronsByWeightSmaller() {
+  showNeuronsSmallerByWeight() {
 
   }
 
