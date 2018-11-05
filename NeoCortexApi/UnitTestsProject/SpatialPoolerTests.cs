@@ -78,10 +78,10 @@ namespace UnitTestsProject
             Assert.AreEqual(5, mem.getColumnDimensions()[0]);
             Assert.AreEqual(5, mem.getPotentialRadius());
             Assert.AreEqual(0.5, mem.getPotentialPct());//, 0);
-            Assert.AreEqual(false, mem.getGlobalInhibition());
+            Assert.AreEqual(false, mem.GlobalInhibition);
             Assert.AreEqual(-1.0, mem.LocalAreaDensity);//, 0);
             Assert.AreEqual(3, mem.NumActiveColumnsPerInhArea);//, 0);
-            Assert.IsTrue(Math.Abs(1 - mem.getStimulusThreshold()) <= 1);
+            Assert.IsTrue(Math.Abs(1 - mem.StimulusThreshold) <= 1);
             Assert.AreEqual(0.01, mem.getSynPermInactiveDec());//, 0);
             Assert.AreEqual(0.1, mem.getSynPermActiveInc());//, 0);
             Assert.AreEqual(0.1, mem.getSynPermConnected());//, 0);
@@ -208,7 +208,7 @@ namespace UnitTestsProject
             parameters.set(KEY.POTENTIAL_RADIUS, 10);
             parameters.set(KEY.GLOBAL_INHIBITION, true);
             parameters.set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 3.0);
-            parameters.set(KEY.STIMULUS_THRESHOLD, 0.0);
+            parameters.set(KEY.STIMULUS_THRESHOLD, 0.0);// This makes column active even if no synapse is connected.
             parameters.set(KEY.RANDOM, new Random(42));
             parameters.set(KEY.SEED, 42);
 
@@ -280,7 +280,7 @@ namespace UnitTestsProject
 
             int[] activeArray = new int[nColumns];
             sp.compute(cn, new int[inputSize], activeArray, true);
-
+           
             Assert.IsTrue(6 == activeArray.Count(i => i > 0));//, ArrayUtils.INT_GREATER_THAN_0).length);
         }
 
@@ -349,6 +349,52 @@ namespace UnitTestsProject
             }
         }
 
+
+        [TestMethod]
+        public void perfTest()
+        {
+            setupParameters();
+            parameters.setInputDimensions(new int[] { 1, 188 });
+            parameters.setColumnDimensions(new int[] { 2048, 10 });
+            parameters.setPotentialRadius(94);
+            parameters.setPotentialPct(0.5);
+            parameters.setGlobalInhibition(false);
+            parameters.setLocalAreaDensity(10);
+            parameters.setNumActiveColumnsPerInhArea(40);
+            parameters.setStimulusThreshold(0);
+            parameters.setSynPermInactiveDec(0.01);
+            parameters.setSynPermActiveInc(0.1);
+            parameters.setMinPctOverlapDutyCycles(0.001);
+            parameters.setMinPctActiveDutyCycles(0.001);
+            parameters.setDutyCyclePeriod(1000);
+            parameters.setMaxBoost(10);
+            initSP();
+
+            int[] inputVector = {
+                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,
+                1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0
+        };
+
+            int[] activeArray = new int[2048];
+
+            sp.compute(mem, inputVector, activeArray, true);
+
+        }
+
         /**
          * Given a specific input and initialization params the SP should return this
          * exact output.
@@ -399,14 +445,6 @@ namespace UnitTestsProject
             sp.compute(mem, inputVector, activeArray, true);
 
             int[] real = activeArray.IndexWhere(i => i > 0).ToArray();
-
-            //    int[] real = ArrayUtils.where(activeArray, new Condition.Adapter<Object>()
-            //    {
-            //    public boolean eval(int n)
-            //    {
-            //        return n > 0;
-            //    }
-            //});
 
             int[] expected1 = new int[] {
              74, 203, 237, 270, 288, 317, 479, 529, 530, 622, 659, 720, 757, 790, 924, 956, 1033,
@@ -698,7 +736,7 @@ namespace UnitTestsProject
             double[] overlaps = ArrayUtils.sample(mem.getNumColumns(), mem.getRandom());
             mem.NumActiveColumnsPerInhArea = 5;
             mem.LocalAreaDensity = 0.1;
-            mem.setGlobalInhibition(true);
+            mem.GlobalInhibition = true;
             mem.InhibitionRadius = 5;
             double trueDensity = mem.LocalAreaDensity;
             //inhibitColumnsGlobal.inhibitColumns(mem, overlaps);
@@ -711,7 +749,7 @@ namespace UnitTestsProject
             reset();
             mem.setColumnDimensions(new int[] { 50, 10 });
             //Internally calculated during init, to overwrite we put after init
-            mem.setGlobalInhibition(false);
+            mem.GlobalInhibition = false;
             mem.InhibitionRadius = 7;
 
             double[] tieBreaker = new double[500];
@@ -838,7 +876,7 @@ namespace UnitTestsProject
             initSP();
 
             //Test global inhibition case
-            mem.setGlobalInhibition(true);
+            mem.GlobalInhibition = true;
             mem.setColumnDimensions(new int[] { 57, 31, 2 });
             // If global inhibition is set, then all columns in the row are inhibited.
             sp.updateInhibitionRadius(mem);
@@ -860,7 +898,7 @@ namespace UnitTestsProject
             //        return 4;
             //    }
             //};
-            mem.setGlobalInhibition(false);
+            mem.GlobalInhibition = false;
             sp = mock;
             sp.updateInhibitionRadius(mem);
             Assert.IsTrue(6 == mem.InhibitionRadius);
@@ -882,7 +920,7 @@ namespace UnitTestsProject
             //        return 1.2;
             //    }
             //};
-            mem.setGlobalInhibition(false);
+            mem.GlobalInhibition = false;
             sp = mock;
             sp.updateInhibitionRadius(mem);
             Assert.IsTrue(1 == mem.InhibitionRadius);
@@ -903,7 +941,7 @@ namespace UnitTestsProject
             //        return 2;
             //    }
             //};
-            mem.setGlobalInhibition(false);
+            mem.GlobalInhibition = false;
             sp = mock;
             //((2 * 2.4) - 1) / 2.0 => round up
             sp.updateInhibitionRadius(mem);
@@ -912,7 +950,7 @@ namespace UnitTestsProject
             //...
             sp = new SpatialPooler();
 
-            mem.setGlobalInhibition(true);
+            mem.GlobalInhibition = true;
 
             sp.updateInhibitionRadius(mem);
 
@@ -921,7 +959,7 @@ namespace UnitTestsProject
 
             // TODO..
             sp = mock;
-            mem.setGlobalInhibition(false);
+            mem.GlobalInhibition = false;
 
             mem.setInputDimensions(new int[] { 5, 10, 2 });
             sp.updateInhibitionRadius(mem);
@@ -1036,7 +1074,7 @@ namespace UnitTestsProject
             double[] trueAvgConnectedSpan = new double[] { 11.0 / 4d, 6.0 / 4d, 14.0 / 4d, 15.0 / 4d, 0d };
             for (int i = 0; i < mem.getNumColumns(); i++)
             {
-                double connectedSpan = sp.avgConnectedSpanForColumnND(mem, i);
+                double connectedSpan = sp.getAvgSpanOfConnectedSynapsesForColumn(mem, i);
                 Assert.IsTrue(trueAvgConnectedSpan[i] == connectedSpan);
             }
         }

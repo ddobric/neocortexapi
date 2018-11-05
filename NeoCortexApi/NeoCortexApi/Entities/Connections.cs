@@ -32,10 +32,10 @@ namespace NeoCortexApi.Entities
          */
         private int potentialRadius = 16;
         private double potentialPct = 0.5;
-        private bool globalInhibition = false;
+        private bool m_GlobalInhibition = false;
         private double m_LocalAreaDensity = -1.0;
         private double m_NumActiveColumnsPerInhArea;
-        private double stimulusThreshold = 0;
+        private double m_StimulusThreshold = 0;
         private double synPermInactiveDec = 0.008;
         private double synPermActiveInc = 0.05;
         private double synPermConnected = 0.10;
@@ -542,7 +542,14 @@ namespace NeoCortexApi.Entities
  * Sets the inhibition radius
  * @param radius
  */
-        public int InhibitionRadius { get => m_InhibitionRadius; set => this.m_InhibitionRadius = value; }
+        public int InhibitionRadius
+        {
+            get { return m_InhibitionRadius; }
+            set
+            {
+                this.m_InhibitionRadius = value;
+            }
+        }
 
         /**
          * Returns the product of the input dimensions
@@ -765,31 +772,12 @@ namespace NeoCortexApi.Entities
             return tieBreaker;
         }
 
-        /**
-         * If true, then during inhibition phase the winning
-         * columns are selected as the most active columns from
-         * the region as a whole. Otherwise, the winning columns
-         * are selected with respect to their local
-         * neighborhoods. Using global inhibition boosts
-         * performance x60.
-         *
-         * @param globalInhibition
-         */
-        public void setGlobalInhibition(bool globalInhibition)
-        {
-            this.globalInhibition = globalInhibition;
-        }
+  
+        /// <summary>
+        /// Enforses using of global inhibition process.
+        /// </summary>
+        public bool GlobalInhibition { get => m_GlobalInhibition; set => this.m_GlobalInhibition = value; }
 
-        /**
-         * Returns the configured global inhibition flag
-         * @return  the configured global inhibition flag
-         *
-         * @see setGlobalInhibition
-         */
-        public bool getGlobalInhibition()
-        {
-            return globalInhibition;
-        }
 
         /**
          * The desired density of active columns within a local
@@ -814,6 +802,20 @@ namespace NeoCortexApi.Entities
          * @return  the configured local area density
          * @see setLocalAreaDensity
          */
+
+        /// <summary>
+        ///     The desired density of active columns within a local
+        ///     inhibition area(the size of which is set by the
+        ///     internally calculated inhibitionRadius, which is in
+        ///     turn determined from the average size of the
+        ///
+        ///     connected potential pools of all columns). The
+        ///     inhibition logic will insure that at most N columns
+        ///         remain ON within a local inhibition area, where N =
+        ///         localAreaDensity * (total number of columns in
+        ///         inhibition area).
+        
+        /// </summary>
         public double LocalAreaDensity
         {
             get
@@ -855,29 +857,11 @@ namespace NeoCortexApi.Entities
  */
         public double NumActiveColumnsPerInhArea { get => m_NumActiveColumnsPerInhArea; set => this.m_NumActiveColumnsPerInhArea = value; }
 
-        /**
-         * This is a number specifying the minimum number of
-         * synapses that must be on in order for a columns to
-         * turn ON. The purpose of this is to prevent noise
-         * input from activating columns. Specified as a percent
-         * of a fully grown synapse.
-         *
-         * @param stimulusThreshold
-         */
-        public void setStimulusThreshold(double stimulusThreshold)
-        {
-            this.stimulusThreshold = stimulusThreshold;
-        }
 
-        /**
-         * Returns the stimulus threshold
-         * @return  the stimulus threshold
-         * @see setStimulusThreshold
-         */
-        public double getStimulusThreshold()
-        {
-            return stimulusThreshold;
-        }
+        /// <summary>
+        /// Minimum number of connected synapses to make column active. Specified as a percent of a fully grown synapse.
+        /// </summary>
+        public double StimulusThreshold { get => m_StimulusThreshold; set => this.m_StimulusThreshold = value; }
 
         /**
          * The amount by which an inactive synapse is
@@ -2340,10 +2324,10 @@ namespace NeoCortexApi.Entities
             Console.WriteLine("numActiveColumnsPerInhArea = " + NumActiveColumnsPerInhArea);
             Console.WriteLine("potentialPct               = " + getPotentialPct());
             Console.WriteLine("potentialRadius            = " + getPotentialRadius());
-            Console.WriteLine("globalInhibition           = " + getGlobalInhibition());
+            Console.WriteLine("globalInhibition           = " + GlobalInhibition);
             Console.WriteLine("localAreaDensity           = " + LocalAreaDensity);
             Console.WriteLine("inhibitionRadius           = " + InhibitionRadius);
-            Console.WriteLine("stimulusThreshold          = " + getStimulusThreshold());
+            Console.WriteLine("stimulusThreshold          = " + StimulusThreshold);
             Console.WriteLine("synPermActiveInc           = " + getSynPermActiveInc());
             Console.WriteLine("synPermInactiveDec         = " + getSynPermInactiveDec());
             Console.WriteLine("synPermConnected           = " + getSynPermConnected());
@@ -2496,7 +2480,7 @@ namespace NeoCortexApi.Entities
             temp = BitConverter.DoubleToInt64Bits(connectedPermanence);
             result = prime * result + (int)(temp ^ (temp >> 32));//it was temp >>> 32
             result = prime * result + dutyCyclePeriod;
-            result = prime * result + (globalInhibition ? 1231 : 1237);
+            result = prime * result + (m_GlobalInhibition ? 1231 : 1237);
             result = prime * result + m_InhibitionRadius;
             temp = BitConverter.DoubleToInt64Bits(initConnectedPct);
             result = prime * result + (int)(temp ^ (temp >> 32));
@@ -2544,7 +2528,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + ((receptorSynapses == null) ? 0 : receptorSynapses.GetHashCode());
             result = prime * result + seed;
             result = prime * result + ((segments == null) ? 0 : segments.GetHashCode());
-            temp = BitConverter.DoubleToInt64Bits(stimulusThreshold);
+            temp = BitConverter.DoubleToInt64Bits(m_StimulusThreshold);
             result = prime * result + (int)(temp ^ (temp >> 32));
             temp = BitConverter.DoubleToInt64Bits(synPermActiveInc);
             result = prime * result + (int)(temp ^ (temp >> 32));
@@ -2615,7 +2599,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (dutyCyclePeriod != other.dutyCyclePeriod)
                 return false;
-            if (globalInhibition != other.globalInhibition)
+            if (m_GlobalInhibition != other.m_GlobalInhibition)
                 return false;
             if (m_InhibitionRadius != other.m_InhibitionRadius)
                 return false;
@@ -2713,7 +2697,7 @@ namespace NeoCortexApi.Entities
             }
             else if (!segments.Equals(other.segments))
                 return false;
-            if (BitConverter.DoubleToInt64Bits(stimulusThreshold) != BitConverter.DoubleToInt64Bits(other.stimulusThreshold))
+            if (BitConverter.DoubleToInt64Bits(m_StimulusThreshold) != BitConverter.DoubleToInt64Bits(other.m_StimulusThreshold))
                 return false;
             if (BitConverter.DoubleToInt64Bits(synPermActiveInc) != BitConverter.DoubleToInt64Bits(other.synPermActiveInc))
                 return false;

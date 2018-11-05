@@ -2283,7 +2283,7 @@ namespace NeoCortexApi.Utility
          * @param indexes
          * @return
          */
-        public static double[] sub(double[] source, int[] indexes)
+        public static double[] ListOfValuesByIndicies(double[] source, int[] indexes)
         {
             double[] retVal = new double[indexes.Length];
             for (int i = 0; i < indexes.Length; i++)

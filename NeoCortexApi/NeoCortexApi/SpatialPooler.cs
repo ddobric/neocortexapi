@@ -28,6 +28,8 @@ namespace NeoCortexApi
 {
     public class SpatialPooler
     {
+        public double MaxInibitionDensity { get; set; } = 0.5;
+
         /** Default Serial Version  */
         private static readonly long serialVersionUID = 1L;
 
@@ -45,8 +47,8 @@ namespace NeoCortexApi
          */
         public void init(Connections c)
         {
-            if (c.NumActiveColumnsPerInhArea== 0 && (c.LocalAreaDensity== 0 ||
-                c.LocalAreaDensity> 0.5))
+            if (c.NumActiveColumnsPerInhArea == 0 && (c.LocalAreaDensity == 0 ||
+                c.LocalAreaDensity > 0.5))
             {
                 throw new ArgumentException("Inhibition parameters are invalid");
             }
@@ -286,7 +288,7 @@ namespace NeoCortexApi
          */
         public void updateMinDutyCycles(Connections c)
         {
-            if (c.getGlobalInhibition() || c.InhibitionRadius> c.getNumInputs())
+            if (c.GlobalInhibition || c.InhibitionRadius > c.getNumInputs())
             {
                 updateMinDutyCyclesGlobal(c);
             }
@@ -357,9 +359,9 @@ namespace NeoCortexApi
                 int[] neighborhood = getColumnNeighborhood(c, i, inhibitionRadius);
 
                 double maxActiveDuty = ArrayUtils.max(
-                    ArrayUtils.sub(activeDutyCycles, neighborhood));
+                    ArrayUtils.ListOfValuesByIndicies(activeDutyCycles, neighborhood));
                 double maxOverlapDuty = ArrayUtils.max(
-                    ArrayUtils.sub(overlapDutyCycles, neighborhood));
+                    ArrayUtils.ListOfValuesByIndicies(overlapDutyCycles, neighborhood));
 
                 c.getMinActiveDutyCycles()[i] = maxActiveDuty * minPctActiveDutyCycles;
 
@@ -454,7 +456,7 @@ namespace NeoCortexApi
         /**
          * Update the inhibition radius. The inhibition radius is a measure of the
          * square (or hypersquare) of columns that each a column is "connected to"
-         * on average. Since columns are are not connected to each other directly, we
+         * on average. Since columns are not connected to each other directly, we
          * determine this quantity by first figuring out how many *inputs* a column is
          * connected to, and then multiplying it by the total number of columns that
          * exist for each input. For multiple dimension the aforementioned
@@ -465,7 +467,7 @@ namespace NeoCortexApi
          */
         public void updateInhibitionRadius(Connections c)
         {
-            if (c.getGlobalInhibition())
+            if (c.GlobalInhibition)
             {
                 c.InhibitionRadius = ArrayUtils.max(c.getColumnDimensions());
                 return;
@@ -475,12 +477,14 @@ namespace NeoCortexApi
             int len = c.getNumColumns();
             for (int i = 0; i < len; i++)
             {
-                avgCollected.Add(avgConnectedSpanForColumnND(c, i));
+                avgCollected.Add(getAvgSpanOfConnectedSynapsesForColumn(c, i));
             }
             double avgConnectedSpan = ArrayUtils.average(avgCollected.ToArray());
+
             double diameter = avgConnectedSpan * avgColumnsPerInput(c);
             double radius = (diameter - 1) / 2.0d;
             radius = Math.Max(1, radius);
+
             c.InhibitionRadius = (int)(radius + 0.5);
         }
 
@@ -509,18 +513,26 @@ namespace NeoCortexApi
         }
 
         /**
-         * The range of connectedSynapses per column, averaged for each dimension.
-         * This value is used to calculate the inhibition radius. This variation of
-         * the function supports arbitrary column dimensions.
-         *  
-         * @param c             the {@link Connections} (spatial pooler memory)
-         * @param columnIndex   the current column for which to avg.
-         * @return
-         */
-        public virtual double avgConnectedSpanForColumnND(Connections c, int columnIndex)
+       * The range of connectedSynapses per column, averaged for each dimension.
+       * This value is used to calculate the inhibition radius. This variation of
+       * the function supports arbitrary column dimensions.
+       *  
+       * @param c             the {@link Connections} (spatial pooler memory)
+       * @param columnIndex   the current column for which to avg.
+       * @return
+       */
+
+        /// <summary>
+        /// It traverses all connected synapses of the column and calculates the span, which synapses
+        /// spans between all input bits. Then it calculates average of spans accross all dimensions. 
+        /// </summary>
+        /// <param name="c"></param>
+        /// <param name="columnIndex"></param>
+        /// <returns></returns>
+        public virtual double getAvgSpanOfConnectedSynapsesForColumn(Connections c, int columnIndex)
         {
             int[] dimensions = c.getInputDimensions();
-           
+
             // Gets synapses connected to input bits.(from pool of the column)
             int[] connected = c.getColumn(columnIndex).getProximalDendrite().getConnectedSynapsesSparse(c);
 
@@ -531,6 +543,10 @@ namespace NeoCortexApi
             ArrayUtils.fillArray(maxCoord, -1);
             ArrayUtils.fillArray(minCoord, ArrayUtils.max(dimensions));
             ISparseMatrix<int> inputMatrix = c.getInputMatrix();
+
+            //
+            // It takes all connected synapses
+            // 
             for (int i = 0; i < connected.Length; i++)
             {
                 maxCoord = ArrayUtils.maxBetween(maxCoord, inputMatrix.computeCoordinates(connected[i]));
@@ -625,7 +641,7 @@ namespace NeoCortexApi
          */
         public virtual void raisePermanenceToThreshold(Connections c, double[] perm, int[] maskPotential)
         {
-            if (maskPotential.Length < c.getStimulusThreshold())
+            if (maskPotential.Length < c.StimulusThreshold)
             {
                 throw new ArgumentException("This is likely due to a " +
                     "value of stimulusThreshold that is too large relative " +
@@ -636,7 +652,7 @@ namespace NeoCortexApi
             while (true)
             {
                 int numConnected = ArrayUtils.valueGreaterCountAtIndex(c.getSynPermConnected(), perm, maskPotential);
-                if (numConnected >= c.getStimulusThreshold()) return;
+                if (numConnected >= c.StimulusThreshold) return;
                 ArrayUtils.raiseValuesBy(c.getSynPermBelowStimulusInc(), perm, maskPotential);
             }
         }
@@ -661,7 +677,7 @@ namespace NeoCortexApi
             while (true)
             {
                 int numConnected = ArrayUtils.valueGreaterCount(c.getSynPermConnected(), perm);
-                if (numConnected >= c.getStimulusThreshold()) return;
+                if (numConnected >= c.StimulusThreshold) return;
                 ArrayUtils.raiseValuesBy(c.getSynPermBelowStimulusInc(), perm);
             }
         }
@@ -803,7 +819,7 @@ namespace NeoCortexApi
                 }
 
                 perm[idx] = perm[idx] < c.getSynPermTrimThreshold() ? 0 : perm[idx];
-               
+
             }
             c.getColumn(colIndx).setProximalPermanences(c, perm);
             return perm;
@@ -891,6 +907,30 @@ namespace NeoCortexApi
             return ArrayUtils.sample(columnInputs, retVal, c.getRandom());
         }
 
+
+        private double calcInhibitionDensity(Connections c)
+        {
+            double density = c.LocalAreaDensity;
+            double inhibitionArea;
+
+            // If density is not specified then inhibition radius must be specified.
+            // In that case we calculate density from inhibition radius.
+            if (density <= 0)
+            {
+                // inhibition area can be higher than num of all columns, if 
+                // radius is near to number of columns of a dimension with highest number of columns.
+                // In that case we limit it to number of all columns.
+                inhibitionArea = Math.Pow(2 * c.InhibitionRadius + 1, c.getColumnDimensions().Length);
+                inhibitionArea = Math.Min(c.getNumColumns(), inhibitionArea);
+
+                density = c.NumActiveColumnsPerInhArea / inhibitionArea;
+
+                density = Math.Min(density, MaxInibitionDensity);
+            }
+
+            return density;
+        }
+
         /**
          * Performs inhibition. This method calculates the necessary values needed to
          * actually perform inhibition and then delegates the task of picking the
@@ -905,25 +945,14 @@ namespace NeoCortexApi
          */
         public virtual int[] inhibitColumns(Connections c, double[] initialOverlaps)
         {
-            //double[] overlaps = new double[initialOverlaps.Length];
-            //Array.Copy(initialOverlaps, overlaps, overlaps.Length);
-
             double[] overlaps = new List<double>(initialOverlaps).ToArray();
 
-            double density = c.LocalAreaDensity;
-            double inhibitionArea;
-            if (density <= 0)
-            {
-                inhibitionArea = Math.Pow(2 * c.InhibitionRadius+ 1, c.getColumnDimensions().Length);
-                inhibitionArea = Math.Min(c.getNumColumns(), inhibitionArea);
-                density = c.NumActiveColumnsPerInhArea/ inhibitionArea;
-                density = Math.Min(density, 0.5);
-            }
+            double density = calcInhibitionDensity(c);
 
             //Add our fixed little bit of random noise to the scores to help break ties.
             //ArrayUtils.d_add(overlaps, c.getTieBreaker());
 
-            if (c.getGlobalInhibition() || c.InhibitionRadius> ArrayUtils.max(c.getColumnDimensions()))
+            if (c.GlobalInhibition || c.InhibitionRadius > ArrayUtils.max(c.getColumnDimensions()))
             {
                 return inhibitColumnsGlobal(c, overlaps, density);
             }
@@ -952,17 +981,11 @@ namespace NeoCortexApi
                 indices.Add(i, overlaps[i]);
             }
 
-            var sortedWinnerIndices = indices.OrderBy(k => k.Value).ToArray();//TODO potential sorting bug.
+            var sortedWinnerIndices = indices.OrderBy(k => k.Value).ToArray();
 
-            //int[] sortedWinnerIndices = IntStream.range(0, overlaps.Length)
-            //    .mapToObj(i-> new Pair<>(i, overlaps[i]))
-            //    .sorted(c.inhibitionComparator)
-            //    .mapToInt(Pair < Integer, Double >::getFirst)
-            //   .toArray();
-
-            // Enforce the stimulus threshold. This is a minimum number of synapses that must be on in order for a columns to turn ON. 
+            // Enforce the stimulus threshold. This is a minimum number of synapses that must be ON in order for a columns to turn ON. 
             // The purpose of this is to prevent noise input from activating columns. Specified as a percent of a fully grown synapse.
-            double stimulusThreshold = c.getStimulusThreshold();
+            double stimulusThreshold = c.StimulusThreshold;
 
             // Calculate difference between num of columns and num of active. Num of active is less than 
             // num of columns, because of specified density.
@@ -999,42 +1022,36 @@ namespace NeoCortexApi
          */
         public virtual int[] inhibitColumnsLocal(Connections c, double[] overlaps, double density)
         {
-            double addToWinners = ArrayUtils.max(overlaps) / 1000.0d;
-            if (addToWinners == 0)
+            double winnerDelta = ArrayUtils.max(overlaps) / 1000.0d;
+            if (winnerDelta == 0)
             {
-                addToWinners = 0.001;
+                winnerDelta = 0.001;
             }
-            double[] tieBrokenOverlaps = new double[overlaps.Length];
-            Array.Copy(overlaps, tieBrokenOverlaps, overlaps.Length);
+
+            double[] tieBrokenOverlaps = new List<double>(overlaps).ToArray();
 
             List<int> winners = new List<int>();
-            double stimulusThreshold = c.getStimulusThreshold();
+
             int inhibitionRadius = c.InhibitionRadius;
-            for (int i = 0; i < overlaps.Length; i++)
+            for (int column = 0; column < overlaps.Length; column++)
             {
-                int column = i;
-                if (overlaps[column] >= stimulusThreshold)
+                // int column = i;
+                if (overlaps[column] >= c.StimulusThreshold)
                 {
                     int[] neighborhood = getColumnNeighborhood(c, column, inhibitionRadius);
 
-                    // Take neighborhood columns only
-                    double[] neighborhoodOverlaps = ArrayUtils.sub(tieBrokenOverlaps, neighborhood);
+                    // Take overlapps of neighbors
+                    double[] neighborhoodOverlaps = ArrayUtils.ListOfValuesByIndicies(tieBrokenOverlaps, neighborhood);
 
-                    // Filter neighbor overlaps bigger than column overlap
+                    // Filter neighbors with overlaps bigger than column overlap
                     long numBigger = neighborhoodOverlaps.Count(d => d > overlaps[column]);
-
-                    //long numBigger=
-                    //    Array.stream(neighborhoodOverlaps)
-                    //    .parallel()
-                    //    .filter(d->d > overlaps[column])
-                    //    .count();
 
                     // density will reduce radius
                     int numActive = (int)(0.5 + density * neighborhood.Length);
                     if (numBigger < numActive)
                     {
                         winners.Add(column);
-                        tieBrokenOverlaps[column] += addToWinners;
+                        tieBrokenOverlaps[column] += winnerDelta;
                     }
                 }
             }
@@ -1132,7 +1149,7 @@ namespace NeoCortexApi
         public int[] calculateOverlap(Connections c, int[] inputVector)
         {
             int[] overlaps = new int[c.getNumColumns()];
-            c.getConnectedCounts().rightVecSumAtNZ(inputVector, overlaps, c.getStimulusThreshold());
+            c.getConnectedCounts().rightVecSumAtNZ(inputVector, overlaps, c.StimulusThreshold);
             return overlaps;
         }
 
