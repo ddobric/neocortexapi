@@ -9,6 +9,9 @@ export const environment = {
     numberOfColours: 600,
 
     // with X,Y, Z Ratio change the appearance of graph
+    /* xRatio: 7,
+    yRatio: 1,
+    zRatio: 0.5, */
     xRatio: 7,
     yRatio: 1,
     zRatio: 0.5,

@@ -1,15 +1,18 @@
 <h1>
   Connectionist System
 </h1>
+<form #formCtrl="ngForm">
 <div class="container form-inline">
   <div calss="row form-group">
       <div class="container col-sm-12">
-          <input class="form-control" type="number" id="weightGivenByUser" ng-required="true" [(ngModel)]="weightGivenByUser"  placeholder="Neurons weight in between 0 and 1" #weightInput>
-      <button [disabled]="!weightGivenByUser" class="btn btn-primary" (click)='showNeuronsSmallerByWeight()'>Smaller than or equal</button>
-      <button [disabled]="!weightGivenByUser" class="btn btn-danger"  (click)='showNeuronsGreaterByWeight()'>Greater than or equal</button>
+          <input class="form-control" name='test' type="number" id="weightGivenByUser" [(ngModel)]="weightGivenByUser"  placeholder="Neurons weight in between 0 and 1" required>
+      <button  [disabled]="!formCtrl.form.valid" class="btn btn-primary" (click)='showNeuronsSmallerByWeight()'>Smaller than or equal</button>
+      <button [disabled]="!formCtrl.form.valid" class="btn btn-danger"  (click)='showNeuronsGreaterByWeight()'>Greater than or equal</button>
+      <button  class="btn btn-success"  (click)='showAllNeurons()'>Show All Neurons</button>
       </div>
   </div>
 </div>
+</form>
 <!-- Plotly chart will be drawn inside this div -->
 <div class="chart"  id="graph"></div>
 

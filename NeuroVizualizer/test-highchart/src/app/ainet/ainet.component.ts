@@ -16,11 +16,11 @@ export class AinetComponent implements OnInit, AfterViewInit {
   weightGivenByUser: string;
   error: string;
 
-  constructor( private _service: NotificationsService) {
+  constructor(private _service: NotificationsService) {
 
   }
- /*  types = ['alert', 'error', 'info', 'warn', 'success'];
-	animationTypes = ['fromRight', 'fromLeft', 'scale', 'rotate']; */
+  /*  types = ['alert', 'error', 'info', 'warn', 'success'];
+   animationTypes = ['fromRight', 'fromLeft', 'scale', 'rotate']; */
 
   ngOnInit() {
   }
@@ -28,26 +28,29 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
     this.createChart();
   }
+  showAllNeurons(){
 
-  displayError(){
+  }
+
+  displayError() {
     this.options;
     this._service.error(
       "Error",
       this.error,
       {
-          timeOut: 3000,
-          showProgressBar: true,
-          pauseOnHover: false,
-          clickToClose: true,
-          maxLength: 30
+        timeOut: 3000,
+        showProgressBar: true,
+        pauseOnHover: false,
+        clickToClose: true,
+        maxLength: 30
       }
-  )
+    )
   }
 
-   public options = {
+  public options = {
     position: ["top", "right"],
     timeOut: 3000,
-} 
+  }
 
   createChart() {
     let getCoordinates = this.fillChart();
@@ -114,13 +117,14 @@ export class AinetComponent implements OnInit, AfterViewInit {
     };
 
     const neuralChartLayout = {
+      
       //showlegend: false, Thgis option is to show the name of legend/DataSeries 
-      scene: {
+   /*    scene: {
         aspectmode: "manual",
         aspectratio: {
           x: env.xRatio, y: env.yRatio, z: env.zRatio,
         }
-      },
+      }, */
 
       legend: {
         x: 0.5,
@@ -135,7 +139,44 @@ export class AinetComponent implements OnInit, AfterViewInit {
         t: 0,
         pad: 4
 
-      }
+      },
+
+      scene: {
+        aspectratio: {
+            x: 7,
+            y: 1,
+            z: 0.5
+        },
+        camera: {
+            center: {
+                x: 0,
+                y: 0,
+                z: 0
+            },
+            eye: {
+                x: 1.25,
+                y: 1.25,
+                z: 1.25
+            },
+            up: {
+                x: 0,
+                y: 0,
+                z: 1
+            }
+        },
+        xaxis: {
+            type: 'linear',
+            zeroline: false
+        },
+        yaxis: {
+            type: 'linear',
+            zeroline: false
+        },
+        zaxis: {
+            type: 'linear',
+            zeroline: false
+        }
+    },
     };
 
     const neuralChartConfig = {
@@ -156,11 +197,50 @@ export class AinetComponent implements OnInit, AfterViewInit {
          y: [[0.5]],
          z: [[3.5]]
        }; */
+
+    const PointsT = {
+      x: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+      y: [0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2],
+      z: [0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2],
+      name: 'PointsT',
+      mode: 'markers',
+      marker: {
+        opacity: env.opacityOfNeuron,
+        size: env.sizeOfNeuron,
+        color: "yellow",
+        symbol: 'circle',
+      },
+      type: 'scatter3d',
+    };
+    const linesT = {
+      x: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+      y: [0, 1, 0, 0, 1, 2, 1, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2],
+      z: [0, 0, 1, 2, 0, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2],
+
+      //x: [0, 0, null, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+      //y: [0, 1, null, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2],
+      //z: [0, 0, null, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2],
+      name: 'linesT',
+      mode: 'lines',
+      marker: {
+        color: "red",
+        width: 10
+      },
+      type: 'scatter3d',
+    };
+
     let graphDOM = this.makeChartResponsive();
 
+    
     Plotlyjs.newPlot(graphDOM, [neurons, synapses], neuralChartLayout, neuralChartConfig);
+    //Plotlyjs.newPlot(graphDOM, [PointsT, linesT], neuralChartLayout);
     // Plotlyjs.newPlot(graphDOM, [test1, test2]);
     //Plotlyjs.restyle(gd,  update, [0]);
+
+    
+    this.showAllNeurons = function(){
+      Plotlyjs.newPlot(graphDOM, [neurons, synapses], neuralChartLayout, neuralChartConfig);
+    }
 
     // this function gives the selected neurons by weight 
     this.showNeuronsSmallerByWeight = function () {
@@ -173,6 +253,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
 
       let neuronWeight = parseFloat(this.weightGivenByUser);
+      
 
       if (neuronWeight > 1) {
         this.error = "Weight could not be greater than 1";
@@ -183,6 +264,20 @@ export class AinetComponent implements OnInit, AfterViewInit {
       let weights = heatColourArray[1];
       let cellColours = heatColourArray[0];
       let indexOfNeuron = weights.indexOf(neuronWeight);
+
+      // This segment is to handle the case if we have n same numbers of Elements in our list then slice will just pick the very first
+      // To avoid it we count the occrunce of that element   
+      if (indexOfNeuron == 0){
+        let i = 10;
+        for (i; i < weights.length; i++) {
+          if (weights[i] > 0){
+            break;
+          }
+          
+        }
+        indexOfNeuron = i;
+      }
+      
       console.log(indexOfNeuron, neuronWeight);
 
       if (indexOfNeuron == -1) {
@@ -243,7 +338,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
       if (neuronWeight > 1) {
         this.error = "Weight could not be greater than 1";
-       throw this.displayError();
+        throw this.displayError();
       }
 
       let heatColourArray = this.getHeatColor();
