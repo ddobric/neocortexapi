@@ -228,6 +228,69 @@ export class AinetComponent implements OnInit, AfterViewInit {
       },
       type: 'scatter3d',
     };
+    
+    const layout = {
+      
+      //showlegend: false, Thgis option is to show the name of legend/DataSeries 
+   /*    scene: {
+        aspectmode: "manual",
+        aspectratio: {
+          x: env.xRatio, y: env.yRatio, z: env.zRatio,
+        }
+      }, */
+
+      legend: {
+        x: 0.5,
+        y: 1
+      },
+      //width: 1800,
+      // height: 800,
+      margin: {
+        l: 0,
+        r: 0,
+        b: 0,
+        t: 0,
+        pad: 4
+
+      },
+
+      scene: {
+        aspectratio: {
+            x: 1.5,
+            y: 1,
+            z: 0.5
+        },
+        camera: {
+            center: {
+                x: 0,
+                y: 0,
+                z: 0
+            },
+            eye: {
+                x: 1.25,
+                y: 1.25,
+                z: 1.25
+            },
+            up: {
+                x: 0,
+                y: 0,
+                z: 1
+            }
+        },
+        xaxis: {
+            type: 'linear',
+            zeroline: false
+        },
+        yaxis: {
+            type: 'linear',
+            zeroline: false
+        },
+        zaxis: {
+            type: 'linear',
+            zeroline: false
+        }
+    },
+    };
 
     let graphDOM = this.makeChartResponsive();
 
@@ -322,7 +385,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
           color: cellColours,
         }
       };
-      Plotlyjs.newPlot(graphDOM, [updateNeurons, updateSynapses], neuralChartLayout, neuralChartConfig);
+      Plotlyjs.newPlot(graphDOM, [updateNeurons, updateSynapses], layout, neuralChartConfig);
     }
 
     // this function gives the selected neurons by weight 
@@ -388,7 +451,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
           color: selectedColours,
         }
       };
-      Plotlyjs.newPlot(graphDOM, [updateNeurons, updateSynapses], neuralChartLayout, neuralChartConfig);
+      Plotlyjs.newPlot(graphDOM, [updateNeurons, updateSynapses], layout, neuralChartConfig);
 
     }
 
