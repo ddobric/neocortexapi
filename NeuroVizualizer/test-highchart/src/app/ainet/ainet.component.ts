@@ -4,6 +4,7 @@ import * as Plotlyjs from 'plotly.js/dist/plotly';
 import { neoCortexUtils } from '../neocortexutils';
 import { color } from 'd3';
 import { environment as env } from "../environments/environment";
+import { NotificationsService } from 'angular2-notifications';
 
 @Component({
   selector: 'app-ainet',
@@ -13,22 +14,53 @@ import { environment as env } from "../environments/environment";
 export class AinetComponent implements OnInit, AfterViewInit {
 
   weightGivenByUser: string;
+  error: string;
 
-  constructor() {
+  constructor(private _service: NotificationsService) {
 
   }
+  /*  types = ['alert', 'error', 'info', 'warn', 'success'];
+   animationTypes = ['fromRight', 'fromLeft', 'scale', 'rotate']; */
+
   ngOnInit() {
   }
   ngAfterViewInit() {
 
     this.createChart();
   }
-  
+  showAllNeurons() {
+
+  }
+
+  displayError() {
+    this.options;
+    this._service.error(
+      "Error",
+      this.error,
+      {
+        timeOut: 3000,
+        showProgressBar: true,
+        pauseOnHover: false,
+        clickToClose: true,
+        maxLength: 30
+      }
+    )
+  }
+
+  public options = {
+    position: ["top", "right"],
+    timeOut: 3000,
+  }
+
   createChart() {
     let getCoordinates = this.fillChart();
     let xCoordinates = getCoordinates[0];
     let yCoordinates = getCoordinates[1];
     let zCoordinates = getCoordinates[2];
+    let xSynap = getCoordinates[4];
+    let ySynap = getCoordinates[5];
+    let zSynap = getCoordinates[6];
+
     console.log(xCoordinates, "X");
     console.log(yCoordinates, "Y");
     console.log(zCoordinates, "Z");
@@ -74,9 +106,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
       type: 'scatter3d',
       mode: 'lines',
       name: 'Synapse',
-      x: xCoordinates,
-      y: yCoordinates,
-      z: zCoordinates,
+      x: xSynap,
+      y: ySynap,
+      z: zSynap,
       text: weights,
       opacity: env.opacityOfSynapse,
       line: {
@@ -89,13 +121,14 @@ export class AinetComponent implements OnInit, AfterViewInit {
     };
 
     const neuralChartLayout = {
+
       //showlegend: false, Thgis option is to show the name of legend/DataSeries 
-      scene: {
-        aspectmode: "manual",
-        aspectratio: {
-          x: env.xRatio, y: env.yRatio, z: env.zRatio,
-        }
-      },
+      /*    scene: {
+           aspectmode: "manual",
+           aspectratio: {
+             x: env.xRatio, y: env.yRatio, z: env.zRatio,
+           }
+         }, */
 
       legend: {
         x: 0.5,
@@ -110,7 +143,47 @@ export class AinetComponent implements OnInit, AfterViewInit {
         t: 0,
         pad: 4
 
-      }
+      },
+
+      scene: {
+        //"auto" | "cube" | "data" | "manual" 
+        aspectmode: 'data',
+        /*  aspectratio: {
+             x: 1.5,
+             y: 1,
+             z: 0.5
+         }, */
+        camera: {
+          center: {
+            x: 0,
+            y: 0,
+            z: 0
+          },
+          eye: {
+            x: 1.25,
+            y: 1.25,
+            z: 1.25
+          },
+          up: {
+            x: 0,
+            y: 0,
+            z: 1
+
+          }
+        },
+        /*     xaxis: {
+                type: 'linear',
+                zeroline: false
+            },
+            yaxis: {
+                type: 'linear',
+                zeroline: false
+            },
+            zaxis: {
+                type: 'linear',
+                zeroline: false
+            }*/
+      },
     };
 
     const neuralChartConfig = {
@@ -131,14 +204,54 @@ export class AinetComponent implements OnInit, AfterViewInit {
          y: [[0.5]],
          z: [[3.5]]
        }; */
+
+    const PointsT = {
+      x: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+      y: [0, 1, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2],
+      z: [0, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2],
+      name: 'PointsT',
+      mode: 'markers',
+      marker: {
+        opacity: env.opacityOfNeuron,
+        size: env.sizeOfNeuron,
+        color: "yellow",
+        symbol: 'circle',
+      },
+      type: 'scatter3d',
+    };
+    const linesT = {
+      x: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+      y: [0, 1, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2],
+      z: [0, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2],
+
+      //x: [0, 0, null, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+      //y: [0, 1, null, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2],
+      //z: [0, 0, null, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2],
+      name: 'linesT',
+      mode: 'lines',
+      marker: {
+        color: "red",
+        width: 10
+      },
+      type: 'scatter3d',
+    };
+
+
     let graphDOM = this.makeChartResponsive();
 
+
     Plotlyjs.newPlot(graphDOM, [neurons, synapses], neuralChartLayout, neuralChartConfig);
+    //Plotlyjs.newPlot(graphDOM, [PointsT, linesT], neuralChartLayout);
     // Plotlyjs.newPlot(graphDOM, [test1, test2]);
     //Plotlyjs.restyle(gd,  update, [0]);
 
+
+    this.showAllNeurons = function () {
+      Plotlyjs.newPlot(graphDOM, [neurons, synapses], neuralChartLayout, neuralChartConfig);
+    }
+
     // this function gives the selected neurons by weight 
-    this.showNeuronsByWeightSmaller = function () {
+    this.showNeuronsSmallerByWeight = function () {
 
       let filteredXCoordinates = [];
       let filteredYCoordinates = [];
@@ -146,20 +259,38 @@ export class AinetComponent implements OnInit, AfterViewInit {
       let selectedWeights = [];
       let selectedColours = [];
 
+
       let neuronWeight = parseFloat(this.weightGivenByUser);
 
+
       if (neuronWeight > 1) {
-        throw "Weight can't be greater than 1";
+        this.error = "Weight could not be greater than 1";
+        throw this.displayError();
       }
 
       let heatColourArray = this.getHeatColor();
       let weights = heatColourArray[1];
       let cellColours = heatColourArray[0];
       let indexOfNeuron = weights.indexOf(neuronWeight);
+
+      // This segment is to handle the case if we have n same numbers of Elements in our list then slice will just pick the very first
+      // To avoid it we count the occrunce of that element   
+      if (indexOfNeuron == 0) {
+        let i = 0;
+        for (i; i < weights.length; i++) {
+          if (weights[i] > 0) {
+            break;
+          }
+
+        }
+        indexOfNeuron = i;
+      }
+
       console.log(indexOfNeuron, neuronWeight);
 
       if (indexOfNeuron == -1) {
-        throw "Given weight is not present"
+        this.error = "Given weight is not present";
+        throw this.displayError();
       }
 
       filteredXCoordinates = xCoordinates.slice(0, indexOfNeuron);
@@ -203,7 +334,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     }
 
     // this function gives the selected neurons by weight 
-    this.showNeuronsByWeightGreater = function () {
+    this.showNeuronsGreaterByWeight = function () {
 
       let selectedXCoordinates = [];
       let selectedYCoordinates = [];
@@ -214,7 +345,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
       let neuronWeight = parseFloat(this.weightGivenByUser);
 
       if (neuronWeight > 1) {
-        throw "Weight can't be greater than 1";
+        this.error = "Weight could not be greater than 1";
+        throw this.displayError();
       }
 
       let heatColourArray = this.getHeatColor();
@@ -224,7 +356,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
       console.log(indexOfNeuron, neuronWeight);
 
       if (indexOfNeuron == -1) {
-        throw "Given weight is not present"
+        this.error = "Given weight is not present";
+        throw this.displayError();
       }
 
       selectedXCoordinates = xCoordinates.slice(indexOfNeuron);
@@ -303,8 +436,55 @@ export class AinetComponent implements OnInit, AfterViewInit {
         zCoord.push(model.areas[ai].minicolumns[0][i].posZ);
       }
     }
+    //Choose uniformly n Random indexes in the range of the x, y, or z Array. (0 -> length.XCoord)
+    //Pick data from that indexes and add the data(randomly) into the copy of w x, x, z arrays
+    //Assign that arrays to synapses 
 
-    return [xCoord, yCoord, zCoord, numOfAreas];
+
+    let xSynapse = xCoord.slice();
+    let ySynapse = yCoord.slice();
+    let zSynapse = zCoord.slice();
+    let randomIndexArray = [];
+    let randomInsertArray = [];
+
+    let rangeOfXVariables = xCoord.length;
+
+    let totalRandomIndexs = 20;
+    for (let j = 0; j < totalRandomIndexs; j++) {
+      let randomIndex = Math.floor(Math.random() * Math.floor(rangeOfXVariables));
+      randomIndexArray.push(randomIndex);
+    }
+
+    let totalRandomInsertIndex = 20;
+    for (let k = 0; k < totalRandomInsertIndex; k++) {
+      let randomInsertIndex = Math.floor(Math.random() * Math.floor(rangeOfXVariables));
+      randomInsertArray.push(randomInsertIndex);
+    }
+
+    for (let l = 0; l < randomIndexArray.length; l++) {
+      let xPointAtXi = xCoord[randomIndexArray[l]];
+      let yPointAtXi = yCoord[randomIndexArray[l]];
+      let zPointAtXi = zCoord[randomIndexArray[l]];
+
+      for (let m = 0; m < randomInsertArray.length; m++) {
+
+        xSynapse.splice(randomInsertArray[m], 0, xPointAtXi); //(index, 0, element)
+        ySynapse.splice(randomInsertArray[m], 0, yPointAtXi);
+        zSynapse.splice(randomInsertArray[m], 0, zPointAtXi);
+      }
+
+    }
+    console.log(randomIndexArray, "rein Zufällig X");
+    console.log(randomInsertArray, 'Zufällig einfügen');
+    console.log(xSynapse,"xSynapse");
+    console.log(ySynapse,"ySynapse");
+    console.log(zSynapse,"zSynapse");
+
+
+
+
+
+    return [xCoord, yCoord, zCoord, numOfAreas, xSynapse, ySynapse, zSynapse];
 
   }
 
@@ -366,10 +546,10 @@ export class AinetComponent implements OnInit, AfterViewInit {
     return [colourCoding, allNeuronsWeight, colourCodingSegment];
   }
 
-  showNeuronsByWeightGreater() {
+  showNeuronsGreaterByWeight() {
   }
 
-  showNeuronsByWeightSmaller() {
+  showNeuronsSmallerByWeight() {
 
   }
 
