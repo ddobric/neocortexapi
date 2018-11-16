@@ -1952,10 +1952,29 @@ namespace UnitTestsProject
             active = sp.inhibitColumnsLocal(mem, overlaps, density);
             Assert.IsTrue(trueActive.SequenceEqual(active));
 
+            density = 0.20;
+            overlaps = new double[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
             mem.setWrapAround(false);
-            trueActive = new int[] { 0, 1, 4, 5, 8 };
+            trueActive = new int[] { 0, 4, 8 };
             active = sp.inhibitColumnsLocal(mem, overlaps, density);
             Assert.IsTrue(trueActive.SequenceEqual(active));
+
+            //overlaps = new double[] { 1, 2, 7, 0.1, 3, 4, 16, 1, 1.5, 1.7 };
+            mem.setWrapAround(false);
+            density = 0.10;
+            active = sp.inhibitColumnsLocal(mem, overlaps, density);
+
+            density = 0.20;
+            active = sp.inhibitColumnsLocal(mem, overlaps, density);
+
+            density = 0.30;
+            active = sp.inhibitColumnsLocal(mem, overlaps, density);
+
+            density = 0.40;
+            active = sp.inhibitColumnsLocal(mem, overlaps, density);
+
+            density = 0.50;
+            active = sp.inhibitColumnsLocal(mem, overlaps, density);
         }
 
         //    /**
