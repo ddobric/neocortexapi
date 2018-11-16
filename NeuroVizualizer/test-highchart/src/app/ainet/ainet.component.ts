@@ -252,12 +252,10 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
     // this function gives the selected neurons by weight 
     this.showNeuronsSmallerByWeight = function () {
-
-      let filteredXCoordinates = [];
-      let filteredYCoordinates = [];
-      let filteredZCoordinates = [];
       let selectedWeights = [];
       let selectedColours = [];
+      let sWeights = [];
+      let sColours = [];
 
 
       let neuronWeight = parseFloat(this.weightGivenByUser);
@@ -293,17 +291,38 @@ export class AinetComponent implements OnInit, AfterViewInit {
         throw this.displayError();
       }
 
-      filteredXCoordinates = xCoordinates.slice(0, indexOfNeuron);
+    /*   filteredXCoordinates = xCoordinates.slice(0, indexOfNeuron);
       filteredYCoordinates = yCoordinates.slice(0, indexOfNeuron);
-      filteredZCoordinates = zCoordinates.slice(0, indexOfNeuron);
-      selectedWeights = weights.slice(0, indexOfNeuron);
-      selectedColours = cellColours.slice(0, indexOfNeuron);
+      filteredZCoordinates = zCoordinates.slice(0, indexOfNeuron); */
+      //selectedWeights = weights.slice(0, indexOfNeuron);
+      sWeights = weights.slice(0, indexOfNeuron + 1);
+
+      sWeights.forEach(sWeight => {
+        selectedWeights.push(sWeight);
+      });
+      for (let j = 0; j < (xCoordinates.length - 1 - indexOfNeuron); j++) {
+        selectedWeights.push("NaN");
+
+      }
+      console.log(selectedWeights, "SW");
+
+      sColours = cellColours.slice(0, indexOfNeuron + 1);
+
+      sColours.forEach(sColour => {
+        selectedColours.push(sColour);
+      });
+      for (let k = 0; k < (xCoordinates.length - 1 - indexOfNeuron); k++) {
+        //selectedColours.push("grey");
+        selectedColours.push("hsl(0, 0%, 72%)");
+      }
+      //selectedColours = cellColours.slice(0, indexOfNeuron);
+      console.log(selectedColours, "SC");
 
 
       const updateNeurons = {
-        x: filteredXCoordinates,
-        y: filteredYCoordinates,
-        z: filteredZCoordinates,
+        x: xCoordinates,
+        y: yCoordinates,
+        z: zCoordinates,
         text: selectedWeights,
         name: 'Neuron',
         mode: 'markers',
@@ -320,14 +339,14 @@ export class AinetComponent implements OnInit, AfterViewInit {
         type: 'scatter3d',
         mode: 'lines',
         name: 'Synapse',
-        x: filteredXCoordinates,
-        y: filteredYCoordinates,
-        z: filteredZCoordinates,
+        x: xCoordinates,
+        y: yCoordinates,
+        z: zCoordinates,
         text: selectedWeights,
         opacity: env.opacityOfSynapse,
         line: {
           width: env.lineWidthOfSynapse,
-          color: cellColours,
+          color: selectedColours,
         }
       };
       Plotlyjs.newPlot(graphDOM, [updateNeurons, updateSynapses], neuralChartLayout, neuralChartConfig);
@@ -335,12 +354,11 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
     // this function gives the selected neurons by weight 
     this.showNeuronsGreaterByWeight = function () {
-
-      let selectedXCoordinates = [];
-      let selectedYCoordinates = [];
-      let selectedZCoordinates = [];
       let selectedWeights = [];
       let selectedColours = [];
+      let sWeights = [];
+      let sColours = [];
+
 
       let neuronWeight = parseFloat(this.weightGivenByUser);
 
@@ -360,16 +378,39 @@ export class AinetComponent implements OnInit, AfterViewInit {
         throw this.displayError();
       }
 
-      selectedXCoordinates = xCoordinates.slice(indexOfNeuron);
+   /*    selectedXCoordinates = xCoordinates.slice(indexOfNeuron);
       selectedYCoordinates = yCoordinates.slice(indexOfNeuron);
-      selectedZCoordinates = zCoordinates.slice(indexOfNeuron);
-      selectedWeights = weights.slice(indexOfNeuron);
-      selectedColours = cellColours.slice(indexOfNeuron);
+      selectedZCoordinates = zCoordinates.slice(indexOfNeuron); */
+
+      //selectedWeights = weights.slice(indexOfNeuron);
+      sWeights = weights.slice(indexOfNeuron, xCoordinates.length);
+
+      for (let j = 0; j < indexOfNeuron; j++) {
+        selectedWeights.push("NaN");
+
+      }
+      sWeights.forEach(sWeight => {
+        selectedWeights.push(sWeight);
+      });
+      console.log(selectedWeights, "SW");
+
+      // selectedColours = cellColours.slice(indexOfNeuron);
+      sColours = cellColours.slice(indexOfNeuron, xCoordinates.length);
+      for (let k = 0; k < indexOfNeuron; k++) {
+        //selectedColours.push("grey");
+        selectedColours.push("hsl(0, 0%, 72%)");
+      }
+      sColours.forEach(sColour => {
+        selectedColours.push(sColour);
+      });
+      console.log(selectedColours, "SC");
+
+  
 
       const updateNeurons = {
-        x: selectedXCoordinates,
-        y: selectedYCoordinates,
-        z: selectedZCoordinates,
+        x: xCoordinates,
+        y: yCoordinates,
+        z: zCoordinates,
         text: selectedWeights,
         name: 'Neuron',
         mode: 'markers',
@@ -386,9 +427,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
         type: 'scatter3d',
         mode: 'lines',
         name: 'Synapse',
-        x: selectedXCoordinates,
-        y: selectedYCoordinates,
-        z: selectedZCoordinates,
+        x: xCoordinates,
+        y: yCoordinates,
+        z: zCoordinates,
         text: selectedWeights,
         opacity: env.opacityOfSynapse,
         line: {
@@ -476,9 +517,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
     }
     console.log(randomIndexArray, "rein Zufällig X");
     console.log(randomInsertArray, 'Zufällig einfügen');
-    console.log(xSynapse,"xSynapse");
-    console.log(ySynapse,"ySynapse");
-    console.log(zSynapse,"zSynapse");
+    console.log(xSynapse, "xSynapse");
+    console.log(ySynapse, "ySynapse");
+    console.log(zSynapse, "zSynapse");
 
 
 
