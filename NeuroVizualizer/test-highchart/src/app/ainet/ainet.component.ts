@@ -291,9 +291,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
         throw this.displayError();
       }
 
-    /*   filteredXCoordinates = xCoordinates.slice(0, indexOfNeuron);
-      filteredYCoordinates = yCoordinates.slice(0, indexOfNeuron);
-      filteredZCoordinates = zCoordinates.slice(0, indexOfNeuron); */
+      /*   filteredXCoordinates = xCoordinates.slice(0, indexOfNeuron);
+        filteredYCoordinates = yCoordinates.slice(0, indexOfNeuron);
+        filteredZCoordinates = zCoordinates.slice(0, indexOfNeuron); */
       //selectedWeights = weights.slice(0, indexOfNeuron);
       sWeights = weights.slice(0, indexOfNeuron + 1);
 
@@ -378,9 +378,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
         throw this.displayError();
       }
 
-   /*    selectedXCoordinates = xCoordinates.slice(indexOfNeuron);
-      selectedYCoordinates = yCoordinates.slice(indexOfNeuron);
-      selectedZCoordinates = zCoordinates.slice(indexOfNeuron); */
+      /*    selectedXCoordinates = xCoordinates.slice(indexOfNeuron);
+         selectedYCoordinates = yCoordinates.slice(indexOfNeuron);
+         selectedZCoordinates = zCoordinates.slice(indexOfNeuron); */
 
       //selectedWeights = weights.slice(indexOfNeuron);
       sWeights = weights.slice(indexOfNeuron, xCoordinates.length);
@@ -405,7 +405,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       });
       console.log(selectedColours, "SC");
 
-  
+
 
       const updateNeurons = {
         x: xCoordinates,
@@ -462,7 +462,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   }
   fillChart() {
-    let model = neoCortexUtils.createModel(1, [100, 6], 10); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
+    let model = neoCortexUtils.createModel(1, [50, 6], 10); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
     // this.opacityValues = new Array(areaSection).fill(0.5, 0, 1200).fill(1.8, 1200, 2400);
     //this.colour = new Array(areaSection).fill('#00BFFF', 0, 800).fill('#48afd1', 800, 1600).fill('#236d86', 1600, 2499);
     let xCoord = [];
@@ -482,37 +482,49 @@ export class AinetComponent implements OnInit, AfterViewInit {
     //Assign that arrays to synapses 
 
 
-    let xSynapse = xCoord.slice();
-    let ySynapse = yCoord.slice();
-    let zSynapse = zCoord.slice();
-    let randomIndexArray = [];
-    let randomInsertArray = [];
+    let xSynapse = xCoord.slice(); // creating copy of list
+    let ySynapse = yCoord.slice(); // creating copy of list
+    let zSynapse = zCoord.slice(); // creating copy of list
+    let randomIndexArray = []; // purely random variables 
+    let randomInsertArray = []; // choosed(randomIndexArray) random variables will be inserted after the purely radom indexes 
 
     let rangeOfXVariables = xCoord.length;
 
-    let totalRandomIndexs = 20;
+    let totalRandomIndexs = 3;
     for (let j = 0; j < totalRandomIndexs; j++) {
       let randomIndex = Math.floor(Math.random() * Math.floor(rangeOfXVariables));
-      randomIndexArray.push(randomIndex);
+      randomIndexArray.push(randomIndex);  // generating/filling purely random variables 
     }
 
-    let totalRandomInsertIndex = 20;
+    let totalRandomInsertIndex = 3;
     for (let k = 0; k < totalRandomInsertIndex; k++) {
       let randomInsertIndex = Math.floor(Math.random() * Math.floor(rangeOfXVariables));
-      randomInsertArray.push(randomInsertIndex);
+      randomInsertArray.push(randomInsertIndex);// generating/filling purely random indexes 
     }
-
-    for (let l = 0; l < randomIndexArray.length; l++) {
+    /* 
+        for (let l = 0; l < randomIndexArray.length; l++) {
+          let xPointAtXi = xCoord[randomIndexArray[l]];
+          let yPointAtXi = yCoord[randomIndexArray[l]];
+          let zPointAtXi = zCoord[randomIndexArray[l]];
+    
+          for (let m = 0; m < randomInsertArray.length; m++) {
+    
+            xSynapse.splice(randomInsertArray[m], 0, xPointAtXi); //(index, 0, element)
+            ySynapse.splice(randomInsertArray[m], 0, yPointAtXi);
+            zSynapse.splice(randomInsertArray[m], 0, zPointAtXi);
+          }
+    
+        } */
+    for (let l = 0; l < randomInsertArray.length; l++) {
+      // reading specific vector from randomIndexArray at l index
       let xPointAtXi = xCoord[randomIndexArray[l]];
       let yPointAtXi = yCoord[randomIndexArray[l]];
       let zPointAtXi = zCoord[randomIndexArray[l]];
+      // inserting specific vector into randomInsertArray at l index
+      xSynapse.splice(randomInsertArray[l], 0, xPointAtXi); //(index, 0, element)
+      ySynapse.splice(randomInsertArray[l], 0, yPointAtXi);
+      zSynapse.splice(randomInsertArray[l], 0, zPointAtXi);
 
-      for (let m = 0; m < randomInsertArray.length; m++) {
-
-        xSynapse.splice(randomInsertArray[m], 0, xPointAtXi); //(index, 0, element)
-        ySynapse.splice(randomInsertArray[m], 0, yPointAtXi);
-        zSynapse.splice(randomInsertArray[m], 0, zPointAtXi);
-      }
 
     }
     console.log(randomIndexArray, "rein Zufällig X");
