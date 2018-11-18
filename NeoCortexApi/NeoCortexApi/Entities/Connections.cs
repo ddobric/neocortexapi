@@ -555,20 +555,12 @@ namespace NeoCortexApi.Entities
          * Returns the product of the input dimensions
          * @return  the product of the input dimensions
          */
-        public int getNumInputs()
-        {
-            return numInputs;
-        }
-
         /**
-         * Sets the product of the input dimensions to
-         * establish a flat count of bits in the input field.
-         * @param n
-         */
-        public void setNumInputs(int n)
-        {
-            this.numInputs = n;
-        }
+ * Sets the product of the input dimensions to
+ * establish a flat count of bits in the input field.
+ * @param n
+ */
+        public int NumInputs { get => numInputs; set => this.numInputs = value; }
 
         /**
          * Returns the product of the column dimensions
@@ -2317,7 +2309,7 @@ namespace NeoCortexApi.Entities
         public void printParameters()
         {
             Console.WriteLine("------------ SpatialPooler Parameters ------------------");
-            Console.WriteLine("numInputs                  = " + getNumInputs());
+            Console.WriteLine("numInputs                  = " + NumInputs);
             Console.WriteLine("numColumns                 = " + getNumColumns());
             Console.WriteLine("cellsPerColumn             = " + getCellsPerColumn());
             Console.WriteLine("columnDimensions           = " + getColumnDimensions().ToString());

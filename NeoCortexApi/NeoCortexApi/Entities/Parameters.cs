@@ -36,11 +36,7 @@ namespace NeoCortexApi.Entities
 
     public class Parameters
     {
-        /** keep it simple */
-        private static readonly long serialVersionUID = 1L;
-        /**
-             Map of parameters to their values
-        */
+
         private readonly MyDictionary<string, Object> paramMap = new MyDictionary<string, object>();
 
         private static readonly MyDictionary<string, Object> DEFAULTS_ALL;
@@ -142,10 +138,16 @@ namespace NeoCortexApi.Entities
             }
         }
 
-        public void set(string key, object val)
+        public void Set(string key, object val)
         {
             paramMap[key] = val;
         }
+
+        public T Get<T>(string key)
+        {
+            return (T)paramMap[key];
+        }
+
 
         /**
  * Returns the size of the internal parameter storage.
@@ -206,7 +208,7 @@ namespace NeoCortexApi.Entities
             Parameters result = new Parameters();
             foreach (var key in map)
             {
-                result.set(key.Key, map[key.Key]);
+                result.Set(key.Key, map[key.Key]);
             }
             return result;
         }
