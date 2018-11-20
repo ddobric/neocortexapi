@@ -4,6 +4,7 @@ using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 
@@ -34,10 +35,18 @@ namespace UnitTestsProject
 
             var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 
+            var str = Helpers.StringifyVector(activeCols);
+
+            Debug.WriteLine(str);
+
+
         }
 
 
-
+        /// <summary>
+        /// This test generates neghborhood cells for different radius and center of cell topoogy 64 single dimensional cell array.
+        /// Reults are stored in CSV file, which is loaded by Python code 'neighborhood-test.py'to create a plotly diagram.
+        /// </summary>
         [TestMethod]
         public void NeighborhoodTest()
         {
@@ -82,7 +91,6 @@ namespace UnitTestsProject
                     }
                 }
             }
-
         }
         #region Private Helpers
 
