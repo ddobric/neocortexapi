@@ -50,7 +50,7 @@ export class neoCortexUtils {
 
     let inpModel: InputModel = new InputModel(sett);
 
-    var model: NeoCortexModel = new NeoCortexModel(sett, inpModel);
+    var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 1,1,1);
 
     let idCnt: number = 0;
 

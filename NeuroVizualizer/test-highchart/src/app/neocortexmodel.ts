@@ -56,9 +56,9 @@ export class NeoCortexModel {
     this.areas = new Array(settings.areaLocations.length);
     for (var i = 0; i < settings.areaLocations.length; i++) {
       if (i >= 1) {
-        posX = posX+50;
-        posY = posY+10;
-        posZ = posZ+7;
+        posX = posX + 50;
+        posY = posY + 10;
+        posZ = posZ + 7;
         this.areas[i] = new Area(settings, i, posX, posY, posZ);/// change at this position to chnage the area
       }
       else {
@@ -76,13 +76,15 @@ export class Area extends Location {
   public minicolumns: Minicolumn[][] = new Array();
 
   public id: number;
-
+  public overlap = [];
+  // public overlap: number[] = new Array();
   private settings: NeocortexSettings;
 
-  constructor(settings: NeocortexSettings, areaId: number, posX: number, posY: number, posZ: number) {
+  constructor(settings: NeocortexSettings, areaId: number, posX: number, posY: number, posZ: number, ) {
     super(posX, posY, posZ); {
 
       this.id = areaId;
+      //this.overlap = overlap;
 
       this.settings = settings;
 
@@ -104,24 +106,30 @@ export class Area extends Location {
          } */
       let row: Array<Minicolumn> = new Array();
       let i; let j; let k;
+      let totalNumberOfNeurons = (settings.minicolumnDims[0] * settings.minicolumnDims[1] * settings.numLayers);
+
+      for (let nW = 0; nW < 1; nW = nW + (1 / (totalNumberOfNeurons / settings.numLayers))) { //totalNumberOfNeurons/settings.numLayers to get each minicolumn
+        for (let l = 0; l < settings.numLayers; l++) {
+          this.overlap.push(parseFloat(nW.toFixed(2)));
+
+        }
+      }
       for (i = 0; i < settings.minicolumnDims[0]; i++) {
         for (j = 0; j < settings.numLayers; j++) {
           for (k = 0; k < settings.minicolumnDims[1]; k++) {
-            row.push(new Minicolumn(settings, areaId, [0], (posX + i), (posY + j), (posZ + k)));
-
+            row.push(new Minicolumn(settings, areaId, [0], (posX + i), (posY + j), (posZ + k), this.overlap));
+            this.minicolumns.push(row);
           }
-
         }
-
-
       }
-      this.minicolumns.push(row);
     }
   }
 }
 
 
 export class Minicolumn extends Location {
+
+  public overlap = [];
 
   public cells: Array<Cell> = new Array();
 
@@ -131,10 +139,11 @@ export class Minicolumn extends Location {
 
   private settings: NeocortexSettings;
 
-  constructor(settings: NeocortexSettings, areaId: number, miniColId: number[], posX: number, posY: number, posZ: number) {
+  constructor(settings: NeocortexSettings, areaId: number, miniColId: number[], posX: number, posY: number, posZ: number, overlap = []) {
     super(posX, posY, posZ);
 
     this.areaId = areaId;
+    this.overlap = overlap;
 
     this.id = miniColId;
 
@@ -156,6 +165,10 @@ export class Minicolumn extends Location {
 export class Cell extends Location {
 
   public id: CellId;
+
+  public isActive: boolean;
+
+  public isPredictiv: boolean;
 
   public Synapses: Synapse[];
 
