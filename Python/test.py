@@ -16,4 +16,4 @@ trace0 = go.Scatter(
 )
 
 data = [trace0]
-py.iplot(data, filename='bubblechart-color')
+py.plot(data)

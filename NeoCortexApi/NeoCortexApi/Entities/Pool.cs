@@ -153,7 +153,7 @@ namespace NeoCortexApi.Entities
          */
         public double[] getDensePermanences(Connections c)
         {
-            double[] retVal = new double[c.getNumInputs()];
+            double[] retVal = new double[c.NumInputs];
             // int[] keys = synapsesBySourceIndex.keys();
             foreach (int inputIndex in synapsesBySourceIndex.Keys)
             {
@@ -184,7 +184,7 @@ namespace NeoCortexApi.Entities
         {
             List<int> newArr = new List<int>();
 
-            for (int i = 0; i < c.getNumInputs(); i++)
+            for (int i = 0; i < c.NumInputs; i++)
             {
                 newArr.Add(synapsesBySourceIndex.ContainsKey(i) ? 1 : 0);
                 //    }
@@ -206,7 +206,7 @@ namespace NeoCortexApi.Entities
         {
             List<int> newArr = new List<int>();
 
-            for (int i = 0; i < c.getNumInputs(); i++)
+            for (int i = 0; i < c.NumInputs; i++)
             {
                 newArr.Add(synapseConnections.Contains(i) ? 1 : 0);
               

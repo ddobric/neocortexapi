@@ -32,7 +32,7 @@ namespace NeoCortexApi.Utility
          *                  42x10, the point [1, 4] is index 1*420 + 4*10 = 460.
          * @return          A array of coordinates of length len(dimensions).
          */
-        public int[] coordinatesFromIndex(int index)
+        public int[] GetCoordinatesFromIndex(int index)
         {
             return computeCoordinates(index);
         }
@@ -46,7 +46,7 @@ namespace NeoCortexApi.Utility
          *                          using the dimensions as a mixed radix definition. For example, in dimensions
          *                          42x10, the point [1, 4] is index 1*420 + 4*10 = 460.
          */
-        public int indexFromCoordinates(int[] coordinates)
+        public int GndexFromCoordinates(int[] coordinates)
         {
             return computeIndex(coordinates);
         }
@@ -65,9 +65,9 @@ namespace NeoCortexApi.Utility
          * @param radius            The radius of this neighborhood about the centerIndex.
          * @return  The points in the neighborhood, including centerIndex.
          */
-        public int[] neighborhood(int centerIndex, int radius)
+        public int[] GetNeighborhood(int centerIndex, int radius)
         {
-            centerPosition = coordinatesFromIndex(centerIndex);
+            centerPosition = GetCoordinatesFromIndex(centerIndex);
 
             IntGenerator[] intGens = new IntGenerator[dimensions.Length];
             for (int i = 0; i < dimensions.Length; i++)
@@ -103,8 +103,7 @@ namespace NeoCortexApi.Utility
                 }
             }
 
-            return result.Select((tl) => indexFromCoordinates(tl.ToArray())).ToArray();
-
+            return result.Select((tl) => GndexFromCoordinates(tl.ToArray())).ToArray();
         }
 
         /**
@@ -119,7 +118,7 @@ namespace NeoCortexApi.Utility
          */
         public int[] wrappingNeighborhood(int centerIndex, int radius)
         {
-            int[] cp = coordinatesFromIndex(centerIndex);
+            int[] cp = GetCoordinatesFromIndex(centerIndex);
 
             // Dims of columns
             IntGenerator[] intGens = new IntGenerator[dimensions.Length];
@@ -161,7 +160,7 @@ namespace NeoCortexApi.Utility
                 k++;
             }
 
-            return result.Select((tl) => indexFromCoordinates(tl.ToArray())).ToArray();
+            return result.Select((tl) => GndexFromCoordinates(tl.ToArray())).ToArray();
         }
     }
 }

@@ -50,7 +50,7 @@ namespace UnitTestsProject
         {
             Topology t = new Topology(new int[] { 2048, 40 });
             int[] coords = new int[] { 200, 10 };
-            var indx = t.indexFromCoordinates(coords);
+            var indx = t.GndexFromCoordinates(coords);
         }
 
 
@@ -59,7 +59,7 @@ namespace UnitTestsProject
         {
             Topology t = new Topology(new int[] { 2048, 40 });
             int[] coords = new int[] { 200, 10 };
-            var indx = t.indexFromCoordinates(coords);
+            var indx = t.GndexFromCoordinates(coords);
             var coords2 = t.computeCoordinates(indx);
 
             Assert.AreEqual(coords[0], coords2[0]);

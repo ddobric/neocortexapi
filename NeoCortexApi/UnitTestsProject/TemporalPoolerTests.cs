@@ -31,18 +31,18 @@ namespace UnitTestsProject
         private Parameters getDefaultParameters()
         {
             Parameters retVal = Parameters.getTemporalDefaultParameters();
-            retVal.set(KEY.COLUMN_DIMENSIONS, new int[] { 32 });
-            retVal.set(KEY.CELLS_PER_COLUMN, 4);
-            retVal.set(KEY.ACTIVATION_THRESHOLD, 3);
-            retVal.set(KEY.INITIAL_PERMANENCE, 0.21);
-            retVal.set(KEY.CONNECTED_PERMANENCE, 0.5);
-            retVal.set(KEY.MIN_THRESHOLD, 2);
-            retVal.set(KEY.MAX_NEW_SYNAPSE_COUNT, 3);
-            retVal.set(KEY.PERMANENCE_INCREMENT, 0.10);
-            retVal.set(KEY.PERMANENCE_DECREMENT, 0.10);
-            retVal.set(KEY.PREDICTED_SEGMENT_DECREMENT, 0.0);
-            retVal.set(KEY.RANDOM, new Random(42));
-            retVal.set(KEY.SEED, 42);
+            retVal.Set(KEY.COLUMN_DIMENSIONS, new int[] { 32 });
+            retVal.Set(KEY.CELLS_PER_COLUMN, 4);
+            retVal.Set(KEY.ACTIVATION_THRESHOLD, 3);
+            retVal.Set(KEY.INITIAL_PERMANENCE, 0.21);
+            retVal.Set(KEY.CONNECTED_PERMANENCE, 0.5);
+            retVal.Set(KEY.MIN_THRESHOLD, 2);
+            retVal.Set(KEY.MAX_NEW_SYNAPSE_COUNT, 3);
+            retVal.Set(KEY.PERMANENCE_INCREMENT, 0.10);
+            retVal.Set(KEY.PERMANENCE_DECREMENT, 0.10);
+            retVal.Set(KEY.PREDICTED_SEGMENT_DECREMENT, 0.0);
+            retVal.Set(KEY.RANDOM, new Random(42));
+            retVal.Set(KEY.SEED, 42);
 
             return retVal;
         }
@@ -51,7 +51,7 @@ namespace UnitTestsProject
         private Parameters getDefaultParameters(Parameters p, string key, Object value)
         {
             Parameters retVal = p == null ? getDefaultParameters() : p;
-            retVal.set(key, value);
+            retVal.Set(key, value);
 
             return retVal;
         }
@@ -604,11 +604,11 @@ namespace UnitTestsProject
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
             Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 1);
-            p.set(KEY.COLUMN_DIMENSIONS, new int[] { 100 });
+            p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 100 });
             p = getDefaultParameters(p, KEY.MIN_THRESHOLD, 1);
             p = getDefaultParameters(p, KEY.PERMANENCE_INCREMENT, 0.02);
             p = getDefaultParameters(p, KEY.PERMANENCE_DECREMENT, 0.02);
-            p.set(KEY.MAX_SYNAPSES_PER_SEGMENT, 3);
+            p.Set(KEY.MAX_SYNAPSES_PER_SEGMENT, 3);
             p.apply(cn);
             TemporalMemory.init(cn);
 
@@ -650,7 +650,7 @@ namespace UnitTestsProject
             p = getDefaultParameters(p, KEY.INITIAL_PERMANENCE, 0.5);
             p = getDefaultParameters(p, KEY.PERMANENCE_INCREMENT, 0.02);
             p = getDefaultParameters(p, KEY.PERMANENCE_DECREMENT, 0.02);
-            p.set(KEY.MAX_SEGMENTS_PER_CELL, 2);
+            p.Set(KEY.MAX_SEGMENTS_PER_CELL, 2);
             p.apply(cn);
             TemporalMemory.init(cn);
 
@@ -962,8 +962,8 @@ namespace UnitTestsProject
         {
             Connections cn = new Connections();
             Parameters p = Parameters.getAllDefaultParameters();
-            p.set(KEY.COLUMN_DIMENSIONS, new int[] { 64, 64 });
-            p.set(KEY.CELLS_PER_COLUMN, 32);
+            p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 64, 64 });
+            p.Set(KEY.CELLS_PER_COLUMN, 32);
             p.apply(cn);
             TemporalMemory.init(cn);
 
@@ -975,8 +975,8 @@ namespace UnitTestsProject
         {
             Connections cn = new Connections();
             Parameters p = Parameters.getAllDefaultParameters();
-            p.set(KEY.COLUMN_DIMENSIONS, new int[] { 64, 64 });
-            p.set(KEY.CELLS_PER_COLUMN, 32);
+            p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 64, 64 });
+            p.Set(KEY.CELLS_PER_COLUMN, 32);
             p.apply(cn);
             TemporalMemory.init(cn);
 

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using System.Diagnostics;
 
 namespace UnitTestsProject
 {
@@ -19,44 +20,44 @@ namespace UnitTestsProject
         public void setupParameters()
         {
             parameters = Parameters.getAllDefaultParameters();
-            parameters.set(KEY.INPUT_DIMENSIONS, new int[] { 5 });
-            parameters.set(KEY.COLUMN_DIMENSIONS, new int[] { 5 });
-            parameters.set(KEY.POTENTIAL_RADIUS, 5);
-            parameters.set(KEY.POTENTIAL_PCT, 0.5);
-            parameters.set(KEY.GLOBAL_INHIBITION, false);
-            parameters.set(KEY.LOCAL_AREA_DENSITY, -1.0);
-            parameters.set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 3.0);
-            parameters.set(KEY.STIMULUS_THRESHOLD, 0.0);
-            parameters.set(KEY.SYN_PERM_INACTIVE_DEC, 0.01);
-            parameters.set(KEY.SYN_PERM_ACTIVE_INC, 0.1);
-            parameters.set(KEY.SYN_PERM_CONNECTED, 0.1);
-            parameters.set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.1);
-            parameters.set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.1);
-            parameters.set(KEY.DUTY_CYCLE_PERIOD, 10);
-            parameters.set(KEY.MAX_BOOST, 10.0);
-            parameters.set(KEY.RANDOM, new Random(42));
+            parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { 5 });
+            parameters.Set(KEY.COLUMN_DIMENSIONS, new int[] { 5 });
+            parameters.Set(KEY.POTENTIAL_RADIUS, 5);
+            parameters.Set(KEY.POTENTIAL_PCT, 0.5);
+            parameters.Set(KEY.GLOBAL_INHIBITION, false);
+            parameters.Set(KEY.LOCAL_AREA_DENSITY, -1.0);
+            parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 3.0);
+            parameters.Set(KEY.STIMULUS_THRESHOLD, 0.0);
+            parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.01);
+            parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0.1);
+            parameters.Set(KEY.SYN_PERM_CONNECTED, 0.1);
+            parameters.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.1);
+            parameters.Set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.1);
+            parameters.Set(KEY.DUTY_CYCLE_PERIOD, 10);
+            parameters.Set(KEY.MAX_BOOST, 10.0);
+            parameters.Set(KEY.RANDOM, new Random(42));
         }
 
         public void setupDefaultParameters()
         {
             parameters = Parameters.getAllDefaultParameters();
-            parameters.set(KEY.INPUT_DIMENSIONS, new int[] { 32, 32 });
-            parameters.set(KEY.COLUMN_DIMENSIONS, new int[] { 64, 64 });
-            parameters.set(KEY.POTENTIAL_RADIUS, 16);
-            parameters.set(KEY.POTENTIAL_PCT, 0.5);
-            parameters.set(KEY.GLOBAL_INHIBITION, false);
-            parameters.set(KEY.LOCAL_AREA_DENSITY, -1.0);
-            parameters.set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 10.0);
-            parameters.set(KEY.STIMULUS_THRESHOLD, 0.0);
-            parameters.set(KEY.SYN_PERM_INACTIVE_DEC, 0.008);
-            parameters.set(KEY.SYN_PERM_ACTIVE_INC, 0.05);
-            parameters.set(KEY.SYN_PERM_CONNECTED, 0.10);
-            parameters.set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.001);
-            parameters.set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.001);
-            parameters.set(KEY.DUTY_CYCLE_PERIOD, 1000);
-            parameters.set(KEY.MAX_BOOST, 10.0);
-            parameters.set(KEY.SEED, 42);
-            parameters.set(KEY.RANDOM, new Random(42));
+            parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { 32, 32 });
+            parameters.Set(KEY.COLUMN_DIMENSIONS, new int[] { 64, 64 });
+            parameters.Set(KEY.POTENTIAL_RADIUS, 16);
+            parameters.Set(KEY.POTENTIAL_PCT, 0.5);
+            parameters.Set(KEY.GLOBAL_INHIBITION, false);
+            parameters.Set(KEY.LOCAL_AREA_DENSITY, -1.0);
+            parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 10.0);
+            parameters.Set(KEY.STIMULUS_THRESHOLD, 0.0);
+            parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.008);
+            parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0.05);
+            parameters.Set(KEY.SYN_PERM_CONNECTED, 0.10);
+            parameters.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.001);
+            parameters.Set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.001);
+            parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000);
+            parameters.Set(KEY.MAX_BOOST, 10.0);
+            parameters.Set(KEY.SEED, 42);
+            parameters.Set(KEY.RANDOM, new Random(42));
         }
 
         private void initSP()
@@ -91,7 +92,7 @@ namespace UnitTestsProject
             Assert.AreEqual(10.0, mem.getMaxBoost());//, 0);
             Assert.AreEqual(42, mem.getSeed());
 
-            Assert.AreEqual(5, mem.getNumInputs());
+            Assert.AreEqual(5, mem.NumInputs);
             Assert.AreEqual(5, mem.getNumColumns());
         }
 
@@ -105,8 +106,8 @@ namespace UnitTestsProject
         public void testCompute1()
         {
             setupParameters();
-            parameters.set(KEY.INPUT_DIMENSIONS, new int[] { 9 });
-            parameters.set(KEY.COLUMN_DIMENSIONS, new int[] { 5 });
+            parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { 9 });
+            parameters.Set(KEY.COLUMN_DIMENSIONS, new int[] { 5 });
             parameters.setPotentialRadius(5);
 
             //This is 0.3 in Python version due to use of dense 
@@ -203,14 +204,14 @@ namespace UnitTestsProject
             int inputSize = 10;
             int nColumns = 20;
             parameters = Parameters.getSpatialDefaultParameters();
-            parameters.set(KEY.INPUT_DIMENSIONS, new int[] { inputSize });
-            parameters.set(KEY.COLUMN_DIMENSIONS, new int[] { nColumns });
-            parameters.set(KEY.POTENTIAL_RADIUS, 10);
-            parameters.set(KEY.GLOBAL_INHIBITION, true);
-            parameters.set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 3.0);
-            parameters.set(KEY.STIMULUS_THRESHOLD, 0.0);// This makes column active even if no synapse is connected.
-            parameters.set(KEY.RANDOM, new Random(42));
-            parameters.set(KEY.SEED, 42);
+            parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { inputSize });
+            parameters.Set(KEY.COLUMN_DIMENSIONS, new int[] { nColumns });
+            parameters.Set(KEY.POTENTIAL_RADIUS, 10);
+            parameters.Set(KEY.GLOBAL_INHIBITION, true);
+            parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 3.0);
+            parameters.Set(KEY.STIMULUS_THRESHOLD, 0.0);// This makes column active even if no synapse is connected.
+            parameters.Set(KEY.RANDOM, new Random(42));
+            parameters.Set(KEY.SEED, 42);
 
             SpatialPooler sp = new SpatialPooler();
             Connections cn = new Connections();
@@ -233,14 +234,14 @@ namespace UnitTestsProject
             int inputSize = 10;
             int nColumns = 20;
             parameters = Parameters.getSpatialDefaultParameters();
-            parameters.set(KEY.INPUT_DIMENSIONS, new int[] { inputSize });
-            parameters.set(KEY.COLUMN_DIMENSIONS, new int[] { nColumns });
-            parameters.set(KEY.POTENTIAL_RADIUS, 10);
-            parameters.set(KEY.GLOBAL_INHIBITION, true);
-            parameters.set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 3.0);
-            parameters.set(KEY.STIMULUS_THRESHOLD, 1.0);
-            parameters.set(KEY.RANDOM, new Random(42));
-            parameters.set(KEY.SEED, 42);
+            parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { inputSize });
+            parameters.Set(KEY.COLUMN_DIMENSIONS, new int[] { nColumns });
+            parameters.Set(KEY.POTENTIAL_RADIUS, 10);
+            parameters.Set(KEY.GLOBAL_INHIBITION, true);
+            parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 3.0);
+            parameters.Set(KEY.STIMULUS_THRESHOLD, 1.0);
+            parameters.Set(KEY.RANDOM, new Random(42));
+            parameters.Set(KEY.SEED, 42);
 
             SpatialPooler sp = new SpatialPooler();
             Connections cn = new Connections();
@@ -259,14 +260,14 @@ namespace UnitTestsProject
             int inputSize = 10;
             int nColumns = 20;
             parameters = Parameters.getSpatialDefaultParameters();
-            parameters.set(KEY.INPUT_DIMENSIONS, new int[] { inputSize });
-            parameters.set(KEY.COLUMN_DIMENSIONS, new int[] { nColumns });
-            parameters.set(KEY.POTENTIAL_RADIUS, 5);
-            parameters.set(KEY.GLOBAL_INHIBITION, false);
-            parameters.set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 1.0);
-            parameters.set(KEY.STIMULUS_THRESHOLD, 0.0);
-            parameters.set(KEY.RANDOM, new Random(42));
-            parameters.set(KEY.SEED, 42);
+            parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { inputSize });
+            parameters.Set(KEY.COLUMN_DIMENSIONS, new int[] { nColumns });
+            parameters.Set(KEY.POTENTIAL_RADIUS, 5);
+            parameters.Set(KEY.GLOBAL_INHIBITION, false);
+            parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 1.0);
+            parameters.Set(KEY.STIMULUS_THRESHOLD, 0.0);
+            parameters.Set(KEY.RANDOM, new Random(42));
+            parameters.Set(KEY.SEED, 42);
 
             SpatialPooler sp = new SpatialPooler();
             Connections cn = new Connections();
@@ -294,14 +295,14 @@ namespace UnitTestsProject
             int inputSize = 10;
             int nColumns = 20;
             parameters = Parameters.getSpatialDefaultParameters();
-            parameters.set(KEY.INPUT_DIMENSIONS, new int[] { inputSize });
-            parameters.set(KEY.COLUMN_DIMENSIONS, new int[] { nColumns });
-            parameters.set(KEY.POTENTIAL_RADIUS, 10);
-            parameters.set(KEY.GLOBAL_INHIBITION, false);
-            parameters.set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 3.0);
-            parameters.set(KEY.STIMULUS_THRESHOLD, 1.0);
-            parameters.set(KEY.RANDOM, new Random(42));
-            parameters.set(KEY.SEED, 42);
+            parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { inputSize });
+            parameters.Set(KEY.COLUMN_DIMENSIONS, new int[] { nColumns });
+            parameters.Set(KEY.POTENTIAL_RADIUS, 10);
+            parameters.Set(KEY.GLOBAL_INHIBITION, false);
+            parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 3.0);
+            parameters.Set(KEY.STIMULUS_THRESHOLD, 1.0);
+            parameters.Set(KEY.RANDOM, new Random(42));
+            parameters.Set(KEY.SEED, 42);
 
             SpatialPooler sp = new SpatialPooler();
             Connections cn = new Connections();
@@ -556,7 +557,7 @@ namespace UnitTestsProject
             parameters.setColumnDimensions(new int[] { 4 });
             parameters.setPotentialRadius(2);
             parameters.setPotentialPct(1);
-            parameters.set(KEY.WRAP_AROUND, false);
+            parameters.Set(KEY.WRAP_AROUND, false);
             initSP();
 
             Assert.AreEqual(12, mem.getInputDimensions()[0]);
@@ -584,7 +585,7 @@ namespace UnitTestsProject
 
             // Test with wrapAround and potentialPct < 1
             parameters.setPotentialPct(0.5);
-            parameters.set(KEY.WRAP_AROUND, true);
+            parameters.Set(KEY.WRAP_AROUND, true);
             initSP();
 
             int[] supersetMask = new int[] { 0, 1, 2, 3, 11 };
@@ -659,7 +660,7 @@ namespace UnitTestsProject
             parameters.setColumnDimensions(new int[] { 1 });
             parameters.setPotentialRadius(2);
             parameters.setPotentialPct(1);
-            parameters.set(KEY.WRAP_AROUND, false);
+            parameters.Set(KEY.WRAP_AROUND, false);
             initSP();
 
             //Test without wrapAround and potentialPct = 1
@@ -1154,7 +1155,7 @@ namespace UnitTestsProject
             setupDefaultParameters();
             parameters.setInputDimensions(new int[] { 5 });
             parameters.setColumnDimensions(new int[] { 8 });
-            parameters.set(KEY.WRAP_AROUND, false);
+            parameters.Set(KEY.WRAP_AROUND, false);
             initSP();
 
             mem.InhibitionRadius = 1;
@@ -1190,7 +1191,7 @@ namespace UnitTestsProject
             setupDefaultParameters();
             parameters.setInputDimensions(new int[] { 5 });
             parameters.setColumnDimensions(new int[] { 8 });
-            parameters.set(KEY.WRAP_AROUND, true);
+            parameters.Set(KEY.WRAP_AROUND, true);
             initSP();
 
             mem.InhibitionRadius = 1;
@@ -1712,7 +1713,7 @@ namespace UnitTestsProject
             mem = new Connections();
             parameters.apply(mem);
             sp.init(mem);
-            mem.setNumInputs(10);
+            mem.NumInputs = 10;
 
             mem.setPotentialRadius(2);
             double connectedPct = 1;
@@ -1730,13 +1731,13 @@ namespace UnitTestsProject
 
             connectedPct = 0.5;
             mem.setPotentialRadius(100);
-            mem.setNumInputs(100);
+            mem.NumInputs = 100;
             mask = new int[100];
             for (int i = 0; i < 100; i++) mask[i] = i;
             double[] perma = this.sp.initPermanence(mem, mask, 0, connectedPct);
             numcon = ArrayUtils.valueGreaterOrEqualCount(mem.getSynPermConnected(), perma);
             Assert.IsTrue(numcon > 0);
-            Assert.IsTrue(numcon < mem.getNumInputs());
+            Assert.IsTrue(numcon < mem.NumInputs);
 
             double minThresh = 0.0;
             double maxThresh = mem.getSynPermMax();
@@ -1782,7 +1783,7 @@ namespace UnitTestsProject
             parameters.apply(mem);
             sp.init(mem);
 
-            mem.setNumInputs(10);
+            mem.NumInputs = 10;
             double connectedPct = 1;
             int[] mask = new int[] { 0, 1 };
             double[] perm = sp.initPermanence(mem, mask, 0, connectedPct);
@@ -2314,7 +2315,7 @@ namespace UnitTestsProject
             }
 
             // Num columns cannot be 0
-            parameters.set(KEY.COLUMN_DIMENSIONS, new int[] { 0 });
+            parameters.Set(KEY.COLUMN_DIMENSIONS, new int[] { 0 });
             c = new Connections();
             parameters.apply(c);
             try
@@ -2333,10 +2334,10 @@ namespace UnitTestsProject
             }
 
             // Reset column dims
-            parameters.set(KEY.COLUMN_DIMENSIONS, new int[] { 5 });
+            parameters.Set(KEY.COLUMN_DIMENSIONS, new int[] { 5 });
 
             // Num columns cannot be 0
-            parameters.set(KEY.INPUT_DIMENSIONS, new int[] { 0 });
+            parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { 0 });
             c = new Connections();
             parameters.apply(c);
             try
@@ -2362,7 +2363,7 @@ namespace UnitTestsProject
         public void testComputeInputMismatch()
         {
             setupParameters();
-            parameters.set(KEY.INPUT_DIMENSIONS, new int[] { 2, 4 });
+            parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { 2, 4 });
             parameters.setColumnDimensions(new int[] { 5, 1 });
 
             Connections c = new Connections();
@@ -2390,7 +2391,7 @@ namespace UnitTestsProject
 
 
             // Now Do the right thing
-            parameters.set(KEY.INPUT_DIMENSIONS, new int[] { 2, 4 });
+            parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { 2, 4 });
             parameters.setColumnDimensions(new int[] { 5, 1 });
 
             c = new Connections();
@@ -2408,6 +2409,8 @@ namespace UnitTestsProject
                 Assert.Fail();
             }
         }
+
+       
     }
 
 

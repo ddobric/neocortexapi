@@ -87,7 +87,7 @@ namespace NeoCortexApi
             {
                 throw new ArgumentException("Invalid number of inputs: " + numInputs);
             }
-            c.setNumInputs(numInputs);
+            c.NumInputs = numInputs;
             c.setNumColumns(numColumns);
 
             //Fill the sparse matrix with column objects
@@ -172,10 +172,10 @@ namespace NeoCortexApi
          */
         public void compute(Connections c, int[] inputVector, int[] activeArray, bool learn)
         {
-            if (inputVector.Length != c.getNumInputs())
+            if (inputVector.Length != c.NumInputs)
             {
                 throw new ArgumentException(
-                        "Input array must be same size as the defined number of inputs: From Params: " + c.getNumInputs() +
+                        "Input array must be same size as the defined number of inputs: From Params: " + c.NumInputs+
                         ", From Input Vector: " + inputVector.Length);
             }
 
@@ -288,7 +288,7 @@ namespace NeoCortexApi
          */
         public void updateMinDutyCycles(Connections c)
         {
-            if (c.GlobalInhibition || c.InhibitionRadius > c.getNumInputs())
+            if (c.GlobalInhibition || c.InhibitionRadius > c.NumInputs)
             {
                 updateMinDutyCyclesGlobal(c);
             }
@@ -333,7 +333,7 @@ namespace NeoCortexApi
         {
             return c.isWrapAround() ?
                 c.getColumnTopology().wrappingNeighborhood(centerColumn, inhibitionRadius) :
-                    c.getColumnTopology().neighborhood(centerColumn, inhibitionRadius);
+                    c.getColumnTopology().GetNeighborhood(centerColumn, inhibitionRadius);
         }
 
         /**
@@ -576,7 +576,7 @@ namespace NeoCortexApi
             // Get all indicies of input vector, which are set on '1'.
             var inputIndices = ArrayUtils.IndexWhere(inputVector, inpBit => inpBit > 0);
 
-            double[] permChanges = new double[c.getNumInputs()];
+            double[] permChanges = new double[c.NumInputs];
 
             // First we initialize all permChanges to minimum decrement values,
             // which are used in a case of none-connections to input.
@@ -806,7 +806,7 @@ namespace NeoCortexApi
          */
         public double[] initPermanence(Connections c, int[] potentialPool, int colIndx, double connectedPct)
         {
-            double[] perm = new double[c.getNumInputs()];
+            double[] perm = new double[c.NumInputs];
             foreach (int idx in potentialPool)
             {
                 if (c.random.NextDouble() <= connectedPct)
@@ -1021,7 +1021,7 @@ namespace NeoCortexApi
          * @return  indices of the winning columns
          */
         public virtual int[] inhibitColumnsLocal(Connections c, double[] overlaps, double density)
-        {
+        { 
             double winnerDelta = ArrayUtils.max(overlaps) / 1000.0d;
             if (winnerDelta == 0)
             {
@@ -1275,7 +1275,7 @@ namespace NeoCortexApi
         {
             return c.isWrapAround() ?
                 c.getInputTopology().wrappingNeighborhood(centerInput, potentialRadius) :
-                    c.getInputTopology().neighborhood(centerInput, potentialRadius);
+                    c.getInputTopology().GetNeighborhood(centerInput, potentialRadius);
         }
     }
 }
