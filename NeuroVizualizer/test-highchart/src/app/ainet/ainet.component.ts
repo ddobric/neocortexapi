@@ -50,30 +50,33 @@ export class AinetComponent implements OnInit, AfterViewInit {
   public options = {
     position: ["top", "right"],
     timeOut: 3000,
-  }
+  };
 
   createChart() {
-    let getCoordinates = this.fillChart();
-    let xCoordinates = getCoordinates[0];
-    let yCoordinates = getCoordinates[1];
-    let zCoordinates = getCoordinates[2];
-    let xSynap = getCoordinates[4];
-    let ySynap = getCoordinates[5];
-    let zSynap = getCoordinates[6];
+    let getData = this.fillChart();
+    let xCoordinates = getData[0];
+    let yCoordinates = getData[1];
+    let zCoordinates = getData[2];
+    let xSynap = getData[4];
+    let ySynap = getData[5];
+    let zSynap = getData[6];
 
     console.log(xCoordinates, "X");
     console.log(yCoordinates, "Y");
     console.log(zCoordinates, "Z");
 
-    let colourArray = this.getHeatColor();
-    let cellColours = colourArray[0];
-    let weights = colourArray[1];
+    //let colourArray = this.getHeatColor();
+    //let cellColours = colourArray[0];
+    let getHeatMap = this.generateHeatMap()
+    let assignColours = getHeatMap[0];
+    //let weights = colourArray[1];
 
+    let overlap = getData[7];
     const neurons = {
       x: xCoordinates,
       y: yCoordinates,
       z: zCoordinates,
-      text: weights,
+      text: overlap,
       name: 'Neuron',
       mode: 'markers',
 
@@ -89,7 +92,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
         opacity: env.opacityOfNeuron,
         size: env.sizeOfNeuron,
         // color: '#00BFFF',
-        color: cellColours,
+        color: assignColours,
         symbol: 'circle',
         line: {
           //color: '#7B68EE',
@@ -109,11 +112,11 @@ export class AinetComponent implements OnInit, AfterViewInit {
       x: xSynap,
       y: ySynap,
       z: zSynap,
-      text: weights,
+      text: overlap,
       opacity: env.opacityOfSynapse,
       line: {
         width: env.lineWidthOfSynapse,
-        color: cellColours,
+        color: assignColours,
 
         //color: '#7CFC00'
         //colorscale: 'Viridis'
@@ -147,12 +150,12 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
       scene: {
         //"auto" | "cube" | "data" | "manual" 
-        aspectmode: 'data',
-        /*  aspectratio: {
-             x: 1.5,
+        aspectmode: 'manual',
+        aspectratio: {
+             x: 7,
              y: 1,
              z: 0.5
-         }, */
+         }, 
         camera: {
           center: {
             x: 0,
@@ -266,8 +269,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
         throw this.displayError();
       }
 
-      let heatColourArray = this.getHeatColor();
-      let weights = heatColourArray[1];
+      let heatColourArray = this.generateHeatMap();
+      let getData = this.fillChart();
+      let weights = getData[7];
       let cellColours = heatColourArray[0];
       let indexOfNeuron = weights.indexOf(neuronWeight);
 
@@ -281,7 +285,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
           }
 
         }
-        indexOfNeuron = i;
+        indexOfNeuron = i-1;
       }
 
       console.log(indexOfNeuron, neuronWeight);
@@ -367,8 +371,11 @@ export class AinetComponent implements OnInit, AfterViewInit {
         throw this.displayError();
       }
 
-      let heatColourArray = this.getHeatColor();
-      let weights = heatColourArray[1];
+      //let heatColourArray = this.getHeatColor();
+      let heatColourArray = this.generateHeatMap();
+      let getData = this.fillChart();
+      //let weights = heatColourArray[1];
+      let weights = getData[7];
       let cellColours = heatColourArray[0];
       let indexOfNeuron = weights.indexOf(neuronWeight);
       console.log(indexOfNeuron, neuronWeight);
@@ -462,21 +469,25 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   }
   fillChart() {
-    let model = neoCortexUtils.createModel(1, [50, 6], 10); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
+    let model = neoCortexUtils.createModel(1, [200, 5], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
     // this.opacityValues = new Array(areaSection).fill(0.5, 0, 1200).fill(1.8, 1200, 2400);
     //this.colour = new Array(areaSection).fill('#00BFFF', 0, 800).fill('#48afd1', 800, 1600).fill('#236d86', 1600, 2499);
     let xCoord = [];
     let yCoord = [];
     let zCoord = [];
+    let overlap = [];
     let numOfAreas = model.areas;
     let ai;
     for (ai = 0; ai < model.areas.length; ai++) {
       for (let i = 0; i < model.areas[ai].minicolumns[0].length; i++) {
+        overlap = model.areas[ai].overlap;
         xCoord.push(model.areas[ai].minicolumns[0][i].posX);
         yCoord.push(model.areas[ai].minicolumns[0][i].posY);
         zCoord.push(model.areas[ai].minicolumns[0][i].posZ);
+
       }
     }
+    console.log(overlap, "overlap");
     //Choose uniformly n Random indexes in the range of the x, y, or z Array. (0 -> length.XCoord)
     //Pick data from that indexes and add the data(randomly) into the copy of w x, x, z arrays
     //Assign that arrays to synapses 
@@ -537,8 +548,30 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
 
 
-    return [xCoord, yCoord, zCoord, numOfAreas, xSynapse, ySynapse, zSynapse];
+    return [xCoord, yCoord, zCoord, numOfAreas, xSynapse, ySynapse, zSynapse, overlap];
 
+  }
+  generateHeatMap() {
+    let getData = this.fillChart();
+    let overlapValues = getData[7];
+    let totalAreas = getData[3];
+
+    let colourCoding: any = new Array();
+    let heatMap: any = new Array();
+
+    for (let oV = 0; oV < overlapValues.length; oV++) {
+      let H = (1.0 - overlapValues[oV]) * 240;
+      colourCoding.push("hsl(" + H + ", 100%, 50%)");
+    }
+    console.log(colourCoding, "colorCoding");
+
+    for (let i = 0; i < totalAreas.length; i++) {
+      for (let j = 0; j < colourCoding.length; j++) {
+        heatMap.push(colourCoding[j]);
+      }
+    }
+    console.log(heatMap, "mapppp");
+    return [heatMap];
   }
 
   getHeatColor() {
@@ -580,7 +613,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       }
 
       for (let w = 0; w < (weights.length); w++) {
-        neuronsWeightSegment.push(weights[w]);
+        neuronsWeightSegment.push(weights[w]); // inserting weights for one area/segment
       }
     }
 
