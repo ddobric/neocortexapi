@@ -20,7 +20,7 @@ namespace UnitTestsProject
 
             parameters.setInputDimensions(new int[] { 32, 32 });
             parameters.setColumnDimensions(new int[] { 64, 64 });
-
+            parameters.setNumActiveColumnsPerInhArea(0.02 * 64 * 64);
             var sp = new SpatialPooler();
 
             var mem = new Connections();
@@ -31,14 +31,50 @@ namespace UnitTestsProject
 
             int[] inputVector = Helpers.GetRandomVector(32 * 32, parameters.Get<Random>(KEY.RANDOM));
 
-            sp.compute(mem, inputVector, activeArray, true);
+            for (int i = 0; i < 10; i++)
+            {
+                sp.compute(mem, inputVector, activeArray, true);
 
+                var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
+
+                var str = Helpers.StringifyVector(activeCols);
+
+                Debug.WriteLine(str);
+            }
+
+        }
+
+
+        /// <summary>
+        /// Corresponds to git\nupic\examples\sp\sp_tutorial.py
+        /// </summary>
+        [TestMethod]
+        public void SPTutorialTest()
+        {
+            var parameters = GetDefaultParams();
+
+            parameters.setInputDimensions(new int[] { 1000});
+            parameters.setColumnDimensions(new int[] { 2048 });
+            parameters.setNumActiveColumnsPerInhArea(0.02 * 2048);
+            parameters.setGlobalInhibition(true);
+
+            var sp = new SpatialPooler();
+
+            var mem = new Connections();
+            parameters.apply(mem);
+            sp.init(mem);
+
+            int[] activeArray = new int[2048];
+
+            int[] inputVector = Helpers.GetRandomVector(1000, parameters.Get<Random>(KEY.RANDOM));
+
+            sp.compute(mem, inputVector, activeArray, true);
+            
             var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 
             var str = Helpers.StringifyVector(activeCols);
 
             Debug.WriteLine(str);
-
 
         }
 
@@ -63,7 +99,7 @@ namespace UnitTestsProject
             var mem = new Connections();
             parameters.apply(mem);
             sp.init(mem);
-
+            
             for (int rad = 1; rad < 10; rad++)
             {
                 using (StreamWriter sw = new StreamWriter($"neighborhood-test-rad{rad}-center-from-{cellsDim1}-to-{0}.csv"))
@@ -92,6 +128,53 @@ namespace UnitTestsProject
                 }
             }
         }
+
+
+        /// <summary>
+        /// Generates result of inhibition
+        /// </summary>
+        [TestMethod]
+        public void SPInhibitionTest()
+        {
+            var parameters = GetDefaultParams();
+
+            parameters.setInputDimensions(new int[] { 1000 });
+            parameters.setColumnDimensions(new int[] { 2048 });
+            parameters.setNumActiveColumnsPerInhArea(0.02 * 2048);
+            parameters.setGlobalInhibition(true);
+
+            var sp = new SpatialPooler();
+
+            var mem = new Connections();
+            parameters.apply(mem);
+            sp.init(mem);
+
+            int[] inputVector = Helpers.GetRandomVector(1000, parameters.Get<Random>(KEY.RANDOM));
+
+            int[] activeArray = new int[2048];
+
+            for (int i = 0; i < 10; i++)
+            {
+                var overlaps = sp.calculateOverlap(mem, inputVector);
+                var strOverlaps = Helpers.StringifyVector(overlaps);
+
+                var inhibitions = sp.inhibitColumns(mem, ArrayUtils.toDoubleArray(overlaps));
+                var strInhibitions = Helpers.StringifyVector(inhibitions);
+
+                sp.compute(mem, inputVector, activeArray, true);
+                
+                var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
+
+                var strActiveCols = Helpers.StringifyVector(activeCols);
+
+                Debug.WriteLine(strOverlaps);
+                Debug.WriteLine(strInhibitions);
+                Debug.WriteLine(strActiveCols);
+            }
+
+        }
+
+
         #region Private Helpers
 
 
@@ -105,7 +188,7 @@ namespace UnitTestsProject
             parameters.Set(KEY.POTENTIAL_PCT, 0.5);
             parameters.Set(KEY.GLOBAL_INHIBITION, false);
             parameters.Set(KEY.LOCAL_AREA_DENSITY, -1.0);
-            parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 3.0);
+            //parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 3.0);
             parameters.Set(KEY.STIMULUS_THRESHOLD, 0.0);
             parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.01);
             parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0.1);
@@ -115,6 +198,7 @@ namespace UnitTestsProject
             parameters.Set(KEY.DUTY_CYCLE_PERIOD, 10);
             parameters.Set(KEY.MAX_BOOST, 10.0);
             parameters.Set(KEY.RANDOM, rnd);
+            //int r = parameters.Get<int>(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA);
 
             return parameters;
         }

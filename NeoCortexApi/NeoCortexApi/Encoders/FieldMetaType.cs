@@ -49,20 +49,21 @@ namespace NeoCortexApi.Encoders
          */
         public EncoderBase newEncoder()
         {
-            switch (this.m_FieldTypeString)
-            {
-                case LIST:
-                case STRING: return SDRCategoryEncoder.builder().build();
-                case DATETIME: return DateEncoder.builder().build();
-                case BOOLEAN: return ScalarEncoder.builder().build();
-                case COORD: return CoordinateEncoder.builder().build();
-                case GEO: return GeospatialCoordinateEncoder.geobuilder().build();
-                case INTEGER:
-                case FLOAT: return RandomDistributedScalarEncoder.builder().build();
-                case DARR:
-                case SARR: return SDRPassThroughEncoder.sptBuilder().build();
-                default: return null;
-            }
+            throw new NotImplementedException();
+            //switch (this.m_FieldTypeString)
+            //{
+            //    case LIST:
+            //    case STRING: return SDRCategoryEncoder.builder().build();
+            //    case DATETIME: return DateEncoder.builder().build();
+            //    case BOOLEAN: return ScalarEncoder.builder().build();
+            //    case COORD: return CoordinateEncoder.builder().build();
+            //    case GEO: return GeospatialCoordinateEncoder.geobuilder().build();
+            //    case INTEGER:
+            //    case FLOAT: return RandomDistributedScalarEncoder.builder().build();
+            //    case DARR:
+            //    case SARR: return SDRPassThroughEncoder.sptBuilder().build();
+            //    default: return null;
+            //}
         }
 
         /**
@@ -72,31 +73,31 @@ namespace NeoCortexApi.Encoders
          * @return
          */
 
-        public <T> T decodeType(String input, Encoder<?> enc)
-        {
-            switch (this.m_FieldTypeString)
-            {
-                case LIST:
-                case STRING: return (T)input;
-                case DATETIME: return (T)((DateEncoder)enc).parse(input);
-                case BOOLEAN: return (T)(Boolean.valueOf(input) == true ? new Double(1) : new Double(0));
-                case COORD:
-                case GEO:
-                    {
-                        String[] parts = input.split("[\\s]*\\;[\\s]*");
-                        return (T)new Tuple(Double.parseDouble(parts[0]), Double.parseDouble(parts[1]), Double.parseDouble(parts[2]));
-                    }
-                case INTEGER:
-                case FLOAT: return (T)new Double(input);
-                case SARR:
-                case DARR:
-                    {
-                        return (T)Arrays.stream(input.replace("[", "").replace("]", "")
-                            .split("[\\s]*\\,[\\s]*")).mapToInt(Integer::parseInt).toArray();
-                    }
-                default: return null;
-            }
-        }
+        //public  T decodeType(String input, Encoder<?> enc)
+        //{
+        //    switch (this.m_FieldTypeString)
+        //    {
+        //        case LIST:
+        //        case STRING: return (T)input;
+        //        case DATETIME: return (T)((DateEncoder)enc).parse(input);
+        //        case BOOLEAN: return (T)(Boolean.valueOf(input) == true ? new Double(1) : new Double(0));
+        //        case COORD:
+        //        case GEO:
+        //            {
+        //                String[] parts = input.split("[\\s]*\\;[\\s]*");
+        //                return (T)new Tuple(Double.parseDouble(parts[0]), Double.parseDouble(parts[1]), Double.parseDouble(parts[2]));
+        //            }
+        //        case INTEGER:
+        //        case FLOAT: return (T)new Double(input);
+        //        case SARR:
+        //        case DARR:
+        //            {
+        //                return (T)Arrays.stream(input.replace("[", "").replace("]", "")
+        //                    .split("[\\s]*\\,[\\s]*")).mapToInt(Integer::parseInt).toArray();
+        //            }
+        //        default: return null;
+        //    }
+        //}
 
         /**
          * Returns the display string

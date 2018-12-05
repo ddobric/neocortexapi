@@ -377,7 +377,7 @@ namespace NeoCortexApi.Encoders
          * @param e		the Encoder the return value should contain
          * @return		the {@link Tuple} containing the specified {@link Encoder}
          */
-        public EncoderTuple getEncoderTuple(EncoderBase<T> e)
+        public EncoderTuple getEncoderTuple(EncoderBase<T> encoder)
         {
             if (encoders == null)
             {
@@ -385,11 +385,11 @@ namespace NeoCortexApi.Encoders
                 encoders = new Dictionary<EncoderTuple, List<EncoderTuple>>();
             }
 
-            foreach (EncoderTuple tuple in encoders.keySet())
+            foreach (var tpl in encoders)
             {
-                if (tuple.getEncoder().equals(e))
+                if (tpl.Value.Equals(encoder))
                 {
-                    return tuple;
+                    return tpl;
                 }
             }
             return null;
@@ -531,7 +531,7 @@ namespace NeoCortexApi.Encoders
 
         public List<String> getScalarNames(String parentFieldName)
         {
-            List<String> names = new ArrayList<String>();
+            List<String> names = new List<String>();
             if (getEncoders() != null)
             {
                 List<EncoderTuple> encoders = getEncoders(this);
@@ -570,17 +570,17 @@ namespace NeoCortexApi.Encoders
          *
          * @return
          */
-        @SuppressWarnings("unchecked")
+       // @SuppressWarnings("unchecked")
 
-    public Dictionary<FieldMetaType> getDecoderOutputFieldTypes()
+        public List<FieldMetaType> getDecoderOutputFieldTypes()
         {
             if (FlattenedFieldTypeList!= null)
             {
-                return new Dictionary(FlattenedFieldTypeList);
+                return new List(FlattenedFieldTypeList);
             }
 
             Set<FieldMetaType> retVal = new HashSet<FieldMetaType>();
-            for (Tuple t : getEncoders(this))
+            foreach (Tuple t : getEncoders(this))
             {
                 Set<FieldMetaType> subTypes = ((Encoder<T>)t.get(1)).getDecoderOutputFieldTypes();
                 retVal.addAll(subTypes);
