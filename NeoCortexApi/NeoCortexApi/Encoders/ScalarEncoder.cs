@@ -4,12 +4,10 @@ using System.Text;
 
 namespace NeoCortexApi.Encoders
 {
-    public class ScalarEncoder
+    public class ScalarEncoder : EncoderBase<int>
     {
 
-        private static final long serialVersionUID = 1L;
-
-        private static final Logger LOGGER = LoggerFactory.getLogger(ScalarEncoder.class);
+       // private static final Logger LOGGER = LoggerFactory.getLogger(ScalarEncoder.class);
 
     /**
      * Constructs a new {@code ScalarEncoder}
@@ -30,8 +28,8 @@ namespace NeoCortexApi.Encoders
         /**
          * Returns true if the underlying encoder works on deltas
          */
-        @Override
-    public boolean isDelta()
+    //    @Override
+    public override bool isDelta()
         {
             return false;
         }
@@ -270,16 +268,16 @@ namespace NeoCortexApi.Encoders
         /**
          * {@inheritDoc}
          */
-        @Override
-    public Set<FieldMetaType> getDecoderOutputFieldTypes()
+      //  @Override
+    public override ISet<FieldMetaType> getDecoderOutputFieldTypes()
         {
-            return new LinkedHashSet<>(Arrays.asList(FieldMetaType.FLOAT, FieldMetaType.INTEGER));
+            return new LinkedHashSet<FieldMetaType>(Arrays.asList(FieldMetaType.FLOAT, FieldMetaType.INTEGER));
         }
 
         /**
          * Should return the output width, in bits.
          */
-        @Override
+      //  @Override
     public int getWidth()
         {
             return getN();
@@ -289,16 +287,16 @@ namespace NeoCortexApi.Encoders
          * {@inheritDoc}
          * NO-OP
          */
-        @Override
-    public int[] getBucketIndices(String input) { return null; }
+     //   @Override
+    public override int[] getBucketIndices(String input) { return null; }
 
         /**
          * Returns the bucket indices.
          *
          * @param	input
          */
-        @Override
-    public int[] getBucketIndices(double input)
+       // @Override
+    public override int[] getBucketIndices(double input)
         {
             int minbin = getFirstOnBit(input);
 
@@ -328,9 +326,11 @@ namespace NeoCortexApi.Encoders
          * @param inputData Data to encode. This should be validated by the encoder.
          * @param output 1-D array of same length returned by {@link Connections#getW()}
          */
-        @Override
-    public void encodeIntoArray(Double input, int[] output)
+       // @Override
+    public override int[] encodeIntoArray(Double input)
         {
+            int[] output = new int[NumOfBits];
+
             if (Double.isNaN(input))
             {
                 Arrays.fill(output, 0);
@@ -386,8 +386,8 @@ namespace NeoCortexApi.Encoders
          * @param parentFieldName	the field the vector corresponds with
          * @return
          */
-        @Override
-    public DecodeResult decode(int[] encoded, String parentFieldName)
+        //@Override
+    public override DecodeResult decode(int[] encoded, String parentFieldName)
         {
             // For now, we simply assume any top-down output greater than 0
             // is ON. Eventually, we will probably want to incorporate the strength
@@ -437,9 +437,9 @@ namespace NeoCortexApi.Encoders
                 }
             }
 
-            LOGGER.trace("raw output:" + Arrays.toString(
+           // LOGGER.trace("raw output:" + Arrays.toString(
                             ArrayUtils.sub(encoded, ArrayUtils.range(0, getN()))));
-            LOGGER.trace("filtered output:" + Arrays.toString(tmpOutput));
+            //LOGGER.trace("filtered output:" + Arrays.toString(tmpOutput));
 
             // ------------------------------------------------------------------------
             // Find each run of 1's.
@@ -450,6 +450,7 @@ namespace NeoCortexApi.Encoders
                 return n > 0;
             }
         });
+
         List<Tuple> runs = new ArrayList<Tuple>(); //will be tuples of (startIdx, runLength)
         Arrays.sort(nz);
         int[] run = new int[] { nz[0], 1 };
@@ -639,10 +640,10 @@ public SparseObjectMatrix<int[]> getTopDownMapping()
  * @return	a list of one input double
  */
 
-    public <S> TDoubleList getScalars(S d)
+    public List<double>  getScalars(double d)
 {
-    TDoubleList retVal = new TDoubleArrayList();
-    retVal.add((Double)d);
+    List<double> retVal = new List<double>();
+    retVal.Add(d);
     return retVal;
 }
 
