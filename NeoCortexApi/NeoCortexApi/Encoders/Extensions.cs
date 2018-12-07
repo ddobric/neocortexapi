@@ -22,5 +22,13 @@ namespace NeoCortexApi.Encoders
 
             throw new ArgumentException("Invalid arguments from/to.");
         }
+
+        public static void AddRange<TKey, TValue>(this IDictionary<TKey, TValue> dest,  IDictionary<TKey, TValue> src)
+        {
+            foreach (var item in src)
+            {
+                dest.Add(item.Key, item.Value);
+            }
+        }
     }
 }
