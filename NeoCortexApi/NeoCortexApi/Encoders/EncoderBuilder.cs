@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NeoCortexApi.Encoders
 {
-    public abstract class EncoderBuilder<TBuilder,TEncoder>
+    public abstract class EncoderBuilder<TBuilder,TEncoder, T>
     {
             protected int n;
             protected int w;
@@ -17,9 +17,9 @@ namespace NeoCortexApi.Encoders
             protected bool forced;
             protected String name;
 
-            protected EncoderBase encoder;
+            protected EncoderBase<T> encoder;
 
-            public E build()
+            public TEncoder build()
             {
                 if (encoder == null)
                 {
@@ -27,7 +27,7 @@ namespace NeoCortexApi.Encoders
                         "before calling this method!");
                 }
 
-                encoder.N = n;
+                encoder.N = this.n;
                 encoder.W = w;
                 encoder.MinVal=minVal;
                 encoder.MaxVal=maxVal;
@@ -41,12 +41,12 @@ namespace NeoCortexApi.Encoders
                 return (E)encoder;
             }
 
-            public TBuilder n(int n)
+            public TBuilder FromN(int n)
             {
                 this.n = n;
                 return (TBuilder)this;
             }
-            public TBuilder w(int w)
+            public TBuilder FromW(int w)
             {
                 this.w = w;
                 return (TBuilder)this;

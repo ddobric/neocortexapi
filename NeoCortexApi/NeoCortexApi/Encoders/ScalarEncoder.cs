@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NeoCortexApi.Entities;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -665,8 +666,9 @@ public SparseObjectMatrix<int[]> getTopDownMapping()
  */
 //@SuppressWarnings("unchecked")
 //    @Override
-    public List<S> getBucketValues(S t)
+    public List<S> getBucketValues<S>(S t)
 {
+    
     if (bucketValues == null)
     {
         SparseObjectMatrix<int[]> topDownMapping = getTopDownMapping();
