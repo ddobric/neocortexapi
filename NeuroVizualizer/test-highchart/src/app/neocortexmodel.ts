@@ -77,6 +77,7 @@ export class Area extends Location {
 
   public id: number;
   public overlap: Array<any> = new Array();
+  public oL: Array<any> = new Array();
   // public overlap: number[] = new Array();
   private settings: NeocortexSettings;
 
@@ -111,10 +112,18 @@ export class Area extends Location {
       for (let nW = 0; nW < 1; nW = nW + (1 / (totalNumberOfNeurons / settings.numLayers))) { //totalNumberOfNeurons/settings.numLayers to get each minicolumn
         for (let l = 0; l < settings.numLayers; l++) {
           let roundNW = nW.toFixed(3);
-          this.overlap.push(parseFloat(roundNW));
-
+          this.oL.push(parseFloat(roundNW));
         }
       }
+
+          for (let totalAreas = 0; totalAreas < settings.areaLocations.length; totalAreas++) {
+            for (let oLArray = 0; oLArray < this.oL.length; oLArray++) {
+              this.overlap.push(this.oL[oLArray]);
+            }
+          }
+
+
+       
       for (i = 0; i < settings.minicolumnDims[0]; i++) {
         for (j = 0; j < settings.numLayers; j++) {
           for (k = 0; k < settings.minicolumnDims[1]; k++) {

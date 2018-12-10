@@ -469,13 +469,14 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   }
   fillChart() {
-    let model = neoCortexUtils.createModel(1, [200, 5], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
+    let model = neoCortexUtils.createModel(1, [100, 5], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
     // this.opacityValues = new Array(areaSection).fill(0.5, 0, 1200).fill(1.8, 1200, 2400);
     //this.colour = new Array(areaSection).fill('#00BFFF', 0, 800).fill('#48afd1', 800, 1600).fill('#236d86', 1600, 2499);
-    let xCoord = [];
-    let yCoord = [];
-    let zCoord = [];
-    let overlap = [];
+    let xCoord: Array<any> = [];
+    let yCoord: Array<any> = [];
+    let zCoord: Array<any> = [];
+    let overlap: Array<any> = [];
+
     let numOfAreas = model.areas;
     let ai;
     for (ai = 0; ai < model.areas.length; ai++) {
@@ -487,7 +488,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
       }
     }
-    console.log(overlap, "overlap");
+    console.log(overlap, "overlap Array");
     //Choose uniformly n Random indexes in the range of the x, y, or z Array. (0 -> length.XCoord)
     //Pick data from that indexes and add the data(randomly) into the copy of w x, x, z arrays
     //Assign that arrays to synapses 
@@ -556,8 +557,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
     let overlapValues = getData[7];
     let totalAreas = getData[3];
 
-    let colourCoding: any = new Array();
-    let heatMap: any = new Array();
+    let heatMap: Array<any> = [];
+    let colourCoding: Array<any> = [];
 
     for (let oV = 0; oV < overlapValues.length; oV++) {
       let H = (1.0 - overlapValues[oV]) * 240;
@@ -570,7 +571,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
         heatMap.push(colourCoding[j]);
       }
     }
-    console.log(heatMap, "mapppp");
+    console.log(heatMap, "heat map for all areas");
     return [heatMap];
   }
 
