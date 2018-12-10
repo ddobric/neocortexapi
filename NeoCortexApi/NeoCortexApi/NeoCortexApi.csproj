@@ -9,17 +9,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Encoders\EncoderBase.cs" />
-    <Compile Remove="Encoders\EncoderBuilder.cs" />
-    <Compile Remove="Encoders\EncoderTuple.cs" />
-    <Compile Remove="Encoders\FieldMetaType.cs" />
+    <Compile Remove="Encoders\ScalarEncoder.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Encoders\EncoderBase.cs" />
-    <None Include="Encoders\EncoderBuilder.cs" />
-    <None Include="Encoders\EncoderTuple.cs" />
-    <None Include="Encoders\FieldMetaType.cs" />
+    <None Include="Encoders\ScalarEncoder.cs" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ILLink.Tasks" Version="0.1.4-preview-906439" />
+   
+  </ItemGroup>
+
 
 </Project>

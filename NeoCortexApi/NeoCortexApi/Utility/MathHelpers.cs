@@ -13,7 +13,7 @@ namespace NeoCortexApi.Utility
         /// <param name="originArray">Original array to compare from.</param>
         /// <param name="comparingArray">Array to compare to.</param>
         /// <returns>Hamming distance.</returns>
-        public static double[] GetHammingDistance(this double[][] originArray, double[][] comparingArray)
+        public static double[] GetHammingDistance(double[][] originArray, double[][] comparingArray)
         {
             double[][] hDistance = new double[originArray.Length][];
             double[] h = new double[originArray.Length];

@@ -1,7 +1,9 @@
 ﻿using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
+using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace NeoCortexApi.Encoders
@@ -56,8 +58,10 @@ namespace NeoCortexApi.Encoders
 
 
         /** Value used to represent no data */
-        public static readonly double SENTINEL_VALUE_FOR_MISSING_DATA = Double.NaN;
-        protected List<Dictionary<string, int>> description = new List<Dictionary<string, int>>();
+        //public static readonly double SENTINEL_VALUE_FOR_MISSING_DATA = Double.NaN;
+        protected List<Tuple<string, int>> description = new List<Tuple<string, int>>();
+
+        protected int n = 0;
 
         /** The number of bits that are set to encode a single value - the
          * "width" of the output signal
@@ -93,13 +97,13 @@ namespace NeoCortexApi.Encoders
         /** if true, skip some safety checks (for compatibility reasons), default false */
         protected bool isForced;
         /** Encoder name - an optional string which will become part of the description */
-        protected String m_name = "";
+        protected String m_Name = "";
         protected int padding;
         protected int nInternal;
         protected double rangeInternal;
         protected double range;
         protected bool encLearningEnabled;
-        protected Set<FieldMetaType> flattenedFieldTypeList;
+        protected List<FieldMetaType> flattenedFieldTypeList;
         protected Dictionary<Dictionary<string, int>, List<FieldMetaType>> decoderFieldTypes;
         /**
          * This matrix is used for the topDownCompute. We build it the first time
@@ -108,14 +112,16 @@ namespace NeoCortexApi.Encoders
         protected SparseObjectMatrix<int[]> topDownMapping;
         protected double[] topDownValues;
         protected List<object> bucketValues;
-        //protected LinkedHashMap<EncoderTuple, List<EncoderTuple>> encoders;
-        protected Dictionary<EncoderTuple, List<EncoderTuple>> encoders;
+        protected Dictionary<EncoderTuple<T>, List<EncoderTuple<T>>> encoders;
         protected List<String> scalarNames;
 
 
         protected EncoderBase() { }
 
         #region Properties
+
+        public int N { get => this.n; set => this.n = value; }
+
         /**
          * Returns w
          * @return
@@ -283,15 +289,12 @@ namespace NeoCortexApi.Encoders
      */
         public bool IsForced { get => isForced; set => this.isForced = value; }
 
-        /**
-         * Returns the optional name
-         * @return
-         */
-        /**
- * An optional string which will become part of the description
- * @param name
- */
-        public String N { get => m_name; set => this.m_name = value; }
+
+
+        /// <summary>
+        /// The number of bits in the output. Must be greater than or equal to w
+        /// </summary>
+        public string Name { get => m_Name; set => this.m_Name = value; }
 
         /**
  * Returns the names of the fields
@@ -353,23 +356,23 @@ namespace NeoCortexApi.Encoders
         {
             if (encoders == null)
             {
-                encoders = new Dictionary<EncoderTuple, List<EncoderTuple>>();
+                encoders = new Dictionary<EncoderTuple<T>, List<EncoderTuple<T>>>();
             }
 
-            EncoderTuple key = getEncoderTuple(parent);
+            EncoderTuple<T> key = getEncoderTuple(parent);
             // Insert a new Tuple for the parent if not yet added.
             if (key == null)
             {
-                encoders.Add(key = new EncoderTuple { Name = String.Empty, Encoder = this, Offset = 0 }, 
-                new List<EncoderTuple>());
+                encoders.Add(key = new EncoderTuple<T> { Name = String.Empty, Encoder = this, Offset = 0 },
+                new List<EncoderTuple<T>>());
             }
 
-            List<EncoderTuple> childEncoders = null;
+            List<EncoderTuple<T>> childEncoders = null;
             if ((childEncoders = encoders[key]) == null)
             {
-                encoders.Add(key, childEncoders = new List<EncoderTuple>());
+                encoders.Add(key, childEncoders = new List<EncoderTuple<T>>());
             }
-            childEncoders.Add(new EncoderTuple(){ Name = name, Encoder = child, Offset = offset });
+            childEncoders.Add(new EncoderTuple<T>() { Name = name, Encoder = child, Offset = offset });
         }
 
         /**
@@ -377,19 +380,19 @@ namespace NeoCortexApi.Encoders
          * @param e		the Encoder the return value should contain
          * @return		the {@link Tuple} containing the specified {@link Encoder}
          */
-        public EncoderTuple getEncoderTuple(EncoderBase<T> e)
+        public EncoderTuple<T> getEncoderTuple(EncoderBase<T> encoder)
         {
             if (encoders == null)
             {
                 //encoders = new LinkedHashMap<EncoderTuple, List<EncoderTuple>>();
-                encoders = new Dictionary<EncoderTuple, List<EncoderTuple>>();
+                encoders = new Dictionary<EncoderTuple<T>, List<EncoderTuple<T>>>();
             }
 
-            foreach (EncoderTuple tuple in encoders.keySet())
+            foreach (var tpl in encoders)
             {
-                if (tuple.getEncoder().equals(e))
+                if (tpl.Value.Equals(encoder))
                 {
-                    return tuple;
+                    return tpl.Key;
                 }
             }
             return null;
@@ -402,20 +405,20 @@ namespace NeoCortexApi.Encoders
          * @param e		the parent {@link Encoder} whose child Encoder Tuples are being returned
          * @return		the list of child {@link Encoder} {@link Tuple}s
          */
-        public List<EncoderTuple> getEncoders(EncoderBase<T> e)
+        public List<EncoderTuple<T>> getEncoders(EncoderBase<T> e)
         {
-            return getEncoders().get(getEncoderTuple(e));
+            return getEncoders()[e.getEncoderTuple(e)];
         }
 
         /**
          * Returns the list of {@link Encoder}s
          * @return
          */
-        public Dictionary<EncoderTuple, List<EncoderTuple>> getEncoders()
+        public Dictionary<EncoderTuple<T>, List<EncoderTuple<T>>> getEncoders()
         {
             if (encoders == null)
             {
-                encoders = new Dictionary<EncoderTuple, List<EncoderTuple>>();
+                encoders = new Dictionary<EncoderTuple<T>, List<EncoderTuple<T>>>();
             }
             return encoders;
         }
@@ -443,21 +446,22 @@ namespace NeoCortexApi.Encoders
          *
          * @return	List<FieldMetaType>
          */
-        public List<FieldMetaType> getFlattenedFieldTypeList(EncoderBase<T> e)
-        {
-            if (decoderFieldTypes == null)
-            {
-                decoderFieldTypes = new Dictionary<Tuple, List<FieldMetaType>>();
-            }
+        //public List<FieldMetaType> getFlattenedFieldTypeList(EncoderBase<T> e)
+        //{
+        //    if (decoderFieldTypes == null)
+        //    {
+        //        //Dictionary<Dictionary<string, int>, List<FieldMetaType>>
+        //        decoderFieldTypes = new Dictionary<Dictionary<string, int>, List<FieldMetaType>>();
+        //    }
 
-            EncoderTuple key = getEncoderTuple(e);
-            List<FieldMetaType> fieldTypes = null;
-            if ((fieldTypes = decoderFieldTypes.get(key)) == null)
-            {
-                decoderFieldTypes.Add(key, fieldTypes = new List<FieldMetaType>());
-            }
-            return fieldTypes;
-        }
+        //    EncoderTuple key = getEncoderTuple(e);
+        //    List<FieldMetaType> fieldTypes = null;
+        //    if ((fieldTypes = decoderFieldTypes.get(key)) == null)
+        //    {
+        //        decoderFieldTypes.Add(key, fieldTypes = new List<FieldMetaType>());
+        //    }
+        //    return fieldTypes;
+        //}
 
 
         ///////////////////////////////////////////////////////////
@@ -513,8 +517,8 @@ namespace NeoCortexApi.Encoders
          */
         public int[] Encode(T inputData)
         {
-            int[] output = new int[NumOfBits];
-            encodeIntoArray(inputData, output);
+            //int[] output = new int[NumOfBits];
+            int[] output = encodeIntoArray(inputData);
             return output;
         }
 
@@ -531,33 +535,34 @@ namespace NeoCortexApi.Encoders
 
         public List<String> getScalarNames(String parentFieldName)
         {
-            List<String> names = new ArrayList<String>();
+            List<String> names = new List<String>();
             if (getEncoders() != null)
             {
-                List<EncoderTuple> encoders = getEncoders(this);
-                for (Tuple tuple : encoders)
+                List<EncoderTuple<T>> encoders = getEncoders(this);
+                foreach (var tuple in encoders)
                 {
-                    List<String> subNames = ((Encoder<T>)tuple.get(1)).getScalarNames(N);
-                    List<String> hierarchicalNames = new ArrayList<String>();
+                    List<String> subNames = ((EncoderBase<T>)tuple.Encoder).getScalarNames(tuple.Name);
+
+                    List<String> hierarchicalNames = new List<String>();
                     if (parentFieldName != null)
                     {
-                        for (String name : subNames)
+                        foreach (String name in subNames)
                         {
-                            hierarchicalNames.add(String.format("%s.%s", parentFieldName, name));
+                            hierarchicalNames.Add($"{parentFieldName}.{name}");
                         }
                     }
-                    names.addAll(hierarchicalNames);
+                    names.AddRange(hierarchicalNames);
                 }
             }
             else
             {
                 if (parentFieldName != null)
                 {
-                    names.add(parentFieldName);
+                    names.Add(parentFieldName);
                 }
                 else
                 {
-                    names.add((String)getEncoderTuple(this).get(0));
+                    names.Add((String)getEncoderTuple(this).Name);
                 }
             }
 
@@ -570,20 +575,20 @@ namespace NeoCortexApi.Encoders
          *
          * @return
          */
-        @SuppressWarnings("unchecked")
+        // @SuppressWarnings("unchecked")
 
-    public Dictionary<FieldMetaType> getDecoderOutputFieldTypes()
+        public List<FieldMetaType> getDecoderOutputFieldTypes()
         {
-            if (FlattenedFieldTypeList!= null)
+            if (FlattenedFieldTypeList != null)
             {
-                return new Dictionary(FlattenedFieldTypeList);
+                return new List<FieldMetaType>(FlattenedFieldTypeList);
             }
 
-            Set<FieldMetaType> retVal = new HashSet<FieldMetaType>();
-            for (Tuple t : getEncoders(this))
+            List<FieldMetaType> retVal = new List<FieldMetaType>();
+            foreach (var t in getEncoders(this))
             {
-                Set<FieldMetaType> subTypes = ((Encoder<T>)t.get(1)).getDecoderOutputFieldTypes();
-                retVal.addAll(subTypes);
+                List<FieldMetaType> subTypes = ((EncoderBase<T>)t.Encoder).getDecoderOutputFieldTypes();
+                retVal.AddRange(subTypes);
             }
             FlattenedFieldTypeList = retVal;
             return retVal;
@@ -595,626 +600,633 @@ namespace NeoCortexApi.Encoders
          * @param fieldName		the name of the field containing the input object.
          * @return
          */
-        public Object getInputValue(Object inputObject, String fieldName)
+        //       public Object getInputValue(Object inputObject, String fieldName)
+        //       {
+        //           if (Map.class.isAssignableFrom(inputObject.getClass())) {
+
+        //           Map map = (Map)inputObject;
+        //		if(!map.containsKey(fieldName)) {
+        //			throw new IllegalArgumentException("Unknown field name " + fieldName +
+        //				" known fields are: " + map.keySet() + ". ");
+        //   }
+        //		return map.get(fieldName);
+        //	}
+        //	return null;
+        //}
+
+        /**
+         * Returns an {@link TDoubleList} containing the sub-field scalar value(s) for
+         * each sub-field of the inputData. To get the associated field names for each of
+         * the scalar values, call getScalarNames().
+         *
+         * For a simple scalar encoder, the scalar value is simply the input unmodified.
+         * For category encoders, it is the scalar representing the category string
+         * that is passed in.
+         *
+         * TODO This is not correct for DateEncoder:
+         *
+         * For the datetime encoder, the scalar value is the
+         * the number of seconds since epoch.
+         *
+         * The intent of the scalar representation of a sub-field is to provide a
+         * baseline for measuring error differences. You can compare the scalar value
+         * of the inputData with the scalar value returned from topDownCompute() on a
+         * top-down representation to evaluate prediction accuracy, for example.
+         *
+         * @param <S>  the specifically typed input object
+         *
+         * @return
+         */
+        public List<double> getScalars(double inputData)
         {
-            if (Map.class.isAssignableFrom(inputObject.getClass())) {
-			@SuppressWarnings("rawtypes")
+            List<double> retVals = new List<double>();
 
-            Map map = (Map)inputObject;
-			if(!map.containsKey(fieldName)) {
-				throw new IllegalArgumentException("Unknown field name " + fieldName +
-					" known fields are: " + map.keySet() + ". ");
-    }
-			return map.get(fieldName);
-		}
-		return null;
-	}
-
-	/**
-	 * Returns an {@link TDoubleList} containing the sub-field scalar value(s) for
-     * each sub-field of the inputData. To get the associated field names for each of
-     * the scalar values, call getScalarNames().
-	 *
-     * For a simple scalar encoder, the scalar value is simply the input unmodified.
-     * For category encoders, it is the scalar representing the category string
-     * that is passed in.
-     *
-     * TODO This is not correct for DateEncoder:
-     *
-     * For the datetime encoder, the scalar value is the
-     * the number of seconds since epoch.
-	 *
-     * The intent of the scalar representation of a sub-field is to provide a
-     * baseline for measuring error differences. You can compare the scalar value
-     * of the inputData with the scalar value returned from topDownCompute() on a
-     * top-down representation to evaluate prediction accuracy, for example.
-     *
-     * @param <S>  the specifically typed input object
-     *
-	 * @return
-	 */
-	public <S> TDoubleList getScalars(S d)
-{
-    TDoubleList retVals = new TDoubleArrayList();
-    double inputData = (Double)d;
-    List<EncoderTuple> encoders = getEncoders(this);
-    if (encoders != null)
-    {
-        for (EncoderTuple t : encoders)
-        {
-            TDoubleList values = t.getEncoder().getScalars(inputData);
-            retVals.addAll(values);
-        }
-    }
-    return retVals;
-}
-
-/**
- * Returns the input in the same format as is returned by topDownCompute().
- * For most encoder types, this is the same as the input data.
- * For instance, for scalar and category types, this corresponds to the numeric
- * and string values, respectively, from the inputs. For datetime encoders, this
- * returns the list of scalars for each of the sub-fields (timeOfDay, dayOfWeek, etc.)
- *
- * This method is essentially the same as getScalars() except that it returns
- * strings
- * @param <S> 	The input data in the format it is received from the data source
- *
- * @return A list of values, in the same format and in the same order as they
- * are returned by topDownCompute.
- *
- * @return	list of encoded values in String form
- */
-public <S> List<String> getEncodedValues(S inputData)
-{
-    List<String> retVals = new ArrayList<String>();
-    Map<EncoderTuple, List<EncoderTuple>> encoders = getEncoders();
-    if (encoders != null && encoders.size() > 0)
-    {
-        for (EncoderTuple t : encoders.keySet())
-        {
-            retVals.addAll(t.getEncoder().getEncodedValues(inputData));
-        }
-    }
-    else
-    {
-        retVals.add(inputData.toString());
-    }
-
-    return retVals;
-}
-
-/**
- * Returns an array containing the sub-field bucket indices for
- * each sub-field of the inputData. To get the associated field names for each of
- * the buckets, call getScalarNames().
- * @param  	input 	The data from the source. This is typically a object with members.
- *
- * @return 	array of bucket indices
- */
-public int[] getBucketIndices(String input)
-{
-    TIntList l = new TIntArrayList();
-    Map<EncoderTuple, List<EncoderTuple>> encoders = getEncoders();
-    if (encoders != null && encoders.size() > 0)
-    {
-        for (EncoderTuple t : encoders.keySet())
-        {
-            l.addAll(t.getEncoder().getBucketIndices(input));
-        }
-    }
-    else
-    {
-        throw new IllegalStateException("Should be implemented in base classes that are not " +
-            "containers for other encoders");
-    }
-    return l.toArray();
-}
-
-/**
- * Returns an array containing the sub-field bucket indices for
- * each sub-field of the inputData. To get the associated field names for each of
- * the buckets, call getScalarNames().
- * @param  	input 	The data from the source. This is typically a object with members.
- *
- * @return 	array of bucket indices
- */
-public int[] getBucketIndices(double input)
-{
-    TIntList l = new TIntArrayList();
-    Map<EncoderTuple, List<EncoderTuple>> encoders = getEncoders();
-    if (encoders != null && encoders.size() > 0)
-    {
-        for (EncoderTuple t : encoders.keySet())
-        {
-            l.addAll(t.getEncoder().getBucketIndices(input));
-        }
-    }
-    else
-    {
-        throw new IllegalStateException("Should be implemented in base classes that are not " +
-            "containers for other encoders");
-    }
-    return l.toArray();
-}
-
-/**
- * Return a pretty print string representing the return values from
- * getScalars and getScalarNames().
- * @param scalarValues 	input values to encode to string
- * @param scalarNames 	optional input of scalar names to convert. If None, gets
- *                  	scalar names from getScalarNames()
- *
- * @return string representation of scalar values
- */
-public String scalarsToStr(List<?> scalarValues, List<String> scalarNames)
-{
-    if (scalarNames == null || scalarNames.isEmpty())
-    {
-        scalarNames = getScalarNames("");
-    }
-
-    StringBuilder desc = new StringBuilder();
-    for (Tuple t : ArrayUtils.zip(scalarNames, scalarValues))
-    {
-        if (desc.length() > 0)
-        {
-            desc.append(String.format(", %s:%.2f", t.get(0), t.get(1)));
-        }
-        else
-        {
-            desc.append(String.format("%s:%.2f", t.get(0), t.get(1)));
-        }
-    }
-    return desc.toString();
-}
-
-/**
- * This returns a list of tuples, each containing (name, offset).
- * The 'name' is a string description of each sub-field, and offset is the bit
- * offset of the sub-field for that encoder.
- *
- * For now, only the 'multi' and 'date' encoders have multiple (name, offset)
- * pairs. All other encoders have a single pair, where the offset is 0.
- *
- * @return		list of tuples, each containing (name, offset)
- */
-public List<Dictionary<string, int> getDescription()
-{
-    return description;
-}
-
-
-/**
- * Return a description of the given bit in the encoded output.
- * This will include the field name and the offset within the field.
- * @param bitOffset  	Offset of the bit to get the description of
- * @param formatted     If True, the bitOffset is w.r.t. formatted output,
- *                     	which includes separators
- *
- * @return tuple(fieldName, offsetWithinField)
- */
-public Tuple encodedBitDescription(int bitOffset, bool formatted)
-{
-    //Find which field it's in
-    List<Dictionary<string, int>> description = getDescription();
-
-    String prevFieldName = null;
-    int prevFieldOffset = -1;
-    int offset = -1;
-    for (int i = 0; i < description.Count; i++)
-    {
-        Tuple t = description.get(i);//(name, offset)
-        if (formatted)
-        {
-            offset = ((int)t.get(1)) + 1;
-            if (bitOffset == offset - 1)
+            List<EncoderTuple<T>> encoders = getEncoders(this);
+            if (encoders != null)
             {
-                prevFieldName = "separator";
-                prevFieldOffset = bitOffset;
-            }
-        }
-        if (bitOffset < offset) break;
-    }
-    // Return the field name and offset within the field
-    // return (fieldName, bitOffset - fieldOffset)
-    int width = formatted ? getDisplayWidth() : getWidth();
-
-    if (prevFieldOffset == -1 || bitOffset > getWidth())
-    {
-        throw new IllegalStateException("Bit is outside of allowable range: " +
-            String.format("[0 - %d]", width));
-    }
-    return new Tuple(prevFieldName, bitOffset - prevFieldOffset);
-}
-
-/**
- * Pretty-print a header that labels the sub-fields of the encoded
- * output. This can be used in conjunction with {@link #pprint(int[], String)}.
- * @param prefix
- */
-//public void pprintHeader(String prefix)
-//{
-//    LOGGER.info(prefix == null ? "" : prefix);
-
-//    List<Tuple> description = getDescription();
-//    description.add(new Tuple("end", getWidth()));
-
-//    int len = description.size() - 1;
-//    for (int i = 0; i < len; i++)
-//    {
-//        String name = (String)description.get(i).get(0);
-//        int width = (int)description.get(i + 1).get(1);
-
-//        String formatStr = String.format("%%-%ds |", width);
-//        StringBuilder pname = new StringBuilder(name);
-//        if (name.length() > width) pname.setLength(width);
-
-//        LOGGER.info(String.format(formatStr, pname));
-//    }
-
-//    len = getWidth() + (description.size() - 1) * 3 - 1;
-//    StringBuilder hyphens = new StringBuilder();
-//    for (int i = 0; i < len; i++) hyphens.append("-");
-//    LOGGER.info(new StringBuilder(prefix).append(hyphens).toString());
-//}
-
-/**
- * Pretty-print the encoded output using ascii art.
- * @param output
- * @param prefix
- */
-//public void pprint(int[] output, String prefix)
-//{
-//    LOGGER.info(prefix == null ? "" : prefix);
-
-//    List<Tuple> description = getDescription();
-//    description.add(new Tuple("end", getWidth()));
-
-//    int len = description.size() - 1;
-//    for (int i = 0; i < len; i++)
-//    {
-//        int offset = (int)description.get(i).get(1);
-//        int nextOffset = (int)description.get(i + 1).get(1);
-
-//        LOGGER.info(
-//                String.format("%s |",
-//                        ArrayUtils.bitsToString(
-//                                ArrayUtils.sub(output, ArrayUtils.range(offset, nextOffset))
-//                        )
-//                )
-//        );
-//    }
-//}
-
-/**
- * Takes an encoded output and does its best to work backwards and generate
- * the input that would have generated it.
- *
- * In cases where the encoded output contains more ON bits than an input
- * would have generated, this routine will return one or more ranges of inputs
- * which, if their encoded outputs were ORed together, would produce the
- * target output. This behavior makes this method suitable for doing things
- * like generating a description of a learned coincidence in the SP, which
- * in many cases might be a union of one or more inputs.
- *
- * If instead, you want to figure the *most likely* single input scalar value
- * that would have generated a specific encoded output, use the topDownCompute()
- * method.
- *
- * If you want to pretty print the return value from this method, use the
- * decodedToStr() method.
- *
- *************
- * OUTPUT EXPLAINED:
- *
- * fieldsMap is a {@link Map} where the keys represent field names
- * (only 1 if this is a simple encoder, > 1 if this is a multi
- * or date encoder) and the values are the result of decoding each
- * field. If there are  no bits in encoded that would have been
- * generated by a field, it won't be present in the Map. The
- * key of each entry in the dict is formed by joining the passed in
- * parentFieldName with the child encoder name using a '.'.
- *
- * Each 'value' in fieldsMap consists of a {@link Tuple} of (ranges, desc),
- * where ranges is a list of one or more {@link MinMax} ranges of
- * input that would generate bits in the encoded output and 'desc'
- * is a comma-separated pretty print description of the ranges.
- * For encoders like the category encoder, the 'desc' will contain
- * the category names that correspond to the scalar values included
- * in the ranges.
- *
- * The fieldOrder is a list of the keys from fieldsMap, in the
- * same order as the fields appear in the encoded output.
- *
- * Example retvals for a scalar encoder:
- *
- *   {'amount':  ( [[1,3], [7,10]], '1-3, 7-10' )}
- *   {'amount':  ( [[2.5,2.5]],     '2.5'       )}
- *
- * Example retval for a category encoder:
- *
- *   {'country': ( [[1,1], [5,6]], 'US, GB, ES' )}
- *
- * Example retval for a multi encoder:
- *
- *   {'amount':  ( [[2.5,2.5]],     '2.5'       ),
- *   'country': ( [[1,1], [5,6]],  'US, GB, ES' )}
- * @param encoded      		The encoded output that you want decode
- * @param parentFieldName 	The name of the encoder which is our parent. This name
- *      					is prefixed to each of the field names within this encoder to form the
- *    						keys of the {@link Map} returned.
- *
- * @returns Tuple(fieldsMap, fieldOrder)
- */
-
-
-    public Tuple decode(int[] encoded, String parentFieldName)
-{
-    Dictionary<String, Tuple> fieldsMap = new Dictionary<string, Tuple>();
-    List<String> fieldsOrder = new List<String>();
-
-    String parentName = parentFieldName == null || parentFieldName.isEmpty() ?
-        getName() : String.format("%s.%s", parentFieldName, getName());
-
-    List<EncoderTuple> encoders = getEncoders(this);
-    int len = encoders.size();
-    for (int i = 0; i < len; i++)
-    {
-        Tuple threeFieldsTuple = encoders.get(i);
-        int nextOffset = 0;
-        if (i < len - 1)
-        {
-            nextOffset = (Integer)encoders.get(i + 1).get(2);
-        }
-        else
-        {
-            nextOffset = getW();
-        }
-
-        int[] fieldOutput = ArrayUtils.sub(encoded, ArrayUtils.range((Integer)threeFieldsTuple.get(2), nextOffset));
-
-        Tuple result = ((Encoder<T>)threeFieldsTuple.get(1)).decode(fieldOutput, parentName);
-
-        fieldsMap.putAll((Map<String, Tuple>)result.get(0));
-        fieldsOrder.addAll((List<String>)result.get(1));
-    }
-
-    return new Tuple(fieldsMap, fieldsOrder);
-}
-
-/**
- * Return a pretty print string representing the return value from decode().
- *
- * @param decodeResults
- * @return
- */
-
-
-    public String decodedToStr(Tuple decodeResults)
-{
-    StringBuilder desc = new StringBuilder();
-    Map<String, Tuple> fieldsDict = (Map<String, Tuple>)decodeResults.get(0);
-    List<String> fieldsOrder = (List<String>)decodeResults.get(1);
-    for (String fieldName : fieldsOrder)
-    {
-        Tuple ranges = fieldsDict.get(fieldName);
-        if (desc.length() > 0)
-        {
-            desc.append(", ").append(fieldName).append(":");
-        }
-        else
-        {
-            desc.append(fieldName).append(":");
-        }
-        desc.append("[").append(ranges.get(1)).append("]");
-    }
-    return desc.toString();
-}
-
-/**
- * Returns a list of items, one for each bucket defined by this encoder.
- * Each item is the value assigned to that bucket, this is the same as the
- * EncoderResult.value that would be returned by getBucketInfo() for that
- * bucket and is in the same format as the input that would be passed to
- * encode().
- *
- * This call is faster than calling getBucketInfo() on each bucket individually
- * if all you need are the bucket values.
- *
- * @param	returnType 		class type parameter so that this method can return encoder
- * 							specific value types
- *
- * @return  list of items, each item representing the bucket value for that
- *          bucket.
- */
-public abstract <S> List<S> getBucketValues(Class<S> returnType);
-
-/**
- * Returns a list of {@link Encoding}s describing the inputs for
- * each sub-field that correspond to the bucket indices passed in 'buckets'.
- * To get the associated field names for each of the values, call getScalarNames().
- * @param buckets 	The list of bucket indices, one for each sub-field encoder.
- *              	These bucket indices for example may have been retrieved
- *              	from the getBucketIndices() call.
- *
- * @return A list of {@link Encoding}s. Each EncoderResult has
- */
-public List<Encoding> getBucketInfo(int[] buckets)
-{
-    //Concatenate the results from bucketInfo on each child encoder
-    List<Encoding> retVals = new List<Encoding>();
-    int bucketOffset = 0;
-    for (EncoderTuple encoderTuple : getEncoders(this))
-    {
-        int nextBucketOffset = -1;
-        List<EncoderTuple> childEncoders = null;
-        if ((childEncoders = getEncoders((Encoder<T>)encoderTuple.getEncoder())) != null)
-        {
-            nextBucketOffset = bucketOffset + childEncoders.size();
-        }
-        else
-        {
-            nextBucketOffset = bucketOffset + 1;
-        }
-        int[] bucketIndices = ArrayUtils.sub(buckets, ArrayUtils.range(bucketOffset, nextBucketOffset));
-        List<Encoding> values = encoderTuple.getEncoder().getBucketInfo(bucketIndices);
-
-        retVals.addAll(values);
-
-        bucketOffset = nextBucketOffset;
-    }
-
-    return retVals;
-}
-
-/**
- * Returns a list of EncoderResult named tuples describing the top-down
- * best guess inputs for each sub-field given the encoded output. These are the
- * values which are most likely to generate the given encoded output.
- * To get the associated field names for each of the values, call
- * getScalarNames().
- * @param encoded The encoded output. Typically received from the topDown outputs
- *              from the spatial pooler just above us.
- *
- * @returns A list of EncoderResult named tuples. Each EncoderResult has
- *        three attributes:
- *
- *        -# value:         This is the best-guess value for the sub-field
- *                          in a format that is consistent with the type
- *                          specified by getDecoderOutputFieldTypes().
- *                          Note that this value is not necessarily
- *                          numeric.
- *
- *        -# scalar:        The scalar representation of this best-guess
- *                          value. This number is consistent with what
- *                          is returned by getScalars(). This value is
- *                          always an int or float, and can be used for
- *                          numeric comparisons.
- *
- *        -# encoding       This is the encoded bit-array
- *                          that represents the best-guess value.
- *                          That is, if 'value' was passed to
- *                          encode(), an identical bit-array should be
- *                          returned.
- */
-
-
-public List<Encoding> topDownCompute(int[] encoded)
-{
-    List<Encoding> retVals = new ArrayList<Encoding>();
-
-    List<EncoderTuple> encoders = getEncoders(this);
-    int len = encoders.size();
-    for (int i = 0; i < len; i++)
-    {
-        int offset = (int)encoders.get(i).get(2);
-        Encoder<T> encoder = (Encoder<T>)encoders.get(i).get(1);
-
-        int nextOffset;
-        if (i < len - 1)
-        {
-            //Encoders = List<Encoder> : Encoder = EncoderTuple(name, encoder, offset)
-            nextOffset = (int)encoders.get(i + 1).get(2);
-        }
-        else
-        {
-            nextOffset = getW();
-        }
-
-        int[] fieldOutput = ArrayUtils.sub(encoded, ArrayUtils.range(offset, nextOffset));
-        List<Encoding> values = encoder.topDownCompute(fieldOutput);
-
-        retVals.addAll(values);
-    }
-
-    return retVals;
-}
-
-public TDoubleList closenessScores(TDoubleList expValues, TDoubleList actValues, bool fractional)
-{
-    TDoubleList retVal = new TDoubleArrayList();
-
-    //Fallback closenss is a percentage match
-    List<EncoderTuple> encoders = getEncoders(this);
-    if (encoders == null || encoders.size() < 1)
-    {
-        double err = Math.abs(expValues.get(0) - actValues.get(0));
-        double closeness = -1;
-        if (fractional)
-        {
-            double denom = Math.max(expValues.get(0), actValues.get(0));
-            if (denom == 0)
-            {
-                denom = 1.0;
+                foreach (EncoderTuple<T> t in encoders)
+                {
+                    List<double> values = t.Encoder.getScalars(inputData);
+                    retVals.AddRange(values);
+                }
             }
 
-            closeness = 1.0 - err / denom;
-            if (closeness < 0)
+            return retVals;
+        }
+
+        /**
+         * Returns the input in the same format as is returned by topDownCompute().
+         * For most encoder types, this is the same as the input data.
+         * For instance, for scalar and category types, this corresponds to the numeric
+         * and string values, respectively, from the inputs. For datetime encoders, this
+         * returns the list of scalars for each of the sub-fields (timeOfDay, dayOfWeek, etc.)
+         *
+         * This method is essentially the same as getScalars() except that it returns
+         * strings
+         * @param <S> 	The input data in the format it is received from the data source
+         *
+         * @return A list of values, in the same format and in the same order as they
+         * are returned by topDownCompute.
+         *
+         * @return	list of encoded values in String form
+         */
+        public List<String> getEncodedValues<TINP>(TINP inputData)
+        {
+            List<String> retVals = new List<String>();
+            Dictionary<EncoderTuple<T>, List<EncoderTuple<T>>> encoders = getEncoders();
+            if (encoders != null && encoders.Count > 0)
             {
-                closeness = 0;
+                foreach (EncoderTuple<T> t in encoders.Keys)
+                {
+                    retVals.AddRange(t.Encoder.getEncodedValues(inputData));
+                }
             }
+            else
+            {
+                retVals.Add(inputData.ToString());
+            }
+
+            return retVals;
         }
-        else
+
+        /**
+         * Returns an array containing the sub-field bucket indices for
+         * each sub-field of the inputData. To get the associated field names for each of
+         * the buckets, call getScalarNames().
+         * @param  	input 	The data from the source. This is typically a object with members.
+         *
+         * @return 	array of bucket indices
+         */
+        public int[] getBucketIndices(String input)
         {
-            closeness = err;
+            List<int> l = new List<int>();
+            Dictionary<EncoderTuple<T>, List<EncoderTuple<T>>> encoders = getEncoders();
+            if (encoders != null && encoders.Count > 0)
+            {
+                foreach (EncoderTuple<T> t in encoders.Keys)
+                {
+                    l.AddRange(t.Encoder.getBucketIndices(input));
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException("Should be implemented in base classes that are not " +
+                    "containers for other encoders");
+            }
+            return l.ToArray();
         }
 
-        retVal.add(closeness);
-        return retVal;
-    }
-
-    int scalarIdx = 0;
-    for (EncoderTuple res : getEncoders(this))
-    {
-        TDoubleList values = res.getEncoder().closenessScores(
-            expValues.subList(scalarIdx, expValues.size()), actValues.subList(scalarIdx, actValues.size()), fractional);
-
-        scalarIdx += values.size();
-        retVal.addAll(values);
-    }
-
-    return retVal;
-}
-
-/**
- * Returns an array containing the sum of the right
- * applied multiplications of each slice to the array
- * passed in.
- *
- * @param encoded
- * @return
- */
-public int[] rightVecProd(SparseObjectMatrix<int[]> matrix, int[] encoded)
-{
-    int[] retVal = new int[matrix.getMaxIndex() + 1];
-    for (int i = 0; i < retVal.length; i++)
-    {
-        int[] slice = matrix.getObject(i);
-        for (int j = 0; j < slice.length; j++)
+        /**
+         * Returns an array containing the sub-field bucket indices for
+         * each sub-field of the inputData. To get the associated field names for each of
+         * the buckets, call getScalarNames().
+         * @param  	input 	The data from the source. This is typically a object with members.
+         *
+         * @return 	array of bucket indices
+         */
+        public int[] getBucketIndices(double input)
         {
-            retVal[i] += (slice[j] * encoded[j]);
+            List<int> l = new List<int>();
+            Dictionary<EncoderTuple<T>, List<EncoderTuple<T>>> encoders = getEncoders();
+            if (encoders != null && encoders.Count > 0)
+            {
+                foreach (EncoderTuple<T> t in encoders.Keys)
+                {
+                    l.AddRange(t.Encoder.getBucketIndices(input));
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException("Should be implemented in base classes that are not " +
+                    "containers for other encoders");
+            }
+            return l.ToArray();
         }
+
+        /**
+         * Return a pretty print string representing the return values from
+         * getScalars and getScalarNames().
+         * @param scalarValues 	input values to encode to string
+         * @param scalarNames 	optional input of scalar names to convert. If None, gets
+         *                  	scalar names from getScalarNames()
+         *
+         * @return string representation of scalar values
+         */
+        public String scalarsToStr<S>(List<S> scalarValues, List<String> scalarNames)
+        {
+            if (scalarNames == null || scalarNames == null || scalarNames.Count == 0)
+            {
+                scalarNames = getScalarNames("");
+            }
+
+            StringBuilder desc = new StringBuilder();
+            foreach (var t in ArrayUtils.Zip(scalarNames, scalarValues))
+            {
+                if (desc.Length > 0)
+                {
+                    desc.Append($"{t.Item1}:{t.Item2}");
+                }
+                else
+                {
+                    desc.Append($"{t.Item1}:{t.Item2}");
+                }
+            }
+            return desc.ToString();
+        }
+
+        /**
+         * This returns a list of tuples, each containing (name, offset).
+         * The 'name' is a string description of each sub-field, and offset is the bit
+         * offset of the sub-field for that encoder.
+         *
+         * For now, only the 'multi' and 'date' encoders have multiple (name, offset)
+         * pairs. All other encoders have a single pair, where the offset is 0.
+         *
+         * @return		list of tuples, each containing (name, offset)
+         */
+        public List<Tuple<string, int>> getDescription()
+        {
+            return description;
+        }
+
+
+        /**
+         * Return a description of the given bit in the encoded output.
+         * This will include the field name and the offset within the field.
+         * @param bitOffset  	Offset of the bit to get the description of
+         * @param formatted     If True, the bitOffset is w.r.t. formatted output,
+         *                     	which includes separators
+         *
+         * @return tuple(fieldName, offsetWithinField)
+         */
+        public Tuple<string, int> encodedBitDescription(int bitOffset, bool formatted)
+        {
+            //Find which field it's in
+            List<Tuple<string, int>> description = getDescription();
+
+            String prevFieldName = null;
+            int prevFieldOffset = -1;
+            int offset = -1;
+            for (int i = 0; i < description.Count; i++)
+            {
+                var keyPair = description[i];//(name, offset)
+                if (formatted)
+                {
+                    offset = keyPair.Item2 + 1;
+                    if (bitOffset == offset - 1)
+                    {
+                        prevFieldName = "separator";
+                        prevFieldOffset = bitOffset;
+                    }
+                }
+                if (bitOffset < offset) break;
+            }
+            // Return the field name and offset within the field
+            // return (fieldName, bitOffset - fieldOffset)
+            int width = formatted ? getDisplayWidth() : getWidth();
+
+            if (prevFieldOffset == -1 || bitOffset > getWidth())
+            {
+                throw new InvalidOperationException($"Bit is outside of allowable range: [0 - {width}");
+            }
+            return new Tuple<string, int>(prevFieldName, bitOffset - prevFieldOffset);
+        }
+
+        /**
+         * Pretty-print a header that labels the sub-fields of the encoded
+         * output. This can be used in conjunction with {@link #pprint(int[], String)}.
+         * @param prefix
+         */
+        public void pprintHeader(String prefix)
+        {
+            //LOGGER.info(prefix == null ? "" : prefix);
+
+            List<Tuple<string, int>> description = getDescription();
+            description.Add(new Tuple<string, int>("end", getWidth()));
+
+            int len = description.Count - 1;
+            for (int i = 0; i < len; i++)
+            {
+                String name = (String)description[i].Item1;
+                int width = (int)description[i + 1].Item2;
+
+                String formatStr = $"{width}";
+                StringBuilder pname = new StringBuilder(name);
+                if (name.Length > width)
+                    pname.Length = width;
+
+                // LOGGER.info(String.format(formatStr, pname));
+            }
+
+            len = getWidth() + (description.Count - 1) * 3 - 1;
+            StringBuilder hyphens = new StringBuilder();
+            for (int i = 0; i < len; i++)
+                hyphens.Append("-");
+
+            Debug.WriteLine(hyphens);
+        }
+
+        /**
+         * Pretty-print the encoded output using ascii art.
+         * @param output
+         * @param prefix
+         */
+        //public void pprint(int[] output, String prefix)
+        //{
+        //    LOGGER.info(prefix == null ? "" : prefix);
+
+        //    List<Tuple> description = getDescription();
+        //    description.add(new Tuple("end", getWidth()));
+
+        //    int len = description.size() - 1;
+        //    for (int i = 0; i < len; i++)
+        //    {
+        //        int offset = (int)description.get(i).get(1);
+        //        int nextOffset = (int)description.get(i + 1).get(1);
+
+        //        LOGGER.info(
+        //                String.format("%s |",
+        //                        ArrayUtils.bitsToString(
+        //                                ArrayUtils.sub(output, ArrayUtils.range(offset, nextOffset))
+        //                        )
+        //                )
+        //        );
+        //    }
+        //}
+
+        /**
+         * Takes an encoded output and does its best to work backwards and generate
+         * the input that would have generated it.
+         *
+         * In cases where the encoded output contains more ON bits than an input
+         * would have generated, this routine will return one or more ranges of inputs
+         * which, if their encoded outputs were ORed together, would produce the
+         * target output. This behavior makes this method suitable for doing things
+         * like generating a description of a learned coincidence in the SP, which
+         * in many cases might be a union of one or more inputs.
+         *
+         * If instead, you want to figure the *most likely* single input scalar value
+         * that would have generated a specific encoded output, use the topDownCompute()
+         * method.
+         *
+         * If you want to pretty print the return value from this method, use the
+         * decodedToStr() method.
+         *
+         *************
+         * OUTPUT EXPLAINED:
+         *
+         * fieldsMap is a {@link Map} where the keys represent field names
+         * (only 1 if this is a simple encoder, > 1 if this is a multi
+         * or date encoder) and the values are the result of decoding each
+         * field. If there are  no bits in encoded that would have been
+         * generated by a field, it won't be present in the Map. The
+         * key of each entry in the dict is formed by joining the passed in
+         * parentFieldName with the child encoder name using a '.'.
+         *
+         * Each 'value' in fieldsMap consists of a {@link Tuple} of (ranges, desc),
+         * where ranges is a list of one or more {@link MinMax} ranges of
+         * input that would generate bits in the encoded output and 'desc'
+         * is a comma-separated pretty print description of the ranges.
+         * For encoders like the category encoder, the 'desc' will contain
+         * the category names that correspond to the scalar values included
+         * in the ranges.
+         *
+         * The fieldOrder is a list of the keys from fieldsMap, in the
+         * same order as the fields appear in the encoded output.
+         *
+         * Example retvals for a scalar encoder:
+         *
+         *   {'amount':  ( [[1,3], [7,10]], '1-3, 7-10' )}
+         *   {'amount':  ( [[2.5,2.5]],     '2.5'       )}
+         *
+         * Example retval for a category encoder:
+         *
+         *   {'country': ( [[1,1], [5,6]], 'US, GB, ES' )}
+         *
+         * Example retval for a multi encoder:
+         *
+         *   {'amount':  ( [[2.5,2.5]],     '2.5'       ),
+         *   'country': ( [[1,1], [5,6]],  'US, GB, ES' )}
+         * @param encoded      		The encoded output that you want decode
+         * @param parentFieldName 	The name of the encoder which is our parent. This name
+         *      					is prefixed to each of the field names within this encoder to form the
+         *    						keys of the {@link Map} returned.
+         *
+         * @returns Tuple(fieldsMap, fieldOrder)
+         */
+
+
+        public Tuple<Dictionary<String, object>, List<String>> decode(int[] encoded, String parentFieldName)
+        {
+            Dictionary<string, object> fieldsMap = new Dictionary<string, object>();
+            List<String> fieldsOrder = new List<String>();
+
+            String parentName = parentFieldName == null || parentFieldName.Length == 0 || parentFieldName == null ?
+                this.m_Name : $"{parentFieldName}.{this.m_Name}";
+
+            List<EncoderTuple<T>> encoders = getEncoders(this);
+
+            int len = encoders.Count;
+
+            for (int i = 0; i < len; i++)
+            {
+                var threeFieldsTuple = encoders[i];
+                int nextOffset = 0;
+                if (i < len - 1)
+                {
+                    nextOffset = (Integer)encoders[i + 1].Offset;
+                }
+                else
+                {
+                    nextOffset = W;
+                }
+
+                int[] fieldOutput = ArrayUtils.sub(encoded, ArrayUtils.range((Integer)threeFieldsTuple.Offset, nextOffset));
+
+                var result = ((EncoderBase<T>)threeFieldsTuple.Encoder).decode(fieldOutput, parentName);
+
+                fieldsMap.AddRange<String, object>((Dictionary<String, object>)result.Item1);
+                fieldsOrder.AddRange((List<String>)result.Item2);
+            }
+
+            return new Tuple<Dictionary<String, object>, List<String>>(fieldsMap, fieldsOrder);
+        }
+
+        /**
+         * Return a pretty print string representing the return value from decode().
+         *
+         * @param decodeResults
+         * @return
+         */
+
+
+        public String decodedToStr(Tuple<Dictionary<String, object>, List<String>> decodeResults)
+        {
+            StringBuilder desc = new StringBuilder();
+            Dictionary<String, object> fieldsDict = decodeResults.Item1;
+            List<String> fieldsOrder = (List<String>)decodeResults.Item2;
+
+            foreach (String fieldName in fieldsOrder)
+            {
+                var ranges = fieldsDict[fieldName];
+                if (desc.Length > 0)
+                {
+                    desc.Append(", ").Append(fieldName).Append(":");
+                }
+                else
+                {
+                    desc.Append(fieldName).Append(":");
+                }
+                desc.Append("[").Append(ranges).Append("]");
+            }
+            return desc.ToString();
+        }
+
+
+        /**
+         * Returns a list of items, one for each bucket defined by this encoder.
+         * Each item is the value assigned to that bucket, this is the same as the
+         * EncoderResult.value that would be returned by getBucketInfo() for that
+         * bucket and is in the same format as the input that would be passed to
+         * encode().
+         *
+         * This call is faster than calling getBucketInfo() on each bucket individually
+         * if all you need are the bucket values.
+         *
+         * @param	returnType 		class type parameter so that this method can return encoder
+         * 							specific value types
+         *
+         * @return  list of items, each item representing the bucket value for that
+         *          bucket.
+         */
+        public abstract List<B> getBucketValues<B>(B returnType);
+
+        /**
+         * Returns a list of {@link Encoding}s describing the inputs for
+         * each sub-field that correspond to the bucket indices passed in 'buckets'.
+         * To get the associated field names for each of the values, call getScalarNames().
+         * @param buckets 	The list of bucket indices, one for each sub-field encoder.
+         *              	These bucket indices for example may have been retrieved
+         *              	from the getBucketIndices() call.
+         *
+         * @return A list of {@link Encoding}s. Each EncoderResult has
+         */
+        public List<Encoding> getBucketInfo(int[] buckets)
+        {
+            //Concatenate the results from bucketInfo on each child encoder
+            List<Encoding> retVals = new List<Encoding>();
+            int bucketOffset = 0;
+            foreach (EncoderTuple<T> encoderTuple in getEncoders(this))
+            {
+                int nextBucketOffset = -1;
+                List<EncoderTuple<T>> childEncoders = null;
+                if ((childEncoders = getEncoders((EncoderBase<T>)encoderTuple.Encoder)) != null)
+                {
+                    nextBucketOffset = bucketOffset + childEncoders.Count;
+                }
+                else
+                {
+                    nextBucketOffset = bucketOffset + 1;
+                }
+                int[] bucketIndices = ArrayUtils.sub(buckets, ArrayUtils.range(bucketOffset, nextBucketOffset));
+                List<Encoding> values = encoderTuple.Encoder.getBucketInfo(bucketIndices);
+
+                retVals.AddRange(values);
+
+                bucketOffset = nextBucketOffset;
+            }
+
+            return retVals;
+        }
+
+        /**
+         * Returns a list of EncoderResult named tuples describing the top-down
+         * best guess inputs for each sub-field given the encoded output. These are the
+         * values which are most likely to generate the given encoded output.
+         * To get the associated field names for each of the values, call
+         * getScalarNames().
+         * @param encoded The encoded output. Typically received from the topDown outputs
+         *              from the spatial pooler just above us.
+         *
+         * @returns A list of EncoderResult named tuples. Each EncoderResult has
+         *        three attributes:
+         *
+         *        -# value:         This is the best-guess value for the sub-field
+         *                          in a format that is consistent with the type
+         *                          specified by getDecoderOutputFieldTypes().
+         *                          Note that this value is not necessarily
+         *                          numeric.
+         *
+         *        -# scalar:        The scalar representation of this best-guess
+         *                          value. This number is consistent with what
+         *                          is returned by getScalars(). This value is
+         *                          always an int or float, and can be used for
+         *                          numeric comparisons.
+         *
+         *        -# encoding       This is the encoded bit-array
+         *                          that represents the best-guess value.
+         *                          That is, if 'value' was passed to
+         *                          encode(), an identical bit-array should be
+         *                          returned.
+         */
+
+
+        public List<Encoding> topDownCompute(int[] encoded)
+        {
+            List<Encoding> retVals = new List<Encoding>();
+
+            List<EncoderTuple<T>> encoders = getEncoders(this);
+            int len = encoders.Count;
+            for (int i = 0; i < len; i++)
+            {
+                int offset = (int)encoders[i].Offset;
+                EncoderBase<T> encoder = encoders[i].Encoder;
+
+                int nextOffset;
+                if (i < len - 1)
+                {
+                    //Encoders = List<Encoder> : Encoder = EncoderTuple(name, encoder, offset)
+                    nextOffset = (int)encoders[i + 1].Offset;
+                }
+                else
+                {
+                    nextOffset = W;
+                }
+
+                int[] fieldOutput = ArrayUtils.sub(encoded, ArrayUtils.range(offset, nextOffset));
+                List<Encoding> values = encoder.topDownCompute(fieldOutput);
+
+                retVals.AddRange(values);
+            }
+
+            return retVals;
+        }
+
+        public List<double> closenessScores(List<double> expValues, List<double> actValues, bool fractional)
+        {
+
+            List<double> retVal = new List<double>();
+
+            //Fallback closenss is a percentage match
+            List<EncoderTuple<T>> encoders = getEncoders(this);
+            if (encoders == null || encoders.Count < 1)
+            {
+                double err = Math.Abs(expValues[0] - actValues[0]);
+                double closeness = -1;
+                if (fractional)
+                {
+                    double denom = Math.Max(expValues[0], actValues[0]);
+                    if (denom == 0)
+                    {
+                        denom = 1.0;
+                    }
+
+                    closeness = 1.0 - err / denom;
+                    if (closeness < 0)
+                    {
+                        closeness = 0;
+                    }
+                }
+                else
+                {
+                    closeness = err;
+                }
+
+                retVal.Add(closeness);
+                return retVal;
+            }
+
+            int scalarIdx = 0;
+            foreach (EncoderTuple<T> res in getEncoders(this))
+            {
+                List<double> values = res.Encoder.closenessScores(
+                    expValues.Sublist(scalarIdx, expValues.Count), actValues.Sublist(scalarIdx, actValues.Count), fractional);
+
+                scalarIdx += values.Count;
+                retVal.AddRange(values);
+            }
+
+            return retVal;
+        }
+
+        /**
+         * Returns an array containing the sum of the right
+         * applied multiplications of each slice to the array
+         * passed in.
+         *
+         * @param encoded
+         * @return
+         */
+        public int[] rightVecProd(SparseObjectMatrix<int[]> matrix, int[] encoded)
+        {
+            int[] retVal = new int[matrix.getMaxIndex() + 1];
+            for (int i = 0; i < retVal.Length; i++)
+            {
+                int[] slice = matrix.getObject(i);
+                for (int j = 0; j < slice.Length; j++)
+                {
+                    retVal[i] += (slice[j] * encoded[j]);
+                }
+            }
+            return retVal;
+        }
+
+        /**
+         * Calculate width of display for bits plus blanks between fields.
+         *
+         * @return	width
+         */
+        public int getDisplayWidth()
+        {
+            return getWidth() + getDescription().Count - 1;
+        }
+
+        /**
+         * Base class for {@link Encoder} builders
+         * @param <T>
+         */
+
+
+
     }
-    return retVal;
-}
-
-/**
- * Calculate width of display for bits plus blanks between fields.
- *
- * @return	width
- */
-public int getDisplayWidth()
-{
-    return getWidth() + getDescription().size() - 1;
-}
-
-/**
- * Base class for {@link Encoder} builders
- * @param <T>
- */
-
-
-
-}
 }

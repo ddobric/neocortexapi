@@ -567,17 +567,17 @@ namespace NeoCortexApi.Utility
          * @param arg2 the first list to be the one'th entry in the returned tuple
          * @return a list of tuples
          */
-        //public static List<Tuple> zip(List<?> arg1, List<?> arg2)
-        //{
-        //    List<Tuple> tuples = new ArrayList<Tuple>();
-        //    int len = Math.min(arg1.size(), arg2.size());
-        //    for (int i = 0; i < len; i++)
-        //    {
-        //        tuples.add(new Tuple(arg1.get(i), arg2.get(i)));
-        //    }
+        public static List<Tuple<T1,T2>> Zip<T1,T2>(List<T1> arg1, List<T2> arg2)
+        {
+            List<Tuple<T1, T2>> tuples = new List<Tuple<T1, T2>>();
+            int len = Math.Min(arg1.Count, arg2.Count);
+            for (int i = 0; i < len; i++)
+            {
+                tuples.Add(new Tuple<T1, T2>(arg1[i], arg2[i]));
+            }
 
-        //    return tuples;
-        //}
+            return tuples;
+        }
 
         /**
          * Return a list of tuples, where each tuple contains the i-th element

@@ -40,6 +40,7 @@ namespace UnitTestsProject
             foreach (var vectorBit in vector)
             {
                 sb.Append(vectorBit);
+                sb.Append(", ");
             }
 
             return sb.ToString();
