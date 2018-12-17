@@ -55,8 +55,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
     timeOut: 3000,
   };
 
-  updateChartTest1(model: NeoCortexModel) {
-    
+  updateChartTest1() {
+   
   }
 
   updateChartTest2(model: NeoCortexModel) {
@@ -281,8 +281,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
       }
 
       let heatColourArray = this.generateHeatMap();
-      let getData = this.fillChart();
-      let weights = getData[7];
+      let data = this.fillChart();
+      let weights = data[7];
       let cellColours = heatColourArray[0];
       let indexOfNeuron = weights.indexOf(neuronWeight);
 
@@ -384,9 +384,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
       //let heatColourArray = this.getHeatColor();
       let heatColourArray = this.generateHeatMap();
-      let getData = this.fillChart();
+      let data = this.fillChart();
       //let weights = heatColourArray[1];
-      let weights = getData[7];
+      let weights = data[7];
       let cellColours = heatColourArray[0];
       let indexOfNeuron = weights.indexOf(neuronWeight);
       console.log(indexOfNeuron, neuronWeight);
@@ -459,6 +459,44 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
     }
 
+    this.updateChartTest1 = function(){
+     let data =  this.getHeatMap();
+     let heatMap = data[0]; 
+     let overlapVal = data[0]; 
+      const updateNeurons = {
+        x: xCoordinates,
+        y: yCoordinates,
+        z: zCoordinates,
+       text: overlapVal,
+        name: 'Neuron',
+        mode: 'markers',
+        marker: {
+          opacity: env.opacityOfNeuron,
+          size: env.sizeOfNeuron,
+          color: heatMap,
+          symbol: 'circle',
+        },
+        type: 'scatter3d',
+      };
+      const updateSynapses = {
+        //the first point in the array will be joined with a line with the next one in the array ans so on...
+        type: 'scatter3d',
+        mode: 'lines',
+        name: 'Synapse',
+        x: xCoordinates,
+        y: yCoordinates,
+        z: zCoordinates,
+        text: overlapVal,
+        opacity: env.opacityOfSynapse,
+        line: {
+          width: env.lineWidthOfSynapse,
+          color: heatMap,
+        }
+      };
+      Plotlyjs.newPlot(graphDOM, [updateNeurons, updateSynapses], neuralChartLayout, neuralChartConfig);
+
+    }
+
 
     window.onresize = function () {
       Plotlyjs.Plots.resize(graphDOM);
@@ -480,7 +518,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   }
   fillChart() {
-    let model = neoCortexUtils.createModel(3, [100, 5], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
+    let model = neoCortexUtils.createModel(1, [100, 5], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
     // this.opacityValues = new Array(areaSection).fill(0.5, 0, 1200).fill(1.8, 1200, 2400);
     //this.colour = new Array(areaSection).fill('#00BFFF', 0, 800).fill('#48afd1', 800, 1600).fill('#236d86', 1600, 2499);
     let xCoord: Array<any> = [];
@@ -491,11 +529,11 @@ export class AinetComponent implements OnInit, AfterViewInit {
     let numOfAreas = model.areas;
     let ai;
     for (ai = 0; ai < model.areas.length; ai++) {
-      for (let i = 0; i < model.areas[ai].minicolumns[0].length; i++) {
+      for (let i = 0; i < model.areas[ai].minicolumns.length; i++) {
         overlap = model.areas[ai].overlap;
-        xCoord.push(model.areas[ai].minicolumns[0][i].posX);
-        yCoord.push(model.areas[ai].minicolumns[0][i].posY);
-        zCoord.push(model.areas[ai].minicolumns[0][i].posZ);
+        xCoord.push(model.areas[ai].minicolumns[i][i].posX);
+        yCoord.push(model.areas[ai].minicolumns[i][i].posY);
+        zCoord.push(model.areas[ai].minicolumns[i][i].posZ);
 
       }
     }
@@ -586,62 +624,49 @@ export class AinetComponent implements OnInit, AfterViewInit {
     return [heatMap];
   }
 
-  getHeatColor() {
+  getHeatMap() {
 
     let colourScheme = [];
-    let colourCodingSegment = [];
-    let colourCoding = [];
+    let colourCodingArea = [];
+    let heatMap = [];
     let weights = [];
-    let neuronsWeightSegment = [];
-    let allNeuronsWeight = [];
+    let overlapValAreas = [];
+    let overlapValues = [];
 
-    let getCoordLength = this.fillChart();
-    let xCoordLen = getCoordLength[0].length;
-    let totalAreas = getCoordLength[3].length;
-
-    /*   for (let neuronWeight = 0; neuronWeight < 1; neuronWeight = neuronWeight + (1 / (xCoordLen / totalAreas)) ) {
-        let H = (1.0 - neuronWeight) * 240;
-            colourScheme.push("hsl(" + H + ", 100%, 50%)")
-      }
-      for (let hsl = 0; hsl < (xCoordLen / colourScheme.length); hsl++) {
-        for (let colourCode = 0; colourCode < colourScheme.length; colourCode++) {
-          colourCoding.push(colourScheme[colourCode]);
-  
-        }
-      } */
-    for (let nW = 0; nW < 1; nW = nW + (1 / (env.numberOfColours))) {
-      let H = (1.0 - nW) * 240;
-
-      colourScheme = Array((xCoordLen / totalAreas) / (env.numberOfColours)).fill("hsl(" + H + ", 100%, 50%)");
-      /* var b = 124.7485;
-      var c = b.toFixed(3);
-      console.log(parseFloat(c)); */
-      let fixedNW = nW.toFixed(3);
-      weights = Array((xCoordLen / totalAreas) / (env.numberOfColours)).fill(parseFloat(fixedNW));
+    let data = this.fillChart();
+    let xCoordLength = data[0].length;
+    let totalAreas = data[3].length;
+// implement it again 
+    
+ /*    for (let overlap = 0; overlap < 1; overlap = overlap + (1 / (env.numberOfColours))) {
+      let H = (1.0 - overlap) * 240;
+      colourScheme = Array((xCoordLength / totalAreas) / (env.numberOfColours)).fill("hsl(" + H + ", 100%, 50%)");
+      let fixedNW = overlap.toFixed(3);
+      weights = Array((xCoordLength / totalAreas) / (env.numberOfColours)).fill(parseFloat(fixedNW));
 
       for (let hsl = 0; hsl < (colourScheme.length); hsl++) {
-        colourCodingSegment.push(colourScheme[hsl]);
+        colourCodingArea.push(colourScheme[hsl]);
 
       }
 
       for (let w = 0; w < (weights.length); w++) {
-        neuronsWeightSegment.push(weights[w]); // inserting weights for one area/segment
+        overlapValAreas.push(weights[w]); // inserting weights for one area/segment
       }
     }
 
     for (let i = 0; i < totalAreas; i++) {
-      for (let j = 0; j < colourCodingSegment.length; j++) {
-        colourCoding.push(colourCodingSegment[j]);
+      for (let j = 0; j < colourCodingArea.length; j++) {
+        heatMap.push(colourCodingArea[j]);
       }
 
       for (let k = 0; k < totalAreas; k++) {
-        for (let l = 0; l < neuronsWeightSegment.length; l++) {
-          allNeuronsWeight.push(neuronsWeightSegment[l]);
+        for (let l = 0; l < overlapValAreas.length; l++) {
+          overlapValues.push(overlapValAreas[l]);
         }
       }
-    }
+    } */
 
-    return [colourCoding, allNeuronsWeight, colourCodingSegment];
+    return [heatMap, overlapValues];
   }
 
   showNeuronsGreaterByWeight() {

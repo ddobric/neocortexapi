@@ -32,6 +32,11 @@ export class NeocortexSettings {
   public areaLocations: Location[];
   public minicolumnDims: number[];
   public numLayers: number;
+  public xAreaDistance: number = 30;
+  public yAreaDistance: number = 10;
+  public zAreaDistance: number = 1;
+  public overlapValue: number = NaN;
+
 
 }
 
@@ -57,12 +62,15 @@ export class NeoCortexModel {
 
     //for (var i = 0; i < settings.areas.length; i++) {
     for (var i = 0; i < settings.areaLocations.length; i++) {
-     
+
       this.areas[i] = new Area(settings, i, posX, posY, posZ);/// change at this position to chnage the area
-     
-      posX = posX + 50;//posX = posX + sett.areaXDistance  ;
-      posY = posY + 10; //posY = posY + sett.areaXDistance * settings.areas[i];
-      posZ = posZ + 7;
+
+      //posX = posX + 50;//posX = posX + sett.areaXDistance  ;
+      //posY = posY + 10; //posY = posY + sett.areaXDistance * settings.areas[i];
+      //posZ = posZ + 7;
+      posX = posX + settings.xAreaDistance;
+      posY = posY + settings.yAreaDistance;
+      posZ = posZ + settings.zAreaDistance;
 
     }
   }
@@ -77,52 +85,21 @@ export class Area extends Location {
   public id: number;
   public overlap: Array<any> = new Array();
   public oL: Array<any> = new Array();
-  // public overlap: number[] = new Array();
   private settings: NeocortexSettings;
 
   constructor(settings: NeocortexSettings, areaId: number, posX: number, posY: number, posZ: number, ) {
     super(posX, posY, posZ); {
 
       this.id = areaId;
-      //this.overlap = overlap;
-
       this.settings = settings;
-
-      this.minicolumns = new Array();
-      /*    for (var i = 0; i < settings.minicolumnDims[0]; i++) {
-   
-           let row: Array<Minicolumn> = new Array();
-   
-           for (var j = 0; j < settings.minicolumnDims[1]; j++) {
-   
-             for (let k = 0; k < settings.areaLocations.length; k++) {
-               row.push(new Minicolumn(settings, areaId, [i, j], (posX+i+j + (k*i * this.settings.miniColumnWidth)), (posY * k+i + this.settings.cellHeightInMiniColumn), (posZ + j+k)));
-               
-             }
-             
-           }
-   
-           this.minicolumns.push(row);
-         } */
       let row: Array<Minicolumn> = new Array();
       let i; let j; let k;
+
       let totalNumberOfNeurons = (settings.minicolumnDims[0] * settings.minicolumnDims[1] * settings.numLayers);
 
-      for (let nW = 0; nW < 1; nW = nW + (1 / (totalNumberOfNeurons / settings.numLayers))) { //totalNumberOfNeurons/settings.numLayers to get each minicolumn
-        for (let l = 0; l < settings.numLayers; l++) {
-          let roundNW = nW.toFixed(3);
-          this.oL.push(parseFloat(roundNW));
-        }
+      for (let overlapV = 0; overlapV < totalNumberOfNeurons; overlapV++) {
+        this.overlap.push(settings.overlapValue);
       }
-
-          for (let totalAreas = 0; totalAreas < settings.areaLocations.length; totalAreas++) {
-            for (let oLArray = 0; oLArray < this.oL.length; oLArray++) {
-              this.overlap.push(this.oL[oLArray]);
-            }
-          }
-
-
-       
       for (i = 0; i < settings.minicolumnDims[0]; i++) {
         for (j = 0; j < settings.numLayers; j++) {
           for (k = 0; k < settings.minicolumnDims[1]; k++) {
@@ -133,6 +110,19 @@ export class Area extends Location {
       }
     }
   }
+  
+      /*  for (let nW = 0; nW < 1; nW = nW + (1 / (totalNumberOfNeurons / settings.numLayers))) { //totalNumberOfNeurons/settings.numLayers to get each minicolumn
+        for (let l = 0; l < settings.numLayers; l++) {
+          let roundNW = nW.toFixed(3);
+          this.oL.push(parseFloat(roundNW));
+        }
+      }
+
+          for (let totalAreas = 0; totalAreas < settings.areaLocations.length; totalAreas++) {
+            for (let oLArray = 0; oLArray < this.oL.length; oLArray++) {
+              this.overlap.push(this.oL[oLArray]);
+            }
+          } */
 }
 
 
@@ -227,7 +217,7 @@ export class InputModel {
     this.cells = new Array();
 
     //TODO. Exception if cellDims > 2
-    
+
     for (var i = 0; i < cellDims[0]; i++) {
 
       let row: Array<Cell> = new Array();
