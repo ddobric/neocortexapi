@@ -5,6 +5,8 @@ import { neoCortexUtils } from '../neocortexutils';
 import { color } from 'd3';
 import { environment as env } from "../environments/environment";
 import { NotificationsService } from 'angular2-notifications';
+import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, NeocortexSettings, InputModel, CellId, Location } from '../neocortexmodel';
+
 
 @Component({
   selector: 'app-ainet',
@@ -28,6 +30,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
     this.createChart();
   }
+
   showAllNeurons() {
 
   }
@@ -52,14 +55,22 @@ export class AinetComponent implements OnInit, AfterViewInit {
     timeOut: 3000,
   };
 
+  updateChartTest1(model: NeoCortexModel) {
+    
+  }
+
+  updateChartTest2(model: NeoCortexModel) {
+    
+  }
+
   createChart() {
-    let getData = this.fillChart();
-    let xCoordinates = getData[0];
-    let yCoordinates = getData[1];
-    let zCoordinates = getData[2];
-    let xSynap = getData[4];
-    let ySynap = getData[5];
-    let zSynap = getData[6];
+    let data = this.fillChart();
+    let xCoordinates = data[0];
+    let yCoordinates = data[1];
+    let zCoordinates = data[2];
+    let xSynap = data[4];
+    let ySynap = data[5];
+    let zSynap = data[6];
 
     console.log(xCoordinates, "X");
     console.log(yCoordinates, "Y");
@@ -71,7 +82,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     let assignColours = getHeatMap[0];
     //let weights = colourArray[1];
 
-    let overlap = getData[7];
+    let overlap = data[7];
     const neurons = {
       x: xCoordinates,
       y: yCoordinates,
@@ -469,7 +480,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   }
   fillChart() {
-    let model = neoCortexUtils.createModel(1, [100, 5], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
+    let model = neoCortexUtils.createModel(3, [100, 5], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
     // this.opacityValues = new Array(areaSection).fill(0.5, 0, 1200).fill(1.8, 1200, 2400);
     //this.colour = new Array(areaSection).fill('#00BFFF', 0, 800).fill('#48afd1', 800, 1600).fill('#236d86', 1600, 2499);
     let xCoord: Array<any> = [];

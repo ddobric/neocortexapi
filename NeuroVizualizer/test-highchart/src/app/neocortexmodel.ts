@@ -54,16 +54,15 @@ export class NeoCortexModel {
     this.settings = settings;
     this.input = input;
     this.areas = new Array(settings.areaLocations.length);
+
+    //for (var i = 0; i < settings.areas.length; i++) {
     for (var i = 0; i < settings.areaLocations.length; i++) {
-      if (i >= 1) {
-        posX = posX + 50;
-        posY = posY + 10;
-        posZ = posZ + 7;
-        this.areas[i] = new Area(settings, i, posX, posY, posZ);/// change at this position to chnage the area
-      }
-      else {
-        this.areas[i] = new Area(settings, i, posX, posY, posZ);/// change at this position to chnage the area
-      }
+     
+      this.areas[i] = new Area(settings, i, posX, posY, posZ);/// change at this position to chnage the area
+     
+      posX = posX + 50;//posX = posX + sett.areaXDistance  ;
+      posY = posY + 10; //posY = posY + sett.areaXDistance * settings.areas[i];
+      posZ = posZ + 7;
 
     }
   }
@@ -227,6 +226,8 @@ export class InputModel {
 
     this.cells = new Array();
 
+    //TODO. Exception if cellDims > 2
+    
     for (var i = 0; i < cellDims[0]; i++) {
 
       let row: Array<Cell> = new Array();

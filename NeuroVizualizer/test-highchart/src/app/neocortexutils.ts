@@ -31,6 +31,7 @@ export class neoCortexUtils {
    */
   //public static createModel(areas: number = 1, miniColDims: number[] = [1000, 3], numLayers: number = 6): NeoCortexModel {
   public static createModel(numOfAreas, miniColDims, numLayers): NeoCortexModel {
+  //numOfAreas = [0,0,0,1,1,2]
     const numberOfAreas = [];
     const sensoryAreaId = 0;
     const sensoryLayer = 3;
