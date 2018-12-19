@@ -55,8 +55,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
     timeOut: 3000,
   };
 
-  updateChartTest1(model: NeoCortexModel) {
-    //u
+  updateChartTest1() {
+    let model: NeoCortexModel 
   }
 
   updateChartTest2(model: NeoCortexModel) {

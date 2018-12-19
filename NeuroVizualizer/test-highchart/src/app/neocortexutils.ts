@@ -43,7 +43,7 @@ export class neoCortexUtils {
     let sett: NeocortexSettings = {
       //areaLocations: [new Location(0, 0, 0), new Location(5, 3, 5), new Location(6, 7, 8)],
   
-      areaLocations:numberOfAreas,
+      areaLevels:numberOfAreas,
       minicolumnDims: miniColDims,
       numLayers: numLayers,
       cellHeightInMiniColumn: 5, miniColumnWidth: 5
@@ -55,7 +55,7 @@ export class neoCortexUtils {
 
     let idCnt: number = 0;
 
-    for (let arrIndx = 0; arrIndx < sett.areaLocations.length; arrIndx++) {
+    for (let arrIndx = 0; arrIndx < sett.areaLevels.length; arrIndx++) {
 
       model.areas[arrIndx].minicolumns.forEach(miniColRow => {
         miniColRow.forEach(miniCol => {

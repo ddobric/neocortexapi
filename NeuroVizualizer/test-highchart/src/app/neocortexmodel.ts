@@ -29,7 +29,7 @@ export class NeocortexSettings {
 
   public cellHeightInMiniColumn: number = 5;
   public miniColumnWidth: number = 5;
-  public areaLocations: Location[];
+  public areaLevels: Location[];
   public minicolumnDims: number[];
   public numLayers: number;
 
@@ -48,18 +48,19 @@ export class NeoCortexModel {
    */
   public input: InputModel;
 
+
   constructor(settings: NeocortexSettings, input: InputModel, posX = 0, posY = 0, posZ = 0) {
 
     this.synapses = new Array();
     this.settings = settings;
     this.input = input;
-    this.areas = new Array(settings.areaLocations.length);
+    this.areas = new Array(settings.areaLevels.length);
 
-    //for (var i = 0; i < settings.areas.length; i++) {
-    for (var i = 0; i < settings.areaLocations.length; i++) {
+    let areaId : number = 0;
+    for (var areaLevel = 0; areaLevel < settings.areaLevels.length; areaLevel++) {
      
-      this.areas[i] = new Area(settings, i, posX, posY, posZ);/// change at this position to chnage the area
-     
+      this.areas[areaLevel] = new Area(settings, areaId, areaLevel, posX, posY, posZ);/// change at this position to chnage the area
+      areaId++;
       posX = posX + 50;//posX = posX + sett.areaXDistance  ;
       posY = posY + 10; //posY = posY + sett.areaXDistance * settings.areas[i];
       posZ = posZ + 7;
@@ -74,16 +75,18 @@ export class Area extends Location {
 
   public minicolumns: Minicolumn[][] = new Array();
 
+  public level: number;
   public id: number;
   public overlap: Array<any> = new Array();
   public oL: Array<any> = new Array();
   // public overlap: number[] = new Array();
   private settings: NeocortexSettings;
 
-  constructor(settings: NeocortexSettings, areaId: number, posX: number, posY: number, posZ: number, ) {
+  constructor(settings: NeocortexSettings, areaId: number, level: number, posX: number, posY: number, posZ: number, ) {
     super(posX, posY, posZ); {
 
       this.id = areaId;
+      this.level = level;
       //this.overlap = overlap;
 
       this.settings = settings;
@@ -117,7 +120,7 @@ export class Area extends Location {
         }
       }
 
-          for (let totalAreas = 0; totalAreas < settings.areaLocations.length; totalAreas++) {
+          for (let totalAreas = 0; totalAreas < settings.areaLevels.length; totalAreas++) {
             for (let oLArray = 0; oLArray < this.oL.length; oLArray++) {
               this.overlap.push(this.oL[oLArray]);
             }
