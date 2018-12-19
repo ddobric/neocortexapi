@@ -110,19 +110,19 @@ export class Area extends Location {
       }
     }
   }
-  
-      /*  for (let nW = 0; nW < 1; nW = nW + (1 / (totalNumberOfNeurons / settings.numLayers))) { //totalNumberOfNeurons/settings.numLayers to get each minicolumn
-        for (let l = 0; l < settings.numLayers; l++) {
-          let roundNW = nW.toFixed(3);
-          this.oL.push(parseFloat(roundNW));
-        }
-      }
 
-          for (let totalAreas = 0; totalAreas < settings.areaLocations.length; totalAreas++) {
-            for (let oLArray = 0; oLArray < this.oL.length; oLArray++) {
-              this.overlap.push(this.oL[oLArray]);
-            }
-          } */
+  /*  for (let nW = 0; nW < 1; nW = nW + (1 / (totalNumberOfNeurons / settings.numLayers))) { //totalNumberOfNeurons/settings.numLayers to get each minicolumn
+    for (let l = 0; l < settings.numLayers; l++) {
+      let roundNW = nW.toFixed(3);
+      this.oL.push(parseFloat(roundNW));
+    }
+  }
+
+      for (let totalAreas = 0; totalAreas < settings.areaLocations.length; totalAreas++) {
+        for (let oLArray = 0; oLArray < this.oL.length; oLArray++) {
+          this.overlap.push(this.oL[oLArray]);
+        }
+      } */
 }
 
 
@@ -217,18 +217,38 @@ export class InputModel {
     this.cells = new Array();
 
     //TODO. Exception if cellDims > 2
+    try {
 
-    for (var i = 0; i < cellDims[0]; i++) {
+      for (var dim = 0; dim < cellDims.length; dim++) {
+        let row: Array<Cell> = new Array();
+        for (var j = 0; j < cellDims[dim]; j++) {
+          row.push(new Cell(settings, this.id, [dim, j], 1,1));
+        }
 
-      let row: Array<Cell> = new Array();
+        
 
-      for (var j = 0; j < cellDims[1]; j++) {
-
-        row.push(new Cell(settings, 0, [i, j], 0));
       }
 
-      this.cells.push(row);
+
+      for (var dim = 0; dim < cellDims[0]; dim++) {
+
+        let row: Array<Cell> = new Array();
+
+        for (var j = 0; j < cellDims[1]; j++) {
+
+          //row.push(new Cell(settings, 0, [i, j], 0));
+          row.push(new Cell(settings, this.id, [dim, j], 1,1));
+        }
+
+        this.cells.push(row);
+      }
+
     }
+    catch (e) {
+      console.log(e);
+    }
+
+
   }
 }
 

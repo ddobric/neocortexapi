@@ -56,7 +56,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
   };
 
   updateChartTest1() {
-   
+   //let updateModel : NeoCortexModel = new NeoCortexModel(null)
   }
 
 
@@ -515,7 +515,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   }
   fillChart() {
-    let model = neoCortexUtils.createModel(1, [100, 5], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
+    let model = neoCortexUtils.createModel(3, [100, 5], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
     // this.opacityValues = new Array(areaSection).fill(0.5, 0, 1200).fill(1.8, 1200, 2400);
     //this.colour = new Array(areaSection).fill('#00BFFF', 0, 800).fill('#48afd1', 800, 1600).fill('#236d86', 1600, 2499);
     let xCoord: Array<any> = [];
