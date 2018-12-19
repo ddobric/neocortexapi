@@ -15,7 +15,10 @@ import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, NeocortexSettings, Inp
 })
 export class AinetComponent implements OnInit, AfterViewInit {
 
+  public model : NeoCortexModel ;
+
   weightGivenByUser: string;
+
   error: string;
 
   constructor(private _service: NotificationsService) {
@@ -26,6 +29,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
   }
+
   ngAfterViewInit() {
 
     this.createChart();
@@ -56,7 +60,10 @@ export class AinetComponent implements OnInit, AfterViewInit {
   };
 
   updateChartTest1() {
-   //let updateModel : NeoCortexModel = new NeoCortexModel(null)
+
+    this.model.areas[0].minicolumns[0][1].overlap += 0.1;
+
+    //this.updateChart();
   }
 
 
@@ -69,9 +76,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
     let ySynap = data[5];
     let zSynap = data[6];
 
-    console.log(xCoordinates, "X");
-    console.log(yCoordinates, "Y");
-    console.log(zCoordinates, "Z");
+    // console.log(xCoordinates, "X");
+    // console.log(yCoordinates, "Y");
+    // console.log(zCoordinates, "Z");
 
     //let colourArray = this.getHeatColor();
     //let cellColours = colourArray[0];
@@ -296,7 +303,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
         indexOfNeuron = i-1;
       }
 
-      console.log(indexOfNeuron, neuronWeight);
+     // console.log(indexOfNeuron, neuronWeight);
 
       if (indexOfNeuron == -1) {
         this.error = "Given weight is not present";
@@ -316,7 +323,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
         selectedWeights.push("NaN");
 
       }
-      console.log(selectedWeights, "SW");
+     // console.log(selectedWeights, "SW");
 
       sColours = cellColours.slice(0, indexOfNeuron + 1);
 
@@ -328,7 +335,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
         selectedColours.push("hsl(0, 0%, 72%)");
       }
       //selectedColours = cellColours.slice(0, indexOfNeuron);
-      console.log(selectedColours, "SC");
+     // console.log(selectedColours, "SC");
 
 
       const updateNeurons = {
@@ -371,7 +378,6 @@ export class AinetComponent implements OnInit, AfterViewInit {
       let sWeights = [];
       let sColours = [];
 
-
       let neuronWeight = parseFloat(this.weightGivenByUser);
 
       if (neuronWeight > 1) {
@@ -386,7 +392,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       let weights = data[7];
       let cellColours = heatColourArray[0];
       let indexOfNeuron = weights.indexOf(neuronWeight);
-      console.log(indexOfNeuron, neuronWeight);
+    //  console.log(indexOfNeuron, neuronWeight);
 
       if (indexOfNeuron == -1) {
         this.error = "Given weight is not present";
@@ -407,7 +413,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       sWeights.forEach(sWeight => {
         selectedWeights.push(sWeight);
       });
-      console.log(selectedWeights, "SW");
+     // console.log(selectedWeights, "SW");
 
       // selectedColours = cellColours.slice(indexOfNeuron);
       sColours = cellColours.slice(indexOfNeuron, xCoordinates.length);
@@ -418,7 +424,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       sColours.forEach(sColour => {
         selectedColours.push(sColour);
       });
-      console.log(selectedColours, "SC");
+     // console.log(selectedColours, "SC");
 
 
 
@@ -456,15 +462,36 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
     }
 
-    this.updateChartTest1 = function(){
-     let data =  this.getHeatMap();
-     let heatMap = data[0]; 
-     let overlapVal = data[1]; 
+    this.showNeuronsGreaterByWeight = function () {
+
+
+    }
+
+    this.updateChart = function(){
+  
+    this.model.areas[0].minicolumns[0][1].overlap += 0.1;
+    this.model.areas[0].minicolumns[0][3].overlap += 0.2;
+
+    let data = this.fillChart();
+
+    let xCoordinates = data[0];
+    let yCoordinates = data[1];
+    let zCoordinates = data[2];
+    let overlap = data[7];
+
+    let xSynap = data[4];
+    let ySynap = data[5];
+    let zSynap = data[6];
+      let heatMap =this.getHeatMap();
+
+     //let data =  this.getHeatMap();
+     //let heatMap = data[0]; 
+     //let overlapVal = data[1]; 
       const updateNeurons = {
         x: xCoordinates,
         y: yCoordinates,
         z: zCoordinates,
-       text: overlapVal,
+       text: overlap,
         name: 'Neuron',
         mode: 'markers',
         marker: {
@@ -483,7 +510,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
         x: xCoordinates,
         y: yCoordinates,
         z: zCoordinates,
-        text: overlapVal,
+        text: overlap,
         opacity: env.opacityOfSynapse,
         line: {
           width: env.lineWidthOfSynapse,
@@ -499,6 +526,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       Plotlyjs.Plots.resize(graphDOM);
     };
   }
+
   makeChartResponsive() {
     let d3 = Plotlyjs.d3;
     let WIDTH_IN_PERCENT_OF_PARENT = 90;
@@ -514,8 +542,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
     return graphDOM;
 
   }
+
   fillChart() {
-    let model = neoCortexUtils.createModel(3, [100, 5], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
+    this.model = neoCortexUtils.createModel(3, [100, 5], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
     // this.opacityValues = new Array(areaSection).fill(0.5, 0, 1200).fill(1.8, 1200, 2400);
     //this.colour = new Array(areaSection).fill('#00BFFF', 0, 800).fill('#48afd1', 800, 1600).fill('#236d86', 1600, 2499);
     let xCoord: Array<any> = [];
@@ -523,14 +552,14 @@ export class AinetComponent implements OnInit, AfterViewInit {
     let zCoord: Array<any> = [];
     let overlap: Array<any> = [];
 
-    let numOfAreas = model.areas;
+    let numOfAreas = this.model.areas;
     let ai;
-    for (ai = 0; ai < model.areas.length; ai++) {
-      for (let i = 0; i < model.areas[ai].minicolumns.length; i++) {
-        overlap = model.areas[ai].overlap;
-        xCoord.push(model.areas[ai].minicolumns[i][i].posX);
-        yCoord.push(model.areas[ai].minicolumns[i][i].posY);
-        zCoord.push(model.areas[ai].minicolumns[i][i].posZ);
+    for (ai = 0; ai < this.model.areas.length; ai++) {
+      for (let i = 0; i < this.model.areas[ai].minicolumns.length; i++) {
+        overlap.push(this.model.areas[ai].minicolumns[i][i].overlap);
+        xCoord.push(this.model.areas[ai].minicolumns[i][i].posX);
+        yCoord.push(this.model.areas[ai].minicolumns[i][i].posY);
+        zCoord.push(this.model.areas[ai].minicolumns[i][i].posZ);
 
       }
     }
@@ -591,13 +620,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
     console.log(ySynapse, "ySynapse");
     console.log(zSynapse, "zSynapse");
 
-
-
-
-
     return [xCoord, yCoord, zCoord, numOfAreas, xSynapse, ySynapse, zSynapse, overlap];
-
   }
+
   generateHeatMap() {
     let getData = this.fillChart();
     let overlapValues = getData[7];
@@ -667,9 +692,14 @@ export class AinetComponent implements OnInit, AfterViewInit {
   }
 
   showNeuronsGreaterByWeight() {
+
   }
 
   showNeuronsSmallerByWeight() {
+
+  }
+
+  updateChart(){
 
   }
 
