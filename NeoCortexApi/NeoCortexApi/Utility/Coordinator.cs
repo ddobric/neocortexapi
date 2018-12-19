@@ -18,7 +18,13 @@ namespace NeoCortexApi.Utility
 
     protected int[] dimensions;
     protected int[] dimensionMultiples;
+
+        /// <summary>
+        /// 
+        /// </summary>
     protected bool isColumnMajor;
+
+
     protected int numDimensions;
 
     /**

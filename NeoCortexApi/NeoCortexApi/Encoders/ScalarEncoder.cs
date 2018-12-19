@@ -8,12 +8,12 @@ namespace NeoCortexApi.Encoders
     public class ScalarEncoder : EncoderBase<int>
     {
 
-       // private static final Logger LOGGER = LoggerFactory.getLogger(ScalarEncoder.class);
+        // private static final Logger LOGGER = LoggerFactory.getLogger(ScalarEncoder.class);
 
-    /**
-     * Constructs a new {@code ScalarEncoder}
-     */
-    ScalarEncoder() { }
+        /**
+         * Constructs a new {@code ScalarEncoder}
+         */
+        ScalarEncoder() { }
 
         /**
          * Returns a builder for building ScalarEncoders.
@@ -21,16 +21,16 @@ namespace NeoCortexApi.Encoders
          *
          * @return a {@code ScalarEncoder.Builder}
          */
-        public static Encoder.Builder<ScalarEncoder.Builder, ScalarEncoder> builder()
-        {
-            return new ScalarEncoder.Builder();
-        }
+        //public static Encoder.Builder<ScalarEncoder.Builder, ScalarEncoder> builder()
+        //{
+        //    return new ScalarEncoder.Builder();
+        //}
 
         /**
          * Returns true if the underlying encoder works on deltas
          */
-    //    @Override
-    public override bool isDelta()
+        //    @Override
+        public override bool isDelta()
         {
             return false;
         }
@@ -58,19 +58,18 @@ namespace NeoCortexApi.Encoders
          */
         public void init()
         {
-            if (getW() % 2 == 0)
+            if (this.W % 2 == 0)
             {
-                throw new IllegalStateException(
-                    "W must be an odd number (to eliminate centering difficulty)");
+                throw new ArgumentException("W must be an odd number (to eliminate centering difficulty)");
             }
 
-            setHalfWidth((getW() - 1) / 2);
+            HalfWidth = (this.W - 1) / 2;
 
             // For non-periodic inputs, padding is the number of bits "outside" the range,
             // on each side. I.e. the representation of minval is centered on some bit, and
             // there are "padding" bits to the left of that centered bit; similarly with
             // bits to the right of the center bit of maxval
-            setPadding(isPeriodic() ? 0 : getHalfWidth());
+            this.Padding = this.Periodic ? 0 : this.HalfWidth;
 
             if (!Double.isNaN(getMinVal()) && !Double.isNaN(getMaxVal()))
             {
@@ -188,29 +187,23 @@ namespace NeoCortexApi.Encoders
          */
         public Integer getFirstOnBit(double input)
         {
-            if (Double.isNaN(input))
+            if (input < getMinVal())
             {
-                return null;
-            }
-            else
-            {
-                if (input < getMinVal())
+                if (clipInput() && !isPeriodic())
                 {
-                    if (clipInput() && !isPeriodic())
+                    if (LOGGER.isTraceEnabled())
                     {
-                        if (LOGGER.isTraceEnabled())
-                        {
-                            LOGGER.info("Clipped input " + getName() + "=" + input + " to minval " + getMinVal());
-                        }
-                        input = getMinVal();
+                        LOGGER.info("Clipped input " + getName() + "=" + input + " to minval " + getMinVal());
                     }
-                    else
-                    {
-                        throw new IllegalStateException("input (" + input + ") less than range (" +
-                            getMinVal() + " - " + getMaxVal() + ")");
-                    }
+                    input = getMinVal();
+                }
+                else
+                {
+                    throw new IllegalStateException("input (" + input + ") less than range (" +
+                        getMinVal() + " - " + getMaxVal() + ")");
                 }
             }
+
 
             if (isPeriodic())
             {
@@ -269,8 +262,8 @@ namespace NeoCortexApi.Encoders
         /**
          * {@inheritDoc}
          */
-      //  @Override
-    public override ISet<FieldMetaType> getDecoderOutputFieldTypes()
+        //  @Override
+        public override ISet<FieldMetaType> getDecoderOutputFieldTypes()
         {
             return new LinkedHashSet<FieldMetaType>(Arrays.asList(FieldMetaType.FLOAT, FieldMetaType.INTEGER));
         }
@@ -278,8 +271,8 @@ namespace NeoCortexApi.Encoders
         /**
          * Should return the output width, in bits.
          */
-      //  @Override
-    public int getWidth()
+        //  @Override
+        public int getWidth()
         {
             return getN();
         }
@@ -288,16 +281,16 @@ namespace NeoCortexApi.Encoders
          * {@inheritDoc}
          * NO-OP
          */
-     //   @Override
-    public override int[] getBucketIndices(String input) { return null; }
+        //   @Override
+        public override int[] getBucketIndices(String input) { return null; }
 
         /**
          * Returns the bucket indices.
          *
          * @param	input
          */
-       // @Override
-    public override int[] getBucketIndices(double input)
+        // @Override
+        public override int[] getBucketIndices(double input)
         {
             int minbin = getFirstOnBit(input);
 
@@ -327,8 +320,8 @@ namespace NeoCortexApi.Encoders
          * @param inputData Data to encode. This should be validated by the encoder.
          * @param output 1-D array of same length returned by {@link Connections#getW()}
          */
-       // @Override
-    public override int[] encodeIntoArray(Double input)
+        // @Override
+        public override int[] encodeIntoArray(Double input)
         {
             int[] output = new int[NumOfBits];
 
@@ -366,16 +359,14 @@ namespace NeoCortexApi.Encoders
             }
 
             // Added guard against immense string concatenation
-            if (LOGGER.isTraceEnabled())
-            {
-                LOGGER.trace("");
-                LOGGER.trace("input: " + input);
-                LOGGER.trace("range: " + getMinVal() + " - " + getMaxVal());
-                LOGGER.trace("n:" + getN() + "w:" + getW() + "resolution:" + getResolution() +
-                                "radius:" + getRadius() + "periodic:" + isPeriodic());
-                LOGGER.trace("output: " + Arrays.toString(output));
-                LOGGER.trace("input desc: " + decode(output, ""));
-            }
+            Debug.WriteLine("");
+            Debug.WriteLine("input: " + input);
+            Debug.WriteLine("range: " + getMinVal() + " - " + getMaxVal());
+            Debug.WriteLine("n:" + getN() + "w:" + getW() + "resolution:" + getResolution() +
+                            "radius:" + getRadius() + "periodic:" + isPeriodic());
+            Debug.WriteLine("output: " + Arrays.toString(output));
+            Debug.WriteLine("input desc: " + decode(output, ""));
+
         }
 
         /**
@@ -388,7 +379,7 @@ namespace NeoCortexApi.Encoders
          * @return
          */
         //@Override
-    public override DecodeResult decode(int[] encoded, String parentFieldName)
+        public override DecodeResult decode(int[] encoded, String parentFieldName)
         {
             // For now, we simply assume any top-down output greater than 0
             // is ON. Eventually, we will probably want to incorporate the strength
@@ -438,8 +429,8 @@ namespace NeoCortexApi.Encoders
                 }
             }
 
-           // LOGGER.trace("raw output:" + Arrays.toString(
-                            ArrayUtils.sub(encoded, ArrayUtils.range(0, getN()))));
+            // LOGGER.trace("raw output:" + Arrays.toString(
+            ArrayUtils.sub(encoded, ArrayUtils.range(0, getN()))));
             //LOGGER.trace("filtered output:" + Arrays.toString(tmpOutput));
 
             // ------------------------------------------------------------------------
@@ -641,7 +632,7 @@ public SparseObjectMatrix<int[]> getTopDownMapping()
  * @return	a list of one input double
  */
 
-    public List<double>  getScalars(double d)
+public List<double> getScalars(double d)
 {
     List<double> retVal = new List<double>();
     retVal.Add(d);
@@ -666,9 +657,9 @@ public SparseObjectMatrix<int[]> getTopDownMapping()
  */
 //@SuppressWarnings("unchecked")
 //    @Override
-    public List<S> getBucketValues<S>(S t)
+public List<S> getBucketValues<S>(S t)
 {
-    
+
     if (bucketValues == null)
     {
         SparseObjectMatrix<int[]> topDownMapping = getTopDownMapping();
@@ -686,7 +677,7 @@ public SparseObjectMatrix<int[]> getTopDownMapping()
  * {@inheritDoc}
  */
 
-    public List<Encoding> getBucketInfo(int[] buckets)
+public List<Encoding> getBucketInfo(int[] buckets)
 {
     SparseObjectMatrix<int[]> topDownMapping = getTopDownMapping();
 
@@ -734,35 +725,35 @@ public Dictionary<string, object> dict()
     Dictionary<string, object> l = new ArrayList<Tuple>();
     l.Add("maxval", getMaxVal());
     l.Add("bucketValues", getBucketValues(typeof(Double)));
-        l.Add("nInternal", getNInternal());
-        l.Add("name", getName());
-        l.Add("minval", getMinVal());
-        l.Add("topDownValues", Arrays.toString(getTopDownValues()));
-        l.Add("clipInput", clipInput());
-        l.Add("n", getN()));
-        l.Add("padding", getPadding());
-        l.Add("range", getRange());
-        l.Add("periodic", isPeriodic());
-        l.Add("radius", getRadius());
-        l.Add("w", getW()));
-        l.Add("topDownMappingM", getTopDownMapping());
-        l.Add("halfwidth", getHalfWidth());
-        l.Add("resolution", getResolution());
-        l.Add("rangeInternal", getRangeInternal());
+    l.Add("nInternal", getNInternal());
+    l.Add("name", getName());
+    l.Add("minval", getMinVal());
+    l.Add("topDownValues", Arrays.toString(getTopDownValues()));
+    l.Add("clipInput", clipInput());
+    l.Add("n", getN()));
+    l.Add("padding", getPadding());
+    l.Add("range", getRange());
+    l.Add("periodic", isPeriodic());
+    l.Add("radius", getRadius());
+    l.Add("w", getW()));
+    l.Add("topDownMappingM", getTopDownMapping());
+    l.Add("halfwidth", getHalfWidth());
+    l.Add("resolution", getResolution());
+    l.Add("rangeInternal", getRangeInternal());
 
-        return l;
-    }
+    return l;
+}
 
-    /**
-     * Returns a {@link EncoderBuilder} for constructing {@link ScalarEncoder}s
-     *
-     * The base class architecture is put together in such a way where boilerplate
-     * initialization can be kept to a minimum for implementing subclasses, while avoiding
-     * the mistake-proneness of extremely long argument lists.
-     *
-     * @see ScalarEncoder.Builder#setStuff(int)
-     */
-    public static class Builder : Encoder.Builder<ScalarEncoder.Builder, ScalarEncoder>
+/**
+ * Returns a {@link EncoderBuilder} for constructing {@link ScalarEncoder}s
+ *
+ * The base class architecture is put together in such a way where boilerplate
+ * initialization can be kept to a minimum for implementing subclasses, while avoiding
+ * the mistake-proneness of extremely long argument lists.
+ *
+ * @see ScalarEncoder.Builder#setStuff(int)
+ */
+public static class Builder : Encoder.Builder<ScalarEncoder.Builder, ScalarEncoder>
 {
     private Builder() { }
 

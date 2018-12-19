@@ -56,7 +56,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
   };
 
   updateChartTest1(model: NeoCortexModel) {
-    
+    //u
   }
 
   updateChartTest2(model: NeoCortexModel) {

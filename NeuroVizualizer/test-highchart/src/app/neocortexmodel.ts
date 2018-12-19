@@ -108,6 +108,8 @@ export class Area extends Location {
       let i; let j; let k;
       let totalNumberOfNeurons = (settings.minicolumnDims[0] * settings.minicolumnDims[1] * settings.numLayers);
 
+      //TODO..
+      // this.oL.push(overlap);
       for (let nW = 0; nW < 1; nW = nW + (1 / (totalNumberOfNeurons / settings.numLayers))) { //totalNumberOfNeurons/settings.numLayers to get each minicolumn
         for (let l = 0; l < settings.numLayers; l++) {
           let roundNW = nW.toFixed(3);
@@ -227,7 +229,7 @@ export class InputModel {
     this.cells = new Array();
 
     //TODO. Exception if cellDims > 2
-    
+
     for (var i = 0; i < cellDims[0]; i++) {
 
       let row: Array<Cell> = new Array();

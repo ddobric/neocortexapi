@@ -223,15 +223,15 @@ namespace NeoCortexApi
         }
 
         /**
-         * Removes the set of columns who have never been active from the set of
-         * active columns selected in the inhibition round. Such columns cannot
-         * represent learned pattern and are therefore meaningless if only inference
-         * is required. This should not be done when using a random, unlearned SP
-         * since you would end up with no active columns.
-         *  
-         * @param activeColumns An array containing the indices of the active columns
-         * @return  a list of columns with a chance of activation
-         */
+             * Removes the set of columns who have never been active from the set of
+             * active columns selected in the inhibition round. Such columns cannot
+             * represent learned pattern and are therefore meaningless if only inference
+             * is required. This should not be done when using a random, unlearned SP
+             * since you would end up with no active columns.
+             *  
+             * @param activeColumns An array containing the indices of the active columns
+             * @return  a list of columns with a chance of activation
+             */
         public int[] stripUnlearnedColumns(Connections c, int[] activeColumns)
         {
             //TIntHashSet active = new TIntHashSet(activeColumns);

@@ -2,17 +2,26 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>NeoCortexApi</PackageId>
+    <Version>1.0.1-beta</Version>
+    <Authors>Damir Dobric</Authors>
+    <Company>daenet GmbH</Company>
+    <Product>Hierarchical Temporal Framework in C#</Product>
+    <Copyright>Damir Dobric</Copyright>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <LangVersion>7.3</LangVersion>
+    <DocumentationFile></DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Encoders\EncoderBuilder.cs" />
     <Compile Remove="Encoders\ScalarEncoder.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Encoders\EncoderBuilder.cs" />
     <None Include="Encoders\ScalarEncoder.cs" />
   </ItemGroup>
 
