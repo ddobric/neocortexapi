@@ -59,9 +59,6 @@ export class AinetComponent implements OnInit, AfterViewInit {
    
   }
 
-  updateChartTest2(model: NeoCortexModel) {
-    
-  }
 
   createChart() {
     let data = this.fillChart();
@@ -645,12 +642,12 @@ export class AinetComponent implements OnInit, AfterViewInit {
       overLaps = Array((xCoordLength / totalAreas) / (env.numberOfColours)).fill(parseFloat(fixedOL));
 
       for (let hsl = 0; hsl < (colourScheme.length); hsl++) {
-        colourCodingArea.push(colourScheme[hsl]);
+        colourCodingArea.push(colourScheme[hsl]);// assigning colour for one area/segment
 
       }
 
       for (let i = 0; i < (overLaps.length); i++) {
-        overlapValAreas.push(overLaps[i]); // inserting weights for one area/segment
+        overlapValAreas.push(overLaps[i]); // inserting overlap values for one area/segment
       }
     }
 
