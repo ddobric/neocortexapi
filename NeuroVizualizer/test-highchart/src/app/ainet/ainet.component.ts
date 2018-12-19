@@ -462,7 +462,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.updateChartTest1 = function(){
      let data =  this.getHeatMap();
      let heatMap = data[0]; 
-     let overlapVal = data[0]; 
+     let overlapVal = data[1]; 
       const updateNeurons = {
         x: xCoordinates,
         y: yCoordinates,
@@ -629,7 +629,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     let colourScheme = [];
     let colourCodingArea = [];
     let heatMap = [];
-    let weights = [];
+    let overLaps = [];
     let overlapValAreas = [];
     let overlapValues = [];
 
@@ -638,33 +638,33 @@ export class AinetComponent implements OnInit, AfterViewInit {
     let totalAreas = data[3].length;
 // implement it again 
     
- /*    for (let overlap = 0; overlap < 1; overlap = overlap + (1 / (env.numberOfColours))) {
+    for (let overlap = 0; overlap < 1; overlap = overlap + (1 / (env.numberOfColours))) {
       let H = (1.0 - overlap) * 240;
       colourScheme = Array((xCoordLength / totalAreas) / (env.numberOfColours)).fill("hsl(" + H + ", 100%, 50%)");
-      let fixedNW = overlap.toFixed(3);
-      weights = Array((xCoordLength / totalAreas) / (env.numberOfColours)).fill(parseFloat(fixedNW));
+      let fixedOL = overlap.toFixed(3);
+      overLaps = Array((xCoordLength / totalAreas) / (env.numberOfColours)).fill(parseFloat(fixedOL));
 
       for (let hsl = 0; hsl < (colourScheme.length); hsl++) {
         colourCodingArea.push(colourScheme[hsl]);
 
       }
 
-      for (let w = 0; w < (weights.length); w++) {
-        overlapValAreas.push(weights[w]); // inserting weights for one area/segment
+      for (let i = 0; i < (overLaps.length); i++) {
+        overlapValAreas.push(overLaps[i]); // inserting weights for one area/segment
       }
     }
 
-    for (let i = 0; i < totalAreas; i++) {
-      for (let j = 0; j < colourCodingArea.length; j++) {
-        heatMap.push(colourCodingArea[j]);
+    for (let j = 0; j < totalAreas; j++) {
+      for (let k = 0; k < colourCodingArea.length; k++) {
+        heatMap.push(colourCodingArea[k]);
       }
 
-      for (let k = 0; k < totalAreas; k++) {
-        for (let l = 0; l < overlapValAreas.length; l++) {
-          overlapValues.push(overlapValAreas[l]);
+      for (let l = 0; l < totalAreas; l++) {
+        for (let m = 0; m < overlapValAreas.length; m++) {
+          overlapValues.push(overlapValAreas[m]);
         }
       }
-    } */
+    } 
 
     return [heatMap, overlapValues];
   }
