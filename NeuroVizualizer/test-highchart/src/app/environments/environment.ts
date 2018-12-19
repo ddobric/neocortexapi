@@ -6,7 +6,7 @@ export const environment = {
 
     //change numberOfColours to specify the total numbers of colours for neurons
     //The colour scale lasts from 0 to 1, 0 == blue and 1 == red 
-    numberOfColours: 600,
+    numberOfColours: 500,
 
     // with X,Y, Z Ratio change the appearance of graph
     /* xRatio: 7,

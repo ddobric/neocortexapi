@@ -46,7 +46,11 @@ export class neoCortexUtils {
       areaLevels:numberOfAreas,
       minicolumnDims: miniColDims,
       numLayers: numLayers,
-      cellHeightInMiniColumn: 5, miniColumnWidth: 5
+      cellHeightInMiniColumn: 5, miniColumnWidth: 5,
+      xAreaDistance:30,
+      yAreaDistance: 10,
+      zAreaDistance: 1,
+      overlapValue: NaN,
     };
 
     let inpModel: InputModel = new InputModel(sett);
