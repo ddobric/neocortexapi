@@ -15,83 +15,55 @@ import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, NeocortexSettings, Inp
 })
 export class AinetComponent implements OnInit, AfterViewInit {
 
-  public model : NeoCortexModel ;
+  public model: NeoCortexModel;
 
+  xCoordinates: Array<any> = [];
+  yCoordinates: Array<any> = [];
+  zCoordinates: Array<any> = [];
+  overlap: Array<any> = [];
   weightGivenByUser: string;
-
   error: string;
+  xSynapse: any;
+  ySynapse: any;
+  zSynapse: any;
+  heatMap = [];
+  overlapValues = [];
+  neuralChartLayout: any;
+  neuralChartConfig: any;
+  numOfAreas: any;
+  colours = [];
 
   constructor(private _service: NotificationsService) {
 
   }
-  /*  types = ['alert', 'error', 'info', 'warn', 'success'];
-   animationTypes = ['fromRight', 'fromLeft', 'scale', 'rotate']; */
+
+  setOverlap(model: NeoCortexModel, areaIndx:number, miniColIndx:number){
+    
+    //this.overlap[]
+    // for (var ai = 0; ai < model.areas.length; ai++) {
+    //   for (let i = 0; i < model.areas[ai].minicolumns.length; i++) {
+    //     this.overlap.push(this.model.areas[ai].minicolumns[i][i].overlap)   ;    
+
+    //   }
+    // }
+  }
 
   ngOnInit() {
   }
 
   ngAfterViewInit() {
 
+    this.fillChart();
+    this.generateColoursFromOverlap();
     this.createChart();
   }
 
-  showAllNeurons() {
-
-  }
-
-  displayError() {
-    this.options;
-    this._service.error(
-      "Error",
-      this.error,
-      {
-        timeOut: 3000,
-        showProgressBar: true,
-        pauseOnHover: false,
-        clickToClose: true,
-        maxLength: 30
-      }
-    )
-  }
-
-  public options = {
-    position: ["top", "right"],
-    timeOut: 3000,
-  };
-
-  updateChartTest1() {
-
-    this.model.areas[0].minicolumns[0][1].overlap += 0.1;
-
-    //this.updateChart();
-  }
-
-
   createChart() {
-    let data = this.fillChart();
-    let xCoordinates = data[0];
-    let yCoordinates = data[1];
-    let zCoordinates = data[2];
-    let xSynap = data[4];
-    let ySynap = data[5];
-    let zSynap = data[6];
-
-    // console.log(xCoordinates, "X");
-    // console.log(yCoordinates, "Y");
-    // console.log(zCoordinates, "Z");
-
-    //let colourArray = this.getHeatColor();
-    //let cellColours = colourArray[0];
-    let getHeatMap = this.generateHeatMap()
-    let assignColours = getHeatMap[0];
-    //let weights = colourArray[1];
-
-    let overlap = data[7];
     const neurons = {
-      x: xCoordinates,
-      y: yCoordinates,
-      z: zCoordinates,
-      text: overlap,
+      x: this.xCoordinates,
+      y: this.yCoordinates,
+      z: this.zCoordinates,
+      text: this.overlap,
       name: 'Neuron',
       mode: 'markers',
 
@@ -107,7 +79,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
         opacity: env.opacityOfNeuron,
         size: env.sizeOfNeuron,
         // color: '#00BFFF',
-        color: assignColours,
+         color: this.colours,
         symbol: 'circle',
         line: {
           //color: '#7B68EE',
@@ -124,21 +96,21 @@ export class AinetComponent implements OnInit, AfterViewInit {
       type: 'scatter3d',
       mode: 'lines',
       name: 'Synapse',
-      x: xSynap,
-      y: ySynap,
-      z: zSynap,
-      text: overlap,
+      x: this.xSynapse,
+      y: this.ySynapse,
+      z: this.zSynapse,
+      text: this.overlap,
       opacity: env.opacityOfSynapse,
       line: {
         width: env.lineWidthOfSynapse,
-        color: assignColours,
+        color: this.colours,
 
         //color: '#7CFC00'
         //colorscale: 'Viridis'
       }
     };
 
-    const neuralChartLayout = {
+    this.neuralChartLayout = {
 
       //showlegend: false, Thgis option is to show the name of legend/DataSeries 
       /*    scene: {
@@ -152,8 +124,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
         x: 0.5,
         y: 1
       },
-      //width: 1800,
-      // height: 800,
+      width: 1500,
+      height: 600,
       margin: {
         l: 0,
         r: 0,
@@ -167,10 +139,10 @@ export class AinetComponent implements OnInit, AfterViewInit {
         //"auto" | "cube" | "data" | "manual" 
         aspectmode: 'manual',
         aspectratio: {
-             x: 7,
-             y: 1,
-             z: 0.5
-         }, 
+          x: 7,
+          y: 1,
+          z: 0.5
+        },
         camera: {
           center: {
             x: 0,
@@ -204,7 +176,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       },
     };
 
-    const neuralChartConfig = {
+    this.neuralChartConfig = {
       //displayModeBar: false,
       title: '3DChart',
       displaylogo: false,
@@ -212,319 +184,13 @@ export class AinetComponent implements OnInit, AfterViewInit {
       // showlegend: false
 
     };
-    /*    const update = {
-         opacity: 0.8,
-         marker:{
-           color: 'red',
-           size: 25
-         },
-         x: [[41.5]],
-         y: [[0.5]],
-         z: [[3.5]]
-       }; */
+    //let graphDOM = this.makeChartResponsive();
+    let graphDOM = document.getElementById('graph');
 
-    const PointsT = {
-      x: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-      y: [0, 1, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2],
-      z: [0, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2],
-      name: 'PointsT',
-      mode: 'markers',
-      marker: {
-        opacity: env.opacityOfNeuron,
-        size: env.sizeOfNeuron,
-        color: "yellow",
-        symbol: 'circle',
-      },
-      type: 'scatter3d',
-    };
-    const linesT = {
-      x: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-      y: [0, 1, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2],
-      z: [0, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2],
-
-      //x: [0, 0, null, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-      //y: [0, 1, null, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 1, 2, 1, 2],
-      //z: [0, 0, null, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 1, 1, 2, 2],
-      name: 'linesT',
-      mode: 'lines',
-      marker: {
-        color: "red",
-        width: 10
-      },
-      type: 'scatter3d',
-    };
-
-
-    let graphDOM = this.makeChartResponsive();
-
-
-    Plotlyjs.newPlot(graphDOM, [neurons, synapses], neuralChartLayout, neuralChartConfig);
+    Plotlyjs.newPlot(graphDOM, [neurons, synapses], this.neuralChartLayout, this.neuralChartConfig);
     //Plotlyjs.newPlot(graphDOM, [PointsT, linesT], neuralChartLayout);
     // Plotlyjs.newPlot(graphDOM, [test1, test2]);
     //Plotlyjs.restyle(gd,  update, [0]);
-
-
-    this.showAllNeurons = function () {
-      Plotlyjs.newPlot(graphDOM, [neurons, synapses], neuralChartLayout, neuralChartConfig);
-    }
-
-    // this function gives the selected neurons by weight 
-    this.showNeuronsSmallerByWeight = function () {
-      let selectedWeights = [];
-      let selectedColours = [];
-      let sWeights = [];
-      let sColours = [];
-
-
-      let neuronWeight = parseFloat(this.weightGivenByUser);
-
-
-      if (neuronWeight > 1) {
-        this.error = "Weight could not be greater than 1";
-        throw this.displayError();
-      }
-
-      let heatColourArray = this.generateHeatMap();
-      let data = this.fillChart();
-      let weights = data[7];
-      let cellColours = heatColourArray[0];
-      let indexOfNeuron = weights.indexOf(neuronWeight);
-
-      // This segment is to handle the case if we have n same numbers of Elements in our list then slice will just pick the very first
-      // To avoid it we count the occrunce of that element   
-      if (indexOfNeuron == 0) {
-        let i = 0;
-        for (i; i < weights.length; i++) {
-          if (weights[i] > 0) {
-            break;
-          }
-
-        }
-        indexOfNeuron = i-1;
-      }
-
-     // console.log(indexOfNeuron, neuronWeight);
-
-      if (indexOfNeuron == -1) {
-        this.error = "Given weight is not present";
-        throw this.displayError();
-      }
-
-      /*   filteredXCoordinates = xCoordinates.slice(0, indexOfNeuron);
-        filteredYCoordinates = yCoordinates.slice(0, indexOfNeuron);
-        filteredZCoordinates = zCoordinates.slice(0, indexOfNeuron); */
-      //selectedWeights = weights.slice(0, indexOfNeuron);
-      sWeights = weights.slice(0, indexOfNeuron + 1);
-
-      sWeights.forEach(sWeight => {
-        selectedWeights.push(sWeight);
-      });
-      for (let j = 0; j < (xCoordinates.length - 1 - indexOfNeuron); j++) {
-        selectedWeights.push("NaN");
-
-      }
-     // console.log(selectedWeights, "SW");
-
-      sColours = cellColours.slice(0, indexOfNeuron + 1);
-
-      sColours.forEach(sColour => {
-        selectedColours.push(sColour);
-      });
-      for (let k = 0; k < (xCoordinates.length - 1 - indexOfNeuron); k++) {
-        //selectedColours.push("grey");
-        selectedColours.push("hsl(0, 0%, 72%)");
-      }
-      //selectedColours = cellColours.slice(0, indexOfNeuron);
-     // console.log(selectedColours, "SC");
-
-
-      const updateNeurons = {
-        x: xCoordinates,
-        y: yCoordinates,
-        z: zCoordinates,
-        text: selectedWeights,
-        name: 'Neuron',
-        mode: 'markers',
-        marker: {
-          opacity: env.opacityOfNeuron,
-          size: env.sizeOfNeuron,
-          color: selectedColours,
-          symbol: 'circle',
-        },
-        type: 'scatter3d',
-      };
-      const updateSynapses = {
-        //the first point in the array will be joined with a line with the next one in the array ans so on...
-        type: 'scatter3d',
-        mode: 'lines',
-        name: 'Synapse',
-        x: xCoordinates,
-        y: yCoordinates,
-        z: zCoordinates,
-        text: selectedWeights,
-        opacity: env.opacityOfSynapse,
-        line: {
-          width: env.lineWidthOfSynapse,
-          color: selectedColours,
-        }
-      };
-      Plotlyjs.newPlot(graphDOM, [updateNeurons, updateSynapses], neuralChartLayout, neuralChartConfig);
-    }
-
-    // this function gives the selected neurons by weight 
-    this.showNeuronsGreaterByWeight = function () {
-      let selectedWeights = [];
-      let selectedColours = [];
-      let sWeights = [];
-      let sColours = [];
-
-      let neuronWeight = parseFloat(this.weightGivenByUser);
-
-      if (neuronWeight > 1) {
-        this.error = "Weight could not be greater than 1";
-        throw this.displayError();
-      }
-
-      //let heatColourArray = this.getHeatColor();
-      let heatColourArray = this.generateHeatMap();
-      let data = this.fillChart();
-      //let weights = heatColourArray[1];
-      let weights = data[7];
-      let cellColours = heatColourArray[0];
-      let indexOfNeuron = weights.indexOf(neuronWeight);
-    //  console.log(indexOfNeuron, neuronWeight);
-
-      if (indexOfNeuron == -1) {
-        this.error = "Given weight is not present";
-        throw this.displayError();
-      }
-
-      /*    selectedXCoordinates = xCoordinates.slice(indexOfNeuron);
-         selectedYCoordinates = yCoordinates.slice(indexOfNeuron);
-         selectedZCoordinates = zCoordinates.slice(indexOfNeuron); */
-
-      //selectedWeights = weights.slice(indexOfNeuron);
-      sWeights = weights.slice(indexOfNeuron, xCoordinates.length);
-
-      for (let j = 0; j < indexOfNeuron; j++) {
-        selectedWeights.push("NaN");
-
-      }
-      sWeights.forEach(sWeight => {
-        selectedWeights.push(sWeight);
-      });
-     // console.log(selectedWeights, "SW");
-
-      // selectedColours = cellColours.slice(indexOfNeuron);
-      sColours = cellColours.slice(indexOfNeuron, xCoordinates.length);
-      for (let k = 0; k < indexOfNeuron; k++) {
-        //selectedColours.push("grey");
-        selectedColours.push("hsl(0, 0%, 72%)");
-      }
-      sColours.forEach(sColour => {
-        selectedColours.push(sColour);
-      });
-     // console.log(selectedColours, "SC");
-
-
-
-      const updateNeurons = {
-        x: xCoordinates,
-        y: yCoordinates,
-        z: zCoordinates,
-        text: selectedWeights,
-        name: 'Neuron',
-        mode: 'markers',
-        marker: {
-          opacity: env.opacityOfNeuron,
-          size: env.sizeOfNeuron,
-          color: selectedColours,
-          symbol: 'circle',
-        },
-        type: 'scatter3d',
-      };
-      const updateSynapses = {
-        //the first point in the array will be joined with a line with the next one in the array ans so on...
-        type: 'scatter3d',
-        mode: 'lines',
-        name: 'Synapse',
-        x: xCoordinates,
-        y: yCoordinates,
-        z: zCoordinates,
-        text: selectedWeights,
-        opacity: env.opacityOfSynapse,
-        line: {
-          width: env.lineWidthOfSynapse,
-          color: selectedColours,
-        }
-      };
-      Plotlyjs.newPlot(graphDOM, [updateNeurons, updateSynapses], neuralChartLayout, neuralChartConfig);
-
-    }
-
-    this.showNeuronsGreaterByWeight = function () {
-
-
-    }
-
-    this.updateChart = function(){
-  
-    this.model.areas[0].minicolumns[0][1].overlap += 0.1;
-    this.model.areas[0].minicolumns[0][3].overlap += 0.2;
-
-    let data = this.fillChart();
-
-    let xCoordinates = data[0];
-    let yCoordinates = data[1];
-    let zCoordinates = data[2];
-    let overlap = data[7];
-
-    let xSynap = data[4];
-    let ySynap = data[5];
-    let zSynap = data[6];
-      let heatMap =this.getHeatMap();
-
-     //let data =  this.getHeatMap();
-     //let heatMap = data[0]; 
-     //let overlapVal = data[1]; 
-      const updateNeurons = {
-        x: xCoordinates,
-        y: yCoordinates,
-        z: zCoordinates,
-       text: overlap,
-        name: 'Neuron',
-        mode: 'markers',
-        marker: {
-          opacity: env.opacityOfNeuron,
-          size: env.sizeOfNeuron,
-          color: heatMap,
-          symbol: 'circle',
-        },
-        type: 'scatter3d',
-      };
-      const updateSynapses = {
-        //the first point in the array will be joined with a line with the next one in the array ans so on...
-        type: 'scatter3d',
-        mode: 'lines',
-        name: 'Synapse',
-        x: xCoordinates,
-        y: yCoordinates,
-        z: zCoordinates,
-        text: overlap,
-        opacity: env.opacityOfSynapse,
-        line: {
-          width: env.lineWidthOfSynapse,
-          color: heatMap,
-        }
-      };
-      Plotlyjs.newPlot(graphDOM, [updateNeurons, updateSynapses], neuralChartLayout, neuralChartConfig);
-
-    }
-
-
-    window.onresize = function () {
-      Plotlyjs.Plots.resize(graphDOM);
-    };
   }
 
   makeChartResponsive() {
@@ -539,43 +205,42 @@ export class AinetComponent implements OnInit, AfterViewInit {
       'margin-top': (100 - HEIGHT_IN_PERCENT_OF_PARENT) / 2 + 'vh'
     });
     let graphDOM = gd3.node();
+
     return graphDOM;
 
   }
 
+ 
   fillChart() {
-    this.model = neoCortexUtils.createModel(3, [100, 5], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
+    this.model = neoCortexUtils.createModel(1, [100, 5], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
     // this.opacityValues = new Array(areaSection).fill(0.5, 0, 1200).fill(1.8, 1200, 2400);
     //this.colour = new Array(areaSection).fill('#00BFFF', 0, 800).fill('#48afd1', 800, 1600).fill('#236d86', 1600, 2499);
-    let xCoord: Array<any> = [];
-    let yCoord: Array<any> = [];
-    let zCoord: Array<any> = [];
-    let overlap: Array<any> = [];
 
-    let numOfAreas = this.model.areas;
+
+    this.numOfAreas = this.model.areas;
     let ai;
     for (ai = 0; ai < this.model.areas.length; ai++) {
       for (let i = 0; i < this.model.areas[ai].minicolumns.length; i++) {
-        overlap.push(this.model.areas[ai].minicolumns[i][i].overlap);
-        xCoord.push(this.model.areas[ai].minicolumns[i][i].posX);
-        yCoord.push(this.model.areas[ai].minicolumns[i][i].posY);
-        zCoord.push(this.model.areas[ai].minicolumns[i][i].posZ);
+        this.overlap.push(this.model.areas[ai].minicolumns[i][i].overlap);
+        this.xCoordinates.push(this.model.areas[ai].minicolumns[i][i].posX);
+        this.yCoordinates.push(this.model.areas[ai].minicolumns[i][i].posY);
+        this.zCoordinates.push(this.model.areas[ai].minicolumns[i][i].posZ);
 
       }
     }
-    console.log(overlap, "overlap Array");
+    console.log(this.overlap, "overlap Array");
     //Choose uniformly n Random indexes in the range of the x, y, or z Array. (0 -> length.XCoord)
     //Pick data from that indexes and add the data(randomly) into the copy of w x, x, z arrays
     //Assign that arrays to synapses 
 
 
-    let xSynapse = xCoord.slice(); // creating copy of list
-    let ySynapse = yCoord.slice(); // creating copy of list
-    let zSynapse = zCoord.slice(); // creating copy of list
+    this.xSynapse = this.xCoordinates.slice(); // creating copy of list
+    this.ySynapse = this.yCoordinates.slice(); // creating copy of list
+    this.zSynapse = this.zCoordinates.slice(); // creating copy of list
     let randomIndexArray = []; // purely random variables 
     let randomInsertArray = []; // choosed(randomIndexArray) random variables will be inserted after the purely radom indexes 
 
-    let rangeOfXVariables = xCoord.length;
+    let rangeOfXVariables = this.xCoordinates.length;
 
     let totalRandomIndexs = 3;
     for (let j = 0; j < totalRandomIndexs; j++) {
@@ -604,23 +269,22 @@ export class AinetComponent implements OnInit, AfterViewInit {
         } */
     for (let l = 0; l < randomInsertArray.length; l++) {
       // reading specific vector from randomIndexArray at l index
-      let xPointAtXi = xCoord[randomIndexArray[l]];
-      let yPointAtXi = yCoord[randomIndexArray[l]];
-      let zPointAtXi = zCoord[randomIndexArray[l]];
+      let xPointAtXi = this.xCoordinates[randomIndexArray[l]];
+      let yPointAtXi = this.yCoordinates[randomIndexArray[l]];
+      let zPointAtXi = this.zCoordinates[randomIndexArray[l]];
       // inserting specific vector into randomInsertArray at l index
-      xSynapse.splice(randomInsertArray[l], 0, xPointAtXi); //(index, 0, element)
-      ySynapse.splice(randomInsertArray[l], 0, yPointAtXi);
-      zSynapse.splice(randomInsertArray[l], 0, zPointAtXi);
+      this.xSynapse.splice(randomInsertArray[l], 0, xPointAtXi); //(index, 0, element)
+      this.ySynapse.splice(randomInsertArray[l], 0, yPointAtXi);
+      this.zSynapse.splice(randomInsertArray[l], 0, zPointAtXi);
 
 
     }
-    console.log(randomIndexArray, "rein Zufällig X");
+    /* console.log(randomIndexArray, "rein Zufällig X");
     console.log(randomInsertArray, 'Zufällig einfügen');
-    console.log(xSynapse, "xSynapse");
-    console.log(ySynapse, "ySynapse");
-    console.log(zSynapse, "zSynapse");
+    console.log(this.xSynapse, "xSynapse");
+    console.log(rhis.ySynapse, "ySynapse");
+    console.log(this.zSynapse, "zSynapse"); */
 
-    return [xCoord, yCoord, zCoord, numOfAreas, xSynapse, ySynapse, zSynapse, overlap];
   }
 
   generateHeatMap() {
@@ -650,21 +314,14 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
     let colourScheme = [];
     let colourCodingArea = [];
-    let heatMap = [];
     let overLaps = [];
     let overlapValAreas = [];
-    let overlapValues = [];
 
-    let data = this.fillChart();
-    let xCoordLength = data[0].length;
-    let totalAreas = data[3].length;
-// implement it again 
-    
     for (let overlap = 0; overlap < 1; overlap = overlap + (1 / (env.numberOfColours))) {
       let H = (1.0 - overlap) * 240;
-      colourScheme = Array((xCoordLength / totalAreas) / (env.numberOfColours)).fill("hsl(" + H + ", 100%, 50%)");
+      colourScheme = Array((this.xCoordinates.length / this.numOfAreas) / (env.numberOfColours)).fill("hsl(" + H + ", 100%, 50%)");
       let fixedOL = overlap.toFixed(3);
-      overLaps = Array((xCoordLength / totalAreas) / (env.numberOfColours)).fill(parseFloat(fixedOL));
+      overLaps = Array((this.xCoordinates.length / this.numOfAreas) / (env.numberOfColours)).fill(parseFloat(fixedOL));
 
       for (let hsl = 0; hsl < (colourScheme.length); hsl++) {
         colourCodingArea.push(colourScheme[hsl]);// assigning colour for one area/segment
@@ -676,30 +333,291 @@ export class AinetComponent implements OnInit, AfterViewInit {
       }
     }
 
-    for (let j = 0; j < totalAreas; j++) {
+    for (let j = 0; j < this.numOfAreas; j++) {
       for (let k = 0; k < colourCodingArea.length; k++) {
-        heatMap.push(colourCodingArea[k]);
+        this.heatMap.push(colourCodingArea[k]);
       }
 
-      for (let l = 0; l < totalAreas; l++) {
+      for (let l = 0; l < this.numOfAreas; l++) {
         for (let m = 0; m < overlapValAreas.length; m++) {
-          overlapValues.push(overlapValAreas[m]);
+          this.overlapValues.push(overlapValAreas[m]);
         }
       }
-    } 
-
-    return [heatMap, overlapValues];
+    }
   }
 
+  showAllNeurons() {
+    this.createChart();
+
+  }
+
+  displayError() {
+    this.options;
+    this._service.error(
+      "Error",
+      this.error,
+      {
+        timeOut: 3000,
+        showProgressBar: true,
+        pauseOnHover: false,
+        clickToClose: true,
+        maxLength: 30
+      }
+    )
+  }
+
+  public options = {
+    position: ["top", "right"],
+    timeOut: 3000,
+  };
+
+
   showNeuronsGreaterByWeight() {
+    // this function gives the selected neurons by weight 
+    let selectedWeights = [];
+    let selectedColours = [];
+    let sWeights = [];
+    let sColours = [];
+
+    let neuronWeight = parseFloat(this.weightGivenByUser);
+
+    if (neuronWeight > 1) {
+      this.error = "Weight could not be greater than 1";
+      throw this.displayError();
+    }
+
+    //let heatColourArray = this.getHeatColor();
+    let heatColourArray = this.generateHeatMap();
+    let data = this.fillChart();
+    //let weights = heatColourArray[1];
+    let weights = data[7];
+    let cellColours = heatColourArray[0];
+    let indexOfNeuron = weights.indexOf(neuronWeight);
+    //  console.log(indexOfNeuron, neuronWeight);
+
+    if (indexOfNeuron == -1) {
+      this.error = "Given weight is not present";
+      throw this.displayError();
+    }
+
+    //selectedWeights = weights.slice(indexOfNeuron);
+    sWeights = weights.slice(indexOfNeuron, this.xCoordinates.length);
+
+    for (let j = 0; j < indexOfNeuron; j++) {
+      selectedWeights.push("NaN");
+
+    }
+    sWeights.forEach(sWeight => {
+      selectedWeights.push(sWeight);
+    });
+    // console.log(selectedWeights, "SW");
+
+    // selectedColours = cellColours.slice(indexOfNeuron);
+    sColours = cellColours.slice(indexOfNeuron, this.xCoordinates.length);
+    for (let k = 0; k < indexOfNeuron; k++) {
+      //selectedColours.push("grey");
+      selectedColours.push("hsl(0, 0%, 72%)");
+    }
+    sColours.forEach(sColour => {
+      selectedColours.push(sColour);
+    });
+    // console.log(selectedColours, "SC");
+
+
+
+    const updateNeurons = {
+      x: this.xCoordinates,
+      y: this.yCoordinates,
+      z: this.zCoordinates,
+      text: selectedWeights,
+      name: 'Neuron',
+      mode: 'markers',
+      marker: {
+        opacity: env.opacityOfNeuron,
+        size: env.sizeOfNeuron,
+        //color: selectedColours,
+        symbol: 'circle',
+      },
+      type: 'scatter3d',
+    };
+    const updateSynapses = {
+      //the first point in the array will be joined with a line with the next one in the array ans so on...
+      type: 'scatter3d',
+      mode: 'lines',
+      name: 'Synapse',
+      x: this.xCoordinates,
+      y: this.yCoordinates,
+      z: this.zCoordinates,
+      text: selectedWeights,
+      opacity: env.opacityOfSynapse,
+      line: {
+        width: env.lineWidthOfSynapse,
+        //color: selectedColours,
+      }
+    };
+    let graphDOM = document.getElementById("graph");
+    Plotlyjs.newPlot(graphDOM, [updateNeurons, updateSynapses], this.neuralChartLayout, this.neuralChartConfig);
 
   }
 
   showNeuronsSmallerByWeight() {
+    // this function gives the selected neurons by weight 
+    let selectedWeights = [];
+    let selectedColours = [];
+    let sWeights = [];
+    let sColours = [];
 
+
+    let neuronWeight = parseFloat(this.weightGivenByUser);
+
+
+    if (neuronWeight > 1) {
+      this.error = "Weight could not be greater than 1";
+      throw this.displayError();
+    }
+
+    let heatColourArray = this.generateHeatMap();
+    let data = this.fillChart();
+    let weights = data[7];
+    let cellColours = heatColourArray[0];
+    let indexOfNeuron = weights.indexOf(neuronWeight);
+
+    // This segment is to handle the case if we have n same numbers of Elements in our list then slice will just pick the very first
+    // To avoid it we count the occrunce of that element   
+    if (indexOfNeuron == 0) {
+      let i = 0;
+      for (i; i < weights.length; i++) {
+        if (weights[i] > 0) {
+          break;
+        }
+
+      }
+      indexOfNeuron = i - 1;
+    }
+
+    // console.log(indexOfNeuron, neuronWeight);
+
+    if (indexOfNeuron == -1) {
+      this.error = "Given weight is not present";
+      throw this.displayError();
+    }
+    sWeights = weights.slice(0, indexOfNeuron + 1);
+
+    sWeights.forEach(sWeight => {
+      selectedWeights.push(sWeight);
+    });
+    for (let j = 0; j < (this.xCoordinates.length - 1 - indexOfNeuron); j++) {
+      selectedWeights.push("NaN");
+
+    }
+    // console.log(selectedWeights, "SW");
+
+    sColours = cellColours.slice(0, indexOfNeuron + 1);
+
+    sColours.forEach(sColour => {
+      selectedColours.push(sColour);
+    });
+    for (let k = 0; k < (this.xCoordinates.length - 1 - indexOfNeuron); k++) {
+      //selectedColours.push("grey");
+      selectedColours.push("hsl(0, 0%, 72%)");
+    }
+    //selectedColours = cellColours.slice(0, indexOfNeuron);
+    // console.log(selectedColours, "SC");
+
+
+    const updateNeurons = {
+      x: this.xCoordinates,
+      y: this.yCoordinates,
+      z: this.zCoordinates,
+      text: selectedWeights,
+      name: 'Neuron',
+      mode: 'markers',
+      marker: {
+        opacity: env.opacityOfNeuron,
+        size: env.sizeOfNeuron,
+        //color: selectedColours,
+        symbol: 'circle',
+      },
+      type: 'scatter3d',
+    };
+    const updateSynapses = {
+      //the first point in the array will be joined with a line with the next one in the array ans so on...
+      type: 'scatter3d',
+      mode: 'lines',
+      name: 'Synapse',
+      x: this.xCoordinates,
+      y: this.yCoordinates,
+      z: this.zCoordinates,
+      text: selectedWeights,
+      opacity: env.opacityOfSynapse,
+      line: {
+        width: env.lineWidthOfSynapse,
+        //color: selectedColours,
+      }
+    };
+    let graphDOM = this.makeChartResponsive();
+    window.onresize = function () {
+      Plotlyjs.Plots.resize(graphDOM);
+    };
+    Plotlyjs.newPlot(graphDOM, [updateNeurons, updateSynapses], this.neuralChartLayout, this.neuralChartConfig);
   }
 
-  updateChart(){
+  updateChart() {
+    /* this.model.areas[0].minicolumns[0][1].overlap += 0.1;
+    this.model.areas[0].minicolumns[0][3].overlap += 0.2; */
+    console.log(this.overlap,"before");
+    this.model.areas[0].minicolumns[0][1].overlap += 0.1;
+    this.model.areas[0].minicolumns[0][3].overlap += 0.2;
+
+    // model -> overlaps -> this.colours
+
+    this.generateColoursFromOverlap();
+    console.log(this.overlap, "after");
+
+    console.log("update")
+    const updateNeurons = {
+      x: this.xCoordinates,
+      y: this.yCoordinates,
+      z: this.zCoordinates,
+      text: this.overlap,
+      name: 'Neuron',
+      mode: 'markers',
+      marker: {
+        opacity: env.opacityOfNeuron,
+        size: env.sizeOfNeuron,
+        color: this.colours,
+        symbol: 'circle',
+      },
+      type: 'scatter3d',
+    };
+    const updateSynapses = {
+      //the first point in the array will be joined with a line with the next one in the array ans so on...
+      type: 'scatter3d',
+      mode: 'lines',
+      name: 'Synapse',
+      x: this.xCoordinates,
+      y: this.yCoordinates,
+      z: this.zCoordinates,
+      text: this.overlap,
+      opacity: env.opacityOfSynapse,
+      line: {
+        width: env.lineWidthOfSynapse,
+        color: this.colours,
+      }
+    };
+    let graphDOM = document.getElementById('graph');
+
+    //let graphDOM = this.makeChartResponsive();
+
+    Plotlyjs.newPlot(graphDOM, [updateNeurons, updateSynapses], this.neuralChartLayout, this.neuralChartConfig);
+  }
+
+  generateColoursFromOverlap() {
+
+    for (let overlap = 0; overlap < this.overlap.length; overlap++) {
+      let H = (1.0 - this.overlap[overlap]) * 240;
+      this.colours.push("hsl(" + H + ", 100%, 50%)")
+    }
 
   }
 

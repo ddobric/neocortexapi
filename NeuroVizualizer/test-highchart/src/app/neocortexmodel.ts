@@ -35,7 +35,7 @@ export class NeocortexSettings {
   public xAreaDistance: number = 30;
   public yAreaDistance: number = 10;
   public zAreaDistance: number = 1;
-  public defaultOverlapValue: number = NaN;
+  public defaultOverlapValue: number = 0; 
 
 
 }

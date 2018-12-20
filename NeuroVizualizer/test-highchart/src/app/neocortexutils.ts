@@ -50,7 +50,7 @@ export class neoCortexUtils {
       xAreaDistance:30,
       yAreaDistance: 10,
       zAreaDistance: 1,
-      defaultOverlapValue: NaN,
+      defaultOverlapValue: 0,
     };
 
     let inpModel: InputModel = new InputModel(sett);

@@ -3,6 +3,8 @@
 </h1>
 <form #formCtrl="ngForm">
 <div class="container form-inline">
+  <!-- Plotly chart will be drawn inside this div -->
+    <div class="chart"  id="graph"></div>
   <div calss="row form-group">
       <div class="container col-sm-12">
           <input class="form-control" name='test' type="number" id="weightGivenByUser" [(ngModel)]="weightGivenByUser"  placeholder="Neurons weight in between 0 and 1" required>
@@ -14,8 +16,8 @@
   </div>
 </div>
 </form>
-<!-- Plotly chart will be drawn inside this div -->
-<div class="chart"  id="graph"></div>
+
+
 
 <simple-notifications [options]="options"></simple-notifications>
 
