@@ -4,24 +4,6 @@ import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, NeocortexSettings, Inp
 export class neoCortexUtils {
 
 
-  // public static createId(settings:neocortexSettings, areaIndx:number = 0, miniColIndx:number[], layer:number) : number
-  // {
-  //   let cellSegmentSz = 1;
-  //   for (let i = 0; i < settings.minicolumnDims.length; i++) {
-  //     cellSegmentSz = cellSegmentSz * settings.minicolumnDims[i];      
-  //   }
-
-  //   let multiDimSegmentSize = settings.numAreas * cellSegmentSz * settings.numLayers;
-
-  //   let flatIndx = 0;
-  //   for (let i = 0; i < miniColIndx.length -1; i++) {
-
-  //     flatIndx = flatIndx + settings.minicolumnDims[i] * miniColIndx[i];    
-  //   }
-  //    let id = areaIndx * multiDimSegmentSize +  cellSegmentSz * 
-
-  //    return id;
-  // }
 
   /**
    * createModel (numberOfAreas/DataSeries, [xAxis, zAxis], yAxis)
@@ -29,53 +11,22 @@ export class neoCortexUtils {
    * @param miniColDims 
    * @param numLayers 
    */
-  //public static createModel(areas: number = 1, miniColDims: number[] = [1000, 3], numLayers: number = 6): NeoCortexModel {
-  public static createModel(numOfAreas, miniColDims, numLayers): NeoCortexModel {
-  //numOfAreas = [0,0,0,1,1,2]
+  public static createModel(areaLevels:number[], miniColDims:number[], numLayers:number): NeoCortexModel {
+  
     const numberOfAreas = [];
     const sensoryAreaId = 0;
     const sensoryLayer = 3;
  
-    for (let index = 0; index < numOfAreas; index++) {
-        numberOfAreas.push(numOfAreas)
-    }
-
-    let sett: NeocortexSettings = {
-      //areaLocations: [new Location(0, 0, 0), new Location(5, 3, 5), new Location(6, 7, 8)],
-  
-      areaLevels:numberOfAreas,
-      minicolumnDims: miniColDims,
-      numLayers: numLayers,
-      cellHeightInMiniColumn: 5, miniColumnWidth: 5,
-      xAreaDistance:30,
-      yAreaDistance: 10,
-      zAreaDistance: 1,
-      defaultOverlapValue: 0,
-    };
-
+    let sett: NeocortexSettings = new NeocortexSettings();
+    sett.minicolumnDims = miniColDims;
+    sett.areaLevels = areaLevels;
+    sett.numLayers = numLayers;
+    
     let inpModel: InputModel = new InputModel(sett);
 
     var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 1,1,1);
 
     let idCnt: number = 0;
-
-    for (let arrIndx = 0; arrIndx < sett.areaLevels.length; arrIndx++) {
-
-      model.areas[arrIndx].minicolumns.forEach(miniColRow => {
-        miniColRow.forEach(miniCol => {
-
-          // Selecting random input cell to cennect.
-          /*    let rndInpRowIndx = Math.floor(Math.random() * inpModel.cells.length);
-             let rndInpCellIndx = Math.floor(Math.random() * inpModel.cells[rndInpRowIndx].length);
-   
-             for (let miniColIndx = 0; miniColIndx < inpModel.cells[rndInpRowIndx].length * 0.2; miniColIndx++) {
-               this.addSynapse(model, ++idCnt, model.areas[arrIndx].id, model.input.cells[rndInpRowIndx][rndInpCellIndx], miniCol.cells[sensoryLayer], 0)
-             }     */
-
-        });
-      });
-
-    }
 
     return model;
   }

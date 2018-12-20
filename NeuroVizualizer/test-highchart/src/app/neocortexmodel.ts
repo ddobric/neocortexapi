@@ -29,14 +29,13 @@ export class NeocortexSettings {
 
   public cellHeightInMiniColumn: number = 5;
   public miniColumnWidth: number = 5;
-  public areaLevels: Location[];
+  public areaLevels: Array<number> = [0,0,0,1,1,2];
   public minicolumnDims: number[];
   public numLayers: number;
   public xAreaDistance: number = 30;
   public yAreaDistance: number = 10;
   public zAreaDistance: number = 1;
   public defaultOverlapValue: number = 0; 
-
 
 }
 
@@ -89,19 +88,16 @@ export class Area extends Location {
 
       this.id = areaId;
       this.settings = settings;
-      let row: Array<Minicolumn> = new Array();
       let miniColDim0; let layer; let miniColDim1;
 
-      let totalNumberOfNeurons = (settings.minicolumnDims[0] * settings.minicolumnDims[1] * settings.numLayers);
-
-   
       for (miniColDim0 = 0; miniColDim0 < settings.minicolumnDims[0]; miniColDim0++) {
-        for (layer = 0; layer < settings.numLayers; layer++) {
-          for (miniColDim1 = 0; miniColDim1 < settings.minicolumnDims[1]; miniColDim1++) {
-            row.push(new Minicolumn(settings, areaId, [this.id, miniColDim0, miniColDim1], settings.defaultOverlapValue, (posX + miniColDim0), (posY + layer), (posZ + miniColDim1) ));
-            this.minicolumns.push(row);
-          }
+        let row: Array<Minicolumn> = new Array();
+        for (miniColDim1 = 0; miniColDim1 < settings.minicolumnDims[1]; miniColDim1++) {
+          row.push(new Minicolumn(settings, areaId, [this.id, miniColDim0, miniColDim1], settings.defaultOverlapValue, (posX + miniColDim0), (posY ), (posZ + miniColDim1)));
         }
+        
+        this.minicolumns.push(row);
+
       }
     }
   }
@@ -138,15 +134,13 @@ export class Minicolumn extends Location {
 
     this.areaId = areaId;
     this.overlap = overlap;
-
     this.id = miniColId;
-
     this.settings = settings;
 
     for (let layer = 0; layer < settings.numLayers; layer++) {
 
       let cell: Cell = new Cell(settings, areaId, miniColId, layer, this.posX, this.posY, this.posZ)
-      //let cell: Cell = new Cell(settings, areaId, miniColId, layer, this.posX, this.posY + layer, this.posZ)
+      
       this.cells.push(cell);
     }
   }

@@ -212,7 +212,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
  
   fillChart() {
-    this.model = neoCortexUtils.createModel(1, [100, 5], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
+    //this.model = neoCortexUtils.createModel([0,0,1], [100, 5], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
+    this.model = neoCortexUtils.createModel([0], [10, 1], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
     // this.opacityValues = new Array(areaSection).fill(0.5, 0, 1200).fill(1.8, 1200, 2400);
     //this.colour = new Array(areaSection).fill('#00BFFF', 0, 800).fill('#48afd1', 800, 1600).fill('#236d86', 1600, 2499);
 
@@ -221,18 +222,17 @@ export class AinetComponent implements OnInit, AfterViewInit {
     let ai;
     for (ai = 0; ai < this.model.areas.length; ai++) {
       for (let i = 0; i < this.model.areas[ai].minicolumns.length; i++) {
-        this.overlap.push(this.model.areas[ai].minicolumns[i][i].overlap);
-        this.xCoordinates.push(this.model.areas[ai].minicolumns[i][i].posX);
-        this.yCoordinates.push(this.model.areas[ai].minicolumns[i][i].posY);
-        this.zCoordinates.push(this.model.areas[ai].minicolumns[i][i].posZ);
-
+        for (let j = 0; j < this.model.areas[ai].minicolumns[i].length; j++) {
+          for (let cellIndx = 0; cellIndx < this.model.areas[ai].minicolumns[i][j].cells.length; cellIndx++) {
+            this.overlap.push(this.model.areas[ai].minicolumns[i][j].overlap);
+            this.xCoordinates.push(this.model.areas[ai].minicolumns[i][j].posX);
+            this.yCoordinates.push(this.model.areas[ai].minicolumns[i][j].posY + cellIndx * 5);
+            this.zCoordinates.push(this.model.areas[ai].minicolumns[i][j].posZ);
+          }
+        }
       }
     }
     console.log(this.overlap, "overlap Array");
-    //Choose uniformly n Random indexes in the range of the x, y, or z Array. (0 -> length.XCoord)
-    //Pick data from that indexes and add the data(randomly) into the copy of w x, x, z arrays
-    //Assign that arrays to synapses 
-
 
     this.xSynapse = this.xCoordinates.slice(); // creating copy of list
     this.ySynapse = this.yCoordinates.slice(); // creating copy of list
@@ -253,20 +253,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       let randomInsertIndex = Math.floor(Math.random() * Math.floor(rangeOfXVariables));
       randomInsertArray.push(randomInsertIndex);// generating/filling purely random indexes 
     }
-    /* 
-        for (let l = 0; l < randomIndexArray.length; l++) {
-          let xPointAtXi = xCoord[randomIndexArray[l]];
-          let yPointAtXi = yCoord[randomIndexArray[l]];
-          let zPointAtXi = zCoord[randomIndexArray[l]];
-    
-          for (let m = 0; m < randomInsertArray.length; m++) {
-    
-            xSynapse.splice(randomInsertArray[m], 0, xPointAtXi); //(index, 0, element)
-            ySynapse.splice(randomInsertArray[m], 0, yPointAtXi);
-            zSynapse.splice(randomInsertArray[m], 0, zPointAtXi);
-          }
-    
-        } */
+   
     for (let l = 0; l < randomInsertArray.length; l++) {
       // reading specific vector from randomIndexArray at l index
       let xPointAtXi = this.xCoordinates[randomIndexArray[l]];
@@ -279,12 +266,6 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
 
     }
-    /* console.log(randomIndexArray, "rein Zufällig X");
-    console.log(randomInsertArray, 'Zufällig einfügen');
-    console.log(this.xSynapse, "xSynapse");
-    console.log(rhis.ySynapse, "ySynapse");
-    console.log(this.zSynapse, "zSynapse"); */
-
   }
 
   generateHeatMap() {
@@ -569,6 +550,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.model.areas[0].minicolumns[0][1].overlap += 0.1;
     this.model.areas[0].minicolumns[0][3].overlap += 0.2;
 
+    //this.setOverlap(this.model, );
     // model -> overlaps -> this.colours
 
     this.generateColoursFromOverlap();
