@@ -55,7 +55,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
 
     this.fillChart();
-    this.generateColoursFromOverlap();
+    this.generateColoursFromOverlap(/*model*/);
+    //this.generateColoursForSynPermanences(model);
     this.createChart();
   }
 
@@ -212,14 +213,10 @@ export class AinetComponent implements OnInit, AfterViewInit {
   }
 
  
-  fillChart() {
-    //this.model = neoCortexUtils.createModel([0,0,1], [100, 5], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
+  fillChart(/*model: NeoCortexModel*/) {
+  
     this.model = neoCortexUtils.createModel([0,0,0,0, 1,1,1,2,2,3], [10, 1], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
-    // this.opacityValues = new Array(areaSection).fill(0.5, 0, 1200).fill(1.8, 1200, 2400);
-    //this.colour = new Array(areaSection).fill('#00BFFF', 0, 800).fill('#48afd1', 800, 1600).fill('#236d86', 1600, 2499);
-
-    
-
+  
     this.numOfAreas = this.model.areas;
     let areaIndx;
     let lastLevel = 0;
@@ -290,7 +287,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
   }
 
   generateHeatMap() {
+    
     let getData = this.fillChart();
+
     let overlapValues = getData[7];
     let totalAreas = getData[3];
 
