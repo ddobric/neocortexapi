@@ -6,6 +6,7 @@ import { color, area } from 'd3';
 import { environment as env } from "../environments/environment";
 import { NotificationsService } from 'angular2-notifications';
 import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, NeocortexSettings, InputModel, CellId, Location } from '../neocortexmodel';
+import { last } from '@angular/router/src/utils/collection';
 
 
 @Component({
@@ -213,7 +214,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
  
   fillChart() {
     //this.model = neoCortexUtils.createModel([0,0,1], [100, 5], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
-    this.model = neoCortexUtils.createModel([0,0,0,1,1,2], [10, 2], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
+    this.model = neoCortexUtils.createModel([0,0,0,0, 1,1,1,2,2,3], [10, 1], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
     // this.opacityValues = new Array(areaSection).fill(0.5, 0, 1200).fill(1.8, 1200, 2400);
     //this.colour = new Array(areaSection).fill('#00BFFF', 0, 800).fill('#48afd1', 800, 1600).fill('#236d86', 1600, 2499);
 
@@ -221,19 +222,31 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
     this.numOfAreas = this.model.areas;
     let areaIndx;
+    let lastLevel = 0;
+    let levelCnt = 0;
+    let xOffset = 0;
+
     for (areaIndx = 0; areaIndx < this.model.areas.length; areaIndx++) {
 
-      var areaXWidth = env.cellXRatio * this.model.areas[areaIndx].minicolumns[0].length + env.areaXOffset;
-      var areaZWidth  = env.cellZRatio * this.model.areas[areaIndx].minicolumns[1].length + env.areaZOffset;
+      var areaXWidth = env.cellXRatio * this.model.areas[areaIndx].minicolumns.length + env.areaXOffset;
+      var areaZWidth  = env.cellZRatio * this.model.areas[areaIndx].minicolumns[0].length + env.areaZOffset;
       var areaYWidth = env.cellYRatio * this.model.areas[areaIndx].minicolumns[0][0].cells.length + env.areaYOffset;
       
+      if (this.model.areas[areaIndx].level != lastLevel)
+      {
+        levelCnt++;
+        lastLevel = this.model.areas[areaIndx].level;
+        xOffset = areaXWidth + levelCnt * areaXWidth /2;
+      }
+      else
+        xOffset += areaXWidth;
 
       for (let i = 0; i < this.model.areas[areaIndx].minicolumns.length; i++) {
         for (let j = 0; j < this.model.areas[areaIndx].minicolumns[i].length; j++) {
           for (let cellIndx = 0; cellIndx < this.model.areas[areaIndx].minicolumns[i][j].cells.length; cellIndx++) {
         
             this.overlap.push(this.model.areas[areaIndx].minicolumns[i][j].overlap);
-            this.xCoordinates.push(areaXWidth * areaIndx + i * env.cellXRatio);
+            this.xCoordinates.push(i * env.cellXRatio + xOffset);
             this.zCoordinates.push(areaZWidth * j);
             this.yCoordinates.push(areaYWidth * this.model.areas[areaIndx].level + cellIndx * env.cellYRatio);
           }

@@ -8,9 +8,9 @@ export const environment = {
     //The colour scale lasts from 0 to 1, 0 == blue and 1 == red 
     numberOfColours: 500,
 
-    cellXRatio : 10,
-    cellYRatio : 10,
-    cellZRatio : 10,
+    cellXRatio : 1,
+    cellYRatio : 1,
+    cellZRatio : 1,
     areaXOffset : 5,
     areaYOffset : 5,
     areaZOffset : 5,
