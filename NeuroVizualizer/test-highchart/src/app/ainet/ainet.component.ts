@@ -225,8 +225,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
         for (let j = 0; j < this.model.areas[ai].minicolumns[i].length; j++) {
           for (let cellIndx = 0; cellIndx < this.model.areas[ai].minicolumns[i][j].cells.length; cellIndx++) {
             this.overlap.push(this.model.areas[ai].minicolumns[i][j].overlap);
-            this.xCoordinates.push(this.model.areas[ai].minicolumns[i][j].posX);
-            this.yCoordinates.push(this.model.areas[ai].minicolumns[i][j].posY + cellIndx * 5);
+            this.xCoordinates.push(this.model.areas[ai].minicolumns[i][j].posX + env.miniColumnWidth);
+            this.yCoordinates.push(this.model.areas[ai].minicolumns[i][j].posY + cellIndx * env.cellHeightInMiniColumn);
             this.zCoordinates.push(this.model.areas[ai].minicolumns[i][j].posZ);
           }
         }

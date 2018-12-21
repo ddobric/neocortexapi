@@ -343,7 +343,7 @@ export class AiNetHighchartComponent implements OnInit {
     }
 
     createChart() {
-        let model = neoCortexUtils.createModel(2, [100, 3], 6); // createModel (numberOfAreas/DataSeries, [xAxis, zAxis], yAxis)
+        let model = neoCortexUtils.createModel([], [100, 3], 6); // createModel (numberOfAreas/DataSeries, [xAxis, zAxis], yAxis)
         let i; let j; let k;
         for (i = 0; i < model.settings.minicolumnDims[0]; i++) {
             for (j = 0; j < model.settings.numLayers; j++) {

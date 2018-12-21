@@ -19,6 +19,8 @@ export const environment = {
     opacityOfNeuron: 1,
     opacityOfSynapse: 1,
     lineWidthOfSynapse: 4,
+    cellHeightInMiniColumn: 5,
+    miniColumnWidth: 5
 
 
 
