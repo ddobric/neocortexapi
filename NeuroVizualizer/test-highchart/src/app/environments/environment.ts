@@ -8,10 +8,14 @@ export const environment = {
     //The colour scale lasts from 0 to 1, 0 == blue and 1 == red 
     numberOfColours: 500,
 
-    // with X,Y, Z Ratio change the appearance of graph
-    /* xRatio: 7,
-    yRatio: 1,
-    zRatio: 0.5, */
+    cellXRatio : 10,
+    cellYRatio : 10,
+    cellZRatio : 10,
+    areaXOffset : 5,
+    areaYOffset : 5,
+    areaZOffset : 5,
+
+
     xRatio: 7,
     yRatio: 1,
     zRatio: 0.5,

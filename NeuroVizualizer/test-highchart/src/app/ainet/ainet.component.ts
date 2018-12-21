@@ -2,7 +2,7 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 //import * as Plotly from 'plotly.js';
 import * as Plotlyjs from 'plotly.js/dist/plotly';
 import { neoCortexUtils } from '../neocortexutils';
-import { color } from 'd3';
+import { color, area } from 'd3';
 import { environment as env } from "../environments/environment";
 import { NotificationsService } from 'angular2-notifications';
 import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, NeocortexSettings, InputModel, CellId, Location } from '../neocortexmodel';
@@ -137,11 +137,11 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
       scene: {
         //"auto" | "cube" | "data" | "manual" 
-        aspectmode: 'manual',
+        aspectmode: 'data',
         aspectratio: {
-          x: 7,
+          x: 1,
           y: 1,
-          z: 0.5
+          z: 1
         },
         camera: {
           center: {
@@ -213,21 +213,29 @@ export class AinetComponent implements OnInit, AfterViewInit {
  
   fillChart() {
     //this.model = neoCortexUtils.createModel([0,0,1], [100, 5], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
-    this.model = neoCortexUtils.createModel([0], [10, 1], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
+    this.model = neoCortexUtils.createModel([0,0,0,1,1,2], [10, 2], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
     // this.opacityValues = new Array(areaSection).fill(0.5, 0, 1200).fill(1.8, 1200, 2400);
     //this.colour = new Array(areaSection).fill('#00BFFF', 0, 800).fill('#48afd1', 800, 1600).fill('#236d86', 1600, 2499);
 
+    
 
     this.numOfAreas = this.model.areas;
-    let ai;
-    for (ai = 0; ai < this.model.areas.length; ai++) {
-      for (let i = 0; i < this.model.areas[ai].minicolumns.length; i++) {
-        for (let j = 0; j < this.model.areas[ai].minicolumns[i].length; j++) {
-          for (let cellIndx = 0; cellIndx < this.model.areas[ai].minicolumns[i][j].cells.length; cellIndx++) {
-            this.overlap.push(this.model.areas[ai].minicolumns[i][j].overlap);
-            this.xCoordinates.push(this.model.areas[ai].minicolumns[i][j].posX + env.miniColumnWidth);
-            this.yCoordinates.push(this.model.areas[ai].minicolumns[i][j].posY + cellIndx * env.cellHeightInMiniColumn);
-            this.zCoordinates.push(this.model.areas[ai].minicolumns[i][j].posZ);
+    let areaIndx;
+    for (areaIndx = 0; areaIndx < this.model.areas.length; areaIndx++) {
+
+      var areaXWidth = env.cellXRatio * this.model.areas[areaIndx].minicolumns[0].length + env.areaXOffset;
+      var areaZWidth  = env.cellZRatio * this.model.areas[areaIndx].minicolumns[1].length + env.areaZOffset;
+      var areaYWidth = env.cellYRatio * this.model.areas[areaIndx].minicolumns[0][0].cells.length + env.areaYOffset;
+      
+
+      for (let i = 0; i < this.model.areas[areaIndx].minicolumns.length; i++) {
+        for (let j = 0; j < this.model.areas[areaIndx].minicolumns[i].length; j++) {
+          for (let cellIndx = 0; cellIndx < this.model.areas[areaIndx].minicolumns[i][j].cells.length; cellIndx++) {
+        
+            this.overlap.push(this.model.areas[areaIndx].minicolumns[i][j].overlap);
+            this.xCoordinates.push(areaXWidth * areaIndx + i * env.cellXRatio);
+            this.zCoordinates.push(areaZWidth * j);
+            this.yCoordinates.push(areaYWidth * this.model.areas[areaIndx].level + cellIndx * env.cellYRatio);
           }
         }
       }

@@ -61,9 +61,9 @@ export class NeoCortexModel {
     this.areas = new Array(settings.areaLevels.length);
 
     let areaId : number = 0;
-    for (var level = 0; level < settings.areaLevels.length; level++) {
+    for (var levelIndx = 0; levelIndx < settings.areaLevels.length; levelIndx++) {
 
-      this.areas[level] = new Area(settings, areaId, level, posX, posY, posZ);/// change at this position to chnage the area
+      this.areas[levelIndx] = new Area(settings, areaId, settings.areaLevels[levelIndx], posX, posY, posZ);
 
       posX = posX + settings.xAreaDistance;
       posY = posY + settings.yAreaDistance;
@@ -87,6 +87,7 @@ export class Area extends Location {
     super(posX, posY, posZ); {
 
       this.id = areaId;
+      this.level = level;
       this.settings = settings;
       let miniColDim0; let layer; let miniColDim1;
 
