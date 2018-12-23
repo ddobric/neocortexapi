@@ -36,6 +36,7 @@ export class NeocortexSettings {
   public yAreaDistance: number = 10;
   public zAreaDistance: number = 1;
   public defaultOverlapValue: number = 0; 
+  public defaultPermanenceValue: number = 1;
 
 }
 
@@ -81,15 +82,13 @@ export class Area extends Location {
   public level: number;
   public id: number;
   public oL: Array<any> = new Array();
-  private settings: NeocortexSettings;
 
   constructor(settings: NeocortexSettings, areaId: number, level: number, posX: number, posY: number, posZ: number, ) {
     super(posX, posY, posZ); {
 
       this.id = areaId;
       this.level = level;
-      this.settings = settings;
-      let miniColDim0; let layer; let miniColDim1;
+      let miniColDim0; let miniColDim1;
 
       for (miniColDim0 = 0; miniColDim0 < settings.minicolumnDims[0]; miniColDim0++) {
         let row: Array<Minicolumn> = new Array();
@@ -102,19 +101,6 @@ export class Area extends Location {
       }
     }
   }
-
-  /*  for (let nW = 0; nW < 1; nW = nW + (1 / (totalNumberOfNeurons / settings.numLayers))) { //totalNumberOfNeurons/settings.numLayers to get each minicolumn
-    for (let l = 0; l < settings.numLayers; l++) {
-      let roundNW = nW.toFixed(3);
-      this.oL.push(parseFloat(roundNW));
-    }
-  }
-
-      for (let totalAreas = 0; totalAreas < settings.areaLocations.length; totalAreas++) {
-        for (let oLArray = 0; oLArray < this.oL.length; oLArray++) {
-          this.overlap.push(this.oL[oLArray]);
-        }
-      } */
 }
 
 
@@ -192,6 +178,8 @@ export class Synapse {
   constructor(id: number, permanence: number = 0, preSynaptic: Cell, postSynaptic: Cell) {
     this.preSynaptic = preSynaptic;
     this.postSynaptic = postSynaptic;
+    this.permanence = permanence;
+    this.id = id;
   }
 }
 

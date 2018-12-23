@@ -17,15 +17,18 @@ import { last } from '@angular/router/src/utils/collection';
 export class AinetComponent implements OnInit, AfterViewInit {
 
   public model: NeoCortexModel;
-  XNeurons = [];
-  yNeurons = [];
-  zNeurons = [];
-  xSynapse = [];
-  ySynapse = [];
-  zSynapse = [];
-  overlap = [];
-  permanence = [];
-  colours = [];
+
+  XNeurons: Array<number> = [];
+  yNeurons: Array<number> = [];
+  zNeurons: Array<number> = [];
+  xSynapse: Array<number> = [];
+  ySynapse: Array<number> = [];
+  zSynapse: Array<number> = [];
+  overlap: Array<number> = [];
+  permanence: Array<number> = [];
+  neuronsColours: Array<string> = [];
+  synapseColours: Array<string> = [];
+
   weightGivenByUser: string;
   error: string;
   neuralChartLayout: any;
@@ -40,7 +43,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    
+
     this.model = neoCortexUtils.createModel([0, 0, 0, 0, 1, 1, 1, 2, 2, 3], [10, 1], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
     this.fillChart(this.model);
     this.generateColoursFromOverlap(this.model);
@@ -69,7 +72,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
         opacity: env.opacityOfNeuron,
         size: env.sizeOfNeuron,
         // color: '#00BFFF',
-        color: this.colours,
+        color: this.neuronsColours,
         symbol: 'circle',
         line: {
           //color: '#7B68EE',
@@ -85,14 +88,14 @@ export class AinetComponent implements OnInit, AfterViewInit {
       type: 'scatter3d',
       mode: 'lines',
       name: 'Synapse',
-      x: this.xSynapse,
-      y: this.ySynapse,
-      z: this.zSynapse,
+      x: this.XNeurons,
+      y: this.yNeurons,
+      z: this.zNeurons,
       text: this.overlap,
       opacity: env.opacityOfSynapse,
       line: {
         width: env.lineWidthOfSynapse,
-        color: this.colours,
+        color: this.synapseColours,
         //color: '#7CFC00'
         //colorscale: 'Viridis'
       }
@@ -191,14 +194,17 @@ export class AinetComponent implements OnInit, AfterViewInit {
           for (let cellIndx = 0; cellIndx < model.areas[areaIndx].minicolumns[i][j].cells.length; cellIndx++) {
 
             this.overlap.push(model.areas[areaIndx].minicolumns[i][j].overlap);
+            this.permanence.push(model.settings.defaultPermanenceValue);
             this.XNeurons.push(i * env.cellXRatio + xOffset);
             this.zNeurons.push(areaZWidth * j);
             this.yNeurons.push(areaYWidth * model.areas[areaIndx].level + cellIndx * env.cellYRatio);
+
           }
         }
       }
     }
     console.log(this.overlap, "overlap Array");
+    console.log(this.permanence, "permanence");
   }
 
   displayError() {
@@ -227,11 +233,12 @@ export class AinetComponent implements OnInit, AfterViewInit {
     /* this.model.areas[0].minicolumns[0][1].overlap += 0.1;
     this.model.areas[0].minicolumns[0][3].overlap += 0.2; */
     console.log(this.overlap, "before");
-    this.model.areas[0].minicolumns[0][1].overlap += 0.1;
-    this.model.areas[0].minicolumns[0][3].overlap += 0.2;
+    this.model.areas[0].minicolumns[0][0].overlap = 0.1;
+    //this.model.areas[0].minicolumns[0][3].overlap += 0.2;
 
     //this.setOverlap(this.model, );
     // model -> overlaps -> this.colours
+    
     this.generateColoursFromOverlap(this.model);
     console.log(this.overlap, "after");
 
@@ -246,7 +253,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       marker: {
         opacity: env.opacityOfNeuron,
         size: env.sizeOfNeuron,
-        color: this.colours,
+        color: this.neuronsColours,
         symbol: 'circle',
       },
       type: 'scatter3d',
@@ -264,7 +271,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       opacity: env.opacityOfSynapse,
       line: {
         width: env.lineWidthOfSynapse,
-        color: this.colours,
+        color: this.synapseColours,
       }
     };
 
@@ -279,14 +286,19 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   generateColoursFromOverlap(model: NeoCortexModel) {
 
-    for (let overlap = 0; overlap < this.overlap.length; overlap++) {
-      let H = (1.0 - this.overlap[overlap]) * 240;
-      this.colours.push("hsl(" + H + ", 100%, 50%)")
+    for (const overlapVal of this.overlap) {
+      let H = (1.0 - overlapVal) * 240;
+      this.neuronsColours.push("hsl(" + H + ", 100%, 50%)");
     }
 
   }
 
-  generateColoursForSynPermanences(model: NeoCortexModel){
+  generateColoursForSynPermanences(model: NeoCortexModel) {
+
+    for (const permanenceVal of this.permanence) {
+      let H = (1.0 - permanenceVal) * 240;
+      this.synapseColours.push("hsl(" + H + ", 100%, 50%)");
+    }
 
   }
 
