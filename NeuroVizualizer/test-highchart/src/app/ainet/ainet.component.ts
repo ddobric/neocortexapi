@@ -18,7 +18,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   public model: NeoCortexModel;
 
-  XNeurons: Array<number> = [];
+  xNeurons: Array<number> = [];
   yNeurons: Array<number> = [];
   zNeurons: Array<number> = [];
   xSynapse: Array<number> = [];
@@ -53,7 +53,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
   createChart() {
 
     const neurons = {
-      x: this.XNeurons,
+      x: this.xNeurons,
       y: this.yNeurons,
       z: this.zNeurons,
       text: this.overlap,
@@ -87,7 +87,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       type: 'scatter3d',
       mode: 'lines',
       name: 'Synapse',
-      x: this.XNeurons,
+      x: this.xNeurons,
       y: this.yNeurons,
       z: this.zNeurons,
       text: this.permanence,
@@ -193,9 +193,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
             this.overlap.push(model.areas[areaIndx].minicolumns[i][j].overlap);
             this.permanence.push(model.settings.defaultPermanenceValue);
-            this.XNeurons.push(i * env.cellXRatio + xOffset);
-            this.zNeurons.push(areaZWidth * j);
+            this.xNeurons.push(i * env.cellXRatio + xOffset);
             this.yNeurons.push(areaYWidth * model.areas[areaIndx].level + cellIndx * env.cellYRatio);
+            this.zNeurons.push(areaZWidth * j);
 
           }
         }
@@ -203,6 +203,10 @@ export class AinetComponent implements OnInit, AfterViewInit {
     }
     console.log(this.overlap, "overlap Array");
     console.log(this.permanence, "permanence");
+
+    console.log(this.xNeurons, "X Neurons");
+    console.log(this.yNeurons, "Y Neurons");
+    console.log(this.zNeurons, "Z Neurons");
   }
 
   displayError() {
@@ -239,7 +243,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.generateColoursFromOverlap(this.model);
     console.log("update")
     const updateNeurons = {
-      x: this.XNeurons,
+      x: this.xNeurons,
       y: this.yNeurons,
       z: this.zNeurons,
       text: this.overlap,
@@ -259,7 +263,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       type: 'scatter3d',
       mode: 'lines',
       name: 'Synapse',
-      x: this.XNeurons,
+      x: this.xNeurons,
       y: this.yNeurons,
       z: this.zNeurons,
       text: this.permanence,
