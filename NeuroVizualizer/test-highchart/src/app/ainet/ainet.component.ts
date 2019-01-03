@@ -33,7 +33,6 @@ export class AinetComponent implements OnInit, AfterViewInit {
   error: string;
   neuralChartLayout: any;
   neuralChartConfig: any;
-  numOfAreas: any;
 
   constructor(private _service: NotificationsService) {
 
@@ -91,7 +90,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       x: this.XNeurons,
       y: this.yNeurons,
       z: this.zNeurons,
-      text: this.overlap,
+      text: this.permanence,
       opacity: env.opacityOfSynapse,
       line: {
         width: env.lineWidthOfSynapse,
@@ -169,8 +168,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   fillChart(model: NeoCortexModel) {
 
-    this.numOfAreas = model.areas;
-    let areaIndx;
+    let areaIndx: any;
     let lastLevel = 0;
     let levelCnt = 0;
     let xOffset = 0;
@@ -232,16 +230,13 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
     /* this.model.areas[0].minicolumns[0][1].overlap += 0.1;
     this.model.areas[0].minicolumns[0][3].overlap += 0.2; */
-    console.log(this.overlap, "before");
-    this.model.areas[0].minicolumns[0][0].overlap = 0.1;
-    //this.model.areas[0].minicolumns[0][3].overlap += 0.2;
+
+    this.model.areas[0].minicolumns[0][0].overlap += 0.1;
 
     //this.setOverlap(this.model, );
     // model -> overlaps -> this.colours
     
     this.generateColoursFromOverlap(this.model);
-    console.log(this.overlap, "after");
-
     console.log("update")
     const updateNeurons = {
       x: this.XNeurons,
@@ -267,7 +262,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       x: this.XNeurons,
       y: this.yNeurons,
       z: this.zNeurons,
-      text: this.overlap,
+      text: this.permanence,
       opacity: env.opacityOfSynapse,
       line: {
         width: env.lineWidthOfSynapse,
