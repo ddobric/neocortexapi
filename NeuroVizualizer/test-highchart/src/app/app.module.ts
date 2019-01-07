@@ -4,11 +4,9 @@ import { FormsModule } from '@angular/forms';
 import {ChartModule} from 'angular2-highcharts';
 import { AppComponent } from './app.component';
 import { RouterModule, Routes } from '@angular/router';
-import { Scattered3DchartComponent } from './scattered3-dchart/scattered3-dchart.component';
 import { HomeComponent } from './home/home.component';
 import { AppRoutingModule } from './app-routing-module';
 import { HighchartsStatic } from 'angular2-highcharts/dist/HighchartsService';
-import { AiNetHighchartComponent } from './ainetHighchart/ainetHighChart.component';
 import { AinetComponent } from './ainet/ainet.component';
 import { SimpleNotificationsModule } from 'angular2-notifications';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -22,9 +20,7 @@ export function highchartsFactory() {
 @NgModule({
   declarations: [
     AppComponent,
-    Scattered3DchartComponent,
     HomeComponent,
-    AiNetHighchartComponent,
     AinetComponent,
     
   ],

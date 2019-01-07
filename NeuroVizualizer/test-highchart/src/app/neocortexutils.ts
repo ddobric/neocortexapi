@@ -21,6 +21,7 @@ export class neoCortexUtils {
     sett.minicolumnDims = miniColDims;
     sett.areaLevels = areaLevels;
     sett.numLayers = numLayers;
+    sett.defaultPermanenceValue = 1;
     
     let inpModel: InputModel = new InputModel(sett);
 

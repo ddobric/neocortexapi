@@ -7,16 +7,16 @@
     <div class="chart"  id="graph"></div>
   <div calss="row form-group">
       <div class="container col-sm-12">
-          <input class="form-control" name='test' type="number" id="weightGivenByUser" [(ngModel)]="weightGivenByUser"  placeholder="Neurons weight in between 0 and 1" required>
-      <button  [disabled]="!formCtrl.form.valid" class="btn btn-primary" (click)='showNeuronsSmallerByWeight()'>Smaller than or equal</button>
-      <button [disabled]="!formCtrl.form.valid" class="btn btn-danger"  (click)='showNeuronsGreaterByWeight()'>Greater than or equal</button>
-      <button  class="btn btn-success"  (click)='showAllNeurons()'>Show All Neurons</button>
-      <button  class="btn btn-warning"  (click)='updateChart()'>Update Neural Data</button>
+      <button  class="btn btn-warning"  (click)='updateOverlapV()'>Update OverlapV</button>
+      <button  class="btn btn-success"  (click)='updatePermanenceV()'>Update PermanenceV</button>
+      <input id="areaIndex" [value] = "getViewModelValue('areaIndex')" (blur)="setViewModelValue($event, 'areaIndex')"/>
+      <input id="miniColumnXDimension" [value] = "getViewModelValue('miniColumnXDimension')" (blur)="setViewModelValue($event, 'miniColumnXDimension')"/>
+      <input id="miniColumnZDimension" [value] = "getViewModelValue('miniColumnZDimension')" (blur)="setViewModelValue($event, 'miniColumnZDimension')"/>
+      <input id="newOverlapValue" [value] = "getViewModelValue('newOverlapValue')" (blur)="setViewModelValue($event, 'newOverlapValue')"/>
       </div>
   </div>
 </div>
 </form>
-
 
 
 <simple-notifications [options]="options"></simple-notifications>
