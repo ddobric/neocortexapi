@@ -9,10 +9,15 @@
       <div class="container col-sm-12">
       <button  class="btn btn-warning"  (click)='updateOverlapV()'>Update OverlapV</button>
       <button  class="btn btn-success"  (click)='updatePermanenceV()'>Update PermanenceV</button>
+      <input id="areaIndex" [value] = "getViewModelValue('areaIndex')" (blur)="setViewModelValue($event, 'areaIndex')"/>
+      <input id="miniColumnXDimension" [value] = "getViewModelValue('miniColumnXDimension')" (blur)="setViewModelValue($event, 'miniColumnXDimension')"/>
+      <input id="miniColumnZDimension" [value] = "getViewModelValue('miniColumnZDimension')" (blur)="setViewModelValue($event, 'miniColumnZDimension')"/>
+      <input id="newOverlapValue" [value] = "getViewModelValue('newOverlapValue')" (blur)="setViewModelValue($event, 'newOverlapValue')"/>
       </div>
   </div>
 </div>
 </form>
+
 
 <simple-notifications [options]="options"></simple-notifications>
 

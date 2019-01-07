@@ -34,6 +34,11 @@ export class AinetComponent implements OnInit, AfterViewInit {
   neuralChartLayout: any;
   neuralChartConfig: any;
 
+  areaIndex : number = 0;
+  miniColumnXDimension : number = 0; 
+  miniColumnZDimension : number = 0;
+  newOverlapValue : any = 0;
+
   constructor(private _service: NotificationsService) {
 
   }
@@ -44,11 +49,13 @@ export class AinetComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
 
     this.model = neoCortexUtils.createModel([0, 0, 0, 0, 1, 1, 1, 2, 2, 3], [10, 1], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
-    this.fillChart(this.model);
+     this.fillChart(this.model);
+    // this.model = neoCortexUtils.createModel([0, 0, 0, 0, 1, 1, 1, 2, 2, 3], [10, 1], 6);
     this.generateColoursFromOverlap(this.model);
     this.generateColoursForSynPermanences(this.model);
     this.createChart();
   }
+
 
   createChart() {
 
@@ -191,6 +198,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
         for (let j = 0; j < model.areas[areaIndx].minicolumns[i].length; j++) {
           for (let cellIndx = 0; cellIndx < model.areas[areaIndx].minicolumns[i][j].cells.length; cellIndx++) {
 
+            this.model.areas[this.areaIndex].minicolumns[this.miniColumnXDimension][this.miniColumnZDimension].overlap = parseFloat(this.newOverlapValue);
+
             this.overlap.push(model.areas[areaIndx].minicolumns[i][j].overlap);
             this.permanence.push(model.settings.defaultPermanenceValue);
             this.xNeurons.push(i * env.cellXRatio + xOffset);
@@ -230,23 +239,36 @@ export class AinetComponent implements OnInit, AfterViewInit {
     timeOut: 3000,
   };
 
-  updateOverlapV() {
+  getViewModelValue(param : string) {
+    return this[param];
+  }
 
+  setViewModelValue(event: any, param : string) {
+    this[param] = event.target.value;
+  }
+
+  updateOverlapV() {
+    this.xNeurons = [];
+    this.yNeurons = [];
+    this.zNeurons = [];
+    this.overlap = [];
+    this.xSynapse = [];
+    this.ySynapse = [];
+    this.zSynapse = [];
+    this.synapseColours = [];
+    this.permanence = [];
+    this.neuronsColours = [];
     /* this.model.areas[0].minicolumns[0][1].overlap += 0.1;
     this.model.areas[0].minicolumns[0][3].overlap += 0.2; */
 
-    this.model.areas[0].minicolumns[0][0].overlap += 0.1;
-
-    //this.setOverlap(this.model, );
-    // model -> overlaps -> this.colours
-    
+    this.fillChart(this.model);
     this.generateColoursFromOverlap(this.model);
-    console.log("update")
+    this.generateColoursForSynPermanences(this.model);
     const updateNeurons = {
-      x: this.xNeurons,
+       x: this.xNeurons,
       y: this.yNeurons,
-      z: this.zNeurons,
-      text: this.overlap,
+      z: this.zNeurons, 
+     // text: this.overlap,
       name: 'Neuron',
       mode: 'markers',
       marker: {
@@ -265,7 +287,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       name: 'Synapse',
       x: this.xNeurons,
       y: this.yNeurons,
-      z: this.zNeurons,
+      z: this.zNeurons,  
       text: this.permanence,
       opacity: env.opacityOfSynapse,
       line: {
@@ -276,7 +298,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
     let graphDOM = document.getElementById('graph');
 
-    Plotlyjs.newPlot(graphDOM, [updateNeurons, updateSynapses], this.neuralChartLayout, this.neuralChartConfig);
+   Plotlyjs.newPlot(graphDOM, [updateNeurons, updateSynapses], this.neuralChartLayout, this.neuralChartConfig);
+   // Plotlyjs.restyle(graphDOM, updateNeurons, this.neuralChartLayout, this.neuralChartConfig);
   }
 
   updatePermanenceV() {
