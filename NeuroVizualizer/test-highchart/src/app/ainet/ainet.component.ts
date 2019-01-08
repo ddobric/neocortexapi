@@ -160,6 +160,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       title: '3DChart',
       displaylogo: false,
       showLink: false,
+      responsive: true
       // showlegend: false
     };
 
@@ -237,14 +238,6 @@ export class AinetComponent implements OnInit, AfterViewInit {
     position: ["top", "right"],
     timeOut: 3000,
   };
-
-  getViewModelValue(param : string) {
-    return this[param];
-  }
-
-  setViewModelValue(event: any, param : string) {
-    this[param] = event.target.value;
-  }
 
   updateOverlapV(selectAreaIndex: any, miniColumnXDimension: any, miniColumnZDimension: any, newOverlapValue: any) {
     this.selectAreaIndex = selectAreaIndex;
@@ -325,16 +318,5 @@ export class AinetComponent implements OnInit, AfterViewInit {
       this.synapseColours.push("hsl(" + H + ", 100%, 50%)");
     }
 
-  }
-
-  setOverlap(model: NeoCortexModel, areaIndx: number, miniColIndx: number) {
-
-    //this.overlap[]
-    // for (var ai = 0; ai < model.areas.length; ai++) {
-    //   for (let i = 0; i < model.areas[ai].minicolumns.length; i++) {
-    //     this.overlap.push(this.model.areas[ai].minicolumns[i][i].overlap)   ;    
-
-    //   }
-    // }
   }
 }
