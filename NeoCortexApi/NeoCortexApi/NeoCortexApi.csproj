@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <PackageReference Include="ILLink.Tasks" Version="0.1.4-preview-906439" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
    
   </ItemGroup>
 

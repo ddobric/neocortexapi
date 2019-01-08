@@ -175,7 +175,7 @@ namespace NeoCortexApi
             if (inputVector.Length != c.NumInputs)
             {
                 throw new ArgumentException(
-                        "Input array must be same size as the defined number of inputs: From Params: " + c.NumInputs+
+                        "Input array must be same size as the defined number of inputs: From Params: " + c.NumInputs +
                         ", From Input Vector: " + inputVector.Length);
             }
 
@@ -183,6 +183,11 @@ namespace NeoCortexApi
 
             // Gets overlap ove every single column.
             var overlaps = calculateOverlap(c, inputVector);
+
+            //overlapActive = calculateOverlap(activeInput)
+            //overlapPredictedActive = calculateOverlap(predictedActiveInput)
+            //totalOverlap = overlapActive * weightActive + overlapPredictedActive * weightPredictedActive
+
             c.Overlaps = overlaps;
 
             double[] boostedOverlaps;
@@ -1021,7 +1026,7 @@ namespace NeoCortexApi
          * @return  indices of the winning columns
          */
         public virtual int[] inhibitColumnsLocal(Connections c, double[] overlaps, double density)
-        { 
+        {
             double winnerDelta = ArrayUtils.max(overlaps) / 1000.0d;
             if (winnerDelta == 0)
             {
