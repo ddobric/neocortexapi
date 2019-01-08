@@ -1,27 +1,28 @@
 <h1>
   Connectionist System
 </h1>
- 
+
 
 <form #formCtrl="ngForm">
-  
+
   <div class="form-row">
     <div class="form-group col-md-2">
-      <input class="form-control" type="text" placeholder="selectAreaIndex" #selectAreaIndex>
+      <input class="form-control" type="text" placeholder="Select area index" #selectAreaIndex>
     </div>
     <div class="form-group col-md-2">
-      <input class="form-control" type="text" placeholder="miniColumnXDimension" #miniColumnXDimension>
+      <input class="form-control" type="text" placeholder="Mini column x dimension" #miniColumnXDimension>
     </div>
     <div class="form-group col-md-2">
-      <input class="form-control" type="text" placeholder="miniColumnZDimension" #miniColumnZDimension>
+      <input class="form-control" type="text" placeholder="Mini column z dimension" #miniColumnZDimension>
     </div>
     <div class="form-group col-md-2">
-      <input class="form-control" type="text" placeholder="newOverlapValue" #newOverlapValue>
+      <input class="form-control" type="text" placeholder="New overlap value" #newOverlapValue>
+    </div>
+    <div class="form-group col-md-2">
+      <button class="btn btn-danger" (click)='updateOverlapV(selectAreaIndex.value, miniColumnXDimension.value,miniColumnZDimension.value,newOverlapValue.value)'>Update
+        overlap to a mini column</button>
     </div>
 
-    <button class="btn btn-danger" (click)='updateOverlapV(selectAreaIndex.value, miniColumnXDimension.value,miniColumnZDimension.value,newOverlapValue.value)'>Update
-      Overlap for a miniColumn</button>
-      
   </div>
   <!-- <button class="btn btn-success" (click)='updatePermanenceV()'>Update PermanenceV</button>
  -->
