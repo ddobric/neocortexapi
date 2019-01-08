@@ -34,9 +34,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
   neuralChartLayout: any;
   neuralChartConfig: any;
 
-  areaIndex : number = 0;
-  miniColumnXDimension : number = 0; 
-  miniColumnZDimension : number = 0;
+  selectAreaIndex : any = 0;
+  miniColumnXDimension : any = 0; 
+  miniColumnZDimension : any = 0;
   newOverlapValue : any = 0;
 
   constructor(private _service: NotificationsService) {
@@ -55,7 +55,6 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.generateColoursForSynPermanences(this.model);
     this.createChart();
   }
-
 
   createChart() {
 
@@ -120,7 +119,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
         y: 1
       },
       width: 1500,
-      height: 600,
+      height: 500,
       margin: {
         l: 0,
         r: 0,
@@ -198,7 +197,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
         for (let j = 0; j < model.areas[areaIndx].minicolumns[i].length; j++) {
           for (let cellIndx = 0; cellIndx < model.areas[areaIndx].minicolumns[i][j].cells.length; cellIndx++) {
 
-            this.model.areas[this.areaIndex].minicolumns[this.miniColumnXDimension][this.miniColumnZDimension].overlap = parseFloat(this.newOverlapValue);
+            this.model.areas[this.selectAreaIndex].minicolumns[this.miniColumnXDimension][this.miniColumnZDimension].overlap = parseFloat(this.newOverlapValue);
 
             this.overlap.push(model.areas[areaIndx].minicolumns[i][j].overlap);
             this.permanence.push(model.settings.defaultPermanenceValue);
@@ -210,12 +209,12 @@ export class AinetComponent implements OnInit, AfterViewInit {
         }
       }
     }
-    console.log(this.overlap, "overlap Array");
+    /* console.log(this.overlap, "overlap Array");
     console.log(this.permanence, "permanence");
 
     console.log(this.xNeurons, "X Neurons");
     console.log(this.yNeurons, "Y Neurons");
-    console.log(this.zNeurons, "Z Neurons");
+    console.log(this.zNeurons, "Z Neurons"); */
   }
 
   displayError() {
@@ -247,7 +246,11 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this[param] = event.target.value;
   }
 
-  updateOverlapV() {
+  updateOverlapV(selectAreaIndex: any, miniColumnXDimension: any, miniColumnZDimension: any, newOverlapValue: any) {
+    this.selectAreaIndex = selectAreaIndex;
+    this.miniColumnXDimension = miniColumnXDimension;
+    this.miniColumnZDimension = miniColumnZDimension;
+    this.newOverlapValue = newOverlapValue;
     this.xNeurons = [];
     this.yNeurons = [];
     this.zNeurons = [];

@@ -1,7 +1,7 @@
-html, body {
+/* html, body {
     height: 100%;
     color: #00BFFF;
-  }
+  } */
   .chart {
     justify-content: center;
     align-items: center;
@@ -9,17 +9,19 @@ html, body {
     max-width: 100% !important;
     /*height: auto !important;*/
     /*height:100vh !important;*/
+    width: 100vw !important;
     position: absolute;
-    top: 0;
+    top: 20%;
+    /* top: 1 !important;
     bottom: 0;
-    
+     */
     /*background-color: rgb(145, 99, 99);*/
 }
-.js-plotly-plot .plotly .modebar {
+/* .js-plotly-plot .plotly .modebar {
   left: 50% !important;
   transform: translateX(-50%);
    
-}
-.form-control{
+} */
+/* .form-control{
   width: 300px;
-}
+} */
