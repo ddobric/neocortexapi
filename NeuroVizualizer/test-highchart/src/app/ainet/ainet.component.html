@@ -1,27 +1,40 @@
 <h1>
   Connectionist System
 </h1>
+
+
 <form #formCtrl="ngForm">
-<div class="container form-inline">
-  <!-- Plotly chart will be drawn inside this div -->
-    <div class="chart"  id="graph"></div>
-  <div calss="row form-group">
-      <div class="container col-sm-12">
-      <button  class="btn btn-warning"  (click)='updateOverlapV()'>Update OverlapV</button>
-      <button  class="btn btn-success"  (click)='updatePermanenceV()'>Update PermanenceV</button>
-      <input id="areaIndex" [value] = "getViewModelValue('areaIndex')" (blur)="setViewModelValue($event, 'areaIndex')"/>
-      <input id="miniColumnXDimension" [value] = "getViewModelValue('miniColumnXDimension')" (blur)="setViewModelValue($event, 'miniColumnXDimension')"/>
-      <input id="miniColumnZDimension" [value] = "getViewModelValue('miniColumnZDimension')" (blur)="setViewModelValue($event, 'miniColumnZDimension')"/>
-      <input id="newOverlapValue" [value] = "getViewModelValue('newOverlapValue')" (blur)="setViewModelValue($event, 'newOverlapValue')"/>
-      </div>
+
+  <div class="form-row">
+    <div class="form-group col-md-2">
+      <input class="form-control" type="text" placeholder="Select area index" #selectAreaIndex>
+    </div>
+    <div class="form-group col-md-2">
+      <input class="form-control" type="text" placeholder="Mini column x dimension" #miniColumnXDimension>
+    </div>
+    <div class="form-group col-md-2">
+      <input class="form-control" type="text" placeholder="Mini column z dimension" #miniColumnZDimension>
+    </div>
+    <div class="form-group col-md-2">
+      <input class="form-control" type="text" placeholder="New overlap value" #newOverlapValue>
+    </div>
+    <div class="form-group col-md-2">
+      <button class="btn btn-danger" (click)='updateOverlapV(selectAreaIndex.value, miniColumnXDimension.value,miniColumnZDimension.value,newOverlapValue.value)'>Update
+        overlap to a mini column</button>
+    </div>
+
   </div>
-</div>
+  <!-- <button class="btn btn-success" (click)='updatePermanenceV()'>Update PermanenceV</button>
+ -->
 </form>
 
-
+<!-- Plotly chart will be drawn inside this div -->
+<div class="chart" id="graph"></div>
 <simple-notifications [options]="options"></simple-notifications>
 
 
-
-
-
+<!--  <button  class="btn btn-warning"  (click)='updateOverlapV()'>Update OverlapV</button>
+      <input id="areaIndex" [value] = "getViewModelValue('areaIndex')" (blur)="setViewModelValue($event, 'areaIndex')"/>
+      <input id="miniColumnXDimension" [value] = "getViewModelValue('miniColumnXDimension')" (blur)="setViewModelValue($event, 'miniColumnXDimension')"/>
+      <input id="miniColumnZDimension" [value] = "getViewModelValue('miniColumnZDimension')" (blur)="setViewModelValue($event, 'miniColumnZDimension')"/>
+      <input id="newOverlapValue" [value] = "getViewModelValue('newOverlapValue')" (blur)="setViewModelValue($event, 'newOverlapValue')"/> -->
