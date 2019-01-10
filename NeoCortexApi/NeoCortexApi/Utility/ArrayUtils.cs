@@ -5,6 +5,7 @@ using System.Text;
 using System.Linq;
 using System.Runtime.InteropServices;
 
+
 namespace NeoCortexApi.Utility
 {
 
@@ -2741,5 +2742,29 @@ namespace NeoCortexApi.Utility
         //    }
         //    return result;
         //}
+
+        public static bool AreEqual<TKey, TValue>(IDictionary<TKey, TValue> dict1, IDictionary<TKey, TValue> dict2) 
+        {          
+            if (dict1.Count != dict2.Count)
+                return false;
+
+            foreach (var pair in dict1)
+            {
+                TValue value;
+                if (dict2.TryGetValue(pair.Key, out value))
+                {
+                    if (!EqualityComparer<TValue>.Default.Equals(pair.Value, value))
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }
 }

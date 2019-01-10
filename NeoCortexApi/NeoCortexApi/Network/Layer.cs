@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using NeoCortexApi.Entities;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -105,7 +107,163 @@ namespace NeoCortexApi
  * 
  * @author David Ray
  */
-    public class Layer
+    public class Layer<T>
     {
+        private ILogger logger;
+
+        private bool isClosed;
+
+        public Network ParentNetwork { get; set; }
+        public string Name { get; private set; }
+
+        protected Parameters parameters;
+
+        protected SensorParameters sensorParams;
+
+        protected Connections connections;
+
+        public void setNetwork(Network network)
+        {
+            this.ParentNetwork = network;
+        }
+
+        internal ICheckPointOp<byte[]> delegateCheckPointCall()
+        {
+            if (ParentNetwork != null)
+            {
+                return ParentNetwork.getCheckPointOperator();
+            }
+            return null;
+        }
+
+        public Layer<T> close()
+        {
+            if (this.isClosed)
+            {
+                logger.LogWarning("Close called on Layer " + this.Name + " which is already closed.");
+                return this;
+            }
+
+            parameters.apply(connections);
+
+            if (sensor != null)
+            {
+                encoder = encoder == null ? sensor.getEncoder() : encoder;
+                sensor.initEncoder(params);
+                connections.setNumInputs(encoder.getWidth());
+                if (parentNetwork != null && parentRegion != null)
+                {
+                    parentNetwork.setSensorRegion(parentRegion);
+
+                    Object supplier;
+                    if ((supplier = sensor.getSensorParams().get("ONSUB")) != null)
+                    {
+                        if (supplier instanceof PublisherSupplier) {
+                            ((PublisherSupplier)supplier).setNetwork(parentNetwork);
+                            parentNetwork.setPublisher(((PublisherSupplier)supplier).get());
+                        }
+                    }
+                }
+            }
+
+            // Create Encoder hierarchy from definitions & auto create classifiers
+            // if specified
+            if (encoder != null)
+            {
+                if (encoder.getEncoders(encoder) == null || encoder.getEncoders(encoder).size() < 1)
+                {
+                    if (params.get(KEY.FIELD_ENCODING_MAP) == null || ((Map<String, Map<String, Object>>)params.get(KEY.FIELD_ENCODING_MAP)).size() < 1) {
+                        LOGGER.error("No field encoding map found for specified MultiEncoder");
+                        throw new IllegalStateException("No field encoding map found for specified MultiEncoder");
+                    }
+
+                    encoder.addMultipleEncoders((Map<String, Map<String, Object>>)params.get(KEY.FIELD_ENCODING_MAP));
+                }
+
+                // Make the declared column dimensions match the actual input
+                // dimensions retrieved from the encoder
+                int product = 0, inputLength = 0, columnLength = 0;
+                if (((inputLength = ((int[])params.get(KEY.INPUT_DIMENSIONS)).length) != (columnLength = ((int[])params.get(KEY.COLUMN_DIMENSIONS)).length))
+                            || encoder.getWidth() != (product = ArrayUtils.product((int[])params.get(KEY.INPUT_DIMENSIONS)))) {
+
+                    LOGGER.warn("The number of Input Dimensions (" + inputLength + ") != number of Column Dimensions " + "(" + columnLength + ") --OR-- Encoder width (" + encoder.getWidth()
+                                    + ") != product of dimensions (" + product + ") -- now attempting to fix it.");
+
+                    int[] inferredDims = inferInputDimensions(encoder.getWidth(), columnLength);
+                    if (inferredDims != null && inferredDims.length > 0 && encoder.getWidth() == ArrayUtils.product(inferredDims))
+                    {
+                        LOGGER.info("Input dimension fix successful!");
+                        LOGGER.info("Using calculated input dimensions: " + Arrays.toString(inferredDims));
+                    }
+
+                params.setInputDimensions(inferredDims);
+                    connections.setInputDimensions(inferredDims);
+                }
+            }
+
+            autoCreateClassifiers = autoCreateClassifiers != null && (autoCreateClassifiers | (Boolean)params.get(KEY.AUTO_CLASSIFY));
+
+            if (autoCreateClassifiers != null && autoCreateClassifiers.booleanValue() && (factory.inference.getClassifiers() == null || factory.inference.getClassifiers().size() < 1))
+            {
+                factory.inference.classifiers(makeClassifiers(encoder == null ? parentNetwork.getEncoder() : encoder));
+
+                // Note classifier addition by setting content mask
+                algo_content_mask |= CLA_CLASSIFIER;
+            }
+
+            // We must adjust this Layer's inputDimensions to the size of the input
+            // received from the previous Region's output vector.
+            if (parentRegion != null && parentRegion.getUpstreamRegion() != null)
+            {
+                int[] upstreamDims = new int[] { calculateInputWidth() };
+            params.setInputDimensions(upstreamDims);
+                connections.setInputDimensions(upstreamDims);
+            }
+            else if (parentRegion != null && parentNetwork != null
+                  && parentRegion.equals(parentNetwork.getSensorRegion()) && encoder == null && spatialPooler != null)
+            {
+                Layer <?> curr = this;
+                while ((curr = curr.getPrevious()) != null)
+                {
+                    if (curr.getEncoder() != null)
+                    {
+                        int[] dims = (int[])curr.getParameters().get(KEY.INPUT_DIMENSIONS);
+                    params.setInputDimensions(dims);
+                        connections.setInputDimensions(dims);
+                    }
+                }
+            }
+
+            // Let the SpatialPooler initialize the matrix with its requirements
+            if (spatialPooler != null)
+            {
+                // The exact dimensions don't have to be the same but the number of
+                // dimensions do!
+                int inputLength, columnLength = 0;
+                if ((inputLength = ((int[])params.get(KEY.INPUT_DIMENSIONS)).length) !=
+                     (columnLength = ((int[])params.get(KEY.COLUMN_DIMENSIONS)).length)) {
+
+                    LOGGER.error("The number of Input Dimensions (" + inputLength + ") is not same as the number of Column Dimensions " +
+                        "(" + columnLength + ") in Parameters! - SpatialPooler not initialized!");
+
+                    return this;
+                }
+                spatialPooler.init(connections);
+            }
+
+            // Let the TemporalMemory initialize the matrix with its requirements
+            if (temporalMemory != null)
+            {
+                TemporalMemory.init(connections);
+            }
+
+            this.numColumns = connections.getNumColumns();
+
+            this.isClosed = true;
+
+            LOGGER.debug("Layer " + name + " content initialize mask = " + Integer.toBinaryString(algo_content_mask));
+
+            return this;
+        }
     }
 }

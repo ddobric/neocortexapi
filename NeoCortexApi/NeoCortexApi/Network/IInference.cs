@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace NeoCortexApi.Network
+namespace NeoCortexApi
 {
     public interface IInference
     {
