@@ -422,7 +422,7 @@ namespace NeoCortexApi
                 throw new InvalidOperationException("Nothing to start - 0 regions");
             }
 
-            Region tail = regions.get(0);
+            Region tail = regions[0];
             Region upstream = tail;
             while ((upstream = upstream.getUpstreamRegion()) != null)
             {

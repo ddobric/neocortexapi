@@ -8,12 +8,12 @@ using NeoCortexApi.Utility;
 
 namespace NeoCortexApi.Sensors
 {
-    public class HTMSensor<T> : ISensor<T>, IEquatable<HtmSensor<T>>
+    public class HTMSensor<T> : ISensor<T>, IEquatable<HTMSensor<T>>
     {
         private bool encodersInitted;
         private ISensor<T> sensor;
         private SensorParameters sensorParams;
-        //private Header header;
+        private Header header;
         private Parameters localParameters;
         //private MultiEncoder encoder;
         private List<int[]> outputStream;
@@ -24,15 +24,32 @@ namespace NeoCortexApi.Sensors
         private Dictionary<String, object> indexFieldMap = new Dictionary<string, object>();
 
 
-    
+        /**
+      * <p>
+      * Main method by which this Sensor's information is retrieved.
+      * </p><p>
+      * This method returns a subclass of Stream ({@link MetaStream})
+      * capable of returning a flag indicating whether a terminal operation
+      * has been performed on the stream (i.e. see {@link MetaStream#isTerminal()});
+      * in addition the MetaStream returned can return meta information (see
+      * {@link MetaStream#getMeta()}.
+      * </p>
+      * @return  a {@link MetaStream} instance.
+      */
+   
+        public <K> MetaStream<K> getInputStream()
+        {
+            return (MetaStream<K>)sensor.getInputStream();
+        }
+
         public HTMSensor(ISensor<T> sensor)
         {
             this.sensor = sensor;
             this.sensorParams = sensor.getSensorParams();
             header = new Header(sensor.getInputStream().getMeta());
-            if (header == null || header.size() < 3)
+            if (header == null || header.Size < 3)
             {
-                throw new IllegalStateException("Header must always be present; and have 3 lines.");
+                throw new InvalidOperationException("Header must always be present; and have 3 lines.");
             }
             createEncoder();
         }

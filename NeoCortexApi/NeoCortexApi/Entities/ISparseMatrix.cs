@@ -4,11 +4,12 @@ using System.Text;
 
 namespace NeoCortexApi.Entities
 {
+
     public interface ISparseMatrix 
     {
 
     }
-
+    
     public interface ISparseMatrix<T> : ISparseMatrix, IFlatMatrix<T>
     {
         /**

@@ -50,7 +50,7 @@ namespace NeoCortexApi
     * @return
     */
         public List<string> Flags { get { return sensorFlags; } }
-      
+
         /**
          * Returns a flag indicating whether any watched column
          * has changed data.
@@ -58,7 +58,7 @@ namespace NeoCortexApi
          * @return
          */
         public bool IsReset { get { return isChanged; } }
-       
+
 
         /**
          * Returns a flag indicating whether the current input state
@@ -67,23 +67,27 @@ namespace NeoCortexApi
          * @return
          */
         public bool IsLearn { get { return IsLearn; } }
-      
 
-        public Header(List<List<object>> input)
+
+        //public Header(List<List<object>> input)
+        public Header(List<string> fieldNames, List<FieldMetaType> fieldMeta, List<string> sensorFlags)
         {
-            if (input.Count != 3)
-            {
-                throw new ArgumentException("Input did not have 3 rows");
-            }
-            this.rawTupleList = input;
-            this.fieldNames = input[0].Cast<string>().ToList();
-            this.fieldMeta = input[1].Cast<FieldMetaType>().ToList();
-            this.sensorFlags = input[2].Cast<string>().ToList();
+            this.fieldNames = fieldNames;
+            this.fieldMeta = fieldMeta;
+            this.sensorFlags = sensorFlags;
+            //if (input.Count != 3)
+            //{
+            //    throw new ArgumentException("Input did not have 3 rows");
+            //}
+            //this.rawTupleList = input;
+            //this.fieldNames = input[0].Cast<string>().ToList();
+            //this.fieldMeta = input[1].Cast<FieldMetaType>().ToList();
+            //this.sensorFlags = input[2].Cast<string>().ToList();
 
             initIndexes();
         }
 
-      
+
         /**
    * Initializes the indexes of {@link SensorFlags} types to aid
    * in line processing.
@@ -112,7 +116,7 @@ namespace NeoCortexApi
             }
 
             // Add + 1 to each to offset for Sensor insertion of sequence number in all row headers.
-            resetIndexes = rList.Select(i=>i+1).ToArray();
+            resetIndexes = rList.Select(i => i + 1).ToArray();
             seqIndexes = sList.Select(i => i + 1).ToArray();
             categoryIndexes = cList.Select(i => i + 1).ToArray(); ;
             tsIndexes = tList.Select(i => i + 1).ToArray();

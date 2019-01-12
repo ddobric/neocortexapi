@@ -5,6 +5,7 @@ using System.Linq;
 
 namespace NeoCortexApi.Utility
 {
+    [Serializable]
     public class Topology : Coordinator //implements Serializable
     {
         /** keep it simple */

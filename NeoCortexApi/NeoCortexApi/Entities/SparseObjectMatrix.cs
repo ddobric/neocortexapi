@@ -16,6 +16,7 @@ namespace NeoCortexApi.Entities
    *
    * @param <T>
    */
+   [Serializable]
     public class SparseObjectMatrix<T> : AbstractSparseMatrix<T>, IEquatable<T> where T : class
     {
         /** keep it simple */

@@ -18,6 +18,7 @@ namespace NeoCortexApi.Entities
  * @param <T>
  */
 
+    
     public interface IFlatMatrix<T> : IMatrix<T> {
 
         T get(int index);
