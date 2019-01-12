@@ -62,32 +62,38 @@ namespace UnitTestsProject
 
             var settings = new JsonSerializerSettings { ContractResolver = new ContractResolver(), Formatting = Formatting.Indented };
 
-            var json = JsonConvert.SerializeObject(mem1, settings);
+            var jsonMem = JsonConvert.SerializeObject(mem1, settings);
 
-            var mem2 = JsonConvert.DeserializeObject<Connections>(json, settings);
-        
+            var mem2 = JsonConvert.DeserializeObject<Connections>(jsonMem, settings);
+
+            sp.init(mem1);
+
+            var jsonSp = JsonConvert.SerializeObject(sp, settings);
+
+            var sp2 = JsonConvert.DeserializeObject<SpatialPooler>(jsonSp, settings);
+
             #region Binary Serialization DOES NOT WORK
 
-          /*
-            MemoryStream ms = new MemoryStream();
+            /*
+              MemoryStream ms = new MemoryStream();
 
-            // Construct a BinaryFormatter and use it to serialize the data to the stream.
-            BinaryFormatter formatter = new BinaryFormatter();
-            try
-            {
-                Random x = new Random(1);
-                formatter.Serialize(ms, x);
-            }
-            catch (SerializationException e)
-            {
-                Console.WriteLine("Failed to serialize. Reason: " + e.Message);
-                throw;
-            }
+              // Construct a BinaryFormatter and use it to serialize the data to the stream.
+              BinaryFormatter formatter = new BinaryFormatter();
+              try
+              {
+                  Random x = new Random(1);
+                  formatter.Serialize(ms, x);
+              }
+              catch (SerializationException e)
+              {
+                  Console.WriteLine("Failed to serialize. Reason: " + e.Message);
+                  throw;
+              }
 
-            ms.Seek(0, SeekOrigin.Begin);
+              ms.Seek(0, SeekOrigin.Begin);
 
-            Connections mem2 = (Connections)formatter.Deserialize(ms);
-            */
+              Connections mem2 = (Connections)formatter.Deserialize(ms);
+              */
             #endregion
 
             sp.init(mem1);
