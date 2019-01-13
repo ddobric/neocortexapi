@@ -19,32 +19,12 @@
     <Compile Remove="Encoders\EncoderBuilder.cs" />
     <Compile Remove="Encoders\ScalarEncoder.cs" />
     <Compile Remove="Network\Header.cs" />
-    <Compile Remove="Network\ICheckPointOP.cs" />
-    <Compile Remove="Network\IInference.cs" />
-    <Compile Remove="Network\Layer.cs" />
-    <Compile Remove="Network\Network.cs" />
-    <Compile Remove="Network\Region.cs" />
-    <Compile Remove="Network\SensorFlags.cs" />
-    <Compile Remove="Network\SensorParameters.cs" />
-    <Compile Remove="Sensors\FileSensor.cs" />
-    <Compile Remove="Sensors\HtmSensor.cs" />
-    <Compile Remove="Sensors\ISensor.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="Encoders\EncoderBuilder.cs" />
     <None Include="Encoders\ScalarEncoder.cs" />
     <None Include="Network\Header.cs" />
-    <None Include="Network\ICheckPointOP.cs" />
-    <None Include="Network\IInference.cs" />
-    <None Include="Network\Layer.cs" />
-    <None Include="Network\Network.cs" />
-    <None Include="Network\Region.cs" />
-    <None Include="Network\SensorFlags.cs" />
-    <None Include="Network\SensorParameters.cs" />
-    <None Include="Sensors\FileSensor.cs" />
-    <None Include="Sensors\HtmSensor.cs" />
-    <None Include="Sensors\ISensor.cs" />
   </ItemGroup>
 
   <ItemGroup>

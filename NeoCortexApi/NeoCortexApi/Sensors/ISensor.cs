@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NeoCortexApi.Sensors
 {
-    public interface ISensor<T>
+    public interface ISensor<T> : IHtmModule
     {
      
 

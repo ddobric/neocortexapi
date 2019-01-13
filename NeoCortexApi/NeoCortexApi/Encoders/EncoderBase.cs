@@ -8,7 +8,7 @@ using System.Text;
 
 namespace NeoCortexApi.Encoders
 {
-    public class EncoderBase
+    public class EncoderBase : IHtmModule
     {
 
     }

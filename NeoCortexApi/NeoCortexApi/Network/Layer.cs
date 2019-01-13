@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using NeoCortexApi.Entities;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace NeoCortexApi
 {
@@ -109,6 +111,9 @@ namespace NeoCortexApi
  */
     public class Layer<T>
     {
+        #region Private Fields
+
+
         private ILogger logger;
 
         private bool isClosed;
@@ -122,9 +127,142 @@ namespace NeoCortexApi
 
         protected Connections connections;
 
+        protected int numColumns;
+
+        protected Network parentNetwork;
+        protected Region parentRegion;
+
+
+
+        protected HTMSensor<?> sensor;
+        protected MultiEncoder encoder;
+        protected SpatialPooler spatialPooler;
+        protected TemporalMemory temporalMemory;
+        private Boolean autoCreateClassifiers;
+        private Anomaly anomalyComputer;
+
+        private readonly ConcurrentQueue<IObserver<IInference>> subscribers = new ConcurrentQueue<IObserver<IInference>>();
+        private readonly PublishSubject<T> publisher = null;
+        private readonly IObservable<IInference> userObservable;
+        private readonly Subscription subscription;
+
+        private readonly IInference currentInference;
+
+        //FunctionFactory factory;
+
+        /** Used to track and document the # of records processed */
+        private int recordNum = -1;
+        /** Keeps track of number of records to skip on restart */
+        private int skip = -1;
+
+        private String name;
+
+
+        private volatile bool isHalted;
+        private volatile bool isPostSerialized;
+        protected volatile bool isLearn = true;
+
+        private Layer<IInference> next;
+        private Layer<IInference> previous;
+
+        private readonly List<IObserver<IInference>> observers = new List<IObserver<IInference>>();
+        private readonly ICheckPointOp<T> checkPointOp;
+        private readonly List<IObserver<byte[]>> checkPointOpObservers = new List<IObserver<byte[]>>();
+
+        #endregion
         public void setNetwork(Network network)
         {
             this.ParentNetwork = network;
+        }
+
+
+        /**
+         * Creates a new {@code Layer} initialized with the specified algorithmic
+         * components.
+         * 
+         * @param params                    A {@link Parameters} object containing configurations for a
+         *                                  SpatialPooler, TemporalMemory, and Encoder (all or none may be used).
+         * @param e                         (optional) The Network API only uses a {@link MultiEncoder} at
+         *                                  the top level because of its ability to delegate to child encoders.
+         * @param sp                        (optional) {@link SpatialPooler}
+         * @param tm                        (optional) {@link TemporalMemory}
+         * @param autoCreateClassifiers     (optional) Indicates that the {@link Parameters} object
+         *                                  contains the configurations necessary to create the required encoders.
+         * @param a                         (optional) An {@link Anomaly} computer.
+         */
+        public Layer(Parameters parameters, IHtmModule module)
+        {
+
+        }
+
+        public Layer(Parameters parameters, ICollection<IHtmModule> modules)
+        //MultiEncoder e = null, SpatialPooler sp = null, TemporalMemory tm = null, Boolean autoCreateClassifiers = null, Anomaly a = null)
+        {
+            // Make sure we have a valid parameters object
+            if (parameters == null || modules == null || modules.Count == 0) {
+                throw new ArgumentException("No parameters specified.");
+            }
+
+            var mulEncoder = modules.FirstOrDefault(m=>m.GetType() == typeof(MultiEncoder));
+            // Check to see if the Parameters include the encoder configuration.
+            if (parameters[KEY.FIELD_ENCODING_MAP] == null && modules != null) {
+                throw new ArgumentException("The passed in Parameters must contain a field encoding map " +
+                    "specified by org.numenta.nupic.Parameters.KEY.FIELD_ENCODING_MAP");
+            }
+
+            this.parameters = parameters;
+            this.encoder = e;
+            this.spatialPooler = sp;
+            this.temporalMemory = tm;
+            this.autoCreateClassifiers = autoCreateClassifiers;
+            this.anomalyComputer = a;
+
+            connections = new Connections();
+            //factory = new FunctionFactory();
+
+            observableDispatch = createDispatchMap();
+
+            initializeMask();
+
+           
+                logger?.LogDebug("Layer successfully created containing: {}{}{}{}{}",
+                    (encoder == null ? "" : "MultiEncoder,"),
+                    (spatialPooler == null ? "" : "SpatialPooler,"),
+                    (temporalMemory == null ? "" : "TemporalMemory,"),
+                    (autoCreateClassifiers == null ? "" : "Auto creating Classifiers for each input field."),
+                    (anomalyComputer == null ? "" : "Anomaly"));
+      
+        }
+
+
+        /**
+      * Processes a single element, sending the specified input up the configured
+      * chain of algorithms or components within this {@code Layer}; resulting in
+      * any {@link Subscriber}s or {@link Observer}s being notified of results
+      * corresponding to the specified input (unless a {@link SpatialPooler}
+      * "primer delay" has been configured).
+      * 
+      * The first input to the Layer invokes a method to resolve the transformer
+      * at the bottom of the input chain, therefore the "type" (&lt;T&gt;) of the
+      * input cannot be changed once this method is called for the first time.
+      * 
+      * @param t     the input object who's type is generic.
+      */
+        public void Compute(T t)
+        {
+            if (!isClosed)
+            {
+                close();
+            }
+
+            increment();
+
+            if (!dispatchCompleted())
+            {
+                completeDispatch(t);
+            }
+
+            publisher.onNext(t);
         }
 
         internal ICheckPointOp<byte[]> delegateCheckPointCall()
@@ -149,7 +287,7 @@ namespace NeoCortexApi
             if (sensor != null)
             {
                 encoder = encoder == null ? sensor.getEncoder() : encoder;
-                sensor.initEncoder(params);
+                sensor.initEncoder(this.parameters);
                 connections.setNumInputs(encoder.getWidth());
                 if (parentNetwork != null && parentRegion != null)
                 {
@@ -172,19 +310,20 @@ namespace NeoCortexApi
             {
                 if (encoder.getEncoders(encoder) == null || encoder.getEncoders(encoder).size() < 1)
                 {
-                    if (params.get(KEY.FIELD_ENCODING_MAP) == null || ((Map<String, Map<String, Object>>)params.get(KEY.FIELD_ENCODING_MAP)).size() < 1) {
+                    if (this.parameters.get(KEY.FIELD_ENCODING_MAP) == null || ((Map<String, Map<String, Object>>)params.get(KEY.FIELD_ENCODING_MAP)).size() < 1) {
                         LOGGER.error("No field encoding map found for specified MultiEncoder");
                         throw new IllegalStateException("No field encoding map found for specified MultiEncoder");
                     }
 
-                    encoder.addMultipleEncoders((Map<String, Map<String, Object>>)params.get(KEY.FIELD_ENCODING_MAP));
+                    encoder.addMultipleEncoders((Map<String, Map<String, Object>>)this.parameters[KEY.FIELD_ENCODING_MAP]);
                 }
 
                 // Make the declared column dimensions match the actual input
                 // dimensions retrieved from the encoder
                 int product = 0, inputLength = 0, columnLength = 0;
-                if (((inputLength = ((int[])params.get(KEY.INPUT_DIMENSIONS)).length) != (columnLength = ((int[])params.get(KEY.COLUMN_DIMENSIONS)).length))
-                            || encoder.getWidth() != (product = ArrayUtils.product((int[])params.get(KEY.INPUT_DIMENSIONS)))) {
+                if (((inputLength = ((int[])this.parameters[KEY.INPUT_DIMENSIONS]).length) != 
+                    (columnLength = ((int[])this.parameters[KEY.COLUMN_DIMENSIONS]).length))
+                            || encoder.getWidth() != (product = ArrayUtils.product((int[])this.parameters[KEY.INPUT_DIMENSIONS]))) {
 
                     LOGGER.warn("The number of Input Dimensions (" + inputLength + ") != number of Column Dimensions " + "(" + columnLength + ") --OR-- Encoder width (" + encoder.getWidth()
                                     + ") != product of dimensions (" + product + ") -- now attempting to fix it.");
@@ -201,7 +340,7 @@ namespace NeoCortexApi
                 }
             }
 
-            autoCreateClassifiers = autoCreateClassifiers != null && (autoCreateClassifiers | (Boolean)params.get(KEY.AUTO_CLASSIFY));
+            autoCreateClassifiers = autoCreateClassifiers != null && (autoCreateClassifiers | (Boolean)this.parameters[KEY.AUTO_CLASSIFY]);
 
             if (autoCreateClassifiers != null && autoCreateClassifiers.booleanValue() && (factory.inference.getClassifiers() == null || factory.inference.getClassifiers().size() < 1))
             {
@@ -222,13 +361,13 @@ namespace NeoCortexApi
             else if (parentRegion != null && parentNetwork != null
                   && parentRegion.equals(parentNetwork.getSensorRegion()) && encoder == null && spatialPooler != null)
             {
-                Layer <?> curr = this;
+                Layer curr = this;
                 while ((curr = curr.getPrevious()) != null)
                 {
                     if (curr.getEncoder() != null)
                     {
-                        int[] dims = (int[])curr.getParameters().get(KEY.INPUT_DIMENSIONS);
-                    params.setInputDimensions(dims);
+                        int[] dims = (int[])curr.getParameters()[KEY.INPUT_DIMENSIONS];
+                    this.parameters.setInputDimensions(dims);
                         connections.setInputDimensions(dims);
                     }
                 }
@@ -240,8 +379,8 @@ namespace NeoCortexApi
                 // The exact dimensions don't have to be the same but the number of
                 // dimensions do!
                 int inputLength, columnLength = 0;
-                if ((inputLength = ((int[])params.get(KEY.INPUT_DIMENSIONS)).length) !=
-                     (columnLength = ((int[])params.get(KEY.COLUMN_DIMENSIONS)).length)) {
+                if ((inputLength = ((int[])this.parameters[KEY.INPUT_DIMENSIONS]).length) !=
+                     (columnLength = ((int[])this.parameters[KEY.COLUMN_DIMENSIONS]).length)) {
 
                     LOGGER.error("The number of Input Dimensions (" + inputLength + ") is not same as the number of Column Dimensions " +
                         "(" + columnLength + ") in Parameters! - SpatialPooler not initialized!");
