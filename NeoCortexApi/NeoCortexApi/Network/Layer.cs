@@ -5,6 +5,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using NeoCortexApi.Encoders;
 
 namespace NeoCortexApi
 {
@@ -137,9 +138,10 @@ namespace NeoCortexApi
         protected HTMSensor<?> sensor;
         protected MultiEncoder encoder;
         protected SpatialPooler spatialPooler;
-        protected TemporalMemory temporalMemory;
-        private Boolean autoCreateClassifiers;
+        protected TemporalMemory temporalMemory;        
         private Anomaly anomalyComputer;
+
+        private Boolean autoCreateClassifiers;
 
         private readonly ConcurrentQueue<IObserver<IInference>> subscribers = new ConcurrentQueue<IObserver<IInference>>();
         private readonly PublishSubject<T> publisher = null;
@@ -190,12 +192,12 @@ namespace NeoCortexApi
          *                                  contains the configurations necessary to create the required encoders.
          * @param a                         (optional) An {@link Anomaly} computer.
          */
-        public Layer(Parameters parameters, IHtmModule module)
+        public Layer(Parameters parameters, IHtmModule module, bool autoCreateClassifiers) : this(parameters, new List<IHtmModule> { module }, autoCreateClassifiers)
         {
 
         }
 
-        public Layer(Parameters parameters, ICollection<IHtmModule> modules)
+        public Layer(Parameters parameters, ICollection<IHtmModule> modules, bool autoCreateClassifiers)
         //MultiEncoder e = null, SpatialPooler sp = null, TemporalMemory tm = null, Boolean autoCreateClassifiers = null, Anomaly a = null)
         {
             // Make sure we have a valid parameters object
@@ -203,7 +205,7 @@ namespace NeoCortexApi
                 throw new ArgumentException("No parameters specified.");
             }
 
-            var mulEncoder = modules.FirstOrDefault(m=>m.GetType() == typeof(MultiEncoder));
+            var mulEncoder = modules.FirstOrDefault(m=>m.GetType() == typeof(Multiencoder));
             // Check to see if the Parameters include the encoder configuration.
             if (parameters[KEY.FIELD_ENCODING_MAP] == null && modules != null) {
                 throw new ArgumentException("The passed in Parameters must contain a field encoding map " +
@@ -211,11 +213,18 @@ namespace NeoCortexApi
             }
 
             this.parameters = parameters;
-            this.encoder = e;
-            this.spatialPooler = sp;
-            this.temporalMemory = tm;
+
+            foreach (var module in modules)
+            {
+
+            }
+
+            //this.encoder = e;
+            //this.spatialPooler = sp;
+            //this.temporalMemory = tm;
+            //this.anomalyComputer = a;
+
             this.autoCreateClassifiers = autoCreateClassifiers;
-            this.anomalyComputer = a;
 
             connections = new Connections();
             //factory = new FunctionFactory();
