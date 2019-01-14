@@ -138,10 +138,12 @@ namespace NeoCortexApi
         protected HTMSensor<?> sensor;
         protected MultiEncoder encoder;
         protected SpatialPooler spatialPooler;
-        protected TemporalMemory temporalMemory;        
+        protected TemporalMemory temporalMemory;
         private Anomaly anomalyComputer;
 
-        private Boolean autoCreateClassifiers;
+        private readonly List<IHtmModule> modules = new List<IHtmModule>();
+
+        private bool? autoCreateClassifiers;
 
         private readonly ConcurrentQueue<IObserver<IInference>> subscribers = new ConcurrentQueue<IObserver<IInference>>();
         private readonly PublishSubject<T> publisher = null;
@@ -172,11 +174,55 @@ namespace NeoCortexApi
         private readonly List<IObserver<byte[]>> checkPointOpObservers = new List<IObserver<byte[]>>();
 
         #endregion
-        public void setNetwork(Network network)
+
+        #region Properties
+
+        /// <summary>
+        /// Gets true if the HTM module of specified type in the list of modules.
+        /// </summary>
+        /// <typeparam name="TModule"></typeparam>
+        /// <returns></returns>
+        public bool HasModule<TModule>() where TModule : IHtmModule
         {
-            this.ParentNetwork = network;
+            return this.modules.FirstOrDefault(m => m.GetType() == typeof(TModule)) != null;
         }
 
+        /// <summary>
+        /// Gets list of modules of layer as descriptive text.
+        /// </summary>
+        private string LayerInfo
+        {
+            get
+            {
+                StringBuilder sb = new StringBuilder("Modules: ");
+
+                foreach (var item in this.modules)
+                {
+                    sb.Append(item.GetType().Name);
+                    sb.AppendLine();
+                }
+
+                return sb.ToString();
+            }
+        }
+
+        /**
+* Returns a flag indicating whether we've connected the first observable in
+* the sequence (which lazily does the input type of &lt;T&gt; to
+* {@link Inference} transformation) to the Observables connecting the rest
+* of the algorithm components.
+* 
+* @return flag indicating all observables connected. True if so, false if
+*         not
+*/
+        private bool DispatchCompleted
+        {
+            get
+            {
+                return observableDispatch == null;
+            }
+        }
+        #endregion
 
         /**
          * Creates a new {@code Layer} initialized with the specified algorithmic
@@ -192,31 +238,39 @@ namespace NeoCortexApi
          *                                  contains the configurations necessary to create the required encoders.
          * @param a                         (optional) An {@link Anomaly} computer.
          */
-        public Layer(Parameters parameters, IHtmModule module, bool autoCreateClassifiers) : this(parameters, new List<IHtmModule> { module }, autoCreateClassifiers)
+        public Layer(string name = null, Network network = null, Parameters parameters = null, IHtmModule module = null, bool autoCreateClassifiers = false) :
+            this(name, network, parameters, new List<IHtmModule> { module }, autoCreateClassifiers)
         {
 
         }
 
-        public Layer(Parameters parameters, ICollection<IHtmModule> modules, bool autoCreateClassifiers)
+        public Layer(string name = null, Network network = null, Parameters parameters = null, ICollection<IHtmModule> modules = null, bool? autoCreateClassifiers = null)
         //MultiEncoder e = null, SpatialPooler sp = null, TemporalMemory tm = null, Boolean autoCreateClassifiers = null, Anomaly a = null)
         {
+            if (name == null)
+                name = $"[Layer {DateTime.Now.Ticks}]";
+
             // Make sure we have a valid parameters object
-            if (parameters == null || modules == null || modules.Count == 0) {
+            if (parameters == null || modules == null || modules.Count == 0)
+            {
                 throw new ArgumentException("No parameters specified.");
             }
 
-            var mulEncoder = modules.FirstOrDefault(m=>m.GetType() == typeof(Multiencoder));
+            var mulEncoder = modules.FirstOrDefault(m => m.GetType() == typeof(Multiencoder));
             // Check to see if the Parameters include the encoder configuration.
-            if (parameters[KEY.FIELD_ENCODING_MAP] == null && modules != null) {
+            if (parameters[KEY.FIELD_ENCODING_MAP] == null && modules != null)
+            {
                 throw new ArgumentException("The passed in Parameters must contain a field encoding map " +
                     "specified by org.numenta.nupic.Parameters.KEY.FIELD_ENCODING_MAP");
             }
 
+            this.name = name;
             this.parameters = parameters;
+            this.parentNetwork = network;
 
             foreach (var module in modules)
             {
-
+                this.modules.Add(module);
             }
 
             //this.encoder = e;
@@ -231,17 +285,15 @@ namespace NeoCortexApi
 
             observableDispatch = createDispatchMap();
 
-            initializeMask();
+            //initializeMask();
 
-           
-                logger?.LogDebug("Layer successfully created containing: {}{}{}{}{}",
-                    (encoder == null ? "" : "MultiEncoder,"),
-                    (spatialPooler == null ? "" : "SpatialPooler,"),
-                    (temporalMemory == null ? "" : "TemporalMemory,"),
-                    (autoCreateClassifiers == null ? "" : "Auto creating Classifiers for each input field."),
-                    (anomalyComputer == null ? "" : "Anomaly"));
-      
+
+            logger?.LogDebug($"Layer successfully created containing: {LayerInfo}");
+
+            if (this.autoCreateClassifiers != null)
+                logger?.LogDebug("Auto creating Classifiers for each input field.");
         }
+
 
 
         /**
@@ -266,7 +318,7 @@ namespace NeoCortexApi
 
             increment();
 
-            if (!dispatchCompleted())
+            if (observableDispatch != null)
             {
                 completeDispatch(t);
             }
@@ -330,9 +382,10 @@ namespace NeoCortexApi
                 // Make the declared column dimensions match the actual input
                 // dimensions retrieved from the encoder
                 int product = 0, inputLength = 0, columnLength = 0;
-                if (((inputLength = ((int[])this.parameters[KEY.INPUT_DIMENSIONS]).length) != 
+                if (((inputLength = ((int[])this.parameters[KEY.INPUT_DIMENSIONS]).length) !=
                     (columnLength = ((int[])this.parameters[KEY.COLUMN_DIMENSIONS]).length))
-                            || encoder.getWidth() != (product = ArrayUtils.product((int[])this.parameters[KEY.INPUT_DIMENSIONS]))) {
+                            || encoder.getWidth() != (product = ArrayUtils.product((int[])this.parameters[KEY.INPUT_DIMENSIONS])))
+                {
 
                     LOGGER.warn("The number of Input Dimensions (" + inputLength + ") != number of Column Dimensions " + "(" + columnLength + ") --OR-- Encoder width (" + encoder.getWidth()
                                     + ") != product of dimensions (" + product + ") -- now attempting to fix it.");
@@ -376,7 +429,7 @@ namespace NeoCortexApi
                     if (curr.getEncoder() != null)
                     {
                         int[] dims = (int[])curr.getParameters()[KEY.INPUT_DIMENSIONS];
-                    this.parameters.setInputDimensions(dims);
+                        this.parameters.setInputDimensions(dims);
                         connections.setInputDimensions(dims);
                     }
                 }
@@ -389,7 +442,8 @@ namespace NeoCortexApi
                 // dimensions do!
                 int inputLength, columnLength = 0;
                 if ((inputLength = ((int[])this.parameters[KEY.INPUT_DIMENSIONS]).length) !=
-                     (columnLength = ((int[])this.parameters[KEY.COLUMN_DIMENSIONS]).length)) {
+                     (columnLength = ((int[])this.parameters[KEY.COLUMN_DIMENSIONS]).length))
+                {
 
                     LOGGER.error("The number of Input Dimensions (" + inputLength + ") is not same as the number of Column Dimensions " +
                         "(" + columnLength + ") in Parameters! - SpatialPooler not initialized!");
@@ -409,9 +463,21 @@ namespace NeoCortexApi
 
             this.isClosed = true;
 
-            LOGGER.debug("Layer " + name + " content initialize mask = " + Integer.toBinaryString(algo_content_mask));
+            this.logger?.LogDebug("Layer " + name + " content initialize mask = " + BitConverter.bin(algo_content_mask));
 
             return this;
         }
+
+        public void setNetwork(Network network)
+        {
+            this.ParentNetwork = network;
+        }
+
+        private IHtmModule GetModule<TModule>()
+        {
+            return this.modules.FirstOrDefault(m => m.GetType() == typeof(TModule));
+        }
+
     }
+}
 }
