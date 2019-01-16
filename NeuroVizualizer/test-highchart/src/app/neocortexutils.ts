@@ -13,21 +13,15 @@ export class neoCortexUtils {
    */
   public static createModel(areaLevels:number[], miniColDims:number[], numLayers:number): NeoCortexModel {
   
-    const numberOfAreas = [];
-    const sensoryAreaId = 0;
-    const sensoryLayer = 3;
- 
     let sett: NeocortexSettings = new NeocortexSettings();
     sett.minicolumnDims = miniColDims;
     sett.areaLevels = areaLevels;
     sett.numLayers = numLayers;
-    sett.defaultPermanenceValue = 1;
     
     let inpModel: InputModel = new InputModel(sett);
 
     var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 1,1,1);
 
-    let idCnt: number = 0;
 
     return model;
   }

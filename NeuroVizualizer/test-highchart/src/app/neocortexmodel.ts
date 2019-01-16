@@ -35,8 +35,7 @@ export class NeocortexSettings {
   public xAreaDistance: number = 30;
   public yAreaDistance: number = 10;
   public zAreaDistance: number = 1;
-  public defaultOverlapValue: number = 0; 
-  public defaultPermanenceValue: number = 1;
+  public defaultOverlapValue: number = 0;
 
 }
 
@@ -47,6 +46,8 @@ export class NeoCortexModel {
   public synapses: Array<Synapse>;
 
   public settings: NeocortexSettings;
+  cell0: Cell;
+  cell1: Cell;
 
   /**
    * Multidimensional sensory input.
@@ -71,6 +72,11 @@ export class NeoCortexModel {
       posZ = posZ + settings.zAreaDistance;
 
     }
+   
+    for (let i = 0; i < settings.minicolumnDims[0]*settings.minicolumnDims[1]*settings.numLayers; i++) {
+      this.synapses[i] = new Synapse(0, 0, this.cell0, this.cell1);
+      
+    }
   }
 }
 
@@ -81,7 +87,6 @@ export class Area extends Location {
   public minicolumns: Minicolumn[][] = new Array();
   public level: number;
   public id: number;
-  public oL: Array<any> = new Array();
 
   constructor(settings: NeocortexSettings, areaId: number, level: number, posX: number, posY: number, posZ: number, ) {
     super(posX, posY, posZ); {
