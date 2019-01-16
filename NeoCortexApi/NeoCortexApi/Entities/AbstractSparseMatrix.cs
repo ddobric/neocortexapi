@@ -16,6 +16,7 @@ namespace NeoCortexApi.Entities
  *
  * @param <T>
  */
+    [Serializable]
     public abstract class AbstractSparseMatrix<T> : AbstractFlatMatrix<T>, ISparseMatrix<T>
     {
 

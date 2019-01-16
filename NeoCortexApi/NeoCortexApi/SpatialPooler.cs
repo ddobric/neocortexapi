@@ -26,7 +26,7 @@ using System.Diagnostics;
 
 namespace NeoCortexApi
 {
-    public class SpatialPooler
+    public class SpatialPooler : IHtmModule
     {
         public double MaxInibitionDensity { get; set; } = 0.5;
 

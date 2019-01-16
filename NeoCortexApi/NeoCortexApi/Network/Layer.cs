@@ -1,6 +1,11 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using NeoCortexApi.Entities;
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
+using NeoCortexApi.Encoders;
 
 namespace NeoCortexApi
 {
@@ -105,7 +110,374 @@ namespace NeoCortexApi
  * 
  * @author David Ray
  */
-    public class Layer
+    public class Layer<T>
     {
+        #region Private Fields
+
+
+        private ILogger logger;
+
+        private bool isClosed;
+
+        public Network ParentNetwork { get; set; }
+        public string Name { get; private set; }
+
+        protected Parameters parameters;
+
+        protected SensorParameters sensorParams;
+
+        protected Connections connections;
+
+        protected int numColumns;
+
+        protected Network parentNetwork;
+        protected Region parentRegion;
+
+
+
+        protected HTMSensor<?> sensor;
+        protected MultiEncoder encoder;
+        protected SpatialPooler spatialPooler;
+        protected TemporalMemory temporalMemory;
+        private Anomaly anomalyComputer;
+
+        private readonly List<IHtmModule> modules = new List<IHtmModule>();
+
+        private bool? autoCreateClassifiers;
+
+        private readonly ConcurrentQueue<IObserver<IInference>> subscribers = new ConcurrentQueue<IObserver<IInference>>();
+        private readonly PublishSubject<T> publisher = null;
+        private readonly IObservable<IInference> userObservable;
+        private readonly Subscription subscription;
+
+        private readonly IInference currentInference;
+
+        //FunctionFactory factory;
+
+        /** Used to track and document the # of records processed */
+        private int recordNum = -1;
+        /** Keeps track of number of records to skip on restart */
+        private int skip = -1;
+
+        private String name;
+
+
+        private volatile bool isHalted;
+        private volatile bool isPostSerialized;
+        protected volatile bool isLearn = true;
+
+        private Layer<IInference> next;
+        private Layer<IInference> previous;
+
+        private readonly List<IObserver<IInference>> observers = new List<IObserver<IInference>>();
+        private readonly ICheckPointOp<T> checkPointOp;
+        private readonly List<IObserver<byte[]>> checkPointOpObservers = new List<IObserver<byte[]>>();
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets true if the HTM module of specified type in the list of modules.
+        /// </summary>
+        /// <typeparam name="TModule"></typeparam>
+        /// <returns></returns>
+        public bool HasModule<TModule>() where TModule : IHtmModule
+        {
+            return this.modules.FirstOrDefault(m => m.GetType() == typeof(TModule)) != null;
+        }
+
+        /// <summary>
+        /// Gets list of modules of layer as descriptive text.
+        /// </summary>
+        private string LayerInfo
+        {
+            get
+            {
+                StringBuilder sb = new StringBuilder("Modules: ");
+
+                foreach (var item in this.modules)
+                {
+                    sb.Append(item.GetType().Name);
+                    sb.AppendLine();
+                }
+
+                return sb.ToString();
+            }
+        }
+
+        /**
+* Returns a flag indicating whether we've connected the first observable in
+* the sequence (which lazily does the input type of &lt;T&gt; to
+* {@link Inference} transformation) to the Observables connecting the rest
+* of the algorithm components.
+* 
+* @return flag indicating all observables connected. True if so, false if
+*         not
+*/
+        private bool DispatchCompleted
+        {
+            get
+            {
+                return observableDispatch == null;
+            }
+        }
+        #endregion
+
+        /**
+         * Creates a new {@code Layer} initialized with the specified algorithmic
+         * components.
+         * 
+         * @param params                    A {@link Parameters} object containing configurations for a
+         *                                  SpatialPooler, TemporalMemory, and Encoder (all or none may be used).
+         * @param e                         (optional) The Network API only uses a {@link MultiEncoder} at
+         *                                  the top level because of its ability to delegate to child encoders.
+         * @param sp                        (optional) {@link SpatialPooler}
+         * @param tm                        (optional) {@link TemporalMemory}
+         * @param autoCreateClassifiers     (optional) Indicates that the {@link Parameters} object
+         *                                  contains the configurations necessary to create the required encoders.
+         * @param a                         (optional) An {@link Anomaly} computer.
+         */
+        public Layer(string name = null, Network network = null, Parameters parameters = null, IHtmModule module = null, bool autoCreateClassifiers = false) :
+            this(name, network, parameters, new List<IHtmModule> { module }, autoCreateClassifiers)
+        {
+
+        }
+
+        public Layer(string name = null, Network network = null, Parameters parameters = null, ICollection<IHtmModule> modules = null, bool? autoCreateClassifiers = null)
+        //MultiEncoder e = null, SpatialPooler sp = null, TemporalMemory tm = null, Boolean autoCreateClassifiers = null, Anomaly a = null)
+        {
+            if (name == null)
+                name = $"[Layer {DateTime.Now.Ticks}]";
+
+            // Make sure we have a valid parameters object
+            if (parameters == null || modules == null || modules.Count == 0)
+            {
+                throw new ArgumentException("No parameters specified.");
+            }
+
+            var mulEncoder = modules.FirstOrDefault(m => m.GetType() == typeof(Multiencoder));
+            // Check to see if the Parameters include the encoder configuration.
+            if (parameters[KEY.FIELD_ENCODING_MAP] == null && modules != null)
+            {
+                throw new ArgumentException("The passed in Parameters must contain a field encoding map " +
+                    "specified by org.numenta.nupic.Parameters.KEY.FIELD_ENCODING_MAP");
+            }
+
+            this.name = name;
+            this.parameters = parameters;
+            this.parentNetwork = network;
+
+            foreach (var module in modules)
+            {
+                this.modules.Add(module);
+            }
+
+            //this.encoder = e;
+            //this.spatialPooler = sp;
+            //this.temporalMemory = tm;
+            //this.anomalyComputer = a;
+
+            this.autoCreateClassifiers = autoCreateClassifiers;
+
+            connections = new Connections();
+            //factory = new FunctionFactory();
+
+            observableDispatch = createDispatchMap();
+
+            //initializeMask();
+
+
+            logger?.LogDebug($"Layer successfully created containing: {LayerInfo}");
+
+            if (this.autoCreateClassifiers != null)
+                logger?.LogDebug("Auto creating Classifiers for each input field.");
+        }
+
+
+
+        /**
+      * Processes a single element, sending the specified input up the configured
+      * chain of algorithms or components within this {@code Layer}; resulting in
+      * any {@link Subscriber}s or {@link Observer}s being notified of results
+      * corresponding to the specified input (unless a {@link SpatialPooler}
+      * "primer delay" has been configured).
+      * 
+      * The first input to the Layer invokes a method to resolve the transformer
+      * at the bottom of the input chain, therefore the "type" (&lt;T&gt;) of the
+      * input cannot be changed once this method is called for the first time.
+      * 
+      * @param t     the input object who's type is generic.
+      */
+        public void Compute(T t)
+        {
+            if (!isClosed)
+            {
+                close();
+            }
+
+            increment();
+
+            if (observableDispatch != null)
+            {
+                completeDispatch(t);
+            }
+
+            publisher.onNext(t);
+        }
+
+        internal ICheckPointOp<byte[]> delegateCheckPointCall()
+        {
+            if (ParentNetwork != null)
+            {
+                return ParentNetwork.getCheckPointOperator();
+            }
+            return null;
+        }
+
+        public Layer<T> close()
+        {
+            if (this.isClosed)
+            {
+                logger.LogWarning("Close called on Layer " + this.Name + " which is already closed.");
+                return this;
+            }
+
+            parameters.apply(connections);
+
+            if (sensor != null)
+            {
+                encoder = encoder == null ? sensor.getEncoder() : encoder;
+                sensor.initEncoder(this.parameters);
+                connections.setNumInputs(encoder.getWidth());
+                if (parentNetwork != null && parentRegion != null)
+                {
+                    parentNetwork.setSensorRegion(parentRegion);
+
+                    Object supplier;
+                    if ((supplier = sensor.getSensorParams().get("ONSUB")) != null)
+                    {
+                        if (supplier instanceof PublisherSupplier) {
+                            ((PublisherSupplier)supplier).setNetwork(parentNetwork);
+                            parentNetwork.setPublisher(((PublisherSupplier)supplier).get());
+                        }
+                    }
+                }
+            }
+
+            // Create Encoder hierarchy from definitions & auto create classifiers
+            // if specified
+            if (encoder != null)
+            {
+                if (encoder.getEncoders(encoder) == null || encoder.getEncoders(encoder).size() < 1)
+                {
+                    if (this.parameters.get(KEY.FIELD_ENCODING_MAP) == null || ((Map<String, Map<String, Object>>)params.get(KEY.FIELD_ENCODING_MAP)).size() < 1) {
+                        LOGGER.error("No field encoding map found for specified MultiEncoder");
+                        throw new IllegalStateException("No field encoding map found for specified MultiEncoder");
+                    }
+
+                    encoder.addMultipleEncoders((Map<String, Map<String, Object>>)this.parameters[KEY.FIELD_ENCODING_MAP]);
+                }
+
+                // Make the declared column dimensions match the actual input
+                // dimensions retrieved from the encoder
+                int product = 0, inputLength = 0, columnLength = 0;
+                if (((inputLength = ((int[])this.parameters[KEY.INPUT_DIMENSIONS]).length) !=
+                    (columnLength = ((int[])this.parameters[KEY.COLUMN_DIMENSIONS]).length))
+                            || encoder.getWidth() != (product = ArrayUtils.product((int[])this.parameters[KEY.INPUT_DIMENSIONS])))
+                {
+
+                    LOGGER.warn("The number of Input Dimensions (" + inputLength + ") != number of Column Dimensions " + "(" + columnLength + ") --OR-- Encoder width (" + encoder.getWidth()
+                                    + ") != product of dimensions (" + product + ") -- now attempting to fix it.");
+
+                    int[] inferredDims = inferInputDimensions(encoder.getWidth(), columnLength);
+                    if (inferredDims != null && inferredDims.length > 0 && encoder.getWidth() == ArrayUtils.product(inferredDims))
+                    {
+                        LOGGER.info("Input dimension fix successful!");
+                        LOGGER.info("Using calculated input dimensions: " + Arrays.toString(inferredDims));
+                    }
+
+                params.setInputDimensions(inferredDims);
+                    connections.setInputDimensions(inferredDims);
+                }
+            }
+
+            autoCreateClassifiers = autoCreateClassifiers != null && (autoCreateClassifiers | (Boolean)this.parameters[KEY.AUTO_CLASSIFY]);
+
+            if (autoCreateClassifiers != null && autoCreateClassifiers.booleanValue() && (factory.inference.getClassifiers() == null || factory.inference.getClassifiers().size() < 1))
+            {
+                factory.inference.classifiers(makeClassifiers(encoder == null ? parentNetwork.getEncoder() : encoder));
+
+                // Note classifier addition by setting content mask
+                algo_content_mask |= CLA_CLASSIFIER;
+            }
+
+            // We must adjust this Layer's inputDimensions to the size of the input
+            // received from the previous Region's output vector.
+            if (parentRegion != null && parentRegion.getUpstreamRegion() != null)
+            {
+                int[] upstreamDims = new int[] { calculateInputWidth() };
+            params.setInputDimensions(upstreamDims);
+                connections.setInputDimensions(upstreamDims);
+            }
+            else if (parentRegion != null && parentNetwork != null
+                  && parentRegion.equals(parentNetwork.getSensorRegion()) && encoder == null && spatialPooler != null)
+            {
+                Layer curr = this;
+                while ((curr = curr.getPrevious()) != null)
+                {
+                    if (curr.getEncoder() != null)
+                    {
+                        int[] dims = (int[])curr.getParameters()[KEY.INPUT_DIMENSIONS];
+                        this.parameters.setInputDimensions(dims);
+                        connections.setInputDimensions(dims);
+                    }
+                }
+            }
+
+            // Let the SpatialPooler initialize the matrix with its requirements
+            if (spatialPooler != null)
+            {
+                // The exact dimensions don't have to be the same but the number of
+                // dimensions do!
+                int inputLength, columnLength = 0;
+                if ((inputLength = ((int[])this.parameters[KEY.INPUT_DIMENSIONS]).length) !=
+                     (columnLength = ((int[])this.parameters[KEY.COLUMN_DIMENSIONS]).length))
+                {
+
+                    LOGGER.error("The number of Input Dimensions (" + inputLength + ") is not same as the number of Column Dimensions " +
+                        "(" + columnLength + ") in Parameters! - SpatialPooler not initialized!");
+
+                    return this;
+                }
+                spatialPooler.init(connections);
+            }
+
+            // Let the TemporalMemory initialize the matrix with its requirements
+            if (temporalMemory != null)
+            {
+                TemporalMemory.init(connections);
+            }
+
+            this.numColumns = connections.getNumColumns();
+
+            this.isClosed = true;
+
+            this.logger?.LogDebug("Layer " + name + " content initialize mask = " + BitConverter.bin(algo_content_mask));
+
+            return this;
+        }
+
+        public void setNetwork(Network network)
+        {
+            this.ParentNetwork = network;
+        }
+
+        private IHtmModule GetModule<TModule>()
+        {
+            return this.modules.FirstOrDefault(m => m.GetType() == typeof(TModule));
+        }
+
     }
+}
 }

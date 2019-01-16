@@ -18,6 +18,7 @@ namespace NeoCortexApi.Entities
  *
  * In the separation of data from logic, this class represents the data/state.
  */
+    [Serializable]
     public class Connections //implements Persistable
     {
         /** keep it simple */
@@ -30,6 +31,7 @@ namespace NeoCortexApi.Entities
          * the inputWidth if using "globalInhibition" and if not 
          * using the Network API (which sets this automatically) 
          */
+   
         private int potentialRadius = 16;
         private double potentialPct = 0.5;
         private bool m_GlobalInhibition = false;
@@ -280,7 +282,7 @@ namespace NeoCortexApi.Entities
          * Returns a deep copy of this {@code Connections} object.
          * @return a deep copy of this {@code Connections}
          */
-        public Connections copy()
+        public Connections copy() //todo this will fail. Many objects are not marked as serializable
         {
             using (MemoryStream stream = new MemoryStream())
             {

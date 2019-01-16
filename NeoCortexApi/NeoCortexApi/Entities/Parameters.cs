@@ -148,6 +148,18 @@ namespace NeoCortexApi.Entities
             return (T)paramMap[key];
         }
 
+        public object this[string key]
+        {
+            get
+            {
+                return paramMap[key];
+            }
+
+            set
+            {
+                paramMap[key] = value;
+            }
+        }
 
         /**
  * Returns the size of the internal parameter storage.
