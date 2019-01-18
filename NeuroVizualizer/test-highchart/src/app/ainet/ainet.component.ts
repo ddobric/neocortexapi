@@ -54,7 +54,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.generateColoursFromOverlap(this.model);
     this.generateColoursForSynPermanences(this.model);
     this.createChart();
-   
+
 
   }
 
@@ -200,7 +200,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
         for (let j = 0; j < model.areas[areaIndx].minicolumns[i].length; j++) {
           for (let cellIndx = 0; cellIndx < model.areas[areaIndx].minicolumns[i][j].cells.length; cellIndx++) {
             this.overlap.push(model.areas[areaIndx].minicolumns[i][j].overlap);
-            this.permanence.push(model.synapses[i].permanence);
+           // this.permanence.push(model.synapses[i].permanence);
+           this.permanence.push(model.areas[i].minicolumns[i][j].cells[cellIndx].synapse.permanence);
             this.xNeurons.push(i * env.cellXRatio + xOffset);
             this.yNeurons.push(areaYWidth * model.areas[areaIndx].level + cellIndx * env.cellYRatio);
             this.zNeurons.push(areaZWidth * j);
@@ -242,59 +243,25 @@ export class AinetComponent implements OnInit, AfterViewInit {
     position: ["top", "right"],
     timeOut: 3000,
   };
-
-  updatePermanenceOfSynaps(selectAreaIndex: any, miniColumnXDimension: any, miniColumnZDimension: any, ) {
-
-    this.selectAreaIndex = selectAreaIndex;
-    this.miniColumnXDimension = miniColumnXDimension;
-    this.miniColumnZDimension = miniColumnZDimension;
-
-    const perm = {
-      preCellX: 1,
-      preCellY: 1,
-      preCellZ: 1,
-
-      postCellX: 1,
-      postCellY: 1,
-      postCellZ: 2,
-
-      permanence: 0.5
-    };
-
-    let perms: any[];
-
-    perms.push(perm);
-    this.update(null, perms, null);
-  }
-
-  clickFunc(){
-    this.updateOverlapCell(0, 0, 0, [0.5, 0.7, 1, 0.75, 0.4, 1]);
+  clickFunc() {
+   // this.updateOverlapCell(0, 0, 0, [0.5, 0.7, 1, 0.75, 0.4, 1]);
+    this.updatePermanenceOfSynaps(0, 0, 0,
+      {
+        preCellX: 1,
+        preCellY: 1,
+        preCellZ: 1,
+      },
+      {
+        postCellX: 2,
+        postCellY: 1,
+        postCellZ: 2,
+      },
+      0.7
+    );
   }
 
   updateOverlapCell(selectAreaIndex: any, miniColumnXDimension: any, miniColumnZDimension: any, overlapArray: any[]) {
 
-    const perm = {
-      preCellX: 1,
-      preCellY: 1,
-      preCellZ: 1,
-
-      postCellX: 1,
-      postCellY: 1,
-      postCellZ: 2,
-
-      permanence: 0.5
-    };
-
-    const actCells = {
-      cellX: 1,
-      cellY: 1,
-      cellZ: 1,
-
-      isActive: false,
-
-      isPredictive: true,
-    };
-    
     let overlaps = [];
 
     overlaps.push({ selectAreaIndex: selectAreaIndex, miniColumnXDimension: miniColumnXDimension, miniColumnZDimension: miniColumnZDimension, overlapArray: overlapArray });
@@ -312,13 +279,65 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.update(overlaps, null, null);
   }
 
+  updatePermanenceOfSynaps(
+    selectAreaIndex: any, miniColumnXDimension: any, miniColumnZDimension: any,
+    preCellDim: {
+      preCellX: any,
+      preCellY: any,
+      preCellZ: any,
+    },
+    postCellDim: {
+      postCellX: any,
+      postCellY: any,
+      postCellZ: any,
+    },
+    permanence: any) {
+
+    const perm = {
+      /*  preCellX: 1,
+       preCellY: 1,
+       preCellZ: 1,
+ 
+       postCellX: 2,
+       postCellY: 1,
+       postCellZ: 2,
+ 
+       permanence: 0.5 */
+      preCellDim,
+      postCellDim,
+      permanence
+    };
+
+    let perms = [];
+
+    perms.push({ selectAreaIndex: selectAreaIndex, miniColumnXDimension: miniColumnXDimension,  miniColumnZDimension: miniColumnZDimension, perm });
+
+    this.xNeurons = [];
+    this.yNeurons = [];
+    this.zNeurons = [];
+    this.overlap = [];
+    this.xSynapse = [];
+    this.ySynapse = [];
+    this.zSynapse = [];
+    this.synapseColours = [];
+    this.permanence = [];
+    this.neuronsColours = [];
+
+    this.update(null, perms, null);
+  }
+
   private update(overlaps: any[], permancences: any[], activeCells: any[]) {
-    for (var i = 0; i < overlaps.length; i++) {
+    /* for (var i = 0; i < overlaps.length; i++) {
       for (var j = 0; j < overlaps[i].overlapArray.length; j++) {
         this.model.areas[overlaps[i].selectAreaIndex].minicolumns[overlaps[i].miniColumnXDimension][overlaps[i].miniColumnZDimension].overlap = parseFloat(overlaps[i].overlapArray[j]);
       }
+    } */
 
-    }
+      for (let k = 0; k < permancences.length; k++) {
+        this.model.areas[permancences[k].selectAreaIndex].minicolumns[permancences[k].miniColumnXDimension][permancences[k].miniColumnZDimension].cells[5].synapse.permanence = permancences[k].perm.permanence;
+
+      }
+
     /* for (var i = 0; i < permancences.length; i++) {
       //this.model.areas[overlaps[i].selectAreaIndex].minicolumns[overlaps.miniColumnXDimension][overlaps.miniColumnZDimension].overlap = parseFloat(overlaps[i]);
 

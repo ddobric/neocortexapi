@@ -17,10 +17,11 @@ export class neoCortexUtils {
     sett.minicolumnDims = miniColDims;
     sett.areaLevels = areaLevels;
     sett.numLayers = numLayers;
+    let synapse = new Synapse(0,0,null,null);
     
     let inpModel: InputModel = new InputModel(sett);
 
-    var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 1,1,1);
+    var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 1,1,1, synapse );
 
 
     return model;
