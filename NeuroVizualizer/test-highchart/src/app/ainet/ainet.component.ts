@@ -34,10 +34,10 @@ export class AinetComponent implements OnInit, AfterViewInit {
   neuralChartLayout: any;
   neuralChartConfig: any;
 
-  selectAreaIndex : any = 0;
-  miniColumnXDimension : any = 0; 
-  miniColumnZDimension : any = 0;
-  newOverlapValue : any = 0;
+  selectAreaIndex: any = 0;
+  miniColumnXDimension: any = 0;
+  miniColumnZDimension: any = 0;
+  newOverlapValue: any = 0;
 
   constructor(private _service: NotificationsService) {
 
@@ -49,11 +49,13 @@ export class AinetComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
 
     this.model = neoCortexUtils.createModel([0, 0, 0, 0, 1, 1, 1, 2, 2, 3], [10, 1], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
-     this.fillChart(this.model);
+    this.fillChart(this.model);
     // this.model = neoCortexUtils.createModel([0, 0, 0, 0, 1, 1, 1, 2, 2, 3], [10, 1], 6);
     this.generateColoursFromOverlap(this.model);
     this.generateColoursForSynPermanences(this.model);
     this.createChart();
+
+
   }
 
   createChart() {
@@ -197,11 +199,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
       for (let i = 0; i < model.areas[areaIndx].minicolumns.length; i++) {
         for (let j = 0; j < model.areas[areaIndx].minicolumns[i].length; j++) {
           for (let cellIndx = 0; cellIndx < model.areas[areaIndx].minicolumns[i][j].cells.length; cellIndx++) {
-
-            this.model.areas[this.selectAreaIndex].minicolumns[this.miniColumnXDimension][this.miniColumnZDimension].overlap = parseFloat(this.newOverlapValue);
-
             this.overlap.push(model.areas[areaIndx].minicolumns[i][j].overlap);
-            this.permanence.push(model.settings.defaultPermanenceValue);
+           // this.permanence.push(model.synapses[i].permanence);
+           this.permanence.push(model.areas[i].minicolumns[i][j].cells[cellIndx].synapse.permanence);
             this.xNeurons.push(i * env.cellXRatio + xOffset);
             this.yNeurons.push(areaYWidth * model.areas[areaIndx].level + cellIndx * env.cellYRatio);
             this.zNeurons.push(areaZWidth * j);
@@ -216,6 +216,11 @@ export class AinetComponent implements OnInit, AfterViewInit {
     console.log(this.xNeurons, "X Neurons");
     console.log(this.yNeurons, "Y Neurons");
     console.log(this.zNeurons, "Z Neurons"); */
+  }
+
+  generateSynapses() {
+
+
   }
 
   displayError() {
@@ -238,12 +243,28 @@ export class AinetComponent implements OnInit, AfterViewInit {
     position: ["top", "right"],
     timeOut: 3000,
   };
+  clickFunc() {
+   // this.updateOverlapCell(0, 0, 0, [0.5, 0.7, 1, 0.75, 0.4, 1]);
+    this.updatePermanenceOfSynaps(0, 0, 0,
+      {
+        preCellX: 1,
+        preCellY: 1,
+        preCellZ: 1,
+      },
+      {
+        postCellX: 2,
+        postCellY: 1,
+        postCellZ: 2,
+      },
+      0.7
+    );
+  }
 
-  updateOverlapV(selectAreaIndex: any, miniColumnXDimension: any, miniColumnZDimension: any, newOverlapValue: any) {
-    this.selectAreaIndex = selectAreaIndex;
-    this.miniColumnXDimension = miniColumnXDimension;
-    this.miniColumnZDimension = miniColumnZDimension;
-    this.newOverlapValue = newOverlapValue;
+  updateOverlapCell(selectAreaIndex: any, miniColumnXDimension: any, miniColumnZDimension: any, overlapArray: any[]) {
+
+    let overlaps = [];
+
+    overlaps.push({ selectAreaIndex: selectAreaIndex, miniColumnXDimension: miniColumnXDimension, miniColumnZDimension: miniColumnZDimension, overlapArray: overlapArray });
     this.xNeurons = [];
     this.yNeurons = [];
     this.zNeurons = [];
@@ -254,17 +275,81 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.synapseColours = [];
     this.permanence = [];
     this.neuronsColours = [];
-    /* this.model.areas[0].minicolumns[0][1].overlap += 0.1;
-    this.model.areas[0].minicolumns[0][3].overlap += 0.2; */
 
+    this.update(overlaps, null, null);
+  }
+
+  updatePermanenceOfSynaps(
+    selectAreaIndex: any, miniColumnXDimension: any, miniColumnZDimension: any,
+    preCellDim: {
+      preCellX: any,
+      preCellY: any,
+      preCellZ: any,
+    },
+    postCellDim: {
+      postCellX: any,
+      postCellY: any,
+      postCellZ: any,
+    },
+    permanence: any) {
+
+    const perm = {
+      /*  preCellX: 1,
+       preCellY: 1,
+       preCellZ: 1,
+ 
+       postCellX: 2,
+       postCellY: 1,
+       postCellZ: 2,
+ 
+       permanence: 0.5 */
+      preCellDim,
+      postCellDim,
+      permanence
+    };
+
+    let perms = [];
+
+    perms.push({ selectAreaIndex: selectAreaIndex, miniColumnXDimension: miniColumnXDimension,  miniColumnZDimension: miniColumnZDimension, perm });
+
+    this.xNeurons = [];
+    this.yNeurons = [];
+    this.zNeurons = [];
+    this.overlap = [];
+    this.xSynapse = [];
+    this.ySynapse = [];
+    this.zSynapse = [];
+    this.synapseColours = [];
+    this.permanence = [];
+    this.neuronsColours = [];
+
+    this.update(null, perms, null);
+  }
+
+  private update(overlaps: any[], permancences: any[], activeCells: any[]) {
+    /* for (var i = 0; i < overlaps.length; i++) {
+      for (var j = 0; j < overlaps[i].overlapArray.length; j++) {
+        this.model.areas[overlaps[i].selectAreaIndex].minicolumns[overlaps[i].miniColumnXDimension][overlaps[i].miniColumnZDimension].overlap = parseFloat(overlaps[i].overlapArray[j]);
+      }
+    } */
+
+      for (let k = 0; k < permancences.length; k++) {
+        this.model.areas[permancences[k].selectAreaIndex].minicolumns[permancences[k].miniColumnXDimension][permancences[k].miniColumnZDimension].cells[5].synapse.permanence = permancences[k].perm.permanence;
+
+      }
+
+    /* for (var i = 0; i < permancences.length; i++) {
+      //this.model.areas[overlaps[i].selectAreaIndex].minicolumns[overlaps.miniColumnXDimension][overlaps.miniColumnZDimension].overlap = parseFloat(overlaps[i]);
+
+    } */
     this.fillChart(this.model);
     this.generateColoursFromOverlap(this.model);
     this.generateColoursForSynPermanences(this.model);
     const updateNeurons = {
-       x: this.xNeurons,
+      x: this.xNeurons,
       y: this.yNeurons,
-      z: this.zNeurons, 
-     // text: this.overlap,
+      z: this.zNeurons,
+      // text: this.overlap,
       name: 'Neuron',
       mode: 'markers',
       marker: {
@@ -283,7 +368,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       name: 'Synapse',
       x: this.xNeurons,
       y: this.yNeurons,
-      z: this.zNeurons,  
+      z: this.zNeurons,
       text: this.permanence,
       opacity: env.opacityOfSynapse,
       line: {
@@ -294,8 +379,66 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
     let graphDOM = document.getElementById('graph');
 
-   Plotlyjs.newPlot(graphDOM, [updateNeurons, updateSynapses], this.neuralChartLayout, this.neuralChartConfig);
-   // Plotlyjs.restyle(graphDOM, updateNeurons, this.neuralChartLayout, this.neuralChartConfig);
+    Plotlyjs.newPlot(graphDOM, [updateNeurons, updateSynapses], this.neuralChartLayout, this.neuralChartConfig);
+  }
+
+  updateOverlapV(selectAreaIndex: any, miniColumnXDimension: any, miniColumnZDimension: any, newOverlapValue: any) {
+    this.selectAreaIndex = selectAreaIndex;
+    this.miniColumnXDimension = miniColumnXDimension;
+    this.miniColumnZDimension = miniColumnZDimension;
+    this.newOverlapValue = newOverlapValue;
+    this.xNeurons = [];
+    this.yNeurons = [];
+    this.zNeurons = [];
+    this.overlap = [];
+    this.xSynapse = [];
+    this.ySynapse = [];
+    this.zSynapse = [];
+    this.synapseColours = [];
+    this.permanence = [];
+    this.neuronsColours = [];
+
+    this.model.areas[this.selectAreaIndex].minicolumns[this.miniColumnXDimension][this.miniColumnZDimension].overlap = parseFloat(this.newOverlapValue);
+
+    this.fillChart(this.model);
+    this.generateColoursFromOverlap(this.model);
+    this.generateColoursForSynPermanences(this.model);
+    const updateNeurons = {
+      x: this.xNeurons,
+      y: this.yNeurons,
+      z: this.zNeurons,
+      // text: this.overlap,
+      name: 'Neuron',
+      mode: 'markers',
+      marker: {
+        opacity: env.opacityOfNeuron,
+        size: env.sizeOfNeuron,
+        color: this.neuronsColours,
+        symbol: 'circle',
+      },
+      type: 'scatter3d',
+    };
+
+    const updateSynapses = {
+      //the first point in the array will be joined with a line with the next one in the array ans so on...
+      type: 'scatter3d',
+      mode: 'lines',
+      name: 'Synapse',
+      x: this.xNeurons,
+      y: this.yNeurons,
+      z: this.zNeurons,
+      text: this.permanence,
+      opacity: env.opacityOfSynapse,
+      line: {
+        width: env.lineWidthOfSynapse,
+        color: this.synapseColours,
+      }
+    };
+
+    let graphDOM = document.getElementById('graph');
+
+    Plotlyjs.newPlot(graphDOM, [updateNeurons, updateSynapses], this.neuralChartLayout, this.neuralChartConfig);
+    // Plotlyjs.restyle(graphDOM, updateNeurons, this.neuralChartLayout, this.neuralChartConfig);
   }
 
   updatePermanenceV() {
