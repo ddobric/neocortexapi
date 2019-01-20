@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
+
 
 namespace NeoCortexApi
 {
@@ -10,24 +12,45 @@ namespace NeoCortexApi
         #region Private Members
         private ILogger logger;
 
-        private Dictionary<String, Layer<IInference>> layers = new Dictionary<string, Layer<IInference>>();
-               
         private Region upstreamRegion;
-        private Network parentNetwork;
+        private CortexNetwork parentNetwork;
         private Region downstreamRegion;
+
+        /// <summary>
+        /// All layers.
+        /// </summary>
+        private Dictionary<String, Layer<IInference>> layers = new Dictionary<string, Layer<IInference>>();
+
+        /// <summary>
+        /// The lowest layer with no input.
+        /// </summary>
         private Layer<IInference> tail;
+
+        /// <summary>
+        /// The highest layer with no output.
+        /// </summary>
         private Layer<IInference> head;
+
+        /// <summary>
+        /// All OUTPUT layers.
+        /// </summary>
+        private List<Layer<IInference>> sources;
+
+        /// <summary>
+        /// All INPUT layers.
+        /// </summary>
+        private List<Layer<IInference>> sinks;
 
         private Object input;
 
         /** Marker flag to indicate that assembly is finished and Region initialized */
         private bool assemblyClosed;
-        
+
         private String Name;
         #endregion
 
         #region Constructors and Initialization
-        public Region(String name, Network network)
+        public Region(String name, CortexNetwork network)
         {
             if (String.IsNullOrEmpty(name))
             {
@@ -40,6 +63,210 @@ namespace NeoCortexApi
         }
         #endregion
 
+
+        /**
+    * Connects two layers to each other in a unidirectional fashion 
+    * with "toLayerName" representing the receiver or "sink" and "fromLayerName"
+    * representing the sender or "source".
+    * 
+    * This method also forwards shared constructs up the connection chain
+    * such as any {@link Encoder} which may exist, and the {@link Inference} result
+    * container which is shared among layers.
+    * 
+    * @param toLayerName       the name of the sink layer
+    * @param fromLayerName     the name of the source layer
+    * @return
+    * @throws IllegalStateException if Region is already closed
+    */
+
+        public Region connect(String toLayerName, String fromLayerName)
+        {
+            if (assemblyClosed)
+            {
+                throw new OperationCanceledException("Cannot connect Layers when Region has already been closed.");
+            }
+
+            Layer<IInference> inputLayer = (Layer<IInference>)this.layers.FirstOrDefault(kp => kp.Key == toLayerName).Value;
+            Layer<IInference> outputLayer = (Layer<IInference>)this.layers.FirstOrDefault(kp => kp.Key == fromLayerName).Value;
+            if (inputLayer == null)
+            {
+                throw new ArgumentException("Could not lookup (to) Layer with name: " + toLayerName);
+            }
+            else if (outputLayer == null)
+            {
+                throw new ArgumentException("Could not lookup (from) Layer with name: " + fromLayerName);
+            }
+
+            outputLayer.NextLayer = inputLayer;
+
+            inputLayer.PreviousLayer = outputLayer;
+
+            // Connect out to in
+            configureConnection(inputLayer, outputLayer);
+
+            connect(inputLayer, outputLayer);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Configures connection between two layers, by filling lists of all 
+        /// output (source) and input (sink) layers.
+        /// </summary>
+        /// <typeparam name="TIN">Input layer instance.</typeparam>
+        /// <typeparam name="TOUT">Output layer instance.</typeparam>
+        /// <param name="input">Input (sink) layer.</param>
+        /// <param name="output">Output (source) layer.</param>
+        private void configureConnection<TIN, TOUT>(TIN input, TOUT output)
+                where TIN : Layer<IInference>
+                where TOUT : Layer<IInference>
+        {
+            if (assemblyClosed)
+            {
+                throw new ArgumentException("Cannot add Layers when Region has already been closed.");
+            }
+
+            List<Layer<IInference>> allLayers = new List<Layer<IInference>>();
+            allLayers.AddRange(sources);
+            allLayers.AddRange(sinks);
+
+            //byte inMask = in.getMask();
+            //byte outMask = out.getMask();
+            //if (!allLayers.Contains(output))
+            //{
+            //    layersDistinct = (flagAccumulator & outMask) < 1;
+            //    flagAccumulator |= outMask;
+            //}
+            //if (!allLayers.contains(in))
+            //{
+            //    layersDistinct = (flagAccumulator & inMask) < 1;
+            //    flagAccumulator |= inMask;
+            //}
+
+            sources.Add(output);
+            sinks.Add(input);
+        }
+
+
+        private class ObservableRegHelper : IObserver<IInference>
+        {
+            private Layer<IInference> inputLayer;
+
+            public ObservableRegHelper(Layer<IInference> inputLayer)
+            {
+                this.inputLayer = inputLayer;
+            }
+
+            public void OnCompleted()
+            {
+                inputLayer.NotifyComplete();
+            }
+
+            public void OnError(Exception error)
+            {
+                throw error;
+            }
+
+            public void OnNext(IInference inference)
+            {
+                if (layersDistinct)
+                {
+                    this.inputLayer.compute(inference);
+                }
+                else
+                {
+                    localInf.sdr(i.getSDR()).recordNum(i.getRecordNum()).layerInput(i.getSDR());
+                    this.inputLayer.compute(localInf);
+                }
+            }
+        }
+
+        /**
+ * Called internally to actually connect two {@link Layer} 
+ * {@link Observable}s taking care of other connection details such as passing
+ * the inference up the chain and any possible encoder.
+ * 
+ * @param in         the sink end of the connection between two layers
+ * @param out        the source end of the connection between two layers
+ * @throws IllegalStateException if Region is already closed 
+ */
+        private void connect<TIN, TOUT>(TIN inputLayer, TOUT outputLayer)
+              where TIN : Layer<IInference>
+              where TOUT : Layer<IInference>
+        {
+            var observable = new ObservableRegHelper(inputLayer);
+            outputLayer.Subscribe(observable);
+
+            //    output.Subscribe(new Subscriber<Inference>() {
+            //    ManualInput localInf = new ManualInput();
+
+            //    @Override public void onCompleted() { in.notifyComplete(); }
+            //    @Override public void onError(Throwable e) { e.printStackTrace(); }
+            //    @Override public void onNext(Inference i)
+            //    {
+            //        if (layersDistinct)
+            //        {
+            //            in.compute(i);
+            //        }
+            //        else
+            //        {
+            //            localInf.sdr(i.getSDR()).recordNum(i.getRecordNum()).layerInput(i.getSDR());
+            //            in.compute(localInf);
+            //        }
+            //    }
+            //});
+        }
+
+
+
+        /**
+    * Called by {@link #start()}, {@link #observe()} and {@link #connect(Region)}
+    * to finalize the internal chain of {@link Layer}s contained by this {@code Region}.
+    * This method assigns the head and tail Layers and composes the {@link Observable}
+    * which offers this Region's emissions to any upstream {@link Region}s.
+*/
+        private void completeAssembly()
+        {
+            if (!assemblyClosed)
+            {
+                if (layers.Count == 0) return;
+
+                if (layers.Count == 1)
+                {
+                    head = tail = layers.Values.First();
+                }
+
+                if (tail == null)
+                {
+                    List<Layer<IInference>> temp = new List<Layer<IInference>>(sources);
+                    temp.RemoveAll(el => sinks.Contains(el));
+                    if (temp.Count != 1)
+                    {
+                        throw new ArgumentException("Detected misconfigured Region too many or too few sinks.");
+                    }
+
+                    // Tail is lowest layer (sensor), which has no input from other layer. 
+                    tail = temp.First();
+                }
+
+                if (head == null)
+                {
+                    List<Layer<IInference>> temp = new List<Layer<IInference>>(sinks);
+                    temp.RemoveAll(el => sources.Contains(el));
+                    if (temp.Count != 1)
+                    {
+                        throw new ArgumentException("Detected misconfigured Region too many or too few sources.");
+                    }
+
+                    // Head is most top layer, which has no output.
+                    head = temp.First();
+                }
+
+                regionObservable = head.observe();
+
+                assemblyClosed = true;
+            }
+        }
         public Region getUpstreamRegion()
         {
             return upstreamRegion;
@@ -55,10 +282,10 @@ namespace NeoCortexApi
 
             completeAssembly();
 
-            Layer<IInference>  layer = tail;
+            Layer<IInference> layer = tail;
             do
             {
-                layer.close();
+                layer.CloseInit();
             } while ((layer = layer.getNext()) != null);
 
             return this;
@@ -79,7 +306,7 @@ namespace NeoCortexApi
             }
             else
             {
-                
+
                 logger.LogWarning("Start called on Region [" + this.Name + "] with no effect due to no Sensor present.");
             }
 
@@ -87,13 +314,13 @@ namespace NeoCortexApi
         }
 
         /**
-   * Connects the output of the specified {@code Region} to the 
-   * input of this Region
-   * 
-   * @param inputRegion   the Region who's emissions will be observed by 
-   *                      this Region.
-   * @return
-   */
+    * Connects the output of the specified {@code Region} to the 
+    * input of this Region
+    * 
+    * @param inputRegion   the Region who's emissions will be observed by 
+    *                      this Region.
+    * @return
+*/
         Region connect(Region inputRegion)
         {
             inputRegion.observe().subscribe(new IObserver<IInference>() {
@@ -105,7 +332,7 @@ namespace NeoCortexApi
             }
             @Override public void onError(Throwable e) { e.printStackTrace(); }
             @SuppressWarnings("unchecked")
-                @Override public void onNext(Inference i)
+                    @Override public void onNext(Inference i)
             {
                 localInf.sdr(i.getSDR()).recordNum(i.getRecordNum()).classifierInput(i.getClassifierInput()).layerInput(i.getSDR());
                 if (i.getSDR().length > 0)

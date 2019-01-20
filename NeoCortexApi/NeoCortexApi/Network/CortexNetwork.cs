@@ -119,7 +119,7 @@ namespace NeoCortexApi
  * @see ManualInput
  * @see NetworkAPIDemo
  */
-    public class Network
+    public class CortexNetwork
     {
         private ILogger logger;
 
@@ -137,15 +137,21 @@ namespace NeoCortexApi
 
         private List<Region> regions = new List<Region>();
 
-        public delegate byte[] CheckPointFnc(Network net);
+        public delegate byte[] CheckPointFnc(CortexNetwork net);
 
         /** Stored check pointer function */
         private CheckPointFnc checkPointFunction;
 
         bool shouldDoHalt = true;
 
+        /// <summary>
+        /// Sets a reference to the Region which contains the Sensor
+        /// (if any).</summary>
+        /// <param name="r"></param>
+        public Region SensorRegion { get; set; }
+        
 
-        Network() { }
+        CortexNetwork() { }
 
         /**
          * Creates a new {@link Network}
@@ -155,7 +161,7 @@ namespace NeoCortexApi
          * @param name
          * @param parameters
          */
-        public Network(String name, object[] parameters)
+        public CortexNetwork(String name, object[] parameters)
         {
             if (string.IsNullOrEmpty(name))
             {

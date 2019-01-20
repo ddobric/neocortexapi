@@ -179,7 +179,7 @@ namespace NeoCortexApi
         }
 
        // @Override
-    public int GetHashCode()
+    public override  int GetHashCode()
         {
             const int prime = 31;
             int result = 1;
