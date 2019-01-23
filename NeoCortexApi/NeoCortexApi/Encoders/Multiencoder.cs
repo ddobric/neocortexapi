@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NeoCortexApi.Encoders
 {
-    public class Multiencoder : EncoderBase<object>
+    public class MultiEncoder : EncoderBase<object>
     {
         public override int[] encodeIntoArray(object inputData)
         {

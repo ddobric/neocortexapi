@@ -14,12 +14,12 @@ namespace NeoCortexApi
      * 
      * @return
      */
-         int getRecordNum();
+         int RecordNum { get; }
         /**
          * Returns the {@link ComputeCycle}
          * @return
          */
-         ComputeCycle getComputeCycle();
+         ComputeCycle ComputeCycle { get; }
         /**
          * Returns a custom Object during sequence processing where one or more 
          * {@link Func1}(s) were added to a {@link Layer} in between algorithmic
@@ -27,27 +27,27 @@ namespace NeoCortexApi
          *  
          * @return  the custom object set during processing
          */
-         Object getCustomObject();
+        Object CustomObject { get; }
         /**
          * Returns the {@link Map} used as input into a given {@link CLAClassifier}
          * if it exists.
          * 
          * @return
          */
-         Dictionary<String, object /*NamedTuple*/> getClassifierInput();
+        Dictionary<String, object /*NamedTuple*/> ClassifierInput { get; }
         /**
          * Returns a tuple containing key/value pairings of input field
          * names to the {@link CLAClassifier} used in conjunction with it.
          * 
          * @return
          */
-         object /*NamedTuple*/ getClassifiers();
+        object /*NamedTuple*/ Classifiers { get; }
         /**
          * Returns the object used as input into a given Layer
          * which is associated with this computation result.
          * @return
          */
-         Object getLayerInput();
+        Object LayerInput { get; }
 
         /**
          * Returns the <em>Sparse Distributed Representation</em> vector
@@ -56,50 +56,50 @@ namespace NeoCortexApi
          * 
          * @return
          */
-         int[] getSDR();
+        int[] getSDR { get; }
         /**
          * Returns the initial encoding produced by an {@link Encoder} or one
          * of its subtypes.
          * 
          * @return
          */
-         int[] getEncoding();
+        int[] getEncoding { get; }
         /**
          * Returns the most recent {@link Classification}
          * 
          * @param fieldName
          * @return
          */
-         Classification<Object> getClassification(String fieldName);
+        Classification<Object> GetClassification(String fieldName);
         /**
          * Returns the most recent anomaly calculation.
          * @return
          */
-         double getAnomalyScore();
+         double AnomalyScore { get; }
         /**
          * Returns the column activation from a {@link SpatialPooler}
          * @return
          */
-         int[] getFeedForwardActiveColumns();
+        int[] FeedForwardActiveColumns { get; }
         /**
          * Returns the column activations in sparse form
          * @return
          */
-         int[] getFeedForwardSparseActives();
+        int[] FeedForwardSparseActives { get; }
         /**
          * Returns the column activation from a {@link TemporalMemory}
          * @return
          */
-         Set<Cell> getActiveCells();
+        List<Cell> ActiveCells { get; }
         /**
          * Returns the predicted output from the last inference cycle.
          * @return
          */
-         Set<Cell> getPreviousPredictiveCells();
+        List<Cell> PreviousPredictiveCells { get; }
         /**
          * Returns the currently predicted columns.
          * @return
          */
-         Set<Cell> getPredictiveCells();
+        List<Cell> PredictiveCells { get; }
     }
 }

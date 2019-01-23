@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using NeoCortexApi.Encoders;
+using NeoCortexApi.Sensors;
 
 namespace NeoCortexApi
 {
@@ -114,12 +115,11 @@ namespace NeoCortexApi
     {
         #region Private Fields
 
-
         private ILogger logger;
 
         private bool isClosed;
-
-        public Network ParentNetwork { get; set; }
+      
+        public CortexNetwork ParentNetwork { get; set; }
         public string Name { get; private set; }
 
         protected Parameters parameters;
@@ -130,12 +130,12 @@ namespace NeoCortexApi
 
         protected int numColumns;
 
-        protected Network parentNetwork;
+        protected CortexNetwork parentNetwork;
         protected Region parentRegion;
 
+        Dictionary<Type, IObservable<ManualInput>> observableDispatch = new Dictionary<Type, IObservable<ManualInput>>();
 
-
-        protected HTMSensor<?> sensor;
+        protected HTMSensor<T> sensor;
         protected MultiEncoder encoder;
         protected SpatialPooler spatialPooler;
         protected TemporalMemory temporalMemory;
@@ -145,10 +145,10 @@ namespace NeoCortexApi
 
         private bool? autoCreateClassifiers;
 
-        private readonly ConcurrentQueue<IObserver<IInference>> subscribers = new ConcurrentQueue<IObserver<IInference>>();
-        private readonly PublishSubject<T> publisher = null;
+        private readonly List<IObserver<IInference>> subscribers = new List<IObserver<IInference>>();
+        private PublisherSubject<IInference> publisher = null;
         private readonly IObservable<IInference> userObservable;
-        private readonly Subscription subscription;
+        private readonly Subscription<T> subscription;
 
         private readonly IInference currentInference;
 
@@ -161,17 +161,22 @@ namespace NeoCortexApi
 
         private String name;
 
-
         private volatile bool isHalted;
         private volatile bool isPostSerialized;
         protected volatile bool isLearn = true;
 
-        private Layer<IInference> next;
-        private Layer<IInference> previous;
+        private Layer<IInference> nextLayer;
+
+        public Layer<IInference> NextLayer { get => nextLayer; set => nextLayer = value; }
+
+        private Layer<IInference> previousLayer;
+        public Layer<IInference> PreviousLayer { get => previousLayer; set => previousLayer = value; }
 
         private readonly List<IObserver<IInference>> observers = new List<IObserver<IInference>>();
         private readonly ICheckPointOp<T> checkPointOp;
         private readonly List<IObserver<byte[]>> checkPointOpObservers = new List<IObserver<byte[]>>();
+
+        ManualInput inference = new ManualInput();
 
         #endregion
 
@@ -222,6 +227,10 @@ namespace NeoCortexApi
                 return observableDispatch == null;
             }
         }
+
+      
+
+
         #endregion
 
         /**
@@ -238,13 +247,39 @@ namespace NeoCortexApi
          *                                  contains the configurations necessary to create the required encoders.
          * @param a                         (optional) An {@link Anomaly} computer.
          */
-        public Layer(string name = null, Network network = null, Parameters parameters = null, IHtmModule module = null, bool autoCreateClassifiers = false) :
+        public Layer(string name = null, CortexNetwork network = null, Parameters parameters = null, IHtmModule module = null, bool autoCreateClassifiers = false) :
             this(name, network, parameters, new List<IHtmModule> { module }, autoCreateClassifiers)
         {
+        
+        }
+        
+        /// <summary>
+        /// Registers specified subscriber.
+        /// </summary>
+        /// <param name="subscriber"></param>
+        /// <returns></returns>
+  
+        public ISubscription<IInference> Subscribe(IObserver<IInference> subscriber)
+        {
+            // This will be called again after the Network is halted so we have to prepare
+            // for rebuild of the Observer chain
+            //if (isHalted)
+            //{
+            //    clearSubscriberObserverLists();
+            //}
 
+            if (subscriber == null)
+            {
+                throw new ArgumentException("Subscriber cannot be null.");
+            }
+
+          
+            this.subscribers.Add(subscriber);
+
+            return this.publisher.Subscribe(subscriber) as ISubscription<IInference>;
         }
 
-        public Layer(string name = null, Network network = null, Parameters parameters = null, ICollection<IHtmModule> modules = null, bool? autoCreateClassifiers = null)
+        public Layer(string name = null, CortexNetwork network = null, Parameters parameters = null, ICollection<IHtmModule> modules = null, bool? autoCreateClassifiers = null)
         //MultiEncoder e = null, SpatialPooler sp = null, TemporalMemory tm = null, Boolean autoCreateClassifiers = null, Anomaly a = null)
         {
             if (name == null)
@@ -256,7 +291,7 @@ namespace NeoCortexApi
                 throw new ArgumentException("No parameters specified.");
             }
 
-            var mulEncoder = modules.FirstOrDefault(m => m.GetType() == typeof(Multiencoder));
+            var mulEncoder = modules.FirstOrDefault(m => m.GetType() == typeof(MultiEncoder));
             // Check to see if the Parameters include the encoder configuration.
             if (parameters[KEY.FIELD_ENCODING_MAP] == null && modules != null)
             {
@@ -295,25 +330,84 @@ namespace NeoCortexApi
         }
 
 
+        /// <summary>
+        /// Notify all subscribers that processing has completed succesfully.
+        /// </summary>
+        public void NotifyComplete()
+        {
+            foreach (var subscriber in this.subscribers)
+            {
+                subscriber.OnCompleted();
+            }
+
+            foreach (var observer in this.observers)
+            {
+                observer.OnCompleted();
+            }
+
+            publisher.OnCompleted();
+        }
 
         /**
-      * Processes a single element, sending the specified input up the configured
-      * chain of algorithms or components within this {@code Layer}; resulting in
-      * any {@link Subscriber}s or {@link Observer}s being notified of results
-      * corresponding to the specified input (unless a {@link SpatialPooler}
-      * "primer delay" has been configured).
-      * 
-      * The first input to the Layer invokes a method to resolve the transformer
-      * at the bottom of the input chain, therefore the "type" (&lt;T&gt;) of the
-      * input cannot be changed once this method is called for the first time.
-      * 
-      * @param t     the input object who's type is generic.
-      */
-        public void Compute(T t)
+        * We cannot create the {@link Observable} sequence all at once because the
+        * first step is to transform the input type to the type the rest of the
+        * sequence uses (Observable<b>&lt;Inference&gt;</b>). This can only happen
+        * during the actual call to {@link #compute(Object)} which presents the
+        * input type - so we create a map of all types of expected inputs, and then
+        * connect the sequence at execution time; being careful to only incur the
+        * cost of sequence assembly on the first call to {@link #compute(Object)}.
+        * After the first call, we dispose of this map and its contents.
+        * 
+        * @return the map of input types to {@link Transformer}
+*/
+
+        private Dictionary<Type, IObservable<ManualInput>> createDispatchMap()
+        {
+            Dictionary<Type, IObservable<ManualInput>> observableDispatch = new Dictionary<Type, IObservable<ManualInput>>();
+
+            this.publisher = new PublisherSubject<IInference>();
+            var fDict = new Func<PublisherSubject<IInference>, object, IObservable<ManualInput>>(
+                (pub, inp)=> { return null; }
+                );
+
+
+            var fInt = new Func<PublisherSubject<IInference>, int[], IObservable<ManualInput>>(
+              (pub, inp) => {
+
+              inference.RecordNum = this.recordNum;
+                  inference.LayerInput = inp;
+
+                  return this.inference;
+              }
+              );
+
+
+            observableDispatch.Add((Class<T>)Map.class, factory.createMultiMapFunc(publisher));
+        observableDispatch.put((Class<T>) ManualInput.class, factory.createManualInputFunc(publisher));
+        observableDispatch.put((Class<T>) String[].class, factory.createEncoderFunc(publisher));
+        observableDispatch.put((Class<T>)int[].class, factory.createVectorFunc(publisher));
+
+        return observableDispatch;
+    }
+
+    /**
+  * Processes a single element, sending the specified input up the configured
+  * chain of algorithms or components within this {@code Layer}; resulting in
+  * any {@link Subscriber}s or {@link Observer}s being notified of results
+  * corresponding to the specified input (unless a {@link SpatialPooler}
+  * "primer delay" has been configured).
+  * 
+  * The first input to the Layer invokes a method to resolve the transformer
+  * at the bottom of the input chain, therefore the "type" (&lt;T&gt;) of the
+  * input cannot be changed once this method is called for the first time.
+  * 
+  * @param t     the input object who's type is generic.
+  */
+    public void Compute(T t)
         {
             if (!isClosed)
             {
-                close();
+                CloseInit();
             }
 
             increment();
@@ -323,7 +417,25 @@ namespace NeoCortexApi
                 completeDispatch(t);
             }
 
-            publisher.onNext(t);
+            publisher.OnNext(t);
+        }
+
+
+        /// <summary>
+        /// Increments the current record sequence number.
+        /// </summary>
+        /// <returns></returns>
+        public Layer<T> increment()
+        {
+            if (skip > -1)
+            {
+                --skip;
+            }
+            else
+            {
+                ++recordNum;
+            }
+            return this;
         }
 
         internal ICheckPointOp<byte[]> delegateCheckPointCall()
@@ -335,7 +447,13 @@ namespace NeoCortexApi
             return null;
         }
 
-        public Layer<T> close()
+        /// <summary>
+        /// Finalizes the initialization in one method call so that side effect
+        /// operations to share objects and other special initialization tasks can
+        /// happen all at once in a central place for maintenance ease.
+        /// </summary>
+        /// <returns></returns>
+        public Layer<T> CloseInit()
         {
             if (this.isClosed)
             {
@@ -349,10 +467,10 @@ namespace NeoCortexApi
             {
                 encoder = encoder == null ? sensor.getEncoder() : encoder;
                 sensor.initEncoder(this.parameters);
-                connections.setNumInputs(encoder.getWidth());
+                connections.NumInputs = encoder.getWidth();
                 if (parentNetwork != null && parentRegion != null)
                 {
-                    parentNetwork.setSensorRegion(parentRegion);
+                    parentNetwork.SensorRegion = parentRegion;
 
                     Object supplier;
                     if ((supplier = sensor.getSensorParams().get("ONSUB")) != null)
