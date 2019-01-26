@@ -16,7 +16,7 @@ namespace NeoCortexApi
      * @author Numenta
      * @author cogmission
      */
-    public class TemporalMemory : IHtmModule//: IComputeDecorator
+    public class TemporalMemory : IHtmAlgorithm//: IComputeDecorator
     {
         /** simple serial version id */
         private static readonly long serialVersionUID = 1L;

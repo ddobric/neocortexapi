@@ -56,7 +56,7 @@ namespace NeoCortexApi
          * 
          * @return
          */
-        int[] getSDR { get; }
+        int[] Sdr { get; }
         /**
          * Returns the initial encoding produced by an {@link Encoder} or one
          * of its subtypes.

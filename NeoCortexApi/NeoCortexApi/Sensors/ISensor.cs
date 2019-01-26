@@ -54,7 +54,7 @@ namespace NeoCortexApi.Sensors
          * 
          * @return the constructed Stream
          */
-        List<List<object>> getInputStream();
+        IMetaStream<T> getInputStream();
 
         /**
          * Returns the inner Stream's meta information.

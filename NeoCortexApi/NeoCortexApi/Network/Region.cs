@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace NeoCortexApi
 {
-    public class Region
+    public class Region //where T : IInference
     {
         #region Private Members
         private ILogger logger;
@@ -15,6 +15,15 @@ namespace NeoCortexApi
         private Region upstreamRegion;
         private CortexNetwork parentNetwork;
         private Region downstreamRegion;
+
+        /** Stores the overlap of algorithms state for {@link Inference} sharing determination */
+        byte flagAccumulator = 0;
+        /** 
+         * Indicates whether algorithms are repeated, if true then no, if false then yes
+         * (for {@link Inference} sharing determination) see {@link Region#configureConnection(Layer, Layer)} 
+         * and {@link Layer#getMask()}
+         */
+        bool layersDistinct = true;
 
         /// <summary>
         /// All layers.
@@ -109,6 +118,27 @@ namespace NeoCortexApi
             return this;
         }
 
+            /**
+      * Used to manually input data into a {@link Region}, the other way 
+      * being the call to {@link Region#start()} for a Region that contains
+      * a {@link Layer} which in turn contains a {@link Sensor} <em>-OR-</em>
+      * subscribing a receiving Region to this Region's output Observable.
+      * 
+      * @param input One of (int[], String[], {@link ManualInput}, or Map&lt;String, Object&gt;)
+      */
+      
+    public void Compute(IInference input)
+        {
+            if (!assemblyClosed)
+            {
+                close();
+            }
+
+            this.input = input;
+
+            ((Layer<IInference>)tail).Compute(input);
+        }
+
         /// <summary>
         /// Configures connection between two layers, by filling lists of all 
         /// output (source) and input (sink) layers.
@@ -132,12 +162,15 @@ namespace NeoCortexApi
 
             //byte inMask = in.getMask();
             //byte outMask = out.getMask();
-            //if (!allLayers.Contains(output))
-            //{
-            //    layersDistinct = (flagAccumulator & outMask) < 1;
-            //    flagAccumulator |= outMask;
-            //}
-            //if (!allLayers.contains(in))
+
+            output.mas
+            if (!allLayers.Contains(output))
+            {
+                layersDistinct = (flagAccumulator & outMask) < 1;
+                flagAccumulator |= outMask;
+            }
+
+            if (!allLayers.contains(input))
             //{
             //    layersDistinct = (flagAccumulator & inMask) < 1;
             //    flagAccumulator |= inMask;
@@ -167,16 +200,25 @@ namespace NeoCortexApi
                 throw error;
             }
 
+            /// <summary>
+            /// Invoked after layer has completed calculation.
+            /// </summary>
+            /// <param name="inference"></param>
             public void OnNext(IInference inference)
             {
+             
+
                 if (layersDistinct)
                 {
                     this.inputLayer.compute(inference);
                 }
                 else
                 {
-                    localInf.sdr(i.getSDR()).recordNum(i.getRecordNum()).layerInput(i.getSDR());
-                    this.inputLayer.compute(localInf);
+                    ManualInput newInf = new ManualInput();
+                    newInf.Sdr = inference.Sdr;
+                    newInf.RecordNum = inference.RecordNum;
+                    newInf.LayerInput = inference.Sdr;
+                    this.inputLayer.compute(newInf);
                 }
             }
         }

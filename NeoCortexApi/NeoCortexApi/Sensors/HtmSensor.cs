@@ -37,9 +37,9 @@ namespace NeoCortexApi.Sensors
       * @return  a {@link MetaStream} instance.
       */
    
-        public <K> MetaStream<K> getInputStream()
+        public IMetaStream<T> getInputStream()
         {
-            return (MetaStream<K>)sensor.getInputStream();
+            return (IMetaStream<T>)sensor.getInputStream();
         }
 
         public HTMSensor(ISensor<T> sensor)
@@ -51,6 +51,7 @@ namespace NeoCortexApi.Sensors
             {
                 throw new InvalidOperationException("Header must always be present; and have 3 lines.");
             }
+
             createEncoder();
         }
 
@@ -60,7 +61,7 @@ namespace NeoCortexApi.Sensors
             throw new NotImplementedException();
         }
 
-        public int GetHashCode()
+        public override int GetHashCode()
         {
             const int prime = 31;
             int result = 1;
