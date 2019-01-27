@@ -92,6 +92,6 @@ namespace NeoCortexApi.Encoders
                 return (TBuilder)this;
             }
         }
-    }
+    
 }
 

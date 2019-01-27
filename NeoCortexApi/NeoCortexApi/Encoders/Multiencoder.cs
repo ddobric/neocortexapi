@@ -7,7 +7,7 @@ namespace NeoCortexApi.Encoders
     public class MultiEncoder : EncoderBase
     {     
         
-        public override void Initialize(Dictionary<string, object> encoderSettings)
+        public override void AfterInitialize()
         {
             throw new NotImplementedException();
         }

@@ -16,20 +16,34 @@ namespace NeoCortexApi.Network
 
         public IHtmModule MyProperty { get; set; }
 
-        public EncoderBase CreateEncoder(string encoderType, Dictionary<String, Object> encoderSettings)
+        /// <summary>
+        /// Gets all available encoders.
+        /// </summary>
+        public List<Type> Encoders { get => allEncoders;}
+
+        /// <summary>
+        /// Loads all implemented encoders in all load assemblies.
+        /// </summary>
+        public CortexNetworkContext()
         {
-            if (allEncoders.Count == 0)
+            foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
             {
-                foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+                foreach (var tp in asm.GetTypes())
                 {
-                    foreach (var tp in asm.GetTypes())
-                    {
-                        if (typeof(EncoderBase).IsAssignableFrom(tp))
-                            this.allEncoders.Add(tp);
-                    }
+                    if (typeof(EncoderBase).IsAssignableFrom(tp))
+                        this.allEncoders.Add(tp);
                 }
             }
+        }
 
+        /// <summary>
+        /// Creates the encoder instance from specified set of properties.
+        /// </summary>
+        /// <param name="encoderType"></param>
+        /// <param name="encoderSettings"></param>
+        /// <returns></returns>
+        public EncoderBase CreateEncoder(string encoderType, Dictionary<String, Object> encoderSettings)
+        {
             var encoderTp = this.allEncoders.FirstOrDefault(t => t.FullName == encoderType);
             if (encoderTp != null)
             {
@@ -46,11 +60,11 @@ namespace NeoCortexApi.Network
                     EncoderBase instance = Activator.CreateInstance(encoderTp) as EncoderBase;
                     instance.Initialize(encoderSettings);
                     return instance;
-                }              
+                }
             }
             else
                 throw new ArgumentException($"Specified encoder cannot be resolved. Encoder: {encoderTp}");
-           
+
         }
     }
 }

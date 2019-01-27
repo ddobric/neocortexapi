@@ -9,31 +9,189 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Linq;
+
 
 namespace UnitTestsProject
 {
     [TestClass]
     public class EncoderTests
     {
+
+        /// <summary>
+        /// Initializes encoder and invokes Encode method.
+        /// </summary>
         [TestMethod]
-        public void StableOutputOnSameInputTest()
+        [DataRow(281)]
+        [DataRow(42)]
+        [DataRow(123242)]
+        [DataRow(-1)]
+        public void EncodeTest1(int input)
         {
             CortexNetworkContext ctx = new CortexNetworkContext();
 
-            ctx.CreateEncoder(typeof(TestEncoder).FullName, null);
+            Dictionary<string, object> encoderSettings = getDefaultSettings();
 
-            ctx.CreateEncoder(typeof(MultiEncoder).FullName, null);
+            TestEncoder encoder = new TestEncoder(encoderSettings);
+
+            var result = encoder.Encode(input);
+
+            Assert.IsTrue(result.Length == 2);
+
+            Assert.IsTrue(result[0] == input + 1);
+
+            Assert.IsTrue(result[1] == 1);
+        }
+
+        /// <summary>
+        /// Demonstratses how to create an encoder by explicite invoke of initialization.
+        /// </summary>
+        [TestMethod]
+        public void InitTest1()
+        {
+            Dictionary<string, object> encoderSettings = getDefaultSettings();
+
+            // We change here value of Name property.
+            encoderSettings["Name"] = "hello";
+
+            // We add here new property.
+            encoderSettings.Add("TestProp1", "hello");
+
+            var encoder = new TestEncoder();
+
+            // Settings can also be passed by invoking Initialize(sett)
+            encoder.Initialize(encoderSettings);
+
+            // Property can also be set this way.
+            encoder["abc"] = "1";
+
+            Assert.IsTrue((string)encoder["TestProp1"] == "hello");
+
+            Assert.IsTrue((string)encoder["Name"] == "hello");
+
+            Assert.IsTrue((string)encoder["abc"] == "1");
+        }
 
 
+        /// <summary>
+        /// Initializes encoder and sets mandatory properties.
+        /// </summary>
+        [TestMethod]
+        public void InitTest2()
+        {
+            CortexNetworkContext ctx = new CortexNetworkContext();
+
+            Dictionary<string, object> encoderSettings = getDefaultSettings();
+
+            var encoder = ctx.CreateEncoder(typeof(TestEncoder).FullName, encoderSettings);
+
+            foreach (var item in encoderSettings)
+            {
+                Assert.IsTrue(item.Value == encoder[item.Key]);
+            }
+        }
+
+        /// <summary>
+        /// Demonstratses how to create an encoder and how to set encoder properties by using of context.
+        /// </summary>
+        [TestMethod]
+        public void InitTest3()
+        {
+            CortexNetworkContext ctx = new CortexNetworkContext();
+
+            // Gets set of default properties, which more or less every encoder requires.
+            Dictionary<string, object> encoderSettings = getDefaultSettings();
+
+            // We change here value of Name property.
+            encoderSettings["Name"] = "hello";
+
+            // We add here new property.
+            encoderSettings.Add("TestProp1", "hello");
+
+            var encoder = ctx.CreateEncoder(typeof(TestEncoder).FullName, encoderSettings);
+
+            // Property can also be set this way.
+            encoder["abc"] = "1";
+
+            Assert.IsTrue((string)encoder["TestProp1"] == "hello");
+
+            Assert.IsTrue((string)encoder["Name"] == "hello");
+
+            Assert.IsTrue((string)encoder["abc"] == "1");
+        }
+
+
+        /// <summary>
+        /// Demonstratses how to create an encoder by explicite invoke of initialization.
+        /// </summary>
+        [TestMethod]
+        public void InitTest4()
+        {
+            Dictionary<string, object> encoderSettings = getDefaultSettings();
+
+            // We change here value of Name property.
+            encoderSettings["Name"] = "hello";
+
+            // We add here new property.
+            encoderSettings.Add("TestProp1", "hello");
+
+            var encoder = new TestEncoder();
+
+            // Settings can also be passed by invoking Initialize(sett)
+            encoder.Initialize(encoderSettings);
+
+            // Property can also be set this way.
+            encoder["abc"] = "1";
+
+            Assert.IsTrue((string)encoder["TestProp1"] == "hello");
+
+            Assert.IsTrue((string)encoder["Name"] == "hello");
+
+            Assert.IsTrue((string)encoder["abc"] == "1");
+        }
+               
+        /// <summary>
+        /// Initializes all encoders.
+        /// </summary>
+        [TestMethod]
+        public void InitializeAllEncodersTest()
+        {
+            CortexNetworkContext ctx = new CortexNetworkContext();
+
+            Assert.IsTrue(ctx.Encoders != null && ctx.Encoders.Count > 0);
+
+            Dictionary<string, object> encoderSettings = getDefaultSettings();
+
+            foreach (var item in ctx.Encoders)
+            {
+                var encoder = ctx.CreateEncoder(typeof(TestEncoder).FullName, encoderSettings);
+
+                foreach (var sett in encoderSettings)
+                {
+                    Assert.IsTrue(sett.Value == encoder[sett.Key]);
+                }
+            }         
         }
 
 
 
-
+        private static Dictionary<string, object> getDefaultSettings()
+        {
+            Dictionary<String, Object> encoderSettings = new Dictionary<string, object>();
+            encoderSettings.Add("N", 5);
+            encoderSettings.Add("W", 10);
+            encoderSettings.Add("MinVal", (double)5);
+            encoderSettings.Add("MaxVal", (double)10);
+            encoderSettings.Add("Radius", (double)5);
+            encoderSettings.Add("Resolution", (double)10);
+            encoderSettings.Add("Periodic", (bool)false);
+            encoderSettings.Add("ClipInput", (bool)true);
+            return encoderSettings;
+        }
     }
 
     /// <summary>
-    /// TODO
+    /// Implementation of simple test encoder.
     /// </summary>
     public class TestEncoder : EncoderBase
     {
@@ -45,13 +203,9 @@ namespace UnitTestsProject
 
         #endregion
 
-
-
         #region Private Methods
 
         #endregion
-
-
 
         #region Public Methods
 
@@ -65,15 +219,24 @@ namespace UnitTestsProject
             this.Initialize(encoderSettings);
         }
 
-        public override void Initialize(Dictionary<string, object> encoderSettings)
+        public override void AfterInitialize()
         {
 
         }
 
-       
+        /// <summary>
+        /// Encodes specified value by adding +1.
+        /// </summary>
+        /// <param name="inputData"></param>
+        /// <returns></returns>
         public override int[] Encode(object inputData)
         {
-            return new[] { 1,0,0,1,0,1,0};
+            if (inputData.GetType() == typeof(int) || inputData.GetType() == typeof(double))
+            {
+                return new int[] { (int)(inputData) + 1, 1 };
+            }
+            else
+                throw new NotSupportedException();
         }
 
         public override List<B> getBucketValues<B>()

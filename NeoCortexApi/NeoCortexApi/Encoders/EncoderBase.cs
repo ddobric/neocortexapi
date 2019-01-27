@@ -8,9 +8,16 @@ using System.Text;
 
 namespace NeoCortexApi.Encoders
 {
- 
+    /// <summary>
+    /// Base class for all encoders.
+    /// </summary> 
     public abstract class EncoderBase : IHtmModule
     {
+        /// <summary>
+        /// List of all encoder properties.
+        /// </summary>
+        protected Dictionary<string, object> Properties = new Dictionary<string, object>();
+        
 
         /**
          * <pre>
@@ -55,49 +62,18 @@ namespace NeoCortexApi.Encoders
 
         /** Value used to represent no data */
         //public static readonly double SENTINEL_VALUE_FOR_MISSING_DATA = Double.NaN;
-        protected List<Tuple<string, int>> description = new List<Tuple<string, int>>();
-
-        protected int n = 0;
-
-        /** The number of bits that are set to encode a single value - the
-         * "width" of the output signal
-         */
-        protected int w = 0;
+        protected List<Tuple<string, int>> description = new List<Tuple<string, int>>();   
 
         /** number of bits in the representation (must be >= w) */
         protected int m_NumOfBits = 0;
 
         /** the half width value */
         protected int halfWidth;
-        /**
-         * inputs separated by more than, or equal to this distance will have non-overlapping
-         * representations
-         */
-        protected double radius = 0;
-
-        /** inputs separated by more than, or equal to this distance will have different representations */
-        protected double resolution = 0;
-        /**
-         * If true, then the input value "wraps around" such that minval = maxval
-         * For a periodic value, the input must be strictly less than maxval,
-         * otherwise maxval is a true upper bound.
-         */
-        protected bool periodic = true;
-        /** The minimum value of the input signal.  */
-        protected double minVal = 0;
-        /** The maximum value of the input signal. */
-        protected double maxVal = 0;
-        /** if true, non-periodic inputs smaller than minval or greater
-                than maxval will be clipped to minval/maxval */
-        protected bool clipInput;
-        /** if true, skip some safety checks (for compatibility reasons), default false */
-        protected bool isForced;
-        /** Encoder name - an optional string which will become part of the description */
-        protected String m_Name = "";
-        protected int padding;
+     
+      
         protected int nInternal;
         protected double rangeInternal;
-        protected double range;
+        //protected double range;
         protected bool encLearningEnabled;
         protected List<FieldMetaType> flattenedFieldTypeList;
         protected Dictionary<Dictionary<string, int>, List<FieldMetaType>> decoderFieldTypes;
@@ -125,204 +101,100 @@ namespace NeoCortexApi.Encoders
         /// <param name="encoderSettings"></param>
         public EncoderBase(Dictionary<String, Object> encoderSettings)
         {
-            Initialize(encoderSettings);
+            this.Initialize(encoderSettings);
         }
 
+
         /// <summary>
-        /// Called by framework to initialize encoder with all required settings.
+        /// Sets the copy all properties.
         /// </summary>
         /// <param name="encoderSettings"></param>
-        public abstract void Initialize(Dictionary<String, Object> encoderSettings);
-       
 
-        #region Properties
+        public void Initialize(Dictionary<String, Object> encoderSettings)
+        {
+            this.Properties.Clear();
 
-        public int N { get => this.n; set => this.n = value; }
+            foreach (var item in encoderSettings)
+            {
+                this.Properties.Add(item.Key, item.Value);
+            }
 
-        /**
-         * Returns w
-         * @return
-         */
-        ///////////////////////////////////////////////////////////
-        /**
-         * Sets the "w" or width of the output signal
-         * <em>Restriction:</em> w must be odd to avoid centering problems.
-         * @param w
-         */
-        public int W { get => w; set => this.w = value; }
-
-
-        /**
-* For non-periodic inputs, padding is the number of bits "outside" the range,
-* on each side. I.e. the representation of minval is centered on some bit, and
-* there are "padding" bits to the left of that centered bit; similarly with
-* bits to the right of the center bit of maxval
-*
-* @param padding
-*/
-        public int Padding { get => padding; set => this.padding = value; }
-
-        /**
-       * Returns the radius
-       * @return
-       */
-        /**
- * inputs separated by more than, or equal to this distance will have non-overlapping
- * representations
- *
- * @param radius
- */
-        public double Radius { get => radius; set => this.radius = value; }
-
-
-        /**
-         * Returns the range internal value
-         * @return
-         */
-        /**
- * Sets rangeInternal
- * @param r
- */
-        public double RangeInternal { get => rangeInternal; set => this.rangeInternal = value; }
-
-        /**
-         * Returns the range
-         * @return
-         */
-        /**
- * Sets the range
- * @param range
- */
-        public double Range { get => range; set => this.range = value; }
-
-        /**
-         * nInternal represents the output area excluding the possible padding on each
-         * side
-         * @return
-         */
-        /**
- * nInternal represents the output area excluding the possible padding on each side
- *
- * @param n
- */
-        public int NInternal { get => nInternal; set => this.nInternal = value; }
-
-
-        /**
-         * Returns the top down range of values
-         * @return
-         */
-        /**
- * Range of values.
- * @param values
- */
-        public double[] TopDownValues { get => topDownValues; set => this.topDownValues = value; }
-
-
-        /**
-         * Returns n
-         * @return
-         */
-        /**
- * The number of bits in the output. Must be greater than or equal to w
- * @param n
- */
-        public int NumOfBits { get => m_NumOfBits; set => this.m_NumOfBits = value; }
-        /**
-       * Returns minval
-       * @return
-       */
-        /**
- * The minimum value of the input signal.
- * @param minVal
- */
-        public double MinVal { get => minVal; set => this.minVal = value; }
-
-
-        /**
-         * Returns maxval
-         * @return
-         */
-        /**
- * The maximum value of the input signal.
- * @param maxVal
- */
-        public double MaxVal { get => maxVal; set => this.maxVal = value; }
-
-
-        /**
-         * Return the half width value.
-         * @return
-         */
-
-        /**
-         * Half the width
-         * @param hw
-         */
-        public int HalfWidth { get => halfWidth; set => this.halfWidth = value; }
-
-
-        /**
-         * inputs separated by more than, or equal to this distance will have different
-         * representations
-         *
-         * @param resolution
-         */
-        public double Resolution { get => resolution; set => this.resolution = value; }
-
-
-
-        /**
-         * Returns the clip input flag
-         * @return
-         */
-        /**
-     * If true, non-periodic inputs smaller than minval or greater
-     * than maxval will be clipped to minval/maxval
-     * @param b
-     */
-        public bool ClipInput { get => this.clipInput; set => this.clipInput = value; }
-
-        /**
-         * Returns the periodic flag
-         * @return
-         */
-        /**
-     * If true, then the input value "wraps around" such that minval = maxval
-     * For a periodic value, the input must be strictly less than maxval,
-     * otherwise maxval is a true upper bound.
-     *
-     * @param b
-     */
-        public bool Periodic { get => periodic; set => this.periodic = value; }
-
-        /**
-         * Returns the forced flag
-         * @return
-         */
-        /**
-     * If true, skip some safety checks (for compatibility reasons), default false
-     * @param b
-     */
-        public bool IsForced { get => isForced; set => this.isForced = value; }
-
+            this.AfterInitialize();
+        }
 
 
         /// <summary>
-        /// The number of bits in the output. Must be greater than or equal to w
+        /// Called by framework to initialize encoder with all required settings. This method is useful
+        /// for implementation of validation logic for properties.
+        /// Otherwise, if any additional initialization is required, override this method.
+        /// When this method is called, all encoder properties are already set in member <see cref="Properties"/>.
         /// </summary>
-        public string Name { get => m_Name; set => this.m_Name = value; }
+        public virtual void AfterInitialize()
+        {
 
-        /**
- * Returns the names of the fields
- *
- * @return	the list of names
- */
-        /**
- * Sets the names of the fields
- *
- * @param names	the list of names
- */
+        }
+        
+        #region Properties
+
+        /// <summary>
+        /// Key acces to property set.
+        /// </summary>
+        /// <param name="key">Name of property.</param>
+        /// <returns></returns>
+        public object this[string key]
+        {
+            get
+            {
+                return Properties[key];
+            }
+
+            set
+            {
+                Properties[key] = value;
+            }
+        }
+
+        #region Keyval Properties
+
+      
+        public int N { get => (int)this["N"]; set => this["N"] = (int)value; }
+       
+        public int W { get => (int)this["W"]; set => this["W"] = (int)value; }
+
+        public double MinVal { get => (double)this["MinVal"]; set => this["MinVal"] = (double)value; }
+
+        public double MaxVal { get => (double)this["MaxVal"]; set => this["MaxVal"] = (double)value; }
+
+        public double Radius { get => (double)this["Radius"]; set => this["Radius"] = (double)value; }
+
+        public double Resolution { get => (double)this["Resolution"]; set => this["Resolution"] = (double)value; }
+
+        public bool Periodic { get => (bool)this["Periodic"]; set => this["Periodic"] = (bool)value; }
+
+        public bool ClipInput { get => (bool)this["ClipInput"]; set => this["ClipInput"] = (bool)value; } 
+
+
+        public int Padding { get => (int)this["Padding"]; set => this["Padding"] = value; }
+
+        public double Range { get => (double)this["Range"]; set => this["Range"] = value; }
+
+        public bool IsForced { get => (bool)this["IsForced"]; set => this["IsForced"] = value; }
+
+        public string Name { get => (string)this["Name"]; set => this["Name"] = value; }
+
+        #endregion
+
+
+        public double RangeInternal { get => rangeInternal; set => this.rangeInternal = value; }
+
+        public int NInternal { get => nInternal; set => this.nInternal = value; }
+
+        public double[] TopDownValues { get => topDownValues; set => this.topDownValues = value; }
+
+        public int NumOfBits { get => m_NumOfBits; set => this.m_NumOfBits = value; }     
+ 
+        public int HalfWidth { get => halfWidth; set => this.halfWidth = value; }   
+ 
         public List<String> ScalarNames { get => scalarNames; set => this.scalarNames = value; }
 
         /**
@@ -978,7 +850,7 @@ namespace NeoCortexApi.Encoders
             List<String> fieldsOrder = new List<String>();
 
             String parentName = parentFieldName == null || parentFieldName.Length == 0 || parentFieldName == null ?
-                this.m_Name : $"{parentFieldName}.{this.m_Name}";
+                this.Name : $"{parentFieldName}.{Name}";
 
             List<EncoderTuple > encoders = getEncoders(this);
 
