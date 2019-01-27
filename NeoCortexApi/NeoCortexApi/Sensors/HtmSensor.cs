@@ -13,6 +13,7 @@ namespace NeoCortexApi.Sensors
     public class HTMSensor<T> : ISensor<T>, IMetaStream<T>, IEquatable<HTMSensor<T>>
     {
         private bool encodersInitted;
+        private CortexNetworkContext context;
         private ISensor<T> sensor;
         private SensorParameters sensorParams;
         private Header header;
@@ -55,8 +56,13 @@ namespace NeoCortexApi.Sensors
    * needed to process the configured field types.
    */
 
-        public HTMSensor(ISensor<T> sensor)
+        public HTMSensor(ISensor<T> sensor, CortexNetworkContext context)
         {
+            if (sensor == null || context == null)
+                throw new ArgumentException("Sensor and context must be both provided.");
+
+            this.context = context;
+
             this.sensor = sensor;
             this.sensorParams = sensor.getSensorParams();
             header = new Header(sensor.getInputStream().getMeta());
@@ -100,6 +106,8 @@ namespace NeoCortexApi.Sensors
             if (!prms.ContainsKey("encoderType")) {
                 throw new ArgumentException($"Missing type for encoder {field}");
             }
+
+                this.context.CreateEncoder<T>(encoderType, prms);
 
             String encoderType = (String) prms["encoderType"];
             Builder <?, ?> builder = ((MultiEncoder)encoder).getBuilder(encoderType);

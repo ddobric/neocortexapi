@@ -16,7 +16,7 @@ namespace NeoCortexApi.Network
 
         public IHtmModule MyProperty { get; set; }
 
-        public EncoderBase<T> CreateEncoder<T>(string encoderType)
+        public EncoderBase CreateEncoder(string encoderType, Dictionary<String, Object> encoderSettings)
         {
             if (allEncoders.Count == 0)
             {
@@ -30,16 +30,26 @@ namespace NeoCortexApi.Network
                 }
             }
 
-            var encoderTp = this.allEncoders.FirstOrDefault(t => t.Name == encoderType);
+            var encoderTp = this.allEncoders.FirstOrDefault(t => t.FullName == encoderType);
             if (encoderTp != null)
             {
-                var tp = typeof(EncoderBase<>);
-                Type constructedClass = tp.MakeGenericType(typeof(T));
-                EncoderBase<T> instance = Activator.CreateInstance(constructedClass) as EncoderBase<T>;
-                return instance;
+                if (encoderTp.IsGenericType)
+                {
+                    throw new ArgumentException("Encoders cannot be generic types.");
+                    //Type constructedClass = encoderTp.MakeGenericType(typeof(T));
+                    //EncoderBase<T> instance = Activator.CreateInstance(constructedClass) as EncoderBase<T>;
+                    //instance.Initialize(encoderSettings);
+                    //return instance;
+                }
+                else
+                {
+                    EncoderBase instance = Activator.CreateInstance(encoderTp) as EncoderBase;
+                    instance.Initialize(encoderSettings);
+                    return instance;
+                }              
             }
             else
-                throw new ArgumentException();
+                throw new ArgumentException($"Specified encoder cannot be resolved. Encoder: {encoderTp}");
            
         }
     }

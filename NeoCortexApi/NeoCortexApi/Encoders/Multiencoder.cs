@@ -4,26 +4,40 @@ using System.Text;
 
 namespace NeoCortexApi.Encoders
 {
-    public class MultiEncoder<T> : EncoderBase<T>
-    {
-        public override int[] encodeIntoArray(T inputData)
+    public class MultiEncoder : EncoderBase
+    {     
+        
+        public override void Initialize(Dictionary<string, object> encoderSettings)
         {
             throw new NotImplementedException();
         }
 
-        public override List<B> getBucketValues<B>(B returnType)
+        public override int[] Encode(object inputData)
         {
             throw new NotImplementedException();
         }
 
-        public override int getWidth()
+        public override List<T> getBucketValues<T>()
         {
             throw new NotImplementedException();
         }
 
-        public override bool isDelta()
+        public override int Width
         {
-            throw new NotImplementedException();
+            get
+            {
+                return this.Width;
+            }
+        }
+
+
+        public override bool IsDelta
+        {
+            get
+            {
+                return false;
+            }
+           
         }
     }
 }
