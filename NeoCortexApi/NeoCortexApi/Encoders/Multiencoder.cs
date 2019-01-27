@@ -4,9 +4,9 @@ using System.Text;
 
 namespace NeoCortexApi.Encoders
 {
-    public class MultiEncoder : EncoderBase<object>
+    public class MultiEncoder<T> : EncoderBase<T>
     {
-        public override int[] encodeIntoArray(object inputData)
+        public override int[] encodeIntoArray(T inputData)
         {
             throw new NotImplementedException();
         }

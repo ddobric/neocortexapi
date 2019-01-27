@@ -5,23 +5,31 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using NeoCortexApi.Utility;
+using System.IO;
+using NeoCortexApi.Network;
 
 namespace NeoCortexApi.Sensors
 {
-    public class HTMSensor<T> : ISensor<T>, IEquatable<HTMSensor<T>>
+    public class HTMSensor<T> : ISensor<T>, IMetaStream<T>, IEquatable<HTMSensor<T>>
     {
         private bool encodersInitted;
         private ISensor<T> sensor;
         private SensorParameters sensorParams;
         private Header header;
         private Parameters localParameters;
-        //private MultiEncoder encoder;
+        private MultiEncoder<T> encoder;
         private List<int[]> outputStream;
         private List<int[]> output;
         //private InputMap inputMap;
 
         private Dictionary<int, EncoderBase<T>> indexToEncoderMap;
+
         private Dictionary<String, object> indexFieldMap = new Dictionary<string, object>();
+
+        /// <summary>
+        /// Encoder attached to sensor.
+        /// </summary>
+        public MultiEncoder<T> Encoder { get => encoder; set => encoder = value; }
 
 
         /**
@@ -36,11 +44,16 @@ namespace NeoCortexApi.Sensors
       * </p>
       * @return  a {@link MetaStream} instance.
       */
-   
+
         public IMetaStream<T> getInputStream()
         {
             return (IMetaStream<T>)sensor.getInputStream();
         }
+
+        /**
+   * Called internally during construction to build the encoders
+   * needed to process the configured field types.
+   */
 
         public HTMSensor(ISensor<T> sensor)
         {
@@ -55,10 +68,213 @@ namespace NeoCortexApi.Sensors
             createEncoder();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="encoderSettings"></param>
+        private void setupEncoders(Dictionary<String, Dictionary<String, Object>> encoderSettings)
+        {
+            //if (encoder is typeof(MultiEncoder<T>)) {
+            if (encoderSettings == null || encoderSettings.Keys.Count == 0)
+            {
+                throw new ArgumentException(
+                    "Cannot initialize this Sensor's MultiEncoder with a null settings");
+            }
+            //}
+
+            var sortedFieldNames = encoderSettings.Keys.OrderBy(k => k);
+
+            const string cFieldName = "fieldName";
+
+            //MultiEncoderAssembler.assemble(Encoder, encoderSettings);
+            foreach (String field in sortedFieldNames)
+            {
+                var prms = encoderSettings[field];
+
+                if (!prms.ContainsKey(cFieldName)) {
+                    throw new ArgumentException($"Missing fieldname for encoder {field}");
+            }
+
+            String fieldName = (String) prms[cFieldName];
+
+            if (!prms.ContainsKey("encoderType")) {
+                throw new ArgumentException($"Missing type for encoder {field}");
+            }
+
+            String encoderType = (String) prms["encoderType"];
+            Builder <?, ?> builder = ((MultiEncoder)encoder).getBuilder(encoderType);
+
+            if (encoderType.equals("SDRCategoryEncoder"))
+            {
+                // Add mappings for category list
+                configureCategoryBuilder((MultiEncoder)encoder, params, builder);
+            }
+            else if (encoderType.equals("DateEncoder"))
+            {
+                // Extract date specific mappings out of the map so that we can
+                // pre-configure the DateEncoder with its needed directives.
+                configureDateBuilder(encoder, encoderSettings, (DateEncoder.Builder)builder);
+            }
+            else if (encoderType.equals("GeospatialCoordinateEncoder"))
+            {
+                // Extract Geo specific mappings out of the map so that we can
+                // pre-configure the GeospatialCoordinateEncoder with its needed directives.
+                configureGeoBuilder(encoder, encoderSettings, (GeospatialCoordinateEncoder.Builder)builder);
+            }
+            else
+            {
+                for (String param : params.keySet())
+                {
+                    if (!param.equals("fieldName") && !param.equals("encoderType") &&
+                        !param.equals("fieldType") && !param.equals("fieldEncodings"))
+                    {
+
+                        ((MultiEncoder)encoder).setValue(builder, param, params.get(param));
+                    }
+                }
+            }
+
+            encoder.addEncoder(fieldName, (Encoder <?>)builder.build());
+        }
+    }
+
+        /**
+     * Initializes this {@code HTMSensor}'s internal encoders if and 
+     * only if the encoders have not been previously initialized.
+     */
+
+
+        public void initEncoder(Parameters encoderParams)
+        {
+            this.localParameters = encoderParams;
+
+            Dictionary<String, Dictionary<String, Object>> encoderSettings;
+            if ((encoderSettings = (Dictionary<String, Dictionary<String, Object>>)encoderParams[KEY.FIELD_ENCODING_MAP]) != null &&
+                !encodersInitted)
+            {
+
+                setupEncoders(encoderSettings);
+
+                makeIndexEncoderMap();
+
+                encodersInitted = true;
+            }
+        }
+
+        private void createEncoder()
+        {
+            Encoder = new MultiEncoder<T>();
+
+            Dictionary<String, Dictionary<String, Object>> encoderSettings;
+            if (localParameters != null &&
+                (encoderSettings = (Dictionary<String, Dictionary<String, Object>>)localParameters[KEY.FIELD_ENCODING_MAP]) != null &&
+                    encoderSettings.Keys.Count != 0)
+            {
+
+                setupEncoders(encoderSettings);
+                makeIndexEncoderMap();
+            }
+        }
+
+
+        /**
+    * Returns the encoded output stream of the underlying {@link Stream}'s encoder.
+    * 
+    * @return      the encoded output stream.
+    */
+        public ICollection<int[]> getOutputStream()
+        {
+            if (this.isTerminal())
+            {
+                throw new InvalidOperationException("Stream is already \"terminal\" (operated upon or empty)");
+            }
+
+            MultiEncoder<T> encoder = (MultiEncoder<T>)getEncoder();
+            if (encoder == null)
+            {
+                throw new InvalidOperationException("setLocalParameters(Parameters) must be called before calling this method.");
+            }
+
+            // Protect outputStream formation and creation of "fan out" also make sure
+            // that no other thread is trying to update the fan out lists
+            Stream<int[]> retVal = null;
+            try
+            {
+                criticalAccessLock.lock () ;
+
+                final String[] fieldNames = getFieldNames();
+                final FieldMetaType[] fieldTypes = getFieldTypes();
+
+                if (outputStream == null)
+                {
+                    if (indexFieldMap.isEmpty())
+                    {
+                        for (int i = 0; i < fieldNames.length; i++)
+                        {
+                            indexFieldMap.put(fieldNames[i], i);
+                        }
+                    }
+
+                    // NOTE: The "inputMap" here is a special local implementation
+                    //       of the "Map" interface, overridden so that we can access
+                    //       the keys directly (without hashing). This map is only used
+                    //       for this use case so it is ok to use this optimization as
+                    //       a convenience.
+                    if (inputMap == null)
+                    {
+                        inputMap = new InputMap();
+                        inputMap.fTypes = fieldTypes;
+                    }
+
+                    final boolean isParallel = delegate.getInputStream().isParallel();
+
+                    output = new ArrayList<>();
+
+                    outputStream = delegate.getInputStream().map(l-> {
+                        String[] arr = (String[])l;
+                        inputMap.arr = arr;
+                        return input(arr, fieldNames, fieldTypes, output, isParallel);
+                    });
+
+                    mainIterator = outputStream.iterator();
+                }
+
+                LinkedList<int[]> l = new LinkedList<int[]>();
+                fanOuts.add(l);
+                Copy copy = new Copy(l);
+
+                retVal = StreamSupport.stream(Spliterators.spliteratorUnknownSize(copy,
+                    Spliterator.ORDERED | Spliterator.NONNULL | Spliterator.IMMUTABLE), false);
+
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+            finally
+            {
+                criticalAccessLock.unlock();
+            }
+
+            return retVal;
+        }
+
+        private void makeIndexEncoderMap()
+        {
+            indexToEncoderMap = new Dictionary<int, EncoderBase<T>>();
+
+            for (int i = 0, size = header.Metadata.FieldNames.Count; i < size; i++)
+            {
+            }
+        }
+
+     
+
+
 
         public SensorParameters getSensorParams()
         {
-            throw new NotImplementedException();
+            return this.sensor.getSensorParams();
         }
 
         public override int GetHashCode()
@@ -102,6 +318,14 @@ namespace NeoCortexApi.Sensors
             return true;
         }
 
-      
+        public HeaderMetaData getMeta()
+        {
+            return this.sensor.getInputStream().getMeta();
+        }
+
+        public bool isTerminal()
+        {
+            return false;
+        }
     }
 }
