@@ -3,11 +3,12 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>NeoCortexApi</PackageId>
-    <Version>1.0.4-beta</Version>
+    <Version>1.0.5-beta</Version>
     <Authors>Damir Dobric</Authors>
     <Company>daenet GmbH</Company>
     <Product>Hierarchical Temporal Framework in C#</Product>
     <Copyright>Damir Dobric</Copyright>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -18,47 +19,11 @@
   <ItemGroup>
     <Compile Remove="Encoders\EncoderBuilder.cs" />
     <Compile Remove="Encoders\ScalarEncoder.cs" />
-    <Compile Remove="Network\CortexNetwork.cs" />
-    <Compile Remove="Network\Header.cs" />
-    <Compile Remove="Network\HeaderMetaData.cs" />
-    <Compile Remove="Network\ICheckPointOP.cs" />
-    <Compile Remove="Network\IInference.cs" />
-    <Compile Remove="Network\ISubscription.cs" />
-    <Compile Remove="Network\Layer.cs" />
-    <Compile Remove="Network\ManualInput.cs" />
-    <Compile Remove="Network\Publisher.cs" />
-    <Compile Remove="Network\PublisherSubject.cs" />
-    <Compile Remove="Network\Region.cs" />
-    <Compile Remove="Network\SensorFlags.cs" />
-    <Compile Remove="Network\SensorParameters.cs" />
-    <Compile Remove="Network\Subscription.cs" />
-    <Compile Remove="Sensors\FileSensor.cs" />
-    <Compile Remove="Sensors\HtmSensor.cs" />
-    <Compile Remove="Sensors\IMetaStream.cs" />
-    <Compile Remove="Sensors\ISensor.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="Encoders\EncoderBuilder.cs" />
     <None Include="Encoders\ScalarEncoder.cs" />
-    <None Include="Network\CortexNetwork.cs" />
-    <None Include="Network\Header.cs" />
-    <None Include="Network\HeaderMetaData.cs" />
-    <None Include="Network\ICheckPointOP.cs" />
-    <None Include="Network\IInference.cs" />
-    <None Include="Network\ISubscription.cs" />
-    <None Include="Network\Layer.cs" />
-    <None Include="Network\ManualInput.cs" />
-    <None Include="Network\Publisher.cs" />
-    <None Include="Network\PublisherSubject.cs" />
-    <None Include="Network\Region.cs" />
-    <None Include="Network\SensorFlags.cs" />
-    <None Include="Network\SensorParameters.cs" />
-    <None Include="Network\Subscription.cs" />
-    <None Include="Sensors\FileSensor.cs" />
-    <None Include="Sensors\HtmSensor.cs" />
-    <None Include="Sensors\IMetaStream.cs" />
-    <None Include="Sensors\ISensor.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -28,8 +28,6 @@ namespace UnitTestsProject
         [DataRow(-1)]
         public void EncodeTest1(int input)
         {
-            CortexNetworkContext ctx = new CortexNetworkContext();
-
             Dictionary<string, object> encoderSettings = getDefaultSettings();
 
             TestEncoder encoder = new TestEncoder(encoderSettings);
@@ -149,7 +147,37 @@ namespace UnitTestsProject
 
             Assert.IsTrue((string)encoder["abc"] == "1");
         }
-               
+
+        /// <summary>
+        /// Demonstratses how to create an encoder and how to set encoder properties by using of context.
+        /// </summary>
+        [TestMethod]
+        public void InitMultiencoder()
+        {
+            CortexNetworkContext ctx = new CortexNetworkContext();
+
+            // Gets set of default properties, which more or less every encoder requires.
+            Dictionary<string, object> encoderSettings = getDefaultSettings();
+            encoderSettings[EncoderProperties.EncoderQualifiedName] = typeof(TestEncoder).AssemblyQualifiedName;
+
+            // We change here value of Name property.
+            encoderSettings["Name"] = "hello";
+
+            // We add here new property.
+            encoderSettings.Add("TestProp1", "hello");
+
+            var encoder = ctx.CreateEncoder(typeof(TestEncoder).FullName, encoderSettings);
+
+            // Property can also be set this way.
+            encoder["abc"] = "1";
+
+            Assert.IsTrue((string)encoder["TestProp1"] == "hello");
+
+            Assert.IsTrue((string)encoder["Name"] == "hello");
+
+            Assert.IsTrue((string)encoder["abc"] == "1");
+        }
+
         /// <summary>
         /// Initializes all encoders.
         /// </summary>

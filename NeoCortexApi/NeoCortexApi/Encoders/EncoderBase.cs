@@ -84,7 +84,9 @@ namespace NeoCortexApi.Encoders
         protected SparseObjectMatrix<int[]> topDownMapping;
         protected double[] topDownValues;
         protected List<object> bucketValues;
-        protected Dictionary<EncoderTuple, List<EncoderTuple>> encoders;
+
+        // Moved to MultiEncoder.
+        //protected Dictionary<EncoderTuple, List<EncoderTuple>> encoders;
         protected List<String> scalarNames;
 
         /// <summary>
@@ -155,10 +157,16 @@ namespace NeoCortexApi.Encoders
         }
 
         #region Keyval Properties
-
-      
+        /// <summary>
+        /// The width of output vector of encoder. 
+        /// It specifies the length of array, which will be occupied by output vector.
+        /// </summary>
+       
         public int N { get => (int)this["N"]; set => this["N"] = (int)value; }
        
+        /// <summary>
+        /// Number of bits set on one, which represents single encoded value.
+        /// </summary>
         public int W { get => (int)this["W"]; set => this["W"] = (int)value; }
 
         public double MinVal { get => (double)this["MinVal"]; set => this["MinVal"] = (double)value; }

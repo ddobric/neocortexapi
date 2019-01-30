@@ -61,7 +61,7 @@ ax1.boxplot(data, positions=positions)
 
 pos = 0
 for label in titles:
-    ax1.text(positions[pos],  minimum * -0.6, label,
+    ax1.text(positions[pos],  minimum * -3.5, label,
              horizontalalignment='center', size='x-small', weight=5,
              color="blue")
     pos = pos + 1
