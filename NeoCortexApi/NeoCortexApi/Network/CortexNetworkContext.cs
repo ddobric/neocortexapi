@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Linq;
+using LearningFoundation;
 
 namespace NeoCortexApi.Network
 {
@@ -66,5 +67,6 @@ namespace NeoCortexApi.Network
                 throw new ArgumentException($"Specified encoder cannot be resolved. Encoder: {encoderTp}");
 
         }
+
     }
 }

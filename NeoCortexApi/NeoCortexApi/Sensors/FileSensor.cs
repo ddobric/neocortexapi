@@ -11,7 +11,7 @@ namespace NeoCortexApi.Sensors
         // This is OFF until Encoders are made concurrency safe
         private static readonly bool DEFAULT_PARALLEL_MODE = false;
     
-    private BatchedCsvStream<String[]> stream;
+        private BatchedCsvStream<String[]> stream;
         private SensorParameters parameters;
 
         public List<List<object>> getInputStream()
