@@ -6,7 +6,7 @@ using System.Text;
 namespace NeoCortexApi.Encoders
 {
     /// <summary>
-    /// Encodes input by using of multiple encoders.
+    /// Encodes input by using of multiple encoders on the same data stream.
     /// </summary>
     public class MultiEncoder : EncoderBase
     {

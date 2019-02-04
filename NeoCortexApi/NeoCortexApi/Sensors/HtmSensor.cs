@@ -8,18 +8,19 @@ using NeoCortexApi.Utility;
 using System.IO;
 using NeoCortexApi.Network;
 using System.Collections;
+using LearningFoundation;
 
 namespace NeoCortexApi.Sensors
 {
 
 
-    public class HTMSensor<T> : ISensor<T>, IMetaStream<T>, IEquatable<HTMSensor<T>>
+    public class HTMSensor<T> : ISensor<T> /*, IMetaStream<T> */, IEquatable<HTMSensor<T>>
     {
         private bool encodersInitted;
         private CortexNetworkContext context;
         private ISensor<T> sensor;
         private SensorParameters sensorParams;
-        private Header header;
+        //private Header header;
         private Parameters localParameters;
         private MultiEncoder encoder;
         //private List<int[]> outputStream;
@@ -36,6 +37,12 @@ namespace NeoCortexApi.Sensors
         private Dictionary<int, EncoderBase> indexToEncoderMap;
 
         private Dictionary<String, object> indexFieldMap = new Dictionary<string, object>();
+
+        public DataDescriptor DataDescriptor
+        {
+            get { return this.sensor.DataDescriptor; }
+            set { this.sensor.DataDescriptor = value; }
+        }
 
         /// <summary>
         /// Encoder attached to sensor.
@@ -75,10 +82,10 @@ namespace NeoCortexApi.Sensors
       * @return  a {@link MetaStream} instance.
       */
 
-        //protected IMetaStream<T> getInputStream()
-        //{
-        //    return (IMetaStream<T>)sensor.getInputStream();
-        //}
+        protected IMetaStream<T> getInputStream()
+        {
+            return (IMetaStream<T>)sensor.getInputStream();
+        }
 
         /**
    * Called internally during construction to build the encoders
@@ -94,16 +101,15 @@ namespace NeoCortexApi.Sensors
 
             this.sensor = sensor;
             this.sensorParams = sensor.getSensorParams();
-            header = new Header(sensor.HeaderMetaData);
-            if (header == null || header.Size < 3)
-            {
-                throw new InvalidOperationException("Header must always be present; and have 3 lines.");
-            }
+            //header = new Header(sensor.HeaderMetaData);
+            //if (header == null || header.Size < 3)
+            //{
+            //    throw new InvalidOperationException("Header must always be present; and have 3 lines.");
+            //}
 
             createEncoder();
         }
-
-
+        
 
         private void createEncoder()
         {
@@ -252,91 +258,86 @@ namespace NeoCortexApi.Sensors
         //}
 
 
-//        /**
-//    * Returns the encoded output stream of the underlying {@link Stream}'s encoder.
-//    * 
-//    * @return      the encoded output stream.
-//*/
-//        public IEnumerator<T> getOutputStream()
-//        {
-//            if (this.isTerminal())
-//            {
-//                throw new InvalidOperationException("Stream is already \"terminal\" (operated upon or empty)");
-//            }
+        //        /**
+        //    * Returns the encoded output stream of the underlying {@link Stream}'s encoder.
+        //    * 
+        //    * @return      the encoded output stream.
+        //*/
+        //        public IEnumerator<T> getOutputStream()
+        //        {
+        //            if (this.isTerminal())
+        //            {
+        //                throw new InvalidOperationException("Stream is already \"terminal\" (operated upon or empty)");
+        //            }
 
-//            // Protect outputStream formation and creation of "fan out" also make sure
-//            // that no other thread is trying to update the fan out lists
-//            List<int[]> retVal = null;
+        //            // Protect outputStream formation and creation of "fan out" also make sure
+        //            // that no other thread is trying to update the fan out lists
+        //            List<int[]> retVal = null;
 
-//            lock (this)
-//            {
-//                String[] fieldNames = getFieldNames();
-//                FieldMetaType[] fieldTypes = getFieldTypes();
+        //            lock (this)
+        //            {
+        //                String[] fieldNames = getFieldNames();
+        //                FieldMetaType[] fieldTypes = getFieldTypes();
 
-//                if (outputStream == null)
-//                {
-//                    if (indexFieldMap.isEmpty())
-//                    {
-//                        for (int i = 0; i < fieldNames.length; i++)
-//                        {
-//                            indexFieldMap.put(fieldNames[i], i);
-//                        }
-//                    }
+        //                if (outputStream == null)
+        //                {
+        //                    if (indexFieldMap.isEmpty())
+        //                    {
+        //                        for (int i = 0; i < fieldNames.length; i++)
+        //                        {
+        //                            indexFieldMap.put(fieldNames[i], i);
+        //                        }
+        //                    }
 
-//                    // NOTE: The "inputMap" here is a special local implementation
-//                    //       of the "Map" interface, overridden so that we can access
-//                    //       the keys directly (without hashing). This map is only used
-//                    //       for this use case so it is ok to use this optimization as
-//                    //       a convenience.
-//                    if (inputMap == null)
-//                    {
-//                        inputMap = new InputMap();
-//                        inputMap.fTypes = fieldTypes;
-//                    }
+        //                    // NOTE: The "inputMap" here is a special local implementation
+        //                    //       of the "Map" interface, overridden so that we can access
+        //                    //       the keys directly (without hashing). This map is only used
+        //                    //       for this use case so it is ok to use this optimization as
+        //                    //       a convenience.
+        //                    if (inputMap == null)
+        //                    {
+        //                        inputMap = new InputMap();
+        //                        inputMap.fTypes = fieldTypes;
+        //                    }
 
-//                    final boolean isParallel = delegate.getInputStream().isParallel();
+        //                    final boolean isParallel = delegate.getInputStream().isParallel();
 
-//                    output = new ArrayList<>();
+        //                    output = new ArrayList<>();
 
-//                    outputStream = delegate.getInputStream().map(l-> {
-//                        String[] arr = (String[])l;
-//                        inputMap.arr = arr;
-//                        return input(arr, fieldNames, fieldTypes, output, isParallel);
-//                    });
+        //                    outputStream = delegate.getInputStream().map(l-> {
+        //                        String[] arr = (String[])l;
+        //                        inputMap.arr = arr;
+        //                        return input(arr, fieldNames, fieldTypes, output, isParallel);
+        //                    });
 
-//                    mainIterator = outputStream.iterator();
-//                }
+        //                    mainIterator = outputStream.iterator();
+        //                }
 
-//                LinkedList<int[]> l = new LinkedList<int[]>();
-//                fanOuts.add(l);
-//                Copy copy = new Copy(l);
+        //                LinkedList<int[]> l = new LinkedList<int[]>();
+        //                fanOuts.add(l);
+        //                Copy copy = new Copy(l);
 
-//                retVal = StreamSupport.stream(Spliterators.spliteratorUnknownSize(copy,
-//                    Spliterator.ORDERED | Spliterator.NONNULL | Spliterator.IMMUTABLE), false);
+        //                retVal = StreamSupport.stream(Spliterators.spliteratorUnknownSize(copy,
+        //                    Spliterator.ORDERED | Spliterator.NONNULL | Spliterator.IMMUTABLE), false);
 
-//            }
-
-
-//            return retVal;
-//        }
-
-        private void makeIndexEncoderMap()
-        {
-            indexToEncoderMap = new Dictionary<int, EncoderBase<T>>();
-
-            for (int i = 0, size = header.Metadata.FieldNames.Count; i < size; i++)
-            {
-            }
-        }
+        //            }
 
 
+        //            return retVal;
+        //        }
+
+        //private void makeIndexEncoderMap()
+        //{
+        //    indexToEncoderMap = new Dictionary<int, EncoderBase>();
+
+        //    for (int i = 0, size = header.Metadata.FieldNames.Count; i < size; i++)
+        //    {
+        //    }
+        //}
 
 
 
-        public SensorParameters getSensorParams()
-        {
-            return this.sensor.getSensorParams();
-        }
+
 
         public override int GetHashCode()
         {
@@ -385,7 +386,8 @@ namespace NeoCortexApi.Sensors
             {
                 return this.sensor.HeaderMetaData;
             }
-            set {
+            set
+            {
                 this.sensor.HeaderMetaData = value;
             }
         }

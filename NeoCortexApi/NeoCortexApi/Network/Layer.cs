@@ -296,7 +296,7 @@ namespace NeoCortexApi
                     Object supplier;
                     if ((supplier = sensor.getSensorParams()["ONSUB"]) != null)
                     {
-                        if (supplier instanceof PublisherSupplier) {
+                        if (supplier is  PublisherSupplier) {
                             ((PublisherSupplier)supplier).setNetwork(parentNetwork);
                             parentNetwork.setPublisher(((PublisherSupplier)supplier).get());
                         }
@@ -310,19 +310,19 @@ namespace NeoCortexApi
             {
                 if (encoder.getEncoders(encoder) == null || encoder.getEncoders(encoder).size() < 1)
                 {
-                    if (this.parameters[KEY.FIELD_ENCODING_MAP] == null || ((Map<String, Map<String, Object>>)params.get(KEY.FIELD_ENCODING_MAP)).size() < 1) {
+                    if (this.parameters[KEY.FIELD_ENCODING_MAP] == null || ((Dictionary<String, Dictionary<String, Object>>)parameters.get(KEY.FIELD_ENCODING_MAP)).size() < 1) {
                         logger.LogError("No field encoding map found for specified MultiEncoder");
-                        throw new OperationalException("No field encoding map found for specified MultiEncoder");
+                        throw new InvalidOperationException("No field encoding map found for specified MultiEncoder");
                     }
 
-                    encoder.addMultipleEncoders((Map<String, Map<String, Object>>)this.parameters[KEY.FIELD_ENCODING_MAP]);
+                    encoder.addMultipleEncoders((Dictionary<String, Dictionary<String, Object>>)this.parameters[KEY.FIELD_ENCODING_MAP]);
                 }
 
                 // Make the declared column dimensions match the actual input
                 // dimensions retrieved from the encoder
                 int product = 0, inputLength = 0, columnLength = 0;
-                if (((inputLength = ((int[])this.parameters[KEY.INPUT_DIMENSIONS]).length) !=
-                    (columnLength = ((int[])this.parameters[KEY.COLUMN_DIMENSIONS]).length))
+                if (((inputLength = ((int[])this.parameters[KEY.INPUT_DIMENSIONS]).Length) !=
+                    (columnLength = ((int[])this.parameters[KEY.COLUMN_DIMENSIONS]).Length))
                             || encoder.getWidth() != (product = ArrayUtils.product((int[])this.parameters[KEY.INPUT_DIMENSIONS])))
                 {
 
@@ -332,11 +332,11 @@ namespace NeoCortexApi
                     int[] inferredDims = inferInputDimensions(encoder.getWidth(), columnLength);
                     if (inferredDims != null && inferredDims.length > 0 && encoder.getWidth() == ArrayUtils.product(inferredDims))
                     {
-                        LOGGER.info("Input dimension fix successful!");
-                        LOGGER.info("Using calculated input dimensions: " + Arrays.toString(inferredDims));
+                        this.logger.LogInformation("Input dimension fix successful!");
+                        this.logger.LogInformation("Using calculated input dimensions: " + Arrays.toString(inferredDims));
                     }
 
-                params.setInputDimensions(inferredDims);
+                parameters.setInputDimensions(inferredDims);
                     connections.setInputDimensions(inferredDims);
                 }
             }
@@ -380,11 +380,11 @@ namespace NeoCortexApi
                 // The exact dimensions don't have to be the same but the number of
                 // dimensions do!
                 int inputLength, columnLength = 0;
-                if ((inputLength = ((int[])this.parameters[KEY.INPUT_DIMENSIONS]).length) !=
-                     (columnLength = ((int[])this.parameters[KEY.COLUMN_DIMENSIONS]).length))
+                if ((inputLength = ((int[])this.parameters[KEY.INPUT_DIMENSIONS]).Length) !=
+                     (columnLength = ((int[])this.parameters[KEY.COLUMN_DIMENSIONS]).Length))
                 {
 
-                    LOGGER.error("The number of Input Dimensions (" + inputLength + ") is not same as the number of Column Dimensions " +
+                    this.logger.LogError("The number of Input Dimensions (" + inputLength + ") is not same as the number of Column Dimensions " +
                         "(" + columnLength + ") in Parameters! - SpatialPooler not initialized!");
 
                     return this;

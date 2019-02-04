@@ -20,7 +20,7 @@ namespace NeoCortexApi.Network
         /// <summary>
         /// Gets all available encoders.
         /// </summary>
-        public List<Type> Encoders { get => allEncoders;}
+        public List<Type> Encoders { get => allEncoders; }
 
         /// <summary>
         /// Loads all implemented encoders in all load assemblies.
@@ -37,11 +37,27 @@ namespace NeoCortexApi.Network
             }
         }
 
+
         /// <summary>
         /// Creates the encoder instance from specified set of properties.
         /// </summary>
-        /// <param name="encoderType"></param>
         /// <param name="encoderSettings"></param>
+        /// <returns></returns>
+        public EncoderBase CreateEncoder(Dictionary<String, Object> encoderSettings)
+        {
+            var encoderType = encoderSettings[EncoderProperties.EncoderQualifiedName] as string;
+            if (String.IsNullOrEmpty(encoderType))
+                throw new ArgumentException("Property 'encoderType' must be specified.");
+
+            return CreateEncoder(encoderType, encoderSettings);
+        }
+
+        /// <summary>
+        /// Creates the encoder instance from specified set of properties.
+        /// </summary>
+        /// <param name="encoderType">Assembly qualified name of the encoder.</param>
+        /// <param name="encoderSettings">List of all required parameters for encoder. 
+        /// If encoder has already been created, this argument SHOULD be null.</param>
         /// <returns></returns>
         public EncoderBase CreateEncoder(string encoderType, Dictionary<String, Object> encoderSettings)
         {

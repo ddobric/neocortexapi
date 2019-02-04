@@ -198,10 +198,19 @@ namespace UnitTestsProject
                 {
                     Assert.IsTrue(sett.Value == encoder[sett.Key]);
                 }
-            }         
+            }
         }
 
-
+        private static Dictionary<string, object> getBinaryEncoderSettings()
+        {
+            Dictionary<String, Object> encoderSettings = new Dictionary<string, object>();
+            encoderSettings.Add("N", 16);
+            encoderSettings.Add("W", 16);
+            encoderSettings.Add("MinVal", (double)int.MinValue);
+            encoderSettings.Add("MaxVal", (double)int.MaxValue);
+           
+            return encoderSettings;
+        }
 
         private static Dictionary<string, object> getDefaultSettings()
         {
@@ -217,6 +226,86 @@ namespace UnitTestsProject
             return encoderSettings;
         }
     }
+
+
+    public class BinaryEncoder : EncoderBase
+    {
+        #region Private Fields
+
+        #endregion
+
+        #region Properties
+
+        #endregion
+
+        #region Private Methods
+
+        #endregion
+
+        #region Public Methods
+
+        public BinaryEncoder()
+        {
+
+        }
+
+        public BinaryEncoder(Dictionary<string, object> encoderSettings)
+        {
+            this.Initialize(encoderSettings);
+        }
+
+        public override void AfterInitialize()
+        {
+
+        }
+
+        /// <summary>
+        /// Encodes specified value by adding +1.
+        /// </summary>
+        /// <param name="inputData"></param>
+        /// <returns></returns>
+        public override int[] Encode(object inputData)
+        {
+            if (inputData == null)
+                throw new ArgumentException("inputData cannot be empty!");
+
+            int val;
+
+            if (!int.TryParse(inputData as string, out val))
+                throw new ArgumentException($"Value {inputData} cannot be casted to integer.");
+
+            string binary = Convert.ToString(val, 2);
+
+            List<int> result = new List<int>();
+            foreach (var chr in binary)
+            {
+                result.Add(chr == 1 ? 1 : 0);
+            }
+
+            return result.ToArray();
+        }
+
+        public override List<B> getBucketValues<B>()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override int Width
+        {
+            get
+            {
+                return 1;
+            }
+        }
+
+
+        public override bool IsDelta
+        {
+            get { return false; }
+        }
+        #endregion
+    }
+
 
     /// <summary>
     /// Implementation of simple test encoder.

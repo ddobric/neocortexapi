@@ -1,4 +1,5 @@
 ﻿
+using NeoCortexApi.Encoders;
 using NeoCortexApi.Network;
 using System;
 using System.Collections.Generic;
@@ -10,89 +11,83 @@ namespace LearningFoundation.DataMappers
     /// <summary>
     /// Class for asigning set of properties for each feature (data column)
     /// </summary>
-    public class DataMapper 
+    internal class DataMapper
     {
         private DataDescriptor descriptor;
 
+        private CortexNetworkContext context;
+
         /// <summary>
-        /// main constructor
+        /// Main constructor
         /// </summary>
-        public DataMapper(DataDescriptor descriptor)
+        public DataMapper(DataDescriptor descriptor, CortexNetworkContext context)
         {
+            this.context = context;
             this.descriptor = descriptor;
+
+            foreach (var feature in descriptor.Features)
+            {
+                if (feature.EncoderSettings != null)
+                {
+                    var encoder = this.context.CreateEncoder(feature.EncoderSettings);
+
+                }
+                else
+                {
+                    throw new ArgumentException("Encoder settings not specified.");
+                }
+            }
         }
 
-        
+
         /// <summary>
         /// Transform the featureVector from natural format in to double format. 
         /// ** AFTER MAPPING:  'LABEL COLUMN IS THE LAST ELEMENT IN ARRAY'**
         /// </summary>
         /// <param name="rawData"></param>
         /// <returns></returns>
-        public double[][] Run(object[][] data)
+        public int[] Run(object[] vector)
         {
-            List<List<double>> rows = new List<List<double>>();
-
             //sort features by id
             Array.Sort(this.descriptor.Features, (x, y) => x.Id.CompareTo(y.Id));
 
             //enumerate all dataset data
-            for (int i = 0; i < data.Length; i++)
+            List<int> output = new List<int>();
+
+            //
+            // Transform rawData in to raw of Features with proper type, normalization value, and corect binary and catogery type 
+            // during enumeration Features are sorted by Id property
+            //for (int featureIndx = 0; featureIndx < data[0].Length; featureIndx++)
+            foreach (var featureIndx in this.descriptor.Features.OrderBy(x => x.Id).Select(x => x.Index))
             {
-                List<double> raw = new List<double>();
+                var col = this.descriptor.Features[featureIndx];
+                if (col.Encoder == null)
+                    col.Encoder = context.CreateEncoder(col.EncoderSettings);
 
-                object[] vector = ((object[])data[i]);
+                int[] encodedValue = col.Encoder.Encode(vector[featureIndx]);
 
-                //
-                // Transform rawData in to raw of Features with proper type, normalization value, and corect binary and catogery type 
-                // during enumeration Features are sorted by Id property
-                //for (int featureIndx = 0; featureIndx < data[0].Length; featureIndx++)
-                foreach(var featureIndx in this.descriptor.Features.OrderBy(x=>x.Id).Select(x=>x.Index))
-                {
-
-                    var col = this.descriptor.Features[featureIndx];
+                output.AddRange(encodedValue);
+                ////skip string columns.
+                //if (col.Type == ColumnType.STRING)
+                //    continue;
 
 
-                    //skip string columns.
-                    if (col.Type == ColumnType.STRING)
-                        continue;
-
-                    //first mapp the features
-                    if (this.descriptor.LabelIndex != featureIndx)
-                    {
-                        var featValues = MapFeature(vector[featureIndx], col);
-                        raw.AddRange(featValues);
-                    }
-                }
-
-                
-                //
-                //The Label column is always the last element in the row array, or the last column in 2D array
-                //
-                if(this.descriptor.LabelIndex > -1)
-                {
-                    var labelCol = this.descriptor.Features.Where(x => x.Index == this.descriptor.LabelIndex).FirstOrDefault();
-                    if (labelCol == null)
-                        throw new ArgumentException("Description 'LabelIndex' is not valid.");
-
-                    //data values from training/testing dataset
-                    var dataValue = vector[this.descriptor.LabelIndex];
-
-                    //
-                    var numValue = MapLabel(dataValue, labelCol);
-                    raw.Add(numValue);
-                }
-                
-                //add transformed row in to new numeric dataset
-                rows.Add(raw);
+                ////first mapp the features
+                //if (this.descriptor.LabelIndex != featureIndx)
+                //{
+                //    var featValues = MapFeature(vector[featureIndx], col);
+                //    raw.AddRange(featValues);
+                //}
             }
 
+            
             //after real data is transformed in to numeric format, then we can calculate number of feature
-           // ctx.DataDescriptor.NumOfFeatures = rows.FirstOrDefault().Count;
+            // ctx.DataDescriptor.NumOfFeatures = rows.FirstOrDefault().Count;
 
             // Returns rows of double value feture vectors
-            return rows.Select(r => r.ToArray()).ToArray();
+            return output.ToArray();
         }
+
 
         /// <summary>
         /// Mapping Feature real value in to numeric representation
@@ -253,7 +248,7 @@ namespace LearningFoundation.DataMappers
                 return index;
             }
             else
-                throw new MLException("Invalid column type.");
+                throw new ArgumentException("Invalid column type.");
         }
 
         /// <summary>
@@ -288,7 +283,7 @@ namespace LearningFoundation.DataMappers
                     return col.DefaultMissingValue;
             }
             else
-                throw new MLException("nonnumeric and nonbinary column type is invalid here.");
+                throw new ArgumentException("nonnumeric and nonbinary column type is invalid here.");
         }
 
     }
@@ -317,6 +312,17 @@ namespace LearningFoundation.DataMappers
         /// The Type of the column (feature)
         /// </summary>
         public ColumnType Type { get; set; }
+
+        /// <summary>
+        /// Assembly qualified name of the column encoder. If specified, encoder is used for encoding of the value.
+        /// </summary>
+        public Dictionary<String, Object> EncoderSettings { get; set; }
+
+        /// <summary>
+        /// Instance of encoder used for this column.
+        /// </summary>
+        public EncoderBase Encoder { get; set; }
+
 
         /// <summary>
         /// In case of binary and Category type, values represent class values enumerated in ascedenting order
