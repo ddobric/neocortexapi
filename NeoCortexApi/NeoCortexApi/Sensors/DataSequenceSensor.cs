@@ -78,7 +78,7 @@ namespace NeoCortexApi.Sensors
 
                 var row = data[this.currentPos];
 
-                currentOutput = this.mapper.Run(new object[][] { row });              
+                currentOutput = this.mapper.Run(row);              
 
                 return true;
             }

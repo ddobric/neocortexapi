@@ -10,7 +10,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Linq;
-
+using System.Globalization;
 
 namespace UnitTestsProject
 {
@@ -201,16 +201,7 @@ namespace UnitTestsProject
             }
         }
 
-        private static Dictionary<string, object> getBinaryEncoderSettings()
-        {
-            Dictionary<String, Object> encoderSettings = new Dictionary<string, object>();
-            encoderSettings.Add("N", 16);
-            encoderSettings.Add("W", 16);
-            encoderSettings.Add("MinVal", (double)int.MinValue);
-            encoderSettings.Add("MaxVal", (double)int.MaxValue);
-           
-            return encoderSettings;
-        }
+ 
 
         private static Dictionary<string, object> getDefaultSettings()
         {
@@ -260,7 +251,7 @@ namespace UnitTestsProject
         }
 
         /// <summary>
-        /// Encodes specified value by adding +1.
+        /// Encodes specified value to binary code sequence.
         /// </summary>
         /// <param name="inputData"></param>
         /// <returns></returns>
@@ -269,17 +260,19 @@ namespace UnitTestsProject
             if (inputData == null)
                 throw new ArgumentException("inputData cannot be empty!");
 
-            int val;
+            double val;
 
-            if (!int.TryParse(inputData as string, out val))
+            if (!double.TryParse(inputData as string, NumberStyles.Float, CultureInfo.InvariantCulture, out val))
                 throw new ArgumentException($"Value {inputData} cannot be casted to integer.");
 
-            string binary = Convert.ToString(val, 2);
+            string binary = Convert.ToString((int)val, 2);
+
+            binary = binary.PadLeft(this.N, '0');
 
             List<int> result = new List<int>();
             foreach (var chr in binary)
             {
-                result.Add(chr == 1 ? 1 : 0);
+                result.Add(chr == '1' ? 1 : 0);
             }
 
             return result.ToArray();
