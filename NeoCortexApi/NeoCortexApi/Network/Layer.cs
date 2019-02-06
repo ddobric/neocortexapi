@@ -138,8 +138,9 @@ namespace NeoCortexApi
 
         Dictionary<Type, IObservable<ManualInput>> observableDispatch = new Dictionary<Type, IObservable<ManualInput>>();
 
-        protected HTMSensor<T> sensor;
-        protected MultiEncoder<T> encoder;
+        //protected HTMSensor<T> sensor;
+        protected ISensor<T> sensor;
+        //protected MultiEncoder<T> encoder;
         protected SpatialPooler spatialPooler;
         protected TemporalMemory temporalMemory;
         private Anomaly anomalyComputer;
@@ -268,173 +269,8 @@ namespace NeoCortexApi
 
         }
 
-        /// <summary>
-        /// Finalizes the initialization in one method call so that side effect
-        /// operations to share objects and other special initialization tasks can
-        /// happen all at once in a central place for maintenance ease.
-        /// </summary>
-        /// <returns></returns>
-        public Layer<T> CloseInit()
-        {
-            if (this.isClosed)
-            {
-                logger.LogWarning("Close called on Layer " + this.Name + " which is already closed.");
-                return this;
-            }
-
-            parameters.apply(connections);
-
-            if (sensor != null)
-            {
-                encoder = encoder == null ? sensor.Encoder : encoder;
-                sensor.initEncoder(this.parameters);
-                connections.NumInputs = encoder.getWidth();
-                if (parentNetwork != null && parentRegion != null)
-                {
-                    parentNetwork.SensorRegion = parentRegion;
-
-                    Object supplier;
-                    if ((supplier = sensor.getSensorParams()["ONSUB"]) != null)
-                    {
-                        if (supplier is  PublisherSupplier) {
-                            ((PublisherSupplier)supplier).setNetwork(parentNetwork);
-                            parentNetwork.setPublisher(((PublisherSupplier)supplier).get());
-                        }
-                    }
-                }
-            }
-
-            // Create Encoder hierarchy from definitions & auto create classifiers
-            // if specified
-            if (encoder != null)
-            {
-                if (encoder.getEncoders(encoder) == null || encoder.getEncoders(encoder).size() < 1)
-                {
-                    if (this.parameters[KEY.FIELD_ENCODING_MAP] == null || ((Dictionary<String, Dictionary<String, Object>>)parameters.get(KEY.FIELD_ENCODING_MAP)).size() < 1) {
-                        logger.LogError("No field encoding map found for specified MultiEncoder");
-                        throw new InvalidOperationException("No field encoding map found for specified MultiEncoder");
-                    }
-
-                    encoder.addMultipleEncoders((Dictionary<String, Dictionary<String, Object>>)this.parameters[KEY.FIELD_ENCODING_MAP]);
-                }
-
-                // Make the declared column dimensions match the actual input
-                // dimensions retrieved from the encoder
-                int product = 0, inputLength = 0, columnLength = 0;
-                if (((inputLength = ((int[])this.parameters[KEY.INPUT_DIMENSIONS]).Length) !=
-                    (columnLength = ((int[])this.parameters[KEY.COLUMN_DIMENSIONS]).Length))
-                            || encoder.getWidth() != (product = ArrayUtils.product((int[])this.parameters[KEY.INPUT_DIMENSIONS])))
-                {
-
-                    logger.LogWarning("The number of Input Dimensions (" + inputLength + ") != number of Column Dimensions " + "(" + columnLength + ") --OR-- Encoder width (" + encoder.getWidth()
-                                    + ") != product of dimensions (" + product + ") -- now attempting to fix it.");
-
-                    int[] inferredDims = inferInputDimensions(encoder.getWidth(), columnLength);
-                    if (inferredDims != null && inferredDims.length > 0 && encoder.getWidth() == ArrayUtils.product(inferredDims))
-                    {
-                        this.logger.LogInformation("Input dimension fix successful!");
-                        this.logger.LogInformation("Using calculated input dimensions: " + Arrays.toString(inferredDims));
-                    }
-
-                parameters.setInputDimensions(inferredDims);
-                    connections.setInputDimensions(inferredDims);
-                }
-            }
-
-            autoCreateClassifiers = autoCreateClassifiers != null && (autoCreateClassifiers | (Boolean)this.parameters[KEY.AUTO_CLASSIFY]);
-
-            if (autoCreateClassifiers != null && autoCreateClassifiers.booleanValue() && (factory.inference.getClassifiers() == null || factory.inference.getClassifiers().size() < 1))
-            {
-                factory.inference.classifiers(makeClassifiers(encoder == null ? parentNetwork.getEncoder() : encoder));
-
-                // Note classifier addition by setting content mask
-                algo_content_mask |= CLA_CLASSIFIER;
-            }
-
-            // We must adjust this Layer's inputDimensions to the size of the input
-            // received from the previous Region's output vector.
-            if (parentRegion != null && parentRegion.getUpstreamRegion() != null)
-            {
-                int[] upstreamDims = new int[] { calculateInputWidth() };
-            params.setInputDimensions(upstreamDims);
-                connections.setInputDimensions(upstreamDims);
-            }
-            else if (parentRegion != null && parentNetwork != null
-                  && parentRegion.equals(parentNetwork.getSensorRegion()) && encoder == null && spatialPooler != null)
-            {
-                Layer curr = this;
-                while ((curr = curr.getPrevious()) != null)
-                {
-                    if (curr.getEncoder() != null)
-                    {
-                        int[] dims = (int[])curr.getParameters()[KEY.INPUT_DIMENSIONS];
-                        this.parameters.setInputDimensions(dims);
-                        connections.setInputDimensions(dims);
-                    }
-                }
-            }
-
-            // Let the SpatialPooler initialize the matrix with its requirements
-            if (spatialPooler != null)
-            {
-                // The exact dimensions don't have to be the same but the number of
-                // dimensions do!
-                int inputLength, columnLength = 0;
-                if ((inputLength = ((int[])this.parameters[KEY.INPUT_DIMENSIONS]).Length) !=
-                     (columnLength = ((int[])this.parameters[KEY.COLUMN_DIMENSIONS]).Length))
-                {
-
-                    this.logger.LogError("The number of Input Dimensions (" + inputLength + ") is not same as the number of Column Dimensions " +
-                        "(" + columnLength + ") in Parameters! - SpatialPooler not initialized!");
-
-                    return this;
-                }
-                spatialPooler.init(connections);
-            }
-
-            // Let the TemporalMemory initialize the matrix with its requirements
-            if (temporalMemory != null)
-            {
-                TemporalMemory.init(connections);
-            }
-
-            this.numColumns = connections.getNumColumns();
-
-            this.isClosed = true;
-
-            this.logger?.LogDebug("Layer " + name + " content initialize mask = " + BitConverter.bin(algo_content_mask));
-
-            return this;
-        }
-
-        /// <summary>
-        /// Registers specified subscriber.
-        /// </summary>
-        /// <param name="subscriber"></param>
-        /// <returns></returns>
-
-        public ISubscription<IInference> Subscribe(IObserver<IInference> subscriber)
-        {
-            // This will be called again after the Network is halted so we have to prepare
-            // for rebuild of the Observer chain
-            //if (isHalted)
-            //{
-            //    clearSubscriberObserverLists();
-            //}
-
-            if (subscriber == null)
-            {
-                throw new ArgumentException("Subscriber cannot be null.");
-            }
-
-
-            this.subscribers.Add(subscriber);
-
-            return this.publisher.Subscribe(subscriber) as ISubscription<IInference>;
-        }
-
         public Layer(string name = null, CortexNetwork network = null, Parameters parameters = null, ICollection<IHtmModule> modules = null, bool? autoCreateClassifiers = null, CortexNetworkContext context = null)
-       {
+        {
             if (name == null)
                 name = $"[Layer {DateTime.Now.Ticks}]";
 
@@ -484,6 +320,176 @@ namespace NeoCortexApi
                 logger?.LogDebug("Auto creating Classifiers for each input field.");
         }
 
+
+        /// <summary>
+        /// Finalizes the initialization in one method call so that side effect
+        /// operations to share objects and other special initialization tasks can
+        /// happen all at once in a central place for maintenance ease.
+        /// </summary>
+        /// <returns></returns>
+        public Layer<T> CloseInit()
+        {
+            if (this.isClosed)
+            {
+                logger.LogWarning("Close called on Layer " + this.Name + " which is already closed.");
+                return this;
+            }
+
+            parameters.apply(connections);
+
+            if (sensor != null)
+            {
+                //encoder = encoder == null ? sensor.Encoder : encoder;
+                //sensor.initEncoder(this.parameters);
+                connections.NumInputs = this.sensor.InputWidth;
+
+                if (parentNetwork != null && parentRegion != null)
+                {
+                    parentNetwork.SensorRegion = parentRegion;
+
+                    Object supplier;
+                    if ((supplier = sensor.getSensorParams()["ONSUB"]) != null)
+                    {
+                        if (supplier is  PublisherSupplier) {
+                            ((PublisherSupplier)supplier).setNetwork(parentNetwork);
+                            parentNetwork.setPublisher(((PublisherSupplier)supplier).get());
+                        }
+                    }
+                }
+            }
+
+            // Create Encoder hierarchy from definitions & auto create classifiers
+            // if specified
+            if (encoder != null)
+            {
+                //if (encoder.getEncoders(encoder) == null || encoder.getEncoders(encoder).size() < 1)
+                //{
+                //    if (this.parameters[KEY.FIELD_ENCODING_MAP] == null || ((Dictionary<String, Dictionary<String, Object>>)parameters.get(KEY.FIELD_ENCODING_MAP)).size() < 1) {
+                //        logger.LogError("No field encoding map found for specified MultiEncoder");
+                //        throw new InvalidOperationException("No field encoding map found for specified MultiEncoder");
+                //    }
+
+                //    encoder.addMultipleEncoders((Dictionary<String, Dictionary<String, Object>>)this.parameters[KEY.FIELD_ENCODING_MAP]);
+                //}
+
+                // Make the declared column dimensions match the actual input
+                // dimensions retrieved from the encoder
+                int product = 0, inputLength = 0, columnLength = 0;
+                if (((inputLength = ((int[])this.parameters[KEY.INPUT_DIMENSIONS]).Length) !=
+                    (columnLength = ((int[])this.parameters[KEY.COLUMN_DIMENSIONS]).Length))
+                            || encoder.getWidth() != (product = ArrayUtils.product((int[])this.parameters[KEY.INPUT_DIMENSIONS])))
+                {
+
+                    logger.LogWarning("The number of Input Dimensions (" + inputLength + ") != number of Column Dimensions " + "(" + columnLength + ") --OR-- Encoder width (" + encoder.getWidth()
+                                    + ") != product of dimensions (" + product + ") -- now attempting to fix it.");
+
+                    int[] inferredDims = inferInputDimensions(encoder.getWidth(), columnLength);
+                    if (inferredDims != null && inferredDims.length > 0 && encoder.getWidth() == ArrayUtils.product(inferredDims))
+                    {
+                        this.logger.LogInformation("Input dimension fix successful!");
+                        this.logger.LogInformation("Using calculated input dimensions: " + Arrays.toString(inferredDims));
+                    }
+
+                parameters.setInputDimensions(inferredDims);
+                    connections.setInputDimensions(inferredDims);
+                }
+            }
+
+            // TODO
+            //autoCreateClassifiers = autoCreateClassifiers != null && (autoCreateClassifiers | (Boolean)this.parameters[KEY.AUTO_CLASSIFY]);
+
+            //if (autoCreateClassifiers != null && autoCreateClassifiers.booleanValue() && (factory.inference.getClassifiers() == null || factory.inference.getClassifiers().size() < 1))
+            //{
+            //    factory.inference.classifiers(makeClassifiers(encoder == null ? parentNetwork.getEncoder() : encoder));
+
+            //    // Note classifier addition by setting content mask
+            //    algo_content_mask |= CLA_CLASSIFIER;
+            //}
+
+            // We must adjust this Layer's inputDimensions to the size of the input
+            // received from the previous Region's output vector.
+            if (parentRegion != null && parentRegion.getUpstreamRegion() != null)
+            {
+                int[] upstreamDims = new int[] { calculateInputWidth() };
+            params.setInputDimensions(upstreamDims);
+                connections.setInputDimensions(upstreamDims);
+            }
+            else if (parentRegion != null && parentNetwork != null
+                  && parentRegion.equals(parentNetwork.getSensorRegion()) && encoder == null && spatialPooler != null)
+            {
+                Layer<T> curr = this;
+                while ((curr = curr.getPrevious()) != null)
+                {
+                    if (curr.getEncoder() != null)
+                    {
+                        int[] dims = (int[])curr.getParameters()[KEY.INPUT_DIMENSIONS];
+                        this.parameters.setInputDimensions(dims);
+                        connections.setInputDimensions(dims);
+                    }
+                }
+            }
+
+            // Let the SpatialPooler initialize the matrix with its requirements
+            if (spatialPooler != null)
+            {
+                // The exact dimensions don't have to be the same but the number of
+                // dimensions do!
+                int inputLength, columnLength = 0;
+                if ((inputLength = ((int[])this.parameters[KEY.INPUT_DIMENSIONS]).Length) !=
+                     (columnLength = ((int[])this.parameters[KEY.COLUMN_DIMENSIONS]).Length))
+                {
+
+                    this.logger.LogError("The number of Input Dimensions (" + inputLength + ") is not same as the number of Column Dimensions " +
+                        "(" + columnLength + ") in Parameters! - SpatialPooler not initialized!");
+
+                    return this;
+                }
+
+                spatialPooler.init(connections);
+            }
+
+            // Let the TemporalMemory initialize the matrix with its requirements
+            if (temporalMemory != null)
+            {
+                TemporalMemory.init(connections);
+            }
+
+            this.numColumns = connections.getNumColumns();
+
+            this.isClosed = true;
+
+            this.logger?.LogDebug("Layer " + name + " content initialize mask = " + BitConverter.bin(algo_content_mask));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Registers specified subscriber.
+        /// </summary>
+        /// <param name="subscriber"></param>
+        /// <returns></returns>
+
+        public ISubscription<IInference> Subscribe(IObserver<IInference> subscriber)
+        {
+            // This will be called again after the Network is halted so we have to prepare
+            // for rebuild of the Observer chain
+            //if (isHalted)
+            //{
+            //    clearSubscriberObserverLists();
+            //}
+
+            if (subscriber == null)
+            {
+                throw new ArgumentException("Subscriber cannot be null.");
+            }
+
+
+            this.subscribers.Add(subscriber);
+
+            return this.publisher.Subscribe(subscriber) as ISubscription<IInference>;
+        }
+
+     
 
         /// <summary>
         /// Notify all subscribers that processing has completed succesfully.

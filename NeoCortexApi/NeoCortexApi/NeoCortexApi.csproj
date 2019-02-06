@@ -22,7 +22,6 @@
     <Compile Remove="Network\CortexNetwork.cs" />
     <Compile Remove="Network\Header.cs" />
     <Compile Remove="Network\ICheckPointOP.cs" />
-    <Compile Remove="Network\IInference.cs" />
     <Compile Remove="Network\ISubscription.cs" />
     <Compile Remove="Network\Layer.cs" />
     <Compile Remove="Network\ManualInput.cs" />
@@ -31,6 +30,8 @@
     <Compile Remove="Network\Region.cs" />
     <Compile Remove="Network\SensorFlags.cs" />
     <Compile Remove="Network\Subscription.cs" />
+    <Compile Remove="Sensors\CsvFileSensor.cs" />
+    <Compile Remove="Sensors\HtmSensor.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,7 +40,6 @@
     <None Include="Network\CortexNetwork.cs" />
     <None Include="Network\Header.cs" />
     <None Include="Network\ICheckPointOP.cs" />
-    <None Include="Network\IInference.cs" />
     <None Include="Network\ISubscription.cs" />
     <None Include="Network\Layer.cs" />
     <None Include="Network\ManualInput.cs" />
@@ -48,11 +48,17 @@
     <None Include="Network\Region.cs" />
     <None Include="Network\SensorFlags.cs" />
     <None Include="Network\Subscription.cs" />
+    <None Include="Sensors\CsvFileSensor.cs" />
+    <None Include="Sensors\HtmSensor.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
    
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DistributedComputeLib\DistributedComputeLib.csproj" />
   </ItemGroup>
 
 

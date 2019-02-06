@@ -181,7 +181,7 @@ namespace NeoCortexApi
 
             updateBookeepingVars(c, learn);
 
-            // Gets overlap ove every single column.
+            // Gets overlap over every single column.
             var overlaps = calculateOverlap(c, inputVector);
 
             //overlapActive = calculateOverlap(activeInput)

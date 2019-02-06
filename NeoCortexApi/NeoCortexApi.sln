@@ -5,7 +5,9 @@ VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexApi", "NeoCortexApi\NeoCortexApi.csproj", "{F5BEDB25-C6A3-4826-A8C6-679098F5CB9C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestsProject", "UnitTestsProject\UnitTestsProject.csproj", "{A2B0776F-3650-4CE5-98BC-E2B7A2205A23}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTestsProject", "UnitTestsProject\UnitTestsProject.csproj", "{A2B0776F-3650-4CE5-98BC-E2B7A2205A23}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DistributedComputeLib", "DistributedComputeLib\DistributedComputeLib.csproj", "{7F75D4D0-408B-4FFE-A450-1D7F647542B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{A2B0776F-3650-4CE5-98BC-E2B7A2205A23}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2B0776F-3650-4CE5-98BC-E2B7A2205A23}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2B0776F-3650-4CE5-98BC-E2B7A2205A23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F75D4D0-408B-4FFE-A450-1D7F647542B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F75D4D0-408B-4FFE-A450-1D7F647542B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F75D4D0-408B-4FFE-A450-1D7F647542B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F75D4D0-408B-4FFE-A450-1D7F647542B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

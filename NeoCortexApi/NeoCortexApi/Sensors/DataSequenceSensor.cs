@@ -41,6 +41,17 @@ namespace NeoCortexApi.Sensors
             }
         }
 
+        /// <summary>
+        /// Length of input vector.
+        /// </summary>
+        public int InputWidth
+        {
+
+            get
+            {
+                return this.mapper.InputWidth;
+            }
+        }
 
         public DataSequenceSensor(object[][] data, DataDescriptor descriptor, CortexNetworkContext context)
         {

@@ -287,7 +287,7 @@ namespace UnitTestsProject
         {
             get
             {
-                return 1;
+                return this.N;
             }
         }
 
@@ -358,7 +358,7 @@ namespace UnitTestsProject
         {
             get
             {
-                return this.Width;
+                return 1;
             }
         }
 

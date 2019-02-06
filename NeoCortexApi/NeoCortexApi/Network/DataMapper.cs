@@ -16,6 +16,22 @@ namespace LearningFoundation.DataMappers
         private DataDescriptor descriptor;
 
         private CortexNetworkContext context;
+        
+        /// <summary>
+        /// Width of input across of all encoders.
+        /// </summary>
+        public int InputWidth
+        {
+            get
+            {
+                int width = 0;
+                foreach (var feature in descriptor.Features)
+                {
+                    width += feature.Encoder.Width;
+                }
+                return width;
+            }
+        }
 
         /// <summary>
         /// Main constructor

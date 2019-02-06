@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DistributedComputeLib\DistributedComputeLib.csproj" />
     <ProjectReference Include="..\NeoCortexApi\NeoCortexApi.csproj" />
   </ItemGroup>
 
