@@ -26,7 +26,7 @@ using System.Diagnostics;
 
 namespace NeoCortexApi
 {
-    public class SpatialPooler : IHtmModule
+    public class SpatialPooler : IHtmAlgorithm
     {
         public double MaxInibitionDensity { get; set; } = 0.5;
 
@@ -181,7 +181,7 @@ namespace NeoCortexApi
 
             updateBookeepingVars(c, learn);
 
-            // Gets overlap ove every single column.
+            // Gets overlap over every single column.
             var overlaps = calculateOverlap(c, inputVector);
 
             //overlapActive = calculateOverlap(activeInput)

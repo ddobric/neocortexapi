@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NeoCortexApi
 {
-    public class Anomaly : IHtmModule
+    public class Anomaly : IHtmAlgorithm
     {
         /** Modes to use for factory creation method */
         public enum Mode { PURE, LIKELIHOOD, WEIGHTED };

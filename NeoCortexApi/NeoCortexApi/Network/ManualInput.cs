@@ -22,7 +22,7 @@ namespace NeoCortexApi
 
         public object LayerInput { get; set; }
 
-        public int[] getSDR { get; }
+        public int[] Sdr { get; set; }
 
         public int[] getEncoding { get; }
 

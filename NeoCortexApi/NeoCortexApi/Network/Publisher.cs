@@ -11,7 +11,7 @@ namespace NeoCortexApi.Network
       
 
         private Network parentNetwork;
-
+       
 
         public class Builder<T>
         {

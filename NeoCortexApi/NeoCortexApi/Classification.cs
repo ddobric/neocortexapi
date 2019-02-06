@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace NeoCortexApi
 {
-    public class Classification<T> : IEquatable<Classification<T>>  where T: class
+    public class Classification<T> : IHtmAlgorithm, IEquatable<Classification<T>>  where T: class
     {
      
         /** Array of actual values */

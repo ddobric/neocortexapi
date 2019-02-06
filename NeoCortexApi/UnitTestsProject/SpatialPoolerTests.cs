@@ -355,7 +355,7 @@ namespace UnitTestsProject
         public void perfTest()
         {
             setupParameters();
-            parameters.setInputDimensions(new int[] { 1, 188 });
+            parameters.setInputDimensions(new int[] { 1, 1 });
             parameters.setColumnDimensions(new int[] { 2048, 10 });
             parameters.setPotentialRadius(94);
             parameters.setPotentialPct(0.5);

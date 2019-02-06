@@ -4,169 +4,155 @@
         <name>NeoCortexApi</name>
     </assembly>
     <members>
-        <!-- Badly formed XML comment ignored for member "F:NeoCortexApi.Encoders.EncoderBase`1.description" -->
-        <member name="F:NeoCortexApi.Encoders.EncoderBase`1.w">
-            The number of bits that are set to encode a single value - the
-            "width" of the output signal
+        <member name="T:NeoCortexApi.Anomaly.Mode">
+            Modes to use for factory creation method 
         </member>
-        <member name="F:NeoCortexApi.Encoders.EncoderBase`1.m_NumOfBits">
+        <member name="M:NeoCortexApi.Anomaly.#ctor">
+            Constructs a new {@code Anomaly}
+        </member>
+        <member name="M:NeoCortexApi.Anomaly.#ctor(System.Boolean,System.Int32)">
+            Constructs a new {@code Anomaly}
+            
+            @param useMovingAverage  indicates whether to apply and store a moving average
+            @param windowSize        size of window to average over
+        </member>
+        <member name="F:NeoCortexApi.Classification`1.actualValues">
+            Array of actual values 
+        </member>
+        <member name="F:NeoCortexApi.Classification`1.probabilities">
+            Map of step count -to- probabilities 
+        </member>
+        <member name="M:NeoCortexApi.Classification`1.copy">
+            Utility method to copy the contents of a ClassifierResult.
+            
+            @return  a copy of this {@code ClassifierResult} which will not be affected
+            by changes to the original.
+        </member>
+        <member name="M:NeoCortexApi.Classification`1.getActualValue(System.Int32)">
+            Returns the actual value for the specified bucket index
+            
+            @param bucketIndex
+            @return
+        </member>
+        <member name="M:NeoCortexApi.Classification`1.getActualValues">
+            Returns all actual values entered
+            
+            @return  array of type &lt;T&gt;
+        </member>
+        <member name="M:NeoCortexApi.Classification`1.setActualValues(`0[])">
+            Sets the array of actual values being entered.
+            
+            @param values
+            @param &lt;T&gt;[]	the value array type
+        </member>
+        <member name="M:NeoCortexApi.Classification`1.getActualValueCount">
+            Returns a count of actual values entered
+            @return
+        </member>
+        <member name="M:NeoCortexApi.Classification`1.getStat(System.Int32,System.Int32)">
+            Returns the probability at the specified index for the given step
+            @param step
+            @param bucketIndex
+            @return
+        </member>
+        <member name="M:NeoCortexApi.Classification`1.setStats(System.Int32,System.Double[])">
+            Sets the array of probabilities for the specified step
+            @param step
+            @param votes
+        </member>
+        <member name="M:NeoCortexApi.Classification`1.getStats(System.Int32)">
+            Returns the probabilities for the specified step
+            @param step
+            @return
+        </member>
+        <member name="M:NeoCortexApi.Classification`1.getMostProbableValue(System.Int32)">
+            Returns the input value corresponding with the highest probability
+            for the specified step.
+            
+            @param step		the step key under which the most probable value will be returned.
+            @return
+        </member>
+        <member name="M:NeoCortexApi.Classification`1.getMostProbableBucketIndex(System.Int32)">
+            Returns the bucket index corresponding with the highest probability
+            for the specified step.
+            
+            @param step		the step key under which the most probable index will be returned.
+            @return			-1 if there is no such entry
+        </member>
+        <member name="M:NeoCortexApi.Classification`1.getStepCount">
+            Returns the count of steps
+            @return
+        </member>
+        <member name="M:NeoCortexApi.Classification`1.getStatCount(System.Int32)">
+            Returns the count of probabilities for the specified step
+            @param	the step indexing the probability values
+            @return
+        </member>
+        <member name="M:NeoCortexApi.Classification`1.stepSet">
+            Returns a set of steps being recorded.
+            @return
+        </member>
+        <member name="T:NeoCortexApi.Encoders.EncoderBase">
+            <summary>
+            Base class for all encoders.
+            </summary> 
+        </member>
+        <member name="F:NeoCortexApi.Encoders.EncoderBase.Properties">
+            <summary>
+            List of all encoder properties.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "F:NeoCortexApi.Encoders.EncoderBase.description" -->
+        <member name="F:NeoCortexApi.Encoders.EncoderBase.m_NumOfBits">
             number of bits in the representation (must be >= w) 
         </member>
-        <member name="F:NeoCortexApi.Encoders.EncoderBase`1.halfWidth">
+        <member name="F:NeoCortexApi.Encoders.EncoderBase.halfWidth">
             the half width value 
         </member>
-        <member name="F:NeoCortexApi.Encoders.EncoderBase`1.radius">
-            inputs separated by more than, or equal to this distance will have non-overlapping
-            representations
-        </member>
-        <member name="F:NeoCortexApi.Encoders.EncoderBase`1.resolution">
-            inputs separated by more than, or equal to this distance will have different representations 
-        </member>
-        <member name="F:NeoCortexApi.Encoders.EncoderBase`1.periodic">
-            If true, then the input value "wraps around" such that minval = maxval
-            For a periodic value, the input must be strictly less than maxval,
-            otherwise maxval is a true upper bound.
-        </member>
-        <member name="F:NeoCortexApi.Encoders.EncoderBase`1.minVal">
-            The minimum value of the input signal.  
-        </member>
-        <member name="F:NeoCortexApi.Encoders.EncoderBase`1.maxVal">
-            The maximum value of the input signal. 
-        </member>
-        <member name="F:NeoCortexApi.Encoders.EncoderBase`1.clipInput">
-            if true, non-periodic inputs smaller than minval or greater
-                            than maxval will be clipped to minval/maxval 
-        </member>
-        <member name="F:NeoCortexApi.Encoders.EncoderBase`1.isForced">
-            if true, skip some safety checks (for compatibility reasons), default false 
-        </member>
-        <member name="F:NeoCortexApi.Encoders.EncoderBase`1.m_Name">
-            Encoder name - an optional string which will become part of the description 
-        </member>
-        <member name="F:NeoCortexApi.Encoders.EncoderBase`1.topDownMapping">
+        <member name="F:NeoCortexApi.Encoders.EncoderBase.topDownMapping">
             This matrix is used for the topDownCompute. We build it the first time
             topDownCompute is called
         </member>
-        <member name="P:NeoCortexApi.Encoders.EncoderBase`1.W">
-            Sets the "w" or width of the output signal
-            <em>Restriction:</em> w must be odd to avoid centering problems.
-            @param w
-        </member>
-        <member name="P:NeoCortexApi.Encoders.EncoderBase`1.Padding">
-             For non-periodic inputs, padding is the number of bits "outside" the range,
-             on each side. I.e. the representation of minval is centered on some bit, and
-             there are "padding" bits to the left of that centered bit; similarly with
-             bits to the right of the center bit of maxval
-            
-             @param padding
-        </member>
-        <member name="P:NeoCortexApi.Encoders.EncoderBase`1.Radius">
-            Returns the radius
-            @return
-             inputs separated by more than, or equal to this distance will have non-overlapping
-             representations
-            
-             @param radius
-        </member>
-        <member name="P:NeoCortexApi.Encoders.EncoderBase`1.RangeInternal">
-            Returns the range internal value
-            @return
-            Sets rangeInternal
-            @param r
-        </member>
-        <member name="P:NeoCortexApi.Encoders.EncoderBase`1.Range">
-            Returns the range
-            @return
-            Sets the range
-            @param range
-        </member>
-        <member name="P:NeoCortexApi.Encoders.EncoderBase`1.NInternal">
-            nInternal represents the output area excluding the possible padding on each
-            side
-            @return
-             nInternal represents the output area excluding the possible padding on each side
-            
-             @param n
-        </member>
-        <member name="P:NeoCortexApi.Encoders.EncoderBase`1.TopDownValues">
-            Returns the top down range of values
-            @return
-            Range of values.
-            @param values
-        </member>
-        <member name="P:NeoCortexApi.Encoders.EncoderBase`1.NumOfBits">
-            Returns n
-            @return
-            The number of bits in the output. Must be greater than or equal to w
-            @param n
-        </member>
-        <member name="P:NeoCortexApi.Encoders.EncoderBase`1.MinVal">
-            Returns minval
-            @return
-            The minimum value of the input signal.
-            @param minVal
-        </member>
-        <member name="P:NeoCortexApi.Encoders.EncoderBase`1.MaxVal">
-            Returns maxval
-            @return
-            The maximum value of the input signal.
-            @param maxVal
-        </member>
-        <member name="P:NeoCortexApi.Encoders.EncoderBase`1.HalfWidth">
-            Return the half width value.
-            @return
-            Half the width
-            @param hw
-        </member>
-        <member name="P:NeoCortexApi.Encoders.EncoderBase`1.Resolution">
-             inputs separated by more than, or equal to this distance will have different
-             representations
-            
-             @param resolution
-        </member>
-        <member name="P:NeoCortexApi.Encoders.EncoderBase`1.ClipInput">
-            Returns the clip input flag
-            @return
-            If true, non-periodic inputs smaller than minval or greater
-            than maxval will be clipped to minval/maxval
-            @param b
-        </member>
-        <member name="P:NeoCortexApi.Encoders.EncoderBase`1.Periodic">
-            Returns the periodic flag
-            @return
-             If true, then the input value "wraps around" such that minval = maxval
-             For a periodic value, the input must be strictly less than maxval,
-             otherwise maxval is a true upper bound.
-            
-             @param b
-        </member>
-        <member name="P:NeoCortexApi.Encoders.EncoderBase`1.IsForced">
-            Returns the forced flag
-            @return
-            If true, skip some safety checks (for compatibility reasons), default false
-            @param b
-        </member>
-        <member name="P:NeoCortexApi.Encoders.EncoderBase`1.Name">
+        <member name="M:NeoCortexApi.Encoders.EncoderBase.#ctor">
             <summary>
-            The number of bits in the output. Must be greater than or equal to w
+            Default constructor.
             </summary>
         </member>
-        <member name="P:NeoCortexApi.Encoders.EncoderBase`1.ScalarNames">
-             Returns the names of the fields
-            
-             @return	the list of names
-             Sets the names of the fields
-            
-             @param names	the list of names
+        <member name="M:NeoCortexApi.Encoders.EncoderBase.#ctor(System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            Called by framework to initialize encoder with all required settings.
+            </summary>
+            <param name="encoderSettings"></param>
         </member>
-        <!-- Badly formed XML comment ignored for member "P:NeoCortexApi.Encoders.EncoderBase`1.FlattenedFieldTypeList" -->
-        <member name="M:NeoCortexApi.Encoders.EncoderBase`1.setTopDownMapping(NeoCortexApi.Entities.SparseObjectMatrix{System.Int32[]})">
+        <member name="M:NeoCortexApi.Encoders.EncoderBase.Initialize(System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            Sets the copy all properties.
+            </summary>
+            <param name="encoderSettings"></param>
+        </member>
+        <member name="M:NeoCortexApi.Encoders.EncoderBase.AfterInitialize">
+            <summary>
+            Called by framework to initialize encoder with all required settings. This method is useful
+            for implementation of validation logic for properties.
+            Otherwise, if any additional initialization is required, override this method.
+            When this method is called, all encoder properties are already set in member <see cref="F:NeoCortexApi.Encoders.EncoderBase.Properties"/>.
+            </summary>
+        </member>
+        <member name="P:NeoCortexApi.Encoders.EncoderBase.Item(System.String)">
+            <summary>
+            Key acces to property set.
+            </summary>
+            <param name="key">Name of property.</param>
+            <returns></returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "P:NeoCortexApi.Encoders.EncoderBase.FlattenedFieldTypeList" -->
+        <member name="M:NeoCortexApi.Encoders.EncoderBase.setTopDownMapping(NeoCortexApi.Entities.SparseObjectMatrix{System.Int32[]})">
              This matrix is used for the topDownCompute. We build it the first time
              topDownCompute is called
             
              @param sm
         </member>
-        <member name="M:NeoCortexApi.Encoders.EncoderBase`1.addEncoder(NeoCortexApi.Encoders.EncoderBase{`0},System.String,NeoCortexApi.Encoders.EncoderBase{`0},System.Int32)">
+        <member name="M:NeoCortexApi.Encoders.EncoderBase.addEncoder(NeoCortexApi.Encoders.EncoderBase,System.String,NeoCortexApi.Encoders.EncoderBase,System.Int32)">
             Returns the resolution
             @return
              Adds a the specified {@link Encoder} to the list of the specified
@@ -178,37 +164,41 @@
              @param offset	the offset of the encoded output the specified encoder
              					was used to encode.
         </member>
-        <member name="M:NeoCortexApi.Encoders.EncoderBase`1.getEncoderTuple(NeoCortexApi.Encoders.EncoderBase{`0})">
+        <member name="M:NeoCortexApi.Encoders.EncoderBase.getEncoderTuple(NeoCortexApi.Encoders.EncoderBase)">
             Returns the {@link Tuple} containing the specified {@link Encoder}
             @param e		the Encoder the return value should contain
             @return		the {@link Tuple} containing the specified {@link Encoder}
         </member>
-        <member name="M:NeoCortexApi.Encoders.EncoderBase`1.getEncoders(NeoCortexApi.Encoders.EncoderBase{`0})">
+        <member name="M:NeoCortexApi.Encoders.EncoderBase.getEncoders(NeoCortexApi.Encoders.EncoderBase)">
              Returns the list of child {@link Encoder} {@link Tuple}s
              corresponding to the specified {@code Encoder}
             
              @param e		the parent {@link Encoder} whose child Encoder Tuples are being returned
              @return		the list of child {@link Encoder} {@link Tuple}s
         </member>
-        <member name="M:NeoCortexApi.Encoders.EncoderBase`1.getEncoders">
+        <member name="M:NeoCortexApi.Encoders.EncoderBase.getEncoders">
             Returns the list of {@link Encoder}s
             @return
         </member>
-        <member name="M:NeoCortexApi.Encoders.EncoderBase`1.setLearningEnabled(System.Boolean)">
+        <member name="M:NeoCortexApi.Encoders.EncoderBase.setLearningEnabled(System.Boolean)">
              Sets the encoder flag indicating whether learning is enabled.
             
              @param	encLearningEnabled	true if learning is enabled, false if not
         </member>
-        <member name="M:NeoCortexApi.Encoders.EncoderBase`1.isEncoderLearningEnabled">
+        <member name="M:NeoCortexApi.Encoders.EncoderBase.isEncoderLearningEnabled">
             Returns a flag indicating whether encoder learning is enabled.
         </member>
-        <member name="M:NeoCortexApi.Encoders.EncoderBase`1.getWidth">
-            Should return the output width, in bits.
+        <member name="P:NeoCortexApi.Encoders.EncoderBase.Width">
+            <summary>
+             Gets the output width, in bits.
+            </summary>
         </member>
-        <member name="M:NeoCortexApi.Encoders.EncoderBase`1.isDelta">
+        <member name="P:NeoCortexApi.Encoders.EncoderBase.IsDelta">
+            <summary>
             Returns true if the underlying encoder works on deltas
+            </summary>
         </member>
-        <member name="M:NeoCortexApi.Encoders.EncoderBase`1.encodeIntoArray(`0)">
+        <member name="M:NeoCortexApi.Encoders.EncoderBase.Encode(System.Object)">
              Encodes inputData and puts the encoded value into the output array,
              which is a 1-D array of length returned by {@link #getW()}.
             
@@ -218,17 +208,11 @@
             
              @return
         </member>
-        <member name="M:NeoCortexApi.Encoders.EncoderBase`1.setLearning(System.Boolean)">
+        <member name="M:NeoCortexApi.Encoders.EncoderBase.setLearning(System.Boolean)">
             Set whether learning is enabled.
             @param 	learningEnabled		flag indicating whether learning is enabled
         </member>
-        <member name="M:NeoCortexApi.Encoders.EncoderBase`1.Encode(`0)">
-             Convenience wrapper for {@link #encodeIntoArray(double, int[])}
-             @param inputData		the input scalar
-            
-             @return	an array with the encoded representation of inputData
-        </member>
-        <member name="M:NeoCortexApi.Encoders.EncoderBase`1.getScalarNames(System.String)">
+        <member name="M:NeoCortexApi.Encoders.EncoderBase.getScalarNames(System.String)">
              Return the field names for each of the scalar values returned by
              .
              @param parentFieldName	parentFieldName The name of the encoder which is our parent. This name
@@ -237,15 +221,15 @@
             
              @return
         </member>
-        <member name="M:NeoCortexApi.Encoders.EncoderBase`1.getDecoderOutputFieldTypes">
+        <member name="M:NeoCortexApi.Encoders.EncoderBase.getDecoderOutputFieldTypes">
              Returns a sequence of field types corresponding to the elements in the
              decoded output field array.  The types are defined by {@link FieldMetaType}
             
              @return
         </member>
-        <!-- Badly formed XML comment ignored for member "M:NeoCortexApi.Encoders.EncoderBase`1.getScalars(System.Double)" -->
-        <!-- Badly formed XML comment ignored for member "M:NeoCortexApi.Encoders.EncoderBase`1.getEncodedValues``1(``0)" -->
-        <member name="M:NeoCortexApi.Encoders.EncoderBase`1.getBucketIndices(System.String)">
+        <!-- Badly formed XML comment ignored for member "M:NeoCortexApi.Encoders.EncoderBase.getScalars(System.Double)" -->
+        <!-- Badly formed XML comment ignored for member "M:NeoCortexApi.Encoders.EncoderBase.getEncodedValues``1(``0)" -->
+        <member name="M:NeoCortexApi.Encoders.EncoderBase.getBucketIndices(System.String)">
              Returns an array containing the sub-field bucket indices for
              each sub-field of the inputData. To get the associated field names for each of
              the buckets, call getScalarNames().
@@ -253,7 +237,7 @@
             
              @return 	array of bucket indices
         </member>
-        <member name="M:NeoCortexApi.Encoders.EncoderBase`1.getBucketIndices(System.Double)">
+        <member name="M:NeoCortexApi.Encoders.EncoderBase.getBucketIndices(System.Double)">
              Returns an array containing the sub-field bucket indices for
              each sub-field of the inputData. To get the associated field names for each of
              the buckets, call getScalarNames().
@@ -261,7 +245,7 @@
             
              @return 	array of bucket indices
         </member>
-        <member name="M:NeoCortexApi.Encoders.EncoderBase`1.scalarsToStr``1(System.Collections.Generic.List{``0},System.Collections.Generic.List{System.String})">
+        <member name="M:NeoCortexApi.Encoders.EncoderBase.scalarsToStr``1(System.Collections.Generic.List{``0},System.Collections.Generic.List{System.String})">
              Return a pretty print string representing the return values from
              getScalars and getScalarNames().
              @param scalarValues 	input values to encode to string
@@ -270,7 +254,7 @@
             
              @return string representation of scalar values
         </member>
-        <member name="M:NeoCortexApi.Encoders.EncoderBase`1.getDescription">
+        <member name="M:NeoCortexApi.Encoders.EncoderBase.getDescription">
              This returns a list of tuples, each containing (name, offset).
              The 'name' is a string description of each sub-field, and offset is the bit
              offset of the sub-field for that encoder.
@@ -280,7 +264,7 @@
             
              @return		list of tuples, each containing (name, offset)
         </member>
-        <member name="M:NeoCortexApi.Encoders.EncoderBase`1.encodedBitDescription(System.Int32,System.Boolean)">
+        <member name="M:NeoCortexApi.Encoders.EncoderBase.encodedBitDescription(System.Int32,System.Boolean)">
              Return a description of the given bit in the encoded output.
              This will include the field name and the offset within the field.
              @param bitOffset  	Offset of the bit to get the description of
@@ -289,12 +273,12 @@
             
              @return tuple(fieldName, offsetWithinField)
         </member>
-        <member name="M:NeoCortexApi.Encoders.EncoderBase`1.pprintHeader(System.String)">
+        <member name="M:NeoCortexApi.Encoders.EncoderBase.printHeader(System.String)">
             Pretty-print a header that labels the sub-fields of the encoded
             output. This can be used in conjunction with {@link #pprint(int[], String)}.
             @param prefix
         </member>
-        <member name="M:NeoCortexApi.Encoders.EncoderBase`1.decode(System.Int32[],System.String)">
+        <member name="M:NeoCortexApi.Encoders.EncoderBase.decode(System.Int32[],System.String)">
              Takes an encoded output and does its best to work backwards and generate
              the input that would have generated it.
             
@@ -354,13 +338,13 @@
             
              @returns Tuple(fieldsMap, fieldOrder)
         </member>
-        <member name="M:NeoCortexApi.Encoders.EncoderBase`1.decodedToStr(System.Tuple{System.Collections.Generic.Dictionary{System.String,System.Object},System.Collections.Generic.List{System.String}})">
+        <member name="M:NeoCortexApi.Encoders.EncoderBase.decodedToStr(System.Tuple{System.Collections.Generic.Dictionary{System.String,System.Object},System.Collections.Generic.List{System.String}})">
              Return a pretty print string representing the return value from decode().
             
              @param decodeResults
              @return
         </member>
-        <member name="M:NeoCortexApi.Encoders.EncoderBase`1.getBucketValues``1(``0)">
+        <member name="M:NeoCortexApi.Encoders.EncoderBase.getBucketValues``1">
              Returns a list of items, one for each bucket defined by this encoder.
              Each item is the value assigned to that bucket, this is the same as the
              EncoderResult.value that would be returned by getBucketInfo() for that
@@ -376,7 +360,7 @@
              @return  list of items, each item representing the bucket value for that
                       bucket.
         </member>
-        <member name="M:NeoCortexApi.Encoders.EncoderBase`1.getBucketInfo(System.Int32[])">
+        <member name="M:NeoCortexApi.Encoders.EncoderBase.getBucketInfo(System.Int32[])">
              Returns a list of {@link Encoding}s describing the inputs for
              each sub-field that correspond to the bucket indices passed in 'buckets'.
              To get the associated field names for each of the values, call getScalarNames().
@@ -386,7 +370,7 @@
             
              @return A list of {@link Encoding}s. Each EncoderResult has
         </member>
-        <member name="M:NeoCortexApi.Encoders.EncoderBase`1.topDownCompute(System.Int32[])">
+        <member name="M:NeoCortexApi.Encoders.EncoderBase.topDownCompute(System.Int32[])">
              Returns a list of EncoderResult named tuples describing the top-down
              best guess inputs for each sub-field given the encoded output. These are the
              values which are most likely to generate the given encoded output.
@@ -416,7 +400,7 @@
                                       encode(), an identical bit-array should be
                                       returned.
         </member>
-        <member name="M:NeoCortexApi.Encoders.EncoderBase`1.rightVecProd(NeoCortexApi.Entities.SparseObjectMatrix{System.Int32[]},System.Int32[])">
+        <member name="M:NeoCortexApi.Encoders.EncoderBase.rightVecProd(NeoCortexApi.Entities.SparseObjectMatrix{System.Int32[]},System.Int32[])">
              Returns an array containing the sum of the right
              applied multiplications of each slice to the array
              passed in.
@@ -424,7 +408,7 @@
              @param encoded
              @return
         </member>
-        <member name="M:NeoCortexApi.Encoders.EncoderBase`1.getDisplayWidth">
+        <member name="M:NeoCortexApi.Encoders.EncoderBase.getDisplayWidth">
              Calculate width of display for bits plus blanks between fields.
             
              @return	width
@@ -3071,6 +3055,119 @@
             
             @param   connections   the Connections state of the temporal memory
         </member>
+        <member name="T:NeoCortexApi.IHtmModule">
+            <summary>
+            Defines the interface, which needs to be implemented by all classes, which can be inserted as a layer in region.
+            </summary>
+        </member>
+        <member name="M:NeoCortexApi.MovingAverage.#ctor(System.Collections.Generic.List{System.Double},System.Int32)">
+            Constructs a new {@code MovingAverage}
+            
+            @param historicalValues  list of entry values
+            @param windowSize        length over which to take the average
+        </member>
+        <member name="M:NeoCortexApi.MovingAverage.#ctor(System.Collections.Generic.List{System.Double},System.Double,System.Int32)">
+            Constructs a new {@code MovingAverage}
+            
+            @param historicalValues  list of entry values
+            @param windowSize        length over which to take the average
+        </member>
+        <member name="M:NeoCortexApi.MovingAverage.compute(System.Collections.Generic.List{System.Double},System.Double,System.Double,System.Int32)">
+            Routine for computing a moving average
+            
+            @param slidingWindow     a list of previous values to use in the computation that
+                                     will be modified and returned
+            @param total             total the sum of the values in the  slidingWindow to be used in the
+                                     calculation of the moving average
+            @param newVal            newVal a new number to compute the new windowed average
+            @param windowSize        windowSize how many values to use in the moving window
+            @return
+        </member>
+        <member name="M:NeoCortexApi.MovingAverage.compute(NeoCortexApi.MovingAverage.Calculation,System.Collections.Generic.List{System.Double},System.Double,System.Double,System.Int32)">
+            Internal method which does actual calculation
+            
+            @param calc              Re-used calculation object
+            @param slidingWindow     a list of previous values to use in the computation that
+                                     will be modified and returned
+            @param total             total the sum of the values in the  slidingWindow to be used in the
+                                     calculation of the moving average
+            @param newVal            newVal a new number to compute the new windowed average
+            @param windowSize        windowSize how many values to use in the moving window
+            @return
+        </member>
+        <member name="M:NeoCortexApi.MovingAverage.next(System.Double)">
+            Called to compute the next moving average value.
+            
+            @param newValue  new point data
+            @return
+        </member>
+        <member name="M:NeoCortexApi.MovingAverage.getSlidingWindow">
+            Returns the sliding window buffer used to calculate the moving average.
+            @return
+        </member>
+        <member name="M:NeoCortexApi.MovingAverage.getTotal">
+            Returns the current running total
+            @return
+        </member>
+        <member name="M:NeoCortexApi.MovingAverage.getWindowSize">
+            Returns the size of the window over which the 
+            moving average is computed.
+            
+            @return
+        </member>
+        <member name="M:NeoCortexApi.MovingAverage.copyInto(NeoCortexApi.MovingAverage.Calculation,System.Collections.Generic.List{System.Double},System.Double,System.Double)">
+            Internal method to update running totals.
+            
+            @param c
+            @param slidingWindow
+            @param value
+            @param total
+            @return
+        </member>
+        <member name="T:NeoCortexApi.MovingAverage.Calculation">
+            <summary>
+            Calculated data.
+            </summary>
+        </member>
+        <member name="F:NeoCortexApi.MovingAverage.Calculation.Average">
+            <summary>
+            Returns the current value at this point in the calculation.
+            </summary>
+        </member>
+        <member name="F:NeoCortexApi.MovingAverage.Calculation.HistoricalValues">
+            <summary>
+            Returns a list of calculated values in the order of their
+            calculation.
+            </summary>
+        </member>
+        <member name="F:NeoCortexApi.MovingAverage.Calculation.Total">
+            <summary>
+            Returns the total.
+            </summary>
+        </member>
+        <member name="T:NeoCortexApi.Network.CortexNetworkContext">
+            <summary>
+            Holds general context information.
+            </summary>
+        </member>
+        <member name="P:NeoCortexApi.Network.CortexNetworkContext.Encoders">
+            <summary>
+            Gets all available encoders.
+            </summary>
+        </member>
+        <member name="M:NeoCortexApi.Network.CortexNetworkContext.#ctor">
+            <summary>
+            Loads all implemented encoders in all load assemblies.
+            </summary>
+        </member>
+        <member name="M:NeoCortexApi.Network.CortexNetworkContext.CreateEncoder(System.String,System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            Creates the encoder instance from specified set of properties.
+            </summary>
+            <param name="encoderType"></param>
+            <param name="encoderSettings"></param>
+            <returns></returns>
+        </member>
         <member name="F:NeoCortexApi.SpatialPooler.serialVersionUID">
             Default Serial Version  
         </member>
@@ -4354,6 +4451,13 @@
             Aggregates all element of multi dimensional array of ints
             @param array
             @return sum of all array elements
+        </member>
+        <member name="M:NeoCortexApi.Utility.ArrayUtils.AreEqual``2(System.Collections.Generic.IDictionary{``0,``1},System.Collections.Generic.IDictionary{``0,``1})">
+             Concat int arrays
+            
+             @return The concatenated array
+            
+             http://stackoverflow.com/a/784842
         </member>
         <member name="T:NeoCortexApi.Utility.Coordinator">
             Specializes in handling coordinate transforms for N-dimensional

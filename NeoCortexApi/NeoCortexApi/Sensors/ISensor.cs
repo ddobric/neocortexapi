@@ -1,13 +1,15 @@
-﻿using NeoCortexApi.Entities;
+﻿using LearningFoundation;
+using NeoCortexApi.Entities;
+using NeoCortexApi.Network;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace NeoCortexApi.Sensors
 {
-    public interface ISensor<T> : IHtmModule
+    public interface ISensor<T> : IEnumerator<int[]>, IHtmModule
     {
-     
+
 
         /**
          * <p>
@@ -54,7 +56,20 @@ namespace NeoCortexApi.Sensors
          * 
          * @return the constructed Stream
          */
-        List<List<object>> getInputStream();
+        IMetaStream<T> getInputStream();
+        
+        /// <summary>
+        /// Descriptor, which describes the input.
+        /// </summary>
+        DataDescriptor DataDescriptor { get; set; }
+
+        HeaderMetaData HeaderMetaData {get;set;}
+
+
+        /// <summary>
+        /// Number of bits of input produced by sensor.
+        /// </summary>
+        int InputWidth { get;  }
 
         /**
          * Returns the inner Stream's meta information.

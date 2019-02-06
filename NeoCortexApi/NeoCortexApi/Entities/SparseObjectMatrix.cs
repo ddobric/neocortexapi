@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
-
+using NeoCortexApi.DistributedComputeLib;
 
 namespace NeoCortexApi.Entities
 {
@@ -22,7 +22,8 @@ namespace NeoCortexApi.Entities
         /** keep it simple */
         private static readonly long serialVersionUID = 1L;
 
-        private Dictionary<int, T> sparseMap = new Dictionary<int, T>();
+        //private IDictionary<int, T> sparseMap = new Dictionary<int, T>();
+        private IDictionary<int, T> sparseMap = new InMemoryDistributedDictionary<int, T>(3);
 
         /**
          * Constructs a new {@code SparseObjectMatrix}

@@ -274,7 +274,7 @@ namespace NeoCortexApi.Encoders
         //  @Override
         public int getWidth()
         {
-            return getN();
+            return W;
         }
 
         /**
@@ -321,7 +321,7 @@ namespace NeoCortexApi.Encoders
          * @param output 1-D array of same length returned by {@link Connections#getW()}
          */
         // @Override
-        public override int[] encodeIntoArray(Double input)
+        public override int[] Encode(Double input)
         {
             int[] output = new int[NumOfBits];
 
@@ -702,17 +702,17 @@ public List<Encoding> getBucketInfo(int[] buckets)
 /**
  * {@inheritDoc}
  */
-@Override
-    public List<Encoding> topDownCompute(int[] encoded)
-{
-    //Get/generate the topDown mapping table
-    SparseObjectMatrix<int[]> topDownMapping = getTopDownMapping();
 
-    // See which "category" we match the closest.
-    int category = ArrayUtils.argmax(rightVecProd(topDownMapping, encoded));
+//    public List<Encoding> topDownCompute(int[] encoded)
+//{
+//    //Get/generate the topDown mapping table
+//    SparseObjectMatrix<int[]> topDownMapping = getTopDownMapping();
 
-    return getBucketInfo(new int[] { category });
-}
+//    // See which "category" we match the closest.
+//    int category = ArrayUtils.argmax(rightVecProd(topDownMapping, encoded));
+
+//    return getBucketInfo(new int[] { category });
+//}
 
 /**
  * Returns a list of {@link Tuple}s which in this case is a list of
@@ -720,29 +720,29 @@ public List<Encoding> getBucketInfo(int[] buckets)
  *
  * @return	a list of {@link Tuple}s
  */
-public Dictionary<string, object> dict()
-{
-    Dictionary<string, object> l = new ArrayList<Tuple>();
-    l.Add("maxval", getMaxVal());
-    l.Add("bucketValues", getBucketValues(typeof(Double)));
-    l.Add("nInternal", getNInternal());
-    l.Add("name", getName());
-    l.Add("minval", getMinVal());
-    l.Add("topDownValues", Arrays.toString(getTopDownValues()));
-    l.Add("clipInput", clipInput());
-    l.Add("n", getN()));
-    l.Add("padding", getPadding());
-    l.Add("range", getRange());
-    l.Add("periodic", isPeriodic());
-    l.Add("radius", getRadius());
-    l.Add("w", getW()));
-    l.Add("topDownMappingM", getTopDownMapping());
-    l.Add("halfwidth", getHalfWidth());
-    l.Add("resolution", getResolution());
-    l.Add("rangeInternal", getRangeInternal());
+//public Dictionary<string, object> dict()
+//{
+//    Dictionary<string, object> l = new ArrayList<Tuple>();
+//    l.Add("maxval", getMaxVal());
+//    l.Add("bucketValues", getBucketValues(typeof(Double)));
+//    l.Add("nInternal", getNInternal());
+//    l.Add("name", getName());
+//    l.Add("minval", getMinVal());
+//    l.Add("topDownValues", Arrays.toString(getTopDownValues()));
+//    l.Add("clipInput", clipInput());
+//    l.Add("n", getN()));
+//    l.Add("padding", getPadding());
+//    l.Add("range", getRange());
+//    l.Add("periodic", isPeriodic());
+//    l.Add("radius", getRadius());
+//    l.Add("w", getW()));
+//    l.Add("topDownMappingM", getTopDownMapping());
+//    l.Add("halfwidth", getHalfWidth());
+//    l.Add("resolution", getResolution());
+//    l.Add("rangeInternal", getRangeInternal());
 
-    return l;
-}
+//    return l;
+//}
 
 /**
  * Returns a {@link EncoderBuilder} for constructing {@link ScalarEncoder}s
@@ -753,29 +753,29 @@ public Dictionary<string, object> dict()
  *
  * @see ScalarEncoder.Builder#setStuff(int)
  */
-public static class Builder : Encoder.Builder<ScalarEncoder.Builder, ScalarEncoder>
-{
-    private Builder() { }
+//public static class Builder : Encoder.Builder<ScalarEncoder.Builder, ScalarEncoder>
+//{
+//    private Builder() { }
 
 
-    override public ScalarEncoder build()
-    {
-        //Must be instantiated so that super class can initialize
-        //boilerplate variables.
-        encoder = new ScalarEncoder();
+//    override public ScalarEncoder build()
+//    {
+//        //Must be instantiated so that super class can initialize
+//        //boilerplate variables.
+//        encoder = new ScalarEncoder();
 
-        //Call super class here
-        super.build();
+//        //Call super class here
+//        super.build();
 
-        ////////////////////////////////////////////////////////
-        //  Implementing classes would do setting of specific //
-        //  vars here together with any sanity checking       //
-        ////////////////////////////////////////////////////////
+//        ////////////////////////////////////////////////////////
+//        //  Implementing classes would do setting of specific //
+//        //  vars here together with any sanity checking       //
+//        ////////////////////////////////////////////////////////
 
-        ((ScalarEncoder)encoder).init();
+//        ((ScalarEncoder)encoder).init();
 
-        return (ScalarEncoder)encoder;
-    }
-}
+//        return (ScalarEncoder)encoder;
+//    }
+//}
     }
 }

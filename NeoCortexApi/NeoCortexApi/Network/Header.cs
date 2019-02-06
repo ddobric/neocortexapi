@@ -3,21 +3,17 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using NeoCortexApi.Network;
 
 namespace NeoCortexApi
 {
     public class Header
     {
+        private HeaderMetaData metadata;
+
         private List<List<object>> rawTupleList;
 
-        /** Name of each field */
-        private List<String> fieldNames;
-
-        /** Field data types */
-        private List<FieldMetaType> fieldMeta;
-
-        /** Processing flags and hints */
-        private List<string> sensorFlags;
+    
 
         private bool isChanged;
 
@@ -37,20 +33,8 @@ namespace NeoCortexApi
 
         public int Size { get { return rawTupleList.Count; } }
 
-        public List<String> FieldNames { get { return fieldNames; } }
 
-        public List<FieldMetaType> FieldTypes { get { return fieldMeta; } }
-
-        /**
-    * Returns the header line ({@link List}) containing the
-    * control flags (in the 3rd line) which designate control
-    * operations such as turning learning on/off and resetting
-    * the state of an algorithm.
-    * 
-    * @return
-    */
-        public List<string> Flags { get { return sensorFlags; } }
-
+     
         /**
          * Returns a flag indicating whether any watched column
          * has changed data.
@@ -68,24 +52,15 @@ namespace NeoCortexApi
          */
         public bool IsLearn { get { return IsLearn; } }
 
+        public HeaderMetaData Metadata { get => metadata; set => metadata = value; }
 
-        //public Header(List<List<object>> input)
-        public Header(List<string> fieldNames, List<FieldMetaType> fieldMeta, List<string> sensorFlags)
+        public Header(HeaderMetaData metadata)
         {
-            this.fieldNames = fieldNames;
-            this.fieldMeta = fieldMeta;
-            this.sensorFlags = sensorFlags;
-            //if (input.Count != 3)
-            //{
-            //    throw new ArgumentException("Input did not have 3 rows");
-            //}
-            //this.rawTupleList = input;
-            //this.fieldNames = input[0].Cast<string>().ToList();
-            //this.fieldMeta = input[1].Cast<FieldMetaType>().ToList();
-            //this.sensorFlags = input[2].Cast<string>().ToList();
+            this.Metadata = metadata;
 
             initIndexes();
         }
+
 
 
         /**
@@ -101,7 +76,7 @@ namespace NeoCortexApi
             List<int> sList = new List<int>();
             List<int> lList = new List<int>();
 
-            foreach (string sf in sensorFlags)
+            foreach (string sf in this.metadata.SensorFlags)
             {
                 switch (sf)
                 {
