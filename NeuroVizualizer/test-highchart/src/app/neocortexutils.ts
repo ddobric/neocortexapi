@@ -19,19 +19,28 @@ export class neoCortexUtils {
     sett.numLayers = numLayers;
     let preCell: Cell;
     let postCell: Cell;
-    let preSynapse = new Synapse(0, 0, preCell, postCell);
-    let postSynapse = new Synapse(0, 0, preCell, postCell);
+
+    let preCell0 = new Cell(sett, null, null,  0, 15, 0, 0, null, null);
+    let preCell3= new Cell(sett, null, null,   0, 15, 3, 0, null, null);
+
+    let postCell1 = new Cell(sett, null, null, 0, 15, 1, 0, null, null);
+    let postCell4 = new Cell(sett, null, null, 0, 15, 4, 0, null, null);  
+    
+
 
     let inpModel: InputModel = new InputModel(sett);
 
-    var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 1, 1, 1, preSynapse, postSynapse,);
+    let synaps01 = new Synapse(null, 1, preCell0, postCell1);
+    let synaps34 = new Synapse(null, 1, preCell3, postCell4);
+
+    var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 1, 1, 1, [preCell0,preCell3], [postCell1, postCell4]);
 
 
     return model;
   }
 
 
-  public static addSynapse(model: NeoCortexModel, id: number, areaId: number = -1, preCell: Cell, postCell: Cell, weight: number) {
+  public static addSynapse(model: NeoCortexModel, id: number, areaId: number = 1, preCell: Cell, postCell: Cell, weight: number) {
 
     model.synapses.push(new Synapse(id, weight, preCell, postCell));
 
