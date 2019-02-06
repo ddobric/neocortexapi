@@ -212,9 +212,16 @@ export class AinetComponent implements OnInit, AfterViewInit {
         }
       }
     }
+    for (let dummyValue = 0; dummyValue < model.synapses.length; dummyValue++) {
+      this.permanence.push(null);
+    }
     for (let readPerma = 0; readPerma < model.synapses.length; readPerma++) {
+      let index = model.synapses[readPerma].preSynaptic.posY;
+      
+      this.permanence.splice(index, 0, model.synapses[readPerma].permanence);
+      this.permanence.push(null);
 
-      this.permanence.push(model.synapses[readPerma].permanence);
+     // this.permanence.push(model.synapses[readPerma].permanence);
       this.xSynapse.push(model.synapses[readPerma].preSynaptic.posX);
       this.xSynapse.push(model.synapses[readPerma].postSynaptic.posX);
       this.xSynapse.push(null);
@@ -231,7 +238,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     console.log(this.permanence, "permanence"); */
 
     
-    console.log(this.xSynapse, "X Synaps");
+   /*  console.log(this.xSynapse, "X Synaps");
     console.log(this.ySynapse, "y Synaps");
     console.log(this.zSynapse, "z Synaps");
 
@@ -240,7 +247,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
     
         console.log(this.xNeurons, "X Neurons");
         console.log(this.yNeurons, "Y Neurons");
-        console.log(this.zNeurons, "Z Neurons"); 
+        console.log(this.zNeurons, "Z Neurons");  */
+        console.log(this.permanence, "permanence");
   }
 
   generateSynapses() {
@@ -482,8 +490,12 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   generateColoursForSynPermanences(model: NeoCortexModel) {
 
-    for (const permanenceVal of this.permanence) {
+    /* for (const permanenceVal of this.permanence) {
       let H = (1.0 - permanenceVal) * 240;
+      this.synapseColours.push("hsl(" + H + ", 100%, 50%)");
+    } */
+    for (let permanenceValue = 0; permanenceValue < this.xSynapse.length; permanenceValue++) {
+      let H = (1.0 - this.permanence[permanenceValue]) * 240;
       this.synapseColours.push("hsl(" + H + ", 100%, 50%)");
     }
 

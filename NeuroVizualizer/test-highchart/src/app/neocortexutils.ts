@@ -30,10 +30,10 @@ export class neoCortexUtils {
 
     let inpModel: InputModel = new InputModel(sett);
 
-    let synaps01 = new Synapse(null, 1, preCell0, postCell1);
-    let synaps34 = new Synapse(null, 1, preCell3, postCell4);
+    let synaps01 = new Synapse(null, 0, preCell0, postCell1);
+    let synaps34 = new Synapse(null, 0, preCell3, postCell4);
 
-    var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 1, 1, 1, [preCell0,preCell3], [postCell1, postCell4]);
+    var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 1, 1, 1, [synaps01, synaps34]);
 
 
     return model;

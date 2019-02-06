@@ -47,8 +47,7 @@ export class NeoCortexModel {
   public synapses: Array<Synapse>;
 
   public settings: NeocortexSettings;
-  public preCellsArray = [];
-  public postCellsArray = [];
+  public synapsesArray = [];
 
   /**
    * Multidimensional sensory input.
@@ -56,14 +55,13 @@ export class NeoCortexModel {
   public input: InputModel;
 
 
-  constructor(settings: NeocortexSettings = null, input: InputModel = null, posX = 0, posY = 0, posZ = 0, preCellsArray = [], postCellsArray = []) {
+  constructor(settings: NeocortexSettings = null, input: InputModel = null, posX = 0, posY = 0, posZ = 0, synapses = []) {
 
     this.synapses = new Array();
     this.settings = settings;
     this.input = input;
     this.areas = new Array(settings.areaLevels.length);
-    this.preCellsArray = preCellsArray;
-    this.preCellsArray = postCellsArray;
+    this.synapses = synapses;
 
     let areaId: number = 0;
     for (var levelIndx = 0; levelIndx < settings.areaLevels.length; levelIndx++) {
@@ -75,7 +73,7 @@ export class NeoCortexModel {
       posZ = posZ + settings.zAreaDistance;
 
     }
-    let preCellIn: any;
+   /*  let preCellIn: any;
     let postCellIn: any;
     for (preCellIn = 0; preCellIn < preCellsArray.length; preCellIn++) {
       for (postCellIn = 0; postCellIn < postCellsArray.length; postCellIn++) {
@@ -84,7 +82,7 @@ export class NeoCortexModel {
 
       }
 
-    }
+    } */
 
   }
 }
