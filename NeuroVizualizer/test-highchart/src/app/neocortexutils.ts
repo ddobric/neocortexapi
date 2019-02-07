@@ -17,14 +17,12 @@ export class neoCortexUtils {
     sett.minicolumnDims = miniColDims;
     sett.areaLevels = areaLevels;
     sett.numLayers = numLayers;
-    let preCell: Cell;
-    let postCell: Cell;
+  
+    let preCell0 = new Cell(sett, null, null,  0, 15, 0, 0);
+    let preCell3= new Cell(sett, null, null,   0, 15, 3, 0);
 
-    let preCell0 = new Cell(sett, null, null,  0, 15, 0, 0, null, null);
-    let preCell3= new Cell(sett, null, null,   0, 15, 3, 0, null, null);
-
-    let postCell1 = new Cell(sett, null, null, 0, 15, 1, 0, null, null);
-    let postCell4 = new Cell(sett, null, null, 0, 15, 4, 0, null, null);  
+    let postCell1 = new Cell(sett, null, null, 0, 15, 1, 0);
+    let postCell4 = new Cell(sett, null, null, 0, 15, 4, 0);  
     
 
 

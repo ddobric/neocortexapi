@@ -141,7 +141,7 @@ export class Minicolumn extends Location {
 
     for (let layer = 0; layer < settings.numLayers; layer++) {
 
-      let cell: Cell = new Cell(settings, areaId, miniColId, layer, this.posX, this.posY, this.posZ, this.preSynapse, this.postSynapse)
+      let cell: Cell = new Cell(settings, areaId, miniColId, layer, this.posX, this.posY, this.posZ)
 
       this.cells.push(cell);
     }
@@ -156,10 +156,7 @@ export class Cell extends Location {
 
   public id: CellId;
   public Layer: number;
-
-
-
-
+  
   /**
    * 
    * @param layer Optional for input model.
@@ -167,7 +164,7 @@ export class Cell extends Location {
    * @param posY 
    * @param posZ 
    */
-  constructor(settings: NeocortexSettings, areaId: number, miniColId: number[], layer: number, posX: number = 0, posY: number = 0, posZ: number = 0, preSynapse: Synapse, postSynapse: Synapse) {
+  constructor(settings: NeocortexSettings, areaId: number, miniColId: number[], layer: number, posX: number = 0, posY: number = 0, posZ: number = 0) {
     super(posX, posY, posZ);
     this.Layer = layer;
     this.id = { area: areaId, minicolumn: miniColId, layer: layer };
@@ -211,7 +208,7 @@ export class InputModel {
       for (var dim = 0; dim < cellDims.length; dim++) {
         let row: Array<Cell> = new Array();
         for (var i = 0; i < cellDims[dim]; i++) {
-          row.push(new Cell(settings, this.id, [dim, i], null, null, null, null, null, null));
+          row.push(new Cell(settings, this.id, [dim, i], null, null, null, null));
         }
 
       }
@@ -223,7 +220,7 @@ export class InputModel {
         for (var j = 0; j < cellDims[1]; j++) {
 
           //row.push(new Cell(settings, 0, [i, j], 0));
-          row.push(new Cell(settings, this.id, [dim, j], null, null, null, null, null, null));
+          row.push(new Cell(settings, this.id, [dim, j], null, null, null, null));
         }
 
         this.cells.push(row);
