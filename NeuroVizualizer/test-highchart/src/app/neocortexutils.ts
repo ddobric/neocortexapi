@@ -1,4 +1,4 @@
-import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, NeocortexSettings, InputModel, CellId, Location } from './neocortexmodel';
+import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, NeocortexSettings, InputModel, CellId } from './neocortexmodel';
 
 
 export class neoCortexUtils {
@@ -17,13 +17,13 @@ export class neoCortexUtils {
     sett.minicolumnDims = miniColDims;
     sett.areaLevels = areaLevels;
     sett.numLayers = numLayers;
-  
-    let preCell0 = new Cell(sett, null, null,  0, 15, 0, 0);
-    let preCell3= new Cell(sett, null, null,   0, 15, 3, 0);
+
+    let preCell0 = new Cell(sett, null, null, 0, 15, 0, 0);
+    let preCell3 = new Cell(sett, null, null, 0, 15, 3, 0);
 
     let postCell1 = new Cell(sett, null, null, 0, 15, 1, 0);
-    let postCell4 = new Cell(sett, null, null, 0, 15, 4, 0);  
-    
+    let postCell4 = new Cell(sett, null, null, 0, 15, 4, 0);
+
 
 
     let inpModel: InputModel = new InputModel(sett);

@@ -1,6 +1,3 @@
-import { NgModule } from '@angular/core';
-import { LOCATION_INITIALIZED } from '@angular/common';
-
 
 export class CellId {
 
@@ -9,21 +6,6 @@ export class CellId {
   public minicolumn: number[];
 
   public layer: number;
-}
-
-export class Location {
-
-  posX: number;
-  posY: number;
-  posZ: number;
-
-  public isVisible: boolean;
-
-  constructor(posX: number, posY: number, posZ: number) {
-    this.posX = posX;
-    this.posY = posY;
-    this.posZ = posZ;
-  }
 }
 
 export class NeocortexSettings {
@@ -55,7 +37,7 @@ export class NeoCortexModel {
   public input: InputModel;
 
 
-  constructor(settings: NeocortexSettings = null, input: InputModel = null, posX = 0, posY = 0, posZ = 0, synapses = []) {
+  constructor(settings: NeocortexSettings = null, input: InputModel = null, X = 0, Y = 0, Z = 0, synapses = []) {
 
     this.synapses = new Array();
     this.settings = settings;
@@ -66,58 +48,54 @@ export class NeoCortexModel {
     let areaId: number = 0;
     for (var levelIndx = 0; levelIndx < settings.areaLevels.length; levelIndx++) {
 
-      this.areas[levelIndx] = new Area(settings, areaId, settings.areaLevels[levelIndx], posX, posY, posZ);
+      this.areas[levelIndx] = new Area(settings, areaId, settings.areaLevels[levelIndx], X, Y, Z);
 
       // posX = posX + settings.xAreaDistance;
       // posY = posY + settings.yAreaDistance;
       // posZ = posZ + settings.zAreaDistance;
 
     }
-   /*  let preCellIn: any;
-    let postCellIn: any;
-    for (preCellIn = 0; preCellIn < preCellsArray.length; preCellIn++) {
-      for (postCellIn = 0; postCellIn < postCellsArray.length; postCellIn++) {
-
-        this.synapses[preCellIn] = new Synapse(null, 0, preCellsArray[preCellIn], postCellsArray[preCellIn]);
-
-      }
-
-    } */
+    /*  let preCellIn: any;
+     let postCellIn: any;
+     for (preCellIn = 0; preCellIn < preCellsArray.length; preCellIn++) {
+       for (postCellIn = 0; postCellIn < postCellsArray.length; postCellIn++) {
+ 
+         this.synapses[preCellIn] = new Synapse(null, 0, preCellsArray[preCellIn], postCellsArray[preCellIn]);
+ 
+       }
+ 
+     } */
 
   }
 }
 
 
-
-export class Area extends Location {
+export class Area {
 
   public minicolumns: Minicolumn[][] = new Array();
   public level: number;
   public id: number;
 
-  constructor(settings: NeocortexSettings, areaId: number, level: number, posX: number, posY: number, posZ: number) {
-    super(posX, posY, posZ); {
+  constructor(settings: NeocortexSettings, areaId: number, level: number, X: number, Y: number, Z: number) {
 
-      this.id = areaId;
-      this.level = level;
-      let miniColDim0; let miniColDim1;
+    this.id = areaId;
+    this.level = level;
+    let miniColDim0: any; let miniColDim1: any;
 
-      for (miniColDim0 = 0; miniColDim0 < settings.minicolumnDims[0]; miniColDim0++) {
-        let row: Array<Minicolumn> = new Array();
-        for (miniColDim1 = 0; miniColDim1 < settings.minicolumnDims[1]; miniColDim1++) {
-          row.push(new Minicolumn(settings, areaId, [this.id, miniColDim0, miniColDim1], settings.defaultOverlapValue, (miniColDim0), (miniColDim1)));
-        }
-
-
-        this.minicolumns.push(row);
-
+    for (miniColDim0 = 0; miniColDim0 < settings.minicolumnDims[0]; miniColDim0++) {
+      let row: Array<Minicolumn> = new Array();
+      for (miniColDim1 = 0; miniColDim1 < settings.minicolumnDims[1]; miniColDim1++) {
+        row.push(new Minicolumn(settings, areaId, [this.id, miniColDim0, miniColDim1], settings.defaultOverlapValue, (miniColDim0), (miniColDim1), Y));
       }
+
+
+      this.minicolumns.push(row);
+
     }
   }
 }
 
-
-export class Minicolumn extends Location {
+export class Minicolumn {
 
   public overlap: number;
 
@@ -131,8 +109,7 @@ export class Minicolumn extends Location {
 
   private settings: NeocortexSettings;
 
-  constructor(settings: NeocortexSettings, areaId: number, miniColId: number[], overlap: number, posX: number, posZ: number) {
-    super(posX, 0, posZ);
+  constructor(settings: NeocortexSettings, areaId: number, miniColId: number[], overlap: number, X: number, Y: number, Z: number) {
 
     this.areaId = areaId;
     this.overlap = overlap;
@@ -141,7 +118,7 @@ export class Minicolumn extends Location {
 
     for (let layer = 0; layer < settings.numLayers; layer++) {
 
-      let cell: Cell = new Cell(settings, areaId, miniColId, layer, this.posX, this.posY, this.posZ)
+      let cell: Cell = new Cell(settings, areaId, miniColId, layer, X, Y, Z)
 
       this.cells.push(cell);
     }
@@ -152,15 +129,16 @@ export class Minicolumn extends Location {
 /**
  * 
  */
-export class Cell extends Location {
+export class Cell {
 
-  public X;
-  public Y;
-  public Z;
-  
+  public X: number;
+  public Y: number;
+  public Z: number;
+
   public id: CellId;
   public Layer: number;
-  
+
+
   /**
    * 
    * @param layer Optional for input model.
@@ -168,8 +146,7 @@ export class Cell extends Location {
    * @param posY 
    * @param posZ 
    */
-  constructor(settings: NeocortexSettings, areaId: number, miniColId: number[], layer: number, posX: number = 0, posY: number = 0, posZ: number = 0) {
-    super(posX, posY, posZ);
+  constructor(settings: NeocortexSettings, areaId: number, miniColId: number[], layer: number, X: number = 0, Y: number = 0, Z: number = 0) {
     this.Layer = layer;
     this.id = { area: areaId, minicolumn: miniColId, layer: layer };
 

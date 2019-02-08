@@ -5,7 +5,7 @@ import { neoCortexUtils } from '../neocortexutils';
 import { color, area } from 'd3';
 import { environment as env } from "../environments/environment";
 import { NotificationsService } from 'angular2-notifications';
-import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, NeocortexSettings, InputModel, CellId, Location } from '../neocortexmodel';
+import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, NeocortexSettings, InputModel, CellId } from '../neocortexmodel';
 import { last } from '@angular/router/src/utils/collection';
 import { modelGroupProvider } from '@angular/forms/src/directives/ng_model_group';
 
@@ -217,7 +217,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       this.permanence.push(null);
     }
     for (let readPerma = 0; readPerma < model.synapses.length; readPerma++) {
-      let index = model.synapses[readPerma].preSynaptic.posY + model.synapses[readPerma].preSynaptic.posZ;
+      let index = model.synapses[readPerma].preSynaptic.Y + model.synapses[readPerma].preSynaptic.Z;
 /* 
       this.permanence.splice(index, 0, model.synapses[readPerma].permanence);
       this.permanence.splice(index+1, 0, model.synapses[readPerma].permanence); */
@@ -225,16 +225,16 @@ export class AinetComponent implements OnInit, AfterViewInit {
       this.permanence[index+1] = model.synapses[readPerma].permanence;
       
     
-      this.xSynapse.push(model.synapses[readPerma].preSynaptic.posX);
-      this.xSynapse.push(model.synapses[readPerma].postSynaptic.posX);
+      this.xSynapse.push(model.synapses[readPerma].preSynaptic.X);
+      this.xSynapse.push(model.synapses[readPerma].postSynaptic.X);
       this.xSynapse.push(null);
 
-      this.ySynapse.push(model.synapses[readPerma].preSynaptic.posY);
-      this.ySynapse.push(model.synapses[readPerma].postSynaptic.posY);
+      this.ySynapse.push(model.synapses[readPerma].preSynaptic.Y);
+      this.ySynapse.push(model.synapses[readPerma].postSynaptic.Y);
       this.ySynapse.push(null);
 
-      this.zSynapse.push(model.synapses[readPerma].preSynaptic.posZ);
-      this.zSynapse.push(model.synapses[readPerma].postSynaptic.posZ);
+      this.zSynapse.push(model.synapses[readPerma].preSynaptic.Z);
+      this.zSynapse.push(model.synapses[readPerma].postSynaptic.Z);
       this.zSynapse.push(null);
     }
     console.log(this.permanence);
@@ -390,12 +390,12 @@ export class AinetComponent implements OnInit, AfterViewInit {
     let synapseIndex: number = 0;
     for (let synapIndex = 0; synapIndex < this.model.synapses.length; synapIndex++) {
 
-      if (this.model.synapses[synapIndex].preSynaptic.posX == preCell0.posX &&
-        this.model.synapses[synapIndex].postSynaptic.posX == postCell0.posX &&
-        this.model.synapses[synapIndex].preSynaptic.posY == preCell0.posY &&
-        this.model.synapses[synapIndex].postSynaptic.posY == postCell0.posY &&
-        this.model.synapses[synapIndex].preSynaptic.posZ == preCell0.posZ &&
-        this.model.synapses[synapIndex].postSynaptic.posZ == postCell0.posZ
+      if (this.model.synapses[synapIndex].preSynaptic.X == preCell0.X &&
+        this.model.synapses[synapIndex].postSynaptic.X == postCell0.X &&
+        this.model.synapses[synapIndex].preSynaptic.Y == preCell0.Y &&
+        this.model.synapses[synapIndex].postSynaptic.Y == postCell0.Y &&
+        this.model.synapses[synapIndex].preSynaptic.Z == preCell0.Z &&
+        this.model.synapses[synapIndex].postSynaptic.Z == postCell0.Z
       ) {
 
         // console.log("True", synapIndex);
@@ -410,7 +410,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     console.log(this.permanence, "ist");
 
     for (let readPerma = 0; readPerma < this.model.synapses.length; readPerma++) {
-      let index = this.model.synapses[readPerma].preSynaptic.posY + this.model.synapses[readPerma].preSynaptic.posZ;
+      let index = this.model.synapses[readPerma].preSynaptic.Y + this.model.synapses[readPerma].preSynaptic.Z;
 
       /* this.permanence.splice(index, 0, this.model.synapses[readPerma].permanence);
       this.permanence.splice(index+1, 0, this.model.synapses[readPerma].permanence); */
