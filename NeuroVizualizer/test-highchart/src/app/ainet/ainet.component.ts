@@ -285,12 +285,12 @@ export class AinetComponent implements OnInit, AfterViewInit {
           preCell:
           {
             cellX: 15,
-            cellY: 0,
+            cellY: 3,
             cellZ: 0,
           },
           postCell: {
             cellX: 15,
-            cellY: 1,
+            cellY: 4,
             cellZ: 0,
           },
           permanence: 1
@@ -385,31 +385,15 @@ export class AinetComponent implements OnInit, AfterViewInit {
     }
     
     this.model.synapses[synapseIndex] = synapse;
-   
     this.fillChart(this.model);
-    this.permanence[1] = 1;
+   
+ 
     
 
     //this.model.synapses.splice(3, 1, synapse);
-    //console.log(this.model.areas[0].minicolumns[0][0].cells[0].preSynapses,"pre, before");
-    //this.model.areas[0].minicolumns[0][0].cells[0].preSynapses = [];
     // find synapse in model.synapses (push/update)
-    //preCell.preSynapses.push(synapse);
-    //preCell.outSynapses.push(synapse);
-    //postCell.inSynapses.push(synapse);
-
-    // console.log(this.model.areas[0].minicolumns[0][0].cells[0].preSynapses,"pre, after");
-
+ 
     //console.log(this.permanence, "Be");
-
-    /*       preCell.preSynapses.push(synapse);
-          postCell.postSynapses.push(synapse); */
-
-
-    /*  this.model.areas[0].minicolumns[0][0].cells[0].synapse.preSynaptic = permancences[0].perm.preCellDim
-     this.model.areas[0].minicolumns[0][0].cells[0].synapse.postSynaptic = permancences[0].perm.postCellDim;
-     this.model.areas[0].minicolumns[0][0].cells[0].synapse.permanence = 0.7; */
-
 
    
     this.generateColoursFromOverlap(this.model);
@@ -528,6 +512,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
      for (const permanenceVal of this.permanence) {
       let H = (1.0 - permanenceVal) * 240;
+      this.synapseColours.push("hsl(" + H + ", 100%, 50%)");
       this.synapseColours.push("hsl(" + H + ", 100%, 50%)");
     } 
    /*  for (let permanenceValue = 0; permanenceValue < this.xSynapse.length; permanenceValue++) {
