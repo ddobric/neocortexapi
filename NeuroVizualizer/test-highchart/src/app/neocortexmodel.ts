@@ -29,7 +29,6 @@ export class NeoCortexModel {
   public synapses: Array<Synapse>;
 
   public settings: NeocortexSettings;
-  public synapsesArray = [];
 
   /**
    * Multidimensional sensory input.
@@ -118,7 +117,7 @@ export class Minicolumn {
 
     for (let layer = 0; layer < settings.numLayers; layer++) {
 
-      let cell: Cell = new Cell(settings, areaId, miniColId, layer, X, Y, Z)
+      let cell: Cell = new Cell(settings, areaId, miniColId, layer, X, Y, Z, null, null)
 
       this.cells.push(cell);
     }
@@ -137,7 +136,8 @@ export class Cell {
 
   public id: CellId;
   public Layer: number;
-
+  incomingSynapses: Array<Synapse> = new Array();
+  outgoingSynapses: Array<Synapse> = new Array();
 
   /**
    * 
@@ -146,9 +146,14 @@ export class Cell {
    * @param posY 
    * @param posZ 
    */
-  constructor(settings: NeocortexSettings, areaId: number, miniColId: number[], layer: number, X: number = 0, Y: number = 0, Z: number = 0) {
+  constructor(settings: NeocortexSettings, areaId: number, miniColId: number[], layer: number, X: number = 0, Y: number = 0, Z: number = 0, incomingSynap :Array<Synapse>, outgoingSynap : Array<Synapse>) {
     this.Layer = layer;
+    this.X = X;
+    this.Y = Y;
+    this.Z = Z;
     this.id = { area: areaId, minicolumn: miniColId, layer: layer };
+    this.incomingSynapses = incomingSynap;
+    this.outgoingSynapses = outgoingSynap;
 
   }
 }
@@ -189,7 +194,7 @@ export class InputModel {
       for (var dim = 0; dim < cellDims.length; dim++) {
         let row: Array<Cell> = new Array();
         for (var i = 0; i < cellDims[dim]; i++) {
-          row.push(new Cell(settings, this.id, [dim, i], null, null, null, null));
+          row.push(new Cell(settings, this.id, [dim, i], null, null, null, null, null, null));
         }
 
       }
@@ -201,7 +206,7 @@ export class InputModel {
         for (var j = 0; j < cellDims[1]; j++) {
 
           //row.push(new Cell(settings, 0, [i, j], 0));
-          row.push(new Cell(settings, this.id, [dim, j], null, null, null, null));
+          row.push(new Cell(settings, this.id, [dim, j], null, null, null, null, null, null));
         }
 
         this.cells.push(row);

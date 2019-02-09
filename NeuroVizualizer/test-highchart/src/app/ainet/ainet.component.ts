@@ -379,8 +379,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
        let preCell = preMinCol.cells[perm.preCell.cellY];
        let postCell = postMinCol.cells[perm.postCell.cellY];
   */
-      preCell0 = new Cell(null, null, null, null, perm.preCell.cellX, perm.preCell.cellY, perm.preCell.cellZ);
-      postCell0 = new Cell(null, null, null, null, perm.postCell.cellX, perm.postCell.cellY, perm.postCell.cellZ);
+      preCell0 = new Cell(null, null, null, null, perm.preCell.cellX, perm.preCell.cellY, perm.preCell.cellZ, null, null);
+      postCell0 = new Cell(null, null, null, null, perm.postCell.cellX, perm.postCell.cellY, perm.postCell.cellZ,null, null);
       /* 
             console.log(preCell0, "pre");
             console.log(postCell0, "post"); */
