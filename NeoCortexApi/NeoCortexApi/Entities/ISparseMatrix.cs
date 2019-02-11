@@ -33,7 +33,7 @@ namespace NeoCortexApi.Entities
          * @param factory   a factory to make a specific type
          * @return  the dense array
          */
-        T[] asDense(ITypeFactory<T> factory);
+        //T[] asDense(ITypeFactory<T> factory);
 
     }
 }

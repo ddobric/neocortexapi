@@ -19,11 +19,9 @@ namespace NeoCortexApi.Entities
    [Serializable]
     public class SparseObjectMatrix<T> : AbstractSparseMatrix<T>, IEquatable<T> where T : class
     {
-        /** keep it simple */
-        private static readonly long serialVersionUID = 1L;
-
-        //private IDictionary<int, T> sparseMap = new Dictionary<int, T>();
-        private IDictionary<int, T> sparseMap = new InMemoryDistributedDictionary<int, T>(3);
+        
+        private IDictionary<int, T> sparseMap = new Dictionary<int, T>();
+        //private IDictionary<int, T> sparseMap = new InMemoryDistributedDictionary<int, T>(3);
 
         /**
          * Constructs a new {@code SparseObjectMatrix}

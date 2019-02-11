@@ -11,10 +11,54 @@ namespace UnitTestsProject
     public class UnitTest1
     {
         [TestMethod]
+        public void ArraySizeTest()
+        {
+            byte[] bb = new byte[Int32.MaxValue - 56];
+
+            for (int i = int.MaxValue - 1000000; i > 0; i--)
+            {
+                try
+                {
+                    //intmax = 2147483647
+                    //2146435071
+                    // intmax-2146435071
+                    int[] ii = new int[i];
+                    Console.Out.WriteLine("MaxValue: " + i);
+                    Environment.Exit(0);
+                }
+                catch (Exception ignored)
+                { }
+            }
+        }
+
+        [TestMethod]
+        public void DictionarySizeTest()
+        {
+            byte[] bb = new byte[Int32.MaxValue - 56];
+
+            for (int i = int.MaxValue - 1000000; i > 0; i--)
+            {
+                try
+                {
+                    //intmax = 2147483647
+                    //2146435071
+                    // intmax-2146435071
+                    Dictionary<int,int> d = new Dictionary<int, int>(int.MaxValue/2);
+                    Console.Out.WriteLine("MaxValue: " + i);
+                    Environment.Exit(0);
+                }
+                catch (Exception ignored)
+                { }
+            }
+        }
+
+        [TestMethod]
         [DataRow(new int[] { 2048, 6 })]
         [DataRow(new int[] { 100, 20 })]
         public void TestMethod1(int[] data)
         {
+            byte[] d = new byte[10000];
+
             var res = initDimensionMultiples(data, 3);
 
             res = initDimensionMultiples(data, 2);

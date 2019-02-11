@@ -86,28 +86,28 @@ namespace NeoCortexApi.Utility
          * @param second    the second array
          * @return
          */
-        public static Object[] interleave<F, S>(F first, S second) where F : IList<F> where S : IList<S>
-        {
-            int flen, slen;
+        //public static Object[] interleave<F, S>(F first, S second) where F : IList<F> where S : IList<S>
+        //{
+        //    int flen, slen;
 
-            flen = first.Count;
-            slen = second.Count;
+        //    flen = first.Count;
+        //    slen = second.Count;
 
-            Object[] retVal = new Object[flen + slen];
-            for (int i = 0, j = 0, k = 0; i < flen || j < slen;)
-            {
-                if (i < flen)
-                {
-                    retVal[k++] = first[i++];
-                }
-                if (j < slen)
-                {
-                    retVal[k++] = second[j++];
-                }
-            }
+        //    Object[] retVal = new Object[flen + slen];
+        //    for (int i = 0, j = 0, k = 0; i < flen || j < slen;)
+        //    {
+        //        if (i < flen)
+        //        {
+        //            retVal[k++] = first[i++];
+        //        }
+        //        if (j < slen)
+        //        {
+        //            retVal[k++] = second[j++];
+        //        }
+        //    }
 
-            return retVal;
-        }
+        //    return retVal;
+        //}
 
         /**
          * <p>
@@ -121,16 +121,16 @@ namespace NeoCortexApi.Utility
          * @param d
          * @return
          */
-        public static double[] diff(double[] d)
-        {
-            double[] retVal = new double[d.Length - 1];
-            for (int i = 0; i < retVal.Length; i++)
-            {
-                retVal[i] = d[i + 1] - d[i];
-            }
+        //public static double[] diff(double[] d)
+        //{
+        //    double[] retVal = new double[d.Length - 1];
+        //    for (int i = 0; i < retVal.Length; i++)
+        //    {
+        //        retVal[i] = d[i + 1] - d[i];
+        //    }
 
-            return retVal;
-        }
+        //    return retVal;
+        //}
 
         /**
          * Returns a flag indicating whether the container list contains an
@@ -140,19 +140,19 @@ namespace NeoCortexApi.Utility
          * @param container the list of arrays to test
          * @return true if so, false if not
          */
-        public static bool contains(int[] match, List<int[]> container)
-        {
-            for (int i = 0; i < container.Count; i++)
-            {
-                bool isSubset = !container[i].Except(match).Any();
-                return isSubset;
-                //if (Arrays.equals(match, container.get(i)))
-                //{
-                //    return true;
-                //}
-            }
-            return false;
-        }
+        //public static bool contains(int[] match, List<int[]> container)
+        //{
+        //    for (int i = 0; i < container.Count; i++)
+        //    {
+        //        bool isSubset = !container[i].Except(match).Any();
+        //        return isSubset;
+        //        //if (Arrays.equals(match, container.get(i)))
+        //        //{
+        //        //    return true;
+        //        //}
+        //    }
+        //    return false;
+        //}
 
         /**
          * Returns a new array of size first.length + second.length, with the
@@ -441,10 +441,10 @@ namespace NeoCortexApi.Utility
          * @param in
          * @return
          */
-        public static int[] argsort(int[] inp)
-        {
-            return argsort(inp, -1, -1);
-        }
+        //public static int[] argsort(int[] inp)
+        //{
+        //    return argsort(inp, -1, -1);
+        //}
 
         /**
          * Sorts the array, then returns an array containing the indexes of
@@ -461,34 +461,34 @@ namespace NeoCortexApi.Utility
          * 
          * @see #argsort(int[])
          */
-        public static int[] argsort(int[] inp, int start, int end)
-        {
-            var sorted = inp.OrderBy(e => e).ToArray();
-            var final = new int[end - start];
-            if (start == -1)
-                start = 0;
+        //public static int[] argsort(int[] inp, int start, int end)
+        //{
+        //    var sorted = inp.OrderBy(e => e).ToArray();
+        //    var final = new int[end - start];
+        //    if (start == -1)
+        //        start = 0;
 
-            if (end == -1)
-                end = inp.Length;
+        //    if (end == -1)
+        //        end = inp.Length;
 
-            for (int i = start; i < end; i++)
-            {
-                final[i] = Array.IndexOf(sorted, sorted[i]);
-            }
+        //    for (int i = start; i < end; i++)
+        //    {
+        //        final[i] = Array.IndexOf(sorted, sorted[i]);
+        //    }
 
-            return final;
-            //if (start == -1 || end == -1)
-            //{
-            //    Array.IndexOf()
-            //    inp.OrderBy(e=>e).Select(e=> inp)
-            //    return IntStream.of(inp).sorted().map(i->
-            //        Arrays.stream(inp).boxed().collect(Collectors.toList()).indexOf(i)).toArray();
-            //}
+        //    return final;
+        //    //if (start == -1 || end == -1)
+        //    //{
+        //    //    Array.IndexOf()
+        //    //    inp.OrderBy(e=>e).Select(e=> inp)
+        //    //    return IntStream.of(inp).sorted().map(i->
+        //    //        Arrays.stream(inp).boxed().collect(Collectors.toList()).indexOf(i)).toArray();
+        //    //}
 
-            //return IntStream.of(inp).sorted().map(i->
-            //    Arrays.stream(inp).boxed().collect(Collectors.toList()).indexOf(i))
-            //        .skip(start).limit(end).toArray();
-        }
+        //    //return IntStream.of(inp).sorted().map(i->
+        //    //    Arrays.stream(inp).boxed().collect(Collectors.toList()).indexOf(i))
+        //    //        .skip(start).limit(end).toArray();
+        //}
 
         /**
         * Transforms 2D matrix of doubles to 1D by concatenation
@@ -538,26 +538,26 @@ namespace NeoCortexApi.Utility
           * @param arr an binary array (0's and 1's only)
           * @return
           */
-        public static String bitsToString(int[] arr)
-        {
-            char[] s = new char[arr.Length + 1];
+        //public static String bitsToString(int[] arr)
+        //{
+        //    char[] s = new char[arr.Length + 1];
 
-            for (int i = 0; i < s.Length; i++)
-            {
-                s[i] = '.';
-            }
+        //    for (int i = 0; i < s.Length; i++)
+        //    {
+        //        s[i] = '.';
+        //    }
 
-            s[0] = 'c';
-            for (int i = 0; i < arr.Length; i++)
-            {
-                if (arr[i] == 1)
-                {
-                    s[i + 1] = '*';
-                }
-            }
+        //    s[0] = 'c';
+        //    for (int i = 0; i < arr.Length; i++)
+        //    {
+        //        if (arr[i] == 1)
+        //        {
+        //            s[i + 1] = '*';
+        //        }
+        //    }
 
-            return new String(s);
-        }
+        //    return new String(s);
+        //}
 
         /**
          * Return a list of tuples, where each tuple contains the i-th element
@@ -568,17 +568,17 @@ namespace NeoCortexApi.Utility
          * @param arg2 the first list to be the one'th entry in the returned tuple
          * @return a list of tuples
          */
-        public static List<Tuple<T1,T2>> Zip<T1,T2>(List<T1> arg1, List<T2> arg2)
-        {
-            List<Tuple<T1, T2>> tuples = new List<Tuple<T1, T2>>();
-            int len = Math.Min(arg1.Count, arg2.Count);
-            for (int i = 0; i < len; i++)
-            {
-                tuples.Add(new Tuple<T1, T2>(arg1[i], arg2[i]));
-            }
+        //public static List<Tuple<T1,T2>> Zip<T1,T2>(List<T1> arg1, List<T2> arg2)
+        //{
+        //    List<Tuple<T1, T2>> tuples = new List<Tuple<T1, T2>>();
+        //    int len = Math.Min(arg1.Count, arg2.Count);
+        //    for (int i = 0; i < len; i++)
+        //    {
+        //        tuples.Add(new Tuple<T1, T2>(arg1[i], arg2[i]));
+        //    }
 
-            return tuples;
-        }
+        //    return tuples;
+        //}
 
         /**
          * Return a list of tuples, where each tuple contains the i-th element
@@ -1961,15 +1961,15 @@ namespace NeoCortexApi.Utility
          * @param size    the size of the dense array to be returned.
          * @return
          */
-        public static int[] asDense(int[] inp, int size)
-        {
-            int[] retVal = new int[size];
-            for (int i = 0; i < inp.Length; i++)
-            {
-                retVal[i] = 1;
-            }
-            return retVal;
-        }
+        //public static int[] asDense(int[] inp, int size)
+        //{
+        //    int[] retVal = new int[size];
+        //    for (int i = 0; i < inp.Length; i++)
+        //    {
+        //        retVal[i] = 1;
+        //    }
+        //    return retVal;
+        //}
 
         /**
          * Scans the specified values and applies the {@link Condition} to each
@@ -2038,13 +2038,13 @@ namespace NeoCortexApi.Utility
          * @param x     the comparison
          * @param y     the value to set if the comparison fails
          */
-        public static void lessThanXThanSetToY(double[] array, double x, double y)
-        {
-            for (int i = 0; i < array.Length; i++)
-            {
-                if (array[i] < x) array[i] = y;
-            }
-        }
+        //public static void lessThanXThanSetToY(double[] array, double x, double y)
+        //{
+        //    for (int i = 0; i < array.Length; i++)
+        //    {
+        //        if (array[i] < x) array[i] = y;
+        //    }
+        //}
 
         /**
          * Makes all values in the specified array which are less than the specified
@@ -2053,13 +2053,13 @@ namespace NeoCortexApi.Utility
          * @param x     the comparison
          * @param y     the value to set if the comparison fails
          */
-        public static void lessThanXThanSetToY(int[] array, int x, int y)
-        {
-            for (int i = 0; i < array.Length; i++)
-            {
-                if (array[i] < x) array[i] = y;
-            }
-        }
+        //public static void lessThanXThanSetToY(int[] array, int x, int y)
+        //{
+        //    for (int i = 0; i < array.Length; i++)
+        //    {
+        //        if (array[i] < x) array[i] = y;
+        //    }
+        //}
 
         /**
          * Makes all values in the specified array which are greater than or equal to the specified
@@ -2068,13 +2068,13 @@ namespace NeoCortexApi.Utility
          * @param x     the comparison
          * @param y     the value to set if the comparison fails
          */
-        public static void greaterThanOrEqualXThanSetToY(double[] array, double x, double y)
-        {
-            for (int i = 0; i < array.Length; i++)
-            {
-                if (array[i] >= x) array[i] = y;
-            }
-        }
+        //public static void greaterThanOrEqualXThanSetToY(double[] array, double x, double y)
+        //{
+        //    for (int i = 0; i < array.Length; i++)
+        //    {
+        //        if (array[i] >= x) array[i] = y;
+        //    }
+        //}
 
         /**
          * Makes all values in the specified array which are greater than the specified
@@ -2084,13 +2084,13 @@ namespace NeoCortexApi.Utility
          * @param x     the comparison
          * @param y     the value to set if the comparison fails
          */
-        public static void greaterThanXThanSetToY(double[] array, double x, double y)
-        {
-            for (int i = 0; i < array.Length; i++)
-            {
-                if (array[i] > x) array[i] = y;
-            }
-        }
+        //public static void greaterThanXThanSetToY(double[] array, double x, double y)
+        //{
+        //    for (int i = 0; i < array.Length; i++)
+        //    {
+        //        if (array[i] > x) array[i] = y;
+        //    }
+        //}
 
         /**
          * Makes all values in the specified array which are greater than the specified
@@ -2099,13 +2099,13 @@ namespace NeoCortexApi.Utility
          * @param x     the comparison
          * @param y     the value to set if the comparison fails
          */
-        public static void greaterThanXThanSetToY(int[] array, int x, int y)
-        {
-            for (int i = 0; i < array.Length; i++)
-            {
-                if (array[i] > x) array[i] = y;
-            }
-        }
+        //public static void greaterThanXThanSetToY(int[] array, int x, int y)
+        //{
+        //    for (int i = 0; i < array.Length; i++)
+        //    {
+        //        if (array[i] > x) array[i] = y;
+        //    }
+        //}
 
         /**
          * Sets value to "y" in "targetB" if the value in the same index in "sourceA" is bigger than "x".
@@ -2129,20 +2129,20 @@ namespace NeoCortexApi.Utility
          * @param array the array to find the max value index in
          * @return the index of the max value
          */
-        public static int argmax(int[] array)
-        {
-            int index = -1;
-            int max = Integer.MinValue;
-            for (int i = 0; i < array.Length; i++)
-            {
-                if (array[i] > max)
-                {
-                    max = array[i];
-                    index = i;
-                }
-            }
-            return index;
-        }
+        //public static int argmax(int[] array)
+        //{
+        //    int index = -1;
+        //    int max = Integer.MinValue;
+        //    for (int i = 0; i < array.Length; i++)
+        //    {
+        //        if (array[i] > max)
+        //        {
+        //            max = array[i];
+        //            index = i;
+        //        }
+        //    }
+        //    return index;
+        //}
 
         /**
          * Returns a boxed Integer[] from the specified primitive array
@@ -2169,22 +2169,22 @@ namespace NeoCortexApi.Utility
          * @param input     the boolean array to transform to a byte array
          * @return          a byte array
          */
-        public static byte[] toBytes(bool[] input)
-        {
-            byte[] toReturn = new byte[input.Length / 8];
-            for (int entry = 0; entry < toReturn.Length; entry++)
-            {
-                for (int bit = 0; bit < 8; bit++)
-                {
-                    if (input[entry * 8 + bit])
-                    {
-                        toReturn[entry] |= (byte)(128 >> bit);
-                    }
-                }
-            }
+        //public static byte[] toBytes(bool[] input)
+        //{
+        //    byte[] toReturn = new byte[input.Length / 8];
+        //    for (int entry = 0; entry < toReturn.Length; entry++)
+        //    {
+        //        for (int bit = 0; bit < 8; bit++)
+        //        {
+        //            if (input[entry * 8 + bit])
+        //            {
+        //                toReturn[entry] |= (byte)(128 >> bit);
+        //            }
+        //        }
+        //    }
 
-            return toReturn;
-        }
+        //    return toReturn;
+        //}
 
         /**
          * Converts an array of Integer objects to an array of its
@@ -2193,15 +2193,15 @@ namespace NeoCortexApi.Utility
          * @param doubs
          * @return
          */
-        public static int[] toPrimitive(Integer[] ints)
-        {
-            int[] retVal = new int[ints.Length];
-            for (int i = 0; i < retVal.Length; i++)
-            {
-                retVal[i] = ints[i].Value;
-            }
-            return retVal;
-        }
+        //public static int[] toPrimitive(Integer[] ints)
+        //{
+        //    int[] retVal = new int[ints.Length];
+        //    for (int i = 0; i < retVal.Length; i++)
+        //    {
+        //        retVal[i] = ints[i].Value;
+        //    }
+        //    return retVal;
+        //}
 
         /**
          * Converts an array of Double objects to an array of its
@@ -2210,35 +2210,35 @@ namespace NeoCortexApi.Utility
          * @param doubs
          * @return
          */
-        public static double[] toPrimitive(Double[] doubs)
-        {
-            double[] retVal = new double[doubs.Length];
-            for (int i = 0; i < retVal.Length; i++)
-            {
-                retVal[i] = doubs[i];
-            }
-            return retVal;
-        }
+        //public static double[] toPrimitive(Double[] doubs)
+        //{
+        //    double[] retVal = new double[doubs.Length];
+        //    for (int i = 0; i < retVal.Length; i++)
+        //    {
+        //        retVal[i] = doubs[i];
+        //    }
+        //    return retVal;
+        //}
 
         /**
          * Returns the index of the max value in the specified array
          * @param array the array to find the max value index in
          * @return the index of the max value
          */
-        public static int argmax(double[] array)
-        {
-            int index = -1;
-            double max = Double.MinValue;
-            for (int i = 0; i < array.Length; i++)
-            {
-                if (array[i] > max)
-                {
-                    max = array[i];
-                    index = i;
-                }
-            }
-            return index;
-        }
+        //public static int argmax(double[] array)
+        //{
+        //    int index = -1;
+        //    double max = Double.MinValue;
+        //    for (int i = 0; i < array.Length; i++)
+        //    {
+        //        if (array[i] > max)
+        //        {
+        //            max = array[i];
+        //            index = i;
+        //        }
+        //    }
+        //    return index;
+        //}
 
         /**
          * Returns the maximum value in the specified array
