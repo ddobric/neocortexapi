@@ -1,4 +1,4 @@
-import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, NeocortexSettings, InputModel, CellId, Location } from './neocortexmodel';
+import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, NeocortexSettings, InputModel, CellId } from './neocortexmodel';
 
 
 export class neoCortexUtils {
@@ -17,21 +17,45 @@ export class neoCortexUtils {
     sett.minicolumnDims = miniColDims;
     sett.areaLevels = areaLevels;
     sett.numLayers = numLayers;
-    let preCell: Cell;
-    let postCell: Cell;
-    let preSynapse = new Synapse(0, 0, preCell, postCell);
-    let postSynapse = new Synapse(0, 0, preCell, postCell);
+    let preCell0: Cell;
+    let postCell1: Cell;
+
+
+    preCell0 = new Cell(sett, null, null, 0, 15, 0, 0, [null], [null]);
+    postCell1 = new Cell(sett, null, null, 0, 15, 1, 0, [null], [null]);
+
+    let incomingSynap0 = new Synapse(null, 0, preCell0, postCell1);
+    let outgoingSynap1 = new Synapse(null, 0, preCell0, postCell1);
+
+    preCell0 = new Cell(sett, null, null, 0, 15, 0, 0, [null], [outgoingSynap1]);
+    postCell1 = new Cell(sett, null, null, 0, 15, 1, 0, [incomingSynap0], [null]);
+
+    let preCell3: Cell;
+    let postCell4: Cell;
+
+    preCell3 = new Cell(sett, null, null, 0, 15, 3, 0, [null], [null]);
+    postCell4 = new Cell(sett, null, null, 0, 15, 4, 0,[ null], [null]);
+    let incomingSynap3 = new Synapse(null, 0, preCell3, postCell4);
+    let outgoingSynap4 = new Synapse(null, 0, preCell3, postCell4);
+
+    preCell3 = new Cell(sett, null, null, 0, 15, 3, 0, [null], [outgoingSynap4]);
+    postCell4 = new Cell(sett, null, null, 0, 15, 4, 0, [incomingSynap3], [null]);
+
+
 
     let inpModel: InputModel = new InputModel(sett);
 
-    var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 1, 1, 1, preSynapse, postSynapse,);
+    let synaps01 = new Synapse(null, 0, preCell0, postCell1);
+    let synaps34 = new Synapse(null, 0, preCell3, postCell4);
+
+    var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 1, 1, 1, [synaps01, synaps34]);
 
 
     return model;
   }
 
 
-  public static addSynapse(model: NeoCortexModel, id: number, areaId: number = -1, preCell: Cell, postCell: Cell, weight: number) {
+  public static addSynapse(model: NeoCortexModel, id: number, areaId: number = 1, preCell: Cell, postCell: Cell, weight: number) {
 
     model.synapses.push(new Synapse(id, weight, preCell, postCell));
 
