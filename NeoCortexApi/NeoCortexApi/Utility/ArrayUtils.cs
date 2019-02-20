@@ -2595,12 +2595,29 @@ namespace NeoCortexApi.Utility
 
             for (int i = 0; i < cols; i++)
             {
+                //Console.WriteLine($"{i}");
                 result[i] = array[row, i];
             }
 
             return result;
         }
 
+        public static int[] GetRow2(this int[,] array, int row)
+        {
+            if (array == null)
+                throw new ArgumentNullException("array");
+
+            int cols = array.GetUpperBound(1) + 1;
+            int[] result = new int[cols];
+
+            for (int i = 0; i < cols; i++)
+            {
+                //Console.WriteLine($"{i}");
+                result[i] = array[row, i];
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Gets the access to a row inside of multidimensional array.

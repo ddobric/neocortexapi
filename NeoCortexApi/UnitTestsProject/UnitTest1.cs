@@ -36,21 +36,43 @@ namespace UnitTestsProject
         {
             byte[] bb = new byte[Int32.MaxValue - 56];
 
-            for (int i = int.MaxValue - 1000000; i > 0; i--)
+            int delta= int.MaxValue / -2;
+
+            for (int i = int.MaxValue; i > 0 ; i= i + delta)
             {
                 try
                 {
                     //intmax = 2147483647
                     //2146435071
                     // intmax-2146435071
-                    Dictionary<int,int> d = new Dictionary<int, int>(int.MaxValue/2);
+                    Dictionary<int,int> d = new Dictionary<int, int>(i);
                     Console.Out.WriteLine("MaxValue: " + i);
+
+                    //if (isDecremeted)
+                    //{
+                    //    isDecremeted 
+                    //}
+
                     Environment.Exit(0);
                 }
                 catch (Exception ignored)
-                { }
+                {                  
+                  
+                }
             }
         }
+
+
+        [TestMethod]
+        public void HugeArryTest()
+        {
+            var x = new int[4096, 250000];
+            for (int i = 0; i < 4096; i++)
+            {
+                int[] y = x.GetRow2(i);
+            }
+        }
+
 
         [TestMethod]
         [DataRow(new int[] { 2048, 6 })]
