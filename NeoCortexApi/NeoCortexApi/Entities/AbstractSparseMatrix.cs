@@ -191,17 +191,17 @@ namespace NeoCortexApi.Entities
         }
 
 
-        public override T[] asDense(ITypeFactory<T> factory)
-        {
+        //public override T[] asDense(ITypeFactory<T> factory)
+        //{
+        //    throw NotImplementedException();
 
-            int[] dimensions = getDimensions();
-            // T[] retVal = (T[])Array.newInstance(factory.typeClass(), dimensions);
-            T[] retVal = (T[])Array.CreateInstance(typeof(T), dimensions);
+        //    int[] dimensions = getDimensions();
+        //    T[] retVal = (T[])Array.CreateInstance(typeof(T), dimensions);
 
-            fill(factory, 0, dimensions, dimensions[0], (object[])(object)retVal);
+        //    fill(factory, 0, dimensions, dimensions[0], (object[])(object)retVal);
 
-            return retVal;
-        }
+        //    return retVal;
+        //}
 
         /**
          * Uses reflection to create and fill a dynamically created multidimensional array.

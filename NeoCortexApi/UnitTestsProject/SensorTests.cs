@@ -1,6 +1,7 @@
 ﻿using LearningFoundation;
 using LearningFoundation.DataMappers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Network;
 using NeoCortexApi.Sensors;

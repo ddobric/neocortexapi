@@ -15,10 +15,10 @@ namespace UnitTestsProject
     {
         [TestMethod]
         public void StableOutputOnSameInputTest()
-        {
+        {         
             var parameters = GetDefaultParams();
 
-            parameters.setInputDimensions(new int[] { 32, 32 });
+            parameters.setInputDimensions(new int[] { 32, 32});
             parameters.setColumnDimensions(new int[] { 64, 64 });
             parameters.setNumActiveColumnsPerInhArea(0.02 * 64 * 64);
             var sp = new SpatialPooler();
@@ -31,7 +31,7 @@ namespace UnitTestsProject
 
             int[] inputVector = Helpers.GetRandomVector(32 * 32, parameters.Get<Random>(KEY.RANDOM));
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 100; i++)
             {
                 sp.compute(mem, inputVector, activeArray, true);
 
@@ -193,6 +193,41 @@ namespace UnitTestsProject
             Debug.WriteLine("Output: " + strOutput);
             //Double robustness = sp.getRobustness(k,oriOutput,activeArray);
             //Debug.WriteLine("Robustness: " + robustness);
+        }
+
+        [TestMethod]
+        public void CalculateSpeedOfLearningTest()
+        {
+            var parameters = GetDefaultParams();
+
+            parameters.setInputDimensions(new int[] { 32, 32 });
+            parameters.setColumnDimensions(new int[] { 64, 64 });
+            parameters.setNumActiveColumnsPerInhArea(0.02 * 64 * 64);
+            var sp = new SpatialPooler();
+
+            var mem = new Connections();
+            parameters.apply(mem);
+            sp.init(mem);
+
+            int[] activeArray = new int[64 * 64];
+
+            int[] inputVector = Helpers.GetRandomVector(32 * 32, parameters.Get<Random>(KEY.RANDOM));
+
+            int[] oldArray = new int[0];
+
+            for (int i = 0; i < 100; i++)
+            {
+                sp.compute(mem, inputVector, activeArray, true);
+
+                var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
+                var distance = MathHelpers.GetHammingDistance(oldArray, activeCols);
+                var str = Helpers.StringifyVector(activeCols);
+
+                Debug.WriteLine($"{distance} - {str}");
+
+                oldArray = activeCols;
+            }
+
         }
 
 

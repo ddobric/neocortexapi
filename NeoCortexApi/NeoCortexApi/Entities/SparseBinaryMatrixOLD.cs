@@ -1,6 +1,4 @@
-﻿
-using NeoCortexApi.DistributedComputeLib;
-using NeoCortexApi.Utility;
+﻿using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,11 +14,11 @@ namespace NeoCortexApi.Entities
  */
     public class SparseBinaryMatrix : AbstractSparseBinaryMatrix
     {
-
+        
         /// <summary>
         /// Holds the matrix with connections between columns and inputs.
         /// </summary>
-        private IDistributedArray backingArray;
+        private Array backingArray;
 
         /**
          * Constructs a new {@code SparseBinaryMatrix} with the specified
@@ -44,7 +42,7 @@ namespace NeoCortexApi.Entities
          */
         public SparseBinaryMatrix(int[] dimensions, bool useColumnMajorOrdering) : base(dimensions, useColumnMajorOrdering)
         {
-            this.backingArray = InMemoryDistributedArray.CreateInstance(typeof(int), dimensions);
+            this.backingArray = Array.CreateInstance(typeof(int), dimensions);
         }
 
         /**
@@ -57,19 +55,19 @@ namespace NeoCortexApi.Entities
         private void back(int val, params int[] coordinates)
         {
             //update true counts
-            DistributedArrayHelpers.setValue(this.backingArray, val, coordinates);
+            ArrayUtils.setValue(this.backingArray, val, coordinates);
             int aggVal = -1;
-            //int aggregateVal = DistributedArrayHelpers.aggregateArray(((System.Int32[,])this.backingArray)[coordinates[0],1]);
-            //if (this.backingArray is System.Int32[,])
-            //{
-                var row = DistributedArrayHelpers.GetRow<Int32>((System.Int32[,])this.backingArray, coordinates[0]);
-                aggVal = DistributedArrayHelpers.aggregateArray(row);
-            //}
-            //else
-            //    throw new NotSupportedException();
+            //int aggregateVal = ArrayUtils.aggregateArray(((System.Int32[,])this.backingArray)[coordinates[0],1]);
+            if (this.backingArray is System.Int32[,])
+            {
+                var row = ArrayUtils.GetRow<Int32>((System.Int32[,])this.backingArray, coordinates[0]);
+                aggVal = ArrayUtils.aggregateArray(row);
+            }
+            else
+                throw new NotSupportedException();
 
             setTrueCount(coordinates[0], aggVal);
-            // setTrueCount(coordinates[0], DistributedArrayHelpers.aggregateArray(((Object[])this.backingArray)[coordinates[0]]));
+            // setTrueCount(coordinates[0], ArrayUtils.aggregateArray(((Object[])this.backingArray)[coordinates[0]]));
         }
 
         /**
@@ -86,10 +84,10 @@ namespace NeoCortexApi.Entities
 
         public override Object getSlice(params int[] coordinates)
         {
-            //Object slice = DistributedArrayHelpers.getValue(this.backingArray, coordinates);
+            //Object slice = ArrayUtils.getValue(this.backingArray, coordinates);
             Object slice;
             if (coordinates.Length == 1)
-                slice = DistributedArrayHelpers.GetRow<int>((int[,])this.backingArray, coordinates[0]);
+                slice = ArrayUtils.GetRow<int>((int[,])this.backingArray, coordinates[0]);
             //else if (coordinates.Length == 1)
             //    slice = ((int[])this.backingArray)[coordinates[0]];
             else
@@ -237,7 +235,7 @@ namespace NeoCortexApi.Entities
             this.setTrueCount(row, 0);
             //int[] slice = (int[])backingArray.GetValue(row);
             //    int[] slice = (int[])Array.get(backingArray, row);
-            //DistributedArrayHelpers.Fill(slice, 0);
+            //ArrayUtils.Fill(slice, 0);
             // Array.fill(slice, 0);
         }
 
@@ -247,7 +245,7 @@ namespace NeoCortexApi.Entities
         //  @Override
         public override AbstractSparseBinaryMatrix setForTest(int index, int value)
         {
-            DistributedArrayHelpers.setValue(this.backingArray, value, computeCoordinates(index));
+            ArrayUtils.setValue(this.backingArray, value, computeCoordinates(index));
             return this;
         }
 
@@ -268,7 +266,7 @@ namespace NeoCortexApi.Entities
                 // return Array.getInt(this.backingArray, index);
             }
 
-            else return (int)DistributedArrayHelpers.getValue(this.backingArray, coordinates);
+            else return (int)ArrayUtils.getValue(this.backingArray, coordinates);
         }
 
    
