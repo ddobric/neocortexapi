@@ -56,7 +56,7 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 1000});
             parameters.setColumnDimensions(new int[] { 2048 });
             parameters.setNumActiveColumnsPerInhArea(0.02 * 2048);
-            parameters.setGlobalInhibition(true);
+            parameters.setGlobalInhibition(false);
 
             var sp = new SpatialPooler();
 
