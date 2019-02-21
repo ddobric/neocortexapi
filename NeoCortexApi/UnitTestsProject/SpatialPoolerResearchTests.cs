@@ -209,7 +209,7 @@ namespace UnitTestsProject
 
             int[] activeArray = new int[64 * 64];
 
-            int[] inputVector = ArrayUtils.ReadCsvFileTest("TestDigit\\digit8_binary_32bit.txt").ToArray();
+            int[] inputVector = ArrayUtils.ReadCsvFileTest("TestFiles\\digit8_binary_32bit.txt").ToArray();
 
             int[] oldArray = new int[0];
 

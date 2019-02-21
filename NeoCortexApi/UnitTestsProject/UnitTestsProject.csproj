@@ -26,4 +26,8 @@
     <ProjectReference Include="..\NeoCortexApi\NeoCortexApi.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="TestFiles\" />
+  </ItemGroup>
+
 </Project>
