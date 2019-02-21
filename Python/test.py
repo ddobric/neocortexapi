@@ -2,7 +2,7 @@ import plotly.plotly as py
 import plotly.graph_objs as go
 import matplotlib.pyplot as plt
 
-
+plotly.__version__
 trace0 = go.Scatter(
     x=[1, 2, 3, 4],
     y=[10, 11, 12, 13],
@@ -16,4 +16,4 @@ trace0 = go.Scatter(
 )
 
 data = [trace0]
-py.plot(data)
+py.offline.plot(data,auto_open=True)

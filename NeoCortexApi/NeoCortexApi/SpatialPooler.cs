@@ -955,7 +955,7 @@ namespace NeoCortexApi
             double[] overlaps = new List<double>(initialOverlaps).ToArray();
 
             double density = calcInhibitionDensity(c);
-
+            //Debug.WriteLine("Density: " + density);
             //Add our fixed little bit of random noise to the scores to help break ties.
             //ArrayUtils.d_add(overlaps, c.getTieBreaker());
 
@@ -963,8 +963,8 @@ namespace NeoCortexApi
             {
                 return inhibitColumnsGlobal(c, overlaps, density);
             }
-
             return inhibitColumnsLocal(c, overlaps, density);
+            //return inhibitColumnsLocalNewApproach(c, overlaps, density);
         }
 
 
@@ -1029,7 +1029,7 @@ namespace NeoCortexApi
          */
         public virtual int[] inhibitColumnsLocal(Connections c, double[] overlaps, double density)
         {
-            double winnerDelta = ArrayUtils.max(overlaps) / 1000.0d;
+           double winnerDelta = ArrayUtils.max(overlaps) / 1000.0d;
             if (winnerDelta == 0)
             {
                 winnerDelta = 0.001;
@@ -1038,21 +1038,17 @@ namespace NeoCortexApi
             double[] tieBrokenOverlaps = new List<double>(overlaps).ToArray();
 
             List<int> winners = new List<int>();
-
             int inhibitionRadius = c.InhibitionRadius;
             for (int column = 0; column < overlaps.Length; column++)
             {
-                // int column = i;
                 if (overlaps[column] >= c.StimulusThreshold)
                 {
                     int[] neighborhood = getColumnNeighborhood(c, column, inhibitionRadius);
-
                     // Take overlapps of neighbors
                     double[] neighborhoodOverlaps = ArrayUtils.ListOfValuesByIndicies(tieBrokenOverlaps, neighborhood);
 
                     // Filter neighbors with overlaps bigger than column overlap
                     long numBigger = neighborhoodOverlaps.Count(d => d > overlaps[column]);
-
                     // density will reduce radius
                     int numActive = (int)(0.5 + density * neighborhood.Length);
                     if (numBigger < numActive)
@@ -1066,6 +1062,133 @@ namespace NeoCortexApi
             return winners.ToArray();
         }
 
+
+        public virtual int[] inhibitColumnsLocalNewApproach(Connections c, double[] overlaps, double density)
+        {
+            /*
+            double winnerDelta = ArrayUtils.max(overlaps) / 1000.0d;
+            if (winnerDelta == 0)
+            {
+                winnerDelta = 0.001;
+            }
+            */
+
+            //double[] tieBrokenOverlaps = new List<double>(overlaps).ToArray();
+
+            List<int> winners = new List<int>();
+
+            int inhibitionRadius = c.InhibitionRadius;
+            for (int column = 0; column < overlaps.Length; column++)
+            {
+                // int column = i;
+                if (overlaps[column] >= c.StimulusThreshold)
+                {
+                    int[] neighborhood = getColumnNeighborhood(c, column, inhibitionRadius);
+                    // Take overlapps of neighbors
+                    double[] neighborhoodOverlaps = ArrayUtils.ListOfValuesByIndicies(overlaps, neighborhood);
+
+                    // Filter neighbors with overlaps bigger than column overlap
+                    long numBigger = neighborhoodOverlaps.Count(d => d >= overlaps[column]);
+                    // density will reduce radius
+                    int numActive = (int)(0.5 + density * neighborhood.Length);
+                    if ((numBigger-1) < numActive)
+                    {
+                        winners.Add(column);
+                        //tieBrokenOverlaps[column] += winnerDelta;
+                    }
+                }
+            }
+
+            return winners.ToArray();
+        }
+
+
+        public virtual int[] inhibitColumnsLocalNewApproach2(Connections c, double[] overlaps, double density)
+        {
+            /*
+            double winnerDelta = ArrayUtils.max(overlaps) / 1000.0d;
+            if (winnerDelta == 0)
+            {
+                winnerDelta = 0.001;
+            }
+            */
+
+            //double[] tieBrokenOverlaps = new List<double>(overlaps).ToArray();
+
+            List<int> winners = new List<int>();
+
+            int inhibitionRadius = 500;
+            int windowNum = inhibitionRadius;
+            for (int column = 0; column < overlaps.Length; column++)
+            {
+                // int column = i;
+                if (overlaps[column] >= c.StimulusThreshold)
+                {
+                    int[] neighborhood = getColumnNeighborhood(c, column, inhibitionRadius);
+                    // Take overlapps of neighbors
+                    double[] neighborhoodOverlaps = ArrayUtils.ListOfValuesByIndicies(overlaps, neighborhood);
+
+                    if (column < inhibitionRadius)
+                    {
+                        windowNum = windowNum + 1;
+                        for (int i = 0; i < (inhibitionRadius-column); i++)
+                        {
+                            neighborhoodOverlaps[i] = 0;
+                        }
+                    }
+                    else if (column >= (overlaps.Length - inhibitionRadius))
+                    {
+                        windowNum = overlaps.Length + inhibitionRadius - column;
+                        for (int i = (neighborhoodOverlaps.Length-1); i > (overlaps.Length-column+inhibitionRadius-1); i--)
+                        {
+                            neighborhoodOverlaps[i] = 0;
+                        }
+                    }
+                    else
+                    {
+                        windowNum = inhibitionRadius * 2 + 1;
+                    }
+                    // Filter neighbors with overlaps bigger than column overlap
+
+                    long numBigger = neighborhoodOverlaps.Count(d => d > overlaps[column]);
+                    // density will reduce radius
+                    int numActive = (int)(0.5 + density * windowNum);
+                    if (numBigger < numActive)
+                    {
+                        winners.Add(column);
+                        //tieBrokenOverlaps[column] += winnerDelta;
+                    }
+                }
+            }
+
+            return winners.ToArray();
+        }
+        public virtual int[] inhibitColumnsLocalNewApproach3(Connections c, double[] overlaps, double density)
+        {
+            /*
+            double winnerDelta = ArrayUtils.max(overlaps) / 1000.0d;
+            if (winnerDelta == 0)
+            {
+                winnerDelta = 0.001;
+            }
+            */
+
+            //double[] tieBrokenOverlaps = new List<double>(overlaps).ToArray();
+
+            List<int> winners = new List<int>();
+            double[] overlapArr = new List<double>(overlaps).ToArray();
+            int inhibitionRadius = c.InhibitionRadius;
+            Debug.WriteLine("Radius: " + inhibitionRadius);
+            int count = 0;
+            int neighborhoodSize = inhibitionRadius * 2 + 1;
+            for (int column = 0; column < (neighborhoodSize-1); column++)
+            {
+                double[] arr = new double[neighborhoodSize];
+                arr[column] = overlapArr[column];
+            }
+
+            return winners.ToArray();
+        }
         /**
          * Update the boost factors for all columns. The boost factors are used to
          * increase the overlap of inactive columns to improve their chances of
@@ -1283,6 +1406,70 @@ namespace NeoCortexApi
             return c.isWrapAround() ?
                 c.getInputTopology().wrappingNeighborhood(centerInput, potentialRadius) :
                     c.getInputTopology().GetNeighborhood(centerInput, potentialRadius);
+        }
+
+        public Double getRobustness(Double k, int[] oriOut, int[] realOut)
+        {
+            Double result = 0;
+            int count = 0;
+            if (oriOut.Length < realOut.Length)
+            {
+                for (int i = 0; i < oriOut.Length; i++)
+                {
+                    if (oriOut[i] != realOut[i])
+                    {
+                        count++;
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < realOut.Length; i++)
+                {
+                    if (oriOut[i] != realOut[i])
+                    {
+                        count++;
+                    }
+                }
+            }
+            Debug.WriteLine("Count: " + count);
+            if (count != 0)
+            {
+                Double outDiff = (Double)count / oriOut.Length;
+                result = (Double)(k / outDiff);
+            }
+            else
+            {
+                result = 1; 
+            }
+            return result;
+        }
+        public int[] flipBit(int[] oriArr, Double bitPerc)
+        {
+            int[] result = new List<int>(oriArr).ToArray();
+            List<int> arr = new List<int>();
+            Random random = new Random();
+            int num = 0;
+            int numOfFlipBit = (int) (bitPerc * oriArr.Length);
+            Debug.WriteLine("Number of Bit flipped:" + numOfFlipBit);
+            for (int i = 0; i < numOfFlipBit; i++)
+            {
+                do
+                {
+                    num = random.Next(0, (oriArr.Length - 1));
+                }
+                while (arr.Contains(num));
+                arr.Add(num);
+                if (result[num] == 1)
+                {
+                    result[num] = 0;
+                }
+                else
+                {
+                    result[num] = 1;
+                }
+            }
+            return result;
         }
     }
 }

@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexApi", "NeoCortexAp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTestsProject", "UnitTestsProject\UnitTestsProject.csproj", "{A2B0776F-3650-4CE5-98BC-E2B7A2205A23}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DistributedComputeLib", "DistributedComputeLib\DistributedComputeLib.csproj", "{7F75D4D0-408B-4FFE-A450-1D7F647542B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DistributedComputeLib", "DistributedComputeLib\DistributedComputeLib.csproj", "{7F75D4D0-408B-4FFE-A450-1D7F647542B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

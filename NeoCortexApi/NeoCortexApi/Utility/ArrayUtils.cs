@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using System.Runtime.InteropServices;
-
+using System.IO;
 
 namespace NeoCortexApi.Utility
 {
@@ -807,6 +807,23 @@ namespace NeoCortexApi.Utility
                 retVal[i] = Math.Min(arr1[i], arr2[i]);
             }
             return retVal;
+        }
+
+        public static List<int> ReadCsvFileTest(String path)
+        {
+            string fileContent = File.ReadAllText(path);
+            string[] integerStrings = fileContent.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            List<int> intList = new List<int>();
+            for (int n = 0; n < integerStrings.Length; n++)
+            {
+                String s = integerStrings[n];
+                char[] sub = s.ToCharArray();
+                for (int j = 0; j < sub.Length - 1; j++)
+                {
+                    intList.Add(int.Parse(sub[j].ToString()));
+                }
+            }
+            return intList;
         }
 
         /**
