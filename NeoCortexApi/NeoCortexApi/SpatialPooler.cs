@@ -1038,7 +1038,6 @@ namespace NeoCortexApi
             double[] tieBrokenOverlaps = new List<double>(overlaps).ToArray();
 
             List<int> winners = new List<int>();
-            //int inhibitionRadius = c.InhibitionRadius;
             int inhibitionRadius = c.InhibitionRadius;
             for (int column = 0; column < overlaps.Length; column++)
             {
