@@ -906,6 +906,8 @@ namespace NeoCortexApi
             // Here we have Receptive Field (RF)
             int[] columnInputs = getInputNeighborhood(c, centerInput, c.getPotentialRadius());
 
+            Debug.WriteLine($"{Helpers.StringifyVector(columnInputs)}");
+            
             // Select a subset of the receptive field to serve as the the potential pool.
             int numPotential = (int)(columnInputs.Length * c.getPotentialPct() + 0.5);
             int[] retVal = new int[numPotential];

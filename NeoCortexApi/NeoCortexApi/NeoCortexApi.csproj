@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>NeoCortexApi</PackageId>
     <Version>1.0.5-beta</Version>
     <Authors>Damir Dobric</Authors>
@@ -19,6 +19,7 @@
   <ItemGroup>
     <Compile Remove="Encoders\EncoderBuilder.cs" />
     <Compile Remove="Encoders\ScalarEncoder.cs" />
+    <Compile Remove="Entities\SparseBinaryMatrix.cs" />
     <Compile Remove="Network\CortexNetwork.cs" />
     <Compile Remove="Network\Header.cs" />
     <Compile Remove="Network\ICheckPointOP.cs" />
@@ -37,6 +38,7 @@
   <ItemGroup>
     <None Include="Encoders\EncoderBuilder.cs" />
     <None Include="Encoders\ScalarEncoder.cs" />
+    <None Include="Entities\SparseBinaryMatrix.cs" />
     <None Include="Network\CortexNetwork.cs" />
     <None Include="Network\Header.cs" />
     <None Include="Network\ICheckPointOP.cs" />

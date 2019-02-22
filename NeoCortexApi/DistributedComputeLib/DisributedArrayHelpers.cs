@@ -8,40 +8,41 @@ using System.Runtime.InteropServices;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
-    //public class ClusteredArray : Array
-    //{
-
-
-    //}
-
+   
     /**
      * Utilities to match some of the functionality found in Python's Numpy.
      * @author David Ray
      */
-    public static class StreamedArrayUtils
+    public static class DistributedArrayHelpers
     {
         /** Empty array constant */
         private static int[] EMPTY_ARRAY = new int[0];
 
-        public static string ArrToString2(this int[] arr)
+        public static string ArrToString(this IDistributedArray arr)
         {
-            var value = string.Join(",", arr.Select(x => x.ToString()).ToArray());
-            return value;
+            StringBuilder sb = new StringBuilder();
+            foreach (var item in arr)
+            {
+                sb.Append(item.ToString());
+                sb.Append(",");
+            }
+           // var value = string.Join(",", arr.Select(x => x.ToString()).ToArray());
+            return sb.ToString();
         }
 
-        public static string ArrToString(this int[][] arr)
-        {
-            var value = string.Join(" [ ", arr.Select(x => x.ArrToString()).ToArray(), " ] ");
-            return value;
-        }
-        
+        //public static string ArrToString(this /*int[][]*/ IDistributedArray<int> arr)
+        //{
+        //    var value = string.Join(" [ ", arr.Select(x => x.ArrToString()).ToArray(), " ] ");
+        //    return value;
+        //}
+
         /**
          * Returns the product of each integer in the specified array.
          * 
          * @param dims
          * @return
          */
-        public static int product(int[] dims)
+        public static int product(int[] dims) // No distribution needed.
         {
             int retVal = 1;
             for (int i = 0; i < dims.Length; i++)
@@ -62,28 +63,28 @@ namespace NeoCortexApi.DistributedComputeLib
          * @param second    the second array
          * @return
          */
-        public static Object[] interleave<F, S>(F first, S second) where F : IList<F> where S : IList<S>
-        {
-            int flen, slen;
+        //public static Object[] interleave<F, S>(F first, S second) where F : IList<F> where S : IList<S>
+        //{
+        //    int flen, slen;
 
-            flen = first.Count;
-            slen = second.Count;
+        //    flen = first.Count;
+        //    slen = second.Count;
 
-            Object[] retVal = new Object[flen + slen];
-            for (int i = 0, j = 0, k = 0; i < flen || j < slen;)
-            {
-                if (i < flen)
-                {
-                    retVal[k++] = first[i++];
-                }
-                if (j < slen)
-                {
-                    retVal[k++] = second[j++];
-                }
-            }
+        //    Object[] retVal = new Object[flen + slen];
+        //    for (int i = 0, j = 0, k = 0; i < flen || j < slen;)
+        //    {
+        //        if (i < flen)
+        //        {
+        //            retVal[k++] = first[i++];
+        //        }
+        //        if (j < slen)
+        //        {
+        //            retVal[k++] = second[j++];
+        //        }
+        //    }
 
-            return retVal;
-        }
+        //    return retVal;
+        //}
 
         /**
          * <p>
@@ -97,16 +98,16 @@ namespace NeoCortexApi.DistributedComputeLib
          * @param d
          * @return
          */
-        public static double[] diff(double[] d)
-        {
-            double[] retVal = new double[d.Length - 1];
-            for (int i = 0; i < retVal.Length; i++)
-            {
-                retVal[i] = d[i + 1] - d[i];
-            }
+        //public static double[] diff(double[] d)
+        //{
+        //    double[] retVal = new double[d.Length - 1];
+        //    for (int i = 0; i < retVal.Length; i++)
+        //    {
+        //        retVal[i] = d[i + 1] - d[i];
+        //    }
 
-            return retVal;
-        }
+        //    return retVal;
+        //}
 
         /**
          * Returns a flag indicating whether the container list contains an
@@ -116,19 +117,19 @@ namespace NeoCortexApi.DistributedComputeLib
          * @param container the list of arrays to test
          * @return true if so, false if not
          */
-        public static bool contains(int[] match, List<int[]> container)
-        {
-            for (int i = 0; i < container.Count; i++)
-            {
-                bool isSubset = !container[i].Except(match).Any();
-                return isSubset;
-                //if (Arrays.equals(match, container.get(i)))
-                //{
-                //    return true;
-                //}
-            }
-            return false;
-        }
+        //public static bool contains(int[] match, List<int[]> container)
+        //{
+        //    for (int i = 0; i < container.Count; i++)
+        //    {
+        //        bool isSubset = !container[i].Except(match).Any();
+        //        return isSubset;
+        //        //if (Arrays.equals(match, container.get(i)))
+        //        //{
+        //        //    return true;
+        //        //}
+        //    }
+        //    return false;
+        //}
 
         /**
          * Returns a new array of size first.length + second.length, with the
@@ -417,10 +418,10 @@ namespace NeoCortexApi.DistributedComputeLib
          * @param in
          * @return
          */
-        public static int[] argsort(int[] inp)
-        {
-            return argsort(inp, -1, -1);
-        }
+        //public static int[] argsort(int[] inp)
+        //{
+        //    return argsort(inp, -1, -1);
+        //}
 
         /**
          * Sorts the array, then returns an array containing the indexes of
@@ -437,34 +438,34 @@ namespace NeoCortexApi.DistributedComputeLib
          * 
          * @see #argsort(int[])
          */
-        public static int[] argsort(int[] inp, int start, int end)
-        {
-            var sorted = inp.OrderBy(e => e).ToArray();
-            var final = new int[end - start];
-            if (start == -1)
-                start = 0;
+        //public static int[] argsort(int[] inp, int start, int end)
+        //{
+        //    var sorted = inp.OrderBy(e => e).ToArray();
+        //    var final = new int[end - start];
+        //    if (start == -1)
+        //        start = 0;
 
-            if (end == -1)
-                end = inp.Length;
+        //    if (end == -1)
+        //        end = inp.Length;
 
-            for (int i = start; i < end; i++)
-            {
-                final[i] = Array.IndexOf(sorted, sorted[i]);
-            }
+        //    for (int i = start; i < end; i++)
+        //    {
+        //        final[i] = Array.IndexOf(sorted, sorted[i]);
+        //    }
 
-            return final;
-            //if (start == -1 || end == -1)
-            //{
-            //    Array.IndexOf()
-            //    inp.OrderBy(e=>e).Select(e=> inp)
-            //    return IntStream.of(inp).sorted().map(i->
-            //        Arrays.stream(inp).boxed().collect(Collectors.toList()).indexOf(i)).toArray();
-            //}
+        //    return final;
+        //    //if (start == -1 || end == -1)
+        //    //{
+        //    //    Array.IndexOf()
+        //    //    inp.OrderBy(e=>e).Select(e=> inp)
+        //    //    return IntStream.of(inp).sorted().map(i->
+        //    //        Arrays.stream(inp).boxed().collect(Collectors.toList()).indexOf(i)).toArray();
+        //    //}
 
-            //return IntStream.of(inp).sorted().map(i->
-            //    Arrays.stream(inp).boxed().collect(Collectors.toList()).indexOf(i))
-            //        .skip(start).limit(end).toArray();
-        }
+        //    //return IntStream.of(inp).sorted().map(i->
+        //    //    Arrays.stream(inp).boxed().collect(Collectors.toList()).indexOf(i))
+        //    //        .skip(start).limit(end).toArray();
+        //}
 
         /**
         * Transforms 2D matrix of doubles to 1D by concatenation
@@ -514,26 +515,26 @@ namespace NeoCortexApi.DistributedComputeLib
           * @param arr an binary array (0's and 1's only)
           * @return
           */
-        public static String bitsToString(int[] arr)
-        {
-            char[] s = new char[arr.Length + 1];
+        //public static String bitsToString(int[] arr)
+        //{
+        //    char[] s = new char[arr.Length + 1];
 
-            for (int i = 0; i < s.Length; i++)
-            {
-                s[i] = '.';
-            }
+        //    for (int i = 0; i < s.Length; i++)
+        //    {
+        //        s[i] = '.';
+        //    }
 
-            s[0] = 'c';
-            for (int i = 0; i < arr.Length; i++)
-            {
-                if (arr[i] == 1)
-                {
-                    s[i + 1] = '*';
-                }
-            }
+        //    s[0] = 'c';
+        //    for (int i = 0; i < arr.Length; i++)
+        //    {
+        //        if (arr[i] == 1)
+        //        {
+        //            s[i + 1] = '*';
+        //        }
+        //    }
 
-            return new String(s);
-        }
+        //    return new String(s);
+        //}
 
         /**
          * Return a list of tuples, where each tuple contains the i-th element
@@ -544,17 +545,17 @@ namespace NeoCortexApi.DistributedComputeLib
          * @param arg2 the first list to be the one'th entry in the returned tuple
          * @return a list of tuples
          */
-        public static List<Tuple<T1,T2>> Zip<T1,T2>(List<T1> arg1, List<T2> arg2)
-        {
-            List<Tuple<T1, T2>> tuples = new List<Tuple<T1, T2>>();
-            int len = Math.Min(arg1.Count, arg2.Count);
-            for (int i = 0; i < len; i++)
-            {
-                tuples.Add(new Tuple<T1, T2>(arg1[i], arg2[i]));
-            }
+        //public static List<Tuple<T1,T2>> Zip<T1,T2>(List<T1> arg1, List<T2> arg2)
+        //{
+        //    List<Tuple<T1, T2>> tuples = new List<Tuple<T1, T2>>();
+        //    int len = Math.Min(arg1.Count, arg2.Count);
+        //    for (int i = 0; i < len; i++)
+        //    {
+        //        tuples.Add(new Tuple<T1, T2>(arg1[i], arg2[i]));
+        //    }
 
-            return tuples;
-        }
+        //    return tuples;
+        //}
 
         /**
          * Return a list of tuples, where each tuple contains the i-th element
@@ -654,10 +655,10 @@ namespace NeoCortexApi.DistributedComputeLib
          * @param doubs an array of doubles.
          * @return
          */
-        public static int[] toIntArray(double[] doubs)
+        public static int[] toIntArray(IDistributedArray doubs)
         {
-            int[] retVal = new int[doubs.Length];
-            for (int i = 0; i < doubs.Length; i++)
+            int[] retVal = new int[doubs.Count];
+            for (int i = 0; i < doubs.Count; i++)
             {
                 retVal[i] = (int)doubs[i];
             }
@@ -671,12 +672,12 @@ namespace NeoCortexApi.DistributedComputeLib
          * @param ints an array of ints.
          * @return
          */
-        public static double[] toDoubleArray(int[] ints)
+        public static double[] toDoubleArray(IDistributedArray ints)
         {
-            double[] retVal = new double[ints.Length];
-            for (int i = 0; i < ints.Length; i++)
+            double[] retVal = new double[ints.Count];
+            for (int i = 0; i < ints.Count; i++)
             {
-                retVal[i] = ints[i];
+                retVal[i] = (double)ints[i];
             }
             return retVal;
         }
@@ -756,7 +757,7 @@ namespace NeoCortexApi.DistributedComputeLib
          * @param arr2
          * @return
          */
-        public static int[] maxBetween(int[] arr1, int[] arr2)
+        public static int[] maxBetween(int[] arr1, int[] arr2) // DIstribution not needed.
         {
             int[] retVal = new int[arr1.Length];
             for (int i = 0; i < arr1.Length; i++)
@@ -1937,15 +1938,15 @@ namespace NeoCortexApi.DistributedComputeLib
          * @param size    the size of the dense array to be returned.
          * @return
          */
-        public static int[] asDense(int[] inp, int size)
-        {
-            int[] retVal = new int[size];
-            for (int i = 0; i < inp.Length; i++)
-            {
-                retVal[i] = 1;
-            }
-            return retVal;
-        }
+        //public static int[] asDense(int[] inp, int size)
+        //{
+        //    int[] retVal = new int[size];
+        //    for (int i = 0; i < inp.Length; i++)
+        //    {
+        //        retVal[i] = 1;
+        //    }
+        //    return retVal;
+        //}
 
         /**
          * Scans the specified values and applies the {@link Condition} to each
@@ -1999,11 +2000,11 @@ namespace NeoCortexApi.DistributedComputeLib
          * @param x     the comparison
          * @param y     the value to set if the comparison fails
          */
-        public static void lessThanOrEqualXThanSetToY(double[] array, double x, double y)
+        public static void lessThanOrEqualXThanSetToY(IDistributedArray array, double x, double y)
         {
-            for (int i = 0; i < array.Length; i++)
+            for (int i = 0; i < array.Count; i++)
             {
-                if (array[i] <= x) array[i] = y;
+                if ((double)array[i] <= x) array[i] = y;
             }
         }
 
@@ -2014,11 +2015,11 @@ namespace NeoCortexApi.DistributedComputeLib
          * @param x     the comparison
          * @param y     the value to set if the comparison fails
          */
-        public static void lessThanXThanSetToY(double[] array, double x, double y)
+        public static void lessThanXThanSetToY(IDistributedArray array, double x, double y)
         {
-            for (int i = 0; i < array.Length; i++)
+            for (int i = 0; i < array.Count; i++)
             {
-                if (array[i] < x) array[i] = y;
+                if ((double)array[i] < x) array[i] = y;
             }
         }
 
@@ -2029,13 +2030,13 @@ namespace NeoCortexApi.DistributedComputeLib
          * @param x     the comparison
          * @param y     the value to set if the comparison fails
          */
-        public static void lessThanXThanSetToY(int[] array, int x, int y)
-        {
-            for (int i = 0; i < array.Length; i++)
-            {
-                if (array[i] < x) array[i] = y;
-            }
-        }
+        //public static void lessThanXThanSetToY(int[] array, int x, int y)
+        //{
+        //    for (int i = 0; i < array.Length; i++)
+        //    {
+        //        if (array[i] < x) array[i] = y;
+        //    }
+        //}
 
         /**
          * Makes all values in the specified array which are greater than or equal to the specified
@@ -2044,13 +2045,13 @@ namespace NeoCortexApi.DistributedComputeLib
          * @param x     the comparison
          * @param y     the value to set if the comparison fails
          */
-        public static void greaterThanOrEqualXThanSetToY(double[] array, double x, double y)
-        {
-            for (int i = 0; i < array.Length; i++)
-            {
-                if (array[i] >= x) array[i] = y;
-            }
-        }
+        //public static void greaterThanOrEqualXThanSetToY(double[] array, double x, double y)
+        //{
+        //    for (int i = 0; i < array.Length; i++)
+        //    {
+        //        if (array[i] >= x) array[i] = y;
+        //    }
+        //}
 
         /**
          * Makes all values in the specified array which are greater than the specified
@@ -2060,28 +2061,28 @@ namespace NeoCortexApi.DistributedComputeLib
          * @param x     the comparison
          * @param y     the value to set if the comparison fails
          */
-        public static void greaterThanXThanSetToY(double[] array, double x, double y)
-        {
-            for (int i = 0; i < array.Length; i++)
-            {
-                if (array[i] > x) array[i] = y;
-            }
-        }
+        //public static void greaterThanXThanSetToY(double[] array, double x, double y)
+        //{
+        //    for (int i = 0; i < array.Length; i++)
+        //    {
+        //        if (array[i] > x) array[i] = y;
+        //    }
+        //}
 
-        /**
-         * Makes all values in the specified array which are greater than the specified
-         * "x" value, equal to the specified "y".
-         * @param array
-         * @param x     the comparison
-         * @param y     the value to set if the comparison fails
-         */
-        public static void greaterThanXThanSetToY(int[] array, int x, int y)
-        {
-            for (int i = 0; i < array.Length; i++)
-            {
-                if (array[i] > x) array[i] = y;
-            }
-        }
+        ///**
+        // * Makes all values in the specified array which are greater than the specified
+        // * "x" value, equal to the specified "y".
+        // * @param array
+        // * @param x     the comparison
+        // * @param y     the value to set if the comparison fails
+        // */
+        //public static void greaterThanXThanSetToY(int[] array, int x, int y)
+        //{
+        //    for (int i = 0; i < array.Length; i++)
+        //    {
+        //        if (array[i] > x) array[i] = y;
+        //    }
+        //}
 
         /**
          * Sets value to "y" in "targetB" if the value in the same index in "sourceA" is bigger than "x".
@@ -2090,11 +2091,11 @@ namespace NeoCortexApi.DistributedComputeLib
          * @param x     the comparison
          * @param y     the value to set if the comparison fails
          */
-        public static void greaterThanXThanSetToYInB(int[] sourceA, double[] targetB, int x, double y)
+        public static void greaterThanXThanSetToYInB(IDistributedArray sourceA, IDistributedArray targetB, int x, double y)
         {
-            for (int i = 0; i < sourceA.Length; i++)
+            for (int i = 0; i < sourceA.Count; i++)
             {
-                if (sourceA[i] > x)
+                if ((int)sourceA[i] > x)
                     targetB[i] = y;
             }
         }
@@ -2105,20 +2106,20 @@ namespace NeoCortexApi.DistributedComputeLib
          * @param array the array to find the max value index in
          * @return the index of the max value
          */
-        public static int argmax(int[] array)
-        {
-            int index = -1;
-            int max = Integer.MinValue;
-            for (int i = 0; i < array.Length; i++)
-            {
-                if (array[i] > max)
-                {
-                    max = array[i];
-                    index = i;
-                }
-            }
-            return index;
-        }
+        //public static int argmax(IDistributedArray array)
+        //{
+        //    int index = -1;
+        //    int max = int.MinValue;
+        //    for (int i = 0; i < array.Count; i++)
+        //    {
+        //        if ((int)array[i] > max)
+        //        {
+        //            max = (int)array[i];
+        //            index = i;
+        //        }
+        //    }
+        //    return index;
+        //}
 
         /**
          * Returns a boxed Integer[] from the specified primitive array
@@ -2145,22 +2146,22 @@ namespace NeoCortexApi.DistributedComputeLib
          * @param input     the boolean array to transform to a byte array
          * @return          a byte array
          */
-        public static byte[] toBytes(bool[] input)
-        {
-            byte[] toReturn = new byte[input.Length / 8];
-            for (int entry = 0; entry < toReturn.Length; entry++)
-            {
-                for (int bit = 0; bit < 8; bit++)
-                {
-                    if (input[entry * 8 + bit])
-                    {
-                        toReturn[entry] |= (byte)(128 >> bit);
-                    }
-                }
-            }
+        //public static byte[] toBytes(bool[] input)
+        //{
+        //    byte[] toReturn = new byte[input.Length / 8];
+        //    for (int entry = 0; entry < toReturn.Length; entry++)
+        //    {
+        //        for (int bit = 0; bit < 8; bit++)
+        //        {
+        //            if (input[entry * 8 + bit])
+        //            {
+        //                toReturn[entry] |= (byte)(128 >> bit);
+        //            }
+        //        }
+        //    }
 
-            return toReturn;
-        }
+        //    return toReturn;
+        //}
 
         /**
          * Converts an array of Integer objects to an array of its
@@ -2169,15 +2170,15 @@ namespace NeoCortexApi.DistributedComputeLib
          * @param doubs
          * @return
          */
-        public static int[] toPrimitive(Integer[] ints)
-        {
-            int[] retVal = new int[ints.Length];
-            for (int i = 0; i < retVal.Length; i++)
-            {
-                retVal[i] = ints[i].Value;
-            }
-            return retVal;
-        }
+        //public static int[] toPrimitive(Integer[] ints)
+        //{
+        //    int[] retVal = new int[ints.Length];
+        //    for (int i = 0; i < retVal.Length; i++)
+        //    {
+        //        retVal[i] = ints[i].Value;
+        //    }
+        //    return retVal;
+        //}
 
         /**
          * Converts an array of Double objects to an array of its
@@ -2186,35 +2187,35 @@ namespace NeoCortexApi.DistributedComputeLib
          * @param doubs
          * @return
          */
-        public static double[] toPrimitive(Double[] doubs)
-        {
-            double[] retVal = new double[doubs.Length];
-            for (int i = 0; i < retVal.Length; i++)
-            {
-                retVal[i] = doubs[i];
-            }
-            return retVal;
-        }
+        //public static double[] toPrimitive(Double[] doubs)
+        //{
+        //    double[] retVal = new double[doubs.Length];
+        //    for (int i = 0; i < retVal.Length; i++)
+        //    {
+        //        retVal[i] = doubs[i];
+        //    }
+        //    return retVal;
+        //}
 
         /**
          * Returns the index of the max value in the specified array
          * @param array the array to find the max value index in
          * @return the index of the max value
          */
-        public static int argmax(double[] array)
-        {
-            int index = -1;
-            double max = Double.MinValue;
-            for (int i = 0; i < array.Length; i++)
-            {
-                if (array[i] > max)
-                {
-                    max = array[i];
-                    index = i;
-                }
-            }
-            return index;
-        }
+        //public static int argmax(double[] array)
+        //{
+        //    int index = -1;
+        //    double max = Double.MinValue;
+        //    for (int i = 0; i < array.Length; i++)
+        //    {
+        //        if (array[i] > max)
+        //        {
+        //            max = array[i];
+        //            index = i;
+        //        }
+        //    }
+        //    return index;
+        //}
 
         /**
          * Returns the maximum value in the specified array
@@ -2223,7 +2224,7 @@ namespace NeoCortexApi.DistributedComputeLib
          */
         public static int max(int[] array)
         {
-            int max = Integer.MinValue;
+            int max = int.MinValue;
             for (int i = 0; i < array.Length; i++)
             {
                 if (array[i] > max)
@@ -2311,14 +2312,14 @@ namespace NeoCortexApi.DistributedComputeLib
          * @param array
          * @return
          */
-        public static int min(int[] array)
+        public static int minInt(IDistributedArray array)
         {
-            int min = Integer.MaxValue;
-            for (int i = 0; i < array.Length; i++)
+            int min = int.MaxValue;
+            for (int i = 0; i < array.Count; i++)
             {
-                if (array[i] < min)
+                if ((int)array[i] < min)
                 {
-                    min = array[i];
+                    min = (int)array[i];
                 }
             }
             return min;
@@ -2329,14 +2330,14 @@ namespace NeoCortexApi.DistributedComputeLib
          * @param array
          * @return
          */
-        public static double min(double[] array)
+        public static double minDouble(IDistributedArray array)
         {
             double min = Double.MaxValue;
-            for (int i = 0; i < array.Length; i++)
+            for (int i = 0; i < array.Count; i++)
             {
-                if (array[i] < min)
+                if ((double)array[i] < min)
                 {
-                    min = array[i];
+                    min = (double)array[i];
                 }
             }
             return min;
@@ -2432,7 +2433,7 @@ namespace NeoCortexApi.DistributedComputeLib
          * @param value
          * @param indexes
          */
-        public static void setValue(Array array, int value, params int[] indexes)
+        public static void setValue(IDistributedArray array, int value, params int[] indexes)
         {
             array.SetValue(value, indexes);
             //if (indexes.Length == 1)
@@ -2561,7 +2562,8 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <param name="array"></param>
         /// <param name="row"></param>
         /// <returns></returns>
-        public static T[] GetRow<T>(this T[,] array, int row)
+        //public static T[] GetRow<T>(this T[,] array, int row)
+        public static T[] GetRow<T>(this IDistributedArray array, int row)
         {
             if (array == null)
                 throw new ArgumentNullException("array");
@@ -2571,7 +2573,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
             for (int i = 0; i < cols; i++)
             {
-                result[i] = array[row, i];
+                result[i] = (T)array[row, i];
             }
 
             return result;
@@ -2607,30 +2609,31 @@ namespace NeoCortexApi.DistributedComputeLib
         * @param array
         * @return sum of all array elements
 */
-        public static int aggregateArray(Object array)
+        public static int aggregateArray(IDistributedArray array)
         {
-            int sum = 0;
-            if (array.GetType() == typeof(int))
-            {
-                return (int)array;
-            }
-            else if (array.GetType() == typeof(int[]))
-            {
-                int[] set = (int[])array;
-                foreach (int element in set)
-                {
-                    sum += element;
-                }
-                return sum;
-            }
-            else
-            {
-                foreach (Object agr in (Object[])array)
-                {
-                    sum += aggregateArray(agr);
-                }
-                return sum;
-            }
+            return array.AggregateArray();
+            //int sum = 0;
+            ////if (array.GetType() == typeof(int))
+            ////{
+            ////    return (int)array;
+            ////}
+            //else if (array.GetType() == typeof(int[]))
+            //{
+            //    int[] set = (int[])array;
+            //    foreach (int element in set)
+            //    {
+            //        sum += element;
+            //    }
+            //    return sum;
+            //}
+            //else
+            //{
+            //    foreach (Object agr in (Object[])array)
+            //    {
+            //        sum += aggregateArray(agr);
+            //    }
+            //    return sum;
+            //}
         }
 
         /**
