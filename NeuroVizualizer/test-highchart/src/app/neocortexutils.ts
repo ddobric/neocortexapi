@@ -21,25 +21,37 @@ export class neoCortexUtils {
     let postCell1: Cell;
 
 
-    preCell0 = new Cell(sett, null, null, 0, 15, 0, 0, [null], [null]);
-    postCell1 = new Cell(sett, null, null, 0, 15, 1, 0, [null], [null]);
+    preCell0 = new Cell(sett, null, null, 0, 0, 0, [null], [null]);
+    postCell1 = new Cell(sett, null, null, 0, 1, 0, [null], [null]);
 
     let incomingSynap0 = new Synapse(null, 0, preCell0, postCell1);
     let outgoingSynap1 = new Synapse(null, 0, preCell0, postCell1);
 
-    preCell0 = new Cell(sett, null, null, 0, 15, 0, 0, [null], [outgoingSynap1]);
-    postCell1 = new Cell(sett, null, null, 0, 15, 1, 0, [incomingSynap0], [null]);
+    preCell0 = new Cell(sett, null, null, 0, 0, 0, [null], [outgoingSynap1]);
+    postCell1 = new Cell(sett, null, null, 0, 1, 0, [incomingSynap0], [null]);
+
+
 
     let preCell3: Cell;
     let postCell4: Cell;
 
-    preCell3 = new Cell(sett, null, null, 0, 15, 3, 0, [null], [null]);
-    postCell4 = new Cell(sett, null, null, 0, 15, 4, 0,[ null], [null]);
+    preCell3 = new Cell(sett, null, null, 0, 3, 0, [null], [null]);
+    postCell4 = new Cell(sett, null, null, 9, 0, 0, [null], [null]);
     let incomingSynap3 = new Synapse(null, 0, preCell3, postCell4);
     let outgoingSynap4 = new Synapse(null, 0, preCell3, postCell4);
 
-    preCell3 = new Cell(sett, null, null, 0, 15, 3, 0, [null], [outgoingSynap4]);
-    postCell4 = new Cell(sett, null, null, 0, 15, 4, 0, [incomingSynap3], [null]);
+    preCell3 = new Cell(sett, null, null, 0, 3, 0, [null], [outgoingSynap4]);
+    postCell4 = new Cell(sett, null, null, 9, 0, 0, [incomingSynap3], [null]);
+
+/* 
+    let preCell2: Cell;
+    let postCell3: Cell;
+    preCell2 = new Cell(sett, null, null, 9, 5, 0, [null], [null]);
+    postCell3 = new Cell(sett, null, null, 15, 5, 0, [null], [null]);
+    let incomingSynap2 = new Synapse(null, 0, preCell2, postCell3);
+    let outgoingSynap3 = new Synapse(null, 0, preCell2, postCell3);
+    preCell2 = new Cell(sett, null, null, 9, 5, 0, [null], [outgoingSynap3]);
+    postCell3 = new Cell(sett, null, null, 15, 5, 0, [incomingSynap2], [null]); */
 
 
 
@@ -47,8 +59,9 @@ export class neoCortexUtils {
 
     let synaps01 = new Synapse(null, 0, preCell0, postCell1);
     let synaps34 = new Synapse(null, 0, preCell3, postCell4);
+    //let synap23 = new Synapse(null, 1, preCell2, postCell3);
 
-    var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 1, 1, 1, [synaps01, synaps34]);
+    var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 0, 0, 0, [synaps01, synaps34]);
 
 
     return model;
