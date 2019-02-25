@@ -46,6 +46,19 @@ namespace NeoCortexApi
             return sb.ToString();
         }
 
+        public static string StringifyVector(double[] vector)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var vectorBit in vector)
+            {
+                sb.Append(vectorBit);
+                sb.Append(", ");
+            }
+
+            return sb.ToString();
+        }
+
         /// <summary>
         /// Creates string representation from one dimensional vector.
         /// </summary>
