@@ -199,40 +199,49 @@ namespace UnitTestsProject
         [TestMethod]
         public void CalculateSpeedOfLearningTest()
         {
-            var parameters = GetDefaultParams();
-
-            parameters.setInputDimensions(new int[] { 32, 32 });
-            parameters.setColumnDimensions(new int[] { 64, 64 });
-            parameters.setNumActiveColumnsPerInhArea(0.02 * 64 * 64);
-            var sp = new SpatialPooler();
-            var mem = new Connections();
-            parameters.apply(mem);
-            sp.init(mem);
-            int[] activeArray = new int[64 * 64];
-
-            int[] inputVector = ArrayUtils.ReadCsvFileTest("Testfiles\\digit8_binary_32bit.txt").ToArray();
-
-            int[] oldArray = new int[0];
-
-            for (int i = 0; i < 10; i++)
+            using (StreamWriter stream = new StreamWriter("performance.txt"))
             {
-                //Debug.WriteLine("This is Iteration number: " + i);
-                sp.compute(mem, inputVector, activeArray, true);
+                var sw = new Stopwatch();
 
-                var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
-                var strActiveArray = Helpers.StringifyVector(activeArray);
-                Debug.WriteLine("Output for Iteration " + i + ": " + strActiveArray);
-                var distance = MathHelpers.GetHammingDistance(oldArray, activeCols);
-                var str = Helpers.StringifyVector(activeCols);
+                var parameters = GetDefaultParams();
 
-                Debug.WriteLine($"{distance} - {str}");
+                parameters.setInputDimensions(new int[] { 32, 32 });
+                parameters.setColumnDimensions(new int[] { 64, 64 });
+                parameters.setNumActiveColumnsPerInhArea(0.02 * 64 * 64);
+                var sp = new SpatialPooler();
+                var mem = new Connections();
+                parameters.apply(mem);
 
-                oldArray = activeCols;
+                sw.Start();
+                sp.init(mem);
+                sw.Stop();
 
-                //Debug.WriteLine("End of Iteration number " + i + "*********************************************************************************************************************************************************************************************************************************");
-                //Debug.WriteLine("\n");
+                stream.Write($"in=32x32, col=64x64 \tInit execution time={(double)sw.ElapsedMilliseconds / (double)1000} sec.");
+
+                int[] activeArray = new int[64 * 64];
+
+                int[] inputVector = ArrayUtils.ReadCsvFileTest("TestFiles\\digit8_binary_32bit.txt").ToArray();
+
+                int[] oldArray = new int[0];
+
+                sw.Restart();
+                int iterations = 100;
+                for (int i = 0; i < iterations; i++)
+                {
+                    sp.compute(mem, inputVector, activeArray, true);
+
+                    var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
+                    var distance = MathHelpers.GetHammingDistance(oldArray, activeCols);
+                    var str = Helpers.StringifyVector(activeCols);
+
+                    Debug.WriteLine($"{distance} - {str}");
+
+                    oldArray = activeCols;
+                }
+
+                sw.Stop();
+                stream.WriteLine($"Compute execution time per iteration ={(double)sw.ElapsedMilliseconds / (double)1000 / iterations} sec. Compute execution time={(double)sw.ElapsedMilliseconds / (double)1000} sec.");
             }
-
         }
         
         [TestMethod]
