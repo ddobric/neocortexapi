@@ -43,6 +43,40 @@ namespace UnitTestsProject
 
         }
 
+        /// <summary>
+        /// Creates data which shows how columns are connected to sensory input.
+        /// </summary>
+        [TestMethod]
+        public void CollSynapsesToInput()
+        {
+            var parameters = GetDefaultParams();
+
+            parameters.setInputDimensions(new int[] { 32 });
+            parameters.setColumnDimensions(new int[] { 128 });
+            parameters.setNumActiveColumnsPerInhArea(0.02 * 128);
+
+            var sp = new SpatialPooler();
+
+            var mem = new Connections();
+            parameters.apply(mem);
+            sp.init(mem);
+
+            int[] activeArray = new int[128];
+
+            int[] inputVector = Helpers.GetRandomVector(32, parameters.Get<Random>(KEY.RANDOM));
+
+            for (int i = 0; i < 100; i++)
+            {
+                sp.compute(mem, inputVector, activeArray, true);
+
+                var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
+
+                var str = Helpers.StringifyVector(activeCols);
+
+                Debug.WriteLine(str);
+            }
+
+        }
 
         /// <summary>
         /// Corresponds to git\nupic\examples\sp\sp_tutorial.py

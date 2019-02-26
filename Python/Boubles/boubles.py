@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 if len(sys.argv) <= 2:
     print("WARNING: Start with argumnet. I.E.: 'python bubles.py title, data1, .\dataFile1.txt, data2, .\dataFile2.txt'")
     print("'python bubbles.py <title> <Number of Points on X>, <name of data> <data file1>,.., <name of data> <data file N>")
-    sys.argv = "./boubles.py", "graph1", "data1", "./Boubles/synapses1.txt"
+    sys.argv = "./boubles.py", "graph1", "data1", "./Boubles/synapses.txt"
 
 print(sys.argv)
 
@@ -33,7 +33,7 @@ for x in range(2, len(sys.argv)):
 bubbles_mpl = plt.figure()
 
 delimiter = ","
-bubleSize = 1
+bubleSize = 10
 
 yScale = 1
 i = 0
@@ -41,7 +41,7 @@ for f in data:
     fileName = f[1]
     lines = open(fileName, 'r')
 
-    colors = ['blue','green', 'red']
+    colors = ['blue','green', 'red', 'black']
 
     for line in lines:
 
@@ -49,17 +49,19 @@ for f in data:
             numbers = []
             tokens = line.split(delimiter)
             for token in tokens:
-                numbers.append(float(token))
+                if( token.strip()):
+                    numbers.append(float(token))
             
-            #plt.annotate("col=%i", xy=(len(numbers),yScale*i + 4.4))
+            y = 0 + yScale * i
+            #plt.annotate("%01d" % (i-1), xy=(-25, y))
             yVals = np.empty(len(numbers))
-            yVals.fill(0 + yScale)   
+            yVals.fill(y)   
 
             boubleSizes = []
             boubleSizes = np.empty(len(numbers))
             boubleSizes.fill(bubleSize)   
 
-            clr = [colors[i] for num in numbers]
+            clr = [colors[i%4] for num in numbers]
 
             plt.scatter(numbers,yVals, s=boubleSizes, c= clr)
             i=i+1
