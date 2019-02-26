@@ -2,12 +2,9 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 //import * as Plotly from 'plotly.js';
 import * as Plotlyjs from 'plotly.js/dist/plotly';
 import { neoCortexUtils } from '../neocortexutils';
-import { color, area } from 'd3';
 import { environment as env } from "../environments/environment";
 import { NotificationsService } from 'angular2-notifications';
 import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, NeocortexSettings, InputModel, CellId } from '../neocortexmodel';
-import { last } from '@angular/router/src/utils/collection';
-import { modelGroupProvider } from '@angular/forms/src/directives/ng_model_group';
 
 
 @Component({
@@ -18,7 +15,6 @@ import { modelGroupProvider } from '@angular/forms/src/directives/ng_model_group
 export class AinetComponent implements OnInit, AfterViewInit {
 
   public model: NeoCortexModel;
-
   xNeurons: Array<number> = [];
   yNeurons: Array<number> = [];
   zNeurons: Array<number> = [];
@@ -39,6 +35,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
   miniColumnXDimension: any = 0;
   miniColumnZDimension: any = 0;
   newOverlapValue: any = 0;
+  mapData: any;
 
   constructor(private _service: NotificationsService) {
 
@@ -48,8 +45,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
+    this.model = neoCortexUtils.createModel([0, 0, 0, 0, 1, 1, 1, 2, 2, 3], [10, 1], 6);
 
-    this.model = neoCortexUtils.createModel([0, 0, 0, 0, 1, 1, 1, 2, 2, 3], [10, 1], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
+   // this.model = neoCortexUtils.createModel([0, 0, 0, 1,2,1], [10, 3], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
     this.fillChart(this.model);
     // this.model = neoCortexUtils.createModel([0, 0, 0, 0, 1, 1, 1, 2, 2, 3], [10, 1], 6);
     this.generateColoursFromOverlap(this.model);
@@ -177,17 +175,24 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
 
   fillChart(model: NeoCortexModel) {
-
     let areaIndx: any;
     let lastLevel = 0;
     let levelCnt = 0;
     let xOffset = 0;
+    let x: number;
+    let y: number;
+    let z: number;
+    let xFactor = 15;
+    let yFactor = 5;
 
     for (areaIndx = 0; areaIndx < model.areas.length; areaIndx++) {
 
-      var areaXWidth = env.cellXRatio * model.areas[areaIndx].minicolumns.length + env.areaXOffset;
+  /*     var areaXWidth = env.cellXRatio * model.areas[areaIndx].minicolumns.length + env.areaXOffset;
       var areaZWidth = env.cellZRatio * model.areas[areaIndx].minicolumns[0].length + env.areaZOffset;
-      var areaYWidth = env.cellYRatio * model.areas[areaIndx].minicolumns[0][0].cells.length + env.areaYOffset;
+      var areaYWidth = env.cellYRatio * model.areas[areaIndx].minicolumns[0][0].cells.length + env.areaYOffset; */
+      var areaXWidth = model.areas[areaIndx].minicolumns.length + env.areaXOffset;
+      var areaZWidth =  model.areas[areaIndx].minicolumns[0].length + env.areaZOffset;
+      var areaYWidth =  model.areas[areaIndx].minicolumns[0][0].cells.length + env.areaYOffset;
 
       if (model.areas[areaIndx].level != lastLevel) {
         levelCnt++;
@@ -197,68 +202,100 @@ export class AinetComponent implements OnInit, AfterViewInit {
       else
         xOffset += areaXWidth;
 
+      /* if(model.areas[areaIndx].level == 0){
+        xOffset = 0;
+      } */
+
+      /* let a = model.areas[areaIndx].minicolumns.length;
+
+      //console.log(counts);
+      x = xFactor * areaIndx;
+      y = 5 * areaIndx;
+      y = model.areas[areaIndx].level * y;
+      //z = 3*areaIndx;
+      if (model.areas[areaIndx].level == 0) {
+        y = 0;
+      }
+      if (model.areas[areaIndx].level > 0) {
+        x = 0;
+        if (model.areas[areaIndx].level == 1) {
+          x = ((a / 2) + ((xFactor - a)/2));
+
+        }
+        
+      } */
+
+    
+
+
+
 
       for (let i = 0; i < model.areas[areaIndx].minicolumns.length; i++) {
         for (let j = 0; j < model.areas[areaIndx].minicolumns[i].length; j++) {
           for (let cellIndx = 0; cellIndx < model.areas[areaIndx].minicolumns[i][j].cells.length; cellIndx++) {
+
             this.overlap.push(model.areas[areaIndx].minicolumns[i][j].overlap);
 
-            // this.permanence.push(model.areas[areaIndx].minicolumns[i][j].cells[cellIndx].preSynapses[cellIndx].permanence);
+            //this.xNeurons.push(i * env.cellXRatio + xOffset);
             this.xNeurons.push(i * env.cellXRatio + xOffset);
             this.yNeurons.push(areaYWidth * model.areas[areaIndx].level + cellIndx * env.cellYRatio);
             this.zNeurons.push(areaZWidth * j);
 
+            /* this.xNeurons.push(i + x);
+            this.yNeurons.push(cellIndx + y);
+            this.zNeurons.push(j); */
+
+
           }
         }
       }
+
     }
-  
-    for (let dummyValue = 0; dummyValue < model.synapses.length; dummyValue++) {
-      this.permanence.push(null);
-    }
+
+
     for (let readPerma = 0; readPerma < model.synapses.length; readPerma++) {
-      let index = model.synapses[readPerma].preSynaptic.Y + model.synapses[readPerma].preSynaptic.Z;
-/* 
-      this.permanence.splice(index, 0, model.synapses[readPerma].permanence);
-      this.permanence.splice(index+1, 0, model.synapses[readPerma].permanence); */
-      this.permanence[index] = model.synapses[readPerma].permanence;
-      this.permanence[index+1] = model.synapses[readPerma].permanence;
-      
-    
-      this.xSynapse.push(model.synapses[readPerma].preSynaptic.X);
-      this.xSynapse.push(model.synapses[readPerma].postSynaptic.X);
-      this.xSynapse.push(null);
+      for (let out = 0; out < model.synapses[readPerma].preSynaptic.outgoingSynapses.length; out++) {
+        for (let ing = 0; ing < model.synapses[readPerma].postSynaptic.incomingSynapses.length; ing++) {
 
-      this.ySynapse.push(model.synapses[readPerma].preSynaptic.Y);
-      this.ySynapse.push(model.synapses[readPerma].postSynaptic.Y);
-      this.ySynapse.push(null);
+          let index = model.synapses[readPerma].preSynaptic.Layer + model.synapses[readPerma].preSynaptic.Z;
+          this.permanence[index] = model.synapses[readPerma].permanence;
+          this.permanence[index + 1] = model.synapses[readPerma].permanence;
 
-      this.zSynapse.push(model.synapses[readPerma].preSynaptic.Z);
-      this.zSynapse.push(model.synapses[readPerma].postSynaptic.Z);
-      this.zSynapse.push(null);
+          this.xSynapse.push(model.synapses[readPerma].preSynaptic.outgoingSynapses[out].preSynaptic.X);
+          this.xSynapse.push(model.synapses[readPerma].postSynaptic.incomingSynapses[ing].postSynaptic.X);
+          this.xSynapse.push(null);
+
+          this.ySynapse.push(model.synapses[readPerma].preSynaptic.outgoingSynapses[out].preSynaptic.Layer);
+          this.ySynapse.push(model.synapses[readPerma].postSynaptic.incomingSynapses[ing].postSynaptic.Layer);
+          this.ySynapse.push(null);
+
+          this.zSynapse.push(model.synapses[readPerma].preSynaptic.outgoingSynapses[out].preSynaptic.Z);
+          this.zSynapse.push(model.synapses[readPerma].postSynaptic.incomingSynapses[ing].postSynaptic.Z);
+          this.zSynapse.push(null);
+
+        }
+      }
+
     }
-    console.log(this.permanence);
+    //console.log(this.permanence);
     /*  console.log(this.overlap, "overlap Array");
      console.log(this.permanence, "permanence"); */
 
 
-    /*  console.log(this.xSynapse, "X Synaps");
-     console.log(this.ySynapse, "y Synaps");
-     console.log(this.zSynapse, "z Synaps");
- 
- 
- 
-     
-         console.log(this.xNeurons, "X Neurons");
-         console.log(this.yNeurons, "Y Neurons");
-         console.log(this.zNeurons, "Z Neurons");  */
+    console.log(this.xSynapse, "X Synaps");
+    console.log(this.ySynapse, "y Synaps");
+    console.log(this.zSynapse, "z Synaps");
+
+
+    /*
+        
+            console.log(this.xNeurons, "X Neurons");
+            console.log(this.yNeurons, "Y Neurons");
+            console.log(this.zNeurons, "Z Neurons");  */
     //console.log(this.permanence, "permanence");
-  }
-
-  generateSynapses() {
-
 
   }
+
 
   displayError() {
 
@@ -288,14 +325,14 @@ export class AinetComponent implements OnInit, AfterViewInit {
           area: 0,
           preCell:
           {
-            cellX: 13,
-            cellY: 0,
+            cellX: 0,
+            cellY: 3,
             cellZ: 0,
           },
           postCell: {
-            cellX: 3,
-            cellY: 7,
-            cellZ: 0,
+            cellX: 10,
+            cellY: 5,
+            cellZ: 3,
           },
           permanence: 1
         }
@@ -323,7 +360,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
   }
 
   updatePermanenceOfSynaps(perms: any) {
-     console.log(this.permanence, "former");
+    console.log(this.permanence, "former");
     /*  this.xNeurons = [];
      this.yNeurons = [];
      this.zNeurons = [];
@@ -333,7 +370,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     /*  this.xSynapse = [];
      this.ySynapse = [];
      this.zSynapse = []; */
-   // this.permanence = [];
+    // this.permanence = [];
     this.synapseColours = [];
 
 
@@ -341,22 +378,15 @@ export class AinetComponent implements OnInit, AfterViewInit {
   }
 
   private getSynapse(preCell: Cell, postCell: Cell) {
-    let synapseIndex: number = 0;
 
-    var cellMinColl = this.model.areas[preCell.id.area].minicolumns[preCell.X][preCell.Y];
-   // cellMinColl.cells[preCell.Z].outgoingSynapces
+    if (preCell.outgoingSynapses == null && postCell.outgoingSynapses == null) {
+      console.log("Synapse does not exisits. New Synapse will be Created");
+    }
+    if (this.model.areas[0].minicolumns[preCell.X][preCell.Z].cells[preCell.Layer] != null) {
 
-
-    for (let synapIndex = 0; synapIndex < this.model.synapses.length; synapIndex++) {
-
-  
-
-        // console.log("True", synapIndex);
-        synapseIndex = synapseIndex + synapIndex;
+    }
 
 
-      }
-    
   }
 
 
@@ -370,65 +400,60 @@ export class AinetComponent implements OnInit, AfterViewInit {
     let synapse: Synapse;
     let preCell0: Cell;
     let postCell0: Cell;
+    let preCell: Cell;
+    let postCell: Cell;
+    let synapse1: Synapse;
     for (let k = 0; k < permancences.length; k++) {
       var perm = permancences[k];
 
-      /*  let preMinCol = this.model.areas[perm.area].minicolumns[perm.preCell.cellX][perm.preCell.cellZ];
-       let postMinCol = this.model.areas[perm.area].minicolumns[perm.postCell.cellX][perm.postCell.cellZ];
- 
-       let preCell = preMinCol.cells[perm.preCell.cellY];
-       let postCell = postMinCol.cells[perm.postCell.cellY];
-  */
-      preCell0 = new Cell(null, null, null, null, perm.preCell.cellX, perm.preCell.cellY, perm.preCell.cellZ, null, null);
-      postCell0 = new Cell(null, null, null, null, perm.postCell.cellX, perm.postCell.cellY, perm.postCell.cellZ,null, null);
+      let preMinCol = this.model.areas[perm.area].minicolumns[perm.preCell.cellX][perm.preCell.cellZ];
+      let postMinCol = this.model.areas[perm.area].minicolumns[perm.postCell.cellX][perm.postCell.cellZ];
+
+      preCell = preMinCol.cells[perm.preCell.cellY - 1];
+      postCell = postMinCol.cells[perm.postCell.cellY - 1];
+
+      preCell0 = new Cell(null, null, null, perm.preCell.cellX, perm.preCell.cellY, perm.preCell.cellZ, null, null);
+      postCell0 = new Cell(null, null, null, perm.postCell.cellX, perm.postCell.cellY, perm.postCell.cellZ, null, null);
       /* 
             console.log(preCell0, "pre");
             console.log(postCell0, "post"); */
       synapse = new Synapse(null, perm.permanence, preCell0, postCell0);
+      synapse1 = new Synapse(null, perm.permanence, preCell, postCell);
+      this.getSynapse(preCell0, postCell0);
     }
-
-    let synapseIndex: number = 0;
-    for (let synapIndex = 0; synapIndex < this.model.synapses.length; synapIndex++) {
-
-      if (this.model.synapses[synapIndex].preSynaptic.X == preCell0.X &&
-        this.model.synapses[synapIndex].postSynaptic.X == postCell0.X &&
-        this.model.synapses[synapIndex].preSynaptic.Y == preCell0.Y &&
-        this.model.synapses[synapIndex].postSynaptic.Y == postCell0.Y &&
-        this.model.synapses[synapIndex].preSynaptic.Z == preCell0.Z &&
-        this.model.synapses[synapIndex].postSynaptic.Z == postCell0.Z
-      ) {
-
-        // console.log("True", synapIndex);
-        synapseIndex = synapseIndex + synapIndex;
+    if (preCell.outgoingSynapses != null) {
+      preCell.outgoingSynapses[0].permanence = 1;
 
 
-      }
 
     }
+    /*
+        let synapseIndex: number = 0;
+    
+         
+        for (let synapIndex = 0; synapIndex < this.model.synapses.length; synapIndex++) {
+    
+          if (this.model.synapses[synapIndex].preSynaptic.X == preCell0.X &&
+            this.model.synapses[synapIndex].postSynaptic.X == postCell0.X &&
+            this.model.synapses[synapIndex].preSynaptic.Y == preCell0.Y &&
+            this.model.synapses[synapIndex].postSynaptic.Y == postCell0.Y &&
+            this.model.synapses[synapIndex].preSynaptic.Z == preCell0.Z &&
+            this.model.synapses[synapIndex].postSynaptic.Z == postCell0.Z
+          ) {
+            synapseIndex = synapseIndex + synapIndex;
+          }
+    
+        }
+    
+        this.model.synapses[synapseIndex] = synapse;
+        console.log(this.permanence, "ist");
+    
+        for (let readPerma = 0; readPerma < this.model.synapses.length; readPerma++) {
+          let index = this.model.synapses[readPerma].preSynaptic.Y + this.model.synapses[readPerma].preSynaptic.Z;
+          this.permanence[index] = this.model.synapses[readPerma].permanence;
+          this.permanence[index + 1] = this.model.synapses[readPerma].permanence;
+        } */
 
-    this.model.synapses[synapseIndex] = synapse;
-    console.log(this.permanence, "ist");
-
-    for (let readPerma = 0; readPerma < this.model.synapses.length; readPerma++) {
-      let index = this.model.synapses[readPerma].preSynaptic.Y + this.model.synapses[readPerma].preSynaptic.Z;
-
-      /* this.permanence.splice(index, 0, this.model.synapses[readPerma].permanence);
-      this.permanence.splice(index+1, 0, this.model.synapses[readPerma].permanence); */
-
-      this.permanence[index] = this.model.synapses[readPerma].permanence;
-      this.permanence[index+1] = this.model.synapses[readPerma].permanence;
-      //this.permanence.push(null);
-
-    }
-    //this.fillChart(this.model);
-
-    //this.model.synapses.splice(3, 1, synapse);
-    // find synapse in model.synapses (push/update)
-
-    //console.log(this.permanence, "Be");
-
-
-    //this.generateColoursFromOverlap(this.model);
     this.generateColoursForSynPermanences(this.model);
     console.log(this.permanence, "last");
     const updateNeurons = {

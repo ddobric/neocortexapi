@@ -11,7 +11,7 @@ export const environment = {
     cellXRatio : 1,
     cellYRatio : 1,
     cellZRatio : 1,
-    areaXOffset : 5,
+    areaXOffset : 2,
     areaYOffset : 5,
     areaZOffset : 5,
 
