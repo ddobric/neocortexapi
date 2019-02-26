@@ -2799,6 +2799,33 @@ namespace NeoCortexApi.Utility
             }
 
             return true;
-        } 
+        }
+
+        public static int[] flipBit(int[] oriArr, Double bitPerc)
+        {
+            int[] result = new List<int>(oriArr).ToArray();
+            List<int> arr = new List<int>();
+            Random random = new Random();
+            int num = 0;
+            int numOfFlipBit = (int)(bitPerc * oriArr.Length);
+            for (int i = 0; i < numOfFlipBit; i++)
+            {
+                do
+                {
+                    num = random.Next(0, (oriArr.Length - 1));
+                }
+                while (arr.Contains(num));
+                arr.Add(num);
+                if (result[num] == 1)
+                {
+                    result[num] = 0;
+                }
+                else
+                {
+                    result[num] = 1;
+                }
+            }
+            return result;
+        }
     }
 }
