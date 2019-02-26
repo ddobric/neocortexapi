@@ -219,7 +219,7 @@ namespace UnitTestsProject
                 str = strActiveCols;
                 //Debug.WriteLine("Overlaps: " + strOverlaps);
                 //Debug.WriteLine("Inhibitions: " + strInhibitions);
-                Debug.WriteLine("Active Cols: " + strActiveCols);
+                Debug.WriteLine($"{i} - {strActiveCols}");
             }
             //Debug.WriteLine("Last Iteration: " + iteration);
             var strOutput = Helpers.StringifyVector(activeArray);
