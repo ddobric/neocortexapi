@@ -253,7 +253,8 @@ namespace UnitTestsProject
 
                 stream.Write($"in=32x32, col=64x64 \tInit execution time={(double)sw.ElapsedMilliseconds / (double)1000} sec.");
 
-                int[] activeArray = new int[64 * 64];
+                int actiColLen = 64 * 64;
+                int[] activeArray = new int[actiColLen];
 
                 int[] inputVector = ArrayUtils.ReadCsvFileTest("TestFiles\\digit8_binary_32bit.txt").ToArray();
                 //int[] newInputVector = ArrayUtils.flipBit(inputVector,0.9);
@@ -263,13 +264,19 @@ namespace UnitTestsProject
                 int[] oldArray = new int[activeArray.Length];
                 for (int i = 0; i < iterations; i++)
                 {
-                    var distance = MathHelpers.GetHammingDistance(oldArray, activeArray);
                     sp.compute(mem, inputVector, activeArray, true);
+
                     var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
                     //var distance = sp.getRobustness(0, oldArray, activeArray);
+                    var distance = MathHelpers.GetHammingDistance(oldArray, activeArray);
+
                     var str = Helpers.StringifyVector(activeCols);
+
                     Debug.WriteLine($"{distance} - {str}");
+
                     oldArray = activeArray;
+
+                    activeArray = new int[actiColLen];
                 }
 
                 sw.Stop();
