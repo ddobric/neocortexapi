@@ -164,7 +164,8 @@ export class Cell {
 
 export class Synapse {
 
-  public id: number;
+  public preSynapseAreaIndex: number;
+  public postSynapseAreaIndex: number;
 
   public preSynaptic: Cell;
 
@@ -172,11 +173,12 @@ export class Synapse {
 
   public permanence: number;
 
-  constructor(id: number, permanence: number = 0, preSynaptic: Cell, postSynaptic: Cell) {
+  constructor(preSynapseAreaIndex: number,postSynapseAreaIndex:number, permanence: number = 0, preSynaptic: Cell, postSynaptic: Cell) {
     this.preSynaptic = preSynaptic;
     this.postSynaptic = postSynaptic;
     this.permanence = permanence;
-    this.id = id;
+    this.preSynapseAreaIndex = preSynapseAreaIndex;
+    this.postSynapseAreaIndex = postSynapseAreaIndex;
   }
 }
 
