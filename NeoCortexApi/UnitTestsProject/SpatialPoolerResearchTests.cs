@@ -274,9 +274,9 @@ namespace UnitTestsProject
 
                     Debug.WriteLine($"{distance} - {str}");
 
-                    oldArray = activeArray;
+                    oldArray = new int[actiColLen];
 
-                    activeArray = new int[actiColLen];
+                    activeArray.CopyTo(oldArray, 0);
                 }
 
                 sw.Stop();
