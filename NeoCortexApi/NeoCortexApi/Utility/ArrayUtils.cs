@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using System.Runtime.InteropServices;
-
+using System.IO;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace NeoCortexApi.Utility
 {
-
     /**
      * Utilities to match some of the functionality found in Python's Numpy.
      * @author David Ray
@@ -807,6 +807,23 @@ namespace NeoCortexApi.Utility
                 retVal[i] = Math.Min(arr1[i], arr2[i]);
             }
             return retVal;
+        }
+
+        public static List<int> ReadCsvFileTest(String path)
+        {
+            string fileContent = File.ReadAllText(path);
+            string[] integerStrings = fileContent.Split(new char[] { '\r','\n' }, StringSplitOptions.RemoveEmptyEntries);
+            List<int> intList = new List<int>();
+            for (int n = 0; n < integerStrings.Length; n++)
+            {
+                String s = integerStrings[n];
+                char[] sub = s.ToCharArray();
+                for (int j = 0; j < sub.Length; j++)
+                {
+                    intList.Add(int.Parse(sub[j].ToString()));
+                }
+            }
+            return intList;
         }
 
         /**
@@ -2782,6 +2799,33 @@ namespace NeoCortexApi.Utility
             }
 
             return true;
+        }
+
+        public static int[] flipBit(int[] oriArr, Double bitPerc)
+        {
+            int[] result = new List<int>(oriArr).ToArray();
+            List<int> arr = new List<int>();
+            Random random = new Random();
+            int num = 0;
+            int numOfFlipBit = (int)(bitPerc * oriArr.Length);
+            for (int i = 0; i < numOfFlipBit; i++)
+            {
+                do
+                {
+                    num = random.Next(0, (oriArr.Length - 1));
+                }
+                while (arr.Contains(num));
+                arr.Add(num);
+                if (result[num] == 1)
+                {
+                    result[num] = 0;
+                }
+                else
+                {
+                    result[num] = 1;
+                }
+            }
+            return result;
         }
     }
 }

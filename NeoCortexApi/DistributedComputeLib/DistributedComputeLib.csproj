@@ -4,4 +4,10 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="ImageBinarizer" Version="1.0.0" />
+    <PackageReference Include="Microsoft.Office.Excel" Version="14.0.4760.1000" />
+    <PackageReference Include="Microsoft.Office.Interop.Excel" Version="15.0.4795.1000" />
+  </ItemGroup>
+
 </Project>

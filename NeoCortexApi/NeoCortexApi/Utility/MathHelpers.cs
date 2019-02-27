@@ -18,7 +18,6 @@ namespace NeoCortexApi.Utility
 
             double[] arr1 = ArrayUtils.toDoubleArray(originArray);
             double[] arr2 = ArrayUtils.toDoubleArray(comparingArray);
-
             return GetHammingDistance(new double[][] { arr1 }, new double[][] { arr2 })[0];
         }
 
