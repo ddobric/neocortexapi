@@ -120,7 +120,7 @@ export class Minicolumn {
 
     for (let layer = 0; layer < settings.numLayers; layer++) {
 
-      let cell: Cell = new Cell(settings, areaId, miniColId, X, layer, Z, [], []);     
+      let cell: Cell = new Cell(0, X, layer, Z, [], []);     
       
       this.cells.push(cell);
     }
@@ -137,8 +137,8 @@ export class Cell {
   public X: number;
   public Layer: number;
   public Z: number;
+  areaIndex: number;
 
-  public id: CellId;
   
   incomingSynapses: Array<Synapse> = new Array();
   outgoingSynapses: Array<Synapse> = new Array();
@@ -150,11 +150,11 @@ export class Cell {
    * @param posY 
    * @param posZ 
    */
-  constructor(settings: NeocortexSettings, areaId: number, miniColId: number[], X: number , layer: number,  Z: number, incomingSynap :Array<Synapse>, outgoingSynap : Array<Synapse>) {
+  constructor( areaIndex: number, X: number , layer: number,  Z: number, incomingSynap :Array<Synapse>, outgoingSynap : Array<Synapse>) {
     this.Layer = layer;
     this.X = X;
     this.Z = Z; 
-    this.id = { area: areaId, minicolumn: miniColId, layer: layer };
+    this.areaIndex = areaIndex;
     this.incomingSynapses = incomingSynap;
     this.outgoingSynapses = outgoingSynap;
 
@@ -164,21 +164,17 @@ export class Cell {
 
 export class Synapse {
 
-  public preSynapseAreaIndex: number;
-  public postSynapseAreaIndex: number;
-
   public preSynaptic: Cell;
 
   public postSynaptic: Cell;
 
   public permanence: number;
 
-  constructor(preSynapseAreaIndex: number,postSynapseAreaIndex:number, permanence: number = 0, preSynaptic: Cell, postSynaptic: Cell) {
+  constructor( permanence: number = 0, preSynaptic: Cell, postSynaptic: Cell) {
     this.preSynaptic = preSynaptic;
     this.postSynaptic = postSynaptic;
     this.permanence = permanence;
-    this.preSynapseAreaIndex = preSynapseAreaIndex;
-    this.postSynapseAreaIndex = postSynapseAreaIndex;
+
   }
 }
 
@@ -199,7 +195,7 @@ export class InputModel {
       for (var dim = 0; dim < cellDims.length; dim++) {
         let row: Array<Cell> = new Array();
         for (var i = 0; i < cellDims[dim]; i++) {
-          row.push(new Cell(settings, this.id, [dim, i], null, null, null, null, null));
+          row.push(new Cell(null,null, null, null, null, null));
         }
 
       }
@@ -211,7 +207,7 @@ export class InputModel {
         for (var j = 0; j < cellDims[1]; j++) {
 
           //row.push(new Cell(settings, 0, [i, j], 0));
-          row.push(new Cell(settings, this.id, [dim, j], null, null, null, null, null));
+          row.push(new Cell( null, null, null,null, null, null));
         }
 
         this.cells.push(row);

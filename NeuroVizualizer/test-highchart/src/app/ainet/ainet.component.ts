@@ -251,28 +251,28 @@ export class AinetComponent implements OnInit, AfterViewInit {
     for (let i = 0; i < this.model.synapses.length; i++) {
       for (let out = 0; out < this.model.synapses[i].preSynaptic.outgoingSynapses.length; out++) {
         for (let ing = 0; ing < this.model.synapses[i].postSynaptic.incomingSynapses.length; ing++) {
-
-          let xPre = this.xCoordinatesAllAreas[this.model.synapses[i].preSynapseAreaIndex][this.model.synapses[i].preSynaptic.outgoingSynapses[out].preSynaptic.X];
-          this.xSynapse.push(xPre);
           this.permanence.push(this.model.synapses[i].permanence);
-          let xPost = this.xCoordinatesAllAreas[this.model.synapses[i].postSynapseAreaIndex][this.model.synapses[i].postSynaptic.incomingSynapses[ing].postSynaptic.X];
+          this.permanence.push(this.model.synapses[i].permanence);
+          this.permanence.push(this.model.synapses[i].permanence);
+
+           let xPre = this.xCoordinatesAllAreas[this.model.synapses[i].preSynaptic.areaIndex][this.model.synapses[i].preSynaptic.outgoingSynapses[out].preSynaptic.X];
+          this.xSynapse.push(xPre);
+          let xPost = this.xCoordinatesAllAreas[this.model.synapses[i].postSynaptic.areaIndex][this.model.synapses[i].postSynaptic.incomingSynapses[ing].postSynaptic.X];
           this.xSynapse.push(xPost);
           this.xSynapse.push(null);
 
-          let yPre = this.yCoordinatesAllAreas[this.model.synapses[i].preSynapseAreaIndex][this.model.synapses[i].preSynaptic.outgoingSynapses[out].preSynaptic.Layer];
+          let yPre = this.yCoordinatesAllAreas[this.model.synapses[i].preSynaptic.areaIndex][this.model.synapses[i].preSynaptic.outgoingSynapses[out].preSynaptic.Layer];
           this.ySynapse.push(yPre);
-          this.permanence.push(this.model.synapses[i].permanence);
-          let yPost = this.yCoordinatesAllAreas[this.model.synapses[i].postSynapseAreaIndex][this.model.synapses[i].postSynaptic.incomingSynapses[ing].postSynaptic.Layer];
+          let yPost = this.yCoordinatesAllAreas[this.model.synapses[i].postSynaptic.areaIndex][this.model.synapses[i].postSynaptic.incomingSynapses[ing].postSynaptic.Layer];
           this.ySynapse.push(yPost);
           this.ySynapse.push(null);
 
-          let zPre = this.zCoordinatesAllAreas[this.model.synapses[i].preSynapseAreaIndex][this.model.synapses[i].preSynaptic.outgoingSynapses[out].preSynaptic.Z];
+          let zPre = this.zCoordinatesAllAreas[this.model.synapses[i].preSynaptic.areaIndex][this.model.synapses[i].preSynaptic.outgoingSynapses[out].preSynaptic.Z];
           this.zSynapse.push(zPre);
-          this.permanence.push(this.model.synapses[i].permanence);
-          let zPost = this.zCoordinatesAllAreas[this.model.synapses[i].postSynapseAreaIndex][this.model.synapses[i].postSynaptic.incomingSynapses[ing].postSynaptic.Z];
+          let zPost = this.zCoordinatesAllAreas[this.model.synapses[i].postSynaptic.areaIndex][this.model.synapses[i].postSynaptic.incomingSynapses[ing].postSynaptic.Z];
           this.zSynapse.push(zPost);
           this.zSynapse.push(null);
-
+ 
         }
       }
     }
@@ -395,13 +395,14 @@ export class AinetComponent implements OnInit, AfterViewInit {
       preCell = preMinCol.cells[perm.preCell.cellY];
       postCell = postMinCol.cells[perm.postCell.cellY];
 
-      preCell0 = new Cell(null, null, null, perm.preCell.cellX, perm.preCell.cellY, perm.preCell.cellZ, null, null);
-      postCell0 = new Cell(null, null, null, perm.postCell.cellX, perm.postCell.cellY, perm.postCell.cellZ, null, null);
+      preCell0 = new Cell(0, perm.preCell.cellX, perm.preCell.cellY, perm.preCell.cellZ, null, null);
+      postCell0 = new Cell(0,perm.postCell.cellX, perm.postCell.cellY, perm.postCell.cellZ, null, null);
       /* 
             console.log(preCell0, "pre");
             console.log(postCell0, "post"); */
-      synapse = new Synapse(null, null, perm.permanence, preCell0, postCell0);
-      synapse1 = new Synapse(0, 0, perm.permanence, preCell, postCell);
+      synapse = new Synapse( perm.permanence, preCell0, postCell0);
+      synapse1 = new Synapse(perm.permanence, preCell, postCell);
+      this.getSynapse(preCell, postCell);
       this.getSynapse(preCell0, postCell0);
     }
     if (preCell.outgoingSynapses != null) {
