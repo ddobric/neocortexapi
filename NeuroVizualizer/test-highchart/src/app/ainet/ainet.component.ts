@@ -323,7 +323,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     );
 
   }
-  
+
   updatePermanenceOfSynaps(perms: any) {
     console.log(this.permanence, "former");
     /*  this.xNeurons = [];
@@ -452,6 +452,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     } 
     this.fillChart(this.model);
     this.generateColoursFromOverlap(this.model);
+    this.generateColoursForSynPermanences(this.model);
     const updateNeurons = {
       x: this.xNeurons,
       y: this.yNeurons,
