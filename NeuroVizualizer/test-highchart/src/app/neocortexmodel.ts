@@ -65,8 +65,8 @@ export class NeoCortexModel {
 
     for (let i = 0; i < this.synapses.length; i++) {
       const a = this.synapses[i];
-      this.areas[0].minicolumns[a.preSynaptic.X][a.preSynaptic.Z].cells[a.preSynaptic.Layer].outgoingSynapses.push(this.synapses[i]);
-      this.areas[0].minicolumns[a.postSynaptic.X][a.postSynaptic.Z].cells[a.postSynaptic.Layer].incomingSynapses.push(this.synapses[i]);
+      this.areas[a.preSynaptic.areaIndex].minicolumns[a.preSynaptic.X][a.preSynaptic.Z].cells[a.preSynaptic.Layer].outgoingSynapses.push(this.synapses[i]);
+      this.areas[a.postSynaptic.areaIndex].minicolumns[a.postSynaptic.X][a.postSynaptic.Z].cells[a.postSynaptic.Layer].incomingSynapses.push(this.synapses[i]);
     } 
   
   }
