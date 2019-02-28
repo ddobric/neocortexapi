@@ -322,7 +322,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
        ] */
       [
         {
-          preCellArea: 4,
+          preCellArea: 2,
           postCellArea: 4,
           preCell:
           {

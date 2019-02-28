@@ -44,11 +44,11 @@ export class NeoCortexModel {
     this.areas = new Array(settings.areaLevels.length);
     this.synapses = synapses;
 
-    let areaId: number;
+    let areaId: number =0;
     for (var levelIndx = 0; levelIndx < settings.areaLevels.length; levelIndx++) {
-
-      this.areas[levelIndx] = new Area(settings, areaId, settings.areaLevels[levelIndx], X, layer, Z);
       areaId = levelIndx;
+      this.areas[levelIndx] = new Area(settings, areaId, settings.areaLevels[levelIndx], X, layer, Z);
+      //areaId = levelIndx + areaId;
       // posX = posX + settings.xAreaDistance;
       // posY = posY + settings.yAreaDistance;
       // posZ = posZ + settings.zAreaDistance;
