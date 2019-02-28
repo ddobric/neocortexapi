@@ -322,8 +322,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
        ] */
       [
         {
-          preCellArea: 0,
-          postCellArea: 0,
+          preCellArea: 4,
+          postCellArea: 4,
           preCell:
           {
             cellX: 1,
@@ -360,8 +360,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.updateSynapsePermanance(perms);
   }
   private updateSynapsePermanance(permancences: any[]) {
-    let preCell: Cell;
-    let postCell: Cell;
+    let preCell;
+    let postCell;
     let perm: any;
     for (let i = 0; i < permancences.length; i++) {
       perm = permancences[i];

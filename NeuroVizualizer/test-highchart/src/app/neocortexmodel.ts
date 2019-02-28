@@ -44,11 +44,11 @@ export class NeoCortexModel {
     this.areas = new Array(settings.areaLevels.length);
     this.synapses = synapses;
 
-    let areaId: number = 0;
+    let areaId: number;
     for (var levelIndx = 0; levelIndx < settings.areaLevels.length; levelIndx++) {
 
       this.areas[levelIndx] = new Area(settings, areaId, settings.areaLevels[levelIndx], X, layer, Z);
-
+      areaId = levelIndx;
       // posX = posX + settings.xAreaDistance;
       // posY = posY + settings.yAreaDistance;
       // posZ = posZ + settings.zAreaDistance;
@@ -117,10 +117,10 @@ export class Minicolumn {
     this.overlap = overlap;
     this.id = miniColId;
     this.settings = settings;
-
+    
     for (let layer = 0; layer < settings.numLayers; layer++) {
 
-      let cell: Cell = new Cell(0, X, layer, Z, [], []);     
+      let cell: Cell = new Cell(areaId, X, layer, Z, [], []);     
       
       this.cells.push(cell);
     }
