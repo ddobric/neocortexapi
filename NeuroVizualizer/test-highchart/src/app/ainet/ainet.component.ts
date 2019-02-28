@@ -322,7 +322,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
        ] */
       [
         {
-          area: 0,
+          preCellArea: 0,
+          postCellArea: 0,
           preCell:
           {
             cellX: 1,
@@ -364,8 +365,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
     let perm: any;
     for (let i = 0; i < permancences.length; i++) {
       perm = permancences[i];
-      let preMinCol = this.model.areas[perm.area].minicolumns[perm.preCell.cellX][perm.preCell.cellZ];
-      let postMinCol = this.model.areas[perm.area].minicolumns[perm.postCell.cellX][perm.postCell.cellZ];
+      let preMinCol = this.model.areas[perm.preCellArea].minicolumns[perm.preCell.cellX][perm.preCell.cellZ];
+      let postMinCol = this.model.areas[perm.postCellArea].minicolumns[perm.postCell.cellX][perm.postCell.cellZ];
       preCell = preMinCol.cells[perm.preCell.cellY];
       postCell = postMinCol.cells[perm.postCell.cellY];
 
