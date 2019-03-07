@@ -63,8 +63,10 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   }
 
+/**
+ * createChart just plot the chart by using plotly
+ */
   createChart() {
-
     const neurons = {
       x: this.xNeurons,
       y: this.yNeurons,
@@ -179,7 +181,10 @@ export class AinetComponent implements OnInit, AfterViewInit {
   }
 
 
-
+/**
+ * Fillchart method gets the data from the model, that will be later used by the createchart method
+ * @param model 
+ */
   fillChart(model: NeoCortexModel) {
     let areaIndx: any;
     let lastLevel = 0;
@@ -243,6 +248,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   }
 
+  /**
+   * synapsesData gets the synapses coordinates to draw the synapses 
+   */
   synapsesData() {
 
     for (let i = 0; i < this.model.synapses.length; i++) {
@@ -302,24 +310,24 @@ export class AinetComponent implements OnInit, AfterViewInit {
   //update synapse permanace
   clickFunc2() {
     this.updateSynaps(
-       /*      [
-              {
-                preCellArea: 0,
-                postCellArea: 0,
-                preCell:
-                {
-                  cellX: 0,
-                  cellY: 3,
-                  cellZ: 0,
-                },
-                postCell: {
-                  cellX: 9,
-                  cellY: 0,
-                  cellZ: 0,
-                },
-                permanence: 1
-              }
-            ]  */
+      /*      [
+             {
+               preCellArea: 0,
+               postCellArea: 0,
+               preCell:
+               {
+                 cellX: 0,
+                 cellY: 3,
+                 cellZ: 0,
+               },
+               postCell: {
+                 cellX: 9,
+                 cellY: 0,
+                 cellZ: 0,
+               },
+               permanence: 1
+             }
+           ]  */
       [
         {
           preCellArea: 2,
@@ -337,7 +345,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
           },
           permanence: 1
         }
-      ] 
+      ]
     );
 
   }
@@ -358,7 +366,10 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.lookupSynapse(perms);
   }
 
-
+/**
+ * Lookup method search certain synapse and calls the further methods to update or create a new synapse
+ * @param permancences 
+ */
   private lookupSynapse(permancences: any[]) {
     let preCell: Cell;
     let postCell: Cell;
@@ -385,7 +396,12 @@ export class AinetComponent implements OnInit, AfterViewInit {
     }
 
   }
-
+/**
+ * This method updates the permanence value of an existing synapse
+ * @param permanence 
+ * @param preCell 
+ * @param postCell 
+ */
   updatePermanenceOfSynaps(permanence: number, preCell: Cell, postCell: Cell) {
     preCell.outgoingSynapses[0].permanence = permanence;
     postCell.incomingSynapses[0].permanence = permanence;
@@ -427,6 +443,13 @@ export class AinetComponent implements OnInit, AfterViewInit {
     Plotlyjs.newPlot(graphDOM, [updateNeurons, updateSynapses], this.neuralChartLayout, this.neuralChartConfig);
   }
 
+
+/**
+ * This method creates a synapse
+ * @param permanence 
+ * @param preCell 
+ * @param postCell 
+ */
   createSynapse(permanence: number, preCell: Cell, postCell: Cell) {
 
     preCell = new Cell(preCell.areaIndex, preCell.X, preCell.Layer, preCell.Z, [null], [null]);
@@ -443,9 +466,6 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.model.synapses.push(synapse);
     this.fillChart(this.model);
     this.generateColoursFromOverlap(this.model);
-    /*  this.permanence = [];
-     this.synapseColours= []; */
-    //this.synapsesData();
     this.generateColoursFromPermanences(this.model);
     const updateNeurons = {
       x: this.xNeurons,
@@ -486,88 +506,11 @@ export class AinetComponent implements OnInit, AfterViewInit {
   }
 
 
-  /*  private updateSynapsePermanance1(permancences: any[]) {
- 
-     let synapse: Synapse;
-     let preCell0: Cell;
-     let postCell0: Cell;
-     let preCell: Cell;
-     let postCell: Cell;
-     let synapse1: Synapse;
-     for (let k = 0; k < permancences.length; k++) {
-       var perm = permancences[k];
- 
-       let preMinCol = this.model.areas[perm.area].minicolumns[perm.preCell.cellX][perm.preCell.cellZ];
-       let postMinCol = this.model.areas[perm.area].minicolumns[perm.postCell.cellX][perm.postCell.cellZ];
- 
-       preCell = preMinCol.cells[perm.preCell.cellY];
-       postCell = postMinCol.cells[perm.postCell.cellY];
- 
-       preCell0 = new Cell(0, perm.preCell.cellX, perm.preCell.cellY, perm.preCell.cellZ, null, null);
-       postCell0 = new Cell(0, perm.postCell.cellX, perm.postCell.cellY, perm.postCell.cellZ, null, null);
- 
-       synapse = new Synapse(perm.permanence, preCell0, postCell0);
-       synapse1 = new Synapse(perm.permanence, preCell, postCell);
- 
-     }
-     this.getSynapse(preCell, postCell);
-     this.getSynapse(preCell0, postCell0);
- 
-     this.generateColoursFromPermanences(this.model);
-     console.log(this.permanence, "last");
-     const updateNeurons = {
-       x: this.xNeurons,
-       y: this.yNeurons,
-       z: this.zNeurons,
-       // text: this.overlap,
-       name: 'Neuron',
-       mode: 'markers',
-       marker: {
-         opacity: env.opacityOfNeuron,
-         size: env.sizeOfNeuron,
-         color: this.neuronsColours,
-         symbol: 'circle',
-       },
-       type: 'scatter3d',
-     };
- 
-     const updateSynapses = {
-       //the first point in the array will be joined with a line with the next one in the array ans so on...
-       type: 'scatter3d',
-       mode: 'lines',
-       name: 'Synapse',
-       x: this.xSynapse,
-       y: this.ySynapse,
-       z: this.zSynapse,
-       text: this.permanence,
-       opacity: env.opacityOfSynapse,
-       line: {
-         width: env.lineWidthOfSynapse,
-         color: this.synapseColours,
-       }
-     };
- 
-     let graphDOM = document.getElementById('graph');
- 
-     Plotlyjs.newPlot(graphDOM, [updateNeurons, updateSynapses], this.neuralChartLayout, this.neuralChartConfig);
-   } */
-
-  /*   private getSynapse(preCell: Cell, postCell: Cell) {
-  
-      if (preCell.outgoingSynapses == null && postCell.outgoingSynapses == null) {
-        console.log("Synapse does not exisits. New Synapse will be Created");
-      }
-      if (this.model.areas[0].minicolumns[preCell.X][preCell.Z].cells[preCell.Layer] != null) {
-  
-      }
-  
-  
-    } */
-
   //update column overlaP
   clickFunc() {
     this.updateOverlapCell(0, 0, 0, [0.5, 0.7, 1, 0.75, 0.4, 1]);
   }
+
 
   updateOverlapCell(selectAreaIndex: any, miniColumnXDimension: any, miniColumnZDimension: any, overlapArray: any[]) {
 
