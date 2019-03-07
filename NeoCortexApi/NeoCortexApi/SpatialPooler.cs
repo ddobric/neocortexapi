@@ -1195,6 +1195,55 @@ namespace NeoCortexApi
             return winners.ToArray();
         }
         */
+        public virtual int[] inhibitColumnsLocalNewApproach11(Connections c, double[] overlaps, double density)
+        {
+            List<int> winners = new List<int>();
+            // NEW INHIBITION ALGORITHM HERE.
+            // for c in columns
+            //     minLocalActivity = kthScore(neighbors(c), numActiveColumnsPerInhArea)
+            //         if overlap(c) > stimulusThreshold and
+            //             overlap(c) ≥ minLocalActivity then
+            //             activeColumns(t).append(c)
+
+            double winnerDelta = ArrayUtils.max(overlaps) / 1000.0d;
+            if (winnerDelta == 0)
+            {
+                winnerDelta = 0.001;
+            }
+
+            double[] tieBrokenOverlaps = new List<double>(overlaps).ToArray();
+
+
+            int inhibitionRadius = c.InhibitionRadius;
+
+            Parallel.ForEach(overlaps, (val, b, index) =>
+            {
+                // int column = i;
+                if ((int)index >= c.StimulusThreshold)
+                {
+                    // GETS INDEXES IN THE ARRAY FOR THE NEIGHBOURS WITHIN THE INHIBITION RADIUS.
+                    List<int> neighborhood = getColumnNeighborhood(c, (int)index, inhibitionRadius).ToList();
+
+                    // GETS THE NEIGHBOURS WITHIN THE INHI
+                    // Take overlapps of neighbors
+                    List<double> neighborhoodOverlaps = ArrayUtils.ListOfValuesByIndicies(tieBrokenOverlaps, neighborhood.ToArray()).ToList();
+
+                    // Filter neighbors with overlaps bigger than column overlap
+                    long numBigger = neighborhoodOverlaps.Count(d => d > val);
+
+                    // density will reduce radius
+                    int numActive = (int)(0.5 + density * neighborhood.Count);
+                    if (numBigger < numActive)
+                    {
+                        winners.Add((int)index);
+                        tieBrokenOverlaps[(int)index] += winnerDelta;
+                    }
+                }
+            });
+
+
+            return winners.ToArray();
+        }
 
         /**
          * Update the boost factors for all columns. The boost factors are used to
