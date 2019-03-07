@@ -305,6 +305,29 @@ export class AinetComponent implements OnInit, AfterViewInit {
     position: ["top", "right"],
     timeOut: 3000,
   };
+  
+  updateSynapses1(preCellAreaId: any, postCellAreaID: any, preCell:Cell, postCell: Cell, permanence:any ){
+
+    this.updateSynaps( [
+      {
+        preCellArea: preCellAreaId,
+        postCellArea: postCellAreaID,
+        preCell:
+        {
+          cellX: preCell[0],
+          cellY: preCell[2],
+          cellZ: preCell[4],
+        },
+        postCell: {
+          cellX: postCell[0],
+          cellY: postCell[2],
+          cellZ: postCell[4],
+        },
+        permanence: permanence
+      }
+    ]);
+  
+  }
 
 
   //update synapse permanace
@@ -350,6 +373,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   }
 
+
   updateSynaps(perms: any) {
     this.xNeurons = [];
     this.yNeurons = [];
@@ -386,6 +410,10 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
     // if (preCell.outgoingSynapses == null && postCell.incomingSynapses == null) {
     if (preCell.outgoingSynapses.length == 0 && postCell.incomingSynapses.length == 0) { // to check if the arrays are empty
+      console.log("Synapse does not exists, it will be created");
+      this.createSynapse(perm.permanence, preCell, postCell);
+    }
+    if (preCell.outgoingSynapses.length == 0 || postCell.incomingSynapses.length == 0) { // to check if one of the array is empty
       console.log("Synapse does not exists, it will be created");
       this.createSynapse(perm.permanence, preCell, postCell);
     }
