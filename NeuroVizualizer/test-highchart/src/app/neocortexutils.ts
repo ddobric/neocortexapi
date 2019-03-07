@@ -63,7 +63,23 @@ export class neoCortexUtils {
     preCell5 = new Cell(1, 2, 2, 0, [null], [outgoingSynap6]);
     postCell6 = new Cell(3, 2, 3, 0, [incomingSynap5], [null]);
 
+    let preCell7: Cell;
+    let postCell8: Cell;
+    preCell7 = new Cell(0, 0, 1, 0, [null], [null]);
+    postCell8 = new Cell(0, 0, 2, 0, [null], [null]);
+    let incomingSynap7 = new Synapse(0, preCell7, postCell8);
+    let outgoingSynap8 = new Synapse(0, preCell7, postCell8);
+    preCell7 = new Cell(0, 0, 1, 0, [null], [outgoingSynap8]);
+    postCell8 = new Cell(0, 0, 2, 0, [incomingSynap7], [null]);
 
+    let preCell9: Cell;
+    let postCell10: Cell;
+    preCell9 = new Cell(3, 0, 1, 0, [null], [null]);
+    postCell10 = new Cell(3, 0, 2, 0, [null], [null]);
+    let incomingSynap9 = new Synapse(0.80, preCell9, postCell10);
+    let outgoingSynap10 = new Synapse(0.80, preCell9, postCell10);
+    preCell9 = new Cell(3, 0, 1, 0, [null], [outgoingSynap10]);
+    postCell10 = new Cell(3, 0, 2, 0, [incomingSynap9], [null]);
 
     let inpModel: InputModel = new InputModel(sett);
 
@@ -71,8 +87,10 @@ export class neoCortexUtils {
     let synap23 = new Synapse(0.5, preCell2, postCell3);
     let synaps34 = new Synapse(0.25, preCell3, postCell4);
     let synap56 = new Synapse(0.65, preCell5, postCell6);
+    let synap78 = new Synapse(1, preCell7, postCell8);
+    let synap910 = new Synapse(0.80, preCell9, postCell10);
 
-    var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 0, 0, 0, [synaps01, synaps34, synap23, synap56]);
+    var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 0, 0, 0, [synaps01, synaps34, synap23, synap56, synap78, synap910]);
 
 
     return model;

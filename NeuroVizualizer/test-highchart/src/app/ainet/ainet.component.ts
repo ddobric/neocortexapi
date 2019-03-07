@@ -63,9 +63,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   }
 
-/**
- * createChart just plot the chart by using plotly
- */
+  /**
+   * createChart just plot the chart by using plotly
+   */
   createChart() {
     const neurons = {
       x: this.xNeurons,
@@ -181,10 +181,10 @@ export class AinetComponent implements OnInit, AfterViewInit {
   }
 
 
-/**
- * Fillchart method gets the data from the model, that will be later used by the createchart method
- * @param model 
- */
+  /**
+   * Fillchart method gets the data from the model, that will be later used by the createchart method
+   * @param model 
+   */
   fillChart(model: NeoCortexModel) {
     let areaIndx: any;
     let lastLevel = 0;
@@ -305,10 +305,10 @@ export class AinetComponent implements OnInit, AfterViewInit {
     position: ["top", "right"],
     timeOut: 3000,
   };
-  
-  updateSynapses1(preCellAreaId: any, postCellAreaID: any, preCell:Cell, postCell: Cell, permanence:any ){
 
-    this.updateSynaps( [
+  updateSynapses1(preCellAreaId: any, postCellAreaID: any, preCell: Cell, postCell: Cell, permanence: any) {
+
+    this.updateSynaps([
       {
         preCellArea: preCellAreaId,
         postCellArea: postCellAreaID,
@@ -326,7 +326,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
         permanence: permanence
       }
     ]);
-  
+
   }
 
 
@@ -390,10 +390,10 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.lookupSynapse(perms);
   }
 
-/**
- * Lookup method search certain synapse and calls the further methods to update or create a new synapse
- * @param permancences 
- */
+  /**
+   * Lookup method search certain synapse and calls the further methods to update or create a new synapse
+   * @param permancences 
+   */
   private lookupSynapse(permancences: any[]) {
     let preCell: Cell;
     let postCell: Cell;
@@ -417,19 +417,23 @@ export class AinetComponent implements OnInit, AfterViewInit {
       console.log("Synapse does not exists, it will be created");
       this.createSynapse(perm.permanence, preCell, postCell);
     }
+    if (preCell.outgoingSynapses.length != 0 && postCell.incomingSynapses.length != 0) {
+      console.log("Synapse does not exists, it will be created");
+      this.createSynapse(perm.permanence, preCell, postCell);
+    }
 
-    else if (preCell.outgoingSynapses != null && postCell.incomingSynapses != null) {
+    if (preCell.outgoingSynapses != null && postCell.incomingSynapses != null) {
       console.log("Synapse Exists, Permannence will be updated");
       this.updatePermanenceOfSynaps(perm.permanence, preCell, postCell);
     }
 
   }
-/**
- * This method updates the permanence value of an existing synapse
- * @param permanence 
- * @param preCell 
- * @param postCell 
- */
+  /**
+   * This method updates the permanence value of an existing synapse
+   * @param permanence 
+   * @param preCell 
+   * @param postCell 
+   */
   updatePermanenceOfSynaps(permanence: number, preCell: Cell, postCell: Cell) {
     preCell.outgoingSynapses[0].permanence = permanence;
     postCell.incomingSynapses[0].permanence = permanence;
@@ -472,12 +476,12 @@ export class AinetComponent implements OnInit, AfterViewInit {
   }
 
 
-/**
- * This method creates a synapse
- * @param permanence 
- * @param preCell 
- * @param postCell 
- */
+  /**
+   * This method creates a synapse
+   * @param permanence 
+   * @param preCell 
+   * @param postCell 
+   */
   createSynapse(permanence: number, preCell: Cell, postCell: Cell) {
 
     preCell = new Cell(preCell.areaIndex, preCell.X, preCell.Layer, preCell.Z, [null], [null]);
