@@ -281,6 +281,10 @@ export class AinetComponent implements OnInit, AfterViewInit {
         }
       }
     }
+    console.log(this.xSynapse);
+    console.log(this.ySynapse);
+    console.log(this.zSynapse);
+
 
   }
 

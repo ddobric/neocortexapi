@@ -1,4 +1,5 @@
 import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, NeocortexSettings, InputModel, CellId } from './neocortexmodel';
+import { all } from 'q';
 
 
 export class neoCortexUtils {
@@ -90,8 +91,74 @@ export class neoCortexUtils {
     let synap78 = new Synapse(1, preCell7, postCell8);
     let synap910 = new Synapse(0.80, preCell9, postCell10);
 
-    var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 0, 0, 0, [synaps01, synaps34, synap23, synap56, synap78, synap910]);
+    function getRandomInt(max) {
+      return Math.floor(Math.random() * Math.floor(max));
+    }
 
+    let arrayOfPreCells: Array<Cell> = [];
+    let arrayOfPostCells: Array<Cell> = [];
+    let preCellAreaID = getRandomInt(5);
+    let preCellX = getRandomInt(9);
+    let preCellY = getRandomInt(5);
+    let preCellZ = getRandomInt(0);
+
+    let postCellAreaID = getRandomInt(5);
+    let postCellX = getRandomInt(9);
+    let postCellY = getRandomInt(5);
+    let postCellZ = getRandomInt(0);
+    for (let cell = 0; cell < 100; cell++) {
+      arrayOfPreCells.push(new Cell(getRandomInt(5), getRandomInt(9), getRandomInt(5), getRandomInt(0), [], []));
+      arrayOfPostCells.push(new Cell(getRandomInt(5), getRandomInt(9), getRandomInt(5), getRandomInt(0), [], []));
+    }
+
+    let outgoingSynapses: Array<Synapse> = [];
+    let incomingSynapses: Array<Synapse> = [];
+    let randomPermanence = Math.random();
+    let defaultPermanence = 0;
+
+    for (let i = 0; i < arrayOfPreCells.length; i++) {
+      outgoingSynapses.push(new Synapse(defaultPermanence, arrayOfPreCells[i], arrayOfPostCells[i]));
+      incomingSynapses.push(new Synapse(defaultPermanence, arrayOfPreCells[i], arrayOfPostCells[i]));
+    }
+ 
+
+    for (let j = 0; j < arrayOfPreCells.length; j++) {
+
+      let numberOfOutSynapses = getRandomInt(3);
+      let numberOfInSynapses = getRandomInt(3);
+      let outsynap: number;
+      let outsynapArr = [];
+      for (let synapMaxIndex = 0; synapMaxIndex < numberOfOutSynapses; synapMaxIndex++) {
+        outsynapArr.push(outsynap = getRandomInt(outgoingSynapses.length));
+      }
+      let insynap: number;
+      let insynapArr = [];
+      for (let insynapMaxIndex = 0; insynapMaxIndex < numberOfInSynapses; insynapMaxIndex++) {
+        insynapArr.push(insynap = getRandomInt(incomingSynapses.length));
+      }
+
+      for (let numOfOutSynap = 0; numOfOutSynap < outsynapArr.length; numOfOutSynap++) {
+        //addoutgoingSynapse = outgoingSynapses[outsynapArr[numOfOutSynap]];
+        arrayOfPreCells[j].outgoingSynapses.push(outgoingSynapses[outsynapArr[numOfOutSynap]]);
+      }
+      for ( let numOfInSynap = 0; numOfInSynap < insynapArr.length; numOfInSynap++) {
+        //addoutgoingSynapse = outgoingSynapses[outsynapArr[numOfOutSynap]];
+        arrayOfPostCells[j].incomingSynapses.push(incomingSynapses[insynapArr[numOfInSynap]]);
+      }
+      //let addoutgoingSynapse: Synapse = outgoingSynapses[j];
+    
+     
+      
+    }
+    let allSynapses: Array<Synapse> = [];
+
+    for (let k = 0; k < arrayOfPreCells.length; k++) {
+      allSynapses.push(new Synapse(Math.random(), arrayOfPreCells[k], arrayOfPostCells[k]));
+    }
+
+    //var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 0, 0, 0, [synaps01, synaps34, synap23, synap56, synap78, synap910]);
+
+    var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 0, 0, 0, allSynapses);
 
     return model;
   }
