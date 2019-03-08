@@ -2800,7 +2800,7 @@ namespace NeoCortexApi.Utility
 
             return true;
         }
-
+        /*This method is used to flip bits of an binary array*/
         public static int[] flipBit(int[] oriArr, Double bitPerc)
         {
             int[] result = new List<int>(oriArr).ToArray();
@@ -2826,6 +2826,84 @@ namespace NeoCortexApi.Utility
                 }
             }
             return result;
+        }
+
+        /*Remove value At Index in Array*/
+        public static double[] RemoveIndices(double[] IndicesArray, int RemoveAt)
+        {
+            double[] newIndicesArray = new double[IndicesArray.Length - 1];
+
+            int i = 0;
+            int j = 0;
+            while (i < IndicesArray.Length)
+            {
+                if (i != RemoveAt)
+                {
+                    newIndicesArray[j] = IndicesArray[i];
+                    j++;
+                }
+
+                i++;
+            }
+
+            return newIndicesArray;
+        }
+        /*Convert 1D array to 2D array*/
+        public static T[,] Make2DArray<T>(T[] input, int height, int width)
+        {
+            T[,] output = new T[height, width];
+            for (int i = 0; i < height; i++)
+            {
+                for (int j = 0; j < width; j++)
+                {
+                    output[i, j] = input[i * width + j];
+                }
+            }
+            return output;
+        }
+
+        /*Transpose 2D array*/
+        public static int[,] Transpose(int[,] matrix)
+        {
+            int w = matrix.GetLength(0);
+            int h = matrix.GetLength(1);
+
+            int[,] result = new int[h, w];
+
+            for (int i = 0; i < w; i++)
+            {
+                for (int j = 0; j < h; j++)
+                {
+                    result[j, i] = matrix[i, j];
+                }
+            }
+            return result;
+        }
+
+        public static void DrawBitmap(int[] sourceArray,int width, int height, String filePath)
+        {
+            int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(sourceArray, width,height);
+            twoDimenArray = ArrayUtils.Transpose(twoDimenArray);
+            System.Drawing.Bitmap myBitmap = new System.Drawing.Bitmap(width,height);
+            int k = 0;
+            for (int Xcount = 0; Xcount < myBitmap.Width; Xcount++)
+            {
+                for (int Ycount = 0; Ycount < myBitmap.Height; Ycount++)
+                {
+                    if (twoDimenArray[Xcount, Ycount] == 1)
+                    {
+                        myBitmap.SetPixel(Xcount, Ycount, System.Drawing.Color.Red); // HERE IS YOUR LOGIC
+                        k++;
+                    }
+                    else
+                    {
+                        myBitmap.SetPixel(Xcount, Ycount, System.Drawing.Color.Black); // HERE IS YOUR LOGIC
+                        k++;
+                    }
+
+                }
+            }
+            myBitmap.Save(filePath);
         }
     }
 }
