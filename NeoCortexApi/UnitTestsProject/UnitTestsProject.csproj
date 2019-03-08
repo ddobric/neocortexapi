@@ -26,6 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\DistributedComputeLib\DistributedComputeLib.csproj" />
     <ProjectReference Include="..\NeoCortexApi\NeoCortexApi.csproj" />
+    <ProjectReference Include="..\NeoCortexUtils\NeoCortexUtils.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -62,6 +63,10 @@
     <None Update="TestFiles\digit8_binary_32bit.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Output\" />
   </ItemGroup>
 
 </Project>

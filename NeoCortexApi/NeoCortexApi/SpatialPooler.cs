@@ -184,7 +184,7 @@ namespace NeoCortexApi
             // Gets overlap over every single column.
             var overlaps = calculateOverlap(c, inputVector);
 
-            //var overlapsStr = Helpers.StringifyVector(overlaps);
+            var overlapsStr = Helpers.StringifyVector(overlaps);
             //Debug.WriteLine("overlap: " + overlapsStr);
 
             //overlapActive = calculateOverlap(activeInput)
@@ -363,7 +363,7 @@ namespace NeoCortexApi
             double[] activeDutyCycles = c.getActiveDutyCycles();
             double minPctActiveDutyCycles = c.getMinPctActiveDutyCycles();
             double[] overlapDutyCycles = c.getOverlapDutyCycles();
-            double minPctOverlapDutyCycles = c.getMinPctOverlapDutyCycles();
+            double minPctOverlapDutyCycles = c  .getMinPctOverlapDutyCycles();
 
             Parallel.For(0, len, (i) =>
             {
@@ -924,7 +924,7 @@ namespace NeoCortexApi
             // Here we have Receptive Field (RF)
             int[] columnInputs = getInputNeighborhood(c, centerInput, c.getPotentialRadius());
 
-            Debug.WriteLine($"{Helpers.StringifyVector(columnInputs)}");
+            //Debug.WriteLine($"{Helpers.StringifyVector(columnInputs)}");
             
             // Select a subset of the receptive field to serve as the the potential pool.
             int numPotential = (int)(columnInputs.Length * c.getPotentialPct() + 0.5);
@@ -983,7 +983,7 @@ namespace NeoCortexApi
                 return inhibitColumnsGlobal(c, overlaps, density);
             }
             return inhibitColumnsLocal(c, overlaps, density);
-            //return inhibitColumnsLocalNewApproach(c, overlaps, density);
+            //return inhibitColumnsLocalNewApproach(c, overlaps);
         }
 
 
@@ -1030,6 +1030,11 @@ namespace NeoCortexApi
             return sortedWinnerIndices.Skip(start).Select(p => (int)p.Key).ToArray();
         }
 
+        public virtual int[] inhibitColumnsLocal(Connections c, double[] overlaps, double density)
+        {
+            return inhibitColumnsLocalOriginal(c, overlaps, density);
+        }
+
         /**
          * Performs inhibition. This method calculates the necessary values needed to
          * actually perform inhibition and then delegates the task of picking the
@@ -1046,7 +1051,7 @@ namespace NeoCortexApi
          *                  of surviving columns is likely to vary.
          * @return  indices of the winning columns
          */
-        public virtual int[] inhibitColumnsLocal(Connections c, double[] overlaps, double density)
+        public virtual int[] inhibitColumnsLocalOriginal(Connections c, double[] overlaps, double density)
         {
            double winnerDelta = ArrayUtils.max(overlaps) / 1000.0d;
             if (winnerDelta == 0)
@@ -1084,26 +1089,45 @@ namespace NeoCortexApi
         }
 
 
-        public virtual int[] inhibitColumnsLocalNewApproach(Connections c, double[] overlaps, double myDensity)
+        public virtual int[] inhibitColumnsLocalNewApproach(Connections c, double[] overlaps)
         {
-            List<int> winners = new List<int>();
-            int maxInhibitionRadius = (int)(Math.Sqrt(overlaps.Length/81.92));
-            int count = (int)(myDensity*overlaps.Length);
-            var activeCols = ArrayUtils.IndexWhere(overlaps, (el) => el > c.StimulusThreshold);
-            foreach (int value in activeCols)
+            int preActive = 0;
+            for (int i = 0; i < overlaps.Length; i++)
             {
-                int maxOverlap = 0;
-                if (winners.Count == count)
+                if (overlaps[i] > 0)
                 {
-                    return winners.ToArray();
+                    preActive++;
                 }
-                int[] neighborhood = getColumnNeighborhood(c, value, maxInhibitionRadius);
+            }
+            List<int> winners = new List<int>();
+            int maxInhibitionRadius = (int)((Math.Sqrt((preActive/(overlaps.Length*0.02))+1)/2)-1);
+            maxInhibitionRadius = Math.Max(1, maxInhibitionRadius);
+            int count = (int)(0.02*overlaps.Length);
+            var activeCols = ArrayUtils.IndexWhere(overlaps, (el) => el > c.StimulusThreshold);
+            double max = 0;
+            int colNum = 0;
+            for (int i = 0; i < count; i++)
+            {
+                for (int j = 0; j < overlaps.Length; j++)
+                {
+                    if (max < overlaps[j])
+                    {
+                        max = overlaps[j];
+                        colNum = j;
+                    }
+                }
+                winners.Add(colNum);
+                int[] neighborhood = getColumnNeighborhood(c, colNum, maxInhibitionRadius);
                 double[] neighborhoodOverlaps = ArrayUtils.ListOfValuesByIndicies(overlaps, neighborhood);
-                maxOverlap = ArrayUtils.max(ArrayUtils.toIntArray(neighborhoodOverlaps));
-                if (maxOverlap == overlaps[value])
+                for (int col = 0; col < neighborhood.Length; col++)
                 {
-                    winners.Add(value);
+                    double newOverlap = neighborhoodOverlaps[col]-0.5;
+                    int a = neighborhood[col];
+                    overlaps[a] = newOverlap;
                 }
+                
+                overlaps = ArrayUtils.RemoveIndices(overlaps, colNum);
+                max = 0;
             }
             return winners.ToArray();
         }
@@ -1244,6 +1268,58 @@ namespace NeoCortexApi
 
             return winners.ToArray();
         }
+
+        // lateral inhibition algorithm new approch /////////////////////
+        public virtual int[] inhibitColumnsLocalNew(Connections c, double[] overlaps, double density)
+        {
+            // WHY IS THIS DONE??
+            double winnerDelta = ArrayUtils.max(overlaps) / 1000.0d;
+            if (winnerDelta == 0)
+            {
+                winnerDelta = 0.001;
+            }
+
+            double[] tieBrokenOverlaps = new List<double>(overlaps).ToArray();
+
+            List<int> winners = new List<int>();
+
+            // FIXED
+            int inhibitionRadius = 2; //c.InhibitionRadius;
+            double[] alpha = new double[] { -0.025, -0.075, 1, -0.075, -0.025 };
+
+            for (int column = 0; column < overlaps.Length; column++)
+            {
+                // int column = i;
+                if (overlaps[column] >= c.StimulusThreshold)
+                {
+                    // GETS INDEXES IN THE ARRAY FOR THE NEIGHBOURS WITHIN THE INHIBITION RADIUS.
+                    int[] neighborhood = getColumnNeighborhood(c, column, inhibitionRadius);
+
+                    // GETS THE NEIGHBOURS WITHIN THE INHI
+                    // Take overlapps of neighbors
+                    double[] neighborhoodOverlaps = ArrayUtils.ListOfValuesByIndicies(tieBrokenOverlaps, neighborhood);
+
+                    // Filter neighbors with overlaps bigger than column overlap
+                    double sum = 0;
+                    for (int i = 0; i < neighborhoodOverlaps.Length; i++)
+                    {
+                        sum += alpha[i] * neighborhoodOverlaps[i];
+                    }
+                    //(-0.025 * neighborhoodOverlaps[0]) + (-0.075 * neighborhoodOverlaps[1]) + neighborhoodOverlaps[2] + (-0.075 * neighborhoodOverlaps[3] + (-0.025 * neighborhoodOverlaps[4]));
+
+                    // density will reduce radius
+                    int threshold = (int)(0.5 + density * neighborhood.Length) / overlaps.Length;
+                    if (sum > threshold)
+                    {
+                        winners.Add(column);
+                        tieBrokenOverlaps[column] += winnerDelta;
+                    }
+                }
+            }
+
+            return winners.ToArray();
+        }
+        ///////////////////////////////////////////////
 
         /**
          * Update the boost factors for all columns. The boost factors are used to
