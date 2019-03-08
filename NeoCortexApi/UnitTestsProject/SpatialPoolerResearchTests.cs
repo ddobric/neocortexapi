@@ -330,9 +330,9 @@ namespace UnitTestsProject
         [TestMethod]
         public void BinarizeImageTest()
         {
-            String pathToTestImage = "TestFiles\\digit8_10bit.png";
-            Binarizer imageBinarizer = new Binarizer();
-            imageBinarizer.CreateBinary(pathToTestImage, "TestFiles\\digit8_binary_10bit.txt");
+            String pathToTestImage = "TestFiles\\digit8.png";
+            Binarizer imageBinarizer = new Binarizer(200,200,200,32,32);
+            imageBinarizer.CreateBinary(pathToTestImage, "TestFiles\\test.txt");
         }
 
         [TestMethod]
@@ -373,8 +373,8 @@ namespace UnitTestsProject
             parameters.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.001);
             parameters.Set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.001);
             //parameters.Set(KEY.WRAP_AROUND, false);
-            parameters.Set(KEY.DUTY_CYCLE_PERIOD, 10);
-            parameters.Set(KEY.MAX_BOOST, 1.0);
+            parameters.Set(KEY.DUTY_CYCLE_PERIOD, 100);
+            parameters.Set(KEY.MAX_BOOST, 10.0);
             parameters.Set(KEY.RANDOM, rnd);
             //int r = parameters.Get<int>(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA);
             
