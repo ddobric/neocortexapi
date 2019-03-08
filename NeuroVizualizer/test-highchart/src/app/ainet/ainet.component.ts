@@ -174,7 +174,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     };
 
     let graphDOM = document.getElementById('graph');
-    Plotlyjs.newPlot(graphDOM, [neurons, synapses], this.neuralChartLayout, this.neuralChartConfig);
+    Plotlyjs.react(graphDOM, [neurons, synapses], this.neuralChartLayout, this.neuralChartConfig);
     //Plotlyjs.newPlot(graphDOM, [PointsT, linesT], neuralChartLayout);
     // Plotlyjs.newPlot(graphDOM, [test1, test2]);
     //Plotlyjs.restyle(gd,  update, [0]);
@@ -306,70 +306,35 @@ export class AinetComponent implements OnInit, AfterViewInit {
     timeOut: 3000,
   };
 
-  updateSynapses1(preCellAreaId: any, postCellAreaID: any, preCell: Cell, postCell: Cell, permanence: any) {
+  updateSynapses(preCellAreaId: any, postCellAreaID: any, preCell: Cell, postCell: Cell, permanenc: any) {
+    let permaValue = parseFloat(permanenc);
+    let preCellArea = parseInt(preCellAreaId);
+    let postCellArea = parseInt(postCellAreaID);
+    let prX = parseInt(preCell[0]);
+    let prY = parseInt(preCell[2]);
+    let prZ = parseInt(preCell[4]);
+    let poX = parseInt(postCell[0]);
+    let poY = parseInt(postCell[2]);
+    let poZ = parseInt(postCell[4]);
 
     this.updateSynaps([
       {
-        preCellArea: preCellAreaId,
-        postCellArea: postCellAreaID,
+        preCellArea: preCellArea,
+        postCellArea: postCellArea,
         preCell:
         {
-          cellX: preCell[0],
-          cellY: preCell[2],
-          cellZ: preCell[4],
+          cellX: prX,
+          cellY: prY,
+          cellZ: prZ,
         },
         postCell: {
-          cellX: postCell[0],
-          cellY: postCell[2],
-          cellZ: postCell[4],
+          cellX: poX,
+          cellY: poY,
+          cellZ: poZ,
         },
-        permanence: permanence
+        permanence:  permaValue
       }
     ]);
-
-  }
-
-
-  //update synapse permanace
-  clickFunc2() {
-    this.updateSynaps(
-      /*      [
-             {
-               preCellArea: 0,
-               postCellArea: 0,
-               preCell:
-               {
-                 cellX: 0,
-                 cellY: 3,
-                 cellZ: 0,
-               },
-               postCell: {
-                 cellX: 9,
-                 cellY: 0,
-                 cellZ: 0,
-               },
-               permanence: 1
-             }
-           ]  */
-      [
-        {
-          preCellArea: 2,
-          postCellArea: 4,
-          preCell:
-          {
-            cellX: 1,
-            cellY: 0,
-            cellZ: 0,
-          },
-          postCell: {
-            cellX: 1,
-            cellY: 1,
-            cellZ: 0,
-          },
-          permanence: 1
-        }
-      ]
-    );
 
   }
 
@@ -417,12 +382,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
       console.log("Synapse does not exists, it will be created");
       this.createSynapse(perm.permanence, preCell, postCell);
     }
-    if (preCell.outgoingSynapses.length != 0 && postCell.incomingSynapses.length != 0) {
-      console.log("Synapse does not exists, it will be created");
-      this.createSynapse(perm.permanence, preCell, postCell);
-    }
 
-    if (preCell.outgoingSynapses != null && postCell.incomingSynapses != null) {
+    else if (preCell.outgoingSynapses != null && postCell.incomingSynapses != null) {
       console.log("Synapse Exists, Permannence will be updated");
       this.updatePermanenceOfSynaps(perm.permanence, preCell, postCell);
     }
@@ -435,8 +396,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
    * @param postCell 
    */
   updatePermanenceOfSynaps(permanence: number, preCell: Cell, postCell: Cell) {
-    preCell.outgoingSynapses[0].permanence = permanence;
-    postCell.incomingSynapses[0].permanence = permanence;
+
+    preCell.outgoingSynapses[0].permanence = permanence ;
+    postCell.incomingSynapses[0].permanence = permanence ;
     this.fillChart(this.model);
     this.generateColoursFromOverlap(this.model);
     this.generateColoursFromPermanences(this.model);
@@ -472,7 +434,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       }
     };
     let graphDOM = document.getElementById('graph');
-    Plotlyjs.newPlot(graphDOM, [updateNeurons, updateSynapses], this.neuralChartLayout, this.neuralChartConfig);
+    Plotlyjs.react(graphDOM, [updateNeurons, updateSynapses], this.neuralChartLayout, this.neuralChartConfig);
   }
 
 
@@ -533,7 +495,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
     let graphDOM = document.getElementById('graph');
 
-    Plotlyjs.newPlot(graphDOM, [updateNeurons, updateSynapses], this.neuralChartLayout, this.neuralChartConfig);
+    Plotlyjs.react(graphDOM, [updateNeurons, updateSynapses], this.neuralChartLayout, this.neuralChartConfig);
 
   }
 
@@ -605,7 +567,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
     let graphDOM = document.getElementById('graph');
 
-    Plotlyjs.newPlot(graphDOM, [updateNeurons, updateSynapses], this.neuralChartLayout, this.neuralChartConfig);
+    Plotlyjs.react(graphDOM, [updateNeurons, updateSynapses], this.neuralChartLayout, this.neuralChartConfig);
 
   }
 
@@ -665,7 +627,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
     let graphDOM = document.getElementById('graph');
 
-    Plotlyjs.newPlot(graphDOM, [updateNeurons, updateSynapses], this.neuralChartLayout, this.neuralChartConfig);
+    Plotlyjs.react(graphDOM, [updateNeurons, updateSynapses], this.neuralChartLayout, this.neuralChartConfig);
     // Plotlyjs.restyle(graphDOM, updateNeurons, this.neuralChartLayout, this.neuralChartConfig);
   }
 
