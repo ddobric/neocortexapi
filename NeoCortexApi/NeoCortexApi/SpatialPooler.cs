@@ -1195,6 +1195,107 @@ namespace NeoCortexApi
             return winners.ToArray();
         }
         */
+        public virtual int[] inhibitColumnsLocalNewApproach11(Connections c, double[] overlaps, double density)
+        {
+            List<int> winners = new List<int>();
+            // NEW INHIBITION ALGORITHM HERE.
+            // for c in columns
+            //     minLocalActivity = kthScore(neighbors(c), numActiveColumnsPerInhArea)
+            //         if overlap(c) > stimulusThreshold and
+            //             overlap(c) ≥ minLocalActivity then
+            //             activeColumns(t).append(c)
+
+            double winnerDelta = ArrayUtils.max(overlaps) / 1000.0d;
+            if (winnerDelta == 0)
+            {
+                winnerDelta = 0.001;
+            }
+
+            double[] tieBrokenOverlaps = new List<double>(overlaps).ToArray();
+
+
+            int inhibitionRadius = c.InhibitionRadius;
+
+            Parallel.ForEach(overlaps, (val, b, index) =>
+            {
+                // int column = i;
+                if ((int)index >= c.StimulusThreshold)
+                {
+                    // GETS INDEXES IN THE ARRAY FOR THE NEIGHBOURS WITHIN THE INHIBITION RADIUS.
+                    List<int> neighborhood = getColumnNeighborhood(c, (int)index, inhibitionRadius).ToList();
+
+                    // GETS THE NEIGHBOURS WITHIN THE INHI
+                    // Take overlapps of neighbors
+                    List<double> neighborhoodOverlaps = ArrayUtils.ListOfValuesByIndicies(tieBrokenOverlaps, neighborhood.ToArray()).ToList();
+
+                    // Filter neighbors with overlaps bigger than column overlap
+                    long numBigger = neighborhoodOverlaps.Count(d => d > val);
+
+                    // density will reduce radius
+                    int numActive = (int)(0.5 + density * neighborhood.Count);
+                    if (numBigger < numActive)
+                    {
+                        winners.Add((int)index);
+                        tieBrokenOverlaps[(int)index] += winnerDelta;
+                    }
+                }
+            });
+
+
+            return winners.ToArray();
+        }
+
+        // lateral inhibition algorithm new approch /////////////////////
+        public virtual int[] inhibitColumnsLocalNew(Connections c, double[] overlaps, double density)
+        {
+            // WHY IS THIS DONE??
+            double winnerDelta = ArrayUtils.max(overlaps) / 1000.0d;
+            if (winnerDelta == 0)
+            {
+                winnerDelta = 0.001;
+            }
+
+            double[] tieBrokenOverlaps = new List<double>(overlaps).ToArray();
+
+            List<int> winners = new List<int>();
+
+            // FIXED
+            int inhibitionRadius = 2; //c.InhibitionRadius;
+            double[] alpha = new double[] { -0.025, -0.075, 1, -0.075, -0.025 };
+
+            for (int column = 0; column < overlaps.Length; column++)
+            {
+                // int column = i;
+                if (overlaps[column] >= c.StimulusThreshold)
+                {
+                    // GETS INDEXES IN THE ARRAY FOR THE NEIGHBOURS WITHIN THE INHIBITION RADIUS.
+                    int[] neighborhood = getColumnNeighborhood(c, column, inhibitionRadius);
+
+                    // GETS THE NEIGHBOURS WITHIN THE INHI
+                    // Take overlapps of neighbors
+                    double[] neighborhoodOverlaps = ArrayUtils.ListOfValuesByIndicies(tieBrokenOverlaps, neighborhood);
+
+                    // Filter neighbors with overlaps bigger than column overlap
+                    double sum = 0;
+                    for (int i = 0; i < neighborhoodOverlaps.Length; i++)
+                    {
+                        sum += alpha[i] * neighborhoodOverlaps[i];
+                    }
+                    //(-0.025 * neighborhoodOverlaps[0]) + (-0.075 * neighborhoodOverlaps[1]) + neighborhoodOverlaps[2] + (-0.075 * neighborhoodOverlaps[3] + (-0.025 * neighborhoodOverlaps[4]));
+
+                    // density will reduce radius
+                    int threshold = (int)(0.5 + density * neighborhood.Length) / overlaps.Length;
+                    if (sum > threshold)
+                    {
+                        winners.Add(column);
+                        tieBrokenOverlaps[column] += winnerDelta;
+                    }
+                }
+            }
+
+            return winners.ToArray();
+        }
+        ///////////////////////////////////////////////
 
         /**
          * Update the boost factors for all columns. The boost factors are used to
