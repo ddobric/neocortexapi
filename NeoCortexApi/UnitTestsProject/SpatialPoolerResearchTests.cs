@@ -352,6 +352,126 @@ namespace UnitTestsProject
             Console.WriteLine("Robustness: " + robustness);
         }
 
+        [TestMethod]
+        public void robustnessTestlateralinhibition()
+        {
+            Console.WriteLine();
+            int[] overlaps = Helpers.GetRandomVector(100);
+            int[] withNoise = new int[overlaps.Length];
+            int[] backUp = new int[overlaps.Length];
+
+            overlaps.CopyTo(withNoise, 0);
+            overlaps.CopyTo(backUp, 0);
+
+            addNoise(withNoise, 0.20);
+            Console.WriteLine("INPUT ORIGINAL: " + Helpers.StringifyVector(overlaps));
+            Console.WriteLine("INPUT WITH NOISE(FLIPPED): " + Helpers.StringifyVector(withNoise));
+
+            var parameters = GetDefaultParams();
+            parameters.setInputDimensions(new int[] { overlaps.Length });
+            parameters.setColumnDimensions(new int[] { 10 });
+            Connections c = new Connections();
+            parameters.apply(c);
+
+
+            // int misMatchedDims = 6; // not 8
+            SpatialPooler sp = new SpatialPooler();
+            sp.init(c);
+            //Internally calculated during init, to overwrite we put after init
+            c.InhibitionRadius = 2;
+            c.setWrapAround(true);
+
+            double density = 0.5;
+            var org = sp.inhibitColumnsLocal(c, ArrayUtils.toDoubleArray(overlaps), density);
+            var updated = sp.inhibitColumnsLocalNew(c, ArrayUtils.toDoubleArray(overlaps), density);
+
+            var noise = sp.inhibitColumnsLocal(c, ArrayUtils.toDoubleArray(withNoise), density);
+            var updatedNoise = sp.inhibitColumnsLocalNew(c, ArrayUtils.toDoubleArray(withNoise), density);
+
+            Console.WriteLine("OUTPUT ORIGINAL: " + Helpers.StringifyVector(org));
+            Console.WriteLine("OUTPUT ORIGINAL: " + Helpers.StringifyVector(getData(org, overlaps.Length).ToArray()));
+            Console.WriteLine("OUTPUT NEW METHOD: " + Helpers.StringifyVector(updated));
+            Console.WriteLine("OUTPUT ORIGINAL: " + Helpers.StringifyVector(getData(updated, overlaps.Length).ToArray()));
+
+
+            Console.WriteLine("OUTPUT ORIGINAL WITH NOISE(FLIPPED): " + Helpers.StringifyVector(noise));
+            Console.WriteLine("OUTPUT ORIGINAL: " + Helpers.StringifyVector(getData(noise, overlaps.Length).ToArray()));
+            Console.WriteLine("OUTPUT NEW METHOD WITH NOISE(FLIPPED): " + Helpers.StringifyVector(updatedNoise));
+            Console.WriteLine("OUTPUT ORIGINAL: " + Helpers.StringifyVector(getData(updatedNoise, overlaps.Length).ToArray()));
+
+            // OLD WITHOUT NOISE VS NEW WITHOUT NOISE
+            double pni = MathHelpers.GetHammingDistance(overlaps, overlaps);
+            double pno = MathHelpers.GetHammingDistance(org, updated);
+            double robustness = Math.Abs(pni / pno);
+            Console.WriteLine("pni: " + pni + "/ pno: " + pno + " = Robustness: " + robustness);
+
+            // OLD WITHOUT NOISE VS OLD WITH NOISE
+            pni = MathHelpers.GetHammingDistance(overlaps, withNoise);
+            pno = MathHelpers.GetHammingDistance(org, noise);
+            robustness = Math.Abs(pni / pno);
+            Console.WriteLine("pni: " + pni + "/ pno: " + pno + " = Robustness: " + robustness);
+
+            // NEW WITHOUT NOISE VS NEW WITH NOISE
+            pni = MathHelpers.GetHammingDistance(overlaps, withNoise);
+            pno = MathHelpers.GetHammingDistance(updated, updatedNoise);
+            robustness = Math.Abs(pni / pno);
+            Console.WriteLine("pni: " + pni + "/ pno: " + pno + " = Robustness: " + robustness);
+
+            // OLD WITH NOISE VS NEW WITH NOISE
+            pni = MathHelpers.GetHammingDistance(withNoise, withNoise);
+            pno = MathHelpers.GetHammingDistance(noise, updatedNoise);
+            robustness = Math.Abs(pni / pno);
+            Console.WriteLine("pni: " + pni + "/ pno: " + pno + " = Robustness: " + robustness);
+        }
+
+        public static List<int> getData(int[] output, int size)
+        {
+            int[] op = new int[size];
+            foreach (int i in output)
+            {
+                op[i] = 1;
+            }
+            return new List<int>(op);
+        }
+
+
+        public static int getChangesCount(double[] original, double[] withNoise)
+        {
+            int count = 0;
+            for (var i = 0; i < original.Length; i++)
+            {
+                if (original[i] != withNoise[i]) count++;
+            }
+
+            return count;
+        }
+
+        // Returns true if arr1[0..n-1] and 
+        // arr2[0..m-1] contain same elements. 
+        public static bool areEqual(int[] arr1,
+                                    int[] arr2)
+        {
+            int n = arr1.Length;
+            int m = arr2.Length;
+
+            // If lengths of array are not  
+            // equal means array are not equal 
+            if (n != m)
+                return false;
+
+            // Sort both arrays 
+            Array.Sort(arr1);
+            Array.Sort(arr2);
+
+            // Linearly compare elements 
+            for (int i = 0; i < n; i++)
+                if (arr1[i] != arr2[i])
+                    return false;
+
+            // If all elements were same. 
+            return true;
+        }
+
         public static void calculateRobustness()
         {
 
