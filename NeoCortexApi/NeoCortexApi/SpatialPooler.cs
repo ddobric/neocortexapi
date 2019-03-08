@@ -1030,6 +1030,11 @@ namespace NeoCortexApi
             return sortedWinnerIndices.Skip(start).Select(p => (int)p.Key).ToArray();
         }
 
+        public virtual int[] inhibitColumnsLocal(Connections c, double[] overlaps, double density)
+        {
+            return inhibitColumnsLocalOriginal(c, overlaps, density);
+        }
+
         /**
          * Performs inhibition. This method calculates the necessary values needed to
          * actually perform inhibition and then delegates the task of picking the
@@ -1046,7 +1051,7 @@ namespace NeoCortexApi
          *                  of surviving columns is likely to vary.
          * @return  indices of the winning columns
          */
-        public virtual int[] inhibitColumnsLocal(Connections c, double[] overlaps, double density)
+        public virtual int[] inhibitColumnsLocalOriginal(Connections c, double[] overlaps, double density)
         {
            double winnerDelta = ArrayUtils.max(overlaps) / 1000.0d;
             if (winnerDelta == 0)
