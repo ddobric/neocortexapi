@@ -10,15 +10,11 @@ export class CellId {
 
 export class NeocortexSettings {
 
-  public cellHeightInMiniColumn: number = 5;
-  public miniColumnWidth: number = 5;
-  public areaLevels: Array<number> = [0, 0, 0, 1, 1, 2];
+  public areaLevels: Array<number> = [];
   public minicolumnDims: number[];
   public numLayers: number;
-  public xAreaDistance: number = 30;
-  public yAreaDistance: number = 10;
-  public zAreaDistance: number = 1;
   public defaultOverlapValue: number = 0;
+  public defaultPermanence: number = 0;
 
 }
 

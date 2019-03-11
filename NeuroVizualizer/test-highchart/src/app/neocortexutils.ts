@@ -1,10 +1,7 @@
 import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, NeocortexSettings, InputModel, CellId } from './neocortexmodel';
-import { all } from 'q';
 
 
 export class neoCortexUtils {
-
-
 
   /**
    * createModel (numberOfAreas/DataSeries, [xAxis, zAxis], yAxis)
@@ -91,34 +88,36 @@ export class neoCortexUtils {
     let synap78 = new Synapse(1, preCell7, postCell8);
     let synap910 = new Synapse(0.80, preCell9, postCell10);
 
-    function getRandomInt(max) {
+    let synapses: Array<Synapse> = [synaps01,synap23,synaps34,synap56,synap78, synap910];
+
+    function getRandomInt(max: any) {
       return Math.floor(Math.random() * Math.floor(max));
     }
 
     let arrayOfPreCells: Array<Cell> = [];
     let arrayOfPostCells: Array<Cell> = [];
-    let preCellAreaID = getRandomInt(5);
-    let preCellX = getRandomInt(9);
-    let preCellY = getRandomInt(5);
-    let preCellZ = getRandomInt(0);
-
-    let postCellAreaID = getRandomInt(5);
-    let postCellX = getRandomInt(9);
-    let postCellY = getRandomInt(5);
-    let postCellZ = getRandomInt(0);
+    
     for (let cell = 0; cell < 100; cell++) {
+      let preCellAreaID = getRandomInt(sett.areaLevels);
+    let preCellX = getRandomInt(sett.minicolumnDims[0]);
+    let preCellY = getRandomInt(sett.numLayers);
+    let preCellZ = getRandomInt(sett.minicolumnDims[1]);
+
+    let postCellAreaID = getRandomInt(sett.areaLevels);
+    let postCellX = getRandomInt(sett.minicolumnDims[0]);
+    let postCellY = getRandomInt(sett.numLayers);
+    let postCellZ = getRandomInt(sett.minicolumnDims[1]);
       arrayOfPreCells.push(new Cell(getRandomInt(5), getRandomInt(9), getRandomInt(5), getRandomInt(0), [], []));
       arrayOfPostCells.push(new Cell(getRandomInt(5), getRandomInt(9), getRandomInt(5), getRandomInt(0), [], []));
     }
 
     let outgoingSynapses: Array<Synapse> = [];
     let incomingSynapses: Array<Synapse> = [];
-    let randomPermanence = Math.random();
-    let defaultPermanence = 0;
+   
 
     for (let i = 0; i < arrayOfPreCells.length; i++) {
-      outgoingSynapses.push(new Synapse(defaultPermanence, arrayOfPreCells[i], arrayOfPostCells[i]));
-      incomingSynapses.push(new Synapse(defaultPermanence, arrayOfPreCells[i], arrayOfPostCells[i]));
+      outgoingSynapses.push(new Synapse(sett.defaultPermanence, arrayOfPreCells[i], arrayOfPostCells[i]));
+      incomingSynapses.push(new Synapse(sett.defaultPermanence, arrayOfPreCells[i], arrayOfPostCells[i]));
     }
  
 
@@ -150,107 +149,18 @@ export class neoCortexUtils {
      
       
     }
-    let allSynapses: Array<Synapse> = [];
+    let randomSynapses: Array<Synapse> = [];
 
     for (let k = 0; k < arrayOfPreCells.length; k++) {
-      allSynapses.push(new Synapse(Math.random(), arrayOfPreCells[k], arrayOfPostCells[k]));
+      let randomPermanence = Math.random();
+      randomSynapses.push(new Synapse(randomPermanence, arrayOfPreCells[k], arrayOfPostCells[k]));
     }
 
     //var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 0, 0, 0, [synaps01, synaps34, synap23, synap56, synap78, synap910]);
 
-    var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 0, 0, 0, allSynapses);
+    var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 0, 0, 0, synapses);
 
     return model;
   }
 
-
-  public static addSynapse(model: NeoCortexModel, id: number, areaId: number = 1, preCell: Cell, postCell: Cell, weight: number) {
-
-    // model.synapses.push(new Synapse(id, weight, preCell, postCell));
-
-  }
-
-  /*   public static updateSynapse(model: NeoCortexModel, synapseId: number, areaId: number = -1, weight: number) {
-  
-      let synapse = this.lookupSynapse(model, synapseId, areaId);
-      if (synapse != null) {
-        synapse.permanence = weight;
-      }
-      else
-        throw "Synapse cannot be found!";
-  
-    } */
-
-  /* public static updateNeuron(model: NeoCortexModel, id: number, weight: number) {
-
-
-  } */
-
-
-  /**
-   *  Search for synapse with specified id.
-   * @param model 
-   * @param synapseId 
-   * @param [optional] areaId.If >= 0 then restricts search for area. If not specified, the it search for synapse in all areas.
-   */
-  /*  public static lookupSynapse(model: NeoCortexModel, synapseId: number, areaId: number = -1): Synapse {
- 
-     if (areaId >= 0 && model.areas.length > areaId)
-       return this.lookupSynapseInArea(model, synapseId, areaId);
- 
-     model.areas.forEach(area => {
-       let synapse = this.lookupSynapseInArea(model, synapseId, area.id);
-       if (synapse != null)
-         return synapse;
-     });
- 
-     return null;
-   } */
-
-
-  /**
-   * Search for synapse with specified id.
-   * @param model Model of AI network.
-   * @param synapseId Identifier of the synapse.
-   * @param areaId Restricts the search in specified area to increase performance.
-   */
-  /*   private static lookupSynapseInArea(model: NeoCortexModel, synapseId: number, areaId: number): Synapse {
-  
-      model.areas[areaId].minicolumns.forEach(minColRow => {
-        minColRow.forEach(miniColumn => {
-          miniColumn.cells.forEach(cell => {
-            cell.Synapses.forEach(synapse => {
-              if (synapse.id == synapseId)
-                return synapse;
-            });
-          });
-        });
-      });
-  
-      return null;
-    } */
-
-
-  /**
-   * Search for synapse with specified id.
-   * @param model Model of AI network.
-   * @param synapseId Identifier of the synapse.
-   * @param areaId Restricts the search in specified area to increase performance.
-   */
-  private static getCell(model: NeoCortexModel, cellId: CellId): Cell {
-
-    let area: Area = model.areas[cellId.area];
-
-    let obj: any[] = area.minicolumns[0];
-
-    for (let i = 1; i < area.minicolumns.length - 1; i++) {
-      obj = obj[cellId.minicolumn[i]];
-    }
-
-    return obj[area.minicolumns.length - 1] as Cell;
-  }
 }
-
-
-
-
