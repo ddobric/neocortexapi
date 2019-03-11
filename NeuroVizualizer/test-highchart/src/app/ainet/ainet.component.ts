@@ -258,7 +258,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
         for (let inc = 0; inc < this.model.synapses[i].postSynaptic.incomingSynapses.length; inc++) {
           this.permanence.push(this.model.synapses[i].permanence);
           this.permanence.push(this.model.synapses[i].permanence);
-          this.permanence.push(this.model.synapses[i].permanence);
+          this.permanence.push(null);
 
           let xPre = this.xCoordinatesAllAreas[this.model.synapses[i].preSynaptic.areaIndex][this.model.synapses[i].preSynaptic.outgoingSynapses[out].preSynaptic.X];
           this.xSynapse.push(xPre);
@@ -281,9 +281,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
         }
       }
     }
-    console.log(this.xSynapse);
+   /*  console.log(this.xSynapse);
     console.log(this.ySynapse);
-    console.log(this.zSynapse);
+    console.log(this.zSynapse); */
 
 
   }
@@ -386,7 +386,10 @@ export class AinetComponent implements OnInit, AfterViewInit {
       console.log("Synapse does not exists, it will be created");
       this.createSynapse(perm.permanence, preCell, postCell);
     }
-
+    if (preCell.outgoingSynapses.length != 0 && preCell.incomingSynapses.length != 0 || postCell.outgoingSynapses.length != 0 && postCell.incomingSynapses.length != 0) { // to check if one of the array is empty
+      console.log("Synapse does not exists, it will be created");
+      this.createSynapse(perm.permanence, preCell, postCell);
+    }
     else if (preCell.outgoingSynapses != null && postCell.incomingSynapses != null) {
       console.log("Synapse Exists, Permannence will be updated");
       this.updatePermanenceOfSynaps(perm.permanence, preCell, postCell);
@@ -406,7 +409,6 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.fillChart(this.model);
     this.generateColoursFromOverlap(this.model);
     this.generateColoursFromPermanences(this.model);
-    console.log(this.permanence, "after");
     const updateNeurons = {
       x: this.xNeurons,
       y: this.yNeurons,
