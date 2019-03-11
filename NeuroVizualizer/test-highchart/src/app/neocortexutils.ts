@@ -98,17 +98,19 @@ export class neoCortexUtils {
     let arrayOfPostCells: Array<Cell> = [];
     
     for (let cell = 0; cell < 100; cell++) {
-      let preCellAreaID = getRandomInt(sett.areaLevels);
-    let preCellX = getRandomInt(sett.minicolumnDims[0]);
-    let preCellY = getRandomInt(sett.numLayers);
-    let preCellZ = getRandomInt(sett.minicolumnDims[1]);
+      let randomPreCellAreaID = getRandomInt(sett.areaLevels.length);
+    let randomPreCellX = getRandomInt(sett.minicolumnDims[0]);
+    let randomPreCellY = getRandomInt(sett.numLayers);
+    let randomPreCellZ = getRandomInt(sett.minicolumnDims[1]);
 
-    let postCellAreaID = getRandomInt(sett.areaLevels);
-    let postCellX = getRandomInt(sett.minicolumnDims[0]);
-    let postCellY = getRandomInt(sett.numLayers);
-    let postCellZ = getRandomInt(sett.minicolumnDims[1]);
-      arrayOfPreCells.push(new Cell(getRandomInt(5), getRandomInt(9), getRandomInt(5), getRandomInt(0), [], []));
-      arrayOfPostCells.push(new Cell(getRandomInt(5), getRandomInt(9), getRandomInt(5), getRandomInt(0), [], []));
+    let randomPostCellAreaID = getRandomInt(sett.areaLevels.length);
+    let randomPostCellX = getRandomInt(sett.minicolumnDims[0]);
+    let randomPostCellY = getRandomInt(sett.numLayers);
+    let randomPostCellZ = getRandomInt(sett.minicolumnDims[1]);
+      /* arrayOfPreCells.push(new Cell(getRandomInt(5), getRandomInt(9), getRandomInt(5), getRandomInt(0), [], []));
+      arrayOfPostCells.push(new Cell(getRandomInt(5), getRandomInt(9), getRandomInt(5), getRandomInt(0), [], [])); */
+      arrayOfPreCells.push(new Cell(randomPreCellAreaID, randomPreCellX, randomPreCellY, randomPreCellZ, [], []));
+      arrayOfPostCells.push(new Cell(randomPostCellAreaID, randomPostCellX, randomPostCellY, randomPostCellZ, [], []));
     }
 
     let outgoingSynapses: Array<Synapse> = [];
@@ -158,7 +160,7 @@ export class neoCortexUtils {
 
     //var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 0, 0, 0, [synaps01, synaps34, synap23, synap56, synap78, synap910]);
 
-    var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 0, 0, 0, synapses);
+    var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 0, 0, 0, randomSynapses);
 
     return model;
   }
