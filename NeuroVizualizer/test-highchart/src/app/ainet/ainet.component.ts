@@ -245,6 +245,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     }
 
     this.synapsesData();
+    
 
   }
 
@@ -382,15 +383,16 @@ export class AinetComponent implements OnInit, AfterViewInit {
       console.log("Synapse does not exists, it will be created");
       this.createSynapse(perm.permanence, preCell, postCell);
     }
-    if (preCell.outgoingSynapses.length == 0 || postCell.incomingSynapses.length == 0) { // to check if one of the array is empty
+    else if (preCell.outgoingSynapses.length == 0 || postCell.incomingSynapses.length == 0) { // to check if one of the array is empty
       console.log("Synapse does not exists, it will be created");
       this.createSynapse(perm.permanence, preCell, postCell);
     }
-    if (preCell.outgoingSynapses.length != 0 && preCell.incomingSynapses.length != 0 || postCell.outgoingSynapses.length != 0 && postCell.incomingSynapses.length != 0) { // to check if one of the array is empty
+    else if (preCell.outgoingSynapses.length != 0 && preCell.incomingSynapses.length != 0 || postCell.outgoingSynapses.length != 0 && postCell.incomingSynapses.length != 0) { // to check if one of the array is empty
       console.log("Synapse does not exists, it will be created");
       this.createSynapse(perm.permanence, preCell, postCell);
     }
-    else if (preCell.outgoingSynapses != null && postCell.incomingSynapses != null) {
+    // if (preCell.outgoingSynapses != null && postCell.incomingSynapses != null)
+    else {
       console.log("Synapse Exists, Permannence will be updated");
       this.updatePermanenceOfSynaps(perm.permanence, preCell, postCell);
     }
@@ -403,6 +405,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
    * @param postCell 
    */
   updatePermanenceOfSynaps(permanence: number, preCell: Cell, postCell: Cell) {
+    console.log("Synapse Exists, Permannence will be updated");
 
     preCell.outgoingSynapses[0].permanence = permanence ;
     postCell.incomingSynapses[0].permanence = permanence ;
