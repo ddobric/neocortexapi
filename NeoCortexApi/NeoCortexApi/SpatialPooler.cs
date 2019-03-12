@@ -950,7 +950,7 @@ namespace NeoCortexApi
 
                 density = c.NumActiveColumnsPerInhArea / inhibitionArea;
 
-                density = Math.Min(density, MaxInibitionDensity);
+                    density = Math.Min(density, MaxInibitionDensity);
             }
 
             return density;

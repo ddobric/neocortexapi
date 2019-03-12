@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTestsProject", "UnitTes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DistributedComputeLib", "DistributedComputeLib\DistributedComputeLib.csproj", "{7F75D4D0-408B-4FFE-A450-1D7F647542B5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeoCortexUtils", "NeoCortexUtils\NeoCortexUtils.csproj", "{28395BF8-B719-4D93-806B-723A7AF0C56A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexUtils", "NeoCortexUtils\NeoCortexUtils.csproj", "{28395BF8-B719-4D93-806B-723A7AF0C56A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentations", "Documentations", "{C0C922A0-6E8A-45F1-8A97-C67E4C6173F2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
