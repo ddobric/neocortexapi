@@ -90,6 +90,8 @@ export class neoCortexUtils {
 
     let synapses: Array<Synapse> = [synaps01,synap23,synaps34,synap56,synap78, synap910];
 
+   
+
     function getRandomInt(max: any) {
       return Math.floor(Math.random() * Math.floor(max));
     }
