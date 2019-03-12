@@ -178,15 +178,31 @@ export class Synapse {
 export class InputModel {
 
   public cells: Cell[][] = new Array();
+  public X: number;
+  public Z: number;
 
-  public id: number;
+  //public id: number;
+ 
 
-  constructor(settings: NeocortexSettings, cellDims: number[] = []) {
+  constructor(cellDim0: any, cellDim1: any) {
+
+    
 
     this.cells = new Array();
 
+    for (let dim = 0; dim < cellDim0; dim++) {
+      let row: Array<Cell> = new Array();
+      for (let i = 0; i < cellDim1; i++) {
+        row.push(new Cell(null, this.X, null, this.Z, [],[]));
+        
+      }
+      this.cells.push(row);
+     
+      
+    }
+
     //TODO. Exception if cellDims > 2
-    try {
+   /*  try {
 
       for (var dim = 0; dim < cellDims.length; dim++) {
         let row: Array<Cell> = new Array();
@@ -211,7 +227,7 @@ export class InputModel {
     }
     catch (e) {
       console.log(e);
-    }
+    } */
 
 
   }

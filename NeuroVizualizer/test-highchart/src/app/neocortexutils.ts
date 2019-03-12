@@ -78,7 +78,7 @@ export class neoCortexUtils {
     preCell9.outgoingSynapses.push(outgoingSynap10);
     postCell10.incomingSynapses.push(incomingSynap9);
 
-    let inpModel: InputModel = new InputModel(sett);
+    let inpModel: InputModel = new InputModel(sett.minicolumnDims[0], sett.minicolumnDims[1]);
 
     let synaps01 = new Synapse(0, preCell0, postCell1);
     let synap23 = new Synapse(0.5, preCell2, postCell3);
@@ -98,7 +98,7 @@ export class neoCortexUtils {
     let arrayOfPreCells: Array<Cell> = [];
     let arrayOfPostCells: Array<Cell> = [];
     
-    for (let cell = 0; cell < 100; cell++) {
+    for (let cell = 0; cell < 1000; cell++) {
       let randomPreCellAreaID = getRandomInt(sett.areaLevels.length);
     let randomPreCellX = getRandomInt(sett.minicolumnDims[0]);
     let randomPreCellY = getRandomInt(sett.numLayers);
@@ -161,7 +161,7 @@ export class neoCortexUtils {
 
     //var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 0, 0, 0, [synaps01, synaps34, synap23, synap56, synap78, synap910]);
 
-    var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 0, 0, 0, synapses);
+    var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 0, 0, 0, randomSynapses);
 
     return model;
   }

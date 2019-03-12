@@ -241,6 +241,10 @@ export class AinetComponent implements OnInit, AfterViewInit {
           }
         }
       }
+      for (let inpMode = 0; inpMode < model.input.cells.length; inpMode++) {
+        //this.xNeurons.push(model.input.cells[inpMode].X);
+        
+      }
 
     }
 
@@ -409,6 +413,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   /*   preCell.outgoingSynapses[0].permanence = newPermanence;
     postCell.incomingSynapses[0].permanence = newPermanence; */
+    //maybe we need it later
+    //this.model.areas[preCell.areaIndex].minicolumns[preCell.X][preCell.Z].cells[preCell.Layer].outgoingSynapses[?].permanence = newPermanence;
     for (let findSynapse = 0; findSynapse < this.model.synapses.length; findSynapse++) {
 
       if (this.model.synapses[findSynapse].preSynaptic.areaIndex == preCell.areaIndex && 
