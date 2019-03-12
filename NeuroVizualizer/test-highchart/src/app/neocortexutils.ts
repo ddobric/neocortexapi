@@ -19,65 +19,64 @@ export class neoCortexUtils {
     let postCell1: Cell;
 
 
-    preCell0 = new Cell(0, 0, 0, 0, [null], [null]);
-    postCell1 = new Cell(0, 0, 1, 0, [null], [null]);
+    preCell0 = new Cell(0, 0, 0, 0, [], []);
+    postCell1 = new Cell(0, 0, 1, 0, [], []);
 
     let incomingSynap0 = new Synapse(0, preCell0, postCell1);
     let outgoingSynap1 = new Synapse(0, preCell0, postCell1);
-
-    preCell0 = new Cell(0, 0, 0, 0, [null], [outgoingSynap1]);
-    postCell1 = new Cell(0, 0, 1, 0, [incomingSynap0], [null]);
+    preCell0.outgoingSynapses.push(outgoingSynap1);
+    postCell1.incomingSynapses.push(incomingSynap0);
 
 
 
     let preCell3: Cell;
     let postCell4: Cell;
 
-    preCell3 = new Cell(0, 0, 3, 0, [null], [null]);
-    postCell4 = new Cell(0, 9, 0, 0, [null], [null]);
+    preCell3 = new Cell(0, 0, 3, 0, [], []);
+    postCell4 = new Cell(0, 9, 0, 0, [], []);
     let incomingSynap3 = new Synapse(0, preCell3, postCell4);
     let outgoingSynap4 = new Synapse(0, preCell3, postCell4);
 
-    preCell3 = new Cell(0, 0, 3, 0, [null], [outgoingSynap4]);
-    postCell4 = new Cell(0, 9, 0, 0, [incomingSynap3], [null]);
+    preCell3.outgoingSynapses.push(outgoingSynap4);
+    postCell4.incomingSynapses.push(incomingSynap3);
 
 
     let preCell2: Cell;
     let postCell3: Cell;
-    preCell2 = new Cell(3, 0, 0, 0, [null], [null]);
-    postCell3 = new Cell(3, 0, 1, 0, [null], [null]);
+    preCell2 = new Cell(3, 0, 0, 0, [], []);
+    postCell3 = new Cell(3, 0, 1, 0, [], []);
     let incomingSynap2 = new Synapse(0, preCell2, postCell3);
     let outgoingSynap3 = new Synapse(0, preCell2, postCell3);
-    preCell2 = new Cell(3, 0, 0, 0, [null], [outgoingSynap3]);
-    postCell3 = new Cell(3, 0, 1, 0, [incomingSynap2], [null]);
+    preCell2.outgoingSynapses.push(outgoingSynap3);
+    postCell3.incomingSynapses.push(incomingSynap2);
 
 
     let preCell5: Cell;
     let postCell6: Cell;
-    preCell5 = new Cell(1, 2, 2, 0, [null], [null]);
-    postCell6 = new Cell(3, 2, 3, 0, [null], [null]);
+    preCell5 = new Cell(1, 2, 2, 0, [], []);
+    postCell6 = new Cell(3, 2, 3, 0, [], []);
     let incomingSynap5 = new Synapse(0, preCell5, postCell6);
     let outgoingSynap6 = new Synapse(0, preCell5, postCell6);
-    preCell5 = new Cell(1, 2, 2, 0, [null], [outgoingSynap6]);
-    postCell6 = new Cell(3, 2, 3, 0, [incomingSynap5], [null]);
+    preCell5.outgoingSynapses.push(outgoingSynap6);
+    postCell6.incomingSynapses.push(incomingSynap5);
 
     let preCell7: Cell;
     let postCell8: Cell;
-    preCell7 = new Cell(0, 0, 1, 0, [null], [null]);
-    postCell8 = new Cell(0, 0, 2, 0, [null], [null]);
+    preCell7 = new Cell(0, 0, 1, 0, [], []);
+    postCell8 = new Cell(0, 0, 2, 0, [], []);
     let incomingSynap7 = new Synapse(0, preCell7, postCell8);
     let outgoingSynap8 = new Synapse(0, preCell7, postCell8);
-    preCell7 = new Cell(0, 0, 1, 0, [null], [outgoingSynap8]);
-    postCell8 = new Cell(0, 0, 2, 0, [incomingSynap7], [null]);
+    preCell7.outgoingSynapses.push(outgoingSynap8);
+    postCell8.incomingSynapses.push(incomingSynap7);
 
     let preCell9: Cell;
     let postCell10: Cell;
-    preCell9 = new Cell(3, 0, 1, 0, [null], [null]);
-    postCell10 = new Cell(3, 0, 2, 0, [null], [null]);
+    preCell9 = new Cell(3, 0, 1, 0, [], []);
+    postCell10 = new Cell(3, 0, 2, 0, [], []);
     let incomingSynap9 = new Synapse(0.80, preCell9, postCell10);
     let outgoingSynap10 = new Synapse(0.80, preCell9, postCell10);
-    preCell9 = new Cell(3, 0, 1, 0, [null], [outgoingSynap10]);
-    postCell10 = new Cell(3, 0, 2, 0, [incomingSynap9], [null]);
+    preCell9.outgoingSynapses.push(outgoingSynap10);
+    postCell10.incomingSynapses.push(incomingSynap9);
 
     let inpModel: InputModel = new InputModel(sett);
 

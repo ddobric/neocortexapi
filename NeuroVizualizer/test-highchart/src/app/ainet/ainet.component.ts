@@ -421,8 +421,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
          this.model.synapses[findSynapse].postSynaptic.Layer == postCell.Layer &&
          this.model.synapses[findSynapse].postSynaptic.Z == postCell.Z ) {
 
-        this.model.synapses[findSynapse].preSynaptic.outgoingSynapses[0].permanence = newPermanence;
-        this.model.synapses[findSynapse].postSynaptic.incomingSynapses[0].permanence = newPermanence;
+        /* this.model.synapses[findSynapse].preSynaptic.outgoingSynapses[0].permanence = newPermanence;
+        this.model.synapses[findSynapse].postSynaptic.incomingSynapses[0].permanence = newPermanence */;
         this.model.synapses[findSynapse].permanence = newPermanence;
       }
 
@@ -480,11 +480,11 @@ export class AinetComponent implements OnInit, AfterViewInit {
     let incomingSynapse = new Synapse(permanence, preCell, postCell);
     let outgoingSynapse = new Synapse(permanence, preCell, postCell);
 
-    preCell = new Cell(preCell.areaIndex, preCell.X, preCell.Layer, preCell.Z, [], [outgoingSynapse]);
-    postCell = new Cell(postCell.areaIndex, postCell.X, postCell.Layer, postCell.Z, [incomingSynapse], []);
+   /*  preCell = new Cell(preCell.areaIndex, preCell.X, preCell.Layer, preCell.Z, [], [outgoingSynapse]);
+    postCell = new Cell(postCell.areaIndex, postCell.X, postCell.Layer, postCell.Z, [incomingSynapse], []); */
 
-    /*   preCell.outgoingSynapses.push(outgoingSynapse);
-      postCell.incomingSynapses.push(incomingSynapse); */
+      preCell.outgoingSynapses.push(outgoingSynapse);
+      postCell.incomingSynapses.push(incomingSynapse);
 
     this.model.areas[preCell.areaIndex].minicolumns[preCell.X][preCell.Z].cells[preCell.Layer].outgoingSynapses.push(outgoingSynapse);
     this.model.areas[postCell.areaIndex].minicolumns[postCell.X][postCell.Z].cells[postCell.Layer].incomingSynapses.push(incomingSynapse);
@@ -492,7 +492,6 @@ export class AinetComponent implements OnInit, AfterViewInit {
     console.log("Synapse does not exists");
     let synapse: Synapse;
     synapse = new Synapse(permanence, preCell, postCell);
-    //this.model = neoCortexUtils.createModel([0, 0, 0, 1, 2, 1], [10, 1], 6, [synapse]); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
     this.model.synapses.push(synapse);
     this.fillChart(this.model);
     this.generateColoursFromOverlap(this.model);
