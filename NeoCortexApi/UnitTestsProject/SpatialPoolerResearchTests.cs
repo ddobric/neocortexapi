@@ -101,6 +101,58 @@ namespace UnitTestsProject
 
         }
 
+        [TestMethod]
+        public void StableOutputOnTwoInputTest()
+        {
+            const int numInputs = 100;
+
+            var parameters = GetDefaultParams();
+
+            parameters.setInputDimensions(new int[] { 32, 32 });
+            parameters.setColumnDimensions(new int[] { 64, 64 });
+            parameters.setNumActiveColumnsPerInhArea(0.02 * 64 * 64);
+            var sp = new SpatialPooler();
+
+            var mem = new Connections();
+            parameters.apply(mem);
+            sp.init(mem);
+
+            int[] activeArray = new int[64 * 64];
+
+            List<int[]> inputVectors = new List<int[]>();
+            for (int i = 0; i < numInputs; i++)
+            {
+                inputVectors.Add(Helpers.GetRandomVector(32 * 32, parameters.Get<Random>(KEY.RANDOM)));
+            }
+      
+            for (int i = 0; i < 20; i++)
+            {
+                for (int j = 0; j < inputVectors.Count; j++)
+                {
+                    sp.compute(mem, inputVectors[j], activeArray, true);
+
+                    var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
+
+                    var str = Helpers.StringifyVector(activeCols);
+
+                    Debug.WriteLine($"V{j} - {str}");
+                }
+            }
+
+            for (int i = 0; i < 20; i++)
+            {
+                for (int j = 0; j < inputVectors.Count; j++)
+                {
+                    sp.compute(mem, inputVectors[j], activeArray, false);
+
+                    var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
+
+                    var str = Helpers.StringifyVector(activeCols);
+
+                    Debug.WriteLine($"V{j} - {str}");
+                }
+            }
+        }
 
         /// <summary>
         /// Corresponds to git\nupic\examples\sp\sp_tutorial.py
