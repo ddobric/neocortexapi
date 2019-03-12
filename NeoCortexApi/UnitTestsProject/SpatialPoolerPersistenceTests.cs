@@ -118,11 +118,13 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 32, 32 });
             parameters.setColumnDimensions(new int[] { 64, 64 });
             parameters.setNumActiveColumnsPerInhArea(0.02 * 64 * 64);
-            var sp = new SpatialPooler();
-
+           
             var mem = new Connections();
             parameters.apply(mem);
+
+            var sp = new SpatialPooler();
             sp.init(mem);
+          
 
             int[] activeArray = new int[64 * 64];
 
