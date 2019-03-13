@@ -225,7 +225,6 @@ namespace UnitTestsProject
         //[DataRow("MnistTestImages\\digit7.png", 128, 30)]
         public void CalculateSpeedOfLearningTest(string mnistImage, int imageSize, int topology)
         {
-            //Extract the name of image
             int index1 = mnistImage.IndexOf("\\") + 1;
             int index2 = mnistImage.IndexOf(".");
             string sub1 = mnistImage.Substring(0, index2);
@@ -234,7 +233,7 @@ namespace UnitTestsProject
             string testName = name + "_" + imageSize + "_Topology" + topology;
             string outputHamDistFile = $"Output\\{testName}_hamming.txt";
             string outputSpeedFile = $"Output\\{testName}_speed.txt";
-            string outputImage = $"Output\\{testName}.png";
+            string outputImage = $"Output\\{testName}_activecolumns.png";
             string inputBinaryImageFile = $"Output\\{testName}_bin.txt";
 
             inputBinaryImageFile = BinarizeImage(mnistImage, imageSize, testName);
@@ -298,7 +297,7 @@ namespace UnitTestsProject
 
                     var activeStr = Helpers.StringifyVector(activeArray);
                     swHam.WriteLine("Active Array: " + activeStr);
-                    //Debug.WriteLine("active Array:" + activeStr);
+
                     sw.Stop();
                     //stream.WriteLine($"Compute execution time per iteration ={(double)sw.ElapsedMilliseconds / (double)1000 / iterations} sec. Compute execution time={(double)sw.ElapsedMilliseconds / (double)1000} sec.");
                     int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(activeArray, topology, topology);
