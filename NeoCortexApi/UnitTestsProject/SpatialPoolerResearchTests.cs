@@ -16,6 +16,8 @@ namespace UnitTestsProject
     [TestClass]
     public class SpatialPoolerResearchTests
     {
+        private const int OutImgSize = 1024;
+
         [TestMethod]
         public void StableOutputOnSameInputTest()
         {
@@ -219,7 +221,7 @@ namespace UnitTestsProject
         /// @param mnistImage directory of original input image.
         /// </summary>
         [TestMethod]
-        [DataRow("MnistTestImages\\digit7.png", 30)]
+        [DataRow("MnistTestImages\\digit7.png", 32, 32)]
         //[DataRow("MnistTestImages\\digit7.png", 128, 30)]
         public void CalculateSpeedOfLearningTest(string mnistImage, int imageSize, int topology)
         {
@@ -293,14 +295,17 @@ namespace UnitTestsProject
                         oldArray = new int[actiColLen];
                         activeArray.CopyTo(oldArray, 0);
                     }
+
                     var activeStr = Helpers.StringifyVector(activeArray);
                     swHam.WriteLine("Active Array: " + activeStr);
                     //Debug.WriteLine("active Array:" + activeStr);
                     sw.Stop();
                     //stream.WriteLine($"Compute execution time per iteration ={(double)sw.ElapsedMilliseconds / (double)1000 / iterations} sec. Compute execution time={(double)sw.ElapsedMilliseconds / (double)1000} sec.");
-                    NeoCortexUtils.DrawBitmap(activeArray, topology, topology, outputImage);
-                }
+                    int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(activeArray, topology, topology);
+                    twoDimenArray = ArrayUtils.Transpose(twoDimenArray);
 
+                    NeoCortexUtils.DrawBitmap(twoDimenArray, OutImgSize, OutImgSize, outputImage);
+                }
             }
         }
 
@@ -313,13 +318,16 @@ namespace UnitTestsProject
         /// <returns></returns>
         private static string BinarizeImage(string mnistImage, int imageSize, string testName)
         {
-            string inputBinaryImageFile;
+            string binaryImage;
 
             Binarizer imageBinarizer = new Binarizer(200, 200, 200, imageSize, imageSize);
-            inputBinaryImageFile = $"Output\\{testName}.txt";
-            imageBinarizer.CreateBinary(mnistImage, inputBinaryImageFile);
+            binaryImage = $"Output\\{testName}.txt";
+            if (File.Exists(binaryImage))
+                File.Delete(binaryImage);
 
-            return inputBinaryImageFile;
+            imageBinarizer.CreateBinary(mnistImage, binaryImage);
+
+            return binaryImage;
         }
 
         /// <summary>
