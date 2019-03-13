@@ -213,13 +213,13 @@ export class AinetComponent implements OnInit, AfterViewInit {
       this.yCoordinatesForOneArea = [];
       this.zCoordinatesForOneArea = [];
 
-    /*   for (let inputmodel = 0; inputmodel < model.input.cells.length; inputmodel++) {
-        this.xNeurons.push(model.input.cells[inputmodel].X);
-        this.yNeurons.push(0);
-        this.zNeurons.push(model.input.cells[inputmodel].Z);
-        this.overlap.push(0);
-        
-      } */
+      /*   for (let inputmodel = 0; inputmodel < model.input.cells.length; inputmodel++) {
+          this.xNeurons.push(model.input.cells[inputmodel].X);
+          this.yNeurons.push(0);
+          this.zNeurons.push(model.input.cells[inputmodel].Z);
+          this.overlap.push(0);
+          
+        } */
 
 
       for (let i = 0; i < model.areas[areaIndx].minicolumns.length; i++) {
@@ -251,7 +251,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       }
       for (let inpMode = 0; inpMode < model.input.cells.length; inpMode++) {
         //this.xNeurons.push(model.input.cells[inpMode].X);
-        
+
       }
 
     }
@@ -399,7 +399,13 @@ export class AinetComponent implements OnInit, AfterViewInit {
       console.log("Synapse does not exists, it will be created");
       this.createSynapse(perm.permanence, preCell, postCell);
     }
-    else if (preCell.outgoingSynapses.length != 0 && preCell.incomingSynapses.length != 0 || postCell.outgoingSynapses.length != 0 && postCell.incomingSynapses.length != 0) { // to check if one of the array is empty
+    else if ((preCell.outgoingSynapses.length == 0 && preCell.incomingSynapses.length == 0) && (postCell.outgoingSynapses.length == 0 && postCell.incomingSynapses.length == 0)) { // to check if one of the array is empty
+      console.log("Synapse does not exists, it will be created");
+      this.createSynapse(perm.permanence, preCell, postCell);
+    }
+
+    else if ((preCell.outgoingSynapses.length != 0 && preCell.incomingSynapses.length != 0) && (postCell.outgoingSynapses.length != 0 && postCell.incomingSynapses.length != 0)) { // to check if one of the array is empty
+      // to fix when this conditions satisfied and there already exisits a synapse how to false this block that it jumps to update block
       console.log("Synapse does not exists, it will be created");
       this.createSynapse(perm.permanence, preCell, postCell);
     }
@@ -419,21 +425,21 @@ export class AinetComponent implements OnInit, AfterViewInit {
   updatePermanenceOfSynaps(newPermanence: number, preCell: Cell, postCell: Cell) {
     console.log("Synapse Exists, Permannence will be updated");
 
-  /*   preCell.outgoingSynapses[0].permanence = newPermanence;
-    postCell.incomingSynapses[0].permanence = newPermanence; */
+    /*   preCell.outgoingSynapses[0].permanence = newPermanence;
+      postCell.incomingSynapses[0].permanence = newPermanence; */
     //maybe we need it later
     //this.model.areas[preCell.areaIndex].minicolumns[preCell.X][preCell.Z].cells[preCell.Layer].outgoingSynapses[?].permanence = newPermanence;
     for (let findSynapse = 0; findSynapse < this.model.synapses.length; findSynapse++) {
 
-      if (this.model.synapses[findSynapse].preSynaptic.areaIndex == preCell.areaIndex && 
-         this.model.synapses[findSynapse].preSynaptic.X == preCell.X &&
-         this.model.synapses[findSynapse].preSynaptic.Layer == preCell.Layer &&
-         this.model.synapses[findSynapse].preSynaptic.Z == preCell.Z &&
+      if (this.model.synapses[findSynapse].preSynaptic.areaIndex == preCell.areaIndex &&
+        this.model.synapses[findSynapse].preSynaptic.X == preCell.X &&
+        this.model.synapses[findSynapse].preSynaptic.Layer == preCell.Layer &&
+        this.model.synapses[findSynapse].preSynaptic.Z == preCell.Z &&
 
-         this.model.synapses[findSynapse].postSynaptic.areaIndex == postCell.areaIndex && 
-         this.model.synapses[findSynapse].postSynaptic.X == postCell.X &&
-         this.model.synapses[findSynapse].postSynaptic.Layer == postCell.Layer &&
-         this.model.synapses[findSynapse].postSynaptic.Z == postCell.Z ) {
+        this.model.synapses[findSynapse].postSynaptic.areaIndex == postCell.areaIndex &&
+        this.model.synapses[findSynapse].postSynaptic.X == postCell.X &&
+        this.model.synapses[findSynapse].postSynaptic.Layer == postCell.Layer &&
+        this.model.synapses[findSynapse].postSynaptic.Z == postCell.Z) {
 
         /* this.model.synapses[findSynapse].preSynaptic.outgoingSynapses[0].permanence = newPermanence;
         this.model.synapses[findSynapse].postSynaptic.incomingSynapses[0].permanence = newPermanence */;
@@ -445,7 +451,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.fillChart(this.model);
     this.generateColoursFromOverlap(this.model);
     this.generateColoursFromPermanences(this.model);
-   
+
     const updateNeurons = {
       x: this.xNeurons,
       y: this.yNeurons,
@@ -494,11 +500,11 @@ export class AinetComponent implements OnInit, AfterViewInit {
     let incomingSynapse = new Synapse(permanence, preCell, postCell);
     let outgoingSynapse = new Synapse(permanence, preCell, postCell);
 
-   /*  preCell = new Cell(preCell.areaIndex, preCell.X, preCell.Layer, preCell.Z, [], [outgoingSynapse]);
-    postCell = new Cell(postCell.areaIndex, postCell.X, postCell.Layer, postCell.Z, [incomingSynapse], []); */
+    /*  preCell = new Cell(preCell.areaIndex, preCell.X, preCell.Layer, preCell.Z, [], [outgoingSynapse]);
+     postCell = new Cell(postCell.areaIndex, postCell.X, postCell.Layer, postCell.Z, [incomingSynapse], []); */
 
-      preCell.outgoingSynapses.push(outgoingSynapse);
-      postCell.incomingSynapses.push(incomingSynapse);
+    preCell.outgoingSynapses.push(outgoingSynapse);
+    postCell.incomingSynapses.push(incomingSynapse);
 
     this.model.areas[preCell.areaIndex].minicolumns[preCell.X][preCell.Z].cells[preCell.Layer].outgoingSynapses.push(outgoingSynapse);
     this.model.areas[postCell.areaIndex].minicolumns[postCell.X][postCell.Z].cells[postCell.Layer].incomingSynapses.push(incomingSynapse);
