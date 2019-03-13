@@ -290,7 +290,10 @@ namespace UnitTestsProject
                                 //Debug.WriteLine("active Array:" + activeStr);
                                 sw.Stop();
                                 //stream.WriteLine($"Compute execution time per iteration ={(double)sw.ElapsedMilliseconds / (double)1000 / iterations} sec. Compute execution time={(double)sw.ElapsedMilliseconds / (double)1000} sec.");
-                                NeoCortexUtils.DrawBitmap(activeArray, OutImgSize, OutImgSize, outputImage);
+                                int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(activeArray, topologies[topologyIndx], topologies[topologyIndx]);
+                                twoDimenArray = ArrayUtils.Transpose(twoDimenArray);
+
+                                NeoCortexUtils.DrawBitmap(twoDimenArray, OutImgSize, OutImgSize, outputImage);
                             }
                         }
                     }
