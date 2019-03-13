@@ -273,7 +273,7 @@ namespace UnitTestsProject
 
                         parameters.setInputDimensions(new int[] { imageSize[i], imageSize[i] });
                         parameters.setColumnDimensions(new int[] { topology[j], topology[j] });
-                        //parameters.setNumActiveColumnsPerInhArea(0.02 * numOfActCols);
+                        parameters.setNumActiveColumnsPerInhArea(0.02 * numOfActCols);
                         var sp = new SpatialPooler();
                         var mem = new Connections();
                         parameters.apply(mem);
