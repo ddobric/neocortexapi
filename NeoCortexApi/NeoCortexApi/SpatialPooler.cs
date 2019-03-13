@@ -432,8 +432,7 @@ namespace NeoCortexApi
                 period = c.getIterationNum();
             }
             //Debug.WriteLine("period is: " + period);
-            c.setOverlapDutyCycles(
-                    updateDutyCyclesHelper(c, c.getOverlapDutyCycles(), overlapArray, period));
+            c.setOverlapDutyCycles(updateDutyCyclesHelper(c, c.getOverlapDutyCycles(), overlapArray, period));
 
             c.setActiveDutyCycles(
                     updateDutyCyclesHelper(c, c.getActiveDutyCycles(), activeArray, period));
@@ -1325,8 +1324,10 @@ namespace NeoCortexApi
          * Update the boost factors for all columns. The boost factors are used to
          * increase the overlap of inactive columns to improve their chances of
          * becoming active. and hence encourage participation of more columns in the
-         * learning process. This is a line defined as: y = mx + b boost =
-         * (1-maxBoost)/minDuty * dutyCycle + maxFiringBoost. Intuitively this means
+         * learning process. This is a line defined as: 
+         * y = mx + b 
+         * boost = (1-maxBoost)/minDuty * activeDutyCycle + maxBoost. 
+         * Intuitively this means
          * that columns that have been active enough have a boost factor of 1, meaning
          * their overlap is not boosted. Columns whose active duty cycle drops too much
          * below that of their neighbors are boosted depending on how infrequently they
@@ -1365,15 +1366,18 @@ namespace NeoCortexApi
             //        int[] mask = ArrayUtils.where(minActiveDutyCycles, ArrayUtils.GREATER_THAN_0);
 
             double[] boostInterim;
+            
+            //
+            // Boost factors are NOT recalculated if minimum active duty cycles are all set on 0.
             if (mask.Count < 1)
             {
                 boostInterim = c.BoostFactors;
             }
             else
             {
-                double[] numerator = new double[c.getNumColumns()];
-                ArrayUtils.fillArray(numerator, 1 - c.getMaxBoost());
-                boostInterim = ArrayUtils.divide(numerator, minActiveDutyCycles, 0, 0);
+                double[] oneMinusMaxBoostFact = new double[c.getNumColumns()];
+                ArrayUtils.fillArray(oneMinusMaxBoostFact, 1 - c.getMaxBoost());
+                boostInterim = ArrayUtils.divide(oneMinusMaxBoostFact, minActiveDutyCycles, 0, 0);
                 boostInterim = ArrayUtils.multiply(boostInterim, activeDutyCycles, 0, 0);
                 boostInterim = ArrayUtils.d_add(boostInterim, c.getMaxBoost());
             }
