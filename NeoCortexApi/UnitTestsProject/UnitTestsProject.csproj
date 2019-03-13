@@ -75,6 +75,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="MnistPng28x28\" />
     <Folder Include="Output\" />
   </ItemGroup>
 
