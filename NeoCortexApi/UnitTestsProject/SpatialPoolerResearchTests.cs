@@ -228,7 +228,6 @@ namespace UnitTestsProject
         //[DataRow("MnistTestImages\\digit7.png", 128, 30)]
         public void CalculateSpeedOfLearningTest(string mnistImage, int[] imageSize, int[] topologies)
         {
-            //Extract the name of image
             int index1 = mnistImage.IndexOf("\\") + 1;
             int index2 = mnistImage.IndexOf(".");
             string sub1 = mnistImage.Substring(0, index2);
@@ -308,13 +307,16 @@ namespace UnitTestsProject
         /// <returns></returns>
         private static string BinarizeImage(string mnistImage, int imageSize, string testName)
         {
-            string inputBinaryImageFile;
+            string binaryImage;
 
             Binarizer imageBinarizer = new Binarizer(200, 200, 200, imageSize, imageSize);
-            inputBinaryImageFile = $"Output\\{testName}.txt";
-            imageBinarizer.CreateBinary(mnistImage, inputBinaryImageFile);
+            binaryImage = $"Output\\{testName}.txt";
+            if (File.Exists(binaryImage))
+                File.Delete(binaryImage);
 
-            return inputBinaryImageFile;
+            imageBinarizer.CreateBinary(mnistImage, binaryImage);
+
+            return binaryImage;
         }
 
         /// <summary>
