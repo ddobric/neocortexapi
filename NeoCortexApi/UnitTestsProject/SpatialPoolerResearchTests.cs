@@ -18,11 +18,11 @@ namespace UnitTestsProject
     {
         [TestMethod]
         public void StableOutputOnSameInputTest()
-        {         
+        {
             var parameters = GetDefaultParams();
 
-            parameters.setInputDimensions(new int[] { 32,32 });
-            parameters.setColumnDimensions(new int[] { 64,64 });
+            parameters.setInputDimensions(new int[] { 32, 32 });
+            parameters.setColumnDimensions(new int[] { 64, 64 });
             parameters.setNumActiveColumnsPerInhArea(0.02 * 64 * 64);
             var sp = new SpatialPooler();
             var mem = new Connections();
@@ -88,7 +88,7 @@ namespace UnitTestsProject
         {
             var parameters = GetDefaultParams();
 
-            parameters.setInputDimensions(new int[] { 1000});
+            parameters.setInputDimensions(new int[] { 1000 });
             parameters.setColumnDimensions(new int[] { 2048 });
             parameters.setNumActiveColumnsPerInhArea(0.02 * 2048);
             parameters.setGlobalInhibition(false);
@@ -104,7 +104,7 @@ namespace UnitTestsProject
             int[] inputVector = Helpers.GetRandomVector(1000, parameters.Get<Random>(KEY.RANDOM));
 
             sp.compute(mem, inputVector, activeArray, true);
-            
+
             var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 
             var str = Helpers.StringifyVector(activeCols);
@@ -134,7 +134,7 @@ namespace UnitTestsProject
             var mem = new Connections();
             parameters.apply(mem);
             sp.init(mem);
-            
+
             for (int rad = 1; rad < 10; rad++)
             {
                 using (StreamWriter sw = new StreamWriter($"neighborhood-test-rad{rad}-center-from-{cellsDim1}-to-{0}.csv"))
@@ -173,9 +173,9 @@ namespace UnitTestsProject
         {
             var parameters = GetDefaultParams();
 
-            parameters.setInputDimensions(new int[] { 32,32 });
-            parameters.setColumnDimensions(new int[] { 32,32 });
-            parameters.setNumActiveColumnsPerInhArea(0.2*32*32);
+            parameters.setInputDimensions(new int[] { 32, 32 });
+            parameters.setColumnDimensions(new int[] { 32, 32 });
+            parameters.setNumActiveColumnsPerInhArea(0.2 * 32 * 32);
             parameters.setGlobalInhibition(false);
 
             var sp = new SpatialPooler();
@@ -187,7 +187,7 @@ namespace UnitTestsProject
             var inputString = Helpers.StringifyVector(inputVector);
             Debug.WriteLine("Input Array: " + inputString);
             //int[] inputVector = new int[] { 1, 0, 0, 0, 1, 1, 1, 0, 1, 1};
-            int[] activeArray = new int[32*32];
+            int[] activeArray = new int[32 * 32];
             //int iteration = -1;
             String str = "";
             for (int i = 0; i < 100; i++)
@@ -200,7 +200,7 @@ namespace UnitTestsProject
                 var strInhibitions = Helpers.StringifyVector(inhibitions);
 
                 sp.compute(mem, inputVector, activeArray, true);
-                
+
                 var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
                 var strActiveArr = Helpers.StringifyVector(activeArray);
                 Debug.WriteLine("Active array: " + strActiveArr);
@@ -219,105 +219,107 @@ namespace UnitTestsProject
         /// @param mnistImage directory of original input image.
         /// </summary>
         [TestMethod]
-        [DataRow("MnistTestImages\\digit7.png")]
-        public void CalculateSpeedOfLearningTest(string mnistImage)
+        [DataRow("MnistTestImages\\digit7.png", 30)]
+        //[DataRow("MnistTestImages\\digit7.png", 128, 30)]
+        public void CalculateSpeedOfLearningTest(string mnistImage, int imageSize, int topology)
         {
-            //define image size
-            int[] imageSize = new int[] {128};
-            int[] topology = new int[] {30};
-
             //Extract the name of image
             int index1 = mnistImage.IndexOf("\\") + 1;
             int index2 = mnistImage.IndexOf(".");
             string sub1 = mnistImage.Substring(0, index2);
             string sub2 = mnistImage.Substring(0, index1);
             string name = mnistImage.Substring(index1, sub1.Length - sub2.Length);
-            string testName = null;
-            string outputHamDistFile = $"Output\\{testName}.txt";
+            string testName = name + "_" + imageSize + "_Topology" + topology;
+            string outputHamDistFile = $"Output\\{testName}_hamming.txt";
+            string outputSpeedFile = $"Output\\{testName}_speed.txt";
             string outputImage = $"Output\\{testName}.png";
-            string inputBinaryImageFile = $"Output\\BinaryImages\\{testName}.txt";
-            for (int i = 0; i < imageSize.Length; i++)
+            string inputBinaryImageFile = $"Output\\{testName}_bin.txt";
+
+            inputBinaryImageFile = BinarizeImage(mnistImage, imageSize, testName);
+
+            int numOfActCols = 0;
+
+            var sw = new Stopwatch();
+
+            // Load mnistImage from original file.
+
+            // Binarize image to specific sizes.
+            // foreach(32x32, 64x64, 128x128, 256,256, 1024x1024)..
+            // {
+            //      foreach(topology) = {10x10, 20x20, 30,30, 60x60, 100x100, 500x500}
+            //{
+            //      img = create bin image of size
+            //      compute
+            //      h = getHamDist()
+            //      writeHamDist
+            //      createPngfromActCols
+            // }
+            //}
+            using (StreamWriter swHam = new StreamWriter(outputHamDistFile))
             {
-                //binarize image to binarizedImage
-
-                /* commented because we already had binary image
-                Binarizer imageBinarizer = new Binarizer(200, 200, 200, imageSize[i], imageSize[i]);
-                testName = name + "_" + imageSize[i];
-                inputBinaryImageFile = $"Output\\BinaryImages\\{testName}.txt";
-                imageBinarizer.CreateBinary(mnistImage, inputBinaryImageFile);
-                */
-                testName = name + "_" + imageSize[i];
-                inputBinaryImageFile = $"Output\\BinaryImages\\{testName}.txt";
-                for (int j = 0; j < topology.Length; j++)
+                using (StreamWriter swSpeed = new StreamWriter(outputSpeedFile, true))
                 {
+                    numOfActCols = topology * topology;
+                    var parameters = GetDefaultParams();
 
-                    testName = name + "_" + imageSize[i] + "_Topology" + topology[j];
-                    outputHamDistFile = $"Output\\{testName}.txt";
-                    outputImage = $"Output\\{testName}.png";
-                    
-                    int numOfActCols = 0;
+                    parameters.setInputDimensions(new int[] { imageSize, imageSize });
+                    parameters.setColumnDimensions(new int[] { topology, topology });
+                    parameters.setNumActiveColumnsPerInhArea(0.02 * numOfActCols);
+                    var sp = new SpatialPooler();
+                    var mem = new Connections();
+                    parameters.apply(mem);
+                    sw.Start();
+                    sp.init(mem);
+                    sw.Stop();
 
-                    var sw = new Stopwatch();
+                    swSpeed.Write($"{(double)sw.ElapsedMilliseconds / (double)1000} sec.");
 
-                    // Load mnistImage from original file.
-
-                    // Binarize image to specific sizes.
-                    // foreach(32x32, 64x64, 128x128, 256,256, 1024x1024)..
-                    // {
-                    //      foreach(topology) = {10x10, 20x20, 30,30, 60x60, 100x100, 500x500}
-                    //{
-                    //      img = create bin image of size
-                    //      compute
-                    //      h = getHamDist()
-                    //      writeHamDist
-                    //      createPngfromActCols
-                    // }
-                    //}
-                    using (StreamWriter stream = new StreamWriter(outputHamDistFile))
+                    int actiColLen = numOfActCols;
+                    int[] activeArray = new int[actiColLen];
+                    //Read input csv file into array
+                    int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+                    sw.Restart();
+                    int iterations = 100;
+                    int[] oldArray = new int[activeArray.Length];
+                    for (int k = 0; k < iterations; k++)
                     {
-                        numOfActCols = topology[j] * topology[j];
-                        var parameters = GetDefaultParams();
+                        sp.compute(mem, inputVector, activeArray, true);
 
-                        parameters.setInputDimensions(new int[] { imageSize[i], imageSize[i] });
-                        parameters.setColumnDimensions(new int[] { topology[j], topology[j] });
-                        parameters.setNumActiveColumnsPerInhArea(0.02 * numOfActCols);
-                        var sp = new SpatialPooler();
-                        var mem = new Connections();
-                        parameters.apply(mem);
-                        sw.Start();
-                        sp.init(mem);
-                        sw.Stop();
-
-                        //stream.Write($"in=32x32, col=64x64 \tInit execution time={(double)sw.ElapsedMilliseconds / (double)1000} sec.");
-
-                        int actiColLen = numOfActCols;
-                        int[] activeArray = new int[actiColLen];
-                        //Read input csv file into array
-                        int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
-                        sw.Restart();
-                        int iterations = 100;
-                        int[] oldArray = new int[activeArray.Length];
-                        for (int k = 0; k < iterations; k++)
-                        {
-                            sp.compute(mem, inputVector, activeArray, true);
-
-                            var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
-                            var distance = MathHelpers.GetHammingDistance(oldArray, activeArray);
-                            stream.WriteLine(distance + "\n");
-                            var str = Helpers.StringifyVector(activeCols);
-                            //Debug.WriteLine($"{distance} - {str}");
-                            oldArray = new int[actiColLen];
-                            activeArray.CopyTo(oldArray, 0);
-                        }
-                        var activeStr = Helpers.StringifyVector(activeArray);
-                        stream.WriteLine("Active Array: " + activeStr);
-                        //Debug.WriteLine("active Array:" + activeStr);
-                        sw.Stop();
-                        //stream.WriteLine($"Compute execution time per iteration ={(double)sw.ElapsedMilliseconds / (double)1000 / iterations} sec. Compute execution time={(double)sw.ElapsedMilliseconds / (double)1000} sec.");
-                        NeoCortexUtils.DrawBitmap(activeArray, topology[j],topology[j], outputImage);
+                        var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
+                        var distance = MathHelpers.GetHammingDistance(oldArray, activeArray);
+                        swHam.WriteLine(distance + "\n");
+                        var str = Helpers.StringifyVector(activeCols);
+                        //Debug.WriteLine($"{distance} - {str}");
+                        oldArray = new int[actiColLen];
+                        activeArray.CopyTo(oldArray, 0);
                     }
+                    var activeStr = Helpers.StringifyVector(activeArray);
+                    swHam.WriteLine("Active Array: " + activeStr);
+                    //Debug.WriteLine("active Array:" + activeStr);
+                    sw.Stop();
+                    //stream.WriteLine($"Compute execution time per iteration ={(double)sw.ElapsedMilliseconds / (double)1000 / iterations} sec. Compute execution time={(double)sw.ElapsedMilliseconds / (double)1000} sec.");
+                    NeoCortexUtils.DrawBitmap(activeArray, topology, topology, outputImage);
                 }
+
             }
+        }
+
+        /// <summary>
+        /// Binarize image to binarizedImage.
+        /// </summary>
+        /// <param name="mnistImage"></param>
+        /// <param name="imageSize"></param>
+        /// <param name="testName"></param>
+        /// <returns></returns>
+        private static string BinarizeImage(string mnistImage, int imageSize, string testName)
+        {
+            string inputBinaryImageFile;
+
+            Binarizer imageBinarizer = new Binarizer(200, 200, 200, imageSize, imageSize);
+            inputBinaryImageFile = $"Output\\{testName}.txt";
+            imageBinarizer.CreateBinary(mnistImage, inputBinaryImageFile);
+
+            return inputBinaryImageFile;
         }
 
         /// <summary>
@@ -327,7 +329,7 @@ namespace UnitTestsProject
         [DataRow("TestFiles\\digit8.png")]
         public void BinarizeImageTest(String sourcePath, String destinationPath)
         {
-            Binarizer imageBinarizer = new Binarizer(200,200,200,32,32);
+            Binarizer imageBinarizer = new Binarizer(200, 200, 200, 32, 32);
             imageBinarizer.CreateBinary(sourcePath, destinationPath);
         }
 
@@ -346,7 +348,7 @@ namespace UnitTestsProject
             {
                 String s = integerStrings[n];
                 char[] sub = s.ToCharArray();
-                for (int j = 0; j < sub.Length-1; j++)
+                for (int j = 0; j < sub.Length - 1; j++)
                 {
                     intList.Add(int.Parse(sub[j].ToString()));
                 }
@@ -358,11 +360,11 @@ namespace UnitTestsProject
 
         private static Parameters GetDefaultParams()
         {
-            
+
             Random rnd = new Random(42);
 
             var parameters = Parameters.getAllDefaultParameters();
-            parameters.Set(KEY.POTENTIAL_RADIUS,10);
+            parameters.Set(KEY.POTENTIAL_RADIUS, 10);
             parameters.Set(KEY.POTENTIAL_PCT, 0.75);
             parameters.Set(KEY.GLOBAL_INHIBITION, false);
             parameters.Set(KEY.LOCAL_AREA_DENSITY, -1);
@@ -378,7 +380,7 @@ namespace UnitTestsProject
             parameters.Set(KEY.MAX_BOOST, 10.0);
             parameters.Set(KEY.RANDOM, rnd);
             //int r = parameters.Get<int>(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA);
-            
+
             /*
             Random rnd = new Random(42);
 
