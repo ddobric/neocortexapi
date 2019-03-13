@@ -213,6 +213,14 @@ export class AinetComponent implements OnInit, AfterViewInit {
       this.yCoordinatesForOneArea = [];
       this.zCoordinatesForOneArea = [];
 
+    /*   for (let inputmodel = 0; inputmodel < model.input.cells.length; inputmodel++) {
+        this.xNeurons.push(model.input.cells[inputmodel].X);
+        this.yNeurons.push(0);
+        this.zNeurons.push(model.input.cells[inputmodel].Z);
+        this.overlap.push(0);
+        
+      } */
+
 
       for (let i = 0; i < model.areas[areaIndx].minicolumns.length; i++) {
         for (let j = 0; j < model.areas[areaIndx].minicolumns[i].length; j++) {
