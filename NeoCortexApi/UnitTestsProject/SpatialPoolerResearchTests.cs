@@ -224,22 +224,28 @@ namespace UnitTestsProject
         /// <param name="imageSize">list of sizes used for testing. Image would have same value for width and length</param>
         /// <param name="topologies">list of sparse space size. Sparse space has same width and length</param>
         [TestMethod]
-        [DataRow("MnistTestImages\\digit7.png", 30)]
+        [DataRow("MnistTestImages\\digit7.png", new int[] { 32, 64 }, new int[] { 10, 20 })]
         //[DataRow("MnistTestImages\\digit7.png", 128, 30)]
         public void CalculateSpeedOfLearningTest(string mnistImage, int[] imageSize, int[] topologies)
         {
+            //Extract the name of image
             int index1 = mnistImage.IndexOf("\\") + 1;
             int index2 = mnistImage.IndexOf(".");
             string sub1 = mnistImage.Substring(0, index2);
             string sub2 = mnistImage.Substring(0, index1);
             string name = mnistImage.Substring(index1, sub1.Length - sub2.Length);
-            string testName = name + "_" + imageSize + "_Topology" + topology;
-            string outputHamDistFile = $"Output\\{testName}_hamming.txt";
-            string outputSpeedFile = $"Output\\{testName}_speed.txt";
-            string outputImage = $"Output\\{testName}.png";
-            string inputBinaryImageFile = $"Output\\{testName}_bin.txt";
+            for (int imSizeIndx = 0; imSizeIndx < imageSize.Length; imSizeIndx++)
+            {
+                string testName = $"{name}_{imageSize[imSizeIndx]}";
+                string outputSpeedFile = $"Output\\{testName}_speed.txt";
+                string inputBinaryImageFile = BinarizeImage(mnistImage, imageSize[imSizeIndx], testName);
+                for (int topologyIndx = 0; topologyIndx < topologies.Length; topologyIndx++)
+                {
+                    string finalName = $"{testName}_{topologies[topologyIndx]}";
+                    string outputHamDistFile = $"Output\\{finalName}_hamming.txt";
+                    string outputActColFile = $"Output\\{finalName}_activeCol.txt";
 
-            inputBinaryImageFile = BinarizeImage(mnistImage, imageSize, testName);
+                    string outputImage = $"Output\\{finalName}.png";
 
                     int numOfActCols = 0;
                     var sw = new Stopwatch();
@@ -272,22 +278,24 @@ namespace UnitTestsProject
                                 {
                                     sp.compute(mem, inputVector, activeArray, true);
 
-                        var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
-                        var distance = MathHelpers.GetHammingDistance(oldArray, activeArray);
-                        swHam.WriteLine(distance + "\n");
-                        var str = Helpers.StringifyVector(activeCols);
-                        //Debug.WriteLine($"{distance} - {str}");
-                        oldArray = new int[actiColLen];
-                        activeArray.CopyTo(oldArray, 0);
+                                    var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
+                                    var distance = MathHelpers.GetHammingDistance(oldArray, activeArray);
+                                    swHam.WriteLine(distance + "\n");
+                                    var str = Helpers.StringifyVector(activeCols);
+                                    //Debug.WriteLine($"{distance} - {str}");
+                                    oldArray = new int[actiColLen];
+                                    activeArray.CopyTo(oldArray, 0);
+                                }
+                                var activeStr = Helpers.StringifyVector(activeArray);
+                                swActCol.WriteLine("Active Array: " + activeStr);
+                                //Debug.WriteLine("active Array:" + activeStr);
+                                sw.Stop();
+                                //stream.WriteLine($"Compute execution time per iteration ={(double)sw.ElapsedMilliseconds / (double)1000 / iterations} sec. Compute execution time={(double)sw.ElapsedMilliseconds / (double)1000} sec.");
+                                NeoCortexUtils.DrawBitmap(activeArray, OutImgSize, OutImgSize, outputImage);
+                            }
+                        }
                     }
-                    var activeStr = Helpers.StringifyVector(activeArray);
-                    swHam.WriteLine("Active Array: " + activeStr);
-                    //Debug.WriteLine("active Array:" + activeStr);
-                    sw.Stop();
-                    //stream.WriteLine($"Compute execution time per iteration ={(double)sw.ElapsedMilliseconds / (double)1000 / iterations} sec. Compute execution time={(double)sw.ElapsedMilliseconds / (double)1000} sec.");
-                    NeoCortexUtils.DrawBitmap(activeArray, topology, topology, outputImage);
                 }
-
             }
         }
 
