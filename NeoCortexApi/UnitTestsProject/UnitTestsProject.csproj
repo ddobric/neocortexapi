@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Output\**" />
+    <EmbeddedResource Remove="Output\**" />
+    <None Remove="Output\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Helpers.cs" />
   </ItemGroup>
 
@@ -72,10 +78,6 @@
     <None Update="TestFiles\digit8_binary_32bit.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Output\" />
   </ItemGroup>
 
 </Project>
