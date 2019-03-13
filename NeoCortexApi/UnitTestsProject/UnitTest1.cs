@@ -189,6 +189,15 @@ namespace UnitTestsProject
             Assert.AreEqual(empty1, empty2);
         }
 
+        [TestMethod]
+        public void CreateDutyCycleGraphTest()
+        {
+            for (int i = 0; i < 1; i++)
+            {
+
+            }
+        }
+
         //[TestMethod]
         //public void CompareDentrites()
         //{
@@ -196,6 +205,6 @@ namespace UnitTestsProject
         //    DistalDendrite bestSegment = matchingSegments.Max();
         //}
 
-       
+
     }
 }
