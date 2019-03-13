@@ -239,15 +239,22 @@ namespace UnitTestsProject
             for (int i = 0; i < imageSize.Length; i++)
             {
                 //binarize image to binarizedImage
+
+                /* commented because we already had binary image
                 Binarizer imageBinarizer = new Binarizer(200, 200, 200, imageSize[i], imageSize[i]);
                 testName = name + "_" + imageSize[i];
                 inputBinaryImageFile = $"Output\\BinaryImages\\{testName}.txt";
                 imageBinarizer.CreateBinary(mnistImage, inputBinaryImageFile);
+                */
+                testName = name + "_" + imageSize[i];
+                inputBinaryImageFile = $"Output\\BinaryImages\\{testName}.txt";
                 for (int j = 0; j < topology.Length; j++)
                 {
+
                     testName = name + "_" + imageSize[i] + "_Topology" + topology[j];
                     outputHamDistFile = $"Output\\{testName}.txt";
                     outputImage = $"Output\\{testName}.png";
+                    
                     int numOfActCols = 0;
 
                     var sw = new Stopwatch();
