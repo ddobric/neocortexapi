@@ -237,7 +237,7 @@ namespace UnitTestsProject
             {
                 string testName = $"{name}_{imageSize[imSizeIndx]}";
                 string outputSpeedFile = $"Output\\{testName}_speed.txt";
-                string inputBinaryImageFile = BinarizeImage(mnistImage, imageSize[imSizeIndx], testName);
+                string inputBinaryImageFile = BinarizeImage("Output\\" + mnistImage, imageSize[imSizeIndx], testName);
                 for (int topologyIndx = 0; topologyIndx < topologies.Length; topologyIndx++)
                 {
                     string finalName = $"{testName}_{topologies[topologyIndx]}";
@@ -259,18 +259,25 @@ namespace UnitTestsProject
                                 parameters.setInputDimensions(new int[] { imageSize[imSizeIndx], imageSize[imSizeIndx] });
                                 parameters.setColumnDimensions(new int[] { topologies[topologyIndx], topologies[topologyIndx] });
                                 parameters.setNumActiveColumnsPerInhArea(0.02 * numOfActCols);
+
                                 var sp = new SpatialPooler();
                                 var mem = new Connections();
+
                                 parameters.apply(mem);
                                 sw.Start();
+
                                 sp.init(mem);
+
                                 sw.Stop();
                                 swSpeed.WriteLine($"{topologies[topologyIndx]}|{(double)sw.ElapsedMilliseconds / (double)1000}");
+
                                 int actiColLen = numOfActCols;
                                 int[] activeArray = new int[actiColLen];
+
                                 //Read input csv file into array
                                 int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
                                 sw.Restart();
+
                                 int iterations = 2;
                                 int[] oldArray = new int[activeArray.Length];
                                 for (int k = 0; k < iterations; k++)
@@ -281,15 +288,119 @@ namespace UnitTestsProject
                                     var distance = MathHelpers.GetHammingDistance(oldArray, activeArray);
                                     swHam.WriteLine(distance + "\n");
                                     var str = Helpers.StringifyVector(activeCols);
-                                    //Debug.WriteLine($"{distance} - {str}");
+
                                     oldArray = new int[actiColLen];
                                     activeArray.CopyTo(oldArray, 0);
                                 }
+
                                 var activeStr = Helpers.StringifyVector(activeArray);
                                 swActCol.WriteLine("Active Array: " + activeStr);
-                                //Debug.WriteLine("active Array:" + activeStr);
+
                                 sw.Stop();
-                                //stream.WriteLine($"Compute execution time per iteration ={(double)sw.ElapsedMilliseconds / (double)1000 / iterations} sec. Compute execution time={(double)sw.ElapsedMilliseconds / (double)1000} sec.");
+
+                                int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(activeArray, topologies[topologyIndx], topologies[topologyIndx]);
+                                twoDimenArray = ArrayUtils.Transpose(twoDimenArray);
+
+                                NeoCortexUtils.DrawBitmap(twoDimenArray, OutImgSize, OutImgSize, outputImage);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+        /// <summary>
+        /// This test do spatial pooling and save hamming distance, active columns 
+        /// and speed of processing in text files in Output directory.
+        /// </summary>
+        /// <param name="mnistImage">original Image directory used in the test</param>
+        /// <param name="imageSize">list of sizes used for testing. Image would have same value for width and length</param>
+        /// <param name="topologies">list of sparse space size. Sparse space has same width and length</param>
+        [TestMethod]
+        [DataRow("MnistPng28x28\\training", "7", new int[] { 28 }, new int[] { 32, 64, 128 })]
+        public void TrainSingleMnistImageTest(string trainingFolder, string digit, int[] imageSize, int[] topologies)
+        {
+            const string TestOutputFolder = "Output";
+
+            var trainingImages = Directory.GetFiles(Path.Combine(trainingFolder, digit));
+
+            if (Directory.Exists(TestOutputFolder))
+                Directory.Delete(TestOutputFolder, true);
+
+            Directory.CreateDirectory(TestOutputFolder);
+
+            Directory.CreateDirectory($"{TestOutputFolder}\\{digit}");
+
+            // Topology loop
+            for (int imSizeIndx = 0; imSizeIndx < imageSize.Length; imSizeIndx++)
+            {
+                for (int topologyIndx = 0; topologyIndx < topologies.Length; topologyIndx++)
+                {
+                    int counter = 0;
+                    var numOfActCols = topologies[topologyIndx] * topologies[topologyIndx];
+                    var parameters = GetDefaultParams();
+                    parameters.Set(KEY.DUTY_CYCLE_PERIOD, 10000);
+                    parameters.Set(KEY.MAX_BOOST, 5);
+                    parameters.setInputDimensions(new int[] { imageSize[imSizeIndx], imageSize[imSizeIndx] });
+                    parameters.setColumnDimensions(new int[] { topologies[topologyIndx], topologies[topologyIndx] });
+                    parameters.setNumActiveColumnsPerInhArea(0.02 * numOfActCols);
+
+                    var sp = new SpatialPooler();
+                    var mem = new Connections();
+
+                    parameters.apply(mem);
+
+                    sp.init(mem);
+
+                    int actiColLen = numOfActCols;
+
+                    int[] activeArray = new int[actiColLen];
+
+                    string outFolder = $"{TestOutputFolder}\\{digit}\\{topologies[topologyIndx]}x{topologies[topologyIndx]}";
+
+                    Directory.CreateDirectory(outFolder);
+
+                    string outputHamDistFile = $"{outFolder}\\digit{digit}_{topologies[topologyIndx]}_hamming.txt";
+
+                    string outputActColFile = $"{outFolder}\\digit{digit}_{topologies[topologyIndx]}_activeCol.txt";
+
+                    using (StreamWriter swHam = new StreamWriter(outputHamDistFile))
+                    {
+                        using (StreamWriter swActCol = new StreamWriter(outputActColFile))
+                        {
+                            foreach (var mnistImage in trainingImages)
+                            {
+                                FileInfo fI = new FileInfo(mnistImage);
+
+                                string outputImage = $"{outFolder}\\digit_{digit}_cycle_{counter}_{topologies[topologyIndx]}_{fI.Name}";
+                             
+                                string testName = $"{fI.Name}_{imageSize[imSizeIndx]}";
+
+                                string inputBinaryImageFile = BinarizeImage($"{mnistImage}", imageSize[imSizeIndx], testName);
+
+                                //Read input csv file into array
+                                int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+
+                                int numIterationsPerImage = 5;
+                                int[] oldArray = new int[activeArray.Length];
+
+                                for (int k = 0; k < numIterationsPerImage; k++)
+                                {
+                                    sp.compute(mem, inputVector, activeArray, true);
+
+                                    var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
+                                    var distance = MathHelpers.GetHammingDistance(oldArray, activeArray);
+                                    swHam.WriteLine($"{counter++}|{distance} ");
+
+                                    oldArray = new int[actiColLen];
+                                    activeArray.CopyTo(oldArray, 0);
+                                }
+
+                                var activeStr = Helpers.StringifyVector(activeArray);
+                                swActCol.WriteLine("Active Array: " + activeStr);
+
                                 int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(activeArray, topologies[topologyIndx], topologies[topologyIndx]);
                                 twoDimenArray = ArrayUtils.Transpose(twoDimenArray);
 
@@ -313,7 +424,7 @@ namespace UnitTestsProject
             string binaryImage;
 
             Binarizer imageBinarizer = new Binarizer(200, 200, 200, imageSize, imageSize);
-            binaryImage = $"Output\\{testName}.txt";
+            binaryImage = $"{testName}.txt";
             if (File.Exists(binaryImage))
                 File.Delete(binaryImage);
 

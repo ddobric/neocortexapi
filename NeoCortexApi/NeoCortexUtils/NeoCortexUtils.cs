@@ -7,10 +7,17 @@ namespace NeoCortex
     public class NeoCortexUtils
     {
 
-        public static void DrawBitmap(int[,] twoDimenArray, int width, int height, String filePath)
+        /// <summary>
+        /// Draws the bitmap from array of active columns.
+        /// </summary>
+        /// <param name="twoDimArray">Array of active columns.</param>
+        /// <param name="width">Output width.</param>
+        /// <param name="height">Output height.</param>
+        /// <param name="filePath">The bitmap filename.</param>
+        public static void DrawBitmap(int[,] twoDimArray, int width, int height, String filePath)
         {
-            int w = twoDimenArray.GetLength(0);
-            int h = twoDimenArray.GetLength(1);
+            int w = twoDimArray.GetLength(0);
+            int h = twoDimArray.GetLength(1);
 
             if (w > width || h > height)
                 throw new ArgumentException("Requested width/height must be greather than width/height inside of array.");
@@ -20,15 +27,20 @@ namespace NeoCortex
             if (scale * w < width)
                 scale++;
 
-            DrawBitmap(twoDimenArray, scale, filePath);
+            DrawBitmap(twoDimArray, scale, filePath);
 
         }
-            
 
-        public static void DrawBitmap(int[,] twoDimenArray, int scale, String filePath)
+        /// <summary>
+        /// Draws the bitmap from array of active columns.
+        /// </summary>
+        /// <param name="twoDimArray">Array of active columns.</param>
+        /// <param name="scale">Scale of bitmap. If array of active columns is 10x10 and scale is 5 then output bitmap will be 50x50.</param>
+        /// <param name="filePath">The bitmap filename.</param>
+        public static void DrawBitmap(int[,] twoDimArray, int scale, String filePath)
         {
-            int w = twoDimenArray.GetLength(0);
-            int h = twoDimenArray.GetLength(1);
+            int w = twoDimArray.GetLength(0);
+            int h = twoDimArray.GetLength(1);
 
             System.Drawing.Bitmap myBitmap = new System.Drawing.Bitmap(w*scale, h*scale);
             int k = 0;
@@ -40,7 +52,7 @@ namespace NeoCortex
                     {
                         for (int padY = 0; padY < scale; padY++)
                         {
-                            if (twoDimenArray[Xcount, Ycount] == 1)
+                            if (twoDimArray[Xcount, Ycount] == 1)
                             {
                                 //myBitmap.SetPixel(Xcount, Ycount, System.Drawing.Color.Yellow); // HERE IS YOUR LOGIC
                                 myBitmap.SetPixel(Xcount * scale + padX, Ycount * scale + padY, System.Drawing.Color.Yellow); // HERE IS YOUR LOGIC
