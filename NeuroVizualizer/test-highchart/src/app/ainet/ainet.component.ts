@@ -388,32 +388,34 @@ export class AinetComponent implements OnInit, AfterViewInit {
       postCell = postMinCol.cells[perm.postCell.cellY];
 
     }
-    //preCell.outgoingSynapses.length === postCell.incomingSynapses.length && preCell.outgoingSynapses.every((value, index) => value === postCell.incomingSynapses[index])
 
-    // if (preCell.outgoingSynapses == null && postCell.incomingSynapses == null) {
-    if (preCell.outgoingSynapses.length == 0 && postCell.incomingSynapses.length == 0) { // to check if the arrays are empty
-      console.log("Synapse does not exists, it will be created");
-      this.createSynapse(perm.permanence, preCell, postCell);
+    let synapseFound = false;
+    loop:
+    for (let out = 0; out < preCell.outgoingSynapses.length; out++) {
+      for (let inc = 0; inc < postCell.incomingSynapses.length; inc++) {
+
+        if ((preCell.outgoingSynapses[out].postSynaptic.X == postCell.X &&
+          preCell.outgoingSynapses[out].postSynaptic.Layer == postCell.Layer &&
+          preCell.outgoingSynapses[out].postSynaptic.Z == postCell.Z) &&
+
+          (postCell.incomingSynapses[inc].preSynaptic.X == preCell.X &&
+            postCell.incomingSynapses[inc].preSynaptic.Layer == preCell.Layer &&
+            postCell.incomingSynapses[inc].preSynaptic.Z == preCell.Z)) {
+              
+          console.log("Synapse Exists, Permannence will be updated");
+          this.updatePermanenceOfSynaps(perm.permanence, preCell, postCell);
+          synapseFound = true;
+          break loop;
+        }
+
+
+      }
     }
-    else if (preCell.outgoingSynapses.length == 0 || postCell.incomingSynapses.length == 0) { // to check if one of the array is empty
-      console.log("Synapse does not exists, it will be created");
-      this.createSynapse(perm.permanence, preCell, postCell);
-    }
-    else if ((preCell.outgoingSynapses.length == 0 && preCell.incomingSynapses.length == 0) && (postCell.outgoingSynapses.length == 0 && postCell.incomingSynapses.length == 0)) { // to check if one of the array is empty
-      console.log("Synapse does not exists, it will be created");
+    if (synapseFound === false) {
+      console.log("Create");
       this.createSynapse(perm.permanence, preCell, postCell);
     }
 
-    else if ((preCell.outgoingSynapses.length != 0 && preCell.incomingSynapses.length != 0) && (postCell.outgoingSynapses.length != 0 && postCell.incomingSynapses.length != 0)) { // to check if one of the array is empty
-      // to fix when this conditions satisfied and there already exisits a synapse how to false this block that it jumps to update block
-      console.log("Synapse does not exists, it will be created");
-      this.createSynapse(perm.permanence, preCell, postCell);
-    }
-    // if (preCell.outgoingSynapses != null && postCell.incomingSynapses != null)
-    else {
-      console.log("Synapse Exists, Permannence will be updated");
-      this.updatePermanenceOfSynaps(perm.permanence, preCell, postCell);
-    }
 
   }
   /**
