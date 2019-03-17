@@ -428,10 +428,10 @@ namespace UnitTestsProject
 
             var trainingImages = Directory.GetFiles(Path.Combine(trainingFolder, digit));
 
-            //if (Directory.Exists(TestOutputFolder))
-            //    Directory.Delete(TestOutputFolder, true);
+            if (Directory.Exists(TestOutputFolder))
+                Directory.Delete(TestOutputFolder, true);
 
-            //Directory.CreateDirectory(TestOutputFolder);
+            Directory.CreateDirectory(TestOutputFolder);
 
             Directory.CreateDirectory($"{TestOutputFolder}\\{digit}");
 
@@ -443,13 +443,15 @@ namespace UnitTestsProject
                     int counter = 0;
                     var numOfActCols = topologies[topologyIndx] * topologies[topologyIndx];
                     var parameters = GetDefaultParams();
+                    parameters.Set(KEY.INHIBITION_RADIUS, (int)0.25 * imageSize[imSizeIndx]);
+                    parameters.Set(KEY.LOCAL_AREA_DENSITY, 0.5);
+                    parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, -1);
                     parameters.Set(KEY.DUTY_CYCLE_PERIOD, 10000);
                     parameters.Set(KEY.MAX_BOOST, 5);
                     parameters.setInputDimensions(new int[] { imageSize[imSizeIndx], imageSize[imSizeIndx] });
                     parameters.setColumnDimensions(new int[] { topologies[topologyIndx], topologies[topologyIndx] });
                     parameters.setNumActiveColumnsPerInhArea(0.02 * numOfActCols);
-
-                   
+                                       
                     var mem = new Connections();
 
                     parameters.apply(mem);
@@ -486,7 +488,7 @@ namespace UnitTestsProject
                                 //Read input csv file into array
                                 int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
 
-                                int numIterationsPerImage = 5;
+                                int numIterationsPerImage = 1;
                                 int[] oldArray = new int[sp.GetActiveColumns(2).Length];
 
                                 var activeArray = sp.GetActiveColumns(2);
@@ -509,8 +511,10 @@ namespace UnitTestsProject
                                 int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(activeArray, (int)Math.Sqrt(activeArray.Length), (int)Math.Sqrt(activeArray.Length));
                                 twoDimenArray = ArrayUtils.Transpose(twoDimenArray);
 
-                                NeoCortexUtils.DrawBitmap(twoDimenArray, OutImgSize, OutImgSize, outputImage);
+                                int[,] twoDimInputArray = ArrayUtils.Make2DArray<int>(inputVector, (int)Math.Sqrt(inputVector.Length), (int)Math.Sqrt(inputVector.Length));
+                                twoDimInputArray = ArrayUtils.Transpose(twoDimInputArray);
 
+                                NeoCortexUtils.DrawBitmaps(new List<int[,]> { twoDimenArray, twoDimInputArray }, outputImage, OutImgSize, OutImgSize);
                           
                             }
                         }
