@@ -1,12 +1,12 @@
 ﻿using NeoCortexApi.Utility;
 using System;
+using System.Drawing;
 using System.Drawing.Imaging;
 
 namespace NeoCortex
 {
     public class NeoCortexUtils
     {
-
         /// <summary>
         /// Draws the bitmap from array of active columns.
         /// </summary>
@@ -15,6 +15,18 @@ namespace NeoCortex
         /// <param name="height">Output height.</param>
         /// <param name="filePath">The bitmap filename.</param>
         public static void DrawBitmap(int[,] twoDimArray, int width, int height, String filePath)
+        {
+            DrawBitmap(twoDimArray, width, height, filePath, Color.Black, Color.Green);
+        }
+
+        /// <summary>
+        /// Draws the bitmap from array of active columns.
+        /// </summary>
+        /// <param name="twoDimArray">Array of active columns.</param>
+        /// <param name="width">Output width.</param>
+        /// <param name="height">Output height.</param>
+        /// <param name="filePath">The bitmap filename.</param>
+        public static void DrawBitmap(int[,] twoDimArray, int width, int height, String filePath, Color inactiveCellColor , Color activeCellColor )
         {
             int w = twoDimArray.GetLength(0);
             int h = twoDimArray.GetLength(1);
@@ -27,7 +39,7 @@ namespace NeoCortex
             if (scale * w < width)
                 scale++;
 
-            DrawBitmap(twoDimArray, scale, filePath);
+            DrawBitmap(twoDimArray, scale, filePath, inactiveCellColor, activeCellColor);
 
         }
 
@@ -37,7 +49,7 @@ namespace NeoCortex
         /// <param name="twoDimArray">Array of active columns.</param>
         /// <param name="scale">Scale of bitmap. If array of active columns is 10x10 and scale is 5 then output bitmap will be 50x50.</param>
         /// <param name="filePath">The bitmap filename.</param>
-        public static void DrawBitmap(int[,] twoDimArray, int scale, String filePath)
+        public static void DrawBitmap(int[,] twoDimArray, int scale, String filePath, Color inactiveCellColor, Color activeCellColor)
         {
             int w = twoDimArray.GetLength(0);
             int h = twoDimArray.GetLength(1);

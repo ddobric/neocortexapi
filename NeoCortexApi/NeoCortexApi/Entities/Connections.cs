@@ -562,7 +562,10 @@ namespace NeoCortexApi.Entities
  * establish a flat count of bits in the input field.
  * @param n
  */
-        public int NumInputs { get => numInputs; set => this.numInputs = value; }
+        public int NumInputs
+        { get => numInputs;
+            set => this.numInputs = value;
+        }
 
         /**
          * Returns the product of the column dimensions

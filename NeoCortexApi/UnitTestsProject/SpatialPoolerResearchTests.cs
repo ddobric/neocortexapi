@@ -10,6 +10,7 @@ using System.Text;
 using ImageBinarizer;
 using System.Drawing;
 using NeoCortex;
+using NeoCortexApi.Network;
 
 namespace UnitTestsProject
 {
@@ -79,7 +80,6 @@ namespace UnitTestsProject
 
                 Debug.WriteLine(str);
             }
-
         }
 
         /// <summary>
@@ -319,7 +319,7 @@ namespace UnitTestsProject
         /// <param name="imageSize">list of sizes used for testing. Image would have same value for width and length</param>
         /// <param name="topologies">list of sparse space size. Sparse space has same width and length</param>
         [TestMethod]
-        [DataRow("MnistPng28x28\\training", "7", new int[] { 28 }, new int[] { 32, 64, 128 })]
+        [DataRow("MnistPng28x28\\training", "3", new int[] { 28 }, new int[] { 32, 64, 128 })]
         public void TrainSingleMnistImageTest(string trainingFolder, string digit, int[] imageSize, int[] topologies)
         {
             const string TestOutputFolder = "Output";
@@ -376,7 +376,7 @@ namespace UnitTestsProject
 
                                 string outputImage = $"{outFolder}\\digit_{digit}_cycle_{counter}_{topologies[topologyIndx]}_{fI.Name}";
                              
-                                string testName = $"{fI.Name}_{imageSize[imSizeIndx]}";
+                                string testName = $"{outFolder}\\digit_{digit}_{fI.Name}_{imageSize[imSizeIndx]}";
 
                                 string inputBinaryImageFile = BinarizeImage($"{mnistImage}", imageSize[imSizeIndx], testName);
 
@@ -405,6 +405,113 @@ namespace UnitTestsProject
                                 twoDimenArray = ArrayUtils.Transpose(twoDimenArray);
 
                                 NeoCortexUtils.DrawBitmap(twoDimenArray, OutImgSize, OutImgSize, outputImage);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// This test do spatial pooling and save hamming distance, active columns 
+        /// and speed of processing in text files in Output directory.
+        /// </summary>
+        /// <param name="mnistImage">original Image directory used in the test</param>
+        /// <param name="imageSize">list of sizes used for testing. Image would have same value for width and length</param>
+        /// <param name="topologies">list of sparse space size. Sparse space has same width and length</param>
+        [TestMethod]
+        [DataRow("MnistPng28x28\\training", "7", new int[] { 28 }, new int[] { 32, 64, 128 })]
+        [DataRow("MnistPng28x28\\training", "3", new int[] { 28 }, new int[] { 32, 64, 128 })]
+        public void TrainMultilevelImageTest(string trainingFolder, string digit, int[] imageSize, int[] topologies)
+        {
+            const string TestOutputFolder = "Output";
+
+            var trainingImages = Directory.GetFiles(Path.Combine(trainingFolder, digit));
+
+            //if (Directory.Exists(TestOutputFolder))
+            //    Directory.Delete(TestOutputFolder, true);
+
+            //Directory.CreateDirectory(TestOutputFolder);
+
+            Directory.CreateDirectory($"{TestOutputFolder}\\{digit}");
+
+            // Topology loop
+            for (int imSizeIndx = 0; imSizeIndx < imageSize.Length; imSizeIndx++)
+            {
+                for (int topologyIndx = 0; topologyIndx < topologies.Length; topologyIndx++)
+                {
+                    int counter = 0;
+                    var numOfActCols = topologies[topologyIndx] * topologies[topologyIndx];
+                    var parameters = GetDefaultParams();
+                    parameters.Set(KEY.DUTY_CYCLE_PERIOD, 10000);
+                    parameters.Set(KEY.MAX_BOOST, 5);
+                    parameters.setInputDimensions(new int[] { imageSize[imSizeIndx], imageSize[imSizeIndx] });
+                    parameters.setColumnDimensions(new int[] { topologies[topologyIndx], topologies[topologyIndx] });
+                    parameters.setNumActiveColumnsPerInhArea(0.02 * numOfActCols);
+
+                   
+                    var mem = new Connections();
+
+                    parameters.apply(mem);
+                    var sp = new HtmModuleNet(parameters, new int[] { 28, 16, 4 });
+
+                    //sp.init(mem);
+
+                    int actiColLen = numOfActCols;
+
+                    //int[] activeArray = new int[actiColLen];
+
+                    string outFolder = $"{TestOutputFolder}\\{digit}\\{topologies[topologyIndx]}x{topologies[topologyIndx]}";
+
+                    Directory.CreateDirectory(outFolder);
+
+                    string outputHamDistFile = $"{outFolder}\\digit{digit}_{topologies[topologyIndx]}_hamming.txt";
+
+                    string outputActColFile = $"{outFolder}\\digit{digit}_{topologies[topologyIndx]}_activeCol.txt";
+
+                    using (StreamWriter swHam = new StreamWriter(outputHamDistFile))
+                    {
+                        using (StreamWriter swActCol = new StreamWriter(outputActColFile))
+                        {
+                            foreach (var mnistImage in trainingImages)
+                            {
+                                FileInfo fI = new FileInfo(mnistImage);
+
+                                string outputImage = $"{outFolder}\\digit_{digit}_cycle_{counter}_{topologies[topologyIndx]}_{fI.Name}";
+
+                                string testName = $"{outFolder}\\digit_{digit}_{fI.Name}_{imageSize[imSizeIndx]}";
+
+                                string inputBinaryImageFile = BinarizeImage($"{mnistImage}", imageSize[imSizeIndx], testName);
+
+                                //Read input csv file into array
+                                int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+
+                                int numIterationsPerImage = 5;
+                                int[] oldArray = new int[sp.GetActiveColumns(2).Length];
+
+                                var activeArray = sp.GetActiveColumns(2);
+
+                                for (int k = 0; k < numIterationsPerImage; k++)
+                                {
+                                    sp.Compute(mem, inputVector, true);
+
+                                    var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
+                                    var distance = MathHelpers.GetHammingDistance(oldArray, sp.GetActiveColumns(2));
+                                    swHam.WriteLine($"{counter++}|{distance} ");
+
+                                    oldArray = new int[actiColLen];
+                                    sp.GetActiveColumns(2).CopyTo(oldArray, 0);
+                                }
+
+                                var activeStr = Helpers.StringifyVector(activeArray);
+                                swActCol.WriteLine("Active Array: " + activeStr);
+
+                                int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(activeArray, (int)Math.Sqrt(activeArray.Length), (int)Math.Sqrt(activeArray.Length));
+                                twoDimenArray = ArrayUtils.Transpose(twoDimenArray);
+
+                                NeoCortexUtils.DrawBitmap(twoDimenArray, OutImgSize, OutImgSize, outputImage);
+
+                          
                             }
                         }
                     }
