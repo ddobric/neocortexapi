@@ -3,7 +3,7 @@
 </h1>
 
 
-<form #formCtrl="ngForm" class="form-horizontal">
+<form #formCtrl="ngForm">
 
   <div class="container">
 
@@ -15,6 +15,15 @@
         <button class="btn btn-success" (click)='filterOverlap(overlapInterval.value)'>
           filter Overlap
         </button>
+      </div>
+      <div class="form-group col-md-2">
+        <input class="form-control input-sm" type="text" placeholder="[a b]" #permanenceInterval>
+      </div>
+      <div class="form-group col-md-2">
+        <button class="btn btn-success" (click)='filterPermanence(permanenceInterval.value)'>
+          filter Permanence
+        </button>
+
       </div>
     </div>
 

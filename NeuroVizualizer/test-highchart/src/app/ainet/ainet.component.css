@@ -17,6 +17,18 @@
      */
     /*background-color: rgb(145, 99, 99);*/
 }
+/* .container{
+  justify-content: center !important;
+  display: table-cell !important;
+} */
+.rowUpdate{
+  justify-content: center !important;
+       display: -webkit-inline-box !important;
+      
+      /*  margin-right: 130pc !important; */
+
+}
+
 /* .form-row{
   justify-content: center;
   align-items: center;
