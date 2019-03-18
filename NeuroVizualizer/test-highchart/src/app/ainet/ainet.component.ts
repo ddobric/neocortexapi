@@ -213,13 +213,14 @@ export class AinetComponent implements OnInit, AfterViewInit {
       this.yCoordinatesForOneArea = [];
       this.zCoordinatesForOneArea = [];
 
-      /*   for (let inputmodel = 0; inputmodel < model.input.cells.length; inputmodel++) {
-          this.xNeurons.push(model.input.cells[inputmodel].X);
+/*       for (let inputmodel = 0; inputmodel < model.input.cells.length; inputmodel++) {
+        for (let inputModelDim1 = 0; inputModelDim1 < model.settings.minicolumnDims[1]; inputModelDim1++) {
+          this.xNeurons.push(model.input.cells[inputmodel][inputModelDim1].X);
           this.yNeurons.push(0);
-          this.zNeurons.push(model.input.cells[inputmodel].Z);
+          this.zNeurons.push(model.input.cells[inputmodel][inputModelDim1].Z);
           this.overlap.push(0);
-          
-        } */
+        }
+      } */
 
 
       for (let i = 0; i < model.areas[areaIndx].minicolumns.length; i++) {
@@ -394,15 +395,15 @@ export class AinetComponent implements OnInit, AfterViewInit {
     for (let out = 0; out < preCell.outgoingSynapses.length; out++) {
       for (let inc = 0; inc < postCell.incomingSynapses.length; inc++) {
 
-        if ((preCell.outgoingSynapses[out].postSynaptic.X == postCell.X &&
-          preCell.outgoingSynapses[out].postSynaptic.Layer == postCell.Layer &&
-          preCell.outgoingSynapses[out].postSynaptic.Z == postCell.Z) &&
+        if ((preCell.outgoingSynapses[out].postSynaptic.X === postCell.X &&
+          preCell.outgoingSynapses[out].postSynaptic.Layer === postCell.Layer &&
+          preCell.outgoingSynapses[out].postSynaptic.Z === postCell.Z) &&
 
-          (postCell.incomingSynapses[inc].preSynaptic.X == preCell.X &&
-            postCell.incomingSynapses[inc].preSynaptic.Layer == preCell.Layer &&
-            postCell.incomingSynapses[inc].preSynaptic.Z == preCell.Z)) {
-              
-          console.log("Synapse Exists, Permannence will be updated");
+          (postCell.incomingSynapses[inc].preSynaptic.X === preCell.X &&
+            postCell.incomingSynapses[inc].preSynaptic.Layer === preCell.Layer &&
+            postCell.incomingSynapses[inc].preSynaptic.Z === preCell.Z)) {
+
+          console.log("Synapse Exists");
           this.updatePermanenceOfSynaps(perm.permanence, preCell, postCell);
           synapseFound = true;
           break loop;
@@ -412,7 +413,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       }
     }
     if (synapseFound === false) {
-      console.log("Create");
+      console.log("Synapse does not exists");
       this.createSynapse(perm.permanence, preCell, postCell);
     }
 
@@ -425,7 +426,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
    * @param postCell 
    */
   updatePermanenceOfSynaps(newPermanence: number, preCell: Cell, postCell: Cell) {
-    console.log("Synapse Exists, Permannence will be updated");
+    console.log("Permannence will be updated");
 
     /*   preCell.outgoingSynapses[0].permanence = newPermanence;
       postCell.incomingSynapses[0].permanence = newPermanence; */
@@ -433,15 +434,15 @@ export class AinetComponent implements OnInit, AfterViewInit {
     //this.model.areas[preCell.areaIndex].minicolumns[preCell.X][preCell.Z].cells[preCell.Layer].outgoingSynapses[?].permanence = newPermanence;
     for (let findSynapse = 0; findSynapse < this.model.synapses.length; findSynapse++) {
 
-      if (this.model.synapses[findSynapse].preSynaptic.areaIndex == preCell.areaIndex &&
-        this.model.synapses[findSynapse].preSynaptic.X == preCell.X &&
-        this.model.synapses[findSynapse].preSynaptic.Layer == preCell.Layer &&
-        this.model.synapses[findSynapse].preSynaptic.Z == preCell.Z &&
+      if (this.model.synapses[findSynapse].preSynaptic.areaIndex === preCell.areaIndex &&
+        this.model.synapses[findSynapse].preSynaptic.X === preCell.X &&
+        this.model.synapses[findSynapse].preSynaptic.Layer === preCell.Layer &&
+        this.model.synapses[findSynapse].preSynaptic.Z === preCell.Z &&
 
-        this.model.synapses[findSynapse].postSynaptic.areaIndex == postCell.areaIndex &&
-        this.model.synapses[findSynapse].postSynaptic.X == postCell.X &&
-        this.model.synapses[findSynapse].postSynaptic.Layer == postCell.Layer &&
-        this.model.synapses[findSynapse].postSynaptic.Z == postCell.Z) {
+        this.model.synapses[findSynapse].postSynaptic.areaIndex === postCell.areaIndex &&
+        this.model.synapses[findSynapse].postSynaptic.X === postCell.X &&
+        this.model.synapses[findSynapse].postSynaptic.Layer === postCell.Layer &&
+        this.model.synapses[findSynapse].postSynaptic.Z === postCell.Z) {
 
         /* this.model.synapses[findSynapse].preSynaptic.outgoingSynapses[0].permanence = newPermanence;
         this.model.synapses[findSynapse].postSynaptic.incomingSynapses[0].permanence = newPermanence */;
@@ -511,7 +512,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.model.areas[preCell.areaIndex].minicolumns[preCell.X][preCell.Z].cells[preCell.Layer].outgoingSynapses.push(outgoingSynapse);
     this.model.areas[postCell.areaIndex].minicolumns[postCell.X][postCell.Z].cells[postCell.Layer].incomingSynapses.push(incomingSynapse);
 
-    console.log("Synapse does not exists");
+    console.log("Synapse will be created");
     let synapse: Synapse;
     synapse = new Synapse(permanence, preCell, postCell);
     this.model.synapses.push(synapse);

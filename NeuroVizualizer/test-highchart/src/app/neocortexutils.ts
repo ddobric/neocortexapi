@@ -87,9 +87,9 @@ export class neoCortexUtils {
     let synap78 = new Synapse(1, preCell7, postCell8);
     let synap910 = new Synapse(0.80, preCell9, postCell10);
 
-    let synapses: Array<Synapse> = [synaps01,synap23,synaps34,synap56,synap78, synap910];
+    let synapses: Array<Synapse> = [synaps01, synap23, synaps34, synap56, synap78, synap910];
 
-   
+
 
     function getRandomInt(max: any) {
       return Math.floor(Math.random() * Math.floor(max));
@@ -97,17 +97,17 @@ export class neoCortexUtils {
 
     let arrayOfPreCells: Array<Cell> = [];
     let arrayOfPostCells: Array<Cell> = [];
-    
+
     for (let cell = 0; cell < 10; cell++) {
       let randomPreCellAreaID = getRandomInt(sett.areaLevels.length);
-    let randomPreCellX = getRandomInt(sett.minicolumnDims[0]);
-    let randomPreCellY = getRandomInt(sett.numLayers);
-    let randomPreCellZ = getRandomInt(sett.minicolumnDims[1]);
+      let randomPreCellX = getRandomInt(sett.minicolumnDims[0]);
+      let randomPreCellY = getRandomInt(sett.numLayers);
+      let randomPreCellZ = getRandomInt(sett.minicolumnDims[1]);
 
-    let randomPostCellAreaID = getRandomInt(sett.areaLevels.length);
-    let randomPostCellX = getRandomInt(sett.minicolumnDims[0]);
-    let randomPostCellY = getRandomInt(sett.numLayers);
-    let randomPostCellZ = getRandomInt(sett.minicolumnDims[1]);
+      let randomPostCellAreaID = getRandomInt(sett.areaLevels.length);
+      let randomPostCellX = getRandomInt(sett.minicolumnDims[0]);
+      let randomPostCellY = getRandomInt(sett.numLayers);
+      let randomPostCellZ = getRandomInt(sett.minicolumnDims[1]);
       /* arrayOfPreCells.push(new Cell(getRandomInt(5), getRandomInt(9), getRandomInt(5), getRandomInt(0), [], []));
       arrayOfPostCells.push(new Cell(getRandomInt(5), getRandomInt(9), getRandomInt(5), getRandomInt(0), [], [])); */
       arrayOfPreCells.push(new Cell(randomPreCellAreaID, randomPreCellX, randomPreCellY, randomPreCellZ, [], []));
@@ -116,13 +116,13 @@ export class neoCortexUtils {
 
     let outgoingSynapses: Array<Synapse> = [];
     let incomingSynapses: Array<Synapse> = [];
-   
+
 
     for (let i = 0; i < arrayOfPreCells.length; i++) {
       outgoingSynapses.push(new Synapse(sett.defaultPermanence, arrayOfPreCells[i], arrayOfPostCells[i]));
       incomingSynapses.push(new Synapse(sett.defaultPermanence, arrayOfPreCells[i], arrayOfPostCells[i]));
     }
- 
+
 
     for (let j = 0; j < arrayOfPreCells.length; j++) {
 
@@ -143,14 +143,14 @@ export class neoCortexUtils {
         //addoutgoingSynapse = outgoingSynapses[outsynapArr[numOfOutSynap]];
         arrayOfPreCells[j].outgoingSynapses.push(outgoingSynapses[outsynapArr[numOfOutSynap]]);
       }
-      for ( let numOfInSynap = 0; numOfInSynap < insynapArr.length; numOfInSynap++) {
+      for (let numOfInSynap = 0; numOfInSynap < insynapArr.length; numOfInSynap++) {
         //addoutgoingSynapse = outgoingSynapses[outsynapArr[numOfOutSynap]];
         arrayOfPostCells[j].incomingSynapses.push(incomingSynapses[insynapArr[numOfInSynap]]);
       }
       //let addoutgoingSynapse: Synapse = outgoingSynapses[j];
-    
-     
-      
+
+
+
     }
     let randomSynapses: Array<Synapse> = [];
 

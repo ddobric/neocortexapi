@@ -86,7 +86,9 @@ export class Area {
     for (miniColDim0 = 0; miniColDim0 < settings.minicolumnDims[0]; miniColDim0++) {
       let row: Array<Minicolumn> = new Array();
       for (miniColDim1 = 0; miniColDim1 < settings.minicolumnDims[1]; miniColDim1++) {
-        row.push(new Minicolumn(settings, areaId, [this.id, miniColDim0, miniColDim1], settings.defaultOverlapValue, (miniColDim0 + X), (miniColDim1 + Z)));
+        let randomOverlap = Math.random();
+        //row.push(new Minicolumn(settings, areaId, [this.id, miniColDim0, miniColDim1], settings.defaultOverlapValue, (miniColDim0 + X), (miniColDim1 + Z)));
+        row.push(new Minicolumn(settings, areaId, [this.id, miniColDim0, miniColDim1], randomOverlap, (miniColDim0 + X), (miniColDim1 + Z)));
       }
 
 
@@ -178,18 +180,20 @@ export class Synapse {
 
 export class InputModel {
 
-  cells: Array<Cell> = new Array();
+  public cells: Cell[][] = new Array();
 
   constructor(cellDim0: any, cellDim1: any) {
 
     this.cells = new Array();
 
     for (let dim = 0; dim < cellDim0; dim++) {
-      for (let i = 0; i < cellDim1; i++) {
+      let row: Array<Cell> = new Array();
 
-        this.cells.push(new Cell(null, dim, null, i, [], []));
+      for (let i = 0; i < cellDim1; i++) {
+        row.push(new Cell(null, dim, null, i, [], []));
 
       }
+      this.cells.push(row);
 
     }
 
