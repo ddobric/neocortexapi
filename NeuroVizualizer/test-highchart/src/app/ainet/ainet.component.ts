@@ -202,7 +202,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     let xFactor = 15;
     let yFactor = 5;
 
-    /*         for (let inputmodel = 0; inputmodel < model.input.cells.length; inputmodel++) {
+   /*          for (let inputmodel = 0; inputmodel < model.input.cells.length; inputmodel++) {
           for (let inputModelDim1 = 0; inputModelDim1 < model.settings.minicolumnDims[1]; inputModelDim1++) {
             this.xNeurons.push(model.input.cells[inputmodel][inputModelDim1].X);
             this.yNeurons.push(0);
@@ -274,10 +274,6 @@ export class AinetComponent implements OnInit, AfterViewInit {
               this.zCoordinatesAllAreas[areaIndx] = this.zCoordinatesForOneArea;
 
             }
-
-
-
-
           }
         }
       }
@@ -285,7 +281,6 @@ export class AinetComponent implements OnInit, AfterViewInit {
     }
 
     this.synapsesData();
-
 
   }
 
@@ -384,7 +379,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
   };
 
   /**
-   * filterPermanence filters the synapses according to a definite enclosed interval 
+   * filterPermanence filters the synapses by permanence according to a definite enclosed interval 
    * @param permanenceInterval 
    */
   filterPermanence(permanenceInterval: any) {
@@ -456,7 +451,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * filterOverlap filters the neurons that have certain overlap values that lies in the specified enclosed interval
+   * filterOverlap filters the neurons by certain overlap values, that lies in the specified enclosed interval
    * @param overlapInterval 
    */
   filterOverlap(overlapInterval: any) {
