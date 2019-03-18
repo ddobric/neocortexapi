@@ -202,14 +202,14 @@ export class AinetComponent implements OnInit, AfterViewInit {
     let xFactor = 15;
     let yFactor = 5;
 
-   /*          for (let inputmodel = 0; inputmodel < model.input.cells.length; inputmodel++) {
-          for (let inputModelDim1 = 0; inputModelDim1 < model.settings.minicolumnDims[1]; inputModelDim1++) {
-            this.xNeurons.push(model.input.cells[inputmodel][inputModelDim1].X);
-            this.yNeurons.push(0);
-            this.zNeurons.push(model.input.cells[inputmodel][inputModelDim1].Z);
-            this.overlap.push(0);
-          }
-        } */
+    /*          for (let inputmodel = 0; inputmodel < model.input.cells.length; inputmodel++) {
+           for (let inputModelDim1 = 0; inputModelDim1 < model.settings.minicolumnDims[1]; inputModelDim1++) {
+             this.xNeurons.push(model.input.cells[inputmodel][inputModelDim1].X);
+             this.yNeurons.push(0);
+             this.zNeurons.push(model.input.cells[inputmodel][inputModelDim1].Z);
+             this.overlap.push(0);
+           }
+         } */
 
     for (areaIndx = 0; areaIndx < model.areas.length; areaIndx++) {
 
@@ -379,6 +379,18 @@ export class AinetComponent implements OnInit, AfterViewInit {
   };
 
   /**
+   * 
+   * @param areaID 
+   * @param cell 
+   */
+  showOutgoingIncomingSynapses(areaID: number, cell: Cell) {
+    console.log(areaID);
+    console.log(cell);
+    
+
+  }
+
+  /**
    * filterPermanence filters the synapses by permanence according to a definite enclosed interval 
    * @param permanenceInterval 
    */
@@ -391,7 +403,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.permanenceIntervalStart = permanenceIntervalStart;
     this.permanenceIntervalEnd = permanenceIntervalEnd;
 
-    
+
     this.xNeurons = [];
     this.yNeurons = [];
     this.zNeurons = [];

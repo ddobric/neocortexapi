@@ -28,6 +28,21 @@
     </div>
 
     <div class="form-row ">
+        <div class="form-group col-md-2">
+          <input class="form-control input-sm" type="text" placeholder="Area ID" #cellAreaID>
+        </div>
+        <div class="form-group col-md-2">
+          <input class="form-control input-sm" type="text" placeholder="X,Y,Z" #cell>
+        </div>
+        <div class="form-group col-md-2">
+          <button class="btn btn-info" (click)='showOutgoingIncomingSynapses(cellAreaID.value, cell.value)'>
+            Out/in Synapses
+          </button>
+
+        </div>
+      </div>
+
+    <div class="form-row ">
       <div class="form-group col-md-2">
         <input class="form-control input-sm" type="text" placeholder="Area ID" #areaID>
       </div>
