@@ -3,58 +3,73 @@
 </h1>
 
 
-<form #formCtrl="ngForm">
+<form #formCtrl="ngForm" class="form-horizontal">
 
-  <div class="form-row">
-    <div class="form-group col-md-2">
-      <input class="form-control" type="text" placeholder="Select area index" #selectAreaIndex>
-    </div>
-    <div class="form-group col-md-2">
-      <input class="form-control" type="text" placeholder="Mini column x dimension" #miniColumnXDimension>
-    </div>
-    <div class="form-group col-md-2">
-      <input class="form-control" type="text" placeholder="Mini column z dimension" #miniColumnZDimension>
-    </div>
-    <div class="form-group col-md-2">
-      <input class="form-control" type="text" placeholder="New overlap value" #newOverlapValue>
-    </div>
-    <div class="form-group col-md-2">
-      <button class="btn btn-danger"
-        (click)='updateOverlapV(selectAreaIndex.value, miniColumnXDimension.value,miniColumnZDimension.value,newOverlapValue.value)'>Update
-        overlap to a mini column</button>
+  <div class="container">
+
+    <div class="form-row ">
+      <div class="form-group col-md-2">
+        <input class="form-control input-sm" type="text" placeholder="[a b]" #overlapInterval>
+      </div>
+      <div class="form-group col-md-2">
+        <button class="btn btn-success" (click)='filterOverlap(overlapInterval.value)'>
+          filter Overlap
+        </button>
+      </div>
     </div>
 
-  </div>
-
-  <div class="form-row">
-    <div class="form-group col-md-2">
-      <input class="form-control" type="text" placeholder="PreCell AreaID" #preCellAreaID>
-    </div>
-    <div class="form-group col-md-2">
-      <input class="form-control" type="text" placeholder="PostCell AreaID" #postCellAreaID>
-    </div>
-    <div class="form-group col-md-2">
-      <input class="form-control" type="text" placeholder="PreCell" #pre_Cell>
-    </div>
-    <div class="form-group col-md-2">
-      <input class="form-control" type="text" placeholder="PostCell" #post_Cell>
-    </div>
-    <div class="form-group col-md-2">
-      <input class="form-control" type="text" placeholder="Permanence" #permanence>
-    </div>
-    <div class="form-group col-md-2">
-      <button class="btn btn-info"
-        (click)='updateSynapses(preCellAreaID.value, postCellAreaID.value, pre_Cell.value, post_Cell.value, permanence.value )'>
-        update Synapses
-      </button>
+    <div class="form-row ">
+      <div class="form-group col-md-2">
+        <input class="form-control input-sm" type="text" placeholder="Area ID" #areaID>
+      </div>
+      <div class="form-group col-md-2">
+        <input class="form-control" type="text" placeholder="MiniColumn X Dimension" #miniColumnXDimension>
+      </div>
+      <div class="form-group col-md-2">
+        <input class="form-control" type="text" placeholder="MiniColumn Z Dimension" #miniColumnZDimension>
+      </div>
+      <div class="form-group col-md-2">
+        <input class="form-control" type="text" placeholder="Overlap value" #newOverlapValue>
+      </div>
+      <div class="form-group col-md-2">
+        <button class="btn btn-danger"
+          (click)='updateOverlapV(areaID.value, miniColumnXDimension.value,miniColumnZDimension.value,newOverlapValue.value)'>Update
+          Overlap</button>
+      </div>
     </div>
 
-  </div>
-<!--
+
+
+    <div class="form-row">
+      <div class="form-group col-md-2">
+        <input class="form-control" type="text" placeholder="PreCell AreaID" #preCellAreaID>
+      </div>
+      <div class="form-group col-md-2">
+        <input class="form-control" type="text" placeholder="PostCell AreaID" #postCellAreaID>
+      </div>
+      <div class="form-group col-md-2">
+        <input class="form-control" type="text" placeholder="PreCell" #pre_Cell>
+      </div>
+      <div class="form-group col-md-2">
+        <input class="form-control" type="text" placeholder="PostCell" #post_Cell>
+      </div>
+      <div class="form-group col-md-2">
+        <input class="form-control" type="text" placeholder="Permanence" #permanence>
+      </div>
+      <div class="form-group col-md-2">
+        <button class="btn btn-warning"
+          (click)='updateSynapses(preCellAreaID.value, postCellAreaID.value, pre_Cell.value, post_Cell.value, permanence.value )'>
+          update Synapses
+        </button>
+      </div>
+    </div>
+
+
+    <!--
   <button class="btn btn-danger" (click)='clickFunc()'>UpdateOverlap</button>
   <button class="btn btn-danger" (click)='clickFunc2()'>UpdateSynapse </button>
 -->
-
+  </div>
 </form>
 
 <!-- Plotly chart will be drawn inside this div -->
