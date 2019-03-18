@@ -384,7 +384,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       x: this.xNeurons,
       y: this.yNeurons,
       z: this.zNeurons,
-      // text: this.overlap,
+     text: this.overlap,
       name: 'Neuron',
       mode: 'markers',
       marker: {
@@ -550,7 +550,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       x: this.xNeurons,
       y: this.yNeurons,
       z: this.zNeurons,
-      // text: this.overlap,
+       text: this.overlap,
       name: 'Neuron',
       mode: 'markers',
       marker: {
@@ -614,7 +614,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       x: this.xNeurons,
       y: this.yNeurons,
       z: this.zNeurons,
-      // text: this.overlap,
+       text: this.overlap,
       name: 'Neuron',
       mode: 'markers',
       marker: {
@@ -686,7 +686,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       x: this.xNeurons,
       y: this.yNeurons,
       z: this.zNeurons,
-      // text: this.overlap,
+       text: this.overlap,
       name: 'Neuron',
       mode: 'markers',
       marker: {
@@ -746,7 +746,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       x: this.xNeurons,
       y: this.yNeurons,
       z: this.zNeurons,
-      // text: this.overlap,
+       text: this.overlap,
       name: 'Neuron',
       mode: 'markers',
       marker: {
