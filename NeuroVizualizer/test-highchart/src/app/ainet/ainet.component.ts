@@ -382,6 +382,11 @@ export class AinetComponent implements OnInit, AfterViewInit {
     position: ["top", "right"],
     timeOut: 3000,
   };
+
+  /**
+   * filterPermanence filters the synapses according to a definite enclosed interval 
+   * @param permanenceInterval 
+   */
   filterPermanence(permanenceInterval: any) {
     let splitpermanenceInterval = permanenceInterval.split(" ");
     let permanenceIntervalStart = parseFloat(splitpermanenceInterval[0]);
@@ -450,6 +455,10 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   }
 
+  /**
+   * filterOverlap filters the neurons that have certain overlap values that lies in the specified enclosed interval
+   * @param overlapInterval 
+   */
   filterOverlap(overlapInterval: any) {
     let splitOverlapInterval = overlapInterval.split(" ");
     let overlapIntervalStart = parseFloat(splitOverlapInterval[0]);
