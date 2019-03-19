@@ -982,8 +982,8 @@ namespace NeoCortexApi
             {
                 return inhibitColumnsGlobal(c, overlaps, density);
             }
-            return inhibitColumnsLocal(c, overlaps, density);
-            //return inhibitColumnsLocalNewApproach(c, overlaps);
+            //return inhibitColumnsLocal(c, overlaps, density);
+            return inhibitColumnsLocalNewApproach(c, overlaps);
         }
 
 
@@ -1125,8 +1125,8 @@ namespace NeoCortexApi
                     int a = neighborhood[col];
                     overlaps[a] = newOverlap;
                 }
-                
-                overlaps = ArrayUtils.RemoveIndices(overlaps, colNum);
+                //overlaps = ArrayUtils.RemoveIndices(overlaps, colNum);
+                overlaps[colNum] = 0;
                 max = 0;
             }
             return winners.ToArray();
@@ -1158,10 +1158,10 @@ namespace NeoCortexApi
         public void updateBoostFactors(Connections c)
         {
             double[] activeDutyCycles = c.getActiveDutyCycles();
-            //var strActiveDutyCycles = Helpers.StringifyVector(activeDutyCycles);
+            var strActiveDutyCycles = Helpers.StringifyVector(activeDutyCycles);
             //Debug.WriteLine("Active Dutycycles:" + strActiveDutyCycles);
             double[] minActiveDutyCycles = c.getMinActiveDutyCycles();
-            //var strMinActiveDutyCycles = Helpers.StringifyVector(activeDutyCycles);
+            var strMinActiveDutyCycles = Helpers.StringifyVector(activeDutyCycles);
             //Debug.WriteLine("Min active dudycycles:" + strMinActiveDutyCycles);
             List<int> mask = new List<int>();
             //Indexes of values > 0
@@ -1199,14 +1199,14 @@ namespace NeoCortexApi
             }
 
             ArrayUtils.setIndexesTo(boostInterim, filteredIndexes.ToArray(), 1.0d);
-            //var boostInterimStr = Helpers.StringifyVector(boostInterim);
+            var boostInterimStr = Helpers.StringifyVector(boostInterim);
 
 
             //    ArrayUtils.setIndexesTo(boostInterim, ArrayUtils.where(activeDutyCycles, new Condition.Adapter<Object>() {
             //        int i = 0;
             //    @Override public boolean eval(double d) { return d > minActiveDutyCycles[i++]; }
             //}), 1.0d);
-            //Debug.WriteLine("new boost factor:" + boostInterimStr);
+            Debug.WriteLine("new boost factor:" + boostInterimStr);
             c.BoostFactors = boostInterim;
         }
 
