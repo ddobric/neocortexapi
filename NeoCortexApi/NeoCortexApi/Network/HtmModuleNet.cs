@@ -13,6 +13,8 @@ namespace NeoCortexApi.Network
         List<Connections> connections = new List<Connections>();
         List<int[]> activeArrays = new List<int[]>();
 
+        public int Layers { get { return this.connections.Count; } }
+
         public HtmModuleNet(Parameters parameters, int[] levels)
         {
             for (int levelIndx = 0; levelIndx < levels.Length; levelIndx++)
