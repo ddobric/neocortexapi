@@ -431,7 +431,7 @@ namespace UnitTestsProject
         //    new int[] { 28 }, new int[] { 128})]
         public void TrainMultilevelImageTest(string trainingFolder, string[] digits, int[] imageSize, int[] topologies)
         {
-             const string TestOutputFolder = "Output";
+            const string TestOutputFolder = "Output";
             //if (Directory.Exists(TestOutputFolder))
             //    Directory.Delete(TestOutputFolder, true);
 
@@ -446,7 +446,7 @@ namespace UnitTestsProject
                     var parameters = GetDefaultParams();
                     parameters.Set(KEY.POTENTIAL_RADIUS, (int)0.3 * imageSize[imSizeIndx]);
                     parameters.Set(KEY.POTENTIAL_PCT, 0.75);
-                    parameters.Set(KEY.GLOBAL_INHIBITION, false);                
+                    parameters.Set(KEY.GLOBAL_INHIBITION, false);
                     parameters.Set(KEY.STIMULUS_THRESHOLD, 0.5);
                     parameters.Set(KEY.INHIBITION_RADIUS, (int)0.25 * imageSize[imSizeIndx]);
                     parameters.Set(KEY.LOCAL_AREA_DENSITY, -1);
@@ -536,10 +536,41 @@ namespace UnitTestsProject
                                     twoDimInputArray = ArrayUtils.Transpose(twoDimInputArray);
 
                                     bmpArrays.Add(twoDimInputArray);
-                                
+
                                     NeoCortexUtils.DrawBitmaps(bmpArrays, outputImage, OutImgSize, OutImgSize);
                                 }
                             }
+                        }
+
+                        foreach (var mnistImage in trainingImages)
+                        {
+                            FileInfo fI = new FileInfo(mnistImage);
+
+                            string testName = $"{outFolder}\\digit_{digit}_{fI.Name}_{imageSize[imSizeIndx]}";
+
+                            string inputBinaryImageFile = BinarizeImage($"{mnistImage}", imageSize[imSizeIndx], testName);
+
+                            int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+
+                            sp.Compute(mem, inputVector, true);
+
+                            List<int[,]> bmpArrays = new List<int[,]>();
+
+                            for (int layer = 0; layer < sp.Layers; layer++)
+                            {
+                                int[,] arr = ArrayUtils.Make2DArray<int>(sp.GetActiveColumns(layer), (int)Math.Sqrt(sp.GetActiveColumns(layer).Length), (int)Math.Sqrt(sp.GetActiveColumns(layer).Length));
+                                arr = ArrayUtils.Transpose(arr);
+                                bmpArrays.Add(arr);
+                            }
+
+                            int[,] twoDimInputArray = ArrayUtils.Make2DArray<int>(inputVector, (int)Math.Sqrt(inputVector.Length), (int)Math.Sqrt(inputVector.Length));
+                            twoDimInputArray = ArrayUtils.Transpose(twoDimInputArray);
+
+                            bmpArrays.Add(twoDimInputArray);
+
+                            string outputImage = $"{outFolder}\\digit_{digit}_PREDICT_{topologies[topologyIndx]}_{fI.Name}";
+
+                            NeoCortexUtils.DrawBitmaps(bmpArrays, outputImage, OutImgSize, OutImgSize);
                         }
                     }
                 }
