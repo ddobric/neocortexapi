@@ -113,10 +113,10 @@ namespace NeoCortex
                 int w = arr.GetLength(0);
                 int h = arr.GetLength(1);
 
-                var scale = (bmpWidth / twoDimArrays.Count) / (w+1) ;// +1 is for offset between pictures in X dim.
+                var scale = ((bmpWidth) / twoDimArrays.Count) / (w+1) ;// +1 is for offset between pictures in X dim.
 
-                if (scale * w < bmpWidth)
-                    scale++;
+                //if (scale * (w + 1) < (bmpWidth))
+                //    scale++;
 
                 for (int Xcount = 0; Xcount < w; Xcount++)
                 {

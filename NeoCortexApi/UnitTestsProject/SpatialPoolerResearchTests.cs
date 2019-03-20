@@ -426,12 +426,12 @@ namespace UnitTestsProject
         //[DataRow("MnistPng28x28\\training", new string[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" },
         //    new int[] { 28 }, new int[] { 32, /*64, 128 */})]
         [DataRow("MnistPng28x28\\training", new string[] { "x", },
-            new int[] { 28 }, new int[] { 32, /*64, 128 */})]
+            new int[] { 28 }, new int[] { 128, /*64, 128 */})]
+        //[DataRow("MnistPng28x28\\training", new string[] { "y", },
+        //    new int[] { 28 }, new int[] { 128})]
         public void TrainMultilevelImageTest(string trainingFolder, string[] digits, int[] imageSize, int[] topologies)
         {
-            const int lastLayerColumn = 0;
-
-            const string TestOutputFolder = "Output";
+             const string TestOutputFolder = "Output";
             //if (Directory.Exists(TestOutputFolder))
             //    Directory.Delete(TestOutputFolder, true);
 
@@ -444,13 +444,13 @@ namespace UnitTestsProject
                 {
                     var numOfActCols = topologies[topologyIndx] * topologies[topologyIndx];
                     var parameters = GetDefaultParams();
-                    parameters.Set(KEY.POTENTIAL_RADIUS, 6);
+                    parameters.Set(KEY.POTENTIAL_RADIUS, (int)0.3 * imageSize[imSizeIndx]);
                     parameters.Set(KEY.POTENTIAL_PCT, 0.75);
                     parameters.Set(KEY.GLOBAL_INHIBITION, false);                
                     parameters.Set(KEY.STIMULUS_THRESHOLD, 0.5);
                     parameters.Set(KEY.INHIBITION_RADIUS, (int)0.25 * imageSize[imSizeIndx]);
-                    parameters.Set(KEY.LOCAL_AREA_DENSITY, 0.5);
-                    parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, -1);
+                    parameters.Set(KEY.LOCAL_AREA_DENSITY, -1);
+                    parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.02 * numOfActCols);
                     parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000000);
                     parameters.Set(KEY.MAX_BOOST, 5);
                     parameters.setInputDimensions(new int[] { imageSize[imSizeIndx], imageSize[imSizeIndx] });
@@ -461,7 +461,7 @@ namespace UnitTestsProject
 
                     parameters.apply(mem);
 
-                    var sp = new HtmModuleNet(parameters, new int[] { 28, 16, 4 });
+                    var sp = new HtmModuleNet(parameters, new int[] { 28, 32, 16, 7, 4 });
 
                     foreach (var digit in digits)
                     {
@@ -476,12 +476,7 @@ namespace UnitTestsProject
 
                         int counter = 0;
 
-
-                        //sp.init(mem);
-
                         int actiColLen = numOfActCols;
-
-                        //int[] activeArray = new int[actiColLen];
 
                         string outFolder = $"{TestOutputFolder}\\{digit}\\{topologies[topologyIndx]}x{topologies[topologyIndx]}";
 
@@ -508,7 +503,7 @@ namespace UnitTestsProject
                                     //Read input csv file into array
                                     int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
 
-                                    int numIterationsPerImage = 1;
+                                    int numIterationsPerImage = 10;
                                     int[] oldArray = new int[sp.GetActiveColumns(2).Length];
 
                                     var activeArray = sp.GetActiveColumns(2);
@@ -541,18 +536,7 @@ namespace UnitTestsProject
                                     twoDimInputArray = ArrayUtils.Transpose(twoDimInputArray);
 
                                     bmpArrays.Add(twoDimInputArray);
-
-                                    //int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(activeArray, (int)Math.Sqrt(activeArray.Length), (int)Math.Sqrt(activeArray.Length));
-                                    //twoDimenArray = ArrayUtils.Transpose(twoDimenArray);
-
-                                    //int[,] twoDimenArray2 = ArrayUtils.Make2DArray<int>(sp.GetActiveColumns(1), (int)Math.Sqrt(sp.GetActiveColumns(1).Length), (int)Math.Sqrt(sp.GetActiveColumns(1).Length));
-                                    //twoDimenArray2 = ArrayUtils.Transpose(twoDimenArray2);
-
-                                    //int[,] twoDimInputArray = ArrayUtils.Make2DArray<int>(inputVector, (int)Math.Sqrt(inputVector.Length), (int)Math.Sqrt(inputVector.Length));
-                                    //twoDimInputArray = ArrayUtils.Transpose(twoDimInputArray);
-
-                                    //NeoCortexUtils.DrawBitmaps(new List<int[,]> { twoDimenArray, twoDimenArray2, twoDimInputArray }, outputImage, OutImgSize, OutImgSize);
-
+                                
                                     NeoCortexUtils.DrawBitmaps(bmpArrays, outputImage, OutImgSize, OutImgSize);
                                 }
                             }
