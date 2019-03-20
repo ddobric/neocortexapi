@@ -426,7 +426,7 @@ namespace UnitTestsProject
         //[DataRow("MnistPng28x28\\training", new string[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" },
         //    new int[] { 28 }, new int[] { 32, /*64, 128 */})]
         [DataRow("MnistPng28x28\\training", new string[] { "x", },
-            new int[] { 28 }, new int[] { 128, /*64, 128 */})]
+            new int[] { 28 }, new int[] { 64, /*64, 128 */})]
         //[DataRow("MnistPng28x28\\training", new string[] { "y", },
         //    new int[] { 28 }, new int[] { 128})]
         public void TrainMultilevelImageTest(string trainingFolder, string[] digits, int[] imageSize, int[] topologies)
@@ -461,7 +461,7 @@ namespace UnitTestsProject
 
                     parameters.apply(mem);
 
-                    var sp = new HtmModuleNet(parameters, new int[] { 28, 32, 16, 7, 4 });
+                    var sp = new HtmModuleNet(parameters, new int[] { 28, 14, 8, 4 });
 
                     foreach (var digit in digits)
                     {
