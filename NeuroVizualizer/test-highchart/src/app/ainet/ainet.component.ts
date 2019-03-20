@@ -158,8 +158,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
         x: 0.5,
         y: 1
       },
-      /*  width: 1500,
-       height: 500, */
+       width: 1500,
+       height: 500,
       margin: {
         l: 0,
         r: 0,
@@ -205,25 +205,10 @@ export class AinetComponent implements OnInit, AfterViewInit {
       // showlegend: false
     };
 
-    // to make the chart responsive 
-    let d3 = Plotlyjs.d3;
-    let WIDTH_IN_PERCENT_OF_PARENT = 80;
-    let HEIGHT_IN_PERCENT_OF_PARENT = 80;
-    let gd3 = d3.select('body').append('div').style({
-      width: WIDTH_IN_PERCENT_OF_PARENT + '%',
-      'margin-left': (100 - WIDTH_IN_PERCENT_OF_PARENT) / 2 + '%',
-      height: HEIGHT_IN_PERCENT_OF_PARENT + 'vh',
-      'margin-top': (100 - HEIGHT_IN_PERCENT_OF_PARENT) / 2 + 'vh'
-    });
-    let graphDiv = gd3.node();
-
-    //let graphDOM = document.getElementById('graph');
-    Plotlyjs.react(graphDiv, [neurons, synapses, inputModel], neuralChartLayout, neuralChartConfig);
+    let graphDOM = document.getElementById('graph');
+    Plotlyjs.react(graphDOM, [neurons, synapses, inputModel], neuralChartLayout, neuralChartConfig);
     //Plotlyjs.newPlot(graphDOM, [PointsT, linesT], neuralChartLayout);
 
-    window.onresize = function () {
-      Plotlyjs.Plots.resize(graphDiv);
-    };
   }
 
 
