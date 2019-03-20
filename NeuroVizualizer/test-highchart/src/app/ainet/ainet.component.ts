@@ -35,8 +35,6 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   weightGivenByUser: string;
   error: string;
-  neuralChartLayout: any;
-  neuralChartConfig: any;
 
   areaID: any = 0;
   miniColumnXDimension: any = 0;
@@ -53,6 +51,11 @@ export class AinetComponent implements OnInit, AfterViewInit {
   zNeuron: number = null;
   cellAreaIndex: number = null;
 
+  xInputModel = [];
+  zInputModel = [];
+  yInputModel = [];
+  inputModelOverlap = [];
+
 
 
 
@@ -68,17 +71,17 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.model = neoCortexUtils.createModel([0, 0, 0, 1, 2, 1], [10, 1], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
     this.fillChart(this.model);
     // this.model = neoCortexUtils.createModel([0, 0, 0, 0, 1, 1, 1, 2, 2, 3], [10, 1], 6);
-    this.generateColoursFromOverlap(this.model);
-    this.generateColoursFromPermanences(this.model);
-    this.createChart();
+    this.generateColoursFromOverlap();
+    this.generateColoursFromPermanences();
+    this.plotChart();
 
 
   }
 
   /**
-   * createChart just plot the chart by using plotly
+   * createChart just plot the chart by using plotly library 
    */
-  createChart() {
+  plotChart() {
     const neurons = {
       x: this.xNeurons,
       y: this.yNeurons,
@@ -126,8 +129,24 @@ export class AinetComponent implements OnInit, AfterViewInit {
         //colorscale: 'Viridis'
       }
     };
+    const inputModel = {
+      x: this.xInputModel,
+      y: this.yInputModel,
+      z: this.zInputModel,
+      text: this.inputModelOverlap,
+      name: 'InputModel',
+      mode: 'markers',
+      marker: {
+        opacity: env.opacityOfNeuron,
+        size: env.sizeOfNeuron,
+         color: this.inputModelOverlap,
+        symbol: 'circle',
+        
+      },
+      type: 'scatter3d',
+    };
 
-    this.neuralChartLayout = {
+    const neuralChartLayout = {
       //showlegend: false, Thgis option is to show the name of legend/DataSeries 
       /*    scene: {
            aspectmode: "manual",
@@ -139,8 +158,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
         x: 0.5,
         y: 1
       },
-      width: 1500,
-      height: 500,
+      /*  width: 1500,
+       height: 500, */
       margin: {
         l: 0,
         r: 0,
@@ -163,9 +182,10 @@ export class AinetComponent implements OnInit, AfterViewInit {
             z: 0
           },
           eye: {
-            x: 1.25,
-            y: 1.25,
-            z: 1.25
+            x: 2,
+            y: 2,
+            z: 0.1
+            /*  x:2.5, y:0.1, z:0.1 */
           },
           up: {
             x: 0,
@@ -176,7 +196,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       },
     };
 
-    this.neuralChartConfig = {
+    const neuralChartConfig = {
       //displayModeBar: false,
       title: '3DChart',
       displaylogo: false,
@@ -185,11 +205,25 @@ export class AinetComponent implements OnInit, AfterViewInit {
       // showlegend: false
     };
 
-    let graphDOM = document.getElementById('graph');
-    Plotlyjs.react(graphDOM, [neurons, synapses], this.neuralChartLayout, this.neuralChartConfig);
+    // to make the chart responsive 
+    let d3 = Plotlyjs.d3;
+    let WIDTH_IN_PERCENT_OF_PARENT = 80;
+    let HEIGHT_IN_PERCENT_OF_PARENT = 80;
+    let gd3 = d3.select('body').append('div').style({
+      width: WIDTH_IN_PERCENT_OF_PARENT + '%',
+      'margin-left': (100 - WIDTH_IN_PERCENT_OF_PARENT) / 2 + '%',
+      height: HEIGHT_IN_PERCENT_OF_PARENT + 'vh',
+      'margin-top': (100 - HEIGHT_IN_PERCENT_OF_PARENT) / 2 + 'vh'
+    });
+    let graphDiv = gd3.node();
+
+    //let graphDOM = document.getElementById('graph');
+    Plotlyjs.react(graphDiv, [neurons, synapses, inputModel], neuralChartLayout, neuralChartConfig);
     //Plotlyjs.newPlot(graphDOM, [PointsT, linesT], neuralChartLayout);
-    // Plotlyjs.newPlot(graphDOM, [test1, test2]);
-    //Plotlyjs.restyle(gd,  update, [0]);
+
+    window.onresize = function () {
+      Plotlyjs.Plots.resize(graphDiv);
+    };
   }
 
 
@@ -208,14 +242,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     let xFactor = 15;
     let yFactor = 5;
 
-    /*          for (let inputmodel = 0; inputmodel < model.input.cells.length; inputmodel++) {
-           for (let inputModelDim1 = 0; inputModelDim1 < model.settings.minicolumnDims[1]; inputModelDim1++) {
-             this.xNeurons.push(model.input.cells[inputmodel][inputModelDim1].X);
-             this.yNeurons.push(0);
-             this.zNeurons.push(model.input.cells[inputmodel][inputModelDim1].Z);
-             this.overlap.push(0);
-           }
-         } */
+
 
     for (areaIndx = 0; areaIndx < model.areas.length; areaIndx++) {
 
@@ -259,27 +286,6 @@ export class AinetComponent implements OnInit, AfterViewInit {
               }
 
             }
-            /*          if (this.cellAreaIndex != null && this.xNeuron != null && this.layerNeuron != null && this.zNeuron != null) {
-                       if (model.areas[areaIndx].minicolumns[i][j].cells[cellIndx] === model.areas[this.cellAreaIndex].minicolumns[this.xNeuron][this.layerNeuron].cells[this.zNeuron]) {
-                         this.overlap.push(model.areas[areaIndx].minicolumns[i][j].overlap);
-                         this.xNeurons.push(i * env.cellXRatio + xOffset);
-                         this.yNeurons.push(areaYWidth * model.areas[areaIndx].level + cellIndx * env.cellYRatio);
-                         this.zNeurons.push(areaZWidth * j);
-         
-                         let xCoorvalue = (i * env.cellXRatio + xOffset);
-                         let yCoorvalue = (areaYWidth * model.areas[areaIndx].level + cellIndx * env.cellYRatio);
-                         let zCoorvalue = (areaZWidth * j);
-         
-                         this.xCoordinatesForOneArea[i] = xCoorvalue;
-                         this.yCoordinatesForOneArea[cellIndx] = yCoorvalue;
-                         this.zCoordinatesForOneArea[j] = zCoorvalue;
-         
-                         this.xCoordinatesAllAreas[areaIndx] = this.xCoordinatesForOneArea;
-                         this.yCoordinatesAllAreas[areaIndx] = this.yCoordinatesForOneArea;
-                         this.zCoordinatesAllAreas[areaIndx] = this.zCoordinatesForOneArea;
-                       }
-         
-                     } */
             else {
 
               this.overlap.push(model.areas[areaIndx].minicolumns[i][j].overlap);
@@ -306,7 +312,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       }
 
     }
-
+    this.inputModelData(this.model);
     this.synapsesData();
 
   }
@@ -380,6 +386,17 @@ export class AinetComponent implements OnInit, AfterViewInit {
      console.log(this.ySynapse);
      console.log(this.zSynapse); */
 
+
+  }
+  inputModelData(model: NeoCortexModel) {
+    for (let inputmodel = 0; inputmodel < model.input.cells.length; inputmodel++) {
+      for (let inputModelDim1 = 0; inputModelDim1 < model.settings.minicolumnDims[1]; inputModelDim1++) {
+        this.xInputModel.push(model.input.cells[inputmodel][inputModelDim1].X);
+        this.yInputModel.push(0);
+        this.zInputModel.push(model.input.cells[inputmodel][inputModelDim1].Z);
+        this.inputModelOverlap.push(0);
+      }
+    }
 
   }
 
@@ -459,7 +476,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       this.xSynapse.push(this.xCoordinatesAllAreas[cell.preSynaptic.areaIndex][cell.preSynaptic.X]);
       this.xSynapse.push(this.xCoordinatesAllAreas[cell.postSynaptic.areaIndex][cell.postSynaptic.X]);
       this.xSynapse.push(null);
-    
+
 
       this.ySynapse.push(this.yCoordinatesAllAreas[cell.preSynaptic.areaIndex][cell.preSynaptic.Layer]);
       this.ySynapse.push(this.yCoordinatesAllAreas[cell.postSynaptic.areaIndex][cell.postSynaptic.Layer]);
@@ -468,7 +485,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       this.zSynapse.push(this.zCoordinatesAllAreas[cell.preSynaptic.areaIndex][cell.preSynaptic.Z]);
       this.zSynapse.push(this.zCoordinatesAllAreas[cell.postSynaptic.areaIndex][cell.postSynaptic.Z]);
       this.zSynapse.push(null);
-      
+
       this.permanence.push(this.model.areas[areaIndex].minicolumns[cellX][cellZ].cells[cellLayer].outgoingSynapses[out].permanence);
       this.permanence.push(this.model.areas[areaIndex].minicolumns[cellX][cellZ].cells[cellLayer].outgoingSynapses[out].permanence);
       this.permanence.push(null);
@@ -488,7 +505,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       this.xSynapse.push(this.xCoordinatesAllAreas[cell.preSynaptic.areaIndex][cell.preSynaptic.X]);
       this.xSynapse.push(this.xCoordinatesAllAreas[cell.postSynaptic.areaIndex][cell.postSynaptic.X]);
       this.xSynapse.push(null);
-    
+
 
       this.ySynapse.push(this.yCoordinatesAllAreas[cell.preSynaptic.areaIndex][cell.preSynaptic.Layer]);
       this.ySynapse.push(this.yCoordinatesAllAreas[cell.postSynaptic.areaIndex][cell.postSynaptic.Layer]);
@@ -497,54 +514,20 @@ export class AinetComponent implements OnInit, AfterViewInit {
       this.zSynapse.push(this.zCoordinatesAllAreas[cell.preSynaptic.areaIndex][cell.preSynaptic.Z]);
       this.zSynapse.push(this.zCoordinatesAllAreas[cell.postSynaptic.areaIndex][cell.postSynaptic.Z]);
       this.zSynapse.push(null);
-      
+
       this.permanence.push(this.model.areas[areaIndex].minicolumns[cellX][cellZ].cells[cellLayer].incomingSynapses[inc].permanence);
       this.permanence.push(this.model.areas[areaIndex].minicolumns[cellX][cellZ].cells[cellLayer].incomingSynapses[inc].permanence);
       this.permanence.push(null);
     }
- /* 
-    console.log(this.xSynapse);
-    console.log(this.ySynapse);
-    console.log(this.zSynapse);
-    console.log(this.permanence); */
+    /* 
+       console.log(this.xSynapse);
+       console.log(this.ySynapse);
+       console.log(this.zSynapse);
+       console.log(this.permanence); */
 
-    this.generateColoursFromOverlap(this.model);
-    this.generateColoursFromPermanences(this.model);
-
-    const updateNeurons = {
-      x: this.xNeurons,
-      y: this.yNeurons,
-      z: this.zNeurons,
-      text: this.overlap,
-      name: 'Neuron',
-      mode: 'markers',
-      marker: {
-        opacity: env.opacityOfNeuron,
-        size: env.sizeOfNeuron,
-        color: this.neuronsColours,
-        symbol: 'circle',
-      },
-      type: 'scatter3d',
-    };
-    const updateSynapses = {
-      //the first point in the array will be joined with a line with the next one in the array ans so on...
-      type: 'scatter3d',
-      mode: 'lines',
-      name: 'Synapse',
-      x: this.xSynapse,
-      y: this.ySynapse,
-      z: this.zSynapse,
-      text: this.permanence,
-      opacity: env.opacityOfSynapse,
-      line: {
-        width: env.lineWidthOfSynapse,
-        color: this.synapseColours,
-      }
-    };
-    let graphDOM = document.getElementById('graph');
-    Plotlyjs.react(graphDOM, [updateNeurons, updateSynapses], this.neuralChartLayout, this.neuralChartConfig);
-
-
+    this.generateColoursFromOverlap();
+    this.generateColoursFromPermanences();
+    this.plotChart();
 
   }
 
@@ -581,43 +564,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.synapseColours = [];
 
     this.fillChart(this.model);
-    this.generateColoursFromOverlap(this.model);
-    this.generateColoursFromPermanences(this.model);
-
-    const updateNeurons = {
-      x: this.xNeurons,
-      y: this.yNeurons,
-      z: this.zNeurons,
-      text: this.overlap,
-      name: 'Neuron',
-      mode: 'markers',
-      marker: {
-        opacity: env.opacityOfNeuron,
-        size: env.sizeOfNeuron,
-        color: this.neuronsColours,
-        symbol: 'circle',
-      },
-      type: 'scatter3d',
-    };
-    const updateSynapses = {
-      //the first point in the array will be joined with a line with the next one in the array ans so on...
-      type: 'scatter3d',
-      mode: 'lines',
-      name: 'Synapse',
-      x: this.xSynapse,
-      y: this.ySynapse,
-      z: this.zSynapse,
-      text: this.permanence,
-      opacity: env.opacityOfSynapse,
-      line: {
-        width: env.lineWidthOfSynapse,
-        color: this.synapseColours,
-      }
-    };
-    let graphDOM = document.getElementById('graph');
-    Plotlyjs.react(graphDOM, [updateNeurons, updateSynapses], this.neuralChartLayout, this.neuralChartConfig);
-
-
+    this.generateColoursFromOverlap();
+    this.generateColoursFromPermanences();
+    this.plotChart();
   }
 
   /**
@@ -652,41 +601,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.synapseColours = [];
 
     this.fillChart(this.model);
-    this.generateColoursFromOverlap(this.model);
-    this.generateColoursFromPermanences(this.model);
-
-    const updateNeurons = {
-      x: this.xNeurons,
-      y: this.yNeurons,
-      z: this.zNeurons,
-      text: this.overlap,
-      name: 'Neuron',
-      mode: 'markers',
-      marker: {
-        opacity: env.opacityOfNeuron,
-        size: env.sizeOfNeuron,
-        color: this.neuronsColours,
-        symbol: 'circle',
-      },
-      type: 'scatter3d',
-    };
-    const updateSynapses = {
-      //the first point in the array will be joined with a line with the next one in the array ans so on...
-      type: 'scatter3d',
-      mode: 'lines',
-      name: 'Synapse',
-      x: this.xSynapse,
-      y: this.ySynapse,
-      z: this.zSynapse,
-      text: this.permanence,
-      opacity: env.opacityOfSynapse,
-      line: {
-        width: env.lineWidthOfSynapse,
-        color: this.synapseColours,
-      }
-    };
-    let graphDOM = document.getElementById('graph');
-    Plotlyjs.react(graphDOM, [updateNeurons, updateSynapses], this.neuralChartLayout, this.neuralChartConfig);
+    this.generateColoursFromOverlap();
+    this.generateColoursFromPermanences();
+    this.plotChart();
 
   }
 
@@ -818,41 +735,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
     }
     this.fillChart(this.model);
-    this.generateColoursFromOverlap(this.model);
-    this.generateColoursFromPermanences(this.model);
-
-    const updateNeurons = {
-      x: this.xNeurons,
-      y: this.yNeurons,
-      z: this.zNeurons,
-      text: this.overlap,
-      name: 'Neuron',
-      mode: 'markers',
-      marker: {
-        opacity: env.opacityOfNeuron,
-        size: env.sizeOfNeuron,
-        color: this.neuronsColours,
-        symbol: 'circle',
-      },
-      type: 'scatter3d',
-    };
-    const updateSynapses = {
-      //the first point in the array will be joined with a line with the next one in the array ans so on...
-      type: 'scatter3d',
-      mode: 'lines',
-      name: 'Synapse',
-      x: this.xSynapse,
-      y: this.ySynapse,
-      z: this.zSynapse,
-      text: this.permanence,
-      opacity: env.opacityOfSynapse,
-      line: {
-        width: env.lineWidthOfSynapse,
-        color: this.synapseColours,
-      }
-    };
-    let graphDOM = document.getElementById('graph');
-    Plotlyjs.react(graphDOM, [updateNeurons, updateSynapses], this.neuralChartLayout, this.neuralChartConfig);
+    this.generateColoursFromOverlap();
+    this.generateColoursFromPermanences();
+    this.plotChart();
   }
 
 
@@ -883,43 +768,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
     synapse = new Synapse(permanence, preCell, postCell);
     this.model.synapses.push(synapse);
     this.fillChart(this.model);
-    this.generateColoursFromOverlap(this.model);
-    this.generateColoursFromPermanences(this.model);
-    const updateNeurons = {
-      x: this.xNeurons,
-      y: this.yNeurons,
-      z: this.zNeurons,
-      text: this.overlap,
-      name: 'Neuron',
-      mode: 'markers',
-      marker: {
-        opacity: env.opacityOfNeuron,
-        size: env.sizeOfNeuron,
-        color: this.neuronsColours,
-        symbol: 'circle',
-      },
-      type: 'scatter3d',
-    };
-
-    const updateSynapses = {
-      //the first point in the array will be joined with a line with the next one in the array ans so on...
-      type: 'scatter3d',
-      mode: 'lines',
-      name: 'Synapse',
-      x: this.xSynapse,
-      y: this.ySynapse,
-      z: this.zSynapse,
-      text: this.permanence,
-      opacity: env.opacityOfSynapse,
-      line: {
-        width: env.lineWidthOfSynapse,
-        color: this.synapseColours,
-      }
-    };
-
-    let graphDOM = document.getElementById('graph');
-
-    Plotlyjs.react(graphDOM, [updateNeurons, updateSynapses], this.neuralChartLayout, this.neuralChartConfig);
+    this.generateColoursFromOverlap();
+    this.generateColoursFromPermanences();
+    this.plotChart();
 
   }
 
@@ -955,44 +806,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
       }
     }
     this.fillChart(this.model);
-    this.generateColoursFromOverlap(this.model);
-    this.generateColoursFromPermanences(this.model);
-    const updateNeurons = {
-      x: this.xNeurons,
-      y: this.yNeurons,
-      z: this.zNeurons,
-      text: this.overlap,
-      name: 'Neuron',
-      mode: 'markers',
-      marker: {
-        opacity: env.opacityOfNeuron,
-        size: env.sizeOfNeuron,
-        color: this.neuronsColours,
-        symbol: 'circle',
-      },
-      type: 'scatter3d',
-    };
-
-    const updateSynapses = {
-      //the first point in the array will be joined with a line with the next one in the array ans so on...
-      type: 'scatter3d',
-      mode: 'lines',
-      name: 'Synapse',
-      x: this.xSynapse,
-      y: this.ySynapse,
-      z: this.zSynapse,
-      text: this.permanence,
-      opacity: env.opacityOfSynapse,
-      line: {
-        width: env.lineWidthOfSynapse,
-        color: this.synapseColours,
-      }
-    };
-
-    let graphDOM = document.getElementById('graph');
-
-    Plotlyjs.react(graphDOM, [updateNeurons, updateSynapses], this.neuralChartLayout, this.neuralChartConfig);
-
+    this.generateColoursFromOverlap();
+    this.generateColoursFromPermanences();
+    this.plotChart();
   }
 
   // This method is for updating overlap column from userinterface
@@ -1015,47 +831,12 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.model.areas[this.areaID].minicolumns[this.miniColumnXDimension][this.miniColumnZDimension].overlap = parseFloat(this.newOverlapValue);
 
     this.fillChart(this.model);
-    this.generateColoursFromOverlap(this.model);
-    this.generateColoursFromPermanences(this.model);
-    const updateNeurons = {
-      x: this.xNeurons,
-      y: this.yNeurons,
-      z: this.zNeurons,
-      text: this.overlap,
-      name: 'Neuron',
-      mode: 'markers',
-      marker: {
-        opacity: env.opacityOfNeuron,
-        size: env.sizeOfNeuron,
-        color: this.neuronsColours,
-        symbol: 'circle',
-      },
-      type: 'scatter3d',
-    };
-
-    const updateSynapses = {
-      //the first point in the array will be joined with a line with the next one in the array ans so on...
-      type: 'scatter3d',
-      mode: 'lines',
-      name: 'Synapse',
-      x: this.xSynapse,
-      y: this.ySynapse,
-      z: this.zSynapse,
-      text: this.permanence,
-      opacity: env.opacityOfSynapse,
-      line: {
-        width: env.lineWidthOfSynapse,
-        color: this.synapseColours,
-      }
-    };
-
-    let graphDOM = document.getElementById('graph');
-
-    Plotlyjs.react(graphDOM, [updateNeurons, updateSynapses], this.neuralChartLayout, this.neuralChartConfig);
-    // Plotlyjs.restyle(graphDOM, updateNeurons, this.neuralChartLayout, this.neuralChartConfig);
+    this.generateColoursFromOverlap();
+    this.generateColoursFromPermanences();
+    this.plotChart();
   }
 
-  generateColoursFromOverlap(model: NeoCortexModel) {
+  generateColoursFromOverlap() {
 
     for (const overlapVal of this.overlap) {
       let H = (1.0 - overlapVal) * 240;
@@ -1064,7 +845,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   }
 
-  generateColoursFromPermanences(model: NeoCortexModel) {
+  generateColoursFromPermanences() {
 
     for (const permanenceVal of this.permanence) {
       let H = (1.0 - permanenceVal) * 240;
