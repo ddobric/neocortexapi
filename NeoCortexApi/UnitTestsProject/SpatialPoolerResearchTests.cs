@@ -423,10 +423,10 @@ namespace UnitTestsProject
         //[DataRow("MnistPng28x28\\training", "7", new int[] { 28 }, new int[] { 32, /*64, 128 */ })]
         //[DataRow("MnistPng28x28\\training", new string[] {"0", "1", "2", "3", "4", "5", "6", "7"},
         //    new int[] { 28 }, new int[] { 32, /*64, 128 */})]
-        //[DataRow("MnistPng28x28\\training", new string[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" },
-        //    new int[] { 28 }, new int[] { 32, /*64, 128 */})]
-        [DataRow("MnistPng28x28\\training", new string[] { "x", },
-            new int[] { 28 }, new int[] { 64, /*64, 128 */})]
+        [DataRow("MnistPng28x28\\training", new string[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" },
+            new int[] { 28 }, new int[] { /*32,*/ 64 /*, 128 */})]
+        //[DataRow("MnistPng28x28\\training", new string[] { "x", },
+        //    new int[] { 28 }, new int[] { 64, /*64, 128 */})]
         //[DataRow("MnistPng28x28\\training", new string[] { "y", },
         //    new int[] { 28 }, new int[] { 128})]
         public void TrainMultilevelImageTest(string trainingFolder, string[] digits, int[] imageSize, int[] topologies)
@@ -521,7 +521,7 @@ namespace UnitTestsProject
                                     }
 
                                     var activeStr = Helpers.StringifyVector(activeArray);
-                                    swActCol.WriteLine("Active Array: " + activeStr);
+                                    swActCol.WriteLine($"{digit}, " + activeStr);
 
                                     List<int[,]> bmpArrays = new List<int[,]>();
 
@@ -542,36 +542,38 @@ namespace UnitTestsProject
                             }
                         }
 
-                        foreach (var mnistImage in trainingImages)
-                        {
-                            FileInfo fI = new FileInfo(mnistImage);
+                        // This part of code is doing prediction.
 
-                            string testName = $"{outFolder}\\digit_{digit}_{fI.Name}_{imageSize[imSizeIndx]}";
+                        //foreach (var mnistImage in trainingImages)
+                        //{
+                        //    FileInfo fI = new FileInfo(mnistImage);
 
-                            string inputBinaryImageFile = BinarizeImage($"{mnistImage}", imageSize[imSizeIndx], testName);
+                        //    string testName = $"{outFolder}\\digit_{digit}_{fI.Name}_{imageSize[imSizeIndx]}";
 
-                            int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+                        //    string inputBinaryImageFile = BinarizeImage($"{mnistImage}", imageSize[imSizeIndx], testName);
 
-                            sp.Compute(mem, inputVector, true);
+                        //    int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
 
-                            List<int[,]> bmpArrays = new List<int[,]>();
+                        //    sp.Compute(mem, inputVector, true);
 
-                            for (int layer = 0; layer < sp.Layers; layer++)
-                            {
-                                int[,] arr = ArrayUtils.Make2DArray<int>(sp.GetActiveColumns(layer), (int)Math.Sqrt(sp.GetActiveColumns(layer).Length), (int)Math.Sqrt(sp.GetActiveColumns(layer).Length));
-                                arr = ArrayUtils.Transpose(arr);
-                                bmpArrays.Add(arr);
-                            }
+                        //    List<int[,]> bmpArrays = new List<int[,]>();
 
-                            int[,] twoDimInputArray = ArrayUtils.Make2DArray<int>(inputVector, (int)Math.Sqrt(inputVector.Length), (int)Math.Sqrt(inputVector.Length));
-                            twoDimInputArray = ArrayUtils.Transpose(twoDimInputArray);
+                        //    for (int layer = 0; layer < sp.Layers; layer++)
+                        //    {
+                        //        int[,] arr = ArrayUtils.Make2DArray<int>(sp.GetActiveColumns(layer), (int)Math.Sqrt(sp.GetActiveColumns(layer).Length), (int)Math.Sqrt(sp.GetActiveColumns(layer).Length));
+                        //        arr = ArrayUtils.Transpose(arr);
+                        //        bmpArrays.Add(arr);
+                        //    }
 
-                            bmpArrays.Add(twoDimInputArray);
+                        //    int[,] twoDimInputArray = ArrayUtils.Make2DArray<int>(inputVector, (int)Math.Sqrt(inputVector.Length), (int)Math.Sqrt(inputVector.Length));
+                        //    twoDimInputArray = ArrayUtils.Transpose(twoDimInputArray);
 
-                            string outputImage = $"{outFolder}\\digit_{digit}_PREDICT_{topologies[topologyIndx]}_{fI.Name}";
+                        //    bmpArrays.Add(twoDimInputArray);
 
-                            NeoCortexUtils.DrawBitmaps(bmpArrays, outputImage, OutImgSize, OutImgSize);
-                        }
+                        //    string outputImage = $"{outFolder}\\digit_{digit}_PREDICT_{topologies[topologyIndx]}_{fI.Name}";
+
+                        //    NeoCortexUtils.DrawBitmaps(bmpArrays, outputImage, OutImgSize, OutImgSize);
+                        //}
                     }
                 }
             }
