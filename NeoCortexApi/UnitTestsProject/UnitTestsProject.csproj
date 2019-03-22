@@ -28,6 +28,8 @@
     <PackageReference Include="Microsoft.Office.Interop.Excel" Version="15.0.4795.1000" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.2.0" />
     <PackageReference Include="MSTest.TestFramework" Version="1.2.0" />
+    <PackageReference Include="NeuralNet.MLPerceptron" Version="1.2.2" />
+    <PackageReference Include="NeuralNetworks.Core" Version="1.2.1" />
   </ItemGroup>
 
   <ItemGroup>

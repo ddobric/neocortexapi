@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LearningFoundation.DataMappers
+namespace NeoCortexApi.DataMappers
 {
     /// <summary>
     /// Class for asigning set of properties for each feature (data column)

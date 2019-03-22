@@ -1,4 +1,4 @@
-﻿using LearningFoundation;
+﻿using NeoCortexApi;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Network;
 using System;
