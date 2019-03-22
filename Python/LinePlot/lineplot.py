@@ -22,7 +22,7 @@ if len(sys.argv) <= 3:
     print("40|11")
     print("...")
     print("10|11")
-    sys.argv = "./LinePlot/lineplot.py", "sample graph", "./LinePlot/sparse.txt", "./figure.png"
+    sys.argv = "./lineplot.py", "sample graph", "./sparse.txt", "./figure.png"
 
 print(sys.argv)
 positions = []
