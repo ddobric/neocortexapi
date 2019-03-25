@@ -2,8 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using LearningFoundation;
-using LearningFoundation.DataMappers;
+using NeoCortexApi;
+using NeoCortexApi.DataMappers;
 using NeoCortexApi.Network;
 
 namespace NeoCortexApi.Sensors

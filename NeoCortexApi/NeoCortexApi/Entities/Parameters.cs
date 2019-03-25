@@ -130,6 +130,21 @@ namespace NeoCortexApi.Entities
         }
 
 
+        /// <summary>
+        /// Clones parameters.
+        /// </summary>
+        /// <returns></returns>
+        public Parameters Clone()
+        {
+            Parameters newParams = new Parameters();
+            foreach (var item in this.paramMap)
+            {
+                Parameters.add(newParams.paramMap, this.paramMap);
+            }
+
+            return newParams;
+        }
+
         private static void add(Dictionary<string, object> dict1, Dictionary<string, object> dict2)
         {
             foreach (var item in dict2)
