@@ -408,7 +408,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       position: ["top", "right"],
       timeOut: 3000,
     };
-    
+
   }
 
   /**
@@ -572,6 +572,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
    * @param overlapInterval 
    */
   filterOverlap(overlapInterval: any) {
+    
     let splitOverlapInterval = overlapInterval.split(" ");
     let overlapIntervalStart = parseFloat(splitOverlapInterval[0]);
     let overlapIntervalEnd = parseFloat(splitOverlapInterval[1]);

@@ -9,7 +9,9 @@
 
     <div class="form-row ">
       <div class="form-group col-md-2">
-        <input class="form-control input-sm" type="text" placeholder="[a b]" #overlapInterval>
+        <div data-toggle="tooltip" data-placement="top" title="Overlap values inbetween 0 and 1">
+          <input class="form-control input-sm" type="text" placeholder="[a b]" #overlapInterval>
+        </div>
       </div>
       <div class="form-group col-md-2">
         <button class="btn btn-success" (click)='filterOverlap(overlapInterval.value)'>
@@ -17,7 +19,9 @@
         </button>
       </div>
       <div class="form-group col-md-2">
-        <input class="form-control input-sm" type="text" placeholder="[a b]" #permanenceInterval>
+        <div data-toggle="tooltip" data-placement="top" title="Permanence values inbetween 0 and 1">
+          <input class="form-control input-sm" type="text" placeholder="[a b]" #permanenceInterval>
+        </div>
       </div>
       <div class="form-group col-md-2">
         <button class="btn btn-success" (click)='filterPermanence(permanenceInterval.value)'>
@@ -28,32 +32,44 @@
     </div>
 
     <div class="form-row ">
-        <div class="form-group col-md-2">
+      <div class="form-group col-md-2">
+        <div data-toggle="tooltip" data-placement="top" title="AreaId of the three dimensional cell">
           <input class="form-control input-sm" type="text" placeholder="Area ID" #cellAreaID>
         </div>
-        <div class="form-group col-md-2">
+      </div>
+      <div class="form-group col-md-2">
+        <div data-toggle="tooltip" data-placement="top" title="Enter the three dimensional cell">
           <input class="form-control input-sm" type="text" placeholder="X,Y,Z" #cell>
         </div>
-        <div class="form-group col-md-2">
-          <button class="btn btn-info" (click)='showOutgoingIncomingSynapses(cellAreaID.value, cell.value)'>
-            Out/in Synapses
-          </button>
-
-        </div>
       </div>
+      <div class="form-group col-md-2">
+        <button class="btn btn-info" (click)='showOutgoingIncomingSynapses(cellAreaID.value, cell.value)'>
+          Out/in Synapses
+        </button>
+
+      </div>
+    </div>
 
     <div class="form-row ">
       <div class="form-group col-md-2">
-        <input class="form-control input-sm" type="text" placeholder="Area ID" #areaID>
+        <div data-toggle="tooltip" data-placement="top" title="AreaId of third dimensional Miicolumn">
+          <input class="form-control input-sm" type="text" placeholder="Area ID" #areaID>
+        </div>
       </div>
       <div class="form-group col-md-2">
-        <input class="form-control" type="text" placeholder="MiniColumn X Dimension" #miniColumnXDimension>
+        <div data-toggle="tooltip" data-placement="top" title="Minicolumn X Dimension, starts from 0">
+          <input class="form-control" type="text" placeholder="MiniColumn X Dimension" #miniColumnXDimension>
+        </div>
       </div>
       <div class="form-group col-md-2">
-        <input class="form-control" type="text" placeholder="MiniColumn Z Dimension" #miniColumnZDimension>
+        <div data-toggle="tooltip" data-placement="top" title="Minicolumn Z Dimension, starts from 0">
+          <input class="form-control" type="text" placeholder="MiniColumn Z Dimension" #miniColumnZDimension>
+        </div>
       </div>
       <div class="form-group col-md-2">
-        <input class="form-control" type="text" placeholder="Overlap value" #newOverlapValue>
+        <div data-toggle="tooltip" data-placement="top" title="Overlap value, ranging from 0 to 1">
+          <input class="form-control" type="text" placeholder="Overlap value" #newOverlapValue>
+        </div>
       </div>
       <div class="form-group col-md-2">
         <button class="btn btn-danger"
@@ -66,19 +82,29 @@
 
     <div class="form-row">
       <div class="form-group col-md-2">
-        <input class="form-control" type="text" placeholder="PreCell AreaID" #preCellAreaID>
+        <div data-toggle="tooltip" data-placement="top" title="AreaId of third dimensional Precell of Synapse">
+          <input class="form-control" type="text" placeholder="PreCell AreaID" #preCellAreaID>
+        </div>
       </div>
       <div class="form-group col-md-2">
-        <input class="form-control" type="text" placeholder="PostCell AreaID" #postCellAreaID>
+        <div data-toggle="tooltip" data-placement="top" title="AreaId of third dimensional PostCell of Synapse">
+          <input class="form-control" type="text" placeholder="PostCell AreaID" #postCellAreaID>
+        </div>
       </div>
       <div class="form-group col-md-2">
-        <input class="form-control" type="text" placeholder="PreCell" #pre_Cell>
+        <div data-toggle="tooltip" data-placement="top" title="Three dimensional preSynaptic cell">
+          <input class="form-control" type="text" placeholder="PreCell" #pre_Cell>
+        </div>
       </div>
       <div class="form-group col-md-2">
-        <input class="form-control" type="text" placeholder="PostCell" #post_Cell>
+        <div data-toggle="tooltip" data-placement="top" title="Three dimensional postSynaptic cell">
+          <input class="form-control" type="text" placeholder="PostCell" #post_Cell>
+        </div>
       </div>
       <div class="form-group col-md-2">
-        <input class="form-control" type="text" placeholder="Permanence" #permanence>
+        <div data-toggle="tooltip" data-placement="top" title="Permanance of the Synapse, ranging from 0 to 1">
+          <input class="form-control" type="text" placeholder="Permanence" #permanence>
+        </div>
       </div>
       <div class="form-group col-md-2">
         <button class="btn btn-warning"
@@ -98,7 +124,7 @@
 
 <!-- Plotly chart will be drawn inside this div -->
 <div class="chart" id="graph"></div>
-<simple-notifications [options]="options" ></simple-notifications>
+<simple-notifications [options]="options"></simple-notifications>
 
 
 <!--  <button  class="btn btn-warning"  (click)='updateOverlapV()'>Update OverlapV</button>
