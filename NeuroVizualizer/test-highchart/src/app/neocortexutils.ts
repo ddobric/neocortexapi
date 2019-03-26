@@ -161,7 +161,7 @@ export class neoCortexUtils {
 
     //var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 0, 0, 0, [synaps01, synaps34, synap23, synap56, synap78, synap910]);
 
-    var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 0, 0, 0, randomSynapses);
+    var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 0, 0, 0, synapses);
 
     return model;
   }

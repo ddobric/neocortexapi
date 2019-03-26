@@ -29,35 +29,25 @@ export class AinetComponent implements OnInit, AfterViewInit {
   xCoordinatesAllAreas: Array<any> = [];
   yCoordinatesAllAreas: Array<any> = [];
   zCoordinatesAllAreas: Array<any> = [];
-  xCoordinatesForOneArea = [];
-  yCoordinatesForOneArea = [];
-  zCoordinatesForOneArea = [];
+  xCoordinatesForOneArea: Array<any> = [];
+  yCoordinatesForOneArea: Array<any> = [];
+  zCoordinatesForOneArea: Array<any> = [];
 
-  weightGivenByUser: string;
-  error: string;
-
-  areaID: any = 0;
-  miniColumnXDimension: any = 0;
-  miniColumnZDimension: any = 0;
-  newOverlapValue: any = 0;
-  mapData: any;
   overlapIntervalStart: number = null;
   overlapIntervalEnd: number = null;
   permanenceIntervalStart: number = null;
   permanenceIntervalEnd: number = null;
 
-  xNeuron: number = null;
-  layerNeuron: number = null;
-  zNeuron: number = null;
-  cellAreaIndex: number = null;
+  options: any;
 
-  xInputModel = [];
-  zInputModel = [];
-  yInputModel = [];
-  inputModelOverlap = [];
 
-  neuronsHoverInformation = [];
-  synapsesHoverInformation = [];
+  xInputModel: Array<any> = [];
+  zInputModel: Array<any> = [];
+  yInputModel: Array<any> = [];
+  inputModelOverlap: Array<any> = [];
+
+  neuronsHoverInformation: Array<any> = [];
+  synapsesHoverInformation: Array<any> = [];
 
 
 
@@ -67,9 +57,11 @@ export class AinetComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    this.notificationConfig();
   }
 
   ngAfterViewInit() {
+   
     //this.model = neoCortexUtils.createModel([0, 0, 0, 0, 1, 1, 1, 2, 2, 3], [10, 1], 6);
     this.model = neoCortexUtils.createModel([0, 0, 0, 1, 2, 1], [10, 1], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
     this.fillChart(this.model);
@@ -77,12 +69,13 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.generateColoursFromOverlap();
     this.generateColoursFromPermanences();
     this.plotChart();
+    this.notificationConfig();
 
 
   }
 
   /**
-   * createChart just plot the chart by using plotly library 
+   * plotChart just plot the chart by using plotly library 
    */
   plotChart() {
     const neurons = {
@@ -219,7 +212,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
 
   /**
-   * Fillchart method gets the data from the model, that will be later used to plot the chart by createchart method
+   * Fillchart method gets the data from the model, that will be later used to plot the chart by plotchart method
    * @param model 
    */
   fillChart(model: NeoCortexModel) {
@@ -388,8 +381,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
         }
       }
     }
-    console.log(this.xSynapse);
-    console.log(this.synapsesHoverInformation);
+    //console.log(this.xSynapse);
+    // console.log(this.synapsesHoverInformation);
     /*  console.log(this.xSynapse);
      console.log(this.ySynapse);
      console.log(this.zSynapse); */
@@ -409,26 +402,14 @@ export class AinetComponent implements OnInit, AfterViewInit {
   }
 
 
-  displayError() {
+  notificationConfig() {
 
-    this.options;
-    this._service.error(
-      "Error",
-      this.error,
-      {
-        timeOut: 3000,
-        showProgressBar: true,
-        pauseOnHover: false,
-        clickToClose: true,
-        maxLength: 30
-      }
-    )
+      this.options = {
+      position: ["top", "right"],
+      timeOut: 3000,
+    };
+    
   }
-
-  public options = {
-    position: ["top", "right"],
-    timeOut: 3000,
-  };
 
   /**
    * 
@@ -436,20 +417,12 @@ export class AinetComponent implements OnInit, AfterViewInit {
    * @param cell 
    */
   showOutgoingIncomingSynapses(areaID: any, cellData: any) {
-    //console.log(areaID);
-    //console.log(cell);
+
     let splitCoordinates = cellData.split(",");
     let cellX = parseInt(splitCoordinates[0]);
     let cellLayer = parseInt(splitCoordinates[1]);
     let cellZ = parseInt(splitCoordinates[2]);
     let areaIndex = parseInt(areaID);
-
-    this.xNeuron = cellX;
-    this.layerNeuron = cellLayer;
-    this.zNeuron = cellZ;
-    this.cellAreaIndex = areaIndex;
-    //console.log(areaID);
-
 
     this.xNeurons = [];
     this.yNeurons = [];
@@ -457,7 +430,6 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.xSynapse = [];
     this.ySynapse = [];
     this.zSynapse = [];
-
     this.neuronsColours = [];
     this.overlap = [];
     this.permanence = [];
@@ -469,33 +441,34 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.yNeurons.push(this.yCoordinatesAllAreas[areaIndex][cellLayer]);
     this.zNeurons.push(this.zCoordinatesAllAreas[areaIndex][cellZ]);
     this.overlap.push(this.model.areas[areaIndex].minicolumns[cellX][cellZ].overlap);
-    let cellArea = this.model.areas[areaIndex].minicolumns[cellX][cellZ].cells[cellLayer];
-    this.neuronsHoverInformation.push('N' + '<br>' + this.model.areas[areaIndex].minicolumns[cellX][cellZ].overlap.toString() + '<br>' + cellArea.areaIndex.toString());
+    this.neuronsHoverInformation.push('N' + '<br>' + this.model.areas[areaIndex].minicolumns[cellX][cellZ].overlap.toString() + '<br>' + areaIndex.toString());
 
     let numberOfOutgoingSynapses = this.model.areas[areaIndex].minicolumns[cellX][cellZ].cells[cellLayer].outgoingSynapses.length;
     let numberOfIncomingSynapses = this.model.areas[areaIndex].minicolumns[cellX][cellZ].cells[cellLayer].incomingSynapses.length;
 
     for (let out = 0; out < numberOfOutgoingSynapses; out++) {
-      let postCell = this.model.areas[areaIndex].minicolumns[cellX][cellZ].cells[cellLayer].outgoingSynapses[out].postSynaptic;
 
-      this.xNeurons.push(this.xCoordinatesAllAreas[postCell.areaIndex][postCell.X]);
-      this.yNeurons.push(this.yCoordinatesAllAreas[postCell.areaIndex][postCell.Layer]);
-      this.zNeurons.push(this.zCoordinatesAllAreas[postCell.areaIndex][postCell.Z]);
-      this.overlap.push(this.model.areas[postCell.areaIndex].minicolumns[postCell.X][postCell.Z].overlap);
-      this.neuronsHoverInformation.push('N' + '<br>' + this.model.areas[areaIndex].minicolumns[cellX][cellZ].overlap.toString() + '<br>' + cellArea.areaIndex.toString());
-      let cell = this.model.areas[areaIndex].minicolumns[cellX][cellZ].cells[cellLayer].outgoingSynapses[out];
+      let postCells = this.model.areas[areaIndex].minicolumns[cellX][cellZ].cells[cellLayer].outgoingSynapses[out].postSynaptic;
+      let preCells = this.model.areas[areaIndex].minicolumns[cellX][cellZ].cells[cellLayer].outgoingSynapses[out].preSynaptic;
 
-      this.xSynapse.push(this.xCoordinatesAllAreas[cell.preSynaptic.areaIndex][cell.preSynaptic.X]);
-      this.xSynapse.push(this.xCoordinatesAllAreas[cell.postSynaptic.areaIndex][cell.postSynaptic.X]);
+      this.xNeurons.push(this.xCoordinatesAllAreas[postCells.areaIndex][postCells.X]);
+      this.yNeurons.push(this.yCoordinatesAllAreas[postCells.areaIndex][postCells.Layer]);
+      this.zNeurons.push(this.zCoordinatesAllAreas[postCells.areaIndex][postCells.Z]);
+      this.overlap.push(this.model.areas[postCells.areaIndex].minicolumns[postCells.X][postCells.Z].overlap);
+      this.neuronsHoverInformation.push('N' + '<br>' + this.model.areas[areaIndex].minicolumns[cellX][cellZ].overlap.toString() + '<br>' + postCells.areaIndex.toString());
+
+
+      this.xSynapse.push(this.xCoordinatesAllAreas[preCells.areaIndex][preCells.X]);
+      this.xSynapse.push(this.xCoordinatesAllAreas[postCells.areaIndex][postCells.X]);
       this.xSynapse.push(null);
 
 
-      this.ySynapse.push(this.yCoordinatesAllAreas[cell.preSynaptic.areaIndex][cell.preSynaptic.Layer]);
-      this.ySynapse.push(this.yCoordinatesAllAreas[cell.postSynaptic.areaIndex][cell.postSynaptic.Layer]);
+      this.ySynapse.push(this.yCoordinatesAllAreas[preCells.areaIndex][preCells.Layer]);
+      this.ySynapse.push(this.yCoordinatesAllAreas[postCells.areaIndex][postCells.Layer]);
       this.ySynapse.push(null);
 
-      this.zSynapse.push(this.zCoordinatesAllAreas[cell.preSynaptic.areaIndex][cell.preSynaptic.Z]);
-      this.zSynapse.push(this.zCoordinatesAllAreas[cell.postSynaptic.areaIndex][cell.postSynaptic.Z]);
+      this.zSynapse.push(this.zCoordinatesAllAreas[preCells.areaIndex][preCells.Z]);
+      this.zSynapse.push(this.zCoordinatesAllAreas[postCells.areaIndex][postCells.Z]);
       this.zSynapse.push(null);
 
       this.permanence.push(this.model.areas[areaIndex].minicolumns[cellX][cellZ].cells[cellLayer].outgoingSynapses[out].permanence);
@@ -503,34 +476,34 @@ export class AinetComponent implements OnInit, AfterViewInit {
       this.permanence.push(null);
 
       this.synapsesHoverInformation.push('S' + '<br>' + this.model.areas[areaIndex].minicolumns[cellX][cellZ].cells[cellLayer].outgoingSynapses[out].permanence.toString() + '<br>' +
-        cell.preSynaptic.areaIndex.toString());
+        preCells.areaIndex.toString());
       this.synapsesHoverInformation.push('S' + '<br>' + this.model.areas[areaIndex].minicolumns[cellX][cellZ].cells[cellLayer].outgoingSynapses[out].permanence.toString() + '<br>' +
-        cell.postSynaptic.areaIndex.toString());
+        postCells.areaIndex.toString());
       this.synapsesHoverInformation.push(null);
 
     }
 
     for (let inc = 0; inc < numberOfIncomingSynapses; inc++) {
-      let preCell = this.model.areas[areaIndex].minicolumns[cellX][cellZ].cells[cellLayer].incomingSynapses[inc].preSynaptic;
 
-      this.xNeurons.push(this.xCoordinatesAllAreas[preCell.areaIndex][preCell.X]);
-      this.yNeurons.push(this.yCoordinatesAllAreas[preCell.areaIndex][preCell.Layer]);
-      this.zNeurons.push(this.zCoordinatesAllAreas[preCell.areaIndex][preCell.Z]);
-      this.overlap.push(this.model.areas[preCell.areaIndex].minicolumns[preCell.X][preCell.Z].overlap);
-      this.neuronsHoverInformation.push('N' + '<br>' + this.model.areas[areaIndex].minicolumns[cellX][cellZ].overlap.toString() + '<br>' + cellArea.areaIndex.toString());
-      let cell = this.model.areas[areaIndex].minicolumns[cellX][cellZ].cells[cellLayer].incomingSynapses[inc];
+      let preCells = this.model.areas[areaIndex].minicolumns[cellX][cellZ].cells[cellLayer].incomingSynapses[inc].preSynaptic;
+      let postCells = this.model.areas[areaIndex].minicolumns[cellX][cellZ].cells[cellLayer].incomingSynapses[inc].postSynaptic;
 
-      this.xSynapse.push(this.xCoordinatesAllAreas[cell.preSynaptic.areaIndex][cell.preSynaptic.X]);
-      this.xSynapse.push(this.xCoordinatesAllAreas[cell.postSynaptic.areaIndex][cell.postSynaptic.X]);
+      this.xNeurons.push(this.xCoordinatesAllAreas[preCells.areaIndex][preCells.X]);
+      this.yNeurons.push(this.yCoordinatesAllAreas[preCells.areaIndex][preCells.Layer]);
+      this.zNeurons.push(this.zCoordinatesAllAreas[preCells.areaIndex][preCells.Z]);
+      this.overlap.push(this.model.areas[preCells.areaIndex].minicolumns[preCells.X][preCells.Z].overlap);
+
+      this.xSynapse.push(this.xCoordinatesAllAreas[preCells.areaIndex][preCells.X]);
+      this.xSynapse.push(this.xCoordinatesAllAreas[postCells.areaIndex][postCells.X]);
       this.xSynapse.push(null);
 
 
-      this.ySynapse.push(this.yCoordinatesAllAreas[cell.preSynaptic.areaIndex][cell.preSynaptic.Layer]);
-      this.ySynapse.push(this.yCoordinatesAllAreas[cell.postSynaptic.areaIndex][cell.postSynaptic.Layer]);
+      this.ySynapse.push(this.yCoordinatesAllAreas[preCells.areaIndex][preCells.Layer]);
+      this.ySynapse.push(this.yCoordinatesAllAreas[postCells.areaIndex][postCells.Layer]);
       this.ySynapse.push(null);
 
-      this.zSynapse.push(this.zCoordinatesAllAreas[cell.preSynaptic.areaIndex][cell.preSynaptic.Z]);
-      this.zSynapse.push(this.zCoordinatesAllAreas[cell.postSynaptic.areaIndex][cell.postSynaptic.Z]);
+      this.zSynapse.push(this.zCoordinatesAllAreas[preCells.areaIndex][preCells.Z]);
+      this.zSynapse.push(this.zCoordinatesAllAreas[postCells.areaIndex][postCells.Z]);
       this.zSynapse.push(null);
 
       this.permanence.push(this.model.areas[areaIndex].minicolumns[cellX][cellZ].cells[cellLayer].incomingSynapses[inc].permanence);
@@ -538,17 +511,20 @@ export class AinetComponent implements OnInit, AfterViewInit {
       this.permanence.push(null);
 
       this.synapsesHoverInformation.push('S' + '<br>' + this.model.areas[areaIndex].minicolumns[cellX][cellZ].cells[cellLayer].incomingSynapses[inc].permanence.toString() + '<br>' +
-        cell.preSynaptic.areaIndex.toString());
+        preCells.areaIndex.toString());
       this.synapsesHoverInformation.push('S' + '<br>' + this.model.areas[areaIndex].minicolumns[cellX][cellZ].cells[cellLayer].incomingSynapses[inc].permanence.toString() + '<br>' +
-        cell.postSynaptic.areaIndex.toString());
+        postCells.areaIndex.toString());
       this.synapsesHoverInformation.push(null);
+
+      this.neuronsHoverInformation.push('N' + '<br>' + this.model.areas[areaIndex].minicolumns[cellX][cellZ].overlap.toString() + '<br>' + preCells.areaIndex.toString());
     }
     /* 
        console.log(this.xSynapse);
        console.log(this.ySynapse);
        console.log(this.zSynapse);
        console.log(this.permanence); */
-    // console.log(this.neuronsHoverInformation);
+    console.log(this.neuronsHoverInformation);
+    console.log(this.synapsesHoverInformation);
     this.generateColoursFromOverlap();
     this.generateColoursFromPermanences();
     this.plotChart();
@@ -708,7 +684,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
             postCell.incomingSynapses[inc].preSynaptic.Layer === preCell.Layer &&
             postCell.incomingSynapses[inc].preSynaptic.Z === preCell.Z)) {
 
-          console.log("Synapse Exists");
+          this.create("Synapse Exists", "Permanence will be updated", 'info');
           this.updatePermanenceOfSynaps(perm.permanence, preCell, postCell);
           synapseFound = true;
           break loop;
@@ -718,7 +694,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       }
     }
     if (synapseFound === false) {
-      console.log("Synapse does not exists");
+      this.create("Synapse doesn't Exists", "It will be created", 'info');
       this.createSynapse(perm.permanence, preCell, postCell);
     }
 
@@ -731,7 +707,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
    * @param postCell 
    */
   updatePermanenceOfSynaps(newPermanence: number, preCell: Cell, postCell: Cell) {
-    console.log("Permannence will be updated");
+    //console.log("Permannence will be updated");
 
     /*   preCell.outgoingSynapses[0].permanence = newPermanence;
       postCell.incomingSynapses[0].permanence = newPermanence; */
@@ -756,6 +732,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
 
     }
+    this.create("Permanence Updated", "Finished", 'success');
     this.fillChart(this.model);
     this.generateColoursFromOverlap();
     this.generateColoursFromPermanences();
@@ -785,10 +762,11 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.model.areas[preCell.areaIndex].minicolumns[preCell.X][preCell.Z].cells[preCell.Layer].outgoingSynapses.push(outgoingSynapse);
     this.model.areas[postCell.areaIndex].minicolumns[postCell.X][postCell.Z].cells[postCell.Layer].incomingSynapses.push(incomingSynapse);
 
-    console.log("Synapse will be created");
+    //console.log("Synapse will be created");
     let synapse: Synapse;
     synapse = new Synapse(permanence, preCell, postCell);
     this.model.synapses.push(synapse);
+    this.create("Synapse Created", "Finished", 'success');
     this.fillChart(this.model);
     this.generateColoursFromOverlap();
     this.generateColoursFromPermanences();
@@ -836,11 +814,11 @@ export class AinetComponent implements OnInit, AfterViewInit {
   }
 
   // This method is for updating overlap column from userinterface
-  updateOverlapV(selectAreaIndex: any, miniColumnXDimension: any, miniColumnZDimension: any, newOverlapValue: any) {
-    this.areaID = selectAreaIndex;
-    this.miniColumnXDimension = miniColumnXDimension;
-    this.miniColumnZDimension = miniColumnZDimension;
-    this.newOverlapValue = newOverlapValue;
+  updateOverlapV(areaID: any, miniColumnXDimension: any, miniColumnZDimension: any, newOverlapValue: any) {
+    let areaIDOfCell = parseInt(areaID);
+    let minColXDim = parseInt(miniColumnXDimension);
+    let minColZDim = parseInt(miniColumnZDimension);
+    let updateOverlapValue = parseFloat(newOverlapValue);
     this.xNeurons = [];
     this.yNeurons = [];
     this.zNeurons = [];
@@ -854,7 +832,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.synapsesHoverInformation = [];
     this.neuronsHoverInformation = [];
 
-    this.model.areas[this.areaID].minicolumns[this.miniColumnXDimension][this.miniColumnZDimension].overlap = parseFloat(this.newOverlapValue);
+    this.model.areas[areaIDOfCell].minicolumns[minColXDim][minColZDim].overlap = updateOverlapValue;
 
     this.fillChart(this.model);
     this.generateColoursFromOverlap();
@@ -886,5 +864,10 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   }
 
+  create(title: any, content: any = '', type: any, override?: any) {
+
+    this._service.create(title, content, type, override);
+
+  }
 
 }
