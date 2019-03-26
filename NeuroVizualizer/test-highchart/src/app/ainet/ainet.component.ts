@@ -40,7 +40,6 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   options: any;
 
-
   xInputModel: Array<any> = [];
   zInputModel: Array<any> = [];
   yInputModel: Array<any> = [];
@@ -48,7 +47,6 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   neuronsHoverInformation: Array<any> = [];
   synapsesHoverInformation: Array<any> = [];
-
 
 
 
@@ -61,7 +59,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-   
+
     //this.model = neoCortexUtils.createModel([0, 0, 0, 0, 1, 1, 1, 2, 2, 3], [10, 1], 6);
     this.model = neoCortexUtils.createModel([0, 0, 0, 1, 2, 1], [10, 1], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
     this.fillChart(this.model);
@@ -404,7 +402,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   notificationConfig() {
 
-      this.options = {
+    this.options = {
       position: ["top", "right"],
       timeOut: 3000,
     };
@@ -572,7 +570,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
    * @param overlapInterval 
    */
   filterOverlap(overlapInterval: any) {
-    
+
     let splitOverlapInterval = overlapInterval.split(" ");
     let overlapIntervalStart = parseFloat(splitOverlapInterval[0]);
     let overlapIntervalEnd = parseFloat(splitOverlapInterval[1]);
@@ -870,5 +868,17 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this._service.create(title, content, type, override);
 
   }
+  /* enableButton() {
 
+    var inputValue = (<any>document.getElementById("overlapInterv"));
+    var inputValue1 = (<any>document.getElementById("overlapIntervalButton"));
+
+    if (inputValue.value === "") {
+
+      inputValue1.disabled = true;
+
+    } else {
+      inputValue1.disabled = false;
+    }
+  } */
 }

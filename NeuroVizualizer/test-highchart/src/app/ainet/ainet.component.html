@@ -11,10 +11,12 @@
       <div class="form-group col-md-2">
         <div data-toggle="tooltip" data-placement="top" title="Overlap values inbetween 0 and 1">
           <input class="form-control input-sm" type="text" placeholder="[a b]" #overlapInterval>
+          <!-- <input id="overlapInterv"  [(ngModel)]="myModel" (blur)="enableButton()"  name="demo" class="form-control input-sm" type="text" placeholder="[a b]" #overlapInterval> -->
         </div>
       </div>
       <div class="form-group col-md-2">
-        <button class="btn btn-success" (click)='filterOverlap(overlapInterval.value)'>
+        <!-- <button id = "overlapIntervalButton" class="btn btn-success " (click)='filterOverlap(overlapInterval.value)'disabled> -->
+            <button id = "overlapIntervalButton" class="btn btn-success " (click)='filterOverlap(overlapInterval.value)'>
           filter Overlap
         </button>
       </div>
@@ -34,7 +36,7 @@
     <div class="form-row ">
       <div class="form-group col-md-2">
         <div data-toggle="tooltip" data-placement="top" title="AreaId of the three dimensional cell">
-          <input class="form-control input-sm" type="text" placeholder="Area ID" #cellAreaID>
+          <input class="form-control input-sm" type="number" placeholder="Area ID" #cellAreaID>
         </div>
       </div>
       <div class="form-group col-md-2">
@@ -53,22 +55,22 @@
     <div class="form-row ">
       <div class="form-group col-md-2">
         <div data-toggle="tooltip" data-placement="top" title="AreaId of third dimensional Miicolumn">
-          <input class="form-control input-sm" type="text" placeholder="Area ID" #areaID>
+          <input class="form-control input-sm" type="number" placeholder="Area ID" #areaID>
         </div>
       </div>
       <div class="form-group col-md-2">
         <div data-toggle="tooltip" data-placement="top" title="Minicolumn X Dimension, starts from 0">
-          <input class="form-control" type="text" placeholder="MiniColumn X Dimension" #miniColumnXDimension>
+          <input class="form-control" type="number" placeholder="MiniColumn X Dimension" #miniColumnXDimension>
         </div>
       </div>
       <div class="form-group col-md-2">
         <div data-toggle="tooltip" data-placement="top" title="Minicolumn Z Dimension, starts from 0">
-          <input class="form-control" type="text" placeholder="MiniColumn Z Dimension" #miniColumnZDimension>
+          <input class="form-control" type="number" placeholder="MiniColumn Z Dimension" #miniColumnZDimension>
         </div>
       </div>
       <div class="form-group col-md-2">
         <div data-toggle="tooltip" data-placement="top" title="Overlap value, ranging from 0 to 1">
-          <input class="form-control" type="text" placeholder="Overlap value" #newOverlapValue>
+          <input class="form-control" type="number" min="0" max="1" placeholder="Overlap value" #newOverlapValue>
         </div>
       </div>
       <div class="form-group col-md-2">
@@ -83,27 +85,27 @@
     <div class="form-row">
       <div class="form-group col-md-2">
         <div data-toggle="tooltip" data-placement="top" title="AreaId of third dimensional Precell of Synapse">
-          <input class="form-control" type="text" placeholder="PreCell AreaID" #preCellAreaID>
+          <input class="form-control" type="number" placeholder="PreCell AreaID" #preCellAreaID required>
         </div>
       </div>
       <div class="form-group col-md-2">
         <div data-toggle="tooltip" data-placement="top" title="AreaId of third dimensional PostCell of Synapse">
-          <input class="form-control" type="text" placeholder="PostCell AreaID" #postCellAreaID>
+          <input class="form-control" type="number" placeholder="PostCell AreaID" #postCellAreaID required>
         </div>
       </div>
       <div class="form-group col-md-2">
         <div data-toggle="tooltip" data-placement="top" title="Three dimensional preSynaptic cell">
-          <input class="form-control" type="text" placeholder="PreCell" #pre_Cell>
+          <input class="form-control" type="text" placeholder="PreCell" #pre_Cell required>
         </div>
       </div>
       <div class="form-group col-md-2">
         <div data-toggle="tooltip" data-placement="top" title="Three dimensional postSynaptic cell">
-          <input class="form-control" type="text" placeholder="PostCell" #post_Cell>
+          <input class="form-control" type="text" placeholder="PostCell" #post_Cell required>
         </div>
       </div>
       <div class="form-group col-md-2">
         <div data-toggle="tooltip" data-placement="top" title="Permanance of the Synapse, ranging from 0 to 1">
-          <input class="form-control" type="text" placeholder="Permanence" #permanence>
+          <input class="form-control" type="number"  placeholder="Permanence" #permanence required>
         </div>
       </div>
       <div class="form-group col-md-2">
