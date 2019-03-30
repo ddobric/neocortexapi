@@ -38,7 +38,7 @@ namespace UnitTestsProject
         [DataRow("MnistPng28x28\\training", "3", new int[] { 28 }, new int[] { 32, 64, 128 })]
         public void TrainSingleMnistImageTest(string trainingFolder, string digit, int[] imageSize, int[] topologies)
         {
-            const string TestOutputFolder = "Output";
+            string TestOutputFolder = $"Output-{nameof(TrainSingleMnistImageTest)}";
 
             var trainingImages = Directory.GetFiles(Path.Combine(trainingFolder, digit));
 
@@ -130,7 +130,8 @@ namespace UnitTestsProject
 
 
         /// <summary>
-        /// This test does spatial pooling training of set of specifies images with variable radius.
+        /// This test does spatial pooling training of set of specified images with variable radius.
+        /// Radius is incremented from 10 to 100% with step of 10%.
         /// </summary>
         /// <param name="mnistImage">original Image directory used in the test</param>
         /// <param name="imageSizes">list of sizes used for testing. Image would have same value for width and length</param>
@@ -139,16 +140,18 @@ namespace UnitTestsProject
         [DataRow("MnistPng28x28\\training", "3", new int[] { 28 }, new int[] { 32 /*, 64, 128 */})]
         public void TrainSingleMnistImageWithVariableRadiusTest(string trainingFolder, string digit, int[] imageSizes, int[] topologies)
         {
-            string TestOutputFolder = $"Output-{nameof(TrainSingleMnistImageWithVariableRadiusTest)}";
+            string testOutputFolder = $"Output-{nameof(TrainSingleMnistImageWithVariableRadiusTest)}";
 
             var trainingImages = Directory.GetFiles(Path.Combine(trainingFolder, digit));
 
-            if (Directory.Exists(TestOutputFolder))
-                Directory.Delete(TestOutputFolder, true);
+            Directory.CreateDirectory($"{testOutputFolder}\\{digit}");
 
-            Directory.CreateDirectory(TestOutputFolder);
+            if (Directory.Exists(testOutputFolder))
+                Directory.Delete(testOutputFolder, true);
 
-            Directory.CreateDirectory($"{TestOutputFolder}\\{digit}");
+            Directory.CreateDirectory(testOutputFolder);
+
+            Directory.CreateDirectory($"{testOutputFolder}\\{digit}");
 
             for (int test = 0; test <= 10; test++)
             {
@@ -187,7 +190,7 @@ namespace UnitTestsProject
 
                         int[] activeArray = new int[actiColLen];
 
-                        string outFolder = $"{TestOutputFolder}\\{digit}\\{topologies[topologyIndx]}x{topologies[topologyIndx]}";
+                        string outFolder = $"{testOutputFolder}\\{digit}\\{topologies[topologyIndx]}x{topologies[topologyIndx]}";
 
                         Directory.CreateDirectory(outFolder);
 
@@ -247,6 +250,9 @@ namespace UnitTestsProject
                         }
                     }
                 }
+
+                //calcCrossOverlapsPerDigit(testOutputFolder, fileActCols);
+                //calcCrossOverlapsBetweenImages(testOutputFolder, fileActCols);
             }
         }
 
@@ -257,19 +263,13 @@ namespace UnitTestsProject
         /// <param name="mnistImage">original Image directory used in the test</param>
         /// <param name="imageSizes">list of sizes used for testing. Image would have same value for width and length</param>
         /// <param name="topologies">list of sparse space size. Sparse space has same width and length</param>
+        /// <param name="maxNumOfTrainingImages">-1 to train all available images. Positive number specifies number of training images to be included
+        /// in the training process. I.E. If you want to train 10 images only, set this parameter to 10.</param>
         [TestMethod]
-        //[DataRow("MnistPng28x28\\training", "7", new int[] { 28 }, new int[] { 32, /*64, 128 */ })]
-        //[DataRow("MnistPng28x28\\training", new string[] {"0", "1", "2", "3", "4", "5", "6", "7"},
-        //    new int[] { 28 }, new int[] { 32, /*64, 128 */})]
-        [DataRow("MnistPng28x28\\training", "MnistPng28x28\\testing", new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9" },
-            new int[] { 28 }, new int[] { /*32,*/ 64 /*, 128 */})]
-        //[DataRow("MnistPng28x28\\training", "MnistPng28x28\\testing", new string[] { "0", "1", "2" },
-        //    new int[] { 28 }, new int[] { /*32,*/ 64 /*, 128 */})]
-        //[DataRow("MnistPng28x28\\training", new string[] { "x", },
-        //    new int[] { 28 }, new int[] { 64, /*64, 128 */})]
-        //[DataRow("MnistPng28x28\\training", "MnistPng28x28\\testing", new string[] { "y", },
-        //    new int[] { 28 }, new int[] { 128 })]
-        public void TrainMultilevelImageTest(string trainingFolder, string testingFolder, string[] digits, int[] imageSizes, int[] topologies)
+        [DataRow("MnistPng28x28\\training", "MnistPng28x28\\testing", new string[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" },
+            new int[] { 28 }, new int[] { /*32,*/ 64 /*, 128 */}, -1)]
+        public void TrainMultilevelImageTest(string trainingFolder, string testingFolder, string[] digits, int[] imageSizes,
+            int[] topologies, int maxNumOfTrainingImages = -1)
         {
             List<string> resultFiles = new List<string>();
 
@@ -279,13 +279,13 @@ namespace UnitTestsProject
             // This test can create more layers with the goal to analyse result.
             // However sparse representation of specific layer can be used for supervised
             // prediction.
-            int targetLyrIndx = 2;
+            int targetLyrIndx = 0;
 
-            const string TestOutputFolder = "Output";
-            //if (Directory.Exists(TestOutputFolder))
-            //    Directory.Delete(TestOutputFolder, true);
+            string testOutputFolder = $"Output-{nameof(TrainMultilevelImageTest)}";
+            if (Directory.Exists(testOutputFolder))
+                Directory.Delete(testOutputFolder, true);
 
-            Directory.CreateDirectory(TestOutputFolder);
+            Directory.CreateDirectory(testOutputFolder);
 
             // Topology loop
             for (int topologyIndx = 0; topologyIndx < topologies.Length; topologyIndx++)
@@ -294,7 +294,7 @@ namespace UnitTestsProject
                 {
                     var numOfCols = topologies[topologyIndx] * topologies[topologyIndx];
                     var parameters = GetDefaultParams();
-                    parameters.Set(KEY.POTENTIAL_RADIUS, (int)0.5 * imageSizes[imSizeIndx]);
+                    parameters.Set(KEY.POTENTIAL_RADIUS, (int)1 * imageSizes[imSizeIndx]);
                     parameters.Set(KEY.POTENTIAL_PCT, 0.75);
                     parameters.Set(KEY.GLOBAL_INHIBITION, false);
                     parameters.Set(KEY.STIMULUS_THRESHOLD, 0.5);
@@ -315,8 +315,14 @@ namespace UnitTestsProject
 
                     List<string> trainingFiles = new List<string>();
 
+                    // Active columns of every specific file.
+                    Dictionary<string, Dictionary<string, int[]>> fileActCols = new Dictionary<string, Dictionary<string, int[]>>();
+
                     foreach (var digit in digits)
                     {
+                        // Contains cross overlaps between oll samples of a single digit.
+                        //int[,] overlapMatrix = new float[trainingFiles.Count, trainingFiles.Count];
+
                         string digitFolder = Path.Combine(trainingFolder, digit);
 
                         if (!Directory.Exists(digitFolder))
@@ -324,13 +330,13 @@ namespace UnitTestsProject
 
                         var trainingImages = Directory.GetFiles(digitFolder);
 
-                        Directory.CreateDirectory($"{TestOutputFolder}\\{digit}");
+                        Directory.CreateDirectory($"{testOutputFolder}\\{digit}");
 
                         int counter = 0;
 
                         int actiColLen = numOfCols;
 
-                        string outFolder = $"{TestOutputFolder}\\{digit}\\{topologies[topologyIndx]}x{topologies[topologyIndx]}";
+                        string outFolder = $"{testOutputFolder}\\{digit}\\{topologies[topologyIndx]}x{topologies[topologyIndx]}";
 
                         Directory.CreateDirectory(outFolder);
 
@@ -344,8 +350,13 @@ namespace UnitTestsProject
                         {
                             using (StreamWriter swActCol = new StreamWriter(outputActColFile))
                             {
+                                int trainedImages = 0;
+
                                 foreach (var mnistImage in trainingImages)
                                 {
+                                    if (trainedImages++ > maxNumOfTrainingImages)
+                                        break;
+
                                     FileInfo fI = new FileInfo(mnistImage);
 
                                     string outputImage = $"{outFolder}\\digit_{digit}_cycle_{counter}_{topologies[topologyIndx]}_{fI.Name}";
@@ -373,6 +384,15 @@ namespace UnitTestsProject
                                         oldArray = new int[actiColLen];
                                         sp.GetActiveColumns(targetLyrIndx).CopyTo(oldArray, 0);
                                     }
+
+                                    //
+                                    // Copy result of the file to list of all results.
+                                    var copyResult = new int[actiColLen];
+                                    sp.GetActiveColumns(targetLyrIndx).CopyTo(copyResult, 0);
+                                    fileActCols.TryAdd(digit, new Dictionary<string, int[]>());
+                                    fileActCols[digit].Add(fI.Name, copyResult);
+
+                                    Debug.WriteLine(copyResult.IndexWhere(x => x == 1));
 
                                     var activeStr = Helpers.StringifyVector(activeArray);
                                     swActCol.WriteLine($"{digit}, " + activeStr);
@@ -435,10 +455,140 @@ namespace UnitTestsProject
                     //var api = DoSupervisedLearning(1000, 0.1, 25, new int[] { 3 }, 1, trainingFiles);
                     //PredictSupervizedLearning(digits, testingFolder, sp, imageSizes[imSizeIndx], mem, targetLyrIndx, api);
 
-                    string sdrResults = MergeFiles(trainingFiles);
+                    //string sdrResults = MergeFiles(trainingFiles);
 
                     //DoSupervisedLearningWithMLNet(topologies[topologyIndx], sdrResults);
+                    calcCrossOverlapsPerDigit(testOutputFolder, fileActCols);
+                    calcCrossOverlapsBetweenImages(testOutputFolder, fileActCols);
+
+                    ValidateResults(testOutputFolder, mem, sp, testingFolder, imageSizes[imSizeIndx], digits, targetLyrIndx, fileActCols);
                 }
+            }
+        }
+
+
+        private void ValidateResults(string outputFolder, Connections mem, HtmModuleNet trainedSpatialPooler,
+            string testingFolder, int imgSize, string[] digits, int targetLyrIndx,
+            Dictionary<string, Dictionary<string, int[]>> results)
+        {
+            string winnerDigit = String.Empty;
+            double maxHamDist = 0.0;
+
+            using (StreamWriter sw = new StreamWriter($"{outputFolder}/validation-results.csv"))
+            {
+                foreach (var digit in digits)
+                {
+                    sw.WriteLine($"-------- Digit {digit} -----------");
+
+                    var testingImages = Directory.GetFiles(Path.Combine(testingFolder, digit));
+
+                    foreach (var testImage in testingImages)
+                    {
+                        FileInfo fI = new FileInfo(testImage);
+
+                        string testName = $"{outputFolder}\\digit_{digit}_{fI.Name}_{imgSize}";
+
+                        string inputBinaryImageFile = BinarizeImage($"{testImage}", imgSize, testName);
+
+                        // Read input csv file into array
+                        int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+
+                        trainedSpatialPooler.Compute(mem, inputVector, false);
+
+                        var activeArray = trainedSpatialPooler.GetActiveColumns(targetLyrIndx);
+
+                        foreach (var digitRes in results[digit].Values.ToArray())
+                        {
+                            var distance = MathHelpers.GetHammingDistance(digitRes, activeArray);
+                            sw.WriteLine(distance);
+
+                            if (maxHamDist < distance)
+                            {
+                                maxHamDist = distance;
+                                winnerDigit = digit;
+                            }
+                        }                       
+                    }
+
+                    sw.WriteLine($"WInning digit: {winnerDigit}, hamDist = {maxHamDist}");
+                    sw.WriteLine();
+                }
+            }
+        }
+
+
+        private void calcCrossOverlapsPerDigit(string outputFolder, Dictionary<string, Dictionary<string, int[]>> results)
+        {
+            using (StreamWriter sw = new StreamWriter($"{outputFolder}/cross-overlapps-perimage.csv"))
+            {
+                foreach (var digit in results.Keys)
+                {
+                    var arr = results[digit].Values.ToArray();
+
+                    sw.Write($"{digit}, ");
+
+                    double min = int.MaxValue, max = 0, sum = 0, cnt = 0;
+
+                    for (int i = 0; i < arr.Length; i++)
+                    {
+                        for (int j = i + 1; j < arr.Length; j++)
+                        {
+                            Debug.WriteLine(Helpers.StringifyVector(ArrayUtils.IndexWhere(arr[i], x => x == 1)));
+                            Debug.WriteLine(Helpers.StringifyVector(ArrayUtils.IndexWhere(arr[j], x => x == 1)));
+                            Debug.WriteLine("");
+
+                            var distance = MathHelpers.GetHammingDistance(arr[i], arr[j]);
+                            sw.WriteLine($"{distance}, ");
+
+                            cnt++;
+                            sum += distance;
+
+                            if (distance < min)
+                                min = distance;
+
+                            if (distance > max)
+                                max = distance;
+                        }
+                    }
+
+                    sw.WriteLine("----------------------");
+                    sw.WriteLine($"Digit: {digit}, Avg:{sum / cnt}, Min:{min}, Max:{max}, Compares:{cnt}");
+                }
+            }
+        }
+
+        private void calcCrossOverlapsBetweenImages(string outputFolder, Dictionary<string, Dictionary<string, int[]>> fileActCols)
+        {
+            List<int[]> digitResults = new List<int[]>();
+            foreach (var digit in fileActCols.Keys)
+            {
+                digitResults.Add(fileActCols[digit].Values.Last());
+            }
+
+            double min = int.MaxValue, max = 0, sum = 0, cnt = 0;
+
+            using (StreamWriter sw = new StreamWriter($"{outputFolder}/cross-overlapps-betweendigits.csv"))
+            {
+                for (int i = 0; i < digitResults.Count; i++)
+                {
+                    for (int j = i; j < digitResults.Count; j++)
+                    {
+                        var distance = MathHelpers.GetHammingDistance(digitResults[i], digitResults[j]);
+                        sw.WriteLine($"{i} vs. {j} = {distance}, ");
+
+                        cnt++;
+                        sum += distance;
+
+                        if (distance < min)
+                            min = distance;
+
+                        if (distance > max)
+                            max = distance;
+                    }
+                }
+
+                sw.WriteLine("----------------------");
+                sw.WriteLine($"Avg:{sum / cnt}, Min:{min}, Max:{max}, Compares:{cnt}");
             }
         }
 
