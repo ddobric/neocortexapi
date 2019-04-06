@@ -112,6 +112,7 @@ namespace UnitTestsProject
 
                                     oldArray = new int[actiColLen];
                                     activeArray.CopyTo(oldArray, 0);
+
                                 }
 
                                 var activeStr = Helpers.StringifyVector(activeArray);
@@ -267,13 +268,13 @@ namespace UnitTestsProject
         /// in the training process. I.E. If you want to train 10 images only, set this parameter to 10.</param>
         [TestMethod]
         [DataRow("MnistPng28x28\\training", "MnistPng28x28\\testing", new string[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" },
-            new int[] { 28 }, new int[] { /*32,*/ 64 /*, 128 */}, -1)]
+            new int[] { 28 }, new int[] { /*32,*/ 64 /*, 128 */}, 120)]
         public void TrainMultilevelImageTest(string trainingFolder, string testingFolder, string[] digits, int[] imageSizes,
-            int[] topologies, int maxNumOfTrainingImages = -1)
+            int[] topologies, int maxNumOfTrainingImages = 10)
         {
             List<string> resultFiles = new List<string>();
 
-            int[] poolerTopology = new int[] { 28, 20, 16 };
+            //int[] poolerTopology = new int[] { 28, 16 };
 
             // Index of layer, which is used for supervised prediction.
             // This test can create more layers with the goal to analyse result.
@@ -292,26 +293,34 @@ namespace UnitTestsProject
             {
                 for (int imSizeIndx = 0; imSizeIndx < imageSizes.Length; imSizeIndx++)
                 {
-                    var numOfCols = topologies[topologyIndx] * topologies[topologyIndx];
+                    //var numOfCols = topologies[topologyIndx] * topologies[topologyIndx];
                     var parameters = GetDefaultParams();
-                    parameters.Set(KEY.POTENTIAL_RADIUS, (int)1 * imageSizes[imSizeIndx]);
-                    parameters.Set(KEY.POTENTIAL_PCT, 0.75);
-                    parameters.Set(KEY.GLOBAL_INHIBITION, false);
-                    parameters.Set(KEY.STIMULUS_THRESHOLD, 0.5);
-                    parameters.Set(KEY.INHIBITION_RADIUS, (int)0.25 * imageSizes[imSizeIndx]);
-                    parameters.Set(KEY.LOCAL_AREA_DENSITY, -1);
-                    parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.1 * numOfCols);
-                    parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000000);
-                    parameters.Set(KEY.MAX_BOOST, 5);
-                    parameters.setInputDimensions(new int[] { imageSizes[imSizeIndx], imageSizes[imSizeIndx] });
-                    parameters.setColumnDimensions(new int[] { topologies[topologyIndx], topologies[topologyIndx] });
-                    //parameters.setNumActiveColumnsPerInhArea(0.02 * numOfActCols);
+                    parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.06 * 64 * 64/*imageSizes[imSizeIndx] * imageSizes[imSizeIndx]*/);
+                    parameters.Set(KEY.POTENTIAL_RADIUS, imageSizes[imSizeIndx]* imageSizes[imSizeIndx]/*(int)0.5 * imageSizes[imSizeIndx]*/);
+                    parameters.Set(KEY.POTENTIAL_PCT, 1.0);
+                    parameters.Set(KEY.GLOBAL_INHIBITION, true);
+                    parameters.Set(KEY.STIMULUS_THRESHOLD, 0.0);
+                    parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0);
+                    parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0);
+                    parameters.Set(KEY.SYN_PERM_CONNECTED, 0.2);
+                    parameters.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.001);
+                    parameters.Set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.001);
+                    parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000);
+                    parameters.Set(KEY.MAX_BOOST, 1);
+                    parameters.Set(KEY.WRAP_AROUND, true);
+                    parameters.Set(KEY.SEED, 1956);
+                    parameters.setInputDimensions(new int[] { 28 * 28 });
+                    parameters.setColumnDimensions(new int[] { 64 * 64 });
 
-                    var mem = new Connections();
+                    //parameters.Set(KEY.INHIBITION_RADIUS, (int)0.25 * imageSizes[imSizeIndx]);
+                    //parameters.Set(KEY.LOCAL_AREA_DENSITY, -1);
+                    //parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.06 * 64 *64/*imageSizes[imSizeIndx] * imageSizes[imSizeIndx]*/);
+                    //parameters.Set(KEY.DUTY_CYCLE_PERIOD, 10000000);
+                    //parameters.Set(KEY.MAX_BOOST, 2);
+                    parameters.setInputDimensions(new int[] { 28*28 });
+                    parameters.setColumnDimensions(new int[] { 64*64 });
 
-                    parameters.apply(mem);
-
-                    var sp = new HtmModuleNet(parameters, poolerTopology);
+                    var sp = new HtmModuleNet(new Parameters[] { parameters });
 
                     List<string> trainingFiles = new List<string>();
 
@@ -334,7 +343,7 @@ namespace UnitTestsProject
 
                         int counter = 0;
 
-                        int actiColLen = numOfCols;
+                        //int actiColLen = numOfCols;
 
                         string outFolder = $"{testOutputFolder}\\{digit}\\{topologies[topologyIndx]}x{topologies[topologyIndx]}";
 
@@ -354,7 +363,7 @@ namespace UnitTestsProject
 
                                 foreach (var mnistImage in trainingImages)
                                 {
-                                    if (trainedImages++ > maxNumOfTrainingImages)
+                                    if (maxNumOfTrainingImages > 0 && trainedImages++ > maxNumOfTrainingImages)
                                         break;
 
                                     FileInfo fI = new FileInfo(mnistImage);
@@ -375,20 +384,20 @@ namespace UnitTestsProject
 
                                     for (int k = 0; k < numIterationsPerImage; k++)
                                     {
-                                        sp.Compute(mem, inputVector, true);
+                                        sp.Compute(inputVector, true);
 
-                                        var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
                                         var distance = MathHelpers.GetHammingDistance(oldArray, sp.GetActiveColumns(targetLyrIndx));
                                         swHam.WriteLine($"{counter++}|{distance} ");
 
-                                        oldArray = new int[actiColLen];
+                                        oldArray = new int[sp.GetActiveColumns(targetLyrIndx).Length];
                                         sp.GetActiveColumns(targetLyrIndx).CopyTo(oldArray, 0);
                                     }
 
                                     //
                                     // Copy result of the file to list of all results.
-                                    var copyResult = new int[actiColLen];
-                                    sp.GetActiveColumns(targetLyrIndx).CopyTo(copyResult, 0);
+                                    var activeColumns = sp.GetActiveColumns(targetLyrIndx);
+                                    var copyResult = new int[activeColumns.Length];
+                                    activeColumns.CopyTo(copyResult, 0);
                                     fileActCols.TryAdd(digit, new Dictionary<string, int[]>());
                                     fileActCols[digit].Add(fI.Name, copyResult);
 
@@ -398,12 +407,19 @@ namespace UnitTestsProject
                                     swActCol.WriteLine($"{digit}, " + activeStr);
 
                                     List<int[,]> bmpArrays = new List<int[,]>();
-
+                                    List<double[,]> overlapArrays = new List<double[,]>();
+                                    List<double[,]> bostArrays = new List<double[,]>();
+                                    
                                     for (int layer = 0; layer < sp.Layers; layer++)
                                     {
-                                        int[,] arr = ArrayUtils.Make2DArray<int>(sp.GetActiveColumns(layer), (int)Math.Sqrt(sp.GetActiveColumns(layer).Length), (int)Math.Sqrt(sp.GetActiveColumns(layer).Length));
+                                        int size = (int)Math.Sqrt(sp.GetActiveColumns(layer).Length);
+                                        int[,] arr = ArrayUtils.Make2DArray<int>(sp.GetActiveColumns(layer), size, size);
                                         arr = ArrayUtils.Transpose(arr);
                                         bmpArrays.Add(arr);
+
+                                        var mem = sp.GetMemory(layer);
+                                        overlapArrays.Add(ArrayUtils.Make2DArray<double>(ArrayUtils.toDoubleArray(mem.Overlaps), size, size));
+                                        bostArrays.Add(ArrayUtils.Make2DArray<double>(mem.BoostedOverlaps, size, size));
                                     }
 
                                     int[,] twoDimInputArray = ArrayUtils.Make2DArray<int>(inputVector, (int)Math.Sqrt(inputVector.Length), (int)Math.Sqrt(inputVector.Length));
@@ -412,6 +428,20 @@ namespace UnitTestsProject
                                     bmpArrays.Add(twoDimInputArray);
 
                                     NeoCortexUtils.DrawBitmaps(bmpArrays, outputImage, OutImgSize, OutImgSize);
+
+                                    double v = 0;
+                                    for (int i = 0; i < 64; i++)
+                                    {
+                                        for (int j = 0; j < 64; j++)
+                                        {
+                                            bostArrays[0][i,j] = v;
+                                        }
+
+                                        v+=1;
+                                    }
+
+                                    NeoCortexUtils.DrawHeatmaps(bostArrays, outputImage + ".boost.png", OutImgSize, OutImgSize);
+                                    //NeoCortexUtils.DrawHeatmaps(overlapArrays, outputImage + ".overlapp.png", OutImgSize, OutImgSize);
                                 }
                             }
                         }
@@ -455,67 +485,97 @@ namespace UnitTestsProject
                     //var api = DoSupervisedLearning(1000, 0.1, 25, new int[] { 3 }, 1, trainingFiles);
                     //PredictSupervizedLearning(digits, testingFolder, sp, imageSizes[imSizeIndx], mem, targetLyrIndx, api);
 
-                    //string sdrResults = MergeFiles(trainingFiles);
+                    string sdrResults = MergeFiles(testOutputFolder, trainingFiles);
 
                     //DoSupervisedLearningWithMLNet(topologies[topologyIndx], sdrResults);
                     calcCrossOverlapsPerDigit(testOutputFolder, fileActCols);
                     calcCrossOverlapsBetweenImages(testOutputFolder, fileActCols);
-
-                    ValidateResults(testOutputFolder, mem, sp, testingFolder, imageSizes[imSizeIndx], digits, targetLyrIndx, fileActCols);
+                    ValidateResults(testOutputFolder, sp, testingFolder, imageSizes[imSizeIndx], digits, targetLyrIndx, fileActCols);
                 }
             }
         }
 
 
-        private void ValidateResults(string outputFolder, Connections mem, HtmModuleNet trainedSpatialPooler,
+        /// <summary>
+        /// It traverses through all test files, digit by digit. 
+        /// Prediction result (set of active columns) is compared with results collected during training process of SP.
+        /// Resulting file contains all compares and highited best match.
+        /// </summary>
+        /// <param name="outputFolder"></param>
+        /// <param name="mem"></param>
+        /// <param name="trainedSpatialPooler"></param>
+        /// <param name="testingFolder"></param>
+        /// <param name="imgSize"></param>
+        /// <param name="digits"></param>
+        /// <param name="targetLyrIndx"></param>
+        /// <param name="results"></param>
+        private void ValidateResults(string outputFolder, HtmModuleNet trainedSpatialPooler,
             string testingFolder, int imgSize, string[] digits, int targetLyrIndx,
             Dictionary<string, Dictionary<string, int[]>> results)
+        {
+            using (StreamWriter predictionsWriter = new StreamWriter($"{outputFolder}/sparse-predictions.csv"))
+            {
+                // This is where we write result file, and does prediction.
+                using (StreamWriter sw = new StreamWriter($"{outputFolder}/validation-results.csv"))
+                {
+                    foreach (var digit in digits)
+                    {
+                        sw.WriteLine($"-------- Trying test images for digit {digit} -----------");
+                        Debug.WriteLine($"-------- Trying test images for digit {digit} -----------");
+
+                        var tstImgsForDigit = Directory.GetFiles(Path.Combine(testingFolder, digit));
+
+                        foreach (var testImage in tstImgsForDigit)
+                        {
+                            FileInfo fI = new FileInfo(testImage);
+
+                            string testName = $"{outputFolder}\\digit_{digit}_{fI.Name}_{imgSize}";
+
+                            string inputBinaryImageFile = BinarizeImage($"{testImage}", imgSize, testName);
+
+                            // Read input csv file into array
+                            int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+
+                            trainedSpatialPooler.Compute(inputVector, false);
+
+                            // Write out predicted columns.
+                            var activeArray = trainedSpatialPooler.GetActiveColumns(targetLyrIndx);
+                            var activeStr = Helpers.StringifyVector(activeArray);
+                            predictionsWriter.WriteLine($"{digit}, " + activeStr);
+
+                            var bestMatch = lookupBestMatch(results, activeArray, sw);
+
+                            sw.WriteLine($"Test image {testImage} matches to digit '{bestMatch.winnerDigit}' with hamDist = {bestMatch.maxHammingDistane}");
+                            sw.WriteLine();
+                            Debug.WriteLine($"Test image {testImage} matches to digit '{bestMatch.winnerDigit}' with hamDist = {bestMatch.maxHammingDistane}");
+                        }
+                    }
+                }
+            }
+        }
+
+
+        private static (double maxHammingDistane, string winnerDigit) lookupBestMatch(Dictionary<string, Dictionary<string, int[]>> results, int[] activeArray, StreamWriter sw)
         {
             string winnerDigit = String.Empty;
             double maxHamDist = 0.0;
 
-            using (StreamWriter sw = new StreamWriter($"{outputFolder}/validation-results.csv"))
+            foreach (var digitResults in results)
             {
-                foreach (var digit in digits)
+                foreach (var digitRes in digitResults.Value.Values.ToArray())
                 {
-                    sw.WriteLine($"-------- Digit {digit} -----------");
-
-                    var testingImages = Directory.GetFiles(Path.Combine(testingFolder, digit));
-
-                    foreach (var testImage in testingImages)
+                    var distance = MathHelpers.GetHammingDistance(digitRes, activeArray);
+                    sw.WriteLine(distance);
+                    if (maxHamDist < distance)
                     {
-                        FileInfo fI = new FileInfo(testImage);
-
-                        string testName = $"{outputFolder}\\digit_{digit}_{fI.Name}_{imgSize}";
-
-                        string inputBinaryImageFile = BinarizeImage($"{testImage}", imgSize, testName);
-
-                        // Read input csv file into array
-                        int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
-
-                        trainedSpatialPooler.Compute(mem, inputVector, false);
-
-                        var activeArray = trainedSpatialPooler.GetActiveColumns(targetLyrIndx);
-
-                        foreach (var digitRes in results[digit].Values.ToArray())
-                        {
-                            var distance = MathHelpers.GetHammingDistance(digitRes, activeArray);
-                            sw.WriteLine(distance);
-
-                            if (maxHamDist < distance)
-                            {
-                                maxHamDist = distance;
-                                winnerDigit = digit;
-                            }
-                        }                       
+                        maxHamDist = distance;
+                        winnerDigit = digitResults.Key;
                     }
-
-                    sw.WriteLine($"WInning digit: {winnerDigit}, hamDist = {maxHamDist}");
-                    sw.WriteLine();
                 }
             }
-        }
 
+            return (maxHammingDistane: maxHamDist, winnerDigit: winnerDigit);
+        }
 
         private void calcCrossOverlapsPerDigit(string outputFolder, Dictionary<string, Dictionary<string, int[]>> results)
         {
@@ -655,10 +715,6 @@ namespace UnitTestsProject
 
                         Directory.CreateDirectory($"{TestOutputFolder}\\{digit}");
 
-                        int counter = 0;
-
-                        int actiColLen = numOfCols;
-
                         string outFolder = $"{TestOutputFolder}\\{digit}\\{topologies[topologyIndx]}x{topologies[topologyIndx]}";
 
                         Directory.CreateDirectory(outFolder);
@@ -711,7 +767,7 @@ namespace UnitTestsProject
 
                                 Debug.WriteLine(distance);
 
-                                oldArray = new int[actiColLen];
+                                oldArray = new int[activeArray.Length];
 
                                 activeArray.CopyTo(oldArray, 0);
 
@@ -757,9 +813,9 @@ namespace UnitTestsProject
         /// Merge all SDR results of all digits into a single SDR resulting file.
         /// </summary>
         /// <param name="trainingFiles"></param>
-        private static string MergeFiles(List<string> trainingFiles)
+        private static string MergeFiles(string outputPath, List<string> trainingFiles)
         {
-            string sparseFileName = "sparse-results.csv";
+            string sparseFileName = $"{outputPath}\\sparse-results.csv";
             if (File.Exists(sparseFileName))
                 File.Delete(sparseFileName);
 
@@ -866,7 +922,7 @@ namespace UnitTestsProject
                     //Read input csv file into array
                     int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
 
-                    sp.Compute(mem, inputVector, false);
+                    sp.Compute(inputVector, false);
 
                     var activeColumns = sp.GetActiveColumns(targetLyrIndx);
 

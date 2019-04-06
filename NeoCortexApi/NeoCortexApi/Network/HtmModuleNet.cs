@@ -9,7 +9,7 @@ namespace NeoCortexApi.Network
 {
     public class HtmModuleNet
     {
-        List<SpatialPooler> graphs = new List<SpatialPooler>();
+        List<SpatialPooler> poolers = new List<SpatialPooler>();
         List<Connections> connections = new List<Connections>();
         List<int[]> activeArrays = new List<int[]>();
 
@@ -29,9 +29,10 @@ namespace NeoCortexApi.Network
                     levelIn = connections[levelIndx - 1].getColumnDimensions()[0];
                     levelOut = levels[levelIndx];
                 }
-                
+
                 parameters.setInputDimensions(new int[] { levelIn, levelIn });
                 parameters.setColumnDimensions(new int[] { levelOut, levelOut });
+                parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.1 * levelOut * levelOut);
 
                 var mem = new Connections();
                 parameters.apply(mem);
@@ -43,25 +44,59 @@ namespace NeoCortexApi.Network
                 SpatialPooler sp = new SpatialPooler();
                 sp.init(mem);
 
-                graphs.Add(sp);
+                poolers.Add(sp);
             }
         }
 
-        public void Compute(Connections mem, int[] inputVector, bool train)
+        public HtmModuleNet(Parameters[] parametersList)
         {
-            for (int i = 0; i < graphs.Count; i++)
+            foreach (var prms in parametersList)
             {
-                graphs[i].compute(connections[i], i == 0 ? inputVector : activeArrays[i - 1],
+                var mem = new Connections();
+                prms.apply(mem);
+
+                var colDims = prms.Get<int[]>(KEY.COLUMN_DIMENSIONS);
+                int numCols = 1;
+                for (int i = 0; i < colDims.Length; i++)
+                {
+                    numCols = numCols * colDims[i];
+                }
+
+                this.activeArrays.Add(new int[numCols]);
+
+                this.connections.Add(mem);
+
+                SpatialPooler sp = new SpatialPooler();
+
+                sp.init(mem);
+
+                poolers.Add(sp);
+            }
+        }
+
+        public void Compute(int[] inputVector, bool train)
+        {
+            for (int i = 0; i < poolers.Count; i++)
+            {
+                poolers[i].compute(connections[i], i == 0 ? inputVector : activeArrays[i - 1],
                     this.activeArrays[i], train);
             }
         }
 
         public int[] GetActiveColumns(int levelIndx)
         {
-            if (levelIndx >= this.graphs.Count)
+            if (levelIndx >= this.poolers.Count)
+                throw new ArgumentException("Invalid level index.");
+           
+            return this.activeArrays[levelIndx];
+        }
+
+        public Connections GetMemory(int levelIndx)
+        {
+            if (levelIndx >= this.connections.Count)
                 throw new ArgumentException("Invalid level index.");
 
-            return this.activeArrays[levelIndx];
+            return this.connections[levelIndx];
         }
 
     }

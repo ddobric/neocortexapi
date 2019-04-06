@@ -184,7 +184,7 @@ namespace NeoCortexApi
             // Gets overlap over every single column.
             var overlaps = calculateOverlap(c, inputVector);
 
-            var overlapsStr = Helpers.StringifyVector(overlaps);
+            //var overlapsStr = Helpers.StringifyVector(overlaps);
             //Debug.WriteLine("overlap: " + overlapsStr);
 
             //overlapActive = calculateOverlap(activeInput)
@@ -228,7 +228,7 @@ namespace NeoCortexApi
 
             ArrayUtils.fillArray(activeArray, 0);
             if (activeColumns.Length > 0)
-            {
+            { 
                 ArrayUtils.setIndexesTo(activeArray, activeColumns, 1);
             }
         }

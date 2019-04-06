@@ -274,7 +274,14 @@ namespace NeoCortexApi.Entities
                 string methodName = $"set{key.First().ToString().ToUpper()}{key.Substring(1)}";
                 var method = methods.FirstOrDefault(m => m.Name == methodName);
                 if (method != null)
-                    method.Invoke(cn, new object[] { paramMap[key] });
+                    try
+                    {
+                        method.Invoke(cn, new object[] { paramMap[key] });
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ArgumentException($"Error when setting parameter '{key}'", ex);
+                    }
                                
                 var properties = cn.GetType().GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
                 var prop = properties.FirstOrDefault(m => m.Name == $"{key.First().ToString().ToUpper()}{key.Substring(1)}");

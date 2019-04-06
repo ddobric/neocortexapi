@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeoCortex;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
@@ -196,6 +197,33 @@ namespace UnitTestsProject
             {
 
             }
+        }
+
+        [TestMethod]
+        [DataRow(20)]
+        [DataRow(30)]
+        [DataRow(40)]
+        [DataRow(50)]
+        public void TestHeatmapCreation(int threshold)
+        {
+            List<double[,]> bostArrays = new List<double[,]>();
+            bostArrays.Add(new double[64, 64]);
+            bostArrays.Add(new double[64, 64]);
+
+            double v = 0;
+            for (int i = 0; i < 64; i++)
+            {
+                for (int j = 0; j < 64; j++)
+                {
+                    bostArrays[0][i, j] = v;
+                    bostArrays[1][j, i] = v;
+                }
+
+                v += 1;
+            }
+
+            NeoCortexUtils.DrawHeatmaps(bostArrays, $"tessheat_{threshold}.png", 1024, 1024, 60, threshold, 10);
+
         }
 
         //[TestMethod]
