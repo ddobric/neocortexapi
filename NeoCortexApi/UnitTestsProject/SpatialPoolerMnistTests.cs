@@ -32,11 +32,11 @@ namespace UnitTestsProject
         /// and speed of processing in text files in Output directory.
         /// </summary>
         /// <param name="mnistImage">original Image directory used in the test</param>
-        /// <param name="imageSize">list of sizes used for testing. Image would have same value for width and length</param>
+        /// <param name="imageSizes">list of sizes used for testing. Image would have same value for width and length</param>
         /// <param name="topologies">list of sparse space size. Sparse space has same width and length</param>
         [TestMethod]
         [DataRow("MnistPng28x28\\training", "3", new int[] { 28 }, new int[] { 32, 64, 128 })]
-        public void TrainSingleMnistImageTest(string trainingFolder, string digit, int[] imageSize, int[] topologies)
+        public void TrainSingleMnistImageTest(string trainingFolder, string digit, int[] imageSizes, int[] topologies)
         {
             string TestOutputFolder = $"Output-{nameof(TrainSingleMnistImageTest)}";
 
@@ -50,19 +50,45 @@ namespace UnitTestsProject
             Directory.CreateDirectory($"{TestOutputFolder}\\{digit}");
 
             // Topology loop
-            for (int imSizeIndx = 0; imSizeIndx < imageSize.Length; imSizeIndx++)
+            for (int imSizeIndx = 0; imSizeIndx < imageSizes.Length; imSizeIndx++)
             {
                 for (int topologyIndx = 0; topologyIndx < topologies.Length; topologyIndx++)
                 {
                     int counter = 0;
                     var numOfActCols = topologies[topologyIndx] * topologies[topologyIndx];
                     var parameters = GetDefaultParams();
-                    parameters.Set(KEY.DUTY_CYCLE_PERIOD, 10000);
-                    parameters.Set(KEY.MAX_BOOST, 5);
-                    parameters.setInputDimensions(new int[] { imageSize[imSizeIndx], imageSize[imSizeIndx] });
-                    parameters.setColumnDimensions(new int[] { topologies[topologyIndx], topologies[topologyIndx] });
-                    parameters.setNumActiveColumnsPerInhArea(0.02 * numOfActCols);
+                    //parameters.Set(KEY.DUTY_CYCLE_PERIOD, 20);
+                    //parameters.Set(KEY.MAX_BOOST, 1);
+                    //parameters.setInputDimensions(new int[] { imageSize[imSizeIndx], imageSize[imSizeIndx] });
+                    //parameters.setColumnDimensions(new int[] { topologies[topologyIndx], topologies[topologyIndx] });
+                    //parameters.setNumActiveColumnsPerInhArea(0.02 * numOfActCols);
 
+                  
+                    parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.06 * 64 * 64/*imageSizes[imSizeIndx] * imageSizes[imSizeIndx]*/);
+                    parameters.Set(KEY.POTENTIAL_RADIUS, imageSizes[imSizeIndx] * imageSizes[imSizeIndx]/*(int)0.5 * imageSizes[imSizeIndx]*/);
+                    parameters.Set(KEY.POTENTIAL_PCT, 1.0);
+                    parameters.Set(KEY.GLOBAL_INHIBITION, true);
+
+                    parameters.Set(KEY.STIMULUS_THRESHOLD, 50.0);       //***
+                    parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.008);   //***
+                    parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0.05);      //***
+
+                    //parameters.Set(KEY.STIMULUS_THRESHOLD, 0.0);       //***
+                    //parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.0);   //***
+                    //parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0.0);      //***
+
+                    parameters.Set(KEY.INHIBITION_RADIUS, (int)0.025 * imageSizes[imSizeIndx] * imageSizes[imSizeIndx]);
+
+                    parameters.Set(KEY.SYN_PERM_CONNECTED, 0.2);
+                    parameters.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.001);
+                    parameters.Set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.001);
+                    parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000);
+                    parameters.Set(KEY.MAX_BOOST, 100);
+                    parameters.Set(KEY.WRAP_AROUND, true);
+                    parameters.Set(KEY.SEED, 1956);
+                    parameters.setInputDimensions(new int[] { imageSizes[imSizeIndx], imageSizes[imSizeIndx] });
+                    parameters.setColumnDimensions(new int[] { topologies[topologyIndx], topologies[topologyIndx] });
+                    
                     var sp = new SpatialPooler();
                     var mem = new Connections();
 
@@ -92,15 +118,17 @@ namespace UnitTestsProject
 
                                 string outputImage = $"{outFolder}\\digit_{digit}_cycle_{counter}_{topologies[topologyIndx]}_{fI.Name}";
 
-                                string testName = $"{outFolder}\\digit_{digit}_{fI.Name}_{imageSize[imSizeIndx]}";
+                                string testName = $"{outFolder}\\digit_{digit}_{fI.Name}_{imageSizes[imSizeIndx]}";
 
-                                string inputBinaryImageFile = BinarizeImage($"{mnistImage}", imageSize[imSizeIndx], testName);
+                                string inputBinaryImageFile = BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
 
                                 //Read input csv file into array
                                 int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
 
                                 int numIterationsPerImage = 5;
                                 int[] oldArray = new int[activeArray.Length];
+                                List<double[,]> overlapArrays = new List<double[,]>();
+                                List<double[,]> bostArrays = new List<double[,]>();
 
                                 for (int k = 0; k < numIterationsPerImage; k++)
                                 {
@@ -113,6 +141,9 @@ namespace UnitTestsProject
                                     oldArray = new int[actiColLen];
                                     activeArray.CopyTo(oldArray, 0);
 
+                                    //var mem = sp.GetMemory(layer);
+                                    overlapArrays.Add(ArrayUtils.Make2DArray<double>(ArrayUtils.toDoubleArray(mem.Overlaps), topologies[topologyIndx], topologies[topologyIndx]));
+                                    bostArrays.Add(ArrayUtils.Make2DArray<double>(mem.BoostedOverlaps, topologies[topologyIndx], topologies[topologyIndx]));
                                 }
 
                                 var activeStr = Helpers.StringifyVector(activeArray);
@@ -120,8 +151,13 @@ namespace UnitTestsProject
 
                                 int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(activeArray, topologies[topologyIndx], topologies[topologyIndx]);
                                 twoDimenArray = ArrayUtils.Transpose(twoDimenArray);
+                                List<int[,]> arrays = new List<int[,]>();
+                                arrays.Add(twoDimenArray);
+                                arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray<int>(inputVector, (int)Math.Sqrt(inputVector.Length), (int)Math.Sqrt(inputVector.Length))));
 
-                                NeoCortexUtils.DrawBitmap(twoDimenArray, OutImgSize, OutImgSize, outputImage);
+                                NeoCortexUtils.DrawBitmaps(arrays, outputImage, Color.Yellow, Color.Gray, OutImgSize, OutImgSize);
+                                NeoCortexUtils.DrawHeatmaps(overlapArrays, $"{outputImage}_overlap.png", 1024, 1024, 150, 50, 5);
+                                NeoCortexUtils.DrawHeatmaps(bostArrays, $"{outputImage}_boost.png", 1024, 1024, 150, 50, 5);
                             }
                         }
                     }
@@ -140,7 +176,7 @@ namespace UnitTestsProject
         [TestMethod]
         [DataRow("MnistPng28x28\\training", "3", new int[] { 28 }, new int[] { 32 /*, 64, 128 */})]
         public void TrainSingleMnistImageWithVariableRadiusTest(string trainingFolder, string digit, int[] imageSizes, int[] topologies)
-        {
+         {
             string testOutputFolder = $"Output-{nameof(TrainSingleMnistImageWithVariableRadiusTest)}";
 
             var trainingImages = Directory.GetFiles(Path.Combine(trainingFolder, digit));
@@ -268,7 +304,7 @@ namespace UnitTestsProject
         /// in the training process. I.E. If you want to train 10 images only, set this parameter to 10.</param>
         [TestMethod]
         [DataRow("MnistPng28x28\\training", "MnistPng28x28\\testing", new string[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" },
-            new int[] { 28 }, new int[] { /*32,*/ 64 /*, 128 */}, 120)]
+            new int[] { 28 }, new int[] { /*32,*/ 64 /*, 128 */}, 200)]
         public void TrainMultilevelImageTest(string trainingFolder, string testingFolder, string[] digits, int[] imageSizes,
             int[] topologies, int maxNumOfTrainingImages = 10)
         {
@@ -295,6 +331,7 @@ namespace UnitTestsProject
                 {
                     //var numOfCols = topologies[topologyIndx] * topologies[topologyIndx];
                     var parameters = GetDefaultParams();
+                    parameters.Set(KEY.STIMULUS_THRESHOLD, 0);
                     parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.06 * 64 * 64/*imageSizes[imSizeIndx] * imageSizes[imSizeIndx]*/);
                     parameters.Set(KEY.POTENTIAL_RADIUS, imageSizes[imSizeIndx]* imageSizes[imSizeIndx]/*(int)0.5 * imageSizes[imSizeIndx]*/);
                     parameters.Set(KEY.POTENTIAL_PCT, 1.0);
@@ -302,6 +339,11 @@ namespace UnitTestsProject
                     parameters.Set(KEY.STIMULUS_THRESHOLD, 0.0);
                     parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0);
                     parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0);
+
+                    //parameters.Set(KEY.STIMULUS_THRESHOLD, 50.0);       //***
+                    //parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.008);   //***
+                    //parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0.05);      //***
+
                     parameters.Set(KEY.SYN_PERM_CONNECTED, 0.2);
                     parameters.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.001);
                     parameters.Set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.001);
@@ -317,8 +359,8 @@ namespace UnitTestsProject
                     //parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.06 * 64 *64/*imageSizes[imSizeIndx] * imageSizes[imSizeIndx]*/);
                     //parameters.Set(KEY.DUTY_CYCLE_PERIOD, 10000000);
                     //parameters.Set(KEY.MAX_BOOST, 2);
-                    parameters.setInputDimensions(new int[] { 28*28 });
-                    parameters.setColumnDimensions(new int[] { 64*64 });
+                    //parameters.setInputDimensions(new int[] { 28*28 });
+                    //parameters.setColumnDimensions(new int[] { 64*64 });
 
                     var sp = new HtmModuleNet(new Parameters[] { parameters });
 
@@ -429,19 +471,8 @@ namespace UnitTestsProject
 
                                     NeoCortexUtils.DrawBitmaps(bmpArrays, outputImage, OutImgSize, OutImgSize);
 
-                                    double v = 0;
-                                    for (int i = 0; i < 64; i++)
-                                    {
-                                        for (int j = 0; j < 64; j++)
-                                        {
-                                            bostArrays[0][i,j] = v;
-                                        }
-
-                                        v+=1;
-                                    }
-
-                                    NeoCortexUtils.DrawHeatmaps(bostArrays, outputImage + ".boost.png", OutImgSize, OutImgSize);
-                                    //NeoCortexUtils.DrawHeatmaps(overlapArrays, outputImage + ".overlapp.png", OutImgSize, OutImgSize);
+                                   // NeoCortexUtils.DrawHeatmaps(bostArrays, outputImage + ".boost.png", OutImgSize, OutImgSize, 200, 50, 10);
+                                   // NeoCortexUtils.DrawHeatmaps(overlapArrays, outputImage + ".overlapp.png", OutImgSize, OutImgSize);
                                 }
                             }
                         }

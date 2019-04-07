@@ -673,8 +673,12 @@ namespace NeoCortexApi
             ArrayUtils.clip(perm, c.getSynPermMin(), c.getSynPermMax());
             while (true)
             {
+                // Gets number of synapses with permanence value grather than 'PermConnected'.
                 int numConnected = ArrayUtils.valueGreaterCountAtIndex(c.getSynPermConnected(), perm, maskPotential);
-                if (numConnected >= c.StimulusThreshold) return;
+                if (numConnected >= c.StimulusThreshold)
+                    return;
+
+                // If number of note connected synapses, then permanences of all synapses will be incremented (raised).
                 ArrayUtils.raiseValuesBy(c.getSynPermBelowStimulusInc(), perm, maskPotential);
             }
         }
@@ -730,9 +734,12 @@ namespace NeoCortexApi
         {
             if (raisePerm)
             {
+                // During every learning cycle, this method ensures that every column 
+                // has enough connections ('SynPermConnected') to iput space.
                 raisePermanenceToThreshold(c, perm, maskPotential);
             }
 
+            // Here we set all permanences to 0 
             ArrayUtils.lessThanOrEqualXThanSetToY(perm, c.getSynPermTrimThreshold(), 0);
             ArrayUtils.clip(perm, c.getSynPermMin(), c.getSynPermMax());
             column.setProximalPermanences(c, perm);
