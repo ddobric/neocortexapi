@@ -982,8 +982,8 @@ namespace NeoCortexApi
             {
                 return inhibitColumnsGlobal(c, overlaps, density);
             }
-            //return inhibitColumnsLocal(c, overlaps, density);
-            return inhibitColumnsLocalNewApproach(c, overlaps);
+            return inhibitColumnsLocal(c, overlaps, density);
+            //return inhibitColumnsLocalNewApproach(c, overlaps);
         }
 
 
@@ -1121,7 +1121,7 @@ namespace NeoCortexApi
                 double[] neighborhoodOverlaps = ArrayUtils.ListOfValuesByIndicies(overlaps, neighborhood);
                 for (int col = 0; col < neighborhood.Length; col++)
                 {
-                    double newOverlap = neighborhoodOverlaps[col]-0.5;
+                    double newOverlap = neighborhoodOverlaps[col]-1;
                     int a = neighborhood[col];
                     overlaps[a] = newOverlap;
                 }
@@ -1171,7 +1171,6 @@ namespace NeoCortexApi
                     mask.Add(i);
             }
 
-
             //        int[] mask = ArrayUtils.where(minActiveDutyCycles, ArrayUtils.GREATER_THAN_0);
 
             double[] boostInterim;
@@ -1206,7 +1205,7 @@ namespace NeoCortexApi
             //        int i = 0;
             //    @Override public boolean eval(double d) { return d > minActiveDutyCycles[i++]; }
             //}), 1.0d);
-            Debug.WriteLine("new boost factor:" + boostInterimStr);
+            //Debug.WriteLine("new boost factor:" + boostInterimStr);
             c.BoostFactors = boostInterim;
         }
 
