@@ -296,12 +296,11 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-
         public void CalculatingActiveColumn()
         {
             string[] fileEntries = Directory.GetFiles("C:\\Users\\n.luu\\Study\\SE\\Project\\NeoCortexApi\\UnitTestsProject\\MnistTestImages");
             int[] oldInput = new int[28*28];
-            int[] oldArray = new int[64*64];
+            int[] oldArray = new int[32*32];
             for (int i = 0; i < 100; i++)
             {
                 string fileName = fileEntries[i].Substring(79,10);
@@ -315,13 +314,13 @@ namespace UnitTestsProject
                     {
                         var parameters = GetDefaultParams();
                         parameters.setInputDimensions(new int[] { 28, 28 });
-                        parameters.setColumnDimensions(new int[] { 64, 64 });
-                        parameters.setNumActiveColumnsPerInhArea(0.02 * 64 * 64);
+                        parameters.setColumnDimensions(new int[] { 32, 32 });
+                        parameters.setNumActiveColumnsPerInhArea(0.02 * 32 * 32);
                         var sp = new SpatialPooler();
                         var mem = new Connections();
                         parameters.apply(mem);
                         sp.init(mem);
-                        int actiColLen = 64 * 64;
+                        int actiColLen = 32 * 32;
                         int[] activeArray = new int[actiColLen];
                         //Read input csv file into array
                         int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
@@ -343,7 +342,7 @@ namespace UnitTestsProject
                         var activeStr = Helpers.StringifyVector(activeArray);
                         swActCol.WriteLine(activColDist);
                         //Debug.WriteLine("active Array:" + activeStr);
-                        int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(activeArray, 64, 64);
+                        int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(activeArray, 32, 32);
                         twoDimenArray = ArrayUtils.Transpose(twoDimenArray);
                         Debug.WriteLine("Finish " + (i+1) +" Image");
                         NeoCortexUtils.DrawBitmap(twoDimenArray, OutImgSize, OutImgSize, outputImage);
@@ -545,7 +544,7 @@ namespace UnitTestsProject
             parameters.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.001);
             parameters.Set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.001);
             //parameters.Set(KEY.WRAP_AROUND, false);
-            parameters.Set(KEY.DUTY_CYCLE_PERIOD, 100);
+            parameters.Set(KEY.DUTY_CYCLE_PERIOD, 10);
             parameters.Set(KEY.MAX_BOOST, 10.0);
             parameters.Set(KEY.RANDOM, rnd);
             //int r = parameters.Get<int>(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA);
