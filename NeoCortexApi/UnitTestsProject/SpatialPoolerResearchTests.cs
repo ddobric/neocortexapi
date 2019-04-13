@@ -396,7 +396,7 @@ namespace UnitTestsProject
 
         #region Private Helpers
 
-        private static Parameters GetDefaultParams()
+        internal static Parameters GetDefaultParams()
         {
 
             Random rnd = new Random(42);
