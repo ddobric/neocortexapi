@@ -366,7 +366,7 @@ namespace UnitTestsProject
         /// This test generate a text file of binary image from original image.The text file is 
         /// </summary>
         [TestMethod]
-        [DataRow("TestFiles\\digit8.png")]
+        [DataRow("TestFiles\\digit8.png", "digit8_binarized.txt")]
         public void BinarizeImageTest(String sourcePath, String destinationPath)
         {
             Binarizer imageBinarizer = new Binarizer(200, 200, 200, 32, 32);

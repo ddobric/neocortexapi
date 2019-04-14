@@ -20,8 +20,6 @@ namespace NeoCortexApi.Entities
     public abstract class AbstractSparseMatrix<T> : AbstractFlatMatrix<T>, ISparseMatrix<T>
     {
 
-        private static readonly long serialVersionUID = 1L;
-
         /**
          * Constructs a new {@code AbstractSparseMatrix} with the specified
          * dimensions (defaults to row major ordering)
