@@ -15,24 +15,24 @@ namespace UnitTestsProject
         [TestMethod]
         public void TestInMemoryDictionary()
         {
-          
-            //InMemoryDistributedDictionary<int, int> dict = new InMemoryDistributedDictionary<int, int>(3);
 
-            //for (int i = 0; i < 90; i++)
-            //{
-            //    dict.Add(i, i);
-            //}
+            InMemoryDistributedDictionary<int, int> dict = new InMemoryDistributedDictionary<int, int>(3);
 
-            //int n = 0;
-            //foreach (var item in dict)
-            //{
-            //    Assert.AreEqual<int>(item.Key, n);
-            //    Assert.AreEqual<int>(item.Value, n);
+            for (int i = 0; i < 90; i++)
+            {
+                dict.Add(i, i);
+            }
 
-            //    n++;
+            int n = 0;
+            foreach (var item in dict)
+            {
+                Assert.AreEqual<int>(item.Key, n);
+                Assert.AreEqual<int>(item.Value, n);
 
-            //    Debug.WriteLine(n);
-            //}
+                n++;
+
+                Debug.WriteLine(n);
+            }
         }
 
 

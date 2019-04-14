@@ -20,6 +20,7 @@ namespace UnitTestsProject
         private const int OutImgSize = 1024;
 
         [TestMethod]
+        [TestCategory("LongRunning")]
         public void StableOutputOnSameInputTest()
         {
             var parameters = GetDefaultParams();
@@ -251,6 +252,7 @@ namespace UnitTestsProject
         /// <param name="imageSize">list of sizes used for testing. Image would have same value for width and length</param>
         /// <param name="topologies">list of sparse space size. Sparse space has same width and length</param>
         [TestMethod]
+        [TestCategory("LongRunning")]
         [DataRow("MnistTestImages\\digit7.png", new int[] { 32, 64 }, new int[] { 10, 20 })]
         //[DataRow("MnistTestImages\\digit7.png", 128, 30)]
         public void CalculateSpeedOfLearningTest(string mnistImage, int[] imageSize, int[] topologies)

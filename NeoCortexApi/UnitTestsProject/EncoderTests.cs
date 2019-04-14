@@ -182,6 +182,7 @@ namespace UnitTestsProject
         /// Initializes all encoders.
         /// </summary>
         [TestMethod]
+  
         public void InitializeAllEncodersTest()
         {
             CortexNetworkContext ctx = new CortexNetworkContext();

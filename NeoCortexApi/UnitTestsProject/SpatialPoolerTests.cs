@@ -352,6 +352,7 @@ namespace UnitTestsProject
 
 
         [TestMethod]
+        [TestCategory("LongRunning")]
         public void perfTest()
         {
             setupParameters();

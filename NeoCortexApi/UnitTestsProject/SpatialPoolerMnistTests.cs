@@ -35,6 +35,7 @@ namespace UnitTestsProject
         /// <param name="imageSizes">list of sizes used for testing. Image would have same value for width and length</param>
         /// <param name="topologies">list of sparse space size. Sparse space has same width and length</param>
         [TestMethod]
+        [TestCategory("LongRunning")]
         [DataRow("MnistPng28x28\\training", "3", new int[] { 28 }, new int[] { 32, 64, 128 })]
         public void TrainSingleMnistImageTest(string trainingFolder, string digit, int[] imageSizes, int[] topologies)
         {
@@ -174,6 +175,7 @@ namespace UnitTestsProject
         /// <param name="imageSizes">list of sizes used for testing. Image would have same value for width and length</param>
         /// <param name="topologies">list of sparse space size. Sparse space has same width and length</param>
         [TestMethod]
+        [TestCategory("LongRunning")]
         [DataRow("MnistPng28x28\\training", "3", new int[] { 28 }, new int[] { 32 /*, 64, 128 */})]
         public void TrainSingleMnistImageWithVariableRadiusTest(string trainingFolder, string digit, int[] imageSizes, int[] topologies)
          {
@@ -303,6 +305,7 @@ namespace UnitTestsProject
         /// <param name="maxNumOfTrainingImages">-1 to train all available images. Positive number specifies number of training images to be included
         /// in the training process. I.E. If you want to train 10 images only, set this parameter to 10.</param>
         [TestMethod]
+        [TestCategory("LongRunning")]
         [DataRow("MnistPng28x28\\training", "MnistPng28x28\\testing", new string[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" },
             new int[] { 28 }, new int[] { /*32,*/ 64 /*, 128 */}, 200)]
         public void TrainMultilevelImageTest(string trainingFolder, string testingFolder, string[] digits, int[] imageSizes,
@@ -685,6 +688,7 @@ namespace UnitTestsProject
 
 
         [TestMethod]
+        [TestCategory("LongRunning")]
         //[DataRow("MnistPng28x28\\training", "MnistPng28x28\\testing", new string[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" },
         //  new int[] { 28 }, new int[] { /*32,*/ 64 /*, 128 */})]
         [DataRow("MnistPng28x28\\training", "MnistPng28x28\\testing", new string[] { "2" },
