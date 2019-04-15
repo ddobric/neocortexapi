@@ -44,7 +44,7 @@ namespace NeoCortexApi.Entities
          */
         public SparseBinaryMatrix(int[] dimensions, bool useColumnMajorOrdering) : base(dimensions, useColumnMajorOrdering)
         {
-            this.backingArray = InMemoryDistributedArray.CreateInstance(typeof(int), dimensions);
+            this.backingArray = InMemoryArray.CreateInstance(typeof(int), dimensions);
         }
 
         /**
@@ -58,15 +58,8 @@ namespace NeoCortexApi.Entities
         {
             //update true counts
             DistributedArrayHelpers.setValue(this.backingArray, val, coordinates);
-            int aggVal = -1;
-            //int aggregateVal = DistributedArrayHelpers.aggregateArray(((System.Int32[,])this.backingArray)[coordinates[0],1]);
-            //if (this.backingArray is System.Int32[,])
-            //{
-                var row = DistributedArrayHelpers.GetRow<Int32>((System.Int32[,])this.backingArray, coordinates[0]);
-                aggVal = DistributedArrayHelpers.aggregateArray(row);
-            //}
-            //else
-            //    throw new NotSupportedException();
+         
+            var aggVal = this.backingArray.AggregateArray(coordinates[0]);
 
             setTrueCount(coordinates[0], aggVal);
             // setTrueCount(coordinates[0], DistributedArrayHelpers.aggregateArray(((Object[])this.backingArray)[coordinates[0]]));
@@ -89,7 +82,9 @@ namespace NeoCortexApi.Entities
             //Object slice = DistributedArrayHelpers.getValue(this.backingArray, coordinates);
             Object slice;
             if (coordinates.Length == 1)
-                slice = DistributedArrayHelpers.GetRow<int>((int[,])this.backingArray, coordinates[0]);
+                slice = backingArray.GetRow<int>(coordinates[0]);
+
+                   // DistributedArrayHelpers.GetRow<int>((int[,])this.backingArray, coordinates[0]);
             //else if (coordinates.Length == 1)
             //    slice = ((int[])this.backingArray)[coordinates[0]];
             else
@@ -228,11 +223,13 @@ namespace NeoCortexApi.Entities
             if (backingArray.Rank != 2)
                 throw new InvalidOperationException("Currently supported 2D arrays only");
 
-            var cols = backingArray.GetLength(1);
-            for (int i = 0; i < cols; i++)
-            {
-                backingArray.SetValue(0, row, i);
-            }
+            backingArray.SetRowValuesTo(row, 0);
+
+            //var cols = backingArray.GetLength(1);
+            //for (int i = 0; i < cols; i++)
+            //{
+            //    backingArray.SetValue(0, row, i);
+            //}
 
             this.setTrueCount(row, 0);
             //int[] slice = (int[])backingArray.GetValue(row);
@@ -264,15 +261,11 @@ namespace NeoCortexApi.Entities
             int[] coordinates = computeCoordinates(index);
             if (coordinates.Length == 1)
             {
-                return (Integer)backingArray.GetValue(index);
+                return (Int32)backingArray.GetValue(index);
                 // return Array.getInt(this.backingArray, index);
             }
-
-            else return (int)DistributedArrayHelpers.getValue(this.backingArray, coordinates);
+            else
+                return (Int32)backingArray.GetValue(coordinates);
         }
-
-   
-     
-
     }
 }

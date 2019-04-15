@@ -48,6 +48,7 @@ namespace UnitTestsProject
 
 
         [TestMethod]
+        [TestCategory("LongRunning")]
         public void SerializationTest()
         {
             var parameters = GetDefaultParams();
@@ -111,6 +112,7 @@ namespace UnitTestsProject
         /// set of active columns as SP1.
         /// </summary>
         [TestMethod]
+        [TestCategory("LongRunning")]
         public void StableOutputWithPersistence()
         {
             var parameters = GetDefaultParams();

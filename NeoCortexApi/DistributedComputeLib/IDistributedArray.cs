@@ -26,10 +26,36 @@ namespace NeoCortexApi.DistributedComputeLib
         //     The property is set and the System.Collections.IList is read-only.
         object this[int row, int col] { get; set; }
 
-        int AggregateArray();
+
+        int AggregateArray(int row);
+
         void SetValue(int value, int[] indexes);
+
+        /// <summary>
+        /// Gets value from single dimension array.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        object GetValue(int index);
+
+        /// <summary>
+        /// Get value from two-dim array.
+        /// </summary>
+        /// <param name="indexes"></param>
+        /// <returns></returns>
+        object GetValue(int[] indexes);
+
         int GetUpperBound(int v);
 
         double Max();
+
+        int Rank { get; }
+
+        /// <summary>
+        /// Sets all values of specified row on specified value.
+        /// </summary>
+        /// <param name="rowIndex"></param>
+        /// <param name="newVal"></param>
+        void SetRowValuesTo(int rowIndex, object newVal);
     }
 }

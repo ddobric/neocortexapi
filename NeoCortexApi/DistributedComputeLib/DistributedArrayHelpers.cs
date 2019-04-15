@@ -2604,37 +2604,7 @@ namespace NeoCortexApi.DistributedComputeLib
             return result;
         }
 
-        /**
-        * Aggregates all element of multi dimensional array of ints
-        * @param array
-        * @return sum of all array elements
-*/
-        public static int aggregateArray(IDistributedArray array)
-        {
-            return array.AggregateArray();
-            //int sum = 0;
-            ////if (array.GetType() == typeof(int))
-            ////{
-            ////    return (int)array;
-            ////}
-            //else if (array.GetType() == typeof(int[]))
-            //{
-            //    int[] set = (int[])array;
-            //    foreach (int element in set)
-            //    {
-            //        sum += element;
-            //    }
-            //    return sum;
-            //}
-            //else
-            //{
-            //    foreach (Object agr in (Object[])array)
-            //    {
-            //        sum += aggregateArray(agr);
-            //    }
-            //    return sum;
-            //}
-        }
+        
 
         /**
          * Convert multidimensional array to readable String

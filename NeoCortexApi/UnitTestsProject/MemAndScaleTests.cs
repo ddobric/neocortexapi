@@ -39,9 +39,10 @@ namespace UnitTestsProject
 
 
         /// <summary>
+        /// Excluded from testing becaus eof OutOfMemory
         /// This test is used to run in out of memory by initializing of to big SpatialPooler.
         /// </summary>
-        [TestMethod]
+        /// [TestMethod]
         [ExpectedException(typeof(OutOfMemoryException))]
         public void TestMaxDims()
         {
@@ -89,19 +90,19 @@ namespace UnitTestsProject
         /// 'Attempted to read or write protected memory. 
         /// This is often an indication that other memory is corrupt.'
         /// </summary>
-        [TestMethod]
-        [ExpectedException(typeof(AccessViolationException))]
+        //[TestMethod]
+        //[ExpectedException(typeof(AccessViolationException))]
 
-        public void HugeIntArrayTest()
-        {
-            var x = new int[4096, 250000];
-            for (int i = 0; i < 4096; i++)
-            {
-                int[] y = x.GetRow2(i);
-            }
-        }
+        //public void HugeIntArrayTest()
+        //{
+        //    var x = new int[4096, 250000];
+        //    for (int i = 0; i < 4096; i++)
+        //    {
+        //        int[] y = x.GetRow2(i);
+        //    }
+        //}
 
-     
+
 
         [TestMethod]
         [TestCategory("LongRunning")]
@@ -165,13 +166,13 @@ namespace UnitTestsProject
         [TestMethod]
         [TestCategory("LongRunning")]
         public void DictionarySizeTest()
-        {     
+        {
             var max = lookupMax((dictSize) => new Dictionary<int, int>(dictSize));
 
             Debug.WriteLine($"Max possible size of dictionery: { max }");
         }
 
-       
+
         private int lookupMax(Action<int> fnc)
         {
             byte[] bb = new byte[Int32.MaxValue - 56];
@@ -185,7 +186,7 @@ namespace UnitTestsProject
                 try
                 {
                     fnc(newVal);
-                   
+
                     lastKnownGood = newVal;
 
                     Debug.WriteLine($"Last known good: { lastKnownGood }");
@@ -204,7 +205,7 @@ namespace UnitTestsProject
                     {
                         lastIncrement = lastIncrement / 2;
 
-                        newVal = lastKnownGood + lastIncrement;                     
+                        newVal = lastKnownGood + lastIncrement;
 
                         if (lastIncrement == 0) break;
                     }

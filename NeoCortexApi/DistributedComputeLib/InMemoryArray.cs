@@ -5,8 +5,12 @@ using System.Text;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
-    public class InMemoryDistributedArray : IDistributedArray
+    public class InMemoryArray : IDistributedArray
     {
+        private int[] dimensions;
+
+        private Array backingArray;
+
         private int numOfNodes;
 
         public object this[int index] { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
@@ -15,23 +19,39 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public bool IsReadOnly => throw new NotImplementedException();
 
-        public int Count => throw new NotImplementedException();
+        public int Count => this.backingArray.Length;
 
         public bool IsSynchronized => throw new NotImplementedException();
 
         public object SyncRoot => throw new NotImplementedException();
 
-        public object this[int row, int col] { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public int Rank => this.backingArray.Rank;
 
-        public InMemoryDistributedArray(int numOfNodes)
+        public object this[int row, int col]
+        {
+            get
+            {
+                return this.backingArray.GetValue(row, col);
+            }
+            set
+            {
+                this.backingArray.SetValue(row, col, (int)value);
+            }
+        }
+
+        public InMemoryArray(int numOfNodes)
         {
             this.numOfNodes = numOfNodes;
         }
 
-        public IDistributedArray CreateInstance(Type type, int[] dimensions)
+        public static IDistributedArray CreateInstance(Type type, int[] dimensions)
         {
             // this.backingArray = InMemoryDistributedArray.CreateInstance(typeof(int), dimensions);
-            throw new NotImplementedException();
+            
+            var arr = new InMemoryArray(1);
+            arr.backingArray = Array.CreateInstance(typeof(int), dimensions);
+            arr.dimensions = dimensions;
+            return arr;
         }
 
         public double Max()
@@ -96,19 +116,46 @@ namespace NeoCortexApi.DistributedComputeLib
             throw new NotImplementedException();
         }
 
-        public int AggregateArray()
+        public int AggregateArray(int row)
         {
-            throw new NotImplementedException();
+            int cols = this.backingArray.GetUpperBound(1) + 1;
+         
+            int sum = 0;
+            for (int i = 0; i < cols; i++)
+            {
+                sum+= (Int32)this.backingArray.GetValue(row, i);
+            }
+
+            return sum;
+        }
+
+        public object GetValue(int index)
+        {
+            return this.backingArray.GetValue(index);
+        }
+        
+        public object GetValue(int[] indexes)
+        {
+            return this.backingArray.GetValue(indexes);
         }
 
         public void SetValue(int value, int[] indexes)
         {
-            throw new NotImplementedException();
+            this.backingArray.SetValue(value, indexes);
         }
 
         public int GetUpperBound(int v)
         {
-            throw new NotImplementedException();
+            return this.backingArray.GetUpperBound(v);
+        }
+
+        public void SetRowValuesTo(int rowIndex, object newVal)
+        {
+            var cols = backingArray.GetLength(1);
+            for (int i = 0; i < cols; i++)
+            {
+                backingArray.SetValue(0, rowIndex, i);
+            }
         }
 
      
