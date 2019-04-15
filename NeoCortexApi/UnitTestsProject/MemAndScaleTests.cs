@@ -42,7 +42,7 @@ namespace UnitTestsProject
         /// Excluded from testing becaus eof OutOfMemory
         /// This test is used to run in out of memory by initializing of to big SpatialPooler.
         /// </summary>
-        /// [TestMethod]
+        [TestMethod]
         [ExpectedException(typeof(OutOfMemoryException))]
         public void TestMaxDims()
         {

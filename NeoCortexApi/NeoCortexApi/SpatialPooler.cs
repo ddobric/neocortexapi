@@ -90,8 +90,14 @@ namespace NeoCortexApi
             c.NumInputs = numInputs;
             c.setNumColumns(numColumns);
 
-            //Fill the sparse matrix with column objects
-            for (int i = 0; i < numColumns; i++) { mem.set(i, new Column(c.getCellsPerColumn(), i)); }
+            //
+            // Fill the sparse matrix with column objects
+            var numCells = c.getCellsPerColumn();
+          
+            for (int i = 0; i < numColumns; i++)
+            {
+                mem.set(i, new Column(numCells, i));
+            }
 
             c.setPotentialPools(new SparseObjectMatrix<Pool>(c.getMemory().getDimensions()));
 

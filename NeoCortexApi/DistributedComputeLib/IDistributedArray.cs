@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
-    public interface IDistributedArray : ICollection, IEnumerable, IList
+    public interface IDistributedArray : IEnumerable//ICollection, IEnumerable//, IList
     {
         //
         // Summary:
@@ -26,6 +26,10 @@ namespace NeoCortexApi.DistributedComputeLib
         //     The property is set and the System.Collections.IList is read-only.
         object this[int row, int col] { get; set; }
 
+
+        object this[int index] { get; set; }
+
+        long Count { get; }
 
         int AggregateArray(int row);
 

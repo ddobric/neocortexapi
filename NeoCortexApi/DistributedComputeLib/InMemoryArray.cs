@@ -13,19 +13,20 @@ namespace NeoCortexApi.DistributedComputeLib
 
         private int numOfNodes;
 
-        public object this[int index] { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public bool IsFixedSize => throw new NotImplementedException();
+        //public bool IsFixedSize => throw new NotImplementedException();
 
-        public bool IsReadOnly => throw new NotImplementedException();
+        //public bool IsReadOnly => throw new NotImplementedException();
 
-        public int Count => this.backingArray.Length;
+        //public int Count => this.backingArray.Length;
 
-        public bool IsSynchronized => throw new NotImplementedException();
+        //public bool IsSynchronized => throw new NotImplementedException();
 
-        public object SyncRoot => throw new NotImplementedException();
+        //public object SyncRoot => throw new NotImplementedException();
 
         public int Rank => this.backingArray.Rank;
+
+        long IDistributedArray.Count => this.backingArray.Length;
 
         public object this[int row, int col]
         {
@@ -35,8 +36,16 @@ namespace NeoCortexApi.DistributedComputeLib
             }
             set
             {
-                this.backingArray.SetValue(row, col, (int)value);
+                this.backingArray.SetValue(value, row, col);
             }
+        }
+
+
+        public object this[int index]
+        {
+            get => this.backingArray.GetValue(index);
+
+            set => this.backingArray.SetValue(value, index);
         }
 
         public InMemoryArray(int numOfNodes)
@@ -46,8 +55,6 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public static IDistributedArray CreateInstance(Type type, int[] dimensions)
         {
-            // this.backingArray = InMemoryDistributedArray.CreateInstance(typeof(int), dimensions);
-            
             var arr = new InMemoryArray(1);
             arr.backingArray = Array.CreateInstance(typeof(int), dimensions);
             arr.dimensions = dimensions;
@@ -69,61 +76,61 @@ namespace NeoCortexApi.DistributedComputeLib
         }
 
 
-        public int Add(object value)
-        {
-            throw new NotImplementedException();
-        }
+        //public int Add(object value)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        public void Clear()
-        {
-            throw new NotImplementedException();
-        }
+        //public void Clear()
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        public bool Contains(object value)
-        {
-            throw new NotImplementedException();
-        }
+        //public bool Contains(object value)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        public void CopyTo(Array array, int index)
-        {
-            throw new NotImplementedException();
-        }
+        //public void CopyTo(Array array, int index)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         public IEnumerator GetEnumerator()
         {
             throw new NotImplementedException();
         }
 
-        public int IndexOf(object value)
-        {
-            throw new NotImplementedException();
-        }
+        //public int IndexOf(object value)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        public void Insert(int index, object value)
-        {
-            throw new NotImplementedException();
-        }
+        //public void Insert(int index, object value)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        public void Remove(object value)
-        {
-            throw new NotImplementedException();
-        }
+        //public void Remove(object value)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-       
 
-        public void RemoveAt(int index)
-        {
-            throw new NotImplementedException();
-        }
+
+        //public void RemoveAt(int index)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         public int AggregateArray(int row)
         {
             int cols = this.backingArray.GetUpperBound(1) + 1;
-         
+
             int sum = 0;
             for (int i = 0; i < cols; i++)
             {
-                sum+= (Int32)this.backingArray.GetValue(row, i);
+                sum += (Int32)this.backingArray.GetValue(row, i);
             }
 
             return sum;
@@ -133,7 +140,7 @@ namespace NeoCortexApi.DistributedComputeLib
         {
             return this.backingArray.GetValue(index);
         }
-        
+
         public object GetValue(int[] indexes)
         {
             return this.backingArray.GetValue(indexes);
@@ -158,6 +165,6 @@ namespace NeoCortexApi.DistributedComputeLib
             }
         }
 
-     
+
     }
 }

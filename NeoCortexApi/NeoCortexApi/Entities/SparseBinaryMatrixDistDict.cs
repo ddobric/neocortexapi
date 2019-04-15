@@ -160,29 +160,7 @@ namespace NeoCortexApi.Entities
             set(index, value);
             return (AbstractFlatMatrix<int>)this;
         }
-
-
-        //protected override AbstractSparseMatrix<int> set(int index, int value)
-        //{
-        //    int[] coordinates = computeCoordinates(index);
-        //    return set(value, coordinates);
-        //}
-
-
-        //        /**
-        //         * Sets the value at the specified index.
-        //         * 
-        //         * @param index     the index the object will occupy
-        //         * @param object    the object to be indexed.
-        //         */
-        //        // @Override
-        //#pragma warning disable CS0114 // Member hides inherited member; missing override keyword
-        //        public AbstractSparseBinaryMatrix set(int index, int value)
-        //#pragma warning restore CS0114 // Member hides inherited member; missing override keyword
-        //        {
-        //            int[] coordinates = computeCoordinates(index);
-        //            return set(value, coordinates);
-        //        }
+        
 
         /**
          * Sets the value to be indexed at the index
@@ -225,17 +203,7 @@ namespace NeoCortexApi.Entities
 
             backingArray.SetRowValuesTo(row, 0);
 
-            //var cols = backingArray.GetLength(1);
-            //for (int i = 0; i < cols; i++)
-            //{
-            //    backingArray.SetValue(0, row, i);
-            //}
-
             this.setTrueCount(row, 0);
-            //int[] slice = (int[])backingArray.GetValue(row);
-            //    int[] slice = (int[])Array.get(backingArray, row);
-            //DistributedArrayHelpers.Fill(slice, 0);
-            // Array.fill(slice, 0);
         }
 
 
@@ -262,7 +230,6 @@ namespace NeoCortexApi.Entities
             if (coordinates.Length == 1)
             {
                 return (Int32)backingArray.GetValue(index);
-                // return Array.getInt(this.backingArray, index);
             }
             else
                 return (Int32)backingArray.GetValue(coordinates);
