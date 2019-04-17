@@ -94,6 +94,7 @@ namespace NeoCortexApi
             // Fill the sparse matrix with column objects
             var numCells = c.getCellsPerColumn();
           
+            // PERF
             for (int i = 0; i < numColumns; i++)
             {
                 mem.set(i, new Column(numCells, i));

@@ -20,8 +20,8 @@ namespace NeoCortexApi.Entities
     public class SparseObjectMatrix<T> : AbstractSparseMatrix<T>, IEquatable<T> where T : class
     {
         
-        private IDictionary<int, T> sparseMap = new Dictionary<int, T>();
-        //private IDictionary<int, T> sparseMap = new InMemoryDistributedDictionary<int, T>(3);
+        //private IDictionary<int, T> sparseMap = new Dictionary<int, T>();
+        private IDictionary<int, T> sparseMap = new InMemoryDistributedDictionary<int, T>(3);
 
         /**
          * Constructs a new {@code SparseObjectMatrix}
@@ -41,15 +41,14 @@ namespace NeoCortexApi.Entities
         {
 
         }
+        
 
-        /**
-         * Sets the object to occupy the specified index.
-         * 
-         * @param index     the index the object will occupy
-         * @param object    the object to be indexed.
-         */
-        //  @Override
-
+        /// <summary>
+        /// Sets the object to occupy the specified index.
+        /// </summary>
+        /// <param name="index">The index the object will occupy</param>
+        /// <param name="obj">the object to be indexed.</param>
+        /// <returns></returns>
         public override AbstractFlatMatrix<T> set(int index, T obj)
         {
             if (!sparseMap.ContainsKey(index))
