@@ -7,7 +7,7 @@ namespace NeoCortexApi.Entities
     /// <summary>
     /// Used as tupple in temporal cycle calculus.
     /// </summary>
-    [Serializable]
+    //[Serializable]
     public class SegmentActivity
     {
         /// <summary>

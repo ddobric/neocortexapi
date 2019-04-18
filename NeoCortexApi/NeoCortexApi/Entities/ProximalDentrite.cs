@@ -8,7 +8,7 @@ namespace NeoCortexApi.Entities
     /// <summary>
     /// Defines th eproximal dentritte segment.
     /// </summary>
-    [Serializable]
+    //[Serializable]
     public class ProximalDendrite : Segment
     {
         /** keep it simple */

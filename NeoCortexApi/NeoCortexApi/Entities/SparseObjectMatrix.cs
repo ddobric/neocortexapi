@@ -12,11 +12,10 @@ namespace NeoCortexApi.Entities
    * savings in memory and computational efficiency because iterative algorithms
    * need only query indexes containing valid data.
    * 
-   * @author David Ray
+   * @author David Ray, Damir Dobric
    *
    * @param <T>
    */
-   [Serializable]
     public class SparseObjectMatrix<T> : AbstractSparseMatrix<T>, IEquatable<T> where T : class
     {
         

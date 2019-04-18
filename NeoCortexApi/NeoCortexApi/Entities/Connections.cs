@@ -18,7 +18,7 @@ namespace NeoCortexApi.Entities
  *
  * In the separation of data from logic, this class represents the data/state.
  */
-    [Serializable]
+    //[Serializable]
     public class Connections //implements Persistable
     {
         /** keep it simple */

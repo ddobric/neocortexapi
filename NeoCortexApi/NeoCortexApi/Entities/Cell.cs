@@ -39,7 +39,7 @@ namespace NeoCortexApi.Entities {
     /// <summary>
     /// Defines a single cell (neuron).
     /// </summary>
-    [Serializable]
+   // [Serializable]
     public class  Cell   : IEquatable<Cell>, IComparable<Cell> {
         /** keep it simple */
         private static readonly long serialVersionUID = 1L;

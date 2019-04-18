@@ -16,7 +16,7 @@ namespace NeoCortexApi.Entities
      * @author David Ray
      *
      */
-     [Serializable]
+     //[Serializable]
     public class Column : IEquatable<Column>, IComparable<Column>
     {
         /** keep it simple */
