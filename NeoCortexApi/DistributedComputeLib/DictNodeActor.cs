@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DistributedComputeLib
+namespace NeoCortexApi.DistributedComputeLib
 {
     public class DictNodeActor : ReceiveActor
     {

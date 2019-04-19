@@ -5,19 +5,14 @@ using System.Text;
 using System.Linq;
 using Akka.Actor;
 using Akka.Configuration;
-using DistributedComputeLib;
+
 
 namespace NeoCortexApi.DistributedComputeLib
 {
-    public class AkkaDistributedDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IEnumerator<KeyValuePair<TKey, TValue>>
-    {
-        public class AkkaDistributedDictConfig
-        {
-            public List<string> Nodes{ get; set; }
-            
-        }
+    public abstract class AkkaDistributedDictionaryBase<TKey, TValue> : IDictionary<TKey, TValue>, IEnumerator<KeyValuePair<TKey, TValue>>
+    {      
 
-        private AkkaDistributedDictConfig config;
+        protected AkkaDistributedDictConfig Config { get; }
 
         private Dictionary<TKey, TValue>[] dictList;
 
@@ -27,12 +22,12 @@ namespace NeoCortexApi.DistributedComputeLib
 
         private ActorSystem actSystem;
 
-        public AkkaDistributedDictionary(AkkaDistributedDictConfig config)
+        public AkkaDistributedDictionaryBase(AkkaDistributedDictConfig config)
         {
             if (config == null)
                 throw new ArgumentException("Configuration must be specified.");
 
-            this.config = config;
+            this.Config = config;
 
             dictActors = new IActorRef[config.Nodes.Count];
 
@@ -50,17 +45,23 @@ namespace NeoCortexApi.DistributedComputeLib
                 }"));
 
             int nodeIndx = 0;
-            foreach (var node in this.config.Nodes)
+            foreach (var node in this.Config.Nodes)
             {
-                {
-                    var actor =
-                      actSystem.ActorOf(Props.Create(() => new DictNodeActor())
-                      .WithDeploy(Deploy.None.WithScope(new RemoteScope(Address.Parse(node)))), $"{nameof(DictNodeActor)}-{++nodeIndx}");
-                }
+                dictActors[nodeIndx] =
+                  actSystem.ActorOf(Props.Create(() => new DictNodeActor())
+                  .WithDeploy(Deploy.None.WithScope(new RemoteScope(Address.Parse(node)))), $"{nameof(DictNodeActor)}-{nodeIndx}");
+
+                var result = dictActors[nodeIndx].Ask<int>(new DictNodeActor.CreateDictNodeMsg()).Result;
             }
         }
 
-
+        /// <summary>
+        /// Depending on usage (Key type) different mechanism can be used to partition keys.
+        /// This method returns the index of the node, whish should hold specified key.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        protected abstract int GetNodeIndexFromKey(TKey key);        
 
         public TValue this[TKey key]
         {
@@ -150,7 +151,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public bool IsReadOnly => false;
 
-        
+
         public void Add(TKey key, TValue value)
         {
             int partitionInd = getPartitionIndex(numElements++);
@@ -193,7 +194,7 @@ namespace NeoCortexApi.DistributedComputeLib
             {
                 if (this.dictList[i].ContainsKey(key))
                 {
-                        return true;
+                    return true;
                 }
             }
 
@@ -262,7 +263,7 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <summary>
         /// Current index in currentdictionary
         /// </summary>
-        private int currentIndex =-1;
+        private int currentIndex = -1;
 
         public object Current => this.dictList[this.currentDictIndex].ElementAt(currentIndex);
 
