@@ -55,21 +55,7 @@ namespace UnitTestsProject
 
         public void UniformPartitioningTest(int nodes, int elements, int placingElement, int expectedNode)
         {
-            int roundedElements = elements;
-
-            while (true)
-            {
-                if (roundedElements % nodes == 0)
-                {
-                    break;
-                }
-                else
-                    roundedElements++;
-            }
-
-            int numOfElemementsPerNode = roundedElements / nodes;
-
-            int targetNode = placingElement / numOfElemementsPerNode;
+            var targetNode = HtmSparseIntDictionary.GetNode(nodes, elements, placingElement);
 
             Assert.IsTrue(targetNode == expectedNode);
         }
