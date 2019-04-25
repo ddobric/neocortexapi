@@ -307,7 +307,7 @@ namespace UnitTestsProject
         [TestMethod]
         [TestCategory("LongRunning")]
         [DataRow("MnistPng28x28\\training", "MnistPng28x28\\testing", new string[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" },
-            new int[] { 28 }, new int[] { /*32,*/ 64 /*, 128 */}, 200)]
+            new int[] { 28 }, new int[] { /*32,*/ 64 /*, 128 */}, 10)]
         public void TrainMultilevelImageTest(string trainingFolder, string testingFolder, string[] digits, int[] imageSizes,
             int[] topologies, int maxNumOfTrainingImages = 10)
         {
@@ -474,8 +474,8 @@ namespace UnitTestsProject
 
                                     NeoCortexUtils.DrawBitmaps(bmpArrays, outputImage, OutImgSize, OutImgSize);
 
-                                   // NeoCortexUtils.DrawHeatmaps(bostArrays, outputImage + ".boost.png", OutImgSize, OutImgSize, 200, 50, 10);
-                                   // NeoCortexUtils.DrawHeatmaps(overlapArrays, outputImage + ".overlapp.png", OutImgSize, OutImgSize);
+                                    //NeoCortexUtils.DrawHeatmaps(bostArrays, outputImage + ".boost.png", OutImgSize, OutImgSize, 200, 50, 10);
+                                    //NeoCortexUtils.DrawHeatmaps(overlapArrays, outputImage + ".overlapp.png", OutImgSize, OutImgSize);
                                 }
                             }
                         }

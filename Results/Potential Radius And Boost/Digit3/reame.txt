@@ -1,1 +1,1 @@
-Crearted with test: TrainSingleMnistImageWithVariableRadiusTest
+Created with test: TrainSingleMnistImageWithVariableRadiusTest
