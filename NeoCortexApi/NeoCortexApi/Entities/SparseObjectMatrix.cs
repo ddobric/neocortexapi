@@ -26,19 +26,22 @@ namespace NeoCortexApi.Entities
          * Constructs a new {@code SparseObjectMatrix}
          * @param dimensions	the dimensions of this array
          */
-        public SparseObjectMatrix(int[] dimensions) : base(dimensions, false)
-        {
+        //public SparseObjectMatrix(int[] dimensions) : base(dimensions, false)
+        //{
 
-        }
+        //}
 
         /**
          * Constructs a new {@code SparseObjectMatrix}
          * @param dimensions					the dimensions of this array
          * @param useColumnMajorOrdering		where inner index increments most frequently
          */
-        public SparseObjectMatrix(int[] dimensions, bool useColumnMajorOrdering) : base(dimensions, useColumnMajorOrdering)
+        public SparseObjectMatrix(int[] dimensions, bool useColumnMajorOrdering = false, IDictionary<int, T> dict = null) : base(dimensions, useColumnMajorOrdering)
         {
-
+            if (dict == null)
+                this.sparseMap = new InMemoryDistributedDictionary<int, T>(1);
+            else
+                this.sparseMap = dict;
         }
         
 

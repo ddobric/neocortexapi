@@ -1,6 +1,8 @@
-﻿using System;
+﻿using ImageBinarizer;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 
 namespace NeoCortexApi
@@ -75,6 +77,40 @@ namespace NeoCortexApi
             }
 
             return sb.ToString();
+        }
+
+        public static List<string> Nodes
+        {
+            get
+            {
+                var nodes = new List<string>()
+                {
+                      "akka.tcp://HtmCluster@localhost:8081",
+                };
+
+                return nodes;
+            }
+        }
+
+        /// <summary>
+        /// Binarize image to binarizedImage.
+        /// </summary>
+        /// <param name="mnistImage"></param>
+        /// <param name="imageSize"></param>
+        /// <param name="testName"></param>
+        /// <returns></returns>
+        public static string BinarizeImage(string mnistImage, int imageSize, string testName)
+        {
+            string binaryImage;
+
+            Binarizer imageBinarizer = new Binarizer(200, 200, 200, imageSize, imageSize);
+            binaryImage = $"{testName}.txt";
+            if (File.Exists(binaryImage))
+                File.Delete(binaryImage);
+
+            imageBinarizer.CreateBinary(mnistImage, binaryImage);
+
+            return binaryImage;
         }
     }
 }

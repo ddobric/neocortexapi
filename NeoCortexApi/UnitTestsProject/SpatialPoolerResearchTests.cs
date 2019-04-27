@@ -199,6 +199,7 @@ namespace UnitTestsProject
         /// Generates result of inhibition
         /// </summary>
         [TestMethod]
+        [TestCategory("LongRunning")]
         public void SPInhibitionTest()
         {
             var parameters = GetDefaultParams();

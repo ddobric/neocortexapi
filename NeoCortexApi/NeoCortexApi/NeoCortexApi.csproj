@@ -19,7 +19,7 @@
   <ItemGroup>
     <Compile Remove="Encoders\EncoderBuilder.cs" />
     <Compile Remove="Encoders\ScalarEncoder.cs" />
-    <Compile Remove="Entities\SparseBinaryMatrixDistDict.cs" />
+    <Compile Remove="Entities\SparseBinaryMatrixOriginal.cs" />
     <Compile Remove="Network\CortexNetwork.cs" />
     <Compile Remove="Network\Header.cs" />
     <Compile Remove="Network\ICheckPointOP.cs" />
@@ -38,7 +38,7 @@
   <ItemGroup>
     <None Include="Encoders\EncoderBuilder.cs" />
     <None Include="Encoders\ScalarEncoder.cs" />
-    <None Include="Entities\SparseBinaryMatrixDistDict.cs" />
+    <None Include="Entities\SparseBinaryMatrixOriginal.cs" />
     <None Include="Network\CortexNetwork.cs" />
     <None Include="Network\Header.cs" />
     <None Include="Network\ICheckPointOP.cs" />
@@ -56,9 +56,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.ML" Version="0.11.0" />
-    <PackageReference Include="Microsoft.Office.Excel" Version="14.0.4760.1000" />
-    <PackageReference Include="Microsoft.Office.Interop.Excel" Version="15.0.4795.1000" />
    
   </ItemGroup>
 

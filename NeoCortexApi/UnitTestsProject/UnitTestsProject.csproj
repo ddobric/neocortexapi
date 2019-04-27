@@ -13,11 +13,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Helpers.cs" />
+    <Compile Remove="UnitTestHelpers.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Helpers.cs" />
+    <None Include="UnitTestHelpers.cs" />
   </ItemGroup>
 
   <ItemGroup>

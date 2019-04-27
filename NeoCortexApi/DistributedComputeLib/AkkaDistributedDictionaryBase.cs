@@ -5,7 +5,7 @@ using System.Text;
 using System.Linq;
 using Akka.Actor;
 using Akka.Configuration;
-
+using System.Threading.Tasks;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
@@ -51,7 +51,7 @@ namespace NeoCortexApi.DistributedComputeLib
                   actSystem.ActorOf(Props.Create(() => new DictNodeActor())
                   .WithDeploy(Deploy.None.WithScope(new RemoteScope(Address.Parse(node)))), $"{nameof(DictNodeActor)}-{nodeIndx}");
 
-                var result = dictActors[nodeIndx].Ask<int>(new DictNodeActor.CreateDictNodeMsg()).Result;
+                var result = dictActors[nodeIndx].Ask<int>(new DictNodeActor.CreateDictNodeMsg(), this.Config.ConnectionTimout).Result;
             }
         }
 
@@ -67,26 +67,14 @@ namespace NeoCortexApi.DistributedComputeLib
         {
             get
             {
-                foreach (var item in this.dictList)
-                {
-                    if (item.ContainsKey(key))
-                        return item[key];
-                }
-
-                throw new ArgumentException("No such key.");
+                var nodeIndex = GetNodeIndexFromKey(key);
+                TValue val = this.dictActors[nodeIndex].Ask<TValue>("").Result;
+                return val;
             }
             set
             {
-                bool isSet = false;
-                for (int i = 0; i < this.dictList.Length; i++)
-                {
-                    if (this.dictList[i].ContainsKey(key))
-                    {
-                        this.dictList[i][key] = value;
-                        isSet = true;
-                        break;
-                    }
-                }
+                var nodeIndex = GetNodeIndexFromKey(key);
+                var isSet = this.dictActors[nodeIndex].Ask<bool>("").Result;
 
                 if (!isSet)
                     throw new ArgumentException("Cannot find the element with specified key!");

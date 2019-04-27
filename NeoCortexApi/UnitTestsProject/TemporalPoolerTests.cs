@@ -841,6 +841,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("Tests with Serialization Issue")]
         public void testConnectionsNeverChangeWhenLearningDisabled()
         {
             TemporalMemory tm = new TemporalMemory();

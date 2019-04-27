@@ -53,7 +53,15 @@ namespace NeoCortexApi.DistributedComputeLib
 
         double Max();
 
+        /// <summary>
+        /// Number of dimensions
+        /// </summary>
         int Rank { get; }
+
+        /// <summary>
+        /// Dimensions
+        /// </summary>
+        int[] Dimensions { get; }
 
         /// <summary>
         /// Sets all values of specified row on specified value.

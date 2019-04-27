@@ -45,7 +45,7 @@ namespace NeoCortexApi
          * 
          * @param c     a {@link Connections} object
          */
-        public void init(Connections c)
+        public void init(Connections c, IDictionary<int, Column> dictionary = null)
         {
             if (c.NumActiveColumnsPerInhArea == 0 && (c.LocalAreaDensity == 0 ||
                 c.LocalAreaDensity > 0.5))
@@ -54,7 +54,7 @@ namespace NeoCortexApi
             }
 
             c.doSpatialPoolerPostInit();
-            initMatrices(c);
+            initMatrices(c, dictionary); 
             connectAndConfigureInputs(c);
         }
 
@@ -64,11 +64,11 @@ namespace NeoCortexApi
          * 
          * @param c
          */
-        public void initMatrices(Connections c)
+        public void initMatrices(Connections c, IDictionary<int, Column> dictionary = null)
         {
-            SparseObjectMatrix<Column> mem = c.getMemory();
-            c.setMemory(mem == null ?
-                mem = new SparseObjectMatrix<Column>(c.getColumnDimensions()) : mem);
+            SparseObjectMatrix<Column> memory = c.getMemory();
+
+            c.setMemory(memory == null ? memory = new SparseObjectMatrix<Column>(c.getColumnDimensions(), dict: dictionary) : memory);
 
             c.setInputMatrix(new SparseBinaryMatrix(c.getInputDimensions()));
 
@@ -97,7 +97,7 @@ namespace NeoCortexApi
             // PERF
             for (int i = 0; i < numColumns; i++)
             {
-                mem.set(i, new Column(numCells, i));
+                memory.set(i, new Column(numCells, i));
             }
 
             c.setPotentialPools(new SparseObjectMatrix<Pool>(c.getMemory().getDimensions()));
@@ -135,7 +135,7 @@ namespace NeoCortexApi
                 int[] potential = mapPotential(c, i, c.isWrapAround());
                 Column column = c.getColumn(i);
 
-                // This line initializes all synased in the potential pool of synapces.
+                // This line initializes all synases in the potential pool of synapces.
                 // After initialization permancences are set to zero.
                 c.getPotentialPools().set(i, column.createPotentialPool(c, potential));
 

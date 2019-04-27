@@ -6,6 +6,8 @@ namespace NeoCortexApi.DistributedComputeLib
 {
     public class AkkaDistributedDictConfig
     {
+        public TimeSpan ConnectionTimout { get; set; } = TimeSpan.FromMinutes(1);
+
         public List<string> Nodes { get; set; }
     }
 }

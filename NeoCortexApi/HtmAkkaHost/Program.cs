@@ -3,8 +3,10 @@ using System;
 
 namespace HtmAkkaHost
 {
+    
     class Program
-    {
+    { 
+       
         static void Main(string[] args)
         {
             Console.WriteLine("Hello HTM Actor Model Cluster!");

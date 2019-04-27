@@ -28,6 +28,23 @@ namespace NeoCortexApi.DistributedComputeLib
 
         long IDistributedArray.Count => this.backingArray.Length;
 
+        /// <summary>
+        /// Gets dimensions of distributed array.
+        /// </summary>
+        public int[] Dimensions
+        {
+            get
+            {
+                int[] dims = new int[Rank];
+                for (int i = 0; i < dims.Length; i++)
+                {
+                    dims[i] = this.backingArray.GetUpperBound(i);
+                }
+
+                return dims;
+            }
+        }
+
         public object this[int row, int col]
         {
             get
@@ -48,18 +65,20 @@ namespace NeoCortexApi.DistributedComputeLib
             set => this.backingArray.SetValue(value, index);
         }
 
-        public InMemoryArray(int numOfNodes)
+        public InMemoryArray(int numOfNodes, Type type, int[] dimensions)
         {
             this.numOfNodes = numOfNodes;
+            this.backingArray = Array.CreateInstance(typeof(int), dimensions);
+            this.dimensions = dimensions;
         }
 
-        public static IDistributedArray CreateInstance(Type type, int[] dimensions)
-        {
-            var arr = new InMemoryArray(1);
-            arr.backingArray = Array.CreateInstance(typeof(int), dimensions);
-            arr.dimensions = dimensions;
-            return arr;
-        }
+        //public static IDistributedArray CreateInstance(Type type, int[] dimensions)
+        //{
+        //    var arr = new InMemoryArray(1, type, dimensions);
+        //    arr.backingArray = Array.CreateInstance(typeof(int), dimensions);
+        //    arr.dimensions = dimensions;
+        //    return arr;
+        //}
 
         public double Max()
         {

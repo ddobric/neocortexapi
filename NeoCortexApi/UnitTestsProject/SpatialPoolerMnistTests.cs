@@ -18,7 +18,7 @@ using System.Linq;
 using NeuralNet.MLPerceptron;
 using Microsoft.ML;
 using Microsoft.ML.Data;
-
+using NeoCortexApi.DistributedCompute;
 
 namespace UnitTestsProject
 {
@@ -121,7 +121,7 @@ namespace UnitTestsProject
 
                                 string testName = $"{outFolder}\\digit_{digit}_{fI.Name}_{imageSizes[imSizeIndx]}";
 
-                                string inputBinaryImageFile = BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
+                                string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
 
                                 //Read input csv file into array
                                 int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
@@ -249,7 +249,7 @@ namespace UnitTestsProject
 
                                     string testName = $"{outFolder}\\digit_{digit}_{fI.Name}_{imageSizes[imSizeIndx]}";
 
-                                    string inputBinaryImageFile = BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
+                                    string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
 
                                     //Read input csv file into array
                                     int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
@@ -417,7 +417,7 @@ namespace UnitTestsProject
 
                                     string testName = $"{outFolder}\\digit_{digit}_{fI.Name}_{imageSizes[imSizeIndx]}";
 
-                                    string inputBinaryImageFile = BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
+                                    string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
 
                                     //Read input csv file into array
                                     int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
@@ -565,7 +565,7 @@ namespace UnitTestsProject
 
                             string testName = $"{outputFolder}\\digit_{digit}_{fI.Name}_{imgSize}";
 
-                            string inputBinaryImageFile = BinarizeImage($"{testImage}", imgSize, testName);
+                            string inputBinaryImageFile = Helpers.BinarizeImage($"{testImage}", imgSize, testName);
 
                             // Read input csv file into array
                             int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
@@ -783,7 +783,7 @@ namespace UnitTestsProject
 
                             string testName = $"{outFolder}\\digit_{digit}_{fI.Name}_{imageSizes[imSizeIndx]}";
 
-                            string inputBinaryImageFile = BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
+                            string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
 
                             //Read input csv file into array
                             int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
@@ -952,7 +952,7 @@ namespace UnitTestsProject
                 {
                     string testName = $"PREDICT_digit_{digit}_{new FileInfo(mnistImage).Name}_{imgSize}";
 
-                    string inputBinaryImageFile = BinarizeImage($"{mnistImage}", imgSize, testName);
+                    string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imgSize, testName);
 
                     //Read input csv file into array
                     int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
@@ -1061,31 +1061,10 @@ namespace UnitTestsProject
             return api;
         }
 
-        /// <summary>
-        /// Binarize image to binarizedImage.
-        /// </summary>
-        /// <param name="mnistImage"></param>
-        /// <param name="imageSize"></param>
-        /// <param name="testName"></param>
-        /// <returns></returns>
-        private static string BinarizeImage(string mnistImage, int imageSize, string testName)
-        {
-            string binaryImage;
-
-            Binarizer imageBinarizer = new Binarizer(200, 200, 200, imageSize, imageSize);
-            binaryImage = $"{testName}.txt";
-            if (File.Exists(binaryImage))
-                File.Delete(binaryImage);
-
-            imageBinarizer.CreateBinary(mnistImage, binaryImage);
-
-            return binaryImage;
-        }
-
-
+       
         #region Private Helpers
 
-        private static Parameters GetDefaultParams()
+        internal static Parameters GetDefaultParams()
         {
 
             Random rnd = new Random(42);

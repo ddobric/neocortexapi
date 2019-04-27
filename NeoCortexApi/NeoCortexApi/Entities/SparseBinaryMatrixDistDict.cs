@@ -42,9 +42,13 @@ namespace NeoCortexApi.Entities
          * @param useColumnMajorOrdering    if true, indicates column first iteration, otherwise
          *                                  row first iteration is the default (if false).
          */
-        public SparseBinaryMatrix(int[] dimensions, bool useColumnMajorOrdering) : base(dimensions, useColumnMajorOrdering)
+        public SparseBinaryMatrix(int[] dimensions, bool useColumnMajorOrdering, IDistributedArray distArray = null) : base(dimensions, useColumnMajorOrdering)
         {
-            this.backingArray = InMemoryArray.CreateInstance(typeof(int), dimensions);
+            // We  create here a simple array on a single node.
+            if (distArray == null)
+                this.backingArray = new InMemoryArray(1, typeof(int), dimensions);
+            else
+                this.backingArray = distArray;
         }
 
         /**
