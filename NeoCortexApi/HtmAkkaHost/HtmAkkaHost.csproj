@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,6 +11,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DistributedComputeLib\DistributedComputeLib.csproj" />
+    <ProjectReference Include="..\NeoCortexApi\NeoCortexApi.csproj" />
+    <ProjectReference Include="..\NeoCortexUtils\NeoCortexUtils.csproj" />
   </ItemGroup>
 
   <ItemGroup>

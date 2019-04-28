@@ -1,5 +1,5 @@
 ﻿
-using NeoCortexApi.DataMappers;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Encoders;
@@ -53,7 +53,7 @@ namespace UnitTestsProject
 
         public void UniformPartitioningTest(int nodes, int elements, int placingElement, int expectedNode)
         {
-            var targetNode = HtmSparseIntDictionary.GetNode(nodes, elements, placingElement);
+            var targetNode = HtmSparseIntDictionary.GetPlacementNodeForKey(nodes, elements, placingElement);
 
             Assert.IsTrue(targetNode == expectedNode);
         }
@@ -68,11 +68,22 @@ namespace UnitTestsProject
             var akkaDict = new HtmSparseIntDictionary(new HtmSparseIntDictionaryConfig()
             {
                 NumColumns = 20148,
-                //Nodes = UnitTestHelpers..Nodes,
+                Nodes = Helpers.Nodes,
             });
 
+            for (int i = 0; i < 100; i++)
+            {
+                akkaDict.Add(i, new Column(32, i));
+            }
 
+            for (int i = 0; i < 100; i++)
+            {
+                Column col;
+                Assert.IsTrue(akkaDict.TryGetValue(i, out col));
+            }
 
+            Column col2;
+            Assert.IsFalse(akkaDict.TryGetValue(-1, out col2));
         }
 
 
@@ -160,8 +171,9 @@ namespace UnitTestsProject
             var mem = new Connections();
 
             parameters.apply(mem);
-
-            sp.init(mem);
+            var dict1 = new HtmSparseIntDictionary(Helpers.DefaultHtmSparseIntDictionaryConfig);
+            //var dict2 = new InMemoryDistributedDictionary<int, NeoCortexApi.Entities.Column>(1);
+            sp.init(mem, dict1 );
 
             int actiColLen = numOfActCols;
 
@@ -224,8 +236,8 @@ namespace UnitTestsProject
 
                         const int OutImgSize = 1024;
                         NeoCortexUtils.DrawBitmaps(arrays, outputImage, Color.Yellow, Color.Gray, OutImgSize, OutImgSize);
-                        NeoCortexUtils.DrawHeatmaps(overlapArrays, $"{outputImage}_overlap.png", OutImgSize, OutImgSize, 150, 50, 5);
-                        NeoCortexUtils.DrawHeatmaps(bostArrays, $"{outputImage}_boost.png", OutImgSize, OutImgSize, 150, 50, 5);
+                        //NeoCortexUtils.DrawHeatmaps(overlapArrays, $"{outputImage}_overlap.png", OutImgSize, OutImgSize, 150, 50, 5);
+                        //NeoCortexUtils.DrawHeatmaps(bostArrays, $"{outputImage}_boost.png", OutImgSize, OutImgSize, 150, 50, 5);
                     }
                 }
             }

@@ -174,7 +174,7 @@ namespace NeoCortexApi.Entities
         /** The main data structure containing columns, cells, and synapses */
         private SparseObjectMatrix<Column> memory;
 
-        private Cell[] cells;
+        public Cell[] cells { get; set; }
 
         ///////////////////////   Structural Elements /////////////////////////
         /** Reverse mapping from source cell to {@link Synapse} */

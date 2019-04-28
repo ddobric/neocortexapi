@@ -22,14 +22,14 @@ namespace NeoCortexApi.DistributedCompute
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        protected override int GetNodeIndexFromKey(int key)
+        protected override int GetPartitionNodeIndexFromKey(int key)
         {
             int cols = (this.Config as HtmSparseIntDictionaryConfig).NumColumns;
 
-            return GetNode(this.Config.Nodes.Count, cols, key);
+            return GetPlacementNodeForKey(this.Config.Nodes.Count, cols, key);
         }
 
-        public static int GetNode(int nodes, int elements, int placingElement)
+        public static int GetPlacementNodeForKey(int nodes, int elements, int placingElement)
         {
             int roundedElements = elements;
 

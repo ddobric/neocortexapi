@@ -61,7 +61,7 @@ namespace NeoCortexApi
                 Column column = colZero == null ? new Column(cellsPerColumn, i) : matrix.getObject(i);
                 for (int j = 0; j < cellsPerColumn; j++)
                 {
-                    cells[i * cellsPerColumn + j] = column.getCell(j);
+                    cells[i * cellsPerColumn + j] = column.Cells[j];
                 }
                 //If columns have not been previously configured
                 if (colZero == null)
@@ -378,7 +378,7 @@ namespace NeoCortexApi
                 Random random, bool learn)
         {
 
-            IList<Cell> cells = column.getCells();
+            IList<Cell> cells = column.Cells;
             Cell leastUsedCell = null;
 
             if (matchingSegments != null && matchingSegments.Count > 0)

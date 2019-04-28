@@ -19,20 +19,28 @@ namespace NeoCortexApi.Entities
      //[Serializable]
     public class Column : IEquatable<Column>, IComparable<Column>
     {
-        /** keep it simple */
-        private static readonly long serialVersionUID = 1L;
+      
+        /// <summary>
+        /// Column index
+        /// </summary>
+        public int Index { get; set; }
 
-        /** The flat non-topological index of this column */
-        private readonly int index;
         /** Stored boxed form to eliminate need for boxing on the fly */
-        private readonly Integer boxedIndex;
+       // private readonly Integer boxedIndex;
         /** Configuration of cell count */
         private readonly int numCells;
-        /** Connects {@link SpatialPooler} input pools */
-        private ProximalDendrite proximalDendrite;
 
-        private Cell[] cells;
-        private ReadOnlyCollection<Cell> cellList;
+        /// <summary>
+        /// Dendrites connected to <see cref="SpatialPooler"/> input pools
+        /// </summary>
+        public ProximalDendrite ProximalDendrite { get; set; }
+
+        /// <summary>
+        /// All cells of the column.
+        /// </summary>
+        public Cell[] Cells { get; set; }
+
+        //private ReadOnlyCollection<Cell> cellList;
 
         private readonly int hashcode;
 
@@ -46,18 +54,18 @@ namespace NeoCortexApi.Entities
         public Column(int numCells, int index)
         {
             this.numCells = numCells;
-            this.index = index;
-            this.boxedIndex = index;
+            this.Index = index;
+            //this.boxedIndex = index;
             this.hashcode = GetHashCode();
-            cells = new Cell[numCells];
+            Cells = new Cell[numCells];
             for (int i = 0; i < numCells; i++)
             {
-                cells[i] = new Cell(this, i);
+                Cells[i] = new Cell(this, i);
             }
 
-            cellList = new ReadOnlyCollection<Cell>(cells);
+            //cellList = new ReadOnlyCollection<Cell>(Cells);
 
-            proximalDendrite = new ProximalDendrite(index);
+            ProximalDendrite = new ProximalDendrite(index);
         }
 
         /**
@@ -73,19 +81,12 @@ namespace NeoCortexApi.Entities
          * @param index     the index of the {@link Cell} to return.
          * @return          the {@link Cell} residing at the specified index.
          */
-        public Cell getCell(int index)
-        {
-            return cells[index];
-        }
+        //public Cell getCell(int index)
+        //{
+        //    return Cells[index];
+        //}
 
-        /**
-         * Returns a {@link List} view of this {@code Column}'s {@link Cell}s.
-         * @return
-         */
-        public IList<Cell> getCells()
-        {
-            return cellList;
-        }
+        
 
         /**
          * Returns the index of this {@code Column}
@@ -93,7 +94,7 @@ namespace NeoCortexApi.Entities
          */
         public int getIndex()
         {
-            return index;
+            return Index;
         }
 
         /**
@@ -118,7 +119,7 @@ namespace NeoCortexApi.Entities
             List<Cell> leastUsedCells = new List<Cell>();
             int minNumSegments = Integer.MaxValue;
 
-            foreach (var cell in cellList)
+            foreach (var cell in Cells)
             {
                 
                 int numSegments = cell.getSegments(c).Count;
@@ -146,7 +147,7 @@ namespace NeoCortexApi.Entities
          */
         public ProximalDendrite getProximalDendrite()
         {
-            return proximalDendrite;
+            return ProximalDendrite;
         }
 
         /**
@@ -158,7 +159,7 @@ namespace NeoCortexApi.Entities
          */
         public Pool createPotentialPool(Connections c, int[] inputVectorIndexes)
         {
-            return proximalDendrite.createPool(c, inputVectorIndexes);
+            return ProximalDendrite.createPool(c, inputVectorIndexes);
         }
 
         /**
@@ -169,7 +170,7 @@ namespace NeoCortexApi.Entities
          */
         public void setProximalPermanences(Connections c, double[] permanences)
         {
-            proximalDendrite.setPermanences(c, permanences);
+            ProximalDendrite.setPermanences(c, permanences);
         }
 
         /**
@@ -180,7 +181,7 @@ namespace NeoCortexApi.Entities
          */
         public void setProximalPermanencesSparse(Connections c, double[] permanences, int[] indexes)
         {
-            proximalDendrite.setPermanences(c, permanences, indexes);
+            ProximalDendrite.setPermanences(c, permanences, indexes);
         }
 
         /**
@@ -191,7 +192,7 @@ namespace NeoCortexApi.Entities
          */
         public void setProximalConnectedSynapsesForTest(Connections c, int[] connections)
         {
-            proximalDendrite.setConnectedSynapsesForTest(c, connections);
+            ProximalDendrite.setConnectedSynapsesForTest(c, connections);
         }
 
       
@@ -209,13 +210,14 @@ namespace NeoCortexApi.Entities
 
         private readonly int m_Hashcode;
 
+
         public override int GetHashCode()
         {
             if (m_Hashcode == 0)
             {
                 int prime = 31;
                 int result = 1;
-                result = prime * result + index;
+                result = prime * result + Index;
                 return result;
             }
             return m_Hashcode;
@@ -228,7 +230,7 @@ namespace NeoCortexApi.Entities
             if (obj == null)
                 return false;
 
-            if (index != obj.index)
+            if (Index != obj.Index)
                 return false;
             else
                 return true;
@@ -236,9 +238,9 @@ namespace NeoCortexApi.Entities
 
         public int CompareTo(Column other)
         {
-            if (this.index < other.index)
+            if (this.Index < other.Index)
                 return -1;
-            else if (this.index > other.index)
+            else if (this.Index > other.Index)
                 return 1;
             else
                 return 0;
@@ -250,7 +252,7 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public override string ToString()
         {
-            return $"Column: Indx:{this.getIndex()}, Cells:{this.cells.Length}";
+            return $"Column: Indx:{this.getIndex()}, Cells:{this.Cells.Length}";
         }
     }
 }

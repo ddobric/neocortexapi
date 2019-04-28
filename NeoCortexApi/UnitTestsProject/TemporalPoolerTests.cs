@@ -896,7 +896,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < 100; i++)
             {
-                Assert.AreEqual(1, tm.leastUsedCell(cn, cn.getColumn(0).getCells(), cn.getRandom()).getIndex());
+                Assert.AreEqual(1, tm.leastUsedCell(cn, cn.getColumn(0).Cells, cn.getRandom()).getIndex());
             }
         }
 

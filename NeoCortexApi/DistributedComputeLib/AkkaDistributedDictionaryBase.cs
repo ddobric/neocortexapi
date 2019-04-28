@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace NeoCortexApi.DistributedComputeLib
 {
     public abstract class AkkaDistributedDictionaryBase<TKey, TValue> : IDictionary<TKey, TValue>, IEnumerator<KeyValuePair<TKey, TValue>>
-    {      
+    {
 
         protected AkkaDistributedDictConfig Config { get; }
 
@@ -45,14 +45,30 @@ namespace NeoCortexApi.DistributedComputeLib
                 }"));
 
             int nodeIndx = 0;
+
+            // dictList = new Dictionary<TKey, TValue>[this.Config.Nodes.Count];
+
             foreach (var node in this.Config.Nodes)
             {
+
                 dictActors[nodeIndx] =
                   actSystem.ActorOf(Props.Create(() => new DictNodeActor())
                   .WithDeploy(Deploy.None.WithScope(new RemoteScope(Address.Parse(node)))), $"{nameof(DictNodeActor)}-{nodeIndx}");
 
-                var result = dictActors[nodeIndx].Ask<int>(new DictNodeActor.CreateDictNodeMsg(), this.Config.ConnectionTimout).Result;
+                //dictActors[nodeIndx] =
+                //  actSystem.ActorOf(Props.Create(() => new DictNodeActor<TKey, TValue>())
+                //  .WithDeploy(Deploy.None.WithScope(new RemoteScope(Address.Parse(node)))), $"{nameof(DictNodeActor<TKey,TValue>)}-{nodeIndx}");
+
+                var result = dictActors[nodeIndx].Ask<int>(new CreateDictNodeMsg(), this.Config.ConnectionTimout).Result;
+
+
+                //result = dictActors[nodeIndx].Ask<int>("abc", this.Config.ConnectionTimout).Result;
+
+                //result = dictActors[nodeIndx].Ask<int>(new CreateDictNodeMsg(), this.Config.ConnectionTimout).Result;
+
             }
+
+
         }
 
         /// <summary>
@@ -61,30 +77,34 @@ namespace NeoCortexApi.DistributedComputeLib
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        protected abstract int GetNodeIndexFromKey(TKey key);        
+        protected abstract int GetPartitionNodeIndexFromKey(TKey key);
 
         public TValue this[TKey key]
         {
             get
             {
-                var nodeIndex = GetNodeIndexFromKey(key);
+                var nodeIndex = GetPartitionNodeIndexFromKey(key);
                 TValue val = this.dictActors[nodeIndex].Ask<TValue>("").Result;
                 return val;
             }
             set
             {
-                var nodeIndex = GetNodeIndexFromKey(key);
-                var isSet = this.dictActors[nodeIndex].Ask<bool>("").Result;
+                var nodeIndex = GetPartitionNodeIndexFromKey(key);
 
-                if (!isSet)
+                var isSet = dictActors[nodeIndex].Ask<int>(new AddElementMsg()
+                {
+                    Elements = new List<KeyPair>
+                    {
+                        new KeyPair { Key=key, Value=value }
+                    }
+
+                }, this.Config.ConnectionTimout).Result;
+
+                if (isSet != 1)
                     throw new ArgumentException("Cannot find the element with specified key!");
             }
         }
 
-        private int getPartitionIndex(int elementIndx)
-        {
-            return elementIndx % this.dictList.Length;
-        }
 
         public ICollection<TKey> Keys
         {
@@ -139,17 +159,56 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public bool IsReadOnly => false;
 
-
+        /// <summary>
+        /// Ads the value with secified key to the right parition.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
         public void Add(TKey key, TValue value)
         {
-            int partitionInd = getPartitionIndex(numElements++);
-            this.dictList[partitionInd].Add(key, value);
+            var nodeIndex = GetPartitionNodeIndexFromKey(key);
+
+            var isSet = dictActors[nodeIndex].Ask<int>(new AddElementMsg()
+            {
+                Elements = new List<KeyPair>
+                    {
+                        new KeyPair { Key=key, Value=value }
+                    }
+
+            }, this.Config.ConnectionTimout).Result;
+
+            if (isSet != 1)
+                throw new ArgumentException("Cannot add the element with specified key!");
+        }
+
+        /// <summary>
+        /// Tries to return value from target partition.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public bool TryGetValue(TKey key, out TValue value)
+        {
+            var nodeIndex = GetPartitionNodeIndexFromKey(key);
+
+            Result result = dictActors[nodeIndex].Ask<Result>(new GetElementMsg { Key = key }).Result;
+
+            if (result.IsError == false)
+            {
+                value = (TValue)result.Value;
+                return true;
+            }
+            else
+            {
+                value = default(TValue);
+                return false;
+            }
         }
 
         public void Add(KeyValuePair<TKey, TValue> item)
         {
-            int partitionInd = getPartitionIndex(++numElements);
-            this.dictList[partitionInd].Add(item.Key, item.Value);
+            int partitionId = GetPartitionNodeIndexFromKey(item.Key);
+            this.dictList[partitionId].Add(item.Key, item.Value);
         }
 
         public void Clear()
@@ -162,31 +221,33 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            for (int i = 0; i < this.dictList.Length; i++)
+            int partitionId = GetPartitionNodeIndexFromKey(item.Key);
+
+            if (ContainsKey(item.Key))
             {
-                if (this.dictList[i].ContainsKey(item.Key))
-                {
-                    if (EqualityComparer<TValue>.Default.Equals(this.dictList[i][item.Key], item.Value))
-                        return true;
-                    else
-                        return false;
-                }
+                var val = this.dictActors[partitionId].Ask<TValue>(new GetElementMsg()).Result;
+                if (EqualityComparer<TValue>.Default.Equals(val, item.Value))
+                    return true;
+                else
+                    return false;
             }
 
             return false;
         }
 
+        /// <summary>
+        /// Checks if element with specified key exists in any partition in cluster.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public bool ContainsKey(TKey key)
         {
-            for (int i = 0; i < this.dictList.Length; i++)
-            {
-                if (this.dictList[i].ContainsKey(key))
-                {
-                    return true;
-                }
-            }
+            int partitionId = GetPartitionNodeIndexFromKey(key);
 
-            return false;
+            if (this.dictActors[partitionId].Ask<bool>(new ContainsKeyMsg { Key = key }).Result)
+                return true;
+            else
+                return false;
         }
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
@@ -220,20 +281,6 @@ namespace NeoCortexApi.DistributedComputeLib
             return false;
         }
 
-        public bool TryGetValue(TKey key, out TValue value)
-        {
-            for (int i = 0; i < this.dictList.Length; i++)
-            {
-                if (this.dictList[i].ContainsKey(key))
-                {
-                    value = this.dictList[i][key];
-                    return true;
-                }
-            }
-
-            value = default(TValue);
-            return false;
-        }
 
 
         IEnumerator IEnumerable.GetEnumerator()

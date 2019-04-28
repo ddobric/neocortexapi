@@ -6,6 +6,13 @@ using System.Linq;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
+    /// <summary>
+    /// Distributes huge dictionary across mutliple dictionaries. Used mainly for testing purposes.
+    /// Special case of this dictionary is with number of nodes = 1. In this case dictionary is redused 
+    /// to a single dictionary, which corresponds original none-distributed implementation of SP and TM.
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
     public class InMemoryDistributedDictionary<TKey, TValue> : IDictionary<TKey, TValue>,  IEnumerator<KeyValuePair<TKey, TValue>>
     {
         private Dictionary<TKey, TValue>[] dictList;

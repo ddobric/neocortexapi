@@ -1,4 +1,5 @@
 ﻿using ImageBinarizer;
+using NeoCortexApi.DistributedCompute;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -79,6 +80,7 @@ namespace NeoCortexApi
             return sb.ToString();
         }
 
+
         public static List<string> Nodes
         {
             get
@@ -91,6 +93,21 @@ namespace NeoCortexApi
                 return nodes;
             }
         }
+
+        /// <summary>
+        /// Gets default sparse dictionary configuration.
+        /// </summary>
+        public static HtmSparseIntDictionaryConfig DefaultHtmSparseIntDictionaryConfig
+        {
+            get
+            {
+                return new HtmSparseIntDictionaryConfig()
+                {
+                    Nodes = Nodes,
+                };
+            }
+        }
+
 
         /// <summary>
         /// Binarize image to binarizedImage.

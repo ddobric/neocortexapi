@@ -5,15 +5,41 @@ using System.Text;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
+    
+
     public class DictNodeActor : ReceiveActor
     {
-        public class CreateDictNodeMsg
-        {
-
-        }
+        private Dictionary<object, object> dict = new Dictionary<object, object>();
 
         public DictNodeActor()
-        {            
+        {
+            Receive<AddElementMsg>(msg =>
+            {
+                Console.WriteLine($"{nameof(DictNodeActor)} -  Receive<string> - {msg} - Calculation started.");
+
+                if (msg.Elements == null)
+                    throw new DistributedException($"{nameof(DictNodeActor)} failed to add element. List of adding elements cannot be empty.");
+
+                foreach (var element in msg.Elements)
+                {
+                    this.dict.Add(element.Key, element.Value);
+                }
+                
+                Sender.Tell(msg.Elements.Count, Self);
+            });
+
+            Receive<GetElementMsg>(msg =>
+            {
+                Console.WriteLine($"{nameof(DictNodeActor)} -  Receive<string> - {msg} - Calculation started.");
+
+                object element;
+
+                if(dict.TryGetValue(msg.Key, out element))
+                    Sender.Tell(new Result { IsError = false, Value = element }, Self);
+                else
+                    Sender.Tell(new Result { IsError = true, Value = null }, Self);
+            });
+
             Receive<CreateDictNodeMsg>(msg =>
             {
                 Console.WriteLine($"{nameof(DictNodeActor)} -  Receive<CreateDictNodeMsg> - {msg} - Calculation started.");
