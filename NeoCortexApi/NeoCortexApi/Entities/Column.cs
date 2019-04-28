@@ -28,7 +28,7 @@ namespace NeoCortexApi.Entities
         /** Stored boxed form to eliminate need for boxing on the fly */
        // private readonly Integer boxedIndex;
         /** Configuration of cell count */
-        private readonly int numCells;
+        //private readonly int numCells;
 
         /// <summary>
         /// Dendrites connected to <see cref="SpatialPooler"/> input pools
@@ -44,7 +44,10 @@ namespace NeoCortexApi.Entities
 
         private readonly int hashcode;
 
+        public Column()
+        {
 
+        }
 
         /// <summary>
         /// Creates a new collumn with specified number of cells and a single proximal dendtrite segment.
@@ -53,7 +56,7 @@ namespace NeoCortexApi.Entities
         /// <param name="index">Colun index.</param>
         public Column(int numCells, int index)
         {
-            this.numCells = numCells;
+            //this.numCells = numCells;
             this.Index = index;
             //this.boxedIndex = index;
             this.hashcode = GetHashCode();
@@ -104,7 +107,7 @@ namespace NeoCortexApi.Entities
          */
         public int getNumCellsPerColumn()
         {
-            return numCells;
+            return Cells.Length;
         }
 
         /**

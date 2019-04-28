@@ -90,13 +90,13 @@ namespace UnitTestsProject
             Column c1 = new Column(9, 1);
 
             // Illustrates the Cell's actual index = colIndex * cellsPerColumn + indexOfCellWithinCol
-            Assert.AreEqual(7, c0.getCell(7).getIndex());
-            Assert.AreEqual(12, c1.getCell(3).getIndex());
-            Assert.AreEqual(16, c1.getCell(7).getIndex());
+            Assert.AreEqual(7, c0.Cells[7].Index);
+            Assert.AreEqual(12, c1.Cells[3].Index);
+            Assert.AreEqual(16, c1.Cells[7].Index);
 
-            DistalDendrite dd0 = new DistalDendrite(c0.getCell(7), 0, 0, 0);
-            DistalDendrite dd1 = new DistalDendrite(c1.getCell(3 /* Col 1's Cells start at 9 */), 1, 0, 1);
-            DistalDendrite dd2 = new DistalDendrite(c1.getCell(7/* Col 1's Cells start at 9 */), 2, 0, 2);
+            DistalDendrite dd0 = new DistalDendrite(c0.Cells[7], 0, 0, 0);
+            DistalDendrite dd1 = new DistalDendrite(c1.Cells[3] /* Col 1's Cells start at 9 */, 1, 0, 1);
+            DistalDendrite dd2 = new DistalDendrite(c1.Cells[7] /* Col 1's Cells start at 9 */, 2, 0, 2);
 
             List<DistalDendrite> l = new List<DistalDendrite>(
                 new DistalDendrite[] { dd0, dd1, dd2 });
@@ -109,7 +109,7 @@ namespace UnitTestsProject
                 new Pair<DistalDendrite, Column>(dd2, c1)
                 });
 
-            GroupBy<DistalDendrite, Column> grouper = GroupBy<DistalDendrite, Column>.From(l, c => c.getParentCell().getColumn());
+            GroupBy<DistalDendrite, Column> grouper = GroupBy<DistalDendrite, Column>.From(l, c => c.getParentCell().getParentColumn());
 
             int i = 0;
 

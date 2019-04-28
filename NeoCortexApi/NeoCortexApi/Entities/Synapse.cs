@@ -65,7 +65,7 @@ namespace NeoCortexApi.Entities
             this.segment = segment;
             this.synapseIndex = index;
             this.boxedIndex = new Integer(index);
-            this.inputIndex = presynapticCell.getIndex();
+            this.inputIndex = presynapticCell.Index;
             this.permanence = permanence;
         }
 

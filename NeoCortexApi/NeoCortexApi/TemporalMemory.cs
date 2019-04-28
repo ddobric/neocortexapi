@@ -118,7 +118,7 @@ namespace NeoCortexApi
                 activeColumns.Add(conn.getColumn(indx));
             }
 
-            Func<Object, Column> segToCol = segment => ((DistalDendrite)segment).getParentCell().getColumn();
+            Func<Object, Column> segToCol = segment => ((DistalDendrite)segment).getParentCell().getParentColumn();
 
             Func<object, Column> times1Fnc = x => (Column)x;
 

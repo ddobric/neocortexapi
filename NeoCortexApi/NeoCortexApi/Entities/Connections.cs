@@ -1554,7 +1554,7 @@ namespace NeoCortexApi.Entities
          */
         public int columnIndexForSegment(DistalDendrite segment)
         {
-            return segment.getParentCell().getIndex() / cellsPerColumn;
+            return segment.getParentCell().Index / cellsPerColumn;
         }
 
         /**
@@ -2220,7 +2220,7 @@ namespace NeoCortexApi.Entities
             List<Integer> ints = new List<Integer>();
             foreach (Cell cell in cells)
             {
-                ints.Add(cell.getIndex());
+                ints.Add(cell.Index);
             }
 
             return ints;

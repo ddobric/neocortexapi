@@ -32,7 +32,8 @@ using System;
 using System.Collections.Generic;
 using NeoCortexApi.Entities;
 
-namespace NeoCortexApi.Entities {
+namespace NeoCortexApi.Entities
+{
 
 
 
@@ -40,20 +41,29 @@ namespace NeoCortexApi.Entities {
     /// Defines a single cell (neuron).
     /// </summary>
    // [Serializable]
-    public class  Cell   : IEquatable<Cell>, IComparable<Cell> {
-        /** keep it simple */
-        private static readonly long serialVersionUID = 1L;
+    public class Cell : IEquatable<Cell>, IComparable<Cell>
+    {
 
-        /** This cell's index */
-        private readonly int index;
+        /// <summary>
+        /// Index of the cell.
+        /// </summary>
+        public int Index { get; set; }
+
         /** Remove boxing where necessary */
-        readonly Integer boxedIndex;
-        /** The owning {@link Column} */
-        private readonly Column column;
+        //readonly Integer boxedIndex;
+
+        /// <summary>
+        /// The column, which owns this cell.
+        /// </summary>
+        public Column Column { get; set; }
+
         /** Cash this because Cells are immutable */
         private readonly int m_Hashcode;
 
+        public Cell()
+        {
 
+        }
         /**
          * Constructs a new {@code Cell} object
          * @param column    the containing {@link Column}
@@ -61,9 +71,9 @@ namespace NeoCortexApi.Entities {
          */
         public Cell(Column column, int colSeq)
         {
-            this.column = column;
-            this.index = column.getIndex() * column.getNumCellsPerColumn() + colSeq;
-            this.boxedIndex = new Integer(index);
+            this.Column = column;
+            this.Index = column.getIndex() * column.getNumCellsPerColumn() + colSeq;
+            //this.boxedIndex = new Integer(index);
             //this.hashcode = hashCode();
         }
 
@@ -71,18 +81,18 @@ namespace NeoCortexApi.Entities {
          * Returns this {@code Cell}'s index.
          * @return
          */
-        public int getIndex()
-        {
-            return index;
-        }
+        //public int getIndex()
+        //{
+        //    return Index;
+        //}
 
         /**
          * Returns the column within which this cell resides
          * @return
          */
-        public Column getColumn()
+        public Column getParentColumn()
         {
-            return column;
+            return Column;
         }
 
         /**
@@ -140,7 +150,7 @@ namespace NeoCortexApi.Entities {
             return c.getSegments(this, doLazyCreate);
         }
 
-     
+
 
         ///**
         // * {@inheritDoc}
@@ -159,7 +169,7 @@ namespace NeoCortexApi.Entities {
             {
                 int prime = 31;
                 int result = 1;
-                result = prime * result + index;
+                result = prime * result + Index;
                 return result;
             }
             return m_Hashcode;
@@ -173,8 +183,8 @@ namespace NeoCortexApi.Entities {
                 return true;
             if (obj == null)
                 return false;
-            
-            if (index != obj.index)
+
+            if (Index != obj.Index)
                 return false;
             else
                 return true;
@@ -182,7 +192,7 @@ namespace NeoCortexApi.Entities {
 
         public override string ToString()
         {
-            return $"Cell: Indx={this.getIndex()}, [{this.column}]";
+            return $"Cell: Indx={this.Index}, [{this.Column}]";
         }
 
 
@@ -193,9 +203,9 @@ namespace NeoCortexApi.Entities {
         /// <returns></returns>
         public int CompareTo(Cell other)
         {
-            if (this.index < other.index)
+            if (this.Index < other.Index)
                 return -1;
-            else if (this.index > other.index)
+            else if (this.Index > other.Index)
                 return 1;
             else
                 return 0;

@@ -34,7 +34,7 @@ namespace NeoCortexApi.DistributedComputeLib
             actSystem = ActorSystem.Create("Deployer", ConfigurationFactory.ParseString(@"
                 akka {  
                     actor{
-                        provider = ""Akka.Remote.RemoteActorRefProvider, Akka.Remote""                        
+                        provider = ""Akka.Remote.RemoteActorRefProvider, Akka.Remote""  		               
                     }
                     remote {
                         helios.tcp {
@@ -46,11 +46,8 @@ namespace NeoCortexApi.DistributedComputeLib
 
             int nodeIndx = 0;
 
-            // dictList = new Dictionary<TKey, TValue>[this.Config.Nodes.Count];
-
             foreach (var node in this.Config.Nodes)
             {
-
                 dictActors[nodeIndx] =
                   actSystem.ActorOf(Props.Create(() => new DictNodeActor())
                   .WithDeploy(Deploy.None.WithScope(new RemoteScope(Address.Parse(node)))), $"{nameof(DictNodeActor)}-{nodeIndx}");

@@ -443,12 +443,12 @@ namespace UnitTestsProject
             synapses.Sort();
             foreach (Synapse synapse in synapses)
             {
-                if (synapse.getPresynapticCell().getIndex() == 0) continue;
+                if (synapse.getPresynapticCell().Index == 0) continue;
 
                 Assert.AreEqual(0.21, synapse.getPermanence(), 0.01);
-                Assert.IsTrue(synapse.getPresynapticCell().getIndex() == 1 ||
-                           synapse.getPresynapticCell().getIndex() == 2 ||
-                           synapse.getPresynapticCell().getIndex() == 3);
+                Assert.IsTrue(synapse.getPresynapticCell().Index == 1 ||
+                           synapse.getPresynapticCell().Index == 2 ||
+                           synapse.getPresynapticCell().Index == 3);
             }
         }
 
@@ -482,10 +482,10 @@ namespace UnitTestsProject
 
             foreach (Synapse synapse in synapses)
             {
-                if (synapse.getPresynapticCell().getIndex() == 0) continue;
+                if (synapse.getPresynapticCell().Index == 0) continue;
 
                 Assert.AreEqual(0.21, synapse.getPermanence(), 0.01);
-                Assert.AreEqual(1, synapse.getPresynapticCell().getIndex());
+                Assert.AreEqual(1, synapse.getPresynapticCell().Index);
             }
         }
 
@@ -636,7 +636,7 @@ namespace UnitTestsProject
                 presynapticCells.Add(syn.getPresynapticCell());
             }
 
-            Assert.IsFalse(presynapticCells.Count(c => c.getIndex() == 0) > 0);
+            Assert.IsFalse(presynapticCells.Count(c => c.Index == 0) > 0);
 
             //Assert.IsFalse(presynapticCells.stream().mapToInt(cell->cell.getIndex()).anyMatch(i->i == 0));
         }
@@ -828,7 +828,7 @@ namespace UnitTestsProject
                 {
                     Assert.AreEqual(0.2, synapse.getPermanence(), 0.01);
 
-                    Column column = synapse.getPresynapticCell().getColumn();
+                    Column column = synapse.getPresynapticCell().getParentColumn();
                     Assert.IsTrue(columnCheckList.Contains(column));
                     columnCheckList.Remove(column);
                 }
@@ -896,7 +896,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < 100; i++)
             {
-                Assert.AreEqual(1, tm.leastUsedCell(cn, cn.getColumn(0).Cells, cn.getRandom()).getIndex());
+                Assert.AreEqual(1, tm.leastUsedCell(cn, cn.getColumn(0).Cells, cn.getRandom()).Index);
             }
         }
 

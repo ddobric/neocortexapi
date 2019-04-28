@@ -17,8 +17,8 @@ namespace NeoCortexApi
 
         public int Compare(DistalDendrite s1, DistalDendrite s2)
         {
-            double c1 = s1.getParentCell().getIndex() + ((double)(s1.getOrdinal() / (double)m_NextSegmentOrdinal));
-            double c2 = s2.getParentCell().getIndex() + ((double)(s2.getOrdinal() / (double)m_NextSegmentOrdinal));
+            double c1 = s1.getParentCell().Index + ((double)(s1.getOrdinal() / (double)m_NextSegmentOrdinal));
+            double c2 = s2.getParentCell().Index + ((double)(s2.getOrdinal() / (double)m_NextSegmentOrdinal));
             return c1 == c2 ? 0 : c1 > c2 ? 1 : -1;
         }
     }
