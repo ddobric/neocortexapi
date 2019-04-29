@@ -15,7 +15,7 @@ namespace NeoCortexApi.DistributedComputeLib
         {
             Receive<AddElementMsg>(msg =>
             {
-                Console.WriteLine($"{nameof(DictNodeActor)} -  Receive<string> - {msg} - Calculation started.");
+                Console.WriteLine($"Received message: '{msg.GetType().Name}'");
 
                 if (msg.Elements == null)
                     throw new DistributedException($"{nameof(DictNodeActor)} failed to add element. List of adding elements cannot be empty.");
@@ -30,7 +30,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
             Receive<GetElementMsg>(msg =>
             {
-                Console.WriteLine($"{nameof(DictNodeActor)} -  Receive<string> - {msg} - Calculation started.");
+                Console.WriteLine($"Received message: '{msg.GetType().Name}'");
 
                 object element;
 
@@ -40,17 +40,24 @@ namespace NeoCortexApi.DistributedComputeLib
                     Sender.Tell(new Result { IsError = true, Value = null }, Self);
             });
 
+            Receive<GetCountMsg>(msg =>
+            {
+                Console.WriteLine($"Received message: '{msg.GetType().Name}'");
+
+                Sender.Tell(this.dict.Count, Self);
+            });
+            
             Receive<CreateDictNodeMsg>(msg =>
             {
-                Console.WriteLine($"{nameof(DictNodeActor)} -  Receive<CreateDictNodeMsg> - {msg} - Calculation started.");
-            
+                Console.WriteLine($"Received message: '{msg.GetType().Name}'");
                 Sender.Tell(-1, Self);
             });
 
-            Receive<Terminated>(terminated =>
+            Receive<Terminated>(msg =>
             {
-                Console.WriteLine($"{nameof(DictNodeActor)} termintion - {terminated.ActorRef}");
-                Console.WriteLine("Was address terminated? {0}", terminated.AddressTerminated);
+                Console.WriteLine($"Received message: '{msg.GetType().Name}'");
+                Console.WriteLine($"{nameof(DictNodeActor)} termintion - {msg.ActorRef}");
+                Console.WriteLine("Was address terminated? {0}", msg.AddressTerminated);
             });
         }
 

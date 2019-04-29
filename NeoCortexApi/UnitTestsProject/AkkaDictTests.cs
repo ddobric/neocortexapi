@@ -58,7 +58,9 @@ namespace UnitTestsProject
             Assert.IsTrue(targetNode == expectedNode);
         }
 
-
+        /// <summary>
+        /// Writes and reads coulmns to distributed dictionary.
+        /// </summary>
         [TestMethod]
         [TestCategory("AkkaHostRequired")]
         public void InitAkkaDictionaryTest()
@@ -84,6 +86,8 @@ namespace UnitTestsProject
 
             Column col2;
             Assert.IsFalse(akkaDict.TryGetValue(-1, out col2));
+
+            Assert.IsTrue(100 == akkaDict.Count);
         }
 
 

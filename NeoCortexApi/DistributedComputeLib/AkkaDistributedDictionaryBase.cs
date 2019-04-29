@@ -142,12 +142,25 @@ namespace NeoCortexApi.DistributedComputeLib
         public int Count
         {
             get
-            {
+            {             
                 int cnt = 0;
 
-                foreach (var item in this.dictList)
+                Task<int>[] tasks = new Task<int>[this.dictActors.Length];
+                int indx = 0;
+
+                foreach (var actor in this.dictActors)
                 {
-                    cnt += item.Values.Count;
+                    tasks[indx++] = actor.Ask<int>(new GetCountMsg(), this.Config.ConnectionTimout);
+                }
+
+                Task.WaitAll(tasks);
+
+                for (int i = 0; i < tasks.Length; i++)
+                {
+                    if (!tasks[i].IsFaulted)
+                        cnt += tasks[i].Result;
+                    else
+                        throw new DistributedException("An error has ocurred.", tasks[i].Exception);
                 }
 
                 return cnt;

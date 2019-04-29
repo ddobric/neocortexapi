@@ -21,6 +21,11 @@ namespace NeoCortexApi.DistributedComputeLib
         public object Key { get; set; }
     }
 
+    internal class GetCountMsg
+    {
+      
+    }
+
     internal class KeyPair
     {
         public object Key { get; set; }
