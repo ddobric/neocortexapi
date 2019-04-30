@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Diagnostics;
 
+
 /**
  * Handles the relationships between the columns of a region 
  * and the inputs bits. The primary public interface to this function is the 
@@ -28,6 +29,7 @@ namespace NeoCortexApi
 {
     public class SpatialPooler : IHtmAlgorithm
     {
+
         public double MaxInibitionDensity { get; set; } = 0.5;
 
         /** Default Serial Version  */
@@ -54,7 +56,7 @@ namespace NeoCortexApi
             }
 
             c.doSpatialPoolerPostInit();
-            initMatrices(c, dictionary); 
+            initMatrices(c, dictionary);
             connectAndConfigureInputs(c);
         }
 
@@ -93,7 +95,7 @@ namespace NeoCortexApi
             //
             // Fill the sparse matrix with column objects
             var numCells = c.getCellsPerColumn();
-          
+
             // PERF
             for (int i = 0; i < numColumns; i++)
             {
@@ -137,7 +139,9 @@ namespace NeoCortexApi
 
                 // This line initializes all synases in the potential pool of synapces.
                 // After initialization permancences are set to zero.
-                c.getPotentialPools().set(i, column.createPotentialPool(c, potential));
+                var potPool = column.createPotentialPool(c, potential);
+
+                c.getPotentialPools().set(i, potPool);
 
                 double[] perm = initPermanence(c, potential, i, c.getInitConnectedPct());
 
@@ -235,7 +239,7 @@ namespace NeoCortexApi
 
             ArrayUtils.fillArray(activeArray, 0);
             if (activeColumns.Length > 0)
-            { 
+            {
                 ArrayUtils.setIndexesTo(activeArray, activeColumns, 1);
             }
         }
@@ -370,7 +374,7 @@ namespace NeoCortexApi
             double[] activeDutyCycles = c.getActiveDutyCycles();
             double minPctActiveDutyCycles = c.getMinPctActiveDutyCycles();
             double[] overlapDutyCycles = c.getOverlapDutyCycles();
-            double minPctOverlapDutyCycles = c  .getMinPctOverlapDutyCycles();
+            double minPctOverlapDutyCycles = c.getMinPctOverlapDutyCycles();
 
             Parallel.For(0, len, (i) =>
             {
@@ -938,7 +942,7 @@ namespace NeoCortexApi
             int[] columnInputs = getInputNeighborhood(c, centerInput, c.getPotentialRadius());
 
             //Debug.WriteLine($"{Helpers.StringifyVector(columnInputs)}");
-            
+
             // Select a subset of the receptive field to serve as the the potential pool.
             int numPotential = (int)(columnInputs.Length * c.getPotentialPct() + 0.5);
             int[] retVal = new int[numPotential];
@@ -963,7 +967,7 @@ namespace NeoCortexApi
 
                 density = c.NumActiveColumnsPerInhArea / inhibitionArea;
 
-                    density = Math.Min(density, MaxInibitionDensity);
+                density = Math.Min(density, MaxInibitionDensity);
             }
 
             return density;
@@ -1066,7 +1070,7 @@ namespace NeoCortexApi
          */
         public virtual int[] inhibitColumnsLocalOriginal(Connections c, double[] overlaps, double density)
         {
-           double winnerDelta = ArrayUtils.max(overlaps) / 1000.0d;
+            double winnerDelta = ArrayUtils.max(overlaps) / 1000.0d;
             if (winnerDelta == 0)
             {
                 winnerDelta = 0.001;
@@ -1113,9 +1117,9 @@ namespace NeoCortexApi
                 }
             }
             List<int> winners = new List<int>();
-            int maxInhibitionRadius = (int)((Math.Sqrt((preActive/(overlaps.Length*0.02))+1)/2)-1);
+            int maxInhibitionRadius = (int)((Math.Sqrt((preActive / (overlaps.Length * 0.02)) + 1) / 2) - 1);
             maxInhibitionRadius = Math.Max(1, maxInhibitionRadius);
-            int count = (int)(0.02*overlaps.Length);
+            int count = (int)(0.02 * overlaps.Length);
             var activeCols = ArrayUtils.IndexWhere(overlaps, (el) => el > c.StimulusThreshold);
             double max = 0;
             int colNum = 0;
@@ -1134,11 +1138,11 @@ namespace NeoCortexApi
                 double[] neighborhoodOverlaps = ArrayUtils.ListOfValuesByIndicies(overlaps, neighborhood);
                 for (int col = 0; col < neighborhood.Length; col++)
                 {
-                    double newOverlap = neighborhoodOverlaps[col]-0.5;
+                    double newOverlap = neighborhoodOverlaps[col] - 0.5;
                     int a = neighborhood[col];
                     overlaps[a] = newOverlap;
                 }
-                
+
                 overlaps = ArrayUtils.RemoveIndices(overlaps, colNum);
                 max = 0;
             }
@@ -1380,7 +1384,7 @@ namespace NeoCortexApi
             //        int[] mask = ArrayUtils.where(minActiveDutyCycles, ArrayUtils.GREATER_THAN_0);
 
             double[] boostInterim;
-            
+
             //
             // Boost factors are NOT recalculated if minimum active duty cycles are all set on 0.
             if (mask.Count < 1)
@@ -1595,7 +1599,7 @@ namespace NeoCortexApi
             }
             else
             {
-                result = 1; 
+                result = 1;
             }
             return result;
         }

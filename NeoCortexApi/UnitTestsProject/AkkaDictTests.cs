@@ -90,7 +90,7 @@ namespace UnitTestsProject
             Assert.IsTrue(100 == akkaDict.Count);
         }
 
-
+#if USE_AKKA
         [TestMethod]
         public void CreateDistributedArrayTest()
         {
@@ -108,6 +108,7 @@ namespace UnitTestsProject
                 }
             }
         }
+#endif
 
         /// <summary>
         /// This test do spatial pooling and save hamming distance, active columns 
@@ -180,8 +181,8 @@ namespace UnitTestsProject
             parameters.apply(mem);
             var dictCfg = Helpers.DefaultHtmSparseIntDictionaryConfig;
             dictCfg.NumColumns = columnTopology * columnTopology;
-            var dict1 = new HtmSparseIntDictionary(dictCfg);
-            //var dict2 = new InMemoryDistributedDictionary<int, NeoCortexApi.Entities.Column>(1);
+            //var dict1 = new HtmSparseIntDictionary(dictCfg);
+            var dict1 = new InMemoryDistributedDictionary<int, NeoCortexApi.Entities.Column>(1);
             sp.init(mem, dict1 );
 
             int actiColLen = numOfActCols;

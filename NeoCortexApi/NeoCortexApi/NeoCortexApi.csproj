@@ -14,12 +14,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <LangVersion>7.3</LangVersion>
     <DocumentationFile></DocumentationFile>
+    <DefineConstants>TRACE;NOUSE_AKKA</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Encoders\EncoderBuilder.cs" />
     <Compile Remove="Encoders\ScalarEncoder.cs" />
-    <Compile Remove="Entities\SparseBinaryMatrixOriginal.cs" />
     <Compile Remove="Network\CortexNetwork.cs" />
     <Compile Remove="Network\Header.cs" />
     <Compile Remove="Network\ICheckPointOP.cs" />
@@ -38,7 +38,6 @@
   <ItemGroup>
     <None Include="Encoders\EncoderBuilder.cs" />
     <None Include="Encoders\ScalarEncoder.cs" />
-    <None Include="Entities\SparseBinaryMatrixOriginal.cs" />
     <None Include="Network\CortexNetwork.cs" />
     <None Include="Network\Header.cs" />
     <None Include="Network\ICheckPointOP.cs" />

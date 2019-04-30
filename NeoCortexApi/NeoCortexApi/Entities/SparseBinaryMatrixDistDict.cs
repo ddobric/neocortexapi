@@ -1,4 +1,4 @@
-﻿
+﻿#if USE_AKKA
 using NeoCortexApi.DistributedComputeLib;
 using NeoCortexApi.Utility;
 using System;
@@ -240,3 +240,4 @@ namespace NeoCortexApi.Entities
         }
     }
 }
+#endif

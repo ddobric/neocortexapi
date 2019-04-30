@@ -1,4 +1,6 @@
-﻿using NeoCortexApi.Utility;
+﻿#if !USE_AKKA
+
+using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -275,3 +277,4 @@ namespace NeoCortexApi.Entities
 
     }
 }
+#endif
