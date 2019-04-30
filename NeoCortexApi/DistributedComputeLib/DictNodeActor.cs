@@ -40,13 +40,28 @@ namespace NeoCortexApi.DistributedComputeLib
                     Sender.Tell(new Result { IsError = true, Value = null }, Self);
             });
 
+            Receive<ContainsMsg>(msg =>
+            {
+                var res = this.dict.ContainsKey(msg.Key);
+
+                Sender.Tell(res, Self);
+            });
+
+            Receive<ContainsKeyMsg>(msg =>
+            {
+                var res = this.dict.ContainsKey(msg.Key);
+
+                Sender.Tell(res, Self);
+            });
+
             Receive<GetCountMsg>(msg =>
             {
                 Console.WriteLine($"Received message: '{msg.GetType().Name}'");
 
                 Sender.Tell(this.dict.Count, Self);
             });
-            
+
+        
             Receive<CreateDictNodeMsg>(msg =>
             {
                 Console.WriteLine($"Received message: '{msg.GetType().Name}'");

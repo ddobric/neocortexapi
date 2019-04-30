@@ -6,6 +6,11 @@ namespace NeoCortexApi.DistributedComputeLib
     {
     }
 
+    internal class ContainsMsg
+    {
+        public object Key { get; set; }
+    }
+
     internal class AddElementMsg
     {
         public IList<KeyPair> Elements { get; set; }

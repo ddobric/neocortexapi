@@ -103,6 +103,34 @@ namespace NeoCortexApi.DistributedComputeLib
         }
 
 
+        public int Count
+        {
+            get
+            {
+                int cnt = 0;
+
+                Task<int>[] tasks = new Task<int>[this.dictActors.Length];
+                int indx = 0;
+
+                foreach (var actor in this.dictActors)
+                {
+                    tasks[indx++] = actor.Ask<int>(new GetCountMsg(), this.Config.ConnectionTimout);
+                }
+
+                Task.WaitAll(tasks);
+
+                for (int i = 0; i < tasks.Length; i++)
+                {
+                    if (!tasks[i].IsFaulted)
+                        cnt += tasks[i].Result;
+                    else
+                        throw new DistributedException("An error has ocurred.", tasks[i].Exception);
+                }
+
+                return cnt;
+            }
+        }
+
         public ICollection<TKey> Keys
         {
             get
@@ -139,33 +167,6 @@ namespace NeoCortexApi.DistributedComputeLib
         }
 
 
-        public int Count
-        {
-            get
-            {             
-                int cnt = 0;
-
-                Task<int>[] tasks = new Task<int>[this.dictActors.Length];
-                int indx = 0;
-
-                foreach (var actor in this.dictActors)
-                {
-                    tasks[indx++] = actor.Ask<int>(new GetCountMsg(), this.Config.ConnectionTimout);
-                }
-
-                Task.WaitAll(tasks);
-
-                for (int i = 0; i < tasks.Length; i++)
-                {
-                    if (!tasks[i].IsFaulted)
-                        cnt += tasks[i].Result;
-                    else
-                        throw new DistributedException("An error has ocurred.", tasks[i].Exception);
-                }
-
-                return cnt;
-            }
-        }
 
         public bool IsReadOnly => false;
 
@@ -254,7 +255,7 @@ namespace NeoCortexApi.DistributedComputeLib
         {
             int partitionId = GetPartitionNodeIndexFromKey(key);
 
-            if (this.dictActors[partitionId].Ask<bool>(new ContainsKeyMsg { Key = key }).Result)
+            if (this.dictActors[partitionId].Ask<bool>(new ContainsMsg { Key = key }).Result)
                 return true;
             else
                 return false;

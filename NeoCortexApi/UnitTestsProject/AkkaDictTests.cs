@@ -117,10 +117,13 @@ namespace UnitTestsProject
         /// <param name="imageSizes">list of sizes used for testing. Image would have same value for width and length</param>
         /// <param name="topologies">list of sparse space size. Sparse space has same width and length</param>
         [TestMethod]
+        [TestCategory("AkkaHostRequired")]
         [TestCategory("LongRunning")]
         [DataRow("MnistPng28x28\\training", "3", 28, 64)]
         public void SparseSingleMnistImageTest(string trainingFolder, string digit, int imageSize, int columnTopology)
         {
+            Thread.Sleep(5000);
+
             string TestOutputFolder = $"Output-{nameof(SparseSingleMnistImageTest)}";
 
             var trainingImages = Directory.GetFiles(Path.Combine(trainingFolder, digit));
@@ -175,7 +178,9 @@ namespace UnitTestsProject
             var mem = new Connections();
 
             parameters.apply(mem);
-            var dict1 = new HtmSparseIntDictionary(Helpers.DefaultHtmSparseIntDictionaryConfig);
+            var dictCfg = Helpers.DefaultHtmSparseIntDictionaryConfig;
+            dictCfg.NumColumns = columnTopology * columnTopology;
+            var dict1 = new HtmSparseIntDictionary(dictCfg);
             //var dict2 = new InMemoryDistributedDictionary<int, NeoCortexApi.Entities.Column>(1);
             sp.init(mem, dict1 );
 
