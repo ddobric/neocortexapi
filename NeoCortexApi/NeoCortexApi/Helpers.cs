@@ -129,5 +129,56 @@ namespace NeoCortexApi
 
             return binaryImage;
         }
+
+
+        public static void f1()
+        {
+            double x = 1.233;
+            for (int i = 0; i < 100000000; i++)
+            {
+                x += 1.2732;
+            }
+
+            f2();
+        }
+
+        public static void f2()
+        {
+            double x = 1.233;
+            for (int i = 0; i < 100000000; i++)
+            {
+                x += 1.2732;
+            }
+            f3();
+        }
+
+        public static void f3()
+        {
+            double x = 1.233;
+            for (int i = 0; i < 100000000; i++)
+            {
+                x += 1.2732;
+            }
+            f4();
+        }
+
+        public static void f4()
+        {
+            double x = 1.233;
+            for (int i = 0; i < 100000000; i++)
+            {
+                x += 1.2732;
+            }
+            f5();
+        }
+
+        public static void f5()
+        {
+            double x = 1.233;
+            for (int i = 0; i < 100000000; i++)
+            {
+                x += 1.2732;
+            }
+        }
     }
 }

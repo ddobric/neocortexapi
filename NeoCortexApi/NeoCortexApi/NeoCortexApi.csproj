@@ -14,7 +14,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <LangVersion>7.3</LangVersion>
     <DocumentationFile></DocumentationFile>
-    <DefineConstants>TRACE;NOUSE_AKKA</DefineConstants>
+    <DefineConstants>TRACE;A_USE_AKKA</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

@@ -57,7 +57,12 @@ namespace NeoCortexApi
 
             c.doSpatialPoolerPostInit();
             initMatrices(c, dictionary);
+
+           // Stopwatch sw = new Stopwatch();
+           // sw.Start();
             connectAndConfigureInputs(c);
+           // sw.Stop();
+           // Debug.WriteLine($">>>connectAndConfigureInputs: {sw.ElapsedMilliseconds}");
         }
 
         /**
@@ -1102,6 +1107,7 @@ namespace NeoCortexApi
                 }
             }
 
+        
             return winners.ToArray();
         }
 

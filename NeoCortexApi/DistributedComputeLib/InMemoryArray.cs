@@ -146,6 +146,26 @@ namespace NeoCortexApi.DistributedComputeLib
         {
             int cols = this.backingArray.GetUpperBound(1) + 1;
 
+            if (this.backingArray is System.Int32[,])
+            {
+                int[,] arr = (int[,])this.backingArray;
+
+                int sum = 0;
+                for (int i = 0; i < cols; i++)
+                {
+                    sum += arr[row, i];
+                }
+
+                return sum;
+            }
+            else
+                throw new InvalidOperationException("Unsupported array type. Array MUST be of type int[,]!");
+        }
+
+        public int AggregateArraySlow(int row)
+        {
+            int cols = this.backingArray.GetUpperBound(1) + 1;
+
             int sum = 0;
             for (int i = 0; i < cols; i++)
             {

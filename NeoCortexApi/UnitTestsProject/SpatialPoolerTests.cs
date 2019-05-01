@@ -132,7 +132,10 @@ namespace UnitTestsProject
 
             parameters.setSynPermConnected(0.1);
 
-            initSP();
+            sp = new SpatialPooler();
+            mem = new Connections();
+            parameters.apply(mem);
+            sp.init(mem);
 
             SpatialPoolerMock mock = new SpatialPoolerMock(new int[] { 0, 1, 2, 3, 4 });
 
