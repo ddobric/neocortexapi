@@ -76,6 +76,88 @@ namespace UnitTestsProject
 
         }
 
+        [TestMethod]
+        [TestCategory("LongRunning")]
+        public void NoiseTest()
+        {
+            var parameters = GetDefaultParams();
+            parameters.Set(KEY.POTENTIAL_RADIUS, 64 * 64);
+            parameters.Set(KEY.POTENTIAL_PCT, 1.0);
+            parameters.Set(KEY.GLOBAL_INHIBITION, false);
+            parameters.Set(KEY.STIMULUS_THRESHOLD, 0.5);
+            parameters.Set(KEY.INHIBITION_RADIUS, (int)0.25 * 64 * 64);
+            parameters.Set(KEY.LOCAL_AREA_DENSITY, -1);
+            parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.1 * 64 * 64);
+            parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000000);
+            parameters.Set(KEY.MAX_BOOST, 5);
+
+            parameters.setInputDimensions(new int[] { 32, 32 });
+            parameters.setColumnDimensions(new int[] { 64, 64 });
+            parameters.setNumActiveColumnsPerInhArea(0.02 * 64 * 64);
+            var sp = new SpatialPooler();
+            var mem = new Connections();
+            //List<int> intList = ArrayUtils.ReadCsvFileTest("TestFiles\\digit1_binary_32bit.txt");
+            //intList.Clear();
+
+            //List<int> intList = new List<int>();
+            var rnd = new Random();
+
+            int[] inputVector = new int[1024];
+
+            for (int i = 0; i < 31; i++)
+            {
+                for (int j = 0; j < 32; j++)
+                {
+                    if (i > 2 && i < 5 && j > 2 && j < 8)
+                        inputVector[i * 32 + j] = 1;
+                    else
+                        inputVector[i * 32 + j] = 0;
+                }
+            }
+
+            parameters.apply(mem);
+            sp.init(mem);
+
+            int[] activeArray = new int[64 * 64];
+            int[] activeArrayWithZeroNoise = new int[64 * 64];
+
+            for (int j = 0; j < 30; j += 10)
+            {
+                Debug.WriteLine("-------------");
+
+                int[] noisedInput = inputVector;
+
+                if (j > 0)
+                {
+                    noisedInput = ArrayUtils.flipBit(inputVector, (double)((double)j / 100.00));
+                }
+
+                var d = MathHelpers.GetHammingDistance(inputVector, noisedInput);
+                Debug.WriteLine($"Input with noise {j} - HamDist: {d}");
+                Debug.WriteLine($"Original: {Helpers.StringifyVector(inputVector)}");
+                Debug.WriteLine($"Noised:   {Helpers.StringifyVector(noisedInput)}");
+
+                for (int i = 0; i < 5; i++)
+                {
+                    sp.compute(mem, noisedInput, activeArray, true);
+                }
+
+                if (j == 0)
+                {
+                    Array.Copy(activeArray, activeArrayWithZeroNoise, activeArrayWithZeroNoise.Length);
+                }
+
+                var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
+
+                var str = Helpers.StringifyVector(activeCols);
+
+                var d2 = MathHelpers.GetHammingDistance(activeArrayWithZeroNoise, activeArray);
+                Debug.WriteLine($"Output with noise {j} - Ham Dist: {d2}");
+                Debug.WriteLine($"Original: {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArrayWithZeroNoise, (el) => el == 1))}");
+                Debug.WriteLine($"Noised:   {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
+            }
+        }
+
         /// <summary>
         /// Creates data which shows how columns are connected to sensory input.
         /// </summary>
