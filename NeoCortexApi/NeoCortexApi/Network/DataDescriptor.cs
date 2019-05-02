@@ -1,10 +1,11 @@
-﻿using LearningFoundation.DataMappers;
+﻿
+using NeoCortexApi.DataMappers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LearningFoundation
+namespace NeoCortexApi
 {
     /// <summary>
     /// Holds all required data, which is passed to all pipeline

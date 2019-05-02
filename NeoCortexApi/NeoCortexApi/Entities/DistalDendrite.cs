@@ -14,13 +14,13 @@ namespace NeoCortexApi.Entities
      * @author Chetan Surpur
      * @author David Ray
      */
-    [Serializable]
+    //[Serializable]
     public class DistalDendrite : Segment, IComparable<DistalDendrite>
     {
         /** keep it simple */
         private static readonly long serialVersionUID = 1L;
 
-        private Cell cell;
+        public Cell ParentCell;
 
         private long m_LastUsedIteration;
 
@@ -33,9 +33,9 @@ namespace NeoCortexApi.Entities
          * @param cell      the owner
          * @param flatIdx     this {@code Segment}'s index.
          */
-        public DistalDendrite(Cell cell, int flatIdx, long lastUsedIteration, int ordinal) : base(flatIdx)
+        public DistalDendrite(Cell parentCell, int flatIdx, long lastUsedIteration, int ordinal) : base(flatIdx)
         {
-            this.cell = cell;
+            this.ParentCell = parentCell;
             this.ordinal = ordinal;
             this.m_LastUsedIteration = lastUsedIteration;
         }
@@ -47,7 +47,7 @@ namespace NeoCortexApi.Entities
          */
         public Cell getParentCell()
         {
-            return cell;
+            return ParentCell;
         }
 
 
@@ -132,7 +132,7 @@ namespace NeoCortexApi.Entities
         {
             int prime = 31;
             int result = base.GetHashCode();
-            result = prime * result + ((cell == null) ? 0 : cell.GetHashCode());
+            result = prime * result + ((ParentCell == null) ? 0 : ParentCell.GetHashCode());
             return result;
         }
 
@@ -149,12 +149,12 @@ namespace NeoCortexApi.Entities
                 return false;
 
             DistalDendrite other = (DistalDendrite)obj;
-            if (cell == null)
+            if (ParentCell == null)
             {
-                if (other.cell != null)
+                if (other.ParentCell != null)
                     return false;
             }
-            else if (!cell.Equals(other.cell))
+            else if (!ParentCell.Equals(other.ParentCell))
                 return false;
 
             return true;

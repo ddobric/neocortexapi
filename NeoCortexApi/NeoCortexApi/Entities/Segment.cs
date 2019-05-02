@@ -9,7 +9,7 @@ namespace NeoCortexApi.Entities
     /// <summary>
     /// Base class which handles the creation of <seealso cref="Synapse"/> on behalf of inheriting class types.
     /// </summary>
-    [Serializable]
+   // [Serializable]
     public abstract class Segment : IEquatable<Segment>
     {
        

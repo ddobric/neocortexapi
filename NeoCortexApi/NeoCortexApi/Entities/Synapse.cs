@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
+
 namespace NeoCortexApi.Entities
 {
     /**
@@ -24,7 +25,8 @@ namespace NeoCortexApi.Entities
   * @see DistalDendrite
   * @see Connections
   */
-    [Serializable]
+ 
+   // [System.SerializableAttribute] 
     public class Synapse : IEquatable<Synapse>, IComparable<Synapse>
     {
         /// <summary>
@@ -63,7 +65,7 @@ namespace NeoCortexApi.Entities
             this.segment = segment;
             this.synapseIndex = index;
             this.boxedIndex = new Integer(index);
-            this.inputIndex = presynapticCell.getIndex();
+            this.inputIndex = presynapticCell.Index;
             this.permanence = permanence;
         }
 

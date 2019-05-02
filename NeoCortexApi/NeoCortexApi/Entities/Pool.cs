@@ -22,23 +22,23 @@ namespace NeoCortexApi.Entities
      * @see Connections
      */
 
-    [Serializable]
+    //[Serializable]
     public class Pool
     {
-
-
         int size;
 
-        /** Allows fast removal of connected synapse indexes. List of connected synapses. These
-         are synapses with permanence value greather than permanence connected threshold. See synPermConnected*/
+        /// <summary>
+        /// Allows fast removal of connected synapse indexes. List of connected synapses. 
+        /// These are synapses with permanence value greather than permanence connected threshold.
+        /// See synPermConnected.
+        /// </summary>      
+        public HashSet<int> synapseConnections { get; set; }  = new HashSet<int>();
 
-        ///
-        private HashSet<int> synapseConnections = new HashSet<int>();
         /** 
          * Indexed according to the source Input Vector Bit (for ProximalDendrites),
          * and source cell (for DistalDendrites).
          */
-        private Dictionary<int, Synapse> synapsesBySourceIndex = new Dictionary<int, Synapse>();
+        public Dictionary<int, Synapse> synapsesBySourceIndex { get; set; }  = new Dictionary<int, Synapse>();
 
         public Pool(int size)
         {

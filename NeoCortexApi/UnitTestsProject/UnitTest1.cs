@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeoCortex;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
@@ -10,69 +11,6 @@ namespace UnitTestsProject
     [TestClass]
     public class UnitTest1
     {
-        [TestMethod]
-        public void ArraySizeTest()
-        {
-            byte[] bb = new byte[Int32.MaxValue - 56];
-
-            for (int i = int.MaxValue - 1000000; i > 0; i--)
-            {
-                try
-                {
-                    //intmax = 2147483647
-                    //2146435071
-                    // intmax-2146435071
-                    int[] ii = new int[i];
-                    Console.Out.WriteLine("MaxValue: " + i);
-                    Environment.Exit(0);
-                }
-                catch (Exception ignored)
-                { }
-            }
-        }
-
-        [TestMethod]
-        public void DictionarySizeTest()
-        {
-            byte[] bb = new byte[Int32.MaxValue - 56];
-
-            int delta= int.MaxValue / -2;
-
-            for (int i = int.MaxValue; i > 0 ; i= i + delta)
-            {
-                try
-                {
-                    //intmax = 2147483647
-                    //2146435071
-                    // intmax-2146435071
-                    Dictionary<int,int> d = new Dictionary<int, int>(i);
-                    Console.Out.WriteLine("MaxValue: " + i);
-
-                    //if (isDecremeted)
-                    //{
-                    //    isDecremeted 
-                    //}
-
-                    Environment.Exit(0);
-                }
-                catch (Exception ignored)
-                {                  
-                  
-                }
-            }
-        }
-
-
-        [TestMethod]
-        public void HugeArryTest()
-        {
-            var x = new int[4096, 250000];
-            for (int i = 0; i < 4096; i++)
-            {
-                int[] y = x.GetRow2(i);
-            }
-        }
-
 
         [TestMethod]
         [DataRow(new int[] { 2048, 6 })]
@@ -189,6 +127,42 @@ namespace UnitTestsProject
             Assert.AreEqual(empty1, empty2);
         }
 
+        [TestMethod]
+        public void CreateDutyCycleGraphTest()
+        {
+            for (int i = 0; i < 1; i++)
+            {
+
+            }
+        }
+
+        [TestMethod]
+        [DataRow(20)]
+        [DataRow(30)]
+        [DataRow(40)]
+        [DataRow(50)]
+        public void TestHeatmapCreation(int threshold)
+        {
+            List<double[,]> bostArrays = new List<double[,]>();
+            bostArrays.Add(new double[64, 64]);
+            bostArrays.Add(new double[64, 64]);
+
+            double v = 0;
+            for (int i = 0; i < 64; i++)
+            {
+                for (int j = 0; j < 64; j++)
+                {
+                    bostArrays[0][i, j] = v;
+                    bostArrays[1][j, i] = v;
+                }
+
+                v += 1;
+            }
+
+            NeoCortexUtils.DrawHeatmaps(bostArrays, $"tessheat_{threshold}.png", 1024, 1024, 60, threshold, 10);
+
+        }
+
         //[TestMethod]
         //public void CompareDentrites()
         //{
@@ -196,6 +170,6 @@ namespace UnitTestsProject
         //    DistalDendrite bestSegment = matchingSegments.Max();
         //}
 
-       
+
     }
 }

@@ -1,0 +1,15 @@
+﻿akka {
+	loglevel=INFO
+    actor.provider = cluster
+    remote {
+        dot-netty.tcp {
+            port = @PORT
+			public-hostname = @PUBHOSTNAME
+            hostname = @HOSTNAME
+		}
+    }
+    cluster {
+        seed-nodes = [@SEEDHOSTS]
+    }	
+}
+

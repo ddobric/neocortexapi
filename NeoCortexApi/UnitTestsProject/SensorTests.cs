@@ -1,5 +1,5 @@
-﻿using LearningFoundation;
-using LearningFoundation.DataMappers;
+﻿
+using NeoCortexApi.DataMappers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Encoders;
@@ -47,9 +47,9 @@ namespace UnitTestsProject
 
       
 
-        private DataDescriptor loadMetaDataWithCategoricLabel()
+        private NeoCortexApi.DataDescriptor loadMetaDataWithCategoricLabel()
         {
-            var des = new DataDescriptor();
+            var des = new NeoCortexApi.DataDescriptor();
 
             var encoder1Sett1 = getBinaryEncoderSettings();
             var encoder2Sett2 = getBinaryEncoderSettings();

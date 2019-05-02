@@ -8,13 +8,10 @@ namespace NeoCortexApi.Entities
     /// <summary>
     /// Defines th eproximal dentritte segment.
     /// </summary>
-    [Serializable]
+    //[Serializable]
     public class ProximalDendrite : Segment
     {
-        /** keep it simple */
-        private static readonly long serialVersionUID = 1L;
-
-        private Pool pool;
+        public Pool Pool {get;set; }
 
         /**
          * 
@@ -24,24 +21,24 @@ namespace NeoCortexApi.Entities
         {
 
         }
+               
 
-        /**
-         * Creates the pool of {@link Synapse}s representing the connection
-         * to the input vector.
-         * 
-         * @param c					the {@link Connections} memory
-         * @param inputIndexes		indexes specifying the input vector bit
-         */
+        /// <summary>
+        /// Creates object, which represents the pool of input neurons, which are connected.
+        /// </summary>
+        /// <param name="c"></param>
+        /// <param name="inputIndexes">Indexes of connected input bits.</param>
+        /// <returns></returns>
         public Pool createPool(Connections c, int[] inputIndexes)
         {
-            pool = new Pool(inputIndexes.Length);
+            this.Pool = new Pool(inputIndexes.Length);
             for (int i = 0; i < inputIndexes.Length; i++)
             {
                 int synCount = c.getProximalSynapseCount();
-                pool.setPermanence(c, createSynapse(c, c.getSynapses(this), null, pool, synCount, inputIndexes[i]), 0);
+                this.Pool.setPermanence(c, createSynapse(c, c.getSynapses(this), null, this.Pool, synCount, inputIndexes[i]), 0);
                 c.setProximalSynapseCount(synCount + 1);
             }
-            return pool;
+            return Pool;
         }
 
         public void clearSynapses(Connections c)
@@ -60,7 +57,7 @@ namespace NeoCortexApi.Entities
          */
         public void setPermanences(Connections c, double[] perms)
         {
-            pool.resetConnections();
+            Pool.resetConnections();
             c.getConnectedCounts().clearStatistics(index);
             List<Synapse> synapses = c.getSynapses(this);
 
@@ -91,11 +88,11 @@ namespace NeoCortexApi.Entities
          */
         public void setPermanences(Connections c, double[] perms, int[] inputIndexes)
         {
-            pool.resetConnections();
+            Pool.resetConnections();
             c.getConnectedCounts().clearStatistics(index);
             for (int i = 0; i < inputIndexes.Length; i++)
             {
-                pool.setPermanence(c, pool.getSynapseWithInput(inputIndexes[i]), perms[i]);
+                Pool.setPermanence(c, Pool.getSynapseWithInput(inputIndexes[i]), perms[i]);
                 if (perms[i] >= c.getSynPermConnected())
                 {
                     c.getConnectedCounts().set(1, index, i);

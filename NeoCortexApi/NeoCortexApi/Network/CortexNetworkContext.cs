@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Linq;
-using LearningFoundation;
+using NeoCortexApi;
 
 namespace NeoCortexApi.Network
 {

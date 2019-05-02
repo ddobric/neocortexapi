@@ -12,44 +12,56 @@ namespace NeoCortexApi.Entities
    * savings in memory and computational efficiency because iterative algorithms
    * need only query indexes containing valid data.
    * 
-   * @author David Ray
+   * @author David Ray, Damir Dobric
    *
    * @param <T>
    */
-   [Serializable]
     public class SparseObjectMatrix<T> : AbstractSparseMatrix<T>, IEquatable<T> where T : class
     {
+
+        //private IDictionary<int, T> sparseMap = new Dictionary<int, T>();
+        private IDictionary<int, T> sparseMap;
         
-        private IDictionary<int, T> sparseMap = new Dictionary<int, T>();
-        //private IDictionary<int, T> sparseMap = new InMemoryDistributedDictionary<int, T>(3);
+        /// <summary>
+        /// Returns true if sparse memory is remotely distributed. It means objects has to be synced with remote partitions.
+        /// </summary>
+        public bool IsRemotelyDistributed
+        {
+            get
+            {
+                return this.sparseMap is IRemotelyDistributed;
+            }
+        }
 
         /**
          * Constructs a new {@code SparseObjectMatrix}
          * @param dimensions	the dimensions of this array
          */
-        public SparseObjectMatrix(int[] dimensions) : base(dimensions, false)
-        {
+        //public SparseObjectMatrix(int[] dimensions) : base(dimensions, false)
+        //{
 
-        }
+        //}
 
         /**
          * Constructs a new {@code SparseObjectMatrix}
          * @param dimensions					the dimensions of this array
          * @param useColumnMajorOrdering		where inner index increments most frequently
          */
-        public SparseObjectMatrix(int[] dimensions, bool useColumnMajorOrdering) : base(dimensions, useColumnMajorOrdering)
+        public SparseObjectMatrix(int[] dimensions, bool useColumnMajorOrdering = false, IDictionary<int, T> dict = null) : base(dimensions, useColumnMajorOrdering)
         {
-
+            if (dict == null)
+                this.sparseMap = new InMemoryDistributedDictionary<int, T>(1);
+            else
+                this.sparseMap = dict;
         }
 
-        /**
-         * Sets the object to occupy the specified index.
-         * 
-         * @param index     the index the object will occupy
-         * @param object    the object to be indexed.
-         */
-        //  @Override
 
+        /// <summary>
+        /// Sets the object to occupy the specified index.
+        /// </summary>
+        /// <param name="index">The index the object will occupy</param>
+        /// <param name="obj">the object to be indexed.</param>
+        /// <returns></returns>
         public override AbstractFlatMatrix<T> set(int index, T obj)
         {
             if (!sparseMap.ContainsKey(index))

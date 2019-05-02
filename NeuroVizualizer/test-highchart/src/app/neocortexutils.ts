@@ -3,8 +3,6 @@ import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, NeocortexSettings, Inp
 
 export class neoCortexUtils {
 
-
-
   /**
    * createModel (numberOfAreas/DataSeries, [xAxis, zAxis], yAxis)
    * @param areas 
@@ -21,140 +19,151 @@ export class neoCortexUtils {
     let postCell1: Cell;
 
 
-    preCell0 = new Cell(sett, null, null, 0, 0, 0, [null], [null]);
-    postCell1 = new Cell(sett, null, null, 0, 1, 0, [null], [null]);
+    preCell0 = new Cell(0, 0, 0, 0, [], []);
+    postCell1 = new Cell(0, 0, 1, 0, [], []);
 
-    let incomingSynap0 = new Synapse(null, 0, preCell0, postCell1);
-    let outgoingSynap1 = new Synapse(null, 0, preCell0, postCell1);
-
-    preCell0 = new Cell(sett, null, null, 0, 0, 0, [null], [outgoingSynap1]);
-    postCell1 = new Cell(sett, null, null, 0, 1, 0, [incomingSynap0], [null]);
+    let incomingSynap0 = new Synapse(0, preCell0, postCell1);
+    let outgoingSynap1 = new Synapse(0, preCell0, postCell1);
+    preCell0.outgoingSynapses.push(outgoingSynap1);
+    postCell1.incomingSynapses.push(incomingSynap0);
 
 
 
     let preCell3: Cell;
     let postCell4: Cell;
 
-    preCell3 = new Cell(sett, null, null, 0, 3, 0, [null], [null]);
-    postCell4 = new Cell(sett, null, null, 9, 0, 0, [null], [null]);
-    let incomingSynap3 = new Synapse(null, 0, preCell3, postCell4);
-    let outgoingSynap4 = new Synapse(null, 0, preCell3, postCell4);
+    preCell3 = new Cell(0, 0, 3, 0, [], []);
+    postCell4 = new Cell(0, 9, 0, 0, [], []);
+    let incomingSynap3 = new Synapse(0, preCell3, postCell4);
+    let outgoingSynap4 = new Synapse(0, preCell3, postCell4);
 
-    preCell3 = new Cell(sett, null, null, 0, 3, 0, [null], [outgoingSynap4]);
-    postCell4 = new Cell(sett, null, null, 9, 0, 0, [incomingSynap3], [null]);
+    preCell3.outgoingSynapses.push(outgoingSynap4);
+    postCell4.incomingSynapses.push(incomingSynap3);
 
-/* 
+
     let preCell2: Cell;
     let postCell3: Cell;
-    preCell2 = new Cell(sett, null, null, 9, 5, 0, [null], [null]);
-    postCell3 = new Cell(sett, null, null, 15, 5, 0, [null], [null]);
-    let incomingSynap2 = new Synapse(null, 0, preCell2, postCell3);
-    let outgoingSynap3 = new Synapse(null, 0, preCell2, postCell3);
-    preCell2 = new Cell(sett, null, null, 9, 5, 0, [null], [outgoingSynap3]);
-    postCell3 = new Cell(sett, null, null, 15, 5, 0, [incomingSynap2], [null]); */
+    preCell2 = new Cell(3, 0, 0, 0, [], []);
+    postCell3 = new Cell(3, 0, 1, 0, [], []);
+    let incomingSynap2 = new Synapse(0, preCell2, postCell3);
+    let outgoingSynap3 = new Synapse(0, preCell2, postCell3);
+    preCell2.outgoingSynapses.push(outgoingSynap3);
+    postCell3.incomingSynapses.push(incomingSynap2);
+
+
+    let preCell5: Cell;
+    let postCell6: Cell;
+    preCell5 = new Cell(1, 2, 2, 0, [], []);
+    postCell6 = new Cell(3, 2, 3, 0, [], []);
+    let incomingSynap5 = new Synapse(0, preCell5, postCell6);
+    let outgoingSynap6 = new Synapse(0, preCell5, postCell6);
+    preCell5.outgoingSynapses.push(outgoingSynap6);
+    postCell6.incomingSynapses.push(incomingSynap5);
+
+    let preCell7: Cell;
+    let postCell8: Cell;
+    preCell7 = new Cell(0, 0, 1, 0, [], []);
+    postCell8 = new Cell(0, 0, 2, 0, [], []);
+    let incomingSynap7 = new Synapse(0, preCell7, postCell8);
+    let outgoingSynap8 = new Synapse(0, preCell7, postCell8);
+    preCell7.outgoingSynapses.push(outgoingSynap8);
+    postCell8.incomingSynapses.push(incomingSynap7);
+
+    let preCell9: Cell;
+    let postCell10: Cell;
+    preCell9 = new Cell(3, 0, 1, 0, [], []);
+    postCell10 = new Cell(3, 0, 2, 0, [], []);
+    let incomingSynap9 = new Synapse(0.80, preCell9, postCell10);
+    let outgoingSynap10 = new Synapse(0.80, preCell9, postCell10);
+    preCell9.outgoingSynapses.push(outgoingSynap10);
+    postCell10.incomingSynapses.push(incomingSynap9);
+
+    let inpModel: InputModel = new InputModel(sett.minicolumnDims[0], sett.minicolumnDims[1]);
+
+    let synaps01 = new Synapse(0, preCell0, postCell1);
+    let synap23 = new Synapse(0.5, preCell2, postCell3);
+    let synaps34 = new Synapse(0.25, preCell3, postCell4);
+    let synap56 = new Synapse(0.65, preCell5, postCell6);
+    let synap78 = new Synapse(1, preCell7, postCell8);
+    let synap910 = new Synapse(0.80, preCell9, postCell10);
+
+    let synapses: Array<Synapse> = [synaps01, synap23, synaps34, synap56, synap78, synap910];
 
 
 
-    let inpModel: InputModel = new InputModel(sett);
+    function getRandomInt(max: any) {
+      return Math.floor(Math.random() * Math.floor(max));
+    }
 
-    let synaps01 = new Synapse(null, 0, preCell0, postCell1);
-    let synaps34 = new Synapse(null, 0, preCell3, postCell4);
-    //let synap23 = new Synapse(null, 1, preCell2, postCell3);
+    let arrayOfPreCells: Array<Cell> = [];
+    let arrayOfPostCells: Array<Cell> = [];
 
-    var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 0, 0, 0, [synaps01, synaps34]);
+    for (let cell = 0; cell < 1000; cell++) {
+      let randomPreCellAreaID = getRandomInt(sett.areaLevels.length);
+      let randomPreCellX = getRandomInt(sett.minicolumnDims[0]);
+      let randomPreCellY = getRandomInt(sett.numLayers);
+      let randomPreCellZ = getRandomInt(sett.minicolumnDims[1]);
 
+      let randomPostCellAreaID = getRandomInt(sett.areaLevels.length);
+      let randomPostCellX = getRandomInt(sett.minicolumnDims[0]);
+      let randomPostCellY = getRandomInt(sett.numLayers);
+      let randomPostCellZ = getRandomInt(sett.minicolumnDims[1]);
+      /* arrayOfPreCells.push(new Cell(getRandomInt(5), getRandomInt(9), getRandomInt(5), getRandomInt(0), [], []));
+      arrayOfPostCells.push(new Cell(getRandomInt(5), getRandomInt(9), getRandomInt(5), getRandomInt(0), [], [])); */
+      arrayOfPreCells.push(new Cell(randomPreCellAreaID, randomPreCellX, randomPreCellY, randomPreCellZ, [], []));
+      arrayOfPostCells.push(new Cell(randomPostCellAreaID, randomPostCellX, randomPostCellY, randomPostCellZ, [], []));
+    }
+
+    let outgoingSynapses: Array<Synapse> = [];
+    let incomingSynapses: Array<Synapse> = [];
+
+
+    for (let i = 0; i < arrayOfPreCells.length; i++) {
+      outgoingSynapses.push(new Synapse(sett.defaultPermanence, arrayOfPreCells[i], arrayOfPostCells[i]));
+      incomingSynapses.push(new Synapse(sett.defaultPermanence, arrayOfPreCells[i], arrayOfPostCells[i]));
+    }
+
+
+    for (let j = 0; j < arrayOfPreCells.length; j++) {
+
+      let numberOfOutSynapses = getRandomInt(3);
+      let numberOfInSynapses = getRandomInt(3);
+      let outsynap: number;
+      let outsynapArr = [];
+      for (let synapMaxIndex = 0; synapMaxIndex < numberOfOutSynapses; synapMaxIndex++) {
+        outsynapArr.push(outsynap = getRandomInt(outgoingSynapses.length));
+      }
+      let insynap: number;
+      let insynapArr = [];
+      for (let insynapMaxIndex = 0; insynapMaxIndex < numberOfInSynapses; insynapMaxIndex++) {
+        insynapArr.push(insynap = getRandomInt(incomingSynapses.length));
+      }
+
+      for (let numOfOutSynap = 0; numOfOutSynap < outsynapArr.length; numOfOutSynap++) {
+        //addoutgoingSynapse = outgoingSynapses[outsynapArr[numOfOutSynap]];
+        arrayOfPreCells[j].outgoingSynapses.push(outgoingSynapses[outsynapArr[numOfOutSynap]]);
+      }
+      for (let numOfInSynap = 0; numOfInSynap < insynapArr.length; numOfInSynap++) {
+        //addoutgoingSynapse = outgoingSynapses[outsynapArr[numOfOutSynap]];
+        arrayOfPostCells[j].incomingSynapses.push(incomingSynapses[insynapArr[numOfInSynap]]);
+      }
+      //let addoutgoingSynapse: Synapse = outgoingSynapses[j];
+
+
+
+    }
+    let randomSynapses: Array<Synapse> = [];
+
+    for (let k = 0; k < arrayOfPreCells.length; k++) {
+      let randomPermanence = Math.random();
+      randomSynapses.push(new Synapse(randomPermanence, arrayOfPreCells[k], arrayOfPostCells[k]));
+    }
+
+    //var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 0, 0, 0, [synaps01, synaps34, synap23, synap56, synap78, synap910]);
+
+    var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 0, 0, 0, synapses);
 
     return model;
   }
 
-
-  public static addSynapse(model: NeoCortexModel, id: number, areaId: number = 1, preCell: Cell, postCell: Cell, weight: number) {
-
-    model.synapses.push(new Synapse(id, weight, preCell, postCell));
-
-  }
-
-  /*   public static updateSynapse(model: NeoCortexModel, synapseId: number, areaId: number = -1, weight: number) {
-  
-      let synapse = this.lookupSynapse(model, synapseId, areaId);
-      if (synapse != null) {
-        synapse.permanence = weight;
-      }
-      else
-        throw "Synapse cannot be found!";
-  
-    } */
-
-  /* public static updateNeuron(model: NeoCortexModel, id: number, weight: number) {
-
-
-  } */
-
-
-  /**
-   *  Search for synapse with specified id.
-   * @param model 
-   * @param synapseId 
-   * @param [optional] areaId.If >= 0 then restricts search for area. If not specified, the it search for synapse in all areas.
-   */
-  /*  public static lookupSynapse(model: NeoCortexModel, synapseId: number, areaId: number = -1): Synapse {
- 
-     if (areaId >= 0 && model.areas.length > areaId)
-       return this.lookupSynapseInArea(model, synapseId, areaId);
- 
-     model.areas.forEach(area => {
-       let synapse = this.lookupSynapseInArea(model, synapseId, area.id);
-       if (synapse != null)
-         return synapse;
-     });
- 
-     return null;
-   } */
-
-
-  /**
-   * Search for synapse with specified id.
-   * @param model Model of AI network.
-   * @param synapseId Identifier of the synapse.
-   * @param areaId Restricts the search in specified area to increase performance.
-   */
-  /*   private static lookupSynapseInArea(model: NeoCortexModel, synapseId: number, areaId: number): Synapse {
-  
-      model.areas[areaId].minicolumns.forEach(minColRow => {
-        minColRow.forEach(miniColumn => {
-          miniColumn.cells.forEach(cell => {
-            cell.Synapses.forEach(synapse => {
-              if (synapse.id == synapseId)
-                return synapse;
-            });
-          });
-        });
-      });
-  
-      return null;
-    } */
-
-
-  /**
-   * Search for synapse with specified id.
-   * @param model Model of AI network.
-   * @param synapseId Identifier of the synapse.
-   * @param areaId Restricts the search in specified area to increase performance.
-   */
-  private static getCell(model: NeoCortexModel, cellId: CellId): Cell {
-
-    let area: Area = model.areas[cellId.area];
-
-    let obj: any[] = area.minicolumns[0];
-
-    for (let i = 1; i < area.minicolumns.length - 1; i++) {
-      obj = obj[cellId.minicolumn[i]];
-    }
-
-    return obj[area.minicolumns.length - 1] as Cell;
-  }
 }
-
-
-
-

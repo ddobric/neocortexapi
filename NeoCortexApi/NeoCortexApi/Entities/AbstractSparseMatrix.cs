@@ -16,11 +16,9 @@ namespace NeoCortexApi.Entities
  *
  * @param <T>
  */
-    [Serializable]
+    //[Serializable]
     public abstract class AbstractSparseMatrix<T> : AbstractFlatMatrix<T>, ISparseMatrix<T>
     {
-
-        private static readonly long serialVersionUID = 1L;
 
         /**
          * Constructs a new {@code AbstractSparseMatrix} with the specified

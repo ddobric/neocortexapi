@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AkkaHostLib" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DistributedComputeLib\DistributedComputeLib.csproj" />
+    <ProjectReference Include="..\NeoCortexApi\NeoCortexApi.csproj" />
+    <ProjectReference Include="..\NeoCortexUtils\NeoCortexUtils.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="akkahost.hocon">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

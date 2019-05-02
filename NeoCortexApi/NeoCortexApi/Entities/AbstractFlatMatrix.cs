@@ -13,7 +13,7 @@ namespace NeoCortexApi.Entities
  * @param <T> element type
  */
 
-    [Serializable]
+    //[Serializable]
     public abstract class AbstractFlatMatrix<T> : IFlatMatrix<T>
     {
 

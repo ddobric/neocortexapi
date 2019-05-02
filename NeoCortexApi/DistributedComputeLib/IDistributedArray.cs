@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
-    public interface IDistributedArray : ICollection, IEnumerable, IList
+    public interface IDistributedArray : IEnumerable//ICollection, IEnumerable//, IList
     {
         //
         // Summary:
@@ -26,10 +26,48 @@ namespace NeoCortexApi.DistributedComputeLib
         //     The property is set and the System.Collections.IList is read-only.
         object this[int row, int col] { get; set; }
 
-        int AggregateArray();
+
+        object this[int index] { get; set; }
+
+        long Count { get; }
+
+        int AggregateArray(int row);
+
         void SetValue(int value, int[] indexes);
+
+        /// <summary>
+        /// Gets value from single dimension array.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        object GetValue(int index);
+
+        /// <summary>
+        /// Get value from two-dim array.
+        /// </summary>
+        /// <param name="indexes"></param>
+        /// <returns></returns>
+        object GetValue(int[] indexes);
+
         int GetUpperBound(int v);
 
         double Max();
+
+        /// <summary>
+        /// Number of dimensions
+        /// </summary>
+        int Rank { get; }
+
+        /// <summary>
+        /// Dimensions
+        /// </summary>
+        int[] Dimensions { get; }
+
+        /// <summary>
+        /// Sets all values of specified row on specified value.
+        /// </summary>
+        /// <param name="rowIndex"></param>
+        /// <param name="newVal"></param>
+        void SetRowValuesTo(int rowIndex, object newVal);
     }
 }

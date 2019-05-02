@@ -132,7 +132,10 @@ namespace UnitTestsProject
 
             parameters.setSynPermConnected(0.1);
 
-            initSP();
+            sp = new SpatialPooler();
+            mem = new Connections();
+            parameters.apply(mem);
+            sp.init(mem);
 
             SpatialPoolerMock mock = new SpatialPoolerMock(new int[] { 0, 1, 2, 3, 4 });
 
@@ -315,6 +318,7 @@ namespace UnitTestsProject
             Assert.IsTrue(0 == activeArray.Count(i => i > 0));//, ArrayUtils.INT_GREATER_THAN_0).length);
         }
 
+        // DD
         [TestMethod]
         public void testOverlapsOutput()
         {
@@ -352,6 +356,7 @@ namespace UnitTestsProject
 
 
         [TestMethod]
+        [TestCategory("LongRunning")]
         public void perfTest()
         {
             setupParameters();
@@ -1011,7 +1016,7 @@ namespace UnitTestsProject
             int[] inputDimensions = new int[] { 4, 4, 2, 5 };
             mem.setInputDimensions(inputDimensions);
             mem.setColumnDimensions(new int[] { 5 });
-            sp.initMatrices(mem);
+            sp.initMatrices(mem, null);
 
             List<int> connected = new List<int>();
             connected.Add(mem.getInputMatrix().computeIndex(new int[] { 1, 0, 1, 0 }, false));

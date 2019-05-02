@@ -18,7 +18,7 @@ namespace NeoCortexApi.Entities
  *
  * In the separation of data from logic, this class represents the data/state.
  */
-    [Serializable]
+    //[Serializable]
     public class Connections //implements Persistable
     {
         /** keep it simple */
@@ -174,7 +174,7 @@ namespace NeoCortexApi.Entities
         /** The main data structure containing columns, cells, and synapses */
         private SparseObjectMatrix<Column> memory;
 
-        private Cell[] cells;
+        public Cell[] cells { get; set; }
 
         ///////////////////////   Structural Elements /////////////////////////
         /** Reverse mapping from source cell to {@link Synapse} */
@@ -562,7 +562,10 @@ namespace NeoCortexApi.Entities
  * establish a flat count of bits in the input field.
  * @param n
  */
-        public int NumInputs { get => numInputs; set => this.numInputs = value; }
+        public int NumInputs
+        { get => numInputs;
+            set => this.numInputs = value;
+        }
 
         /**
          * Returns the product of the column dimensions
@@ -1551,7 +1554,7 @@ namespace NeoCortexApi.Entities
          */
         public int columnIndexForSegment(DistalDendrite segment)
         {
-            return segment.getParentCell().getIndex() / cellsPerColumn;
+            return segment.getParentCell().Index / cellsPerColumn;
         }
 
         /**
@@ -2217,7 +2220,7 @@ namespace NeoCortexApi.Entities
             List<Integer> ints = new List<Integer>();
             foreach (Cell cell in cells)
             {
-                ints.Add(cell.getIndex());
+                ints.Add(cell.Index);
             }
 
             return ints;

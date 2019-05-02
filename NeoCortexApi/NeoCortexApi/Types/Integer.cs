@@ -5,7 +5,7 @@ using System.Text;
 namespace NeoCortexApi.Entities
 {
 
-    [Serializable]
+    //[Serializable]
     public class Integer : IEquatable<Integer>, IComparable<Integer>
     {
         public int Value { get; set; }

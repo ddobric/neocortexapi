@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="NeoCortexApi.Entities.Column" Collapsed="true">
+    <Position X="4.25" Y="1.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>BAAAAEAEAAAAAQQciAgAMADCAAIAAoIAQAAAAAAhAAA=</HashCode>
+      <FileName>Entities\Column.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="NeoCortexApi.Entities.Cell" Collapsed="true">
+    <Position X="8" Y="1.75" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAAAQQEgAAAEAAAQACEAIAAQAAAAAAhAAA=</HashCode>
+      <FileName>Entities\Cell.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="NeoCortexApi.Entities.Synapse" Collapsed="true">
+    <Position X="10.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAACAAAQYEgAAAMYAAAQCABIAARAgAgAAAQEA=</HashCode>
+      <FileName>Entities\Synapse.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

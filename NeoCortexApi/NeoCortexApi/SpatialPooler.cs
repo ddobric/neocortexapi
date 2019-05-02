@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Diagnostics;
 
+
 /**
  * Handles the relationships between the columns of a region 
  * and the inputs bits. The primary public interface to this function is the 
@@ -28,6 +29,7 @@ namespace NeoCortexApi
 {
     public class SpatialPooler : IHtmAlgorithm
     {
+
         public double MaxInibitionDensity { get; set; } = 0.5;
 
         /** Default Serial Version  */
@@ -45,7 +47,7 @@ namespace NeoCortexApi
          * 
          * @param c     a {@link Connections} object
          */
-        public void init(Connections c)
+        public void init(Connections c, DistributedMemory distMem = null)
         {
             if (c.NumActiveColumnsPerInhArea == 0 && (c.LocalAreaDensity == 0 ||
                 c.LocalAreaDensity > 0.5))
@@ -54,8 +56,13 @@ namespace NeoCortexApi
             }
 
             c.doSpatialPoolerPostInit();
-            initMatrices(c);
+            initMatrices(c, distMem);
+
+           // Stopwatch sw = new Stopwatch();
+           // sw.Start();
             connectAndConfigureInputs(c);
+           // sw.Stop();
+           // Debug.WriteLine($">>>connectAndConfigureInputs: {sw.ElapsedMilliseconds}");
         }
 
         /**
@@ -64,11 +71,11 @@ namespace NeoCortexApi
          * 
          * @param c
          */
-        public void initMatrices(Connections c)
+        public void initMatrices(Connections c, DistributedMemory distMem)
         {
-            SparseObjectMatrix<Column> mem = c.getMemory();
-            c.setMemory(mem == null ?
-                mem = new SparseObjectMatrix<Column>(c.getColumnDimensions()) : mem);
+            SparseObjectMatrix<Column> memory = c.getMemory();
+
+            c.setMemory(memory == null ? memory = new SparseObjectMatrix<Column>(c.getColumnDimensions(), dict: distMem.ColumnDictionary) : memory);
 
             c.setInputMatrix(new SparseBinaryMatrix(c.getInputDimensions()));
 
@@ -90,10 +97,17 @@ namespace NeoCortexApi
             c.NumInputs = numInputs;
             c.setNumColumns(numColumns);
 
-            //Fill the sparse matrix with column objects
-            for (int i = 0; i < numColumns; i++) { mem.set(i, new Column(c.getCellsPerColumn(), i)); }
+            //
+            // Fill the sparse matrix with column objects
+            var numCells = c.getCellsPerColumn();
 
-            c.setPotentialPools(new SparseObjectMatrix<Pool>(c.getMemory().getDimensions()));
+            // PERF
+            for (int i = 0; i < numColumns; i++)
+            {
+                memory.set(i, new Column(numCells, i));
+            }
+
+            c.setPotentialPools(new SparseObjectMatrix<Pool>(c.getMemory().getDimensions(), dict: distMem.PoolDictionary));
 
             c.setConnectedMatrix(new SparseBinaryMatrix(new int[] { numColumns, numInputs }));
 
@@ -128,15 +142,26 @@ namespace NeoCortexApi
                 int[] potential = mapPotential(c, i, c.isWrapAround());
                 Column column = c.getColumn(i);
 
-                // This line initializes all synased in the potential pool of synapces.
+                // This line initializes all synases in the potential pool of synapces.
                 // After initialization permancences are set to zero.
-                c.getPotentialPools().set(i, column.createPotentialPool(c, potential));
+                var potPool = column.createPotentialPool(c, potential);
+
+                var mem = c.getMemory();
+
+                if (mem.IsRemotelyDistributed)
+                {
+                    // Pool is created and attached to the local instance of Column.
+                    // Here we need to update the pool on remote Column instance.
+                    mem.set(i, column);
+                }
+
+                c.getPotentialPools().set(i, potPool);
 
                 double[] perm = initPermanence(c, potential, i, c.getInitConnectedPct());
 
                 updatePermanencesForColumn(c, perm, column, potential, true);
             }
-
+            
             // The inhibition radius determines the size of a column's local
             // neighborhood.  A cortical column must overcome the overlap score of
             // columns in its neighborhood in order to become active. This radius is
@@ -184,7 +209,7 @@ namespace NeoCortexApi
             // Gets overlap over every single column.
             var overlaps = calculateOverlap(c, inputVector);
 
-            var overlapsStr = Helpers.StringifyVector(overlaps);
+            //var overlapsStr = Helpers.StringifyVector(overlaps);
             //Debug.WriteLine("overlap: " + overlapsStr);
 
             //overlapActive = calculateOverlap(activeInput)
@@ -363,7 +388,7 @@ namespace NeoCortexApi
             double[] activeDutyCycles = c.getActiveDutyCycles();
             double minPctActiveDutyCycles = c.getMinPctActiveDutyCycles();
             double[] overlapDutyCycles = c.getOverlapDutyCycles();
-            double minPctOverlapDutyCycles = c  .getMinPctOverlapDutyCycles();
+            double minPctOverlapDutyCycles = c.getMinPctOverlapDutyCycles();
 
             Parallel.For(0, len, (i) =>
             {
@@ -432,8 +457,7 @@ namespace NeoCortexApi
                 period = c.getIterationNum();
             }
             //Debug.WriteLine("period is: " + period);
-            c.setOverlapDutyCycles(
-                    updateDutyCyclesHelper(c, c.getOverlapDutyCycles(), overlapArray, period));
+            c.setOverlapDutyCycles(updateDutyCyclesHelper(c, c.getOverlapDutyCycles(), overlapArray, period));
 
             c.setActiveDutyCycles(
                     updateDutyCyclesHelper(c, c.getActiveDutyCycles(), activeArray, period));
@@ -674,8 +698,12 @@ namespace NeoCortexApi
             ArrayUtils.clip(perm, c.getSynPermMin(), c.getSynPermMax());
             while (true)
             {
+                // Gets number of synapses with permanence value grather than 'PermConnected'.
                 int numConnected = ArrayUtils.valueGreaterCountAtIndex(c.getSynPermConnected(), perm, maskPotential);
-                if (numConnected >= c.StimulusThreshold) return;
+                if (numConnected >= c.StimulusThreshold)
+                    return;
+
+                // If number of note connected synapses, then permanences of all synapses will be incremented (raised).
                 ArrayUtils.raiseValuesBy(c.getSynPermBelowStimulusInc(), perm, maskPotential);
             }
         }
@@ -731,9 +759,12 @@ namespace NeoCortexApi
         {
             if (raisePerm)
             {
+                // During every learning cycle, this method ensures that every column 
+                // has enough connections ('SynPermConnected') to iput space.
                 raisePermanenceToThreshold(c, perm, maskPotential);
             }
 
+            // Here we set all permanences to 0 
             ArrayUtils.lessThanOrEqualXThanSetToY(perm, c.getSynPermTrimThreshold(), 0);
             ArrayUtils.clip(perm, c.getSynPermMin(), c.getSynPermMax());
             column.setProximalPermanences(c, perm);
@@ -925,7 +956,7 @@ namespace NeoCortexApi
             int[] columnInputs = getInputNeighborhood(c, centerInput, c.getPotentialRadius());
 
             //Debug.WriteLine($"{Helpers.StringifyVector(columnInputs)}");
-            
+
             // Select a subset of the receptive field to serve as the the potential pool.
             int numPotential = (int)(columnInputs.Length * c.getPotentialPct() + 0.5);
             int[] retVal = new int[numPotential];
@@ -950,7 +981,7 @@ namespace NeoCortexApi
 
                 density = c.NumActiveColumnsPerInhArea / inhibitionArea;
 
-                    density = Math.Min(density, MaxInibitionDensity);
+                density = Math.Min(density, MaxInibitionDensity);
             }
 
             return density;
@@ -1053,7 +1084,7 @@ namespace NeoCortexApi
          */
         public virtual int[] inhibitColumnsLocalOriginal(Connections c, double[] overlaps, double density)
         {
-           double winnerDelta = ArrayUtils.max(overlaps) / 1000.0d;
+            double winnerDelta = ArrayUtils.max(overlaps) / 1000.0d;
             if (winnerDelta == 0)
             {
                 winnerDelta = 0.001;
@@ -1085,6 +1116,7 @@ namespace NeoCortexApi
                 }
             }
 
+        
             return winners.ToArray();
         }
 
@@ -1100,9 +1132,9 @@ namespace NeoCortexApi
                 }
             }
             List<int> winners = new List<int>();
-            int maxInhibitionRadius = (int)((Math.Sqrt((preActive/(overlaps.Length*0.02))+1)/2)-1);
+            int maxInhibitionRadius = (int)((Math.Sqrt((preActive / (overlaps.Length * 0.02)) + 1) / 2) - 1);
             maxInhibitionRadius = Math.Max(1, maxInhibitionRadius);
-            int count = (int)(0.02*overlaps.Length);
+            int count = (int)(0.02 * overlaps.Length);
             var activeCols = ArrayUtils.IndexWhere(overlaps, (el) => el > c.StimulusThreshold);
             double max = 0;
             int colNum = 0;
@@ -1131,12 +1163,204 @@ namespace NeoCortexApi
             }
             return winners.ToArray();
         }
+        /*
+        public virtual int[] inhibitColumnsLocalNewApproach2(Connections c, double[] overlaps, double density)
+        {
+            
+            double winnerDelta = ArrayUtils.max(overlaps) / 1000.0d;
+            if (winnerDelta == 0)
+            {
+                winnerDelta = 0.001;
+            }
+            
+
+            //double[] tieBrokenOverlaps = new List<double>(overlaps).ToArray();
+
+            List<int> winners = new List<int>();
+
+            int inhibitionRadius = 500;
+            int windowNum = inhibitionRadius;
+            for (int column = 0; column < overlaps.Length; column++)
+            {
+                // int column = i;
+                if (overlaps[column] >= c.StimulusThreshold)
+                {
+                    int[] neighborhood = getColumnNeighborhood(c, column, inhibitionRadius);
+                    // Take overlapps of neighbors
+                    double[] neighborhoodOverlaps = ArrayUtils.ListOfValuesByIndicies(overlaps, neighborhood);
+
+                    if (column < inhibitionRadius)
+                    {
+                        windowNum = windowNum + 1;
+                        for (int i = 0; i < (inhibitionRadius-column); i++)
+                        {
+                            neighborhoodOverlaps[i] = 0;
+                        }
+                    }
+                    else if (column >= (overlaps.Length - inhibitionRadius))
+                    {
+                        windowNum = overlaps.Length + inhibitionRadius - column;
+                        for (int i = (neighborhoodOverlaps.Length-1); i > (overlaps.Length-column+inhibitionRadius-1); i--)
+                        {
+                            neighborhoodOverlaps[i] = 0;
+                        }
+                    }
+                    else
+                    {
+                        windowNum = inhibitionRadius * 2 + 1;
+                    }
+                    // Filter neighbors with overlaps bigger than column overlap
+
+                    long numBigger = neighborhoodOverlaps.Count(d => d > overlaps[column]);
+                    // density will reduce radius
+                    int numActive = (int)(0.5 + density * windowNum);
+                    if (numBigger < numActive)
+                    {
+                        winners.Add(column);
+                        //tieBrokenOverlaps[column] += winnerDelta;
+                    }
+                }
+            }
+
+            return winners.ToArray();
+        }
+        public virtual int[] inhibitColumnsLocalNewApproach3(Connections c, double[] overlaps, double density)
+        {
+            
+            double winnerDelta = ArrayUtils.max(overlaps) / 1000.0d;
+            if (winnerDelta == 0)
+            {
+                winnerDelta = 0.001;
+            }
+            
+
+            //double[] tieBrokenOverlaps = new List<double>(overlaps).ToArray();
+
+            List<int> winners = new List<int>();
+            double[] overlapArr = new List<double>(overlaps).ToArray();
+            int inhibitionRadius = c.InhibitionRadius;
+            Debug.WriteLine("Radius: " + inhibitionRadius);
+            int count = 0;
+            int neighborhoodSize = inhibitionRadius * 2 + 1;
+            for (int column = 0; column < (neighborhoodSize-1); column++)
+            {
+                double[] arr = new double[neighborhoodSize];
+                arr[column] = overlapArr[column];
+            }
+
+            return winners.ToArray();
+        }
+        */
+        public virtual int[] inhibitColumnsLocalNewApproach11(Connections c, double[] overlaps, double density)
+        {
+            List<int> winners = new List<int>();
+            // NEW INHIBITION ALGORITHM HERE.
+            // for c in columns
+            //     minLocalActivity = kthScore(neighbors(c), numActiveColumnsPerInhArea)
+            //         if overlap(c) > stimulusThreshold and
+            //             overlap(c) ≥ minLocalActivity then
+            //             activeColumns(t).append(c)
+
+            double winnerDelta = ArrayUtils.max(overlaps) / 1000.0d;
+            if (winnerDelta == 0)
+            {
+                winnerDelta = 0.001;
+            }
+
+            double[] tieBrokenOverlaps = new List<double>(overlaps).ToArray();
+
+
+            int inhibitionRadius = c.InhibitionRadius;
+
+            Parallel.ForEach(overlaps, (val, b, index) =>
+            {
+                // int column = i;
+                if ((int)index >= c.StimulusThreshold)
+                {
+                    // GETS INDEXES IN THE ARRAY FOR THE NEIGHBOURS WITHIN THE INHIBITION RADIUS.
+                    List<int> neighborhood = getColumnNeighborhood(c, (int)index, inhibitionRadius).ToList();
+
+                    // GETS THE NEIGHBOURS WITHIN THE INHI
+                    // Take overlapps of neighbors
+                    List<double> neighborhoodOverlaps = ArrayUtils.ListOfValuesByIndicies(tieBrokenOverlaps, neighborhood.ToArray()).ToList();
+
+                    // Filter neighbors with overlaps bigger than column overlap
+                    long numBigger = neighborhoodOverlaps.Count(d => d > val);
+
+                    // density will reduce radius
+                    int numActive = (int)(0.5 + density * neighborhood.Count);
+                    if (numBigger < numActive)
+                    {
+                        winners.Add((int)index);
+                        tieBrokenOverlaps[(int)index] += winnerDelta;
+                    }
+                }
+            });
+
+
+            return winners.ToArray();
+        }
+
+        // lateral inhibition algorithm new approch /////////////////////
+        public virtual int[] inhibitColumnsLocalNew(Connections c, double[] overlaps, double density)
+        {
+            // WHY IS THIS DONE??
+            double winnerDelta = ArrayUtils.max(overlaps) / 1000.0d;
+            if (winnerDelta == 0)
+            {
+                winnerDelta = 0.001;
+            }
+
+            double[] tieBrokenOverlaps = new List<double>(overlaps).ToArray();
+
+            List<int> winners = new List<int>();
+
+            // FIXED
+            int inhibitionRadius = 2; //c.InhibitionRadius;
+            double[] alpha = new double[] { -0.025, -0.075, 1, -0.075, -0.025 };
+
+            for (int column = 0; column < overlaps.Length; column++)
+            {
+                // int column = i;
+                if (overlaps[column] >= c.StimulusThreshold)
+                {
+                    // GETS INDEXES IN THE ARRAY FOR THE NEIGHBOURS WITHIN THE INHIBITION RADIUS.
+                    int[] neighborhood = getColumnNeighborhood(c, column, inhibitionRadius);
+
+                    // GETS THE NEIGHBOURS WITHIN THE INHI
+                    // Take overlapps of neighbors
+                    double[] neighborhoodOverlaps = ArrayUtils.ListOfValuesByIndicies(tieBrokenOverlaps, neighborhood);
+
+                    // Filter neighbors with overlaps bigger than column overlap
+                    double sum = 0;
+                    for (int i = 0; i < neighborhoodOverlaps.Length; i++)
+                    {
+                        sum += alpha[i] * neighborhoodOverlaps[i];
+                    }
+                    //(-0.025 * neighborhoodOverlaps[0]) + (-0.075 * neighborhoodOverlaps[1]) + neighborhoodOverlaps[2] + (-0.075 * neighborhoodOverlaps[3] + (-0.025 * neighborhoodOverlaps[4]));
+
+                    // density will reduce radius
+                    int threshold = (int)(0.5 + density * neighborhood.Length) / overlaps.Length;
+                    if (sum > threshold)
+                    {
+                        winners.Add(column);
+                        tieBrokenOverlaps[column] += winnerDelta;
+                    }
+                }
+            }
+
+            return winners.ToArray();
+        }
+        ///////////////////////////////////////////////
+
         /**
          * Update the boost factors for all columns. The boost factors are used to
          * increase the overlap of inactive columns to improve their chances of
          * becoming active. and hence encourage participation of more columns in the
-         * learning process. This is a line defined as: y = mx + b boost =
-         * (1-maxBoost)/minDuty * dutyCycle + maxFiringBoost. Intuitively this means
+         * learning process. This is a line defined as: 
+         * y = mx + b 
+         * boost = (1-maxBoost)/minDuty * activeDutyCycle + maxBoost. 
+         * Intuitively this means
          * that columns that have been active enough have a boost factor of 1, meaning
          * their overlap is not boosted. Columns whose active duty cycle drops too much
          * below that of their neighbors are boosted depending on how infrequently they
@@ -1174,15 +1398,18 @@ namespace NeoCortexApi
             //        int[] mask = ArrayUtils.where(minActiveDutyCycles, ArrayUtils.GREATER_THAN_0);
 
             double[] boostInterim;
+
+            //
+            // Boost factors are NOT recalculated if minimum active duty cycles are all set on 0.
             if (mask.Count < 1)
             {
                 boostInterim = c.BoostFactors;
             }
             else
             {
-                double[] numerator = new double[c.getNumColumns()];
-                ArrayUtils.fillArray(numerator, 1 - c.getMaxBoost());
-                boostInterim = ArrayUtils.divide(numerator, minActiveDutyCycles, 0, 0);
+                double[] oneMinusMaxBoostFact = new double[c.getNumColumns()];
+                ArrayUtils.fillArray(oneMinusMaxBoostFact, 1 - c.getMaxBoost());
+                boostInterim = ArrayUtils.divide(oneMinusMaxBoostFact, minActiveDutyCycles, 0, 0);
                 boostInterim = ArrayUtils.multiply(boostInterim, activeDutyCycles, 0, 0);
                 boostInterim = ArrayUtils.d_add(boostInterim, c.getMaxBoost());
             }
@@ -1386,7 +1613,7 @@ namespace NeoCortexApi
             }
             else
             {
-                result = 1; 
+                result = 1;
             }
             return result;
         }
