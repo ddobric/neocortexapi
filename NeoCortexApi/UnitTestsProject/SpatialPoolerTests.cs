@@ -1016,7 +1016,7 @@ namespace UnitTestsProject
             int[] inputDimensions = new int[] { 4, 4, 2, 5 };
             mem.setInputDimensions(inputDimensions);
             mem.setColumnDimensions(new int[] { 5 });
-            sp.initMatrices(mem);
+            sp.initMatrices(mem, null);
 
             List<int> connected = new List<int>();
             connected.Add(mem.getInputMatrix().computeIndex(new int[] { 1, 0, 1, 0 }, false));

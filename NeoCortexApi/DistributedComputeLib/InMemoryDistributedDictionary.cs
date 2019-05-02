@@ -13,7 +13,7 @@ namespace NeoCortexApi.DistributedComputeLib
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
-    public class InMemoryDistributedDictionary<TKey, TValue> : IDictionary<TKey, TValue>,  IEnumerator<KeyValuePair<TKey, TValue>>
+    public class InMemoryDistributedDictionary<TKey, TValue> : IDistributedDictionary<TKey, TValue>
     {
         private Dictionary<TKey, TValue>[] dictList;
 

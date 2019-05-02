@@ -47,7 +47,7 @@ namespace NeoCortexApi
          * 
          * @param c     a {@link Connections} object
          */
-        public void init(Connections c, IDictionary<int, Column> dictionary = null)
+        public void init(Connections c, DistributedMemory distMem = null)
         {
             if (c.NumActiveColumnsPerInhArea == 0 && (c.LocalAreaDensity == 0 ||
                 c.LocalAreaDensity > 0.5))
@@ -56,7 +56,7 @@ namespace NeoCortexApi
             }
 
             c.doSpatialPoolerPostInit();
-            initMatrices(c, dictionary);
+            initMatrices(c, distMem);
 
            // Stopwatch sw = new Stopwatch();
            // sw.Start();
@@ -71,11 +71,11 @@ namespace NeoCortexApi
          * 
          * @param c
          */
-        public void initMatrices(Connections c, IDictionary<int, Column> dictionary = null)
+        public void initMatrices(Connections c, DistributedMemory distMem)
         {
             SparseObjectMatrix<Column> memory = c.getMemory();
 
-            c.setMemory(memory == null ? memory = new SparseObjectMatrix<Column>(c.getColumnDimensions(), dict: dictionary) : memory);
+            c.setMemory(memory == null ? memory = new SparseObjectMatrix<Column>(c.getColumnDimensions(), dict: distMem.ColumnDictionary) : memory);
 
             c.setInputMatrix(new SparseBinaryMatrix(c.getInputDimensions()));
 
@@ -107,7 +107,7 @@ namespace NeoCortexApi
                 memory.set(i, new Column(numCells, i));
             }
 
-            c.setPotentialPools(new SparseObjectMatrix<Pool>(c.getMemory().getDimensions()));
+            c.setPotentialPools(new SparseObjectMatrix<Pool>(c.getMemory().getDimensions(), dict: distMem.PoolDictionary));
 
             c.setConnectedMatrix(new SparseBinaryMatrix(new int[] { numColumns, numInputs }));
 
@@ -146,13 +146,22 @@ namespace NeoCortexApi
                 // After initialization permancences are set to zero.
                 var potPool = column.createPotentialPool(c, potential);
 
+                var mem = c.getMemory();
+
+                if (mem.IsRemotelyDistributed)
+                {
+                    // Pool is created and attached to the local instance of Column.
+                    // Here we need to update the pool on remote Column instance.
+                    mem.set(i, column);
+                }
+
                 c.getPotentialPools().set(i, potPool);
 
                 double[] perm = initPermanence(c, potential, i, c.getInitConnectedPct());
 
                 updatePermanencesForColumn(c, perm, column, potential, true);
             }
-
+            
             // The inhibition radius determines the size of a column's local
             // neighborhood.  A cortical column must overcome the overlap score of
             // columns in its neighborhood in order to become active. This radius is

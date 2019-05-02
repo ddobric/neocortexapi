@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
-    public abstract class AkkaDistributedDictionaryBase<TKey, TValue> : IDictionary<TKey, TValue>, IEnumerator<KeyValuePair<TKey, TValue>>
+    public abstract class AkkaDistributedDictionaryBase<TKey, TValue> : IDistributedDictionary<TKey, TValue>
     {
 
         protected AkkaDistributedDictConfig Config { get; }
@@ -88,7 +88,7 @@ namespace NeoCortexApi.DistributedComputeLib
             {
                 var nodeIndex = GetPartitionNodeIndexFromKey(key);
 
-                var isSet = dictActors[nodeIndex].Ask<int>(new AddElementMsg()
+                var isSet = dictActors[nodeIndex].Ask<int>(new UpdateElementsMsg()
                 {
                     Elements = new List<KeyPair>
                     {
@@ -179,7 +179,7 @@ namespace NeoCortexApi.DistributedComputeLib
         {
             var nodeIndex = GetPartitionNodeIndexFromKey(key);
 
-            var isSet = dictActors[nodeIndex].Ask<int>(new AddElementMsg()
+            var isSet = dictActors[nodeIndex].Ask<int>(new AddElementsMsg()
             {
                 Elements = new List<KeyPair>
                     {

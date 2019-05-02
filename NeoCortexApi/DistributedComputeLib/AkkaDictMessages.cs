@@ -11,10 +11,15 @@ namespace NeoCortexApi.DistributedComputeLib
         public object Key { get; set; }
     }
 
-    internal class AddElementMsg
+    internal class AddElementsMsg
     {
         public IList<KeyPair> Elements { get; set; }
     }
+    internal class UpdateElementsMsg
+    {
+        public IList<KeyPair> Elements { get; set; }
+    }
+
 
     internal class GetElementMsg
     {

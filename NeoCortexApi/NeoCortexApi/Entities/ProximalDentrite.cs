@@ -11,10 +11,7 @@ namespace NeoCortexApi.Entities
     //[Serializable]
     public class ProximalDendrite : Segment
     {
-        /** keep it simple */
-        private static readonly long serialVersionUID = 1L;
-
-        public Pool Pool;
+        public Pool Pool {get;set; }
 
         /**
          * 
@@ -34,11 +31,11 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public Pool createPool(Connections c, int[] inputIndexes)
         {
-            Pool = new Pool(inputIndexes.Length);
+            this.Pool = new Pool(inputIndexes.Length);
             for (int i = 0; i < inputIndexes.Length; i++)
             {
                 int synCount = c.getProximalSynapseCount();
-                Pool.setPermanence(c, createSynapse(c, c.getSynapses(this), null, Pool, synCount, inputIndexes[i]), 0);
+                this.Pool.setPermanence(c, createSynapse(c, c.getSynapses(this), null, this.Pool, synCount, inputIndexes[i]), 0);
                 c.setProximalSynapseCount(synCount + 1);
             }
             return Pool;

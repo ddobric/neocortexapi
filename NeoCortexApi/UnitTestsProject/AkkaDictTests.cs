@@ -53,7 +53,7 @@ namespace UnitTestsProject
 
         public void UniformPartitioningTest(int nodes, int elements, int placingElement, int expectedNode)
         {
-            var targetNode = HtmSparseIntDictionary.GetPlacementNodeForKey(nodes, elements, placingElement);
+            var targetNode = HtmSparseIntDictionary<Column>.GetPlacementNodeForKey(nodes, elements, placingElement);
 
             Assert.IsTrue(targetNode == expectedNode);
         }
@@ -67,7 +67,7 @@ namespace UnitTestsProject
         {
             Thread.Sleep(5000);
 
-            var akkaDict = new HtmSparseIntDictionary(new HtmSparseIntDictionaryConfig()
+            var akkaDict = new HtmSparseIntDictionary<Column>(new HtmSparseIntDictionaryConfig()
             {
                 NumColumns = 20148,
                 Nodes = Helpers.Nodes,
@@ -109,6 +109,55 @@ namespace UnitTestsProject
             }
         }
 #endif
+        [TestMethod]
+        [TestCategory("AkkaHostRequired")]
+        [TestCategory("LongRunning")]      
+        public void InitDistributedTest()
+        {
+            Thread.Sleep(5000);
+
+            int inputBits = 132;
+            int numOfColumns = 64;
+
+            Random rnd = new Random(42);
+
+            var parameters = Parameters.getAllDefaultParameters();
+            parameters.Set(KEY.POTENTIAL_RADIUS, inputBits);
+            parameters.Set(KEY.POTENTIAL_PCT, 1.0);
+            parameters.Set(KEY.GLOBAL_INHIBITION, true);
+
+            parameters.Set(KEY.RANDOM, rnd);
+
+            parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.02 * numOfColumns);
+            parameters.Set(KEY.LOCAL_AREA_DENSITY, -1);
+
+            parameters.Set(KEY.POTENTIAL_RADIUS, inputBits);
+            parameters.Set(KEY.POTENTIAL_PCT, 1.0);
+
+            parameters.Set(KEY.STIMULUS_THRESHOLD, 50.0);       //***
+            parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.008);   //***
+            parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0.05);      //***
+
+            parameters.Set(KEY.INHIBITION_RADIUS, (int)0.025 * inputBits);
+
+            parameters.Set(KEY.SYN_PERM_CONNECTED, 0.2);
+
+            parameters.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.001);
+            parameters.Set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.001);
+            parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000);
+            parameters.Set(KEY.MAX_BOOST, 100);
+            parameters.Set(KEY.WRAP_AROUND, true);
+            parameters.Set(KEY.SEED, 1956);
+            parameters.setInputDimensions(new int[] { (int)Math.Sqrt(inputBits), (int)Math.Sqrt(inputBits) });
+            parameters.setColumnDimensions(new int[] { (int)Math.Sqrt(numOfColumns), (int)Math.Sqrt(numOfColumns) });
+
+            var sp = new SpatialPooler();
+            var mem = new Connections();
+
+            parameters.apply(mem);
+          
+            sp.init(mem, UnitTestHelpers.GetMemory(numOfColumns));
+        }
 
         /// <summary>
         /// This test do spatial pooling and save hamming distance, active columns 
@@ -179,11 +228,8 @@ namespace UnitTestsProject
             var mem = new Connections();
 
             parameters.apply(mem);
-            var dictCfg = Helpers.DefaultHtmSparseIntDictionaryConfig;
-            dictCfg.NumColumns = columnTopology * columnTopology;
-            //var dict1 = new HtmSparseIntDictionary(dictCfg);
-            var dict1 = new InMemoryDistributedDictionary<int, NeoCortexApi.Entities.Column>(1);
-            sp.init(mem, dict1 );
+
+            sp.init(mem, UnitTestHelpers.GetMemory(columnTopology * columnTopology) );
 
             int actiColLen = numOfActCols;
 
@@ -256,3 +302,5 @@ namespace UnitTestsProject
 
     }
 }
+
+

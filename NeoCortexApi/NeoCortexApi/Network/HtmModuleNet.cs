@@ -42,7 +42,7 @@ namespace NeoCortexApi.Network
                 this.connections.Add(mem);
 
                 SpatialPooler sp = new SpatialPooler();
-                sp.init(mem);
+                sp.init(mem, null);
 
                 poolers.Add(sp);
             }
@@ -68,7 +68,7 @@ namespace NeoCortexApi.Network
 
                 SpatialPooler sp = new SpatialPooler();
 
-                sp.init(mem);
+                sp.init(mem, null);
 
                 poolers.Add(sp);
             }

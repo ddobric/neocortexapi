@@ -162,7 +162,8 @@ namespace NeoCortexApi.Entities
          */
         public Pool createPotentialPool(Connections c, int[] inputVectorIndexes)
         {
-            return ProximalDendrite.createPool(c, inputVectorIndexes);
+            var pool = ProximalDendrite.createPool(c, inputVectorIndexes);
+            return pool;
         }
 
         /**

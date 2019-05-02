@@ -13,7 +13,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public DictNodeActor()
         {
-            Receive<AddElementMsg>(msg =>
+            Receive<AddElementsMsg>(msg =>
             {
                 Console.WriteLine($"Received message: '{msg.GetType().Name}'");
 
@@ -25,6 +25,21 @@ namespace NeoCortexApi.DistributedComputeLib
                     this.dict.Add(element.Key, element.Value);
                 }
                 
+                Sender.Tell(msg.Elements.Count, Self);
+            });
+
+            Receive<UpdateElementsMsg>(msg =>
+            {
+                Console.WriteLine($"Received message: '{msg.GetType().Name}'");
+
+                if (msg.Elements == null)
+                    throw new DistributedException($"{nameof(DictNodeActor)} failed to add element. List of adding elements cannot be empty.");
+
+                foreach (var element in msg.Elements)
+                {
+                    this.dict[element.Key] = element.Value;
+                }
+
                 Sender.Tell(msg.Elements.Count, Self);
             });
 

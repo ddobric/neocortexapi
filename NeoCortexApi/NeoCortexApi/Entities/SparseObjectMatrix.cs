@@ -18,9 +18,20 @@ namespace NeoCortexApi.Entities
    */
     public class SparseObjectMatrix<T> : AbstractSparseMatrix<T>, IEquatable<T> where T : class
     {
-        
+
         //private IDictionary<int, T> sparseMap = new Dictionary<int, T>();
-        private IDictionary<int, T> sparseMap = new InMemoryDistributedDictionary<int, T>(3);
+        private IDictionary<int, T> sparseMap;
+        
+        /// <summary>
+        /// Returns true if sparse memory is remotely distributed. It means objects has to be synced with remote partitions.
+        /// </summary>
+        public bool IsRemotelyDistributed
+        {
+            get
+            {
+                return this.sparseMap is IRemotelyDistributed;
+            }
+        }
 
         /**
          * Constructs a new {@code SparseObjectMatrix}
@@ -43,7 +54,7 @@ namespace NeoCortexApi.Entities
             else
                 this.sparseMap = dict;
         }
-        
+
 
         /// <summary>
         /// Sets the object to occupy the specified index.
