@@ -75,7 +75,7 @@ namespace NeoCortexApi
         {
             SparseObjectMatrix<Column> memory = c.getMemory();
 
-            c.setMemory(memory == null ? memory = new SparseObjectMatrix<Column>(c.getColumnDimensions(), dict: distMem.ColumnDictionary) : memory);
+            c.setMemory(memory == null ? memory = new SparseObjectMatrix<Column>(c.getColumnDimensions(), dict: distMem == null? null : distMem.ColumnDictionary) : memory);
 
             c.setInputMatrix(new SparseBinaryMatrix(c.getInputDimensions()));
 
@@ -107,7 +107,7 @@ namespace NeoCortexApi
                 memory.set(i, new Column(numCells, i));
             }
 
-            c.setPotentialPools(new SparseObjectMatrix<Pool>(c.getMemory().getDimensions(), dict: distMem.PoolDictionary));
+            c.setPotentialPools(new SparseObjectMatrix<Pool>(c.getMemory().getDimensions(), dict: distMem == null? null : distMem.PoolDictionary));
 
             c.setConnectedMatrix(new SparseBinaryMatrix(new int[] { numColumns, numInputs }));
 

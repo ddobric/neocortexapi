@@ -13,7 +13,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexUtils", "NeoCortex
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Akka", "Akka", "{7E0EE186-7A75-4A97-9E16-A6B4E1853915}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HtmAkkaHost", "HtmAkkaHost\HtmAkkaHost.csproj", "{A56DD089-679E-479B-BD00-955AA4CDF569}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtmAkkaHost", "HtmAkkaHost\HtmAkkaHost.csproj", "{A56DD089-679E-479B-BD00-955AA4CDF569}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{23838D99-F23D-47B6-BC70-92FA0A34FF1C}"
+	ProjectSection(SolutionItems) = preProject
+		nuget.config = nuget.config
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{7D17894D-95EC-4D16-B6C5-4A6CBBE07E2F}"
+	ProjectSection(SolutionItems) = preProject
+		nuget\LearningApi.1.3.1.nupkg = nuget\LearningApi.1.3.1.nupkg
+		nuget\NeuralNet.MLPerceptron.1.2.2.nupkg = nuget\NeuralNet.MLPerceptron.1.2.2.nupkg
+		nuget\NeuralNetworks.Core.1.2.1.nupkg = nuget\NeuralNetworks.Core.1.2.1.nupkg
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

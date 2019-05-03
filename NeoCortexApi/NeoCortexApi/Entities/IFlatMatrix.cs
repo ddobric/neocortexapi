@@ -23,6 +23,12 @@ namespace NeoCortexApi.Entities
 
         T get(int index);
 
+        /// <summary>
+        /// Sets the single value in the array.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         IFlatMatrix<T> set(int index, T value);
 
         int computeIndex(int[] coordinates);

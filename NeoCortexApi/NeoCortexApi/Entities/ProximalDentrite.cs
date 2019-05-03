@@ -57,8 +57,10 @@ namespace NeoCortexApi.Entities
          */
         public void setPermanences(Connections c, double[] perms)
         {
+            var connCounts = c.getConnectedCounts();
+
             Pool.resetConnections();
-            c.getConnectedCounts().clearStatistics(index);
+            connCounts.clearStatistics(index);
             List<Synapse> synapses = c.getSynapses(this);
 
             foreach (Synapse s in synapses)
@@ -69,7 +71,7 @@ namespace NeoCortexApi.Entities
 
                 if (perms[indx] >= c.getSynPermConnected())
                 {
-                    c.getConnectedCounts().set(1, index, s.getInputIndex());
+                    connCounts.set(1, index, s.getInputIndex());
                 }
             }
         }
