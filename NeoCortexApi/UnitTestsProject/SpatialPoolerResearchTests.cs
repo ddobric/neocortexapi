@@ -81,12 +81,16 @@ namespace UnitTestsProject
         [TestCategory("LongRunning")]
         public void NoiseTest()
         {
+            const int colDimSize = 64;
+
+            const int noiseStepPercent = 5;
+
             var parameters = GetDefaultParams();
             parameters.Set(KEY.POTENTIAL_RADIUS, 32*32);
             parameters.Set(KEY.POTENTIAL_PCT, 0.5);
             parameters.Set(KEY.GLOBAL_INHIBITION, true);
             parameters.Set(KEY.STIMULUS_THRESHOLD, 0.5);
-            parameters.Set(KEY.INHIBITION_RADIUS, (int)0.25 * 64 * 64);
+            parameters.Set(KEY.INHIBITION_RADIUS, (int)0.25 * colDimSize* colDimSize);
             parameters.Set(KEY.LOCAL_AREA_DENSITY, -1);
             parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.02 * 64 * 64);
             parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000);
@@ -108,35 +112,26 @@ namespace UnitTestsProject
             //List<int> intList = new List<int>();
             var rnd = new Random();
 
-            int[] inputVector = new int[1024];
-
-            for (int i = 0; i < 31; i++)
-            {
-                for (int j = 0; j < 32; j++)
-                {
-                    if (i > 2 && i < 5 && j > 2 && j < 8)
-                        inputVector[i * 32 + j] = 1;
-                    else
-                        inputVector[i * 32 + j] = 0;
-                }
-            }
+            int[] inputVector = getInputVector1();
 
             parameters.apply(mem);
             sp.init(mem);
 
             int[] activeArray = new int[64 * 64];
-            int[] activeArrayWithZeroNoise = new int[64 * 64];
+            int[] activeArrayWithZeroNoise = new int[64 * 64];            
 
-            for (int j = 0; j < 30; j += 10)
+            for (int j = 0; j < 30; j += noiseStepPercent)
             {
                 Debug.WriteLine("-------------");
 
-                int[] noisedInput = inputVector;
+                int[] noisedInput;
 
                 if (j > 0)
                 {
                     noisedInput = ArrayUtils.flipBit(inputVector, (double)((double)j / 100.00));
                 }
+                else
+                    noisedInput = inputVector;
 
                 var d = MathHelpers.GetHammingDistance(inputVector, noisedInput, true);
                 Debug.WriteLine($"Input with noise {j} - HamDist: {d}");
@@ -173,6 +168,30 @@ namespace UnitTestsProject
 
                 NeoCortexUtils.DrawBitmaps(arrays, $"Noise_{j*10}.png", Color.Yellow, Color.Gray, OutImgSize, OutImgSize);
             }
+        }
+
+
+        private static int[] getInputVector1()
+        {
+            int[] inputVector = new int[1024];
+
+            for (int i = 0; i < 31; i++)
+            {
+                for (int j = 0; j < 32; j++)
+                {
+                    if (i > 2 && i < 18 && j > 2 && j < 19)
+                        inputVector[i * 32 + j] = 1;
+                    else
+                        inputVector[i * 32 + j] = 0;
+                }
+            }
+
+            return inputVector;
+        }
+
+        private static int[] getInputVector2()
+        {
+            return null;
         }
 
         /// <summary>
