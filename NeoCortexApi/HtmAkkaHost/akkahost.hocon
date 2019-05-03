@@ -1,6 +1,14 @@
 ﻿akka {
-	loglevel=INFO
+ debug {  
+              receive = on 
+              autoreceive = on
+              lifecycle = on
+              event-stream = on
+              unhandled = on
+        }
+	loglevel=DEBUG
     actor.provider = cluster
+	log-config-on-start = on       
     remote {
         dot-netty.tcp {
             port = @PORT

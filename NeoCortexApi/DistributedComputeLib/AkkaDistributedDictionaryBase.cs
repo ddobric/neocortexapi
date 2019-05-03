@@ -177,23 +177,36 @@ namespace NeoCortexApi.DistributedComputeLib
         {
             Dictionary<int, AddOrUpdateElementsMsg> list = new Dictionary<int, AddOrUpdateElementsMsg>();
 
-            foreach (var item in keyValuePairs.Take(100))
+            int pageSize = 5;
+            int alreadyProcessed = 0;
+
+            while (true)
             {
-                var partitionIndex = GetPartitionNodeIndexFromKey((TKey)item.Key);
-                if (!list.ContainsKey(partitionIndex))
-                    list.Add(partitionIndex, new AddOrUpdateElementsMsg() { Elements = new List<KeyPair>() });
+                foreach (var item in keyValuePairs.Skip(alreadyProcessed).Take(pageSize))
+                {
+                    var partitionIndex = GetPartitionNodeIndexFromKey((TKey)item.Key);
+                    if (!list.ContainsKey(partitionIndex))
+                        list.Add(partitionIndex, new AddOrUpdateElementsMsg() { Elements = new List<KeyPair>() });
 
-                list[partitionIndex].Elements.Add(new KeyPair { Key = item.Key, Value = item.Value });
+                    list[partitionIndex].Elements.Add(new KeyPair { Key = item.Key, Value = item.Value });
+                }
+
+                if (list.Count > 0)
+                {
+                    alreadyProcessed += pageSize;
+
+                    Task<int>[] tasks = new Task<int>[list.Count];
+
+                    for (int partIndx = 0; partIndx < tasks.Length; partIndx++)
+                    {
+                        tasks[partIndx] = dictActors[partIndx].Ask<int>(list[partIndx], TimeSpan.FromMinutes(3));
+                    }
+
+                    Task.WaitAll(tasks);
+                }
+                else
+                    break;
             }
-
-            Task<int>[] tasks = new Task<int>[list.Count];
-
-            for (int partIndx = 0; partIndx < tasks.Length; partIndx++)
-            {
-                tasks[partIndx] = dictActors[partIndx].Ask<int>(list[partIndx], TimeSpan.FromMinutes(3));
-            }
-
-            Task.WaitAll(tasks);           
         }
 
         /// <summary>

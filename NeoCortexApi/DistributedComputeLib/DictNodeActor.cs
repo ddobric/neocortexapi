@@ -22,10 +22,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
                 foreach (var element in msg.Elements)
                 {
-                    if(this.dict.ContainsKey(element.Key))
-                        this.dict.Add(element.Key, element.Value);
-                    else
-                        this.dict[element.Key] = element.Value;
+                    this.dict[element.Key] = element.Value;
                 }
 
                 Sender.Tell(msg.Elements.Count, Self);
