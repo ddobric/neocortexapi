@@ -11,7 +11,6 @@ namespace NeoCortexApi.DistributedComputeLib
 {
     public abstract class AkkaDistributedDictionaryBase<TKey, TValue> : IDistributedDictionary<TKey, TValue>
     {
-
         protected AkkaDistributedDictConfig Config { get; }
 
         private Dictionary<TKey, TValue>[] dictList;
@@ -169,6 +168,33 @@ namespace NeoCortexApi.DistributedComputeLib
 
 
         public bool IsReadOnly => false;
+
+        /// <summary>
+        /// Adds/Updates batch of elements to remote nodes.
+        /// </summary>
+        /// <param name="keyValuePairs"></param>
+        public void AddOrUpdate(ICollection<KeyPair> keyValuePairs)
+        {
+            Dictionary<int, AddOrUpdateElementsMsg> list = new Dictionary<int, AddOrUpdateElementsMsg>();
+
+            foreach (var item in keyValuePairs.Take(100))
+            {
+                var partitionIndex = GetPartitionNodeIndexFromKey((TKey)item.Key);
+                if (!list.ContainsKey(partitionIndex))
+                    list.Add(partitionIndex, new AddOrUpdateElementsMsg() { Elements = new List<KeyPair>() });
+
+                list[partitionIndex].Elements.Add(new KeyPair { Key = item.Key, Value = item.Value });
+            }
+
+            Task<int>[] tasks = new Task<int>[list.Count];
+
+            for (int partIndx = 0; partIndx < tasks.Length; partIndx++)
+            {
+                tasks[partIndx] = dictActors[partIndx].Ask<int>(list[partIndx], TimeSpan.FromMinutes(3));
+            }
+
+            Task.WaitAll(tasks);           
+        }
 
         /// <summary>
         /// Ads the value with secified key to the right parition.

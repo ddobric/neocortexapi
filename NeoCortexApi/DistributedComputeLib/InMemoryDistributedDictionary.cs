@@ -117,7 +117,18 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public bool IsReadOnly => false;
 
-        
+        /// <summary>
+        /// Adds list of objects to dictioanary.
+        /// </summary>
+        /// <param name="keyValuePairs"></param>
+        public void AddOrUpdate(ICollection<KeyPair> keyValuePairs)
+        {
+            foreach (var item in keyValuePairs)
+            {
+                Add((TKey)item.Key, (TValue)item.Value);
+            }
+        }
+
         public void Add(TKey key, TValue value)
         {
             int partitionInd = getPartitionIndex(numElements++);
@@ -307,6 +318,8 @@ namespace NeoCortexApi.DistributedComputeLib
         {
             this.dictList = null;
         }
+
+     
         #endregion
     }
 }

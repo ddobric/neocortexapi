@@ -41,7 +41,7 @@ namespace NeoCortexApi.DistributedComputeLib
       
     }
 
-    internal class KeyPair
+    public class KeyPair
     {
         public object Key { get; set; }
 

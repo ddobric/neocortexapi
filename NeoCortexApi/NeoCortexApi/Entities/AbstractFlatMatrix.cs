@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NeoCortexApi.DistributedComputeLib;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -211,7 +212,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="updatingValues"></param>
         /// <returns></returns>
-        public abstract AbstractFlatMatrix<T> set(List<Pair<int, T>> updatingValues);
+        public abstract AbstractFlatMatrix<T> set(List<KeyPair> updatingValues);
 
         /// <summary>
         /// Sets same value to multiple indexes.

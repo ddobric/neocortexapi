@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Diagnostics;
-
+using NeoCortexApi.DistributedComputeLib;
 
 /**
  * Handles the relationships between the columns of a region 
@@ -101,11 +101,19 @@ namespace NeoCortexApi
             // Fill the sparse matrix with column objects
             var numCells = c.getCellsPerColumn();
 
-            // PERF
+            List<KeyPair> colList = new List<KeyPair>();
             for (int i = 0; i < numColumns; i++)
             {
-                memory.set(i, new Column(numCells, i));
+                colList.Add(new KeyPair() { Key = i, Value = new Column(numCells, i) });
             }
+
+            // PERF
+            //for (int i = 0; i < numColumns; i++)
+            //{
+            //    memory.set(i, new Column(numCells, i));
+            //}
+
+            memory.set(colList);
 
             c.setPotentialPools(new SparseObjectMatrix<Pool>(c.getMemory().getDimensions(), dict: distMem == null? null : distMem.PoolDictionary));
 
@@ -204,7 +212,7 @@ namespace NeoCortexApi
                         ", From Input Vector: " + inputVector.Length);
             }
 
-            updateBookeepingVars(c, learn);
+             updateBookeepingVars(c, learn);
 
             // Gets overlap over every single column.
             var overlaps = calculateOverlap(c, inputVector);

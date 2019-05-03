@@ -2309,7 +2309,8 @@ namespace NeoCortexApi.Entities
         }
 
         /**
-         * High verbose output useful for debugging
+         * High 
+         * e output useful for debugging
          */
         public void printParameters()
         {
