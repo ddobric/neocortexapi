@@ -13,12 +13,12 @@ namespace NeoCortexApi.Utility
         /// <param name="originArray">Original array to compare from.</param>
         /// <param name="comparingArray">Array to compare to.</param>
         /// <returns>Hamming distance.</returns>
-        public static double GetHammingDistance(int[] originArray, int[] comparingArray)
+        public static double GetHammingDistance(int[] originArray, int[] comparingArray, bool countNoneZerosOnly = false)
         {
 
             double[] arr1 = ArrayUtils.toDoubleArray(originArray);
             double[] arr2 = ArrayUtils.toDoubleArray(comparingArray);
-            return GetHammingDistance(new double[][] { arr1 }, new double[][] { arr2 })[0];
+            return GetHammingDistance(new double[][] { arr1 }, new double[][] { arr2 }, countNoneZerosOnly)[0];
         }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace NeoCortexApi.Utility
         /// <param name="originArray">Original array to compare from.</param>
         /// <param name="comparingArray">Array to compare to.</param>
         /// <returns>Hamming distance.</returns>
-        public static double[] GetHammingDistance(double[][] originArray, double[][] comparingArray)
+        public static double[] GetHammingDistance(double[][] originArray, double[][] comparingArray, bool countNoneZerosOnly = false)
         {
             double[][] hDistance = new double[originArray.Length][];
             double[] h = new double[originArray.Length];
@@ -36,27 +36,33 @@ namespace NeoCortexApi.Utility
             for (int i = 0; i < originArray.Length; i++)
             {
                 int len = Math.Max(originArray[i].Length, comparingArray[i].Length);
-                int sum = 0;
+                int numOfDifferentBits = 0;
                 for (int j = 0; j < len; j++)
                 {
                     if (originArray[i].Length > j && comparingArray[i].Length > j)
                     {
                         if (originArray[i][j] == comparingArray[i][j])
                         {
-                            sum = sum + 0;
+                            numOfDifferentBits = numOfDifferentBits + 0;
                         }
                         else
                         {
-                            sum++;
+                            if (countNoneZerosOnly == false)
+                                numOfDifferentBits++;
+                            else
+                            {
+                                if (originArray[i][j] == 1)
+                                    numOfDifferentBits++;
+                            }
                         }
                     }
                     else
-                        sum++;
+                        numOfDifferentBits++;
                 }
 
-                h[i] = sum;
+                h[i] = numOfDifferentBits;
                 if (originArray[i].Length > 0)
-                    hammingDistance[i] = ((originArray[i].Length - sum) * 100 / originArray[i].Length);
+                    hammingDistance[i] = ((originArray[i].Length - numOfDifferentBits) * 100 / originArray[i].Length);
                 else
                     hammingDistance[i] = double.PositiveInfinity;
             }

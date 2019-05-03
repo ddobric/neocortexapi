@@ -132,7 +132,7 @@ namespace UnitTestsProject
                     noisedInput = ArrayUtils.flipBit(inputVector, (double)((double)j / 100.00));
                 }
 
-                var d = MathHelpers.GetHammingDistance(inputVector, noisedInput);
+                var d = MathHelpers.GetHammingDistance(inputVector, noisedInput, true);
                 Debug.WriteLine($"Input with noise {j} - HamDist: {d}");
                 Debug.WriteLine($"Original: {Helpers.StringifyVector(inputVector)}");
                 Debug.WriteLine($"Noised:   {Helpers.StringifyVector(noisedInput)}");
@@ -151,7 +151,7 @@ namespace UnitTestsProject
 
                 var str = Helpers.StringifyVector(activeCols);
 
-                var d2 = MathHelpers.GetHammingDistance(activeArrayWithZeroNoise, activeArray);
+                var d2 = MathHelpers.GetHammingDistance(activeArrayWithZeroNoise, activeArray, true);
                 Debug.WriteLine($"Output with noise {j} - Ham Dist: {d2}");
                 Debug.WriteLine($"Original: {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArrayWithZeroNoise, (el) => el == 1))}");
                 Debug.WriteLine($"Noised:   {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
