@@ -11,6 +11,7 @@ using ImageBinarizer;
 using System.Drawing;
 using NeoCortex;
 using NeoCortexApi.Network;
+using System.Linq;
 
 namespace UnitTestsProject
 {
@@ -81,19 +82,24 @@ namespace UnitTestsProject
         public void NoiseTest()
         {
             var parameters = GetDefaultParams();
-            parameters.Set(KEY.POTENTIAL_RADIUS, 64 * 64);
+            parameters.Set(KEY.POTENTIAL_RADIUS, 32*32);
             parameters.Set(KEY.POTENTIAL_PCT, 0.5);
-            parameters.Set(KEY.GLOBAL_INHIBITION, false);
+            parameters.Set(KEY.GLOBAL_INHIBITION, true);
             parameters.Set(KEY.STIMULUS_THRESHOLD, 0.5);
             parameters.Set(KEY.INHIBITION_RADIUS, (int)0.25 * 64 * 64);
             parameters.Set(KEY.LOCAL_AREA_DENSITY, -1);
-            parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.1 * 64 * 64);
-            parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000000);
-            parameters.Set(KEY.MAX_BOOST, 5);
+            parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.02 * 64 * 64);
+            parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000);
+            parameters.Set(KEY.MAX_BOOST, 0.0);
+            parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.008);
+            parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0.01);
+            parameters.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.001);
+            
+            parameters.Set(KEY.SEED, 42);
 
             parameters.setInputDimensions(new int[] { 32, 32 });
             parameters.setColumnDimensions(new int[] { 64, 64 });
-            parameters.setNumActiveColumnsPerInhArea(0.02 * 64 * 64);
+
             var sp = new SpatialPooler();
             var mem = new Connections();
             //List<int> intList = ArrayUtils.ReadCsvFileTest("TestFiles\\digit1_binary_32bit.txt");
@@ -132,14 +138,15 @@ namespace UnitTestsProject
                     noisedInput = ArrayUtils.flipBit(inputVector, (double)((double)j / 100.00));
                 }
 
-                var d = MathHelpers.GetHammingDistance(inputVector, noisedInput);
+                var d = MathHelpers.GetHammingDistance(inputVector, noisedInput, true);
                 Debug.WriteLine($"Input with noise {j} - HamDist: {d}");
                 Debug.WriteLine($"Original: {Helpers.StringifyVector(inputVector)}");
                 Debug.WriteLine($"Noised:   {Helpers.StringifyVector(noisedInput)}");
 
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 1; i++)
                 {
                     sp.compute(mem, noisedInput, activeArray, true);
+                    Debug.WriteLine($"{Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
                 }
 
                 if (j == 0)
@@ -151,10 +158,20 @@ namespace UnitTestsProject
 
                 var str = Helpers.StringifyVector(activeCols);
 
-                var d2 = MathHelpers.GetHammingDistance(activeArrayWithZeroNoise, activeArray);
+                var d2 = MathHelpers.GetHammingDistance(activeArrayWithZeroNoise, activeArray, true);
                 Debug.WriteLine($"Output with noise {j} - Ham Dist: {d2}");
                 Debug.WriteLine($"Original: {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArrayWithZeroNoise, (el) => el == 1))}");
                 Debug.WriteLine($"Noised:   {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
+
+                List<int[,]> arrays = new List<int[,]>();
+
+                int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(activeArray, 64, 64);
+                twoDimenArray = ArrayUtils.Transpose(twoDimenArray);
+                
+                arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray<int>(noisedInput, 32,32)));
+                arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray<int>(activeArray, 64, 64)));
+
+                NeoCortexUtils.DrawBitmaps(arrays, $"Noise_{j*10}.png", Color.Yellow, Color.Gray, OutImgSize, OutImgSize);
             }
         }
 

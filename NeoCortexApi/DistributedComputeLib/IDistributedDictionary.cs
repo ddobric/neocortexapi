@@ -6,6 +6,7 @@ namespace NeoCortexApi.DistributedComputeLib
 {
     public interface IDistributedDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IEnumerator<KeyValuePair<TKey, TValue>>
     {
+        void AddOrUpdate(ICollection<KeyPair> keyValuePairs);
     }
 
     /// <summary>

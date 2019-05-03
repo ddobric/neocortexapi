@@ -239,7 +239,7 @@ namespace NeoCortexApi.Entities
                 return (Int32)backingArray.GetValue(coordinates);
         }
 
-        public override AbstractFlatMatrix<int> set(List<Pair<int, int>> updatingValues)
+        public override AbstractFlatMatrix<int> set(List<KeyPair> updatingValues)
         {
             throw new NotImplementedException();
         }

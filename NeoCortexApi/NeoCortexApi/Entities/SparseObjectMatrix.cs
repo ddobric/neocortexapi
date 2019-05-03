@@ -20,7 +20,7 @@ namespace NeoCortexApi.Entities
     {
 
         //private IDictionary<int, T> sparseMap = new Dictionary<int, T>();
-        private IDictionary<int, T> sparseMap;
+        private IDistributedDictionary<int, T> sparseMap;
         
         /// <summary>
         /// Returns true if sparse memory is remotely distributed. It means objects has to be synced with remote partitions.
@@ -47,7 +47,7 @@ namespace NeoCortexApi.Entities
          * @param dimensions					the dimensions of this array
          * @param useColumnMajorOrdering		where inner index increments most frequently
          */
-        public SparseObjectMatrix(int[] dimensions, bool useColumnMajorOrdering = false, IDictionary<int, T> dict = null) : base(dimensions, useColumnMajorOrdering)
+        public SparseObjectMatrix(int[] dimensions, bool useColumnMajorOrdering = false, IDistributedDictionary<int, T> dict = null) : base(dimensions, useColumnMajorOrdering)
         {
             if (dict == null)
                 this.sparseMap = new InMemoryDistributedDictionary<int, T>(1);
@@ -64,17 +64,27 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public override AbstractFlatMatrix<T> set(int index, T obj)
         {
-            if (!sparseMap.ContainsKey(index))
-                sparseMap.Add(index, (T)obj);
+            //
+            // If not distributed in cluster, we add element by element.
+            if (!(this.sparseMap is IRemotelyDistributed))
+            {
+                if (!sparseMap.ContainsKey(index))
+                    sparseMap.Add(index, (T)obj);
+                else
+                    sparseMap[index] = obj;
+            }
             else
-                sparseMap[index] = obj;
+            {
+                KeyValuePair<int, T> p = new KeyValuePair<int, T>(1, default(T));
+            }
 
             return this;
         }
 
-        public override AbstractFlatMatrix<T> set(List<Pair<int, T>> updatingValues)
+        public override AbstractFlatMatrix<T> set(List<KeyPair> updatingValues)
         {
-            throw new Exception();
+            sparseMap.AddOrUpdate(updatingValues);
+            return this;
         }
 
         /**
@@ -83,7 +93,7 @@ namespace NeoCortexApi.Entities
          * @param object        the object to be indexed.
          * @param coordinates   the row major coordinates [outer --> ,...,..., inner]
          */
-        //@Override
+     
         public override AbstractFlatMatrix<T> set(int[] coordinates, T obj)
         {
             set(computeIndex(coordinates), obj);

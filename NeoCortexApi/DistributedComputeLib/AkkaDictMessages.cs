@@ -11,6 +11,11 @@ namespace NeoCortexApi.DistributedComputeLib
         public object Key { get; set; }
     }
 
+    internal class AddOrUpdateElementsMsg
+    {
+        public IList<KeyPair> Elements { get; set; }
+    }
+
     internal class AddElementsMsg
     {
         public IList<KeyPair> Elements { get; set; }
@@ -36,7 +41,7 @@ namespace NeoCortexApi.DistributedComputeLib
       
     }
 
-    internal class KeyPair
+    public class KeyPair
     {
         public object Key { get; set; }
 
