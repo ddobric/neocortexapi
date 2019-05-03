@@ -202,13 +202,23 @@ namespace NeoCortexApi.Entities
 
         public abstract T get(int index);
 
-        //@Override
         public abstract T get(params int[] index);
 
-        //@Override
         public abstract AbstractFlatMatrix<T> set(int index, T value);
 
-        //@Override
+        /// <summary>
+        /// Sets batcvh of values.
+        /// </summary>
+        /// <param name="updatingValues"></param>
+        /// <returns></returns>
+        public abstract AbstractFlatMatrix<T> set(List<Pair<int, T>> updatingValues);
+
+        /// <summary>
+        /// Sets same value to multiple indexes.
+        /// </summary>
+        /// <param name="indexes"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public virtual AbstractFlatMatrix<T> set(int[] indexes, T value)
         {
             set(computeIndex(indexes), value);
@@ -324,7 +334,9 @@ namespace NeoCortexApi.Entities
 
         public abstract int[] get1DIndexes();
 
-       //public abstract T[] asDense(ITypeFactory<T> factory);
+       
+
+        //public abstract T[] asDense(ITypeFactory<T> factory);
 
         // public abstract IFlatMatrix<T> set(int index, T value);
 

@@ -47,7 +47,7 @@ namespace NeoCortexApi.Utility
          *                          using the dimensions as a mixed radix definition. For example, in dimensions
          *                          42x10, the point [1, 4] is index 1*420 + 4*10 = 460.
          */
-        public int GndexFromCoordinates(int[] coordinates)
+        public int GetIndexFromCoordinates(int[] coordinates)
         {
             return computeIndex(coordinates);
         }
@@ -104,7 +104,7 @@ namespace NeoCortexApi.Utility
                 }
             }
 
-            return result.Select((tl) => GndexFromCoordinates(tl.ToArray())).ToArray();
+            return result.Select((tl) => GetIndexFromCoordinates(tl.ToArray())).ToArray();
         }
 
         /**
@@ -125,8 +125,7 @@ namespace NeoCortexApi.Utility
             IntGenerator[] intGens = new IntGenerator[dimensions.Length];
             for (int i = 0; i < dimensions.Length; i++)
             {
-                intGens[i] = new IntGenerator(cp[i] - radius,
-                    Math.Min((cp[i] - radius) + dimensions[i] - 1, cp[i] + radius) + 1);
+                intGens[i] = new IntGenerator(cp[i] - radius, Math.Min((cp[i] - radius) + dimensions[i] - 1, cp[i] + radius) + 1);
             }
 
             List<List<int>> result = new List<List<int>>();
@@ -161,7 +160,7 @@ namespace NeoCortexApi.Utility
                 k++;
             }
 
-            return result.Select((tl) => GndexFromCoordinates(tl.ToArray())).ToArray();
+            return result.Select((tl) => GetIndexFromCoordinates(tl.ToArray())).ToArray();
         }
     }
 }

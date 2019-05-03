@@ -72,6 +72,11 @@ namespace NeoCortexApi.Entities
             return this;
         }
 
+        public override AbstractFlatMatrix<T> set(List<Pair<int, T>> updatingValues)
+        {
+            throw new Exception();
+        }
+
         /**
          * Sets the specified object to be indexed at the index
          * computed from the specified coordinates.

@@ -82,7 +82,7 @@ namespace UnitTestsProject
         {
             var parameters = GetDefaultParams();
             parameters.Set(KEY.POTENTIAL_RADIUS, 64 * 64);
-            parameters.Set(KEY.POTENTIAL_PCT, 1.0);
+            parameters.Set(KEY.POTENTIAL_PCT, 0.5);
             parameters.Set(KEY.GLOBAL_INHIBITION, false);
             parameters.Set(KEY.STIMULUS_THRESHOLD, 0.5);
             parameters.Set(KEY.INHIBITION_RADIUS, (int)0.25 * 64 * 64);

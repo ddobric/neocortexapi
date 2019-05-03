@@ -116,8 +116,8 @@ namespace UnitTestsProject
         {
             Thread.Sleep(5000);
 
-            int inputBits = 132;
-            int numOfColumns = 64;
+            int inputBits = 1024;
+            int numOfColumns = 4096;
 
             Random rnd = new Random(42);
 
