@@ -11,6 +11,12 @@ namespace NeoCortexApi.DistributedComputeLib
     {
         private Dictionary<object, object> dict = new Dictionary<object, object>();
 
+        protected override void Unhandled(object msg)
+        {
+            Console.WriteLine($"Unhandled message: '{msg.GetType().Name}'");
+            //base.Unhandled(msg);
+        }
+
         public DictNodeActor()
         {
             Receive<AddOrUpdateElementsMsg>(msg =>
