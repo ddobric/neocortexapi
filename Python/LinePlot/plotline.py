@@ -8,7 +8,7 @@ delimiter = "|"
 
 if len(sys.argv) <= 3:
     print("WARNING: Invalid arguments.")
-    print("python lineplot.py <title> <CSV file with data> <output picture name>")
+    print("python plotline.py <title> <CSV file with data> <output picture name>")
     print("python ./plotline.py title ./sample.txt ./figure1.png")
     print("Data sample")
     print("10|11")
