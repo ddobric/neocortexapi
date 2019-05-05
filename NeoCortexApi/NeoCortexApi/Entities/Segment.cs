@@ -17,6 +17,7 @@ namespace NeoCortexApi.Entities
 
         protected Integer boxedIndex;
 
+        //public List<Synapse> Synapses { get; set; }
 
         /// <summary>
         /// Creates the proximal dentrite segment with specified index.
@@ -24,6 +25,7 @@ namespace NeoCortexApi.Entities
         /// <param name="index">Index of segment.</param>
         public Segment(int index)
         {
+            //this.Synapses = new List<Synapse>();
             this.index = index;
             this.boxedIndex = new Integer(index);
         }

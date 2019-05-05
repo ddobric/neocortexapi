@@ -6,11 +6,12 @@
               event-stream = on
               unhandled = on
         }
-	loglevel=DEBUG
+	loglevel=INFO
     actor.provider = cluster
 	log-config-on-start = on       
     remote {
         dot-netty.tcp {
+			maximum-frame-size = 16000000b
             port = @PORT
 			public-hostname = @PUBHOSTNAME
             hostname = @HOSTNAME

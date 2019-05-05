@@ -623,7 +623,7 @@ namespace NeoCortexApi
                 }
                 else
                 {
-                    synapse.setPermanence(conn, permanence);
+                    synapse.setPermanence(conn.getSynPermConnected(), permanence);
                 }
             }
 

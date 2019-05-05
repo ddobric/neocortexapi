@@ -32,7 +32,7 @@ namespace NeoCortexApi.Entities
         /// These are synapses with permanence value greather than permanence connected threshold.
         /// See synPermConnected.
         /// </summary>      
-        public HashSet<int> synapseConnections { get; set; }  = new HashSet<int>();
+        private List<int> synapseConnections { get; set; }  = new List<int>();
 
         /** 
          * Indexed according to the source Input Vector Bit (for ProximalDendrites),
@@ -61,25 +61,25 @@ namespace NeoCortexApi.Entities
          * @param s
          * @param permanence
          */
-        public void setPermanence(Connections c, Synapse s, double permanence)
-        {
-            s.setPermanence(c, permanence);
-        }
+        //public void setPermanence(Connections c, Synapse s, double permanence)
+        //{
+        //    s.setPermanence(c, permanence);
+        //}
 
         /**
          * Updates this {@code Pool}'s store of permanences for the specified {@link Synapse}
          * @param c				the connections memory
-         * @param s				the synapse who's permanence is recorded
+         * @param synapse				the synapse who's permanence is recorded
          * @param permanence	the permanence value to record
          */
-        public void updatePool(Connections c, Synapse s, double permanence)
+        public void updatePool(double synPermConnected, Synapse synapse, double permanence)
         {
-            int inputIndex = s.getInputIndex();
+            int inputIndex = synapse.getInputIndex();
             if (synapsesBySourceIndex.ContainsKey(inputIndex) == false)
             {
-                synapsesBySourceIndex.Add(inputIndex, s);
+                synapsesBySourceIndex.Add(inputIndex, synapse);
             }
-            if (permanence >= c.getSynPermConnected())
+            if (permanence >= synPermConnected)
             {
                 synapseConnections.Add(inputIndex);
             }
@@ -89,10 +89,9 @@ namespace NeoCortexApi.Entities
             }
         }
 
-        /**
-         * Resets the current connections in preparation for new permanence
-         * adjustments.
-         */
+        /// <summary>
+        ///  Resets the current connections in preparation for new permanence adjustments.
+        ///  </summary>
         public void resetConnections()
         {
             synapseConnections.Clear();

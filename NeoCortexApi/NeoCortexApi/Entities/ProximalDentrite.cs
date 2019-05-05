@@ -11,7 +11,7 @@ namespace NeoCortexApi.Entities
     //[Serializable]
     public class ProximalDendrite : Segment
     {
-        public Pool Pool {get;set; }
+        public Pool RFPool {get;set; }
 
         /**
          * 
@@ -31,19 +31,40 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public Pool createPool(Connections c, int[] inputIndexes)
         {
-            this.Pool = new Pool(inputIndexes.Length);
+            this.RFPool = new Pool(inputIndexes.Length);
             for (int i = 0; i < inputIndexes.Length; i++)
             {
                 int synCount = c.getProximalSynapseCount();
-                this.Pool.setPermanence(c, createSynapse(c, c.getSynapses(this), null, this.Pool, synCount, inputIndexes[i]), 0);
+                var synapse = createSynapse(c, c.getSynapses(this), null, this.RFPool, synCount, inputIndexes[i]);
+                synapse.setPermanence(c.getSynPermConnected(), 0);
                 c.setProximalSynapseCount(synCount + 1);
             }
-            return Pool;
+            return RFPool;
         }
 
         public void clearSynapses(Connections c)
         {
             c.getSynapses(this).Clear();
+        }
+
+
+        public void setPermanences2(Connections c, AbstractSparseBinaryMatrix coonCounts, double[] perms)
+        {
+            RFPool.resetConnections();
+            coonCounts.clearStatistics(index);
+            List<Synapse> synapses = c.getSynapses(this);
+
+            foreach (Synapse s in synapses)
+            {
+                int indx = s.getInputIndex();
+
+                s.setPermanence(c.getSynPermConnected(), perms[indx]);
+
+                if (perms[indx] >= c.getSynPermConnected())
+                {
+                   // connCounts.set(1, index, s.getInputIndex());
+                }
+            }
         }
 
         /**
@@ -59,15 +80,17 @@ namespace NeoCortexApi.Entities
         {
             var connCounts = c.getConnectedCounts();
 
-            Pool.resetConnections();
+            this.RFPool.resetConnections();
+
             connCounts.clearStatistics(index);
+
             List<Synapse> synapses = c.getSynapses(this);
 
             foreach (Synapse s in synapses)
             {
                 int indx = s.getInputIndex();
 
-                s.setPermanence(c, perms[indx]);
+                s.setPermanence(c.getSynPermConnected(), perms[indx]);
 
                 if (perms[indx] >= c.getSynPermConnected())
                 {
@@ -90,11 +113,13 @@ namespace NeoCortexApi.Entities
          */
         public void setPermanences(Connections c, double[] perms, int[] inputIndexes)
         {
-            Pool.resetConnections();
+            RFPool.resetConnections();
             c.getConnectedCounts().clearStatistics(index);
             for (int i = 0; i < inputIndexes.Length; i++)
             {
-                Pool.setPermanence(c, Pool.getSynapseWithInput(inputIndexes[i]), perms[i]);
+                var synapse = RFPool.getSynapseWithInput(inputIndexes[i]);
+                synapse.setPermanence(c.getSynPermConnected(), perms[i]);
+                //RFPool.setPermanence(c, RFPool.getSynapseWithInput(inputIndexes[i]), perms[i]);
                 if (perms[i] >= c.getSynPermConnected())
                 {
                     c.getConnectedCounts().set(1, index, i);

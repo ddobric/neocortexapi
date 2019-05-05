@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Text;
 using NeoCortexApi.Utility;
 using NeoCortexApi.DistributedCompute;
+using System.Threading;
 
 namespace UnitTestsProject
 {
@@ -221,6 +222,8 @@ namespace UnitTestsProject
         [TestMethod]
         public void SPInitTest()
         {
+            int numOfColsInDim = 64;
+
             Parameters parameters = Parameters.getAllDefaultParameters();
            
             parameters.Set(KEY.POTENTIAL_RADIUS, 5);
@@ -238,7 +241,7 @@ namespace UnitTestsProject
             parameters.Set(KEY.MAX_BOOST, 10.0);
             parameters.Set(KEY.RANDOM, new Random(42));
             parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { 32, 32 });
-            parameters.Set(KEY.COLUMN_DIMENSIONS, new int[] { 64, 64 });
+            parameters.Set(KEY.COLUMN_DIMENSIONS, new int[] { numOfColsInDim, numOfColsInDim });
             parameters.setPotentialRadius(5);
 
             //This is 0.3 in Python version due to use of dense 
@@ -266,6 +269,11 @@ namespace UnitTestsProject
             var sp = new SpatialPooler();
             var mem = new Connections();
             parameters.apply(mem);
+                 
+            //Thread.Sleep(5000);
+
+            //var dicts = UnitTestHelpers.GetMemory(numOfColsInDim * numOfColsInDim);
+
             sp.init(mem);
 
             //int[] inputVector = new int[] { 1, 0, 1, 0, 1, 0, 0, 1, 1 };

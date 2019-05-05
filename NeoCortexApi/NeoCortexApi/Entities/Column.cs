@@ -172,10 +172,10 @@ namespace NeoCortexApi.Entities
          * @param c				the {@link Connections} memory object
          * @param permanences	floating point degree of connectedness
          */
-        public void setProximalPermanences(Connections c, double[] permanences)
-        {
-            ProximalDendrite.setPermanences(c, permanences);
-        }
+        //public void setProximalPermanences(Connections c, double[] permanences)
+        //{
+        //    ProximalDendrite.setPermanences(c, permanences);
+        //}
 
         /**
          * Sets the permanences on the {@link ProximalDendrite} {@link Synapse}s
