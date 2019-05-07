@@ -58,7 +58,7 @@ namespace NeoCortexApi
             Column colZero = matrix.getObject(0);
             for (int i = 0; i < numColumns; i++)
             {
-                Column column = colZero == null ? new Column(cellsPerColumn, i) : matrix.getObject(i);
+                Column column = colZero == null ? new Column(cellsPerColumn, i, c.getSynPermConnected(), c.NumInputs) : matrix.getObject(i);
                 for (int j = 0; j < cellsPerColumn; j++)
                 {
                     cells[i * cellsPerColumn + j] = column.Cells[j];

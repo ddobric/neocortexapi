@@ -86,17 +86,17 @@ namespace UnitTestsProject
         [TestMethod]
         public void testObjectGroup()
         {
-            Column c0 = new Column(9, 0);
-            Column c1 = new Column(9, 1);
+            Column c0 = new Column(9, 0, 0.0, 0);
+            Column c1 = new Column(9, 1, 0.0, 0);
 
             // Illustrates the Cell's actual index = colIndex * cellsPerColumn + indexOfCellWithinCol
             Assert.AreEqual(7, c0.Cells[7].Index);
             Assert.AreEqual(12, c1.Cells[3].Index);
             Assert.AreEqual(16, c1.Cells[7].Index);
 
-            DistalDendrite dd0 = new DistalDendrite(c0.Cells[7], 0, 0, 0);
-            DistalDendrite dd1 = new DistalDendrite(c1.Cells[3] /* Col 1's Cells start at 9 */, 1, 0, 1);
-            DistalDendrite dd2 = new DistalDendrite(c1.Cells[7] /* Col 1's Cells start at 9 */, 2, 0, 2);
+            DistalDendrite dd0 = new DistalDendrite(c0.Cells[7], 0, 0, 0, 0, 0);
+            DistalDendrite dd1 = new DistalDendrite(c1.Cells[3] /* Col 1's Cells start at 9 */, 1, 0, 1,  0, 0);
+            DistalDendrite dd2 = new DistalDendrite(c1.Cells[7] /* Col 1's Cells start at 9 */, 2, 0, 2,  0, 0);
 
             List<DistalDendrite> l = new List<DistalDendrite>(
                 new DistalDendrite[] { dd0, dd1, dd2 });

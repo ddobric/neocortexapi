@@ -97,8 +97,8 @@ namespace UnitTestsProject
         [TestMethod]
         public void ColumnCompareTest()
         {
-            Column c1 = new Column(10, 0);
-            Column c2 = new Column(10, 1);
+            Column c1 = new Column(10, 0, 0, 0);
+            Column c2 = new Column(10, 1, 0, 0);
 
             List<Column> l = new List<Column>(new Column[] { c1, c2});
 

@@ -54,7 +54,9 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="numCells">Number of cells in the column.</param>
         /// <param name="index">Colun index.</param>
-        public Column(int numCells, int index)
+        /// <param name="synapsePermConnected">Permanence threshold value to declare synapse as connected.</param>
+        /// <param name="numInputs">Number of input neorn cells.</param>
+        public Column(int numCells, int index, double synapsePermConnected, int numInputs)
         {
             //this.numCells = numCells;
             this.Index = index;
@@ -68,7 +70,7 @@ namespace NeoCortexApi.Entities
 
             //cellList = new ReadOnlyCollection<Cell>(Cells);
 
-            ProximalDendrite = new ProximalDendrite(index);
+            ProximalDendrite = new ProximalDendrite(index, synapsePermConnected, numInputs);
         }
 
         /**
@@ -162,7 +164,22 @@ namespace NeoCortexApi.Entities
          */
         public Pool createPotentialPool(Connections c, int[] inputVectorIndexes)
         {
-            var pool = ProximalDendrite.createPool(c, inputVectorIndexes);
+            //var pool = ProximalDendrite.createPool(c, inputVectorIndexes);
+            this.ProximalDendrite.Synapses.Clear();
+            var pool = new Pool(inputVectorIndexes.Length, c.NumInputs);
+            for (int i = 0; i < inputVectorIndexes.Length; i++)
+            {
+                var cnt = c.getProximalSynapseCount();
+                //var synapse = createSynapse(c, c.getSynapses(this), null, this.RFPool, synCount, inputIndexes[i]);
+                var synapse = this.ProximalDendrite.createSynapse(null, pool, cnt, inputVectorIndexes[i]);
+                synapse.setPermanence(c.getSynPermConnected(), 0);
+                c.setProximalSynapseCount(cnt + 1);
+            }
+
+            this.ProximalDendrite.RFPool = pool;
+
+            c.getPotentialPools().set(this.Index, pool);
+
             return pool;
         }
 
@@ -183,9 +200,10 @@ namespace NeoCortexApi.Entities
          * @param c				the {@link Connections} memory object
          * @param permanences	floating point degree of connectedness
          */
-        public void setProximalPermanencesSparse(Connections c, double[] permanences, int[] indexes)
+        public void setProximalPermanencesSparse(Connections c, double[] permanences, int[] inputVectorIndexes)
         {
-            ProximalDendrite.setPermanences(c, permanences, indexes);
+            ProximalDendrite.setPermanences(c, permanences, inputVectorIndexes);
+           
         }
 
         /**
@@ -194,9 +212,10 @@ namespace NeoCortexApi.Entities
          * @param c
          * @param connections
          */
-        public void setProximalConnectedSynapsesForTest(Connections c, int[] connections)
+        public void setProximalConnectedSynapsesForTest(Connections c, int[] inputVectorIndexes)
         {
-            ProximalDendrite.setConnectedSynapsesForTest(c, connections);
+            this.ProximalDendrite.RFPool = createPotentialPool(c, inputVectorIndexes);
+            //ProximalDendrite.setConnectedSynapsesForTest(c, connections);
         }
 
       

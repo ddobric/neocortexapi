@@ -11,21 +11,34 @@ namespace NeoCortexApi.Entities
     /// </summary>
    // [Serializable]
     public abstract class Segment : IEquatable<Segment>
-    {
-       
+    {       
         protected int index;
 
         protected Integer boxedIndex;
 
-        //public List<Synapse> Synapses { get; set; }
+        public List<Synapse> Synapses { get; set; }
+
+        /// <summary>
+        /// Permanence threshold value to declare synapse as connected.
+        /// </summary>
+        public double SynapsePermConnected { get; set; }
+
+        /// <summary>
+        /// Number of input neorn cells.
+        /// </summary>
+        public int NumInputs { get; set; }
 
         /// <summary>
         /// Creates the proximal dentrite segment with specified index.
         /// </summary>
+        /// <param name="synapsePermConnected">Permanence threshold value to declare synapse as connected.</param>
         /// <param name="index">Index of segment.</param>
-        public Segment(int index)
+        /// <param name="numInputs">Number of input neorn cells.</param>
+        public Segment(int index, double synapsePermConnected, int numInputs)
         {
-            //this.Synapses = new List<Synapse>();
+            this.NumInputs = NumInputs;
+            this.SynapsePermConnected = synapsePermConnected;
+            this.Synapses = new List<Synapse>();
             this.index = index;
             this.boxedIndex = new Integer(index);
         }
@@ -67,7 +80,6 @@ namespace NeoCortexApi.Entities
         /// Creates and returns a newly created synapse with the specified
         /// source cell, permanence, and index.
         /// </summary>
-        /// <param name="c">Memory instance.</param>
         /// <param name="synapses">List of synapses, where one has to be added.</param>
         /// <param name="sourceCell"></param>
         /// <param name="pool"></param>
@@ -79,11 +91,11 @@ namespace NeoCortexApi.Entities
         /// specifies the synapse's sequence order within the pool object, and may be referenced by that index</remarks>
         /// <returns>Instance of the new synapse.</returns>
         /// <seealso cref="Synapse"/>
-        public Synapse createSynapse(Connections c, List<Synapse> synapses, Cell sourceCell, Pool pool, int index, int inputIndex)
+        public Synapse createSynapse(Cell sourceCell, Pool pool, int index, int inputIndex)
         {
-            Synapse s = new Synapse(c, sourceCell, this, pool, index, inputIndex);
-            synapses.Add(s);
-            return s;
+            Synapse synapse = new Synapse(sourceCell, this, pool, index, inputIndex);
+            this.Synapses.Add(synapse);
+            return synapse;
         }
 
        

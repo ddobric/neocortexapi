@@ -13,15 +13,23 @@ namespace NeoCortexApi.Entities
     {
         public Pool RFPool {get;set; }
 
-        /**
-         * 
-         * @param index     this {@code ProximalDendrite}'s index.
-         */
-        public ProximalDendrite(int index) : base(index)
+        /// <summary>
+        /// Permanence threshold value to declare synapse as connected.
+        /// </summary>
+        public double SynapsePermConnected { get; set; }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="index">The global index of the segment.</param>
+        /// <param name="synapsePermConnected">Permanence threshold value to declare synapse as connected.</param>
+        /// <param name="numInputs">Number of input neorn cells.</param>
+        public ProximalDendrite(int index, double synapsePermConnected, int numInputs) : base(index, synapsePermConnected, numInputs)
         {
 
         }
-               
+
 
         /// <summary>
         /// Creates object, which represents the pool of input neurons, which are connected.
@@ -29,43 +37,25 @@ namespace NeoCortexApi.Entities
         /// <param name="c"></param>
         /// <param name="inputIndexes">Indexes of connected input bits.</param>
         /// <returns></returns>
-        public Pool createPool(Connections c, int[] inputIndexes)
-        {
-            this.RFPool = new Pool(inputIndexes.Length);
-            for (int i = 0; i < inputIndexes.Length; i++)
-            {
-                int synCount = c.getProximalSynapseCount();
-                var synapse = createSynapse(c, c.getSynapses(this), null, this.RFPool, synCount, inputIndexes[i]);
-                synapse.setPermanence(c.getSynPermConnected(), 0);
-                c.setProximalSynapseCount(synCount + 1);
-            }
-            return RFPool;
-        }
+        //public Pool createPool(int numInputs, int currentProximalSynapseCount, int[] inputIndexes)
+        //{
+        //    this.RFPool = new Pool(inputIndexes.Length, numInputs);
+        //    for (int i = 0; i < inputIndexes.Length; i++)
+        //    {
+        //        //var synapse = createSynapse(c, c.getSynapses(this), null, this.RFPool, synCount, inputIndexes[i]);
+        //        var synapse = createSynapse(null, this.RFPool, currentProximalSynapseCount, inputIndexes[i]);
+        //        synapse.setPermanence(this.SynapsePermConnected, 0);
+        //        c.setProximalSynapseCount(currentProximalSynapseCount + 1);
+        //    }
+        //    return RFPool;
+        //}
 
         public void clearSynapses(Connections c)
         {
-            c.getSynapses(this).Clear();
+            this.Synapses.Clear();
+            //c.getSynapses(this).Clear();
         }
 
-
-        public void setPermanences2(Connections c, AbstractSparseBinaryMatrix coonCounts, double[] perms)
-        {
-            RFPool.resetConnections();
-            coonCounts.clearStatistics(index);
-            List<Synapse> synapses = c.getSynapses(this);
-
-            foreach (Synapse s in synapses)
-            {
-                int indx = s.getInputIndex();
-
-                s.setPermanence(c.getSynPermConnected(), perms[indx]);
-
-                if (perms[indx] >= c.getSynPermConnected())
-                {
-                   // connCounts.set(1, index, s.getInputIndex());
-                }
-            }
-        }
 
         /**
          * Sets the permanences for each {@link Synapse}. The number of synapses
@@ -84,9 +74,9 @@ namespace NeoCortexApi.Entities
 
             connCounts.clearStatistics(index);
 
-            List<Synapse> synapses = c.getSynapses(this);
+            //List<Synapse> synapses = c.getSynapses(this);
 
-            foreach (Synapse s in synapses)
+            foreach (Synapse s in this.Synapses)
             {
                 int indx = s.getInputIndex();
 
@@ -127,6 +117,9 @@ namespace NeoCortexApi.Entities
             }
         }
 
+        public double SynPermConnected { get; set; }
+       
+
         /**
          * Sets the input vector synapse indexes which are connected (&gt;= synPermConnected)
          * @param c
@@ -134,7 +127,8 @@ namespace NeoCortexApi.Entities
          */
         public void setConnectedSynapsesForTest(Connections c, int[] connectedIndexes)
         {
-            Pool pool = createPool(c, connectedIndexes);
+            //Pool pool = createPool(c, connectedIndexes);
+            var pool = new Pool(connectedIndexes.Length, c.NumInputs);
             c.getPotentialPools().set(index, pool);
         }
 
@@ -143,9 +137,10 @@ namespace NeoCortexApi.Entities
          * @param c
          * @return
          */
-        public int[] getConnectedSynapsesDense(Connections c)
+        public int[] getConnectedSynapsesDense()
         {
-            return c.getPotentialPools().get(index).getDenseConnected(c);
+            return this.RFPool.getDenseConnected();
+            //return c.getPotentialPools().get(index).getDenseConnected(c);
         }
 
         /**
@@ -153,9 +148,10 @@ namespace NeoCortexApi.Entities
          * @param c
          * @return
          */
-        public int[] getConnectedSynapsesSparse(Connections c)
+        public int[] getConnectedSynapsesSparse()
         {
-            return c.getPotentialPools().get(index).getSparsePotential();
+            return this.RFPool.getSparsePotential();
+            //return c.getPotentialPools().get(index).getSparsePotential();
         }
     }
 }

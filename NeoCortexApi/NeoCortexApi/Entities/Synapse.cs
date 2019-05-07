@@ -80,7 +80,7 @@ namespace NeoCortexApi.Entities
          * @param index         this {@code Synapse}'s index
          * @param inputIndex	the index of this {@link Synapse}'s input; be it a Cell or InputVector bit.
          */
-        public Synapse(Connections c, Cell sourceCell, Segment segment, Pool pool, int index, int inputIndex)
+        public Synapse(Cell sourceCell, Segment segment, Pool pool, int index, int inputIndex)
         {
             this.sourceCell = sourceCell;
             this.segment = segment;
@@ -184,27 +184,13 @@ namespace NeoCortexApi.Entities
          */
         public override String ToString()
         {
-            //StringBuilder sb = new StringBuilder("synapse: [ synIndx=")
-            //    .Append(synapseIndex)
-            //    .Append(", inIndx=")
-            //    .Append(inputIndex)
-            //    .Append(", segIndx=")
-            //    .Append(segment.getIndex());
-
-            //if (sourceCell != null)
-            //{
-            //    sb.Append(", srcCellIndx=").Append(sourceCell.getIndex());
-            //}
-
-            //sb.Append(" ]");
-
             string srcCell = String.Empty;
             if (sourceCell != null)
             {
                 srcCell = $"[SrcCell: {sourceCell.ToString()}]";
             }
 
-            return $"Syn: synIndx:{synapseIndex}, inpIndx:{inputIndex}, [{segment}], {srcCell}";
+            return $"Syn: synIndx:{synapseIndex}, inpIndx:{inputIndex}, perm:{this.permanence}[{segment}], {srcCell}";
         }
 
     

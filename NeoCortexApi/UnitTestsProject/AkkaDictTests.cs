@@ -75,7 +75,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < 100; i++)
             {
-                akkaDict.Add(i, new Column(32, i));
+                akkaDict.Add(i, new Column(32, i, 0.0, 0));
             }
 
             for (int i = 0; i < 100; i++)

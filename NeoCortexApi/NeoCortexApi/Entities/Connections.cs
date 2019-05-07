@@ -187,7 +187,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public Dictionary<Segment, List<Synapse>> distalSynapses;
 
-        protected Dictionary<Segment, List<Synapse>> proximalSynapses;
+        //protected Dictionary<Segment, List<Synapse>> proximalSynapses;
 
         /** Helps index each new proximal Synapse */
         protected int proximalSynapseCounter = -1;
@@ -1405,7 +1405,7 @@ namespace NeoCortexApi.Entities
             int ordinal = nextSegmentOrdinal;
             ++nextSegmentOrdinal;
 
-            DistalDendrite segment = new DistalDendrite(cell, flatIdx, tmIteration, ordinal);
+            DistalDendrite segment = new DistalDendrite(cell, flatIdx, tmIteration, ordinal, this.getSynPermConnected(), this.NumInputs);
             getSegments(cell, true).Add(segment);
             m_SegmentForFlatIdx[flatIdx] = segment;
 
@@ -1802,28 +1802,28 @@ namespace NeoCortexApi.Entities
          * @param segment   the {@link ProximalDendrite} used as a key.
          * @return          the mapping of {@link ProximalDendrite}s to their {@link Synapse}s.
          */
-        public List<Synapse> getSynapses(ProximalDendrite segment)
-        {
-            if (segment == null)
-            {
-                throw new ArgumentException("Segment was null");
-            }
+        //public List<Synapse> getSynapses(ProximalDendrite segment)
+        //{
+        //    if (segment == null)
+        //    {
+        //        throw new ArgumentException("Segment was null");
+        //    }
 
-            if (proximalSynapses == null)
-            {
-                proximalSynapses = new Dictionary<Segment, List<Synapse>>();
-            }
+        //    if (proximalSynapses == null)
+        //    {
+        //        proximalSynapses = new Dictionary<Segment, List<Synapse>>();
+        //    }
 
-            List<Synapse> retVal = null;
-            if (proximalSynapses.ContainsKey(segment) == false)
-            {
-                proximalSynapses.Add(segment, retVal = new List<Synapse>());
-            }
+        //    List<Synapse> retVal = null;
+        //    if (proximalSynapses.ContainsKey(segment) == false)
+        //    {
+        //        proximalSynapses.Add(segment, retVal = new List<Synapse>());
+        //    }
 
-            retVal = proximalSynapses[segment];
+        //    retVal = proximalSynapses[segment];
 
-            return retVal;
-        }
+        //    return retVal;
+        //}
 
         /**
          * <b>FOR TEST USE ONLY<b>
@@ -2415,7 +2415,7 @@ namespace NeoCortexApi.Entities
             for (int i = 0; i < getNumColumns(); i++)
             {
                 Pool pool = getPotentialPools().get(i);
-                int[] indexes = pool.getDenseConnected(this);
+                int[] indexes = pool.getDenseConnected();
                 retVal[i] = indexes;
             }
 
@@ -2458,10 +2458,11 @@ namespace NeoCortexApi.Entities
             return retVal;
         }
 
-        /**
-         * {@inheritDoc}
-         */
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
             int prime = 31;
@@ -2543,7 +2544,7 @@ namespace NeoCortexApi.Entities
             temp = BitConverter.DoubleToInt64Bits(synPermTrimThreshold);
             result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + proximalSynapseCounter;
-            result = prime * result + ((proximalSynapses == null) ? 0 : proximalSynapses.GetHashCode());
+            //result = prime * result + ((proximalSynapses == null) ? 0 : proximalSynapses.GetHashCode());
             result = prime * result + ((distalSynapses == null) ? 0 : distalSynapses.GetHashCode());
             result = prime * result + tieBreaker.GetHashCode();
             result = prime * result + updatePeriod;
@@ -2713,13 +2714,13 @@ namespace NeoCortexApi.Entities
                 return false;
             if (proximalSynapseCounter != other.proximalSynapseCounter)
                 return false;
-            if (proximalSynapses == null)
-            {
-                if (other.proximalSynapses != null)
-                    return false;
-            }
-            else if (!proximalSynapses.Equals(other.proximalSynapses))
-                return false;
+            //if (proximalSynapses == null)
+            //{
+            //    if (other.proximalSynapses != null)
+            //        return false;
+            //}
+            //else if (!proximalSynapses.Equals(other.proximalSynapses))
+            //    return false;
             if (distalSynapses == null)
             {
                 if (other.distalSynapses != null)

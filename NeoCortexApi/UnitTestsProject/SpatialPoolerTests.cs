@@ -1030,7 +1030,7 @@ namespace UnitTestsProject
 
             //[ 45  46  48 105 125 145]
             //mem.getConnectedSynapses().set(0, connected.toArray());
-            mem.getPotentialPools().set(0, new Pool(6));
+            mem.getPotentialPools().set(0, new Pool(6, mem.NumInputs));
             mem.getColumn(0).setProximalConnectedSynapsesForTest(mem, connected.ToArray());
 
             connected.Clear();
@@ -1043,7 +1043,7 @@ namespace UnitTestsProject
 
             //[ 80  85 120 125]
             //mem.getConnectedSynapses().set(1, connected.toArray());
-            mem.getPotentialPools().set(1, new Pool(4));
+            mem.getPotentialPools().set(1, new Pool(4, mem.NumInputs));
             mem.getColumn(1).setProximalConnectedSynapsesForTest(mem, connected.ToArray());
 
             connected.Clear();
@@ -1058,7 +1058,7 @@ namespace UnitTestsProject
 
             //[  1   3   6   9  42 156]
             //mem.getConnectedSynapses().set(2, connected.toArray());
-            mem.getPotentialPools().set(2, new Pool(4));
+            mem.getPotentialPools().set(2, new Pool(4, mem.NumInputs));
             mem.getColumn(2).setProximalConnectedSynapsesForTest(mem, connected.ToArray());
 
             connected.Clear();
@@ -1069,12 +1069,12 @@ namespace UnitTestsProject
 
             //[  0 159]
             //mem.getConnectedSynapses().set(3, connected.toArray());
-            mem.getPotentialPools().set(3, new Pool(4));
+            mem.getPotentialPools().set(3, new Pool(4, mem.NumInputs));
             mem.getColumn(3).setProximalConnectedSynapsesForTest(mem, connected.ToArray());
 
             //[]
             connected.Clear();
-            mem.getPotentialPools().set(4, new Pool(4));
+            mem.getPotentialPools().set(4, new Pool(4, mem.NumInputs));
             mem.getColumn(4).setProximalConnectedSynapsesForTest(mem, connected.ToArray());
 
             double[] trueAvgConnectedSpan = new double[] { 11.0 / 4d, 6.0 / 4d, 14.0 / 4d, 15.0 / 4d, 0d };
@@ -1332,7 +1332,7 @@ namespace UnitTestsProject
             initSP();
 
             mem.setSynPermTrimThreshold(0.05);
-
+            
             int[][] potentialPools = new int[][] {
             new int[]{ 1, 1, 1, 1, 0, 0, 0, 0 },
             new int[]{ 1, 0, 0, 0, 1, 1, 0, 1 },
@@ -1533,7 +1533,7 @@ namespace UnitTestsProject
             {
                 mem.getColumn(i).ProximalDendrite.setPermanences(mem, permanences[i]);
                 sp.updatePermanencesForColumn(mem, permanences[i], mem.getColumn(i), connectedDense[i], true);
-                int[] dense = mem.getColumn(i).getProximalDendrite().getConnectedSynapsesDense(mem);
+                int[] dense = mem.getColumn(i).getProximalDendrite().getConnectedSynapsesDense();
                 trueConnectedSynapses[i].ArrToString().SequenceEqual(dense.ArrToString());
             }
 

@@ -101,7 +101,7 @@ namespace NeoCortexApi
             List<KeyPair> colList = new List<KeyPair>();
             for (int i = 0; i < numColumns; i++)
             {
-                colList.Add(new KeyPair() { Key = i, Value = new Column(numCells, i) });
+                colList.Add(new KeyPair() { Key = i, Value = new Column(numCells, i, c.getSynPermConnected(), c.NumInputs) });
             }
 
             // PERF
@@ -153,7 +153,7 @@ namespace NeoCortexApi
                 // After initialization permancences are set to zero.
                 var potPool = column.createPotentialPool(c, potential);
 
-                c.getPotentialPools().set(i, potPool);
+                //c.getPotentialPools().set(i, potPool);
                 
                 colList.Add(new KeyPair() { Key = i, Value = c.getColumn(i) });
 
@@ -583,7 +583,7 @@ namespace NeoCortexApi
             int[] dimensions = c.getInputDimensions();
 
             // Gets synapses connected to input bits.(from pool of the column)
-            int[] connected = c.getColumn(columnIndex).getProximalDendrite().getConnectedSynapsesSparse(c);
+            int[] connected = c.getColumn(columnIndex).ProximalDendrite.getConnectedSynapsesSparse();
 
             if (connected == null || connected.Length == 0) return 0;
 
