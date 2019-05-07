@@ -57,37 +57,37 @@ namespace NeoCortexApi.Entities
         }
 
 
-        /**
-         * Sets the permanences for each {@link Synapse}. The number of synapses
-         * is set by the potentialPct variable which determines the number of input
-         * bits a given column will be "attached" to which is the same number as the
-         * number of {@link Synapse}s
-         * 
-         * @param c			the {@link Connections} memory
-         * @param perms		the floating point degree of connectedness
-         */
-        public void setPermanences(Connections c, double[] perms)
-        {
-            var connCounts = c.getConnectedCounts();
+        ///**
+        // * Sets the permanences for each {@link Synapse}. The number of synapses
+        // * is set by the potentialPct variable which determines the number of input
+        // * bits a given column will be "attached" to which is the same number as the
+        // * number of {@link Synapse}s
+        // * 
+        // * @param c			the {@link Connections} memory
+        // * @param perms		the floating point degree of connectedness
+        // */
+        //public void setPermanencesOLD(Connections c, double[] perms)
+        //{
+        //    var connCounts = c.getConnectedCounts();
 
-            this.RFPool.resetConnections();
+        //    this.RFPool.resetConnections();
 
-            connCounts.clearStatistics(index);
+        //    connCounts.clearStatistics(index);
 
-            //List<Synapse> synapses = c.getSynapses(this);
+        //    //List<Synapse> synapses = c.getSynapses(this);
 
-            foreach (Synapse s in this.Synapses)
-            {
-                int indx = s.getInputIndex();
+        //    foreach (Synapse s in this.Synapses)
+        //    {
+        //        int indx = s.getInputIndex();
 
-                s.setPermanence(c.getSynPermConnected(), perms[indx]);
+        //        s.setPermanence(c.getSynPermConnected(), perms[indx]);
 
-                if (perms[indx] >= c.getSynPermConnected())
-                {
-                    connCounts.set(1, index, s.getInputIndex());
-                }
-            }
-        }
+        //        if (perms[indx] >= c.getSynPermConnected())
+        //        {
+        //            connCounts.set(1, index, s.getInputIndex());
+        //        }
+        //    }
+        //}
 
         /**
          * Sets the permanences for each {@link Synapse} specified by the indexes

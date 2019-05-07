@@ -17,7 +17,7 @@ namespace UnitTestsProject
             return GetDistributedDictionary(numOfColumns);
         }
 
-        private static DistributedMemory GetDistributedDictionary(int numOfColumns)
+        public static DistributedMemory GetDistributedDictionary(int numOfColumns)
         {
             var cfg = Helpers.DefaultHtmSparseIntDictionaryConfig;
             cfg.NumColumns = numOfColumns;
@@ -29,7 +29,7 @@ namespace UnitTestsProject
             };
         }
 
-        private static DistributedMemory GetInMemoryDictionary()
+        public static DistributedMemory GetInMemoryDictionary()
         {
             return new DistributedMemory()
             {

@@ -10,8 +10,9 @@
     actor.provider = cluster
 	log-config-on-start = on       
     remote {
+		connection-timeout = 120 s
         dot-netty.tcp {
-			maximum-frame-size = 16000000b
+			maximum-frame-size = 32000000b
             port = @PORT
 			public-hostname = @PUBHOSTNAME
             hostname = @HOSTNAME

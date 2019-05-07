@@ -33,14 +33,17 @@ namespace NeoCortexApi.DistributedComputeLib
 
             actSystem = ActorSystem.Create("Deployer", ConfigurationFactory.ParseString(@"
                 akka {  
+                    loglevel=Debug
                     actor{
                         provider = ""Akka.Remote.RemoteActorRefProvider, Akka.Remote""  		               
                     }
                     remote {
+                        connection-timeout = 120 s
                         helios.tcp {
-                            maximum-frame-size = 16000000b
+                            maximum-frame-size = 326000000b
 		                    port = 0
 		                    hostname = localhost
+                            
                         }
                     }
                 }"));
@@ -65,8 +68,6 @@ namespace NeoCortexApi.DistributedComputeLib
                 //result = dictActors[nodeIndx].Ask<int>(new CreateDictNodeMsg(), this.Config.ConnectionTimout).Result;
 
             }
-
-
         }
 
         /// <summary>
@@ -179,7 +180,7 @@ namespace NeoCortexApi.DistributedComputeLib
         {
             Dictionary<int, AddOrUpdateElementsMsg> list = new Dictionary<int, AddOrUpdateElementsMsg>();
 
-            int pageSize = 10;
+            int pageSize = 100;
             int alreadyProcessed = 0;
 
             while (true)

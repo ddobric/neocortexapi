@@ -142,6 +142,10 @@ namespace NeoCortexApi
             // Initialize the set of permanence values for each column. Ensure that
             // each column is connected to enough input bits to allow it to be activated.
             int numColumns = c.getNumColumns();
+            //Parallel.For<long>(0, numColumns, ()=>, (a, state, b, c) => { }
+            //{
+
+
             for (int i = 0; i < numColumns; i++)
             {
                 // Gets RF
@@ -155,10 +159,10 @@ namespace NeoCortexApi
 
                 //c.getPotentialPools().set(i, potPool);
                 
-                colList.Add(new KeyPair() { Key = i, Value = c.getColumn(i) });
+                colList.Add(new KeyPair() { Key = i, Value = column });
 
                 double[] perm = initPermanence(c.getSynPermConnected(), c.getSynPermMax(), 
-                    c.getRandom(), c.getSynPermTrimThreshold(), c, potential, i, c.getInitConnectedPct());
+                    c.getRandom(), c.getSynPermTrimThreshold(), c, potential, column, c.getInitConnectedPct());
 
                 updatePermanencesForColumn(c, perm, column, potential, true);
             }
@@ -777,7 +781,7 @@ namespace NeoCortexApi
             // Here we set all permanences to 0 
             ArrayUtils.lessThanOrEqualXThanSetToY(perm, c.getSynPermTrimThreshold(), 0);
             ArrayUtils.clip(perm, c.getSynPermMin(), c.getSynPermMax());
-            column.ProximalDendrite.setPermanences(c, perm);
+            column.setPermanences(c, perm);
         }
 
         /**
@@ -870,7 +874,7 @@ namespace NeoCortexApi
          *                          0.7 means, maximally 70% of potential might be connected
          * @return
          */
-        public double[] initPermanence(double synPermConnected, double synPermMax, Random random, double synapsePermanenceTrimThreshold, Connections c, int[] potentialPool, int colIndx, double connectedPct)
+        public double[] initPermanence(double synPermConnected, double synPermMax, Random random, double synapsePermanenceTrimThreshold, Connections c, int[] potentialPool, Column column, double connectedPct)
         {
             double[] perm = new double[c.NumInputs];
             foreach (int idx in potentialPool)
@@ -887,7 +891,7 @@ namespace NeoCortexApi
                 perm[idx] = perm[idx] < synapsePermanenceTrimThreshold ? 0 : perm[idx];
 
             }
-            c.getColumn(colIndx).ProximalDendrite.setPermanences(c, perm);
+            column.setPermanences(c, perm);
             return perm;
         }
 

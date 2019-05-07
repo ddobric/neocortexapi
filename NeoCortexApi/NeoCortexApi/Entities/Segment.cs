@@ -91,9 +91,9 @@ namespace NeoCortexApi.Entities
         /// specifies the synapse's sequence order within the pool object, and may be referenced by that index</remarks>
         /// <returns>Instance of the new synapse.</returns>
         /// <seealso cref="Synapse"/>
-        public Synapse createSynapse(Cell sourceCell, Pool pool, int index, int inputIndex)
+        public Synapse createSynapse(Cell sourceCell, int index, int inputIndex)
         {
-            Synapse synapse = new Synapse(sourceCell, this, pool, index, inputIndex);
+            Synapse synapse = new Synapse(sourceCell, this, index, inputIndex);
             this.Synapses.Add(synapse);
             return synapse;
         }

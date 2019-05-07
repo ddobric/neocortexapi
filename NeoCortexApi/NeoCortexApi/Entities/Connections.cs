@@ -661,7 +661,7 @@ namespace NeoCortexApi.Entities
         {
             foreach (int idx in s.getSparseIndices())
             {
-                memory.getObject(idx).ProximalDendrite.setPermanences(this, s.getObject(idx));
+                memory.getObject(idx).setPermanences(this, s.getObject(idx));
             }
         }
 

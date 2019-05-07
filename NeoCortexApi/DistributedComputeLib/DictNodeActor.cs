@@ -1,4 +1,5 @@
 ﻿using Akka.Actor;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -59,6 +60,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
                 foreach (var element in msg.Elements)
                 {
+                    //Console.WriteLine(JsonConvert.SerializeObject(element));
                     this.dict[element.Key] = element.Value;
                 }
 

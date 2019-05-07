@@ -1138,7 +1138,7 @@ namespace UnitTestsProject
 
                 // int[] indexes = ArrayUtils.where(potentialPools[i], cond);
                 mem.getColumn(i).setProximalConnectedSynapsesForTest(mem, indexes);
-                mem.getColumn(i).ProximalDendrite.setPermanences(mem, permanences[i]);
+                mem.getColumn(i).setPermanences(mem, permanences[i]);
             }
 
             //Execute method being tested
@@ -1372,7 +1372,7 @@ namespace UnitTestsProject
                 int[] indexes = ArrayUtils.IndexWhere(potentialPools[i], (n) => (n == 1));
                 //    int[] indexes = ArrayUtils.where(potentialPools[i], cond);
                 mem.getColumn(i).setProximalConnectedSynapsesForTest(mem, indexes);
-                mem.getColumn(i).ProximalDendrite.setPermanences(mem, permanences[i]);
+                mem.getColumn(i).setPermanences(mem, permanences[i]);
             }
 
             int[] inputVector = new int[] { 1, 0, 0, 1, 1, 0, 1, 0 };
@@ -1419,7 +1419,7 @@ namespace UnitTestsProject
 
                 //int[] indexes = ArrayUtils.where(potentialPools[i], cond);
                 mem.getColumn(i).setProximalConnectedSynapsesForTest(mem, indexes);
-                mem.getColumn(i).ProximalDendrite.setPermanences(mem, permanences[i]);
+                mem.getColumn(i).setPermanences(mem, permanences[i]);
             }
 
             sp.adaptSynapses(mem, inputVector, activeColumns);
@@ -1531,7 +1531,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < mem.getNumColumns(); i++)
             {
-                mem.getColumn(i).ProximalDendrite.setPermanences(mem, permanences[i]);
+                mem.getColumn(i).setPermanences(mem, permanences[i]);
                 sp.updatePermanencesForColumn(mem, permanences[i], mem.getColumn(i), connectedDense[i], true);
                 int[] dense = mem.getColumn(i).getProximalDendrite().getConnectedSynapsesDense();
                 trueConnectedSynapses[i].ArrToString().SequenceEqual(dense.ArrToString());
@@ -1723,14 +1723,14 @@ namespace UnitTestsProject
             mem.setPotentialRadius(2);
             double connectedPct = 1;
             int[] mask = new int[] { 0, 1, 2, 8, 9 };
-            double[] perm = this.sp.initPermanence(mem.getSynPermConnected(), mem.getSynPermMax(), mem.getRandom(), mem.getSynPermTrimThreshold(), mem, mask, 0, connectedPct);
+            double[] perm = this.sp.initPermanence(mem.getSynPermConnected(), mem.getSynPermMax(), mem.getRandom(), mem.getSynPermTrimThreshold(), mem, mask, mem.getColumn(0), connectedPct);
             int numcon = ArrayUtils.valueGreaterCount(mem.getSynPermConnected(), perm);
 
             // Because of connectedPct=1 all 5 specified synapses have to be connected.
             Assert.AreEqual(5, numcon);
 
             connectedPct = 0;
-            perm = this.sp.initPermanence(mem.getSynPermConnected(), mem.getSynPermMax(), mem.getRandom(), mem.getSynPermTrimThreshold(), mem, mask, 0, connectedPct);
+            perm = this.sp.initPermanence(mem.getSynPermConnected(), mem.getSynPermMax(), mem.getRandom(), mem.getSynPermTrimThreshold(), mem, mask, mem.getColumn(0), connectedPct);
             numcon = ArrayUtils.valueGreaterCount(mem.getSynPermConnected(), perm);
             Assert.AreEqual(0, numcon);
 
@@ -1739,7 +1739,7 @@ namespace UnitTestsProject
             mem.NumInputs = 100;
             mask = new int[100];
             for (int i = 0; i < 100; i++) mask[i] = i;
-            double[] perma = this.sp.initPermanence(mem.getSynPermConnected(), mem.getSynPermMax(), mem.getRandom(), mem.getSynPermTrimThreshold(), mem, mask, 0, connectedPct);
+            double[] perma = this.sp.initPermanence(mem.getSynPermConnected(), mem.getSynPermMax(), mem.getRandom(), mem.getSynPermTrimThreshold(), mem, mask, mem.getColumn(0), connectedPct);
             numcon = ArrayUtils.valueGreaterOrEqualCount(mem.getSynPermConnected(), perma);
             Assert.IsTrue(numcon > 0);
             Assert.IsTrue(numcon < mem.NumInputs);
@@ -1791,7 +1791,7 @@ namespace UnitTestsProject
             mem.NumInputs = 10;
             double connectedPct = 1;
             int[] mask = new int[] { 0, 1 };
-            double[] perm = sp.initPermanence(mem.getSynPermConnected(), mem.getSynPermMax(), mem.getRandom(), mem.getSynPermTrimThreshold(), mem, mask, 0, connectedPct);
+            double[] perm = sp.initPermanence(mem.getSynPermConnected(), mem.getSynPermMax(), mem.getRandom(), mem.getSynPermTrimThreshold(), mem, mask, mem.getColumn(0), connectedPct);
             int[] trueConnected = new int[] { 0, 1 };
 
             //Condition<?> cond = new Condition.Adapter<Object>()
@@ -1805,19 +1805,19 @@ namespace UnitTestsProject
 
             connectedPct = 1;
             mask = new int[] { 4, 5, 6 };
-            perm = sp.initPermanence(mem.getSynPermConnected(), mem.getSynPermMax(), mem.getRandom(), mem.getSynPermTrimThreshold(), mem, mask, 0, connectedPct);
+            perm = sp.initPermanence(mem.getSynPermConnected(), mem.getSynPermMax(), mem.getRandom(), mem.getSynPermTrimThreshold(), mem, mask, mem.getColumn(0), connectedPct);
             trueConnected = new int[] { 4, 5, 6 };
             ArrayUtils.toDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
 
             connectedPct = 1;
             mask = new int[] { 8, 9 };
-            perm = sp.initPermanence(mem.getSynPermConnected(), mem.getSynPermMax(), mem.getRandom(), mem.getSynPermTrimThreshold(), mem, mask, 0, connectedPct);
+            perm = sp.initPermanence(mem.getSynPermConnected(), mem.getSynPermMax(), mem.getRandom(), mem.getSynPermTrimThreshold(), mem, mask, mem.getColumn(0), connectedPct);
             trueConnected = new int[] { 8, 9 };
             ArrayUtils.toDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
 
             connectedPct = 1;
             mask = new int[] { 0, 1, 2, 3, 4, 5, 6, 8, 9 };
-            perm = sp.initPermanence(mem.getSynPermConnected(), mem.getSynPermMax(), mem.getRandom(), mem.getSynPermTrimThreshold(), mem, mask, 0, connectedPct);
+            perm = sp.initPermanence(mem.getSynPermConnected(), mem.getSynPermMax(), mem.getRandom(), mem.getSynPermTrimThreshold(), mem, mask, mem.getColumn(0), connectedPct);
             trueConnected = new int[] { 0, 1, 2, 3, 4, 5, 6, 8, 9 };
             ArrayUtils.toDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
         }
