@@ -184,7 +184,7 @@ namespace NeoCortexApi.Entities
 
             //mem.set(this.Index, this);
             
-            c.getPotentialPools().set(this.Index, pool);
+            //c.getPotentialPools().set(this.Index, pool);
 
             return pool;
         }

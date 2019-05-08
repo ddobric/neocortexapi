@@ -1136,7 +1136,7 @@ namespace NeoCortexApi.Entities
          * of column indexes to their lists of potential inputs.
          * @return	the potential pools
          */
-        public IFlatMatrix<Pool> getPotentialPools()
+        public IFlatMatrix<Pool> getPotentialPoolsOld()
         {
             return this.potentialPools;
         }
@@ -2414,7 +2414,8 @@ namespace NeoCortexApi.Entities
             int[][] retVal = new int[getNumColumns()][];
             for (int i = 0; i < getNumColumns(); i++)
             {
-                Pool pool = getPotentialPools().get(i);
+                //Pool pool = getPotentialPools().get(i);
+                Pool pool = getColumn(i).ProximalDendrite.RFPool;
                 int[] indexes = pool.getDenseConnected();
                 retVal[i] = indexes;
             }
@@ -2432,7 +2433,8 @@ namespace NeoCortexApi.Entities
             int[][] retVal = new int[getNumColumns()][];
             for (int i = 0; i < getNumColumns(); i++)
             {
-                Pool pool = getPotentialPools().get(i);
+                //Pool pool = getPotentialPools().get(i);
+                Pool pool = getColumn(i).ProximalDendrite.RFPool;
                 int[] indexes = pool.getDensePotential(this);
                 retVal[i] = indexes;
             }
@@ -2450,7 +2452,8 @@ namespace NeoCortexApi.Entities
             double[][] retVal = new double[getNumColumns()][];
             for (int i = 0; i < getNumColumns(); i++)
             {
-                Pool pool = getPotentialPools().get(i);
+                //Pool pool = getPotentialPools().get(i);
+                Pool pool = getColumn(i).ProximalDendrite.RFPool;
                 double[] perm = pool.getDensePermanences(this);
                 retVal[i] = perm;
             }

@@ -129,7 +129,8 @@ namespace NeoCortexApi.Entities
         {
             //Pool pool = createPool(c, connectedIndexes);
             var pool = new Pool(connectedIndexes.Length, c.NumInputs);
-            c.getPotentialPools().set(index, pool);
+            //c.getPotentialPools().set(index, pool);
+            c.getPotentialPoolsOld().set(index, pool);
         }
 
         /**

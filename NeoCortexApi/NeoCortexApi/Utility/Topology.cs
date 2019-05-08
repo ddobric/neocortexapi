@@ -8,11 +8,9 @@ namespace NeoCortexApi.Utility
    // [Serializable]
     public class Topology : Coordinator //implements Serializable
     {
-        /** keep it simple */
-        private static readonly long serialVersionUID = 1L;
-
+   
         private IntGenerator[] igs;
-        private int[] centerPosition;
+        //private int[] centerPosition;
 
 
         /**
@@ -68,7 +66,7 @@ namespace NeoCortexApi.Utility
          */
         public int[] GetNeighborhood(int centerIndex, int radius)
         {
-            centerPosition = GetCoordinatesFromIndex(centerIndex);
+            var centerPosition = GetCoordinatesFromIndex(centerIndex);
 
             IntGenerator[] intGens = new IntGenerator[dimensions.Length];
             for (int i = 0; i < dimensions.Length; i++)
