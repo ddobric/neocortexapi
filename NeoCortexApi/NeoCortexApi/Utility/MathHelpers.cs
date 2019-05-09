@@ -61,7 +61,7 @@ namespace NeoCortexApi.Utility
                 }
 
                 h[i] = numOfDifferentBits;
-                if (originArray[i].Length > 0)
+                if (originArray[i].Length > 0 && originArray[i].Count(b => b == 1) > 0)
                 {
                     //hammingDistance[i] = ((originArray[i].Length - numOfDifferentBits) * 100 / originArray[i].Length);
                     if (countNoneZerosOnly == true)
@@ -75,7 +75,7 @@ namespace NeoCortexApi.Utility
                     
                 }
                 else
-                    hammingDistance[i] = double.PositiveInfinity;
+                    hammingDistance[i] = double.NegativeInfinity;
             }
 
             return hammingDistance;

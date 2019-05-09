@@ -33,7 +33,7 @@ namespace NeoCortexApi.Entities
          * @param cell      the owner
          * @param flatIdx     this {@code Segment}'s index.
          */
-        public DistalDendrite(Cell parentCell, int flatIdx, long lastUsedIteration, int ordinal) : base(flatIdx)
+        public DistalDendrite(Cell parentCell, int flatIdx, long lastUsedIteration, int ordinal, double synapsePermConnected, int numInputs) : base(flatIdx, synapsePermConnected, numInputs)
         {
             this.ParentCell = parentCell;
             this.ordinal = ordinal;

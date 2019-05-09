@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace UnitTestsProject
 {
@@ -148,7 +149,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < mem.getNumColumns(); i++)
             {
-                int[] permanences = ArrayUtils.toIntArray(mem.getPotentialPools().get(i).getDensePermanences(mem));
+                int[] permanences = ArrayUtils.toIntArray(mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem));
 
                 Assert.IsTrue(inputVector.SequenceEqual(permanences));
             }
@@ -191,7 +192,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < mem.getNumColumns(); i++)
             {
-                int[] permanences = ArrayUtils.toIntArray(mem.getPotentialPools().get(i).getDensePermanences(mem));
+                int[] permanences = ArrayUtils.toIntArray(mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem));
                 int[] potential = (int[])mem.getConnectedCounts().getSlice(i);
                 Assert.IsTrue(permanences.SequenceEqual(potential));
             }
@@ -284,7 +285,7 @@ namespace UnitTestsProject
 
             int[] activeArray = new int[nColumns];
             sp.compute(cn, new int[inputSize], activeArray, true);
-           
+
             Assert.IsTrue(6 == activeArray.Count(i => i > 0));//, ArrayUtils.INT_GREATER_THAN_0).length);
         }
 
@@ -1030,7 +1031,8 @@ namespace UnitTestsProject
 
             //[ 45  46  48 105 125 145]
             //mem.getConnectedSynapses().set(0, connected.toArray());
-            mem.getPotentialPools().set(0, new Pool(6));
+            // mem.getPotentialPools().set(0, new Pool(6, mem.NumInputs));
+            mem.getColumn(0).ProximalDendrite.RFPool = new Pool(6, mem.NumInputs);
             mem.getColumn(0).setProximalConnectedSynapsesForTest(mem, connected.ToArray());
 
             connected.Clear();
@@ -1043,7 +1045,8 @@ namespace UnitTestsProject
 
             //[ 80  85 120 125]
             //mem.getConnectedSynapses().set(1, connected.toArray());
-            mem.getPotentialPools().set(1, new Pool(4));
+            //mem.getPotentialPools().set(1, new Pool(4, mem.NumInputs));
+            mem.getColumn(1).ProximalDendrite.RFPool = new Pool(4, mem.NumInputs);
             mem.getColumn(1).setProximalConnectedSynapsesForTest(mem, connected.ToArray());
 
             connected.Clear();
@@ -1058,7 +1061,8 @@ namespace UnitTestsProject
 
             //[  1   3   6   9  42 156]
             //mem.getConnectedSynapses().set(2, connected.toArray());
-            mem.getPotentialPools().set(2, new Pool(4));
+            //mem.getPotentialPools().set(2, new Pool(4, mem.NumInputs));
+            mem.getColumn(2).ProximalDendrite.RFPool = new Pool(4, mem.NumInputs);
             mem.getColumn(2).setProximalConnectedSynapsesForTest(mem, connected.ToArray());
 
             connected.Clear();
@@ -1069,12 +1073,14 @@ namespace UnitTestsProject
 
             //[  0 159]
             //mem.getConnectedSynapses().set(3, connected.toArray());
-            mem.getPotentialPools().set(3, new Pool(4));
+            //mem.getPotentialPools().set(3, new Pool(4, mem.NumInputs));
+            mem.getColumn(3).ProximalDendrite.RFPool = new Pool(4, mem.NumInputs);
             mem.getColumn(3).setProximalConnectedSynapsesForTest(mem, connected.ToArray());
 
             //[]
             connected.Clear();
-            mem.getPotentialPools().set(4, new Pool(4));
+            //mem.getPotentialPools().set(4, new Pool(4, mem.NumInputs));
+            mem.getColumn(4).ProximalDendrite.RFPool = new Pool(4, mem.NumInputs);
             mem.getColumn(4).setProximalConnectedSynapsesForTest(mem, connected.ToArray());
 
             double[] trueAvgConnectedSpan = new double[] { 11.0 / 4d, 6.0 / 4d, 14.0 / 4d, 15.0 / 4d, 0d };
@@ -1138,7 +1144,7 @@ namespace UnitTestsProject
 
                 // int[] indexes = ArrayUtils.where(potentialPools[i], cond);
                 mem.getColumn(i).setProximalConnectedSynapsesForTest(mem, indexes);
-                mem.getColumn(i).setProximalPermanences(mem, permanences[i]);
+                mem.getColumn(i).setPermanences(mem, permanences[i]);
             }
 
             //Execute method being tested
@@ -1146,7 +1152,8 @@ namespace UnitTestsProject
 
             for (int i = 0; i < mem.getNumColumns(); i++)
             {
-                double[] perms = mem.getPotentialPools().get(i).getDensePermanences(mem);
+                //double[] perms = mem.getPotentialPools().get(i).getDensePermanences(mem);
+                double[] perms = mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem);
                 for (int j = 0; j < truePermanences[i].Length; j++)
                 {
                     Assert.IsTrue(Math.Abs(truePermanences[i][j] - perms[j]) <= 0.01);
@@ -1154,6 +1161,52 @@ namespace UnitTestsProject
             }
         }
 
+
+        /// <summary>
+        /// Ensures that neighborhod calculation is thread-safe.
+        ///{5 - [4,5,6]}
+        ///{2 - [1,2,3]}
+        ///{3 - [2,3,4]}
+        ///{6 - [5,6,7]}
+        ///{4 - [3,4,5]}
+        ///{1 - [0,1,2]}
+        ///{0 - [0,1]}
+        /// </summary>
+        [TestMethod]
+        public void TestParallelNeighborhood()
+        {
+            int[][] expectedList = new int[8][];
+
+            expectedList[0] = new int[] { 0, 1 };
+            expectedList[1] = new int[] { 0, 1, 2 };
+            expectedList[2] = new int[] { 1, 2, 3 };
+            expectedList[3] = new int[] { 2, 3, 4 };
+            expectedList[4] = new int[] { 3, 4, 5 };
+            expectedList[5] = new int[] { 4, 5, 6 };
+            expectedList[6] = new int[] { 5, 6, 7 };
+            expectedList[7] = new int[] { 6, 7 };
+
+            setupDefaultParameters();
+            parameters.setInputDimensions(new int[] { 5 });
+            parameters.setColumnDimensions(new int[] { 8 });
+            parameters.Set(KEY.WRAP_AROUND, false);
+            initSP();
+
+            mem.InhibitionRadius = 1;
+            int inhibitionRadius = 1;
+
+            for (int k = 0; k < 100; k++)
+            {
+                Parallel.For(0, 8, (i) =>
+                {
+                    int[] neighborhood = mem.getColumnTopology().GetNeighborhood(i, inhibitionRadius);
+                     
+                    Assert.IsTrue(expectedList[i].SequenceEqual(neighborhood));                    
+                });
+            }
+        }
+
+      
         [TestMethod]
         public void testUpdateMinDutyCycleLocal()
         {
@@ -1175,9 +1228,8 @@ namespace UnitTestsProject
 
             for (var i = 0; i < expected0.Length; i++)
             {
-                Assert.IsTrue(Math.Abs(expected0[i] - resultMinActiveDutyCycles[i]) <= 0.01);
+                Console.WriteLine($"{i}: {expected0[i]}-{resultMinActiveDutyCycles[i]}\t = {expected0[i] - resultMinActiveDutyCycles[i]} | {expected0[i] - resultMinActiveDutyCycles[i] <= 0.01}"); Assert.IsTrue(Math.Abs(expected0[i] - resultMinActiveDutyCycles[i]) <= 0.01);
             }
-
             //IntStream.range(0, expected0.length)
             //    .forEach(i->assertEquals(expected0[i], resultMinActiveDutyCycles[i], 0.01));
 
@@ -1186,7 +1238,7 @@ namespace UnitTestsProject
 
             for (var i = 0; i < expected1.Length; i++)
             {
-                Assert.IsTrue(Math.Abs(expected1[i] - resultMinOverlapDutyCycles[i]) <= 0.01);
+                Assert.IsTrue(Math.Abs(expected1[i] - resultMinOverlapDutyCycles[i]) <= 0.01, $"At position: {i} - exp: {expected1[i]} - READ: {resultMinOverlapDutyCycles[i]}");
             }
 
             //IntStream.range(0, expected1.length)
@@ -1211,7 +1263,8 @@ namespace UnitTestsProject
 
             for (var i = 0; i < expected2.Length; i++)
             {
-                Assert.IsTrue(Math.Abs(expected2[i] - resultMinActiveDutyCycles2[i]) <= 0.01);
+                Console.WriteLine($"{i} - exp: {expected2[i]} - read: {resultMinActiveDutyCycles2[i]}");
+                Assert.IsTrue(Math.Abs(expected2[i] - resultMinActiveDutyCycles2[i]) <= 0.01, $"At position: {i} - exp: {expected2[i]} - READ: {resultMinActiveDutyCycles2[i]}");
             }
 
             //IntStream.range(0, expected2.length)
@@ -1222,7 +1275,7 @@ namespace UnitTestsProject
 
             for (var i = 0; i < expected3.Length; i++)
             {
-                Assert.IsTrue(Math.Abs(expected3[i] - resultMinOverlapDutyCycles2[i]) <= 0.01);
+                Assert.IsTrue(Math.Abs(expected3[i] - resultMinOverlapDutyCycles2[i]) <= 0.01, $"At position: {i} - exp: {expected2[i]} - READ: {resultMinActiveDutyCycles2[i]}");
             }
 
             //IntStream.range(0, expected3.length)
@@ -1372,7 +1425,7 @@ namespace UnitTestsProject
                 int[] indexes = ArrayUtils.IndexWhere(potentialPools[i], (n) => (n == 1));
                 //    int[] indexes = ArrayUtils.where(potentialPools[i], cond);
                 mem.getColumn(i).setProximalConnectedSynapsesForTest(mem, indexes);
-                mem.getColumn(i).setProximalPermanences(mem, permanences[i]);
+                mem.getColumn(i).setPermanences(mem, permanences[i]);
             }
 
             int[] inputVector = new int[] { 1, 0, 0, 1, 1, 0, 1, 0 };
@@ -1382,7 +1435,8 @@ namespace UnitTestsProject
 
             for (int i = 0; i < mem.getNumColumns(); i++)
             {
-                double[] perms = mem.getPotentialPools().get(i).getDensePermanences(mem);
+                //double[] perms = mem.getPotentialPools().get(i).getDensePermanences(mem);
+                double[] perms = mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem);
                 for (int j = 0; j < truePermanences[i].Length; j++)
                 {
                     Assert.IsTrue(Math.Abs(truePermanences[i][j] - perms[j]) <= 0.01);
@@ -1419,14 +1473,14 @@ namespace UnitTestsProject
 
                 //int[] indexes = ArrayUtils.where(potentialPools[i], cond);
                 mem.getColumn(i).setProximalConnectedSynapsesForTest(mem, indexes);
-                mem.getColumn(i).setProximalPermanences(mem, permanences[i]);
+                mem.getColumn(i).setPermanences(mem, permanences[i]);
             }
 
             sp.adaptSynapses(mem, inputVector, activeColumns);
 
             for (int i = 0; i < mem.getNumColumns(); i++)
             {
-                double[] perms = mem.getPotentialPools().get(i).getDensePermanences(mem);
+                double[] perms = mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem);
                 for (int j = 0; j < truePermanences[i].Length; j++)
                 {
                     Assert.IsTrue(Math.Abs(truePermanences[i][j] - perms[j]) <= 0.01);
@@ -1481,7 +1535,8 @@ namespace UnitTestsProject
             int[] indices = mem.getMemory().getSparseIndices();
             for (int i = 0; i < mem.getNumColumns(); i++)
             {
-                double[] perm = mem.getPotentialPools().get(i).getSparsePermanences();
+                // double[] perm = mem.getPotentialPools().get(i).getSparsePermanences();
+                double[] perm = mem.getColumn(i).ProximalDendrite.RFPool.getSparsePermanences();
                 sp.raisePermanenceToThreshold(mem, perm, indices);
 
                 for (int j = 0; j < perm.Length; j++)
@@ -1531,9 +1586,9 @@ namespace UnitTestsProject
 
             for (int i = 0; i < mem.getNumColumns(); i++)
             {
-                mem.getColumn(i).setProximalPermanences(mem, permanences[i]);
+                mem.getColumn(i).setPermanences(mem, permanences[i]);
                 sp.updatePermanencesForColumn(mem, permanences[i], mem.getColumn(i), connectedDense[i], true);
-                int[] dense = mem.getColumn(i).getProximalDendrite().getConnectedSynapsesDense(mem);
+                int[] dense = mem.getColumn(i).getProximalDendrite().getConnectedSynapsesDense();
                 trueConnectedSynapses[i].ArrToString().SequenceEqual(dense.ArrToString());
             }
 
@@ -1723,14 +1778,14 @@ namespace UnitTestsProject
             mem.setPotentialRadius(2);
             double connectedPct = 1;
             int[] mask = new int[] { 0, 1, 2, 8, 9 };
-            double[] perm = this.sp.initPermanence(mem, mask, 0, connectedPct);
+            double[] perm = this.sp.initPermanence(mem.getSynPermConnected(), mem.getSynPermMax(), mem.getRandom(), mem.getSynPermTrimThreshold(), mem, mask, mem.getColumn(0), connectedPct);
             int numcon = ArrayUtils.valueGreaterCount(mem.getSynPermConnected(), perm);
 
             // Because of connectedPct=1 all 5 specified synapses have to be connected.
             Assert.AreEqual(5, numcon);
 
             connectedPct = 0;
-            perm = this.sp.initPermanence(mem, mask, 0, connectedPct);
+            perm = this.sp.initPermanence(mem.getSynPermConnected(), mem.getSynPermMax(), mem.getRandom(), mem.getSynPermTrimThreshold(), mem, mask, mem.getColumn(0), connectedPct);
             numcon = ArrayUtils.valueGreaterCount(mem.getSynPermConnected(), perm);
             Assert.AreEqual(0, numcon);
 
@@ -1739,7 +1794,7 @@ namespace UnitTestsProject
             mem.NumInputs = 100;
             mask = new int[100];
             for (int i = 0; i < 100; i++) mask[i] = i;
-            double[] perma = this.sp.initPermanence(mem, mask, 0, connectedPct);
+            double[] perma = this.sp.initPermanence(mem.getSynPermConnected(), mem.getSynPermMax(), mem.getRandom(), mem.getSynPermTrimThreshold(), mem, mask, mem.getColumn(0), connectedPct);
             numcon = ArrayUtils.valueGreaterOrEqualCount(mem.getSynPermConnected(), perma);
             Assert.IsTrue(numcon > 0);
             Assert.IsTrue(numcon < mem.NumInputs);
@@ -1791,7 +1846,7 @@ namespace UnitTestsProject
             mem.NumInputs = 10;
             double connectedPct = 1;
             int[] mask = new int[] { 0, 1 };
-            double[] perm = sp.initPermanence(mem, mask, 0, connectedPct);
+            double[] perm = sp.initPermanence(mem.getSynPermConnected(), mem.getSynPermMax(), mem.getRandom(), mem.getSynPermTrimThreshold(), mem, mask, mem.getColumn(0), connectedPct);
             int[] trueConnected = new int[] { 0, 1 };
 
             //Condition<?> cond = new Condition.Adapter<Object>()
@@ -1805,19 +1860,19 @@ namespace UnitTestsProject
 
             connectedPct = 1;
             mask = new int[] { 4, 5, 6 };
-            perm = sp.initPermanence(mem, mask, 0, connectedPct);
+            perm = sp.initPermanence(mem.getSynPermConnected(), mem.getSynPermMax(), mem.getRandom(), mem.getSynPermTrimThreshold(), mem, mask, mem.getColumn(0), connectedPct);
             trueConnected = new int[] { 4, 5, 6 };
             ArrayUtils.toDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
 
             connectedPct = 1;
             mask = new int[] { 8, 9 };
-            perm = sp.initPermanence(mem, mask, 0, connectedPct);
+            perm = sp.initPermanence(mem.getSynPermConnected(), mem.getSynPermMax(), mem.getRandom(), mem.getSynPermTrimThreshold(), mem, mask, mem.getColumn(0), connectedPct);
             trueConnected = new int[] { 8, 9 };
             ArrayUtils.toDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
 
             connectedPct = 1;
             mask = new int[] { 0, 1, 2, 3, 4, 5, 6, 8, 9 };
-            perm = sp.initPermanence(mem, mask, 0, connectedPct);
+            perm = sp.initPermanence(mem.getSynPermConnected(), mem.getSynPermMax(), mem.getRandom(), mem.getSynPermTrimThreshold(), mem, mask, mem.getColumn(0), connectedPct);
             trueConnected = new int[] { 0, 1, 2, 3, 4, 5, 6, 8, 9 };
             ArrayUtils.toDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
         }
@@ -1852,7 +1907,7 @@ namespace UnitTestsProject
 
             trueNewDc = new double[5];
             Array.Copy(dc, trueNewDc, trueNewDc.Length);
-            
+
             Assert.IsTrue(trueNewDc.SequenceEqual(newDc));
 
             dc = new double[5];
@@ -2415,7 +2470,7 @@ namespace UnitTestsProject
             }
         }
 
-       
+
     }
 
 

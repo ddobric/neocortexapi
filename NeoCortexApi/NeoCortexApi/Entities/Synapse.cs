@@ -25,26 +25,31 @@ namespace NeoCortexApi.Entities
   * @see DistalDendrite
   * @see Connections
   */
- 
-   // [System.SerializableAttribute] 
+
+    // [System.SerializableAttribute] 
     public class Synapse : IEquatable<Synapse>, IComparable<Synapse>
     {
         /// <summary>
         /// Cell which activates this synapse. On proximal dendrite is this set on NULL. That means proximal dentrites have no presynaptic cell.
         /// </summary>
-        private Cell sourceCell;
+        public Cell SourceCell { get; set; }
 
-        private Segment segment;
-        private Pool pool;
-        private int synapseIndex;
-        private Integer boxedIndex;
+        public Segment Segment { get; set; }
+
+        //public Pool Pool {get;set;}
+
+        public int SynapseIndex { get; set; }
+
+        public Integer BoxedIndex { get; set; }
 
         /// <summary>
         /// Index of pre-synaptic cell.
         /// </summary>
-        private int inputIndex;
-        private double permanence;
-        private bool m_Isdestroyed;
+        public int InputIndex { get; set; }
+
+        public double Permanence { get; set; }
+
+        public bool m_Isdestroyed { get; set; }
 
         /**
          * Constructor used when setting parameters later.
@@ -61,12 +66,12 @@ namespace NeoCortexApi.Entities
          */
         public Synapse(Cell presynapticCell, Segment segment, int index, double permanence)
         {
-            this.sourceCell = presynapticCell;
-            this.segment = segment;
-            this.synapseIndex = index;
-            this.boxedIndex = new Integer(index);
-            this.inputIndex = presynapticCell.Index;
-            this.permanence = permanence;
+            this.SourceCell = presynapticCell;
+            this.Segment = segment;
+            this.SynapseIndex = index;
+            this.BoxedIndex = new Integer(index);
+            this.InputIndex = presynapticCell.Index;
+            this.Permanence = permanence;
         }
 
         /**
@@ -80,14 +85,14 @@ namespace NeoCortexApi.Entities
          * @param index         this {@code Synapse}'s index
          * @param inputIndex	the index of this {@link Synapse}'s input; be it a Cell or InputVector bit.
          */
-        public Synapse(Connections c, Cell sourceCell, Segment segment, Pool pool, int index, int inputIndex)
+        public Synapse(Cell sourceCell, Segment segment, int synapseIndex, int inputIndex)
         {
-            this.sourceCell = sourceCell;
-            this.segment = segment;
-            this.pool = pool;
-            this.synapseIndex = index;
-            this.boxedIndex = new Integer(index);
-            this.inputIndex = inputIndex;
+            this.SourceCell = sourceCell;
+            this.Segment = segment;
+            //this.Pool = pool;
+            this.SynapseIndex = synapseIndex;
+            this.BoxedIndex = new Integer(synapseIndex);
+            this.InputIndex = inputIndex;
         }
 
         /**
@@ -96,7 +101,7 @@ namespace NeoCortexApi.Entities
          */
         public int getIndex()
         {
-            return synapseIndex;
+            return SynapseIndex;
         }
 
         /**
@@ -106,7 +111,7 @@ namespace NeoCortexApi.Entities
          */
         public int getInputIndex()
         {
-            return inputIndex;
+            return InputIndex;
         }
 
         /**
@@ -115,22 +120,22 @@ namespace NeoCortexApi.Entities
          */
         public double getPermanence()
         {
-            return permanence;
+            return Permanence;
         }
 
         /**
          * Sets this {@code Synapse}'s degree of connectedness.
          * @param perm
          */
-        public void setPermanence(Connections c, double perm)
+        public void setPermanence(double synPermConnected, double perm)
         {
-            this.permanence = perm;
+            this.Permanence = perm;
 
-            // On proximal dendrite which has no presynaptic cell
-            if (sourceCell == null)
-            {
-                pool.updatePool(c, this, perm);
-            }
+            //// On proximal dendrite which has no presynaptic cell
+            //if (SourceCell == null)
+            //{
+            //    Pool.updatePool(synPermConnected, this, perm);
+            //}
         }
 
         /**
@@ -139,7 +144,7 @@ namespace NeoCortexApi.Entities
          */
         public Segment getSegment()
         {
-            return segment;
+            return Segment;
         }
 
         /**
@@ -149,7 +154,7 @@ namespace NeoCortexApi.Entities
          */
         public void setPresynapticCell(Cell cell)
         {
-            this.sourceCell = cell;
+            this.SourceCell = cell;
         }
 
         /**
@@ -158,7 +163,7 @@ namespace NeoCortexApi.Entities
          */
         public Cell getPresynapticCell()
         {
-            return sourceCell;
+            return SourceCell;
         }
 
         /**
@@ -184,27 +189,13 @@ namespace NeoCortexApi.Entities
          */
         public override String ToString()
         {
-            //StringBuilder sb = new StringBuilder("synapse: [ synIndx=")
-            //    .Append(synapseIndex)
-            //    .Append(", inIndx=")
-            //    .Append(inputIndex)
-            //    .Append(", segIndx=")
-            //    .Append(segment.getIndex());
-
-            //if (sourceCell != null)
-            //{
-            //    sb.Append(", srcCellIndx=").Append(sourceCell.getIndex());
-            //}
-
-            //sb.Append(" ]");
-
             string srcCell = String.Empty;
-            if (sourceCell != null)
+            if (SourceCell != null)
             {
-                srcCell = $"[SrcCell: {sourceCell.ToString()}]";
+                srcCell = $"[SrcCell: {SourceCell.ToString()}]";
             }
 
-            return $"Syn: synIndx:{synapseIndex}, inpIndx:{inputIndex}, [{segment}], {srcCell}";
+            return $"Syn: synIndx:{SynapseIndex}, inpIndx:{InputIndex}, perm:{this.Permanence}[{Segment}], {srcCell}";
         }
 
     
@@ -213,10 +204,10 @@ namespace NeoCortexApi.Entities
         {
             int prime = 31;
             int result = 1;
-            result = prime * result + inputIndex;
-            result = prime * result + ((segment == null) ? 0 : segment.GetHashCode());
-            result = prime * result + ((sourceCell == null) ? 0 : sourceCell.GetHashCode());
-            result = prime * result + synapseIndex;
+            result = prime * result + InputIndex;
+            result = prime * result + ((Segment == null) ? 0 : Segment.GetHashCode());
+            result = prime * result + ((SourceCell == null) ? 0 : SourceCell.GetHashCode());
+            result = prime * result + SynapseIndex;
             return result;
         }
 
@@ -234,25 +225,25 @@ namespace NeoCortexApi.Entities
             if (typeof(Synapse) != obj.GetType())
                 return false;
             Synapse other = (Synapse)obj;
-            if (inputIndex != other.inputIndex)
+            if (InputIndex != other.InputIndex)
                 return false;
-            if (segment == null)
+            if (Segment == null)
             {
-                if (other.segment != null)
+                if (other.Segment != null)
                     return false;
             }
-            else if (!segment.Equals(other.segment))
+            else if (!Segment.Equals(other.Segment))
                 return false;
-            if (sourceCell == null)
+            if (SourceCell == null)
             {
-                if (other.sourceCell != null)
+                if (other.SourceCell != null)
                     return false;
             }
-            else if (!sourceCell.Equals(other.sourceCell))
+            else if (!SourceCell.Equals(other.SourceCell))
                 return false;
-            if (synapseIndex != other.synapseIndex)
+            if (SynapseIndex != other.SynapseIndex)
                 return false;
-            if (permanence != other.permanence)
+            if (Permanence != other.Permanence)
                 return false;
             return true;
         }
@@ -265,28 +256,28 @@ namespace NeoCortexApi.Entities
             if (obj == null)
                 return false;
 
-            if (inputIndex != obj.inputIndex)
+            if (InputIndex != obj.InputIndex)
                 return false;
 
             //
             // Synapses are equal if they belong to the same segment.
-            if (segment == null && obj.segment != null)
+            if (Segment == null && obj.Segment != null)
             {
                 return false;
             }
-            else if (!segment.Equals(obj.segment))
+            else if (!Segment.Equals(obj.Segment))
                 return false;
 
-            if (sourceCell == null)
+            if (SourceCell == null)
             {
-                if (obj.sourceCell != null)
+                if (obj.SourceCell != null)
                     return false;
             }
-            else if (!sourceCell.Equals(obj.sourceCell))
+            else if (!SourceCell.Equals(obj.SourceCell))
                 return false;
-            if (synapseIndex != obj.synapseIndex)
+            if (SynapseIndex != obj.SynapseIndex)
                 return false;
-            if (permanence != obj.permanence)
+            if (Permanence != obj.Permanence)
                 return false;
             return true;
         }

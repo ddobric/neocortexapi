@@ -75,7 +75,7 @@ namespace NeoCortexApi.Entities
             }
             else
             {
-                KeyValuePair<int, T> p = new KeyValuePair<int, T>(1, default(T));
+                sparseMap[index] = obj;
             }
 
             return this;

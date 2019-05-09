@@ -1,4 +1,5 @@
 ﻿using Akka.Actor;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,6 +12,12 @@ namespace NeoCortexApi.DistributedComputeLib
     {
         private Dictionary<object, object> dict = new Dictionary<object, object>();
 
+        protected override void Unhandled(object msg)
+        {
+            Console.WriteLine($"Unhandled message: '{msg.GetType().Name}'");
+            //base.Unhandled(msg);
+        }
+
         public DictNodeActor()
         {
             Receive<AddOrUpdateElementsMsg>(msg =>
@@ -22,10 +29,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
                 foreach (var element in msg.Elements)
                 {
-                    if(this.dict.ContainsKey(element.Key))
-                        this.dict.Add(element.Key, element.Value);
-                    else
-                        this.dict[element.Key] = element.Value;
+                    this.dict[element.Key] = element.Value;
                 }
 
                 Sender.Tell(msg.Elements.Count, Self);
@@ -56,6 +60,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
                 foreach (var element in msg.Elements)
                 {
+                    //Console.WriteLine(JsonConvert.SerializeObject(element));
                     this.dict[element.Key] = element.Value;
                 }
 

@@ -1,6 +1,4 @@
-﻿
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Network;
@@ -18,6 +16,7 @@ using NeoCortexApi.Utility;
 using NeoCortex;
 using System.Drawing;
 
+#if USE_AKKA
 namespace UnitTestsProject
 {
     /// <summary>
@@ -58,6 +57,7 @@ namespace UnitTestsProject
             Assert.IsTrue(targetNode == expectedNode);
         }
 
+
         /// <summary>
         /// Writes and reads coulmns to distributed dictionary.
         /// </summary>
@@ -75,7 +75,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < 100; i++)
             {
-                akkaDict.Add(i, new Column(32, i));
+                akkaDict.Add(i, new Column(32, i, 0.0, 0));
             }
 
             for (int i = 0; i < 100; i++)
@@ -90,25 +90,7 @@ namespace UnitTestsProject
             Assert.IsTrue(100 == akkaDict.Count);
         }
 
-#if USE_AKKA
-        [TestMethod]
-        public void CreateDistributedArrayTest()
-        {
-            int[] dims;
 
-            var arr = new InMemoryArray(1, typeof(int), dims = new int[] { 100, 100 });
-
-            SparseBinaryMatrix m = new SparseBinaryMatrix(dims, true, arr);
-
-            for (int i = 0; i < 100; i++)
-            {
-                for (int j = 0; j < 100; j++)
-                {
-                    m.set(7, i, j);
-                }
-            }
-        }
-#endif
         [TestMethod]
         [TestCategory("AkkaHostRequired")]
         [TestCategory("LongRunning")]      
@@ -299,8 +281,51 @@ namespace UnitTestsProject
             }
         }
 
+  
+        /// <summary>
+        /// Ensures that pool instance inside of Column.DentrideSegment.Synapses[n].Pool is correctlly serialized.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("AkkaHostRequired")]
+        public void TestColumnSerialize()
+        {
+            Thread.Sleep(5000);
 
+            Pool pool = new Pool(10, 10);
+
+            Synapse syn = new Synapse(null, null, 0, 0);
+
+            var dict = UnitTestHelpers.GetMemory(1);
+
+            Column col = new Column(10, 0, 0.01, 10);
+            col.ProximalDendrite = new ProximalDendrite(0, 0.01, 10);
+            col.ProximalDendrite.Synapses = new List<Synapse>();
+            col.ProximalDendrite.Synapses.Add(syn);
+
+            dict.ColumnDictionary.Add(0, col);
+
+            Assert.IsTrue(dict.ColumnDictionary[0].ProximalDendrite.Synapses[0].Segment != null);
+        }
+
+        [TestMethod]
+        public void CreateDistributedArrayTest()
+        {
+            int[] dims;
+
+            var arr = new InMemoryArray(1, typeof(int), dims = new int[] { 100, 100 });
+
+            SparseBinaryMatrix m = new SparseBinaryMatrix(dims, true, arr);
+
+            for (int i = 0; i < 100; i++)
+            {
+                for (int j = 0; j < 100; j++)
+                {
+                    m.set(7, i, j);
+                }
+            }
+        }
     }
 }
+#endif
 
 

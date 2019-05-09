@@ -25,14 +25,19 @@ namespace NeoCortexApi.Entities
     //[Serializable]
     public class Pool
     {
-        int size;
+        int Size;
+
+        /// <summary>
+        /// Number of inut neuron cells.
+        /// </summary>
+        public int NumInputs { get; set; }
 
         /// <summary>
         /// Allows fast removal of connected synapse indexes. List of connected synapses. 
         /// These are synapses with permanence value greather than permanence connected threshold.
         /// See synPermConnected.
         /// </summary>      
-        public HashSet<int> synapseConnections { get; set; }  = new HashSet<int>();
+        private List<int> synapseConnections { get; set; }  = new List<int>();
 
         /** 
          * Indexed according to the source Input Vector Bit (for ProximalDendrites),
@@ -40,9 +45,15 @@ namespace NeoCortexApi.Entities
          */
         public Dictionary<int, Synapse> synapsesBySourceIndex { get; set; }  = new Dictionary<int, Synapse>();
 
-        public Pool(int size)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="size">Number of connected input neurons. These neurons define RF fo the segment, which owns this pool.</param>
+        /// <param name="numInputs">Total number of input neurons.</param>
+        public Pool(int size, int numInputs)
         {
-            this.size = size;
+            this.NumInputs = NumInputs;
+            this.Size = size;
         }
 
         /**
@@ -61,25 +72,25 @@ namespace NeoCortexApi.Entities
          * @param s
          * @param permanence
          */
-        public void setPermanence(Connections c, Synapse s, double permanence)
-        {
-            s.setPermanence(c, permanence);
-        }
+        //public void setPermanence(Connections c, Synapse s, double permanence)
+        //{
+        //    s.setPermanence(c, permanence);
+        //}
 
         /**
          * Updates this {@code Pool}'s store of permanences for the specified {@link Synapse}
          * @param c				the connections memory
-         * @param s				the synapse who's permanence is recorded
+         * @param synapse				the synapse who's permanence is recorded
          * @param permanence	the permanence value to record
          */
-        public void updatePool(Connections c, Synapse s, double permanence)
+        public void updatePool(double synPermConnected, Synapse synapse, double permanence)
         {
-            int inputIndex = s.getInputIndex();
+            int inputIndex = synapse.getInputIndex();
             if (synapsesBySourceIndex.ContainsKey(inputIndex) == false)
             {
-                synapsesBySourceIndex.Add(inputIndex, s);
+                synapsesBySourceIndex.Add(inputIndex, synapse);
             }
-            if (permanence >= c.getSynPermConnected())
+            if (permanence >= synPermConnected)
             {
                 synapseConnections.Add(inputIndex);
             }
@@ -89,10 +100,9 @@ namespace NeoCortexApi.Entities
             }
         }
 
-        /**
-         * Resets the current connections in preparation for new permanence
-         * adjustments.
-         */
+        /// <summary>
+        ///  Resets the current connections in preparation for new permanence adjustments.
+        ///  </summary>
         public void resetConnections()
         {
             synapseConnections.Clear();
@@ -116,11 +126,11 @@ namespace NeoCortexApi.Entities
          */
         public double[] getSparsePermanences()
         {
-            double[] retVal = new double[size];
+            double[] retVal = new double[Size];
             int[] keys = getSynapseKeys();// synapsesBySourceIndex.Keys;
-            for (int x = 0, j = size - 1; x < size; x++, j--)
+            for (int x = 0, j = Size - 1; x < Size; x++, j--)
             {
-                retVal[j] = synapsesBySourceIndex[keys[size-x-1]].getPermanence();
+                retVal[j] = synapsesBySourceIndex[keys[Size-x-1]].getPermanence();
             }
 
             //for (int x = size-1, j = 0; x >= 0; x--, j++)
@@ -202,11 +212,11 @@ namespace NeoCortexApi.Entities
          * @param   c   {@link Connections}
          * @return the sparse array
          */
-        public int[] getDenseConnected(Connections c)
+        public int[] getDenseConnected()
         {
             List<int> newArr = new List<int>();
 
-            for (int i = 0; i < c.NumInputs; i++)
+            for (int i = 0; i < this.NumInputs; i++)
             {
                 newArr.Add(synapseConnections.Contains(i) ? 1 : 0);
               
@@ -253,7 +263,7 @@ namespace NeoCortexApi.Entities
         {
             int prime = 31;
             int result = 1;
-            result = prime * result + size;
+            result = prime * result + Size;
             result = prime * result + ((synapseConnections == null) ? 0 : synapseConnections.ToString().GetHashCode());
             result = prime * result + ((synapsesBySourceIndex == null) ? 0 : synapsesBySourceIndex.ToString().GetHashCode());
             return result;
@@ -272,7 +282,7 @@ namespace NeoCortexApi.Entities
             if (typeof(Pool) != obj.GetType())
                 return false;
             Pool other = (Pool)obj;
-            if (size != other.size)
+            if (Size != other.Size)
                 return false;
             if (synapseConnections == null)
             {

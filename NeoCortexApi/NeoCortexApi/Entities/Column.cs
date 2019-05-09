@@ -54,7 +54,9 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="numCells">Number of cells in the column.</param>
         /// <param name="index">Colun index.</param>
-        public Column(int numCells, int index)
+        /// <param name="synapsePermConnected">Permanence threshold value to declare synapse as connected.</param>
+        /// <param name="numInputs">Number of input neorn cells.</param>
+        public Column(int numCells, int index, double synapsePermConnected, int numInputs)
         {
             //this.numCells = numCells;
             this.Index = index;
@@ -68,7 +70,7 @@ namespace NeoCortexApi.Entities
 
             //cellList = new ReadOnlyCollection<Cell>(Cells);
 
-            ProximalDendrite = new ProximalDendrite(index);
+            ProximalDendrite = new ProximalDendrite(index, synapsePermConnected, numInputs);
         }
 
         /**
@@ -162,19 +164,73 @@ namespace NeoCortexApi.Entities
          */
         public Pool createPotentialPool(Connections c, int[] inputVectorIndexes)
         {
-            var pool = ProximalDendrite.createPool(c, inputVectorIndexes);
+            //var pool = ProximalDendrite.createPool(c, inputVectorIndexes);
+            this.ProximalDendrite.Synapses.Clear();
+
+            var pool = new Pool(inputVectorIndexes.Length, c.NumInputs);
+
+            this.ProximalDendrite.RFPool = pool;
+
+            for (int i = 0; i < inputVectorIndexes.Length; i++)
+            {
+                var cnt = c.getProximalSynapseCount();
+                //var synapse = createSynapse(c, c.getSynapses(this), null, this.RFPool, synCount, inputIndexes[i]);
+                var synapse = this.ProximalDendrite.createSynapse(null, cnt, inputVectorIndexes[i]);
+                this.setPermanence(synapse, c.getSynPermConnected(), 0);
+                c.setProximalSynapseCount(cnt + 1);
+            }
+
+            //var mem = c.getMemory();
+
+            //mem.set(this.Index, this);
+            
+            //c.getPotentialPools().set(this.Index, pool);
+
             return pool;
         }
 
-        /**
-         * Sets the permanences on the {@link ProximalDendrite} {@link Synapse}s
-         * 
-         * @param c				the {@link Connections} memory object
-         * @param permanences	floating point degree of connectedness
-         */
-        public void setProximalPermanences(Connections c, double[] permanences)
+        public void setPermanence(Synapse synapse, double synPermConnected, double perm)
         {
-            ProximalDendrite.setPermanences(c, permanences);
+            synapse.Permanence = perm;
+
+            // On proximal dendrite which has no presynaptic cell
+            if (synapse.SourceCell == null)
+            {
+                this.ProximalDendrite.RFPool.updatePool(synPermConnected, synapse, perm);
+            }
+        }
+
+
+        /**
+         * Sets the permanences for each {@link Synapse}. The number of synapses
+         * is set by the potentialPct variable which determines the number of input
+         * bits a given column will be "attached" to which is the same number as the
+         * number of {@link Synapse}s
+         * 
+         * @param c			the {@link Connections} memory
+         * @param perms		the floating point degree of connectedness
+         */
+        public void setPermanences(Connections c, double[] perms)
+        {
+            var connCounts = c.getConnectedCounts();
+
+            this.ProximalDendrite.RFPool.resetConnections();
+
+            connCounts.clearStatistics(this.Index);
+
+            //List<Synapse> synapses = c.getSynapses(this);
+
+            foreach (Synapse s in this.ProximalDendrite.Synapses)
+            {
+                int indx = s.getInputIndex();
+
+                this.setPermanence(s, c.getSynPermConnected(), perms[indx]);
+
+                if (perms[indx] >= c.getSynPermConnected())
+                {
+                    connCounts.set(1, this.Index, s.getInputIndex());
+                }
+            }
         }
 
         /**
@@ -183,9 +239,20 @@ namespace NeoCortexApi.Entities
          * @param c				the {@link Connections} memory object
          * @param permanences	floating point degree of connectedness
          */
-        public void setProximalPermanencesSparse(Connections c, double[] permanences, int[] indexes)
+        //public void setProximalPermanences(Connections c, double[] permanences)
+        //{
+        //    ProximalDendrite.setPermanences(c, permanences);
+        //}
+
+        /**
+         * Sets the permanences on the {@link ProximalDendrite} {@link Synapse}s
+         * 
+         * @param c				the {@link Connections} memory object
+         * @param permanences	floating point degree of connectedness
+         */
+        public void setProximalPermanencesSparse(Connections c, double[] permanences, int[] inputVectorIndexes)
         {
-            ProximalDendrite.setPermanences(c, permanences, indexes);
+            ProximalDendrite.setPermanences(c, permanences, inputVectorIndexes);           
         }
 
         /**
@@ -194,9 +261,10 @@ namespace NeoCortexApi.Entities
          * @param c
          * @param connections
          */
-        public void setProximalConnectedSynapsesForTest(Connections c, int[] connections)
+        public void setProximalConnectedSynapsesForTest(Connections c, int[] inputVectorIndexes)
         {
-            ProximalDendrite.setConnectedSynapsesForTest(c, connections);
+            this.ProximalDendrite.RFPool = createPotentialPool(c, inputVectorIndexes);
+            //ProximalDendrite.setConnectedSynapsesForTest(c, connections);
         }
 
       
