@@ -107,14 +107,11 @@ namespace UnitTestsProject
 
             parameters.setInputDimensions(new int[] { 32, 32 });
             parameters.setColumnDimensions(new int[] { 64, 64 });
-
-
             //List<int> intList = ArrayUtils.ReadCsvFileTest("TestFiles\\digit1_binary_32bit.txt");
             //intList.Clear();
 
             //List<int> intList = new List<int>();
             //var rnd = new Random();
-
             //int[] inputVector = getInputVector1();
             for (int i = 0; i < NonZeroPercentage.Length; i++)
             {
