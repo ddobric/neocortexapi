@@ -2808,23 +2808,41 @@ namespace NeoCortexApi.Utility
             Random random = new Random();
             int num = 0;
             int numOfFlipBit = (int)(bitPerc * oriArr.Length);
-            for (int i = 0; i < numOfFlipBit; i++)
+            if (bitPerc == 1.0)
             {
-                do
+                for (int i = 0; i < oriArr.Length; i++)
                 {
-                    num = random.Next(0, (oriArr.Length - 1));
-                }
-                while (arr.Contains(num));
-                arr.Add(num);
-                if (result[num] == 1)
-                {
-                    result[num] = 0;
-                }
-                else
-                {
-                    result[num] = 1;
+                    if (result[i] == 1)
+                    {
+                        result[i] = 0;
+                    }
+                    else
+                    {
+                        result[i] = 1;
+                    }
                 }
             }
+            else
+            {
+                for (int i = 0; i < numOfFlipBit; i++)
+                {
+                    do
+                    {
+                        num = random.Next(0, (oriArr.Length - 1));
+                    }
+                    while (arr.Contains(num));
+                    arr.Add(num);
+                    if (result[num] == 1)
+                    {
+                        result[num] = 0;
+                    }
+                    else
+                    {
+                        result[num] = 1;
+                    }
+                }
+            }
+            
             return result;
         }
 
