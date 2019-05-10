@@ -120,15 +120,14 @@ namespace UnitTestsProject
             int vectorIndex = 0;
 
             int[][] activeArrayWithZeroNoise = new int[inputVectors.Count][];
-            int vectorIndx = 0;
-
+           
             foreach (var inputVector in inputVectors)
             {
                 Debug.WriteLine("");
                 Debug.WriteLine($"----- VECTOR {vectorIndex} ----------");
 
                 int[] activeArray = new int[64 * 64];
-                activeArrayWithZeroNoise[vectorIndx++] = new int[64 * 64];
+                activeArrayWithZeroNoise[vectorIndex] = new int[64 * 64];
 
                 for (int j = 0; j < 25; j += noiseStepPercent)
                 {
@@ -152,19 +151,19 @@ namespace UnitTestsProject
                     {
                         sp.compute(mem, noisedInput, activeArray, true);
                         if (j > 0)
-                            Debug.WriteLine($"{ MathHelpers.GetHammingDistance(activeArrayWithZeroNoise[vectorIndx++], activeArray, true)} -> {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
+                            Debug.WriteLine($"{ MathHelpers.GetHammingDistance(activeArrayWithZeroNoise[vectorIndex], activeArray, true)} -> {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
                     }
 
                     if (j == 0)
                     {
-                        Array.Copy(activeArray, activeArrayWithZeroNoise, activeArrayWithZeroNoise.Length);
+                        Array.Copy(activeArray, activeArrayWithZeroNoise[vectorIndex], activeArrayWithZeroNoise[vectorIndex].Length);
                     }
 
                     var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 
-                    var d2 = MathHelpers.GetHammingDistance(activeArrayWithZeroNoise[vectorIndx++], activeArray, true);
+                    var d2 = MathHelpers.GetHammingDistance(activeArrayWithZeroNoise[vectorIndex], activeArray, true);
                     Debug.WriteLine($"Output with noise {j} - Ham Dist: {d2}");
-                    Debug.WriteLine($"Original: {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArrayWithZeroNoise, (el) => el == 1))}");
+                    Debug.WriteLine($"Original: {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArrayWithZeroNoise[vectorIndex], (el) => el == 1))}");
                     Debug.WriteLine($"Noised:   {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
 
                     List<int[,]> arrays = new List<int[,]>();
@@ -182,10 +181,28 @@ namespace UnitTestsProject
                 vectorIndex++;
             }
 
+            //
             // Prediction code.
+            // This part of code takes a single sample of every input vector and add
+            // some noise to it. Then it predicts it.
+            // Calculated hamming distance (percent overlap) between predicted output and output 
+            // trained without noise is final result, which should be higher than 95% (realistic guess).
+
+            vectorIndex = 0;
 
             foreach (var inputVector in inputVectors)
             {
+                double noise = 7;
+                var noisedInput = ArrayUtils.flipBit(inputVector, noise / 100.00);
+
+                int[] activeArray = new int[64 * 64];
+
+                sp.compute(mem, noisedInput, activeArray, false);
+
+                var dist = MathHelpers.GetHammingDistance(activeArrayWithZeroNoise[vectorIndex], activeArray, true);
+                Debug.WriteLine($"Result for vector {vectorIndex++} with noise {noise} - Ham Dist: {dist}");
+
+                Assert.IsTrue(dist >= 95);
             }
         }
 
