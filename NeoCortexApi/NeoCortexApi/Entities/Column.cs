@@ -16,17 +16,17 @@ namespace NeoCortexApi.Entities
      * @author David Ray
      *
      */
-     //[Serializable]
+    //[Serializable]
     public class Column : IEquatable<Column>, IComparable<Column>
     {
-      
+
         /// <summary>
         /// Column index
         /// </summary>
         public int Index { get; set; }
 
         /** Stored boxed form to eliminate need for boxing on the fly */
-       // private readonly Integer boxedIndex;
+        // private readonly Integer boxedIndex;
         /** Configuration of cell count */
         //private readonly int numCells;
 
@@ -73,6 +73,7 @@ namespace NeoCortexApi.Entities
             ProximalDendrite = new ProximalDendrite(index, synapsePermConnected, numInputs);
         }
 
+      
         /**
          * Returns the {@link Cell} residing at the specified index.
          * <p>
@@ -91,7 +92,7 @@ namespace NeoCortexApi.Entities
         //    return Cells[index];
         //}
 
-        
+
 
         /**
          * Returns the index of this {@code Column}
@@ -126,7 +127,7 @@ namespace NeoCortexApi.Entities
 
             foreach (var cell in Cells)
             {
-                
+
                 int numSegments = cell.getSegments(c).Count;
 
                 if (numSegments < minNumSegments)
@@ -162,7 +163,7 @@ namespace NeoCortexApi.Entities
          * @param c						the {@link Connections} memory
          * @param inputVectorIndexes	indexes specifying the input vector bit
          */
-        public Pool createPotentialPool(Connections c, int[] inputVectorIndexes)
+        public Pool createPotentialPool(Connections c, int[] inputVectorIndexes, int startSynapseIndex)
         {
             //var pool = ProximalDendrite.createPool(c, inputVectorIndexes);
             this.ProximalDendrite.Synapses.Clear();
@@ -173,17 +174,17 @@ namespace NeoCortexApi.Entities
 
             for (int i = 0; i < inputVectorIndexes.Length; i++)
             {
-                var cnt = c.getProximalSynapseCount();
+                //var cnt = c.getProximalSynapseCount();
                 //var synapse = createSynapse(c, c.getSynapses(this), null, this.RFPool, synCount, inputIndexes[i]);
-                var synapse = this.ProximalDendrite.createSynapse(null, cnt, inputVectorIndexes[i]);
+                var synapse = this.ProximalDendrite.createSynapse(null, startSynapseIndex + i, inputVectorIndexes[i]);
                 this.setPermanence(synapse, c.getSynPermConnected(), 0);
-                c.setProximalSynapseCount(cnt + 1);
+                //c.setProximalSynapseCount(cnt + 1);
             }
 
             //var mem = c.getMemory();
 
             //mem.set(this.Index, this);
-            
+
             //c.getPotentialPools().set(this.Index, pool);
 
             return pool;
@@ -252,7 +253,7 @@ namespace NeoCortexApi.Entities
          */
         public void setProximalPermanencesSparse(Connections c, double[] permanences, int[] inputVectorIndexes)
         {
-            ProximalDendrite.setPermanences(c, permanences, inputVectorIndexes);           
+            ProximalDendrite.setPermanences(c, permanences, inputVectorIndexes);
         }
 
         /**
@@ -263,21 +264,23 @@ namespace NeoCortexApi.Entities
          */
         public void setProximalConnectedSynapsesForTest(Connections c, int[] inputVectorIndexes)
         {
-            this.ProximalDendrite.RFPool = createPotentialPool(c, inputVectorIndexes);
+            var synapseIndex = c.getProximalSynapseCount();
+            c.setProximalSynapseCount(synapseIndex + inputVectorIndexes.Length);
+            this.ProximalDendrite.RFPool = createPotentialPool(c, inputVectorIndexes, synapseIndex);
             //ProximalDendrite.setConnectedSynapsesForTest(c, connections);
         }
 
-      
+
         /**
          * {@inheritDoc}
          * @param otherColumn     the {@code Column} to compare to
          * @return
          */
         //@Override
-    //public int compareTo(Column otherColumn)
-    //    {
-    //        return boxedIndex(otherColumn.boxedIndex);
-    //    }
+        //public int compareTo(Column otherColumn)
+        //    {
+        //        return boxedIndex(otherColumn.boxedIndex);
+        //    }
 
 
         private readonly int m_Hashcode;

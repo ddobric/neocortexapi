@@ -43,8 +43,8 @@ namespace UnitTestsProject
 
             var trainingImages = Directory.GetFiles(Path.Combine(trainingFolder, digit));
 
-            if (Directory.Exists(TestOutputFolder))
-                Directory.Delete(TestOutputFolder, true);
+            //if (Directory.Exists(TestOutputFolder))
+            //    Directory.Delete(TestOutputFolder, true);
 
             Directory.CreateDirectory(TestOutputFolder);
 
@@ -1067,7 +1067,7 @@ namespace UnitTestsProject
         internal static Parameters GetDefaultParams()
         {
 
-            Random rnd = new Random(42);
+            ThreadSafeRandom rnd = new ThreadSafeRandom(42);
 
             var parameters = Parameters.getAllDefaultParameters();
             parameters.Set(KEY.POTENTIAL_RADIUS, 10);

@@ -101,7 +101,7 @@ namespace UnitTestsProject
             int inputBits = 1024;
             int numOfColumns = 4096;
 
-            Random rnd = new Random(42);
+            ThreadSafeRandom rnd = new ThreadSafeRandom(42);
 
             var parameters = Parameters.getAllDefaultParameters();
             parameters.Set(KEY.POTENTIAL_RADIUS, inputBits);
@@ -170,7 +170,7 @@ namespace UnitTestsProject
             int counter = 0;
             var numOfActCols = columnTopology * columnTopology;
 
-            Random rnd = new Random(42);
+            ThreadSafeRandom rnd = new ThreadSafeRandom(42);
 
             var parameters = Parameters.getAllDefaultParameters();
             parameters.Set(KEY.POTENTIAL_RADIUS, imageSize*imageSize);

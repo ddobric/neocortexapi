@@ -36,7 +36,7 @@ namespace UnitTestsProject
             parameters.Set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.1);
             parameters.Set(KEY.DUTY_CYCLE_PERIOD, 10);
             parameters.Set(KEY.MAX_BOOST, 10.0);
-            parameters.Set(KEY.RANDOM, new Random(42));
+            parameters.Set(KEY.RANDOM, new ThreadSafeRandom(42));
         }
 
         public void setupDefaultParameters()
@@ -58,7 +58,7 @@ namespace UnitTestsProject
             parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000);
             parameters.Set(KEY.MAX_BOOST, 10.0);
             parameters.Set(KEY.SEED, 42);
-            parameters.Set(KEY.RANDOM, new Random(42));
+            parameters.Set(KEY.RANDOM, new ThreadSafeRandom(42));
         }
 
         private void initSP()
@@ -214,7 +214,7 @@ namespace UnitTestsProject
             parameters.Set(KEY.GLOBAL_INHIBITION, true);
             parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 3.0);
             parameters.Set(KEY.STIMULUS_THRESHOLD, 0.0);// This makes column active even if no synapse is connected.
-            parameters.Set(KEY.RANDOM, new Random(42));
+            parameters.Set(KEY.RANDOM, new ThreadSafeRandom(42));
             parameters.Set(KEY.SEED, 42);
 
             SpatialPooler sp = new SpatialPooler();
@@ -244,7 +244,7 @@ namespace UnitTestsProject
             parameters.Set(KEY.GLOBAL_INHIBITION, true);
             parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 3.0);
             parameters.Set(KEY.STIMULUS_THRESHOLD, 1.0);
-            parameters.Set(KEY.RANDOM, new Random(42));
+            parameters.Set(KEY.RANDOM, new ThreadSafeRandom(42));
             parameters.Set(KEY.SEED, 42);
 
             SpatialPooler sp = new SpatialPooler();
@@ -270,7 +270,7 @@ namespace UnitTestsProject
             parameters.Set(KEY.GLOBAL_INHIBITION, false);
             parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 1.0);
             parameters.Set(KEY.STIMULUS_THRESHOLD, 0.0);
-            parameters.Set(KEY.RANDOM, new Random(42));
+            parameters.Set(KEY.RANDOM, new ThreadSafeRandom(42));
             parameters.Set(KEY.SEED, 42);
 
             SpatialPooler sp = new SpatialPooler();
@@ -305,7 +305,7 @@ namespace UnitTestsProject
             parameters.Set(KEY.GLOBAL_INHIBITION, false);
             parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 3.0);
             parameters.Set(KEY.STIMULUS_THRESHOLD, 1.0);
-            parameters.Set(KEY.RANDOM, new Random(42));
+            parameters.Set(KEY.RANDOM, new ThreadSafeRandom(42));
             parameters.Set(KEY.SEED, 42);
 
             SpatialPooler sp = new SpatialPooler();
@@ -332,7 +332,7 @@ namespace UnitTestsProject
             parameters.setSynPermActiveInc(0.1);
             parameters.setSynPermInactiveDec(0.1);
             parameters.setSeed(42);
-            parameters.setRandom(new Random(42));
+            parameters.setRandom(new ThreadSafeRandom(42));
 
             SpatialPooler sp = new SpatialPooler();
             Connections cn = new Connections();
@@ -342,7 +342,8 @@ namespace UnitTestsProject
             cn.BoostFactors = (new double[] { 2.0, 2.0, 2.0 });
             int[] inputVector = { 1, 1, 1, 1, 1 };
             int[] activeArray = { 0, 0, 0 };
-            int[] expOutput = { 1, 1, 1 };// { 2, 1, 0 }; This was used originally on Linux with JAVA and Pyhton
+            int[] expOutput = { 2, 2, 1 }; // Added during implementation of parllel.
+            /*{ 1, 1, 1 }*/ ;/// { 2, 1, 0 }; This was used originally on Linux with JAVA and Pyhton
             sp.compute(cn, inputVector, activeArray, true);
 
             double[] boostedOverlaps = cn.BoostedOverlaps;
@@ -818,7 +819,7 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 5/*Don't care*/ });
             parameters.setColumnDimensions(new int[] { 5 });
             parameters.setMaxBoost(10.0);
-            parameters.setRandom(new Random(42));
+            parameters.setRandom(new ThreadSafeRandom(42));
             initSP();
 
             mem.setNumColumns(6);
@@ -1161,6 +1162,82 @@ namespace UnitTestsProject
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        [TestMethod]
+        public void RandomGenMultithreadTest()
+        {
+            ThreadSafeRandom rnd = new ThreadSafeRandom();
+            Parallel.For(0, 100, new ParallelOptions(), (i) =>
+            {
+                Console.WriteLine(rnd.Next());
+            });
+
+
+            Console.WriteLine("-----------");
+
+
+            for (int i = 0; i < 100; i++)
+            {
+                Console.WriteLine(rnd.Next());
+            };
+        }
+
+        /// <summary>
+        /// Ensures that two calls to mapPotential() gives different results.
+        /// This is because of a Random generator.
+        /// </summary>
+        [TestMethod]
+        public void TestMapPotentialUndeterminismus()
+        {
+            int[][] expectedList = new int[2][];
+
+            expectedList[0] = new int[] { 2047, 0, 1 };
+            expectedList[1] = new int[] { 2046, 2047, 0 };
+
+            setupParameters();
+            parameters.setInputDimensions(new int[] { 10 });
+            parameters.setColumnDimensions(new int[] { 5 });
+            parameters.setPotentialRadius(94);
+            parameters.setPotentialPct(0.5);
+            parameters.setGlobalInhibition(true);
+            parameters.setLocalAreaDensity(-1.0);
+            parameters.setNumActiveColumnsPerInhArea(40);
+            parameters.setStimulusThreshold(0);
+            parameters.setSynPermInactiveDec(0.01);
+            parameters.setSynPermActiveInc(0.1);
+            parameters.setMinPctOverlapDutyCycles(0.001);
+            parameters.setMinPctActiveDutyCycles(0.001);
+            parameters.setDutyCyclePeriod(1000);
+            parameters.setMaxBoost(10);
+            parameters.setRandom(new ThreadSafeRandom(42));
+            initSP();
+                        
+            mem.InhibitionRadius = 1;
+
+            for (int i = 0; i < mem.getNumColumns(); i++)
+            {
+                foreach (var syn in mem.getColumn(i).ProximalDendrite.Synapses)
+                {
+                    Console.WriteLine($"{i} - {syn.SynapseIndex} - [{String.Join("", "", syn.InputIndex)}]");
+                }
+
+                //parameters.setRandom(new Random(42));
+
+                //int[] potential1 = sp.mapPotential(mem, i, mem.isWrapAround());
+                //Console.WriteLine($"{i} - [{String.Join(",", potential1)}]");
+
+                //parameters.setRandom(new Random(42));
+
+                //int[] potential2 = sp.mapPotential(mem, i, mem.isWrapAround());
+                //Console.WriteLine($"{i} - [{String.Join(",", potential2)}]");
+
+                //// Can be same or different.
+                //Assert.IsTrue(potential1.SequenceEqual(potential2) || !potential1.SequenceEqual(potential2));
+            }
+        }
+             
 
         /// <summary>
         /// Ensures that neighborhod calculation is thread-safe.
@@ -1206,7 +1283,66 @@ namespace UnitTestsProject
             }
         }
 
-      
+
+        /// <summary>
+        /// Ensures that neighborhod calculation is thread-safe.
+        ///{5 - [4,5,6]}
+        ///{2 - [1,2,3]}
+        ///{3 - [2,3,4]}
+        ///{6 - [5,6,7]}
+        ///{4 - [3,4,5]}
+        ///{1 - [0,1,2]}
+        ///{0 - [0,1]}
+        /// </summary>
+        [TestMethod]
+        public void TestParallelWrappingNeighborhood()
+        {
+            int[][] expectedList = new int[2][];
+
+            expectedList[0] = new int[] { 2047, 0, 1 };
+            expectedList[1] = new int[] { 2046, 2047, 0 };
+          
+            setupParameters();
+            parameters.setInputDimensions(new int[] { 1, 188 });
+            parameters.setColumnDimensions(new int[] { 2048, 1 });
+            parameters.setPotentialRadius(94);
+            parameters.setPotentialPct(0.5);
+            parameters.setGlobalInhibition(true);
+            parameters.setLocalAreaDensity(-1.0);
+            parameters.setNumActiveColumnsPerInhArea(40);
+            parameters.setStimulusThreshold(0);
+            parameters.setSynPermInactiveDec(0.01);
+            parameters.setSynPermActiveInc(0.1);
+            parameters.setMinPctOverlapDutyCycles(0.001);
+            parameters.setMinPctActiveDutyCycles(0.001);
+            parameters.setDutyCyclePeriod(1000);
+            parameters.setMaxBoost(10);
+            initSP();
+
+            mem.InhibitionRadius = 1;
+            int inhibitionRadius = 1;
+
+            for (int k = 0; k < 100; k++)
+            {
+                Parallel.For(0, 2048, (i) =>
+                //for (int i = 0; i < 2048; i++)
+                {   
+                    int[] neighborhood = mem.getColumnTopology().wrappingNeighborhood(i, inhibitionRadius);
+
+                    if (i == 0)
+                        Assert.IsTrue(expectedList[0].SequenceEqual(neighborhood));
+                    else if (i == 2047)
+                        Assert.IsTrue(expectedList[1].SequenceEqual(neighborhood));
+                    else
+                    {
+                        Assert.IsTrue(neighborhood[0] == i - 1);
+                        Assert.IsTrue(neighborhood[1] == i );
+                        Assert.IsTrue(neighborhood[2] == i + 1);
+                    }
+                });
+            }
+        }
+
         [TestMethod]
         public void testUpdateMinDutyCycleLocal()
         {
@@ -1759,15 +1895,7 @@ namespace UnitTestsProject
         public void testInitPermanence1()
         {
             setupParameters();
-            //        sp = new SpatialPooler()
-            //        {
-            //        private static final long serialVersionUID = 1L;
-            //    public void raisePermanenceToThreshold(Connections c, double[] perm, int[] maskPotential)
-            //    {
-            //        //Mock out
-            //    }
-            //};
-
+        
             sp = new SpatialPoolerMock4();
 
             mem = new Connections();
@@ -1778,6 +1906,16 @@ namespace UnitTestsProject
             mem.setPotentialRadius(2);
             double connectedPct = 1;
             int[] mask = new int[] { 0, 1, 2, 8, 9 };
+
+            //var dendriteSeg = mem.getColumn(0).ProximalDendrite;
+
+            //dendriteSeg.Synapses.Clear();
+
+            //for (int i = 0; i < mask.Length; i++)
+            //{
+            //    dendriteSeg.Synapses.Add(new Synapse(null, dendriteSeg, i, 0) { InputIndex = mask[i] });
+            //}
+
             double[] perm = this.sp.initPermanence(mem.getSynPermConnected(), mem.getSynPermMax(), mem.getRandom(), mem.getSynPermTrimThreshold(), mem, mask, mem.getColumn(0), connectedPct);
             int numcon = ArrayUtils.valueGreaterCount(mem.getSynPermConnected(), perm);
 
@@ -1804,20 +1942,6 @@ namespace UnitTestsProject
 
             double[] results = perma.Where(d => d > minThresh && d <= maxThresh).ToArray();
 
-            //            double[] results = ArrayUtils.retainLogicalAnd(perma, new Condition[] {
-            //                new Condition.Adapter<Object>() {
-            //                    public boolean eval(double d)
-            //            {
-            //                return d >= minThresh;
-            //            }
-            //        },
-            //                new Condition.Adapter<Object>() {
-            //                    public boolean eval(double d)
-            //        {
-            //            return d < maxThresh;
-            //        }
-            //    }
-            //});
             Assert.IsTrue(results.Length > 0);
         }
 

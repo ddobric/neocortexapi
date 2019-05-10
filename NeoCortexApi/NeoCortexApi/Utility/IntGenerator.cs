@@ -13,9 +13,6 @@ namespace NeoCortexApi.Utility
      */
     public class IntGenerator
     {
-        /** serial version */
-        private static readonly long serialVersionUID = 1L;
-
         protected int m_CurrentValue;
         protected int lower;
         protected int upper;

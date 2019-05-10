@@ -44,7 +44,11 @@ namespace NeoCortexApi.Entities
         private static readonly MyDictionary<string, Object> DEFAULTS_SPATIAL;
         private static readonly MyDictionary<string, Object> DEFAULTS_ENCODER;
 
-
+        public static Random GetDefaultRandomGen(int seed)
+        {
+                return new ThreadSafeRandom(seed);
+            
+        }
         static Dictionary<string, Object> defaultParams;
 
         /////////// Universal Parameters ///////////
@@ -53,7 +57,7 @@ namespace NeoCortexApi.Entities
             DEFAULTS_ALL = new MyDictionary<string, Object>();
             defaultParams = new MyDictionary<string, Object>();
             defaultParams.Add(KEY.SEED, 42);
-            defaultParams.Add(KEY.RANDOM, new Random((int)defaultParams[KEY.SEED]));// new MersenneTwister((int) defaultParams.get(KEY.SEED)));
+            defaultParams.Add(KEY.RANDOM, GetDefaultRandomGen((int)defaultParams[KEY.SEED]));// new MersenneTwister((int) defaultParams.get(KEY.SEED)));
 
             /////////// Temporal Memory Parameters ///////////
             MyDictionary<string, Object> defaultTemporalParams = new MyDictionary<string, object>();
@@ -265,10 +269,9 @@ namespace NeoCortexApi.Entities
                 if (key == KEY.RANDOM)
                 {
                     if (paramMap.ContainsKey(KEY.SEED))
-                        paramMap[key] = new Random((int)paramMap[KEY.SEED]);
+                        paramMap[key] = GetDefaultRandomGen((int)paramMap[KEY.SEED]);
                     else
-                        paramMap[key] = new Random(42);
-                    // ((Random)get(key)).setSeed(Long.valueOf(((int)get(KEY.SEED))));
+                        paramMap[key] = new ThreadSafeRandom(42);
                 }
 
                 string methodName = $"set{key.First().ToString().ToUpper()}{key.Substring(1)}";

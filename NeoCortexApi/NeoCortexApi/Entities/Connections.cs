@@ -272,26 +272,25 @@ namespace NeoCortexApi.Entities
          */
         public Connections()
         {
-
             synPermTrimThreshold = synPermActiveInc / 2.0;
             synPermBelowStimulusInc = synPermConnected / 10.0;
-            random = new Random(seed);
+            //random = new Random(seed);
         }
 
-        /**
-         * Returns a deep copy of this {@code Connections} object.
-         * @return a deep copy of this {@code Connections}
-         */
-        public Connections copy() //todo this will fail. Many objects are not marked as serializable
-        {
-            using (MemoryStream stream = new MemoryStream())
-            {
-                BinaryFormatter formatter = new BinaryFormatter();
-                formatter.Serialize(stream, this);
-                stream.Position = 0;
-                return (Connections)formatter.Deserialize(stream);
-            }
-        }
+        ///**
+        // * Returns a deep copy of this {@code Connections} object.
+        // * @return a deep copy of this {@code Connections}
+        // */
+        //public Connections copy() //todo this will fail. Many objects are not marked as serializable
+        //{
+        //    using (MemoryStream stream = new MemoryStream())
+        //    {
+        //        BinaryFormatter formatter = new BinaryFormatter();
+        //        formatter.Serialize(stream, this);
+        //        stream.Position = 0;
+        //        return (Connections)formatter.Deserialize(stream);
+        //    }
+        //}
 
         /**
          * Sets the derived values of the {@link SpatialPooler}'s initialization.

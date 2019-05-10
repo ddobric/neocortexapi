@@ -9,7 +9,7 @@ namespace NeoCortexApi.Utility
     public class Topology : Coordinator //implements Serializable
     {
    
-        private IntGenerator[] igs;
+        //private IntGenerator[] igs;
         //private int[] centerPosition;
 
 

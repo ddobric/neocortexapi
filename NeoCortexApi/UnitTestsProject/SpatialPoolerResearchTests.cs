@@ -44,7 +44,7 @@ namespace UnitTestsProject
             //intList.Clear();
 
             //List<int> intList = new List<int>();
-            var rnd = new Random();
+            
 
             int[] inputVector = new int[1024];
 
@@ -107,7 +107,7 @@ namespace UnitTestsProject
             var sp = new SpatialPooler();
             var mem = new Connections();
 
-            var rnd = new Random();
+            //var rnd = new Random();
 
             parameters.apply(mem);
             sp.init(mem);
@@ -119,13 +119,16 @@ namespace UnitTestsProject
 
             int vectorIndex = 0;
 
+            int[][] activeArrayWithZeroNoise = new int[inputVectors.Count][];
+            int vectorIndx = 0;
+
             foreach (var inputVector in inputVectors)
             {
                 Debug.WriteLine("");
                 Debug.WriteLine($"----- VECTOR {vectorIndex} ----------");
 
                 int[] activeArray = new int[64 * 64];
-                int[] activeArrayWithZeroNoise = new int[64 * 64];
+                activeArrayWithZeroNoise[vectorIndx++] = new int[64 * 64];
 
                 for (int j = 0; j < 25; j += noiseStepPercent)
                 {
@@ -149,7 +152,7 @@ namespace UnitTestsProject
                     {
                         sp.compute(mem, noisedInput, activeArray, true);
                         if (j > 0)
-                            Debug.WriteLine($"{ MathHelpers.GetHammingDistance(activeArrayWithZeroNoise, activeArray, true)} -> {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
+                            Debug.WriteLine($"{ MathHelpers.GetHammingDistance(activeArrayWithZeroNoise[vectorIndx++], activeArray, true)} -> {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
                     }
 
                     if (j == 0)
@@ -159,7 +162,7 @@ namespace UnitTestsProject
 
                     var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 
-                    var d2 = MathHelpers.GetHammingDistance(activeArrayWithZeroNoise, activeArray, true);
+                    var d2 = MathHelpers.GetHammingDistance(activeArrayWithZeroNoise[vectorIndx++], activeArray, true);
                     Debug.WriteLine($"Output with noise {j} - Ham Dist: {d2}");
                     Debug.WriteLine($"Original: {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArrayWithZeroNoise, (el) => el == 1))}");
                     Debug.WriteLine($"Noised:   {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
@@ -177,6 +180,12 @@ namespace UnitTestsProject
                 }
 
                 vectorIndex++;
+            }
+
+            // Prediction code.
+
+            foreach (var inputVector in inputVectors)
+            {
             }
         }
 
@@ -543,7 +552,7 @@ namespace UnitTestsProject
         internal static Parameters GetDefaultParams()
         {
 
-            Random rnd = new Random(42);
+            ThreadSafeRandom rnd = new ThreadSafeRandom(42);
 
             var parameters = Parameters.getAllDefaultParameters();
             parameters.Set(KEY.POTENTIAL_RADIUS, 10);

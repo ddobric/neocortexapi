@@ -13,8 +13,8 @@ namespace UnitTestsProject
     {
         public static DistributedMemory GetMemory(int numOfColumns)
         {
-            //return GetInMemoryDictionary();
-            return GetDistributedDictionary(numOfColumns);
+            return GetInMemoryDictionary();
+            //return GetDistributedDictionary(numOfColumns);
         }
 
         public static DistributedMemory GetDistributedDictionary(int numOfColumns)

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Diagnostics;
 using NeoCortexApi.DistributedComputeLib;
 using System.Collections.Concurrent;
+using System.Threading;
 
 /**
  * Handles the relationships between the columns of a region 
@@ -50,6 +51,9 @@ namespace NeoCortexApi
          */
         public void init(Connections c, DistributedMemory distMem = null)
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
             if (c.NumActiveColumnsPerInhArea == 0 && (c.LocalAreaDensity == 0 ||
                 c.LocalAreaDensity > 0.5))
             {
@@ -61,6 +65,9 @@ namespace NeoCortexApi
             initMatrices(c, distMem);
 
             connectAndConfigureInputs(c);
+
+            sw.Stop();
+            Console.WriteLine($"Init time: {(float)sw.ElapsedMilliseconds / (float)1000} s");
         }
 
         /**
@@ -135,6 +142,7 @@ namespace NeoCortexApi
             public int[] Potential { get; set; }
 
             public Column Column { get; set; }
+            public double[] Perm { get; internal set; }
         }
 
 
@@ -156,79 +164,100 @@ namespace NeoCortexApi
             // Initialize the set of permanence values for each column. Ensure that
             // each column is connected to enough input bits to allow it to be activated.
             int numColumns = c.getNumColumns();
-            
-            ParallelOptions opts = new ParallelOptions();
+
+
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            
-            int batchSize = 100;
-            int processedColumns = 0;
 
-            //while (processedColumns < numColumns)
+#if SINGLE_THREADED
+            ParallelOptions opts = new ParallelOptions();
+            int synapseCounter = 0;
+
+            Parallel.For(0, numColumns, opts, (indx) =>
+            //for (int i = 0; i < numColumns; i++)
             {
-                Parallel.For(0, numColumns, opts, (indx) =>
-                //for (int i = 0; i < numColumns; i++)
+                int i = (int)indx;
+                var data = new ProcessingData();
+
+                // Gets RF
+                data.Potential = mapPotential(c, i, c.isWrapAround());
+                data.Column = c.getColumn(i);
+
+                // This line initializes all synases in the potential pool of synapses.
+                // It creates the pool on proximal dendrite segment of the column.
+                // After initialization permancences are set to zero.
+                connectColumnToInputRF(c, data.Potential, data.Column);
+
+                Interlocked.Add(ref synapseCounter, data.Column.ProximalDendrite.Synapses.Count);
+              
+                //colList.Add(new KeyPair() { Key = i, Value = column });
+                
+                data.Perm = initPermanence(c.getSynPermConnected(), c.getSynPermMax(), c.getRandom(), c.getSynPermTrimThreshold(),
+                    c,
+                    data.Potential, data.Column, c.getInitConnectedPct());
+
+                updatePermanencesForColumn(c, data.Perm, data.Column, data.Potential, true);
+
+                if (!colList2.TryAdd(i, new KeyPair() { Key = i, Value = data }))
                 {
-                    int i = (int)indx;
 
-                    // Gets RF
-                    //int[] potential = mapPotential(c, i, c.isWrapAround());
-                    //Column column = c.getColumn(i);
+                }
+            });
 
-                    // This line initializes all synases in the potential pool of synapses.
-                    // It creates the pool on proximal dendrite segment of the column.
-                    // After initialization permancences are set to zero.
-                    //var potPool = column.createPotentialPool(c, potential);
-
-                    //c.getPotentialPools().set(i, potPool);
-
-                    //colList.Add(new KeyPair() { Key = i, Value = column });
-
-                    if (!colList2.TryAdd(i, new KeyPair() { Key = i, Value = new ProcessingData() { Column = null, Potential = null } }))
-                    {
-
-                    }
-
-                    //double[] perm = initPermanence(c.getSynPermConnected(), c.getSynPermMax(),
-                    //   c.getRandom(), c.getSynPermTrimThreshold(), c, potential, column, c.getInitConnectedPct());
-
-                    //updatePermanencesForColumn(c, perm, column, potential, true);
-
-                });
-            }
+            c.setProximalSynapseCount(synapseCounter);
 
             foreach (var item in colList2.Values)
             //for (int i = 0; i < numColumns; i++)
             {
                 int i = (int)item.Key;
 
-                Debug.WriteLine(i);
-                int[] potential = mapPotential(c,i, c.isWrapAround());
-                Column column = c.getColumn(i);
+                ProcessingData data = (ProcessingData)item.Value;
+                //ProcessingData data = new ProcessingData();
+
+                // Debug.WriteLine(i);
+                //data.Potential = mapPotential(c, i, c.isWrapAround());
+
+                //var st = string.Join(",", data.Potential);
+                //Debug.WriteLine($"{i} - [{st}]");
+
+                //var counts = c.getConnectedCounts();
+
+                //for (int h = 0; h < counts.getDimensions()[0]; h++)
+                //{
+                //    // Gets the synapse mapping between column-i with input vector.
+                //    int[] slice = (int[])counts.getSlice(h);
+                //    Debug.Write($"{slice.Count(y => y == 1)} - ");
+                //}
+                //Debug.WriteLine(" --- ");
+                // Console.WriteLine($"{i} - [{String.Join(",", ((ProcessingData)item.Value).Potential)}]");
+
                 // This line initializes all synases in the potential pool of synapses.
                 // It creates the pool on proximal dendrite segment of the column.
                 // After initialization permancences are set to zero.
-                var potPool = column.createPotentialPool(c, potential);
+                //var potPool = data.Column.createPotentialPool(c, data.Potential);
+                //connectColumnToInputRF(c, data.Potential, data.Column);
 
-                double[] perm = initPermanence(c.getSynPermConnected(), c.getSynPermMax(),
-                      c.getRandom(), c.getSynPermTrimThreshold(), c, potential, column, c.getInitConnectedPct());
+                //data.Perm = initPermanence(c.getSynPermConnected(), c.getSynPermMax(),
+                //      c.getRandom(), c.getSynPermTrimThreshold(), c, data.Potential, data.Column, c.getInitConnectedPct());
 
-                updatePermanencesForColumn(c, perm, column, potential, true);
+                //updatePermanencesForColumn(c, data.Perm, data.Column, data.Potential, true);
 
-                colList.Add(new KeyPair() { Key = i, Value = column });
+                colList.Add(new KeyPair() { Key = i, Value = data.Column });
             }
-            /*
+#else
+
             for (int i = 0; i < numColumns; i++)
             {
                 // Gets RF
                 int[] potential = mapPotential(c, i, c.isWrapAround());
+
                 Column column = c.getColumn(i);
 
                 // This line initializes all synases in the potential pool of synapses.
                 // It creates the pool on proximal dendrite segment of the column.
                 // After initialization permancences are set to zero.
-                var potPool = column.createPotentialPool(c, potential);
+                connectColumnToInputRF(c, potential, column);
 
                 //c.getPotentialPools().set(i, potPool);
 
@@ -239,7 +268,7 @@ namespace NeoCortexApi
 
                 updatePermanencesForColumn(c, perm, column, potential, true);
             }
-            */
+#endif
             sw.Stop();
             Debug.WriteLine($"Elaped: {sw.ElapsedMilliseconds} ms");
 
@@ -258,6 +287,13 @@ namespace NeoCortexApi
             // updated every learning round. It grows and shrinks with the average
             // number of connected synapses per column.
             updateInhibitionRadius(c);
+        }
+
+        private static void connectColumnToInputRF(Connections c, int[] potential, Column column)
+        {
+            var synapseIndex = c.getProximalSynapseCount();
+            c.setProximalSynapseCount(synapseIndex + potential.Length);
+            var potPool = column.createPotentialPool(c, potential, synapseIndex);
         }
 
         /**
@@ -480,7 +516,7 @@ namespace NeoCortexApi
             double[] overlapDutyCycles = c.getOverlapDutyCycles();
             double minPctOverlapDutyCycles = c.getMinPctOverlapDutyCycles();
 
-            Console.WriteLine($"{inhibitionRadius: inhibitionRadius}");
+            //Console.WriteLine($"{inhibitionRadius: inhibitionRadius}");
 
             Parallel.For(0, len, (i) =>
             {
@@ -956,7 +992,11 @@ namespace NeoCortexApi
          */
         public double[] initPermanence(double synPermConnected, double synPermMax, Random random, double synapsePermanenceTrimThreshold, Connections c, int[] potentialPool, Column column, double connectedPct)
         {
+            //Random random = new Random();
+
             double[] perm = new double[c.NumInputs];
+
+            //foreach (int idx in column.ProximalDendrite.ConnectedInputs)
             foreach (int idx in potentialPool)
             {
                 if (random.NextDouble() <= connectedPct)
@@ -971,7 +1011,7 @@ namespace NeoCortexApi
                 perm[idx] = perm[idx] < synapsePermanenceTrimThreshold ? 0 : perm[idx];
 
             }
-            column.setPermanences(c, perm);
+
             return perm;
         }
 
@@ -1054,7 +1094,11 @@ namespace NeoCortexApi
             // Select a subset of the receptive field to serve as the the potential pool.
             int numPotential = (int)(columnInputs.Length * c.getPotentialPct() + 0.5);
             int[] retVal = new int[numPotential];
-            return ArrayUtils.sample(columnInputs, retVal, c.getRandom());
+
+            //Console.WriteLine($"{columnIndex} - [{String.Join(",", columnInputs)}]");
+
+            var data = ArrayUtils.sample(columnInputs, retVal, c.getRandom());
+            return data;
         }
 
 
@@ -1548,6 +1592,8 @@ namespace NeoCortexApi
         {
             int[] overlaps = new int[c.getNumColumns()];
             c.getConnectedCounts().rightVecSumAtNZ(inputVector, overlaps, c.StimulusThreshold);
+            string st = string.Join(",", overlaps);
+            Debug.WriteLine($"Overlap: {st}");
             return overlaps;
         }
 

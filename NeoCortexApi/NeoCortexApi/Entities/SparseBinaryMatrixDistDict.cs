@@ -4,6 +4,8 @@ using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
+using System.Diagnostics;
 
 namespace NeoCortexApi.Entities
 {
@@ -139,6 +141,8 @@ namespace NeoCortexApi.Entities
                 // Go through all connections (synapses) between column-i and input vector.
                 for (int j = 0; j < slice.Length; j++)
                 {
+                    //Debug.WriteLine($"Slice {i} - {String.Join("","", slice )}");
+
                     // Result (overlapp) is 1 if 
                     results[i] += (inputVector[j] * slice[j]);
                     if (j == slice.Length - 1)
