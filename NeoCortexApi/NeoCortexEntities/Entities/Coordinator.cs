@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace NeoCortexApi.Utility
+namespace NeoCortexApi.Entities
 {
     /**
   * Specializes in handling coordinate transforms for N-dimensional
@@ -12,7 +12,7 @@ namespace NeoCortexApi.Utility
   * @see Topology
   */
    // [Serializable]
-    public class Coordinator //implements Serializable
+    public class Coordinator 
     {
     /** keep it simple */
     private const long serialVersionUID = 1L;

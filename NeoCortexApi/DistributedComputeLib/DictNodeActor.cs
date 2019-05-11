@@ -127,13 +127,13 @@ namespace NeoCortexApi.DistributedComputeLib
             Console.WriteLine($"{nameof(DictNodeActor)} stoped.");
         }
 
-        /// <summary>
-        /// It traverses all connected synapses of the column and calculates the span, which synapses
-        /// spans between all input bits. Then it calculates average of spans accross all dimensions. 
-        /// </summary>
-        /// <param name="c"></param>
-        /// <param name="columnIndex"></param>
-        /// <returns></returns>
+        ///// <summary>
+        ///// It traverses all connected synapses of the column and calculates the span, which synapses
+        ///// spans between all input bits. Then it calculates average of spans accross all dimensions. 
+        ///// </summary>
+        ///// <param name="c"></param>
+        ///// <param name="columnIndex"></param>
+        ///// <returns></returns>
         //private virtual double getAvgSpanOfConnectedSynapsesForColumn(Connections c, int columnIndex)
         //{
         //    int[] dimensions = c.getInputDimensions();

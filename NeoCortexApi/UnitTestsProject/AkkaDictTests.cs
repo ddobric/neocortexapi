@@ -1,20 +1,16 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
-using NeoCortexApi.Encoders;
-using NeoCortexApi.Network;
-using NeoCortexApi.Sensors;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using NeoCortexApi.DistributedComputeLib;
 using System.Threading;
-using NeoCortexApi.DistributedCompute;
 using NeoCortexApi.Entities;
 using System.IO;
 using NeoCortexApi.Utility;
 using NeoCortex;
 using System.Drawing;
+using NeoCortexApi.DistributedCompute;
 
 #if USE_AKKA
 namespace UnitTestsProject

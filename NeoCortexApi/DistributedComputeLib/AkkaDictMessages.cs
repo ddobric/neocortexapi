@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using NeoCortexApi.Entities;
+using System.Collections.Generic;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
@@ -41,12 +42,6 @@ namespace NeoCortexApi.DistributedComputeLib
       
     }
 
-    public class KeyPair
-    {
-        public object Key { get; set; }
-
-        public object Value { get; set; }
-    }
 
     internal class Result
     {

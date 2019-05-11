@@ -60,9 +60,9 @@ namespace NeoCortexApi.Entities
         {
             return null;
         }
-//        public override AbstractFlatMatrix<T> set(int index, int value)
-//#pragma warning restore IDE1006 // Naming Styles
-//        { return null; }
+        //        public override AbstractFlatMatrix<T> set(int index, int value)
+        //#pragma warning restore IDE1006 // Naming Styles
+        //        { return null; }
 
         /**
          * Sets the object to occupy the specified index.
@@ -112,8 +112,10 @@ namespace NeoCortexApi.Entities
          * @param index     the index of the T to return
          * @return  the T at the specified index.
          */
-        protected T getObject(int index)
-        { return default(T); }
+        public virtual T getObject(int index)
+        {
+            return default(T);
+        }
 
         /**
          * Returns the T at the specified index.
@@ -220,7 +222,7 @@ namespace NeoCortexApi.Entities
                 for (int i = 0; i < count; i++)
                 {
                     arr[i] = f.make(getDimensions());
-                   // arr[i] = new 
+                    // arr[i] = new 
                 }
                 return arr;
             }

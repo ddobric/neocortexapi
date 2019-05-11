@@ -1,16 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NeoCortexApi;
-using NeoCortexApi.Encoders;
-using NeoCortexApi.Entities;
-using NeoCortexApi.Network;
-using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Text;
 using System.Linq;
 using System.Globalization;
+using NeoCortexApi.Encoders;
+using NeoCortexApi.Network;
 
 namespace UnitTestsProject
 {

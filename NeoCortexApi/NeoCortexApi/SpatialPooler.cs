@@ -78,7 +78,7 @@ namespace NeoCortexApi
          */
         public void initMatrices(Connections c, DistributedMemory distMem)
         {
-            SparseObjectMatrix<Column> memory = c.getMemory();
+            SparseObjectMatrix<Column> memory = (SparseObjectMatrix<Column>)c.getMemory();
 
             c.setMemory(memory == null ? memory = new SparseObjectMatrix<Column>(c.getColumnDimensions(), dict: distMem == null ? null : distMem.ColumnDictionary) : memory);
 
@@ -265,7 +265,7 @@ namespace NeoCortexApi
             }
 #endif
 
-            var mem = c.getMemory();
+            SparseObjectMatrix<Column> mem = (SparseObjectMatrix<Column>)c.getMemory();
 
             if (mem.IsRemotelyDistributed)
             {

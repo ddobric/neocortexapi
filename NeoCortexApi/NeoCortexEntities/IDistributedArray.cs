@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-namespace NeoCortexApi.DistributedComputeLib
+namespace NeoCortexApi.Entities
 {
     public interface IDistributedArray : IEnumerable//ICollection, IEnumerable//, IList
     {

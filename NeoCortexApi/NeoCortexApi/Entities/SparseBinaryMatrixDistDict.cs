@@ -1,11 +1,12 @@
 ﻿#if USE_AKKA
-using NeoCortexApi.DistributedComputeLib;
+
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using System.Diagnostics;
+using NeoCortexApi.DistributedComputeLib;
 
 namespace NeoCortexApi.Entities
 {
