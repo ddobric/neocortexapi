@@ -156,18 +156,24 @@ namespace NeoCortexApi
  * @param c     the {@link Connections} memory
  */
 
+        public void connectAndConfigureInputs(Connections c)
+        {
+            connectAndConfigureInputsSingleThreadStrategy(c);
+        }
+
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="c"></param>
-        public void connectAndConfigureInputs(Connections c)
+        public void connectAndConfigureInputsMultiThreaded(Connections c)
         {
             List<KeyPair> colList = new List<KeyPair>();
             ConcurrentDictionary<int, KeyPair> colList2 = new ConcurrentDictionary<int, KeyPair>();
 
             int numColumns = c.NumColumns;
 
-#if !SINGLE_THREADED
+
             // Parallel implementation of initialization
             ParallelOptions opts = new ParallelOptions();
             //int synapseCounter = 0;
@@ -240,7 +246,30 @@ namespace NeoCortexApi
 
                 colList.Add(new KeyPair() { Key = i, Value = data.Column });
             }
-#else
+                       
+            SparseObjectMatrix<Column> mem = (SparseObjectMatrix<Column>)c.getMemory();
+
+            if (mem.IsRemotelyDistributed)
+            {
+                // Pool is created and attached to the local instance of Column.
+                // Here we need to update the pool on remote Column instance.
+                mem.set(colList);
+            }
+
+            // The inhibition radius determines the size of a column's local
+            // neighborhood.  A cortical column must overcome the overlap score of
+            // columns in its neighborhood in order to become active. This radius is
+            // updated every learning round. It grows and shrinks with the average
+            // number of connected synapses per column.
+            updateInhibitionRadius(c);
+        }
+
+        public void connectAndConfigureInputsSingleThreadStrategy(Connections c)
+        {
+            List<KeyPair> colList = new List<KeyPair>();
+            ConcurrentDictionary<int, KeyPair> colList2 = new ConcurrentDictionary<int, KeyPair>();
+
+            int numColumns = c.NumColumns;
 
             for (int i = 0; i < numColumns; i++)
             {
@@ -258,20 +287,9 @@ namespace NeoCortexApi
 
                 colList.Add(new KeyPair() { Key = i, Value = column });
 
-                double[] perm = initPermanence(c.getSynPermConnected(), c.getSynPermMax(),
-                    c.getRandom(), c.getSynPermTrimThreshold(), c, potential, column, c.getInitConnectedPct());
+                double[] perm = initPermanence(c, potential, column);
 
                 updatePermanencesForColumn(c, perm, column, potential, true);
-            }
-#endif
-
-            SparseObjectMatrix<Column> mem = (SparseObjectMatrix<Column>)c.getMemory();
-
-            if (mem.IsRemotelyDistributed)
-            {
-                // Pool is created and attached to the local instance of Column.
-                // Here we need to update the pool on remote Column instance.
-                mem.set(colList);
             }
 
             // The inhibition radius determines the size of a column's local
@@ -948,7 +966,7 @@ namespace NeoCortexApi
             return p;
         }
 
-      
+
         /// <summary>
         /// Returns a randomly generated permanence value for a synapses that is to be
         /// initialized in a non-connected state.</summary>
@@ -986,7 +1004,7 @@ namespace NeoCortexApi
          *                          0.7 means, maximally 70% of potential might be connected
          * @return
          */
-        public  double[] initPermanence(Connections c, int[] potentialPool, Column column)
+        public double[] initPermanence(Connections c, int[] potentialPool, Column column)
         {
             //Random random = new Random();
 
@@ -1090,8 +1108,6 @@ namespace NeoCortexApi
             // Select a subset of the receptive field to serve as the the potential pool.
             int numPotential = (int)(columnInputs.Length * c.getPotentialPct() + 0.5);
             int[] retVal = new int[numPotential];
-
-            //Console.WriteLine($"{columnIndex} - [{String.Join(",", columnInputs)}]");
 
             var data = ArrayUtils.sample(columnInputs, retVal, c.getRandom());
             return data;
