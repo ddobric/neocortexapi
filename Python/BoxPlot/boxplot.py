@@ -3,7 +3,7 @@
 # Examples:
 # python Title ./BoxPlot/boxplot.py ./BoxPlot/data.csv
 # python ./boxplot.py "Many messages, Page=5000, Single device" "./query 5000 large results.txt" "./query 5000 large results.png"
-# python 'BoxPlot/boxplot.py' 'Spatial Pooler init time with 4096 columns and 30 cells' 'BoxPlot/Spatial Pooler init.txt' 'BoxPlot/Spatial Pooler init.png' 'xLabel' 'yLabel']
+# python "BoxPlot/boxplot.py" "Title" "BoxPlot/SpatialPoolerInitTimeNoAkka.txt" "BoxPlot/Spatial Pooler init.png" "xLabel" "yLabel"
 ########################################################################################
 
 
