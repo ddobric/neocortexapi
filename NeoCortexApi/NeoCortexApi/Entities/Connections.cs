@@ -190,7 +190,7 @@ namespace NeoCortexApi.Entities
         //protected Dictionary<Segment, List<Synapse>> proximalSynapses;
 
         /** Helps index each new proximal Synapse */
-        protected int proximalSynapseCounter = -1;
+        //protected int proximalSynapseCounter = -1;
         /** Global tracker of the next available segment index */
         protected int nextFlatIdx;
         /** Global counter incremented for each DD segment creation*/
@@ -669,20 +669,20 @@ namespace NeoCortexApi.Entities
          * {@link ProximalDendrite}s
          * @return
          */
-        public int getProximalSynapseCount()
-        {
-            return proximalSynapseCounter + 1;
-        }
+        //public int getProximalSynapseCount()
+        //{
+        //    return proximalSynapseCounter + 1;
+        //}
 
         /**
          * Sets the count of {@link Synapse}s on
          * {@link ProximalDendrite}s
          * @param i
          */
-        public void setProximalSynapseCount(int i)
-        {
-            this.proximalSynapseCounter = i;
-        }
+        //public void setProximalSynapseCount(int i)
+        //{
+        //    this.proximalSynapseCounter = i;
+        //}
 
         /**
          * Increments and returns the incremented
@@ -690,20 +690,20 @@ namespace NeoCortexApi.Entities
          *
          * @return
          */
-        public int incrementProximalSynapses()
-        {
-            return ++proximalSynapseCounter;
-        }
+        //public int incrementProximalSynapses()
+        //{
+        //    return ++proximalSynapseCounter;
+        //}
 
         /**
          * Decrements and returns the decremented
          * proximal {link Synapse} count
          * @return
          */
-        public int decrementProximalSynapses()
-        {
-            return --proximalSynapseCounter;
-        }
+        //public int decrementProximalSynapses()
+        //{
+        //    return --proximalSynapseCounter;
+        //}
 
         /**
          * Returns the indexed count of connected synapses per column.
@@ -2545,7 +2545,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + (int)(temp ^ (temp >> 32));
             temp = BitConverter.DoubleToInt64Bits(synPermTrimThreshold);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            result = prime * result + proximalSynapseCounter;
+            //result = prime * result + proximalSynapseCounter;
             //result = prime * result + ((proximalSynapses == null) ? 0 : proximalSynapses.GetHashCode());
             result = prime * result + ((distalSynapses == null) ? 0 : distalSynapses.GetHashCode());
             result = prime * result + tieBreaker.GetHashCode();
@@ -2714,8 +2714,8 @@ namespace NeoCortexApi.Entities
                 return false;
             if (BitConverter.DoubleToInt64Bits(synPermTrimThreshold) != BitConverter.DoubleToInt64Bits(other.synPermTrimThreshold))
                 return false;
-            if (proximalSynapseCounter != other.proximalSynapseCounter)
-                return false;
+            //if (proximalSynapseCounter != other.proximalSynapseCounter)
+            //    return false;
             //if (proximalSynapses == null)
             //{
             //    if (other.proximalSynapses != null)

@@ -51,8 +51,8 @@ namespace NeoCortexApi
          */
         public void init(Connections c, DistributedMemory distMem = null)
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
+            //Stopwatch sw = new Stopwatch();
+            //sw.Start();
 
             if (c.NumActiveColumnsPerInhArea == 0 && (c.LocalAreaDensity == 0 ||
                 c.LocalAreaDensity > 0.5))
@@ -66,8 +66,8 @@ namespace NeoCortexApi
 
             connectAndConfigureInputs(c);
 
-            sw.Stop();
-            Console.WriteLine($"Init time: {(float)sw.ElapsedMilliseconds / (float)1000} s");
+            //sw.Stop();
+            //Console.WriteLine($"Init time: {(float)sw.ElapsedMilliseconds / (float)1000} s");
         }
 
         /**
@@ -145,17 +145,21 @@ namespace NeoCortexApi
             public double[] Perm { get; internal set; }
         }
 
-
         /**
-         * Step two of pooler initialization kept separate from initialization
-         * of static members so that they may be set at a different point in 
-         * the initialization (as sometimes needed by tests).
-         * 
-         * This step prepares the proximal dendritic synapse pools with their 
-         * initial permanence values and connected inputs.
-         * 
-         * @param c     the {@link Connections} memory
-         */
+ * Step two of pooler initialization kept separate from initialization
+ * of static members so that they may be set at a different point in 
+ * the initialization (as sometimes needed by tests).
+ * 
+ * This step prepares the proximal dendritic synapse pools with their 
+ * initial permanence values and connected inputs.
+ * 
+ * @param c     the {@link Connections} memory
+ */
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="c"></param>
         public void connectAndConfigureInputs(Connections c)
         {
             List<KeyPair> colList = new List<KeyPair>();
@@ -165,12 +169,7 @@ namespace NeoCortexApi
             // each column is connected to enough input bits to allow it to be activated.
             int numColumns = c.getNumColumns();
 
-
-
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-
-#if SINGLE_THREADED
+#if !SINGLE_THREADED
             ParallelOptions opts = new ParallelOptions();
             int synapseCounter = 0;
 
@@ -190,9 +189,9 @@ namespace NeoCortexApi
                 connectColumnToInputRF(c, data.Potential, data.Column);
 
                 Interlocked.Add(ref synapseCounter, data.Column.ProximalDendrite.Synapses.Count);
-              
+
                 //colList.Add(new KeyPair() { Key = i, Value = column });
-                
+
                 data.Perm = initPermanence(c.getSynPermConnected(), c.getSynPermMax(), c.getRandom(), c.getSynPermTrimThreshold(),
                     c,
                     data.Potential, data.Column, c.getInitConnectedPct());
@@ -205,7 +204,7 @@ namespace NeoCortexApi
                 }
             });
 
-            c.setProximalSynapseCount(synapseCounter);
+            //c.setProximalSynapseCount(synapseCounter);
 
             foreach (var item in colList2.Values)
             //for (int i = 0; i < numColumns; i++)
@@ -269,8 +268,6 @@ namespace NeoCortexApi
                 updatePermanencesForColumn(c, perm, column, potential, true);
             }
 #endif
-            sw.Stop();
-            Debug.WriteLine($"Elaped: {sw.ElapsedMilliseconds} ms");
 
             var mem = c.getMemory();
 
@@ -291,8 +288,9 @@ namespace NeoCortexApi
 
         private static void connectColumnToInputRF(Connections c, int[] potential, Column column)
         {
-            var synapseIndex = c.getProximalSynapseCount();
-            c.setProximalSynapseCount(synapseIndex + potential.Length);
+            //var synapseIndex = c.getProximalSynapseCount();
+            //c.setProximalSynapseCount(synapseIndex + potential.Length);
+            var synapseIndex = 0;
             var potPool = column.createPotentialPool(c, potential, synapseIndex);
         }
 

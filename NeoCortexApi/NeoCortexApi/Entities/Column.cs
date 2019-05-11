@@ -264,9 +264,9 @@ namespace NeoCortexApi.Entities
          */
         public void setProximalConnectedSynapsesForTest(Connections c, int[] inputVectorIndexes)
         {
-            var synapseIndex = c.getProximalSynapseCount();
-            c.setProximalSynapseCount(synapseIndex + inputVectorIndexes.Length);
-            this.ProximalDendrite.RFPool = createPotentialPool(c, inputVectorIndexes, synapseIndex);
+            //var synapseIndex = c.getProximalSynapseCount();
+            //c.setProximalSynapseCount(synapseIndex + inputVectorIndexes.Length);
+            this.ProximalDendrite.RFPool = createPotentialPool(c, inputVectorIndexes, -1);
             //ProximalDendrite.setConnectedSynapsesForTest(c, connections);
         }
 

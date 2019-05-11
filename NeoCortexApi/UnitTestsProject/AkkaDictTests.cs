@@ -97,48 +97,56 @@ namespace UnitTestsProject
         public void InitDistributedTest()
         {
             Thread.Sleep(5000);
+            for (int test = 0; test < 15; test++)
+            {
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
 
-            int inputBits = 1024;
-            int numOfColumns = 4096;
+                int inputBits = 1024;
+                int numOfColumns = 4096;
 
-            ThreadSafeRandom rnd = new ThreadSafeRandom(42);
+                ThreadSafeRandom rnd = new ThreadSafeRandom(42);
 
-            var parameters = Parameters.getAllDefaultParameters();
-            parameters.Set(KEY.POTENTIAL_RADIUS, inputBits);
-            parameters.Set(KEY.POTENTIAL_PCT, 1.0);
-            parameters.Set(KEY.GLOBAL_INHIBITION, true);
+                var parameters = Parameters.getAllDefaultParameters();
+                parameters.Set(KEY.POTENTIAL_RADIUS, inputBits);
+                parameters.Set(KEY.POTENTIAL_PCT, 1.0);
+                parameters.Set(KEY.GLOBAL_INHIBITION, true);
 
-            parameters.Set(KEY.RANDOM, rnd);
+                parameters.Set(KEY.RANDOM, rnd);
 
-            parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.02 * numOfColumns);
-            parameters.Set(KEY.LOCAL_AREA_DENSITY, -1);
+                parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.02 * numOfColumns);
+                parameters.Set(KEY.LOCAL_AREA_DENSITY, -1);
 
-            parameters.Set(KEY.POTENTIAL_RADIUS, inputBits);
-            parameters.Set(KEY.POTENTIAL_PCT, 1.0);
+                parameters.Set(KEY.POTENTIAL_RADIUS, inputBits);
+                parameters.Set(KEY.POTENTIAL_PCT, 1.0);
 
-            parameters.Set(KEY.STIMULUS_THRESHOLD, 50.0);       //***
-            parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.008);   //***
-            parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0.05);      //***
+                parameters.Set(KEY.STIMULUS_THRESHOLD, 50.0);       //***
+                parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.008);   //***
+                parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0.05);      //***
 
-            parameters.Set(KEY.INHIBITION_RADIUS, (int)0.025 * inputBits);
+                parameters.Set(KEY.INHIBITION_RADIUS, (int)0.025 * inputBits);
 
-            parameters.Set(KEY.SYN_PERM_CONNECTED, 0.2);
+                parameters.Set(KEY.SYN_PERM_CONNECTED, 0.2);
 
-            parameters.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.001);
-            parameters.Set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.001);
-            parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000);
-            parameters.Set(KEY.MAX_BOOST, 100);
-            parameters.Set(KEY.WRAP_AROUND, true);
-            parameters.Set(KEY.SEED, 1956);
-            parameters.setInputDimensions(new int[] { (int)Math.Sqrt(inputBits), (int)Math.Sqrt(inputBits) });
-            parameters.setColumnDimensions(new int[] { (int)Math.Sqrt(numOfColumns), (int)Math.Sqrt(numOfColumns) });
+                parameters.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.001);
+                parameters.Set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.001);
+                parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000);
+                parameters.Set(KEY.MAX_BOOST, 100);
+                parameters.Set(KEY.WRAP_AROUND, true);
+                parameters.Set(KEY.SEED, 1956);
+                parameters.setInputDimensions(new int[] { (int)Math.Sqrt(inputBits), (int)Math.Sqrt(inputBits) });
+                parameters.setColumnDimensions(new int[] { (int)Math.Sqrt(numOfColumns), (int)Math.Sqrt(numOfColumns) });
 
-            var sp = new SpatialPooler();
-            var mem = new Connections();
+                var sp = new SpatialPooler();
+                var mem = new Connections();
 
-            parameters.apply(mem);
-          
-            sp.init(mem, UnitTestHelpers.GetMemory(numOfColumns));
+                parameters.apply(mem);
+
+                sp.init(mem, UnitTestHelpers.GetMemory(numOfColumns));
+
+                sw.Stop();
+                Console.Write($"{(float)sw.ElapsedMilliseconds / (float)1000} | ");
+            }
         }
 
         /// <summary>
