@@ -31,6 +31,7 @@
   <ItemGroup>
     <ProjectReference Include="..\DistributedComputeLib\DistributedComputeLib.csproj" />
     <ProjectReference Include="..\NeoCortexApi\NeoCortexApi.csproj" />
+    <ProjectReference Include="..\NeoCortexArrayLib\NeoCortexArrayLib.csproj" />
     <ProjectReference Include="..\NeoCortexUtils\NeoCortexUtils.csproj" />
   </ItemGroup>
 

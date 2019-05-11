@@ -14,6 +14,9 @@ namespace NeoCortexApi.DistributedComputeLib
     /// </summary>
     public interface IRemotelyDistributed
     {
-
+        /// <summary>
+        /// Gets number of nodes in distributed cluster.
+        /// </summary>
+        int Nodes { get; }
     }
 }

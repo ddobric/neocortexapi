@@ -11,4 +11,8 @@
     
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\NeoCortexArrayLib\NeoCortexArrayLib.csproj" />
+  </ItemGroup>
+
 </Project>

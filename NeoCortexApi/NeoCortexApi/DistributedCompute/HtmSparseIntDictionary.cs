@@ -9,7 +9,7 @@ namespace NeoCortexApi.DistributedCompute
     /// <summary>
     /// Acts as distributed dictionary of SparseObjectMatrix.
     /// </summary>
-    public class HtmSparseIntDictionary<T> : AkkaDistributedDictionaryBase<int, T>, IRemotelyDistributed
+    public class HtmSparseIntDictionary<T> : AkkaDistributedDictionaryBase<int, T>
     {
         public HtmSparseIntDictionary(HtmSparseIntDictionaryConfig config) : base(config)
         {

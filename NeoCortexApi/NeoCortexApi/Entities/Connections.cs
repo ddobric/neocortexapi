@@ -575,13 +575,16 @@ namespace NeoCortexApi.Entities
             set => this.numInputs = value;
         }
 
-        /**
-         * Returns the product of the column dimensions
-         * @return  the product of the column dimensions
-         */
-        public int getNumColumns()
+
+        /// <summary>
+        /// Returns the total numbe rof columns across all dimensions.
+        /// </summary>
+        public int NumColumns
         {
-            return numColumns;
+            get
+            {
+                return this.numColumns;
+            }
         }
 
         /**
@@ -2324,7 +2327,7 @@ namespace NeoCortexApi.Entities
         {
             Console.WriteLine("------------ SpatialPooler Parameters ------------------");
             Console.WriteLine("numInputs                  = " + NumInputs);
-            Console.WriteLine("numColumns                 = " + getNumColumns());
+            Console.WriteLine("numColumns                 = " + NumColumns);
             Console.WriteLine("cellsPerColumn             = " + getCellsPerColumn());
             Console.WriteLine("columnDimensions           = " + getColumnDimensions().ToString());
             Console.WriteLine("numActiveColumnsPerInhArea = " + NumActiveColumnsPerInhArea);
@@ -2375,7 +2378,7 @@ namespace NeoCortexApi.Entities
 
         //    pw.println("\n------------ SpatialPooler Parameters ------------------");
         //    pw.println("numInputs                  = " + getNumInputs());
-        //    pw.println("numColumns                 = " + getNumColumns());
+        //    pw.println("numColumns                 = " + getNumColumns);
         //    pw.println("numActiveColumnsPerInhArea = " + getNumActiveColumnsPerInhArea());
         //    pw.println("potentialPct               = " + getPotentialPct());
         //    pw.println("potentialRadius            = " + getPotentialRadius());
@@ -2419,8 +2422,8 @@ namespace NeoCortexApi.Entities
          */
         public int[][] getConnecteds()
         {
-            int[][] retVal = new int[getNumColumns()][];
-            for (int i = 0; i < getNumColumns(); i++)
+            int[][] retVal = new int[NumColumns][];
+            for (int i = 0; i < NumColumns; i++)
             {
                 //Pool pool = getPotentialPools().get(i);
                 Pool pool = getColumn(i).ProximalDendrite.RFPool;
@@ -2438,8 +2441,8 @@ namespace NeoCortexApi.Entities
          */
         public int[][] getPotentials()
         {
-            int[][] retVal = new int[getNumColumns()][];
-            for (int i = 0; i < getNumColumns(); i++)
+            int[][] retVal = new int[NumColumns][];
+            for (int i = 0; i < NumColumns; i++)
             {
                 //Pool pool = getPotentialPools().get(i);
                 Pool pool = getColumn(i).ProximalDendrite.RFPool;
@@ -2457,8 +2460,8 @@ namespace NeoCortexApi.Entities
          */
         public double[][] getPermanences()
         {
-            double[][] retVal = new double[getNumColumns()][];
-            for (int i = 0; i < getNumColumns(); i++)
+            double[][] retVal = new double[NumColumns][];
+            for (int i = 0; i < NumColumns; i++)
             {
                 //Pool pool = getPotentialPools().get(i);
                 Pool pool = getColumn(i).ProximalDendrite.RFPool;

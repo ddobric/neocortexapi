@@ -97,6 +97,7 @@ namespace UnitTestsProject
         public void InitDistributedTest()
         {
             Thread.Sleep(5000);
+
             for (int test = 0; test < 15; test++)
             {
                 Stopwatch sw = new Stopwatch();
@@ -248,7 +249,7 @@ namespace UnitTestsProject
                         string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imageSize, testName);
 
                         //Read input csv file into array
-                        int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+                        int[] inputVector = NeoCortexUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
 
                         int numIterationsPerImage = 5;
                         int[] oldArray = new int[activeArray.Length];

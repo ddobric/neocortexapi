@@ -23,7 +23,7 @@ using System.Threading;
  * >   inputVector = prepared int[] (containing 1's and 0's)
  * >   sp.compute(inputVector)
  * 
- * @author David Ray
+ * @author David Ray, Damir Dobric
  *
  */
 
@@ -165,7 +165,7 @@ namespace NeoCortexApi
             List<KeyPair> colList = new List<KeyPair>();
             ConcurrentDictionary<int, KeyPair> colList2 = new ConcurrentDictionary<int, KeyPair>();
 
-            int numColumns = c.getNumColumns();
+            int numColumns = c.NumColumns;
 
 #if !SINGLE_THREADED
             // Parallel implementation of initialization
@@ -173,7 +173,6 @@ namespace NeoCortexApi
             //int synapseCounter = 0;
 
             Parallel.For(0, numColumns, opts, (indx) =>
-            //for (int i = 0; i < numColumns; i++)
             {
                 int i = (int)indx;
                 var data = new ProcessingData();
@@ -393,7 +392,7 @@ namespace NeoCortexApi
         {
             //TIntHashSet active = new TIntHashSet(activeColumns);
             //TIntHashSet aboveZero = new TIntHashSet();
-            //int numCols = c.getNumColumns();
+            //int numCols = c.getNumColumns;
             //double[] colDutyCycles = c.getActiveDutyCycles();
             //for (int i = 0; i < numCols; i++)
             //{
@@ -414,7 +413,7 @@ namespace NeoCortexApi
             //HashSet<int> active = new HashSet<int>(activeColumns);
             //HashSet<int> aboveZero = new HashSet<int>();
 
-            //int numCols = c.getNumColumns();
+            //int numCols = c.getNumColumns;
             //double[] colDutyCycles = c.getActiveDutyCycles();
             //for (int i = 0; i < numCols; i++)
             //{
@@ -504,7 +503,7 @@ namespace NeoCortexApi
          */
         public void updateMinDutyCyclesLocal(Connections c)
         {
-            int len = c.getNumColumns();
+            int len = c.NumColumns;
             int inhibitionRadius = c.InhibitionRadius;
             double[] activeDutyCycles = c.getActiveDutyCycles();
             double minPctActiveDutyCycles = c.getMinPctActiveDutyCycles();
@@ -559,10 +558,10 @@ namespace NeoCortexApi
         public void updateDutyCycles(Connections c, int[] overlaps, int[] activeColumns)
         {
             // All columns with overlap are set to 1. Otherwise 0.
-            double[] overlapArray = new double[c.getNumColumns()];
+            double[] overlapArray = new double[c.NumColumns];
 
             // All active columns are set on 1, otherwise 0.
-            double[] activeArray = new double[c.getNumColumns()];
+            double[] activeArray = new double[c.NumColumns];
 
             //
             // if (sourceA[i] > 0) then targetB[i] = 1;
@@ -636,11 +635,12 @@ namespace NeoCortexApi
             }
 
             List<double> avgCollected = new List<double>();
-            int len = c.getNumColumns();
+            int len = c.NumColumns;
             for (int i = 0; i < len; i++)
             {
                 avgCollected.Add(getAvgSpanOfConnectedSynapsesForColumn(c, i));
             }
+
             double avgConnectedSpan = ArrayUtils.average(avgCollected.ToArray());
 
             double diameter = avgConnectedSpan * avgColumnsPerInput(c);
@@ -1111,7 +1111,7 @@ namespace NeoCortexApi
                 // radius is near to number of columns of a dimension with highest number of columns.
                 // In that case we limit it to number of all columns.
                 inhibitionArea = Math.Pow(2 * c.InhibitionRadius + 1, c.getColumnDimensions().Length);
-                inhibitionArea = Math.Min(c.getNumColumns(), inhibitionArea);
+                inhibitionArea = Math.Min(c.NumColumns, inhibitionArea);
 
                 density = c.NumActiveColumnsPerInhArea / inhibitionArea;
 
@@ -1163,7 +1163,7 @@ namespace NeoCortexApi
         /// <returns>We return all columns, whof synapses in a "connected state" (connected synapses)ich have overlap greather than stimulusThreshold.</returns>
         public virtual int[] inhibitColumnsGlobal(Connections c, double[] overlaps, double density)
         {
-            int numCols = c.getNumColumns();
+            int numCols = c.NumColumns;
             int numActive = (int)(density * numCols);
 
             Dictionary<int, double> indices = new Dictionary<int, double>();
@@ -1542,7 +1542,7 @@ namespace NeoCortexApi
             }
             else
             {
-                double[] oneMinusMaxBoostFact = new double[c.getNumColumns()];
+                double[] oneMinusMaxBoostFact = new double[c.NumColumns];
                 ArrayUtils.fillArray(oneMinusMaxBoostFact, 1 - c.getMaxBoost());
                 boostInterim = ArrayUtils.divide(oneMinusMaxBoostFact, minActiveDutyCycles, 0, 0);
                 boostInterim = ArrayUtils.multiply(boostInterim, activeDutyCycles, 0, 0);
@@ -1586,7 +1586,7 @@ namespace NeoCortexApi
          */
         public int[] calculateOverlap(Connections c, int[] inputVector)
         {
-            int[] overlaps = new int[c.getNumColumns()];
+            int[] overlaps = new int[c.NumColumns];
             c.getConnectedCounts().rightVecSumAtNZ(inputVector, overlaps, c.StimulusThreshold);
             string st = string.Join(",", overlaps);
             Debug.WriteLine($"Overlap: {st}");

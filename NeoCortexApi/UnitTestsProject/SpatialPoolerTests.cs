@@ -94,7 +94,7 @@ namespace UnitTestsProject
             Assert.AreEqual(42, mem.getSeed());
 
             Assert.AreEqual(5, mem.NumInputs);
-            Assert.AreEqual(5, mem.getNumColumns());
+            Assert.AreEqual(5, mem.NumColumns);
         }
 
 
@@ -147,7 +147,7 @@ namespace UnitTestsProject
                 mock.compute(mem, inputVector, activeArray, true);
             }
 
-            for (int i = 0; i < mem.getNumColumns(); i++)
+            for (int i = 0; i < mem.NumColumns; i++)
             {
                 int[] permanences = ArrayUtils.toIntArray(mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem));
 
@@ -190,7 +190,7 @@ namespace UnitTestsProject
                 mock.compute(mem, inputVector, activeArray, true);
             }
 
-            for (int i = 0; i < mem.getNumColumns(); i++)
+            for (int i = 0; i < mem.NumColumns; i++)
             {
                 int[] permanences = ArrayUtils.toIntArray(mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem));
                 int[] potential = (int[])mem.getConnectedCounts().getSlice(i);
@@ -349,7 +349,7 @@ namespace UnitTestsProject
             double[] boostedOverlaps = cn.BoostedOverlaps;
             int[] overlaps = cn.Overlaps;
 
-            for (int i = 0; i < cn.getNumColumns(); i++)
+            for (int i = 0; i < cn.NumColumns; i++)
             {
                 Assert.AreEqual(expOutput[i], overlaps[i]);
                 Assert.IsTrue(Math.Abs(expOutput[i] * 2 - boostedOverlaps[i]) <= 0.01);
@@ -741,7 +741,7 @@ namespace UnitTestsProject
             //};
 
 
-            double[] overlaps = ArrayUtils.sample(mem.getNumColumns(), mem.getRandom());
+            double[] overlaps = ArrayUtils.sample(mem.NumColumns, mem.getRandom());
             mem.NumActiveColumnsPerInhArea = 5;
             mem.LocalAreaDensity = 0.1;
             mem.GlobalInhibition = true;
@@ -763,7 +763,7 @@ namespace UnitTestsProject
             double[] tieBreaker = new double[500];
             ArrayUtils.fillArray(tieBreaker, 0);
             mem.setTieBreaker(tieBreaker);
-            overlaps = ArrayUtils.sample(mem.getNumColumns(), mem.getRandom());
+            overlaps = ArrayUtils.sample(mem.NumColumns, mem.getRandom());
             //inhibitColumnsLocal.inhibitColumns(mem, overlaps);
             mock.inhibitColumns(mem, overlaps);
             trueDensity = mem.LocalAreaDensity;
@@ -785,7 +785,7 @@ namespace UnitTestsProject
             tieBreaker = new double[1000];
             ArrayUtils.fillArray(tieBreaker, 0);
             mem.setTieBreaker(tieBreaker);
-            overlaps = ArrayUtils.sample(mem.getNumColumns(), mem.getRandom());
+            overlaps = ArrayUtils.sample(mem.NumColumns, mem.getRandom());
             //inhibitColumnsLocal.inhibitColumns(mem, overlaps);
             mock.inhibitColumns(mem, overlaps);
             trueDensity = 3.0 / 81.0;
@@ -802,7 +802,7 @@ namespace UnitTestsProject
             tieBreaker = new double[1000];
             ArrayUtils.fillArray(tieBreaker, 0);
             mem.setTieBreaker(tieBreaker);
-            overlaps = ArrayUtils.sample(mem.getNumColumns(), mem.getRandom());
+            overlaps = ArrayUtils.sample(mem.NumColumns, mem.getRandom());
             //inhibitColumnsLocal.inhibitColumns(mem, overlaps);
             mock.inhibitColumns(mem, overlaps);
             trueDensity = 0.5;
@@ -1085,7 +1085,7 @@ namespace UnitTestsProject
             mem.getColumn(4).setProximalConnectedSynapsesForTest(mem, connected.ToArray());
 
             double[] trueAvgConnectedSpan = new double[] { 11.0 / 4d, 6.0 / 4d, 14.0 / 4d, 15.0 / 4d, 0d };
-            for (int i = 0; i < mem.getNumColumns(); i++)
+            for (int i = 0; i < mem.NumColumns; i++)
             {
                 double connectedSpan = sp.getAvgSpanOfConnectedSynapsesForColumn(mem, i);
                 Assert.IsTrue(trueAvgConnectedSpan[i] == connectedSpan);
@@ -1139,7 +1139,7 @@ namespace UnitTestsProject
             //    }
             //};
 
-            for (int i = 0; i < mem.getNumColumns(); i++)
+            for (int i = 0; i < mem.NumColumns; i++)
             {
                 int[] indexes = ArrayUtils.IndexWhere(potentialPools[i], n => n == 1);
 
@@ -1151,7 +1151,7 @@ namespace UnitTestsProject
             //Execute method being tested
             sp.bumpUpWeakColumns(mem);
 
-            for (int i = 0; i < mem.getNumColumns(); i++)
+            for (int i = 0; i < mem.NumColumns; i++)
             {
                 //double[] perms = mem.getPotentialPools().get(i).getDensePermanences(mem);
                 double[] perms = mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem);
@@ -1216,7 +1216,7 @@ namespace UnitTestsProject
                         
             mem.InhibitionRadius = 1;
 
-            for (int i = 0; i < mem.getNumColumns(); i++)
+            for (int i = 0; i < mem.NumColumns; i++)
             {
                 foreach (var syn in mem.getColumn(i).ProximalDendrite.Synapses)
                 {
@@ -1433,11 +1433,11 @@ namespace UnitTestsProject
             mem.setActiveDutyCycles(new double[] { 0.6, 0.07, 0.5, 0.4, 0.3 });
 
             sp.updateMinDutyCyclesGlobal(mem);
-            double[] trueMinActiveDutyCycles = new double[mem.getNumColumns()];
+            double[] trueMinActiveDutyCycles = new double[mem.NumColumns];
             ArrayUtils.fillArray(trueMinActiveDutyCycles, 0.02 * 0.6);
-            double[] trueMinOverlapDutyCycles = new double[mem.getNumColumns()];
+            double[] trueMinOverlapDutyCycles = new double[mem.NumColumns];
             ArrayUtils.fillArray(trueMinOverlapDutyCycles, 0.01 * 6);
-            for (int i = 0; i < mem.getNumColumns(); i++)
+            for (int i = 0; i < mem.NumColumns; i++)
             {
                 //          System.out.println(i + ") " + trueMinOverlapDutyCycles[i] + "  -  " +  mem.getMinOverlapDutyCycles()[i]);
                 //          System.out.println(i + ") " + trueMinActiveDutyCycles[i] + "  -  " +  mem.getMinActiveDutyCycles()[i]);
@@ -1451,7 +1451,7 @@ namespace UnitTestsProject
             mem.setActiveDutyCycles(new double[] { 0.16, 0.007, 0.15, 0.54, 0.13 });
             sp.updateMinDutyCyclesGlobal(mem);
             ArrayUtils.fillArray(trueMinOverlapDutyCycles, 0.015 * 2.4);
-            for (int i = 0; i < mem.getNumColumns(); i++)
+            for (int i = 0; i < mem.NumColumns; i++)
             {
                 //          System.out.println(i + ") " + trueMinOverlapDutyCycles[i] + "  -  " +  mem.getMinOverlapDutyCycles()[i]);
                 //          System.out.println(i + ") " + trueMinActiveDutyCycles[i] + "  -  " +  mem.getMinActiveDutyCycles()[i]);
@@ -1465,7 +1465,7 @@ namespace UnitTestsProject
             sp.updateMinDutyCyclesGlobal(mem);
             ArrayUtils.fillArray(trueMinOverlapDutyCycles, 0);
             ArrayUtils.fillArray(trueMinActiveDutyCycles, 0);
-            for (int i = 0; i < mem.getNumColumns(); i++)
+            for (int i = 0; i < mem.NumColumns; i++)
             {
                 //          System.out.println(i + ") " + trueMinOverlapDutyCycles[i] + "  -  " +  mem.getMinOverlapDutyCycles()[i]);
                 //          System.out.println(i + ") " + trueMinActiveDutyCycles[i] + "  -  " +  mem.getMinActiveDutyCycles()[i]);
@@ -1556,7 +1556,7 @@ namespace UnitTestsProject
             //    }
             //};
 
-            for (int i = 0; i < mem.getNumColumns(); i++)
+            for (int i = 0; i < mem.NumColumns; i++)
             {
                 int[] indexes = ArrayUtils.IndexWhere(potentialPools[i], (n) => (n == 1));
                 //    int[] indexes = ArrayUtils.where(potentialPools[i], cond);
@@ -1569,7 +1569,7 @@ namespace UnitTestsProject
 
             sp.adaptSynapses(mem, inputVector, activeColumns);
 
-            for (int i = 0; i < mem.getNumColumns(); i++)
+            for (int i = 0; i < mem.NumColumns; i++)
             {
                 //double[] perms = mem.getPotentialPools().get(i).getDensePermanences(mem);
                 double[] perms = mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem);
@@ -1602,7 +1602,7 @@ namespace UnitTestsProject
            new double[] { 0.170, 0.000, 0.000, 0.000, 0.000, 0.000, 0.380, 0.000 }
         };
 
-            for (int i = 0; i < mem.getNumColumns(); i++)
+            for (int i = 0; i < mem.NumColumns; i++)
             {
                 //int[] indexes = potentialPools[i].Where(n => n == 1).ToArray();
                 int[] indexes = ArrayUtils.IndexWhere(potentialPools[i], (n) => (n == 1));
@@ -1614,7 +1614,7 @@ namespace UnitTestsProject
 
             sp.adaptSynapses(mem, inputVector, activeColumns);
 
-            for (int i = 0; i < mem.getNumColumns(); i++)
+            for (int i = 0; i < mem.NumColumns; i++)
             {
                 double[] perms = mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem);
                 for (int j = 0; j < truePermanences[i].Length; j++)
@@ -1669,7 +1669,7 @@ namespace UnitTestsProject
 
             //FORGOT TO SET PERMANENCES ABOVE - DON'T USE mem.setPermanences() 
             int[] indices = mem.getMemory().getSparseIndices();
-            for (int i = 0; i < mem.getNumColumns(); i++)
+            for (int i = 0; i < mem.NumColumns; i++)
             {
                 // double[] perm = mem.getPotentialPools().get(i).getSparsePermanences();
                 double[] perm = mem.getColumn(i).ProximalDendrite.RFPool.getSparsePermanences();
@@ -1720,7 +1720,7 @@ namespace UnitTestsProject
 
             int[] trueConnectedCounts = new int[] { 2, 2, 2, 2, 3 };
 
-            for (int i = 0; i < mem.getNumColumns(); i++)
+            for (int i = 0; i < mem.NumColumns; i++)
             {
                 mem.getColumn(i).setPermanences(mem, permanences[i]);
                 sp.updatePermanencesForColumn(mem, permanences[i], mem.getColumn(i), connectedDense[i], true);

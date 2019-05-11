@@ -28,6 +28,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{7D17894D
 		nuget\NeuralNetworks.Core.1.2.1.nupkg = nuget\NeuralNetworks.Core.1.2.1.nupkg
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeoCortexArrayLib", "NeoCortexArrayLib\NeoCortexArrayLib.csproj", "{A7F4E797-E60F-470E-96F6-B9ECD3A67451}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,6 +56,10 @@ Global
 		{A56DD089-679E-479B-BD00-955AA4CDF569}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A56DD089-679E-479B-BD00-955AA4CDF569}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A56DD089-679E-479B-BD00-955AA4CDF569}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7F4E797-E60F-470E-96F6-B9ECD3A67451}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7F4E797-E60F-470E-96F6-B9ECD3A67451}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7F4E797-E60F-470E-96F6-B9ECD3A67451}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7F4E797-E60F-470E-96F6-B9ECD3A67451}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

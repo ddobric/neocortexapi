@@ -60,6 +60,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DistributedComputeLib\DistributedComputeLib.csproj" />
+    <ProjectReference Include="..\NeoCortexArrayLib\NeoCortexArrayLib.csproj" />
   </ItemGroup>
 
 

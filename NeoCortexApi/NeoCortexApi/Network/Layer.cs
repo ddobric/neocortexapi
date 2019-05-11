@@ -454,7 +454,7 @@ namespace NeoCortexApi
                 TemporalMemory.init(connections);
             }
 
-            this.numColumns = connections.getNumColumns();
+            this.numColumns = connections.getNumColumns;
 
             this.isClosed = true;
 

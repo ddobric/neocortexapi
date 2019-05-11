@@ -968,7 +968,7 @@ namespace UnitTestsProject
             p.apply(cn);
             TemporalMemory.init(cn);
 
-            Assert.AreEqual(64 * 64, cn.getNumColumns());
+            Assert.AreEqual(64 * 64, cn.NumColumns);
         }
 
         [TestMethod]

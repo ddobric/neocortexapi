@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NeoCortexApi.Utility;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -319,7 +320,7 @@ namespace NeoCortexApi.Entities
         {
             int[] mask = inputMatrix.getSparseIndices();
             int[] ones = new int[mask.Length];
-            Utility.ArrayUtils.Fill(ones, 1);
+            ArrayUtils.Fill(ones, 1);
             return set(mask, ones);
         }
 

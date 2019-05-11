@@ -10,7 +10,7 @@ using System.Diagnostics;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
-    public abstract class AkkaDistributedDictionaryBase<TKey, TValue> : IDistributedDictionary<TKey, TValue>
+    public abstract class AkkaDistributedDictionaryBase<TKey, TValue> : IDistributedDictionary<TKey, TValue>, IRemotelyDistributed
     {
         protected AkkaDistributedDictConfig Config { get; }
 
@@ -212,291 +212,295 @@ namespace NeoCortexApi.DistributedComputeLib
                     break;
             }
         }
-    
 
 
 
-/// <summary>
-/// Adds/Updates batch of elements to remote nodes.
-/// </summary>
-/// <param name="keyValuePairs"></param>
-//public void AddOrUpdatePerf(ICollection<KeyPair> keyValuePairs)
-//{
-//    for (int k = 0; k < 10; k++)
-//    {
-//        Debug.WriteLine($"----------- {k} -----------");
-//        List<int> pages = new List<int>();
-//        pages.Add(1000);
-//        pages.Add(500);
-//        pages.Add(250);
-//        pages.Add(100);
-//        pages.Add(50);
-//        pages.Add(10);
-//        pages.Add(1);
 
-//        foreach (var pageSize in pages)
-//        {
-//            Stopwatch sw = new Stopwatch();
-//            sw.Start();
+        /// <summary>
+        /// Adds/Updates batch of elements to remote nodes.
+        /// </summary>
+        /// <param name="keyValuePairs"></param>
+        //public void AddOrUpdatePerf(ICollection<KeyPair> keyValuePairs)
+        //{
+        //    for (int k = 0; k < 10; k++)
+        //    {
+        //        Debug.WriteLine($"----------- {k} -----------");
+        //        List<int> pages = new List<int>();
+        //        pages.Add(1000);
+        //        pages.Add(500);
+        //        pages.Add(250);
+        //        pages.Add(100);
+        //        pages.Add(50);
+        //        pages.Add(10);
+        //        pages.Add(1);
 
-//            Dictionary<int, AddOrUpdateElementsMsg> list = new Dictionary<int, AddOrUpdateElementsMsg>();
+        //        foreach (var pageSize in pages)
+        //        {
+        //            Stopwatch sw = new Stopwatch();
+        //            sw.Start();
 
-//            //int pageSize = 10;
-//            int alreadyProcessed = 0;
-//            //Debug.WriteLine("-------------");
-//            while (true)
-//            {
-//                foreach (var item in keyValuePairs.Skip(alreadyProcessed).Take(pageSize))
-//                {
-//                    var partitionIndex = GetPartitionNodeIndexFromKey((TKey)item.Key);
-//                    if (!list.ContainsKey(partitionIndex))
-//                        list.Add(partitionIndex, new AddOrUpdateElementsMsg() { Elements = new List<KeyPair>() });
+        //            Dictionary<int, AddOrUpdateElementsMsg> list = new Dictionary<int, AddOrUpdateElementsMsg>();
 
-//                    list[partitionIndex].Elements.Add(new KeyPair { Key = item.Key, Value = item.Value });
-//                }
+        //            //int pageSize = 10;
+        //            int alreadyProcessed = 0;
+        //            //Debug.WriteLine("-------------");
+        //            while (true)
+        //            {
+        //                foreach (var item in keyValuePairs.Skip(alreadyProcessed).Take(pageSize))
+        //                {
+        //                    var partitionIndex = GetPartitionNodeIndexFromKey((TKey)item.Key);
+        //                    if (!list.ContainsKey(partitionIndex))
+        //                        list.Add(partitionIndex, new AddOrUpdateElementsMsg() { Elements = new List<KeyPair>() });
 
-//                if (list.Count > 0)
-//                {
-//                    Task<int>[] tasks = new Task<int>[list.Count];
+        //                    list[partitionIndex].Elements.Add(new KeyPair { Key = item.Key, Value = item.Value });
+        //                }
 
-//                    for (int partIndx = 0; partIndx < tasks.Length; partIndx++)
-//                    {
-//                        //Debug.Write(".");
-//                        tasks[partIndx] = dictActors[partIndx].Ask<int>(list[partIndx], TimeSpan.FromMinutes(3));
-//                        alreadyProcessed += list[partIndx].Elements.Count;
-//                    }
+        //                if (list.Count > 0)
+        //                {
+        //                    Task<int>[] tasks = new Task<int>[list.Count];
 
-//                    Task.WaitAll(tasks);
+        //                    for (int partIndx = 0; partIndx < tasks.Length; partIndx++)
+        //                    {
+        //                        //Debug.Write(".");
+        //                        tasks[partIndx] = dictActors[partIndx].Ask<int>(list[partIndx], TimeSpan.FromMinutes(3));
+        //                        alreadyProcessed += list[partIndx].Elements.Count;
+        //                    }
 
-//                    list.Clear();
-//                }
-//                else
-//                    break;
-//            }
-//            sw.Stop();
-//            Debug.WriteLine("");
-//            Debug.WriteLine($"{pageSize} | {sw.ElapsedMilliseconds}");
-//        }
-//    }
-//}
+        //                    Task.WaitAll(tasks);
 
-/// <summary>
-/// Ads the value with secified key to the right parition.
-/// </summary>
-/// <param name="key"></param>
-/// <param name="value"></param>
-public void Add(TKey key, TValue value)
-{
-    var nodeIndex = GetPartitionNodeIndexFromKey(key);
+        //                    list.Clear();
+        //                }
+        //                else
+        //                    break;
+        //            }
+        //            sw.Stop();
+        //            Debug.WriteLine("");
+        //            Debug.WriteLine($"{pageSize} | {sw.ElapsedMilliseconds}");
+        //        }
+        //    }
+        //}
 
-    var isSet = dictActors[nodeIndex].Ask<int>(new AddElementsMsg()
-    {
-        Elements = new List<KeyPair>
+        /// <summary>
+        /// Ads the value with secified key to the right parition.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public void Add(TKey key, TValue value)
+        {
+            var nodeIndex = GetPartitionNodeIndexFromKey(key);
+
+            var isSet = dictActors[nodeIndex].Ask<int>(new AddElementsMsg()
+            {
+                Elements = new List<KeyPair>
                     {
                         new KeyPair { Key=key, Value=value }
                     }
 
-    }, this.Config.ConnectionTimout).Result;
+            }, this.Config.ConnectionTimout).Result;
 
-    if (isSet != 1)
-        throw new ArgumentException("Cannot add the element with specified key!");
-}
-
-/// <summary>
-/// Tries to return value from target partition.
-/// </summary>
-/// <param name="key"></param>
-/// <param name="value"></param>
-/// <returns></returns>
-public bool TryGetValue(TKey key, out TValue value)
-{
-    var nodeIndex = GetPartitionNodeIndexFromKey(key);
-
-    Result result = dictActors[nodeIndex].Ask<Result>(new GetElementMsg { Key = key }).Result;
-
-    if (result.IsError == false)
-    {
-        value = (TValue)result.Value;
-        return true;
-    }
-    else
-    {
-        value = default(TValue);
-        return false;
-    }
-}
-
-public void Add(KeyValuePair<TKey, TValue> item)
-{
-    int partitionId = GetPartitionNodeIndexFromKey(item.Key);
-    this.dictList[partitionId].Add(item.Key, item.Value);
-}
-
-public void Clear()
-{
-    foreach (var item in this.dictList)
-    {
-        item.Clear();
-    }
-}
-
-public bool Contains(KeyValuePair<TKey, TValue> item)
-{
-    int partitionId = GetPartitionNodeIndexFromKey(item.Key);
-
-    if (ContainsKey(item.Key))
-    {
-        var val = this.dictActors[partitionId].Ask<TValue>(new GetElementMsg()).Result;
-        if (EqualityComparer<TValue>.Default.Equals(val, item.Value))
-            return true;
-        else
-            return false;
-    }
-
-    return false;
-}
-
-/// <summary>
-/// Checks if element with specified key exists in any partition in cluster.
-/// </summary>
-/// <param name="key"></param>
-/// <returns></returns>
-public bool ContainsKey(TKey key)
-{
-    int partitionId = GetPartitionNodeIndexFromKey(key);
-
-    if (this.dictActors[partitionId].Ask<bool>(new ContainsMsg { Key = key }).Result)
-        return true;
-    else
-        return false;
-}
-
-public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
-{
-    throw new NotImplementedException();
-}
-
-public bool Remove(TKey key)
-{
-    for (int i = 0; i < this.dictList.Length; i++)
-    {
-        if (this.dictList[i].ContainsKey(key))
-        {
-            return this.dictList[i].Remove(key);
+            if (isSet != 1)
+                throw new ArgumentException("Cannot add the element with specified key!");
         }
-    }
 
-    return false;
-}
-
-public bool Remove(KeyValuePair<TKey, TValue> item)
-{
-    for (int i = 0; i < this.dictList.Length; i++)
-    {
-        if (this.dictList[i].ContainsKey(item.Key))
+        /// <summary>
+        /// Tries to return value from target partition.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public bool TryGetValue(TKey key, out TValue value)
         {
-            return this.dictList[i].Remove(item.Key);
+            var nodeIndex = GetPartitionNodeIndexFromKey(key);
+
+            Result result = dictActors[nodeIndex].Ask<Result>(new GetElementMsg { Key = key }).Result;
+
+            if (result.IsError == false)
+            {
+                value = (TValue)result.Value;
+                return true;
+            }
+            else
+            {
+                value = default(TValue);
+                return false;
+            }
         }
-    }
 
-    return false;
-}
-
-
-
-IEnumerator IEnumerable.GetEnumerator()
-{
-    return this;
-}
-
-#region Enumerators
-
-/// <summary>
-/// Current dictionary list in enemerator.
-/// </summary>
-private int currentDictIndex = -1;
-
-/// <summary>
-/// Current index in currentdictionary
-/// </summary>
-private int currentIndex = -1;
-
-public object Current => this.dictList[this.currentDictIndex].ElementAt(currentIndex);
-
-KeyValuePair<TKey, TValue> IEnumerator<KeyValuePair<TKey, TValue>>.Current => this.dictList[this.currentDictIndex].ElementAt(currentIndex);
-
-
-public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
-{
-    return this;
-}
-
-
-public bool MoveNext()
-{
-    if (this.currentIndex == -1)
-        this.currentIndex = 0;
-
-    if (this.currentDictIndex + 1 < this.dictList.Length)
-    {
-        this.currentDictIndex++;
-
-        if (this.dictList[this.currentDictIndex].Count > 0 && this.dictList[this.currentDictIndex].Count > this.currentIndex)
-            return true;
-        else
-            return false;
-    }
-    else
-    {
-        this.currentDictIndex = 0;
-
-        if (this.currentIndex + 1 < this.dictList[this.currentDictIndex].Count)
+        public void Add(KeyValuePair<TKey, TValue> item)
         {
-            this.currentIndex++;
-            return true;
+            int partitionId = GetPartitionNodeIndexFromKey(item.Key);
+            this.dictList[partitionId].Add(item.Key, item.Value);
         }
-        else
-            return false;
-    }
-}
 
-
-public bool MoveNextOLD()
-{
-    if (this.currentDictIndex == -1)
-        this.currentDictIndex++;
-
-    if (this.currentIndex + 1 < this.dictList[this.currentDictIndex].Count)
-    {
-        this.currentIndex++;
-        return true;
-    }
-    else
-    {
-        if (this.currentDictIndex < this.dictList.Length)
+        public void Clear()
         {
-            this.currentDictIndex++;
+            foreach (var item in this.dictList)
+            {
+                item.Clear();
+            }
+        }
 
-            if (this.dictList[this.currentDictIndex].Count > 0)
+        public bool Contains(KeyValuePair<TKey, TValue> item)
+        {
+            int partitionId = GetPartitionNodeIndexFromKey(item.Key);
+
+            if (ContainsKey(item.Key))
+            {
+                var val = this.dictActors[partitionId].Ask<TValue>(new GetElementMsg()).Result;
+                if (EqualityComparer<TValue>.Default.Equals(val, item.Value))
+                    return true;
+                else
+                    return false;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Checks if element with specified key exists in any partition in cluster.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public bool ContainsKey(TKey key)
+        {
+            int partitionId = GetPartitionNodeIndexFromKey(key);
+
+            if (this.dictActors[partitionId].Ask<bool>(new ContainsMsg { Key = key }).Result)
                 return true;
             else
                 return false;
         }
-        else
+
+        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Remove(TKey key)
+        {
+            for (int i = 0; i < this.dictList.Length; i++)
+            {
+                if (this.dictList[i].ContainsKey(key))
+                {
+                    return this.dictList[i].Remove(key);
+                }
+            }
+
             return false;
-    }
-}
+        }
 
-public void Reset()
-{
-    this.currentDictIndex = -1;
-    this.currentIndex = -1;
-}
+        public bool Remove(KeyValuePair<TKey, TValue> item)
+        {
+            for (int i = 0; i < this.dictList.Length; i++)
+            {
+                if (this.dictList[i].ContainsKey(item.Key))
+                {
+                    return this.dictList[i].Remove(item.Key);
+                }
+            }
 
-public void Dispose()
-{
-    this.dictList = null;
-}
+            return false;
+        }
+
+
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this;
+        }
+
+        #region Enumerators
+
+        /// <summary>
+        /// Current dictionary list in enemerator.
+        /// </summary>
+        private int currentDictIndex = -1;
+
+        /// <summary>
+        /// Current index in currentdictionary
+        /// </summary>
+        private int currentIndex = -1;
+
+        public object Current => this.dictList[this.currentDictIndex].ElementAt(currentIndex);
+
+        KeyValuePair<TKey, TValue> IEnumerator<KeyValuePair<TKey, TValue>>.Current => this.dictList[this.currentDictIndex].ElementAt(currentIndex);
+
+        /// <summary>
+        /// Gets number of physical nodes in cluster.
+        /// </summary>
+        public int Nodes => this.Config.Nodes.Count;
+
+        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+        {
+            return this;
+        }
+
+
+        public bool MoveNext()
+        {
+            if (this.currentIndex == -1)
+                this.currentIndex = 0;
+
+            if (this.currentDictIndex + 1 < this.dictList.Length)
+            {
+                this.currentDictIndex++;
+
+                if (this.dictList[this.currentDictIndex].Count > 0 && this.dictList[this.currentDictIndex].Count > this.currentIndex)
+                    return true;
+                else
+                    return false;
+            }
+            else
+            {
+                this.currentDictIndex = 0;
+
+                if (this.currentIndex + 1 < this.dictList[this.currentDictIndex].Count)
+                {
+                    this.currentIndex++;
+                    return true;
+                }
+                else
+                    return false;
+            }
+        }
+
+
+        public bool MoveNextOLD()
+        {
+            if (this.currentDictIndex == -1)
+                this.currentDictIndex++;
+
+            if (this.currentIndex + 1 < this.dictList[this.currentDictIndex].Count)
+            {
+                this.currentIndex++;
+                return true;
+            }
+            else
+            {
+                if (this.currentDictIndex < this.dictList.Length)
+                {
+                    this.currentDictIndex++;
+
+                    if (this.dictList[this.currentDictIndex].Count > 0)
+                        return true;
+                    else
+                        return false;
+                }
+                else
+                    return false;
+            }
+        }
+
+        public void Reset()
+        {
+            this.currentDictIndex = -1;
+            this.currentIndex = -1;
+        }
+
+        public void Dispose()
+        {
+            this.dictList = null;
+        }
         #endregion
     }
 }

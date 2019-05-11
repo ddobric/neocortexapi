@@ -124,7 +124,7 @@ namespace UnitTestsProject
                                 string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
 
                                 //Read input csv file into array
-                                int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+                                int[] inputVector = NeoCortexUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
 
                                 int numIterationsPerImage = 5;
                                 int[] oldArray = new int[activeArray.Length];
@@ -176,7 +176,7 @@ namespace UnitTestsProject
         /// <param name="topologies">list of sparse space size. Sparse space has same width and length</param>
         [TestMethod]
         [TestCategory("LongRunning")]
-        [DataRow("MnistPng28x28\\training", "3", new int[] { 28 }, new int[] { 32 /*, 64, 128 */})]
+        [DataRow("MnistPng28x28\\training", "5", new int[] { 28 }, new int[] { 32 /*, 64, 128 */})]
         public void TrainSingleMnistImageWithVariableRadiusTest(string trainingFolder, string digit, int[] imageSizes, int[] topologies)
          {
             string testOutputFolder = $"Output-{nameof(TrainSingleMnistImageWithVariableRadiusTest)}";
@@ -252,7 +252,7 @@ namespace UnitTestsProject
                                     string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
 
                                     //Read input csv file into array
-                                    int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+                                    int[] inputVector = NeoCortexUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
 
                                     int numIterationsPerImage = 5;
                                     int[] oldArray = new int[activeArray.Length];
@@ -420,7 +420,7 @@ namespace UnitTestsProject
                                     string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
 
                                     //Read input csv file into array
-                                    int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+                                    int[] inputVector = NeoCortexUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
 
                                     int numIterationsPerImage = 10;
                                     int[] oldArray = new int[sp.GetActiveColumns(targetLyrIndx).Length];
@@ -568,7 +568,7 @@ namespace UnitTestsProject
                             string inputBinaryImageFile = Helpers.BinarizeImage($"{testImage}", imgSize, testName);
 
                             // Read input csv file into array
-                            int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+                            int[] inputVector = NeoCortexUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
 
                             trainedSpatialPooler.Compute(inputVector, false);
 
@@ -786,7 +786,7 @@ namespace UnitTestsProject
                             string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
 
                             //Read input csv file into array
-                            int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+                            int[] inputVector = NeoCortexUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
 
                             int numIterationsPerImage = 5;
 
@@ -955,7 +955,7 @@ namespace UnitTestsProject
                     string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imgSize, testName);
 
                     //Read input csv file into array
-                    int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+                    int[] inputVector = NeoCortexUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
 
                     sp.Compute(inputVector, false);
 

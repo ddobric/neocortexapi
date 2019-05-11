@@ -126,5 +126,38 @@ namespace NeoCortexApi.DistributedComputeLib
         {
             Console.WriteLine($"{nameof(DictNodeActor)} stoped.");
         }
+
+        /// <summary>
+        /// It traverses all connected synapses of the column and calculates the span, which synapses
+        /// spans between all input bits. Then it calculates average of spans accross all dimensions. 
+        /// </summary>
+        /// <param name="c"></param>
+        /// <param name="columnIndex"></param>
+        /// <returns></returns>
+        //private virtual double getAvgSpanOfConnectedSynapsesForColumn(Connections c, int columnIndex)
+        //{
+        //    int[] dimensions = c.getInputDimensions();
+
+        //    // Gets synapses connected to input bits.(from pool of the column)
+        //    int[] connected = c.getColumn(columnIndex).ProximalDendrite.getConnectedSynapsesSparse();
+
+        //    if (connected == null || connected.Length == 0) return 0;
+
+        //    int[] maxCoord = new int[c.getInputDimensions().Length];
+        //    int[] minCoord = new int[c.getInputDimensions().Length];
+        //    ArrayUtils.fillArray(maxCoord, -1);
+        //    ArrayUtils.fillArray(minCoord, ArrayUtils.max(dimensions));
+        //    ISparseMatrix<int> inputMatrix = c.getInputMatrix();
+
+        //    //
+        //    // It takes all connected synapses
+        //    // 
+        //    for (int i = 0; i < connected.Length; i++)
+        //    {
+        //        maxCoord = ArrayUtils.maxBetween(maxCoord, inputMatrix.computeCoordinates(connected[i]));
+        //        minCoord = ArrayUtils.minBetween(minCoord, inputMatrix.computeCoordinates(connected[i]));
+        //    }
+        //    return ArrayUtils.average(ArrayUtils.add(ArrayUtils.subtract(maxCoord, minCoord), 1));
+        //}
     }
 }

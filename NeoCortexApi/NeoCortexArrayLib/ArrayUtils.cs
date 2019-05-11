@@ -1,11 +1,11 @@
-﻿using NeoCortexApi.Entities;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.IO;
-using System.Drawing.Imaging;
+
 
 namespace NeoCortexApi.Utility
 {
@@ -705,13 +705,13 @@ namespace NeoCortexApi.Utility
             return retVal;
         }
 
-        /**
-         * Performs a modulus operation in Python style.
-         *
-         * @param a
-         * @param b
-         * @return
-         */
+
+        /// <smmary>
+        /// Performs a modulus operation in Python style.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns>Modulo.</returns>
         public static int modulo(int a, int b)
         {
             if (b == 0) throw new DivideByZeroException();
@@ -812,7 +812,7 @@ namespace NeoCortexApi.Utility
         public static List<int> ReadCsvFileTest(String path)
         {
             string fileContent = File.ReadAllText(path);
-            string[] integerStrings = fileContent.Split(new char[] { '\r','\n' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] integerStrings = fileContent.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
             List<int> intList = new List<int>();
             for (int n = 0; n < integerStrings.Length; n++)
             {
@@ -2264,7 +2264,7 @@ namespace NeoCortexApi.Utility
          */
         public static int max(int[] array)
         {
-            int max = Integer.MinValue;
+            int max = int.MinValue;
             for (int i = 0; i < array.Length; i++)
             {
                 if (array[i] > max)
@@ -2354,7 +2354,7 @@ namespace NeoCortexApi.Utility
          */
         public static int min(int[] array)
         {
-            int min = Integer.MaxValue;
+            int min = int.MaxValue;
             for (int i = 0; i < array.Length; i++)
             {
                 if (array[i] < min)
@@ -2777,8 +2777,8 @@ namespace NeoCortexApi.Utility
         //    return result;
         //}
 
-        public static bool AreEqual<TKey, TValue>(IDictionary<TKey, TValue> dict1, IDictionary<TKey, TValue> dict2) 
-        {          
+        public static bool AreEqual<TKey, TValue>(IDictionary<TKey, TValue> dict1, IDictionary<TKey, TValue> dict2)
+        {
             if (dict1.Count != dict2.Count)
                 return false;
 
