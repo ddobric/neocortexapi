@@ -31,7 +31,7 @@ namespace NeoCortexApi.Entities
          * the inputWidth if using "globalInhibition" and if not 
          * using the Network API (which sets this automatically) 
          */
-   
+
         private int potentialRadius = 16;
         private double potentialPct = 0.5;
         private bool m_GlobalInhibition = false;
@@ -489,13 +489,21 @@ namespace NeoCortexApi.Entities
         ////////////////////////////////////////
         //       SpatialPooler Methods        //
         ////////////////////////////////////////
-        /**
-         * Returns the configured initial connected percent.
-         * @return
-         */
-        public double getInitConnectedPct()
+
+
+        /// <summary>
+        /// Percent of initially connected synapses. Typically 50%.
+        /// </summary>
+        public double InitialSynapseConnsPct
         {
-            return this.initConnectedPct;
+            get
+            {
+                return this.initConnectedPct;
+            }
+            set
+            {
+                this.initConnectedPct = value;
+            }
         }
 
         /**
@@ -562,7 +570,8 @@ namespace NeoCortexApi.Entities
  * @param n
  */
         public int NumInputs
-        { get => numInputs;
+        {
+            get => numInputs;
             set => this.numInputs = value;
         }
 
@@ -768,7 +777,7 @@ namespace NeoCortexApi.Entities
             return tieBreaker;
         }
 
-  
+
         /// <summary>
         /// Enforses using of global inhibition process.
         /// </summary>
@@ -810,7 +819,7 @@ namespace NeoCortexApi.Entities
         ///         remain ON within a local inhibition area, where N =
         ///         localAreaDensity * (total number of columns in
         ///         inhibition area).
-        
+
         /// </summary>
         public double LocalAreaDensity
         {

@@ -165,13 +165,12 @@ namespace NeoCortexApi
             List<KeyPair> colList = new List<KeyPair>();
             ConcurrentDictionary<int, KeyPair> colList2 = new ConcurrentDictionary<int, KeyPair>();
 
-            // Initialize the set of permanence values for each column. Ensure that
-            // each column is connected to enough input bits to allow it to be activated.
             int numColumns = c.getNumColumns();
 
 #if !SINGLE_THREADED
+            // Parallel implementation of initialization
             ParallelOptions opts = new ParallelOptions();
-            int synapseCounter = 0;
+            //int synapseCounter = 0;
 
             Parallel.For(0, numColumns, opts, (indx) =>
             //for (int i = 0; i < numColumns; i++)
@@ -188,13 +187,11 @@ namespace NeoCortexApi
                 // After initialization permancences are set to zero.
                 connectColumnToInputRF(c, data.Potential, data.Column);
 
-                Interlocked.Add(ref synapseCounter, data.Column.ProximalDendrite.Synapses.Count);
+                //Interlocked.Add(ref synapseCounter, data.Column.ProximalDendrite.Synapses.Count);
 
                 //colList.Add(new KeyPair() { Key = i, Value = column });
 
-                data.Perm = initPermanence(c.getSynPermConnected(), c.getSynPermMax(), c.getRandom(), c.getSynPermTrimThreshold(),
-                    c,
-                    data.Potential, data.Column, c.getInitConnectedPct());
+                data.Perm = initPermanence(c, data.Potential, data.Column);
 
                 updatePermanencesForColumn(c, data.Perm, data.Column, data.Potential, true);
 
@@ -290,7 +287,7 @@ namespace NeoCortexApi
         {
             //var synapseIndex = c.getProximalSynapseCount();
             //c.setProximalSynapseCount(synapseIndex + potential.Length);
-            var synapseIndex = 0;
+            var synapseIndex = -1;
             var potPool = column.createPotentialPool(c, potential, synapseIndex);
         }
 
@@ -951,12 +948,13 @@ namespace NeoCortexApi
             return p;
         }
 
-        /**
-         * Returns a randomly generated permanence value for a synapses that is to be
-         * initialized in a non-connected state.
-         * 
-         * @return  a randomly generated permanence value
-         */
+      
+        /// <summary>
+        /// Returns a randomly generated permanence value for a synapses that is to be
+        /// initialized in a non-connected state.</summary>
+        /// <param name="synPermConnected"></param>
+        /// <param name="rnd">Random generator to be used to generate permanence.</param>
+        /// <returns>Permanence value.</returns>
         public static double initPermNonConnected(double synPermConnected, Random rnd)
         {
             //double p = c.getSynPermConnected() * c.getRandom().NextDouble();
@@ -988,25 +986,25 @@ namespace NeoCortexApi
          *                          0.7 means, maximally 70% of potential might be connected
          * @return
          */
-        public double[] initPermanence(double synPermConnected, double synPermMax, Random random, double synapsePermanenceTrimThreshold, Connections c, int[] potentialPool, Column column, double connectedPct)
+        public  double[] initPermanence(Connections c, int[] potentialPool, Column column)
         {
             //Random random = new Random();
 
             double[] perm = new double[c.NumInputs];
-
+            var random = c.getRandom();
             //foreach (int idx in column.ProximalDendrite.ConnectedInputs)
             foreach (int idx in potentialPool)
             {
-                if (random.NextDouble() <= connectedPct)
+                if (random.NextDouble() <= c.InitialSynapseConnsPct)
                 {
-                    perm[idx] = initPermConnected(synPermMax, synPermMax, random);
+                    perm[idx] = initPermConnected(c.getSynPermMax(), c.getSynPermMax(), random);
                 }
                 else
                 {
-                    perm[idx] = initPermNonConnected(synPermConnected, random);
+                    perm[idx] = initPermNonConnected(c.getSynPermConnected(), random);
                 }
 
-                perm[idx] = perm[idx] < synapsePermanenceTrimThreshold ? 0 : perm[idx];
+                perm[idx] = perm[idx] < c.getSynPermTrimThreshold() ? 0 : perm[idx];
 
             }
 

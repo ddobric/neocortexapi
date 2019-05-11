@@ -1904,7 +1904,7 @@ namespace UnitTestsProject
             mem.NumInputs = 10;
 
             mem.setPotentialRadius(2);
-            double connectedPct = 1;
+            mem.InitialSynapseConnsPct = 1;
             int[] mask = new int[] { 0, 1, 2, 8, 9 };
 
             //var dendriteSeg = mem.getColumn(0).ProximalDendrite;
@@ -1916,23 +1916,23 @@ namespace UnitTestsProject
             //    dendriteSeg.Synapses.Add(new Synapse(null, dendriteSeg, i, 0) { InputIndex = mask[i] });
             //}
 
-            double[] perm = this.sp.initPermanence(mem.getSynPermConnected(), mem.getSynPermMax(), mem.getRandom(), mem.getSynPermTrimThreshold(), mem, mask, mem.getColumn(0), connectedPct);
+            double[] perm = this.sp.initPermanence(mem, mask, mem.getColumn(0));
             int numcon = ArrayUtils.valueGreaterCount(mem.getSynPermConnected(), perm);
 
             // Because of connectedPct=1 all 5 specified synapses have to be connected.
             Assert.AreEqual(5, numcon);
 
-            connectedPct = 0;
-            perm = this.sp.initPermanence(mem.getSynPermConnected(), mem.getSynPermMax(), mem.getRandom(), mem.getSynPermTrimThreshold(), mem, mask, mem.getColumn(0), connectedPct);
+            mem.InitialSynapseConnsPct = 0;
+            perm = this.sp.initPermanence(mem, mask, mem.getColumn(0));
             numcon = ArrayUtils.valueGreaterCount(mem.getSynPermConnected(), perm);
             Assert.AreEqual(0, numcon);
 
-            connectedPct = 0.5;
+            mem.InitialSynapseConnsPct = 0.5;
             mem.setPotentialRadius(100);
             mem.NumInputs = 100;
             mask = new int[100];
             for (int i = 0; i < 100; i++) mask[i] = i;
-            double[] perma = this.sp.initPermanence(mem.getSynPermConnected(), mem.getSynPermMax(), mem.getRandom(), mem.getSynPermTrimThreshold(), mem, mask, mem.getColumn(0), connectedPct);
+            double[] perma = this.sp.initPermanence(mem, mask, mem.getColumn(0));
             numcon = ArrayUtils.valueGreaterOrEqualCount(mem.getSynPermConnected(), perma);
             Assert.IsTrue(numcon > 0);
             Assert.IsTrue(numcon < mem.NumInputs);
@@ -1970,7 +1970,7 @@ namespace UnitTestsProject
             mem.NumInputs = 10;
             double connectedPct = 1;
             int[] mask = new int[] { 0, 1 };
-            double[] perm = sp.initPermanence(mem.getSynPermConnected(), mem.getSynPermMax(), mem.getRandom(), mem.getSynPermTrimThreshold(), mem, mask, mem.getColumn(0), connectedPct);
+            double[] perm = sp.initPermanence( mem, mask, mem.getColumn(0));
             int[] trueConnected = new int[] { 0, 1 };
 
             //Condition<?> cond = new Condition.Adapter<Object>()
@@ -1984,19 +1984,19 @@ namespace UnitTestsProject
 
             connectedPct = 1;
             mask = new int[] { 4, 5, 6 };
-            perm = sp.initPermanence(mem.getSynPermConnected(), mem.getSynPermMax(), mem.getRandom(), mem.getSynPermTrimThreshold(), mem, mask, mem.getColumn(0), connectedPct);
+            perm = sp.initPermanence(mem, mask, mem.getColumn(0));
             trueConnected = new int[] { 4, 5, 6 };
             ArrayUtils.toDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
 
             connectedPct = 1;
             mask = new int[] { 8, 9 };
-            perm = sp.initPermanence(mem.getSynPermConnected(), mem.getSynPermMax(), mem.getRandom(), mem.getSynPermTrimThreshold(), mem, mask, mem.getColumn(0), connectedPct);
+            perm = sp.initPermanence(mem, mask, mem.getColumn(0));
             trueConnected = new int[] { 8, 9 };
             ArrayUtils.toDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
 
             connectedPct = 1;
             mask = new int[] { 0, 1, 2, 3, 4, 5, 6, 8, 9 };
-            perm = sp.initPermanence(mem.getSynPermConnected(), mem.getSynPermMax(), mem.getRandom(), mem.getSynPermTrimThreshold(), mem, mask, mem.getColumn(0), connectedPct);
+            perm = sp.initPermanence(mem, mask, mem.getColumn(0));
             trueConnected = new int[] { 0, 1, 2, 3, 4, 5, 6, 8, 9 };
             ArrayUtils.toDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
         }
