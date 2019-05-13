@@ -63,7 +63,7 @@ namespace UnitTestsProject
 
         private void initSP()
         {
-            sp = new SpatialPooler();
+            sp = new SpatialPoolerMT();
             mem = new Connections();
             parameters.apply(mem);
             sp.init(mem);
