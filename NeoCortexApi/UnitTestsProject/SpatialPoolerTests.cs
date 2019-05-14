@@ -63,7 +63,7 @@ namespace UnitTestsProject
 
         private void initSP()
         {
-            sp = new SpatialPoolerMT();
+            sp = new SpatialPooler();
             mem = new Connections();
             parameters.apply(mem);
             sp.init(mem);
@@ -956,7 +956,7 @@ namespace UnitTestsProject
             Assert.IsTrue(2 == mem.InhibitionRadius);
 
             //...
-            sp = new SpatialPooler();
+            sp = new SpatialPoolerMT();
 
             mem.GlobalInhibition = true;
 
@@ -1424,6 +1424,7 @@ namespace UnitTestsProject
         {
             setupParameters();
             parameters.setInputDimensions(new int[] { 5 });
+
             parameters.setColumnDimensions(new int[] { 5 });
             initSP();
 
@@ -1916,14 +1917,14 @@ namespace UnitTestsProject
             //    dendriteSeg.Synapses.Add(new Synapse(null, dendriteSeg, i, 0) { InputIndex = mask[i] });
             //}
 
-            double[] perm = this.sp.initPermanence(mem, mask, mem.getColumn(0));
+            double[] perm = this.sp.initSynapsePermanencesForColumn(mem, mask, mem.getColumn(0));
             int numcon = ArrayUtils.valueGreaterCount(mem.getSynPermConnected(), perm);
 
             // Because of connectedPct=1 all 5 specified synapses have to be connected.
             Assert.AreEqual(5, numcon);
 
             mem.InitialSynapseConnsPct = 0;
-            perm = this.sp.initPermanence(mem, mask, mem.getColumn(0));
+            perm = this.sp.initSynapsePermanencesForColumn(mem, mask, mem.getColumn(0));
             numcon = ArrayUtils.valueGreaterCount(mem.getSynPermConnected(), perm);
             Assert.AreEqual(0, numcon);
 
@@ -1932,7 +1933,7 @@ namespace UnitTestsProject
             mem.NumInputs = 100;
             mask = new int[100];
             for (int i = 0; i < 100; i++) mask[i] = i;
-            double[] perma = this.sp.initPermanence(mem, mask, mem.getColumn(0));
+            double[] perma = this.sp.initSynapsePermanencesForColumn(mem, mask, mem.getColumn(0));
             numcon = ArrayUtils.valueGreaterOrEqualCount(mem.getSynPermConnected(), perma);
             Assert.IsTrue(numcon > 0);
             Assert.IsTrue(numcon < mem.NumInputs);
@@ -1970,7 +1971,7 @@ namespace UnitTestsProject
             mem.NumInputs = 10;
             double connectedPct = 1;
             int[] mask = new int[] { 0, 1 };
-            double[] perm = sp.initPermanence( mem, mask, mem.getColumn(0));
+            double[] perm = sp.initSynapsePermanencesForColumn( mem, mask, mem.getColumn(0));
             int[] trueConnected = new int[] { 0, 1 };
 
             //Condition<?> cond = new Condition.Adapter<Object>()
@@ -1984,19 +1985,19 @@ namespace UnitTestsProject
 
             connectedPct = 1;
             mask = new int[] { 4, 5, 6 };
-            perm = sp.initPermanence(mem, mask, mem.getColumn(0));
+            perm = sp.initSynapsePermanencesForColumn(mem, mask, mem.getColumn(0));
             trueConnected = new int[] { 4, 5, 6 };
             ArrayUtils.toDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
 
             connectedPct = 1;
             mask = new int[] { 8, 9 };
-            perm = sp.initPermanence(mem, mask, mem.getColumn(0));
+            perm = sp.initSynapsePermanencesForColumn(mem, mask, mem.getColumn(0));
             trueConnected = new int[] { 8, 9 };
             ArrayUtils.toDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
 
             connectedPct = 1;
             mask = new int[] { 0, 1, 2, 3, 4, 5, 6, 8, 9 };
-            perm = sp.initPermanence(mem, mask, mem.getColumn(0));
+            perm = sp.initSynapsePermanencesForColumn(mem, mask, mem.getColumn(0));
             trueConnected = new int[] { 0, 1, 2, 3, 4, 5, 6, 8, 9 };
             ArrayUtils.toDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
         }
@@ -2441,8 +2442,12 @@ namespace UnitTestsProject
         //        assertFalse(sbm.any(neg));
         //    }
 
+
+
         [TestMethod]
-        public void testInit()
+        [DataRow(0)]
+        [DataRow(1)]
+        public void testInit(int poolerImplementation)
         {
             setupParameters();
             parameters.setNumActiveColumnsPerInhArea(0);
@@ -2451,7 +2456,7 @@ namespace UnitTestsProject
             Connections c = new Connections();
             parameters.apply(c);
 
-            SpatialPooler sp = new SpatialPooler();
+            SpatialPooler sp = UnitTestHelpers.CreatePooler(poolerImplementation);
 
             // Local Area Density cannot be 0
             try

@@ -37,7 +37,7 @@ namespace UnitTestsProject
 
 
         /// <summary>
-        /// Excluded from testing becaus eof OutOfMemory
+        /// Excluded from testing because of OutOfMemory
         /// This test is used to run in out of memory by initializing of to big SpatialPooler.
         /// </summary>
         //[TestMethod]
@@ -64,7 +64,7 @@ namespace UnitTestsProject
             //intList.Clear();
 
             //List<int> intList = new List<int>();
-           
+
 
             int[] inputVector = new int[1024];
 
@@ -80,7 +80,7 @@ namespace UnitTestsProject
             }
 
             parameters.apply(mem);
-            sp.init(mem,null);
+            sp.init(mem, null);
         }
 
         /// <summary>
@@ -216,12 +216,14 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        public void SPInitTest()
+        [DataRow(0)]
+        [DataRow(1)]
+        public void SPInitTest(int poolerImplementation)
         {
             int numOfColsInDim = 64;
 
             Parameters parameters = Parameters.getAllDefaultParameters();
-           
+
             parameters.Set(KEY.POTENTIAL_RADIUS, 5);
             parameters.Set(KEY.POTENTIAL_PCT, 0.5);
             parameters.Set(KEY.GLOBAL_INHIBITION, false);
@@ -262,10 +264,11 @@ namespace UnitTestsProject
 
             parameters.setSynPermConnected(0.1);
 
-            var sp = new SpatialPooler();
+            SpatialPooler sp = UnitTestHelpers.CreatePooler(poolerImplementation) ;            
+
             var mem = new Connections();
             parameters.apply(mem);
-                 
+
             //Thread.Sleep(5000);
 
             //var dicts = UnitTestHelpers.GetMemory(numOfColsInDim * numOfColsInDim);
@@ -288,5 +291,5 @@ namespace UnitTestsProject
 
     }
 
-   
+
 }

@@ -65,7 +65,11 @@ namespace UnitTestsProject
 
             var akkaDict = new HtmSparseIntDictionary<Column>(new HtmSparseIntDictionaryConfig()
             {
-                NumColumns = 20148,
+                 ActorConfig = new ActorConfig()
+                 {
+                      ColumnDimensions = new int[] { 100, 200}
+                 },
+
                 Nodes = Helpers.Nodes,
             });
 
@@ -131,15 +135,20 @@ namespace UnitTestsProject
                 parameters.Set(KEY.MAX_BOOST, 100);
                 parameters.Set(KEY.WRAP_AROUND, true);
                 parameters.Set(KEY.SEED, 1956);
-                parameters.setInputDimensions(new int[] { (int)Math.Sqrt(inputBits), (int)Math.Sqrt(inputBits) });
-                parameters.setColumnDimensions(new int[] { (int)Math.Sqrt(numOfColumns), (int)Math.Sqrt(numOfColumns) });
+                
+
+                int[] inputDims = new int[] { (int)Math.Sqrt(inputBits), (int)Math.Sqrt(inputBits) };
+                parameters.setInputDimensions(inputDims);
+
+                int[] colDims = new int[] { (int)Math.Sqrt(numOfColumns), (int)Math.Sqrt(numOfColumns) };
+                parameters.setColumnDimensions(colDims);
 
                 var sp = new SpatialPooler();
                 var mem = new Connections();
 
                 parameters.apply(mem);
 
-                sp.init(mem, UnitTestHelpers.GetMemory(numOfColumns));
+                sp.init(mem, UnitTestHelpers.GetMemory(parameters));
 
                 sw.Stop();
                 Console.Write($"{(float)sw.ElapsedMilliseconds / (float)1000} | ");
@@ -216,7 +225,7 @@ namespace UnitTestsProject
 
             parameters.apply(mem);
 
-            sp.init(mem, UnitTestHelpers.GetMemory(columnTopology * columnTopology) );
+            sp.init(mem, UnitTestHelpers.GetMemory(parameters) );
 
             int actiColLen = numOfActCols;
 
@@ -300,7 +309,7 @@ namespace UnitTestsProject
 
             Synapse syn = new Synapse(null, null, 0, 0);
 
-            var dict = UnitTestHelpers.GetMemory(1);
+            var dict = UnitTestHelpers.GetMemory();
 
             Column col = new Column(10, 0, 0.01, 10);
             col.ProximalDendrite = new ProximalDendrite(0, 0.01, 10);

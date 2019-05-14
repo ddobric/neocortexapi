@@ -61,13 +61,15 @@ namespace NeoCortexApi.DistributedComputeLib
                 //  actSystem.ActorOf(Props.Create(() => new DictNodeActor<TKey, TValue>())
                 //  .WithDeploy(Deploy.None.WithScope(new RemoteScope(Address.Parse(node)))), $"{nameof(DictNodeActor<TKey,TValue>)}-{nodeIndx}");
 
-                var result = dictActors[nodeIndx].Ask<int>(new CreateDictNodeMsg(), this.Config.ConnectionTimout).Result;
+                var result = dictActors[nodeIndx].Ask<int>(new CreateDictNodeMsg()
+                {
+                    HtmAkkaConfig = config.ActorConfig,                    
+                }, this.Config.ConnectionTimout).Result;
 
 
                 //result = dictActors[nodeIndx].Ask<int>("abc", this.Config.ConnectionTimout).Result;
 
                 //result = dictActors[nodeIndx].Ask<int>(new CreateDictNodeMsg(), this.Config.ConnectionTimout).Result;
-
             }
         }
 

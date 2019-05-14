@@ -18,5 +18,10 @@ namespace NeoCortexApi.DistributedComputeLib
         /// Address of all nodes in cluster.
         /// </summary>
         public List<string> Nodes { get; set; }
+
+        /// <summary>
+        /// Configuration used to initialize HTM actor.
+        /// </summary>
+        public ActorConfig ActorConfig { get; set; }
     }
 }

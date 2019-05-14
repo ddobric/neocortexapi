@@ -35,7 +35,7 @@ namespace NeoCortexApi
 
                 colList.Add(new KeyPair() { Key = i, Value = column });
 
-                double[] perm = initPermanence(c, potential, column);
+                double[] perm = initSynapsePermanencesForColumn(c, potential, column);
 
                 updatePermanencesForColumn(c, perm, column, potential, true);
             }

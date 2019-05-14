@@ -22,10 +22,8 @@ namespace NeoCortexApi.DistributedCompute
         /// <param name="key"></param>
         /// <returns></returns>
         protected override int GetPartitionNodeIndexFromKey(int key)
-        {
-            int cols = (this.Config as HtmSparseIntDictionaryConfig).NumColumns;
-
-            return GetPlacementNodeForKey(this.Config.Nodes.Count, cols, key);
+        {          
+            return GetPlacementNodeForKey(this.Config.Nodes.Count, NumColumns, key);
         }
 
         public static int GetPlacementNodeForKey(int nodes, int elements, int placingElement)
@@ -48,12 +46,33 @@ namespace NeoCortexApi.DistributedCompute
 
             return targetNode;
         }
+
+        private int? numColumns = null;
+
+        private int NumColumns
+        {
+            get
+            {
+                if (numColumns == null)
+                {
+                    numColumns = 1;
+
+                    foreach (var dimCols in this.Config.ActorConfig.ColumnDimensions)
+                    {
+                        numColumns *= dimCols;
+                    }
+                }
+
+                return this.numColumns.Value;
+            }
+        }
     }
 
    
 
     public class HtmSparseIntDictionaryConfig : AkkaDistributedDictConfig
     {
-        public int NumColumns { get; set; }
+    
+
     }
 }

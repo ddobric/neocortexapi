@@ -137,8 +137,6 @@ namespace NeoCortexApi
             ArrayUtils.fillArray(c.BoostFactors, 1);
         }
 
-       
-
         /// <summary>
         /// Implements single threaded (originally based on JAVA implementation) initialization of SP.
         /// It creates columns, initializes the pool of potentially connected synapses on ProximalDendrites and
@@ -168,7 +166,7 @@ namespace NeoCortexApi
 
                 colList.Add(new KeyPair() { Key = i, Value = column });
 
-                double[] perm = initPermanence(c, potential, column);
+                double[] perm = initSynapsePermanencesForColumn(c, potential, column);
 
                 updatePermanencesForColumn(c, perm, column, potential, true);
             }
@@ -736,6 +734,7 @@ namespace NeoCortexApi
         /// <returns></returns>
         public virtual double getAvgSpanOfConnectedSynapsesForColumn(Connections c, int columnIndex)
         {
+            //return CalcAvgSpanOfConnectedSynapsesForColumn(c.getColumn(columnIndex), c.getInputDimensions(), c.getMemory().IsColumnMajorOrdering);
             int[] dimensions = c.getInputDimensions();
 
             // Gets synapses connected to input bits.(from pool of the column)
@@ -756,6 +755,40 @@ namespace NeoCortexApi
             {
                 maxCoord = ArrayUtils.maxBetween(maxCoord, inputMatrix.computeCoordinates(connected[i]));
                 minCoord = ArrayUtils.minBetween(minCoord, inputMatrix.computeCoordinates(connected[i]));
+            }
+            return ArrayUtils.average(ArrayUtils.add(ArrayUtils.subtract(maxCoord, minCoord), 1));
+        }
+
+        /// <summary>
+        /// It traverses all connected synapses of the column and calculates the span, which synapses
+        /// spans between all input bits. Then it calculates average of spans accross all dimensions. 
+        /// </summary>
+        /// <param name="c"></param>
+        /// <param name="columnIndex"></param>
+        /// <returns></returns>
+        internal static double CalcAvgSpanOfConnectedSynapsesForColumn(Column column, int[] inpDims, bool isColumnMajor)
+        {
+            // Gets synapses connected to input bits.(from pool of the column)
+            int[] connected = column.ProximalDendrite.getConnectedSynapsesSparse();
+
+            if (connected == null || connected.Length == 0) return 0;
+
+            int[] maxCoord = new int[inpDims.Length];
+            int[] minCoord = new int[inpDims.Length];
+            ArrayUtils.fillArray(maxCoord, -1);
+            ArrayUtils.fillArray(minCoord, ArrayUtils.max(inpDims));
+
+            //
+            // It takes all connected synapses
+            // 
+            for (int i = 0; i < connected.Length; i++)
+            {
+                maxCoord = ArrayUtils.maxBetween(maxCoord, AbstractFlatMatrix.ComputeCoordinates(inpDims.Length,
+                    AbstractFlatMatrix<Column>.InitDimensionMultiples(inpDims), isColumnMajor, i));
+
+                minCoord = ArrayUtils.minBetween(minCoord, AbstractFlatMatrix.ComputeCoordinates(inpDims.Length,
+                   AbstractFlatMatrix<Column>.InitDimensionMultiples(inpDims), isColumnMajor, i));
+
             }
             return ArrayUtils.average(ArrayUtils.add(ArrayUtils.subtract(maxCoord, minCoord), 1));
         }
@@ -1029,7 +1062,7 @@ namespace NeoCortexApi
          *                          0.7 means, maximally 70% of potential might be connected
          * @return
          */
-        public double[] initPermanence(Connections c, int[] potentialPool, Column column)
+        public double[] initSynapsePermanencesForColumn(Connections c, int[] potentialPool, Column column)
         {
             //Random random = new Random();
 

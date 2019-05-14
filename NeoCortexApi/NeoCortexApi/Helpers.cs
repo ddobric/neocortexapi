@@ -103,6 +103,10 @@ namespace NeoCortexApi
             {
                 return new HtmSparseIntDictionaryConfig()
                 {
+                     ActorConfig = new DistributedComputeLib.ActorConfig()
+                     {
+                          
+                     }, 
                     Nodes = Nodes,
                 };
             }
