@@ -22,6 +22,17 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <summary>
         /// Configuration used to initialize HTM actor.
         /// </summary>
-        public ActorConfig ActorConfig { get; set; }
+        public ActorConfig HtmActorConfig { get; set; }
+
+        /// <summary>
+        /// Upload and Download page size.
+        /// </summary>
+        public int PageSize { get; set; } = 100;
+
+        /// <summary>
+        /// Number of partitions per node. Every partition at node will hold a number of elements.
+        /// Note, a single actor implements a partition.
+        /// </summary>
+        public int PartitionsPerNode { get; set; } = 4;
     }
 }

@@ -11,6 +11,7 @@ using NeoCortexApi.Utility;
 using NeoCortex;
 using System.Drawing;
 using NeoCortexApi.DistributedCompute;
+using System.Linq;
 
 #if USE_AKKA
 namespace UnitTestsProject
@@ -33,6 +34,10 @@ namespace UnitTestsProject
         /// <param name="elements"></param>
         /// <param name="placingElement"></param>
         [TestMethod]
+        [DataRow(2, 6, 3, 1)]
+        [DataRow(2, 6, 5, 1)]
+        [DataRow(2, 6, 6, 2)]
+
         [DataRow(2, 7, 3, 0)]
         [DataRow(2, 7, 0, 0)]
         [DataRow(2, 7, 1, 0)]
@@ -48,11 +53,52 @@ namespace UnitTestsProject
 
         public void UniformPartitioningTest(int nodes, int elements, int placingElement, int expectedNode)
         {
-            var targetNode = HtmSparseIntDictionary<Column>.GetPlacementNodeForKey(nodes, elements, placingElement);
+            var targetNode = HtmSparseIntDictionary<Column>.GetPlacementSlotForElement(nodes, elements, placingElement);
 
             Assert.IsTrue(targetNode == expectedNode);
         }
 
+
+        /// <summary>
+        /// Generates the map of partitions and key placements.
+        /// </summary>
+        /// <param name="nodes"></param>
+        /// <param name="partitionsPerNode"></param>
+        /// <param name="elements"></param>
+        /// <param name="placingElement"></param>
+        /// <param name="expectedNode"></param>
+        /// <param name="expectedPartition"></param>
+        [TestMethod]
+        [DataRow(new string[] { "url1", "url2", "url3" }, 5, 17, 0, 0)]
+        [DataRow(new string[] { "url1", "url2", "url3" }, 5, 31, 0, 0)]
+        public void PartitionMapTest(string[] nodes, int partitionsPerNode, int elements, int expectedNode, int expectedPartition)
+        {
+            var nodeList = new List<string>();
+            nodeList.AddRange(nodes);
+            var map = HtmSparseIntDictionary<Column>.GetPartitionMap(nodeList, elements, partitionsPerNode);
+                       
+            Assert.IsTrue(map.Count == nodes.Length * partitionsPerNode);
+            Assert.IsTrue((map[7].minKey == 14 && map[7].maxKey == 15) || (map[7].minKey == 21 && map[7].maxKey == 23));
+        }
+
+
+        [TestMethod]
+        [DataRow(new string[] { "url1", "url2", "url3" }, 3, 17, 15, 2, 7)]
+        [DataRow(new string[] { "url1", "url2", "url3" }, 5, 17, 0, 0, 0)]
+        [DataRow(new string[] { "url1", "url2", "url3" }, 5, 17, 17, 1, 8)]
+        [DataRow(new string[] { "url1", "url2", "url3" }, 5, 33, 22, 1, 7)]
+        [DataRow(new string[] { "url1", "url2", "url3" }, 5, 31, 22, 1, 7)]
+        public void PartitionLookupTest(string[] nodes, int partitionsPerNode, int elements, int key, int expectedNode, int expectedPartition)
+        {
+            var nodeList = new List<string>();
+            nodeList.AddRange(nodes);
+            var map = HtmSparseIntDictionary<Column>.GetPartitionMap(nodeList, elements, partitionsPerNode);
+
+            var part = HtmSparseIntDictionary<Column>.GetPlacementSlotForElement(map, key) ;
+
+            Assert.IsTrue(part.nodeIndx == expectedNode && part.partitionIndx == expectedPartition);
+
+        }
 
         /// <summary>
         /// Writes and reads coulmns to distributed dictionary.
@@ -65,10 +111,10 @@ namespace UnitTestsProject
 
             var akkaDict = new HtmSparseIntDictionary<Column>(new HtmSparseIntDictionaryConfig()
             {
-                 ActorConfig = new ActorConfig()
-                 {
-                      ColumnDimensions = new int[] { 100, 200}
-                 },
+                HtmActorConfig = new ActorConfig()
+                {
+                    ColumnDimensions = new int[] { 100, 200 }
+                },
 
                 Nodes = Helpers.Nodes,
             });
@@ -93,7 +139,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("AkkaHostRequired")]
-        [TestCategory("LongRunning")]      
+        [TestCategory("LongRunning")]
         public void InitDistributedTest()
         {
             Thread.Sleep(5000);
@@ -135,7 +181,6 @@ namespace UnitTestsProject
                 parameters.Set(KEY.MAX_BOOST, 100);
                 parameters.Set(KEY.WRAP_AROUND, true);
                 parameters.Set(KEY.SEED, 1956);
-                
 
                 int[] inputDims = new int[] { (int)Math.Sqrt(inputBits), (int)Math.Sqrt(inputBits) };
                 parameters.setInputDimensions(inputDims);
@@ -143,7 +188,7 @@ namespace UnitTestsProject
                 int[] colDims = new int[] { (int)Math.Sqrt(numOfColumns), (int)Math.Sqrt(numOfColumns) };
                 parameters.setColumnDimensions(colDims);
 
-                var sp = new SpatialPooler();
+                var sp = new SpatialPoolerParallel();
                 var mem = new Connections();
 
                 parameters.apply(mem);
@@ -187,9 +232,9 @@ namespace UnitTestsProject
             ThreadSafeRandom rnd = new ThreadSafeRandom(42);
 
             var parameters = Parameters.getAllDefaultParameters();
-            parameters.Set(KEY.POTENTIAL_RADIUS, imageSize*imageSize);
+            parameters.Set(KEY.POTENTIAL_RADIUS, imageSize * imageSize);
             parameters.Set(KEY.POTENTIAL_PCT, 1.0);
-            parameters.Set(KEY.GLOBAL_INHIBITION, true);          
+            parameters.Set(KEY.GLOBAL_INHIBITION, true);
 
             parameters.Set(KEY.RANDOM, rnd);
 
@@ -225,7 +270,7 @@ namespace UnitTestsProject
 
             parameters.apply(mem);
 
-            sp.init(mem, UnitTestHelpers.GetMemory(parameters) );
+            sp.init(mem, UnitTestHelpers.GetMemory(parameters));
 
             int actiColLen = numOfActCols;
 
@@ -295,7 +340,7 @@ namespace UnitTestsProject
             }
         }
 
-  
+
         /// <summary>
         /// Ensures that pool instance inside of Column.DentrideSegment.Synapses[n].Pool is correctlly serialized.
         /// </summary>
@@ -337,6 +382,51 @@ namespace UnitTestsProject
                     m.set(7, i, j);
                 }
             }
+        }
+
+        /// <summary>
+        /// Ensures that all keys (items in the list) are grouped in pages inside of a single partition.
+        /// </summary>
+        [TestMethod()]
+        public void TestPagedPartitioning()
+        {
+            Dictionary<int, List<int>> partitions = new Dictionary<int, List<int>>();
+            partitions.Add(0, new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+            partitions.Add(1, new List<int>() { 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 });
+            partitions.Add(2, new List<int>() { 21, 22, 23, 24, 25, 26, 27, 28, 29, 30 });
+
+            var res = SpatialPoolerParallel.SplitPartitionsToPages(3, partitions);
+
+            Assert.IsTrue(res.Count == 12);
+            Assert.IsTrue(res[0].First().Value.Count == 3);
+            Assert.IsTrue(res[1].First().Value.Count == 3);
+            Assert.IsTrue(res[2].First().Value.Count == 3);
+            Assert.IsTrue(res[3].First().Value.Count == 1);
+
+            Assert.IsTrue(res[4].First().Value.Count == 3);
+            Assert.IsTrue(res[5].First().Value.Count == 3);
+            Assert.IsTrue(res[6].First().Value.Count == 3);
+            Assert.IsTrue(res[7].First().Value.Count == 1);
+
+            Assert.IsTrue(res[8].First().Value.Count == 3);
+            Assert.IsTrue(res[9].First().Value.Count == 3);
+            Assert.IsTrue(res[10].First().Value.Count == 3);
+            Assert.IsTrue(res[11].First().Value.Count == 1);
+
+            res = SpatialPoolerParallel.SplitPartitionsToPages(4, partitions);
+
+            Assert.IsTrue(res.Count == 9);
+            Assert.IsTrue(res[0].First().Value.Count == 4);
+            Assert.IsTrue(res[1].First().Value.Count == 4);
+            Assert.IsTrue(res[2].First().Value.Count == 2);
+
+            Assert.IsTrue(res[3].First().Value.Count == 4);
+            Assert.IsTrue(res[4].First().Value.Count == 4);
+            Assert.IsTrue(res[5].First().Value.Count == 2);
+
+            Assert.IsTrue(res[6].First().Value.Count == 4);
+            Assert.IsTrue(res[7].First().Value.Count == 4);
+            Assert.IsTrue(res[8].First().Value.Count == 2);
         }
     }
 }

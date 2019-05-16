@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using NeoCortexApi.Entities;
+using Akka.Actor;
 
 namespace NeoCortexApi.DistributedCompute
 {
@@ -22,29 +23,101 @@ namespace NeoCortexApi.DistributedCompute
         /// <param name="key"></param>
         /// <returns></returns>
         protected override int GetPartitionNodeIndexFromKey(int key)
-        {          
-            return GetPlacementNodeForKey(this.Config.Nodes.Count, NumColumns, key);
+        {
+            return GetPlacementSlotForElement(this.Config.Nodes.Count, NumColumns, key);
         }
 
-        public static int GetPlacementNodeForKey(int nodes, int elements, int placingElement)
+        /// <summary>
+        ///  Creates maps of partitions.
+        /// </summary>
+        /// <param name="nodes"></param>
+        /// <param name="numElements"></param>
+        /// <returns></returns>
+        public override  List<(int nodeIndx, string nodeUrl, int partitionIndx, int minKey, int maxKey, IActorRef actorRef)> GetPartitionMap()
         {
-            int roundedElements = elements;
+            return GetPartitionMap(this.Config.Nodes, NumColumns, this.Config.PartitionsPerNode);
+        }
 
-            while (true)
+        /// <summary>
+        /// Creates map of partitions.
+        /// </summary>
+        /// <param name="nodes"></param>
+        /// <param name="numElements"></param>
+        /// <param name="numPartitionsPerNode"></param>
+        /// <returns></returns>
+        public static List<(int nodeIndx, string nodeUrl, int partitionIndx, int minKey, int maxKey, IActorRef actorRef)> GetPartitionMap(List<string> nodes, int numElements, int numPartitionsPerNode)
+        {
+            List<(int nodeIndx, string nodeUrl, int partitionIndx, int minKey, int maxKey, IActorRef actorRef)> map = new List<(int nodeIndx, string nodeUrl, int partitionIndx, int minKey, int maxKey, IActorRef actorRef)>();
+
+            int numOfElementsPerNode = (numElements % nodes.Count) == 0 ? numElements / nodes.Count : (int)((float)numElements / (float)nodes.Count + 1.0);
+
+            int numOfElementsPerPartition = numOfElementsPerNode % numPartitionsPerNode == 0 ? numOfElementsPerNode / numPartitionsPerNode :  (int)(1.0 + (float)numOfElementsPerNode / (float)numPartitionsPerNode);
+
+            int capacity = nodes.Count * numOfElementsPerPartition * numPartitionsPerNode;
+
+            int globalPartIndx = 0;
+
+            for (int nodIndx = 0; nodIndx < nodes.Count; nodIndx++)
             {
-                if (roundedElements % nodes == 0)
+                for (int partIndx = 0; partIndx < numPartitionsPerNode; partIndx++, globalPartIndx++)
                 {
-                    break;
+                    var min = numOfElementsPerPartition * globalPartIndx;
+                    var max = numOfElementsPerPartition * (globalPartIndx + 1) - 1;
+                    map.Add((nodIndx, nodes[nodIndx], globalPartIndx, min, max, null));
                 }
-                else
-                    roundedElements++;
+            }           
+
+            return map;
+        }
+
+        //private static string getPartitionId(int nodeIndex, int key)
+        //{
+        //    return $"{nodeIndex}/key";
+        //}
+
+        public static (int nodeIndx, string nodeUrl, int partitionIndx, int minKey, int maxKey, IActorRef actorRef)
+            GetPlacementSlotForElement(List<(int nodeIndx, string nodeUrl, int partitionIndx, int minKey, int maxKey, IActorRef actorRef)> map, int key)
+        {
+            foreach (var placement in map)
+            {
+                if (placement.minKey <= key && key <= placement.maxKey)
+                    return placement;
             }
 
-            int numOfElemementsPerNode = roundedElements / nodes;
+            throw new KeyNotFoundException($"The specified key {key} cannot be located in the partition map.");
+        }
 
-            int targetNode = placingElement / numOfElemementsPerNode;
+        public static int GetPlacementSlotForElement(int slots, int numElements, int key)
+        {
+            int numOfElemementsPerNode = numElements % slots == 0 ? numElements / slots : (int)((float)numElements / (float)slots + 1.0);
+
+            int targetNode = key / numOfElemementsPerNode;
 
             return targetNode;
+        }
+
+
+        /// <summary>
+        /// Gets the list of partitions (nodes) with assotiated keys.
+        /// Key is assotiated to partition if it is hosted at the partition node.
+        /// </summary>
+        /// <returns></returns>
+        public override IDictionary<int, List<int>> GetPartitions()
+        {
+            Dictionary<int, List<int>> partitions = new Dictionary<int, List<int>>();
+
+            for (int key = 0; key < this.NumColumns; key++)
+            {
+                int node = GetPlacementSlotForElement(this.Nodes, this.NumColumns, key);
+                if (!partitions.ContainsKey(node))
+                {
+                    partitions.Add(node, new List<int>());
+                }
+
+                partitions[node].Add(key);
+            }
+
+            return partitions;
         }
 
         private int? numColumns = null;
@@ -57,7 +130,7 @@ namespace NeoCortexApi.DistributedCompute
                 {
                     numColumns = 1;
 
-                    foreach (var dimCols in this.Config.ActorConfig.ColumnDimensions)
+                    foreach (var dimCols in this.Config.HtmActorConfig.ColumnDimensions)
                     {
                         numColumns *= dimCols;
                     }
@@ -68,11 +141,11 @@ namespace NeoCortexApi.DistributedCompute
         }
     }
 
-   
+
 
     public class HtmSparseIntDictionaryConfig : AkkaDistributedDictConfig
     {
-    
+
 
     }
 }

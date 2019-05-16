@@ -10,12 +10,23 @@ namespace NeoCortexApi
     public class SpatialPoolerMT : SpatialPooler
     {
         /// <summary>
+        /// Uses the same implementation as Single-Threaded.
+        /// </summary>
+        /// <param name="c"></param>
+        /// <param name="distMem"></param>
+        public virtual void InitMatrices(Connections c, DistributedMemory distMem)
+        {
+            base.InitMatrices(c, distMem);
+        }
+
+        /// <summary>
         /// Implements muticore initialization of pooler.
         /// </summary>
         /// <param name="c"></param>
         protected override void ConnectAndConfigureInputs(Connections c)
-        {           
+        {
             List<KeyPair> colList = new List<KeyPair>();
+
             ConcurrentDictionary<int, KeyPair> colList2 = new ConcurrentDictionary<int, KeyPair>();
 
             int numColumns = c.NumColumns;
@@ -44,6 +55,8 @@ namespace NeoCortexApi
 
                 data.Perm = initSynapsePermanencesForColumn(c, data.Potential, data.Column);
 
+                data.AvgConnected = GetAvgSpanOfConnectedSynapses(c, i);
+
                 updatePermanencesForColumn(c, data.Perm, data.Column, data.Potential, true);
 
                 if (!colList2.TryAdd(i, new KeyPair() { Key = i, Value = data }))
@@ -53,6 +66,8 @@ namespace NeoCortexApi
             });
 
             //c.setProximalSynapseCount(synapseCounter);
+
+            List<double> avgSynapsesConnected = new List<double>();
 
             foreach (var item in colList2.Values)
             //for (int i = 0; i < numColumns; i++)
@@ -90,11 +105,13 @@ namespace NeoCortexApi
 
                 //updatePermanencesForColumn(c, data.Perm, data.Column, data.Potential, true);
 
+                avgSynapsesConnected.Add(data.AvgConnected);
+
                 colList.Add(new KeyPair() { Key = i, Value = data.Column });
             }
 
             SparseObjectMatrix<Column> mem = (SparseObjectMatrix<Column>)c.getMemory();
-
+            
             if (mem.IsRemotelyDistributed)
             {
                 // Pool is created and attached to the local instance of Column.
@@ -107,7 +124,7 @@ namespace NeoCortexApi
             // columns in its neighborhood in order to become active. This radius is
             // updated every learning round. It grows and shrinks with the average
             // number of connected synapses per column.
-            updateInhibitionRadius(c);
+            updateInhibitionRadius(c, avgSynapsesConnected);
         }
 
         class ProcessingData
@@ -115,7 +132,10 @@ namespace NeoCortexApi
             public int[] Potential { get; set; }
 
             public Column Column { get; set; }
+
             public double[] Perm { get; internal set; }
+
+            public double AvgConnected { get; set; }
         }
     }
 }

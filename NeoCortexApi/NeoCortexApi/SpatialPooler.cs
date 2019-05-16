@@ -62,7 +62,7 @@ namespace NeoCortexApi
 
             c.doSpatialPoolerPostInit();
 
-            initMatrices(c, distMem);
+            InitMatrices(c, distMem);
 
             ConnectAndConfigureInputs(c);
 
@@ -76,7 +76,7 @@ namespace NeoCortexApi
          * 
          * @param c
          */
-        public void initMatrices(Connections c, DistributedMemory distMem)
+        public virtual void InitMatrices(Connections c, DistributedMemory distMem)
         {
             SparseObjectMatrix<Column> memory = (SparseObjectMatrix<Column>)c.getMemory();
 
@@ -112,17 +112,13 @@ namespace NeoCortexApi
                 colList.Add(new KeyPair() { Key = i, Value = new Column(numCells, i, c.getSynPermConnected(), c.NumInputs) });
             }
 
-            // PERF
-            //for (int i = 0; i < numColumns; i++)
-            //{
-            //    memory.set(i, new Column(numCells, i));
-            //}
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
             memory.set(colList);
+
             sw.Stop();
-            c.setPotentialPools(new SparseObjectMatrix<Pool>(c.getMemory().getDimensions(), dict: distMem == null ? null : distMem.PoolDictionary));
+            //c.setPotentialPools(new SparseObjectMatrix<Pool>(c.getMemory().getDimensions(), dict: distMem == null ? null : distMem.PoolDictionary));
 
             Debug.WriteLine($" Upload time: {sw.ElapsedMilliseconds}");
 
@@ -137,6 +133,7 @@ namespace NeoCortexApi
             ArrayUtils.fillArray(c.BoostFactors, 1);
         }
 
+     
         /// <summary>
         /// Implements single threaded (originally based on JAVA implementation) initialization of SP.
         /// It creates columns, initializes the pool of potentially connected synapses on ProximalDendrites and
@@ -145,7 +142,10 @@ namespace NeoCortexApi
         /// <param name="c"></param>
         protected virtual void ConnectAndConfigureInputs(Connections c)
         {
+            List<double> avgSynapsesConnected = new List<double>();
+            
             List<KeyPair> colList = new List<KeyPair>();
+
             ConcurrentDictionary<int, KeyPair> colList2 = new ConcurrentDictionary<int, KeyPair>();
 
             int numColumns = c.NumColumns;
@@ -169,6 +169,8 @@ namespace NeoCortexApi
                 double[] perm = initSynapsePermanencesForColumn(c, potential, column);
 
                 updatePermanencesForColumn(c, perm, column, potential, true);
+
+                avgSynapsesConnected.Add(GetAvgSpanOfConnectedSynapses(c, i));
             }
 
             // The inhibition radius determines the size of a column's local
@@ -176,7 +178,7 @@ namespace NeoCortexApi
             // columns in its neighborhood in order to become active. This radius is
             // updated every learning round. It grows and shrinks with the average
             // number of connected synapses per column.
-            updateInhibitionRadius(c);
+            updateInhibitionRadius(c, avgSynapsesConnected);
         }
 
         /*
@@ -667,7 +669,7 @@ namespace NeoCortexApi
          * 
          * @param c     the {@link Connections} (spatial pooler memory)
          */
-        public void updateInhibitionRadius(Connections c)
+        public void updateInhibitionRadius(Connections c, List<double> avgCollected = null)
         {
             if (c.GlobalInhibition)
             {
@@ -675,33 +677,32 @@ namespace NeoCortexApi
                 return;
             }
 
-            List<double> avgCollected = new List<double>();
-            int len = c.NumColumns;
-            for (int i = 0; i < len; i++)
+            if (avgCollected == null)
             {
-                avgCollected.Add(getAvgSpanOfConnectedSynapsesForColumn(c, i));
+                avgCollected = new List<double>();
+                int len = c.NumColumns;
+                for (int i = 0; i < len; i++)
+                {
+                    avgCollected.Add(GetAvgSpanOfConnectedSynapses(c, i));
+                }
             }
 
             double avgConnectedSpan = ArrayUtils.average(avgCollected.ToArray());
 
-            double diameter = avgConnectedSpan * avgColumnsPerInput(c);
+            double diameter = avgConnectedSpan * calcAvgColumnsPerInput(c);
             double radius = (diameter - 1) / 2.0d;
             radius = Math.Max(1, radius);
 
             c.InhibitionRadius = (int)(radius + 0.5);
         }
 
-        /**
-         * The average number of columns per input, taking into account the topology
-         * of the inputs and columns. This value is used to calculate the inhibition
-         * radius. This function supports an arbitrary number of dimensions. If the
-         * number of column dimensions does not match the number of input dimensions,
-         * we treat the missing, or phantom dimensions as 'ones'.
-         *  
-         * @param c     the {@link Connections} (spatial pooler memory)
-         * @return
-         */
-        public virtual double avgColumnsPerInput(Connections c)
+               
+        /// <summary>
+        /// It calculates ratio numOfCols/numOfInputs for every dimension.This value is used to calculate the inhibition radius.
+        /// </summary>
+        /// <param name="c"></param>
+        /// <returns>Average ratio numOfCols/numOfInputs across all dimensions.</returns>
+        public virtual double calcAvgColumnsPerInput(Connections c)
         {
             //int[] colDim = Array.Copy(c.getColumnDimensions(), c.getColumnDimensions().Length);
             int[] colDim = new int[c.getColumnDimensions().Length];
@@ -712,6 +713,7 @@ namespace NeoCortexApi
 
             double[] columnsPerInput = ArrayUtils.divide(
                 ArrayUtils.toDoubleArray(colDim), ArrayUtils.toDoubleArray(inputDim), 0, 0);
+
             return ArrayUtils.average(columnsPerInput);
         }
 
@@ -732,31 +734,13 @@ namespace NeoCortexApi
         /// <param name="c"></param>
         /// <param name="columnIndex"></param>
         /// <returns></returns>
-        public virtual double getAvgSpanOfConnectedSynapsesForColumn(Connections c, int columnIndex)
+        public virtual double GetAvgSpanOfConnectedSynapses(Connections c, int columnIndex)
         {
-            //return CalcAvgSpanOfConnectedSynapsesForColumn(c.getColumn(columnIndex), c.getInputDimensions(), c.getMemory().IsColumnMajorOrdering);
-            int[] dimensions = c.getInputDimensions();
+            var dims = c.getInputDimensions();
 
-            // Gets synapses connected to input bits.(from pool of the column)
-            int[] connected = c.getColumn(columnIndex).ProximalDendrite.getConnectedSynapsesSparse();
+            var dimensionMultiplies = AbstractFlatMatrix<Column>.InitDimensionMultiples(dims);
 
-            if (connected == null || connected.Length == 0) return 0;
-
-            int[] maxCoord = new int[c.getInputDimensions().Length];
-            int[] minCoord = new int[c.getInputDimensions().Length];
-            ArrayUtils.fillArray(maxCoord, -1);
-            ArrayUtils.fillArray(minCoord, ArrayUtils.max(dimensions));
-            ISparseMatrix<int> inputMatrix = c.getInputMatrix();
-
-            //
-            // It takes all connected synapses
-            // 
-            for (int i = 0; i < connected.Length; i++)
-            {
-                maxCoord = ArrayUtils.maxBetween(maxCoord, inputMatrix.computeCoordinates(connected[i]));
-                minCoord = ArrayUtils.minBetween(minCoord, inputMatrix.computeCoordinates(connected[i]));
-            }
-            return ArrayUtils.average(ArrayUtils.add(ArrayUtils.subtract(maxCoord, minCoord), 1));
+            return CalcAvgSpanOfConnectedSynapses(c.getColumn(columnIndex), dims, dimensionMultiplies, c.getMemory().IsColumnMajorOrdering);           
         }
 
         /// <summary>
@@ -766,7 +750,7 @@ namespace NeoCortexApi
         /// <param name="c"></param>
         /// <param name="columnIndex"></param>
         /// <returns></returns>
-        internal static double CalcAvgSpanOfConnectedSynapsesForColumn(Column column, int[] inpDims, bool isColumnMajor)
+        internal static double CalcAvgSpanOfConnectedSynapses(Column column, int[] inpDims, int[] dimensionMultiplies, bool isColumnMajor)
         {
             // Gets synapses connected to input bits.(from pool of the column)
             int[] connected = column.ProximalDendrite.getConnectedSynapsesSparse();
@@ -780,16 +764,16 @@ namespace NeoCortexApi
 
             //
             // It takes all connected synapses
-            // 
             for (int i = 0; i < connected.Length; i++)
             {
                 maxCoord = ArrayUtils.maxBetween(maxCoord, AbstractFlatMatrix.ComputeCoordinates(inpDims.Length,
-                    AbstractFlatMatrix<Column>.InitDimensionMultiples(inpDims), isColumnMajor, i));
+                   dimensionMultiplies , isColumnMajor, connected[i]));
 
                 minCoord = ArrayUtils.minBetween(minCoord, AbstractFlatMatrix.ComputeCoordinates(inpDims.Length,
-                   AbstractFlatMatrix<Column>.InitDimensionMultiples(inpDims), isColumnMajor, i));
+                   dimensionMultiplies, isColumnMajor, connected[i]));
 
             }
+
             return ArrayUtils.average(ArrayUtils.add(ArrayUtils.subtract(maxCoord, minCoord), 1));
         }
 

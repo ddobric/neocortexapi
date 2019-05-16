@@ -63,7 +63,7 @@ namespace UnitTestsProject
 
         private void initSP()
         {
-            sp = new SpatialPooler();
+            sp = new SpatialPoolerMT();
             mem = new Connections();
             parameters.apply(mem);
             sp.init(mem);
@@ -981,32 +981,32 @@ namespace UnitTestsProject
 
             mem.setColumnDimensions(new int[] { 2, 2, 2, 2 });
             mem.setInputDimensions(new int[] { 4, 4, 4, 4 });
-            Assert.IsTrue(0.5 == sp.avgColumnsPerInput(mem));
+            Assert.IsTrue(0.5 == sp.calcAvgColumnsPerInput(mem));
 
             mem.setColumnDimensions(new int[] { 2, 2, 2, 2 });
             mem.setInputDimensions(new int[] { 7, 5, 1, 3 });
             double trueAvgColumnPerInput = (2.0 / 7 + 2.0 / 5 + 2.0 / 1 + 2 / 3.0) / 4.0d;
-            Assert.IsTrue(trueAvgColumnPerInput == sp.avgColumnsPerInput(mem));
+            Assert.IsTrue(trueAvgColumnPerInput == sp.calcAvgColumnsPerInput(mem));
 
             mem.setColumnDimensions(new int[] { 3, 3 });
             mem.setInputDimensions(new int[] { 3, 3 });
             trueAvgColumnPerInput = 1;
-            Assert.IsTrue(trueAvgColumnPerInput == sp.avgColumnsPerInput(mem));
+            Assert.IsTrue(trueAvgColumnPerInput == sp.calcAvgColumnsPerInput(mem));
 
             mem.setColumnDimensions(new int[] { 25 });
             mem.setInputDimensions(new int[] { 5 });
             trueAvgColumnPerInput = 5;
-            Assert.IsTrue(trueAvgColumnPerInput == sp.avgColumnsPerInput(mem));
+            Assert.IsTrue(trueAvgColumnPerInput == sp.calcAvgColumnsPerInput(mem));
 
             mem.setColumnDimensions(new int[] { 3, 3, 3, 5, 5, 6, 6 });
             mem.setInputDimensions(new int[] { 3, 3, 3, 5, 5, 6, 6 });
             trueAvgColumnPerInput = 1;
-            Assert.IsTrue(trueAvgColumnPerInput == sp.avgColumnsPerInput(mem));
+            Assert.IsTrue(trueAvgColumnPerInput == sp.calcAvgColumnsPerInput(mem));
 
             mem.setColumnDimensions(new int[] { 3, 6, 9, 12 });
             mem.setInputDimensions(new int[] { 3, 3, 3, 3 });
             trueAvgColumnPerInput = 2.5;
-            Assert.IsTrue(trueAvgColumnPerInput == sp.avgColumnsPerInput(mem));
+            Assert.IsTrue(trueAvgColumnPerInput == sp.calcAvgColumnsPerInput(mem));
         }
 
         [TestMethod]
@@ -1018,7 +1018,7 @@ namespace UnitTestsProject
             int[] inputDimensions = new int[] { 4, 4, 2, 5 };
             mem.setInputDimensions(inputDimensions);
             mem.setColumnDimensions(new int[] { 5 });
-            sp.initMatrices(mem, null);
+            sp.InitMatrices(mem, null);
 
             List<int> connected = new List<int>();
             connected.Add(mem.getInputMatrix().computeIndex(new int[] { 1, 0, 1, 0 }, false));
@@ -1087,7 +1087,7 @@ namespace UnitTestsProject
             double[] trueAvgConnectedSpan = new double[] { 11.0 / 4d, 6.0 / 4d, 14.0 / 4d, 15.0 / 4d, 0d };
             for (int i = 0; i < mem.NumColumns; i++)
             {
-                double connectedSpan = sp.getAvgSpanOfConnectedSynapsesForColumn(mem, i);
+                double connectedSpan = sp.GetAvgSpanOfConnectedSynapses(mem, i);
                 Assert.IsTrue(trueAvgConnectedSpan[i] == connectedSpan);
             }
         }

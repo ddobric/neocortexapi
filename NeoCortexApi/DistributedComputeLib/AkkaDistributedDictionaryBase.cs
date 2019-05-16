@@ -15,9 +15,18 @@ namespace NeoCortexApi.DistributedComputeLib
     {
         protected AkkaDistributedDictConfig Config { get; }
 
+        // not used!
         private Dictionary<TKey, TValue>[] dictList;
 
+        /// <summary>
+        /// List of actors, which hold partitions.
+        /// </summary>
         private IActorRef[] dictActors;
+
+        /// <summary>
+        /// Maps from Actor partition identifier to actor index in <see cref="dictActors" list./>
+        /// </summary>
+        private List<(int nodeIndx, string nodeUrl, int partitionIndx, int minKey, int maxKey, IActorRef actorRef)> actorMap;
 
         private int numElements = 0;
 
@@ -43,13 +52,19 @@ namespace NeoCortexApi.DistributedComputeLib
                         helios.tcp {
                             maximum-frame-size = 326000000b
 		                    port = 0
-		                    hostname = localhost
-                            
+		                    hostname = localhost                            
                         }
                     }
                 }"));
 
             int nodeIndx = 0;
+
+            this.actorMap = GetPartitionMap();
+
+            foreach (var placement in this.actorMap)
+            {
+
+            }
 
             foreach (var node in this.Config.Nodes)
             {
@@ -57,22 +72,19 @@ namespace NeoCortexApi.DistributedComputeLib
                   actSystem.ActorOf(Props.Create(() => new DictNodeActor())
                   .WithDeploy(Deploy.None.WithScope(new RemoteScope(Address.Parse(node)))), $"{nameof(DictNodeActor)}-{nodeIndx}");
 
-                //dictActors[nodeIndx] =
-                //  actSystem.ActorOf(Props.Create(() => new DictNodeActor<TKey, TValue>())
-                //  .WithDeploy(Deploy.None.WithScope(new RemoteScope(Address.Parse(node)))), $"{nameof(DictNodeActor<TKey,TValue>)}-{nodeIndx}");
-
                 var result = dictActors[nodeIndx].Ask<int>(new CreateDictNodeMsg()
                 {
-                    HtmAkkaConfig = config.ActorConfig,                    
+                    HtmAkkaConfig = config.HtmActorConfig,
                 }, this.Config.ConnectionTimout).Result;
-
-
-                //result = dictActors[nodeIndx].Ask<int>("abc", this.Config.ConnectionTimout).Result;
-
-                //result = dictActors[nodeIndx].Ask<int>(new CreateDictNodeMsg(), this.Config.ConnectionTimout).Result;
             }
         }
 
+        /// <summary>
+        /// Calculates partition placements on nodes.
+        /// </summary>
+        /// <returns></returns>
+        public abstract List<(int nodeIndx, string nodeUrl, int partitionIndx, int minKey, int maxKey, IActorRef actorRef)> GetPartitionMap();
+        
         /// <summary>
         /// Depending on usage (Key type) different mechanism can be used to partition keys.
         /// This method returns the index of the node, whish should hold specified key.
@@ -80,6 +92,12 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <param name="key"></param>
         /// <returns></returns>
         protected abstract int GetPartitionNodeIndexFromKey(TKey key);
+
+        /// <summary>
+        /// Gets partitions (nodes) with assotiated indexes.
+        /// </summary>
+        /// <returns></returns>
+        public abstract IDictionary<int, List<int>> GetPartitions();
 
         public TValue this[TKey key]
         {
@@ -183,7 +201,7 @@ namespace NeoCortexApi.DistributedComputeLib
         {
             Dictionary<int, AddOrUpdateElementsMsg> list = new Dictionary<int, AddOrUpdateElementsMsg>();
 
-            int pageSize = 100;
+            int pageSize = this.Config.PageSize;
             int alreadyProcessed = 0;
 
             while (true)
@@ -315,7 +333,7 @@ namespace NeoCortexApi.DistributedComputeLib
         {
             var nodeIndex = GetPartitionNodeIndexFromKey(key);
 
-            Result result = dictActors[nodeIndex].Ask<Result>(new GetElementMsg { Key = key }).Result;
+            Result result = dictActors[nodeIndex].Ask<Result>(new GetElementMsg { Key =  key }).Result;
 
             if (result.IsError == false)
             {
@@ -468,31 +486,31 @@ namespace NeoCortexApi.DistributedComputeLib
         }
 
 
-        public bool MoveNextOLD()
-        {
-            if (this.currentDictIndex == -1)
-                this.currentDictIndex++;
+        //public bool MoveNextOLD()
+        //{
+        //    if (this.currentDictIndex == -1)
+        //        this.currentDictIndex++;
 
-            if (this.currentIndex + 1 < this.dictList[this.currentDictIndex].Count)
-            {
-                this.currentIndex++;
-                return true;
-            }
-            else
-            {
-                if (this.currentDictIndex < this.dictList.Length)
-                {
-                    this.currentDictIndex++;
+        //    if (this.currentIndex + 1 < this.dictList[this.currentDictIndex].Count)
+        //    {
+        //        this.currentIndex++;
+        //        return true;
+        //    }
+        //    else
+        //    {
+        //        if (this.currentDictIndex < this.dictList.Length)
+        //        {
+        //            this.currentDictIndex++;
 
-                    if (this.dictList[this.currentDictIndex].Count > 0)
-                        return true;
-                    else
-                        return false;
-                }
-                else
-                    return false;
-            }
-        }
+        //            if (this.dictList[this.currentDictIndex].Count > 0)
+        //                return true;
+        //            else
+        //                return false;
+        //        }
+        //        else
+        //            return false;
+        //    }
+        //}
 
         public void Reset()
         {
@@ -503,6 +521,43 @@ namespace NeoCortexApi.DistributedComputeLib
         public void Dispose()
         {
             this.dictList = null;
+        }
+
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="keys">All keys must belong to same partition. Search object (caller of this method)
+        /// should sot keys </param>
+        /// <returns></returns>
+        public ICollection<KeyPair> GetObjects(TKey[] keys)
+        {
+            if (keys == null || keys.Length == 0)
+                throw new ArgumentException("Argument 'keys' must be specified!");
+        
+            var partition = GetPartitionNodeIndexFromKey(keys[0]);
+          
+            int pageSize = this.Config.PageSize;
+            int alreadyProcessed = 0;
+
+            while (true)
+            {
+                List<object> keysToGet = new List<object>();
+                
+                foreach (var key in keys.Skip(alreadyProcessed).Take(pageSize))
+                {
+                    keysToGet.Add(key);
+                }
+
+                var batchResult = dictActors[partition].Ask<List<KeyPair>>(new GetElementsMsg()
+                {
+                    Keys = keysToGet.ToArray(),
+                });
+                
+                keysToGet.Clear();
+            }
+
+            return null;
         }
         #endregion
     }

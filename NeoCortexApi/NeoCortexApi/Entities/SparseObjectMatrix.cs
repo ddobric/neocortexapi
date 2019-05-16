@@ -33,6 +33,21 @@ namespace NeoCortexApi.Entities
             }
         }
 
+        /// <summary>
+        /// Gets partitions (nodes) with assotiated indexes.
+        /// </summary>
+        /// <returns></returns>
+        public IDictionary<int, List<int>> GetPartitions()
+        {
+            if (IsRemotelyDistributed)
+            {
+                IRemotelyDistributed map = this.sparseMap as IRemotelyDistributed;
+                return map.GetPartitions();
+            }
+            else
+                throw new InvalidOperationException("GetPartitions can only be ued for remotely distributed collections.");
+        }
+
         /**
          * Constructs a new {@code SparseObjectMatrix}
          * @param dimensions	the dimensions of this array
@@ -111,6 +126,8 @@ namespace NeoCortexApi.Entities
         {
             return get(index);
         }
+
+
 
         /**
          * Returns the T at the index computed from the specified coordinates
@@ -203,6 +220,11 @@ namespace NeoCortexApi.Entities
         public bool Equals(T other)
         {
             return this.Equals((object)other);
+        }
+
+        public override ICollection<KeyPair> GetObjects(int[] indexes)
+        {
+            throw new NotImplementedException();
         }
     }
 }

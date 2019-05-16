@@ -10,7 +10,7 @@ namespace NeoCortexApi.DistributedComputeLib
     {
         public int[] ColumnDimensions { get; set; }
 
-        public bool IsColumnMajor { get; set; }
+        public bool IsColumnMajor { get; set; } = false;
 
         public int[] InputDimensions { get; set; }
 
@@ -49,6 +49,13 @@ namespace NeoCortexApi.DistributedComputeLib
     {
         public object Key { get; set; }
     }
+
+    internal class GetElementsMsg
+    {
+        public object[] Keys { get; set; }
+    }
+
+
 
     internal class ContainsKeyMsg
     {

@@ -117,6 +117,9 @@ namespace NeoCortexApi.Entities
             return default(T);
         }
 
+        public abstract ICollection<KeyPair> GetObjects(int[] indexes);
+        
+
         /**
          * Returns the T at the specified index.
          * 

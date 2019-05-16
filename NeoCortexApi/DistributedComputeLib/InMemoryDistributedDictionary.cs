@@ -30,6 +30,18 @@ namespace NeoCortexApi.DistributedComputeLib
         }
 
 
+        public ICollection<KeyPair> GetObjects(TKey[] keys)
+        {
+            List<KeyPair> objects = new List<KeyPair>();
+            foreach (var key in keys)
+            {
+                objects.Add(new KeyPair { Value = this[key], Key = key });
+            }
+
+            return objects;
+        }
+
+
         public TValue this[TKey key]
         {
             get
@@ -320,7 +332,7 @@ namespace NeoCortexApi.DistributedComputeLib
             this.dictList = null;
         }
 
-     
+   
         #endregion
     }
 }

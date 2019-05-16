@@ -1935,6 +1935,7 @@ namespace NeoCortexApi.Entities
             return memory.getObject(index);
         }
 
+
         /**
          * Sets the number of {@link Column}.
          *

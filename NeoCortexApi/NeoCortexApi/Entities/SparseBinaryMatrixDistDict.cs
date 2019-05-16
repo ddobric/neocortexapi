@@ -248,6 +248,11 @@ namespace NeoCortexApi.Entities
         {
             throw new NotImplementedException();
         }
+
+        public override ICollection<KeyPair> GetObjects(int[] indexes)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 #endif
