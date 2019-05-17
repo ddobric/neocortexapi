@@ -103,11 +103,12 @@ namespace NeoCortexApi
             {
                 return new HtmSparseIntDictionaryConfig()
                 {
-                     HtmActorConfig = new DistributedComputeLib.ActorConfig()
-                     {
-                          
-                     }, 
+                    HtmActorConfig = new DistributedComputeLib.ActorConfig()
+                    {
+
+                    },
                     Nodes = Nodes,
+                    PartitionsPerNode = 10
                 };
             }
         }

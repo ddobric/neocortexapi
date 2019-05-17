@@ -71,14 +71,17 @@ namespace UnitTestsProject
         [TestMethod]
         [DataRow(new string[] { "url1", "url2", "url3" }, 5, 17, 0, 0)]
         [DataRow(new string[] { "url1", "url2", "url3" }, 5, 31, 0, 0)]
+        [DataRow(new string[] { "url1" }, 10, 4096, 0, 0)]
         public void PartitionMapTest(string[] nodes, int partitionsPerNode, int elements, int expectedNode, int expectedPartition)
         {
             var nodeList = new List<string>();
             nodeList.AddRange(nodes);
-            var map = HtmSparseIntDictionary<Column>.GetPartitionMap(nodeList, elements, partitionsPerNode);
+            var map = HtmSparseIntDictionary<Column>.CreatePartitionMap(nodeList, elements, partitionsPerNode);
                        
             Assert.IsTrue(map.Count == nodes.Length * partitionsPerNode);
-            Assert.IsTrue((map[7].minKey == 14 && map[7].maxKey == 15) || (map[7].minKey == 21 && map[7].maxKey == 23));
+            Assert.IsTrue((map[7].MinKey == 14 && map[7].MaxKey == 15) 
+                || (map[7].MinKey == 21 && map[7].MaxKey == 23)
+                || (map[9].MinKey == 3690 && map[9].MaxKey == 4099));
         }
 
 
@@ -92,11 +95,11 @@ namespace UnitTestsProject
         {
             var nodeList = new List<string>();
             nodeList.AddRange(nodes);
-            var map = HtmSparseIntDictionary<Column>.GetPartitionMap(nodeList, elements, partitionsPerNode);
+            var map = HtmSparseIntDictionary<Column>.CreatePartitionMap(nodeList, elements, partitionsPerNode);
 
             var part = HtmSparseIntDictionary<Column>.GetPlacementSlotForElement(map, key) ;
 
-            Assert.IsTrue(part.nodeIndx == expectedNode && part.partitionIndx == expectedPartition);
+            Assert.IsTrue(part.NodeIndx == expectedNode && part.PartitionIndx == expectedPartition);
 
         }
 
@@ -384,50 +387,50 @@ namespace UnitTestsProject
             }
         }
 
-        /// <summary>
-        /// Ensures that all keys (items in the list) are grouped in pages inside of a single partition.
-        /// </summary>
-        [TestMethod()]
-        public void TestPagedPartitioning()
-        {
-            Dictionary<int, List<int>> partitions = new Dictionary<int, List<int>>();
-            partitions.Add(0, new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
-            partitions.Add(1, new List<int>() { 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 });
-            partitions.Add(2, new List<int>() { 21, 22, 23, 24, 25, 26, 27, 28, 29, 30 });
+        ///// <summary>
+        ///// Ensures that all keys (items in the list) are grouped in pages inside of a single partition.
+        ///// </summary>
+        //[TestMethod()]
+        //public void TestPagedPartitioning()
+        //{
+        //    Dictionary<int, List<int>> partitions = new Dictionary<int, List<int>>();
+        //    partitions.Add(0, new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+        //    partitions.Add(1, new List<int>() { 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 });
+        //    partitions.Add(2, new List<int>() { 21, 22, 23, 24, 25, 26, 27, 28, 29, 30 });
 
-            var res = SpatialPoolerParallel.SplitPartitionsToPages(3, partitions);
+        //    var res = SpatialPoolerParallel.SplitPartitionsToPages(3, partitions);
 
-            Assert.IsTrue(res.Count == 12);
-            Assert.IsTrue(res[0].First().Value.Count == 3);
-            Assert.IsTrue(res[1].First().Value.Count == 3);
-            Assert.IsTrue(res[2].First().Value.Count == 3);
-            Assert.IsTrue(res[3].First().Value.Count == 1);
+        //    Assert.IsTrue(res.Count == 12);
+        //    Assert.IsTrue(res[0].First().Value.Count == 3);
+        //    Assert.IsTrue(res[1].First().Value.Count == 3);
+        //    Assert.IsTrue(res[2].First().Value.Count == 3);
+        //    Assert.IsTrue(res[3].First().Value.Count == 1);
 
-            Assert.IsTrue(res[4].First().Value.Count == 3);
-            Assert.IsTrue(res[5].First().Value.Count == 3);
-            Assert.IsTrue(res[6].First().Value.Count == 3);
-            Assert.IsTrue(res[7].First().Value.Count == 1);
+        //    Assert.IsTrue(res[4].First().Value.Count == 3);
+        //    Assert.IsTrue(res[5].First().Value.Count == 3);
+        //    Assert.IsTrue(res[6].First().Value.Count == 3);
+        //    Assert.IsTrue(res[7].First().Value.Count == 1);
 
-            Assert.IsTrue(res[8].First().Value.Count == 3);
-            Assert.IsTrue(res[9].First().Value.Count == 3);
-            Assert.IsTrue(res[10].First().Value.Count == 3);
-            Assert.IsTrue(res[11].First().Value.Count == 1);
+        //    Assert.IsTrue(res[8].First().Value.Count == 3);
+        //    Assert.IsTrue(res[9].First().Value.Count == 3);
+        //    Assert.IsTrue(res[10].First().Value.Count == 3);
+        //    Assert.IsTrue(res[11].First().Value.Count == 1);
 
-            res = SpatialPoolerParallel.SplitPartitionsToPages(4, partitions);
+        //    res = SpatialPoolerParallel.SplitPartitionsToPages(4, partitions);
 
-            Assert.IsTrue(res.Count == 9);
-            Assert.IsTrue(res[0].First().Value.Count == 4);
-            Assert.IsTrue(res[1].First().Value.Count == 4);
-            Assert.IsTrue(res[2].First().Value.Count == 2);
+        //    Assert.IsTrue(res.Count == 9);
+        //    Assert.IsTrue(res[0].First().Value.Count == 4);
+        //    Assert.IsTrue(res[1].First().Value.Count == 4);
+        //    Assert.IsTrue(res[2].First().Value.Count == 2);
 
-            Assert.IsTrue(res[3].First().Value.Count == 4);
-            Assert.IsTrue(res[4].First().Value.Count == 4);
-            Assert.IsTrue(res[5].First().Value.Count == 2);
+        //    Assert.IsTrue(res[3].First().Value.Count == 4);
+        //    Assert.IsTrue(res[4].First().Value.Count == 4);
+        //    Assert.IsTrue(res[5].First().Value.Count == 2);
 
-            Assert.IsTrue(res[6].First().Value.Count == 4);
-            Assert.IsTrue(res[7].First().Value.Count == 4);
-            Assert.IsTrue(res[8].First().Value.Count == 2);
-        }
+        //    Assert.IsTrue(res[6].First().Value.Count == 4);
+        //    Assert.IsTrue(res[7].First().Value.Count == 4);
+        //    Assert.IsTrue(res[8].First().Value.Count == 2);
+        //}
     }
 }
 #endif

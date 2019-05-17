@@ -21,25 +21,27 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <summary>
         /// List of actors, which hold partitions.
         /// </summary>
-        private IActorRef[] dictActors;
+        //private IActorRef[] dictActors;
 
         /// <summary>
         /// Maps from Actor partition identifier to actor index in <see cref="dictActors" list./>
         /// </summary>
-        private List<(int nodeIndx, string nodeUrl, int partitionIndx, int minKey, int maxKey, IActorRef actorRef)> actorMap;
+        protected List<Placement<TKey>> ActorMap { get; set; }
 
         private int numElements = 0;
 
         private ActorSystem actSystem;
 
+        /// <summary>
+        /// Creates all required actors, which host partitions.
+        /// </summary>
+        /// <param name="config"></param>
         public AkkaDistributedDictionaryBase(AkkaDistributedDictConfig config)
         {
             if (config == null)
                 throw new ArgumentException("Configuration must be specified.");
 
             this.Config = config;
-
-            dictActors = new IActorRef[config.Nodes.Count];
 
             actSystem = ActorSystem.Create("Deployer", ConfigurationFactory.ParseString(@"
                 akka {  
@@ -57,22 +59,17 @@ namespace NeoCortexApi.DistributedComputeLib
                     }
                 }"));
 
-            int nodeIndx = 0;
+            // Creates partition placements.
+            this.ActorMap = CreatePartitionMap();
 
-            this.actorMap = GetPartitionMap();
-
-            foreach (var placement in this.actorMap)
+            for (int i = 0; i < this.ActorMap.Count; i++)
             {
+                this.ActorMap[i].ActorRef =
+                 actSystem.ActorOf(Props.Create(() => new DictNodeActor())
+                 .WithDeploy(Deploy.None.WithScope(new RemoteScope(Address.Parse(this.ActorMap[i].NodeUrl)))),
+                 $"{nameof(DictNodeActor)}-{this.ActorMap[i].NodeIndx}-{this.ActorMap[i].PartitionIndx}");
 
-            }
-
-            foreach (var node in this.Config.Nodes)
-            {
-                dictActors[nodeIndx] =
-                  actSystem.ActorOf(Props.Create(() => new DictNodeActor())
-                  .WithDeploy(Deploy.None.WithScope(new RemoteScope(Address.Parse(node)))), $"{nameof(DictNodeActor)}-{nodeIndx}");
-
-                var result = dictActors[nodeIndx].Ask<int>(new CreateDictNodeMsg()
+                var result = this.ActorMap[i].ActorRef.Ask<int>(new CreateDictNodeMsg()
                 {
                     HtmAkkaConfig = config.HtmActorConfig,
                 }, this.Config.ConnectionTimout).Result;
@@ -83,35 +80,37 @@ namespace NeoCortexApi.DistributedComputeLib
         /// Calculates partition placements on nodes.
         /// </summary>
         /// <returns></returns>
-        public abstract List<(int nodeIndx, string nodeUrl, int partitionIndx, int minKey, int maxKey, IActorRef actorRef)> GetPartitionMap();
-        
+        public abstract List<Placement<TKey>> CreatePartitionMap();
+
         /// <summary>
         /// Depending on usage (Key type) different mechanism can be used to partition keys.
         /// This method returns the index of the node, whish should hold specified key.
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        protected abstract int GetPartitionNodeIndexFromKey(TKey key);
+        protected abstract IActorRef GetPartitionActorFromKey(TKey key);
 
         /// <summary>
         /// Gets partitions (nodes) with assotiated indexes.
         /// </summary>
         /// <returns></returns>
-        public abstract IDictionary<int, List<int>> GetPartitions();
+        public abstract List<(int partId, int minKey, int maxKey)> GetPartitions();
 
         public TValue this[TKey key]
         {
             get
             {
-                var nodeIndex = GetPartitionNodeIndexFromKey(key);
-                TValue val = this.dictActors[nodeIndex].Ask<TValue>("").Result;
+                var partActor = GetPartitionActorFromKey(key);
+
+                TValue val = partActor.Ask<TValue>("").Result;
+
                 return val;
             }
             set
             {
-                var nodeIndex = GetPartitionNodeIndexFromKey(key);
+                var partActor = GetPartitionActorFromKey(key);
 
-                var isSet = dictActors[nodeIndex].Ask<int>(new UpdateElementsMsg()
+                var isSet = partActor.Ask<int>(new UpdateElementsMsg()
                 {
                     Elements = new List<KeyPair>
                     {
@@ -132,10 +131,10 @@ namespace NeoCortexApi.DistributedComputeLib
             {
                 int cnt = 0;
 
-                Task<int>[] tasks = new Task<int>[this.dictActors.Length];
+                Task<int>[] tasks = new Task<int>[this.ActorMap.Count];
                 int indx = 0;
 
-                foreach (var actor in this.dictActors)
+                foreach (var actor in this.ActorMap.Select(el => el.ActorRef))
                 {
                     tasks[indx++] = actor.Ask<int>(new GetCountMsg(), this.Config.ConnectionTimout);
                 }
@@ -199,107 +198,67 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <param name="keyValuePairs"></param>
         public void AddOrUpdate(ICollection<KeyPair> keyValuePairs)
         {
-            Dictionary<int, AddOrUpdateElementsMsg> list = new Dictionary<int, AddOrUpdateElementsMsg>();
+         
+            ParallelOptions opts = new ParallelOptions();
+            opts.MaxDegreeOfParallelism = this.ActorMap.Count;
 
-            int pageSize = this.Config.PageSize;
-            int alreadyProcessed = 0;
+            var partitions = GetPartitionsForKeyset(keyValuePairs);
 
-            while (true)
+            Parallel.ForEach(partitions, opts, (partition) =>
             {
-                foreach (var item in keyValuePairs.Skip(alreadyProcessed).Take(pageSize))
+                Dictionary<IActorRef, AddOrUpdateElementsMsg> list = new Dictionary<IActorRef, AddOrUpdateElementsMsg>();
+
+                int pageSize = this.Config.PageSize;
+                int alreadyProcessed = 0;
+
+                while (true)
                 {
-                    var partitionIndex = GetPartitionNodeIndexFromKey((TKey)item.Key);
-                    if (!list.ContainsKey(partitionIndex))
-                        list.Add(partitionIndex, new AddOrUpdateElementsMsg() { Elements = new List<KeyPair>() });
-
-                    list[partitionIndex].Elements.Add(new KeyPair { Key = item.Key, Value = item.Value });
-                }
-
-                if (list.Count > 0)
-                {
-                    Task<int>[] tasks = new Task<int>[list.Count];
-
-                    for (int partIndx = 0; partIndx < tasks.Length; partIndx++)
+                    foreach (var item in partition.Value.Skip(alreadyProcessed).Take(pageSize))
                     {
-                        tasks[partIndx] = dictActors[partIndx].Ask<int>(list[partIndx], TimeSpan.FromMinutes(3));
-                        alreadyProcessed += list[partIndx].Elements.Count;
+                        var actorRef = GetPartitionActorFromKey((TKey)item.Key);
+                        if (!list.ContainsKey(actorRef))
+                            list.Add(actorRef, new AddOrUpdateElementsMsg() { Elements = new List<KeyPair>() });
+
+                        list[actorRef].Elements.Add(new KeyPair { Key = item.Key, Value = item.Value });
                     }
 
-                    Task.WaitAll(tasks);
+                    if (list.Count > 0)
+                    {
+                        List<Task<int>> tasks = new List<Task<int>>();
 
-                    list.Clear();
+                        foreach (var item in list)
+                        {
+                            tasks.Add(item.Key.Ask<int>(item.Value, TimeSpan.FromMinutes(3)));
+                            alreadyProcessed += item.Value.Elements.Count;
+                        }
+
+                        Task.WaitAll(tasks.ToArray());
+
+                        list.Clear();
+                    }
+                    else
+                        break;
                 }
-                else
-                    break;
-            }
+            });
         }
 
 
+        /// <summary>
+        /// Gets list of partitions, which host specified keys.
+        /// </summary>
+        /// <param name="keyValuePairs">Keyvalue pairs.</param>
+        /// <returns></returns>
+        public abstract Dictionary<IActorRef, List<KeyPair>> GetPartitionsForKeyset(ICollection<KeyPair>  keyValuePairs);
 
 
         /// <summary>
-        /// Adds/Updates batch of elements to remote nodes.
+        /// Ads the value with specified keypair.
         /// </summary>
-        /// <param name="keyValuePairs"></param>
-        //public void AddOrUpdatePerf(ICollection<KeyPair> keyValuePairs)
-        //{
-        //    for (int k = 0; k < 10; k++)
-        //    {
-        //        Debug.WriteLine($"----------- {k} -----------");
-        //        List<int> pages = new List<int>();
-        //        pages.Add(1000);
-        //        pages.Add(500);
-        //        pages.Add(250);
-        //        pages.Add(100);
-        //        pages.Add(50);
-        //        pages.Add(10);
-        //        pages.Add(1);
-
-        //        foreach (var pageSize in pages)
-        //        {
-        //            Stopwatch sw = new Stopwatch();
-        //            sw.Start();
-
-        //            Dictionary<int, AddOrUpdateElementsMsg> list = new Dictionary<int, AddOrUpdateElementsMsg>();
-
-        //            //int pageSize = 10;
-        //            int alreadyProcessed = 0;
-        //            //Debug.WriteLine("-------------");
-        //            while (true)
-        //            {
-        //                foreach (var item in keyValuePairs.Skip(alreadyProcessed).Take(pageSize))
-        //                {
-        //                    var partitionIndex = GetPartitionNodeIndexFromKey((TKey)item.Key);
-        //                    if (!list.ContainsKey(partitionIndex))
-        //                        list.Add(partitionIndex, new AddOrUpdateElementsMsg() { Elements = new List<KeyPair>() });
-
-        //                    list[partitionIndex].Elements.Add(new KeyPair { Key = item.Key, Value = item.Value });
-        //                }
-
-        //                if (list.Count > 0)
-        //                {
-        //                    Task<int>[] tasks = new Task<int>[list.Count];
-
-        //                    for (int partIndx = 0; partIndx < tasks.Length; partIndx++)
-        //                    {
-        //                        //Debug.Write(".");
-        //                        tasks[partIndx] = dictActors[partIndx].Ask<int>(list[partIndx], TimeSpan.FromMinutes(3));
-        //                        alreadyProcessed += list[partIndx].Elements.Count;
-        //                    }
-
-        //                    Task.WaitAll(tasks);
-
-        //                    list.Clear();
-        //                }
-        //                else
-        //                    break;
-        //            }
-        //            sw.Stop();
-        //            Debug.WriteLine("");
-        //            Debug.WriteLine($"{pageSize} | {sw.ElapsedMilliseconds}");
-        //        }
-        //    }
-        //}
+        /// <param name="item">Keypair of the new item.</param>
+        public void Add(KeyValuePair<TKey, TValue> item)
+        {
+            Add(item.Key, item.Value);
+        }
 
         /// <summary>
         /// Ads the value with secified key to the right parition.
@@ -308,9 +267,9 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <param name="value"></param>
         public void Add(TKey key, TValue value)
         {
-            var nodeIndex = GetPartitionNodeIndexFromKey(key);
+            var partActor = GetPartitionActorFromKey(key);
 
-            var isSet = dictActors[nodeIndex].Ask<int>(new AddElementsMsg()
+            var isSet = partActor.Ask<int>(new AddElementsMsg()
             {
                 Elements = new List<KeyPair>
                     {
@@ -331,9 +290,9 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <returns></returns>
         public bool TryGetValue(TKey key, out TValue value)
         {
-            var nodeIndex = GetPartitionNodeIndexFromKey(key);
+            var partActor = GetPartitionActorFromKey(key);
 
-            Result result = dictActors[nodeIndex].Ask<Result>(new GetElementMsg { Key =  key }).Result;
+            Result result = partActor.Ask<Result>(new GetElementMsg { Key = key }).Result;
 
             if (result.IsError == false)
             {
@@ -347,11 +306,7 @@ namespace NeoCortexApi.DistributedComputeLib
             }
         }
 
-        public void Add(KeyValuePair<TKey, TValue> item)
-        {
-            int partitionId = GetPartitionNodeIndexFromKey(item.Key);
-            this.dictList[partitionId].Add(item.Key, item.Value);
-        }
+
 
         public void Clear()
         {
@@ -363,11 +318,11 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            int partitionId = GetPartitionNodeIndexFromKey(item.Key);
+            var actorRef = GetPartitionActorFromKey(item.Key);
 
             if (ContainsKey(item.Key))
             {
-                var val = this.dictActors[partitionId].Ask<TValue>(new GetElementMsg()).Result;
+                var val = actorRef.Ask<TValue>(new GetElementMsg()).Result;
                 if (EqualityComparer<TValue>.Default.Equals(val, item.Value))
                     return true;
                 else
@@ -384,9 +339,9 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <returns></returns>
         public bool ContainsKey(TKey key)
         {
-            int partitionId = GetPartitionNodeIndexFromKey(key);
+            var actorRef = GetPartitionActorFromKey(key);
 
-            if (this.dictActors[partitionId].Ask<bool>(new ContainsMsg { Key = key }).Result)
+            if (actorRef.Ask<bool>(new ContainsMsg { Key = key }).Result)
                 return true;
             else
                 return false;
@@ -486,32 +441,6 @@ namespace NeoCortexApi.DistributedComputeLib
         }
 
 
-        //public bool MoveNextOLD()
-        //{
-        //    if (this.currentDictIndex == -1)
-        //        this.currentDictIndex++;
-
-        //    if (this.currentIndex + 1 < this.dictList[this.currentDictIndex].Count)
-        //    {
-        //        this.currentIndex++;
-        //        return true;
-        //    }
-        //    else
-        //    {
-        //        if (this.currentDictIndex < this.dictList.Length)
-        //        {
-        //            this.currentDictIndex++;
-
-        //            if (this.dictList[this.currentDictIndex].Count > 0)
-        //                return true;
-        //            else
-        //                return false;
-        //        }
-        //        else
-        //            return false;
-        //    }
-        //}
-
         public void Reset()
         {
             this.currentDictIndex = -1;
@@ -534,26 +463,26 @@ namespace NeoCortexApi.DistributedComputeLib
         {
             if (keys == null || keys.Length == 0)
                 throw new ArgumentException("Argument 'keys' must be specified!");
-        
-            var partition = GetPartitionNodeIndexFromKey(keys[0]);
-          
+
+            var actorRef = GetPartitionActorFromKey(keys[0]);
+
             int pageSize = this.Config.PageSize;
             int alreadyProcessed = 0;
 
             while (true)
             {
                 List<object> keysToGet = new List<object>();
-                
+
                 foreach (var key in keys.Skip(alreadyProcessed).Take(pageSize))
                 {
                     keysToGet.Add(key);
                 }
 
-                var batchResult = dictActors[partition].Ask<List<KeyPair>>(new GetElementsMsg()
+                var batchResult = actorRef.Ask<List<KeyPair>>(new GetElementsMsg()
                 {
                     Keys = keysToGet.ToArray(),
-                });
-                
+                }).Result;
+
                 keysToGet.Clear();
             }
 

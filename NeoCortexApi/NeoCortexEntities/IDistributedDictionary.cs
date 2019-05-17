@@ -29,7 +29,8 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Gets partitions (nodes) with assotiated indexes.
         /// </summary>
-        /// <returns></returns>
-        IDictionary<int, List<int>> GetPartitions();
+        /// <returns>
+        /// </returns>
+        List<(int partId, int minKey, int maxKey)> GetPartitions();
     }
 }

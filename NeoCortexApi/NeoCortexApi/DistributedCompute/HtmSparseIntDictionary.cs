@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Text;
 using NeoCortexApi.Entities;
 using Akka.Actor;
+using System.Linq;
+
 
 namespace NeoCortexApi.DistributedCompute
 {
@@ -17,14 +19,13 @@ namespace NeoCortexApi.DistributedCompute
         }
 
         /// <summary>
-        /// Nodes = 2, Cols = 7 => Node 0: {0,1,2,3}, Node 1: {4,5,6}
-        /// Nodes = 3, Cols = 7 => Node 0: {0,1,2}, Node 1: {3,4}, Node 1: {5,6}
+        /// Returns the actor reference for specified key.
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        protected override int GetPartitionNodeIndexFromKey(int key)
+        protected override IActorRef GetPartitionActorFromKey(int key)
         {
-            return GetPlacementSlotForElement(this.Config.Nodes.Count, NumColumns, key);
+            return this.ActorMap.Where(p => p.MinKey <= key && p.MaxKey >= key).First().ActorRef;
         }
 
         /// <summary>
@@ -33,9 +34,9 @@ namespace NeoCortexApi.DistributedCompute
         /// <param name="nodes"></param>
         /// <param name="numElements"></param>
         /// <returns></returns>
-        public override  List<(int nodeIndx, string nodeUrl, int partitionIndx, int minKey, int maxKey, IActorRef actorRef)> GetPartitionMap()
+        public override List<Placement<int>> CreatePartitionMap()
         {
-            return GetPartitionMap(this.Config.Nodes, NumColumns, this.Config.PartitionsPerNode);
+            return CreatePartitionMap(this.Config.Nodes, NumColumns, this.Config.PartitionsPerNode);
         }
 
         /// <summary>
@@ -45,13 +46,13 @@ namespace NeoCortexApi.DistributedCompute
         /// <param name="numElements"></param>
         /// <param name="numPartitionsPerNode"></param>
         /// <returns></returns>
-        public static List<(int nodeIndx, string nodeUrl, int partitionIndx, int minKey, int maxKey, IActorRef actorRef)> GetPartitionMap(List<string> nodes, int numElements, int numPartitionsPerNode)
+        public static List<Placement<int>> CreatePartitionMap(List<string> nodes, int numElements, int numPartitionsPerNode)
         {
-            List<(int nodeIndx, string nodeUrl, int partitionIndx, int minKey, int maxKey, IActorRef actorRef)> map = new List<(int nodeIndx, string nodeUrl, int partitionIndx, int minKey, int maxKey, IActorRef actorRef)>();
+            List<Placement<int>> map = new List<Placement<int>>();
 
             int numOfElementsPerNode = (numElements % nodes.Count) == 0 ? numElements / nodes.Count : (int)((float)numElements / (float)nodes.Count + 1.0);
 
-            int numOfElementsPerPartition = numOfElementsPerNode % numPartitionsPerNode == 0 ? numOfElementsPerNode / numPartitionsPerNode :  (int)(1.0 + (float)numOfElementsPerNode / (float)numPartitionsPerNode);
+            int numOfElementsPerPartition = numOfElementsPerNode % numPartitionsPerNode == 0 ? numOfElementsPerNode / numPartitionsPerNode : (int)(1.0 + (float)numOfElementsPerNode / (float)numPartitionsPerNode);
 
             int capacity = nodes.Count * numOfElementsPerPartition * numPartitionsPerNode;
 
@@ -63,24 +64,19 @@ namespace NeoCortexApi.DistributedCompute
                 {
                     var min = numOfElementsPerPartition * globalPartIndx;
                     var max = numOfElementsPerPartition * (globalPartIndx + 1) - 1;
-                    map.Add((nodIndx, nodes[nodIndx], globalPartIndx, min, max, null));
+                    map.Add(new Placement<int>() { NodeIndx = nodIndx, NodeUrl = nodes[nodIndx], PartitionIndx = globalPartIndx, MinKey = min, MaxKey = max, ActorRef = null });
                 }
-            }           
+            }
 
             return map;
         }
 
-        //private static string getPartitionId(int nodeIndex, int key)
-        //{
-        //    return $"{nodeIndex}/key";
-        //}
 
-        public static (int nodeIndx, string nodeUrl, int partitionIndx, int minKey, int maxKey, IActorRef actorRef)
-            GetPlacementSlotForElement(List<(int nodeIndx, string nodeUrl, int partitionIndx, int minKey, int maxKey, IActorRef actorRef)> map, int key)
+        public static Placement<int> GetPlacementSlotForElement(List<Placement<int>> map, int key)
         {
             foreach (var placement in map)
             {
-                if (placement.minKey <= key && key <= placement.maxKey)
+                if (placement.MinKey <= key && key <= placement.MaxKey)
                     return placement;
             }
 
@@ -102,22 +98,16 @@ namespace NeoCortexApi.DistributedCompute
         /// Key is assotiated to partition if it is hosted at the partition node.
         /// </summary>
         /// <returns></returns>
-        public override IDictionary<int, List<int>> GetPartitions()
+        public override List<(int partId, int minKey, int maxKey)> GetPartitions()
         {
-            Dictionary<int, List<int>> partitions = new Dictionary<int, List<int>>();
+            List<(int partId, int minKey, int maxKey)> map = new List<(int partId, int minKey, int maxKey)>();
 
-            for (int key = 0; key < this.NumColumns; key++)
+            foreach (var part in this.ActorMap)
             {
-                int node = GetPlacementSlotForElement(this.Nodes, this.NumColumns, key);
-                if (!partitions.ContainsKey(node))
-                {
-                    partitions.Add(node, new List<int>());
-                }
-
-                partitions[node].Add(key);
+                map.Add((part.PartitionIndx, part.MinKey, part.MaxKey));
             }
 
-            return partitions;
+            return map;
         }
 
         private int? numColumns = null;
@@ -138,6 +128,28 @@ namespace NeoCortexApi.DistributedCompute
 
                 return this.numColumns.Value;
             }
+        }
+
+
+        public override Dictionary<IActorRef, List<KeyPair>> GetPartitionsForKeyset(ICollection<KeyPair> keyValuePairs)
+        {
+            Dictionary<IActorRef, List<KeyPair>> res = new Dictionary<IActorRef, List<KeyPair>>();
+
+            foreach (var partition in this.ActorMap)
+            {
+                foreach (var pair in keyValuePairs)
+                {
+                    if (partition.MinKey <= (int)pair.Key && partition.MaxKey >= (int)pair.Key)
+                    {
+                        if (res.ContainsKey(partition.ActorRef) == false)
+                            res.Add(partition.ActorRef, new List<KeyPair>());
+
+                        res[partition.ActorRef].Add(pair);
+                    }                   
+                }
+            }
+
+            return res;
         }
     }
 

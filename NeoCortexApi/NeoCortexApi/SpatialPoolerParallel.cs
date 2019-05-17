@@ -15,7 +15,7 @@ namespace NeoCortexApi
     {
         private DistributedMemory distMemConfig;
 
-        public virtual void InitMatrices(Connections c, DistributedMemory distMem)
+        public override void InitMatrices(Connections c, DistributedMemory distMem)
         {
             this.distMemConfig = distMem;
 
@@ -109,9 +109,8 @@ namespace NeoCortexApi
 
             var partitions = mem.GetPartitions();
 
-            var pages = SplitPartitionsToPages(100, partitions);
 
-            Parallel.ForEach(pages, opts, (keyValPair) =>
+            Parallel.ForEach(partitions, opts, (keyValPair) =>
             {
                 //int i = keyValPair.Key;
 
@@ -210,40 +209,42 @@ namespace NeoCortexApi
 
         /// <summary>
         /// Does paging inside of partition. Every page will contain items (kays) from same partition.
+        /// WE DO NOT SUPPORT PAGING INSIDE OF PARTITION!
+        /// NUMBER OF PARTITIONS PER NODE MUST BE DESIGNED TO AVOID PAGING!
         /// </summary>
         /// <param name="partitions"></param>
         /// <returns></returns>
-        public static List<Dictionary<int, List<int>>> SplitPartitionsToPages(int pageSize, IDictionary<int, List<int>> partitions)
-        {
-            List<Dictionary<int, List<int>>> pages = new List<Dictionary<int, List<int>>>();
+        //public static List<Dictionary<int, List<int>>> SplitPartitionsToPages(int pageSize, IDictionary<int, List<int>> partitions)
+        //{
+        //    List<Dictionary<int, List<int>>> pages = new List<Dictionary<int, List<int>>>();
 
-            foreach (var keyPair in partitions)
-            {
-                int alreadyProcessed = 0;
+        //    foreach (var keyPair in partitions)
+        //    {
+        //        int alreadyProcessed = 0;
 
-                while (true)
-                {
-                    var lst = new List<int>();
+        //        while (true)
+        //        {
+        //            var lst = new List<int>();
 
-                    foreach (var key in keyPair.Value.Skip(alreadyProcessed).Take(pageSize))
-                    {
-                        lst.Add(key);
-                        alreadyProcessed++;
-                    }
+        //            foreach (var key in keyPair.Value.Skip(alreadyProcessed).Take(pageSize))
+        //            {
+        //                lst.Add(key);
+        //                alreadyProcessed++;
+        //            }
 
-                    if (lst.Count > 0)
-                    {
-                        var d = new Dictionary<int, List<int>>();
-                        d.Add(keyPair.Key, lst);
-                        pages.Add(d);
-                    }
-                    else
-                        break;
-                }              
-            }
+        //            if (lst.Count > 0)
+        //            {
+        //                var d = new Dictionary<int, List<int>>();
+        //                d.Add(keyPair.Key, lst);
+        //                pages.Add(d);
+        //            }
+        //            else
+        //                break;
+        //        }              
+        //    }
 
-            return pages;
-        }
+        //    return pages;
+        //}
 
         class ProcessingData
         {
