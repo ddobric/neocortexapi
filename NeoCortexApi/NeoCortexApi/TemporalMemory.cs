@@ -46,7 +46,8 @@ namespace NeoCortexApi
         {
             SparseObjectMatrix<Column> matrix = c.getMemory() == null ?
                 new SparseObjectMatrix<Column>(c.getColumnDimensions()) :
-                    c.getMemory();
+                    (SparseObjectMatrix<Column>)c.getMemory();
+
             c.setMemory(matrix);
 
             int numColumns = matrix.getMaxIndex() + 1;
@@ -234,9 +235,9 @@ namespace NeoCortexApi
             //        Select(indx => conn.GetSegmentForFlatIdx(indx)).ToList();
 
 
-            activeSegments.Sort(conn.GetComparer());
+            activeSegments.Sort(GetComparer(conn.getNextSegmentOrdinal()));
             //Collections.sort(activeSegments, conn.segmentPositionSortKey);
-            matchingSegments.Sort(conn.GetComparer());
+            matchingSegments.Sort(GetComparer(conn.getNextSegmentOrdinal()));
             //Collections.sort(matchingSegments, conn.segmentPositionSortKey);
 
             cycle.activeSegments = activeSegments;
@@ -706,6 +707,11 @@ namespace NeoCortexApi
                 else
                     return true;
             }
+        }
+
+        public DentriteComparer GetComparer(int nextSegmentOrdinal)
+        {
+            return new DentriteComparer(nextSegmentOrdinal);
         }
     }
 }

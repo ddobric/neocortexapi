@@ -5,10 +5,6 @@ using NeoCortexApi.Entities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
-using NeoCortexApi.Utility;
-using NeoCortexApi.DistributedCompute;
-using System.Threading;
 
 namespace UnitTestsProject
 {
@@ -41,7 +37,7 @@ namespace UnitTestsProject
 
 
         /// <summary>
-        /// Excluded from testing becaus eof OutOfMemory
+        /// Excluded from testing because of OutOfMemory
         /// This test is used to run in out of memory by initializing of to big SpatialPooler.
         /// </summary>
         //[TestMethod]
@@ -68,7 +64,7 @@ namespace UnitTestsProject
             //intList.Clear();
 
             //List<int> intList = new List<int>();
-            var rnd = new Random();
+
 
             int[] inputVector = new int[1024];
 
@@ -84,7 +80,7 @@ namespace UnitTestsProject
             }
 
             parameters.apply(mem);
-            sp.init(mem,null);
+            sp.init(mem, null);
         }
 
         /// <summary>
@@ -220,12 +216,14 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        public void SPInitTest()
+        [DataRow(0)]
+        [DataRow(1)]
+        public void SPInitTest(int poolerImplementation)
         {
             int numOfColsInDim = 64;
 
             Parameters parameters = Parameters.getAllDefaultParameters();
-           
+
             parameters.Set(KEY.POTENTIAL_RADIUS, 5);
             parameters.Set(KEY.POTENTIAL_PCT, 0.5);
             parameters.Set(KEY.GLOBAL_INHIBITION, false);
@@ -239,7 +237,7 @@ namespace UnitTestsProject
             parameters.Set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.1);
             parameters.Set(KEY.DUTY_CYCLE_PERIOD, 10);
             parameters.Set(KEY.MAX_BOOST, 10.0);
-            parameters.Set(KEY.RANDOM, new Random(42));
+            parameters.Set(KEY.RANDOM, new ThreadSafeRandom(42));
             parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { 32, 32 });
             parameters.Set(KEY.COLUMN_DIMENSIONS, new int[] { numOfColsInDim, numOfColsInDim });
             parameters.setPotentialRadius(5);
@@ -266,10 +264,11 @@ namespace UnitTestsProject
 
             parameters.setSynPermConnected(0.1);
 
-            var sp = new SpatialPooler();
+            SpatialPooler sp = UnitTestHelpers.CreatePooler(poolerImplementation) ;            
+
             var mem = new Connections();
             parameters.apply(mem);
-                 
+
             //Thread.Sleep(5000);
 
             //var dicts = UnitTestHelpers.GetMemory(numOfColsInDim * numOfColsInDim);
@@ -292,5 +291,5 @@ namespace UnitTestsProject
 
     }
 
-   
+
 }

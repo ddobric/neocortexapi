@@ -41,7 +41,7 @@ namespace UnitTestsProject
             retVal.Set(KEY.PERMANENCE_INCREMENT, 0.10);
             retVal.Set(KEY.PERMANENCE_DECREMENT, 0.10);
             retVal.Set(KEY.PREDICTED_SEGMENT_DECREMENT, 0.0);
-            retVal.Set(KEY.RANDOM, new Random(42));
+            retVal.Set(KEY.RANDOM, new ThreadSafeRandom(42));
             retVal.Set(KEY.SEED, 42);
 
             return retVal;
@@ -968,7 +968,7 @@ namespace UnitTestsProject
             p.apply(cn);
             TemporalMemory.init(cn);
 
-            Assert.AreEqual(64 * 64, cn.getNumColumns());
+            Assert.AreEqual(64 * 64, cn.NumColumns);
         }
 
         [TestMethod]

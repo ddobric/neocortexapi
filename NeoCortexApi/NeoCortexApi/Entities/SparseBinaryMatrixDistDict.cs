@@ -1,9 +1,12 @@
 ﻿#if USE_AKKA
-using NeoCortexApi.DistributedComputeLib;
+
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
+using System.Diagnostics;
+using NeoCortexApi.DistributedComputeLib;
 
 namespace NeoCortexApi.Entities
 {
@@ -139,6 +142,8 @@ namespace NeoCortexApi.Entities
                 // Go through all connections (synapses) between column-i and input vector.
                 for (int j = 0; j < slice.Length; j++)
                 {
+                    //Debug.WriteLine($"Slice {i} - {String.Join("","", slice )}");
+
                     // Result (overlapp) is 1 if 
                     results[i] += (inputVector[j] * slice[j]);
                     if (j == slice.Length - 1)
@@ -240,6 +245,11 @@ namespace NeoCortexApi.Entities
         }
 
         public override AbstractFlatMatrix<int> set(List<KeyPair> updatingValues)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override ICollection<KeyPair> GetObjects(int[] indexes)
         {
             throw new NotImplementedException();
         }

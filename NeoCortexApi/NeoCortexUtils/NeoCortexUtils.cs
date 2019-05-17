@@ -1,9 +1,8 @@
-﻿using NeoCortexApi.Utility;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
+using System.IO;
 namespace NeoCortex
 {
     public class NeoCortexUtils
@@ -310,5 +309,26 @@ namespace NeoCortex
             return rgb;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static List<int> ReadCsvFileTest(String path)
+        {
+            string fileContent = File.ReadAllText(path);
+            string[] integerStrings = fileContent.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            List<int> intList = new List<int>();
+            for (int n = 0; n < integerStrings.Length; n++)
+            {
+                String s = integerStrings[n];
+                char[] sub = s.ToCharArray();
+                for (int j = 0; j < sub.Length; j++)
+                {
+                    intList.Add(int.Parse(sub[j].ToString()));
+                }
+            }
+            return intList;
+        }
     }
 }

@@ -1,6 +1,4 @@
-﻿
-using NeoCortexApi.DataMappers;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Network;
@@ -8,7 +6,6 @@ using NeoCortexApi.Sensors;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 
 namespace UnitTestsProject
 {
@@ -54,9 +51,9 @@ namespace UnitTestsProject
             var encoder1Sett1 = getBinaryEncoderSettings();
             var encoder2Sett2 = getBinaryEncoderSettings();
 
-            des.Features = new Column[2];
-            des.Features[0] = new Column { Id = 1, Name = "col1", Index = 0, Values = null, EncoderSettings = encoder1Sett1 };
-            des.Features[1] = new Column { Id = 2, Name = "col2", Index = 0, Values = null, EncoderSettings = encoder1Sett1 };
+            des.Features = new NeoCortexApi.DataMappers.Column[2];
+            des.Features[0] = new NeoCortexApi.DataMappers.Column { Id = 1, Name = "col1", Index = 0, Values = null, EncoderSettings = encoder1Sett1 };
+            des.Features[1] = new NeoCortexApi.DataMappers.Column { Id = 2, Name = "col2", Index = 0, Values = null, EncoderSettings = encoder1Sett1 };
             //des.Features[1] = new Column { Id = 2, Name = "col2", Index = 1, Type = ColumnType.BOOLEAN, Values = new string[] { "0", "1" }, EncoderSettings = encoder2Sett2 };
             //des.Features[2] = new Column { Id = 3, Name = "col3", Index = 2, Type = ColumnType.STRING, Values = null, DefaultMissingValue = 1.4 };
             //des.Features[3] = new Column { Id = 4, Name = "col4", Index = 3, Type = ColumnType.CLASS, Values = new string[] { "red", "green", "blue" }, DefaultMissingValue = 1 };

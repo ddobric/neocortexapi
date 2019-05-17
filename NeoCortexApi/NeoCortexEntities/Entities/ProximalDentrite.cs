@@ -32,6 +32,25 @@ namespace NeoCortexApi.Entities
 
 
         /// <summary>
+        /// Array of indicies of connected inputs. Defines RF.
+        /// Sometimes also called 'Potential Pool'.
+        /// </summary>
+        public int[] ConnectedInputs
+        {
+            get
+            {
+                int[] lst = new int[this.Synapses.Count];
+                for (int i = 0; i < lst.Length; i++)
+                {
+                    lst[i]=  this.Synapses[i].InputIndex;
+                }
+
+                return lst;
+            }
+        }
+
+
+        /// <summary>
         /// Creates object, which represents the pool of input neurons, which are connected.
         /// </summary>
         /// <param name="c"></param>

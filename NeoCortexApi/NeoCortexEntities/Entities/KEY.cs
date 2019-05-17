@@ -6,7 +6,7 @@ namespace NeoCortexApi.Entities
 {
     public static class KEY
     {
-        /////////// Universal Parameters ///////////
+           /////////// Universal Parameters ///////////
         /**
          * Total number of columns
          */
@@ -113,6 +113,8 @@ namespace NeoCortexApi.Entities
              * Using global inhibition boosts performance x60.
              */
         public const string GLOBAL_INHIBITION = "globalInhibition";//, Boolean.class),
+
+
                                                                    /**
                                                                     * The inhibition radius determines the size of a column's local
                                                                     * neighborhood.  A cortical column must overcome the overlap score of
@@ -121,6 +123,8 @@ namespace NeoCortexApi.Entities
                                                                     * number of connected synapses per column.
                                                                     */
         public const string INHIBITION_RADIUS = "inhibitionRadius";//, Integer.class, 0, null),
+
+
                                                                    /**
                                                                     * The desired density of active columns within a local inhibition area
                                                                     * (the size of which is set by the internally calculated inhibitionRadius,

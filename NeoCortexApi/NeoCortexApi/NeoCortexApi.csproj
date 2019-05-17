@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>NeoCortexApi</PackageId>
-    <Version>1.0.5-beta</Version>
+    <Version>1.0.6-beta</Version>
     <Authors>Damir Dobric</Authors>
     <Company>daenet GmbH</Company>
     <Product>Hierarchical Temporal Framework in C#</Product>
@@ -60,6 +60,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DistributedComputeLib\DistributedComputeLib.csproj" />
+    <ProjectReference Include="..\NeoCortexArrayLib\NeoCortexArrayLib.csproj" />
+    <ProjectReference Include="..\NeoCortexEntities\NeoCortexEntities.csproj" />
   </ItemGroup>
 
 

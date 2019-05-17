@@ -43,8 +43,8 @@ namespace UnitTestsProject
 
             var trainingImages = Directory.GetFiles(Path.Combine(trainingFolder, digit));
 
-            if (Directory.Exists(TestOutputFolder))
-                Directory.Delete(TestOutputFolder, true);
+            //if (Directory.Exists(TestOutputFolder))
+            //    Directory.Delete(TestOutputFolder, true);
 
             Directory.CreateDirectory(TestOutputFolder);
 
@@ -63,8 +63,6 @@ namespace UnitTestsProject
                     //parameters.setInputDimensions(new int[] { imageSize[imSizeIndx], imageSize[imSizeIndx] });
                     //parameters.setColumnDimensions(new int[] { topologies[topologyIndx], topologies[topologyIndx] });
                     //parameters.setNumActiveColumnsPerInhArea(0.02 * numOfActCols);
-
-                  
                     parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.06 * 64 * 64/*imageSizes[imSizeIndx] * imageSizes[imSizeIndx]*/);
                     parameters.Set(KEY.POTENTIAL_RADIUS, imageSizes[imSizeIndx] * imageSizes[imSizeIndx]/*(int)0.5 * imageSizes[imSizeIndx]*/);
                     parameters.Set(KEY.POTENTIAL_PCT, 1.0);
@@ -90,7 +88,7 @@ namespace UnitTestsProject
                     parameters.setInputDimensions(new int[] { imageSizes[imSizeIndx], imageSizes[imSizeIndx] });
                     parameters.setColumnDimensions(new int[] { topologies[topologyIndx], topologies[topologyIndx] });
                     
-                    var sp = new SpatialPooler();
+                    var sp = new SpatialPoolerMT();
                     var mem = new Connections();
 
                     parameters.apply(mem);
@@ -124,7 +122,7 @@ namespace UnitTestsProject
                                 string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
 
                                 //Read input csv file into array
-                                int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+                                int[] inputVector = NeoCortexUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
 
                                 int numIterationsPerImage = 5;
                                 int[] oldArray = new int[activeArray.Length];
@@ -176,7 +174,7 @@ namespace UnitTestsProject
         /// <param name="topologies">list of sparse space size. Sparse space has same width and length</param>
         [TestMethod]
         [TestCategory("LongRunning")]
-        [DataRow("MnistPng28x28\\training", "3", new int[] { 28 }, new int[] { 32 /*, 64, 128 */})]
+        [DataRow("MnistPng28x28\\training", "5", new int[] { 28 }, new int[] { 32 /*, 64, 128 */})]
         public void TrainSingleMnistImageWithVariableRadiusTest(string trainingFolder, string digit, int[] imageSizes, int[] topologies)
          {
             string testOutputFolder = $"Output-{nameof(TrainSingleMnistImageWithVariableRadiusTest)}";
@@ -218,7 +216,7 @@ namespace UnitTestsProject
                         parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000000);
                         parameters.Set(KEY.MAX_BOOST, 5);
 
-                        var sp = new SpatialPooler();
+                        var sp = new SpatialPoolerMT();
                         var mem = new Connections();
 
                         parameters.apply(mem);
@@ -252,7 +250,7 @@ namespace UnitTestsProject
                                     string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
 
                                     //Read input csv file into array
-                                    int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+                                    int[] inputVector = NeoCortexUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
 
                                     int numIterationsPerImage = 5;
                                     int[] oldArray = new int[activeArray.Length];
@@ -420,7 +418,7 @@ namespace UnitTestsProject
                                     string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
 
                                     //Read input csv file into array
-                                    int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+                                    int[] inputVector = NeoCortexUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
 
                                     int numIterationsPerImage = 10;
                                     int[] oldArray = new int[sp.GetActiveColumns(targetLyrIndx).Length];
@@ -568,7 +566,7 @@ namespace UnitTestsProject
                             string inputBinaryImageFile = Helpers.BinarizeImage($"{testImage}", imgSize, testName);
 
                             // Read input csv file into array
-                            int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+                            int[] inputVector = NeoCortexUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
 
                             trainedSpatialPooler.Compute(inputVector, false);
 
@@ -692,7 +690,7 @@ namespace UnitTestsProject
         //[DataRow("MnistPng28x28\\training", "MnistPng28x28\\testing", new string[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" },
         //  new int[] { 28 }, new int[] { /*32,*/ 64 /*, 128 */})]
         [DataRow("MnistPng28x28\\training", "MnistPng28x28\\testing", new string[] { "2" },
-            new int[] { 28 }, new int[] { 64 })]
+            new int[] { 28 }, new int[] { 32 })]
         //[DataRow("MnistPng28x28\\training", new string[] { "x", },
         //    new int[] { 28 }, new int[] { 64, /*64, 128 */})]
         //[DataRow("MnistPng28x28\\training", "MnistPng28x28\\testing", new string[] { "y", },
@@ -710,7 +708,7 @@ namespace UnitTestsProject
             // prediction.
             int targetLyrIndx = 2;
 
-            const string TestOutputFolder = "Output";
+            string TestOutputFolder = $"Output-{nameof(GenerateSparsityImageTest)}";
             //if (Directory.Exists(TestOutputFolder))
             //    Directory.Delete(TestOutputFolder, true);
 
@@ -722,20 +720,57 @@ namespace UnitTestsProject
                 for (int imSizeIndx = 0; imSizeIndx < imageSizes.Length; imSizeIndx++)
                 {
                     var numOfCols = topologies[topologyIndx] * topologies[topologyIndx];
-                    var parameters = GetDefaultParams();
-                    parameters.Set(KEY.POTENTIAL_RADIUS, (int)0.3 * imageSizes[imSizeIndx]);
-                    parameters.Set(KEY.POTENTIAL_PCT, 0.75);
-                    parameters.Set(KEY.GLOBAL_INHIBITION, false);
-                    parameters.Set(KEY.STIMULUS_THRESHOLD, 0.5);
-                    parameters.Set(KEY.INHIBITION_RADIUS, (int)0.25 * imageSizes[imSizeIndx]);
-                    parameters.Set(KEY.LOCAL_AREA_DENSITY, -1);
-                    parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.1 * numOfCols);
-                    parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000000);
-                    parameters.Set(KEY.MAX_BOOST, 5);
-                    parameters.setInputDimensions(new int[] { imageSizes[imSizeIndx], imageSizes[imSizeIndx] });
-                    parameters.setColumnDimensions(new int[] { topologies[topologyIndx], topologies[topologyIndx] });
+                    //var parameters = GetDefaultParams();
+                    //parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.06 * numOfCols);
+                    //parameters.Set(KEY.POTENTIAL_RADIUS, imageSizes[imSizeIndx]* imageSizes[imSizeIndx]);
+                    //parameters.Set(KEY.POTENTIAL_PCT, 1.0);
+                    //parameters.Set(KEY.GLOBAL_INHIBITION, true);
+
+                    //parameters.Set(KEY.INHIBITION_RADIUS, (int)0.025 * imageSizes[imSizeIndx] * imageSizes[imSizeIndx]);
+
+                    //parameters.Set(KEY.STIMULUS_THRESHOLD, 50);
+                    //parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.008);   
+                    //parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0.05);
+                    ////parameters.Set(KEY.LOCAL_AREA_DENSITY, -1);
+
+                    //parameters.Set(KEY.SYN_PERM_CONNECTED, 0.2);
+                    //parameters.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.001);
+                    //parameters.Set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.001);
+                    //parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000);
+                    //parameters.Set(KEY.MAX_BOOST, 100);
+                    //parameters.Set(KEY.WRAP_AROUND, true);
+                    //parameters.Set(KEY.SEED, 1956);
+
+                    //parameters.setInputDimensions(new int[] { imageSizes[imSizeIndx], imageSizes[imSizeIndx] });
+                    //parameters.setColumnDimensions(new int[] { topologies[topologyIndx], topologies[topologyIndx] });
                     //parameters.setNumActiveColumnsPerInhArea(0.02 * numOfActCols);
 
+                    var parameters = GetDefaultParams();
+                    //parameters.Set(KEY.DUTY_CYCLE_PERIOD, 20);
+                    //parameters.Set(KEY.MAX_BOOST, 1);
+                    //parameters.setInputDimensions(new int[] { imageSize[imSizeIndx], imageSize[imSizeIndx] });
+                    //parameters.setColumnDimensions(new int[] { topologies[topologyIndx], topologies[topologyIndx] });
+                    //parameters.setNumActiveColumnsPerInhArea(0.02 * numOfActCols);
+                    parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.06 * numOfCols);
+                    parameters.Set(KEY.POTENTIAL_RADIUS, imageSizes[imSizeIndx] * imageSizes[imSizeIndx]/*(int)0.5 * imageSizes[imSizeIndx]*/);
+                    parameters.Set(KEY.POTENTIAL_PCT, 1.0);
+                    parameters.Set(KEY.GLOBAL_INHIBITION, true);
+
+                    parameters.Set(KEY.STIMULUS_THRESHOLD, 50.0);       //***
+                    parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.008);   //***
+                    parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0.05);      //***
+
+                    parameters.Set(KEY.INHIBITION_RADIUS, (int)0.025 * imageSizes[imSizeIndx] * imageSizes[imSizeIndx]);
+
+                    parameters.Set(KEY.SYN_PERM_CONNECTED, 0.2);
+                    parameters.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.001);
+                    parameters.Set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.001);
+                    parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000);
+                    parameters.Set(KEY.MAX_BOOST, 100);
+                    parameters.Set(KEY.WRAP_AROUND, true);
+                    parameters.Set(KEY.SEED, 1956);
+                    parameters.setInputDimensions(new int[] { imageSizes[imSizeIndx], imageSizes[imSizeIndx] });
+                    parameters.setColumnDimensions(new int[] { topologies[topologyIndx], topologies[topologyIndx] });
 
                     List<string> trainingFiles = new List<string>();
 
@@ -770,7 +805,7 @@ namespace UnitTestsProject
 
                             parameters.apply(mem);
 
-                            var sp = new SpatialPooler();
+                            var sp = new SpatialPoolerMT();
                             sp.init(mem);
 
                             int[] activeArray = new int[topologies[topologyIndx] * topologies[topologyIndx]];
@@ -786,7 +821,7 @@ namespace UnitTestsProject
                             string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
 
                             //Read input csv file into array
-                            int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+                            int[] inputVector = NeoCortexUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
 
                             int numIterationsPerImage = 5;
 
@@ -810,7 +845,7 @@ namespace UnitTestsProject
                                 twoDimInputArray = ArrayUtils.Transpose(twoDimInputArray);
 
                                 int[,] winArray = ArrayUtils.Make2DArray<int>(activeArray, (int)Math.Sqrt(activeArray.Length), (int)Math.Sqrt(activeArray.Length));
-                                winArray = ArrayUtils.Transpose(twoDimInputArray);
+                                winArray = ArrayUtils.Transpose(winArray);
 
                                 string outputImage = $"{outFolder}\\digit_{digit}_img_{imgCnt}_epoch_{numIterationsPerImage}_{topologies[topologyIndx]}_{fI.Name}";
 
@@ -955,7 +990,7 @@ namespace UnitTestsProject
                     string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imgSize, testName);
 
                     //Read input csv file into array
-                    int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+                    int[] inputVector = NeoCortexUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
 
                     sp.Compute(inputVector, false);
 
@@ -1067,7 +1102,7 @@ namespace UnitTestsProject
         internal static Parameters GetDefaultParams()
         {
 
-            Random rnd = new Random(42);
+            ThreadSafeRandom rnd = new ThreadSafeRandom(42);
 
             var parameters = Parameters.getAllDefaultParameters();
             parameters.Set(KEY.POTENTIAL_RADIUS, 10);

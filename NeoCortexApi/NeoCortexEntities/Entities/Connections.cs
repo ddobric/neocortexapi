@@ -1,4 +1,4 @@
-﻿using NeoCortexApi.Utility;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,6 +8,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Linq;
 using System.Collections.ObjectModel;
+using NeoCortexApi.Utility;
 
 namespace NeoCortexApi.Entities
 {
@@ -31,7 +32,7 @@ namespace NeoCortexApi.Entities
          * the inputWidth if using "globalInhibition" and if not 
          * using the Network API (which sets this automatically) 
          */
-   
+
         private int potentialRadius = 16;
         private double potentialPct = 0.5;
         private bool m_GlobalInhibition = false;
@@ -172,7 +173,7 @@ namespace NeoCortexApi.Entities
         private double permanenceDecrement = 0.10;
 
         /** The main data structure containing columns, cells, and synapses */
-        private SparseObjectMatrix<Column> memory;
+        private AbstractSparseMatrix<Column> memory;
 
         public Cell[] cells { get; set; }
 
@@ -190,7 +191,7 @@ namespace NeoCortexApi.Entities
         //protected Dictionary<Segment, List<Synapse>> proximalSynapses;
 
         /** Helps index each new proximal Synapse */
-        protected int proximalSynapseCounter = -1;
+        //protected int proximalSynapseCounter = -1;
         /** Global tracker of the next available segment index */
         protected int nextFlatIdx;
         /** Global counter incremented for each DD segment creation*/
@@ -219,9 +220,9 @@ namespace NeoCortexApi.Entities
         /** The random number generator */
         public Random random;
 
-        public DentriteComparer GetComparer()
+        public int getNextSegmentOrdinal()
         {
-            return new DentriteComparer(nextSegmentOrdinal);
+            return nextSegmentOrdinal;
         }
 
         ///** Sorting Lambda used for sorting active and matching segments */
@@ -272,26 +273,25 @@ namespace NeoCortexApi.Entities
          */
         public Connections()
         {
-
             synPermTrimThreshold = synPermActiveInc / 2.0;
             synPermBelowStimulusInc = synPermConnected / 10.0;
-            random = new Random(seed);
+            //random = new Random(seed);
         }
 
-        /**
-         * Returns a deep copy of this {@code Connections} object.
-         * @return a deep copy of this {@code Connections}
-         */
-        public Connections copy() //todo this will fail. Many objects are not marked as serializable
-        {
-            using (MemoryStream stream = new MemoryStream())
-            {
-                BinaryFormatter formatter = new BinaryFormatter();
-                formatter.Serialize(stream, this);
-                stream.Position = 0;
-                return (Connections)formatter.Deserialize(stream);
-            }
-        }
+        ///**
+        // * Returns a deep copy of this {@code Connections} object.
+        // * @return a deep copy of this {@code Connections}
+        // */
+        //public Connections copy() //todo this will fail. Many objects are not marked as serializable
+        //{
+        //    using (MemoryStream stream = new MemoryStream())
+        //    {
+        //        BinaryFormatter formatter = new BinaryFormatter();
+        //        formatter.Serialize(stream, this);
+        //        stream.Position = 0;
+        //        return (Connections)formatter.Deserialize(stream);
+        //    }
+        //}
 
         /**
          * Sets the derived values of the {@link SpatialPooler}'s initialization.
@@ -414,7 +414,7 @@ namespace NeoCortexApi.Entities
          * Sets the matrix containing the {@link Column}s
          * @param mem
          */
-        public void setMemory(SparseObjectMatrix<Column> mem)
+        public void setMemory(AbstractSparseMatrix<Column> mem)
         {
             this.memory = mem;
         }
@@ -423,7 +423,7 @@ namespace NeoCortexApi.Entities
          * Returns the matrix containing the {@link Column}s
          * @return
          */
-        public SparseObjectMatrix<Column> getMemory()
+        public AbstractSparseMatrix<Column> getMemory()
         {
             return memory;
         }
@@ -490,13 +490,21 @@ namespace NeoCortexApi.Entities
         ////////////////////////////////////////
         //       SpatialPooler Methods        //
         ////////////////////////////////////////
-        /**
-         * Returns the configured initial connected percent.
-         * @return
-         */
-        public double getInitConnectedPct()
+
+
+        /// <summary>
+        /// Percent of initially connected synapses. Typically 50%.
+        /// </summary>
+        public double InitialSynapseConnsPct
         {
-            return this.initConnectedPct;
+            get
+            {
+                return this.initConnectedPct;
+            }
+            set
+            {
+                this.initConnectedPct = value;
+            }
         }
 
         /**
@@ -563,17 +571,21 @@ namespace NeoCortexApi.Entities
  * @param n
  */
         public int NumInputs
-        { get => numInputs;
+        {
+            get => numInputs;
             set => this.numInputs = value;
         }
 
-        /**
-         * Returns the product of the column dimensions
-         * @return  the product of the column dimensions
-         */
-        public int getNumColumns()
+
+        /// <summary>
+        /// Returns the total numbe rof columns across all dimensions.
+        /// </summary>
+        public int NumColumns
         {
-            return numColumns;
+            get
+            {
+                return this.numColumns;
+            }
         }
 
         /**
@@ -657,7 +669,7 @@ namespace NeoCortexApi.Entities
          *
          * @param s the {@link SparseObjectMatrix}
          */
-        public void setProximalPermanences(SparseObjectMatrix<double[]> s)
+        public void setProximalPermanences(AbstractSparseMatrix<double[]> s)
         {
             foreach (int idx in s.getSparseIndices())
             {
@@ -670,20 +682,20 @@ namespace NeoCortexApi.Entities
          * {@link ProximalDendrite}s
          * @return
          */
-        public int getProximalSynapseCount()
-        {
-            return proximalSynapseCounter + 1;
-        }
+        //public int getProximalSynapseCount()
+        //{
+        //    return proximalSynapseCounter + 1;
+        //}
 
         /**
          * Sets the count of {@link Synapse}s on
          * {@link ProximalDendrite}s
          * @param i
          */
-        public void setProximalSynapseCount(int i)
-        {
-            this.proximalSynapseCounter = i;
-        }
+        //public void setProximalSynapseCount(int i)
+        //{
+        //    this.proximalSynapseCounter = i;
+        //}
 
         /**
          * Increments and returns the incremented
@@ -691,20 +703,20 @@ namespace NeoCortexApi.Entities
          *
          * @return
          */
-        public int incrementProximalSynapses()
-        {
-            return ++proximalSynapseCounter;
-        }
+        //public int incrementProximalSynapses()
+        //{
+        //    return ++proximalSynapseCounter;
+        //}
 
         /**
          * Decrements and returns the decremented
          * proximal {link Synapse} count
          * @return
          */
-        public int decrementProximalSynapses()
-        {
-            return --proximalSynapseCounter;
-        }
+        //public int decrementProximalSynapses()
+        //{
+        //    return --proximalSynapseCounter;
+        //}
 
         /**
          * Returns the indexed count of connected synapses per column.
@@ -769,7 +781,7 @@ namespace NeoCortexApi.Entities
             return tieBreaker;
         }
 
-  
+
         /// <summary>
         /// Enforses using of global inhibition process.
         /// </summary>
@@ -811,7 +823,7 @@ namespace NeoCortexApi.Entities
         ///         remain ON within a local inhibition area, where N =
         ///         localAreaDensity * (total number of columns in
         ///         inhibition area).
-        
+
         /// </summary>
         public double LocalAreaDensity
         {
@@ -1923,6 +1935,7 @@ namespace NeoCortexApi.Entities
             return memory.getObject(index);
         }
 
+
         /**
          * Sets the number of {@link Column}.
          *
@@ -2316,7 +2329,7 @@ namespace NeoCortexApi.Entities
         {
             Console.WriteLine("------------ SpatialPooler Parameters ------------------");
             Console.WriteLine("numInputs                  = " + NumInputs);
-            Console.WriteLine("numColumns                 = " + getNumColumns());
+            Console.WriteLine("numColumns                 = " + NumColumns);
             Console.WriteLine("cellsPerColumn             = " + getCellsPerColumn());
             Console.WriteLine("columnDimensions           = " + getColumnDimensions().ToString());
             Console.WriteLine("numActiveColumnsPerInhArea = " + NumActiveColumnsPerInhArea);
@@ -2367,7 +2380,7 @@ namespace NeoCortexApi.Entities
 
         //    pw.println("\n------------ SpatialPooler Parameters ------------------");
         //    pw.println("numInputs                  = " + getNumInputs());
-        //    pw.println("numColumns                 = " + getNumColumns());
+        //    pw.println("numColumns                 = " + getNumColumns);
         //    pw.println("numActiveColumnsPerInhArea = " + getNumActiveColumnsPerInhArea());
         //    pw.println("potentialPct               = " + getPotentialPct());
         //    pw.println("potentialRadius            = " + getPotentialRadius());
@@ -2411,8 +2424,8 @@ namespace NeoCortexApi.Entities
          */
         public int[][] getConnecteds()
         {
-            int[][] retVal = new int[getNumColumns()][];
-            for (int i = 0; i < getNumColumns(); i++)
+            int[][] retVal = new int[NumColumns][];
+            for (int i = 0; i < NumColumns; i++)
             {
                 //Pool pool = getPotentialPools().get(i);
                 Pool pool = getColumn(i).ProximalDendrite.RFPool;
@@ -2430,8 +2443,8 @@ namespace NeoCortexApi.Entities
          */
         public int[][] getPotentials()
         {
-            int[][] retVal = new int[getNumColumns()][];
-            for (int i = 0; i < getNumColumns(); i++)
+            int[][] retVal = new int[NumColumns][];
+            for (int i = 0; i < NumColumns; i++)
             {
                 //Pool pool = getPotentialPools().get(i);
                 Pool pool = getColumn(i).ProximalDendrite.RFPool;
@@ -2449,8 +2462,8 @@ namespace NeoCortexApi.Entities
          */
         public double[][] getPermanences()
         {
-            double[][] retVal = new double[getNumColumns()][];
-            for (int i = 0; i < getNumColumns(); i++)
+            double[][] retVal = new double[NumColumns][];
+            for (int i = 0; i < NumColumns; i++)
             {
                 //Pool pool = getPotentialPools().get(i);
                 Pool pool = getColumn(i).ProximalDendrite.RFPool;
@@ -2546,7 +2559,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + (int)(temp ^ (temp >> 32));
             temp = BitConverter.DoubleToInt64Bits(synPermTrimThreshold);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            result = prime * result + proximalSynapseCounter;
+            //result = prime * result + proximalSynapseCounter;
             //result = prime * result + ((proximalSynapses == null) ? 0 : proximalSynapses.GetHashCode());
             result = prime * result + ((distalSynapses == null) ? 0 : distalSynapses.GetHashCode());
             result = prime * result + tieBreaker.GetHashCode();
@@ -2715,8 +2728,8 @@ namespace NeoCortexApi.Entities
                 return false;
             if (BitConverter.DoubleToInt64Bits(synPermTrimThreshold) != BitConverter.DoubleToInt64Bits(other.synPermTrimThreshold))
                 return false;
-            if (proximalSynapseCounter != other.proximalSynapseCounter)
-                return false;
+            //if (proximalSynapseCounter != other.proximalSynapseCounter)
+            //    return false;
             //if (proximalSynapses == null)
             //{
             //    if (other.proximalSynapses != null)

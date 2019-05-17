@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NeoCortexApi.Entities;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -12,17 +13,6 @@ namespace NeoCortexApi.DistributedComputeLib
         private Array backingArray;
 
         private int numOfNodes;
-
-
-        //public bool IsFixedSize => throw new NotImplementedException();
-
-        //public bool IsReadOnly => throw new NotImplementedException();
-
-        //public int Count => this.backingArray.Length;
-
-        //public bool IsSynchronized => throw new NotImplementedException();
-
-        //public object SyncRoot => throw new NotImplementedException();
 
         public int Rank => this.backingArray.Rank;
 
