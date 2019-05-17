@@ -77,10 +77,25 @@ namespace UnitTestsProject
 
         }
 
+        /// <summary>
+        /// This test is loading to prepared vectors (two boxed getInputVector1() and getInputVector2() or ...)
+        /// and does training in two ways. First, it trains vectors after each other in sequence for number of iterations.
+        /// Second, it trains every vector for number of iterations after each other to ensure, that there is o difference in result.
+        /// Output of this test is ....
+        /// </summary>
         [TestMethod]
         [TestCategory("LongRunning")]
         public void NoiseTest()
         {
+            string TestOutputFolder = nameof(NoiseTest);
+
+            if (Directory.Exists(TestOutputFolder))
+                Directory.Delete(TestOutputFolder, true);
+
+            Directory.CreateDirectory(TestOutputFolder);
+
+            Directory.CreateDirectory($"{TestOutputFolder}");
+
             const int colDimSize = 64;
 
             const int noiseStepPercent = 5;
@@ -169,9 +184,9 @@ namespace UnitTestsProject
                     //Debug.WriteLine($"{i}--{Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
                 //}
                 
-                using (StreamWriter inputHam = new StreamWriter($"Output\\HammingIn_{vectorIndex}.txt", true))
+                using (StreamWriter inputHam = new StreamWriter($"{TestOutputFolder}\\HammingIn_{vectorIndex}.txt", true))
                 {
-                    using (StreamWriter outputHam = new StreamWriter($"Output\\HammingOut_{vectorIndex}.txt", true))
+                    using (StreamWriter outputHam = new StreamWriter($"{TestOutputFolder}\\HammingOut_{vectorIndex}.txt", true))
                     {
                         inputHam.WriteLine("---------------");
                         outputHam.WriteLine("---------------");
