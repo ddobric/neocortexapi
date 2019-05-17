@@ -117,7 +117,7 @@ namespace NeoCortexApi
             sw.Stop();
             c.setPotentialPools(new SparseObjectMatrix<Pool>(c.getMemory().getDimensions(), dict: distMem == null ? null : distMem.PoolDictionary));
 
-            Debug.WriteLine($" Upload time: {sw.ElapsedMilliseconds}");
+            //Debug.WriteLine($" Upload time: {sw.ElapsedMilliseconds}");
 
             c.setConnectedMatrix(new SparseBinaryMatrix(new int[] { numColumns, numInputs }));
 
@@ -203,7 +203,7 @@ namespace NeoCortexApi
             {
                 int i = (int)item.Key;
 
-                Debug.WriteLine(i);
+                //Debug.WriteLine(i);
                 int[] potential = mapPotential(c,i, c.isWrapAround());
                 Column column = c.getColumn(i);
                 // This line initializes all synases in the potential pool of synapses.
