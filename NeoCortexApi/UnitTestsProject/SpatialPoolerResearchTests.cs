@@ -44,7 +44,7 @@ namespace UnitTestsProject
             //intList.Clear();
 
             //List<int> intList = new List<int>();
-            var rnd = new Random();
+            
 
             int[] inputVector = new int[1024];
 
@@ -77,10 +77,25 @@ namespace UnitTestsProject
 
         }
 
+        /// <summary>
+        /// This test is loading to prepared vectors (two boxed getInputVector1() and getInputVector2() or ...)
+        /// and does training in two ways. First, it trains vectors after each other in sequence for number of iterations.
+        /// Second, it trains every vector for number of iterations after each other to ensure, that there is o difference in result.
+        /// Output of this test is ....
+        /// </summary>
         [TestMethod]
         [TestCategory("LongRunning")]
         public void NoiseTest()
         {
+            string TestOutputFolder = nameof(NoiseTest);
+
+            if (Directory.Exists(TestOutputFolder))
+                Directory.Delete(TestOutputFolder, true);
+
+            Directory.CreateDirectory(TestOutputFolder);
+
+            Directory.CreateDirectory($"{TestOutputFolder}");
+
             const int colDimSize = 64;
 
             const int noiseStepPercent = 5;
@@ -169,9 +184,9 @@ namespace UnitTestsProject
                     //Debug.WriteLine($"{i}--{Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
                 //}
                 
-                using (StreamWriter inputHam = new StreamWriter($"Output\\HammingIn_{vectorIndex}.txt", true))
+                using (StreamWriter inputHam = new StreamWriter($"{TestOutputFolder}\\HammingIn_{vectorIndex}.txt", true))
                 {
-                    using (StreamWriter outputHam = new StreamWriter($"Output\\HammingOut_{vectorIndex}.txt", true))
+                    using (StreamWriter outputHam = new StreamWriter($"{TestOutputFolder}\\HammingOut_{vectorIndex}.txt", true))
                     {
                         inputHam.WriteLine("---------------");
                         outputHam.WriteLine("---------------");
@@ -239,6 +254,30 @@ namespace UnitTestsProject
                     }
                 }
                 vectorIndex++;
+            }
+
+            //
+            // Prediction code.
+            // This part of code takes a single sample of every input vector and add
+            // some noise to it. Then it predicts it.
+            // Calculated hamming distance (percent overlap) between predicted output and output 
+            // trained without noise is final result, which should be higher than 95% (realistic guess).
+
+            vectorIndex = 0;
+
+            foreach (var inputVector in inputVectors)
+            {
+                double noise = 7;
+                var noisedInput = ArrayUtils.flipBit(inputVector, noise / 100.00);
+
+                int[] activeArray = new int[64 * 64];
+
+                sp.compute(mem, noisedInput, activeArray, false);
+
+                var dist = MathHelpers.GetHammingDistance(activeArrayWithZeroNoise[vectorIndex], activeArray, true);
+                Debug.WriteLine($"Result for vector {vectorIndex++} with noise {noise} - Ham Dist: {dist}");
+
+                Assert.IsTrue(dist >= 95);
             }
         }
 
@@ -460,7 +499,7 @@ namespace UnitTestsProject
             var mem = new Connections();
             parameters.apply(mem);
             sp.init(mem);
-            int[] inputVector = ArrayUtils.ReadCsvFileTest("Testfiles\\digit8_binary_32bit.txt").ToArray();
+            int[] inputVector = NeoCortexUtils.ReadCsvFileTest("Testfiles\\digit8_binary_32bit.txt").ToArray();
             var inputString = Helpers.StringifyVector(inputVector);
             Debug.WriteLine("Input Array: " + inputString);
             //int[] inputVector = new int[] { 1, 0, 0, 0, 1, 1, 1, 0, 1, 1};
@@ -551,7 +590,7 @@ namespace UnitTestsProject
                                 int[] activeArray = new int[actiColLen];
 
                                 //Read input csv file into array
-                                int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+                                int[] inputVector = NeoCortexUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
                                 sw.Restart();
 
                                 int iterations = 2;
@@ -650,7 +689,7 @@ namespace UnitTestsProject
         internal static Parameters GetDefaultParams()
         {
 
-            Random rnd = new Random(42);
+            ThreadSafeRandom rnd = new ThreadSafeRandom(42);
 
             var parameters = Parameters.getAllDefaultParameters();
             parameters.Set(KEY.POTENTIAL_RADIUS, 10);

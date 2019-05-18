@@ -1,4 +1,6 @@
 ﻿using Akka.Actor;
+using NeoCortexApi.Entities;
+using NeoCortexApi.Utility;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -6,11 +8,13 @@ using System.Text;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
-    
+
 
     public class DictNodeActor : ReceiveActor
     {
         private Dictionary<object, object> dict = new Dictionary<object, object>();
+
+        private ActorConfig config;
 
         protected override void Unhandled(object msg)
         {
@@ -20,6 +24,13 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public DictNodeActor()
         {
+            Receive<CreateDictNodeMsg>(msg =>
+            {
+                this.config = msg.HtmAkkaConfig;
+                Console.WriteLine($"Received message: '{msg.GetType().Name}'");
+                Sender.Tell(-1, Self);
+            });
+
             Receive<AddOrUpdateElementsMsg>(msg =>
             {
                 Console.WriteLine($"Received message: '{msg.GetType().Name}'");
@@ -47,7 +58,7 @@ namespace NeoCortexApi.DistributedComputeLib
                 {
                     this.dict.Add(element.Key, element.Value);
                 }
-                
+
                 Sender.Tell(msg.Elements.Count, Self);
             });
 
@@ -67,16 +78,41 @@ namespace NeoCortexApi.DistributedComputeLib
                 Sender.Tell(msg.Elements.Count, Self);
             });
 
-            Receive<GetElementMsg>(msg =>
+            Receive<GetElementsMsg>(msg =>
             {
                 Console.WriteLine($"Received message: '{msg.GetType().Name}'");
 
                 object element;
 
-                if(dict.TryGetValue(msg.Key, out element))
+                if (msg.Keys == null)
+                    throw new ArgumentException("Key must be specified.");
+                
+                if (dict.TryGetValue(msg.Keys, out element))
                     Sender.Tell(new Result { IsError = false, Value = element }, Self);
                 else
                     Sender.Tell(new Result { IsError = true, Value = null }, Self);
+            });
+
+            Receive<GetElementsMsg>(msg =>
+            {
+                Console.WriteLine($"Received message: '{msg.GetType().Name}'");
+
+                object element;
+
+                if (msg.Keys == null)
+                    throw new ArgumentException("At least one key must be specified.");
+
+                List<KeyPair> result = new List<KeyPair>();
+
+                //
+                // Returns a single value.
+                foreach (var key in msg.Keys)
+                {
+                    if (dict.TryGetValue(msg.Keys, out element))
+                        result.Add(new KeyPair() { Key = key, Value = element });
+                    else
+                        result.Add(new KeyPair() { Key = key, Value = null });
+                }
             });
 
             Receive<ContainsMsg>(msg =>
@@ -100,12 +136,7 @@ namespace NeoCortexApi.DistributedComputeLib
                 Sender.Tell(this.dict.Count, Self);
             });
 
-        
-            Receive<CreateDictNodeMsg>(msg =>
-            {
-                Console.WriteLine($"Received message: '{msg.GetType().Name}'");
-                Sender.Tell(-1, Self);
-            });
+
 
             Receive<Terminated>(msg =>
             {
@@ -126,5 +157,7 @@ namespace NeoCortexApi.DistributedComputeLib
         {
             Console.WriteLine($"{nameof(DictNodeActor)} stoped.");
         }
+
+
     }
 }

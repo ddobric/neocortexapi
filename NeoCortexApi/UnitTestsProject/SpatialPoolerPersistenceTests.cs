@@ -22,7 +22,7 @@ namespace UnitTestsProject
         #region Private Methods
         private static Parameters GetDefaultParams()
         {
-            Random rnd = new Random(42);
+            ThreadSafeRandom rnd = new ThreadSafeRandom(42);
 
             var parameters = Parameters.getAllDefaultParameters();
             parameters.Set(KEY.POTENTIAL_RADIUS, 10);

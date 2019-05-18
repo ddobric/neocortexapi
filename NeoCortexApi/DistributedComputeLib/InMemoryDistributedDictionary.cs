@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using NeoCortexApi.Entities;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
@@ -26,6 +27,18 @@ namespace NeoCortexApi.DistributedComputeLib
             {
                 dictList[i] = new Dictionary<TKey, TValue>();
             }
+        }
+
+
+        public ICollection<KeyPair> GetObjects(TKey[] keys)
+        {
+            List<KeyPair> objects = new List<KeyPair>();
+            foreach (var key in keys)
+            {
+                objects.Add(new KeyPair { Value = this[key], Key = key });
+            }
+
+            return objects;
         }
 
 
@@ -319,7 +332,7 @@ namespace NeoCortexApi.DistributedComputeLib
             this.dictList = null;
         }
 
-     
+   
         #endregion
     }
 }

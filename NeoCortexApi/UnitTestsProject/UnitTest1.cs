@@ -1,5 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortex;
+using NeoCortexApi;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
@@ -42,7 +43,7 @@ namespace UnitTestsProject
         [DataRow(42)]
         public void RandomSeed(int seed)
         {
-            Random x = new Random(seed);
+            ThreadSafeRandom x = new ThreadSafeRandom(seed);
             var res = x.NextDouble();
             Assert.AreEqual(res, 0.668, 0.01);
         }

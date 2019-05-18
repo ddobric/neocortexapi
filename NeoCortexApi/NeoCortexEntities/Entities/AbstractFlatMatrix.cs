@@ -1,28 +1,69 @@
-﻿using NeoCortexApi.DistributedComputeLib;
+﻿
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace NeoCortexApi.Entities
 {
-    /**
- * Base class for flat {@link Matrix} implementations.
- * 
- * @author David Ray
- * @author Jose Luis Martin
- * 
- * @param <T> element type
- */
 
-    //[Serializable]
-    public abstract class AbstractFlatMatrix<T> : IFlatMatrix<T>
+    /// <summary>
+    /// Provides common generic independent calculation functions.
+    /// </summary>
+    public class AbstractFlatMatrix
+    {
+
+        /// <summary>
+        /// Reverses the array.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static int[] reverse(int[] input)
+        {
+            int[] retVal = new int[input.Length];
+            for (int i = input.Length - 1, j = 0; i >= 0; i--, j++)
+            {
+                retVal[j] = input[i];
+            }
+            return retVal;
+        }
+
+        /// <summary>
+        /// Computes multidimensional coordinats from flat index.
+        /// </summary>
+        /// <param name="numDims"></param>
+        /// <param name="dimensionMultiples"></param>
+        /// <param name="isColumnMajor"></param>
+        /// <param name="synapseFlatIndex">Flat intdex of the synapse.</param>
+        /// <returns></returns>
+        public static int[] ComputeCoordinates(int numDims, int[] dimensionMultiples, bool isColumnMajor, int synapseFlatIndex)
+        {
+            int[] returnVal = new int[numDims];
+            int @base = synapseFlatIndex;
+            for (int i = 0; i < dimensionMultiples.Length; i++)
+            {
+                int quotient = @base / dimensionMultiples[i];
+                @base %= dimensionMultiples[i];
+                returnVal[i] = quotient;
+            }
+            return isColumnMajor ? reverse(returnVal) : returnVal;
+        }
+    }
+
+
+    /// <summary>
+    /// Imlements flat calculations on matrix.
+    /// Originally authored by: David Ray and  Jose Luis Martin.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public abstract class AbstractFlatMatrix<T> : AbstractFlatMatrix, IFlatMatrix<T>
     {
 
         private static long serialVersionUID = 1L;
 
         protected int[] dimensions;
         protected int[] dimensionMultiples;
-        protected bool isColumnMajor;
+        public bool IsColumnMajorOrdering;
         protected int numDimensions;
 
         /**
@@ -49,9 +90,9 @@ namespace NeoCortexApi.Entities
         {
             this.dimensions = dimensions;
             this.numDimensions = dimensions.Length;
-            this.dimensionMultiples = initDimensionMultiples(
+            this.dimensionMultiples = InitDimensionMultiples(
                     useColumnMajorOrdering ? reverse(dimensions) : dimensions);
-            isColumnMajor = useColumnMajorOrdering;
+            IsColumnMajorOrdering = useColumnMajorOrdering;
         }
 
         /**
@@ -76,7 +117,7 @@ namespace NeoCortexApi.Entities
         {
             if (doCheck) checkDims(coordinates);
 
-            int[] localMults = isColumnMajor ? reverse(dimensionMultiples) : dimensionMultiples;
+            int[] localMults = IsColumnMajorOrdering ? reverse(dimensionMultiples) : dimensionMultiples;
             int @base = 0;
             for (int i = 0; i < coordinates.Length; i++)
             {
@@ -118,16 +159,10 @@ namespace NeoCortexApi.Entities
         //@Override
         public int[] computeCoordinates(int index)
         {
-            int[] returnVal = new int[getNumDimensions()];
-            int @base = index;
-            for (int i = 0; i < dimensionMultiples.Length; i++)
-            {
-                int quotient = @base / dimensionMultiples[i];
-                @base %= dimensionMultiples[i];
-                returnVal[i] = quotient;
-            }
-            return isColumnMajor ? reverse(returnVal) : returnVal;
+            return ComputeCoordinates(getNumDimensions(), dimensionMultiples, IsColumnMajorOrdering, index);            
         }
+
+
 
         /**
          * Initializes internal helper array which is used for multidimensional
@@ -135,11 +170,11 @@ namespace NeoCortexApi.Entities
          * @param dimensions matrix dimensions
          * @return array for use in coordinates to flat index computation.
          */
-        protected int[] initDimensionMultiples(int[] dimensions)
+        public static int[] InitDimensionMultiples(int[] dimensions)
         {
             int holder = 1;
             int len = dimensions.Length;
-            int[] dimensionMultiples = new int[getNumDimensions()];
+            int[] dimensionMultiples = new int[dimensions.Length];
             for (int i = 0; i < len; i++)
             {
                 holder *= (i == 0 ? 1 : dimensions[len - i]);
@@ -162,20 +197,6 @@ namespace NeoCortexApi.Entities
             return retVal;
         }
 
-        /**
-         * Reverses the specified array.
-         * @param input
-         * @return
-         */
-        public static int[] reverse(int[] input)
-        {
-            int[] retVal = new int[input.Length];
-            for (int i = input.Length - 1, j = 0; i >= 0; i--, j++)
-            {
-                retVal[j] = input[i];
-            }
-            return retVal;
-        }
 
         /**
          * Prints the specified array to a returned String.
@@ -298,7 +319,7 @@ namespace NeoCortexApi.Entities
             int result = 1;
             result = prime * result + dimensionMultiples.GetHashCode();
             result = prime * result + dimensions.GetHashCode();
-            result = prime * result + (isColumnMajor ? 1231 : 1237);
+            result = prime * result + (IsColumnMajorOrdering ? 1231 : 1237);
             result = prime * result + numDimensions;
             return result;
         }
@@ -323,7 +344,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (!Array.Equals(dimensions, other.dimensions))
                 return false;
-            if (isColumnMajor != other.isColumnMajor)
+            if (IsColumnMajorOrdering != other.IsColumnMajorOrdering)
                 return false;
             if (numDimensions != other.numDimensions)
                 return false;

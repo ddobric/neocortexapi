@@ -1,20 +1,17 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
-using NeoCortexApi.Encoders;
-using NeoCortexApi.Network;
-using NeoCortexApi.Sensors;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using NeoCortexApi.DistributedComputeLib;
 using System.Threading;
-using NeoCortexApi.DistributedCompute;
 using NeoCortexApi.Entities;
 using System.IO;
 using NeoCortexApi.Utility;
 using NeoCortex;
 using System.Drawing;
+using NeoCortexApi.DistributedCompute;
+using System.Linq;
 
 #if USE_AKKA
 namespace UnitTestsProject
@@ -37,6 +34,10 @@ namespace UnitTestsProject
         /// <param name="elements"></param>
         /// <param name="placingElement"></param>
         [TestMethod]
+        [DataRow(2, 6, 3, 1)]
+        [DataRow(2, 6, 5, 1)]
+        [DataRow(2, 6, 6, 2)]
+
         [DataRow(2, 7, 3, 0)]
         [DataRow(2, 7, 0, 0)]
         [DataRow(2, 7, 1, 0)]
@@ -52,11 +53,55 @@ namespace UnitTestsProject
 
         public void UniformPartitioningTest(int nodes, int elements, int placingElement, int expectedNode)
         {
-            var targetNode = HtmSparseIntDictionary<Column>.GetPlacementNodeForKey(nodes, elements, placingElement);
+            var targetNode = HtmSparseIntDictionary<Column>.GetPlacementSlotForElement(nodes, elements, placingElement);
 
             Assert.IsTrue(targetNode == expectedNode);
         }
 
+
+        /// <summary>
+        /// Generates the map of partitions and key placements.
+        /// </summary>
+        /// <param name="nodes"></param>
+        /// <param name="partitionsPerNode"></param>
+        /// <param name="elements"></param>
+        /// <param name="placingElement"></param>
+        /// <param name="expectedNode"></param>
+        /// <param name="expectedPartition"></param>
+        [TestMethod]
+        [DataRow(new string[] { "url1", "url2", "url3" }, 5, 17, 0, 0)]
+        [DataRow(new string[] { "url1", "url2", "url3" }, 5, 31, 0, 0)]
+        [DataRow(new string[] { "url1" }, 10, 4096, 0, 0)]
+        public void PartitionMapTest(string[] nodes, int partitionsPerNode, int elements, int expectedNode, int expectedPartition)
+        {
+            var nodeList = new List<string>();
+            nodeList.AddRange(nodes);
+            var map = HtmSparseIntDictionary<Column>.CreatePartitionMap(nodeList, elements, partitionsPerNode);
+                       
+            Assert.IsTrue(map.Count == nodes.Length * partitionsPerNode);
+            Assert.IsTrue((map[7].MinKey == 14 && map[7].MaxKey == 15) 
+                || (map[7].MinKey == 21 && map[7].MaxKey == 23)
+                || (map[9].MinKey == 3690 && map[9].MaxKey == 4099));
+        }
+
+
+        [TestMethod]
+        [DataRow(new string[] { "url1", "url2", "url3" }, 3, 17, 15, 2, 7)]
+        [DataRow(new string[] { "url1", "url2", "url3" }, 5, 17, 0, 0, 0)]
+        [DataRow(new string[] { "url1", "url2", "url3" }, 5, 17, 17, 1, 8)]
+        [DataRow(new string[] { "url1", "url2", "url3" }, 5, 33, 22, 1, 7)]
+        [DataRow(new string[] { "url1", "url2", "url3" }, 5, 31, 22, 1, 7)]
+        public void PartitionLookupTest(string[] nodes, int partitionsPerNode, int elements, int key, int expectedNode, int expectedPartition)
+        {
+            var nodeList = new List<string>();
+            nodeList.AddRange(nodes);
+            var map = HtmSparseIntDictionary<Column>.CreatePartitionMap(nodeList, elements, partitionsPerNode);
+
+            var part = HtmSparseIntDictionary<Column>.GetPlacementSlotForElement(map, key) ;
+
+            Assert.IsTrue(part.NodeIndx == expectedNode && part.PartitionIndx == expectedPartition);
+
+        }
 
         /// <summary>
         /// Writes and reads coulmns to distributed dictionary.
@@ -69,7 +114,11 @@ namespace UnitTestsProject
 
             var akkaDict = new HtmSparseIntDictionary<Column>(new HtmSparseIntDictionaryConfig()
             {
-                NumColumns = 20148,
+                HtmActorConfig = new ActorConfig()
+                {
+                    ColumnDimensions = new int[] { 100, 200 }
+                },
+
                 Nodes = Helpers.Nodes,
             });
 
@@ -93,52 +142,65 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("AkkaHostRequired")]
-        [TestCategory("LongRunning")]      
+        [TestCategory("LongRunning")]
         public void InitDistributedTest()
         {
             Thread.Sleep(5000);
 
-            int inputBits = 1024;
-            int numOfColumns = 4096;
+            for (int test = 0; test < 15; test++)
+            {
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
 
-            Random rnd = new Random(42);
+                int inputBits = 1024;
+                int numOfColumns = 4096;
 
-            var parameters = Parameters.getAllDefaultParameters();
-            parameters.Set(KEY.POTENTIAL_RADIUS, inputBits);
-            parameters.Set(KEY.POTENTIAL_PCT, 1.0);
-            parameters.Set(KEY.GLOBAL_INHIBITION, true);
+                ThreadSafeRandom rnd = new ThreadSafeRandom(42);
 
-            parameters.Set(KEY.RANDOM, rnd);
+                var parameters = Parameters.getAllDefaultParameters();
+                parameters.Set(KEY.POTENTIAL_RADIUS, inputBits);
+                parameters.Set(KEY.POTENTIAL_PCT, 1.0);
+                parameters.Set(KEY.GLOBAL_INHIBITION, true);
 
-            parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.02 * numOfColumns);
-            parameters.Set(KEY.LOCAL_AREA_DENSITY, -1);
+                parameters.Set(KEY.RANDOM, rnd);
 
-            parameters.Set(KEY.POTENTIAL_RADIUS, inputBits);
-            parameters.Set(KEY.POTENTIAL_PCT, 1.0);
+                parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.02 * numOfColumns);
+                parameters.Set(KEY.LOCAL_AREA_DENSITY, -1);
 
-            parameters.Set(KEY.STIMULUS_THRESHOLD, 50.0);       //***
-            parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.008);   //***
-            parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0.05);      //***
+                parameters.Set(KEY.POTENTIAL_RADIUS, inputBits);
+                parameters.Set(KEY.POTENTIAL_PCT, 1.0);
 
-            parameters.Set(KEY.INHIBITION_RADIUS, (int)0.025 * inputBits);
+                parameters.Set(KEY.STIMULUS_THRESHOLD, 50.0);       //***
+                parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.008);   //***
+                parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0.05);      //***
 
-            parameters.Set(KEY.SYN_PERM_CONNECTED, 0.2);
+                parameters.Set(KEY.INHIBITION_RADIUS, (int)0.025 * inputBits);
 
-            parameters.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.001);
-            parameters.Set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.001);
-            parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000);
-            parameters.Set(KEY.MAX_BOOST, 100);
-            parameters.Set(KEY.WRAP_AROUND, true);
-            parameters.Set(KEY.SEED, 1956);
-            parameters.setInputDimensions(new int[] { (int)Math.Sqrt(inputBits), (int)Math.Sqrt(inputBits) });
-            parameters.setColumnDimensions(new int[] { (int)Math.Sqrt(numOfColumns), (int)Math.Sqrt(numOfColumns) });
+                parameters.Set(KEY.SYN_PERM_CONNECTED, 0.2);
 
-            var sp = new SpatialPooler();
-            var mem = new Connections();
+                parameters.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.001);
+                parameters.Set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.001);
+                parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000);
+                parameters.Set(KEY.MAX_BOOST, 100);
+                parameters.Set(KEY.WRAP_AROUND, true);
+                parameters.Set(KEY.SEED, 1956);
 
-            parameters.apply(mem);
-          
-            sp.init(mem, UnitTestHelpers.GetMemory(numOfColumns));
+                int[] inputDims = new int[] { (int)Math.Sqrt(inputBits), (int)Math.Sqrt(inputBits) };
+                parameters.setInputDimensions(inputDims);
+
+                int[] colDims = new int[] { (int)Math.Sqrt(numOfColumns), (int)Math.Sqrt(numOfColumns) };
+                parameters.setColumnDimensions(colDims);
+
+                var sp = new SpatialPoolerParallel();
+                var mem = new Connections();
+
+                parameters.apply(mem);
+
+                sp.init(mem, UnitTestHelpers.GetMemory(parameters));
+
+                sw.Stop();
+                Console.Write($"{(float)sw.ElapsedMilliseconds / (float)1000} | ");
+            }
         }
 
         /// <summary>
@@ -170,12 +232,12 @@ namespace UnitTestsProject
             int counter = 0;
             var numOfActCols = columnTopology * columnTopology;
 
-            Random rnd = new Random(42);
+            ThreadSafeRandom rnd = new ThreadSafeRandom(42);
 
             var parameters = Parameters.getAllDefaultParameters();
-            parameters.Set(KEY.POTENTIAL_RADIUS, imageSize*imageSize);
+            parameters.Set(KEY.POTENTIAL_RADIUS, imageSize * imageSize);
             parameters.Set(KEY.POTENTIAL_PCT, 1.0);
-            parameters.Set(KEY.GLOBAL_INHIBITION, true);          
+            parameters.Set(KEY.GLOBAL_INHIBITION, true);
 
             parameters.Set(KEY.RANDOM, rnd);
 
@@ -211,7 +273,7 @@ namespace UnitTestsProject
 
             parameters.apply(mem);
 
-            sp.init(mem, UnitTestHelpers.GetMemory(columnTopology * columnTopology) );
+            sp.init(mem, UnitTestHelpers.GetMemory(parameters));
 
             int actiColLen = numOfActCols;
 
@@ -240,7 +302,7 @@ namespace UnitTestsProject
                         string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imageSize, testName);
 
                         //Read input csv file into array
-                        int[] inputVector = ArrayUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+                        int[] inputVector = NeoCortexUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
 
                         int numIterationsPerImage = 5;
                         int[] oldArray = new int[activeArray.Length];
@@ -281,7 +343,7 @@ namespace UnitTestsProject
             }
         }
 
-  
+
         /// <summary>
         /// Ensures that pool instance inside of Column.DentrideSegment.Synapses[n].Pool is correctlly serialized.
         /// </summary>
@@ -295,7 +357,7 @@ namespace UnitTestsProject
 
             Synapse syn = new Synapse(null, null, 0, 0);
 
-            var dict = UnitTestHelpers.GetMemory(1);
+            var dict = UnitTestHelpers.GetMemory();
 
             Column col = new Column(10, 0, 0.01, 10);
             col.ProximalDendrite = new ProximalDendrite(0, 0.01, 10);
@@ -324,6 +386,51 @@ namespace UnitTestsProject
                 }
             }
         }
+
+        ///// <summary>
+        ///// Ensures that all keys (items in the list) are grouped in pages inside of a single partition.
+        ///// </summary>
+        //[TestMethod()]
+        //public void TestPagedPartitioning()
+        //{
+        //    Dictionary<int, List<int>> partitions = new Dictionary<int, List<int>>();
+        //    partitions.Add(0, new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+        //    partitions.Add(1, new List<int>() { 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 });
+        //    partitions.Add(2, new List<int>() { 21, 22, 23, 24, 25, 26, 27, 28, 29, 30 });
+
+        //    var res = SpatialPoolerParallel.SplitPartitionsToPages(3, partitions);
+
+        //    Assert.IsTrue(res.Count == 12);
+        //    Assert.IsTrue(res[0].First().Value.Count == 3);
+        //    Assert.IsTrue(res[1].First().Value.Count == 3);
+        //    Assert.IsTrue(res[2].First().Value.Count == 3);
+        //    Assert.IsTrue(res[3].First().Value.Count == 1);
+
+        //    Assert.IsTrue(res[4].First().Value.Count == 3);
+        //    Assert.IsTrue(res[5].First().Value.Count == 3);
+        //    Assert.IsTrue(res[6].First().Value.Count == 3);
+        //    Assert.IsTrue(res[7].First().Value.Count == 1);
+
+        //    Assert.IsTrue(res[8].First().Value.Count == 3);
+        //    Assert.IsTrue(res[9].First().Value.Count == 3);
+        //    Assert.IsTrue(res[10].First().Value.Count == 3);
+        //    Assert.IsTrue(res[11].First().Value.Count == 1);
+
+        //    res = SpatialPoolerParallel.SplitPartitionsToPages(4, partitions);
+
+        //    Assert.IsTrue(res.Count == 9);
+        //    Assert.IsTrue(res[0].First().Value.Count == 4);
+        //    Assert.IsTrue(res[1].First().Value.Count == 4);
+        //    Assert.IsTrue(res[2].First().Value.Count == 2);
+
+        //    Assert.IsTrue(res[3].First().Value.Count == 4);
+        //    Assert.IsTrue(res[4].First().Value.Count == 4);
+        //    Assert.IsTrue(res[5].First().Value.Count == 2);
+
+        //    Assert.IsTrue(res[6].First().Value.Count == 4);
+        //    Assert.IsTrue(res[7].First().Value.Count == 4);
+        //    Assert.IsTrue(res[8].First().Value.Count == 2);
+        //}
     }
 }
 #endif

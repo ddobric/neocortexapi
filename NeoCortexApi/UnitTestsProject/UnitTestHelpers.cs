@@ -11,16 +11,23 @@ namespace UnitTestsProject
 {
     public class UnitTestHelpers
     {
-        public static DistributedMemory GetMemory(int numOfColumns)
+        public static DistributedMemory GetMemory(Parameters htmParams = null)
         {
-            //return GetInMemoryDictionary();
-            return GetDistributedDictionary(numOfColumns);
+            if(htmParams == null)
+                return GetInMemoryDictionary();
+            else
+                return GetDistributedDictionary(htmParams);
         }
 
-        public static DistributedMemory GetDistributedDictionary(int numOfColumns)
+        public static DistributedMemory GetDistributedDictionary(Parameters htmParams)
         {
             var cfg = Helpers.DefaultHtmSparseIntDictionaryConfig;
-            cfg.NumColumns = numOfColumns;
+            cfg.HtmActorConfig = new ActorConfig()
+            {
+                ColumnDimensions = (int[])htmParams[KEY.COLUMN_DIMENSIONS],
+                InputDimensions = (int[])htmParams[KEY.INPUT_DIMENSIONS],
+            };
+       
 
             return new DistributedMemory()
             {                
@@ -36,6 +43,25 @@ namespace UnitTestsProject
                 ColumnDictionary = new InMemoryDistributedDictionary<int, NeoCortexApi.Entities.Column>(1),
                 PoolDictionary = new InMemoryDistributedDictionary<int, NeoCortexApi.Entities.Pool>(1),
             };
+        }
+
+
+        /// <summary>
+        /// Creates apprpriate instance of SpatialPooler.
+        /// </summary>
+        /// <param name="poolerImplementation"></param>
+        /// <returns></returns>
+        internal static SpatialPooler CreatePooler(int poolerImplementation)
+        {
+            SpatialPooler sp;
+            if (poolerImplementation == 0)
+                sp = new SpatialPooler();
+            else if (poolerImplementation == 1)
+                sp = new SpatialPoolerMT();
+            else
+                throw new NotImplementedException();
+
+            return sp;
         }
     }
 }
