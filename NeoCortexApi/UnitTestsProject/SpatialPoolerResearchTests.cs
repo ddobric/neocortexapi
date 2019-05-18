@@ -233,7 +233,7 @@ namespace UnitTestsProject
                             //arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray<int>(noisedInput, 32, 32)));
                             //arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray<int>(activeArray, 64, 64)));
 
-                            //   NeoCortexUtils.DrawHeatmaps(bostArrays, $"{outputImage}_boost.png", 1024, 1024, 150, 50, 5);
+                            //NeoCortexUtils.DrawHeatmaps(bostArrays, $"{outputImage}_boost.png", 1024, 1024, 150, 50, 5);
                             //NeoCortexUtils.DrawBitmaps(arrays, $"Vector_{vectorIndex}_Noise_{j * 10}.png", Color.Yellow, Color.Gray, OutImgSize, OutImgSize);
                         }
                     }
@@ -242,6 +242,26 @@ namespace UnitTestsProject
             }
         }
 
+        [TestMethod]
+        public void createVector()
+        {
+            List<int[]> inputVectors = new List<int[]>();
+            //int[] inputVec1 = ArrayUtils.ReadCsvFileTest("Output\\BinaryImages\\digit7.txt").ToArray();
+            int[] inputVec1 = getInputVector1();
+            //int[] inputVec2 = getInputVector2();
+            inputVectors.Add(inputVec1);
+            //inputVectors.Add(inputVec2);
+            int count = 0;
+            foreach (var vec in inputVectors)
+            {
+                count++;
+                List<int[,]> arrays = new List<int[,]>();
+                arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray<int>(vec, 28, 28)));
+                var str = Helpers.StringifyVector(vec);
+                Debug.WriteLine(str);
+                NeoCortexUtils.DrawBitmaps(arrays,$"Output\\{count}.png", Color.Yellow, Color.Gray, OutImgSize, OutImgSize);
+            }
+        }
         private static int[] getInputVector1()
         {
             int[] inputVector = new int[1024];
