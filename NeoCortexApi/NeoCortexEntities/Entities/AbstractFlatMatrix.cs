@@ -18,7 +18,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public static int[] reverse(int[] input)
+        public static int[] Reverse(int[] input)
         {
             int[] retVal = new int[input.Length];
             for (int i = input.Length - 1, j = 0; i >= 0; i--, j++)
@@ -46,7 +46,70 @@ namespace NeoCortexApi.Entities
                 @base %= dimensionMultiples[i];
                 returnVal[i] = quotient;
             }
-            return isColumnMajor ? reverse(returnVal) : returnVal;
+            return isColumnMajor ? Reverse(returnVal) : returnVal;
+        }
+
+        public static int ComputeIndex(int[] coordinates, int[] dimensions, int numDimensions, int[] dimensionMultiples, bool isColumnMajor, bool doCheck)
+        {
+            if (doCheck) CheckDims(dimensions, numDimensions, coordinates);
+
+            int[] localMults = isColumnMajor ? Reverse(dimensionMultiples) : dimensionMultiples;
+            int @base = 0;
+            for (int i = 0; i < coordinates.Length; i++)
+            {
+                @base += (localMults[i] * coordinates[i]);
+            }
+            return @base;
+        }
+
+
+        /**
+        * Checks the indexes specified to see whether they are within the
+        * configured bounds and size parameters of this array configuration.
+        * 
+        * @param index the array dimensions to check
+        */
+        public static void CheckDims(int[] dimensions, int numDimensions, int[] coordinates)
+        {
+            if (coordinates.Length != numDimensions)
+            {
+                throw new ArgumentException("Specified coordinates exceed the configured array dimensions " +
+                        "input dimensions: " + coordinates.Length + " > number of configured dimensions: " + numDimensions);
+            }
+            for (int i = 0; i < coordinates.Length - 1; i++)
+            {
+                if (coordinates[i] >= dimensions[i])
+                {
+                    throw new ArgumentException("Specified coordinates exceed the configured array dimensions " +
+                            ArrayToString(coordinates) + " > " + ArrayToString(dimensions));
+                }
+            }
+        }
+
+        /**
+        * Prints the specified array to a returned String.
+        * 
+        * @param aObject   the array object to print.
+        * @return  the array in string form suitable for display.
+        */
+        public static String ArrayToString(int[] arr)
+        {
+            string res = String.Join(",", arr);
+            return res;
+            //if (aObject is Array)
+            //{
+            //    if (!typeof(T).IsValueType) // can we cast to Object[]
+            //        return aObject.ToString();
+            //    else
+            //    {  // we can't cast to Object[] - case of primitive arrays
+            //        int length = ((Array)aObject).Length;
+            //        Object[] objArr = new Object[length];
+            //        for (int i = 0; i < length; i++)
+            //            objArr[i] = ((Array)aObject).GetValue(i);
+            //        return objArr.ToString();
+            //    }
+            //}
+            //return "[]";
         }
 
         /**
@@ -82,7 +145,8 @@ namespace NeoCortexApi.Entities
 
         protected int[] dimensions;
         protected int[] dimensionMultiples;
-        public bool IsColumnMajorOrdering;
+        public bool IsColumnMajorOrdering { get; set; }
+
         protected int numDimensions;
 
         /**
@@ -110,7 +174,7 @@ namespace NeoCortexApi.Entities
             this.dimensions = dimensions;
             this.numDimensions = dimensions.Length;
             this.dimensionMultiples = InitDimensionMultiples(
-                    useColumnMajorOrdering ? reverse(dimensions) : dimensions);
+                    useColumnMajorOrdering ? Reverse(dimensions) : dimensions);
             IsColumnMajorOrdering = useColumnMajorOrdering;
         }
 
@@ -134,9 +198,9 @@ namespace NeoCortexApi.Entities
          */
         public int computeIndex(int[] coordinates, bool doCheck)
         {
-            if (doCheck) checkDims(coordinates);
+            if (doCheck) CheckDims(getDimensions(), getNumDimensions(), coordinates);
 
-            int[] localMults = IsColumnMajorOrdering ? reverse(dimensionMultiples) : dimensionMultiples;
+            int[] localMults = IsColumnMajorOrdering ? Reverse(dimensionMultiples) : dimensionMultiples;
             int @base = 0;
             for (int i = 0; i < coordinates.Length; i++)
             {
@@ -145,28 +209,7 @@ namespace NeoCortexApi.Entities
             return @base;
         }
 
-        /**
-         * Checks the indexes specified to see whether they are within the
-         * configured bounds and size parameters of this array configuration.
-         * 
-         * @param index the array dimensions to check
-         */
-        protected void checkDims(int[] index)
-        {
-            if (index.Length != numDimensions)
-            {
-                throw new ArgumentException("Specified coordinates exceed the configured array dimensions " +
-                        "input dimensions: " + index.Length + " > number of configured dimensions: " + numDimensions);
-            }
-            for (int i = 0; i < index.Length - 1; i++)
-            {
-                if (index[i] >= dimensions[i])
-                {
-                    throw new ArgumentException("Specified coordinates exceed the configured array dimensions " +
-                            print1DArray(index) + " > " + print1DArray(dimensions));
-                }
-            }
-        }
+       
 
         /**
          * Returns an array of coordinates calculated from
@@ -200,29 +243,7 @@ namespace NeoCortexApi.Entities
         }
 
 
-        /**
-         * Prints the specified array to a returned String.
-         * 
-         * @param aObject   the array object to print.
-         * @return  the array in string form suitable for display.
-         */
-        public static String print1DArray(Object aObject)
-        {
-            if (aObject is Array)
-            {
-                if (!typeof(T).IsValueType) // can we cast to Object[]
-                    return aObject.ToString();
-                else
-                {  // we can't cast to Object[] - case of primitive arrays
-                    int length = ((Array)aObject).Length;
-                    Object[] objArr = new Object[length];
-                    for (int i = 0; i < length; i++)
-                        objArr[i] = ((Array)aObject).GetValue(i);
-                    return objArr.ToString();
-                }
-            }
-            return "[]";
-        }
+       
 
         public abstract T get(int index);
 

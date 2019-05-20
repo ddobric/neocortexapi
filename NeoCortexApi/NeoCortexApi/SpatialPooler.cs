@@ -1110,8 +1110,13 @@ namespace NeoCortexApi
             // Makes sure that inputCoords are in range [0, inpDims]
             int[] inputCoordInts = ArrayUtils.clip(ArrayUtils.toIntArray(inputCoords), c.getInputDimensions(), -1);
 
-            return c.getInputMatrix().computeIndex(inputCoordInts);
+            var inpMem = c.getInputMatrix();
+
+            return AbstractFlatMatrix.ComputeIndex(inputCoordInts, inpMem.getDimensions(), inpMem.getNumDimensions(),
+                 inpMem.getDimensionMultiples(), inpMem.IsColumnMajorOrdering, true);
+            
         }
+
 
         /**
          * Maps a column to its input bits. This method encapsulates the topology of

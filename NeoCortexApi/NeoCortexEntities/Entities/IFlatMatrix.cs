@@ -18,8 +18,9 @@ namespace NeoCortexApi.Entities
  * @param <T>
  */
 
-    
-    public interface IFlatMatrix<T> : IMatrix<T> {
+
+    public interface IFlatMatrix<T> : IMatrix<T>
+    {
 
         T get(int index);
 
@@ -49,6 +50,8 @@ namespace NeoCortexApi.Entities
          */
         //int[] computeCoordinates(int index);
 
+        bool IsColumnMajorOrdering {get;set;}
+
         int[] getDimensionMultiples();
-        }
     }
+}
