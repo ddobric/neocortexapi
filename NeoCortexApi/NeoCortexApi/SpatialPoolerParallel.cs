@@ -81,6 +81,115 @@ namespace NeoCortexApi
         }
 
         /// <summary>
+        /// Implements muticore initialization of pooler.
+        /// </summary>
+        /// <param name="c"></param>
+        protected override void ConnectAndConfigureInputs(Connections c)
+        {
+            List<KeyPair> colList = new List<KeyPair>();
+
+            ConcurrentDictionary<int, KeyPair> colList2 = new ConcurrentDictionary<int, KeyPair>();
+
+            int numColumns = c.NumColumns;
+
+            // Parallel implementation of initialization
+            ParallelOptions opts = new ParallelOptions();
+            //int synapseCounter = 0;
+
+            Parallel.For(0, numColumns, opts, (indx) =>
+            {
+                int i = (int)indx;
+                var data = new ProcessingDataParallel();
+
+                // Gets RF
+                data.Potential = mapPotential(c, i, c.isWrapAround());
+                data.Column = c.getColumn(i);
+
+                // This line initializes all synases in the potential pool of synapses.
+                // It creates the pool on proximal dendrite segment of the column.
+                // After initialization permancences are set to zero.
+                connectColumnToInputRF(c, data.Potential, data.Column);
+
+                //Interlocked.Add(ref synapseCounter, data.Column.ProximalDendrite.Synapses.Count);
+
+                //colList.Add(new KeyPair() { Key = i, Value = column });
+
+                data.Perm = initSynapsePermanencesForColumn(c, data.Potential, data.Column);
+
+                data.AvgConnected = GetAvgSpanOfConnectedSynapses(c, i);
+
+                updatePermanencesForColumn(c, data.Perm, data.Column, data.Potential, true);
+
+                if (!colList2.TryAdd(i, new KeyPair() { Key = i, Value = data }))
+                {
+
+                }
+            });
+
+            //c.setProximalSynapseCount(synapseCounter);
+
+            List<double> avgSynapsesConnected = new List<double>();
+
+            foreach (var item in colList2.Values)
+            //for (int i = 0; i < numColumns; i++)
+            {
+                int i = (int)item.Key;
+
+                ProcessingDataParallel data = (ProcessingDataParallel)item.Value;
+                //ProcessingData data = new ProcessingData();
+
+                // Debug.WriteLine(i);
+                //data.Potential = mapPotential(c, i, c.isWrapAround());
+
+                //var st = string.Join(",", data.Potential);
+                //Debug.WriteLine($"{i} - [{st}]");
+
+                //var counts = c.getConnectedCounts();
+
+                //for (int h = 0; h < counts.getDimensions()[0]; h++)
+                //{
+                //    // Gets the synapse mapping between column-i with input vector.
+                //    int[] slice = (int[])counts.getSlice(h);
+                //    Debug.Write($"{slice.Count(y => y == 1)} - ");
+                //}
+                //Debug.WriteLine(" --- ");
+                // Console.WriteLine($"{i} - [{String.Join(",", ((ProcessingData)item.Value).Potential)}]");
+
+                // This line initializes all synases in the potential pool of synapses.
+                // It creates the pool on proximal dendrite segment of the column.
+                // After initialization permancences are set to zero.
+                //var potPool = data.Column.createPotentialPool(c, data.Potential);
+                //connectColumnToInputRF(c, data.Potential, data.Column);
+
+                //data.Perm = initPermanence(c.getSynPermConnected(), c.getSynPermMax(),
+                //      c.getRandom(), c.getSynPermTrimThreshold(), c, data.Potential, data.Column, c.getInitConnectedPct());
+
+                //updatePermanencesForColumn(c, data.Perm, data.Column, data.Potential, true);
+
+                avgSynapsesConnected.Add(data.AvgConnected);
+
+                colList.Add(new KeyPair() { Key = i, Value = data.Column });
+            }
+
+            SparseObjectMatrix<Column> mem = (SparseObjectMatrix<Column>)c.getMemory();
+
+            if (mem.IsRemotelyDistributed)
+            {
+                // Pool is created and attached to the local instance of Column.
+                // Here we need to update the pool on remote Column instance.
+                mem.set(colList);
+            }
+
+            // The inhibition radius determines the size of a column's local
+            // neighborhood.  A cortical column must overcome the overlap score of
+            // columns in its neighborhood in order to become active. This radius is
+            // updated every learning round. It grows and shrinks with the average
+            // number of connected synapses per column.
+            updateInhibitionRadius(c, avgSynapsesConnected);
+        }
+
+        /*
+        /// <summary>
         /// Implements single threaded (originally based on JAVA implementation) initialization of SP.
         /// </summary>
         /// <param name="c"></param>
@@ -103,51 +212,53 @@ namespace NeoCortexApi
             //int synapseCounter = 0;
 
             SparseObjectMatrix<Column> mem = (SparseObjectMatrix<Column>)c.getMemory();
-
+            
             if (mem.IsRemotelyDistributed == false)
                 throw new ArgumentException("Column memory matrix 'SparseObjectMatrix<Column>' must be remotely distributed.");
 
             var partitions = mem.GetPartitions();
-
-
+            
             Parallel.ForEach(partitions, opts, (keyValPair) =>
             {
-                //int i = keyValPair.Key;
+                //// We get here keys grouped to actors, which host partitions.
+                //var partitions = mem.GetPartitionsForKeyset(keyValuePairs);
 
-                //mem.GetObjects(keyValPair.ToArray());
+                ////int i = keyValPair.Key;
 
-                var data = new ProcessingData();
+                ////mem.GetObjects(keyValPair.ToArray());
 
-                /*
-                // Gets RF
-                data.Potential = mapPotential(c, i, c.isWrapAround());
+                //var data = new ProcessingData();
 
-                mem.GetObjects(keyValPair.Value.ToArray());
+               
+                //// Gets RF
+                //data.Potential = mapPotential(c, i, c.isWrapAround());
 
-                data.Column = c.getColumn(i);
+                //mem.GetObjects(keyValPair.Value.ToArray());
 
-                Parallel.ForEach(pages, opts, (keyValPair) =>
-                {
+                //data.Column = c.getColumn(i);
+
+                //Parallel.ForEach(pages, opts, (keyValPair) =>
+                //{
 
                 
-                    // This line initializes all synases in the potential pool of synapses.
-                    // It creates the pool on proximal dendrite segment of the column.
-                    // After initialization permancences are set to zero.
-                    connectColumnToInputRF(c, data.Potential, data.Column);
+                //    // This line initializes all synases in the potential pool of synapses.
+                //    // It creates the pool on proximal dendrite segment of the column.
+                //    // After initialization permancences are set to zero.
+                //    connectColumnToInputRF(c, data.Potential, data.Column);
 
-                //Interlocked.Add(ref synapseCounter, data.Column.ProximalDendrite.Synapses.Count);
+                ////Interlocked.Add(ref synapseCounter, data.Column.ProximalDendrite.Synapses.Count);
 
-                //colList.Add(new KeyPair() { Key = i, Value = column });
+                ////colList.Add(new KeyPair() { Key = i, Value = column });
 
-                data.Perm = initSynapsePermanencesForColumn(c, data.Potential, data.Column);
+                //data.Perm = initSynapsePermanencesForColumn(c, data.Potential, data.Column);
 
-                updatePermanencesForColumn(c, data.Perm, data.Column, data.Potential, true);
+                //updatePermanencesForColumn(c, data.Perm, data.Column, data.Potential, true);
 
-                if (!colList2.TryAdd(i, new KeyPair() { Key = i, Value = data }))
-                {
+                //if (!colList2.TryAdd(i, new KeyPair() { Key = i, Value = data }))
+                //{
 
-                }
-                });*/
+                //}
+                //});
             });
 
             //c.setProximalSynapseCount(synapseCounter);
@@ -206,6 +317,8 @@ namespace NeoCortexApi
             // number of connected synapses per column.
             updateInhibitionRadius(c);
         }
+        */
+
 
         /// <summary>
         /// Does paging inside of partition. Every page will contain items (kays) from same partition.
@@ -246,13 +359,15 @@ namespace NeoCortexApi
         //    return pages;
         //}
 
-        class ProcessingData
+        class ProcessingDataParallel
         {
             public int[] Potential { get; set; }
 
             public Column Column { get; set; }
 
             public double[] Perm { get; internal set; }
+
+            public double AvgConnected { get; set; }
         }
     }
 }

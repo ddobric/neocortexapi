@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace NeoCortexApi.Entities
-{
-    /**
-  * Specializes in handling coordinate transforms for N-dimensional
-  * integer arrays, between flat and coordinate indexing.
-  * 
-  * @author cogmission
-  * @see Topology
-  */
-    // [Serializable]
+{ 
+   
+    /// <summary>
+    /// Transforms coordinates from multidimensional space into the single dimensional space of flat indexes.
+    /// </summary>
+    /// <remarks>
+    /// Authors:
+    /// cogmission, Damir Dobric.
+    /// </remarks>
     public class Coordinator
     {
       

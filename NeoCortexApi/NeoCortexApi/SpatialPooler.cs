@@ -531,7 +531,7 @@ namespace NeoCortexApi
         public int[] getColumnNeighborhood(Connections c, int centerColumn, int inhibitionRadius)
         {
             return c.isWrapAround() ?
-                c.getColumnTopology().wrappingNeighborhood(centerColumn, inhibitionRadius) :
+                c.getColumnTopology().GetWrappingNeighborhood(centerColumn, inhibitionRadius) :
                     c.getColumnTopology().GetNeighborhood(centerColumn, inhibitionRadius);
         }
 
@@ -1090,9 +1090,9 @@ namespace NeoCortexApi
          *                      and connectivity matrices.
          * @return              Flat index of mapped column.
          */
-        public int mapColumn(Connections c, int columnIndex)
+        public static int MapColumn(Connections c, int columnIndex)
         {
-            int[] columnCoords = c.getMemory().computeCoordinates(columnIndex);
+            int[] columnCoords = AbstractFlatMatrix.ComputeCoordinates(c.getMemory().getNumDimensions(), c.getMemory().getDimensionMultiples(), c.getMemory().IsColumnMajorOrdering, columnIndex);
             double[] colCoords = ArrayUtils.toDoubleArray(columnCoords);
 
             double[] columnRatios = ArrayUtils.divide(
@@ -1142,7 +1142,7 @@ namespace NeoCortexApi
          */
         public int[] mapPotential(Connections c, int columnIndex, bool wrapAround)
         {
-            int centerInput = mapColumn(c, columnIndex);
+            int centerInput = MapColumn(c, columnIndex);
 
             // Here we have Receptive Field (RF)
             int[] columnInputs = getInputNeighborhood(c, centerInput, c.getPotentialRadius());
@@ -1772,7 +1772,7 @@ namespace NeoCortexApi
         public int[] getInputNeighborhood(Connections c, int centerInput, int potentialRadius)
         {
             return c.isWrapAround() ?
-                c.getInputTopology().wrappingNeighborhood(centerInput, potentialRadius) :
+                c.getInputTopology().GetWrappingNeighborhood(centerInput, potentialRadius) :
                     c.getInputTopology().GetNeighborhood(centerInput, potentialRadius);
         }
 

@@ -131,6 +131,11 @@ namespace NeoCortexApi.DistributedCompute
         }
 
 
+        /// <summary>
+        /// Groups keys by partitions (actors).
+        /// </summary>
+        /// <param name="keyValuePairs"></param>
+        /// <returns></returns>
         public override Dictionary<IActorRef, List<KeyPair>> GetPartitionsForKeyset(ICollection<KeyPair> keyValuePairs)
         {
             Dictionary<IActorRef, List<KeyPair>> res = new Dictionary<IActorRef, List<KeyPair>>();

@@ -14,7 +14,7 @@ namespace NeoCortexApi.DistributedComputeLib
     {
         private Dictionary<object, object> dict = new Dictionary<object, object>();
 
-        private ActorConfig config;
+        private HtmConfig config;
 
         protected override void Unhandled(object msg)
         {

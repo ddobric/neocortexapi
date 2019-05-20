@@ -32,5 +32,7 @@ namespace NeoCortexApi.Entities
         /// <returns>
         /// </returns>
         List<(int partId, int minKey, int maxKey)> GetPartitions();
+
+     
     }
 }

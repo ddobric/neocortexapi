@@ -47,7 +47,7 @@ namespace NeoCortexApi.Entities
          * @param index the flat index to be returned as coordinates
          * @return  coordinates
          */
-        int[] computeCoordinates(int index);
+        //int[] computeCoordinates(int index);
 
         int[] getDimensionMultiples();
         }

@@ -198,12 +198,15 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <param name="keyValuePairs"></param>
         public void AddOrUpdate(ICollection<KeyPair> keyValuePairs)
         {
-         
             ParallelOptions opts = new ParallelOptions();
             opts.MaxDegreeOfParallelism = this.ActorMap.Count;
 
+            // We get here keys grouped to actors, which host partitions.
             var partitions = GetPartitionsForKeyset(keyValuePairs);
 
+            //
+            // Here is upload performed in context of every actor (partition).
+            // Because keys are grouped by partitions (actors) parallel upload can be done here.
             Parallel.ForEach(partitions, opts, (partition) =>
             {
                 Dictionary<IActorRef, AddOrUpdateElementsMsg> list = new Dictionary<IActorRef, AddOrUpdateElementsMsg>();

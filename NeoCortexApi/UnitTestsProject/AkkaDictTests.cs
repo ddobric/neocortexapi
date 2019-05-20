@@ -114,7 +114,7 @@ namespace UnitTestsProject
 
             var akkaDict = new HtmSparseIntDictionary<Column>(new HtmSparseIntDictionaryConfig()
             {
-                HtmActorConfig = new ActorConfig()
+                HtmActorConfig = new HtmConfig()
                 {
                     ColumnDimensions = new int[] { 100, 200 }
                 },
@@ -143,7 +143,8 @@ namespace UnitTestsProject
         [TestMethod]
         [TestCategory("AkkaHostRequired")]
         [TestCategory("LongRunning")]
-        public void InitDistributedTest()
+        [DataRow(true)]
+        public void InitDistributedTest(bool isMultinode)
         {
             Thread.Sleep(5000);
 
@@ -191,12 +192,21 @@ namespace UnitTestsProject
                 int[] colDims = new int[] { (int)Math.Sqrt(numOfColumns), (int)Math.Sqrt(numOfColumns) };
                 parameters.setColumnDimensions(colDims);
 
-                var sp = new SpatialPoolerParallel();
+                SpatialPooler sp;
+
+                if (isMultinode)
+                    sp = new SpatialPoolerParallel();
+                else
+                    sp = new SpatialPoolerMT();
+                
                 var mem = new Connections();
 
                 parameters.apply(mem);
 
-                sp.init(mem, UnitTestHelpers.GetMemory(parameters));
+                if (isMultinode)
+                    sp.init(mem, UnitTestHelpers.GetMemory(parameters));
+                else
+                    sp.init(mem, UnitTestHelpers.GetMemory());
 
                 sw.Stop();
                 Console.Write($"{(float)sw.ElapsedMilliseconds / (float)1000} | ");

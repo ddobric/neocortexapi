@@ -22,7 +22,7 @@ namespace UnitTestsProject
         public static DistributedMemory GetDistributedDictionary(Parameters htmParams)
         {
             var cfg = Helpers.DefaultHtmSparseIntDictionaryConfig;
-            cfg.HtmActorConfig = new ActorConfig()
+            cfg.HtmActorConfig = new HtmConfig()
             {
                 ColumnDimensions = (int[])htmParams[KEY.COLUMN_DIMENSIONS],
                 InputDimensions = (int[])htmParams[KEY.INPUT_DIMENSIONS],

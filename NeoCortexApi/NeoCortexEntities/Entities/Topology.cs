@@ -6,7 +6,7 @@ using NeoCortexApi.Utility;
 
 namespace NeoCortexApi.Entities
 {
-   // [Serializable]
+ 
     public class Topology : Coordinator 
     {
    
@@ -112,7 +112,7 @@ namespace NeoCortexApi.Entities
          * @param radius            The radius of this neighborhood about the centerIndex.
          * @return  The points in the neighborhood, including centerIndex.
          */
-        public int[] wrappingNeighborhood(int centerIndex, int radius)
+        public int[] GetWrappingNeighborhood(int centerIndex, int radius)
         {
             int[] cp = GetCoordinatesFromIndex(centerIndex);
 

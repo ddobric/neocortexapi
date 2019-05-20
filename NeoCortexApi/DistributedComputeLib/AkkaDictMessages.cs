@@ -6,7 +6,7 @@ namespace NeoCortexApi.DistributedComputeLib
     /// <summary>
     /// HTM required configuration sent from Akka-client to Akka Actor.
     /// </summary>
-    public class ActorConfig
+    public class HtmConfig
     {
         public int[] ColumnDimensions { get; set; }
 
@@ -22,7 +22,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
     internal class CreateDictNodeMsg
     {
-        public ActorConfig HtmAkkaConfig { get; set; }
+        public HtmConfig HtmAkkaConfig { get; set; }
     }
 
     internal class ContainsMsg

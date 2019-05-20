@@ -48,6 +48,25 @@ namespace NeoCortexApi.Entities
             }
             return isColumnMajor ? reverse(returnVal) : returnVal;
         }
+
+        /**
+       * Initializes internal helper array which is used for multidimensional
+       * index computation.
+       * @param dimensions matrix dimensions
+       * @return array for use in coordinates to flat index computation.
+       */
+        public static int[] InitDimensionMultiples(int[] dimensions)
+        {
+            int holder = 1;
+            int len = dimensions.Length;
+            int[] dimensionMultiples = new int[dimensions.Length];
+            for (int i = 0; i < len; i++)
+            {
+                holder *= (i == 0 ? 1 : dimensions[len - i]);
+                dimensionMultiples[len - 1 - i] = holder;
+            }
+            return dimensionMultiples;
+        }
     }
 
 
@@ -157,31 +176,14 @@ namespace NeoCortexApi.Entities
          * @return  a coordinate array
          */
         //@Override
-        public int[] computeCoordinates(int index)
+        public int[] computeCoordinatesOLD(int index)
         {
             return ComputeCoordinates(getNumDimensions(), dimensionMultiples, IsColumnMajorOrdering, index);            
         }
 
 
 
-        /**
-         * Initializes internal helper array which is used for multidimensional
-         * index computation.
-         * @param dimensions matrix dimensions
-         * @return array for use in coordinates to flat index computation.
-         */
-        public static int[] InitDimensionMultiples(int[] dimensions)
-        {
-            int holder = 1;
-            int len = dimensions.Length;
-            int[] dimensionMultiples = new int[dimensions.Length];
-            for (int i = 0; i < len; i++)
-            {
-                holder *= (i == 0 ? 1 : dimensions[len - i]);
-                dimensionMultiples[len - 1 - i] = holder;
-            }
-            return dimensionMultiples;
-        }
+      
 
         /**
          * Utility method to shrink a single dimension array by one index.

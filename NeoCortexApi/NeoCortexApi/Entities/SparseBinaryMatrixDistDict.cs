@@ -221,7 +221,8 @@ namespace NeoCortexApi.Entities
         //  @Override
         public override AbstractSparseBinaryMatrix setForTest(int index, int value)
         {
-            DistributedArrayHelpers.setValue(this.backingArray, value, computeCoordinates(index));
+            DistributedArrayHelpers.setValue(this.backingArray, value, 
+                ComputeCoordinates(getNumDimensions(), getDimensionMultiples(), IsColumnMajorOrdering, index));
             return this;
         }
 
@@ -235,7 +236,7 @@ namespace NeoCortexApi.Entities
         // @Override
         public override int get(int index)
         {
-            int[] coordinates = computeCoordinates(index);
+            int[] coordinates = ComputeCoordinates(getNumDimensions(), getDimensionMultiples(), IsColumnMajorOrdering, index);
             if (coordinates.Length == 1)
             {
                 return (Int32)backingArray.GetValue(index);
