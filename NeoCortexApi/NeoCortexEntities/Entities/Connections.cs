@@ -22,8 +22,6 @@ namespace NeoCortexApi.Entities
     //[Serializable]
     public class Connections //implements Persistable
     {
-        /** keep it simple */
-        private static readonly long serialVersionUID = 1L;
 
         private static readonly double EPSILON = 0.00001;
 
@@ -174,6 +172,22 @@ namespace NeoCortexApi.Entities
 
         /** The main data structure containing columns, cells, and synapses */
         private AbstractSparseMatrix<Column> memory;
+
+        public HtmModuleTopology ColumnTopology
+        {
+            get
+            {
+                return getMemory().ModuleTopology;
+            }
+        }
+
+        public HtmModuleTopology InputTopology
+        {
+            get
+            {
+                return getInputMatrix().ModuleTopology;
+            }
+        }
 
         public Cell[] cells { get; set; }
 

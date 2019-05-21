@@ -14,7 +14,7 @@ namespace NeoCortexApi
         /// </summary>
         /// <param name="c"></param>
         /// <param name="distMem"></param>
-        public virtual void InitMatrices(Connections c, DistributedMemory distMem)
+        public override void InitMatrices(Connections c, DistributedMemory distMem)
         {
             base.InitMatrices(c, distMem);
         }

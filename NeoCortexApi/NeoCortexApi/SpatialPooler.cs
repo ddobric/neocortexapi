@@ -740,7 +740,7 @@ namespace NeoCortexApi
 
             var dimensionMultiplies = AbstractFlatMatrix<Column>.InitDimensionMultiples(dims);
 
-            return CalcAvgSpanOfConnectedSynapses(c.getColumn(columnIndex), dims, dimensionMultiplies, c.getMemory().IsColumnMajorOrdering);           
+            return CalcAvgSpanOfConnectedSynapses(c.getColumn(columnIndex), dims, dimensionMultiplies, c.getMemory().ModuleTopology.IsMajorOrdering);           
         }
 
         /// <summary>
@@ -1090,31 +1090,32 @@ namespace NeoCortexApi
          *                      and connectivity matrices.
          * @return              Flat index of mapped column.
          */
-        public static int MapColumn(Connections c, int columnIndex)
-        {
-            int[] columnCoords = AbstractFlatMatrix.ComputeCoordinates(c.getMemory().getNumDimensions(), c.getMemory().getDimensionMultiples(), c.getMemory().IsColumnMajorOrdering, columnIndex);
+        public static int MapColumn(Connections c, int columnIndex, HtmModuleTopology colTop = null, HtmModuleTopology inpTop = null)
+        {         
+            int[] columnCoords = AbstractFlatMatrix.ComputeCoordinates(c.ColumnTopology.NumDimensions,
+                c.ColumnTopology.DimensionMultiplies, c.ColumnTopology.IsMajorOrdering, columnIndex);
+
             double[] colCoords = ArrayUtils.toDoubleArray(columnCoords);
 
             double[] columnRatios = ArrayUtils.divide(
-                colCoords, ArrayUtils.toDoubleArray(c.getColumnDimensions()), 0, 0);
+                colCoords, ArrayUtils.toDoubleArray(c.ColumnTopology.Dimensions), 0, 0);
 
             double[] inputCoords = ArrayUtils.multiply(
-                ArrayUtils.toDoubleArray(c.getInputDimensions()), columnRatios, 0, 0);
+                ArrayUtils.toDoubleArray(c.InputTopology.Dimensions), columnRatios, 0, 0);
 
             var colSpanOverInputs = ArrayUtils.divide(
-                        ArrayUtils.toDoubleArray(c.getInputDimensions()),
-                        ArrayUtils.toDoubleArray(c.getColumnDimensions()), 0, 0);
+                        ArrayUtils.toDoubleArray(c.InputTopology.Dimensions),
+                        ArrayUtils.toDoubleArray(c.ColumnTopology.Dimensions), 0, 0);
 
             inputCoords = ArrayUtils.d_add(inputCoords, ArrayUtils.multiply(colSpanOverInputs, 0.5));
 
             // Makes sure that inputCoords are in range [0, inpDims]
-            int[] inputCoordInts = ArrayUtils.clip(ArrayUtils.toIntArray(inputCoords), c.getInputDimensions(), -1);
+            int[] inputCoordInts = ArrayUtils.clip(ArrayUtils.toIntArray(inputCoords), c.InputTopology.Dimensions, -1);
 
             var inpMem = c.getInputMatrix();
 
-            return AbstractFlatMatrix.ComputeIndex(inputCoordInts, inpMem.getDimensions(), inpMem.getNumDimensions(),
-                 inpMem.getDimensionMultiples(), inpMem.IsColumnMajorOrdering, true);
-            
+            return AbstractFlatMatrix.ComputeIndex(inputCoordInts, c.InputTopology.Dimensions, c.InputTopology.NumDimensions,
+                 c.InputTopology.DimensionMultiplies, c.InputTopology.IsMajorOrdering, true);            
         }
 
 

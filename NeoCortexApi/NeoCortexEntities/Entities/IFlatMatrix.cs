@@ -50,7 +50,9 @@ namespace NeoCortexApi.Entities
          */
         //int[] computeCoordinates(int index);
 
-        bool IsColumnMajorOrdering {get;set;}
+        //bool IsColumnMajorOrdering {get;set;}
+
+        HtmModuleTopology ModuleTopology {get;set;}
 
         int[] getDimensionMultiples();
     }

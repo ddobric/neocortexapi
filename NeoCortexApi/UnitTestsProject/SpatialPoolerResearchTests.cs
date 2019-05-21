@@ -104,7 +104,7 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 32, 32 });
             parameters.setColumnDimensions(new int[] { 64, 64 });
 
-            var sp = new SpatialPooler();
+            var sp = new SpatialPoolerMT();
             var mem = new Connections();
 
             //var rnd = new Random();

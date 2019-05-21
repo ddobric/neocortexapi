@@ -152,7 +152,7 @@ namespace NeoCortexApi.Entities
 
         public override AbstractFlatMatrix<int> set(int index, int value)
         {
-            int[] coordinates = ComputeCoordinates(getNumDimensions(), getDimensionMultiples(), IsColumnMajorOrdering, index);
+            int[] coordinates = ComputeCoordinates(getNumDimensions(), getDimensionMultiples(), this.ModuleTopology.IsMajorOrdering, index);
             return set(value, coordinates);
         }
 

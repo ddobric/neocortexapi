@@ -115,9 +115,9 @@ namespace NeoCortexApi.Entities
          */
         public override void rightVecSumAtNZ(int[] inputVector, int[] results)
         {
-            for (int i = 0; i < dimensions[0]; i++)
+            for (int i = 0; i < this.ModuleTopology.Dimensions[0]; i++)
             {
-                int[] slice = (int[])(dimensions.Length > 1 ? getSlice(i) : backingArray);
+                int[] slice = (int[])(this.ModuleTopology.Dimensions.Length > 1 ? getSlice(i) : backingArray);
                 for (int j = 0; j < slice.Length; j++)
                 {
                     results[i] += (inputVector[j] * slice[j]);
@@ -134,10 +134,10 @@ namespace NeoCortexApi.Entities
          */
         public override void rightVecSumAtNZ(int[] inputVector, int[] results, double stimulusThreshold)
         {
-            for (int i = 0; i < dimensions[0]; i++)
+            for (int i = 0; i < this.ModuleTopology.Dimensions[0]; i++)
             {
                 // Gets the synapse mapping between column-i with input vector.
-                int[] slice = (int[])(dimensions.Length > 1 ? getSlice(i) : backingArray);
+                int[] slice = (int[])(this.ModuleTopology.Dimensions.Length > 1 ? getSlice(i) : backingArray);
 
                 // Go through all connections (synapses) between column-i and input vector.
                 for (int j = 0; j < slice.Length; j++)
@@ -222,7 +222,7 @@ namespace NeoCortexApi.Entities
         public override AbstractSparseBinaryMatrix setForTest(int index, int value)
         {
             DistributedArrayHelpers.setValue(this.backingArray, value, 
-                ComputeCoordinates(getNumDimensions(), getDimensionMultiples(), IsColumnMajorOrdering, index));
+                ComputeCoordinates(getNumDimensions(), getDimensionMultiples(), ModuleTopology.IsMajorOrdering, index));
             return this;
         }
 
@@ -236,7 +236,7 @@ namespace NeoCortexApi.Entities
         // @Override
         public override int get(int index)
         {
-            int[] coordinates = ComputeCoordinates(getNumDimensions(), getDimensionMultiples(), IsColumnMajorOrdering, index);
+            int[] coordinates = ComputeCoordinates(getNumDimensions(), getDimensionMultiples(), this.ModuleTopology.IsMajorOrdering, index);
             if (coordinates.Length == 1)
             {
                 return (Int32)backingArray.GetValue(index);

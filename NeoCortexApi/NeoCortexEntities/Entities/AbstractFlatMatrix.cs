@@ -140,24 +140,24 @@ namespace NeoCortexApi.Entities
     /// <typeparam name="T"></typeparam>
     public abstract class AbstractFlatMatrix<T> : AbstractFlatMatrix, IFlatMatrix<T>
     {
+        public HtmModuleTopology ModuleTopology { get; set; }
 
-        private static long serialVersionUID = 1L;
+        //protected int[] dimensions;
 
-        protected int[] dimensions;
-        protected int[] dimensionMultiples;
-        public bool IsColumnMajorOrdering { get; set; }
+        //protected int[] dimensionMultiples;
+        //public bool IsColumnMajorOrdering { get; set; }
 
-        protected int numDimensions;
+        //protected int numDimensions;
 
         /**
          * Constructs a new {@link AbstractFlatMatrix} object to be configured with specified
          * dimensions and major ordering.
          * @param dimensions  the dimensions of this matrix	
          */
-        public AbstractFlatMatrix(int[] dimensions) : this(dimensions, false)
-        {
+        //public AbstractFlatMatrix(int[] dimensions) : this(dimensions, false)
+        //{
 
-        }
+        //}
 
         /**
          * Constructs a new {@link AbstractFlatMatrix} object to be configured with specified
@@ -171,11 +171,13 @@ namespace NeoCortexApi.Entities
          */
         public AbstractFlatMatrix(int[] dimensions, bool useColumnMajorOrdering)
         {
-            this.dimensions = dimensions;
-            this.numDimensions = dimensions.Length;
-            this.dimensionMultiples = InitDimensionMultiples(
-                    useColumnMajorOrdering ? Reverse(dimensions) : dimensions);
-            IsColumnMajorOrdering = useColumnMajorOrdering;
+            this.ModuleTopology = new HtmModuleTopology(dimensions, useColumnMajorOrdering);
+
+            //this.dimensions = dimensions;
+            //this.numDimensions = dimensions.Length;
+            //this.dimensionMultiples = InitDimensionMultiples(
+            //        useColumnMajorOrdering ? Reverse(dimensions) : dimensions);
+            //IsColumnMajorOrdering = useColumnMajorOrdering;
         }
 
         /**
@@ -200,7 +202,8 @@ namespace NeoCortexApi.Entities
         {
             if (doCheck) CheckDims(getDimensions(), getNumDimensions(), coordinates);
 
-            int[] localMults = IsColumnMajorOrdering ? Reverse(dimensionMultiples) : dimensionMultiples;
+            int[] localMults = this.ModuleTopology.IsMajorOrdering ? 
+                Reverse(this.ModuleTopology.DimensionMultiplies) : this.ModuleTopology.DimensionMultiplies;
             int @base = 0;
             for (int i = 0; i < coordinates.Length; i++)
             {
@@ -219,14 +222,11 @@ namespace NeoCortexApi.Entities
          * @return  a coordinate array
          */
         //@Override
-        public int[] computeCoordinatesOLD(int index)
-        {
-            return ComputeCoordinates(getNumDimensions(), dimensionMultiples, IsColumnMajorOrdering, index);            
-        }
+        //public int[] computeCoordinatesOLD(int index)
+        //{
+        //    return ComputeCoordinates(getNumDimensions(), dimensionMultiples, IsColumnMajorOrdering, index);            
+        //}
 
-
-
-      
 
         /**
          * Utility method to shrink a single dimension array by one index.
@@ -294,7 +294,7 @@ namespace NeoCortexApi.Entities
         {
             int partialResult = 0;
 
-            foreach (var dim in dimensions)
+            foreach (var dim in this.ModuleTopology.Dimensions)
             {
                 partialResult = partialResult * dim;
             }
@@ -312,24 +312,24 @@ namespace NeoCortexApi.Entities
         //@Override
         public virtual int[] getDimensions()
         {
-            return this.dimensions;
+            return this.ModuleTopology.Dimensions;
         }
 
         public void setDimensions(int[] dimensions)
         {
-            this.dimensions = dimensions;
+            this.ModuleTopology.Dimensions = dimensions;
         }
 
         //@Override
         public virtual int getNumDimensions()
         {
-            return this.dimensions.Length;
+            return this.ModuleTopology.Dimensions.Length;
         }
 
         //@Override
         public int[] getDimensionMultiples()
         {
-            return this.dimensionMultiples;
+            return this.ModuleTopology.DimensionMultiplies;
         }
 
         /* (non-Javadoc)
@@ -340,10 +340,10 @@ namespace NeoCortexApi.Entities
         {
             int prime = 31;
             int result = 1;
-            result = prime * result + dimensionMultiples.GetHashCode();
-            result = prime * result + dimensions.GetHashCode();
-            result = prime * result + (IsColumnMajorOrdering ? 1231 : 1237);
-            result = prime * result + numDimensions;
+            result = prime * result + this.ModuleTopology.DimensionMultiplies.GetHashCode();
+            result = prime * result + this.ModuleTopology.Dimensions.GetHashCode();
+            result = prime * result + (this.ModuleTopology.IsMajorOrdering ? 1231 : 1237);
+            result = prime * result + this.ModuleTopology.NumDimensions;
             return result;
         }
 
@@ -363,13 +363,13 @@ namespace NeoCortexApi.Entities
                 return false;
             AbstractFlatMatrix<T> other = (AbstractFlatMatrix<T>)obj;
 
-            if (!Array.Equals(dimensionMultiples, other.dimensionMultiples))
+            if (!Array.Equals(this.ModuleTopology.DimensionMultiplies, other.ModuleTopology.DimensionMultiplies))
                 return false;
-            if (!Array.Equals(dimensions, other.dimensions))
+            if (!Array.Equals(this.ModuleTopology.Dimensions, other.ModuleTopology.Dimensions))
                 return false;
-            if (IsColumnMajorOrdering != other.IsColumnMajorOrdering)
+            if (this.ModuleTopology.IsMajorOrdering != other.ModuleTopology.IsMajorOrdering)
                 return false;
-            if (numDimensions != other.numDimensions)
+            if (this.ModuleTopology.NumDimensions != other.ModuleTopology.NumDimensions)
                 return false;
             return true;
         }

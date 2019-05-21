@@ -36,8 +36,8 @@ namespace UnitTestsProject
         /// <param name="topologies">list of sparse space size. Sparse space has same width and length</param>
         [TestMethod]
         [TestCategory("LongRunning")]
-        [DataRow("MnistPng28x28\\training", "3", new int[] { 28 }, new int[] { 32, 64, 128 }, false)]
-        public void TrainSingleMnistImageTest(string trainingFolder, string digit, int[] imageSizes, int[] topologies, bool isMultinode)
+        [DataRow("MnistPng28x28\\training", "3", new int[] { 28 }, new int[] { 32, 64, 128 }, PoolerMode.Multicore)]
+        public void TrainSingleMnistImageTest(string trainingFolder, string digit, int[] imageSizes, int[] topologies, PoolerMode poolerMode)
         {
             string TestOutputFolder = $"Output-{nameof(TrainSingleMnistImageTest)}";
 
@@ -88,21 +88,13 @@ namespace UnitTestsProject
                     parameters.setInputDimensions(new int[] { imageSizes[imSizeIndx], imageSizes[imSizeIndx] });
                     parameters.setColumnDimensions(new int[] { topologies[topologyIndx], topologies[topologyIndx] });
 
-                    SpatialPooler sp;
-
-                    if (isMultinode)
-                        sp = new SpatialPoolerParallel();
-                    else
-                        sp = new SpatialPoolerMT();
+                    SpatialPooler sp = UnitTestHelpers.CreatePooler(poolerMode);
 
                     var mem = new Connections();
 
                     parameters.apply(mem);
 
-                    if (isMultinode)
-                        sp.init(mem, UnitTestHelpers.GetMemory(parameters));
-                    else
-                        sp.init(mem, UnitTestHelpers.GetMemory());
+                    UnitTestHelpers.InitPooler(poolerMode, sp, mem, parameters);
 
                     int actiColLen = numOfActCols;
 
