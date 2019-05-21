@@ -509,10 +509,10 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 12 });
             initSP();
 
-            Assert.IsTrue(1 == SpatialPooler.MapColumn(mem, 0));
-            Assert.IsTrue(4 == SpatialPooler.MapColumn(mem, 1));
-            Assert.IsTrue(7 == SpatialPooler.MapColumn(mem, 2));
-            Assert.IsTrue(10 == SpatialPooler.MapColumn(mem, 3));
+            Assert.IsTrue(1 == SpatialPooler.MapColumn(0, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(4 == SpatialPooler.MapColumn(1, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(7 == SpatialPooler.MapColumn(2, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(10 == SpatialPooler.MapColumn(3, mem.ColumnTopology, mem.InputTopology));
 
             // Test 1D with same dimension of columns and inputs
             setupParameters();
@@ -520,10 +520,10 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 4 });
             initSP();
 
-            Assert.IsTrue(0 == SpatialPooler.MapColumn(mem, 0));
-            Assert.IsTrue(1 == SpatialPooler.MapColumn(mem, 1));
-            Assert.IsTrue(2 == SpatialPooler.MapColumn(mem, 2));
-            Assert.IsTrue(3 == SpatialPooler.MapColumn(mem, 3));
+            Assert.IsTrue(0 == SpatialPooler.MapColumn(0, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(1 == SpatialPooler.MapColumn(1, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(2 == SpatialPooler.MapColumn(2, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(3 == SpatialPooler.MapColumn(3, mem.ColumnTopology, mem.InputTopology));
 
             // Test 1D with dimensions of length 1
             setupParameters();
@@ -531,7 +531,7 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 1 });
             initSP();
 
-            Assert.IsTrue(0 == SpatialPooler.MapColumn(mem, 0));
+            Assert.IsTrue(0 == SpatialPooler.MapColumn(0, mem.ColumnTopology, mem.InputTopology));
 
             // Test 2D
             setupParameters();
@@ -539,11 +539,11 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 36, 12 });
             initSP();
 
-            Assert.IsTrue(13 == SpatialPooler.MapColumn(mem, 0));
-            Assert.IsTrue(49 == SpatialPooler.MapColumn(mem, 4));
-            Assert.IsTrue(52 == SpatialPooler.MapColumn(mem, 5));
-            Assert.IsTrue(58 == SpatialPooler.MapColumn(mem, 7));
-            Assert.IsTrue(418 == SpatialPooler.MapColumn(mem, 47));
+            Assert.IsTrue(13 == SpatialPooler.MapColumn( 0, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(49 == SpatialPooler.MapColumn( 4, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(52 == SpatialPooler.MapColumn( 5, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(58 == SpatialPooler.MapColumn( 7, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(418 == SpatialPooler.MapColumn(47, mem.ColumnTopology, mem.InputTopology));
 
             // Test 2D with some input dimensions smaller than column dimensions.
             setupParameters();
@@ -551,9 +551,9 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 3, 5 });
             initSP();
 
-            Assert.IsTrue(0 == SpatialPooler.MapColumn(mem, 0));
-            Assert.IsTrue(4 == SpatialPooler.MapColumn(mem, 3));
-            Assert.IsTrue(14 == SpatialPooler.MapColumn(mem, 15));
+            Assert.IsTrue(0 == SpatialPooler.MapColumn( 0, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(4 == SpatialPooler.MapColumn( 3, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(14 == SpatialPooler.MapColumn(15, mem.ColumnTopology, mem.InputTopology));
         }
 
         [TestMethod]

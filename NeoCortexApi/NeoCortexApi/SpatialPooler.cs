@@ -1090,32 +1090,30 @@ namespace NeoCortexApi
          *                      and connectivity matrices.
          * @return              Flat index of mapped column.
          */
-        public static int MapColumn(Connections c, int columnIndex, HtmModuleTopology colTop = null, HtmModuleTopology inpTop = null)
+        public static int MapColumn(int columnIndex, HtmModuleTopology colTop, HtmModuleTopology inpTop)
         {         
-            int[] columnCoords = AbstractFlatMatrix.ComputeCoordinates(c.ColumnTopology.NumDimensions,
-                c.ColumnTopology.DimensionMultiplies, c.ColumnTopology.IsMajorOrdering, columnIndex);
+            int[] columnCoords = AbstractFlatMatrix.ComputeCoordinates(colTop.NumDimensions,
+                colTop.DimensionMultiplies, colTop.IsMajorOrdering, columnIndex);
 
             double[] colCoords = ArrayUtils.toDoubleArray(columnCoords);
 
             double[] columnRatios = ArrayUtils.divide(
-                colCoords, ArrayUtils.toDoubleArray(c.ColumnTopology.Dimensions), 0, 0);
+                colCoords, ArrayUtils.toDoubleArray(colTop.Dimensions), 0, 0);
 
             double[] inputCoords = ArrayUtils.multiply(
-                ArrayUtils.toDoubleArray(c.InputTopology.Dimensions), columnRatios, 0, 0);
+                ArrayUtils.toDoubleArray(inpTop.Dimensions), columnRatios, 0, 0);
 
             var colSpanOverInputs = ArrayUtils.divide(
-                        ArrayUtils.toDoubleArray(c.InputTopology.Dimensions),
-                        ArrayUtils.toDoubleArray(c.ColumnTopology.Dimensions), 0, 0);
+                        ArrayUtils.toDoubleArray(inpTop.Dimensions),
+                        ArrayUtils.toDoubleArray(colTop.Dimensions), 0, 0);
 
             inputCoords = ArrayUtils.d_add(inputCoords, ArrayUtils.multiply(colSpanOverInputs, 0.5));
 
             // Makes sure that inputCoords are in range [0, inpDims]
-            int[] inputCoordInts = ArrayUtils.clip(ArrayUtils.toIntArray(inputCoords), c.InputTopology.Dimensions, -1);
+            int[] inputCoordInts = ArrayUtils.clip(ArrayUtils.toIntArray(inputCoords), inpTop.Dimensions, -1);
 
-            var inpMem = c.getInputMatrix();
-
-            return AbstractFlatMatrix.ComputeIndex(inputCoordInts, c.InputTopology.Dimensions, c.InputTopology.NumDimensions,
-                 c.InputTopology.DimensionMultiplies, c.InputTopology.IsMajorOrdering, true);            
+            return AbstractFlatMatrix.ComputeIndex(inputCoordInts, inpTop.Dimensions, inpTop.NumDimensions,
+                 inpTop.DimensionMultiplies, inpTop.IsMajorOrdering, true);            
         }
 
 
@@ -1148,7 +1146,7 @@ namespace NeoCortexApi
          */
         public int[] mapPotential(Connections c, int columnIndex, bool wrapAround)
         {
-            int centerInput = MapColumn(c, columnIndex);
+            int centerInput = MapColumn(columnIndex, c.ColumnTopology, c.InputTopology);
 
             // Here we have Receptive Field (RF)
             int[] columnInputs = getInputNeighborhood(c, centerInput, c.getPotentialRadius());
