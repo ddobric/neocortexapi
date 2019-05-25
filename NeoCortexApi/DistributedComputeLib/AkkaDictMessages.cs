@@ -14,10 +14,15 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public int[] InputDimensions { get; set; }
 
+
+        public bool IsWrapAround { get; set; }
+
         /// <summary>
         /// The name of the actor as set by actor-client.
         /// </summary>
         public string Name { get; set; }
+
+        public double PotentialPct { get; set; }
     }
 
     internal class CreateDictNodeMsg

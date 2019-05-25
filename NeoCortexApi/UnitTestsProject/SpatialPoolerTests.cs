@@ -573,21 +573,21 @@ namespace UnitTestsProject
 
             // Test without wrapAround and potentialPct = 1
             int[] expected = new int[] { 0, 1, 2, 3 };
-            int[] mask = sp.mapPotential(mem, 0, false);
+            int[] mask = sp.MapPotential(mem, 0, false);
             Assert.IsTrue(expected.SequenceEqual(mask));
 
             expected = new int[] { 5, 6, 7, 8, 9 };
-            mask = sp.mapPotential(mem, 2, false);
+            mask = sp.MapPotential(mem, 2, false);
             Assert.IsTrue(expected.SequenceEqual(mask));
 
             // Test with wrapAround and potentialPct = 1
             mem.setWrapAround(true);
             expected = new int[] { 0, 1, 2, 3, 11 };
-            mask = sp.mapPotential(mem, 0, true);
+            mask = sp.MapPotential(mem, 0, true);
             Assert.IsTrue(expected.SequenceEqual(mask));
 
             expected = new int[] { 0, 8, 9, 10, 11 };
-            mask = sp.mapPotential(mem, 3, true);
+            mask = sp.MapPotential(mem, 3, true);
             Assert.IsTrue(expected.SequenceEqual(mask));
 
             // Test with wrapAround and potentialPct < 1
@@ -596,7 +596,7 @@ namespace UnitTestsProject
             initSP();
 
             int[] supersetMask = new int[] { 0, 1, 2, 3, 11 };
-            mask = sp.mapPotential(mem, 0, true);
+            mask = sp.MapPotential(mem, 0, true);
             Assert.IsTrue(mask.Length == 3);
             List<int> unionList = new List<int>(supersetMask);
             unionList.AddRange(mask);
@@ -619,7 +619,7 @@ namespace UnitTestsProject
             initSP();
 
             //Test without wrapAround
-            int[] mask = sp.mapPotential(mem, 0, false);
+            int[] mask = sp.MapPotential(mem, 0, false);
             List<int> trueIndices = new List<int>(new int[] { 0, 1, 2, 12, 13, 14, 24, 25, 26 });
             List<int> maskSet = new List<int>(mask);
             Assert.IsTrue(trueIndices.SequenceEqual(maskSet));
@@ -627,7 +627,7 @@ namespace UnitTestsProject
             trueIndices.Clear();
             maskSet.Clear();
             trueIndices.AddRange(new int[] { 6, 7, 8, 18, 19, 20, 30, 31, 32 });
-            mask = sp.mapPotential(mem, 2, false);
+            mask = sp.MapPotential(mem, 2, false);
             maskSet.AddRange(mask);
             Assert.IsTrue(trueIndices.SequenceEqual(maskSet));
 
@@ -642,7 +642,7 @@ namespace UnitTestsProject
                         24, 25, 26, 27, 35,
                         36, 37, 38, 39, 47,
                         60, 61, 62, 63, 71 });
-            mask = sp.mapPotential(mem, 0, true);
+            mask = sp.MapPotential(mem, 0, true);
             maskSet.AddRange(mask);
             Assert.IsTrue(trueIndices.SequenceEqual(maskSet));
 
@@ -654,7 +654,7 @@ namespace UnitTestsProject
                         24, 32, 33, 34, 35,
                         36, 44, 45, 46, 47,
                         60, 68, 69, 70, 71 });
-            mask = sp.mapPotential(mem, 3, true);
+            mask = sp.MapPotential(mem, 3, true);
             maskSet.AddRange(mask);
             Assert.IsTrue(trueIndices.SequenceEqual(maskSet));
         }
@@ -672,7 +672,7 @@ namespace UnitTestsProject
 
             //Test without wrapAround and potentialPct = 1
             int[] expectedMask = new int[] { 0 };
-            int[] mask = sp.mapPotential(mem, 0, false);
+            int[] mask = sp.MapPotential(mem, 0, false);
             List<int> trueIndices = new List<int>(expectedMask);
             List<int> maskSet = new List<int>(mask);
 

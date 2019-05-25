@@ -12,9 +12,9 @@ namespace NeoCortexApi.Entities
    // [Serializable]
     public abstract class Segment : IEquatable<Segment>
     {       
-        protected int index;
+        public int index { get; set; }
 
-        protected Integer boxedIndex;
+        public Integer boxedIndex { get; set; }
 
         public List<Synapse> Synapses { get; set; }
 

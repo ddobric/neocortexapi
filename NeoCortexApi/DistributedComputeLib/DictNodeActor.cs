@@ -12,6 +12,10 @@ namespace NeoCortexApi.DistributedComputeLib
 
     public class DictNodeActor : ReceiveActor
     {
+        public Topology ColumnTopology { get; set; }
+
+        public Topology InputTopology { get; set; }
+
         private Dictionary<object, object> dict = new Dictionary<object, object>();
 
         private HtmConfig config;
@@ -27,6 +31,10 @@ namespace NeoCortexApi.DistributedComputeLib
             Receive<CreateDictNodeMsg>(msg =>
             {
                 this.config = msg.HtmAkkaConfig;
+
+                this.ColumnTopology =new Topology(this.config.ColumnDimensions);
+                this.InputTopology = new Topology(this.config.InputDimensions);
+                
                 Console.WriteLine($"Received message: '{msg.GetType().Name}'");
                 Sender.Tell(-1, Self);
             });
@@ -158,6 +166,13 @@ namespace NeoCortexApi.DistributedComputeLib
             Console.WriteLine($"{nameof(DictNodeActor)} stoped.");
         }
 
+
+        public int[] GetInputNeighborhood(int centerInput, int potentialRadius)
+        {
+            return this.config.IsWrapAround ?
+                this.InputTopology.GetWrappingNeighborhood(centerInput, potentialRadius) :
+                    this.InputTopology.GetNeighborhood(centerInput, potentialRadius);
+        }
 
     }
 }

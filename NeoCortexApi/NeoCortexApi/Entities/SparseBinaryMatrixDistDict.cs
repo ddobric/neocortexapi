@@ -134,24 +134,24 @@ namespace NeoCortexApi.Entities
          */
         public override void rightVecSumAtNZ(int[] inputVector, int[] results, double stimulusThreshold)
         {
-            for (int i = 0; i < this.ModuleTopology.Dimensions[0]; i++)
+            for (int colIndx = 0; colIndx < this.ModuleTopology.Dimensions[0]; colIndx++)
             {
                 // Gets the synapse mapping between column-i with input vector.
-                int[] slice = (int[])(this.ModuleTopology.Dimensions.Length > 1 ? getSlice(i) : backingArray);
+                int[] slice = (int[])(this.ModuleTopology.Dimensions.Length > 1 ? getSlice(colIndx) : backingArray);
 
-                // Go through all connections (synapses) between column-i and input vector.
+                // Go through all connections (synapses) between column and input vector.
                 for (int j = 0; j < slice.Length; j++)
                 {
                     //Debug.WriteLine($"Slice {i} - {String.Join("","", slice )}");
 
                     // Result (overlapp) is 1 if 
-                    results[i] += (inputVector[j] * slice[j]);
+                    results[colIndx] += (inputVector[j] * slice[j]);
                     if (j == slice.Length - 1)
                     {
                         // If the overlap (num of connected synapses to TRUE input) is less than stimulusThreshold then we set result on 0.
                         // If the overlap (num of connected synapses to TRUE input) is greather than stimulusThreshold then result remains as calculated.
                         // This ensures that only overlaps are calculated, which are over the stimulusThreshold. All less than stimulusThreshold are set on 0.
-                        results[i] -= results[i] < stimulusThreshold ? results[i] : 0;
+                        results[colIndx] -= results[colIndx] < stimulusThreshold ? results[colIndx] : 0;
                     }
                 }
             }

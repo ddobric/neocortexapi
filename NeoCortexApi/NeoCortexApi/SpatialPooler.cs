@@ -153,7 +153,7 @@ namespace NeoCortexApi
             for (int i = 0; i < numColumns; i++)
             {
                 // Gets RF
-                int[] potential = mapPotential(c, i, c.isWrapAround());
+                int[] potential = MapPotential(c, i, c.isWrapAround());
 
                 Column column = c.getColumn(i);
 
@@ -1144,7 +1144,7 @@ namespace NeoCortexApi
          *                      ignored.
          * @return
          */
-        public int[] mapPotential(Connections c, int columnIndex, bool wrapAround)
+        public int[] MapPotential(Connections c, int columnIndex, bool wrapAround)
         {
             int centerInput = MapColumn(columnIndex, c.ColumnTopology, c.InputTopology);
 
@@ -1156,6 +1156,7 @@ namespace NeoCortexApi
             int[] retVal = new int[numPotential];
 
             var data = ArrayUtils.sample(columnInputs, retVal, c.getRandom());
+
             return data;
         }
 

@@ -102,7 +102,7 @@ namespace NeoCortexApi
                 var data = new ProcessingDataParallel();
 
                 // Gets RF
-                data.Potential = mapPotential(c, i, c.isWrapAround());
+                data.Potential = MapPotential(c, i, c.isWrapAround());
                 data.Column = c.getColumn(i);
 
                 // This line initializes all synases in the potential pool of synapses.

@@ -220,9 +220,11 @@ namespace UnitTestsProject
         [DataRow(1)]
         public void SPInitTest(int poolerImplementation)
         {
-            int numOfColsInDim = 64;
+            int numOfColsInDim = 1024;
 
             Parameters parameters = Parameters.getAllDefaultParameters();
+
+
 
             parameters.Set(KEY.POTENTIAL_RADIUS, 5);
             parameters.Set(KEY.POTENTIAL_PCT, 0.5);
@@ -238,7 +240,7 @@ namespace UnitTestsProject
             parameters.Set(KEY.DUTY_CYCLE_PERIOD, 10);
             parameters.Set(KEY.MAX_BOOST, 10.0);
             parameters.Set(KEY.RANDOM, new ThreadSafeRandom(42));
-            parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { 32, 32 });
+            parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { 128, 128 });
             parameters.Set(KEY.COLUMN_DIMENSIONS, new int[] { numOfColsInDim, numOfColsInDim });
             parameters.setPotentialRadius(5);
 

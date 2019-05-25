@@ -26,9 +26,10 @@ namespace UnitTestsProject
             {
                 ColumnDimensions = (int[])htmParams[KEY.COLUMN_DIMENSIONS],
                 InputDimensions = (int[])htmParams[KEY.INPUT_DIMENSIONS],
+                IsWrapAround = (bool)htmParams[KEY.WRAP_AROUND],
+                PotentialPct = (double)htmParams[KEY.POTENTIAL_PCT]
             };
-
-
+        
             return new DistributedMemory()
             {
                 ColumnDictionary = new HtmSparseIntDictionary<Column>(cfg),
