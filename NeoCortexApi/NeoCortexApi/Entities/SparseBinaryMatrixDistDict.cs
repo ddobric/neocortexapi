@@ -65,7 +65,7 @@ namespace NeoCortexApi.Entities
         {
             //update true counts
             DistributedArrayHelpers.setValue(this.backingArray, val, coordinates);
-         
+
             var aggVal = this.backingArray.AggregateArray(coordinates[0]);
 
             setTrueCount(coordinates[0], aggVal);
@@ -91,7 +91,7 @@ namespace NeoCortexApi.Entities
             if (coordinates.Length == 1)
                 slice = backingArray.GetRow<int>(coordinates[0]);
 
-                   // DistributedArrayHelpers.GetRow<int>((int[,])this.backingArray, coordinates[0]);
+            // DistributedArrayHelpers.GetRow<int>((int[,])this.backingArray, coordinates[0]);
             //else if (coordinates.Length == 1)
             //    slice = ((int[])this.backingArray)[coordinates[0]];
             else
@@ -130,7 +130,7 @@ namespace NeoCortexApi.Entities
          * matrix vector multiplication.
          * 
          * @param inputVector       the right side vector
-         * @param results           the results array
+         * @param results           the re\sults array
          */
         public override void rightVecSumAtNZ(int[] inputVector, int[] results, double stimulusThreshold)
         {
@@ -140,13 +140,13 @@ namespace NeoCortexApi.Entities
                 int[] slice = (int[])(this.ModuleTopology.Dimensions.Length > 1 ? getSlice(colIndx) : backingArray);
 
                 // Go through all connections (synapses) between column and input vector.
-                for (int j = 0; j < slice.Length; j++)
+                for (int inpBit = 0; inpBit < slice.Length; inpBit++)
                 {
                     //Debug.WriteLine($"Slice {i} - {String.Join("","", slice )}");
 
                     // Result (overlapp) is 1 if 
-                    results[colIndx] += (inputVector[j] * slice[j]);
-                    if (j == slice.Length - 1)
+                    results[colIndx] += (inputVector[inpBit] * slice[inpBit]);
+                    if (inpBit == slice.Length - 1)
                     {
                         // If the overlap (num of connected synapses to TRUE input) is less than stimulusThreshold then we set result on 0.
                         // If the overlap (num of connected synapses to TRUE input) is greather than stimulusThreshold then result remains as calculated.
@@ -169,7 +169,7 @@ namespace NeoCortexApi.Entities
             set(index, value);
             return (AbstractFlatMatrix<int>)this;
         }
-        
+
 
         /**
          * Sets the value to be indexed at the index
@@ -221,7 +221,7 @@ namespace NeoCortexApi.Entities
         //  @Override
         public override AbstractSparseBinaryMatrix setForTest(int index, int value)
         {
-            DistributedArrayHelpers.setValue(this.backingArray, value, 
+            DistributedArrayHelpers.setValue(this.backingArray, value,
                 ComputeCoordinates(getNumDimensions(), getDimensionMultiples(), ModuleTopology.IsMajorOrdering, index));
             return this;
         }

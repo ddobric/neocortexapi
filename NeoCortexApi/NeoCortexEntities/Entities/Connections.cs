@@ -87,7 +87,7 @@ namespace NeoCortexApi.Entities
          * class, to reduce memory footprint and computation time of algorithms that
          * require iterating over the data structure.
          */
-        private IFlatMatrix<Pool> potentialPools;
+        //private IFlatMatrix<Pool> potentialPools;
         /**
          * Initialize a tiny random tie breaker. This is used to determine winning
          * columns where the overlaps are identical.
@@ -746,10 +746,10 @@ namespace NeoCortexApi.Entities
          * @param columnIndex
          * @return
          */
-        public int getConnectedCount(int columnIndex)
-        {
-            return connectedCounts.getTrueCount(columnIndex);
-        }
+        //public int getConnectedCount(int columnIndex)
+        //{
+        //    return connectedCounts.getTrueCount(columnIndex);
+        //}
 
         /**
          * Sets the indexed count of synapses connected at the columns in each index.
@@ -1152,20 +1152,20 @@ namespace NeoCortexApi.Entities
          *
          * @param pools		{@link FlatMatrix} which holds the pools.
          */
-        public void setPotentialPools(IFlatMatrix<Pool> pools)
-        {
-            this.potentialPools = pools;
-        }
+        //public void setPotentialPools(IFlatMatrix<Pool> pools)
+        //{
+        //    this.potentialPools = pools;
+        //}
 
         /**
          * Returns the {@link FlatMatrix} which holds the mapping
          * of column indexes to their lists of potential inputs.
          * @return	the potential pools
          */
-        public IFlatMatrix<Pool> getPotentialPoolsOld()
-        {
-            return this.potentialPools;
-        }
+        //public IFlatMatrix<Pool> getPotentialPoolsOld()
+        //{
+        //    return this.potentialPools;
+        //}
 
         /**
          * Returns the minimum {@link Synapse} permanence.
@@ -2548,7 +2548,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + (int)(temp ^ (temp >> 32));
             temp = BitConverter.DoubleToInt64Bits(potentialPct);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            result = prime * result + ((potentialPools == null) ? 0 : potentialPools.GetHashCode());
+            //result = prime * result + ((potentialPools == null) ? 0 : potentialPools.GetHashCode());
             result = prime * result + potentialRadius;
             temp = BitConverter.DoubleToInt64Bits(predictedSegmentDecrement);
             result = prime * result + (int)(temp ^ (temp >> 32));
@@ -2692,13 +2692,13 @@ namespace NeoCortexApi.Entities
                 return false;
             if (BitConverter.DoubleToInt64Bits(potentialPct) != BitConverter.DoubleToInt64Bits(other.potentialPct))
                 return false;
-            if (potentialPools == null)
-            {
-                if (other.potentialPools != null)
-                    return false;
-            }
-            else if (!potentialPools.Equals(other.potentialPools))
-                return false;
+            //if (potentialPools == null)
+            //{
+            //    if (other.potentialPools != null)
+            //        return false;
+            //}
+            //else if (!potentialPools.Equals(other.potentialPools))
+            //    return false;
             if (potentialRadius != other.potentialRadius)
                 return false;
             if (BitConverter.DoubleToInt64Bits(predictedSegmentDecrement) != BitConverter.DoubleToInt64Bits(other.predictedSegmentDecrement))

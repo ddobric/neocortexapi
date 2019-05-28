@@ -13,10 +13,10 @@ namespace NeoCortexApi.Entities
     {
         public Pool RFPool {get;set; }
 
-        /// <summary>
-        /// Permanence threshold value to declare synapse as connected.
-        /// </summary>
-        public double SynapsePermConnected { get; set; }
+        ///// <summary>
+        ///// Permanence threshold value to declare synapse as connected.
+        ///// </summary>
+        //public double SynapsePermConnected { get; set; }
 
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace NeoCortexApi.Entities
         //    return RFPool;
         //}
 
-        public void clearSynapses(Connections c)
+        public void ClearSynapses(Connections c)
         {
             this.Synapses.Clear();
             //c.getSynapses(this).Clear();
@@ -122,21 +122,23 @@ namespace NeoCortexApi.Entities
          */
         public void setPermanences(Connections c, double[] perms, int[] inputIndexes)
         {
+            var permConnThreshold = c.getSynPermConnected();
+
             RFPool.resetConnections();
             c.getConnectedCounts().clearStatistics(index);
             for (int i = 0; i < inputIndexes.Length; i++)
             {
-                var synapse = RFPool.getSynapseWithInput(inputIndexes[i]);
+                var synapse = RFPool.GetSynapseForInput(inputIndexes[i]);
                 synapse.setPermanence(c.getSynPermConnected(), perms[i]);
                 //RFPool.setPermanence(c, RFPool.getSynapseWithInput(inputIndexes[i]), perms[i]);
-                if (perms[i] >= c.getSynPermConnected())
+                if (perms[i] >= permConnThreshold)
                 {
                     c.getConnectedCounts().set(1, index, i);
                 }
             }
         }
 
-        public double SynPermConnected { get; set; }
+        //public double SynPermConnected { get; set; }
        
 
         /**
@@ -144,13 +146,13 @@ namespace NeoCortexApi.Entities
          * @param c
          * @param connectedIndexes
          */
-        public void setConnectedSynapsesForTest(Connections c, int[] connectedIndexes)
-        {
-            //Pool pool = createPool(c, connectedIndexes);
-            var pool = new Pool(connectedIndexes.Length, c.NumInputs);
-            //c.getPotentialPools().set(index, pool);
-            c.getPotentialPoolsOld().set(index, pool);
-        }
+        //public void setConnectedSynapsesForTest(Connections c, int[] connectedIndexes)
+        //{
+        //    //Pool pool = createPool(c, connectedIndexes);
+        //    var pool = new Pool(connectedIndexes.Length, c.NumInputs);
+        //    //c.getPotentialPools().set(index, pool);
+        //    c.getPotentialPoolsOld().set(index, pool);
+        //}
 
         /**
          * Returns an array of synapse indexes as a dense binary array.

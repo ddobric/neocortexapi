@@ -33,7 +33,7 @@ namespace UnitTestsProject
             return new DistributedMemory()
             {
                 ColumnDictionary = new HtmSparseIntDictionary<Column>(cfg),
-                PoolDictionary = new HtmSparseIntDictionary<Pool>(cfg),
+                //PoolDictionary = new HtmSparseIntDictionary<Pool>(cfg),
             };
         }
 
@@ -42,7 +42,7 @@ namespace UnitTestsProject
             return new DistributedMemory()
             {
                 ColumnDictionary = new InMemoryDistributedDictionary<int, NeoCortexApi.Entities.Column>(1),
-                PoolDictionary = new InMemoryDistributedDictionary<int, NeoCortexApi.Entities.Pool>(1),
+                //PoolDictionary = new InMemoryDistributedDictionary<int, NeoCortexApi.Entities.Pool>(1),
             };
         }
 

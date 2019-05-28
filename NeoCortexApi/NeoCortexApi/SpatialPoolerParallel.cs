@@ -65,7 +65,7 @@ namespace NeoCortexApi
             mem.set(colList);
 
             sw.Stop();
-            c.setPotentialPools(new SparseObjectMatrix<Pool>(c.getMemory().getDimensions(), dict: distMem == null ? null : distMem.PoolDictionary));
+            //c.setPotentialPools(new SparseObjectMatrix<Pool>(c.getMemory().getDimensions(), dict: distMem == null ? null : distMem.PoolDictionary));
 
             Debug.WriteLine($" Upload time: {sw.ElapsedMilliseconds}");
 

@@ -9,6 +9,6 @@ namespace NeoCortexApi.Entities
     {
         public IDistributedDictionary<int, Column> ColumnDictionary { get; set; }
 
-        public IDistributedDictionary<int, Pool> PoolDictionary { get; set; }
+        //public IDistributedDictionary<int, Pool> PoolDictionary { get; set; }
     }
 }

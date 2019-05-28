@@ -28,10 +28,10 @@ namespace NeoCortexApi.Entities
          *                  42x10, the point [1, 4] is index 1*420 + 4*10 = 460.
          * @return          A array of coordinates of length len(dimensions).
          */
-        public int[] GetCoordinatesFromIndex(int index)
-        {
-            return computeCoordinates(index);
-        }
+        //public int[] GetCoordinatesFromIndex(int index)
+        //{
+        //    return calcCoordinatesFrmFlatIndex(index, new HtmModuleTopology(this.dimensions, this.isColumnMajor));
+        //}
 
         /**
          * Translate coordinates into an index, using the given coordinate system.
@@ -63,7 +63,7 @@ namespace NeoCortexApi.Entities
          */
         public int[] GetNeighborhood(int centerIndex, int radius)
         {
-            var centerPosition = GetCoordinatesFromIndex(centerIndex);
+            var centerPosition = HtmCompute.GetCoordinatesFromIndex(centerIndex, this.HtmTopology);
 
             IntGenerator[] intGens = new IntGenerator[dimensions.Length];
             for (int i = 0; i < dimensions.Length; i++)
@@ -114,7 +114,7 @@ namespace NeoCortexApi.Entities
          */
         public int[] GetWrappingNeighborhood(int centerIndex, int radius)
         {
-            int[] cp = GetCoordinatesFromIndex(centerIndex);
+            int[] cp = HtmCompute.GetCoordinatesFromIndex(centerIndex, this.HtmTopology);
 
             // Dims of columns
             IntGenerator[] intGens = new IntGenerator[dimensions.Length];

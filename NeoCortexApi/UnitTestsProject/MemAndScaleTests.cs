@@ -220,7 +220,7 @@ namespace UnitTestsProject
         [DataRow(1)]
         public void SPInitTest(int poolerImplementation)
         {
-            int numOfColsInDim = 1024;
+            int numOfColsInDim = 100;
 
             Parameters parameters = Parameters.getAllDefaultParameters();
 

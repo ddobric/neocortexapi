@@ -62,10 +62,10 @@ namespace NeoCortexApi.Entities
          * @param s	the Synapse
          * @return	the permanence
          */
-        public double getPermanence(Synapse s)
-        {
-            return synapsesBySourceIndex[s.getInputIndex()].getPermanence();
-        }
+        //public double getPermanence(Synapse s)
+        //{
+        //    return synapsesBySourceIndex[s.getInputIndex()].getPermanence();
+        //}
 
         /**
          * Sets the specified  permanence value for the specified {@link Synapse}
@@ -115,7 +115,7 @@ namespace NeoCortexApi.Entities
          * @param inputIndex	the input vector connection's index.
          * @return
          */
-        public Synapse getSynapseWithInput(int inputIndex)
+        public Synapse GetSynapseForInput(int inputIndex)
         {
             return synapsesBySourceIndex[inputIndex];
         }
@@ -130,13 +130,8 @@ namespace NeoCortexApi.Entities
             int[] keys = getSynapseKeys();// synapsesBySourceIndex.Keys;
             for (int x = 0, j = Size - 1; x < Size; x++, j--)
             {
-                retVal[j] = synapsesBySourceIndex[keys[Size-x-1]].getPermanence();
+                retVal[j] = this.synapsesBySourceIndex[keys[Size-x-1]].getPermanence();
             }
-
-            //for (int x = size-1, j = 0; x >= 0; x--, j++)
-            //{
-            //    retVal[j] = synapsesBySourceIndex[x].getPermanence();
-            //}
 
             return retVal;
         }
