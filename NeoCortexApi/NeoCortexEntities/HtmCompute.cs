@@ -270,5 +270,93 @@ namespace NeoCortexApi
                     GetNeighborhood(centerInput, potentialRadius, inputTopology);
         }
 
+
+        /**
+     * Initializes the permanences of a column. The method
+     * returns a 1-D array the size of the input, where each entry in the
+     * array represents the initial permanence value between the input bit
+     * at the particular index in the array, and the column represented by
+     * the 'index' parameter.
+     * 
+     * @param c                 the {@link Connections} which is the memory model
+     * @param potentialPool     An array specifying the potential pool of the column.
+     *                          Permanence values will only be generated for input bits
+     *                          corresponding to indices for which the mask value is 1.
+     *                          WARNING: potentialPool is sparse, not an array of "1's"
+     * @param index             the index of the column being initialized
+     * @param connectedPct      A value between 0 or 1 specifying the percent of the input
+     *                          bits that might maximally start off in a connected state.
+     *                          0.7 means, maximally 70% of potential might be connected
+     * @return
+     */
+        public static double[] InitSynapsePermanences(HtmConfig htmConfig, int[] potentialPool, Random random)
+        {
+            //Random random = new Random();
+            double[] perm = new double[htmConfig.NumInputs];
+
+            //foreach (int idx in column.ProximalDendrite.ConnectedInputs)
+            foreach (int idx in potentialPool)
+            {
+                if (random.NextDouble() <= htmConfig.InitialSynapseConnsPct)
+                {
+                    perm[idx] = InitPermConnected(htmConfig.SynPermMax, htmConfig.SynPermMax, random);
+                }
+                else
+                {
+                    htmConfig.SynPermConnected =
+                    perm[idx] = InitPermNonConnected(htmConfig.SynPermConnected, random);
+                }
+
+                perm[idx] = perm[idx] < htmConfig.SynPermTrimThreshold ? 0 : perm[idx];
+
+            }
+
+            return perm;
+        }
+
+        /**
+      * Returns a randomly generated permanence value for a synapse that is
+      * initialized in a connected state. The basic idea here is to initialize
+      * permanence values very close to synPermConnected so that a small number of
+      * learning steps could make it disconnected or connected.
+      *
+      * Note: experimentation was done a long time ago on the best way to initialize
+      * permanence values, but the history for this particular scheme has been lost.
+      * 
+      * @return  a randomly generated permanence value
+      */
+        public static double InitPermConnected(double synPermMax, double synPermConnected, Random rnd)
+        {
+            //double p = c.getSynPermConnected() + (c.getSynPermMax() - c.getSynPermConnected()) * c.random.NextDouble();
+            double p = synPermConnected + (synPermMax - synPermConnected) * rnd.NextDouble();
+
+            // Note from Python implementation on conditioning below:
+            // Ensure we don't have too much unnecessary precision. A full 64 bits of
+            // precision causes numerical stability issues across platforms and across
+            // implementations
+            p = ((int)(p * 100000)) / 100000.0d;
+            return p;
+        }
+
+
+        /// <summary>
+        /// Returns a randomly generated permanence value for a synapses that is to be
+        /// initialized in a non-connected state.</summary>
+        /// <param name="synPermConnected"></param>
+        /// <param name="rnd">Random generator to be used to generate permanence.</param>
+        /// <returns>Permanence value.</returns>
+        public static double InitPermNonConnected(double synPermConnected, Random rnd)
+        {
+            //double p = c.getSynPermConnected() * c.getRandom().NextDouble();
+            double p = synPermConnected * rnd.NextDouble();
+
+            // Note from Python implementation on conditioning below:
+            // Ensure we don't have too much unnecessary precision. A full 64 bits of
+            // precision causes numerical stability issues across platforms and across
+            // implementations
+            p = ((int)(p * 100000)) / 100000.0d;
+            return p;
+        }
+
     }
 }
