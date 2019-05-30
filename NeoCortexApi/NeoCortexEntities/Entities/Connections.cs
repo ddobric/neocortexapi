@@ -1,14 +1,10 @@
 ﻿
+using NeoCortexApi.Types;
+using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using NeoCortexApi.Entities;
-using NeoCortexApi.Types;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Linq;
 using System.Collections.ObjectModel;
-using NeoCortexApi.Utility;
+using System.Linq;
 
 namespace NeoCortexApi.Entities
 {
@@ -186,6 +182,21 @@ namespace NeoCortexApi.Entities
             get
             {
                 return getInputMatrix().ModuleTopology;
+            }
+        }
+
+        public HtmConfig HtmConfig
+        {
+            get
+            {
+                HtmConfig cfg = new HtmConfig();
+                cfg.ColumnTopology = this.ColumnTopology;
+                cfg.InputTopology = this.InputTopology;
+                cfg.IsWrapAround = this.isWrapAround();
+                cfg.PotentialPct = getPotentialPct();
+                cfg.PotentialRadius = getPotentialRadius();
+
+                return cfg;
             }
         }
 

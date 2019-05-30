@@ -55,7 +55,7 @@ namespace UnitTestsProject
         {
             Topology t = new Topology(new int[] { 2048, 40 });
             int[] coords = new int[] { 200, 10 };
-            var indx = t.GetIndexFromCoordinates(coords);
+            var indx = HtmCompute.GetFlatIndexFromCoordinates(coords, t.HtmTopology);
         }
 
 
@@ -64,7 +64,7 @@ namespace UnitTestsProject
         {
             Topology t = new Topology(new int[] { 2048, 40 });
             int[] coords = new int[] { 200, 10 };
-            var indx = t.GetIndexFromCoordinates(coords);
+            var indx = HtmCompute.GetFlatIndexFromCoordinates(coords, t.HtmTopology);
             var coords2 = HtmCompute.GetCoordinatesFromIndex(indx, t.HtmTopology);
 
             Assert.AreEqual(coords[0], coords2[0]);

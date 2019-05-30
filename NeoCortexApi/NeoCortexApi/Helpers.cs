@@ -1,5 +1,6 @@
 ﻿using ImageBinarizer;
 using NeoCortexApi.DistributedCompute;
+using NeoCortexApi.Entities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -103,7 +104,7 @@ namespace NeoCortexApi
             {
                 return new HtmSparseIntDictionaryConfig()
                 {
-                    HtmActorConfig = new DistributedComputeLib.HtmConfig()
+                    HtmActorConfig = new HtmConfig
                     {
 
                     },

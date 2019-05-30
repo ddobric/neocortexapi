@@ -64,23 +64,23 @@ namespace NeoCortexApi.Entities
             isColumnMajor = useColumnMajorOrdering;
         }
 
-        /**
-         * Returns a flat index computed from the specified coordinates
-         * which represent a "dimensioned" index.
-         * 
-         * @param   coordinates     an array of coordinates
-         * @return  a flat index
-         */
-        public int computeIndex(int[] coordinates)
-        {
-            int[] localMults = isColumnMajor ? HtmCompute.Reverse(dimensionMultiples) : dimensionMultiples;
-            int baseNum = 0;
-            for (int i = 0; i < coordinates.Length; i++)
-            {
-                baseNum += (localMults[i] * coordinates[i]);
-            }
-            return baseNum;
-        }
+        ///**
+        // * Returns a flat index computed from the specified coordinates
+        // * which represent a "dimensioned" index.
+        // * 
+        // * @param   coordinates     an array of coordinates
+        // * @return  a flat index
+        // */
+        //public int computeIndex(int[] coordinates)
+        //{
+        //    int[] localMults = isColumnMajor ? HtmCompute.Reverse(dimensionMultiples) : dimensionMultiples;
+        //    int baseNum = 0;
+        //    for (int i = 0; i < coordinates.Length; i++)
+        //    {
+        //        baseNum += (localMults[i] * coordinates[i]);
+        //    }
+        //    return baseNum;
+        //}
 
 
         ///// <summary>

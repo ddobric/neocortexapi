@@ -153,7 +153,7 @@ namespace NeoCortexApi
             for (int i = 0; i < numColumns; i++)
             {
                 // Gets RF
-                int[] potential = MapPotential(c, i, c.isWrapAround());
+                int[] potential = MapPotential(c.HtmConfig, i, c.getRandom());
 
                 Column column = c.getColumn(i);
 
@@ -530,9 +530,10 @@ namespace NeoCortexApi
      */
         public int[] getColumnNeighborhood(Connections c, int centerColumn, int inhibitionRadius)
         {
+            var topology = c.getColumnTopology().HtmTopology;
             return c.isWrapAround() ?
-                c.getColumnTopology().GetWrappingNeighborhood(centerColumn, inhibitionRadius) :
-                    c.getColumnTopology().GetNeighborhood(centerColumn, inhibitionRadius);
+                HtmCompute.GetWrappingNeighborhood(centerColumn, inhibitionRadius, topology) :
+                    HtmCompute.GetNeighborhood(centerColumn, inhibitionRadius, topology);
         }
 
         /**
@@ -1144,18 +1145,18 @@ namespace NeoCortexApi
          *                      ignored.
          * @return
          */
-        public int[] MapPotential(Connections c, int columnIndex, bool wrapAround)
+        public int[] MapPotential(HtmConfig htmConfig, int columnIndex, Random rnd)
         {
-            int centerInput = MapColumn(columnIndex, c.ColumnTopology, c.InputTopology);
+            int centerInput = MapColumn(columnIndex, htmConfig.ColumnTopology, htmConfig.InputTopology);
 
             // Here we have Receptive Field (RF)
-            int[] columnInputs = getInputNeighborhood(c, centerInput, c.getPotentialRadius());
+            int[] columnInputs = HtmCompute.GetInputNeighborhood(htmConfig.IsWrapAround, htmConfig.InputTopology, centerInput, htmConfig.PotentialRadius);
 
             // Select a subset of the receptive field to serve as the the potential pool.
-            int numPotential = (int)(columnInputs.Length * c.getPotentialPct() + 0.5);
+            int numPotential = (int)(columnInputs.Length * htmConfig.PotentialPct + 0.5);
             int[] retVal = new int[numPotential];
 
-            var data = ArrayUtils.sample(columnInputs, retVal, c.getRandom());
+            var data = ArrayUtils.sample(columnInputs, retVal, rnd);
 
             return data;
         }
@@ -1762,24 +1763,7 @@ namespace NeoCortexApi
 
 
 
-        /**
-         * Gets a neighborhood of inputs.
-         * 
-         * Simply calls topology.wrappingNeighborhood or topology.neighborhood.
-         * 
-         * A subclass can insert different topology behavior by overriding this method.
-         * 
-         * @param c                     the {@link Connections} memory encapsulation
-         * @param centerInput           The center of the neighborhood.
-         * @param potentialRadius       Span of the input field included in each neighborhood
-         * @return                      The input's in the neighborhood. (1D)
-         */
-        public int[] getInputNeighborhood(Connections c, int centerInput, int potentialRadius)
-        {
-            return c.isWrapAround() ?
-                c.getInputTopology().GetWrappingNeighborhood(centerInput, potentialRadius) :
-                    c.getInputTopology().GetNeighborhood(centerInput, potentialRadius);
-        }
+      
 
         public Double getRobustness(Double k, int[] oriOut, int[] realOut)
         {

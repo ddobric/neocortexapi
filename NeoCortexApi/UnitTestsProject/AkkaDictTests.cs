@@ -1,17 +1,16 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeoCortex;
 using NeoCortexApi;
+using NeoCortexApi.DistributedCompute;
+using NeoCortexApi.DistributedComputeLib;
+using NeoCortexApi.Entities;
+using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using NeoCortexApi.DistributedComputeLib;
-using System.Threading;
-using NeoCortexApi.Entities;
-using System.IO;
-using NeoCortexApi.Utility;
-using NeoCortex;
 using System.Drawing;
-using NeoCortexApi.DistributedCompute;
-using System.Linq;
+using System.IO;
+using System.Threading;
 
 #if USE_AKKA
 namespace UnitTestsProject
@@ -283,7 +282,7 @@ namespace UnitTestsProject
 
             parameters.apply(mem);
 
-            sp.init(mem, UnitTestHelpers.GetMemory(parameters));
+            sp.init(mem,null /* UnitTestHelpers.GetMemory(parameters)*/);
 
             int actiColLen = numOfActCols;
 

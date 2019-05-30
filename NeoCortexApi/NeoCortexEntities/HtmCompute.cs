@@ -1,7 +1,9 @@
 ﻿using NeoCortexApi.Entities;
+using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace NeoCortexApi
 {
@@ -25,6 +27,7 @@ namespace NeoCortexApi
             return topology.IsMajorOrdering ? Reverse(returnVal) : returnVal;
         }
 
+
         /// <summary>
         /// Reurns reverse array
         /// </summary>
@@ -39,5 +42,143 @@ namespace NeoCortexApi
             }
             return retVal;
         }
+
+
+        /// <summary>
+        /// Gets indexes of neighborhood cells within centered radius  
+        /// </summary>
+        /// <param name="centerIndex">The index of the point. The coordinates are expressed as a single index by
+        /// using the dimensions as a mixed radix definition. For example, in dimensions 42x10, the point [1, 4] is index 1*420 + 4*10 = 460.
+        /// </param>   
+        /// <param name="radius"></param>
+        /// <param name="topology"></param>
+        /// <returns>The points in the neighborhood, including centerIndex.</returns>
+        public static int[] GetWrappingNeighborhood(int centerIndex, int radius, HtmModuleTopology topology)
+        {
+            int[] cp = HtmCompute.GetCoordinatesFromIndex(centerIndex, topology);
+
+            // Dims of columns
+            IntGenerator[] intGens = new IntGenerator[topology.Dimensions.Length];
+            for (int i = 0; i < topology.Dimensions.Length; i++)
+            {
+                intGens[i] = new IntGenerator(cp[i] - radius, Math.Min((cp[i] - radius) + topology.Dimensions[i] - 1, cp[i] + radius) + 1);
+            }
+
+            List<List<int>> result = new List<List<int>>();
+
+            result.Add(new List<int>());
+
+            List<List<int>> interim = new List<List<int>>();
+
+            int k = 0;
+            foreach (IntGenerator gen in intGens)
+            {
+                interim.Clear();
+                interim.AddRange(result);
+                result.Clear();
+
+                foreach (var lx in interim)
+                {
+                    gen.reset();
+
+                    for (int y = 0; y < gen.size(); y++)
+                    {
+                        int py = ArrayUtils.modulo(gen.next(), topology.Dimensions[k]);
+                        //int py = gen.next() % dimensions[k];
+
+                        List<int> tl = new List<int>();
+                        tl.AddRange(lx);
+                        tl.Add(py);
+                        result.Add(tl);
+                    }
+                }
+
+                k++;
+            }
+
+            return result.Select((tl) => GetFlatIndexFromCoordinates(tl.ToArray(), topology)).ToArray();
+        }
+
+
+        public static int[] GetNeighborhood(int centerIndex, int radius, HtmModuleTopology topology)
+        {
+            var centerPosition = HtmCompute.GetCoordinatesFromIndex(centerIndex, topology);
+
+            IntGenerator[] intGens = new IntGenerator[topology.Dimensions.Length];
+            for (int i = 0; i < topology.Dimensions.Length; i++)
+            {
+                intGens[i] = new IntGenerator(Math.Max(0, centerPosition[i] - radius),
+                    Math.Min(topology.Dimensions[i] - 1, centerPosition[i] + radius) + 1);
+            }
+
+            List<List<int>> result = new List<List<int>>();
+
+            result.Add(new List<int>());
+
+            List<List<int>> interim = new List<List<int>>();
+
+            foreach (IntGenerator gen in intGens)
+            {
+                interim.Clear();
+                interim.AddRange(result);
+                result.Clear();
+
+                foreach (var lx in interim)
+                {
+                    gen.reset();
+
+                    for (int y = 0; y < gen.size(); y++)
+                    {
+                        int py = gen.next();
+                        List<int> tl = new List<int>();
+                        tl.AddRange(lx);
+                        tl.Add(py);
+                        result.Add(tl);
+                    }
+                }
+            }
+
+            return result.Select((tl) => GetFlatIndexFromCoordinates(tl.ToArray(), topology)).ToArray();
+        }
+
+
+        /// <summary>
+        /// Returns a flat index computed from the specified coordinates.
+        /// </summary>
+        /// <param name="coordinates">  The index of the point</param>
+        /// <param name="topology"></param>
+        /// <returns>using the dimensions as a mixed radix definition.For example, in dimensions 
+        /// 42x10, the point [1, 4] is index 1*420 + 4*10 = 460.</returns>
+        public static int GetFlatIndexFromCoordinates(int[] coordinates, HtmModuleTopology topology)
+        {
+            int[] localMults = topology.IsMajorOrdering ? HtmCompute.Reverse(topology.DimensionMultiplies) : topology.DimensionMultiplies;
+            int baseNum = 0;
+            for (int i = 0; i < coordinates.Length; i++)
+            {
+                baseNum += (localMults[i] * coordinates[i]);
+            }
+            return baseNum;
+        }
+
+
+        /**
+       * Gets a neighborhood of inputs.
+       * 
+       * Simply calls topology.wrappingNeighborhood or topology.neighborhood.
+       * 
+       * A subclass can insert different topology behavior by overriding this method.
+       * 
+       * @param c                     the {@link Connections} memory encapsulation
+       * @param centerInput           The center of the neighborhood.
+       * @param potentialRadius       Span of the input field included in each neighborhood
+       * @return                      The input's in the neighborhood. (1D)
+       */
+        public static int[] GetInputNeighborhood(bool isWrapAround, HtmModuleTopology inputTopology, int centerInput, int potentialRadius)
+        {
+            return isWrapAround ?
+                GetWrappingNeighborhood(centerInput, potentialRadius, inputTopology) :
+                    GetNeighborhood(centerInput, potentialRadius, inputTopology);
+        }
+
     }
 }

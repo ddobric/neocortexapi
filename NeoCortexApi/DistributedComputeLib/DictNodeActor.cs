@@ -167,12 +167,12 @@ namespace NeoCortexApi.DistributedComputeLib
         }
 
 
-        public int[] GetInputNeighborhood(int centerInput, int potentialRadius)
-        {
-            return this.config.IsWrapAround ?
-                this.InputTopology.GetWrappingNeighborhood(centerInput, potentialRadius) :
-                    this.InputTopology.GetNeighborhood(centerInput, potentialRadius);
-        }
+        //public int[] GetInputNeighborhood(int centerInput, int potentialRadius)
+        //{
+        //    return this.config.IsWrapAround ?
+        //        this.InputTopology.GetWrappingNeighborhood(centerInput, potentialRadius) :
+        //            this.InputTopology.GetNeighborhood(centerInput, potentialRadius);
+        //}
 
     }
 }
