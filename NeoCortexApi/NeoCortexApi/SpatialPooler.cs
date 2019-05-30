@@ -1072,50 +1072,7 @@ namespace NeoCortexApi
             return perm;
         }
 
-        /**
-         * Uniform Column Mapping 
-         * Maps a column to its respective input index, keeping to the topology of
-         * the region. It takes the index of the column as an argument and determines
-         * what is the index of the flattened input vector that is to be the center of
-         * the column's potential pool. It distributes the columns over the inputs
-         * uniformly. The return value is an integer representing the index of the
-         * input bit. Examples of the expected output of this method:
-         * * If the topology is one dimensional, and the column index is 0, this
-         *   method will return the input index 0. If the column index is 1, and there
-         *   are 3 columns over 7 inputs, this method will return the input index 3.
-         * * If the topology is two dimensional, with column dimensions [3, 5] and
-         *   input dimensions [7, 11], and the column index is 3, the method
-         *   returns input index 8. 
-         *   
-         * @param columnIndex   The index identifying a column in the permanence, potential
-         *                      and connectivity matrices.
-         * @return              Flat index of mapped column.
-         */
-        public static int MapColumn(int columnIndex, HtmModuleTopology colTop, HtmModuleTopology inpTop)
-        {         
-            int[] columnCoords = AbstractFlatMatrix.ComputeCoordinates(colTop.NumDimensions,
-                colTop.DimensionMultiplies, colTop.IsMajorOrdering, columnIndex);
-
-            double[] colCoords = ArrayUtils.toDoubleArray(columnCoords);
-
-            double[] columnRatios = ArrayUtils.divide(
-                colCoords, ArrayUtils.toDoubleArray(colTop.Dimensions), 0, 0);
-
-            double[] inputCoords = ArrayUtils.multiply(
-                ArrayUtils.toDoubleArray(inpTop.Dimensions), columnRatios, 0, 0);
-
-            var colSpanOverInputs = ArrayUtils.divide(
-                        ArrayUtils.toDoubleArray(inpTop.Dimensions),
-                        ArrayUtils.toDoubleArray(colTop.Dimensions), 0, 0);
-
-            inputCoords = ArrayUtils.d_add(inputCoords, ArrayUtils.multiply(colSpanOverInputs, 0.5));
-
-            // Makes sure that inputCoords are in range [0, inpDims]
-            int[] inputCoordInts = ArrayUtils.clip(ArrayUtils.toIntArray(inputCoords), inpTop.Dimensions, -1);
-
-            return AbstractFlatMatrix.ComputeIndex(inputCoordInts, inpTop.Dimensions, inpTop.NumDimensions,
-                 inpTop.DimensionMultiplies, inpTop.IsMajorOrdering, true);            
-        }
+       
 
 
         /**
@@ -1145,9 +1102,9 @@ namespace NeoCortexApi
          *                      ignored.
          * @return
          */
-        public int[] MapPotential(HtmConfig htmConfig, int columnIndex, Random rnd)
+        public static int[] MapPotential(HtmConfig htmConfig, int columnIndex, Random rnd)
         {
-            int centerInput = MapColumn(columnIndex, htmConfig.ColumnTopology, htmConfig.InputTopology);
+            int centerInput = HtmCompute.MapColumn(columnIndex, htmConfig.ColumnTopology, htmConfig.InputTopology);
 
             // Here we have Receptive Field (RF)
             int[] columnInputs = HtmCompute.GetInputNeighborhood(htmConfig.IsWrapAround, htmConfig.InputTopology, centerInput, htmConfig.PotentialRadius);

@@ -509,10 +509,10 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 12 });
             initSP();
 
-            Assert.IsTrue(1 == SpatialPooler.MapColumn(0, mem.ColumnTopology, mem.InputTopology));
-            Assert.IsTrue(4 == SpatialPooler.MapColumn(1, mem.ColumnTopology, mem.InputTopology));
-            Assert.IsTrue(7 == SpatialPooler.MapColumn(2, mem.ColumnTopology, mem.InputTopology));
-            Assert.IsTrue(10 == SpatialPooler.MapColumn(3, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(1 == HtmCompute.MapColumn(0, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(4 == HtmCompute.MapColumn(1, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(7 == HtmCompute.MapColumn(2, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(10 == HtmCompute.MapColumn(3, mem.ColumnTopology, mem.InputTopology));
 
             // Test 1D with same dimension of columns and inputs
             setupParameters();
@@ -520,10 +520,10 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 4 });
             initSP();
 
-            Assert.IsTrue(0 == SpatialPooler.MapColumn(0, mem.ColumnTopology, mem.InputTopology));
-            Assert.IsTrue(1 == SpatialPooler.MapColumn(1, mem.ColumnTopology, mem.InputTopology));
-            Assert.IsTrue(2 == SpatialPooler.MapColumn(2, mem.ColumnTopology, mem.InputTopology));
-            Assert.IsTrue(3 == SpatialPooler.MapColumn(3, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(0 == HtmCompute.MapColumn(0, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(1 == HtmCompute.MapColumn(1, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(2 == HtmCompute.MapColumn(2, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(3 == HtmCompute.MapColumn(3, mem.ColumnTopology, mem.InputTopology));
 
             // Test 1D with dimensions of length 1
             setupParameters();
@@ -531,7 +531,7 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 1 });
             initSP();
 
-            Assert.IsTrue(0 == SpatialPooler.MapColumn(0, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(0 == HtmCompute.MapColumn(0, mem.ColumnTopology, mem.InputTopology));
 
             // Test 2D
             setupParameters();
@@ -539,11 +539,11 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 36, 12 });
             initSP();
 
-            Assert.IsTrue(13 == SpatialPooler.MapColumn( 0, mem.ColumnTopology, mem.InputTopology));
-            Assert.IsTrue(49 == SpatialPooler.MapColumn( 4, mem.ColumnTopology, mem.InputTopology));
-            Assert.IsTrue(52 == SpatialPooler.MapColumn( 5, mem.ColumnTopology, mem.InputTopology));
-            Assert.IsTrue(58 == SpatialPooler.MapColumn( 7, mem.ColumnTopology, mem.InputTopology));
-            Assert.IsTrue(418 == SpatialPooler.MapColumn(47, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(13 == HtmCompute.MapColumn( 0, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(49 == HtmCompute.MapColumn( 4, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(52 == HtmCompute.MapColumn( 5, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(58 == HtmCompute.MapColumn( 7, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(418 == HtmCompute.MapColumn(47, mem.ColumnTopology, mem.InputTopology));
 
             // Test 2D with some input dimensions smaller than column dimensions.
             setupParameters();
@@ -551,9 +551,9 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 3, 5 });
             initSP();
 
-            Assert.IsTrue(0 == SpatialPooler.MapColumn( 0, mem.ColumnTopology, mem.InputTopology));
-            Assert.IsTrue(4 == SpatialPooler.MapColumn( 3, mem.ColumnTopology, mem.InputTopology));
-            Assert.IsTrue(14 == SpatialPooler.MapColumn(15, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(0 == HtmCompute.MapColumn( 0, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(4 == HtmCompute.MapColumn( 3, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(14 == HtmCompute.MapColumn(15, mem.ColumnTopology, mem.InputTopology));
         }
 
         [TestMethod]
@@ -574,22 +574,22 @@ namespace UnitTestsProject
             // Test without wrapAround and potentialPct = 1
             int[] expected = new int[] { 0, 1, 2, 3 };
             mem.setWrapAround(false);
-            int[] mask = sp.MapPotential(mem.HtmConfig, 0, mem.getRandom());
+            int[] mask = HtmCompute.MapPotential(mem.HtmConfig, 0, mem.getRandom());
             Assert.IsTrue(expected.SequenceEqual(mask));
 
             expected = new int[] { 5, 6, 7, 8, 9 };
-            mask = sp.MapPotential(mem.HtmConfig, 2, mem.getRandom());
+            mask = HtmCompute.MapPotential(mem.HtmConfig, 2, mem.getRandom());
             Assert.IsTrue(expected.SequenceEqual(mask));
 
             // Test with wrapAround and potentialPct = 1
           
             expected = new int[] { 0, 1, 2, 3, 11 };
             mem.setWrapAround(true);
-            mask = sp.MapPotential(mem.HtmConfig, 0, mem.getRandom());
+            mask = HtmCompute.MapPotential(mem.HtmConfig, 0, mem.getRandom());
             Assert.IsTrue(expected.SequenceEqual(mask));
 
             expected = new int[] { 0, 8, 9, 10, 11 };
-            mask = sp.MapPotential(mem.HtmConfig, 3, mem.getRandom());
+            mask = HtmCompute.MapPotential(mem.HtmConfig, 3, mem.getRandom());
             Assert.IsTrue(expected.SequenceEqual(mask));
 
             // Test with wrapAround and potentialPct < 1
@@ -598,7 +598,7 @@ namespace UnitTestsProject
             initSP();
 
             int[] supersetMask = new int[] { 0, 1, 2, 3, 11 };
-            mask = sp.MapPotential(mem.HtmConfig, 0, mem.getRandom());
+            mask = HtmCompute.MapPotential(mem.HtmConfig, 0, mem.getRandom());
             Assert.IsTrue(mask.Length == 3);
             List<int> unionList = new List<int>(supersetMask);
             unionList.AddRange(mask);
@@ -622,7 +622,7 @@ namespace UnitTestsProject
 
             //Test without wrapAround
             mem.setWrapAround(false);
-            int[] mask = sp.MapPotential(mem.HtmConfig, 0, mem.getRandom());
+            int[] mask = HtmCompute.MapPotential(mem.HtmConfig, 0, mem.getRandom());
             List<int> trueIndices = new List<int>(new int[] { 0, 1, 2, 12, 13, 14, 24, 25, 26 });
             List<int> maskSet = new List<int>(mask);
             Assert.IsTrue(trueIndices.SequenceEqual(maskSet));
@@ -630,7 +630,7 @@ namespace UnitTestsProject
             trueIndices.Clear();
             maskSet.Clear();
             trueIndices.AddRange(new int[] { 6, 7, 8, 18, 19, 20, 30, 31, 32 });
-            mask = sp.MapPotential(mem.HtmConfig, 2, mem.getRandom());
+            mask = HtmCompute.MapPotential(mem.HtmConfig, 2, mem.getRandom());
             maskSet.AddRange(mask);
             Assert.IsTrue(trueIndices.SequenceEqual(maskSet));
 
@@ -646,7 +646,7 @@ namespace UnitTestsProject
                         36, 37, 38, 39, 47,
                         60, 61, 62, 63, 71 });
             mem.setWrapAround(true);
-            mask = sp.MapPotential(mem.HtmConfig, 0, mem.getRandom());
+            mask = HtmCompute.MapPotential(mem.HtmConfig, 0, mem.getRandom());
             maskSet.AddRange(mask);
             Assert.IsTrue(trueIndices.SequenceEqual(maskSet));
 
@@ -658,7 +658,7 @@ namespace UnitTestsProject
                         24, 32, 33, 34, 35,
                         36, 44, 45, 46, 47,
                         60, 68, 69, 70, 71 });
-            mask = sp.MapPotential(mem.HtmConfig, 3, mem.getRandom());
+            mask = HtmCompute.MapPotential(mem.HtmConfig, 3, mem.getRandom());
             maskSet.AddRange(mask);
             Assert.IsTrue(trueIndices.SequenceEqual(maskSet));
         }
@@ -676,7 +676,7 @@ namespace UnitTestsProject
 
             //Test without wrapAround and potentialPct = 1
             int[] expectedMask = new int[] { 0 };
-            int[] mask = sp.MapPotential(mem.HtmConfig, 0, mem.getRandom());
+            int[] mask = HtmCompute.MapPotential(mem.HtmConfig, 0, mem.getRandom());
             List<int> trueIndices = new List<int>(expectedMask);
             List<int> maskSet = new List<int>(mask);
 
