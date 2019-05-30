@@ -223,9 +223,7 @@ namespace UnitTestsProject
             int numOfColsInDim = 100;
 
             Parameters parameters = Parameters.getAllDefaultParameters();
-
-
-
+                       
             parameters.Set(KEY.POTENTIAL_RADIUS, 5);
             parameters.Set(KEY.POTENTIAL_PCT, 0.5);
             parameters.Set(KEY.GLOBAL_INHIBITION, false);

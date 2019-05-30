@@ -1921,14 +1921,14 @@ namespace UnitTestsProject
             //    dendriteSeg.Synapses.Add(new Synapse(null, dendriteSeg, i, 0) { InputIndex = mask[i] });
             //}
 
-            double[] perm = this.sp.InitSynapsePermanencesForColumn(mem.HtmConfig, mask, mem.getColumn(0), mem.getRandom());
+            double[] perm = this.sp.InitSynapsePermanences(mem.HtmConfig, mask, mem.getRandom());
             int numcon = ArrayUtils.valueGreaterCount(mem.getSynPermConnected(), perm);
 
             // Because of connectedPct=1 all 5 specified synapses have to be connected.
             Assert.AreEqual(5, numcon);
 
             mem.InitialSynapseConnsPct = 0;
-            perm = this.sp.InitSynapsePermanencesForColumn(mem.HtmConfig, mask, mem.getColumn(0), mem.getRandom());
+            perm = this.sp.InitSynapsePermanences(mem.HtmConfig, mask, mem.getRandom());
             numcon = ArrayUtils.valueGreaterCount(mem.getSynPermConnected(), perm);
             Assert.AreEqual(0, numcon);
 
@@ -1937,7 +1937,7 @@ namespace UnitTestsProject
             mem.NumInputs = 100;
             mask = new int[100];
             for (int i = 0; i < 100; i++) mask[i] = i;
-            double[] perma = this.sp.InitSynapsePermanencesForColumn(mem.HtmConfig, mask, mem.getColumn(0), mem.getRandom());
+            double[] perma = this.sp.InitSynapsePermanences(mem.HtmConfig, mask,  mem.getRandom());
             numcon = ArrayUtils.valueGreaterOrEqualCount(mem.getSynPermConnected(), perma);
             Assert.IsTrue(numcon > 0);
             Assert.IsTrue(numcon < mem.NumInputs);
@@ -1975,7 +1975,7 @@ namespace UnitTestsProject
             mem.NumInputs = 10;
             double connectedPct = 1;
             int[] mask = new int[] { 0, 1 };
-            double[] perm = sp.InitSynapsePermanencesForColumn( mem.HtmConfig, mask, mem.getColumn(0), mem.getRandom());
+            double[] perm = sp.InitSynapsePermanences( mem.HtmConfig, mask, mem.getRandom());
             int[] trueConnected = new int[] { 0, 1 };
 
             //Condition<?> cond = new Condition.Adapter<Object>()
@@ -1989,19 +1989,19 @@ namespace UnitTestsProject
 
             connectedPct = 1;
             mask = new int[] { 4, 5, 6 };
-            perm = sp.InitSynapsePermanencesForColumn(mem.HtmConfig, mask, mem.getColumn(0), mem.getRandom() );
+            perm = sp.InitSynapsePermanences(mem.HtmConfig, mask, mem.getRandom() );
             trueConnected = new int[] { 4, 5, 6 };
             ArrayUtils.toDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
 
             connectedPct = 1;
             mask = new int[] { 8, 9 };
-            perm = sp.InitSynapsePermanencesForColumn(mem.HtmConfig, mask, mem.getColumn(0), mem.getRandom());
+            perm = sp.InitSynapsePermanences(mem.HtmConfig, mask, mem.getRandom());
             trueConnected = new int[] { 8, 9 };
             ArrayUtils.toDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
 
             connectedPct = 1;
             mask = new int[] { 0, 1, 2, 3, 4, 5, 6, 8, 9 };
-            perm = sp.InitSynapsePermanencesForColumn(mem.HtmConfig, mask, mem.getColumn(0), mem.getRandom());
+            perm = sp.InitSynapsePermanences(mem.HtmConfig, mask, mem.getRandom());
             trueConnected = new int[] { 0, 1, 2, 3, 4, 5, 6, 8, 9 };
             ArrayUtils.toDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
         }

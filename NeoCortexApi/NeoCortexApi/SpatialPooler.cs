@@ -167,7 +167,7 @@ namespace NeoCortexApi
 
                 colList.Add(new KeyPair() { Key = i, Value = column });
 
-                double[] perm = InitSynapsePermanencesForColumn(c.HtmConfig, potential, column, c.getRandom());
+                double[] perm = InitSynapsePermanences(c.HtmConfig, potential, c.getRandom());
 
                 updatePermanencesForColumn(c, perm, column, potential, true);
 
@@ -1048,7 +1048,7 @@ namespace NeoCortexApi
          *                          0.7 means, maximally 70% of potential might be connected
          * @return
          */
-        public double[] InitSynapsePermanencesForColumn(HtmConfig htmConfig, int[] potentialPool, Column column, Random random)
+        public double[] InitSynapsePermanences(HtmConfig htmConfig, int[] potentialPool, Random random)
         {
             //Random random = new Random();
             double[] perm = new double[htmConfig.NumInputs];
