@@ -115,7 +115,11 @@ namespace UnitTestsProject
             {
                 HtmActorConfig = new HtmConfig()
                 {
-                    ColumnDimensions = new int[] { 100, 200 }
+                     ColumnTopology = new HtmModuleTopology()
+                     {
+                          Dimensions = new int[] { 100, 200 },
+                           IsMajorOrdering = false,
+                     }                  
                 },
 
                 Nodes = Helpers.Nodes,

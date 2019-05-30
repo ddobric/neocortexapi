@@ -9,9 +9,9 @@ namespace NeoCortexApi.Entities
     /// </summary>
     public class HtmConfig
     {
-        public int[] ColumnDimensions { get; set; }
+        //public int[] ColumnDimensions { get; set; }
 
-        public bool IsColumnMajor { get; set; } = false;
+        //public bool IsColumnMajor { get; set; } = false;
 
         public int[] InputDimensions { get; set; }
 

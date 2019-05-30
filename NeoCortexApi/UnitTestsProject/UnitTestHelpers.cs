@@ -24,12 +24,24 @@ namespace UnitTestsProject
             var cfg = Helpers.DefaultHtmSparseIntDictionaryConfig;
             cfg.HtmActorConfig = new HtmConfig()
             {
-                ColumnDimensions = (int[])htmParams[KEY.COLUMN_DIMENSIONS],
-                InputDimensions = (int[])htmParams[KEY.INPUT_DIMENSIONS],
+                ColumnTopology = new HtmModuleTopology()
+                {
+                    Dimensions = (int[])htmParams[KEY.COLUMN_DIMENSIONS],
+                    IsMajorOrdering = false,
+                },
+                InputTopology = new HtmModuleTopology
+                {
+                    Dimensions = (int[])htmParams[KEY.INPUT_DIMENSIONS],
+                    IsMajorOrdering = false,
+                },
+               
                 IsWrapAround = (bool)htmParams[KEY.WRAP_AROUND],
-                PotentialPct = (double)htmParams[KEY.POTENTIAL_PCT]
+
+                PotentialPct = (double)htmParams[KEY.POTENTIAL_PCT],
+
+                PotentialRadius = (int)htmParams[KEY.POTENTIAL_RADIUS],
             };
-        
+
             return new DistributedMemory()
             {
                 ColumnDictionary = new HtmSparseIntDictionary<Column>(cfg),

@@ -12,10 +12,6 @@ namespace NeoCortexApi.DistributedComputeLib
 
     public class DictNodeActor : ReceiveActor
     {
-        public Topology ColumnTopology { get; set; }
-
-        public Topology InputTopology { get; set; }
-
         private Dictionary<object, object> dict = new Dictionary<object, object>();
 
         private HtmConfig config;
@@ -32,8 +28,8 @@ namespace NeoCortexApi.DistributedComputeLib
             {
                 this.config = msg.HtmAkkaConfig;
 
-                this.ColumnTopology =new Topology(this.config.ColumnDimensions);
-                this.InputTopology = new Topology(this.config.InputDimensions);
+                //this.ColumnTopology =new Topology(this.config.ColumnDimensions);
+                //this.InputTopology = new Topology(this.config.InputDimensions);
                 
                 Console.WriteLine($"Received message: '{msg.GetType().Name}'");
                 Sender.Tell(-1, Self);
