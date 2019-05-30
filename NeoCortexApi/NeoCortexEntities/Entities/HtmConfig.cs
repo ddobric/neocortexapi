@@ -30,5 +30,14 @@ namespace NeoCortexApi.Entities
         public double PotentialPct { get; set; }
 
         public int PotentialRadius { get; set; }
+
+        public double SynPermConnected { get; set; }
+
+        public int NumInputs { get;  set; }
+
+        public double SynPermMax { get; set; }
+
+        public double InitialSynapseConnsPct { get; set; }
+        public double SynPermTrimThreshold { get; set; }
     }
 }

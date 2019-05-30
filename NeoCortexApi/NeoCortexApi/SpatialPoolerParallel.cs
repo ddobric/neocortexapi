@@ -98,23 +98,26 @@ namespace NeoCortexApi
 
             Parallel.For(0, numColumns, opts, (indx) =>
             {
+                Random rnd = new Random(42);
+
                 int i = (int)indx;
                 var data = new ProcessingDataParallel();
 
                 // Gets RF
-                data.Potential = MapPotential(c.HtmConfig, i, c.getRandom());
+                data.Potential = HtmCompute.MapPotential(c.HtmConfig, i, rnd);
                 data.Column = c.getColumn(i);
 
                 // This line initializes all synases in the potential pool of synapses.
                 // It creates the pool on proximal dendrite segment of the column.
                 // After initialization permancences are set to zero.
-                connectColumnToInputRF(c, data.Potential, data.Column);
+                //connectColumnToInputRF(c.HtmConfig, data.Potential, data.Column);
+                data.Column.CreatePotentialPool(c.HtmConfig, data.Potential, -1);
 
                 //Interlocked.Add(ref synapseCounter, data.Column.ProximalDendrite.Synapses.Count);
 
                 //colList.Add(new KeyPair() { Key = i, Value = column });
 
-                data.Perm = initSynapsePermanencesForColumn(c, data.Potential, data.Column);
+                data.Perm = InitSynapsePermanencesForColumn(c.HtmConfig, data.Potential, data.Column, rnd);
 
                 data.AvgConnected = GetAvgSpanOfConnectedSynapses(c, i);
 

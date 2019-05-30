@@ -153,20 +153,21 @@ namespace NeoCortexApi
             for (int i = 0; i < numColumns; i++)
             {
                 // Gets RF
-                int[] potential = MapPotential(c.HtmConfig, i, c.getRandom());
+                int[] potential = HtmCompute.MapPotential(c.HtmConfig, i, c.getRandom());
 
                 Column column = c.getColumn(i);
 
                 // This line initializes all synases in the potential pool of synapses.
                 // It creates the pool on proximal dendrite segment of the column.
                 // After initialization permancences are set to zero.
-                connectColumnToInputRF(c, potential, column);
+                column.CreatePotentialPool(c.HtmConfig, potential, -1);
+                //connectColumnToInputRF(c.HtmConfig, potential, column);
 
                 //c.getPotentialPools().set(i, potPool);
 
                 colList.Add(new KeyPair() { Key = i, Value = column });
 
-                double[] perm = initSynapsePermanencesForColumn(c, potential, column);
+                double[] perm = InitSynapsePermanencesForColumn(c.HtmConfig, potential, column, c.getRandom());
 
                 updatePermanencesForColumn(c, perm, column, potential, true);
 
@@ -325,13 +326,13 @@ namespace NeoCortexApi
             updateInhibitionRadius(c);
         }*/
 
-        protected static void connectColumnToInputRF(Connections c, int[] potential, Column column)
-        {
-            //var synapseIndex = c.getProximalSynapseCount();
-            //c.setProximalSynapseCount(synapseIndex + potential.Length);
-            var synapseIndex = -1;
-            var potPool = column.createPotentialPool(c, potential, synapseIndex);
-        }
+        //protected static void connectColumnToInputRF(HtmConfig htmConfig, int[] potential, Column column)
+        //{
+        //    //var synapseIndex = c.getProximalSynapseCount();
+        //    //c.setProximalSynapseCount(synapseIndex + potential.Length);
+        //    var synapseIndex = -1;
+        //    column.CreatePotentialPool(htmConfig, potential, synapseIndex);
+        //}
 
         /**
          * This is the primary public method of the SpatialPooler class. This
@@ -1047,25 +1048,25 @@ namespace NeoCortexApi
          *                          0.7 means, maximally 70% of potential might be connected
          * @return
          */
-        public double[] initSynapsePermanencesForColumn(Connections c, int[] potentialPool, Column column)
+        public double[] InitSynapsePermanencesForColumn(HtmConfig htmConfig, int[] potentialPool, Column column, Random random)
         {
             //Random random = new Random();
-
-            double[] perm = new double[c.NumInputs];
-            var random = c.getRandom();
+            double[] perm = new double[htmConfig.NumInputs];
+            
             //foreach (int idx in column.ProximalDendrite.ConnectedInputs)
             foreach (int idx in potentialPool)
             {
-                if (random.NextDouble() <= c.InitialSynapseConnsPct)
+                if (random.NextDouble() <= htmConfig.InitialSynapseConnsPct)
                 {
-                    perm[idx] = initPermConnected(c.getSynPermMax(), c.getSynPermMax(), random);
+                    perm[idx] = initPermConnected(htmConfig.SynPermMax, htmConfig.SynPermMax, random);
                 }
                 else
                 {
-                    perm[idx] = initPermNonConnected(c.getSynPermConnected(), random);
+                    htmConfig.SynPermConnected =
+                    perm[idx] = initPermNonConnected(htmConfig.SynPermConnected, random);
                 }
 
-                perm[idx] = perm[idx] < c.getSynPermTrimThreshold() ? 0 : perm[idx];
+                perm[idx] = perm[idx] < htmConfig.SynPermTrimThreshold ? 0 : perm[idx];
 
             }
 
@@ -1074,49 +1075,6 @@ namespace NeoCortexApi
 
        
 
-
-        /**
-         * Maps a column to its input bits. This method encapsulates the topology of
-         * the region. It takes the index of the column as an argument and determines
-         * what are the indices of the input vector that are located within the
-         * column's potential pool. The return value is a list containing the indices
-         * of the input bits. The current implementation of the base class only
-         * supports a 1 dimensional topology of columns with a 1 dimensional topology
-         * of inputs. To extend this class to support 2-D topology you will need to
-         * override this method. Examples of the expected output of this method:
-         * * If the potentialRadius is greater than or equal to the entire input
-         *   space, (global visibility), then this method returns an array filled with
-         *   all the indices
-         * * If the topology is one dimensional, and the potentialRadius is 5, this
-         *   method will return an array containing 5 consecutive values centered on
-         *   the index of the column (wrapping around if necessary).
-         * * If the topology is two dimensional (not implemented), and the
-         *   potentialRadius is 5, the method should return an array containing 25
-         *   '1's, where the exact indices are to be determined by the mapping from
-         *   1-D index to 2-D position.
-         * 
-         * @param c             {@link Connections} the main memory model
-         * @param columnIndex   The index identifying a column in the permanence, potential
-         *                      and connectivity matrices.
-         * @param wrapAround    A boolean value indicating that boundaries should be
-         *                      ignored.
-         * @return
-         */
-        public static int[] MapPotential(HtmConfig htmConfig, int columnIndex, Random rnd)
-        {
-            int centerInput = HtmCompute.MapColumn(columnIndex, htmConfig.ColumnTopology, htmConfig.InputTopology);
-
-            // Here we have Receptive Field (RF)
-            int[] columnInputs = HtmCompute.GetInputNeighborhood(htmConfig.IsWrapAround, htmConfig.InputTopology, centerInput, htmConfig.PotentialRadius);
-
-            // Select a subset of the receptive field to serve as the the potential pool.
-            int numPotential = (int)(columnInputs.Length * htmConfig.PotentialPct + 0.5);
-            int[] retVal = new int[numPotential];
-
-            var data = ArrayUtils.sample(columnInputs, retVal, rnd);
-
-            return data;
-        }
 
 
         private double calcInhibitionDensity(Connections c)

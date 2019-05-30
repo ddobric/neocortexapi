@@ -193,8 +193,13 @@ namespace NeoCortexApi.Entities
                 cfg.ColumnTopology = this.ColumnTopology;
                 cfg.InputTopology = this.InputTopology;
                 cfg.IsWrapAround = this.isWrapAround();
+                cfg.NumInputs = this.NumInputs;
                 cfg.PotentialPct = getPotentialPct();
                 cfg.PotentialRadius = getPotentialRadius();
+                cfg.SynPermConnected = getSynPermConnected();
+                cfg.InitialSynapseConnsPct = this.InitialSynapseConnsPct;
+                cfg.SynPermTrimThreshold = this.getSynPermTrimThreshold();
+                cfg.SynPermMax = this.getSynPermMax();
 
                 return cfg;
             }
@@ -586,15 +591,11 @@ namespace NeoCortexApi.Entities
             }
         }
 
-        /**
-         * Returns the product of the input dimensions
-         * @return  the product of the input dimensions
-         */
-        /**
- * Sets the product of the input dimensions to
- * establish a flat count of bits in the input field.
- * @param n
- */
+        
+        /// <summary>
+        /// Gets/Sets the number of input neurons in 1D space. Mathematically, 
+        /// this is the product of the input dimensions.
+        /// </summary>
         public int NumInputs
         {
             get => numInputs;

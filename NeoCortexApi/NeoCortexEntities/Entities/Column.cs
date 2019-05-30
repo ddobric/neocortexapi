@@ -163,12 +163,12 @@ namespace NeoCortexApi.Entities
          * @param c						the {@link Connections} memory
          * @param inputVectorIndexes	indexes specifying the input vector bit
          */
-        public Pool createPotentialPool(Connections c, int[] inputVectorIndexes, int startSynapseIndex)
+        public Pool CreatePotentialPool(HtmConfig htmConfig, int[] inputVectorIndexes, int startSynapseIndex)
         {
             //var pool = ProximalDendrite.createPool(c, inputVectorIndexes);
             this.ProximalDendrite.Synapses.Clear();
 
-            var pool = new Pool(inputVectorIndexes.Length, c.NumInputs);
+            var pool = new Pool(inputVectorIndexes.Length, htmConfig.NumInputs);
 
             this.ProximalDendrite.RFPool = pool;
 
@@ -177,7 +177,7 @@ namespace NeoCortexApi.Entities
                 //var cnt = c.getProximalSynapseCount();
                 //var synapse = createSynapse(c, c.getSynapses(this), null, this.RFPool, synCount, inputIndexes[i]);
                 var synapse = this.ProximalDendrite.createSynapse(null, startSynapseIndex + i, inputVectorIndexes[i]);
-                this.setPermanence(synapse, c.getSynPermConnected(), 0);
+                this.setPermanence(synapse, htmConfig.SynPermConnected, 0);
                 //c.setProximalSynapseCount(cnt + 1);
             }
 
@@ -266,7 +266,7 @@ namespace NeoCortexApi.Entities
         {
             //var synapseIndex = c.getProximalSynapseCount();
             //c.setProximalSynapseCount(synapseIndex + inputVectorIndexes.Length);
-            this.ProximalDendrite.RFPool = createPotentialPool(c, inputVectorIndexes, -1);
+            this.ProximalDendrite.RFPool = CreatePotentialPool(c.HtmConfig, inputVectorIndexes, -1);
             //ProximalDendrite.setConnectedSynapsesForTest(c, connections);
         }
 
