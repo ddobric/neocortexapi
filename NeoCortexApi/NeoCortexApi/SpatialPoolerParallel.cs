@@ -121,7 +121,7 @@ namespace NeoCortexApi
 
                 data.AvgConnected = GetAvgSpanOfConnectedSynapses(c, i);
 
-                updatePermanencesForColumn(c, data.Perm, data.Column, data.Potential, true);
+                updatePermanencesForColumn(c, c.HtmConfig, data.Perm, data.Column, data.Potential, true);
 
                 if (!colList2.TryAdd(i, new KeyPair() { Key = i, Value = data }))
                 {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 using NeoCortexApi.Entities;
+using NeoCortexApi.Utility;
 
 namespace NeoCortexApi.Entities
 {
@@ -19,6 +20,7 @@ namespace NeoCortexApi.Entities
     //[Serializable]
     public class Column : IEquatable<Column>, IComparable<Column>
     {
+        private AbstractSparseBinaryMatrix connectedCounts;
 
         /// <summary>
         /// Column index
@@ -211,7 +213,7 @@ namespace NeoCortexApi.Entities
          * @param c			the {@link Connections} memory
          * @param perms		the floating point degree of connectedness
          */
-        public void setPermanences(Connections c, double[] perms)
+        public void setPermanences(Connections c, HtmConfig htmConfig,  double[] perms)
         {
             var connCounts = c.getConnectedCounts();
 
@@ -225,9 +227,9 @@ namespace NeoCortexApi.Entities
             {
                 int indx = s.getInputIndex();
 
-                this.setPermanence(s, c.getSynPermConnected(), perms[indx]);
+                this.setPermanence(s, htmConfig.SynPermConnected, perms[indx]);
 
-                if (perms[indx] >= c.getSynPermConnected())
+                if (perms[indx] >= htmConfig.SynPermConnected)
                 {
                     connCounts.set(1, this.Index, s.getInputIndex());
                 }
@@ -251,9 +253,39 @@ namespace NeoCortexApi.Entities
          * @param c				the {@link Connections} memory object
          * @param permanences	floating point degree of connectedness
          */
-        public void setProximalPermanencesSparse(Connections c, double[] permanences, int[] inputVectorIndexes)
+        public void setProximalPermanencesSparse(Connections c, HtmConfig htmConfig, double[] permanences, int[] inputVectorIndexes)
         {
-            ProximalDendrite.setPermanences(c, permanences, inputVectorIndexes);
+            this.ProximalDendrite.setPermanences(c, htmConfig, permanences, inputVectorIndexes);
+        }
+
+
+        /**
+        * This method updates the permanence matrix with a column's new permanence
+        * values. The column is identified by its index, which reflects the row in
+        * the matrix, and the permanence is given in 'sparse' form, (i.e. an array
+        * whose members are associated with specific indexes). It is in
+        * charge of implementing 'clipping' - ensuring that the permanence values are
+        * always between 0 and 1 - and 'trimming' - enforcing sparseness by zeroing out
+        * all permanence values below 'synPermTrimThreshold'. Every method wishing
+        * to modify the permanence matrix should do so through this method.
+        * 
+        * @param c                 the {@link Connections} which is the memory model.
+        * @param perm              An array of permanence values for a column. The array is
+        *                          "sparse", i.e. it contains an entry for each input bit, even
+        *                          if the permanence value is 0.
+        * @param column            The column in the permanence, potential and connectivity matrices
+        * @param raisePerm         a boolean value indicating whether the permanence values
+        */
+        public void UpdatePermanencesForColumnSparse(Connections c,HtmConfig htmConfig, double[] perm, int[] maskPotential, bool raisePerm)
+        {
+            if (raisePerm)
+            {
+               HtmCompute.RaisePermanenceToThresholdSparse(htmConfig, perm);
+            }
+
+            ArrayUtils.LessOrEqualXThanSetToY(perm, htmConfig.SynPermTrimThreshold, 0);
+            ArrayUtils.Clip(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
+            setProximalPermanencesSparse(c, htmConfig, perm, maskPotential);
         }
 
         /**

@@ -199,8 +199,10 @@ namespace NeoCortexApi.Entities
                 cfg.SynPermConnected = getSynPermConnected();
                 cfg.InitialSynapseConnsPct = this.InitialSynapseConnsPct;
                 cfg.SynPermTrimThreshold = this.getSynPermTrimThreshold();
+                cfg.SynPermBelowStimulusInc = this.synPermBelowStimulusInc;
                 cfg.SynPermMax = this.getSynPermMax();
-
+                cfg.SynPermMin = this.getSynPermMin();
+                cfg.StimulusThreshold = this.StimulusThreshold;
                 return cfg;
             }
         }
@@ -699,7 +701,7 @@ namespace NeoCortexApi.Entities
         {
             foreach (int idx in s.getSparseIndices())
             {
-                memory.getObject(idx).setPermanences(this, s.getObject(idx));
+                memory.getObject(idx).setPermanences(this, this.HtmConfig, s.getObject(idx));
             }
         }
 

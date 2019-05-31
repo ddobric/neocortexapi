@@ -94,7 +94,7 @@ namespace UnitTestsProject
 
         }
 
-        public override void raisePermanenceToThreshold(Connections c, double[] perm, int[] maskPotential)
+        public override void RaisePermanenceToThreshold(HtmConfig htmConfig, double[] perm, int[] maskPotential)
         {
             //Mock out
         }

@@ -1701,7 +1701,7 @@ namespace NeoCortexApi.Utility
          */
 
 
-        public static double[] clip(double[] values, double min, double max)
+        public static double[] Clip(double[] values, double min, double max)
         {
             for (int i = 0; i < values.Length; i++)
             {
@@ -1800,12 +1800,12 @@ namespace NeoCortexApi.Utility
          *
          * @return the count of values greater
          */
-        public static int valueGreaterCountAtIndex(double compare, double[] array, int[] indexes)
+        public static int ValueGreaterThanCountAtIndex(double compareValue, double[] array, int[] indexes)
         {
             int count = 0;
             for (int i = 0; i < indexes.Length; i++)
             {
-                if (array[indexes[i]] > compare)
+                if (array[indexes[i]] > compareValue)
                 {
                     count++;
                 }
@@ -2040,7 +2040,7 @@ namespace NeoCortexApi.Utility
          * @param x     the comparison
          * @param y     the value to set if the comparison fails
          */
-        public static void lessThanOrEqualXThanSetToY(double[] array, double x, double y)
+        public static void LessOrEqualXThanSetToY(double[] array, double x, double y)
         {
             for (int i = 0; i < array.Length; i++)
             {

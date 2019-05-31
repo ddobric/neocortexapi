@@ -358,5 +358,84 @@ namespace NeoCortexApi
             return p;
         }
 
+        /// <summary>
+        /// It traverses all connected synapses of the column and calculates the span, which synapses
+        /// spans between all input bits. Then it calculates average of spans accross all dimensions. 
+        /// </summary>
+        /// <param name="column"></param>
+        /// <param name="htmConfig">Topology</param>
+        /// <returns></returns>
+        public static double CalcAvgSpanOfConnectedSynapses(Column column, HtmConfig htmConfig)
+        {
+            // Gets synapses connected to input bits.(from pool of the column)
+            int[] connected = column.ProximalDendrite.getConnectedSynapsesSparse();
+
+            if (connected == null || connected.Length == 0) return 0;
+
+            int[] maxCoord = new int[htmConfig.InputTopology.Dimensions.Length];
+            int[] minCoord = new int[maxCoord.Length];
+            ArrayUtils.fillArray(maxCoord, -1);
+            ArrayUtils.fillArray(minCoord, ArrayUtils.max(htmConfig.InputTopology.Dimensions));
+
+            //
+            // It takes all connected synapses
+            for (int i = 0; i < connected.Length; i++)
+            {
+                maxCoord = ArrayUtils.maxBetween(maxCoord, AbstractFlatMatrix.ComputeCoordinates(htmConfig.InputTopology.Dimensions.Length,
+                   htmConfig.InputTopology.DimensionMultiplies, htmConfig.InputTopology.IsMajorOrdering, connected[i]));
+
+                minCoord = ArrayUtils.minBetween(minCoord, AbstractFlatMatrix.ComputeCoordinates(htmConfig.InputTopology.Dimensions.Length,
+                   htmConfig.InputTopology.DimensionMultiplies, htmConfig.InputTopology.IsMajorOrdering, connected[i]));
+            }
+
+            return ArrayUtils.average(ArrayUtils.add(ArrayUtils.subtract(maxCoord, minCoord), 1));
+        }
+
+
+        /// <summary>
+        /// This method ensures that each column has enough connections to input bits
+        /// to allow it to become active. Since a column must have at least
+        /// 'stimulusThreshold' overlaps in order to be considered during the
+        /// inhibition phase, columns without such minimal number of connections, even
+        /// if all the input bits they are connected to turn on, have no chance of
+        /// obtaining the minimum threshold. For such columns, the permanence values
+        /// are increased until the minimum number of connections are formed.        /// 
+        /// </summary>
+        /// <param name="htmConfig"></param>
+        /// <param name="perm"></param>
+        /// <param name="maskPotential"></param>
+        public static void RaisePermanenceToThreshold(HtmConfig htmConfig, double[] perm, int[] maskPotential)
+        {
+            if (maskPotential.Length < htmConfig.StimulusThreshold)
+            {
+                throw new ArgumentException("StimulusThreshold as number of required connected synapses cannot be lgreather than number of neurons in receptive field.");
+            }
+
+            ArrayUtils.Clip(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
+            while (true)
+            {
+                // Gets number of synapses with permanence value grather than 'PermConnected'.
+                int numConnected = ArrayUtils.ValueGreaterThanCountAtIndex(htmConfig.SynPermConnected, perm, maskPotential);
+
+                // If enough synapces are connected, all ok.
+                if (numConnected >= htmConfig.StimulusThreshold)
+                    return;
+
+                // If number of connected synapses is below threshold, 
+                // then permanences of all synapses will be incremented (raised) until column is connected.
+                ArrayUtils.raiseValuesBy(htmConfig.SynPermBelowStimulusInc, perm, maskPotential);
+            }
+        }
+
+        public static void RaisePermanenceToThresholdSparse(HtmConfig htmConfig, double[] perm)
+        {
+            ArrayUtils.Clip(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
+            while (true)
+            {
+                int numConnected = ArrayUtils.valueGreaterCount(htmConfig.SynPermConnected, perm);
+                if (numConnected >= htmConfig.StimulusThreshold) return;
+                ArrayUtils.raiseValuesBy(htmConfig.SynPermBelowStimulusInc, perm);
+            }
+        }
     }
 }

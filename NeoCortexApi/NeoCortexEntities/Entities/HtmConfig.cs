@@ -33,11 +33,18 @@ namespace NeoCortexApi.Entities
 
         public double SynPermConnected { get; set; }
 
+        public double StimulusThreshold { get; set; }        
+
         public int NumInputs { get;  set; }
 
         public double SynPermMax { get; set; }
 
+        public double SynPermMin { get; set; }
+
         public double InitialSynapseConnsPct { get; set; }
+
         public double SynPermTrimThreshold { get; set; }
+
+        public double SynPermBelowStimulusInc { get; set; }
     }
 }

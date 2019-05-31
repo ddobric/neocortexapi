@@ -169,7 +169,7 @@ namespace NeoCortexApi
 
                 double[] perm = HtmCompute.InitSynapsePermanences(c.HtmConfig, potential, c.getRandom());
 
-                updatePermanencesForColumn(c, perm, column, potential, true);
+                updatePermanencesForColumn(c, c.HtmConfig, perm, column, potential, true);
 
                 avgSynapsesConnected.Add(GetAvgSpanOfConnectedSynapses(c, i));
             }
@@ -738,46 +738,46 @@ namespace NeoCortexApi
         /// <returns></returns>
         public virtual double GetAvgSpanOfConnectedSynapses(Connections c, int columnIndex)
         {
-            var dims = c.getInputDimensions();
+            //var dims = c.getInputDimensions();
 
-            var dimensionMultiplies = AbstractFlatMatrix<Column>.InitDimensionMultiples(dims);
+            //var dimensionMultiplies = AbstractFlatMatrix<Column>.InitDimensionMultiples(dims);
 
-            return CalcAvgSpanOfConnectedSynapses(c.getColumn(columnIndex), dims, dimensionMultiplies, c.getMemory().ModuleTopology.IsMajorOrdering);           
+            return HtmCompute.CalcAvgSpanOfConnectedSynapses(c.getColumn(columnIndex), c.HtmConfig);
         }
 
-        /// <summary>
-        /// It traverses all connected synapses of the column and calculates the span, which synapses
-        /// spans between all input bits. Then it calculates average of spans accross all dimensions. 
-        /// </summary>
-        /// <param name="c"></param>
-        /// <param name="columnIndex"></param>
-        /// <returns></returns>
-        internal static double CalcAvgSpanOfConnectedSynapses(Column column, int[] inpDims, int[] dimensionMultiplies, bool isColumnMajor)
-        {
-            // Gets synapses connected to input bits.(from pool of the column)
-            int[] connected = column.ProximalDendrite.getConnectedSynapsesSparse();
+        ///// <summary>
+        ///// It traverses all connected synapses of the column and calculates the span, which synapses
+        ///// spans between all input bits. Then it calculates average of spans accross all dimensions. 
+        ///// </summary>
+        ///// <param name="c"></param>
+        ///// <param name="columnIndex"></param>
+        ///// <returns></returns>
+        //internal static double CalcAvgSpanOfConnectedSynapses(Column column, int[] inpDims, int[] dimensionMultiplies, bool isColumnMajor)
+        //{
+        //    // Gets synapses connected to input bits.(from pool of the column)
+        //    int[] connected = column.ProximalDendrite.getConnectedSynapsesSparse();
 
-            if (connected == null || connected.Length == 0) return 0;
+        //    if (connected == null || connected.Length == 0) return 0;
 
-            int[] maxCoord = new int[inpDims.Length];
-            int[] minCoord = new int[inpDims.Length];
-            ArrayUtils.fillArray(maxCoord, -1);
-            ArrayUtils.fillArray(minCoord, ArrayUtils.max(inpDims));
+        //    int[] maxCoord = new int[inpDims.Length];
+        //    int[] minCoord = new int[inpDims.Length];
+        //    ArrayUtils.fillArray(maxCoord, -1);
+        //    ArrayUtils.fillArray(minCoord, ArrayUtils.max(inpDims));
 
-            //
-            // It takes all connected synapses
-            for (int i = 0; i < connected.Length; i++)
-            {
-                maxCoord = ArrayUtils.maxBetween(maxCoord, AbstractFlatMatrix.ComputeCoordinates(inpDims.Length,
-                   dimensionMultiplies , isColumnMajor, connected[i]));
+        //    //
+        //    // It takes all connected synapses
+        //    for (int i = 0; i < connected.Length; i++)
+        //    {
+        //        maxCoord = ArrayUtils.maxBetween(maxCoord, AbstractFlatMatrix.ComputeCoordinates(inpDims.Length,
+        //           dimensionMultiplies , isColumnMajor, connected[i]));
 
-                minCoord = ArrayUtils.minBetween(minCoord, AbstractFlatMatrix.ComputeCoordinates(inpDims.Length,
-                   dimensionMultiplies, isColumnMajor, connected[i]));
+        //        minCoord = ArrayUtils.minBetween(minCoord, AbstractFlatMatrix.ComputeCoordinates(inpDims.Length,
+        //           dimensionMultiplies, isColumnMajor, connected[i]));
 
-            }
+        //    }
 
-            return ArrayUtils.average(ArrayUtils.add(ArrayUtils.subtract(maxCoord, minCoord), 1));
-        }
+        //    return ArrayUtils.average(ArrayUtils.add(ArrayUtils.subtract(maxCoord, minCoord), 1));
+        //}
 
         /**
          * The primary method in charge of learning. Adapts the permanence values of
@@ -821,7 +821,7 @@ namespace NeoCortexApi
                 int[] indexes = pool.getSparsePotential();
                 ArrayUtils.raiseValuesBy(permChanges, perm);
                 Column col = c.getColumn(activeColumns[i]);
-                updatePermanencesForColumn(c, perm, col, indexes, true);
+                updatePermanencesForColumn(c, c.HtmConfig, perm, col, indexes, true);
             }
             //Debug.WriteLine("Permance after update in adaptSynapses: " + permChangesStr);
         }
@@ -873,26 +873,27 @@ namespace NeoCortexApi
          * @param perm              the permanence values
          * @param maskPotential         
          */
-        public virtual void raisePermanenceToThreshold(Connections c, double[] perm, int[] maskPotential)
+        public virtual void RaisePermanenceToThreshold(HtmConfig htmConfig, double[] perm, int[] maskPotential)
         {
-            if (maskPotential.Length < c.StimulusThreshold)
-            {
-                throw new ArgumentException("This is likely due to a " +
-                    "value of stimulusThreshold that is too large relative " +
-                    "to the input size. [len(mask) < self._stimulusThreshold]");
-            }
+            HtmCompute.RaisePermanenceToThreshold(htmConfig, perm, maskPotential);
+            //if (maskPotential.Length < c.StimulusThreshold)
+            //{
+            //    throw new ArgumentException("This is likely due to a " +
+            //        "value of stimulusThreshold that is too large relative " +
+            //        "to the input size. [len(mask) < self._stimulusThreshold]");
+            //}
 
-            ArrayUtils.clip(perm, c.getSynPermMin(), c.getSynPermMax());
-            while (true)
-            {
-                // Gets number of synapses with permanence value grather than 'PermConnected'.
-                int numConnected = ArrayUtils.valueGreaterCountAtIndex(c.getSynPermConnected(), perm, maskPotential);
-                if (numConnected >= c.StimulusThreshold)
-                    return;
+            //ArrayUtils.Clip(perm, c.getSynPermMin(), c.getSynPermMax());
+            //while (true)
+            //{
+            //    // Gets number of synapses with permanence value grather than 'PermConnected'.
+            //    int numConnected = ArrayUtils.ValueGreaterThanCountAtIndex(c.getSynPermConnected(), perm, maskPotential);
+            //    if (numConnected >= c.StimulusThreshold)
+            //        return;
 
-                // If number of note connected synapses, then permanences of all synapses will be incremented (raised).
-                ArrayUtils.raiseValuesBy(c.getSynPermBelowStimulusInc(), perm, maskPotential);
-            }
+            //    // If number of note connected synapses, then permanences of all synapses will be incremented (raised).
+            //    ArrayUtils.raiseValuesBy(c.getSynPermBelowStimulusInc(), perm, maskPotential);
+            //}
         }
 
         /**
@@ -909,15 +910,9 @@ namespace NeoCortexApi
          * @param c         The {@link Connections} memory
          * @param perm      permanence values
          */
-        public void raisePermanenceToThresholdSparse(Connections c, double[] perm)
+        public virtual void RaisePermanenceToThresholdSparse(Connections c, double[] perm)
         {
-            ArrayUtils.clip(perm, c.getSynPermMin(), c.getSynPermMax());
-            while (true)
-            {
-                int numConnected = ArrayUtils.valueGreaterCount(c.getSynPermConnected(), perm);
-                if (numConnected >= c.StimulusThreshold) return;
-                ArrayUtils.raiseValuesBy(c.getSynPermBelowStimulusInc(), perm);
-            }
+            HtmCompute.RaisePermanenceToThresholdSparse(c.HtmConfig, perm);
         }
 
         /**
@@ -942,19 +937,21 @@ namespace NeoCortexApi
          * @param maskPotential     The indexes of inputs in the specified {@link Column}'s pool.
          * @param raisePerm         a boolean value indicating whether the permanence values
          */
-        public void updatePermanencesForColumn(Connections c, double[] perm, Column column, int[] maskPotential, bool raisePerm)
+        public void updatePermanencesForColumn(Connections c, HtmConfig htmConfig, double[] perm, Column column, int[] maskPotential, bool raisePerm)
         {
             if (raisePerm)
             {
                 // During every learning cycle, this method ensures that every column 
                 // has enough connections ('SynPermConnected') to iput space.
-                raisePermanenceToThreshold(c, perm, maskPotential);
+                RaisePermanenceToThreshold(htmConfig, perm, maskPotential);
             }
 
             // Here we set all permanences to 0 
-            ArrayUtils.lessThanOrEqualXThanSetToY(perm, c.getSynPermTrimThreshold(), 0);
-            ArrayUtils.clip(perm, c.getSynPermMin(), c.getSynPermMax());
-            column.setPermanences(c, perm);
+            ArrayUtils.LessOrEqualXThanSetToY(perm, htmConfig.SynPermTrimThreshold, 0);
+
+            ArrayUtils.Clip(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
+
+            column.setPermanences(c, htmConfig, perm);
         }
 
         /**
@@ -976,14 +973,15 @@ namespace NeoCortexApi
          */
         public void updatePermanencesForColumnSparse(Connections c, double[] perm, Column column, int[] maskPotential, bool raisePerm)
         {
-            if (raisePerm)
-            {
-                raisePermanenceToThresholdSparse(c, perm);
-            }
+            column.UpdatePermanencesForColumnSparse(c, c.HtmConfig, perm, maskPotential, raisePerm);
+            //if (raisePerm)
+            //{
+            //    RaisePermanenceToThresholdSparse(c, perm);
+            //}
 
-            ArrayUtils.lessThanOrEqualXThanSetToY(perm, c.getSynPermTrimThreshold(), 0);
-            ArrayUtils.clip(perm, c.getSynPermMin(), c.getSynPermMax());
-            column.setProximalPermanencesSparse(c, perm, maskPotential);
+            //ArrayUtils.LessOrEqualXThanSetToY(perm, c.getSynPermTrimThreshold(), 0);
+            //ArrayUtils.Clip(perm, c.getSynPermMin(), c.getSynPermMax());
+            //column.setProximalPermanencesSparse(c, perm, maskPotential);
         }
 
         ///**
@@ -1567,8 +1565,8 @@ namespace NeoCortexApi
         {
             int[] overlaps = new int[c.NumColumns];
             c.getConnectedCounts().rightVecSumAtNZ(inputVector, overlaps, c.StimulusThreshold);
-            string st = string.Join(",", overlaps);
-            Debug.WriteLine($"Overlap: {st}");
+            //string st = string.Join(",", overlaps);
+            //Debug.WriteLine($"Overlap: {st}");
             return overlaps;
         }
 

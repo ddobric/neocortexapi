@@ -120,9 +120,9 @@ namespace NeoCortexApi.Entities
          * @param c			the {@link Connections} memory
          * @param perms		the floating point degree of connectedness
          */
-        public void setPermanences(Connections c, double[] perms, int[] inputIndexes)
+        public void setPermanences(Connections c, HtmConfig htmConfig, double[] perms, int[] inputIndexes)
         {
-            var permConnThreshold = c.getSynPermConnected();
+            var permConnThreshold = htmConfig.SynPermConnected;
 
             RFPool.resetConnections();
             c.getConnectedCounts().clearStatistics(index);

@@ -1091,7 +1091,7 @@ namespace UnitTestsProject
             double[] trueAvgConnectedSpan = new double[] { 11.0 / 4d, 6.0 / 4d, 14.0 / 4d, 15.0 / 4d, 0d };
             for (int i = 0; i < mem.NumColumns; i++)
             {
-                double connectedSpan = sp.GetAvgSpanOfConnectedSynapses(mem, i);
+                double connectedSpan = HtmCompute.CalcAvgSpanOfConnectedSynapses(mem.getColumn(i), mem.HtmConfig);
                 Assert.IsTrue(trueAvgConnectedSpan[i] == connectedSpan);
             }
         }
@@ -1149,7 +1149,7 @@ namespace UnitTestsProject
 
                 // int[] indexes = ArrayUtils.where(potentialPools[i], cond);
                 mem.getColumn(i).setProximalConnectedSynapsesForTest(mem, indexes);
-                mem.getColumn(i).setPermanences(mem, permanences[i]);
+                mem.getColumn(i).setPermanences(mem, mem.HtmConfig, permanences[i]);
             }
 
             //Execute method being tested
@@ -1566,7 +1566,7 @@ namespace UnitTestsProject
                 int[] indexes = ArrayUtils.IndexWhere(potentialPools[i], (n) => (n == 1));
                 //    int[] indexes = ArrayUtils.where(potentialPools[i], cond);
                 mem.getColumn(i).setProximalConnectedSynapsesForTest(mem, indexes);
-                mem.getColumn(i).setPermanences(mem, permanences[i]);
+                mem.getColumn(i).setPermanences(mem, mem.HtmConfig, permanences[i]);
             }
 
             int[] inputVector = new int[] { 1, 0, 0, 1, 1, 0, 1, 0 };
@@ -1614,7 +1614,7 @@ namespace UnitTestsProject
 
                 //int[] indexes = ArrayUtils.where(potentialPools[i], cond);
                 mem.getColumn(i).setProximalConnectedSynapsesForTest(mem, indexes);
-                mem.getColumn(i).setPermanences(mem, permanences[i]);
+                mem.getColumn(i).setPermanences(mem, mem.HtmConfig, permanences[i]);
             }
 
             sp.adaptSynapses(mem, inputVector, activeColumns);
@@ -1678,7 +1678,7 @@ namespace UnitTestsProject
             {
                 // double[] perm = mem.getPotentialPools().get(i).getSparsePermanences();
                 double[] perm = mem.getColumn(i).ProximalDendrite.RFPool.getSparsePermanences();
-                sp.raisePermanenceToThreshold(mem, perm, indices);
+                sp.RaisePermanenceToThreshold(mem.HtmConfig, perm, indices);
 
                 for (int j = 0; j < perm.Length; j++)
                 {
@@ -1727,8 +1727,8 @@ namespace UnitTestsProject
 
             for (int i = 0; i < mem.NumColumns; i++)
             {
-                mem.getColumn(i).setPermanences(mem, permanences[i]);
-                sp.updatePermanencesForColumn(mem, permanences[i], mem.getColumn(i), connectedDense[i], true);
+                mem.getColumn(i).setPermanences(mem, mem.HtmConfig, permanences[i]);
+                sp.updatePermanencesForColumn(mem, mem.HtmConfig, permanences[i], mem.getColumn(i), connectedDense[i], true);
                 int[] dense = mem.getColumn(i).getProximalDendrite().getConnectedSynapsesDense();
                 trueConnectedSynapses[i].ArrToString().SequenceEqual(dense.ArrToString());
             }
