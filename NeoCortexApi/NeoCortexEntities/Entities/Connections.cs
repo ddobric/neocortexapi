@@ -95,7 +95,7 @@ namespace NeoCortexApi.Entities
          * information is readily available from 'connectedSynapses', it is
          * stored separately for efficiency purposes.
          */
-        private AbstractSparseBinaryMatrix connectedCounts;
+        private AbstractSparseBinaryMatrix connectedCounts2;
         /**
          * The inhibition radius determines the size of a column's local
          * neighborhood. of a column. A cortical column must overcome the overlap
@@ -701,7 +701,7 @@ namespace NeoCortexApi.Entities
         {
             foreach (int idx in s.getSparseIndices())
             {
-                memory.getObject(idx).setPermanences(this, this.HtmConfig, s.getObject(idx));
+                memory.getObject(idx).setPermanences(this.HtmConfig, s.getObject(idx));
             }
         }
 
@@ -750,9 +750,20 @@ namespace NeoCortexApi.Entities
          * Returns the indexed count of connected synapses per column.
          * @return
          */
-        public AbstractSparseBinaryMatrix getConnectedCounts()
+        //public AbstractSparseBinaryMatrix getConnectedCounts()
+        //{
+        //    return connectedCounts;
+        //}
+
+        public int[] GetTrueCounts()
         {
-            return connectedCounts;
+            int[] counts = new int[NumColumns];
+            for (int i = 0; i < NumColumns; i++)
+            {
+                counts[i] = getColumn(i).ConnectedInputCounterMatrix.getTrueCounts()[0];
+            }
+
+            return counts;
         }
 
         /**
@@ -773,7 +784,8 @@ namespace NeoCortexApi.Entities
         {
             for (int i = 0; i < counts.Length; i++)
             {
-                connectedCounts.setTrueCount(i, counts[i]);
+                getColumn(i).ConnectedInputCounterMatrix.setTrueCount(0, counts[i]);
+                //connectedCounts.setTrueCount(i, counts[i]);
             }
         }
 
@@ -785,7 +797,29 @@ namespace NeoCortexApi.Entities
          */
         public void setConnectedMatrix(AbstractSparseBinaryMatrix matrix)
         {
-            this.connectedCounts = matrix;
+            for (int col = 0; col < this.NumColumns; col++)
+            {
+                var colMatrix = this.getColumn(col).ConnectedInputCounterMatrix = new SparseBinaryMatrix(new int[] { 1, numInputs });
+
+                int[] row = (int[])matrix.getSlice(col);
+
+                for (int j = 0; j < row.Length; j++)
+                {
+                    colMatrix.set(row[j], 0, j);
+                }               
+            }
+           
+           // this.connectedCounts = matrix;
+        }
+
+        public void InitConnectedMatrix(int numColumns, int numInputs)
+        {
+            //for (int col = 0; col < this.NumColumns; col++)
+            //{
+            //    this.getColumn(col).ConnectedInputCounterMatrix = new SparseBinaryMatrix(new int[] { 1, numInputs });
+            //}
+
+           // this.connectedCounts = new SparseBinaryMatrix(new int[] { numColumns, numInputs }); 
         }
 
         /**
@@ -2518,7 +2552,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + cells.GetHashCode();
             result = prime * result + cellsPerColumn;
             result = prime * result + columnDimensions.GetHashCode();
-            result = prime * result + ((connectedCounts == null) ? 0 : connectedCounts.GetHashCode());
+            //result = prime * result + ((connectedCounts == null) ? 0 : connectedCounts.GetHashCode());
             long temp;
             temp = BitConverter.DoubleToInt64Bits(connectedPermanence);
             result = prime * result + (int)(temp ^ (temp >> 32));//it was temp >>> 32
@@ -2631,13 +2665,13 @@ namespace NeoCortexApi.Entities
                 return false;
             if (!Array.Equals(columnDimensions, other.columnDimensions))
                 return false;
-            if (connectedCounts == null)
-            {
-                if (other.connectedCounts != null)
-                    return false;
-            }
-            else if (!connectedCounts.Equals(other.connectedCounts))
-                return false;
+            //if (connectedCounts == null)
+            //{
+            //    if (other.connectedCounts != null)
+            //        return false;
+            //}
+            //else if (!connectedCounts.Equals(other.connectedCounts))
+            //    return false;
             if (BitConverter.DoubleToInt64Bits(connectedPermanence) != BitConverter.DoubleToInt64Bits(other.connectedPermanence))
                 return false;
             if (dutyCyclePeriod != other.dutyCyclePeriod)

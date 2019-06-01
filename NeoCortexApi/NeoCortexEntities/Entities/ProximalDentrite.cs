@@ -22,10 +22,10 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="index">The global index of the segment.</param>
+        /// <param name="colIndx">The global index of the segment.</param>
         /// <param name="synapsePermConnected">Permanence threshold value to declare synapse as connected.</param>
         /// <param name="numInputs">Number of input neorn cells.</param>
-        public ProximalDendrite(int index, double synapsePermConnected, int numInputs) : base(index, synapsePermConnected, numInputs)
+        public ProximalDendrite(int colIndx, double synapsePermConnected, int numInputs) : base(colIndx, synapsePermConnected, numInputs)
         {
 
         }
@@ -120,20 +120,22 @@ namespace NeoCortexApi.Entities
          * @param c			the {@link Connections} memory
          * @param perms		the floating point degree of connectedness
          */
-        public void setPermanences(Connections c, HtmConfig htmConfig, double[] perms, int[] inputIndexes)
+        public void setPermanences(AbstractSparseBinaryMatrix connectedCounts, HtmConfig htmConfig, double[] perms, int[] inputIndexes)
         {
             var permConnThreshold = htmConfig.SynPermConnected;
 
             RFPool.resetConnections();
-            c.getConnectedCounts().clearStatistics(index);
+            // c.getConnectedCounts().clearStatistics(ParentColumnIndex);
+            connectedCounts.clearStatistics(0 /*this.ParentColumnIndex*/);
             for (int i = 0; i < inputIndexes.Length; i++)
             {
                 var synapse = RFPool.GetSynapseForInput(inputIndexes[i]);
-                synapse.setPermanence(c.getSynPermConnected(), perms[i]);
+                synapse.setPermanence(htmConfig.SynPermConnected, perms[i]);
                 //RFPool.setPermanence(c, RFPool.getSynapseWithInput(inputIndexes[i]), perms[i]);
                 if (perms[i] >= permConnThreshold)
                 {
-                    c.getConnectedCounts().set(1, index, i);
+                    //c.getConnectedCounts().set(1, ParentColumnIndex, i);
+                    connectedCounts.set(1, 0 /*ParentColumnIndex*/, i);
                 }
             }
         }

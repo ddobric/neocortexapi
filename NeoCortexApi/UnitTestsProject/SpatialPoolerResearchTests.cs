@@ -391,7 +391,7 @@ namespace UnitTestsProject
             for (int i = 0; i < 100; i++)
             {
 
-                var overlaps = sp.calculateOverlap(mem, inputVector);
+                var overlaps = sp.CalculateOverlap(mem, inputVector);
                 var strOverlaps = Helpers.StringifyVector(overlaps);
 
                 var inhibitions = sp.inhibitColumns(mem, ArrayUtils.toDoubleArray(overlaps));

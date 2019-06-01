@@ -20,7 +20,11 @@ namespace NeoCortexApi.Entities
     //[Serializable]
     public class Column : IEquatable<Column>, IComparable<Column>
     {
-        private AbstractSparseBinaryMatrix connectedCounts;
+        private AbstractSparseBinaryMatrix connectedInputCounter;
+
+        public AbstractSparseBinaryMatrix ConnectedInputCounterMatrix { get { return connectedInputCounter; } set { connectedInputCounter = value; } }
+
+        public int[] ConnectedInputBits { get => (int[])this.connectedInputCounter.getSlice(0); }
 
         /// <summary>
         /// Column index
@@ -55,27 +59,29 @@ namespace NeoCortexApi.Entities
         /// Creates a new collumn with specified number of cells and a single proximal dendtrite segment.
         /// </summary>
         /// <param name="numCells">Number of cells in the column.</param>
-        /// <param name="index">Colun index.</param>
+        /// <param name="colIndx">Column index.</param>
         /// <param name="synapsePermConnected">Permanence threshold value to declare synapse as connected.</param>
         /// <param name="numInputs">Number of input neorn cells.</param>
-        public Column(int numCells, int index, double synapsePermConnected, int numInputs)
+        public Column(int numCells, int colIndx, double synapsePermConnected, int numInputs)
         {
-            //this.numCells = numCells;
-            this.Index = index;
-            //this.boxedIndex = index;
+            this.Index = colIndx;
+
             this.hashcode = GetHashCode();
+
             Cells = new Cell[numCells];
+
             for (int i = 0; i < numCells; i++)
             {
                 Cells[i] = new Cell(this, i);
             }
 
-            //cellList = new ReadOnlyCollection<Cell>(Cells);
+            // We keep tracking of this column only
+            this.connectedInputCounter = new SparseBinaryMatrix(new int[] { 1, numInputs });
 
-            ProximalDendrite = new ProximalDendrite(index, synapsePermConnected, numInputs);
+            ProximalDendrite = new ProximalDendrite(colIndx, synapsePermConnected, numInputs);
         }
 
-      
+
         /**
          * Returns the {@link Cell} residing at the specified index.
          * <p>
@@ -213,13 +219,14 @@ namespace NeoCortexApi.Entities
          * @param c			the {@link Connections} memory
          * @param perms		the floating point degree of connectedness
          */
-        public void setPermanences(Connections c, HtmConfig htmConfig,  double[] perms)
+        public void setPermanences(HtmConfig htmConfig, double[] perms)
         {
-            var connCounts = c.getConnectedCounts();
+            //var connCounts = c.getConnectedCounts();
 
             this.ProximalDendrite.RFPool.resetConnections();
 
-            connCounts.clearStatistics(this.Index);
+            // Every column contians a single row at index 0.
+            this.ConnectedInputCounterMatrix.clearStatistics(0 /*this.Index*/);
 
             //List<Synapse> synapses = c.getSynapses(this);
 
@@ -231,7 +238,7 @@ namespace NeoCortexApi.Entities
 
                 if (perms[indx] >= htmConfig.SynPermConnected)
                 {
-                    connCounts.set(1, this.Index, s.getInputIndex());
+                    this.ConnectedInputCounterMatrix.set(1, 0 /*this.Index*/, s.getInputIndex());
                 }
             }
         }
@@ -253,9 +260,9 @@ namespace NeoCortexApi.Entities
          * @param c				the {@link Connections} memory object
          * @param permanences	floating point degree of connectedness
          */
-        public void setProximalPermanencesSparse(Connections c, HtmConfig htmConfig, double[] permanences, int[] inputVectorIndexes)
+        public void setProximalPermanencesSparse(HtmConfig htmConfig, double[] permanences, int[] inputVectorIndexes)
         {
-            this.ProximalDendrite.setPermanences(c, htmConfig, permanences, inputVectorIndexes);
+            this.ProximalDendrite.setPermanences(this.ConnectedInputCounterMatrix, htmConfig, permanences, inputVectorIndexes);
         }
 
 
@@ -276,16 +283,49 @@ namespace NeoCortexApi.Entities
         * @param column            The column in the permanence, potential and connectivity matrices
         * @param raisePerm         a boolean value indicating whether the permanence values
         */
-        public void UpdatePermanencesForColumnSparse(Connections c,HtmConfig htmConfig, double[] perm, int[] maskPotential, bool raisePerm)
+        public void UpdatePermanencesForColumnSparse(Connections c, HtmConfig htmConfig, double[] perm, int[] maskPotential, bool raisePerm)
         {
             if (raisePerm)
             {
-               HtmCompute.RaisePermanenceToThresholdSparse(htmConfig, perm);
+                HtmCompute.RaisePermanenceToThresholdSparse(htmConfig, perm);
             }
 
             ArrayUtils.LessOrEqualXThanSetToY(perm, htmConfig.SynPermTrimThreshold, 0);
             ArrayUtils.Clip(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
-            setProximalPermanencesSparse(c, htmConfig, perm, maskPotential);
+            setProximalPermanencesSparse(htmConfig, perm, maskPotential);
+        }
+
+
+        /// <summary>
+        /// Calculates the overlapp of the column.
+        /// </summary>
+        /// <param name="inputVector"></param>
+        /// <param name="stimulusThreshold"></param>
+        /// <returns></returns>
+        public int GetColumnOverlapp(int[] inputVector, double stimulusThreshold)
+        {
+            int result = 0;
+
+
+            // Gets the synapse mapping between column-i with input vector.
+            int[] slice = (int[])this.connectedInputCounter.getSlice(0);
+
+            // Go through all connections (synapses) between column and input vector.
+            for (int inpBit = 0; inpBit < slice.Length; inpBit++)
+            {
+                // Result (overlapp) is 1 if 
+                result += (inputVector[inpBit] * slice[inpBit]);
+                //TODO: check if this is needed!
+                if (inpBit == slice.Length - 1)
+                {
+                    // If the overlap (num of connected synapses to TRUE input) is less than stimulusThreshold then we set result on 0.
+                    // If the overlap (num of connected synapses to TRUE input) is greather than stimulusThreshold then result remains as calculated.
+                    // This ensures that only overlaps are calculated, which are over the stimulusThreshold. All less than stimulusThreshold are set on 0.
+                    result -= result < stimulusThreshold ? result : 0;
+                }
+            }
+
+            return result;
         }
 
         /**

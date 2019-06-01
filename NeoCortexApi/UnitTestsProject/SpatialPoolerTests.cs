@@ -193,7 +193,8 @@ namespace UnitTestsProject
             for (int i = 0; i < mem.NumColumns; i++)
             {
                 int[] permanences = ArrayUtils.toIntArray(mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem));
-                int[] potential = (int[])mem.getConnectedCounts().getSlice(i);
+                //int[] potential = (int[])mem.getConnectedCounts().getSlice(i);
+                int[] potential = (int[])mem.getColumn(i).ConnectedInputBits;
                 Assert.IsTrue(permanences.SequenceEqual(potential));
             }
         }
@@ -1149,7 +1150,7 @@ namespace UnitTestsProject
 
                 // int[] indexes = ArrayUtils.where(potentialPools[i], cond);
                 mem.getColumn(i).setProximalConnectedSynapsesForTest(mem, indexes);
-                mem.getColumn(i).setPermanences(mem, mem.HtmConfig, permanences[i]);
+                mem.getColumn(i).setPermanences(mem.HtmConfig, permanences[i]);
             }
 
             //Execute method being tested
@@ -1566,7 +1567,7 @@ namespace UnitTestsProject
                 int[] indexes = ArrayUtils.IndexWhere(potentialPools[i], (n) => (n == 1));
                 //    int[] indexes = ArrayUtils.where(potentialPools[i], cond);
                 mem.getColumn(i).setProximalConnectedSynapsesForTest(mem, indexes);
-                mem.getColumn(i).setPermanences(mem, mem.HtmConfig, permanences[i]);
+                mem.getColumn(i).setPermanences(mem.HtmConfig, permanences[i]);
             }
 
             int[] inputVector = new int[] { 1, 0, 0, 1, 1, 0, 1, 0 };
@@ -1614,7 +1615,7 @@ namespace UnitTestsProject
 
                 //int[] indexes = ArrayUtils.where(potentialPools[i], cond);
                 mem.getColumn(i).setProximalConnectedSynapsesForTest(mem, indexes);
-                mem.getColumn(i).setPermanences(mem, mem.HtmConfig, permanences[i]);
+                mem.getColumn(i).setPermanences(mem.HtmConfig, permanences[i]);
             }
 
             sp.adaptSynapses(mem, inputVector, activeColumns);
@@ -1727,13 +1728,14 @@ namespace UnitTestsProject
 
             for (int i = 0; i < mem.NumColumns; i++)
             {
-                mem.getColumn(i).setPermanences(mem, mem.HtmConfig, permanences[i]);
+                mem.getColumn(i).setPermanences(mem.HtmConfig, permanences[i]);
                 sp.updatePermanencesForColumn(mem, mem.HtmConfig, permanences[i], mem.getColumn(i), connectedDense[i], true);
                 int[] dense = mem.getColumn(i).getProximalDendrite().getConnectedSynapsesDense();
                 trueConnectedSynapses[i].ArrToString().SequenceEqual(dense.ArrToString());
             }
 
-            trueConnectedCounts.ArrToString().SequenceEqual(mem.getConnectedCounts().getTrueCounts().ArrToString());
+            //trueConnectedCounts.ArrToString().SequenceEqual(mem.getConnectedCounts().getTrueCounts().ArrToString());
+            trueConnectedCounts.ArrToString().SequenceEqual(mem.GetTrueCounts().ArrToString());
         }
 
         [TestMethod]
@@ -1765,16 +1767,19 @@ namespace UnitTestsProject
 
             for (int i = 0; i < 5; i++)
             {
+                var column = mem.getColumn(i);
+
                 for (int j = 0; j < 10; j++)
                 {
-                    Assert.IsTrue(connectedSynapses[i][j] == sm.getIntValue(i, j));
+                    Assert.IsTrue(connectedSynapses[i][j] == column.ConnectedInputCounterMatrix.getIntValue(0, j));
+                    //Assert.IsTrue(connectedSynapses[i][j] == sm.getIntValue(i, j));
                 }
             }
 
             int[] inputVector = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            int[] overlaps = sp.calculateOverlap(mem, inputVector);
+            int[] overlaps = sp.CalculateOverlap(mem, inputVector);
             int[] trueOverlaps = new int[5];
-            double[] overlapsPct = sp.calculateOverlapPct(mem, overlaps);
+            double[] overlapsPct = sp.CalculateOverlapPct(mem, overlaps);
             double[] trueOverlapsPct = new double[5];
             Assert.IsTrue(trueOverlaps.SequenceEqual(overlaps));
             Assert.IsTrue(trueOverlapsPct.SequenceEqual(overlapsPct));
@@ -1808,9 +1813,9 @@ namespace UnitTestsProject
             }
 
             inputVector = new int[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
-            overlaps = sp.calculateOverlap(mem, inputVector);
+            overlaps = sp.CalculateOverlap(mem, inputVector);
             trueOverlaps = new int[] { 10, 8, 6, 4, 2 };
-            overlapsPct = sp.calculateOverlapPct(mem, overlaps);
+            overlapsPct = sp.CalculateOverlapPct(mem, overlaps);
             trueOverlapsPct = new double[] { 1, 1, 1, 1, 1 };
             Assert.IsTrue(trueOverlaps.SequenceEqual(overlaps));
             Assert.IsTrue(trueOverlapsPct.SequenceEqual(overlapsPct));
@@ -1845,11 +1850,11 @@ namespace UnitTestsProject
 
             inputVector = new int[10];
             inputVector[9] = 1;
-            overlaps = sp.calculateOverlap(mem, inputVector);
+            overlaps = sp.CalculateOverlap(mem, inputVector);
             trueOverlaps = new int[] { 1, 1, 1, 1, 1 };
             Assert.IsTrue(trueOverlaps.SequenceEqual(overlaps));
 
-            overlapsPct = sp.calculateOverlapPct(mem, overlaps);
+            overlapsPct = sp.CalculateOverlapPct(mem, overlaps);
             trueOverlapsPct = new double[] { 0.1, 0.125, 1.0 / 6, 0.25, 0.5 };
             Assert.IsTrue(trueOverlapsPct.SequenceEqual(overlapsPct));
 
@@ -1882,9 +1887,9 @@ namespace UnitTestsProject
             }
 
             inputVector = new int[] { 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 };
-            overlaps = sp.calculateOverlap(mem, inputVector);
+            overlaps = sp.CalculateOverlap(mem, inputVector);
             trueOverlaps = new int[] { 1, 1, 1, 1, 1 };
-            overlapsPct = sp.calculateOverlapPct(mem, overlaps);
+            overlapsPct = sp.CalculateOverlapPct(mem, overlaps);
             trueOverlapsPct = new double[] { 0.5, 0.5, 0.5, 0.5, 0.5 };
             Assert.IsTrue(trueOverlaps.SequenceEqual(overlaps));
             Assert.IsTrue(trueOverlapsPct.SequenceEqual(overlapsPct));

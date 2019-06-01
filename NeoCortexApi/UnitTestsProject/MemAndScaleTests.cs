@@ -218,6 +218,7 @@ namespace UnitTestsProject
         [TestMethod]
         [DataRow(0)]
         [DataRow(1)]
+        [TestCategory("LongRunning")]
         public void SPInitTest(int poolerImplementation)
         {
             int numOfColsInDim = 100;

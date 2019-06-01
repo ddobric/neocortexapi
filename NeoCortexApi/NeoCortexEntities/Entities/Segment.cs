@@ -12,7 +12,7 @@ namespace NeoCortexApi.Entities
    // [Serializable]
     public abstract class Segment : IEquatable<Segment>
     {       
-        public int index { get; set; }
+        public int ParentColumnIndex { get; set; }
 
         public Integer boxedIndex { get; set; }
 
@@ -39,7 +39,7 @@ namespace NeoCortexApi.Entities
             this.NumInputs = NumInputs;
             this.SynapsePermConnected = synapsePermConnected;
             this.Synapses = new List<Synapse>();
-            this.index = index;
+            this.ParentColumnIndex = index;
             this.boxedIndex = new Integer(index);
         }
     
@@ -51,7 +51,7 @@ namespace NeoCortexApi.Entities
         /// <returns>Index</returns>
         public int getIndex()
         {
-            return index;
+            return ParentColumnIndex;
         }
 
         /**
@@ -107,7 +107,7 @@ namespace NeoCortexApi.Entities
         {
             int prime = 31;
             int result = 1;
-            result = prime * result + index;
+            result = prime * result + ParentColumnIndex;
             return result;
         }
 
@@ -123,7 +123,7 @@ namespace NeoCortexApi.Entities
             if (obj == null)
                 return false;
 
-            if (index != obj.index)
+            if (ParentColumnIndex != obj.ParentColumnIndex)
                 return false;
             else
                 return true;
@@ -131,7 +131,7 @@ namespace NeoCortexApi.Entities
 
         public override string ToString()
         {
-            return $"Seg: {this.index}";
+            return $"Seg: {this.ParentColumnIndex}";
         }
     }
 }

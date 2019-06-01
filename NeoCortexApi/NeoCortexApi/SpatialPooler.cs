@@ -122,7 +122,10 @@ namespace NeoCortexApi
 
             Debug.WriteLine($" Upload time: {sw.ElapsedMilliseconds}");
 
-            c.setConnectedMatrix(new SparseBinaryMatrix(new int[] { numColumns, numInputs }));
+            //c.setConnectedMatrix(new SparseBinaryMatrix(new int[] { numColumns, numInputs }));
+            // TODO. this shoul dbe removed. Every colun maintain sits own matrix.
+            c.InitConnectedMatrix(numColumns, numInputs);
+
 
             //Initialize state meta-management statistics
             c.setOverlapDutyCycles(new double[numColumns]);
@@ -133,7 +136,7 @@ namespace NeoCortexApi
             ArrayUtils.fillArray(c.BoostFactors, 1);
         }
 
-     
+
         /// <summary>
         /// Implements single threaded (originally based on JAVA implementation) initialization of SP.
         /// It creates columns, initializes the pool of potentially connected synapses on ProximalDendrites and
@@ -143,8 +146,8 @@ namespace NeoCortexApi
         protected virtual void ConnectAndConfigureInputs(Connections c)
         {
             List<double> avgSynapsesConnected = new List<double>();
-            
-            List<KeyPair> colList = new List<KeyPair>();
+
+            //List<KeyPair> colList = new List<KeyPair>();
 
             ConcurrentDictionary<int, KeyPair> colList2 = new ConcurrentDictionary<int, KeyPair>();
 
@@ -165,7 +168,7 @@ namespace NeoCortexApi
 
                 //c.getPotentialPools().set(i, potPool);
 
-                colList.Add(new KeyPair() { Key = i, Value = column });
+                // colList.Add(new KeyPair() { Key = i, Value = column });
 
                 double[] perm = HtmCompute.InitSynapsePermanences(c.HtmConfig, potential, c.getRandom());
 
@@ -371,7 +374,7 @@ namespace NeoCortexApi
             updateBookeepingVars(c, learn);
 
             // Gets overlap over every single column.
-            var overlaps = calculateOverlap(c, inputVector);
+            var overlaps = CalculateOverlap(c, inputVector);
 
             //var overlapsStr = Helpers.StringifyVector(overlaps);
             //Debug.WriteLine("overlap: " + overlapsStr);
@@ -698,7 +701,7 @@ namespace NeoCortexApi
             c.InhibitionRadius = (int)(radius + 0.5);
         }
 
-               
+
         /// <summary>
         /// It calculates ratio numOfCols/numOfInputs for every dimension.This value is used to calculate the inhibition radius.
         /// </summary>
@@ -951,7 +954,7 @@ namespace NeoCortexApi
 
             ArrayUtils.Clip(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
 
-            column.setPermanences(c, htmConfig, perm);
+            column.setPermanences(htmConfig, perm);
         }
 
         /**
@@ -1050,7 +1053,7 @@ namespace NeoCortexApi
         //{
         //    //Random random = new Random();
         //    double[] perm = new double[htmConfig.NumInputs];
-            
+
         //    //foreach (int idx in column.ProximalDendrite.ConnectedInputs)
         //    foreach (int idx in potentialPool)
         //    {
@@ -1071,7 +1074,7 @@ namespace NeoCortexApi
         //    return perm;
         //}
 
-       
+
 
 
 
@@ -1561,14 +1564,20 @@ namespace NeoCortexApi
          *                      the spatial pooler.
          * @return
          */
-        public int[] calculateOverlap(Connections c, int[] inputVector)
+        public virtual int[] CalculateOverlap(Connections c, int[] inputVector)
         {
             int[] overlaps = new int[c.NumColumns];
-            c.getConnectedCounts().rightVecSumAtNZ(inputVector, overlaps, c.StimulusThreshold);
+            for (int col = 0; col < c.NumColumns; col++)
+            {
+                overlaps[col] = c.getColumn(col).GetColumnOverlapp(inputVector, c.StimulusThreshold);
+            }
+            //c.getConnectedCounts().rightVecSumAtNZ(inputVector, overlaps, c.StimulusThreshold);
             //string st = string.Join(",", overlaps);
             //Debug.WriteLine($"Overlap: {st}");
             return overlaps;
         }
+
+
 
         /**
          * Return the overlap to connected counts ratio for a given column
@@ -1576,9 +1585,16 @@ namespace NeoCortexApi
          * @param overlaps
          * @return
          */
-        public double[] calculateOverlapPct(Connections c, int[] overlaps)
+        public double[] CalculateOverlapPct(Connections c, int[] overlaps)
         {
-            return ArrayUtils.divide(overlaps, c.getConnectedCounts().getTrueCounts());
+            int[] columnsCounts = new int[overlaps.Length];
+
+            for (int i = 0; i < c.NumColumns; i++)
+            {
+                columnsCounts[i] = c.getColumn(i).ConnectedInputCounterMatrix.getTrueCounts()[0];
+            }
+
+            return ArrayUtils.divide(overlaps, columnsCounts);
         }
 
         //    /**
@@ -1676,7 +1692,7 @@ namespace NeoCortexApi
 
 
 
-      
+
 
         public Double getRobustness(Double k, int[] oriOut, int[] realOut)
         {
