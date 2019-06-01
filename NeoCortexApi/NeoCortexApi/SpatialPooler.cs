@@ -172,7 +172,7 @@ namespace NeoCortexApi
 
                 double[] perm = HtmCompute.InitSynapsePermanences(c.HtmConfig, potential, c.getRandom());
 
-                updatePermanencesForColumn(c, c.HtmConfig, perm, column, potential, true);
+                updatePermanencesForColumn(c.HtmConfig, perm, column, potential, true);
 
                 avgSynapsesConnected.Add(GetAvgSpanOfConnectedSynapses(c, i));
             }
@@ -824,7 +824,7 @@ namespace NeoCortexApi
                 int[] indexes = pool.getSparsePotential();
                 ArrayUtils.raiseValuesBy(permChanges, perm);
                 Column col = c.getColumn(activeColumns[i]);
-                updatePermanencesForColumn(c, c.HtmConfig, perm, col, indexes, true);
+                updatePermanencesForColumn(c.HtmConfig, perm, col, indexes, true);
             }
             //Debug.WriteLine("Permance after update in adaptSynapses: " + permChangesStr);
         }
@@ -940,7 +940,7 @@ namespace NeoCortexApi
          * @param maskPotential     The indexes of inputs in the specified {@link Column}'s pool.
          * @param raisePerm         a boolean value indicating whether the permanence values
          */
-        public void updatePermanencesForColumn(Connections c, HtmConfig htmConfig, double[] perm, Column column, int[] maskPotential, bool raisePerm)
+        public void updatePermanencesForColumn(HtmConfig htmConfig, double[] perm, Column column, int[] maskPotential, bool raisePerm)
         {
             if (raisePerm)
             {

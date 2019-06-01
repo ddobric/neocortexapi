@@ -1729,7 +1729,7 @@ namespace UnitTestsProject
             for (int i = 0; i < mem.NumColumns; i++)
             {
                 mem.getColumn(i).setPermanences(mem.HtmConfig, permanences[i]);
-                sp.updatePermanencesForColumn(mem, mem.HtmConfig, permanences[i], mem.getColumn(i), connectedDense[i], true);
+                sp.updatePermanencesForColumn( mem.HtmConfig, permanences[i], mem.getColumn(i), connectedDense[i], true);
                 int[] dense = mem.getColumn(i).getProximalDendrite().getConnectedSynapsesDense();
                 trueConnectedSynapses[i].ArrToString().SequenceEqual(dense.ArrToString());
             }
