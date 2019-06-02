@@ -194,6 +194,7 @@ namespace NeoCortexApi.Entities
                 cfg.InputTopology = this.InputTopology;
                 cfg.IsWrapAround = this.isWrapAround();
                 cfg.NumInputs = this.NumInputs;
+                cfg.NumColumns = this.getMemory().getMaxIndex() + 1;
                 cfg.PotentialPct = getPotentialPct();
                 cfg.PotentialRadius = getPotentialRadius();
                 cfg.SynPermConnected = getSynPermConnected();
@@ -203,6 +204,7 @@ namespace NeoCortexApi.Entities
                 cfg.SynPermMax = this.getSynPermMax();
                 cfg.SynPermMin = this.getSynPermMin();
                 cfg.StimulusThreshold = this.StimulusThreshold;
+                cfg.CellsPerColumn = this.getCellsPerColumn();
                 return cfg;
             }
         }
@@ -812,15 +814,6 @@ namespace NeoCortexApi.Entities
            // this.connectedCounts = matrix;
         }
 
-        public void InitConnectedMatrix(int numColumns, int numInputs)
-        {
-            //for (int col = 0; col < this.NumColumns; col++)
-            //{
-            //    this.getColumn(col).ConnectedInputCounterMatrix = new SparseBinaryMatrix(new int[] { 1, numInputs });
-            //}
-
-           // this.connectedCounts = new SparseBinaryMatrix(new int[] { numColumns, numInputs }); 
-        }
 
         /**
          * Sets the array holding the random noise added to proximal dendrite overlaps.

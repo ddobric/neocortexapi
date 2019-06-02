@@ -37,6 +37,8 @@ namespace NeoCortexApi.Entities
 
         public int NumInputs { get;  set; }
 
+        public int NumColumns { get; set; }
+
         public double SynPermMax { get; set; }
 
         public double SynPermMin { get; set; }
@@ -46,5 +48,7 @@ namespace NeoCortexApi.Entities
         public double SynPermTrimThreshold { get; set; }
 
         public double SynPermBelowStimulusInc { get; set; }
+
+        public int CellsPerColumn { get; set; }
     }
 }

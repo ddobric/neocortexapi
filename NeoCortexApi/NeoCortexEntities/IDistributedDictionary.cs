@@ -33,6 +33,11 @@ namespace NeoCortexApi.Entities
         /// </returns>
         List<(int partId, int minKey, int maxKey)> GetPartitions();
 
-     
+        void InitializeColumnPartitionsDist(ICollection<KeyPair> keyValuePairs);
+
+        List<double> ConnectAndConfigureInputsDist(HtmConfig htmConfig);
+
+        int[] CalculateOverlapDist(int[] inputVector);
+
     }
 }

@@ -25,6 +25,11 @@ namespace NeoCortexApi.Entities
         /// </summary>
         private IDistributedArray backingArray;
 
+        public SparseBinaryMatrix() : this(null, false)
+        {
+
+        }
+
         /**
          * Constructs a new {@code SparseBinaryMatrix} with the specified
          * dimensions (defaults to row major ordering)

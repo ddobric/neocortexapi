@@ -8,6 +8,7 @@ using Akka.Configuration;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using NeoCortexApi.Entities;
+using System.Collections.Concurrent;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
@@ -45,7 +46,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
             actSystem = ActorSystem.Create("Deployer", ConfigurationFactory.ParseString(@"
                 akka {  
-                    loglevel=Debug
+                    loglevel=Info
                     actor{
                         provider = ""Akka.Remote.RemoteActorRefProvider, Akka.Remote""  		               
                     }
@@ -247,12 +248,124 @@ namespace NeoCortexApi.DistributedComputeLib
 
 
         /// <summary>
+        /// Adds/Updates batch of elements to remote nodes.
+        /// </summary>
+        /// <param name="keyValuePairs"></param>
+        public void InitializeColumnPartitionsDist(ICollection<KeyPair> keyValuePairs)
+        {
+            ParallelOptions opts = new ParallelOptions();
+            opts.MaxDegreeOfParallelism = this.ActorMap.Count;
+
+            // We get here keys grouped to actors, which host partitions.
+            var partitions = GetPartitionsForKeyset(keyValuePairs);
+
+            //
+            // Here is upload performed in context of every actor (partition).
+            // Because keys are grouped by partitions (actors) parallel upload can be done here.
+            Parallel.ForEach(partitions, opts, (partition) =>
+            {
+                Dictionary<IActorRef, InitColumnsMsg> list = new Dictionary<IActorRef, InitColumnsMsg>();
+
+                int pageSize = this.Config.PageSize;
+                int alreadyProcessed = 0;
+
+                while (true)
+                {
+                    foreach (var item in partition.Value.Skip(alreadyProcessed).Take(pageSize))
+                    {
+                        var actorRef = GetPartitionActorFromKey((TKey)item.Key);
+                        if (!list.ContainsKey(actorRef))
+                            list.Add(actorRef, new InitColumnsMsg() { Elements = new List<KeyPair>() });
+
+                        list[actorRef].Elements.Add(new KeyPair { Key = item.Key, Value = item.Value });
+                    }
+
+                    if (list.Count > 0)
+                    {
+                        List<Task<int>> tasks = new List<Task<int>>();
+
+                        foreach (var item in list)
+                        {
+                            tasks.Add(item.Key.Ask<int>(item.Value, TimeSpan.FromMinutes(3)));
+                            alreadyProcessed += item.Value.Elements.Count;
+                        }
+
+                        Task.WaitAll(tasks.ToArray());
+
+                        list.Clear();
+                    }
+                    else
+                        break;
+                }
+            });
+        }
+
+
+        /// <summary>
+        /// Performs remote initialization and configuration of all coulms in all partitions.
+        /// </summary>
+        /// <param name="htmConfig"></param>
+        /// <returns>List of average spans of all columns on this node in this partition.
+        /// This list is agreggated by caller to estimate average span for all system.</returns>
+        public List<double> ConnectAndConfigureInputsDist(HtmConfig htmConfig)
+        {
+            // List of results.
+            ConcurrentDictionary<int, double> aggLst = new ConcurrentDictionary<int, double>();
+
+            ParallelOptions opts = new ParallelOptions();
+            opts.MaxDegreeOfParallelism = this.ActorMap.Count;
+
+            Parallel.ForEach(this.ActorMap, opts, (placement) =>
+            {
+                var avgSpanOfPart = placement.ActorRef.Ask<double>(new ConnectAndConfigureColumnsMsg() { HtmConfig = htmConfig }, this.Config.ConnectionTimout).Result;
+                aggLst.TryAdd(placement.PartitionIndx, avgSpanOfPart);
+            });
+
+            return aggLst.Values.ToList();
+        }
+
+
+
+        public int[] CalculateOverlapDist(int[] inputVector)
+        {
+            ConcurrentDictionary<int, List<KeyPair>> overlapList = new ConcurrentDictionary<int, List<KeyPair>>();
+
+            ParallelOptions opts = new ParallelOptions();
+            opts.MaxDegreeOfParallelism = this.ActorMap.Count;
+
+            var sss = this.ActorMap.First().ActorRef.Ask<List<KeyPair>>(new CalculateOverlapMsg { InputVector = inputVector }, this.Config.ConnectionTimout).Result;
+
+
+            // Run overlap calculation on all actors (in all partitions)
+            Parallel.ForEach(this.ActorMap, opts, (placement) =>
+            {
+                var partitionOverlaps = placement.ActorRef.Ask<List<KeyPair>>(new CalculateOverlapMsg { InputVector = inputVector }, this.Config.ConnectionTimout).Result;
+                overlapList.TryAdd(placement.PartitionIndx, partitionOverlaps);
+            });
+
+            List<int> overlaps = new List<int>();
+            foreach (var item in overlapList.OrderBy(i => i.Key))
+            {
+                foreach (var keyPair in item.Value)
+                {
+                    overlaps.Add((int)keyPair.Value);
+                }
+            }
+            return overlaps.ToArray();
+        }
+
+        /// <summary>
         /// Gets list of partitions, which host specified keys.
         /// </summary>
         /// <param name="keyValuePairs">Keyvalue pairs.</param>
         /// <returns></returns>
-        public abstract Dictionary<IActorRef, List<KeyPair>> GetPartitionsForKeyset(ICollection<KeyPair>  keyValuePairs);
+        public abstract Dictionary<IActorRef, List<KeyPair>> GetPartitionsForKeyset(ICollection<KeyPair> keyValuePairs);
 
+        /// <summary>
+        /// Gets partitions grouped by nodes.
+        /// </summary>
+        /// <returns></returns>
+        public abstract Dictionary<IActorRef, List<KeyPair>> GetPartitionsByNode();
 
         /// <summary>
         /// Ads the value with specified keypair.
@@ -289,13 +402,13 @@ namespace NeoCortexApi.DistributedComputeLib
         /// Tries to return value from target partition.
         /// </summary>
         /// <param name="key"></param>
-        /// <param name="value"></param>
+        /// <param name="value"></param>time
         /// <returns></returns>
         public bool TryGetValue(TKey key, out TValue value)
         {
             var partActor = GetPartitionActorFromKey(key);
 
-            Result result = partActor.Ask<Result>(new GetElementMsg { Key = key }).Result;
+            Result result = partActor.Ask<Result>(new GetElementMsg { Key = key }, this.Config.ConnectionTimout).Result;
 
             if (result.IsError == false)
             {
@@ -491,6 +604,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
             return null;
         }
+
         #endregion
     }
 }

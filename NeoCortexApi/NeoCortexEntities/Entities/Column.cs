@@ -79,6 +79,8 @@ namespace NeoCortexApi.Entities
             this.connectedInputCounter = new SparseBinaryMatrix(new int[] { 1, numInputs });
 
             ProximalDendrite = new ProximalDendrite(colIndx, synapsePermConnected, numInputs);
+
+            this.ConnectedInputCounterMatrix = new SparseBinaryMatrix(new int[] { 1, numInputs });
         }
 
 

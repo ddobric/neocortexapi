@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
-    
+
 
     internal class CreateDictNodeMsg
     {
@@ -49,7 +49,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
     internal class GetCountMsg
     {
-      
+
     }
 
 
@@ -58,5 +58,22 @@ namespace NeoCortexApi.DistributedComputeLib
         public bool IsError { get; set; }
 
         public object Value { get; set; }
+    }
+
+
+
+    public class InitColumnsMsg
+    {
+        public IList<KeyPair> Elements { get; set; }
+    }
+
+    public class ConnectAndConfigureColumnsMsg
+    {
+        public HtmConfig HtmConfig { get; set; }
+    }
+
+    public class CalculateOverlapMsg
+    {
+        public int[] InputVector { get; set; }
     }
 }

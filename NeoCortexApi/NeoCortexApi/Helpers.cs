@@ -82,7 +82,7 @@ namespace NeoCortexApi
         }
 
 
-        public static List<string> Nodes
+        public static List<string> DefaultNodeList
         {
             get
             {
@@ -106,9 +106,9 @@ namespace NeoCortexApi
                 {
                     HtmActorConfig = new HtmConfig
                     {
-
+                         ColumnTopology = new HtmModuleTopology(new int[] { 64 }, false ),
                     },
-                    Nodes = Nodes,
+                    Nodes = DefaultNodeList,
                     PartitionsPerNode = 10
                 };
             }

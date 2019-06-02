@@ -150,11 +150,29 @@ namespace NeoCortexApi.DistributedCompute
                             res.Add(partition.ActorRef, new List<KeyPair>());
 
                         res[partition.ActorRef].Add(pair);
-                    }                   
+                    }
                 }
             }
 
             return res;
+        }
+
+        public override Dictionary<IActorRef, List<KeyPair>> GetPartitionsByNode()
+        {
+            return GetPartitionsByNode(this.ActorMap);
+        }
+
+        public static Dictionary<IActorRef, List<KeyPair>> GetPartitionsByNode(List<Placement<int>> actorMap)
+        {
+            var groupedByNode = actorMap.GroupBy(i => i.ActorRef);
+            foreach (var node in groupedByNode)
+            {
+                foreach (var item in node)
+                {
+
+                } 
+            }
+            return null;
         }
     }
 

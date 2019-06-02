@@ -123,10 +123,8 @@ namespace NeoCortexApi
             Debug.WriteLine($" Upload time: {sw.ElapsedMilliseconds}");
 
             //c.setConnectedMatrix(new SparseBinaryMatrix(new int[] { numColumns, numInputs }));
-            // TODO. this shoul dbe removed. Every colun maintain sits own matrix.
-            c.InitConnectedMatrix(numColumns, numInputs);
-
-
+            //  this IS removed. Every colun maintains its own matrix.
+         
             //Initialize state meta-management statistics
             c.setOverlapDutyCycles(new double[numColumns]);
             c.setActiveDutyCycles(new double[numColumns]);
@@ -172,7 +170,7 @@ namespace NeoCortexApi
 
                 double[] perm = HtmCompute.InitSynapsePermanences(c.HtmConfig, potential, c.getRandom());
 
-                updatePermanencesForColumn(c.HtmConfig, perm, column, potential, true);
+                HtmCompute.UpdatePermanencesForColumn(c.HtmConfig, perm, column, potential, true);
 
                 avgSynapsesConnected.Add(GetAvgSpanOfConnectedSynapses(c, i));
             }
@@ -288,54 +286,7 @@ namespace NeoCortexApi
                 }
         */
 
-        /*
-        /// <summary>
-        /// Implements single threaded (originally based on JAVA implementation) initialization of SP.
-        /// </summary>
-        /// <param name="c"></param>
-        public void connectAndConfigureInputsSingleThreadStrategy(Connections c)
-        {
-            List<KeyPair> colList = new List<KeyPair>();
-            ConcurrentDictionary<int, KeyPair> colList2 = new ConcurrentDictionary<int, KeyPair>();
-
-            int numColumns = c.NumColumns;
-
-            for (int i = 0; i < numColumns; i++)
-            {
-                // Gets RF
-                int[] potential = mapPotential(c, i, c.isWrapAround());
-
-                Column column = c.getColumn(i);
-
-                // This line initializes all synases in the potential pool of synapses.
-                // It creates the pool on proximal dendrite segment of the column.
-                // After initialization permancences are set to zero.
-                connectColumnToInputRF(c, potential, column);
-
-                //c.getPotentialPools().set(i, potPool);
-
-                colList.Add(new KeyPair() { Key = i, Value = column });
-
-                double[] perm = initPermanence(c, potential, column);
-
-                updatePermanencesForColumn(c, perm, column, potential, true);
-            }
-
-            // The inhibition radius determines the size of a column's local
-            // neighborhood.  A cortical column must overcome the overlap score of
-            // columns in its neighborhood in order to become active. This radius is
-            // updated every learning round. It grows and shrinks with the average
-            // number of connected synapses per column.
-            updateInhibitionRadius(c);
-        }*/
-
-        //protected static void connectColumnToInputRF(HtmConfig htmConfig, int[] potential, Column column)
-        //{
-        //    //var synapseIndex = c.getProximalSynapseCount();
-        //    //c.setProximalSynapseCount(synapseIndex + potential.Length);
-        //    var synapseIndex = -1;
-        //    column.CreatePotentialPool(htmConfig, potential, synapseIndex);
-        //}
+     
 
         /**
          * This is the primary public method of the SpatialPooler class. This
@@ -379,8 +330,6 @@ namespace NeoCortexApi
             //var overlapsStr = Helpers.StringifyVector(overlaps);
             //Debug.WriteLine("overlap: " + overlapsStr);
 
-            //overlapActive = calculateOverlap(activeInput)
-            //overlapPredictedActive = calculateOverlap(predictedActiveInput)
             //totalOverlap = overlapActive * weightActive + overlapPredictedActive * weightPredictedActive
 
             c.Overlaps = overlaps;
@@ -393,8 +342,6 @@ namespace NeoCortexApi
             {
                 //Debug.WriteLine("Boosted Factor: " + c.BoostFactors);
                 boostedOverlaps = ArrayUtils.multiply(c.BoostFactors, overlaps);
-                //var boostedoverlapsStr = Helpers.StringifyVector(boostedOverlaps);
-                //Debug.WriteLine("boosted overlap: " + boostedoverlapsStr);
             }
             else
             {
@@ -824,8 +771,9 @@ namespace NeoCortexApi
                 int[] indexes = pool.getSparsePotential();
                 ArrayUtils.raiseValuesBy(permChanges, perm);
                 Column col = c.getColumn(activeColumns[i]);
-                updatePermanencesForColumn(c.HtmConfig, perm, col, indexes, true);
+                HtmCompute.UpdatePermanencesForColumn(c.HtmConfig, perm, col, indexes, true);
             }
+
             //Debug.WriteLine("Permance after update in adaptSynapses: " + permChangesStr);
         }
 
@@ -918,44 +866,7 @@ namespace NeoCortexApi
             HtmCompute.RaisePermanenceToThresholdSparse(c.HtmConfig, perm);
         }
 
-        /**
-         * This method updates the permanence matrix with a column's new permanence
-         * values. The column is identified by its index, which reflects the row in
-         * the matrix, and the permanence is given in 'sparse' form, i.e. an array
-         * whose members are associated with specific indexes. It is in
-         * charge of implementing 'clipping' - ensuring that the permanence values are
-         * always between 0 and 1 - and 'trimming' - enforcing sparseness by zeroing out
-         * all permanence values below 'synPermTrimThreshold'. It also maintains
-         * the consistency between 'permanences' (the matrix storing the
-         * permanence values), 'connectedSynapses', (the matrix storing the bits
-         * each column is connected to), and 'connectedCounts' (an array storing
-         * the number of input bits each column is connected to). Every method wishing
-         * to modify the permanence matrix should do so through this method.
-         * 
-         * @param c                 the {@link Connections} which is the memory model.
-         * @param perm              An array of permanence values for a column. The array is
-         *                          "dense", i.e. it contains an entry for each input bit, even
-         *                          if the permanence value is 0.
-         * @param column            The column in the permanence, potential and connectivity matrices
-         * @param maskPotential     The indexes of inputs in the specified {@link Column}'s pool.
-         * @param raisePerm         a boolean value indicating whether the permanence values
-         */
-        public void updatePermanencesForColumn(HtmConfig htmConfig, double[] perm, Column column, int[] maskPotential, bool raisePerm)
-        {
-            if (raisePerm)
-            {
-                // During every learning cycle, this method ensures that every column 
-                // has enough connections ('SynPermConnected') to iput space.
-                RaisePermanenceToThreshold(htmConfig, perm, maskPotential);
-            }
-
-            // Here we set all permanences to 0 
-            ArrayUtils.LessOrEqualXThanSetToY(perm, htmConfig.SynPermTrimThreshold, 0);
-
-            ArrayUtils.Clip(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
-
-            column.setPermanences(htmConfig, perm);
-        }
+       
 
         /**
          * This method updates the permanence matrix with a column's new permanence

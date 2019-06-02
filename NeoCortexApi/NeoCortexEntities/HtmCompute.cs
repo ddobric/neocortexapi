@@ -437,5 +437,44 @@ namespace NeoCortexApi
                 ArrayUtils.raiseValuesBy(htmConfig.SynPermBelowStimulusInc, perm);
             }
         }
+
+        /**
+        * This method updates the permanence matrix with a column's new permanence
+        * values. The column is identified by its index, which reflects the row in
+        * the matrix, and the permanence is given in 'sparse' form, i.e. an array
+        * whose members are associated with specific indexes. It is in
+        * charge of implementing 'clipping' - ensuring that the permanence values are
+        * always between 0 and 1 - and 'trimming' - enforcing sparseness by zeroing out
+        * all permanence values below 'synPermTrimThreshold'. It also maintains
+        * the consistency between 'permanences' (the matrix storing the
+        * permanence values), 'connectedSynapses', (the matrix storing the bits
+        * each column is connected to), and 'connectedCounts' (an array storing
+        * the number of input bits each column is connected to). Every method wishing
+        * to modify the permanence matrix should do so through this method.
+        * 
+        * @param c                 the {@link Connections} which is the memory model.
+        * @param perm              An array of permanence values for a column. The array is
+        *                          "dense", i.e. it contains an entry for each input bit, even
+        *                          if the permanence value is 0.
+        * @param column            The column in the permanence, potential and connectivity matrices
+        * @param maskPotential     The indexes of inputs in the specified {@link Column}'s pool.
+        * @param raisePerm         a boolean value indicating whether the permanence values
+        */
+        public static void UpdatePermanencesForColumn(HtmConfig htmConfig, double[] perm, Column column, int[] maskPotential, bool raisePerm)
+        {
+            if (raisePerm)
+            {
+                // During every learning cycle, this method ensures that every column 
+                // has enough connections ('SynPermConnected') to iput space.
+                RaisePermanenceToThreshold(htmConfig, perm, maskPotential);
+            }
+
+            // Here we set all permanences to 0 
+            ArrayUtils.LessOrEqualXThanSetToY(perm, htmConfig.SynPermTrimThreshold, 0);
+
+            ArrayUtils.Clip(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
+
+            column.setPermanences(htmConfig, perm);
+        }
     }
 }
