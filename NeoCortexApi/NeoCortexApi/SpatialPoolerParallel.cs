@@ -25,13 +25,13 @@ namespace NeoCortexApi
 
             SparseObjectMatrix<Column> mem = (SparseObjectMatrix<Column>)c.getMemory();
 
-            c.setMemory(mem == null ? mem = new SparseObjectMatrix<Column>(c.getColumnDimensions(), dict: distMem == null ? null : distMem.ColumnDictionary) : mem);
+            c.setMemory(mem == null ? mem = new SparseObjectMatrix<Column>(c.getColumnDimensions(), dict : distMem.ColumnDictionary) : mem);
 
             c.setInputMatrix(new SparseBinaryMatrix(c.getInputDimensions()));
 
             // Initiate the topologies
             c.setColumnTopology(new Topology(c.getColumnDimensions()));
-            c.setInputTopology(new Topology(c.getInputDimensions()));
+            c.setInputTopology(new Topology(c.getInputDimensions()));           
 
             //Calculate numInputs and numColumns
             int numInputs = c.getInputMatrix().getMaxIndex() + 1;
@@ -46,6 +46,12 @@ namespace NeoCortexApi
             }
             c.NumInputs = numInputs;
             c.setNumColumns(numColumns);
+            
+            if (distMem != null)
+            {
+                var distHtmCla = distMem.ColumnDictionary as HtmSparseIntDictionary<Column>;
+                distHtmCla.HtmConfig = c.HtmConfig;
+            }
 
             //
             // Fill the sparse matrix with column objects
@@ -351,9 +357,42 @@ namespace NeoCortexApi
             if (remoteHtm == null)
                 throw new ArgumentException("disMemConfig is not of type IRemotelyDistributed!");
 
+            //c.getColumn(0).GetColumnOverlapp(inputVector, c.StimulusThreshold);
+
             int[] columnOverlaps = remoteHtm.CalculateOverlapDist(inputVector);
 
             return columnOverlaps;
+        }
+
+        public override void AdaptSynapses(Connections c, int[] inputVector, int[] activeColumns)
+        {
+            throw new NotImplementedException();
+
+            // Get all indicies of input vector, which are set on '1'.
+            var inputIndices = ArrayUtils.IndexWhere(inputVector, inpBit => inpBit > 0);
+
+            double[] permChanges = new double[c.NumInputs];
+
+            // First we initialize all permChanges to minimum decrement values,
+            // which are used in a case of none-connections to input.
+            ArrayUtils.fillArray(permChanges, -1 * c.getSynPermInactiveDec());
+
+            // Then we update all connected permChanges to increment values for connected values.
+            // Permanences are set in conencted input bits to default incremental value.
+
+            ArrayUtils.setIndexesTo(permChanges, inputIndices.ToArray(), c.getSynPermActiveInc());
+            for (int i = 0; i < activeColumns.Length; i++)
+            {
+                //Pool pool = c.getPotentialPools().get(activeColumns[i]);
+                Pool pool = c.getColumn(activeColumns[i]).ProximalDendrite.RFPool;
+                double[] perm = pool.getDensePermanences(c);
+                int[] indexes = pool.getSparsePotential();
+                ArrayUtils.raiseValuesBy(permChanges, perm);
+                Column col = c.getColumn(activeColumns[i]);
+                HtmCompute.UpdatePermanencesForColumn(c.HtmConfig, perm, col, indexes, true);
+            }
+
+            //Debug.WriteLine("Permance after update in adaptSynapses: " + permChangesStr);
         }
 
         class ProcessingDataParallel

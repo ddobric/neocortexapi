@@ -22,6 +22,11 @@ namespace NeoCortexApi.Entities
     public interface IRemotelyDistributed
     {
         /// <summary>
+        /// All required HTM configuration in serializable form.
+        /// </summary>
+        HtmConfig HtmConfig { get; set; }
+
+        /// <summary>
         /// Gets number of nodes in distributed cluster.
         /// </summary>
         int Nodes { get; }

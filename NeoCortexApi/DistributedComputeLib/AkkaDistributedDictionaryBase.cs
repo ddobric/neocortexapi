@@ -14,24 +14,51 @@ namespace NeoCortexApi.DistributedComputeLib
 {
     public abstract class AkkaDistributedDictionaryBase<TKey, TValue> : IDistributedDictionary<TKey, TValue>, IRemotelyDistributed
     {
-        protected AkkaDistributedDictConfig Config { get; }
 
         // not used!
         private Dictionary<TKey, TValue>[] dictList;
+
 
         /// <summary>
         /// List of actors, which hold partitions.
         /// </summary>
         //private IActorRef[] dictActors;
 
+        private List<Placement<TKey>> actorMap;
+
         /// <summary>
         /// Maps from Actor partition identifier to actor index in <see cref="dictActors" list./>
         /// </summary>
-        protected List<Placement<TKey>> ActorMap { get; set; }
+        protected List<Placement<TKey>> ActorMap
+        {
+            get
+            {
+                if (actorMap == null)
+                    InitPartitionActorsDist();
+
+                return this.actorMap;
+            }
+            set
+            {
+                this.actorMap = value;
+            }
+        }
 
         private int numElements = 0;
 
         private ActorSystem actSystem;
+
+        #region Properties
+        /// <summary>
+        /// Akka cluster configuration.
+        /// </summary>
+        public AkkaDistributedDictConfig Config { get; set; }
+
+        /// <summary>
+        /// Configuration used to initialize HTM actor.
+        /// </summary>
+        public HtmConfig HtmConfig { get; set; }
+        #endregion
 
         /// <summary>
         /// Creates all required actors, which host partitions.
@@ -60,6 +87,13 @@ namespace NeoCortexApi.DistributedComputeLib
                     }
                 }"));
 
+        }
+
+        /// <summary>
+        /// Creates partition actors on cluster.
+        /// </summary>
+        protected void InitPartitionActorsDist()
+        {
             // Creates partition placements.
             this.ActorMap = CreatePartitionMap();
 
@@ -72,7 +106,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
                 var result = this.ActorMap[i].ActorRef.Ask<int>(new CreateDictNodeMsg()
                 {
-                    HtmAkkaConfig = config.HtmActorConfig,
+                    HtmAkkaConfig = this.HtmConfig,
                 }, this.Config.ConnectionTimout).Result;
             }
         }
@@ -317,7 +351,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
             Parallel.ForEach(this.ActorMap, opts, (placement) =>
             {
-                var avgSpanOfPart = placement.ActorRef.Ask<double>(new ConnectAndConfigureColumnsMsg() { HtmConfig = htmConfig }, this.Config.ConnectionTimout).Result;
+                var avgSpanOfPart = placement.ActorRef.Ask<double>(new ConnectAndConfigureColumnsMsg(), this.Config.ConnectionTimout).Result;
                 aggLst.TryAdd(placement.PartitionIndx, avgSpanOfPart);
             });
 
@@ -332,9 +366,6 @@ namespace NeoCortexApi.DistributedComputeLib
 
             ParallelOptions opts = new ParallelOptions();
             opts.MaxDegreeOfParallelism = this.ActorMap.Count;
-
-            var sss = this.ActorMap.First().ActorRef.Ask<List<KeyPair>>(new CalculateOverlapMsg { InputVector = inputVector }, this.Config.ConnectionTimout).Result;
-
 
             // Run overlap calculation on all actors (in all partitions)
             Parallel.ForEach(this.ActorMap, opts, (placement) =>
@@ -351,7 +382,22 @@ namespace NeoCortexApi.DistributedComputeLib
                     overlaps.Add((int)keyPair.Value);
                 }
             }
+
             return overlaps.ToArray();
+        }
+
+
+        public static string StringifyVector(double[] vector)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var vectorBit in vector)
+            {
+                sb.Append(vectorBit);
+                sb.Append(", ");
+            }
+
+            return sb.ToString();
         }
 
         /// <summary>
@@ -521,6 +567,7 @@ namespace NeoCortexApi.DistributedComputeLib
         /// Gets number of physical nodes in cluster.
         /// </summary>
         public int Nodes => this.Config.Nodes.Count;
+
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {

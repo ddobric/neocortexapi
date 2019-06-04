@@ -103,11 +103,7 @@ namespace NeoCortexApi
             get
             {
                 return new HtmSparseIntDictionaryConfig()
-                {
-                    HtmActorConfig = new HtmConfig
-                    {
-                         ColumnTopology = new HtmModuleTopology(new int[] { 64 }, false ),
-                    },
+                {  
                     Nodes = DefaultNodeList,
                     PartitionsPerNode = 10
                 };

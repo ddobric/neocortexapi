@@ -11,37 +11,18 @@ namespace UnitTestsProject
 {
     public class UnitTestHelpers
     {
-        public static DistributedMemory GetMemory(Parameters htmParams = null)
+        public static DistributedMemory GetMemory(HtmConfig htmConfig = null)
         {
-            if (htmParams == null)
+            if (htmConfig == null)
                 return GetInMemoryDictionary();
             else
-                return GetDistributedDictionary(htmParams);
+                return GetDistributedDictionary(htmConfig);
         }
 
-        public static DistributedMemory GetDistributedDictionary(Parameters htmParams)
+        public static DistributedMemory GetDistributedDictionary(HtmConfig htmConfig)
         {
             var cfg = Helpers.DefaultHtmSparseIntDictionaryConfig;
-            cfg.HtmActorConfig = new HtmConfig()
-            {
-                ColumnTopology = new HtmModuleTopology()
-                {
-                    Dimensions = (int[])htmParams[KEY.COLUMN_DIMENSIONS],
-                    IsMajorOrdering = false,
-                },
-                InputTopology = new HtmModuleTopology
-                {
-                    Dimensions = (int[])htmParams[KEY.INPUT_DIMENSIONS],
-                    IsMajorOrdering = false,
-                },
-               
-                IsWrapAround = (bool)htmParams[KEY.WRAP_AROUND],
-
-                PotentialPct = (double)htmParams[KEY.POTENTIAL_PCT],
-
-                PotentialRadius = (int)htmParams[KEY.POTENTIAL_RADIUS],
-            };
-
+           
             return new DistributedMemory()
             {
                 ColumnDictionary = new HtmSparseIntDictionary<Column>(cfg),
@@ -80,7 +61,7 @@ namespace UnitTestsProject
         internal static void InitPooler(PoolerMode poolerMode, SpatialPooler sp, Connections mem, Parameters parameters = null)
         {
             if (poolerMode == PoolerMode.Multinode)
-                sp.init(mem, UnitTestHelpers.GetMemory(parameters));
+                sp.init(mem, UnitTestHelpers.GetMemory(mem.HtmConfig));
             else if (poolerMode == PoolerMode.Multicore)
                 sp.init(mem, UnitTestHelpers.GetMemory());
             else

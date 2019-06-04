@@ -8,6 +8,7 @@ using System.Diagnostics;
 using NeoCortexApi.DistributedComputeLib;
 using System.Collections.Concurrent;
 using System.Threading;
+using NeoCortexApi.DistributedCompute;
 
 /**
  * Handles the relationships between the columns of a region 
@@ -80,7 +81,7 @@ namespace NeoCortexApi
         {
             SparseObjectMatrix<Column> memory = (SparseObjectMatrix<Column>)c.getMemory();
 
-            c.setMemory(memory == null ? memory = new SparseObjectMatrix<Column>(c.getColumnDimensions(), dict: distMem == null ? null : distMem.ColumnDictionary) : memory);
+            c.setMemory(memory == null ? memory = new SparseObjectMatrix<Column>(c.getColumnDimensions(), dict:  null ) : memory);
 
             c.setInputMatrix(new SparseBinaryMatrix(c.getInputDimensions()));
 
@@ -354,7 +355,7 @@ namespace NeoCortexApi
 
             if (learn)
             {
-                adaptSynapses(c, inputVector, activeColumns);
+                AdaptSynapses(c, inputVector, activeColumns);
                 updateDutyCycles(c, overlaps, activeColumns);
                 bumpUpWeakColumns(c);
                 updateBoostFactors(c);
@@ -743,7 +744,7 @@ namespace NeoCortexApi
          * @param activeColumns     an array containing the indices of the columns that
          *                          survived inhibition.
          */
-        public void adaptSynapses(Connections c, int[] inputVector, int[] activeColumns)
+        public virtual void AdaptSynapses(Connections c, int[] inputVector, int[] activeColumns)
         {
             //int[] inputIndices = ArrayUtils.where(inputVector, ArrayUtils.INT_GREATER_THAN_0);
 

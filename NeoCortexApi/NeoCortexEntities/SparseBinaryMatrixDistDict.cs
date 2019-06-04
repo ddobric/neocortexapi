@@ -19,13 +19,13 @@ namespace NeoCortexApi.Entities
  */
     public class SparseBinaryMatrix : AbstractSparseBinaryMatrix
     {
-
         /// <summary>
         /// Holds the matrix with connections between columns and inputs.
         /// </summary>
         private IDistributedArray backingArray;
 
-        public SparseBinaryMatrix() : this(null, false)
+
+        public SparseBinaryMatrix()
         {
 
         }

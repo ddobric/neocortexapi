@@ -12,6 +12,10 @@ namespace NeoCortexApi.Entities
     /// </summary>
     public class AbstractFlatMatrix
     {
+        public AbstractFlatMatrix()
+        {
+
+        }
 
         /// <summary>
         /// Reverses the array.
@@ -140,7 +144,13 @@ namespace NeoCortexApi.Entities
     /// <typeparam name="T"></typeparam>
     public abstract class AbstractFlatMatrix<T> : AbstractFlatMatrix, IFlatMatrix<T>
     {
-        public HtmModuleTopology ModuleTopology { get; set; }
+        public AbstractFlatMatrix()
+        {
+
+        }
+
+
+    public HtmModuleTopology ModuleTopology { get; set; }
 
         //protected int[] dimensions;
 

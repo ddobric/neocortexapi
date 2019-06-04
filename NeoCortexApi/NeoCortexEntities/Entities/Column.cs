@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Text;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
+using System.Linq;
 
 namespace NeoCortexApi.Entities
 {
@@ -230,8 +231,6 @@ namespace NeoCortexApi.Entities
             // Every column contians a single row at index 0.
             this.ConnectedInputCounterMatrix.clearStatistics(0 /*this.Index*/);
 
-            //List<Synapse> synapses = c.getSynapses(this);
-
             foreach (Synapse s in this.ProximalDendrite.Synapses)
             {
                 int indx = s.getInputIndex();
@@ -307,7 +306,6 @@ namespace NeoCortexApi.Entities
         public int GetColumnOverlapp(int[] inputVector, double stimulusThreshold)
         {
             int result = 0;
-
 
             // Gets the synapse mapping between column-i with input vector.
             int[] slice = (int[])this.connectedInputCounter.getSlice(0);

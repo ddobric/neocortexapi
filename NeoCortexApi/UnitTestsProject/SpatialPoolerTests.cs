@@ -1573,7 +1573,7 @@ namespace UnitTestsProject
             int[] inputVector = new int[] { 1, 0, 0, 1, 1, 0, 1, 0 };
             int[] activeColumns = new int[] { 0, 1, 2 };
 
-            sp.adaptSynapses(mem, inputVector, activeColumns);
+            sp.AdaptSynapses(mem, inputVector, activeColumns);
 
             for (int i = 0; i < mem.NumColumns; i++)
             {
@@ -1618,7 +1618,7 @@ namespace UnitTestsProject
                 mem.getColumn(i).setPermanences(mem.HtmConfig, permanences[i]);
             }
 
-            sp.adaptSynapses(mem, inputVector, activeColumns);
+            sp.AdaptSynapses(mem, inputVector, activeColumns);
 
             for (int i = 0; i < mem.NumColumns; i++)
             {

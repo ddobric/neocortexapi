@@ -303,7 +303,6 @@ namespace NeoCortexApi
                 }
                 else
                 {
-                    htmConfig.SynPermConnected =
                     perm[idx] = InitPermNonConnected(htmConfig.SynPermConnected, random);
                 }
 
@@ -462,7 +461,7 @@ namespace NeoCortexApi
         */
         public static void UpdatePermanencesForColumn(HtmConfig htmConfig, double[] perm, Column column, int[] maskPotential, bool raisePerm)
         {
-            if (raisePerm)
+             if (raisePerm)
             {
                 // During every learning cycle, this method ensures that every column 
                 // has enough connections ('SynPermConnected') to iput space.

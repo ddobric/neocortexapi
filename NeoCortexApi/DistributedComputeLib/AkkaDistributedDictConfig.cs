@@ -21,11 +21,6 @@ namespace NeoCortexApi.DistributedComputeLib
         public List<string> Nodes { get; set; }
 
         /// <summary>
-        /// Configuration used to initialize HTM actor.
-        /// </summary>
-        public HtmConfig HtmActorConfig { get; set; }
-
-        /// <summary>
         /// Upload and Download page size.
         /// </summary>
         public int PageSize { get; set; } = 100;

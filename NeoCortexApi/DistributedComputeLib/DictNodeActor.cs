@@ -232,7 +232,7 @@ namespace NeoCortexApi.DistributedComputeLib
            
             foreach (var element in this.dict)
             {
-                if (msg.HtmConfig == null)
+                if (this.config == null)
                     throw new ArgumentException($"HtmConfig must be set in the message.");
 
                 Random rnd = new Random(42);
@@ -240,20 +240,20 @@ namespace NeoCortexApi.DistributedComputeLib
                 int i = (int)element.Key;
 
                 // Gets RF
-                var potential = HtmCompute.MapPotential(msg.HtmConfig, i, rnd);
+                var potential = HtmCompute.MapPotential(this.config, i, rnd);
                 var column = (Column)this.dict[i];
 
                 // This line initializes all synases in the potential pool of synapses.
                 // It creates the pool on proximal dendrite segment of the column.
                 // After initialization permancences are set to zero.
                 //connectColumnToInputRF(c.HtmConfig, data.Potential, data.Column);
-                column.CreatePotentialPool(msg.HtmConfig, potential, -1);
+                column.CreatePotentialPool(this.config, potential, -1);
 
-                var perms = HtmCompute.InitSynapsePermanences(msg.HtmConfig, potential, rnd);
+                var perms = HtmCompute.InitSynapsePermanences(this.config, potential, rnd);
 
-                avgConnections.Add(HtmCompute.CalcAvgSpanOfConnectedSynapses(column, msg.HtmConfig));
+                avgConnections.Add(HtmCompute.CalcAvgSpanOfConnectedSynapses(column, this.config));
 
-                HtmCompute.UpdatePermanencesForColumn(msg.HtmConfig, perms, column, potential, true);
+                HtmCompute.UpdatePermanencesForColumn(this.config, perms, column, potential, true);
             }
 
             double avgConnectedSpan = ArrayUtils.average(avgConnections.ToArray());
@@ -284,10 +284,23 @@ namespace NeoCortexApi.DistributedComputeLib
             }
 
             var sortedRes = result.OrderBy(k => k.Key).ToList();
+         
 
             Sender.Tell(sortedRes, Self);
         }
 
+        public static string StringifyVector(double[] vector)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var vectorBit in vector)
+            {
+                sb.Append(vectorBit);
+                sb.Append(", ");
+            }
+
+            return sb.ToString();
+        }
         #endregion
     }
 }

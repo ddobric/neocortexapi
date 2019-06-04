@@ -69,7 +69,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
     public class ConnectAndConfigureColumnsMsg
     {
-        public HtmConfig HtmConfig { get; set; }
+        
     }
 
     public class CalculateOverlapMsg

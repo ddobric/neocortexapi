@@ -115,14 +115,14 @@ namespace UnitTestsProject
 
             var akkaDict = new HtmSparseIntDictionary<Column>(new HtmSparseIntDictionaryConfig()
             {
-                HtmActorConfig = new HtmConfig()
-                {
-                     ColumnTopology = new HtmModuleTopology()
-                     {
-                          Dimensions = new int[] { 100, 200 },
-                           IsMajorOrdering = false,
-                     }                  
-                },
+                //HtmActorConfig = new HtmConfig()
+                //{
+                //     ColumnTopology = new HtmModuleTopology()
+                //     {
+                //          Dimensions = new int[] { 100, 200 },
+                //           IsMajorOrdering = false,
+                //     }                  
+                //},
 
                 Nodes = Helpers.DefaultNodeList,
             });
@@ -210,7 +210,7 @@ namespace UnitTestsProject
                 parameters.apply(mem);
 
                 if (isMultinode)
-                    sp.init(mem, UnitTestHelpers.GetMemory(parameters));
+                    sp.init(mem, UnitTestHelpers.GetMemory(mem.HtmConfig));
                 else
                     sp.init(mem, UnitTestHelpers.GetMemory());
 
@@ -285,11 +285,12 @@ namespace UnitTestsProject
             parameters.setColumnDimensions(new int[] { columnTopology, columnTopology });
 
             var sp = new SpatialPoolerParallel();
+
             var mem = new Connections();
 
             parameters.apply(mem);
 
-            sp.init(mem, UnitTestHelpers.GetMemory(parameters));
+            sp.init(mem, UnitTestHelpers.GetMemory(new HtmConfig()));
 
             int actiColLen = numOfActCols;
 

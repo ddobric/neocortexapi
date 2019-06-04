@@ -16,6 +16,10 @@ namespace NeoCortexApi.Entities
 
         private int[] trueCounts;
 
+        public AbstractSparseBinaryMatrix()
+        {
+
+        }
         /**
          * Constructs a new {@code AbstractSparseBinaryMatrix} with the specified
          * dimensions (defaults to row major ordering)
