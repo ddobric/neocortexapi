@@ -335,7 +335,7 @@ namespace UnitTestsProject
             parameters.setSeed(42);
             parameters.setRandom(new ThreadSafeRandom(42));
 
-            SpatialPooler sp = new SpatialPooler();
+            var sp = new SpatialPoolerMT();
             Connections cn = new Connections();
             parameters.apply(cn);
             sp.init(cn);
@@ -343,8 +343,9 @@ namespace UnitTestsProject
             cn.BoostFactors = (new double[] { 2.0, 2.0, 2.0 });
             int[] inputVector = { 1, 1, 1, 1, 1 };
             int[] activeArray = { 0, 0, 0 };
-            int[] expOutput = { 1, 1, 1 }; // Added during implementation of parllel.
-            /*{ 1, 1, 1 }*/ ;/// { 2, 1, 0 }; This was used originally on Linux with JAVA and Pyhton
+            int[] expOutput = { 1,1,1 }; // Added during implementation of parallel.
+            /*{ 1, 1, 1 }*/ ;
+            // { 2, 1, 0 }; This was used originally on Linux with JAVA and Pyhton
             sp.compute(cn, inputVector, activeArray, true);
 
             double[] boostedOverlaps = cn.BoostedOverlaps;

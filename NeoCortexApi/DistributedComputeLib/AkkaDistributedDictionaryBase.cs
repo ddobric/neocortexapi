@@ -368,12 +368,18 @@ namespace NeoCortexApi.DistributedComputeLib
             opts.MaxDegreeOfParallelism = this.ActorMap.Count;
 
             // Run overlap calculation on all actors (in all partitions)
-            Parallel.ForEach(this.ActorMap, opts, (placement) =>
+            //Parallel.ForEach(this.ActorMap, opts, (placement) =>
+            //{
+            //    var partitionOverlaps = placement.ActorRef.Ask<List<KeyPair>>(new CalculateOverlapMsg { InputVector = inputVector }, this.Config.ConnectionTimout).Result;
+            //    overlapList.TryAdd(placement.PartitionIndx, partitionOverlaps);
+            //});
+
+            foreach (var placement  in this.ActorMap)
             {
                 var partitionOverlaps = placement.ActorRef.Ask<List<KeyPair>>(new CalculateOverlapMsg { InputVector = inputVector }, this.Config.ConnectionTimout).Result;
                 overlapList.TryAdd(placement.PartitionIndx, partitionOverlaps);
-            });
-
+            }
+                   
             List<int> overlaps = new List<int>();
             foreach (var item in overlapList.OrderBy(i => i.Key))
             {
@@ -384,20 +390,6 @@ namespace NeoCortexApi.DistributedComputeLib
             }
 
             return overlaps.ToArray();
-        }
-
-
-        public static string StringifyVector(double[] vector)
-        {
-            StringBuilder sb = new StringBuilder();
-
-            foreach (var vectorBit in vector)
-            {
-                sb.Append(vectorBit);
-                sb.Append(", ");
-            }
-
-            return sb.ToString();
         }
 
         /// <summary>

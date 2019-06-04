@@ -229,19 +229,19 @@ namespace NeoCortexApi.DistributedComputeLib
             Console.WriteLine($"{Self.Path} - Received message: '{msg.GetType().Name}'");
 
             List<double> avgConnections = new List<double>();
-           
+
+            Random rnd = new Random(42);
+
             foreach (var element in this.dict)
             {
                 if (this.config == null)
                     throw new ArgumentException($"HtmConfig must be set in the message.");
 
-                Random rnd = new Random(42);
-
-                int i = (int)element.Key;
+                int colIndx = (int)element.Key;
 
                 // Gets RF
-                var potential = HtmCompute.MapPotential(this.config, i, rnd);
-                var column = (Column)this.dict[i];
+                var potential = HtmCompute.MapPotential(this.config, colIndx, rnd);
+                var column = (Column)this.dict[colIndx];
 
                 // This line initializes all synases in the potential pool of synapses.
                 // It creates the pool on proximal dendrite segment of the column.
@@ -273,8 +273,10 @@ namespace NeoCortexApi.DistributedComputeLib
             Parallel.ForEach(this.dict, opts, (keyPair) =>
             {
                 Column col = keyPair.Value as Column;
-                
-                overlaps.TryAdd((int)keyPair.Key, col.GetColumnOverlapp(msg.InputVector, this.config.StimulusThreshold));
+
+                var overlap = col.GetColumnOverlapp(msg.InputVector, this.config.StimulusThreshold);
+
+                overlaps.TryAdd((int)keyPair.Key, overlap);
             });
 
             List<KeyPair> result = new List<KeyPair>();
@@ -284,7 +286,8 @@ namespace NeoCortexApi.DistributedComputeLib
             }
 
             var sortedRes = result.OrderBy(k => k.Key).ToList();
-         
+
+            Console.Write($"o = {sortedRes.Count(p => (int)p.Value > 0)}");
 
             Sender.Tell(sortedRes, Self);
         }

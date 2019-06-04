@@ -595,7 +595,7 @@ namespace NeoCortexApi.Entities
             }
         }
 
-        
+
         /// <summary>
         /// Gets/Sets the number of input neurons in 1D space. Mathematically, 
         /// this is the product of the input dimensions.
@@ -808,10 +808,10 @@ namespace NeoCortexApi.Entities
                 for (int j = 0; j < row.Length; j++)
                 {
                     colMatrix.set(row[j], 0, j);
-                }               
+                }
             }
-           
-           // this.connectedCounts = matrix;
+
+            // this.connectedCounts = matrix;
         }
 
 

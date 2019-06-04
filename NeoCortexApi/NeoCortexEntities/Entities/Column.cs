@@ -5,6 +5,7 @@ using System.Text;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System.Linq;
+using System.Diagnostics;
 
 namespace NeoCortexApi.Entities
 {
@@ -233,13 +234,13 @@ namespace NeoCortexApi.Entities
 
             foreach (Synapse s in this.ProximalDendrite.Synapses)
             {
-                int indx = s.getInputIndex();
+                //int indx = s.getInputIndex();
 
-                this.setPermanence(s, htmConfig.SynPermConnected, perms[indx]);
+                this.setPermanence(s, htmConfig.SynPermConnected, perms[s.InputIndex]);
 
-                if (perms[indx] >= htmConfig.SynPermConnected)
+                if (perms[s.InputIndex] >= htmConfig.SynPermConnected)
                 {
-                    this.ConnectedInputCounterMatrix.set(1, 0 /*this.Index*/, s.getInputIndex());
+                    this.ConnectedInputCounterMatrix.set(1, 0 /*this.Index*/, s.InputIndex);
                 }
             }
         }
@@ -325,7 +326,25 @@ namespace NeoCortexApi.Entities
                 }
             }
 
+            Debug.WriteLine($"Col {this.Index} - o = {result} - onces: {slice.Count(i=>i == 1)}");
+           // Debug.WriteLine(StringifyVector(slice));
+           // Debug.WriteLine("");
+
             return result;
+        }
+
+
+        public static string StringifyVector(int[] vector)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var vectorBit in vector)
+            {
+                sb.Append(vectorBit);
+                sb.Append(", ");
+            }
+
+            return sb.ToString();
         }
 
         /**

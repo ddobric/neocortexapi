@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using System.Diagnostics;
 
 namespace NeoCortexApi
 {
@@ -87,6 +88,18 @@ namespace NeoCortexApi
             return data;
         }
 
+        public static string StringifyVector(int[] vector)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var vectorBit in vector)
+            {
+                sb.Append(vectorBit);
+                sb.Append(", ");
+            }
+
+            return sb.ToString();
+        }
 
         /**
         * Uniform Column Mapping 

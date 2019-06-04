@@ -154,8 +154,10 @@ namespace NeoCortexApi
 
             for (int i = 0; i < numColumns; i++)
             {
+                Random rnd = new Random(42);
+
                 // Gets RF
-                int[] potential = HtmCompute.MapPotential(c.HtmConfig, i, c.getRandom());
+                int[] potential = HtmCompute.MapPotential(c.HtmConfig, i, rnd /*c.getRandom()*/);
 
                 Column column = c.getColumn(i);
 
@@ -169,7 +171,7 @@ namespace NeoCortexApi
 
                 // colList.Add(new KeyPair() { Key = i, Value = column });
 
-                double[] perm = HtmCompute.InitSynapsePermanences(c.HtmConfig, potential, c.getRandom());
+                double[] perm = HtmCompute.InitSynapsePermanences(c.HtmConfig, potential, rnd /*c.getRandom()*/);
 
                 HtmCompute.UpdatePermanencesForColumn(c.HtmConfig, perm, column, potential, true);
 

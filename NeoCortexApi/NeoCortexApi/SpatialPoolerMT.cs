@@ -37,11 +37,13 @@ namespace NeoCortexApi
 
             Parallel.For(0, numColumns, opts, (indx) =>
             {
+                Random rnd = new Random(42);
+
                 int i = (int)indx;
                 var data = new ProcessingData();
 
                 // Gets RF
-                data.Potential = HtmCompute.MapPotential(c.HtmConfig, i, c.getRandom());
+                data.Potential = HtmCompute.MapPotential(c.HtmConfig, i, rnd /*(c.getRandom()*/);
                 data.Column = c.getColumn(i);
 
                 // This line initializes all synases in the potential pool of synapses.
