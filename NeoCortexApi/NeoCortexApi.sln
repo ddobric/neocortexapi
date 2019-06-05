@@ -1,9 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28803.156
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.572
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexApi", "NeoCortexApi\NeoCortexApi.csproj", "{F5BEDB25-C6A3-4826-A8C6-679098F5CB9C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{28395BF8-B719-4D93-806B-723A7AF0C56A} = {28395BF8-B719-4D93-806B-723A7AF0C56A}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTestsProject", "UnitTestsProject\UnitTestsProject.csproj", "{A2B0776F-3650-4CE5-98BC-E2B7A2205A23}"
 EndProject

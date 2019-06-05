@@ -81,7 +81,8 @@ namespace UnitTestsProject
         /// This test is loading to prepared vectors (two boxed getInputVector1() and getInputVector2() or ...)
         /// and does training in two ways. First, it trains vectors after each other in sequence for number of iterations.
         /// Second, it trains every vector for number of iterations after each other to ensure, that there is o difference in result.
-        /// Output of this test is ....
+        /// Output of this test is hamming distance of active columns when learning is enable and when learning is disable with different 
+        /// noise level.
         /// </summary>
         [TestMethod]
         [TestCategory("LongRunning")]
@@ -152,7 +153,7 @@ namespace UnitTestsProject
                 for (int i = 0; i < 150; i++)
                 {
                     sp.compute(mem, intput, activeArray, true);
-                    Debug.WriteLine(Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1)));
+                    //Debug.WriteLine(Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1)));
                 }
                 if (vectorIndex == 0)
                 {
@@ -262,7 +263,7 @@ namespace UnitTestsProject
             // some noise to it. Then it predicts it.
             // Calculated hamming distance (percent overlap) between predicted output and output 
             // trained without noise is final result, which should be higher than 95% (realistic guess).
-
+            /*
             vectorIndex = 0;
 
             foreach (var inputVector in inputVectors)
@@ -279,6 +280,7 @@ namespace UnitTestsProject
 
                 Assert.IsTrue(dist >= 95);
             }
+            */
         }
 
         [TestMethod]
@@ -287,24 +289,65 @@ namespace UnitTestsProject
             List<int[]> inputVectors = new List<int[]>();
             //int[] inputVec1 = ArrayUtils.ReadCsvFileTest("Output\\BinaryImages\\digit7.txt").ToArray();
             int[] inputVec1 = getInputVector1();
-            //int[] inputVec2 = getInputVector2();
+            int[] inputVec2 = getInputVector2();
             inputVectors.Add(inputVec1);
-            //inputVectors.Add(inputVec2);
+            inputVectors.Add(inputVec2);
             int count = 0;
             foreach (var vec in inputVectors)
             {
                 count++;
                 List<int[,]> arrays = new List<int[,]>();
-                arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray<int>(vec, 28, 28)));
+                arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray<int>(vec, 32, 32)));
                 var str = Helpers.StringifyVector(vec);
-                Debug.WriteLine(str);
-                NeoCortexUtils.DrawBitmaps(arrays,$"Output\\{count}.png", Color.Yellow, Color.Gray, OutImgSize, OutImgSize);
+                Debug.WriteLine($"{count}: {str}");
+                //NeoCortexUtils.DrawBitmaps(arrays,$"Output\\{count}.png", Color.Yellow, Color.Gray, OutImgSize, OutImgSize);
             }
         }
+
+        [TestMethod]
+        public void testing()
+        {
+            var parameters = GetDefaultParams();
+            parameters.Set(KEY.POTENTIAL_RADIUS, 10);
+            parameters.Set(KEY.POTENTIAL_PCT, 0.85);
+            parameters.Set(KEY.GLOBAL_INHIBITION, true);
+            parameters.Set(KEY.STIMULUS_THRESHOLD, 0.5);
+            parameters.Set(KEY.INHIBITION_RADIUS, (int)15);
+            parameters.Set(KEY.LOCAL_AREA_DENSITY, -1);
+            parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.02 * 64 * 64);
+            parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000);
+            parameters.Set(KEY.MAX_BOOST, 0.0);
+            parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.008);
+            parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0.01);
+            parameters.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.001);
+
+            parameters.Set(KEY.SEED, 42);
+
+            parameters.setInputDimensions(new int[] { 32, 32 });
+            parameters.setColumnDimensions(new int[] { 64, 64 });
+
+            var rnd = new Random();
+
+            var sp = new SpatialPooler();
+            var mem = new Connections();
+            parameters.apply(mem);
+            sp.init(mem);
+            int[] oldArray = new int[64 * 64];
+            int[] inputVec = getInputVector1();
+            int[] activeArray = new int[64 * 64];
+            for (int i = 0; i < 150; i++)
+            {
+                sp.compute(mem, inputVec, activeArray, true);
+                var d = MathHelpers.GetHammingDistance(oldArray, activeArray, true);
+                oldArray = new int[64*64];
+                activeArray.CopyTo(oldArray, 0);
+                Debug.WriteLine(d);
+            }
+        }
+
         private static int[] getInputVector1()
         {
             int[] inputVector = new int[1024];
-
             for (int i = 0; i < 31; i++)
             {
                 for (int j = 0; j < 32; j++)
@@ -315,7 +358,6 @@ namespace UnitTestsProject
                         inputVector[i * 32 + j] = 0;
                 }
             }
-
             return inputVector;
         }
 
@@ -333,7 +375,6 @@ namespace UnitTestsProject
                         inputVector[i * 32 + j] = 0;
                 }
             }
-
             return inputVector;
         }
 
@@ -653,11 +694,11 @@ namespace UnitTestsProject
         /// This test generate a text file of binary image from original image.The text file is 
         /// </summary>
         [TestMethod]
-        [DataRow("TestFiles\\digit8.png", "Output\\BinaryImages\\digit8.txt")]
-        [DataRow("TestFiles\\digit7.png", "Output\\BinaryImages\\digit7.txt")]
+        [DataRow("Output\\1.png", "Output\\BinaryImages\\1.txt")]
+        [DataRow("Output\\2.png", "Output\\BinaryImages\\2.txt")]
         public void BinarizeImageTest(String sourcePath, String destinationPath)
         {
-            Binarizer imageBinarizer = new Binarizer(200, 200, 200, 28, 28);
+            Binarizer imageBinarizer = new Binarizer(255, 255, 0, 32, 32);
             imageBinarizer.CreateBinary(sourcePath, destinationPath);
         }
 

@@ -1647,7 +1647,7 @@ namespace NeoCortexApi
             int[] overlaps = new int[c.NumColumns];
             c.getConnectedCounts().rightVecSumAtNZ(inputVector, overlaps, c.StimulusThreshold);
             string st = string.Join(",", overlaps);
-            Debug.WriteLine($"Overlap: {st}");
+            //Debug.WriteLine($"Overlap: {st}");
             return overlaps;
         }
 
