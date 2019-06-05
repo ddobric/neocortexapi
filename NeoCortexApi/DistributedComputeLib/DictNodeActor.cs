@@ -53,6 +53,11 @@ namespace NeoCortexApi.DistributedComputeLib
                 calculateOverlap(msg);
             }));
 
+            Receive((Action<AdaptSynapsesMsg>)(msg =>
+            {
+                adaptSynapses(msg);
+            }));
+
 
 
 
@@ -118,7 +123,7 @@ namespace NeoCortexApi.DistributedComputeLib
                 else
                     Sender.Tell(new Result { IsError = true, Value = null }, Self);
             });
-            
+
             Receive<GetElementsMsg>(msg =>
             {
                 Console.WriteLine($"Received message: '{msg.GetType().Name}'");
@@ -172,7 +177,7 @@ namespace NeoCortexApi.DistributedComputeLib
             });
         }
 
-      
+
         protected override void PreStart()
         {
             Console.WriteLine($"{nameof(DictNodeActor)} started.");
@@ -292,6 +297,26 @@ namespace NeoCortexApi.DistributedComputeLib
             Sender.Tell(sortedRes, Self);
         }
 
+        void adaptSynapses(AdaptSynapsesMsg msg)
+        {
+            ParallelOptions opts = new ParallelOptions();
+            opts.MaxDegreeOfParallelism = msg.ColumnKeys.Count;
+
+            Parallel.ForEach(msg.ColumnKeys, opts, (colPair) =>
+            {
+                Column activeColumn = (Column)this.dict[colPair.Key];
+                //Pool pool = c.getPotentialPools().get(activeColumns[i]);
+                Pool pool = activeColumn.ProximalDendrite.RFPool;
+                double[] perm = pool.getDensePermanences(this.config.NumInputs);
+                int[] indexes = pool.getSparsePotential();
+                ArrayUtils.raiseValuesBy(msg.PermanenceChanges, perm);
+               
+                HtmCompute.UpdatePermanencesForColumn(this.config, perm, activeColumn, indexes, true);
+            });
+
+            // We send this to ensure reliable messaging. No other result is required here.
+            Sender.Tell(0, Self);
+        }
         public static string StringifyVector(double[] vector)
         {
             StringBuilder sb = new StringBuilder();

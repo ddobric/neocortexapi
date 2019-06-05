@@ -50,5 +50,7 @@ namespace NeoCortexApi.Entities
         public double SynPermBelowStimulusInc { get; set; }
 
         public int CellsPerColumn { get; set; }
+
+        public double SynPermInactiveDec { get; set; }   
     }
 }

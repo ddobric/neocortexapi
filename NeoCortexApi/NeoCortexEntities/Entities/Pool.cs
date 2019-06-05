@@ -156,10 +156,10 @@ namespace NeoCortexApi.Entities
          * @param c
          * @return
          */
-        public double[] getDensePermanences(Connections c)
+        public double[] getDensePermanences(int numInputs)
         {
-            double[] retVal = new double[c.NumInputs];
-            // int[] keys = synapsesBySourceIndex.keys();
+            double[] retVal = new double[numInputs];
+           
             foreach (int inputIndex in synapsesBySourceIndex.Keys)
             {
                 retVal[inputIndex] = synapsesBySourceIndex[inputIndex].getPermanence();

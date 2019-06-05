@@ -81,7 +81,7 @@ namespace NeoCortexApi
         {
             SparseObjectMatrix<Column> memory = (SparseObjectMatrix<Column>)c.getMemory();
 
-            c.setMemory(memory == null ? memory = new SparseObjectMatrix<Column>(c.getColumnDimensions(), dict:  null ) : memory);
+            c.setMemory(memory == null ? memory = new SparseObjectMatrix<Column>(c.getColumnDimensions(), dict: null) : memory);
 
             c.setInputMatrix(new SparseBinaryMatrix(c.getInputDimensions()));
 
@@ -125,7 +125,7 @@ namespace NeoCortexApi
 
             //c.setConnectedMatrix(new SparseBinaryMatrix(new int[] { numColumns, numInputs }));
             //  this IS removed. Every colun maintains its own matrix.
-         
+
             //Initialize state meta-management statistics
             c.setOverlapDutyCycles(new double[numColumns]);
             c.setActiveDutyCycles(new double[numColumns]);
@@ -152,10 +152,10 @@ namespace NeoCortexApi
 
             int numColumns = c.NumColumns;
 
+            Random rnd = new Random(42);
+
             for (int i = 0; i < numColumns; i++)
             {
-                Random rnd = new Random(42);
-
                 // Gets RF
                 int[] potential = HtmCompute.MapPotential(c.HtmConfig, i, rnd /*c.getRandom()*/);
 
@@ -289,7 +289,7 @@ namespace NeoCortexApi
                 }
         */
 
-     
+
 
         /**
          * This is the primary public method of the SpatialPooler class. This
@@ -336,6 +336,9 @@ namespace NeoCortexApi
             //totalOverlap = overlapActive * weightActive + overlapPredictedActive * weightPredictedActive
 
             c.Overlaps = overlaps;
+
+            var overlapsStr = Helpers.StringifyVector(overlaps);
+            Debug.WriteLine("overlap: " + overlapsStr);
 
             double[] boostedOverlaps;
 
@@ -770,7 +773,7 @@ namespace NeoCortexApi
             {
                 //Pool pool = c.getPotentialPools().get(activeColumns[i]);
                 Pool pool = c.getColumn(activeColumns[i]).ProximalDendrite.RFPool;
-                double[] perm = pool.getDensePermanences(c);
+                double[] perm = pool.getDensePermanences(c.NumInputs);
                 int[] indexes = pool.getSparsePotential();
                 ArrayUtils.raiseValuesBy(permChanges, perm);
                 Column col = c.getColumn(activeColumns[i]);
@@ -869,7 +872,7 @@ namespace NeoCortexApi
             HtmCompute.RaisePermanenceToThresholdSparse(c.HtmConfig, perm);
         }
 
-       
+
 
         /**
          * This method updates the permanence matrix with a column's new permanence

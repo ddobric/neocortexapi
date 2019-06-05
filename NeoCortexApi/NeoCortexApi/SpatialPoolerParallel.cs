@@ -359,14 +359,19 @@ namespace NeoCortexApi
 
             //c.getColumn(0).GetColumnOverlapp(inputVector, c.StimulusThreshold);
 
-            int[] columnOverlaps = remoteHtm.CalculateOverlapDist(inputVector);
+            int[] overlaps = remoteHtm.CalculateOverlapDist(inputVector);
 
-            return columnOverlaps;
+            var overlapsStr = Helpers.StringifyVector(overlaps);
+            Debug.WriteLine("overlap: " + overlapsStr);
+
+            return overlaps;
         }
 
         public override void AdaptSynapses(Connections c, int[] inputVector, int[] activeColumns)
         {
-            throw new NotImplementedException();
+            IRemotelyDistributed remoteHtm = this.distMemConfig.ColumnDictionary as IRemotelyDistributed;
+            if (remoteHtm == null)
+                throw new ArgumentException("disMemConfig is not of type IRemotelyDistributed!");
 
             // Get all indicies of input vector, which are set on '1'.
             var inputIndices = ArrayUtils.IndexWhere(inputVector, inpBit => inpBit > 0);
@@ -379,20 +384,9 @@ namespace NeoCortexApi
 
             // Then we update all connected permChanges to increment values for connected values.
             // Permanences are set in conencted input bits to default incremental value.
-
             ArrayUtils.setIndexesTo(permChanges, inputIndices.ToArray(), c.getSynPermActiveInc());
-            for (int i = 0; i < activeColumns.Length; i++)
-            {
-                //Pool pool = c.getPotentialPools().get(activeColumns[i]);
-                Pool pool = c.getColumn(activeColumns[i]).ProximalDendrite.RFPool;
-                double[] perm = pool.getDensePermanences(c);
-                int[] indexes = pool.getSparsePotential();
-                ArrayUtils.raiseValuesBy(permChanges, perm);
-                Column col = c.getColumn(activeColumns[i]);
-                HtmCompute.UpdatePermanencesForColumn(c.HtmConfig, perm, col, indexes, true);
-            }
 
-            //Debug.WriteLine("Permance after update in adaptSynapses: " + permChangesStr);
+            remoteHtm.AdaptSynapsesDist(inputVector, permChanges, activeColumns);
         }
 
         class ProcessingDataParallel

@@ -69,11 +69,17 @@ namespace NeoCortexApi.DistributedComputeLib
 
     public class ConnectAndConfigureColumnsMsg
     {
-        
+
     }
 
     public class CalculateOverlapMsg
     {
         public int[] InputVector { get; set; }
+    }
+
+    public class AdaptSynapsesMsg
+    {
+        public List<KeyPair> ColumnKeys { get; internal set; }
+        public double[] PermanenceChanges { get; internal set; }
     }
 }

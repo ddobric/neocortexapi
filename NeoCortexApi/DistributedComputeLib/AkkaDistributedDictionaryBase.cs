@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using NeoCortexApi.Entities;
 using System.Collections.Concurrent;
+using NeoCortexApi.Utility;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
@@ -367,19 +368,19 @@ namespace NeoCortexApi.DistributedComputeLib
             ParallelOptions opts = new ParallelOptions();
             opts.MaxDegreeOfParallelism = this.ActorMap.Count;
 
-            // Run overlap calculation on all actors (in all partitions)
-            //Parallel.ForEach(this.ActorMap, opts, (placement) =>
-            //{
-            //    var partitionOverlaps = placement.ActorRef.Ask<List<KeyPair>>(new CalculateOverlapMsg { InputVector = inputVector }, this.Config.ConnectionTimout).Result;
-            //    overlapList.TryAdd(placement.PartitionIndx, partitionOverlaps);
-            //});
-
-            foreach (var placement  in this.ActorMap)
+            // Run overlap calculation on all actors(in all partitions)
+            Parallel.ForEach(this.ActorMap, opts, (placement) =>
             {
                 var partitionOverlaps = placement.ActorRef.Ask<List<KeyPair>>(new CalculateOverlapMsg { InputVector = inputVector }, this.Config.ConnectionTimout).Result;
                 overlapList.TryAdd(placement.PartitionIndx, partitionOverlaps);
-            }
-                   
+            });
+
+            //foreach (var placement  in this.ActorMap)
+            //{
+            //    var partitionOverlaps = placement.ActorRef.Ask<List<KeyPair>>(new CalculateOverlapMsg { InputVector = inputVector }, this.Config.ConnectionTimout).Result;
+            //    overlapList.TryAdd(placement.PartitionIndx, partitionOverlaps);
+            //}
+
             List<int> overlaps = new List<int>();
             foreach (var item in overlapList.OrderBy(i => i.Key))
             {
@@ -390,6 +391,30 @@ namespace NeoCortexApi.DistributedComputeLib
             }
 
             return overlaps.ToArray();
+        }
+
+        public void AdaptSynapsesDist(int[] inputVector, double[] permChanges, int[] activeColumns)
+        {
+            List<KeyPair> list = new List<KeyPair>();
+            foreach (var colIndx in activeColumns)
+            {
+                list.Add(new KeyPair() { Key = colIndx, Value = colIndx });
+            }
+
+            var partitions = GetPartitionsForKeyset(list);
+
+            ParallelOptions opts = new ParallelOptions();
+            opts.MaxDegreeOfParallelism = this.ActorMap.Count;
+
+            Parallel.ForEach(partitions, opts, (placement) =>
+            {
+                // Result here should ensure reliable messaging. No semantin meaning.
+                var res = placement.Key.Ask<int>(new AdaptSynapsesMsg
+                {
+                    PermanenceChanges = permChanges,
+                    ColumnKeys = placement.Value }, 
+                    this.Config.ConnectionTimout).Result;
+            });
         }
 
         /// <summary>

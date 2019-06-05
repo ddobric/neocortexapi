@@ -234,15 +234,13 @@ namespace NeoCortexApi.Entities
 
             foreach (Synapse s in this.ProximalDendrite.Synapses)
             {
-                //int indx = s.getInputIndex();
-
                 this.setPermanence(s, htmConfig.SynPermConnected, perms[s.InputIndex]);
 
                 if (perms[s.InputIndex] >= htmConfig.SynPermConnected)
                 {
                     this.ConnectedInputCounterMatrix.set(1, 0 /*this.Index*/, s.InputIndex);
                 }
-            }
+            }           
         }
 
         /**
@@ -326,7 +324,7 @@ namespace NeoCortexApi.Entities
                 }
             }
 
-            Debug.WriteLine($"Col {this.Index} - o = {result} - onces: {slice.Count(i=>i == 1)}");
+            //Debug.WriteLine($"Col {this.Index} - o = {result} - onces: {slice.Count(i=>i == 1)}");
            // Debug.WriteLine(StringifyVector(slice));
            // Debug.WriteLine("");
 
