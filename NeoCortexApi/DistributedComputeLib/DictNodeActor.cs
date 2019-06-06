@@ -40,7 +40,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
             Receive((Action<InitColumnsMsg>)(msg =>
             {
-                createColumns(msg);
+                initializeColumns(msg);
             }));
 
             Receive((Action<ConnectAndConfigureColumnsMsg>)(msg =>
@@ -204,23 +204,35 @@ namespace NeoCortexApi.DistributedComputeLib
         /// Creates columns on the node.
         /// </summary>
         /// <param name="msg"></param>
-        private void createColumns(InitColumnsMsg msg)
+        private void initializeColumns(InitColumnsMsg msg)
         {
-            Console.WriteLine($"{Self.Path} -  Received message: '{msg.GetType().Name}'");
+            Console.WriteLine($"{Self.Path} -  Received message: '{msg.GetType().Name}' - min={msg.MinKey}, max={msg.MaxKey}");
 
+            for (int i = msg.MinKey; i <= msg.MaxKey; i++)
+            {
+                this.dict[i] = new Column(this.config.CellsPerColumn, i, this.config.SynPermConnected, this.config.NumInputs);
+            }
+
+            /*
             if (msg.Elements == null || msg.Elements.Count == 0)
                 throw new DistributedException($"{nameof(DictNodeActor)} failed to create columns. List of elements cannot be empty.");
 
+            ParallelOptions opts = new ParallelOptions();
+            opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
+
+            //
+            // Here is upload performed in context of every actor (partition).
+            // Because keys are grouped by partitions (actors) parallel upload can be done here.
             foreach (var element in msg.Elements)
             {
                 HtmConfig cfg = element.Value as HtmConfig;
                 if (cfg == null)
                     throw new ArgumentException($"Value hast to be of type {nameof(HtmConfig)}");
 
-                this.dict[element.Key] = new Column(cfg.CellsPerColumn, (int)element.Key, cfg.SynPermConnected, cfg.NumInputs);
+                this.dict[element.Key] = new Column(this.config.CellsPerColumn, (int)element.Key, this.config.SynPermConnected, cfg.NumInputs);
             }
-
-            Sender.Tell(msg.Elements.Count, Self);
+            */
+            Sender.Tell(msg.MaxKey-msg.MinKey, Self);
         }
 
 
@@ -310,7 +322,7 @@ namespace NeoCortexApi.DistributedComputeLib
                 double[] perm = pool.getDensePermanences(this.config.NumInputs);
                 int[] indexes = pool.getSparsePotential();
                 ArrayUtils.raiseValuesBy(msg.PermanenceChanges, perm);
-               
+
                 HtmCompute.UpdatePermanencesForColumn(this.config, perm, activeColumn, indexes, true);
             });
 

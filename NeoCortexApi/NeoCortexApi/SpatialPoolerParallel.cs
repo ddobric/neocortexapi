@@ -362,7 +362,7 @@ namespace NeoCortexApi
             int[] overlaps = remoteHtm.CalculateOverlapDist(inputVector);
 
             var overlapsStr = Helpers.StringifyVector(overlaps);
-            Debug.WriteLine("overlap: " + overlapsStr);
+           // Debug.WriteLine("overlap: " + overlapsStr);
 
             return overlaps;
         }

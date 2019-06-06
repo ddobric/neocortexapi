@@ -289,16 +289,28 @@ namespace NeoCortexApi.DistributedComputeLib
         public void InitializeColumnPartitionsDist(ICollection<KeyPair> keyValuePairs)
         {
             ParallelOptions opts = new ParallelOptions();
-            opts.MaxDegreeOfParallelism = this.ActorMap.Count;
+            opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
 
             // We get here keys grouped to actors, which host partitions.
-            var partitions = GetPartitionsForKeyset(keyValuePairs);
+            //var partitions = GetPartitionsForKeyset(keyValuePairs);
+            var partitions = GetPartitions();
+            // Run overlap calculation on all actors(in all partitions)
+            Parallel.ForEach(this.ActorMap, opts, (placement) =>
+            {
+                var res = placement.ActorRef.Ask<int>(new InitColumnsMsg()
+                {
+                    MinKey = (int)(object)placement.MinKey,
+                    MaxKey = (int)(object)placement.MaxKey
+                }, this.Config.ConnectionTimout).Result;
+            });
 
-            //
+            /*
+             * //
             // Here is upload performed in context of every actor (partition).
             // Because keys are grouped by partitions (actors) parallel upload can be done here.
             Parallel.ForEach(partitions, opts, (partition) =>
             {
+              
                 Dictionary<IActorRef, InitColumnsMsg> list = new Dictionary<IActorRef, InitColumnsMsg>();
 
                 int pageSize = this.Config.PageSize;
@@ -332,7 +344,8 @@ namespace NeoCortexApi.DistributedComputeLib
                     else
                         break;
                 }
-            });
+                
+            });*/
         }
 
 

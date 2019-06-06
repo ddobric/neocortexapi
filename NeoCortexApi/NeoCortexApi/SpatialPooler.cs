@@ -338,7 +338,7 @@ namespace NeoCortexApi
             c.Overlaps = overlaps;
 
             var overlapsStr = Helpers.StringifyVector(overlaps);
-            Debug.WriteLine("overlap: " + overlapsStr);
+            //Debug.WriteLine("overlap: " + overlapsStr);
 
             double[] boostedOverlaps;
 

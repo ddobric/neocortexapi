@@ -234,7 +234,9 @@ namespace UnitTestsProject
          * become active. This test focuses on the global inhibition code path.
          */
         [TestMethod]
-        public void testZeroOverlap_StimulusThreshold_GlobalInhibition()
+        [DataRow(PoolerMode.SingleThreaded)]
+        [DataRow(PoolerMode.Multicore)]
+        public void testZeroOverlap_StimulusThreshold_GlobalInhibition(PoolerMode poolerMode)
         {
             int inputSize = 10;
             int nColumns = 20;
@@ -248,7 +250,7 @@ namespace UnitTestsProject
             parameters.Set(KEY.RANDOM, new ThreadSafeRandom(42));
             parameters.Set(KEY.SEED, 42);
 
-            SpatialPooler sp = new SpatialPooler();
+            SpatialPooler sp = UnitTestHelpers.CreatePooler(poolerMode);
             Connections cn = new Connections();
             parameters.apply(cn);
             sp.init(cn);
@@ -2455,9 +2457,9 @@ namespace UnitTestsProject
 
 
         [TestMethod]
-        [DataRow(0)]
-        [DataRow(1)]
-        public void testInit(int poolerImplementation)
+        [DataRow(PoolerMode.SingleThreaded)]
+        [DataRow(PoolerMode.Multicore)]      
+        public void testInit(PoolerMode poolerMode)
         {
             setupParameters();
             parameters.setNumActiveColumnsPerInhArea(0);
@@ -2466,7 +2468,7 @@ namespace UnitTestsProject
             Connections c = new Connections();
             parameters.apply(c);
 
-            SpatialPooler sp = UnitTestHelpers.CreatePooler(poolerImplementation);
+            SpatialPooler sp = UnitTestHelpers.CreatePooler(poolerMode);
 
             // Local Area Density cannot be 0
             try
