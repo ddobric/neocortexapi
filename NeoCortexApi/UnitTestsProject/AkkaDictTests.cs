@@ -82,14 +82,14 @@ namespace UnitTestsProject
             Assert.IsTrue(map.Count == nodes.Length * partitionsPerNode);
             Assert.IsTrue((map[7].MinKey == 14 && map[7].MaxKey == 15) 
                 || (map[7].MinKey == 21 && map[7].MaxKey == 23)
-                || (map[9].MinKey == 3690 && map[9].MaxKey == 4099));
+                || (map[9].MinKey == 3690 && map[9].MaxKey == 4095));
         }
 
 
         [TestMethod]
         [DataRow(new string[] { "url1", "url2", "url3" }, 3, 17, 15, 2, 7)]
         [DataRow(new string[] { "url1", "url2", "url3" }, 5, 17, 0, 0, 0)]
-        [DataRow(new string[] { "url1", "url2", "url3" }, 5, 17, 17, 1, 8)]
+        [DataRow(new string[] { "url1", "url2", "url3" }, 5, 17, 16, 1, 8)]
         [DataRow(new string[] { "url1", "url2", "url3" }, 5, 33, 22, 1, 7)]
         [DataRow(new string[] { "url1", "url2", "url3" }, 5, 31, 22, 1, 7)]
         public void PartitionLookupTest(string[] nodes, int partitionsPerNode, int elements, int key, int expectedNode, int expectedPartition)
