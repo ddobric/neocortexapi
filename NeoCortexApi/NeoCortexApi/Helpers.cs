@@ -89,6 +89,7 @@ namespace NeoCortexApi
                 var nodes = new List<string>()
                 {
                       "akka.tcp://HtmCluster@localhost:8081",
+                      "akka.tcp://HtmCluster@localhost:8082"
                 };
 
                 return nodes;

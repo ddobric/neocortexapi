@@ -283,7 +283,7 @@ namespace NeoCortexApi.Entities
         * @param column            The column in the permanence, potential and connectivity matrices
         * @param raisePerm         a boolean value indicating whether the permanence values
         */
-        public void UpdatePermanencesForColumnSparse(Connections c, HtmConfig htmConfig, double[] perm, int[] maskPotential, bool raisePerm)
+        public void UpdatePermanencesForColumnSparse(HtmConfig htmConfig, double[] perm, int[] maskPotential, bool raisePerm)
         {
             if (raisePerm)
             {

@@ -362,7 +362,7 @@ namespace NeoCortexApi
             {
                 AdaptSynapses(c, inputVector, activeColumns);
                 updateDutyCycles(c, overlaps, activeColumns);
-                bumpUpWeakColumns(c);
+                BumpUpWeakColumns(c);
                 updateBoostFactors(c);
                 if (isUpdateRound(c))
                 {
@@ -791,26 +791,20 @@ namespace NeoCortexApi
          *  
          * @param c
          */
-        public void bumpUpWeakColumns(Connections c)
+        public virtual void BumpUpWeakColumns(Connections c)
         {
-            //    int[] weakColumns = ArrayUtils.where(c.getMemory().get1DIndexes(), new Condition.Adapter<Integer>() {
-            //        @Override public boolean eval(int i)
-            //    {
-            //        return c.getOverlapDutyCycles()[i] < c.getMinOverlapDutyCycles()[i];
-            //    }
-            //});
-
             var weakColumns = c.getMemory().get1DIndexes().Where(i => c.getOverlapDutyCycles()[i] < c.getMinOverlapDutyCycles()[i]).ToArray();
             //var weakColumnsStr = Helpers.StringifyVector(weakColumns);
             //Debug.WriteLine("weak Columns:" + weakColumnsStr);
             for (int i = 0; i < weakColumns.Length; i++)
             {
+                Column col = c.getColumn(weakColumns[i]);
                 //Pool pool = c.getPotentialPools().get(weakColumns[i]);
-                Pool pool = c.getColumn(weakColumns[i]).ProximalDendrite.RFPool;
+                Pool pool = col.ProximalDendrite.RFPool;
                 double[] perm = pool.getSparsePermanences();
                 ArrayUtils.raiseValuesBy(c.getSynPermBelowStimulusInc(), perm);
                 int[] indexes = pool.getSparsePotential();
-                Column col = c.getColumn(weakColumns[i]);
+               
                 updatePermanencesForColumnSparse(c, perm, col, indexes, true);
                 //var permStr = Helpers.StringifyVector(perm);
                 //Debug.WriteLine("pearm after bump up weak column:" + permStr);
@@ -893,7 +887,7 @@ namespace NeoCortexApi
          */
         public void updatePermanencesForColumnSparse(Connections c, double[] perm, Column column, int[] maskPotential, bool raisePerm)
         {
-            column.UpdatePermanencesForColumnSparse(c, c.HtmConfig, perm, maskPotential, raisePerm);
+            column.UpdatePermanencesForColumnSparse(c.HtmConfig, perm, maskPotential, raisePerm);
             //if (raisePerm)
             //{
             //    RaisePermanenceToThresholdSparse(c, perm);

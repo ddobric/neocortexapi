@@ -80,6 +80,10 @@ namespace NeoCortexApi.DistributedComputeLib
                     }
                     remote {
                         connection-timeout = 120 s
+                        transport-failure-detector {
+			                heartbeat-interval = 1000s 
+			                acceptable-heartbeat-pause = 6000s 
+		                }
                         helios.tcp {
                             maximum-frame-size = 326000000b
 		                    port = 0
@@ -267,7 +271,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
                         foreach (var item in list)
                         {
-                            tasks.Add(item.Key.Ask<int>(item.Value, TimeSpan.FromMinutes(3)));
+                            tasks.Add(item.Key.Ask<int>(item.Value, this.Config.ConnectionTimout));
                             alreadyProcessed += item.Value.Elements.Count;
                         }
 
@@ -388,12 +392,6 @@ namespace NeoCortexApi.DistributedComputeLib
                 overlapList.TryAdd(placement.PartitionIndx, partitionOverlaps);
             });
 
-            //foreach (var placement  in this.ActorMap)
-            //{
-            //    var partitionOverlaps = placement.ActorRef.Ask<List<KeyPair>>(new CalculateOverlapMsg { InputVector = inputVector }, this.Config.ConnectionTimout).Result;
-            //    overlapList.TryAdd(placement.PartitionIndx, partitionOverlaps);
-            //}
-
             List<int> overlaps = new List<int>();
             foreach (var item in overlapList.OrderBy(i => i.Key))
             {
@@ -427,6 +425,26 @@ namespace NeoCortexApi.DistributedComputeLib
                     PermanenceChanges = permChanges,
                     ColumnKeys = placement.Value }, 
                     this.Config.ConnectionTimout).Result;
+            });
+        }
+
+
+        public void BumpUpWeakColumnsDist(int[] weakColumns)
+        {
+            ParallelOptions opts = new ParallelOptions();
+            opts.MaxDegreeOfParallelism = weakColumns.Length;
+
+            List<KeyPair> list = new List<KeyPair>();
+            foreach (var weakColIndx in weakColumns)
+            {
+                list.Add(new KeyPair() { Key = weakColIndx, Value = weakColIndx });
+            }
+
+            var partitionMap = GetPartitionsForKeyset(list);
+
+            Parallel.ForEach(partitionMap, opts, (placement) =>
+            {
+                placement.Key.Ask<int>(new BumUpWeakColumnsMsg { ColumnKeys = placement.Value }, this.Config.ConnectionTimout);
             });
         }
 

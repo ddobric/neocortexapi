@@ -84,4 +84,10 @@ namespace NeoCortexApi.DistributedComputeLib
         public List<KeyPair> ColumnKeys { get; internal set; }
         public double[] PermanenceChanges { get; internal set; }
     }
+
+    public class BumUpWeakColumnsMsg
+    {
+        public List<KeyPair> ColumnKeys { get; internal set; }
+ 
+    }
 }

@@ -8,9 +8,14 @@
         }
 	loglevel=INFO
     actor.provider = cluster
-	log-config-on-start = on       
+	log-config-on-start = on    
+
     remote {
 		connection-timeout = 120 s
+		transport-failure-detector {
+			heartbeat-interval = 1000s 
+			acceptable-heartbeat-pause = 6000s 
+		}
         dot-netty.tcp {
 			maximum-frame-size = 32000000b
             port = @PORT

@@ -1157,7 +1157,7 @@ namespace UnitTestsProject
             }
 
             //Execute method being tested
-            sp.bumpUpWeakColumns(mem);
+            sp.BumpUpWeakColumns(mem);
 
             for (int i = 0; i < mem.NumColumns; i++)
             {

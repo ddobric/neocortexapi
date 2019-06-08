@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="AkkaHostLib" Version="1.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.4.10" />
+
   </ItemGroup>
 
   <ItemGroup>

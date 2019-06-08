@@ -167,7 +167,12 @@ namespace NeoCortexApi.DistributedComputeLib
                 Sender.Tell(this.dict.Count, Self);
             });
 
+            Receive<BumUpWeakColumnsMsg>(msg =>
+            {
+                Console.WriteLine($"Received message: '{msg.GetType().Name}'");
 
+                bumpUpWeakColumns(msg);
+            });
 
             Receive<Terminated>(msg =>
             {
@@ -175,6 +180,9 @@ namespace NeoCortexApi.DistributedComputeLib
                 Console.WriteLine($"{nameof(DictNodeActor)} termintion - {msg.ActorRef}");
                 Console.WriteLine("Was address terminated? {0}", msg.AddressTerminated);
             });
+
+
+            
         }
 
 
@@ -285,7 +293,7 @@ namespace NeoCortexApi.DistributedComputeLib
             ConcurrentDictionary<int, int> overlaps = new ConcurrentDictionary<int, int>();
 
             ParallelOptions opts = new ParallelOptions();
-            opts.MaxDegreeOfParallelism = this.dict.Count;
+            opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
 
             Parallel.ForEach(this.dict, opts, (keyPair) =>
             {
@@ -304,7 +312,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
             var sortedRes = result.OrderBy(k => k.Key).ToList();
 
-            Console.Write($"o = {sortedRes.Count(p => (int)p.Value > 0)}");
+            //Console.Write($"o = {sortedRes.Count(p => (int)p.Value > 0)}");
 
             Sender.Tell(sortedRes, Self);
         }
@@ -329,6 +337,27 @@ namespace NeoCortexApi.DistributedComputeLib
             // We send this to ensure reliable messaging. No other result is required here.
             Sender.Tell(0, Self);
         }
+
+        public void bumpUpWeakColumns(BumUpWeakColumnsMsg msg)
+        {
+            ParallelOptions opts = new ParallelOptions();
+            opts.MaxDegreeOfParallelism = msg.ColumnKeys.Count;
+
+            Parallel.ForEach(msg.ColumnKeys, opts, (colPair) =>
+            {
+                Column weakColumn = (Column)dict[colPair.Key];
+
+                Pool pool = weakColumn.ProximalDendrite.RFPool;
+                double[] perm = pool.getSparsePermanences();
+                ArrayUtils.raiseValuesBy(this.config.SynPermBelowStimulusInc, perm);
+                int[] indexes = pool.getSparsePotential();
+
+                weakColumn.UpdatePermanencesForColumnSparse(this.config, perm, indexes, true);
+            });
+
+            Sender.Tell(0, Self);
+        }
+
         public static string StringifyVector(double[] vector)
         {
             StringBuilder sb = new StringBuilder();

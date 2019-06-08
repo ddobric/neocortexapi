@@ -13,7 +13,7 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <summary>
         /// Time to wait to connect to Akk Cluster.
         /// </summary>
-        public TimeSpan ConnectionTimout { get; set; } = TimeSpan.FromMinutes(2);
+        public TimeSpan ConnectionTimout { get; set; } = TimeSpan.FromMinutes(5);
 
         /// <summary>
         /// Address of all nodes in cluster.
