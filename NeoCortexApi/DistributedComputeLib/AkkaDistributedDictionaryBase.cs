@@ -86,8 +86,9 @@ namespace NeoCortexApi.DistributedComputeLib
 		                }
                         helios.tcp {
                             maximum-frame-size = 326000000b
-		                    port = 0
-		                    hostname = localhost                            
+		                    port = 8080
+		                    hostname = 0.0.0.0
+                            public-hostname = DADO-SR1
                         }
                     }
                 }"));
@@ -295,9 +296,12 @@ namespace NeoCortexApi.DistributedComputeLib
             ParallelOptions opts = new ParallelOptions();
             opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
 
-            // We get here keys grouped to actors, which host partitions.
-            //var partitions = GetPartitionsForKeyset(keyValuePairs);
-            var partitions = GetPartitions();
+            //var resss = this.ActorMap[0].ActorRef.Ask<int>(new InitColumnsMsg()
+            //{
+            //    MinKey = -4,
+            //    MaxKey = -1
+            //}, TimeSpan.FromMinutes(1)).Result;
+
             // Run overlap calculation on all actors(in all partitions)
             Parallel.ForEach(this.ActorMap, opts, (placement) =>
             {

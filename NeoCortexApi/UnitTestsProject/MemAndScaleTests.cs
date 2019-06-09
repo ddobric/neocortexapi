@@ -217,14 +217,14 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [DataRow(PoolerMode.SingleThreaded)]
+        //[DataRow(PoolerMode.SingleThreaded)]
         [DataRow(PoolerMode.Multicore)]
         [TestCategory("LongRunning")]
         public void SPInitTest(PoolerMode poolerMode)
         {
             Thread.Sleep(5000);
 
-            int numOfColsInDim = 512;
+            int numOfColsInDim = 16;
             int numInputs = 128;
 
             Parameters parameters = Parameters.getAllDefaultParameters();
@@ -275,6 +275,7 @@ namespace UnitTestsProject
             parameters.apply(mem);
 
             sp.init(mem,UnitTestHelpers.GetMemory(new HtmConfig()));
+            //sp.init(mem);
 
             //int[] inputVector = new int[] { 1, 0, 1, 0, 1, 0, 0, 1, 1 };
             //int[] activeArray = new int[] { 0, 0, 0, 0, 0 };

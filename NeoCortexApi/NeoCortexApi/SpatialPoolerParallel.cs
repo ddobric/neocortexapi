@@ -17,7 +17,7 @@ namespace NeoCortexApi
 
         public override void InitMatrices(Connections c, DistributedMemory distMem)
         {
-            IRemotelyDistributed remoteHtm = distMem.ColumnDictionary as IRemotelyDistributed;
+            IRemotelyDistributed remoteHtm = distMem?.ColumnDictionary as IRemotelyDistributed;
             if (remoteHtm == null)
                 throw new ArgumentException("");
 
