@@ -309,66 +309,15 @@ namespace NeoCortexApi.DistributedComputeLib
             //    MaxKey = -1
             //}, TimeSpan.FromMinutes(1)).Result;
 
-            var placement = this.ActorMap.FirstOrDefault();
-
-            var res = placement.ActorRef.Ask<int>(new InitColumnsMsg()
-            {
-                MinKey = (int)(object)placement.MinKey,
-                MaxKey = (int)(object)placement.MaxKey
-            }, this.Config.ConnectionTimout).Result;
-
             // Run overlap calculation on all actors(in all partitions)
-            //Parallel.ForEach(this.ActorMap, opts, (placement) =>
-            //{
-            //    var res = placement.ActorRef.Ask<int>(new InitColumnsMsg()
-            //    {
-            //        MinKey = (int)(object)placement.MinKey,
-            //        MaxKey = (int)(object)placement.MaxKey
-            //    }, this.Config.ConnectionTimout).Result;
-            //});
-
-            /*
-             * //
-            // Here is upload performed in context of every actor (partition).
-            // Because keys are grouped by partitions (actors) parallel upload can be done here.
-            Parallel.ForEach(partitions, opts, (partition) =>
+            Parallel.ForEach(this.ActorMap, opts, (placement) =>
             {
-              
-                Dictionary<IActorRef, InitColumnsMsg> list = new Dictionary<IActorRef, InitColumnsMsg>();
-
-                int pageSize = this.Config.PageSize;
-                int alreadyProcessed = 0;
-
-                while (true)
+                var res = placement.ActorRef.Ask<int>(new InitColumnsMsg()
                 {
-                    foreach (var item in partition.Value.Skip(alreadyProcessed).Take(pageSize))
-                    {
-                        var actorRef = GetPartitionActorFromKey((TKey)item.Key);
-                        if (!list.ContainsKey(actorRef))
-                            list.Add(actorRef, new InitColumnsMsg() { Elements = new List<KeyPair>() });
-
-                        list[actorRef].Elements.Add(new KeyPair { Key = item.Key, Value = item.Value });
-                    }
-
-                    if (list.Count > 0)
-                    {
-                        List<Task<int>> tasks = new List<Task<int>>();
-
-                        foreach (var item in list)
-                        {
-                            tasks.Add(item.Key.Ask<int>(item.Value, TimeSpan.FromMinutes(3)));
-                            alreadyProcessed += item.Value.Elements.Count;
-                        }
-
-                        Task.WaitAll(tasks.ToArray());
-
-                        list.Clear();
-                    }
-                    else
-                        break;
-                }
-                
-            });*/
+                    MinKey = (int)(object)placement.MinKey,
+                    MaxKey = (int)(object)placement.MaxKey
+                }, this.Config.ConnectionTimout).Result;
+            });
         }
 
 

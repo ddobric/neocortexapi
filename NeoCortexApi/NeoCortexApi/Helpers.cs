@@ -86,17 +86,17 @@ namespace NeoCortexApi
         {
             get
             {
-                //var nodes = new List<string>()
-                //{
-                //      "akka.tcp://HtmCluster@localhost:8081",
-                //     // "akka.tcp://HtmCluster@localhost:8082"
-                //};
-
                 var nodes = new List<string>()
                 {
-                      "akka.tcp://HtmCluster@htm-node1.westeurope.azurecontainer.io:8081",
-                      "akka.tcp://HtmCluster@htm-node2.westeurope.azurecontainer.io:8081"
+                      "akka.tcp://HtmCluster@localhost:8081",
+                      "akka.tcp://HtmCluster@localhost:8082"
                 };
+
+                //var nodes = new List<string>()
+                //{
+                //      "akka.tcp://HtmCluster@htm-node1.westeurope.azurecontainer.io:8081",
+                //      "akka.tcp://HtmCluster@htm-node2.westeurope.azurecontainer.io:8081"
+                //};
 
 
                 return nodes;
