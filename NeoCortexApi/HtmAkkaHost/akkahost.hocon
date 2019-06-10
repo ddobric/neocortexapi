@@ -6,7 +6,7 @@
               event-stream = on
               unhandled = on
         }
-	loglevel=INFO
+	loglevel=DEBUG
     actor.provider = cluster
 	log-config-on-start = on    
 
@@ -16,7 +16,7 @@
 			heartbeat-interval = 1000s 
 			acceptable-heartbeat-pause = 6000s 
 		}
-        helios.tcp{
+        dot-netty.tcp {
 			maximum-frame-size = 32000000b
             port = @PORT
 			public-hostname = @PUBHOSTNAME

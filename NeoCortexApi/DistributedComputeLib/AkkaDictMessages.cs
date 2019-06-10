@@ -4,6 +4,10 @@ using System.Collections.Generic;
 namespace NeoCortexApi.DistributedComputeLib
 {
 
+    public class PingNodeMsg
+    {
+        public string Msg { get; set; }
+    }
 
     internal class CreateDictNodeMsg
     {

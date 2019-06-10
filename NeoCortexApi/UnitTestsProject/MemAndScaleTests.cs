@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Akka.Actor;
+using Akka.Configuration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.DistributedComputeLib;
 using NeoCortexApi.Entities;
@@ -6,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using System.Linq;
 
 namespace UnitTestsProject
 {
@@ -217,18 +220,77 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("AkkaHostRequired")]
+        public void AkkClusterTest()
+        {
+            var actSystem = ActorSystem.Create("Deployer", ConfigurationFactory.ParseString(@"
+                akka {  
+                    loglevel=DEBUG
+                    actor{
+                        provider = ""Akka.Remote.RemoteActorRefProvider, Akka.Remote""  		               
+                    }
+                    remote {
+                        connection-timeout = 120 s
+                        transport-failure-detector {
+			                heartbeat-interval = 1000s 
+			                acceptable-heartbeat-pause = 6000s 
+		                }
+                        dot-netty.tcp {
+                            maximum-frame-size = 326000000b
+		                    port = 8080
+		                    hostname = 0.0.0.0
+                            public-hostname = DADO-SR1
+                        }
+                    }
+                }"));
+
+            string actorName = $"TestActor2";
+
+            IActorRef aRef = null;
+
+            aRef = actSystem.ActorOf(Props.Create(() => new DictNodeActor())
+                 .WithDeploy(Deploy.None.WithScope(new RemoteScope(Address.Parse(Helpers.DefaultNodeList.First())))),
+                 actorName);
+
+            var sel = actSystem.ActorSelection($"/user/{actorName}");
+            aRef = sel.ResolveOne(TimeSpan.FromSeconds(5)).Result;
+
+            //try
+            //{
+            //    var sel = actSystem.ActorSelection($"/user/{actorName}");
+            //    aRef = sel.ResolveOne(TimeSpan.FromSeconds(5)).Result;
+
+            //}
+            //catch (AggregateException ex)
+            //{
+            //    if (ex.InnerException is ActorNotFoundException)
+            //    {
+            //        aRef =
+            //          actSystem.ActorOf(Props.Create(() => new DictNodeActor())
+            //          .WithDeploy(Deploy.None.WithScope(new RemoteScope(Address.Parse(Helpers.DefaultNodeList.First())))),
+            //          actorName);
+            //    }
+            //}
+
+            var result = aRef.Ask<string>(new PingNodeMsg()
+            {
+                Msg = "Echo"
+            }, TimeSpan.FromSeconds(5)).Result;
+        }
+
+        [TestMethod]
         //[DataRow(PoolerMode.SingleThreaded)]
         [DataRow(PoolerMode.Multicore)]
         [TestCategory("LongRunning")]
         public void SPInitTest(PoolerMode poolerMode)
         {
-            Thread.Sleep(5000);
+            //Thread.Sleep(2000);
 
-            int numOfColsInDim = 16;
+            int numOfColsInDim = 120;
             int numInputs = 128;
 
             Parameters parameters = Parameters.getAllDefaultParameters();
-                       
+
             parameters.Set(KEY.POTENTIAL_RADIUS, 5);
             parameters.Set(KEY.POTENTIAL_PCT, 0.5);
             parameters.Set(KEY.GLOBAL_INHIBITION, false);
@@ -274,7 +336,7 @@ namespace UnitTestsProject
             var mem = new Connections();
             parameters.apply(mem);
 
-            sp.init(mem,UnitTestHelpers.GetMemory(new HtmConfig()));
+            sp.init(mem, UnitTestHelpers.GetMemory(new HtmConfig()));
             //sp.init(mem);
 
             //int[] inputVector = new int[] { 1, 0, 1, 0, 1, 0, 0, 1, 1 };

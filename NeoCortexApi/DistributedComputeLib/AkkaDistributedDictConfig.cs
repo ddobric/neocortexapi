@@ -10,10 +10,12 @@ namespace NeoCortexApi.DistributedComputeLib
     /// </summary>
     public class AkkaDistributedDictConfig
     {
+       
+
         /// <summary>
         /// Time to wait to connect to Akk Cluster.
         /// </summary>
-        public TimeSpan ConnectionTimout { get; set; } = TimeSpan.FromMinutes(3);
+        public TimeSpan ConnectionTimout { get; set; } = TimeSpan.FromMinutes(1);
 
         /// <summary>
         /// Address of all nodes in cluster.

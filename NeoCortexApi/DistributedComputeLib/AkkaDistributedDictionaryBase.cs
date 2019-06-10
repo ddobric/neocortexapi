@@ -74,7 +74,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
             actSystem = ActorSystem.Create("Deployer", ConfigurationFactory.ParseString(@"
                 akka {  
-                    loglevel=Info
+                    loglevel=DEBUG
                     actor{
                         provider = ""Akka.Remote.RemoteActorRefProvider, Akka.Remote""  		               
                     }
@@ -84,7 +84,7 @@ namespace NeoCortexApi.DistributedComputeLib
 			                heartbeat-interval = 1000s 
 			                acceptable-heartbeat-pause = 6000s 
 		                }
-                        helios.tcp {
+                        dot-netty.tcp {
                             maximum-frame-size = 326000000b
 		                    port = 8080
 		                    hostname = 0.0.0.0
@@ -105,11 +105,18 @@ namespace NeoCortexApi.DistributedComputeLib
 
             for (int i = 0; i < this.ActorMap.Count; i++)
             {
-                this.ActorMap[i].ActorRef =
-                 actSystem.ActorOf(Props.Create(() => new DictNodeActor())
-                 .WithDeploy(Deploy.None.WithScope(new RemoteScope(Address.Parse(this.ActorMap[i].NodeUrl)))),
-                 $"{nameof(DictNodeActor)}-{this.ActorMap[i].NodeIndx}-{this.ActorMap[i].PartitionIndx}");
-
+                string actorName = $"{nameof(DictNodeActor)}-{Guid.NewGuid()}-{this.ActorMap[i].NodeIndx}-{this.ActorMap[i].PartitionIndx}";
+                
+                //var sel = actSystem.ActorSelection($"/user/{actorName}");
+                //this.ActorMap[i].ActorRef = sel.ResolveOne(TimeSpan.FromSeconds(1)).Result;
+                //if (this.ActorMap[i].ActorRef == null)
+                {
+                    this.ActorMap[i].ActorRef =
+                     actSystem.ActorOf(Props.Create(() => new DictNodeActor())
+                     .WithDeploy(Deploy.None.WithScope(new RemoteScope(Address.Parse(this.ActorMap[i].NodeUrl)))),
+                     actorName);
+                }
+              
                 var result = this.ActorMap[i].ActorRef.Ask<int>(new CreateDictNodeMsg()
                 {
                     HtmAkkaConfig = this.HtmConfig,

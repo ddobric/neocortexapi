@@ -206,6 +206,9 @@ namespace NeoCortexApi.Entities
                 cfg.StimulusThreshold = this.StimulusThreshold;
                 cfg.CellsPerColumn = this.getCellsPerColumn();
                 cfg.SynPermInactiveDec = this.getSynPermInactiveDec();
+
+                cfg.RandomGenSeed = this.seed;
+
                 return cfg;
             }
         }

@@ -111,7 +111,7 @@ namespace UnitTestsProject
         [TestCategory("AkkaHostRequired")]
         public void InitAkkaDictionaryTest()
         {
-            Thread.Sleep(5000);
+            //Thread.Sleep(5000);
 
             var akkaDict = new HtmSparseIntDictionary<Column>(new HtmSparseIntDictionaryConfig()
             {
@@ -229,10 +229,10 @@ namespace UnitTestsProject
         [TestMethod]
         [TestCategory("AkkaHostRequired")]
         [TestCategory("LongRunning")]
-        [DataRow("MnistPng28x28\\training", "7", 28, 1000)]
+        [DataRow("MnistPng28x28\\training", "3", 28, 64)]
         public void SparseSingleMnistImageTest(string trainingFolder, string digit, int imageSize, int columnTopology)
         {
-            Thread.Sleep(3000);
+            //Thread.Sleep(3000);
 
             string TestOutputFolder = $"Output-{nameof(SparseSingleMnistImageTest)}";
 
@@ -280,7 +280,7 @@ namespace UnitTestsProject
             parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000);
             parameters.Set(KEY.MAX_BOOST, 100);
             parameters.Set(KEY.WRAP_AROUND, true);
-            parameters.Set(KEY.SEED, 1956);
+            parameters.Set(KEY.SEED, -1);
             parameters.setInputDimensions(new int[] { imageSize, imageSize });
             parameters.setColumnDimensions(new int[] { columnTopology, columnTopology });
 

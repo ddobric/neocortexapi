@@ -27,6 +27,11 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public DictNodeActor()
         {
+            Receive((Action<PingNodeMsg>)(msg =>
+            {
+                Sender.Tell($"Ping back - {msg.Msg}", Self);
+            }));
+
             Receive<CreateDictNodeMsg>(msg =>
             {
                 this.config = msg.HtmAkkaConfig;
@@ -180,22 +185,19 @@ namespace NeoCortexApi.DistributedComputeLib
                 Console.WriteLine($"{nameof(DictNodeActor)} termintion - {msg.ActorRef}");
                 Console.WriteLine("Was address terminated? {0}", msg.AddressTerminated);
             });
-
-
-            
         }
 
 
         protected override void PreStart()
         {
-            Console.WriteLine($"{nameof(DictNodeActor)} started.");
+            Console.WriteLine($"{nameof(DictNodeActor)} | '{Self.Path}' started.");
             //m_HelloTask = Context.System.Scheduler.ScheduleTellRepeatedlyCancelable(TimeSpan.FromSeconds(1),
             //    TimeSpan.FromSeconds(1), Context.Self, new Actor1Message(), ActorRefs.NoSender);
         }
 
         protected override void PostStop()
         {
-            Console.WriteLine($"{nameof(DictNodeActor)} stoped.");
+            Console.WriteLine($"{nameof(DictNodeActor)} | '{Self.Path}' stoped.");
         }
 
 
@@ -214,6 +216,8 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <param name="msg"></param>
         private void initializeColumns(InitColumnsMsg msg)
         {
+            dict = new Dictionary<object, object>();
+
             Console.WriteLine($"{Self.Path} -  Received message: '{msg.GetType().Name}' - min={msg.MinKey}, max={msg.MaxKey}");
 
             for (int i = msg.MinKey; i <= msg.MaxKey; i++)
@@ -240,7 +244,7 @@ namespace NeoCortexApi.DistributedComputeLib
                 this.dict[element.Key] = new Column(this.config.CellsPerColumn, (int)element.Key, this.config.SynPermConnected, cfg.NumInputs);
             }
             */
-            Sender.Tell(msg.MaxKey-msg.MinKey, Self);
+            Sender.Tell(msg.MaxKey - msg.MinKey, Self);
         }
 
 
@@ -255,7 +259,12 @@ namespace NeoCortexApi.DistributedComputeLib
 
             List<double> avgConnections = new List<double>();
 
-            Random rnd = new Random(42);
+            Random rnd;
+
+            if (this.config.RandomGenSeed > 0)
+                rnd = new Random(this.config.RandomGenSeed);
+            else
+                rnd = new Random();
 
             foreach (var element in this.dict)
             {
