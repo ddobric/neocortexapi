@@ -7,7 +7,9 @@
               unhandled = on
         }
 	loglevel=DEBUG
-    actor.provider = cluster
+     actor {
+           provider = "Akka.Remote.RemoteActorRefProvider, Akka.Remote"	               
+    }
 	log-config-on-start = on    
 
     remote {
@@ -23,8 +25,5 @@
             hostname = @HOSTNAME
 		}
     }
-    cluster {
-        seed-nodes = [@SEEDHOSTS]
-    }	
 }
 

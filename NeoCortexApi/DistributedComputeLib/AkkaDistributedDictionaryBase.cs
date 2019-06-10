@@ -318,49 +318,6 @@ namespace NeoCortexApi.DistributedComputeLib
                     MaxKey = (int)(object)placement.MaxKey
                 }, this.Config.ConnectionTimout).Result;
             });
-
-            /*
-             * //
-            // Here is upload performed in context of every actor (partition).
-            // Because keys are grouped by partitions (actors) parallel upload can be done here.
-            Parallel.ForEach(partitions, opts, (partition) =>
-            {
-              
-                Dictionary<IActorRef, InitColumnsMsg> list = new Dictionary<IActorRef, InitColumnsMsg>();
-
-                int pageSize = this.Config.PageSize;
-                int alreadyProcessed = 0;
-
-                while (true)
-                {
-                    foreach (var item in partition.Value.Skip(alreadyProcessed).Take(pageSize))
-                    {
-                        var actorRef = GetPartitionActorFromKey((TKey)item.Key);
-                        if (!list.ContainsKey(actorRef))
-                            list.Add(actorRef, new InitColumnsMsg() { Elements = new List<KeyPair>() });
-
-                        list[actorRef].Elements.Add(new KeyPair { Key = item.Key, Value = item.Value });
-                    }
-
-                    if (list.Count > 0)
-                    {
-                        List<Task<int>> tasks = new List<Task<int>>();
-
-                        foreach (var item in list)
-                        {
-                            tasks.Add(item.Key.Ask<int>(item.Value, TimeSpan.FromMinutes(3)));
-                            alreadyProcessed += item.Value.Elements.Count;
-                        }
-
-                        Task.WaitAll(tasks.ToArray());
-
-                        list.Clear();
-                    }
-                    else
-                        break;
-                }
-                
-            });*/
         }
 
 
