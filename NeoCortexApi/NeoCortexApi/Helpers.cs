@@ -113,7 +113,7 @@ namespace NeoCortexApi
                 return new HtmSparseIntDictionaryConfig()
                 {  
                     Nodes = DefaultNodeList,
-                    PartitionsPerNode = 10
+                    PartitionsPerNode = 100
                 };
             }
         }

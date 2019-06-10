@@ -88,7 +88,7 @@ namespace NeoCortexApi.DistributedComputeLib
                             maximum-frame-size = 326000000b
 		                    port = 8080
 		                    hostname = 0.0.0.0
-                            public-hostname = DADO-SR1
+                            public-hostname = phd.westeurope.cloudapp.azure.com
                         }
                     }
                 }"));
@@ -309,15 +309,23 @@ namespace NeoCortexApi.DistributedComputeLib
             //    MaxKey = -1
             //}, TimeSpan.FromMinutes(1)).Result;
 
-            // Run overlap calculation on all actors(in all partitions)
-            Parallel.ForEach(this.ActorMap, opts, (placement) =>
+            var placement = this.ActorMap.FirstOrDefault();
+
+            var res = placement.ActorRef.Ask<int>(new InitColumnsMsg()
             {
-                var res = placement.ActorRef.Ask<int>(new InitColumnsMsg()
-                {
-                    MinKey = (int)(object)placement.MinKey,
-                    MaxKey = (int)(object)placement.MaxKey
-                }, this.Config.ConnectionTimout).Result;
-            });
+                MinKey = (int)(object)placement.MinKey,
+                MaxKey = (int)(object)placement.MaxKey
+            }, this.Config.ConnectionTimout).Result;
+
+            // Run overlap calculation on all actors(in all partitions)
+            //Parallel.ForEach(this.ActorMap, opts, (placement) =>
+            //{
+            //    var res = placement.ActorRef.Ask<int>(new InitColumnsMsg()
+            //    {
+            //        MinKey = (int)(object)placement.MinKey,
+            //        MaxKey = (int)(object)placement.MaxKey
+            //    }, this.Config.ConnectionTimout).Result;
+            //});
 
             /*
              * //
@@ -376,7 +384,10 @@ namespace NeoCortexApi.DistributedComputeLib
             ConcurrentDictionary<int, double> aggLst = new ConcurrentDictionary<int, double>();
 
             ParallelOptions opts = new ParallelOptions();
-            opts.MaxDegreeOfParallelism = this.ActorMap.Count;
+            opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
+
+            //var avgSpanOfPart = this.ActorMap.First().ActorRef.Ask<double>(new ConnectAndConfigureColumnsMsg(), this.Config.ConnectionTimout).Result;
+            //aggLst.TryAdd(this.ActorMap.First().PartitionIndx, avgSpanOfPart);
 
             Parallel.ForEach(this.ActorMap, opts, (placement) =>
             {

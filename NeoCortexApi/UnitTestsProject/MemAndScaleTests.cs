@@ -286,7 +286,7 @@ namespace UnitTestsProject
         {
             //Thread.Sleep(2000);
 
-            int numOfColsInDim = 120;
+            int numOfColsInDim = 12;
             int numInputs = 128;
 
             Parameters parameters = Parameters.getAllDefaultParameters();
