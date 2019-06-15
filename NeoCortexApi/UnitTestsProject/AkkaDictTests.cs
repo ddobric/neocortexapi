@@ -232,7 +232,7 @@ namespace UnitTestsProject
         [DataRow("MnistPng28x28\\training", "9", 28, 128)]
         public void SparseSingleMnistImageTest(string trainingFolder, string digit, int imageSize, int columnTopology)
         {
-            //Thread.Sleep(3000);
+            Thread.Sleep(3000);
 
             string TestOutputFolder = $"Output-{nameof(SparseSingleMnistImageTest)}";
 

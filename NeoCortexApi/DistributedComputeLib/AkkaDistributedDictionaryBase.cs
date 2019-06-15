@@ -86,9 +86,9 @@ namespace NeoCortexApi.DistributedComputeLib
 		                }
                         dot-netty.tcp {
                             maximum-frame-size = 326000000b
-		                    port = 8080
-		                    hostname = 0.0.0.0
-                            public-hostname = phd.westeurope.cloudapp.azure.com
+		                    port = 8079
+		                    hostname = localhost
+                            public-hostname = localhost
                         }
                     }
                 }"));
