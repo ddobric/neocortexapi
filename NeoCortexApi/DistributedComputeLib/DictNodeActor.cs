@@ -244,7 +244,12 @@ namespace NeoCortexApi.DistributedComputeLib
                 this.dict[element.Key] = new Column(this.config.CellsPerColumn, (int)element.Key, this.config.SynPermConnected, cfg.NumInputs);
             }
             */
+            Console.WriteLine($"{Self.Path} - Init completed. '{msg.GetType().Name}' - min={msg.MinKey}, max={msg.MaxKey}");
+
             Sender.Tell(msg.MaxKey - msg.MinKey, Self);
+
+            Console.WriteLine($"{Self.Path} -  Response on init message sent '{msg.GetType().Name}' - min={msg.MinKey}, max={msg.MaxKey}");
+
         }
 
 
@@ -292,7 +297,9 @@ namespace NeoCortexApi.DistributedComputeLib
 
             double avgConnectedSpan = ArrayUtils.average(avgConnections.ToArray());
 
+            Console.WriteLine($"{Self.Path} - '{msg.GetType().Name}' completed.");
             Sender.Tell(avgConnectedSpan, Self);
+            Console.WriteLine($"{Self.Path} - '{msg.GetType().Name}' response sent.");
         }
 
         private void calculateOverlap(CalculateOverlapMsg msg)

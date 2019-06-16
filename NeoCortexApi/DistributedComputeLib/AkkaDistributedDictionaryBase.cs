@@ -394,7 +394,10 @@ namespace NeoCortexApi.DistributedComputeLib
             ConcurrentDictionary<int, double> aggLst = new ConcurrentDictionary<int, double>();
 
             ParallelOptions opts = new ParallelOptions();
-            opts.MaxDegreeOfParallelism = this.ActorMap.Count;
+            opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
+
+            //var avgSpanOfPart = this.ActorMap.First().ActorRef.Ask<double>(new ConnectAndConfigureColumnsMsg(), this.Config.ConnectionTimout).Result;
+            //aggLst.TryAdd(this.ActorMap.First().PartitionIndx, avgSpanOfPart);
 
             runBatched((batchOfElements) => {
                 Parallel.ForEach(batchOfElements, opts, (placement) =>
