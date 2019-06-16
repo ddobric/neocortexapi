@@ -86,17 +86,24 @@ namespace NeoCortexApi
         {
             get
             {
-                var nodes = new List<string>()
-                {
-                      "akka.tcp://HtmCluster@localhost:8081",
-                      "akka.tcp://HtmCluster@localhost:8082"
-                };
+                //var nodes = new List<string>()
+                //{
+                //      "akka.tcp://HtmCluster@localhost:8081",
+                //      "akka.tcp://HtmCluster@localhost:8082"
+                //};
 
                 //var nodes = new List<string>()
                 //{
                 //      "akka.tcp://HtmCluster@htm-node1.westeurope.azurecontainer.io:8081",
                 //      "akka.tcp://HtmCluster@htm-node2.westeurope.azurecontainer.io:8081"
                 //};
+
+                var nodes = new List<string>()
+                {
+                     "akka.tcp://HtmCluster@phd-node1.westeurope.cloudapp.azure.com:8080",
+                     "akka.tcp://HtmCluster@phd-node2.westeurope.cloudapp.azure.com:8080"
+
+                };
 
 
                 return nodes;
@@ -111,9 +118,10 @@ namespace NeoCortexApi
             get
             {
                 return new HtmSparseIntDictionaryConfig()
-                {  
+                {
                     Nodes = DefaultNodeList,
-                    PartitionsPerNode = 10
+                    PartitionsPerNode = 200,
+                    ProcessingBatch = 10
                 };
             }
         }

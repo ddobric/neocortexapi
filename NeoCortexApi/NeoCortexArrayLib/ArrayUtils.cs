@@ -1465,6 +1465,29 @@ namespace NeoCortexApi.Utility
             return array;
         }
 
+        /// <summary>
+        /// Suffles the list of elements.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="array"></param>
+        /// <returns></returns>
+        public static IList<T> Shuffle<T>(IList<T> array)
+        {
+            int index;
+            Random random = new Random();
+            for (int i = array.Count - 1; i > 0; i--)
+            {
+                index = random.Next(i + 1);
+                if (index != i)
+                {
+                    T value = array[i];
+                    array[i] = array[index];
+                    array[index] = value;
+                }
+            }
+            return array;
+        }
+
         /**
          * Replaces the range specified by "start" and "end" of "orig" with the 
          * array of replacement ints found in "replacement".

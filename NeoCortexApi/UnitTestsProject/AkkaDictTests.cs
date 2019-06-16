@@ -229,7 +229,7 @@ namespace UnitTestsProject
         [TestMethod]
         [TestCategory("AkkaHostRequired")]
         [TestCategory("LongRunning")]
-        [DataRow("MnistPng28x28\\training", "9", 28, 128)]
+        [DataRow("MnistPng28x28\\training", "5", 28, 512)]
         public void SparseSingleMnistImageTest(string trainingFolder, string digit, int imageSize, int columnTopology)
         {
             //Thread.Sleep(3000);
@@ -290,8 +290,11 @@ namespace UnitTestsProject
 
             parameters.apply(mem);
 
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             sp.init(mem, UnitTestHelpers.GetMemory(new HtmConfig()));
-
+            sw.Stop();
+            Debug.WriteLine($"Init time: {sw.ElapsedMilliseconds}");
             int actiColLen = numOfActCols;
 
             int[] activeArray = new int[actiColLen];
@@ -328,7 +331,11 @@ namespace UnitTestsProject
 
                         for (int k = 0; k < numIterationsPerImage; k++)
                         {
+                            sw.Reset();
+                            sw.Start();
                             sp.compute(mem, inputVector, activeArray, true);
+                            sw.Stop();
+                            Debug.WriteLine($"Compute time: {sw.ElapsedMilliseconds}");
 
                             var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
                             var distance = MathHelpers.GetHammingDistance(oldArray, activeArray);
