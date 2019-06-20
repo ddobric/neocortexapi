@@ -10,7 +10,7 @@ namespace AkkaSb.Net
 
         public NodeConfig LocalNode { get; set; }
 
-        public Dictionary<string, NodeConfig> RemoteNodes { get; set; }
+        public Dictionary<string, NodeConfig> RemoteNodes { get; set; } = new Dictionary<string, NodeConfig>();
     }
 
     public class NodeConfig
