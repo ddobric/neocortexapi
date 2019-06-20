@@ -58,8 +58,11 @@ namespace AkkaSb.Net
 
         internal void Invoke(object message)
         {
-            var pair = dict.First();
-            pair.Value.DynamicInvoke("aaa");
+            var pair = dict.FirstOrDefault(o => o.Key == message.GetType());
+            if (pair.Key == null)
+                throw new ArgumentException($"Message contains unregistered message type. '{message.GetType()}' was not registerd in Receive() method.");
+         
+            pair.Value.DynamicInvoke(message);
         }
 
         public virtual void Activated()

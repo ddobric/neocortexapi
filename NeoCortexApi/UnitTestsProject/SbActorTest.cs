@@ -42,7 +42,15 @@ namespace UnitTestsProject
         }
 
 
-        static ConcurrentDictionary<string, string> receivedMessages = new ConcurrentDictionary<string, string>();
+        static ConcurrentDictionary<object, object> receivedMessages = new ConcurrentDictionary<object, object>();
+
+
+        public class TestClass
+        {
+            public int Prop1 { get; set; }
+
+            public string Prop2 { get; set; }
+        }
 
         public class MyActor : ActorBase
         {
@@ -50,7 +58,12 @@ namespace UnitTestsProject
             {
                 Receive<string>((str) =>
                 {
-                    receivedMessages.TryAdd(id, str);
+                    receivedMessages.TryAdd(str, str);
+                });
+
+                Receive<TestClass>((c) =>
+                {
+                    receivedMessages.TryAdd(c, c.ToString());
                 });
             }
 
@@ -74,21 +87,24 @@ namespace UnitTestsProject
             ActorReference actorRef1 = sysLocal.CreateActor<MyActor>(1, cfg.RemoteNodes.FirstOrDefault().Key);
             actorRef1.Tell("message 1").Wait();
 
+            actorRef1.Tell(new TestClass()).Wait();
+
             ActorReference actorRef2 = sysLocal.CreateActor<MyActor>(2, cfg.RemoteNodes.FirstOrDefault().Key);
             actorRef2.Tell("message 2").Wait();
 
             while (true)
             {
-                if (receivedMessages.Count == 2)
+                if (receivedMessages.Count == 3)
                 {
-                    Assert.IsTrue(receivedMessages.Keys.Contains("1"));
-                    Assert.IsTrue(receivedMessages.Keys.Contains("2"));
+                    Assert.IsTrue(receivedMessages.Values.Contains("message 1"));
+                    Assert.IsTrue(receivedMessages.Values.Contains("message 2"));
+                    Assert.IsTrue(receivedMessages.Values.Contains("UnitTestsProject.SbAkkaTest+TestClass"));
                     src.Cancel();
                     break;
                 }
                 Thread.Sleep(250);
             }
-           
+
             task.Wait();
         }
     }

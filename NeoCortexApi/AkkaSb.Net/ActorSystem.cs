@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace AkkaSb.Net
 {
@@ -146,8 +147,17 @@ namespace AkkaSb.Net
 
                     Debug.WriteLine($"Received message: {tp.Name}/{id}");
 
-                    var invokingMsg = ActorReference.DeserializeMsg<object>(msg.Body);
+                    var method = typeof(ActorReference).GetMethod("DeserializeMsg", BindingFlags.Static | BindingFlags.NonPublic);
 
+                    var msgTypeName = new ActorId((string)msg.UserProperties[ActorReference.cMsgType]);
+                    var msgType = Type.GetType(msgTypeName);
+                    if (msgType == null)
+                        throw new ArgumentException($"Cabbot find requested type {msgTypeName}");
+
+                    //MethodInfo genericDeserialize = method.MakeGenericMethod(new[] { msgType });
+                    //var invokingMsg = genericDeserialize.Invoke(null, new object[] { msg.Body });
+                    var invokingMsg = ActorReference.DeserializeMsg<object>(msg.Body);
+                    //var invokingMsg = genericDeserialize()
                     InvokeOperationOnActor(actor, invokingMsg);
 
                     await session.CompleteAsync(msg.SystemProperties.LockToken);
