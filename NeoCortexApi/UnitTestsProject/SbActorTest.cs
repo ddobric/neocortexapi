@@ -50,7 +50,7 @@ namespace UnitTestsProject
             {
                 Receive<string>((str) =>
                 {
-                    receivedMessages.TryAdd(str, str);
+                    receivedMessages.TryAdd(id, str);
                 });
             }
 
@@ -81,8 +81,8 @@ namespace UnitTestsProject
             {
                 if (receivedMessages.Count == 2)
                 {
-                    Assert.IsTrue(receivedMessages.Keys.Contains("message 1"));
-                    Assert.IsTrue(receivedMessages.Keys.Contains("message 2"));
+                    Assert.IsTrue(receivedMessages.Keys.Contains("1"));
+                    Assert.IsTrue(receivedMessages.Keys.Contains("2"));
                     src.Cancel();
                     break;
                 }

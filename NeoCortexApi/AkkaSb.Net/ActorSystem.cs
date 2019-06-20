@@ -80,12 +80,34 @@ namespace AkkaSb.Net
 
         public async Task Start(CancellationToken cancelToken)
         {
-            while (!cancelToken.IsCancellationRequested)
+            Task[] tasks = new Task[2];
+
+            tasks[0] = Task.Run(async () =>
             {
-                var session = await this.SessionClient.AcceptMessageSessionAsync(TimeSpan.FromDays(double.MaxValue));
-                Debug.WriteLine($"Session: {session.SessionId}");
-                _ = RunDispatcherForActor(session, cancelToken);
-            }
+                while (!cancelToken.IsCancellationRequested)
+                {
+                    try
+                    {
+                        var session = await this.SessionClient.AcceptMessageSessionAsync();
+                        Debug.WriteLine($"Session: {session.SessionId}");
+                        _ = RunDispatcherForActor(session, cancelToken);
+                    }
+                    catch (ServiceBusTimeoutException ex)
+                    {
+                      
+                    }
+                }
+            }, cancelToken);
+
+            tasks[1] = Task.Run(async ()=> {
+                while (!cancelToken.IsCancellationRequested)
+                {
+                    await Task.Delay(500);
+                }
+            });
+
+            Task.WaitAny(tasks);
+
         }
 
 
@@ -103,7 +125,7 @@ namespace AkkaSb.Net
             {
                 var msg = await session.ReceiveAsync();
                 if (msg != null)
-                {                   
+                {
                     ActorBase actor;
 
                     Type tp = Type.GetType((string)msg.UserProperties[ActorReference.cActorType]);
