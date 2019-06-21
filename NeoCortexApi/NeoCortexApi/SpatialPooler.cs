@@ -34,6 +34,7 @@ namespace NeoCortexApi
     {
 
         public double MaxInibitionDensity { get; set; } = 0.5;
+        public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         /** Default Serial Version  */
         private static readonly long serialVersionUID = 1L;
@@ -293,13 +294,13 @@ namespace NeoCortexApi
                 }
         */
 
-        public IComputeOutput Compute(int[] input, bool learn)
+        public IModuleData Compute(int[] input, bool learn)
         {
             int[] activeColumnsArr = new int[this.connections.HtmConfig.NumColumns];
 
             this.compute(input, activeColumnsArr, learn);
 
-            return new InArrayOutput(activeColumnsArr);
+            return new IntegerArrayOutput(activeColumnsArr);
         }
 
         /**

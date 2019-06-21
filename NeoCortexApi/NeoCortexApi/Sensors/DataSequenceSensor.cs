@@ -53,6 +53,12 @@ namespace NeoCortexApi.Sensors
             }
         }
 
+        public IModuleData Output => throw new NotImplementedException();
+
+        public IModuleData Input => throw new NotImplementedException();
+
+        public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
         public DataSequenceSensor(object[][] data, DataDescriptor descriptor, CortexNetworkContext context)
         {
             if (data == null)
@@ -102,7 +108,7 @@ namespace NeoCortexApi.Sensors
             this.currentPos = 0;
         }
 
-        public IComputeOutput Compute(int[] input, bool learn)
+        public IModuleData Compute(int[] input, bool learn)
         {
             throw new NotImplementedException();
         }

@@ -67,7 +67,7 @@ namespace UnitTestsProject
             for (int i = 0; i < 10; i++)
             {
                 //sp.compute( inputVector, activeArray, true);
-                InArrayOutput result = sp.Compute(inputVector, true) as InArrayOutput;
+                IntegerArrayOutput result = sp.Compute(inputVector, true) as IntegerArrayOutput;
                 activeArray = result.Output;
 
                 var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
@@ -152,7 +152,7 @@ namespace UnitTestsProject
                     for (int i = 0; i < 10; i++)
                     {
                         //sp.compute( noisedInput, activeArray, true);
-                        InArrayOutput result = sp.Compute(noisedInput, true) as InArrayOutput;
+                        IntegerArrayOutput result = sp.Compute(noisedInput, true) as IntegerArrayOutput;
                         activeArray = result.Output;
                         if (j > 0)
                             Debug.WriteLine($"{ MathHelpers.GetHammingDistance(activeArrayWithZeroNoise[vectorIndex], activeArray, true)} -> {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
@@ -401,8 +401,8 @@ namespace UnitTestsProject
                 var inhibitions = sp.inhibitColumns(mem, ArrayUtils.toDoubleArray(overlaps));
                 var strInhibitions = Helpers.StringifyVector(inhibitions);
 
-                InArrayOutput result = sp.Compute(inputVector, true) as InArrayOutput;
-                activeArray = result.Output;
+                IIntegerArrayData result = sp.Compute(inputVector, true) as IIntegerArrayData;
+                activeArray = result.Data;
                //Debug.WriteLine(result);
                 //sp.compute( inputVector, activeArray, true);
 
