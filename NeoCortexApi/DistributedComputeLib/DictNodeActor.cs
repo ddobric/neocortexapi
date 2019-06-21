@@ -27,6 +27,11 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public DictNodeActor()
         {
+            Receive((Action<PingNodeMsg>)(msg =>
+            {
+                Sender.Tell($"Ping back - {msg.Msg}", Self);
+            }));
+
             Receive<CreateDictNodeMsg>(msg =>
             {
                 this.config = msg.HtmAkkaConfig;
@@ -40,7 +45,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
             Receive((Action<InitColumnsMsg>)(msg =>
             {
-                createColumns(msg);
+                initializeColumns(msg);
             }));
 
             Receive((Action<ConnectAndConfigureColumnsMsg>)(msg =>
@@ -53,8 +58,10 @@ namespace NeoCortexApi.DistributedComputeLib
                 calculateOverlap(msg);
             }));
 
-
-
+            Receive((Action<AdaptSynapsesMsg>)(msg =>
+            {
+                adaptSynapses(msg);
+            }));
 
 
             Receive<AddOrUpdateElementsMsg>(msg =>
@@ -118,7 +125,7 @@ namespace NeoCortexApi.DistributedComputeLib
                 else
                     Sender.Tell(new Result { IsError = true, Value = null }, Self);
             });
-            
+
             Receive<GetElementsMsg>(msg =>
             {
                 Console.WriteLine($"Received message: '{msg.GetType().Name}'");
@@ -162,7 +169,12 @@ namespace NeoCortexApi.DistributedComputeLib
                 Sender.Tell(this.dict.Count, Self);
             });
 
+            Receive<BumUpWeakColumnsMsg>(msg =>
+            {
+                Console.WriteLine($"Received message: '{msg.GetType().Name}'");
 
+                bumpUpWeakColumns(msg);
+            });
 
             Receive<Terminated>(msg =>
             {
@@ -172,17 +184,17 @@ namespace NeoCortexApi.DistributedComputeLib
             });
         }
 
-      
+
         protected override void PreStart()
         {
-            Console.WriteLine($"{nameof(DictNodeActor)} started.");
+            Console.WriteLine($"{nameof(DictNodeActor)} | '{Self.Path}' started.");
             //m_HelloTask = Context.System.Scheduler.ScheduleTellRepeatedlyCancelable(TimeSpan.FromSeconds(1),
             //    TimeSpan.FromSeconds(1), Context.Self, new Actor1Message(), ActorRefs.NoSender);
         }
 
         protected override void PostStop()
         {
-            Console.WriteLine($"{nameof(DictNodeActor)} stoped.");
+            Console.WriteLine($"{nameof(DictNodeActor)} | '{Self.Path}' stoped.");
         }
 
 
@@ -199,23 +211,42 @@ namespace NeoCortexApi.DistributedComputeLib
         /// Creates columns on the node.
         /// </summary>
         /// <param name="msg"></param>
-        private void createColumns(InitColumnsMsg msg)
+        private void initializeColumns(InitColumnsMsg msg)
         {
-            Console.WriteLine($"{Self.Path} -  Received message: '{msg.GetType().Name}'");
+            dict = new Dictionary<object, object>();
 
+            Console.WriteLine($"{Self.Path} -  Received message: '{msg.GetType().Name}' - min={msg.MinKey}, max={msg.MaxKey}");
+
+            for (int i = msg.MinKey; i <= msg.MaxKey; i++)
+            {
+                this.dict[i] = new Column(this.config.CellsPerColumn, i, this.config.SynPermConnected, this.config.NumInputs);
+            }
+
+            /*
             if (msg.Elements == null || msg.Elements.Count == 0)
                 throw new DistributedException($"{nameof(DictNodeActor)} failed to create columns. List of elements cannot be empty.");
 
+            ParallelOptions opts = new ParallelOptions();
+            opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
+
+            //
+            // Here is upload performed in context of every actor (partition).
+            // Because keys are grouped by partitions (actors) parallel upload can be done here.
             foreach (var element in msg.Elements)
             {
                 HtmConfig cfg = element.Value as HtmConfig;
                 if (cfg == null)
                     throw new ArgumentException($"Value hast to be of type {nameof(HtmConfig)}");
 
-                this.dict[element.Key] = new Column(cfg.CellsPerColumn, (int)element.Key, cfg.SynPermConnected, cfg.NumInputs);
+                this.dict[element.Key] = new Column(this.config.CellsPerColumn, (int)element.Key, this.config.SynPermConnected, cfg.NumInputs);
             }
+            */
+            Console.WriteLine($"{Self.Path} - Init completed. '{msg.GetType().Name}' - min={msg.MinKey}, max={msg.MaxKey}");
 
-            Sender.Tell(msg.Elements.Count, Self);
+            Sender.Tell(msg.MaxKey - msg.MinKey, Self);
+
+            Console.WriteLine($"{Self.Path} -  Response on init message sent '{msg.GetType().Name}' - min={msg.MinKey}, max={msg.MaxKey}");
+
         }
 
 
@@ -230,7 +261,12 @@ namespace NeoCortexApi.DistributedComputeLib
 
             List<double> avgConnections = new List<double>();
 
-            Random rnd = new Random(42);
+            Random rnd;
+
+            if (this.config.RandomGenSeed > 0)
+                rnd = new Random(this.config.RandomGenSeed);
+            else
+                rnd = new Random();
 
             foreach (var element in this.dict)
             {
@@ -258,7 +294,9 @@ namespace NeoCortexApi.DistributedComputeLib
 
             double avgConnectedSpan = ArrayUtils.average(avgConnections.ToArray());
 
+            Console.WriteLine($"{Self.Path} - '{msg.GetType().Name}' completed.");
             Sender.Tell(avgConnectedSpan, Self);
+            Console.WriteLine($"{Self.Path} - '{msg.GetType().Name}' response sent.");
         }
 
         private void calculateOverlap(CalculateOverlapMsg msg)
@@ -268,7 +306,7 @@ namespace NeoCortexApi.DistributedComputeLib
             ConcurrentDictionary<int, int> overlaps = new ConcurrentDictionary<int, int>();
 
             ParallelOptions opts = new ParallelOptions();
-            opts.MaxDegreeOfParallelism = this.dict.Count;
+            opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
 
             Parallel.ForEach(this.dict, opts, (keyPair) =>
             {
@@ -287,9 +325,50 @@ namespace NeoCortexApi.DistributedComputeLib
 
             var sortedRes = result.OrderBy(k => k.Key).ToList();
 
-            Console.Write($"o = {sortedRes.Count(p => (int)p.Value > 0)}");
+            //Console.Write($"o = {sortedRes.Count(p => (int)p.Value > 0)}");
 
             Sender.Tell(sortedRes, Self);
+        }
+
+        void adaptSynapses(AdaptSynapsesMsg msg)
+        {
+            ParallelOptions opts = new ParallelOptions();
+            opts.MaxDegreeOfParallelism = msg.ColumnKeys.Count;
+
+            Parallel.ForEach(msg.ColumnKeys, opts, (colPair) =>
+            {
+                Column activeColumn = (Column)this.dict[colPair.Key];
+                //Pool pool = c.getPotentialPools().get(activeColumns[i]);
+                Pool pool = activeColumn.ProximalDendrite.RFPool;
+                double[] perm = pool.getDensePermanences(this.config.NumInputs);
+                int[] indexes = pool.getSparsePotential();
+                ArrayUtils.raiseValuesBy(msg.PermanenceChanges, perm);
+
+                HtmCompute.UpdatePermanencesForColumn(this.config, perm, activeColumn, indexes, true);
+            });
+
+            // We send this to ensure reliable messaging. No other result is required here.
+            Sender.Tell(0, Self);
+        }
+
+        public void bumpUpWeakColumns(BumUpWeakColumnsMsg msg)
+        {
+            ParallelOptions opts = new ParallelOptions();
+            opts.MaxDegreeOfParallelism = msg.ColumnKeys.Count;
+
+            Parallel.ForEach(msg.ColumnKeys, opts, (colPair) =>
+            {
+                Column weakColumn = (Column)dict[colPair.Key];
+
+                Pool pool = weakColumn.ProximalDendrite.RFPool;
+                double[] perm = pool.getSparsePermanences();
+                ArrayUtils.raiseValuesBy(this.config.SynPermBelowStimulusInc, perm);
+                int[] indexes = pool.getSparsePotential();
+
+                weakColumn.UpdatePermanencesForColumnSparse(this.config, perm, indexes, true);
+            });
+
+            Sender.Tell(0, Self);
         }
 
         public static string StringifyVector(double[] vector)

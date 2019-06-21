@@ -41,16 +41,16 @@ namespace UnitTestsProject
 
 
         /// <summary>
-        /// Creates apprpriate instance of SpatialPooler.
+        /// Creates appropriate instance of SpatialPooler.
         /// </summary>
         /// <param name="poolerImplementation"></param>
         /// <returns></returns>
-        internal static SpatialPooler CreatePooler(int poolerImplementation)
+        internal static SpatialPooler CreatePooler(PoolerMode poolerMode)
         {
             SpatialPooler sp;
-            if (poolerImplementation == 0)
+            if (poolerMode == PoolerMode.SingleThreaded)
                 sp = new SpatialPooler();
-            else if (poolerImplementation == 1)
+            else if (poolerMode == PoolerMode.Multicore)
                 sp = new SpatialPoolerMT();
             else
                 throw new NotImplementedException();
@@ -68,24 +68,24 @@ namespace UnitTestsProject
                 sp.init(mem);
         }
 
-        /// <summary>
-        /// Creates pooler instance.
-        /// </summary>
-        /// <param name="poolerMode"></param>
-        /// <returns></returns>
-        public static SpatialPooler CreatePooler(PoolerMode poolerMode)
-        {
-            SpatialPooler sp;
+        ///// <summary>
+        ///// Creates pooler instance.
+        ///// </summary>
+        ///// <param name="poolerMode"></param>
+        ///// <returns></returns>
+        //public static SpatialPooler CreatePooler(PoolerMode poolerMode)
+        //{
+        //    SpatialPooler sp;
 
-            if (poolerMode == PoolerMode.Multinode)
-                sp = new SpatialPoolerParallel();
-            else if (poolerMode == PoolerMode.Multicore)
-                sp = new SpatialPoolerMT();
-            else
-                sp = new SpatialPooler();
+        //    if (poolerMode == PoolerMode.Multinode)
+        //        sp = new SpatialPoolerParallel();
+        //    else if (poolerMode == PoolerMode.Multicore)
+        //        sp = new SpatialPoolerMT();
+        //    else
+        //        sp = new SpatialPooler();
 
-            return sp;
-        }
+        //    return sp;
+        //}
     }
 
 

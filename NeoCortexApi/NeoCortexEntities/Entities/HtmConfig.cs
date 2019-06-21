@@ -13,13 +13,15 @@ namespace NeoCortexApi.Entities
 
         //public bool IsColumnMajor { get; set; } = false;
 
-        public int[] InputDimensions { get; set; }
+        /// <summary>
+        /// Use -1 if real random generator has to be used with timestamp seed.
+        /// </summary>
+        public int RandomGenSeed { get; set; } = 42;
 
         public HtmModuleTopology ColumnTopology { get; set; }
 
         public HtmModuleTopology InputTopology { get; set; }
-
-
+        
         public bool IsWrapAround { get; set; }
 
         /// <summary>
@@ -50,5 +52,7 @@ namespace NeoCortexApi.Entities
         public double SynPermBelowStimulusInc { get; set; }
 
         public int CellsPerColumn { get; set; }
+
+        public double SynPermInactiveDec { get; set; }   
     }
 }

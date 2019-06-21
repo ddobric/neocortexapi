@@ -82,14 +82,14 @@ namespace UnitTestsProject
             Assert.IsTrue(map.Count == nodes.Length * partitionsPerNode);
             Assert.IsTrue((map[7].MinKey == 14 && map[7].MaxKey == 15) 
                 || (map[7].MinKey == 21 && map[7].MaxKey == 23)
-                || (map[9].MinKey == 3690 && map[9].MaxKey == 4099));
+                || (map[9].MinKey == 3690 && map[9].MaxKey == 4095));
         }
 
 
         [TestMethod]
         [DataRow(new string[] { "url1", "url2", "url3" }, 3, 17, 15, 2, 7)]
         [DataRow(new string[] { "url1", "url2", "url3" }, 5, 17, 0, 0, 0)]
-        [DataRow(new string[] { "url1", "url2", "url3" }, 5, 17, 17, 1, 8)]
+        [DataRow(new string[] { "url1", "url2", "url3" }, 5, 17, 16, 1, 8)]
         [DataRow(new string[] { "url1", "url2", "url3" }, 5, 33, 22, 1, 7)]
         [DataRow(new string[] { "url1", "url2", "url3" }, 5, 31, 22, 1, 7)]
         public void PartitionLookupTest(string[] nodes, int partitionsPerNode, int elements, int key, int expectedNode, int expectedPartition)
@@ -111,7 +111,7 @@ namespace UnitTestsProject
         [TestCategory("AkkaHostRequired")]
         public void InitAkkaDictionaryTest()
         {
-            Thread.Sleep(5000);
+            //Thread.Sleep(5000);
 
             var akkaDict = new HtmSparseIntDictionary<Column>(new HtmSparseIntDictionaryConfig()
             {
@@ -229,7 +229,7 @@ namespace UnitTestsProject
         [TestMethod]
         [TestCategory("AkkaHostRequired")]
         [TestCategory("LongRunning")]
-        [DataRow("MnistPng28x28\\training", "3", 28, 64)]
+        [DataRow("MnistPng28x28\\training", "5", 28, 512)]
         public void SparseSingleMnistImageTest(string trainingFolder, string digit, int imageSize, int columnTopology)
         {
             Thread.Sleep(3000);
@@ -280,7 +280,7 @@ namespace UnitTestsProject
             parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000);
             parameters.Set(KEY.MAX_BOOST, 100);
             parameters.Set(KEY.WRAP_AROUND, true);
-            parameters.Set(KEY.SEED, 1956);
+            parameters.Set(KEY.SEED, -1);
             parameters.setInputDimensions(new int[] { imageSize, imageSize });
             parameters.setColumnDimensions(new int[] { columnTopology, columnTopology });
 
@@ -290,8 +290,11 @@ namespace UnitTestsProject
 
             parameters.apply(mem);
 
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             sp.init(mem, UnitTestHelpers.GetMemory(new HtmConfig()));
-
+            sw.Stop();
+            Debug.WriteLine($"Init time: {sw.ElapsedMilliseconds}");
             int actiColLen = numOfActCols;
 
             int[] activeArray = new int[actiColLen];
@@ -328,7 +331,11 @@ namespace UnitTestsProject
 
                         for (int k = 0; k < numIterationsPerImage; k++)
                         {
-                            sp.compute(mem, inputVector, activeArray, true);
+                            sw.Reset();
+                            sw.Start();
+                            sp.compute(inputVector, activeArray, true);
+                            sw.Stop();
+                            Debug.WriteLine($"Compute time: {sw.ElapsedMilliseconds}");
 
                             var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
                             var distance = MathHelpers.GetHammingDistance(oldArray, activeArray);

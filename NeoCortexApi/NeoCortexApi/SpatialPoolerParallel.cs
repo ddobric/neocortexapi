@@ -17,7 +17,7 @@ namespace NeoCortexApi
 
         public override void InitMatrices(Connections c, DistributedMemory distMem)
         {
-            IRemotelyDistributed remoteHtm = distMem.ColumnDictionary as IRemotelyDistributed;
+            IRemotelyDistributed remoteHtm = distMem?.ColumnDictionary as IRemotelyDistributed;
             if (remoteHtm == null)
                 throw new ArgumentException("");
 
@@ -25,13 +25,13 @@ namespace NeoCortexApi
 
             SparseObjectMatrix<Column> mem = (SparseObjectMatrix<Column>)c.getMemory();
 
-            c.setMemory(mem == null ? mem = new SparseObjectMatrix<Column>(c.getColumnDimensions(), dict : distMem.ColumnDictionary) : mem);
+            c.setMemory(mem == null ? mem = new SparseObjectMatrix<Column>(c.getColumnDimensions(), dict: distMem.ColumnDictionary) : mem);
 
             c.setInputMatrix(new SparseBinaryMatrix(c.getInputDimensions()));
 
             // Initiate the topologies
             c.setColumnTopology(new Topology(c.getColumnDimensions()));
-            c.setInputTopology(new Topology(c.getInputDimensions()));           
+            c.setInputTopology(new Topology(c.getInputDimensions()));
 
             //Calculate numInputs and numColumns
             int numInputs = c.getInputMatrix().getMaxIndex() + 1;
@@ -46,7 +46,7 @@ namespace NeoCortexApi
             }
             c.NumInputs = numInputs;
             c.setNumColumns(numColumns);
-            
+
             if (distMem != null)
             {
                 var distHtmCla = distMem.ColumnDictionary as HtmSparseIntDictionary<Column>;
@@ -212,138 +212,6 @@ namespace NeoCortexApi
             updateInhibitionRadius(c, avgSynapsesConnected);
         }
 
-        /*
-        /// <summary>
-        /// Implements single threaded (originally based on JAVA implementation) initialization of SP.
-        /// </summary>
-        /// <param name="c"></param>
-        protected override void ConnectAndConfigureInputs(Connections c)
-        {
-            List<KeyPair> colList = new List<KeyPair>();
-            ConcurrentDictionary<int, KeyPair> colList2 = new ConcurrentDictionary<int, KeyPair>();
-
-            int numColumns = c.NumColumns;
-
-            // We need dictionary , which implements Akk paralellism.
-            HtmSparseIntDictionary<Column> colDict = this.distMemConfig.ColumnDictionary as HtmSparseIntDictionary<Column>;
-            if (colDict == null)
-                throw new ArgumentException($"ColumnDictionary must be of type {nameof(HtmSparseIntDictionary<Column>)}!");
-
-            // Parallel implementation of initialization
-            ParallelOptions opts = new ParallelOptions();
-            opts.MaxDegreeOfParallelism = colDict.Nodes;
-
-            //int synapseCounter = 0;
-
-            SparseObjectMatrix<Column> mem = (SparseObjectMatrix<Column>)c.getMemory();
-            
-            if (mem.IsRemotelyDistributed == false)
-                throw new ArgumentException("Column memory matrix 'SparseObjectMatrix<Column>' must be remotely distributed.");
-
-            var partitions = mem.GetPartitions();
-            
-            Parallel.ForEach(partitions, opts, (keyValPair) =>
-            {
-                //// We get here keys grouped to actors, which host partitions.
-                //var partitions = mem.GetPartitionsForKeyset(keyValuePairs);
-
-                ////int i = keyValPair.Key;
-
-                ////mem.GetObjects(keyValPair.ToArray());
-
-                //var data = new ProcessingData();
-
-               
-                //// Gets RF
-                //data.Potential = mapPotential(c, i, c.isWrapAround());
-
-                //mem.GetObjects(keyValPair.Value.ToArray());
-
-                //data.Column = c.getColumn(i);
-
-                //Parallel.ForEach(pages, opts, (keyValPair) =>
-                //{
-
-                
-                //    // This line initializes all synases in the potential pool of synapses.
-                //    // It creates the pool on proximal dendrite segment of the column.
-                //    // After initialization permancences are set to zero.
-                //    connectColumnToInputRF(c, data.Potential, data.Column);
-
-                ////Interlocked.Add(ref synapseCounter, data.Column.ProximalDendrite.Synapses.Count);
-
-                ////colList.Add(new KeyPair() { Key = i, Value = column });
-
-                //data.Perm = initSynapsePermanencesForColumn(c, data.Potential, data.Column);
-
-                //updatePermanencesForColumn(c, data.Perm, data.Column, data.Potential, true);
-
-                //if (!colList2.TryAdd(i, new KeyPair() { Key = i, Value = data }))
-                //{
-
-                //}
-                //});
-            });
-
-            //c.setProximalSynapseCount(synapseCounter);
-
-            foreach (var item in colList2.Values)
-            //for (int i = 0; i < numColumns; i++)
-            {
-                int i = (int)item.Key;
-
-                ProcessingData data = (ProcessingData)item.Value;
-                //ProcessingData data = new ProcessingData();
-
-                // Debug.WriteLine(i);
-                //data.Potential = mapPotential(c, i, c.isWrapAround());
-
-                //var st = string.Join(",", data.Potential);
-                //Debug.WriteLine($"{i} - [{st}]");
-
-                //var counts = c.getConnectedCounts();
-
-                //for (int h = 0; h < counts.getDimensions()[0]; h++)
-                //{
-                //    // Gets the synapse mapping between column-i with input vector.
-                //    int[] slice = (int[])counts.getSlice(h);
-                //    Debug.Write($"{slice.Count(y => y == 1)} - ");
-                //}
-                //Debug.WriteLine(" --- ");
-                // Console.WriteLine($"{i} - [{String.Join(",", ((ProcessingData)item.Value).Potential)}]");
-
-                // This line initializes all synases in the potential pool of synapses.
-                // It creates the pool on proximal dendrite segment of the column.
-                // After initialization permancences are set to zero.
-                //var potPool = data.Column.createPotentialPool(c, data.Potential);
-                //connectColumnToInputRF(c, data.Potential, data.Column);
-
-                //data.Perm = initPermanence(c.getSynPermConnected(), c.getSynPermMax(),
-                //      c.getRandom(), c.getSynPermTrimThreshold(), c, data.Potential, data.Column, c.getInitConnectedPct());
-
-                //updatePermanencesForColumn(c, data.Perm, data.Column, data.Potential, true);
-
-                colList.Add(new KeyPair() { Key = i, Value = data.Column });
-            }
-
-
-            if (mem.IsRemotelyDistributed)
-            {
-                // Pool is created and attached to the local instance of Column.
-                // Here we need to update the pool on remote Column instance.
-                mem.set(colList);
-            }
-
-            // The inhibition radius determines the size of a column's local
-            // neighborhood.  A cortical column must overcome the overlap score of
-            // columns in its neighborhood in order to become active. This radius is
-            // updated every learning round. It grows and shrinks with the average
-            // number of connected synapses per column.
-            updateInhibitionRadius(c);
-        }
-        */
-
-
 
         /// <summary>
         /// Starts distributed calculation of overlaps.
@@ -359,14 +227,19 @@ namespace NeoCortexApi
 
             //c.getColumn(0).GetColumnOverlapp(inputVector, c.StimulusThreshold);
 
-            int[] columnOverlaps = remoteHtm.CalculateOverlapDist(inputVector);
+            int[] overlaps = remoteHtm.CalculateOverlapDist(inputVector);
 
-            return columnOverlaps;
+            var overlapsStr = Helpers.StringifyVector(overlaps);
+            // Debug.WriteLine("overlap: " + overlapsStr);
+
+            return overlaps;
         }
 
         public override void AdaptSynapses(Connections c, int[] inputVector, int[] activeColumns)
         {
-            throw new NotImplementedException();
+            IRemotelyDistributed remoteHtm = this.distMemConfig.ColumnDictionary as IRemotelyDistributed;
+            if (remoteHtm == null)
+                throw new ArgumentException("disMemConfig is not of type IRemotelyDistributed!");
 
             // Get all indicies of input vector, which are set on '1'.
             var inputIndices = ArrayUtils.IndexWhere(inputVector, inpBit => inpBit > 0);
@@ -379,20 +252,20 @@ namespace NeoCortexApi
 
             // Then we update all connected permChanges to increment values for connected values.
             // Permanences are set in conencted input bits to default incremental value.
-
             ArrayUtils.setIndexesTo(permChanges, inputIndices.ToArray(), c.getSynPermActiveInc());
-            for (int i = 0; i < activeColumns.Length; i++)
-            {
-                //Pool pool = c.getPotentialPools().get(activeColumns[i]);
-                Pool pool = c.getColumn(activeColumns[i]).ProximalDendrite.RFPool;
-                double[] perm = pool.getDensePermanences(c);
-                int[] indexes = pool.getSparsePotential();
-                ArrayUtils.raiseValuesBy(permChanges, perm);
-                Column col = c.getColumn(activeColumns[i]);
-                HtmCompute.UpdatePermanencesForColumn(c.HtmConfig, perm, col, indexes, true);
-            }
 
-            //Debug.WriteLine("Permance after update in adaptSynapses: " + permChangesStr);
+            remoteHtm.AdaptSynapsesDist(inputVector, permChanges, activeColumns);
+        }
+
+        public override void BumpUpWeakColumns(Connections c)
+        {
+            IRemotelyDistributed remoteHtm = this.distMemConfig.ColumnDictionary as IRemotelyDistributed;
+            if (remoteHtm == null)
+                throw new ArgumentException("disMemConfig is not of type IRemotelyDistributed!");
+
+            var weakColumns = c.getMemory().get1DIndexes().Where(i => c.getOverlapDutyCycles()[i] < c.getMinOverlapDutyCycles()[i]).ToArray();
+            if (weakColumns.Length > 0)
+                remoteHtm.BumpUpWeakColumnsDist(weakColumns);
         }
 
         class ProcessingDataParallel

@@ -135,21 +135,21 @@ namespace UnitTestsProject
 
             sp = new SpatialPooler();
             mem = new Connections();
-            parameters.apply(mem);
-            sp.init(mem);
+            parameters.apply(mem);           
 
             SpatialPoolerMock mock = new SpatialPoolerMock(new int[] { 0, 1, 2, 3, 4 });
+            mock.init(mem);
 
             int[] inputVector = new int[] { 1, 0, 1, 0, 1, 0, 0, 1, 1 };
             int[] activeArray = new int[] { 0, 0, 0, 0, 0 };
             for (int i = 0; i < 20; i++)
             {
-                mock.compute(mem, inputVector, activeArray, true);
+                mock.compute( inputVector, activeArray, true);
             }
 
             for (int i = 0; i < mem.NumColumns; i++)
             {
-                int[] permanences = ArrayUtils.toIntArray(mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem));
+                int[] permanences = ArrayUtils.toIntArray(mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem.NumInputs));
 
                 Assert.IsTrue(inputVector.SequenceEqual(permanences));
             }
@@ -179,20 +179,22 @@ namespace UnitTestsProject
             parameters.setMaxBoost(10);
             parameters.setSynPermConnected(0.1);
 
-            initSP();
+            mem = new Connections();
+            parameters.apply(mem);           
 
             SpatialPoolerMock mock = new SpatialPoolerMock(new int[] { 0, 1, 2, 3, 4 });
+            mock.init(mem);
 
             int[] inputVector = new int[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
             int[] activeArray = new int[] { 0, 0, 0, 0, 0 };
             for (int i = 0; i < 20; i++)
             {
-                mock.compute(mem, inputVector, activeArray, true);
+                mock.compute( inputVector, activeArray, true);
             }
 
             for (int i = 0; i < mem.NumColumns; i++)
             {
-                int[] permanences = ArrayUtils.toIntArray(mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem));
+                int[] permanences = ArrayUtils.toIntArray(mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem.NumInputs));
                 //int[] potential = (int[])mem.getConnectedCounts().getSlice(i);
                 int[] potential = (int[])mem.getColumn(i).ConnectedInputBits;
                 Assert.IsTrue(permanences.SequenceEqual(potential));
@@ -224,7 +226,7 @@ namespace UnitTestsProject
             sp.init(cn);
 
             int[] activeArray = new int[nColumns];
-            sp.compute(cn, new int[inputSize], activeArray, true);
+            sp.compute(new int[inputSize], activeArray, true);
 
             Assert.IsTrue(3 == activeArray.Count(i => i > 0));//, ArrayUtils.INT_GREATER_THAN_0).length);
         }
@@ -234,7 +236,9 @@ namespace UnitTestsProject
          * become active. This test focuses on the global inhibition code path.
          */
         [TestMethod]
-        public void testZeroOverlap_StimulusThreshold_GlobalInhibition()
+        [DataRow(PoolerMode.SingleThreaded)]
+        [DataRow(PoolerMode.Multicore)]
+        public void testZeroOverlap_StimulusThreshold_GlobalInhibition(PoolerMode poolerMode)
         {
             int inputSize = 10;
             int nColumns = 20;
@@ -248,13 +252,13 @@ namespace UnitTestsProject
             parameters.Set(KEY.RANDOM, new ThreadSafeRandom(42));
             parameters.Set(KEY.SEED, 42);
 
-            SpatialPooler sp = new SpatialPooler();
+            SpatialPooler sp = UnitTestHelpers.CreatePooler(poolerMode);
             Connections cn = new Connections();
             parameters.apply(cn);
             sp.init(cn);
 
             int[] activeArray = new int[nColumns];
-            sp.compute(cn, new int[inputSize], activeArray, true);
+            sp.compute( new int[inputSize], activeArray, true);
 
             Assert.IsTrue(0 == activeArray.Count(i => i > 0));//, ArrayUtils.INT_GREATER_THAN_0).length);
         }
@@ -285,7 +289,7 @@ namespace UnitTestsProject
             cn.InhibitionRadius = 2;
 
             int[] activeArray = new int[nColumns];
-            sp.compute(cn, new int[inputSize], activeArray, true);
+            sp.compute( new int[inputSize], activeArray, true);
 
             Assert.IsTrue(6 == activeArray.Count(i => i > 0));//, ArrayUtils.INT_GREATER_THAN_0).length);
         }
@@ -315,7 +319,7 @@ namespace UnitTestsProject
             sp.init(cn);
 
             int[] activeArray = new int[nColumns];
-            sp.compute(cn, new int[inputSize], activeArray, true);
+            sp.compute( new int[inputSize], activeArray, true);
 
             Assert.IsTrue(0 == activeArray.Count(i => i > 0));//, ArrayUtils.INT_GREATER_THAN_0).length);
         }
@@ -346,7 +350,7 @@ namespace UnitTestsProject
             int[] expOutput = { 1,1,1 }; // Added during implementation of parallel.
             /*{ 1, 1, 1 }*/ ;
             // { 2, 1, 0 }; This was used originally on Linux with JAVA and Pyhton
-            sp.compute(cn, inputVector, activeArray, true);
+            sp.compute( inputVector, activeArray, true);
 
             double[] boostedOverlaps = cn.BoostedOverlaps;
             int[] overlaps = cn.Overlaps;
@@ -401,7 +405,7 @@ namespace UnitTestsProject
 
             int[] activeArray = new int[2048];
 
-            sp.compute(mem, inputVector, activeArray, true);
+            sp.compute( inputVector, activeArray, true);
 
         }
 
@@ -452,7 +456,7 @@ namespace UnitTestsProject
 
             int[] activeArray = new int[2048];
 
-            sp.compute(mem, inputVector, activeArray, true);
+            sp.compute( inputVector, activeArray, true);
 
             int[] real = activeArray.IndexWhere(i => i > 0).ToArray();
 
@@ -1155,12 +1159,12 @@ namespace UnitTestsProject
             }
 
             //Execute method being tested
-            sp.bumpUpWeakColumns(mem);
+            sp.BumpUpWeakColumns(mem);
 
             for (int i = 0; i < mem.NumColumns; i++)
             {
                 //double[] perms = mem.getPotentialPools().get(i).getDensePermanences(mem);
-                double[] perms = mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem);
+                double[] perms = mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem.NumInputs);
                 for (int j = 0; j < truePermanences[i].Length; j++)
                 {
                     Assert.IsTrue(Math.Abs(truePermanences[i][j] - perms[j]) <= 0.01);
@@ -1579,7 +1583,7 @@ namespace UnitTestsProject
             for (int i = 0; i < mem.NumColumns; i++)
             {
                 //double[] perms = mem.getPotentialPools().get(i).getDensePermanences(mem);
-                double[] perms = mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem);
+                double[] perms = mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem.NumInputs);
                 for (int j = 0; j < truePermanences[i].Length; j++)
                 {
                     Assert.IsTrue(Math.Abs(truePermanences[i][j] - perms[j]) <= 0.01);
@@ -1623,7 +1627,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < mem.NumColumns; i++)
             {
-                double[] perms = mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem);
+                double[] perms = mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem.NumInputs);
                 for (int j = 0; j < truePermanences[i].Length; j++)
                 {
                     Assert.IsTrue(Math.Abs(truePermanences[i][j] - perms[j]) <= 0.01);
@@ -2455,9 +2459,9 @@ namespace UnitTestsProject
 
 
         [TestMethod]
-        [DataRow(0)]
-        [DataRow(1)]
-        public void testInit(int poolerImplementation)
+        [DataRow(PoolerMode.SingleThreaded)]
+        [DataRow(PoolerMode.Multicore)]      
+        public void testInit(PoolerMode poolerMode)
         {
             setupParameters();
             parameters.setNumActiveColumnsPerInhArea(0);
@@ -2466,7 +2470,7 @@ namespace UnitTestsProject
             Connections c = new Connections();
             parameters.apply(c);
 
-            SpatialPooler sp = UnitTestHelpers.CreatePooler(poolerImplementation);
+            SpatialPooler sp = UnitTestHelpers.CreatePooler(poolerMode);
 
             // Local Area Density cannot be 0
             try
@@ -2573,7 +2577,7 @@ namespace UnitTestsProject
             sp.init(c);
             try
             {
-                sp.compute(c, new int[misMatchedDims], new int[25], true);
+                sp.compute(new int[misMatchedDims], new int[25], true);
                 //fail();
                 //Assert.Fail();
             }
@@ -2600,7 +2604,7 @@ namespace UnitTestsProject
             sp.init(c);
             try
             {
-                sp.compute(c, new int[matchedDims], new int[25], true);
+                sp.compute(new int[matchedDims], new int[25], true);
             }
             catch (ArgumentException e)
             {

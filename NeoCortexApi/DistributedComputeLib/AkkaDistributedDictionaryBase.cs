@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using NeoCortexApi.Entities;
 using System.Collections.Concurrent;
+using NeoCortexApi.Utility;
+using System.Threading;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
@@ -73,16 +75,26 @@ namespace NeoCortexApi.DistributedComputeLib
 
             actSystem = ActorSystem.Create("Deployer", ConfigurationFactory.ParseString(@"
                 akka {  
-                    loglevel=Info
+                    loglevel=DEBUG
                     actor{
                         provider = ""Akka.Remote.RemoteActorRefProvider, Akka.Remote""  		               
                     }
                     remote {
-                        connection-timeout = 120 s
-                        helios.tcp {
-                            maximum-frame-size = 326000000b
-		                    port = 0
-		                    hostname = localhost                            
+		                connection-timeout = 120 s
+		                transport-failure-detector {
+			                heartbeat-interval = 10 s 
+			                acceptable-heartbeat-pause = 60 s 
+			                unreachable-nodes-reaper-interval = 10 s
+			                expected-response-after = 30 s
+			                retry-gate-closed-for = 5 s
+			                prune-quarantine-marker-after = 2 d
+			                system-message-ack-piggyback-timeout = 3 s
+		                }
+                        dot-netty.tcp {
+                            maximum-frame-size = 64000000b
+		                    port = 8080
+		                    hostname = 0.0.0.0
+                            public-hostname = DADO-SR1
                         }
                     }
                 }"));
@@ -99,11 +111,18 @@ namespace NeoCortexApi.DistributedComputeLib
 
             for (int i = 0; i < this.ActorMap.Count; i++)
             {
-                this.ActorMap[i].ActorRef =
-                 actSystem.ActorOf(Props.Create(() => new DictNodeActor())
-                 .WithDeploy(Deploy.None.WithScope(new RemoteScope(Address.Parse(this.ActorMap[i].NodeUrl)))),
-                 $"{nameof(DictNodeActor)}-{this.ActorMap[i].NodeIndx}-{this.ActorMap[i].PartitionIndx}");
-
+                string actorName = $"{nameof(DictNodeActor)}-{Guid.NewGuid()}-{this.ActorMap[i].NodeIndx}-{this.ActorMap[i].PartitionIndx}";
+                
+                //var sel = actSystem.ActorSelection($"/user/{actorName}");
+                //this.ActorMap[i].ActorRef = sel.ResolveOne(TimeSpan.FromSeconds(1)).Result;
+                //if (this.ActorMap[i].ActorRef == null)
+                {
+                    this.ActorMap[i].ActorRef =
+                     actSystem.ActorOf(Props.Create(() => new DictNodeActor())
+                     .WithDeploy(Deploy.None.WithScope(new RemoteScope(Address.Parse(this.ActorMap[i].NodeUrl)))),
+                     actorName);
+                }
+              
                 var result = this.ActorMap[i].ActorRef.Ask<int>(new CreateDictNodeMsg()
                 {
                     HtmAkkaConfig = this.HtmConfig,
@@ -266,7 +285,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
                         foreach (var item in list)
                         {
-                            tasks.Add(item.Key.Ask<int>(item.Value, TimeSpan.FromMinutes(3)));
+                            tasks.Add(item.Key.Ask<int>(item.Value, this.Config.ConnectionTimout));
                             alreadyProcessed += item.Value.Elements.Count;
                         }
 
@@ -288,52 +307,80 @@ namespace NeoCortexApi.DistributedComputeLib
         public void InitializeColumnPartitionsDist(ICollection<KeyPair> keyValuePairs)
         {
             ParallelOptions opts = new ParallelOptions();
-            opts.MaxDegreeOfParallelism = this.ActorMap.Count;
+            opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
 
-            // We get here keys grouped to actors, which host partitions.
-            var partitions = GetPartitionsForKeyset(keyValuePairs);
-
-            //
-            // Here is upload performed in context of every actor (partition).
-            // Because keys are grouped by partitions (actors) parallel upload can be done here.
-            Parallel.ForEach(partitions, opts, (partition) =>
-            {
-                Dictionary<IActorRef, InitColumnsMsg> list = new Dictionary<IActorRef, InitColumnsMsg>();
-
-                int pageSize = this.Config.PageSize;
-                int alreadyProcessed = 0;
-
-                while (true)
+            runBatched((batchOfElements)=> {
+                // Run overlap calculation on all actors(in all partitions)
+                Parallel.ForEach(batchOfElements, opts, (placement) =>
                 {
-                    foreach (var item in partition.Value.Skip(alreadyProcessed).Take(pageSize))
+                    var res = placement.ActorRef.Ask<int>(new InitColumnsMsg()
                     {
-                        var actorRef = GetPartitionActorFromKey((TKey)item.Key);
-                        if (!list.ContainsKey(actorRef))
-                            list.Add(actorRef, new InitColumnsMsg() { Elements = new List<KeyPair>() });
+                        MinKey = (int)(object)placement.MinKey,
+                        MaxKey = (int)(object)placement.MaxKey
+                    }, this.Config.ConnectionTimout).Result;
+                });
+            }, this.ActorMap, this.Config.ProcessingBatch);
 
-                        list[actorRef].Elements.Add(new KeyPair { Key = item.Key, Value = item.Value });
-                    }
+            //int processedItems = 0;
+            //int batchCnt = 0;
 
-                    if (list.Count > 0)
-                    {
-                        List<Task<int>> tasks = new List<Task<int>>();
+            //var shuffledList = ArrayUtils.Shuffle(this.ActorMap);
 
-                        foreach (var item in list)
-                        {
-                            tasks.Add(item.Key.Ask<int>(item.Value, TimeSpan.FromMinutes(3)));
-                            alreadyProcessed += item.Value.Elements.Count;
-                        }
+            //List<Placement<TKey>> batchedList = new List<Placement<TKey>>();
 
-                        Task.WaitAll(tasks.ToArray());
+            //while (processedItems < this.ActorMap.Count)
+            //{              
+            //    if (batchCnt < this.Config.ProcessingBatch && processedItems < this.ActorMap.Count)
+            //    {
+            //        batchedList.Add(shuffledList[processedItems]);
+            //        processedItems++;
+            //        batchCnt++;
+            //    }
+            //    else
+            //    {
+          
+            //        // Run overlap calculation on all actors(in all partitions)
+            //        Parallel.ForEach(batchedList, opts, (placement) =>
+            //        {
+            //            var res = placement.ActorRef.Ask<int>(new InitColumnsMsg()
+            //            {
+            //                MinKey = (int)(object)placement.MinKey,
+            //                MaxKey = (int)(object)placement.MaxKey
+            //            }, this.Config.ConnectionTimout).Result;
+            //        });
 
-                        list.Clear();
-                    }
-                    else
-                        break;
-                }
-            });
+            //        batchCnt = 0;
+            //        batchedList = new List<Placement<TKey>>();
+            //    }             
+            //}
         }
 
+        private void runBatched(Action<List<Placement<TKey>>> func, List<Placement<TKey>> list, int batchSize)
+        {
+            int processedItems = 0;
+            int batchCnt = 0;
+
+            var shuffledList = ArrayUtils.Shuffle(list);
+
+            List<Placement<TKey>> batchedList = new List<Placement<TKey>>();
+
+            while (processedItems < this.ActorMap.Count)
+            {
+                if (batchCnt < batchSize && processedItems < this.ActorMap.Count)
+                {
+                    batchedList.Add(shuffledList[processedItems]);
+                    processedItems++;
+                    batchCnt++;
+                }
+                else
+                {
+                    func(batchedList);
+
+                    batchCnt = 0;
+                    batchedList = new List<Placement<TKey>>();
+                }
+            }
+        }
 
         /// <summary>
         /// Performs remote initialization and configuration of all coulms in all partitions.
@@ -347,18 +394,34 @@ namespace NeoCortexApi.DistributedComputeLib
             ConcurrentDictionary<int, double> aggLst = new ConcurrentDictionary<int, double>();
 
             ParallelOptions opts = new ParallelOptions();
-            opts.MaxDegreeOfParallelism = this.ActorMap.Count;
+            opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
 
-            Parallel.ForEach(this.ActorMap, opts, (placement) =>
-            {
-                var avgSpanOfPart = placement.ActorRef.Ask<double>(new ConnectAndConfigureColumnsMsg(), this.Config.ConnectionTimout).Result;
-                aggLst.TryAdd(placement.PartitionIndx, avgSpanOfPart);
-            });
+            //var avgSpanOfPart = this.ActorMap.First().ActorRef.Ask<double>(new ConnectAndConfigureColumnsMsg(), this.Config.ConnectionTimout).Result;
+            //aggLst.TryAdd(this.ActorMap.First().PartitionIndx, avgSpanOfPart);
+
+            runBatched((batchOfElements) => {
+                Parallel.ForEach(batchOfElements, opts, (placement) =>
+                {
+                    while (true)
+                    {
+                        try
+                        {
+                            Debug.WriteLine($"C: {placement.ActorRef.Path}");
+                            var avgSpanOfPart = placement.ActorRef.Ask<double>(new ConnectAndConfigureColumnsMsg(), this.Config.ConnectionTimout).Result;
+                            aggLst.TryAdd(placement.PartitionIndx, avgSpanOfPart);
+                            break;
+                        }
+                        catch (Exception ex)
+                        {
+                            Thread.Sleep(1000);
+                        }
+                    }
+                });
+            }, this.ActorMap, this.Config.ProcessingBatch / 2);
+          
 
             return aggLst.Values.ToList();
         }
-
-
 
         public int[] CalculateOverlapDist(int[] inputVector)
         {
@@ -367,19 +430,13 @@ namespace NeoCortexApi.DistributedComputeLib
             ParallelOptions opts = new ParallelOptions();
             opts.MaxDegreeOfParallelism = this.ActorMap.Count;
 
-            // Run overlap calculation on all actors (in all partitions)
-            //Parallel.ForEach(this.ActorMap, opts, (placement) =>
-            //{
-            //    var partitionOverlaps = placement.ActorRef.Ask<List<KeyPair>>(new CalculateOverlapMsg { InputVector = inputVector }, this.Config.ConnectionTimout).Result;
-            //    overlapList.TryAdd(placement.PartitionIndx, partitionOverlaps);
-            //});
-
-            foreach (var placement  in this.ActorMap)
+            // Run overlap calculation on all actors(in all partitions)
+            Parallel.ForEach(this.ActorMap, opts, (placement) =>
             {
                 var partitionOverlaps = placement.ActorRef.Ask<List<KeyPair>>(new CalculateOverlapMsg { InputVector = inputVector }, this.Config.ConnectionTimout).Result;
                 overlapList.TryAdd(placement.PartitionIndx, partitionOverlaps);
-            }
-                   
+            });
+
             List<int> overlaps = new List<int>();
             foreach (var item in overlapList.OrderBy(i => i.Key))
             {
@@ -390,6 +447,50 @@ namespace NeoCortexApi.DistributedComputeLib
             }
 
             return overlaps.ToArray();
+        }
+
+        public void AdaptSynapsesDist(int[] inputVector, double[] permChanges, int[] activeColumns)
+        {
+            List<KeyPair> list = new List<KeyPair>();
+            foreach (var colIndx in activeColumns)
+            {
+                list.Add(new KeyPair() { Key = colIndx, Value = colIndx });
+            }
+
+            var partitions = GetPartitionsForKeyset(list);
+
+            ParallelOptions opts = new ParallelOptions();
+            opts.MaxDegreeOfParallelism = this.ActorMap.Count;
+
+            Parallel.ForEach(partitions, opts, (placement) =>
+            {
+                // Result here should ensure reliable messaging. No semantin meaning.
+                var res = placement.Key.Ask<int>(new AdaptSynapsesMsg
+                {
+                    PermanenceChanges = permChanges,
+                    ColumnKeys = placement.Value }, 
+                    this.Config.ConnectionTimout).Result;
+            });
+        }
+
+
+        public void BumpUpWeakColumnsDist(int[] weakColumns)
+        {
+            ParallelOptions opts = new ParallelOptions();
+            opts.MaxDegreeOfParallelism = weakColumns.Length;
+
+            List<KeyPair> list = new List<KeyPair>();
+            foreach (var weakColIndx in weakColumns)
+            {
+                list.Add(new KeyPair() { Key = weakColIndx, Value = weakColIndx });
+            }
+
+            var partitionMap = GetPartitionsForKeyset(list);
+
+            Parallel.ForEach(partitionMap, opts, (placement) =>
+            {
+                placement.Key.Ask<int>(new BumUpWeakColumnsMsg { ColumnKeys = placement.Value }, this.Config.ConnectionTimout);
+            });
         }
 
         /// <summary>

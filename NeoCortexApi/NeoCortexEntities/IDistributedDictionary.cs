@@ -44,5 +44,8 @@ namespace NeoCortexApi.Entities
 
         int[] CalculateOverlapDist(int[] inputVector);
 
+        void AdaptSynapsesDist(int[] inputVector, double[] permChanges, int[] activeColumns);
+
+        void BumpUpWeakColumnsDist(int[] weakColumns);
     }
 }

@@ -205,6 +205,10 @@ namespace NeoCortexApi.Entities
                 cfg.SynPermMin = this.getSynPermMin();
                 cfg.StimulusThreshold = this.StimulusThreshold;
                 cfg.CellsPerColumn = this.getCellsPerColumn();
+                cfg.SynPermInactiveDec = this.getSynPermInactiveDec();
+
+                cfg.RandomGenSeed = this.seed;
+
                 return cfg;
             }
         }
@@ -2522,7 +2526,7 @@ namespace NeoCortexApi.Entities
             {
                 //Pool pool = getPotentialPools().get(i);
                 Pool pool = getColumn(i).ProximalDendrite.RFPool;
-                double[] perm = pool.getDensePermanences(this);
+                double[] perm = pool.getDensePermanences(this.NumInputs);
                 retVal[i] = perm;
             }
 

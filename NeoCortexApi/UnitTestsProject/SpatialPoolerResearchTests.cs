@@ -66,7 +66,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < 200; i++)
             {
-                sp.compute(mem, inputVector, activeArray, true);
+                sp.compute( inputVector, activeArray, true);
 
                 var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 
@@ -77,242 +77,20 @@ namespace UnitTestsProject
 
         }
 
-        /// <summary>
-        /// This test is loading to prepared vectors (two boxed getInputVector1() and getInputVector2() or ...)
-        /// and does training in two ways. First, it trains vectors after each other in sequence for number of iterations.
-        /// Second, it trains every vector for number of iterations after each other to ensure, that there is o difference in result.
-        /// Output of this test is hamming distance of active columns when learning is enable and when learning is disable with different 
-        /// noise level.
-        /// </summary>
         [TestMethod]
         [TestCategory("LongRunning")]
         public void NoiseTest()
         {
-            string TestOutputFolder = nameof(NoiseTest);
-
-            if (Directory.Exists(TestOutputFolder))
-                Directory.Delete(TestOutputFolder, true);
-
-            Directory.CreateDirectory(TestOutputFolder);
-
-            Directory.CreateDirectory($"{TestOutputFolder}");
-
             const int colDimSize = 64;
 
             const int noiseStepPercent = 5;
 
             var parameters = GetDefaultParams();
-            parameters.Set(KEY.POTENTIAL_RADIUS, 32*32);
+            parameters.Set(KEY.POTENTIAL_RADIUS, 32 * 32);
             parameters.Set(KEY.POTENTIAL_PCT, 1.0);
             parameters.Set(KEY.GLOBAL_INHIBITION, true);
             parameters.Set(KEY.STIMULUS_THRESHOLD, 0.5);
             parameters.Set(KEY.INHIBITION_RADIUS, (int)0.01 * colDimSize * colDimSize);
-            parameters.Set(KEY.LOCAL_AREA_DENSITY, -1);
-            parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.02 * 64 * 64);
-            parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000);
-            parameters.Set(KEY.MAX_BOOST, 100.0);
-            parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.008);
-            parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0.01);
-            parameters.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.001);
-
-            parameters.Set(KEY.SEED, 42);
-
-            parameters.setInputDimensions(new int[] { 32, 32 });
-            parameters.setColumnDimensions(new int[] { 64, 64 });
-
-            var rnd = new Random();
-            
-            List<int[]> inputVectors = new List<int[]>();
-
-            var sp = new SpatialPooler();
-            var mem = new Connections();
-            parameters.apply(mem);
-            sp.init(mem);
-
-            //int[] inputVec1 = ArrayUtils.ReadCsvFileTest("Output\\BinaryImages\\digit7.txt").ToArray();
-            //int[] inputVec2 = ArrayUtils.ReadCsvFileTest("Output\\BinaryImages\\digit8.txt").ToArray();
-            int[] inputVec1 = getInputVector1();
-            int[] inputVec2 = getInputVector2();
-            int vectorIndex = 0;
-            int[] activeArray1 = new int[64 * 64];
-            int[] activeArray2 = new int[64 * 64];
-
-            inputVectors.Add(inputVec1);
-            inputVectors.Add(inputVec2);
-            /*
-            for (int i = 0; i < 150; i++)
-            {
-                sp.compute(mem, inputVec1, activeArray1, true);
-                sp.compute(mem, inputVec2, activeArray2, true);          
-            }
-            */
-            
-            foreach(var intput in inputVectors)
-            {
-                int[] activeArray = new int[64 * 64];
-                for (int i = 0; i < 150; i++)
-                {
-                    sp.compute(mem, intput, activeArray, true);
-                    //Debug.WriteLine(Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1)));
-                }
-                if (vectorIndex == 0)
-                {
-                    activeArray1 = new List<int>(activeArray).ToArray();
-                }
-                else
-                {
-                    activeArray2 = new List<int>(activeArray).ToArray();
-                }
-                vectorIndex++;
-            }
-            
-            Debug.WriteLine($"ActiveArray 1 = {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray1, (el) => el == 1))}");
-            Debug.WriteLine($"ActiveArray 2 = {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray2, (el) => el == 1))}");
-
-            Debug.WriteLine("Finish Learning");
-            vectorIndex = 0;
-    
-            foreach (var inputVector in inputVectors)
-            {
-                //Debug.WriteLine("");
-                //Debug.WriteLine($"----- VECTOR {vectorIndex} ----------");
-                
-                //int[] activeArray = new int[64 * 64];
-                //int[] activeArrayWithZeroNoise = new int[64 * 64];
-                //for (int i = 0; i < 30; i++)
-                //{
-                //    sp.compute(mem, inputVector, activeArray, true);
-                    //Debug.WriteLine($"{i}--{Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
-                //}
-                
-                using (StreamWriter inputHam = new StreamWriter($"{TestOutputFolder}\\HammingIn_{vectorIndex}.txt", true))
-                {
-                    using (StreamWriter outputHam = new StreamWriter($"{TestOutputFolder}\\HammingOut_{vectorIndex}.txt", true))
-                    {
-                        inputHam.WriteLine("---------------");
-                        outputHam.WriteLine("---------------");
-                        for (int j = 0; j < (100+noiseStepPercent); j += noiseStepPercent)
-                        {
-                            //Debug.WriteLine($"--- Vector {0} - Noise Iteration {j} ----------");
-                            int[] noisedInput = new int[32 * 32];
-                            int[] noisedActiveArray = new int[64 * 64];
-                            if (j > 0)
-                            {
-                                noisedInput = ArrayUtils.flipBit(inputVector, (double)((double)j / 100.00));
-                            }
-                            else
-                                noisedInput = new List<int>(inputVector).ToArray();
-
-                            var d = MathHelpers.GetHammingDistance(inputVector, noisedInput, true);
-                            inputHam.WriteLine(d);
-                            //Debug.WriteLine($"Input with noise {j} - HamDist: {d}");
-                            //Debug.WriteLine($"Original: {Helpers.StringifyVector(inputVector)}");
-                            //Debug.WriteLine($"Noised:   {Helpers.StringifyVector(noisedInput)}");
-
-                            for (int i = 0; i < 1; i++)
-                            {
-                                sp.compute(mem, noisedInput, noisedActiveArray, false);
-                                //Debug.WriteLine($"{i}--{Helpers.StringifyVector(ArrayUtils.IndexWhere(noisedActiveArray, (el) => el == 1))}");
-
-                                //if (j > 0)
-                                //Debug.WriteLine($"{ MathHelpers.GetHammingDistance(activeArrayWithZeroNoise, activeArray, true)} -> {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
-                            }
-                            //Debug.WriteLine($"{Helpers.StringifyVector(ArrayUtils.IndexWhere(noisedActiveArray, (el) => el == 1))}");
-                            var d2 = 0.0;
-                            if (vectorIndex == 0)
-                            {
-                                d2 = MathHelpers.GetHammingDistance(activeArray1, noisedActiveArray, true);
-                            }
-                            else
-                            {
-                                d2 = MathHelpers.GetHammingDistance(activeArray2, noisedActiveArray, true);
-                            }
-                            
-                            //if (j == 0)
-                            //{
-                            //    Array.Copy(activeArray, activeArrayWithZeroNoise, activeArrayWithZeroNoise.Length);
-                            //}
-                            
-                            //var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
-
-                            //var d2 = MathHelpers.GetHammingDistance(noisedActiveArray, activeArray, true);
-                            outputHam.WriteLine($"{d2}");
-                            //Debug.WriteLine($"Output with noise {j} - Ham Dist: {d2}");
-                            //Debug.WriteLine($"Original: {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray1, (el) => el == 1))}");
-                            //Debug.WriteLine($"Noised:   {Helpers.StringifyVector(ArrayUtils.IndexWhere(noisedActiveArray, (el) => el == 1))}");
-
-                            //List<int[,]> arrays = new List<int[,]>();
-
-                            //int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(activeArray, 64, 64);
-                            //twoDimenArray = ArrayUtils.Transpose(twoDimenArray);
-
-                            //arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray<int>(noisedInput, 32, 32)));
-                            //arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray<int>(activeArray, 64, 64)));
-
-                            //NeoCortexUtils.DrawHeatmaps(bostArrays, $"{outputImage}_boost.png", 1024, 1024, 150, 50, 5);
-                            //NeoCortexUtils.DrawBitmaps(arrays, $"Vector_{vectorIndex}_Noise_{j * 10}.png", Color.Yellow, Color.Gray, OutImgSize, OutImgSize);
-                        }
-                    }
-                }
-                vectorIndex++;
-            }
-
-            //
-            // Prediction code.
-            // This part of code takes a single sample of every input vector and add
-            // some noise to it. Then it predicts it.
-            // Calculated hamming distance (percent overlap) between predicted output and output 
-            // trained without noise is final result, which should be higher than 95% (realistic guess).
-            /*
-            vectorIndex = 0;
-
-            foreach (var inputVector in inputVectors)
-            {
-                double noise = 7;
-                var noisedInput = ArrayUtils.flipBit(inputVector, noise / 100.00);
-
-                int[] activeArray = new int[64 * 64];
-
-                sp.compute(mem, noisedInput, activeArray, false);
-
-                var dist = MathHelpers.GetHammingDistance(activeArrayWithZeroNoise[vectorIndex], activeArray, true);
-                Debug.WriteLine($"Result for vector {vectorIndex++} with noise {noise} - Ham Dist: {dist}");
-
-                Assert.IsTrue(dist >= 95);
-            }
-            */
-        }
-
-        [TestMethod]
-        public void createVector()
-        {
-            List<int[]> inputVectors = new List<int[]>();
-            //int[] inputVec1 = ArrayUtils.ReadCsvFileTest("Output\\BinaryImages\\digit7.txt").ToArray();
-            int[] inputVec1 = getInputVector1();
-            int[] inputVec2 = getInputVector2();
-            inputVectors.Add(inputVec1);
-            inputVectors.Add(inputVec2);
-            int count = 0;
-            foreach (var vec in inputVectors)
-            {
-                count++;
-                List<int[,]> arrays = new List<int[,]>();
-                arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray<int>(vec, 32, 32)));
-                var str = Helpers.StringifyVector(vec);
-                Debug.WriteLine($"{count}: {str}");
-                //NeoCortexUtils.DrawBitmaps(arrays,$"Output\\{count}.png", Color.Yellow, Color.Gray, OutImgSize, OutImgSize);
-            }
-        }
-
-        [TestMethod]
-        public void testing()
-        {
-            var parameters = GetDefaultParams();
-            parameters.Set(KEY.POTENTIAL_RADIUS, 10);
-            parameters.Set(KEY.POTENTIAL_PCT, 0.85);
-            parameters.Set(KEY.GLOBAL_INHIBITION, true);
-            parameters.Set(KEY.STIMULUS_THRESHOLD, 0.5);
-            parameters.Set(KEY.INHIBITION_RADIUS, (int)15);
             parameters.Set(KEY.LOCAL_AREA_DENSITY, -1);
             parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.02 * 64 * 64);
             parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000);
@@ -326,28 +104,113 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 32, 32 });
             parameters.setColumnDimensions(new int[] { 64, 64 });
 
-            var rnd = new Random();
-
-            var sp = new SpatialPooler();
+            var sp = new SpatialPoolerMT();
             var mem = new Connections();
+
+            //var rnd = new Random();
+
             parameters.apply(mem);
             sp.init(mem);
-            int[] oldArray = new int[64 * 64];
-            int[] inputVec = getInputVector1();
-            int[] activeArray = new int[64 * 64];
-            for (int i = 0; i < 150; i++)
+
+            List<int[]> inputVectors = new List<int[]>();
+
+            inputVectors.Add(getInputVector1());
+            inputVectors.Add(getInputVector2());
+
+            int vectorIndex = 0;
+
+            int[][] activeArrayWithZeroNoise = new int[inputVectors.Count][];
+           
+            foreach (var inputVector in inputVectors)
             {
-                sp.compute(mem, inputVec, activeArray, true);
-                var d = MathHelpers.GetHammingDistance(oldArray, activeArray, true);
-                oldArray = new int[64*64];
-                activeArray.CopyTo(oldArray, 0);
-                Debug.WriteLine(d);
+                Debug.WriteLine("");
+                Debug.WriteLine($"----- VECTOR {vectorIndex} ----------");
+
+                int[] activeArray = new int[64 * 64];
+                activeArrayWithZeroNoise[vectorIndex] = new int[64 * 64];
+
+                for (int j = 0; j < 25; j += noiseStepPercent)
+                {
+                    Debug.WriteLine($"--- Vector {0} - Noise Iteration {j} ----------");
+
+                    int[] noisedInput;
+
+                    if (j > 0)
+                    {
+                        noisedInput = ArrayUtils.flipBit(inputVector, (double)((double)j / 100.00));
+                    }
+                    else
+                        noisedInput = inputVector;
+
+                    var d = MathHelpers.GetHammingDistance(inputVector, noisedInput, true);
+                    Debug.WriteLine($"Input with noise {j} - HamDist: {d}");
+                    Debug.WriteLine($"Original: {Helpers.StringifyVector(inputVector)}");
+                    Debug.WriteLine($"Noised:   {Helpers.StringifyVector(noisedInput)}");
+
+                    for (int i = 0; i < 10; i++)
+                    {
+                        sp.compute( noisedInput, activeArray, true);
+                        if (j > 0)
+                            Debug.WriteLine($"{ MathHelpers.GetHammingDistance(activeArrayWithZeroNoise[vectorIndex], activeArray, true)} -> {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
+                    }
+
+                    if (j == 0)
+                    {
+                        Array.Copy(activeArray, activeArrayWithZeroNoise[vectorIndex], activeArrayWithZeroNoise[vectorIndex].Length);
+                    }
+
+                    var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
+
+                    var d2 = MathHelpers.GetHammingDistance(activeArrayWithZeroNoise[vectorIndex], activeArray, true);
+                    Debug.WriteLine($"Output with noise {j} - Ham Dist: {d2}");
+                    Debug.WriteLine($"Original: {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArrayWithZeroNoise[vectorIndex], (el) => el == 1))}");
+                    Debug.WriteLine($"Noised:   {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
+
+                    List<int[,]> arrays = new List<int[,]>();
+
+                    int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(activeArray, 64, 64);
+                    twoDimenArray = ArrayUtils.Transpose(twoDimenArray);
+
+                    arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray<int>(noisedInput, 32, 32)));
+                    arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray<int>(activeArray, 64, 64)));
+
+                    //   NeoCortexUtils.DrawHeatmaps(bostArrays, $"{outputImage}_boost.png", 1024, 1024, 150, 50, 5);
+                    NeoCortexUtils.DrawBitmaps(arrays, $"Vector_{vectorIndex}_Noise_{j * 10}.png", Color.Yellow, Color.Gray, OutImgSize, OutImgSize);
+                }
+
+                vectorIndex++;
+            }
+
+            //
+            // Prediction code.
+            // This part of code takes a single sample of every input vector and add
+            // some noise to it. Then it predicts it.
+            // Calculated hamming distance (percent overlap) between predicted output and output 
+            // trained without noise is final result, which should be higher than 95% (realistic guess).
+
+            vectorIndex = 0;
+
+            foreach (var inputVector in inputVectors)
+            {
+                double noise = 7;
+                var noisedInput = ArrayUtils.flipBit(inputVector, noise / 100.00);
+
+                int[] activeArray = new int[64 * 64];
+
+                sp.compute( noisedInput, activeArray, false);
+
+                var dist = MathHelpers.GetHammingDistance(activeArrayWithZeroNoise[vectorIndex], activeArray, true);
+                Debug.WriteLine($"Result for vector {vectorIndex++} with noise {noise} - Ham Dist: {dist}");
+
+                Assert.IsTrue(dist >= 95);
             }
         }
+
 
         private static int[] getInputVector1()
         {
             int[] inputVector = new int[1024];
+
             for (int i = 0; i < 31; i++)
             {
                 for (int j = 0; j < 32; j++)
@@ -358,6 +221,7 @@ namespace UnitTestsProject
                         inputVector[i * 32 + j] = 0;
                 }
             }
+
             return inputVector;
         }
 
@@ -375,31 +239,8 @@ namespace UnitTestsProject
                         inputVector[i * 32 + j] = 0;
                 }
             }
-            return inputVector;
-        }
 
-        private static double OverlapOnBit(int[] arr1, int[] arr2)
-        {
-            int sum1 = 0;
-            int sum2 = 0;
-            int overlapBitCounter = 0;
-            for (int i = 0; i < arr1.Length; i++)
-            {
-                if (arr1[i] == 1)
-                {
-                    sum1++;
-                }
-                if (arr2[i] == 1)
-                {
-                    sum2++;
-                }
-                if (arr1[i] == 1 && arr2[i]== 1)
-                {
-                    overlapBitCounter++;
-                }
-            }
-            int min = Math.Min(sum1, sum2);
-            return (double)overlapBitCounter*100/min;
+            return inputVector;
         }
 
         /// <summary>
@@ -426,7 +267,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < 100; i++)
             {
-                sp.compute(mem, inputVector, activeArray, true);
+                sp.compute( inputVector, activeArray, true);
 
                 var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 
@@ -435,7 +276,7 @@ namespace UnitTestsProject
                 Debug.WriteLine(str);
             }
         }
-        /**/
+
         /// <summary>
         /// Corresponds to git\nupic\examples\sp\sp_tutorial.py
         /// </summary>
@@ -459,7 +300,7 @@ namespace UnitTestsProject
 
             int[] inputVector = Helpers.GetRandomVector(1000, parameters.Get<Random>(KEY.RANDOM));
 
-            sp.compute(mem, inputVector, activeArray, true);
+            sp.compute( inputVector, activeArray, true);
 
             var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 
@@ -469,7 +310,7 @@ namespace UnitTestsProject
 
         }
 
-        /*
+
         /// <summary>
         /// This test generates neghborhood cells for different radius and center of cell topoogy 64 single dimensional cell array.
         /// Reults are stored in CSV file, which is loaded by Python code 'neighborhood-test.py'to create a plotly diagram.
@@ -499,7 +340,7 @@ namespace UnitTestsProject
 
                     for (int center = 0; center < 64; center++)
                     {
-                        var nbs = mem.getColumnTopology().GetNeighborhood(center, rad);
+                        var nbs = HtmCompute.GetNeighborhood(center, rad, mem.getColumnTopology().HtmTopology);
 
                         StringBuilder sb = new StringBuilder();
 
@@ -519,7 +360,7 @@ namespace UnitTestsProject
                 }
             }
         }
-        */
+
 
         /// <summary>
         /// Generates result of inhibition
@@ -556,7 +397,7 @@ namespace UnitTestsProject
                 var inhibitions = sp.inhibitColumns(mem, ArrayUtils.toDoubleArray(overlaps));
                 var strInhibitions = Helpers.StringifyVector(inhibitions);
 
-                sp.compute(mem, inputVector, activeArray, true);
+                sp.compute( inputVector, activeArray, true);
 
                 var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
                 var strActiveArr = Helpers.StringifyVector(activeArray);
@@ -638,7 +479,7 @@ namespace UnitTestsProject
                                 int[] oldArray = new int[activeArray.Length];
                                 for (int k = 0; k < iterations; k++)
                                 {
-                                    sp.compute(mem, inputVector, activeArray, true);
+                                    sp.compute( inputVector, activeArray, true);
 
                                     var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
                                     var distance = MathHelpers.GetHammingDistance(oldArray, activeArray);
@@ -689,16 +530,14 @@ namespace UnitTestsProject
             return binaryImage;
         }
 
-
         /// <summary>
         /// This test generate a text file of binary image from original image.The text file is 
         /// </summary>
         [TestMethod]
-        [DataRow("Output\\1.png", "Output\\BinaryImages\\1.txt")]
-        [DataRow("Output\\2.png", "Output\\BinaryImages\\2.txt")]
+        [DataRow("TestFiles\\digit8.png", "digit8_binarized.txt")]
         public void BinarizeImageTest(String sourcePath, String destinationPath)
         {
-            Binarizer imageBinarizer = new Binarizer(255, 255, 0, 32, 32);
+            Binarizer imageBinarizer = new Binarizer(200, 200, 200, 32, 32);
             imageBinarizer.CreateBinary(sourcePath, destinationPath);
         }
 

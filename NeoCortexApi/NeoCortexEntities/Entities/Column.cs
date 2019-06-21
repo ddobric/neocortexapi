@@ -234,15 +234,13 @@ namespace NeoCortexApi.Entities
 
             foreach (Synapse s in this.ProximalDendrite.Synapses)
             {
-                //int indx = s.getInputIndex();
-
                 this.setPermanence(s, htmConfig.SynPermConnected, perms[s.InputIndex]);
 
                 if (perms[s.InputIndex] >= htmConfig.SynPermConnected)
                 {
                     this.ConnectedInputCounterMatrix.set(1, 0 /*this.Index*/, s.InputIndex);
                 }
-            }
+            }           
         }
 
         /**
@@ -285,7 +283,7 @@ namespace NeoCortexApi.Entities
         * @param column            The column in the permanence, potential and connectivity matrices
         * @param raisePerm         a boolean value indicating whether the permanence values
         */
-        public void UpdatePermanencesForColumnSparse(Connections c, HtmConfig htmConfig, double[] perm, int[] maskPotential, bool raisePerm)
+        public void UpdatePermanencesForColumnSparse(HtmConfig htmConfig, double[] perm, int[] maskPotential, bool raisePerm)
         {
             if (raisePerm)
             {
@@ -326,7 +324,7 @@ namespace NeoCortexApi.Entities
                 }
             }
 
-            Debug.WriteLine($"Col {this.Index} - o = {result} - onces: {slice.Count(i=>i == 1)}");
+            //Debug.WriteLine($"Col {this.Index} - o = {result} - onces: {slice.Count(i=>i == 1)}");
            // Debug.WriteLine(StringifyVector(slice));
            // Debug.WriteLine("");
 

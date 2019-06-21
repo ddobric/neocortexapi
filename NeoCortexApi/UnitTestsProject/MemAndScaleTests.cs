@@ -1,10 +1,14 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Akka.Actor;
+using Akka.Configuration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.DistributedComputeLib;
 using NeoCortexApi.Entities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
+using System.Linq;
 
 namespace UnitTestsProject
 {
@@ -216,15 +220,77 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [DataRow(0)]
-        [DataRow(1)]
-        [TestCategory("LongRunning")]
-        public void SPInitTest(int poolerImplementation)
+        [TestCategory("AkkaHostRequired")]
+        public void AkkClusterTest()
         {
-            int numOfColsInDim = 100;
+            var actSystem = ActorSystem.Create("Deployer", ConfigurationFactory.ParseString(@"
+                akka {  
+                    loglevel=DEBUG
+                    actor{
+                        provider = ""Akka.Remote.RemoteActorRefProvider, Akka.Remote""  		               
+                    }
+                    remote {
+                        connection-timeout = 120 s
+                        transport-failure-detector {
+			                heartbeat-interval = 1000s 
+			                acceptable-heartbeat-pause = 6000s 
+		                }
+                        dot-netty.tcp {
+                            maximum-frame-size = 326000000b
+		                    port = 8080
+		                    hostname = 0.0.0.0
+                            public-hostname = DADO-SR1
+                        }
+                    }
+                }"));
+
+            string actorName = $"TestActor2";
+
+            IActorRef aRef = null;
+
+            aRef = actSystem.ActorOf(Props.Create(() => new DictNodeActor())
+                 .WithDeploy(Deploy.None.WithScope(new RemoteScope(Address.Parse(Helpers.DefaultNodeList.First())))),
+                 actorName);
+
+            var sel = actSystem.ActorSelection($"/user/{actorName}");
+            aRef = sel.ResolveOne(TimeSpan.FromSeconds(5)).Result;
+
+            //try
+            //{
+            //    var sel = actSystem.ActorSelection($"/user/{actorName}");
+            //    aRef = sel.ResolveOne(TimeSpan.FromSeconds(5)).Result;
+
+            //}
+            //catch (AggregateException ex)
+            //{
+            //    if (ex.InnerException is ActorNotFoundException)
+            //    {
+            //        aRef =
+            //          actSystem.ActorOf(Props.Create(() => new DictNodeActor())
+            //          .WithDeploy(Deploy.None.WithScope(new RemoteScope(Address.Parse(Helpers.DefaultNodeList.First())))),
+            //          actorName);
+            //    }
+            //}
+
+            var result = aRef.Ask<string>(new PingNodeMsg()
+            {
+                Msg = "Echo"
+            }, TimeSpan.FromSeconds(5)).Result;
+        }
+
+        [TestMethod]
+        //[DataRow(PoolerMode.SingleThreaded)]
+        [DataRow(PoolerMode.Multicore)]
+        [TestCategory("LongRunning")]
+        public void SPInitTest(PoolerMode poolerMode)
+        {
+            //Thread.Sleep(2000);
+
+            int numOfColsInDim = 12;
+            int numInputs = 128;
 
             Parameters parameters = Parameters.getAllDefaultParameters();
-                       
+
             parameters.Set(KEY.POTENTIAL_RADIUS, 5);
             parameters.Set(KEY.POTENTIAL_PCT, 0.5);
             parameters.Set(KEY.GLOBAL_INHIBITION, false);
@@ -239,7 +305,7 @@ namespace UnitTestsProject
             parameters.Set(KEY.DUTY_CYCLE_PERIOD, 10);
             parameters.Set(KEY.MAX_BOOST, 10.0);
             parameters.Set(KEY.RANDOM, new ThreadSafeRandom(42));
-            parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { 128, 128 });
+            parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { numInputs, numInputs });
             parameters.Set(KEY.COLUMN_DIMENSIONS, new int[] { numOfColsInDim, numOfColsInDim });
             parameters.setPotentialRadius(5);
 
@@ -265,16 +331,13 @@ namespace UnitTestsProject
 
             parameters.setSynPermConnected(0.1);
 
-            SpatialPooler sp = UnitTestHelpers.CreatePooler(poolerImplementation) ;            
-
+            //SpatialPooler sp = UnitTestHelpers.CreatePooler(poolerMode) ;            
+            var sp = new SpatialPoolerParallel();
             var mem = new Connections();
             parameters.apply(mem);
 
-            //Thread.Sleep(5000);
-
-            //var dicts = UnitTestHelpers.GetMemory(numOfColsInDim * numOfColsInDim);
-
-            sp.init(mem);
+            sp.init(mem, UnitTestHelpers.GetMemory(new HtmConfig()));
+            //sp.init(mem);
 
             //int[] inputVector = new int[] { 1, 0, 1, 0, 1, 0, 0, 1, 1 };
             //int[] activeArray = new int[] { 0, 0, 0, 0, 0 };

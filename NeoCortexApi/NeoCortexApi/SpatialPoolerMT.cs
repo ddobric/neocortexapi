@@ -39,12 +39,12 @@ namespace NeoCortexApi
             {
                 Random rnd = new Random(42);
 
-                int i = (int)indx;
+                int colIndex = (int)indx;
                 var data = new ProcessingData();
 
                 // Gets RF
-                data.Potential = HtmCompute.MapPotential(c.HtmConfig, i, rnd /*(c.getRandom()*/);
-                data.Column = c.getColumn(i);
+                data.Potential = HtmCompute.MapPotential(c.HtmConfig, colIndex, rnd /*(c.getRandom()*/);
+                data.Column = c.getColumn(colIndex);
 
                 // This line initializes all synases in the potential pool of synapses.
                 // It creates the pool on proximal dendrite segment of the column.
@@ -58,11 +58,11 @@ namespace NeoCortexApi
 
                 data.Perm = HtmCompute.InitSynapsePermanences(c.HtmConfig, data.Potential, c.getRandom());
 
-                data.AvgConnected = GetAvgSpanOfConnectedSynapses(c, i);
+                data.AvgConnected = GetAvgSpanOfConnectedSynapses(c, colIndex);
 
                 HtmCompute.UpdatePermanencesForColumn( c.HtmConfig, data.Perm, data.Column, data.Potential, true);
 
-                if (!colList2.TryAdd(i, new KeyPair() { Key = i, Value = data }))
+                if (!colList2.TryAdd(colIndex, new KeyPair() { Key = colIndex, Value = data }))
                 {
 
                 }

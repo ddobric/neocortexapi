@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using NeoCortexApi;
 
 namespace NeoCortexApi.Entities
 {
@@ -14,7 +15,7 @@ namespace NeoCortexApi.Entities
      * 
      * @author David Ray
      */
-    public class ComputeCycle : IEquatable<object>
+    public class ComputeCycle : IEquatable<object>, NeoCortexApi.IComputeOutput
     {
 
         private static readonly long serialVersionUID = 1L;
@@ -56,7 +57,6 @@ namespace NeoCortexApi.Entities
             this.matchingSegments = new List<DistalDendrite>(c.getMatchingSegments());
         }
 
-        public int MyProperty { get; set; }
         /**
          * Returns the current {@link Set} of active cells
          * 

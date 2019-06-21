@@ -4,6 +4,10 @@ using System.Collections.Generic;
 namespace NeoCortexApi.DistributedComputeLib
 {
 
+    public class PingNodeMsg
+    {
+        public string Msg { get; set; }
+    }
 
     internal class CreateDictNodeMsg
     {
@@ -64,16 +68,30 @@ namespace NeoCortexApi.DistributedComputeLib
 
     public class InitColumnsMsg
     {
+        public int MinKey { get; set; }
+        public int MaxKey { get; set; }
         public IList<KeyPair> Elements { get; set; }
     }
 
     public class ConnectAndConfigureColumnsMsg
     {
-        
+
     }
 
     public class CalculateOverlapMsg
     {
         public int[] InputVector { get; set; }
+    }
+
+    public class AdaptSynapsesMsg
+    {
+        public List<KeyPair> ColumnKeys { get; internal set; }
+        public double[] PermanenceChanges { get; internal set; }
+    }
+
+    public class BumUpWeakColumnsMsg
+    {
+        public List<KeyPair> ColumnKeys { get; internal set; }
+ 
     }
 }

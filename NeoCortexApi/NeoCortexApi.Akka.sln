@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.572
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29009.5
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexApi", "NeoCortexApi\NeoCortexApi.csproj", "{F5BEDB25-C6A3-4826-A8C6-679098F5CB9C}"
 EndProject
@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DistributedComputeLib", "Di
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexUtils", "NeoCortexUtils\NeoCortexUtils.csproj", "{28395BF8-B719-4D93-806B-723A7AF0C56A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Akka", "Akka", "{7E0EE186-7A75-4A97-9E16-A6B4E1853915}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HtmHosts", "HtmHosts", "{7E0EE186-7A75-4A97-9E16-A6B4E1853915}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtmAkkaHost", "HtmAkkaHost\HtmAkkaHost.csproj", "{A56DD089-679E-479B-BD00-955AA4CDF569}"
 EndProject
@@ -30,7 +30,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{7D17894D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexArrayLib", "NeoCortexArrayLib\NeoCortexArrayLib.csproj", "{A7F4E797-E60F-470E-96F6-B9ECD3A67451}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeoCortexEntities", "NeoCortexEntities\NeoCortexEntities.csproj", "{F2693439-77AF-420C-B42F-9FD5BBEC5482}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexEntities", "NeoCortexEntities\NeoCortexEntities.csproj", "{F2693439-77AF-420C-B42F-9FD5BBEC5482}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AkkaSb.Net", "AkkaSb.Net\AkkaSb.Net.csproj", "{A3B8131A-DA87-44BB-A0A4-BD683383E984}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -66,6 +68,10 @@ Global
 		{F2693439-77AF-420C-B42F-9FD5BBEC5482}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2693439-77AF-420C-B42F-9FD5BBEC5482}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F2693439-77AF-420C-B42F-9FD5BBEC5482}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3B8131A-DA87-44BB-A0A4-BD683383E984}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3B8131A-DA87-44BB-A0A4-BD683383E984}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3B8131A-DA87-44BB-A0A4-BD683383E984}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3B8131A-DA87-44BB-A0A4-BD683383E984}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

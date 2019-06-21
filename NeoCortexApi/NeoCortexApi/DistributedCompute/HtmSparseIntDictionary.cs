@@ -63,7 +63,8 @@ namespace NeoCortexApi.DistributedCompute
                 for (int partIndx = 0; partIndx < numPartitionsPerNode; partIndx++, globalPartIndx++)
                 {
                     var min = numOfElementsPerPartition * globalPartIndx;
-                    var max = numOfElementsPerPartition * (globalPartIndx + 1) - 1;
+                    var maxPartEl = numOfElementsPerPartition * (globalPartIndx + 1) - 1;
+                    var max = maxPartEl < numElements ? maxPartEl : numElements - 1;
                     map.Add(new Placement<int>() { NodeIndx = nodIndx, NodeUrl = nodes[nodIndx], PartitionIndx = globalPartIndx, MinKey = min, MaxKey = max, ActorRef = null });
                 }
             }
@@ -170,7 +171,7 @@ namespace NeoCortexApi.DistributedCompute
                 foreach (var item in node)
                 {
 
-                } 
+                }
             }
             return null;
         }

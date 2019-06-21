@@ -43,6 +43,8 @@ namespace NeoCortexApi
          */
         public SpatialPooler() { }
 
+        private Connections connections;
+
         /**
          * Initializes the specified {@link Connections} object which contains
          * the memory and structural anatomy this spatial pooler uses to implement
@@ -52,6 +54,8 @@ namespace NeoCortexApi
          */
         public void init(Connections c, DistributedMemory distMem = null)
         {
+            this.connections = c;
+
             //Stopwatch sw = new Stopwatch();
             //sw.Start();
 
@@ -81,7 +85,7 @@ namespace NeoCortexApi
         {
             SparseObjectMatrix<Column> memory = (SparseObjectMatrix<Column>)c.getMemory();
 
-            c.setMemory(memory == null ? memory = new SparseObjectMatrix<Column>(c.getColumnDimensions(), dict:  null ) : memory);
+            c.setMemory(memory == null ? memory = new SparseObjectMatrix<Column>(c.getColumnDimensions(), dict: null) : memory);
 
             c.setInputMatrix(new SparseBinaryMatrix(c.getInputDimensions()));
 
@@ -125,7 +129,7 @@ namespace NeoCortexApi
 
             //c.setConnectedMatrix(new SparseBinaryMatrix(new int[] { numColumns, numInputs }));
             //  this IS removed. Every colun maintains its own matrix.
-         
+
             //Initialize state meta-management statistics
             c.setOverlapDutyCycles(new double[numColumns]);
             c.setActiveDutyCycles(new double[numColumns]);
@@ -152,10 +156,10 @@ namespace NeoCortexApi
 
             int numColumns = c.NumColumns;
 
+            Random rnd = new Random(42);
+
             for (int i = 0; i < numColumns; i++)
             {
-                Random rnd = new Random(42);
-
                 // Gets RF
                 int[] potential = HtmCompute.MapPotential(c.HtmConfig, i, rnd /*c.getRandom()*/);
 
@@ -289,7 +293,10 @@ namespace NeoCortexApi
                 }
         */
 
-     
+        public int[] Compute(int[] input, bool learn)
+        {
+            throw new NotImplementedException();
+        }
 
         /**
          * This is the primary public method of the SpatialPooler class. This
@@ -316,26 +323,29 @@ namespace NeoCortexApi
          *                          and has many uses. For example, you might want to feed in
          *                          various inputs and examine the resulting SDR's.
          */
-        public void compute(Connections c, int[] inputVector, int[] activeArray, bool learn)
+        public void compute(int[] inputVector, int[] activeArray, bool learn)
         {
-            if (inputVector.Length != c.NumInputs)
+            if (inputVector.Length != this.connections.NumInputs)
             {
                 throw new ArgumentException(
-                        "Input array must be same size as the defined number of inputs: From Params: " + c.NumInputs +
+                        "Input array must be same size as the defined number of inputs: From Params: " + this.connections.NumInputs +
                         ", From Input Vector: " + inputVector.Length);
             }
 
-            updateBookeepingVars(c, learn);
+            updateBookeepingVars(this.connections, learn);
 
             // Gets overlap over every single column.
-            var overlaps = CalculateOverlap(c, inputVector);
+            var overlaps = CalculateOverlap(this.connections, inputVector);
 
             //var overlapsStr = Helpers.StringifyVector(overlaps);
             //Debug.WriteLine("overlap: " + overlapsStr);
 
             //totalOverlap = overlapActive * weightActive + overlapPredictedActive * weightPredictedActive
 
-            c.Overlaps = overlaps;
+            this.connections.Overlaps = overlaps;
+
+            var overlapsStr = Helpers.StringifyVector(overlaps);
+            //Debug.WriteLine("overlap: " + overlapsStr);
 
             double[] boostedOverlaps;
 
@@ -344,27 +354,27 @@ namespace NeoCortexApi
             if (learn)
             {
                 //Debug.WriteLine("Boosted Factor: " + c.BoostFactors);
-                boostedOverlaps = ArrayUtils.multiply(c.BoostFactors, overlaps);
+                boostedOverlaps = ArrayUtils.multiply(this.connections.BoostFactors, overlaps);
             }
             else
             {
                 boostedOverlaps = ArrayUtils.toDoubleArray(overlaps);
             }
 
-            c.BoostedOverlaps = boostedOverlaps;
+            this.connections.BoostedOverlaps = boostedOverlaps;
 
-            int[] activeColumns = inhibitColumns(c, boostedOverlaps);
+            int[] activeColumns = inhibitColumns(this.connections, boostedOverlaps);
 
             if (learn)
             {
-                AdaptSynapses(c, inputVector, activeColumns);
-                updateDutyCycles(c, overlaps, activeColumns);
-                bumpUpWeakColumns(c);
-                updateBoostFactors(c);
-                if (isUpdateRound(c))
+                AdaptSynapses(this.connections, inputVector, activeColumns);
+                updateDutyCycles(this.connections, overlaps, activeColumns);
+                BumpUpWeakColumns(this.connections);
+                updateBoostFactors(this.connections);
+                if (isUpdateRound(this.connections))
                 {
-                    updateInhibitionRadius(c);
-                    updateMinDutyCycles(c);
+                    updateInhibitionRadius(this.connections);
+                    updateMinDutyCycles(this.connections);
                 }
             }
 
@@ -770,7 +780,7 @@ namespace NeoCortexApi
             {
                 //Pool pool = c.getPotentialPools().get(activeColumns[i]);
                 Pool pool = c.getColumn(activeColumns[i]).ProximalDendrite.RFPool;
-                double[] perm = pool.getDensePermanences(c);
+                double[] perm = pool.getDensePermanences(c.NumInputs);
                 int[] indexes = pool.getSparsePotential();
                 ArrayUtils.raiseValuesBy(permChanges, perm);
                 Column col = c.getColumn(activeColumns[i]);
@@ -788,26 +798,20 @@ namespace NeoCortexApi
          *  
          * @param c
          */
-        public void bumpUpWeakColumns(Connections c)
+        public virtual void BumpUpWeakColumns(Connections c)
         {
-            //    int[] weakColumns = ArrayUtils.where(c.getMemory().get1DIndexes(), new Condition.Adapter<Integer>() {
-            //        @Override public boolean eval(int i)
-            //    {
-            //        return c.getOverlapDutyCycles()[i] < c.getMinOverlapDutyCycles()[i];
-            //    }
-            //});
-
             var weakColumns = c.getMemory().get1DIndexes().Where(i => c.getOverlapDutyCycles()[i] < c.getMinOverlapDutyCycles()[i]).ToArray();
             //var weakColumnsStr = Helpers.StringifyVector(weakColumns);
             //Debug.WriteLine("weak Columns:" + weakColumnsStr);
             for (int i = 0; i < weakColumns.Length; i++)
             {
+                Column col = c.getColumn(weakColumns[i]);
                 //Pool pool = c.getPotentialPools().get(weakColumns[i]);
-                Pool pool = c.getColumn(weakColumns[i]).ProximalDendrite.RFPool;
+                Pool pool = col.ProximalDendrite.RFPool;
                 double[] perm = pool.getSparsePermanences();
                 ArrayUtils.raiseValuesBy(c.getSynPermBelowStimulusInc(), perm);
                 int[] indexes = pool.getSparsePotential();
-                Column col = c.getColumn(weakColumns[i]);
+               
                 updatePermanencesForColumnSparse(c, perm, col, indexes, true);
                 //var permStr = Helpers.StringifyVector(perm);
                 //Debug.WriteLine("pearm after bump up weak column:" + permStr);
@@ -869,7 +873,7 @@ namespace NeoCortexApi
             HtmCompute.RaisePermanenceToThresholdSparse(c.HtmConfig, perm);
         }
 
-       
+
 
         /**
          * This method updates the permanence matrix with a column's new permanence
@@ -890,7 +894,7 @@ namespace NeoCortexApi
          */
         public void updatePermanencesForColumnSparse(Connections c, double[] perm, Column column, int[] maskPotential, bool raisePerm)
         {
-            column.UpdatePermanencesForColumnSparse(c, c.HtmConfig, perm, maskPotential, raisePerm);
+            column.UpdatePermanencesForColumnSparse(c.HtmConfig, perm, maskPotential, raisePerm);
             //if (raisePerm)
             //{
             //    RaisePermanenceToThresholdSparse(c, perm);
@@ -1644,6 +1648,8 @@ namespace NeoCortexApi
             }
             return result;
         }
+
+      
     }
 }
 

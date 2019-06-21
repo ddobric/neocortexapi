@@ -29,6 +29,9 @@ namespace NeoCortexApi.Network
         {
             foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
             {
+                if (asm.FullName.Contains("Microsoft."))
+                    continue;
+
                 foreach (var tp in asm.GetTypes())
                 {
                     if (typeof(EncoderBase).IsAssignableFrom(tp))

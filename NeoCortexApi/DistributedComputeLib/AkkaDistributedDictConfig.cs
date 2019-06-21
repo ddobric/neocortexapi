@@ -10,10 +10,12 @@ namespace NeoCortexApi.DistributedComputeLib
     /// </summary>
     public class AkkaDistributedDictConfig
     {
+       
+
         /// <summary>
         /// Time to wait to connect to Akk Cluster.
         /// </summary>
-        public TimeSpan ConnectionTimout { get; set; } = TimeSpan.FromMinutes(1);
+        public TimeSpan ConnectionTimout { get; set; } = TimeSpan.FromMinutes(2);
 
         /// <summary>
         /// Address of all nodes in cluster.
@@ -30,5 +32,6 @@ namespace NeoCortexApi.DistributedComputeLib
         /// Note, a single actor implements a partition.
         /// </summary>
         public int PartitionsPerNode { get; set; } = 4;
+        public int ProcessingBatch { get;  set; }
     }
 }
