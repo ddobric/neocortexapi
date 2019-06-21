@@ -371,8 +371,8 @@ namespace UnitTestsProject
         {
             var parameters = GetDefaultParams();
 
-            parameters.setInputDimensions(new int[] { 32, 32 });
-            parameters.setColumnDimensions(new int[] { 32, 32 });
+            parameters.setInputDimensions(new int[] { 10 });
+            parameters.setColumnDimensions(new int[] { 1024 });
             parameters.setNumActiveColumnsPerInhArea(0.2 * 32 * 32);
             parameters.setGlobalInhibition(false);
 
@@ -381,14 +381,14 @@ namespace UnitTestsProject
             var mem = new Connections();
             parameters.apply(mem);
             sp.init(mem);
-            int[] inputVector = NeoCortexUtils.ReadCsvFileTest("Testfiles\\digit8_binary_32bit.txt").ToArray();
-            var inputString = Helpers.StringifyVector(inputVector);
-            Debug.WriteLine("Input Array: " + inputString);
-            //int[] inputVector = new int[] { 1, 0, 0, 0, 1, 1, 1, 0, 1, 1};
+            //int[] inputVector = NeoCortexUtils.ReadCsvFileTest("Testfiles\\digit8_binary_32bit.txt").ToArray();
+           // var inputString = Helpers.StringifyVector(inputVector);
+            //Debug.WriteLine("Input Array: " + inputString);
+            int[] inputVector = new int[] { 1, 0, 0, 0, 1, 1, 1, 0, 1, 1};
             int[] activeArray = new int[32 * 32];
             //int iteration = -1;
             String str = "";
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 10; i++)
             {
 
                 var overlaps = sp.CalculateOverlap(mem, inputVector);
@@ -396,8 +396,8 @@ namespace UnitTestsProject
 
                 var inhibitions = sp.inhibitColumns(mem, ArrayUtils.toDoubleArray(overlaps));
                 var strInhibitions = Helpers.StringifyVector(inhibitions);
-
-                sp.compute( inputVector, activeArray, true);
+                activeArray = sp.Compute(inputVector, true);
+                //sp.compute( inputVector, activeArray, true);
 
                 var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
                 var strActiveArr = Helpers.StringifyVector(activeArray);
