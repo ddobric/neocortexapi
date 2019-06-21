@@ -12,13 +12,17 @@ namespace NeoCortexApi.Entities
     /// </summary>
     public class AbstractFlatMatrix
     {
+        public AbstractFlatMatrix()
+        {
+
+        }
 
         /// <summary>
         /// Reverses the array.
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public static int[] reverse(int[] input)
+        public static int[] Reverse(int[] input)
         {
             int[] retVal = new int[input.Length];
             for (int i = input.Length - 1, j = 0; i >= 0; i--, j++)
@@ -46,7 +50,89 @@ namespace NeoCortexApi.Entities
                 @base %= dimensionMultiples[i];
                 returnVal[i] = quotient;
             }
-            return isColumnMajor ? reverse(returnVal) : returnVal;
+            return isColumnMajor ? Reverse(returnVal) : returnVal;
+        }
+
+        public static int ComputeIndex(int[] coordinates, int[] dimensions, int numDimensions, int[] dimensionMultiples, bool isColumnMajor, bool doCheck)
+        {
+            if (doCheck) CheckDims(dimensions, numDimensions, coordinates);
+
+            int[] localMults = isColumnMajor ? Reverse(dimensionMultiples) : dimensionMultiples;
+            int @base = 0;
+            for (int i = 0; i < coordinates.Length; i++)
+            {
+                @base += (localMults[i] * coordinates[i]);
+            }
+            return @base;
+        }
+
+
+        /**
+        * Checks the indexes specified to see whether they are within the
+        * configured bounds and size parameters of this array configuration.
+        * 
+        * @param index the array dimensions to check
+        */
+        public static void CheckDims(int[] dimensions, int numDimensions, int[] coordinates)
+        {
+            if (coordinates.Length != numDimensions)
+            {
+                throw new ArgumentException("Specified coordinates exceed the configured array dimensions " +
+                        "input dimensions: " + coordinates.Length + " > number of configured dimensions: " + numDimensions);
+            }
+            for (int i = 0; i < coordinates.Length - 1; i++)
+            {
+                if (coordinates[i] >= dimensions[i])
+                {
+                    throw new ArgumentException("Specified coordinates exceed the configured array dimensions " +
+                            ArrayToString(coordinates) + " > " + ArrayToString(dimensions));
+                }
+            }
+        }
+
+        /**
+        * Prints the specified array to a returned String.
+        * 
+        * @param aObject   the array object to print.
+        * @return  the array in string form suitable for display.
+        */
+        public static String ArrayToString(int[] arr)
+        {
+            string res = String.Join(",", arr);
+            return res;
+            //if (aObject is Array)
+            //{
+            //    if (!typeof(T).IsValueType) // can we cast to Object[]
+            //        return aObject.ToString();
+            //    else
+            //    {  // we can't cast to Object[] - case of primitive arrays
+            //        int length = ((Array)aObject).Length;
+            //        Object[] objArr = new Object[length];
+            //        for (int i = 0; i < length; i++)
+            //            objArr[i] = ((Array)aObject).GetValue(i);
+            //        return objArr.ToString();
+            //    }
+            //}
+            //return "[]";
+        }
+
+        /**
+       * Initializes internal helper array which is used for multidimensional
+       * index computation.
+       * @param dimensions matrix dimensions
+       * @return array for use in coordinates to flat index computation.
+       */
+        public static int[] InitDimensionMultiples(int[] dimensions)
+        {
+            int holder = 1;
+            int len = dimensions.Length;
+            int[] dimensionMultiples = new int[dimensions.Length];
+            for (int i = 0; i < len; i++)
+            {
+                holder *= (i == 0 ? 1 : dimensions[len - i]);
+                dimensionMultiples[len - 1 - i] = holder;
+            }
+            return dimensionMultiples;
         }
     }
 
@@ -58,23 +144,30 @@ namespace NeoCortexApi.Entities
     /// <typeparam name="T"></typeparam>
     public abstract class AbstractFlatMatrix<T> : AbstractFlatMatrix, IFlatMatrix<T>
     {
+        public AbstractFlatMatrix()
+        {
 
-        private static long serialVersionUID = 1L;
+        }
 
-        protected int[] dimensions;
-        protected int[] dimensionMultiples;
-        public bool IsColumnMajorOrdering;
-        protected int numDimensions;
+
+    public HtmModuleTopology ModuleTopology { get; set; }
+
+        //protected int[] dimensions;
+
+        //protected int[] dimensionMultiples;
+        //public bool IsColumnMajorOrdering { get; set; }
+
+        //protected int numDimensions;
 
         /**
          * Constructs a new {@link AbstractFlatMatrix} object to be configured with specified
          * dimensions and major ordering.
          * @param dimensions  the dimensions of this matrix	
          */
-        public AbstractFlatMatrix(int[] dimensions) : this(dimensions, false)
-        {
+        //public AbstractFlatMatrix(int[] dimensions) : this(dimensions, false)
+        //{
 
-        }
+        //}
 
         /**
          * Constructs a new {@link AbstractFlatMatrix} object to be configured with specified
@@ -88,11 +181,13 @@ namespace NeoCortexApi.Entities
          */
         public AbstractFlatMatrix(int[] dimensions, bool useColumnMajorOrdering)
         {
-            this.dimensions = dimensions;
-            this.numDimensions = dimensions.Length;
-            this.dimensionMultiples = InitDimensionMultiples(
-                    useColumnMajorOrdering ? reverse(dimensions) : dimensions);
-            IsColumnMajorOrdering = useColumnMajorOrdering;
+            this.ModuleTopology = new HtmModuleTopology(dimensions, useColumnMajorOrdering);
+
+            //this.dimensions = dimensions;
+            //this.numDimensions = dimensions.Length;
+            //this.dimensionMultiples = InitDimensionMultiples(
+            //        useColumnMajorOrdering ? Reverse(dimensions) : dimensions);
+            //IsColumnMajorOrdering = useColumnMajorOrdering;
         }
 
         /**
@@ -115,9 +210,10 @@ namespace NeoCortexApi.Entities
          */
         public int computeIndex(int[] coordinates, bool doCheck)
         {
-            if (doCheck) checkDims(coordinates);
+            if (doCheck) CheckDims(getDimensions(), getNumDimensions(), coordinates);
 
-            int[] localMults = IsColumnMajorOrdering ? reverse(dimensionMultiples) : dimensionMultiples;
+            int[] localMults = this.ModuleTopology.IsMajorOrdering ? 
+                Reverse(this.ModuleTopology.DimensionMultiplies) : this.ModuleTopology.DimensionMultiplies;
             int @base = 0;
             for (int i = 0; i < coordinates.Length; i++)
             {
@@ -126,28 +222,7 @@ namespace NeoCortexApi.Entities
             return @base;
         }
 
-        /**
-         * Checks the indexes specified to see whether they are within the
-         * configured bounds and size parameters of this array configuration.
-         * 
-         * @param index the array dimensions to check
-         */
-        protected void checkDims(int[] index)
-        {
-            if (index.Length != numDimensions)
-            {
-                throw new ArgumentException("Specified coordinates exceed the configured array dimensions " +
-                        "input dimensions: " + index.Length + " > number of configured dimensions: " + numDimensions);
-            }
-            for (int i = 0; i < index.Length - 1; i++)
-            {
-                if (index[i] >= dimensions[i])
-                {
-                    throw new ArgumentException("Specified coordinates exceed the configured array dimensions " +
-                            print1DArray(index) + " > " + print1DArray(dimensions));
-                }
-            }
-        }
+       
 
         /**
          * Returns an array of coordinates calculated from
@@ -157,31 +232,11 @@ namespace NeoCortexApi.Entities
          * @return  a coordinate array
          */
         //@Override
-        public int[] computeCoordinates(int index)
-        {
-            return ComputeCoordinates(getNumDimensions(), dimensionMultiples, IsColumnMajorOrdering, index);            
-        }
+        //public int[] computeCoordinatesOLD(int index)
+        //{
+        //    return ComputeCoordinates(getNumDimensions(), dimensionMultiples, IsColumnMajorOrdering, index);            
+        //}
 
-
-
-        /**
-         * Initializes internal helper array which is used for multidimensional
-         * index computation.
-         * @param dimensions matrix dimensions
-         * @return array for use in coordinates to flat index computation.
-         */
-        public static int[] InitDimensionMultiples(int[] dimensions)
-        {
-            int holder = 1;
-            int len = dimensions.Length;
-            int[] dimensionMultiples = new int[dimensions.Length];
-            for (int i = 0; i < len; i++)
-            {
-                holder *= (i == 0 ? 1 : dimensions[len - i]);
-                dimensionMultiples[len - 1 - i] = holder;
-            }
-            return dimensionMultiples;
-        }
 
         /**
          * Utility method to shrink a single dimension array by one index.
@@ -198,29 +253,7 @@ namespace NeoCortexApi.Entities
         }
 
 
-        /**
-         * Prints the specified array to a returned String.
-         * 
-         * @param aObject   the array object to print.
-         * @return  the array in string form suitable for display.
-         */
-        public static String print1DArray(Object aObject)
-        {
-            if (aObject is Array)
-            {
-                if (!typeof(T).IsValueType) // can we cast to Object[]
-                    return aObject.ToString();
-                else
-                {  // we can't cast to Object[] - case of primitive arrays
-                    int length = ((Array)aObject).Length;
-                    Object[] objArr = new Object[length];
-                    for (int i = 0; i < length; i++)
-                        objArr[i] = ((Array)aObject).GetValue(i);
-                    return objArr.ToString();
-                }
-            }
-            return "[]";
-        }
+       
 
         public abstract T get(int index);
 
@@ -271,7 +304,7 @@ namespace NeoCortexApi.Entities
         {
             int partialResult = 0;
 
-            foreach (var dim in dimensions)
+            foreach (var dim in this.ModuleTopology.Dimensions)
             {
                 partialResult = partialResult * dim;
             }
@@ -289,24 +322,24 @@ namespace NeoCortexApi.Entities
         //@Override
         public virtual int[] getDimensions()
         {
-            return this.dimensions;
+            return this.ModuleTopology.Dimensions;
         }
 
         public void setDimensions(int[] dimensions)
         {
-            this.dimensions = dimensions;
+            this.ModuleTopology.Dimensions = dimensions;
         }
 
         //@Override
         public virtual int getNumDimensions()
         {
-            return this.dimensions.Length;
+            return this.ModuleTopology.Dimensions.Length;
         }
 
         //@Override
         public int[] getDimensionMultiples()
         {
-            return this.dimensionMultiples;
+            return this.ModuleTopology.DimensionMultiplies;
         }
 
         /* (non-Javadoc)
@@ -317,10 +350,10 @@ namespace NeoCortexApi.Entities
         {
             int prime = 31;
             int result = 1;
-            result = prime * result + dimensionMultiples.GetHashCode();
-            result = prime * result + dimensions.GetHashCode();
-            result = prime * result + (IsColumnMajorOrdering ? 1231 : 1237);
-            result = prime * result + numDimensions;
+            result = prime * result + this.ModuleTopology.DimensionMultiplies.GetHashCode();
+            result = prime * result + this.ModuleTopology.Dimensions.GetHashCode();
+            result = prime * result + (this.ModuleTopology.IsMajorOrdering ? 1231 : 1237);
+            result = prime * result + this.ModuleTopology.NumDimensions;
             return result;
         }
 
@@ -340,13 +373,13 @@ namespace NeoCortexApi.Entities
                 return false;
             AbstractFlatMatrix<T> other = (AbstractFlatMatrix<T>)obj;
 
-            if (!Array.Equals(dimensionMultiples, other.dimensionMultiples))
+            if (!Array.Equals(this.ModuleTopology.DimensionMultiplies, other.ModuleTopology.DimensionMultiplies))
                 return false;
-            if (!Array.Equals(dimensions, other.dimensions))
+            if (!Array.Equals(this.ModuleTopology.Dimensions, other.ModuleTopology.Dimensions))
                 return false;
-            if (IsColumnMajorOrdering != other.IsColumnMajorOrdering)
+            if (this.ModuleTopology.IsMajorOrdering != other.ModuleTopology.IsMajorOrdering)
                 return false;
-            if (numDimensions != other.numDimensions)
+            if (this.ModuleTopology.NumDimensions != other.ModuleTopology.NumDimensions)
                 return false;
             return true;
         }

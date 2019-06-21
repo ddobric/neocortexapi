@@ -13,19 +13,19 @@ namespace NeoCortexApi.Entities
     {
         public Pool RFPool {get;set; }
 
-        /// <summary>
-        /// Permanence threshold value to declare synapse as connected.
-        /// </summary>
-        public double SynapsePermConnected { get; set; }
+        ///// <summary>
+        ///// Permanence threshold value to declare synapse as connected.
+        ///// </summary>
+        //public double SynapsePermConnected { get; set; }
 
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="index">The global index of the segment.</param>
+        /// <param name="colIndx">The global index of the segment.</param>
         /// <param name="synapsePermConnected">Permanence threshold value to declare synapse as connected.</param>
         /// <param name="numInputs">Number of input neorn cells.</param>
-        public ProximalDendrite(int index, double synapsePermConnected, int numInputs) : base(index, synapsePermConnected, numInputs)
+        public ProximalDendrite(int colIndx, double synapsePermConnected, int numInputs) : base(colIndx, synapsePermConnected, numInputs)
         {
 
         }
@@ -69,7 +69,7 @@ namespace NeoCortexApi.Entities
         //    return RFPool;
         //}
 
-        public void clearSynapses(Connections c)
+        public void ClearSynapses(Connections c)
         {
             this.Synapses.Clear();
             //c.getSynapses(this).Clear();
@@ -120,23 +120,27 @@ namespace NeoCortexApi.Entities
          * @param c			the {@link Connections} memory
          * @param perms		the floating point degree of connectedness
          */
-        public void setPermanences(Connections c, double[] perms, int[] inputIndexes)
+        public void setPermanences(AbstractSparseBinaryMatrix connectedCounts, HtmConfig htmConfig, double[] perms, int[] inputIndexes)
         {
+            var permConnThreshold = htmConfig.SynPermConnected;
+
             RFPool.resetConnections();
-            c.getConnectedCounts().clearStatistics(index);
+            // c.getConnectedCounts().clearStatistics(ParentColumnIndex);
+            connectedCounts.clearStatistics(0 /*this.ParentColumnIndex*/);
             for (int i = 0; i < inputIndexes.Length; i++)
             {
-                var synapse = RFPool.getSynapseWithInput(inputIndexes[i]);
-                synapse.setPermanence(c.getSynPermConnected(), perms[i]);
+                var synapse = RFPool.GetSynapseForInput(inputIndexes[i]);
+                synapse.setPermanence(htmConfig.SynPermConnected, perms[i]);
                 //RFPool.setPermanence(c, RFPool.getSynapseWithInput(inputIndexes[i]), perms[i]);
-                if (perms[i] >= c.getSynPermConnected())
+                if (perms[i] >= permConnThreshold)
                 {
-                    c.getConnectedCounts().set(1, index, i);
+                    //c.getConnectedCounts().set(1, ParentColumnIndex, i);
+                    connectedCounts.set(1, 0 /*ParentColumnIndex*/, i);
                 }
             }
         }
 
-        public double SynPermConnected { get; set; }
+        //public double SynPermConnected { get; set; }
        
 
         /**
@@ -144,13 +148,13 @@ namespace NeoCortexApi.Entities
          * @param c
          * @param connectedIndexes
          */
-        public void setConnectedSynapsesForTest(Connections c, int[] connectedIndexes)
-        {
-            //Pool pool = createPool(c, connectedIndexes);
-            var pool = new Pool(connectedIndexes.Length, c.NumInputs);
-            //c.getPotentialPools().set(index, pool);
-            c.getPotentialPoolsOld().set(index, pool);
-        }
+        //public void setConnectedSynapsesForTest(Connections c, int[] connectedIndexes)
+        //{
+        //    //Pool pool = createPool(c, connectedIndexes);
+        //    var pool = new Pool(connectedIndexes.Length, c.NumInputs);
+        //    //c.getPotentialPools().set(index, pool);
+        //    c.getPotentialPoolsOld().set(index, pool);
+        //}
 
         /**
          * Returns an array of synapse indexes as a dense binary array.

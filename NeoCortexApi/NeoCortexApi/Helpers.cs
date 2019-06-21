@@ -1,5 +1,6 @@
 ﻿using ImageBinarizer;
 using NeoCortexApi.DistributedCompute;
+using NeoCortexApi.Entities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -81,7 +82,7 @@ namespace NeoCortexApi
         }
 
 
-        public static List<string> Nodes
+        public static List<string> DefaultNodeList
         {
             get
             {
@@ -102,12 +103,8 @@ namespace NeoCortexApi
             get
             {
                 return new HtmSparseIntDictionaryConfig()
-                {
-                    HtmActorConfig = new DistributedComputeLib.ActorConfig()
-                    {
-
-                    },
-                    Nodes = Nodes,
+                {  
+                    Nodes = DefaultNodeList,
                     PartitionsPerNode = 10
                 };
             }

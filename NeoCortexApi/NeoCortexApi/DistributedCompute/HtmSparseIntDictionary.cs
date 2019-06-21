@@ -120,7 +120,7 @@ namespace NeoCortexApi.DistributedCompute
                 {
                     numColumns = 1;
 
-                    foreach (var dimCols in this.Config.HtmActorConfig.ColumnDimensions)
+                    foreach (var dimCols in this.HtmConfig.ColumnTopology.Dimensions)
                     {
                         numColumns *= dimCols;
                     }
@@ -131,6 +131,11 @@ namespace NeoCortexApi.DistributedCompute
         }
 
 
+        /// <summary>
+        /// Groups keys by partitions (actors).
+        /// </summary>
+        /// <param name="keyValuePairs"></param>
+        /// <returns></returns>
         public override Dictionary<IActorRef, List<KeyPair>> GetPartitionsForKeyset(ICollection<KeyPair> keyValuePairs)
         {
             Dictionary<IActorRef, List<KeyPair>> res = new Dictionary<IActorRef, List<KeyPair>>();
@@ -145,11 +150,29 @@ namespace NeoCortexApi.DistributedCompute
                             res.Add(partition.ActorRef, new List<KeyPair>());
 
                         res[partition.ActorRef].Add(pair);
-                    }                   
+                    }
                 }
             }
 
             return res;
+        }
+
+        public override Dictionary<IActorRef, List<KeyPair>> GetPartitionsByNode()
+        {
+            return GetPartitionsByNode(this.ActorMap);
+        }
+
+        public static Dictionary<IActorRef, List<KeyPair>> GetPartitionsByNode(List<Placement<int>> actorMap)
+        {
+            var groupedByNode = actorMap.GroupBy(i => i.ActorRef);
+            foreach (var node in groupedByNode)
+            {
+                foreach (var item in node)
+                {
+
+                } 
+            }
+            return null;
         }
     }
 

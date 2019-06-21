@@ -16,6 +16,10 @@ namespace NeoCortexApi.Entities
 
         private int[] trueCounts;
 
+        public AbstractSparseBinaryMatrix()
+        {
+
+        }
         /**
          * Constructs a new {@code AbstractSparseBinaryMatrix} with the specified
          * dimensions (defaults to row major ordering)
@@ -152,7 +156,7 @@ namespace NeoCortexApi.Entities
 
         public override AbstractFlatMatrix<int> set(int index, int value)
         {
-            int[] coordinates = computeCoordinates(index);
+            int[] coordinates = ComputeCoordinates(getNumDimensions(), getDimensionMultiples(), this.ModuleTopology.IsMajorOrdering, index);
             return set(value, coordinates);
         }
 

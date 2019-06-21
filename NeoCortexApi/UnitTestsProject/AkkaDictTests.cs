@@ -1,17 +1,18 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Akka.Actor;
+using Akka.Util;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeoCortex;
 using NeoCortexApi;
+using NeoCortexApi.DistributedCompute;
+using NeoCortexApi.DistributedComputeLib;
+using NeoCortexApi.Entities;
+using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using NeoCortexApi.DistributedComputeLib;
-using System.Threading;
-using NeoCortexApi.Entities;
-using System.IO;
-using NeoCortexApi.Utility;
-using NeoCortex;
 using System.Drawing;
-using NeoCortexApi.DistributedCompute;
-using System.Linq;
+using System.IO;
+using System.Threading;
 
 #if USE_AKKA
 namespace UnitTestsProject
@@ -114,12 +115,16 @@ namespace UnitTestsProject
 
             var akkaDict = new HtmSparseIntDictionary<Column>(new HtmSparseIntDictionaryConfig()
             {
-                HtmActorConfig = new ActorConfig()
-                {
-                    ColumnDimensions = new int[] { 100, 200 }
-                },
+                //HtmActorConfig = new HtmConfig()
+                //{
+                //     ColumnTopology = new HtmModuleTopology()
+                //     {
+                //          Dimensions = new int[] { 100, 200 },
+                //           IsMajorOrdering = false,
+                //     }                  
+                //},
 
-                Nodes = Helpers.Nodes,
+                Nodes = Helpers.DefaultNodeList,
             });
 
             for (int i = 0; i < 100; i++)
@@ -143,11 +148,13 @@ namespace UnitTestsProject
         [TestMethod]
         [TestCategory("AkkaHostRequired")]
         [TestCategory("LongRunning")]
-        public void InitDistributedTest()
+        [DataRow(true)]
+        [DataRow(false)]
+        public void InitDistributedTest(bool isMultinode)
         {
             Thread.Sleep(5000);
 
-            for (int test = 0; test < 15; test++)
+            for (int test = 0; test < 3; test++)
             {
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
@@ -191,12 +198,21 @@ namespace UnitTestsProject
                 int[] colDims = new int[] { (int)Math.Sqrt(numOfColumns), (int)Math.Sqrt(numOfColumns) };
                 parameters.setColumnDimensions(colDims);
 
-                var sp = new SpatialPoolerParallel();
+                SpatialPooler sp;
+
+                if (isMultinode)
+                    sp = new SpatialPoolerParallel();
+                else
+                    sp = new SpatialPoolerMT();
+                
                 var mem = new Connections();
 
                 parameters.apply(mem);
 
-                sp.init(mem, UnitTestHelpers.GetMemory(parameters));
+                if (isMultinode)
+                    sp.init(mem, UnitTestHelpers.GetMemory(mem.HtmConfig));
+                else
+                    sp.init(mem, UnitTestHelpers.GetMemory());
 
                 sw.Stop();
                 Console.Write($"{(float)sw.ElapsedMilliseconds / (float)1000} | ");
@@ -216,7 +232,7 @@ namespace UnitTestsProject
         [DataRow("MnistPng28x28\\training", "3", 28, 64)]
         public void SparseSingleMnistImageTest(string trainingFolder, string digit, int imageSize, int columnTopology)
         {
-            Thread.Sleep(5000);
+            Thread.Sleep(3000);
 
             string TestOutputFolder = $"Output-{nameof(SparseSingleMnistImageTest)}";
 
@@ -268,12 +284,13 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { imageSize, imageSize });
             parameters.setColumnDimensions(new int[] { columnTopology, columnTopology });
 
-            var sp = new SpatialPooler();
+            var sp = new SpatialPoolerParallel();
+
             var mem = new Connections();
 
             parameters.apply(mem);
 
-            sp.init(mem, UnitTestHelpers.GetMemory(parameters));
+            sp.init(mem, UnitTestHelpers.GetMemory(new HtmConfig()));
 
             int actiColLen = numOfActCols;
 
@@ -385,6 +402,74 @@ namespace UnitTestsProject
                     m.set(7, i, j);
                 }
             }
+        }
+
+
+        public class MockedActor : IActorRef
+        {
+            string Url;
+
+            public MockedActor(string id)
+            {
+                this.Url = id;
+            }
+
+            public ActorPath Path => throw new NotImplementedException();
+
+            public int CompareTo(IActorRef other)
+            {
+                throw new NotImplementedException();
+            }
+
+            public int CompareTo(object obj)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool Equals(IActorRef other)
+            {
+                return ((MockedActor)other).Url == this.Url;
+            }
+
+            public void Tell(object message, IActorRef sender)
+            {
+                throw new NotImplementedException();
+            }
+
+            public ISurrogate ToSurrogate(ActorSystem system)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override string ToString()
+            {
+                return this.Url;
+            }
+        }
+
+        /// <summary>
+        /// Test if the list of partitions is correctly grouped by nodes.
+        /// </summary>
+        [TestMethod]
+        [DataRow(new string[] { "url1", "url2", "url3" })]        
+        public void TestGroupingByNode(string[] nodes)
+        {  
+            var nodeList = new List<string>(nodes);
+
+            List<IActorRef> list = new List<IActorRef>();
+            for (int k = 0; k < nodes.Length; k++)
+            {
+                list.Add(new MockedActor(nodes[k]));
+            }
+
+            var map = HtmSparseIntDictionary<Column>.CreatePartitionMap(nodeList, 4096, 10);
+            int i = 0;
+            foreach (var item in map)
+            {
+                item.ActorRef = list[i++ % nodes.Length];
+            }
+
+            var groupedNodes = HtmSparseIntDictionary<object>.GetPartitionsByNode(map);           
         }
 
         ///// <summary>

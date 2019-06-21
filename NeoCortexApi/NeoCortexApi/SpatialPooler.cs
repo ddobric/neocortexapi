@@ -8,6 +8,7 @@ using System.Diagnostics;
 using NeoCortexApi.DistributedComputeLib;
 using System.Collections.Concurrent;
 using System.Threading;
+using NeoCortexApi.DistributedCompute;
 
 /**
  * Handles the relationships between the columns of a region 
@@ -80,7 +81,7 @@ namespace NeoCortexApi
         {
             SparseObjectMatrix<Column> memory = (SparseObjectMatrix<Column>)c.getMemory();
 
-            c.setMemory(memory == null ? memory = new SparseObjectMatrix<Column>(c.getColumnDimensions(), dict: distMem == null ? null : distMem.ColumnDictionary) : memory);
+            c.setMemory(memory == null ? memory = new SparseObjectMatrix<Column>(c.getColumnDimensions(), dict:  null ) : memory);
 
             c.setInputMatrix(new SparseBinaryMatrix(c.getInputDimensions()));
 
@@ -122,8 +123,9 @@ namespace NeoCortexApi
 
             Debug.WriteLine($" Upload time: {sw.ElapsedMilliseconds}");
 
-            c.setConnectedMatrix(new SparseBinaryMatrix(new int[] { numColumns, numInputs }));
-
+            //c.setConnectedMatrix(new SparseBinaryMatrix(new int[] { numColumns, numInputs }));
+            //  this IS removed. Every colun maintains its own matrix.
+         
             //Initialize state meta-management statistics
             c.setOverlapDutyCycles(new double[numColumns]);
             c.setActiveDutyCycles(new double[numColumns]);
@@ -133,7 +135,7 @@ namespace NeoCortexApi
             ArrayUtils.fillArray(c.BoostFactors, 1);
         }
 
-     
+
         /// <summary>
         /// Implements single threaded (originally based on JAVA implementation) initialization of SP.
         /// It creates columns, initializes the pool of potentially connected synapses on ProximalDendrites and
@@ -143,8 +145,8 @@ namespace NeoCortexApi
         protected virtual void ConnectAndConfigureInputs(Connections c)
         {
             List<double> avgSynapsesConnected = new List<double>();
-            
-            List<KeyPair> colList = new List<KeyPair>();
+
+            //List<KeyPair> colList = new List<KeyPair>();
 
             ConcurrentDictionary<int, KeyPair> colList2 = new ConcurrentDictionary<int, KeyPair>();
 
@@ -152,23 +154,26 @@ namespace NeoCortexApi
 
             for (int i = 0; i < numColumns; i++)
             {
+                Random rnd = new Random(42);
+
                 // Gets RF
-                int[] potential = mapPotential(c, i, c.isWrapAround());
+                int[] potential = HtmCompute.MapPotential(c.HtmConfig, i, rnd /*c.getRandom()*/);
 
                 Column column = c.getColumn(i);
 
                 // This line initializes all synases in the potential pool of synapses.
                 // It creates the pool on proximal dendrite segment of the column.
                 // After initialization permancences are set to zero.
-                connectColumnToInputRF(c, potential, column);
+                column.CreatePotentialPool(c.HtmConfig, potential, -1);
+                //connectColumnToInputRF(c.HtmConfig, potential, column);
 
                 //c.getPotentialPools().set(i, potPool);
 
-                colList.Add(new KeyPair() { Key = i, Value = column });
+                // colList.Add(new KeyPair() { Key = i, Value = column });
 
-                double[] perm = initSynapsePermanencesForColumn(c, potential, column);
+                double[] perm = HtmCompute.InitSynapsePermanences(c.HtmConfig, potential, rnd /*c.getRandom()*/);
 
-                updatePermanencesForColumn(c, perm, column, potential, true);
+                HtmCompute.UpdatePermanencesForColumn(c.HtmConfig, perm, column, potential, true);
 
                 avgSynapsesConnected.Add(GetAvgSpanOfConnectedSynapses(c, i));
             }
@@ -284,54 +289,7 @@ namespace NeoCortexApi
                 }
         */
 
-        /*
-        /// <summary>
-        /// Implements single threaded (originally based on JAVA implementation) initialization of SP.
-        /// </summary>
-        /// <param name="c"></param>
-        public void connectAndConfigureInputsSingleThreadStrategy(Connections c)
-        {
-            List<KeyPair> colList = new List<KeyPair>();
-            ConcurrentDictionary<int, KeyPair> colList2 = new ConcurrentDictionary<int, KeyPair>();
-
-            int numColumns = c.NumColumns;
-
-            for (int i = 0; i < numColumns; i++)
-            {
-                // Gets RF
-                int[] potential = mapPotential(c, i, c.isWrapAround());
-
-                Column column = c.getColumn(i);
-
-                // This line initializes all synases in the potential pool of synapses.
-                // It creates the pool on proximal dendrite segment of the column.
-                // After initialization permancences are set to zero.
-                connectColumnToInputRF(c, potential, column);
-
-                //c.getPotentialPools().set(i, potPool);
-
-                colList.Add(new KeyPair() { Key = i, Value = column });
-
-                double[] perm = initPermanence(c, potential, column);
-
-                updatePermanencesForColumn(c, perm, column, potential, true);
-            }
-
-            // The inhibition radius determines the size of a column's local
-            // neighborhood.  A cortical column must overcome the overlap score of
-            // columns in its neighborhood in order to become active. This radius is
-            // updated every learning round. It grows and shrinks with the average
-            // number of connected synapses per column.
-            updateInhibitionRadius(c);
-        }*/
-
-        protected static void connectColumnToInputRF(Connections c, int[] potential, Column column)
-        {
-            //var synapseIndex = c.getProximalSynapseCount();
-            //c.setProximalSynapseCount(synapseIndex + potential.Length);
-            var synapseIndex = -1;
-            var potPool = column.createPotentialPool(c, potential, synapseIndex);
-        }
+     
 
         /**
          * This is the primary public method of the SpatialPooler class. This
@@ -370,13 +328,11 @@ namespace NeoCortexApi
             updateBookeepingVars(c, learn);
 
             // Gets overlap over every single column.
-            var overlaps = calculateOverlap(c, inputVector);
+            var overlaps = CalculateOverlap(c, inputVector);
 
             //var overlapsStr = Helpers.StringifyVector(overlaps);
             //Debug.WriteLine("overlap: " + overlapsStr);
 
-            //overlapActive = calculateOverlap(activeInput)
-            //overlapPredictedActive = calculateOverlap(predictedActiveInput)
             //totalOverlap = overlapActive * weightActive + overlapPredictedActive * weightPredictedActive
 
             c.Overlaps = overlaps;
@@ -389,8 +345,6 @@ namespace NeoCortexApi
             {
                 //Debug.WriteLine("Boosted Factor: " + c.BoostFactors);
                 boostedOverlaps = ArrayUtils.multiply(c.BoostFactors, overlaps);
-                //var boostedoverlapsStr = Helpers.StringifyVector(boostedOverlaps);
-                //Debug.WriteLine("boosted overlap: " + boostedoverlapsStr);
             }
             else
             {
@@ -403,7 +357,7 @@ namespace NeoCortexApi
 
             if (learn)
             {
-                adaptSynapses(c, inputVector, activeColumns);
+                AdaptSynapses(c, inputVector, activeColumns);
                 updateDutyCycles(c, overlaps, activeColumns);
                 bumpUpWeakColumns(c);
                 updateBoostFactors(c);
@@ -530,9 +484,10 @@ namespace NeoCortexApi
      */
         public int[] getColumnNeighborhood(Connections c, int centerColumn, int inhibitionRadius)
         {
+            var topology = c.getColumnTopology().HtmTopology;
             return c.isWrapAround() ?
-                c.getColumnTopology().wrappingNeighborhood(centerColumn, inhibitionRadius) :
-                    c.getColumnTopology().GetNeighborhood(centerColumn, inhibitionRadius);
+                HtmCompute.GetWrappingNeighborhood(centerColumn, inhibitionRadius, topology) :
+                    HtmCompute.GetNeighborhood(centerColumn, inhibitionRadius, topology);
         }
 
         /**
@@ -696,7 +651,7 @@ namespace NeoCortexApi
             c.InhibitionRadius = (int)(radius + 0.5);
         }
 
-               
+
         /// <summary>
         /// It calculates ratio numOfCols/numOfInputs for every dimension.This value is used to calculate the inhibition radius.
         /// </summary>
@@ -736,46 +691,46 @@ namespace NeoCortexApi
         /// <returns></returns>
         public virtual double GetAvgSpanOfConnectedSynapses(Connections c, int columnIndex)
         {
-            var dims = c.getInputDimensions();
+            //var dims = c.getInputDimensions();
 
-            var dimensionMultiplies = AbstractFlatMatrix<Column>.InitDimensionMultiples(dims);
+            //var dimensionMultiplies = AbstractFlatMatrix<Column>.InitDimensionMultiples(dims);
 
-            return CalcAvgSpanOfConnectedSynapses(c.getColumn(columnIndex), dims, dimensionMultiplies, c.getMemory().IsColumnMajorOrdering);           
+            return HtmCompute.CalcAvgSpanOfConnectedSynapses(c.getColumn(columnIndex), c.HtmConfig);
         }
 
-        /// <summary>
-        /// It traverses all connected synapses of the column and calculates the span, which synapses
-        /// spans between all input bits. Then it calculates average of spans accross all dimensions. 
-        /// </summary>
-        /// <param name="c"></param>
-        /// <param name="columnIndex"></param>
-        /// <returns></returns>
-        internal static double CalcAvgSpanOfConnectedSynapses(Column column, int[] inpDims, int[] dimensionMultiplies, bool isColumnMajor)
-        {
-            // Gets synapses connected to input bits.(from pool of the column)
-            int[] connected = column.ProximalDendrite.getConnectedSynapsesSparse();
+        ///// <summary>
+        ///// It traverses all connected synapses of the column and calculates the span, which synapses
+        ///// spans between all input bits. Then it calculates average of spans accross all dimensions. 
+        ///// </summary>
+        ///// <param name="c"></param>
+        ///// <param name="columnIndex"></param>
+        ///// <returns></returns>
+        //internal static double CalcAvgSpanOfConnectedSynapses(Column column, int[] inpDims, int[] dimensionMultiplies, bool isColumnMajor)
+        //{
+        //    // Gets synapses connected to input bits.(from pool of the column)
+        //    int[] connected = column.ProximalDendrite.getConnectedSynapsesSparse();
 
-            if (connected == null || connected.Length == 0) return 0;
+        //    if (connected == null || connected.Length == 0) return 0;
 
-            int[] maxCoord = new int[inpDims.Length];
-            int[] minCoord = new int[inpDims.Length];
-            ArrayUtils.fillArray(maxCoord, -1);
-            ArrayUtils.fillArray(minCoord, ArrayUtils.max(inpDims));
+        //    int[] maxCoord = new int[inpDims.Length];
+        //    int[] minCoord = new int[inpDims.Length];
+        //    ArrayUtils.fillArray(maxCoord, -1);
+        //    ArrayUtils.fillArray(minCoord, ArrayUtils.max(inpDims));
 
-            //
-            // It takes all connected synapses
-            for (int i = 0; i < connected.Length; i++)
-            {
-                maxCoord = ArrayUtils.maxBetween(maxCoord, AbstractFlatMatrix.ComputeCoordinates(inpDims.Length,
-                   dimensionMultiplies , isColumnMajor, connected[i]));
+        //    //
+        //    // It takes all connected synapses
+        //    for (int i = 0; i < connected.Length; i++)
+        //    {
+        //        maxCoord = ArrayUtils.maxBetween(maxCoord, AbstractFlatMatrix.ComputeCoordinates(inpDims.Length,
+        //           dimensionMultiplies , isColumnMajor, connected[i]));
 
-                minCoord = ArrayUtils.minBetween(minCoord, AbstractFlatMatrix.ComputeCoordinates(inpDims.Length,
-                   dimensionMultiplies, isColumnMajor, connected[i]));
+        //        minCoord = ArrayUtils.minBetween(minCoord, AbstractFlatMatrix.ComputeCoordinates(inpDims.Length,
+        //           dimensionMultiplies, isColumnMajor, connected[i]));
 
-            }
+        //    }
 
-            return ArrayUtils.average(ArrayUtils.add(ArrayUtils.subtract(maxCoord, minCoord), 1));
-        }
+        //    return ArrayUtils.average(ArrayUtils.add(ArrayUtils.subtract(maxCoord, minCoord), 1));
+        //}
 
         /**
          * The primary method in charge of learning. Adapts the permanence values of
@@ -791,7 +746,7 @@ namespace NeoCortexApi
          * @param activeColumns     an array containing the indices of the columns that
          *                          survived inhibition.
          */
-        public void adaptSynapses(Connections c, int[] inputVector, int[] activeColumns)
+        public virtual void AdaptSynapses(Connections c, int[] inputVector, int[] activeColumns)
         {
             //int[] inputIndices = ArrayUtils.where(inputVector, ArrayUtils.INT_GREATER_THAN_0);
 
@@ -819,8 +774,9 @@ namespace NeoCortexApi
                 int[] indexes = pool.getSparsePotential();
                 ArrayUtils.raiseValuesBy(permChanges, perm);
                 Column col = c.getColumn(activeColumns[i]);
-                updatePermanencesForColumn(c, perm, col, indexes, true);
+                HtmCompute.UpdatePermanencesForColumn(c.HtmConfig, perm, col, indexes, true);
             }
+
             //Debug.WriteLine("Permance after update in adaptSynapses: " + permChangesStr);
         }
 
@@ -871,26 +827,27 @@ namespace NeoCortexApi
          * @param perm              the permanence values
          * @param maskPotential         
          */
-        public virtual void raisePermanenceToThreshold(Connections c, double[] perm, int[] maskPotential)
+        public virtual void RaisePermanenceToThreshold(HtmConfig htmConfig, double[] perm, int[] maskPotential)
         {
-            if (maskPotential.Length < c.StimulusThreshold)
-            {
-                throw new ArgumentException("This is likely due to a " +
-                    "value of stimulusThreshold that is too large relative " +
-                    "to the input size. [len(mask) < self._stimulusThreshold]");
-            }
+            HtmCompute.RaisePermanenceToThreshold(htmConfig, perm, maskPotential);
+            //if (maskPotential.Length < c.StimulusThreshold)
+            //{
+            //    throw new ArgumentException("This is likely due to a " +
+            //        "value of stimulusThreshold that is too large relative " +
+            //        "to the input size. [len(mask) < self._stimulusThreshold]");
+            //}
 
-            ArrayUtils.clip(perm, c.getSynPermMin(), c.getSynPermMax());
-            while (true)
-            {
-                // Gets number of synapses with permanence value grather than 'PermConnected'.
-                int numConnected = ArrayUtils.valueGreaterCountAtIndex(c.getSynPermConnected(), perm, maskPotential);
-                if (numConnected >= c.StimulusThreshold)
-                    return;
+            //ArrayUtils.Clip(perm, c.getSynPermMin(), c.getSynPermMax());
+            //while (true)
+            //{
+            //    // Gets number of synapses with permanence value grather than 'PermConnected'.
+            //    int numConnected = ArrayUtils.ValueGreaterThanCountAtIndex(c.getSynPermConnected(), perm, maskPotential);
+            //    if (numConnected >= c.StimulusThreshold)
+            //        return;
 
-                // If number of note connected synapses, then permanences of all synapses will be incremented (raised).
-                ArrayUtils.raiseValuesBy(c.getSynPermBelowStimulusInc(), perm, maskPotential);
-            }
+            //    // If number of note connected synapses, then permanences of all synapses will be incremented (raised).
+            //    ArrayUtils.raiseValuesBy(c.getSynPermBelowStimulusInc(), perm, maskPotential);
+            //}
         }
 
         /**
@@ -907,53 +864,12 @@ namespace NeoCortexApi
          * @param c         The {@link Connections} memory
          * @param perm      permanence values
          */
-        public void raisePermanenceToThresholdSparse(Connections c, double[] perm)
+        public virtual void RaisePermanenceToThresholdSparse(Connections c, double[] perm)
         {
-            ArrayUtils.clip(perm, c.getSynPermMin(), c.getSynPermMax());
-            while (true)
-            {
-                int numConnected = ArrayUtils.valueGreaterCount(c.getSynPermConnected(), perm);
-                if (numConnected >= c.StimulusThreshold) return;
-                ArrayUtils.raiseValuesBy(c.getSynPermBelowStimulusInc(), perm);
-            }
+            HtmCompute.RaisePermanenceToThresholdSparse(c.HtmConfig, perm);
         }
 
-        /**
-         * This method updates the permanence matrix with a column's new permanence
-         * values. The column is identified by its index, which reflects the row in
-         * the matrix, and the permanence is given in 'sparse' form, i.e. an array
-         * whose members are associated with specific indexes. It is in
-         * charge of implementing 'clipping' - ensuring that the permanence values are
-         * always between 0 and 1 - and 'trimming' - enforcing sparseness by zeroing out
-         * all permanence values below 'synPermTrimThreshold'. It also maintains
-         * the consistency between 'permanences' (the matrix storing the
-         * permanence values), 'connectedSynapses', (the matrix storing the bits
-         * each column is connected to), and 'connectedCounts' (an array storing
-         * the number of input bits each column is connected to). Every method wishing
-         * to modify the permanence matrix should do so through this method.
-         * 
-         * @param c                 the {@link Connections} which is the memory model.
-         * @param perm              An array of permanence values for a column. The array is
-         *                          "dense", i.e. it contains an entry for each input bit, even
-         *                          if the permanence value is 0.
-         * @param column            The column in the permanence, potential and connectivity matrices
-         * @param maskPotential     The indexes of inputs in the specified {@link Column}'s pool.
-         * @param raisePerm         a boolean value indicating whether the permanence values
-         */
-        public void updatePermanencesForColumn(Connections c, double[] perm, Column column, int[] maskPotential, bool raisePerm)
-        {
-            if (raisePerm)
-            {
-                // During every learning cycle, this method ensures that every column 
-                // has enough connections ('SynPermConnected') to iput space.
-                raisePermanenceToThreshold(c, perm, maskPotential);
-            }
-
-            // Here we set all permanences to 0 
-            ArrayUtils.lessThanOrEqualXThanSetToY(perm, c.getSynPermTrimThreshold(), 0);
-            ArrayUtils.clip(perm, c.getSynPermMin(), c.getSynPermMax());
-            column.setPermanences(c, perm);
-        }
+       
 
         /**
          * This method updates the permanence matrix with a column's new permanence
@@ -974,186 +890,106 @@ namespace NeoCortexApi
          */
         public void updatePermanencesForColumnSparse(Connections c, double[] perm, Column column, int[] maskPotential, bool raisePerm)
         {
-            if (raisePerm)
-            {
-                raisePermanenceToThresholdSparse(c, perm);
-            }
+            column.UpdatePermanencesForColumnSparse(c, c.HtmConfig, perm, maskPotential, raisePerm);
+            //if (raisePerm)
+            //{
+            //    RaisePermanenceToThresholdSparse(c, perm);
+            //}
 
-            ArrayUtils.lessThanOrEqualXThanSetToY(perm, c.getSynPermTrimThreshold(), 0);
-            ArrayUtils.clip(perm, c.getSynPermMin(), c.getSynPermMax());
-            column.setProximalPermanencesSparse(c, perm, maskPotential);
+            //ArrayUtils.LessOrEqualXThanSetToY(perm, c.getSynPermTrimThreshold(), 0);
+            //ArrayUtils.Clip(perm, c.getSynPermMin(), c.getSynPermMax());
+            //column.setProximalPermanencesSparse(c, perm, maskPotential);
         }
 
-        /**
-         * Returns a randomly generated permanence value for a synapse that is
-         * initialized in a connected state. The basic idea here is to initialize
-         * permanence values very close to synPermConnected so that a small number of
-         * learning steps could make it disconnected or connected.
-         *
-         * Note: experimentation was done a long time ago on the best way to initialize
-         * permanence values, but the history for this particular scheme has been lost.
-         * 
-         * @return  a randomly generated permanence value
-         */
-        public static double initPermConnected(double synPermMax, double synPermConnected, Random rnd)
-        {
-            //double p = c.getSynPermConnected() + (c.getSynPermMax() - c.getSynPermConnected()) * c.random.NextDouble();
-            double p = synPermConnected + (synPermMax - synPermConnected) * rnd.NextDouble();
+        ///**
+        // * Returns a randomly generated permanence value for a synapse that is
+        // * initialized in a connected state. The basic idea here is to initialize
+        // * permanence values very close to synPermConnected so that a small number of
+        // * learning steps could make it disconnected or connected.
+        // *
+        // * Note: experimentation was done a long time ago on the best way to initialize
+        // * permanence values, but the history for this particular scheme has been lost.
+        // * 
+        // * @return  a randomly generated permanence value
+        // */
+        //public static double initPermConnected(double synPermMax, double synPermConnected, Random rnd)
+        //{
+        //    //double p = c.getSynPermConnected() + (c.getSynPermMax() - c.getSynPermConnected()) * c.random.NextDouble();
+        //    double p = synPermConnected + (synPermMax - synPermConnected) * rnd.NextDouble();
 
-            // Note from Python implementation on conditioning below:
-            // Ensure we don't have too much unnecessary precision. A full 64 bits of
-            // precision causes numerical stability issues across platforms and across
-            // implementations
-            p = ((int)(p * 100000)) / 100000.0d;
-            return p;
-        }
+        //    // Note from Python implementation on conditioning below:
+        //    // Ensure we don't have too much unnecessary precision. A full 64 bits of
+        //    // precision causes numerical stability issues across platforms and across
+        //    // implementations
+        //    p = ((int)(p * 100000)) / 100000.0d;
+        //    return p;
+        //}
 
 
-        /// <summary>
-        /// Returns a randomly generated permanence value for a synapses that is to be
-        /// initialized in a non-connected state.</summary>
-        /// <param name="synPermConnected"></param>
-        /// <param name="rnd">Random generator to be used to generate permanence.</param>
-        /// <returns>Permanence value.</returns>
-        public static double initPermNonConnected(double synPermConnected, Random rnd)
-        {
-            //double p = c.getSynPermConnected() * c.getRandom().NextDouble();
-            double p = synPermConnected * rnd.NextDouble();
+        ///// <summary>
+        ///// Returns a randomly generated permanence value for a synapses that is to be
+        ///// initialized in a non-connected state.</summary>
+        ///// <param name="synPermConnected"></param>
+        ///// <param name="rnd">Random generator to be used to generate permanence.</param>
+        ///// <returns>Permanence value.</returns>
+        //public static double initPermNonConnected(double synPermConnected, Random rnd)
+        //{
+        //    //double p = c.getSynPermConnected() * c.getRandom().NextDouble();
+        //    double p = synPermConnected * rnd.NextDouble();
 
-            // Note from Python implementation on conditioning below:
-            // Ensure we don't have too much unnecessary precision. A full 64 bits of
-            // precision causes numerical stability issues across platforms and across
-            // implementations
-            p = ((int)(p * 100000)) / 100000.0d;
-            return p;
-        }
+        //    // Note from Python implementation on conditioning below:
+        //    // Ensure we don't have too much unnecessary precision. A full 64 bits of
+        //    // precision causes numerical stability issues across platforms and across
+        //    // implementations
+        //    p = ((int)(p * 100000)) / 100000.0d;
+        //    return p;
+        //}
 
-        /**
-         * Initializes the permanences of a column. The method
-         * returns a 1-D array the size of the input, where each entry in the
-         * array represents the initial permanence value between the input bit
-         * at the particular index in the array, and the column represented by
-         * the 'index' parameter.
-         * 
-         * @param c                 the {@link Connections} which is the memory model
-         * @param potentialPool     An array specifying the potential pool of the column.
-         *                          Permanence values will only be generated for input bits
-         *                          corresponding to indices for which the mask value is 1.
-         *                          WARNING: potentialPool is sparse, not an array of "1's"
-         * @param index             the index of the column being initialized
-         * @param connectedPct      A value between 0 or 1 specifying the percent of the input
-         *                          bits that might maximally start off in a connected state.
-         *                          0.7 means, maximally 70% of potential might be connected
-         * @return
-         */
-        public double[] initSynapsePermanencesForColumn(Connections c, int[] potentialPool, Column column)
-        {
-            //Random random = new Random();
+        ///**
+        // * Initializes the permanences of a column. The method
+        // * returns a 1-D array the size of the input, where each entry in the
+        // * array represents the initial permanence value between the input bit
+        // * at the particular index in the array, and the column represented by
+        // * the 'index' parameter.
+        // * 
+        // * @param c                 the {@link Connections} which is the memory model
+        // * @param potentialPool     An array specifying the potential pool of the column.
+        // *                          Permanence values will only be generated for input bits
+        // *                          corresponding to indices for which the mask value is 1.
+        // *                          WARNING: potentialPool is sparse, not an array of "1's"
+        // * @param index             the index of the column being initialized
+        // * @param connectedPct      A value between 0 or 1 specifying the percent of the input
+        // *                          bits that might maximally start off in a connected state.
+        // *                          0.7 means, maximally 70% of potential might be connected
+        // * @return
+        // */
+        //public static double[] InitSynapsePermanences(HtmConfig htmConfig, int[] potentialPool, Random random)
+        //{
+        //    //Random random = new Random();
+        //    double[] perm = new double[htmConfig.NumInputs];
 
-            double[] perm = new double[c.NumInputs];
-            var random = c.getRandom();
-            //foreach (int idx in column.ProximalDendrite.ConnectedInputs)
-            foreach (int idx in potentialPool)
-            {
-                if (random.NextDouble() <= c.InitialSynapseConnsPct)
-                {
-                    perm[idx] = initPermConnected(c.getSynPermMax(), c.getSynPermMax(), random);
-                }
-                else
-                {
-                    perm[idx] = initPermNonConnected(c.getSynPermConnected(), random);
-                }
+        //    //foreach (int idx in column.ProximalDendrite.ConnectedInputs)
+        //    foreach (int idx in potentialPool)
+        //    {
+        //        if (random.NextDouble() <= htmConfig.InitialSynapseConnsPct)
+        //        {
+        //            perm[idx] = initPermConnected(htmConfig.SynPermMax, htmConfig.SynPermMax, random);
+        //        }
+        //        else
+        //        {
+        //            htmConfig.SynPermConnected =
+        //            perm[idx] = initPermNonConnected(htmConfig.SynPermConnected, random);
+        //        }
 
-                perm[idx] = perm[idx] < c.getSynPermTrimThreshold() ? 0 : perm[idx];
+        //        perm[idx] = perm[idx] < htmConfig.SynPermTrimThreshold ? 0 : perm[idx];
 
-            }
+        //    }
 
-            return perm;
-        }
+        //    return perm;
+        //}
 
-        /**
-         * Uniform Column Mapping 
-         * Maps a column to its respective input index, keeping to the topology of
-         * the region. It takes the index of the column as an argument and determines
-         * what is the index of the flattened input vector that is to be the center of
-         * the column's potential pool. It distributes the columns over the inputs
-         * uniformly. The return value is an integer representing the index of the
-         * input bit. Examples of the expected output of this method:
-         * * If the topology is one dimensional, and the column index is 0, this
-         *   method will return the input index 0. If the column index is 1, and there
-         *   are 3 columns over 7 inputs, this method will return the input index 3.
-         * * If the topology is two dimensional, with column dimensions [3, 5] and
-         *   input dimensions [7, 11], and the column index is 3, the method
-         *   returns input index 8. 
-         *   
-         * @param columnIndex   The index identifying a column in the permanence, potential
-         *                      and connectivity matrices.
-         * @return              Flat index of mapped column.
-         */
-        public int mapColumn(Connections c, int columnIndex)
-        {
-            int[] columnCoords = c.getMemory().computeCoordinates(columnIndex);
-            double[] colCoords = ArrayUtils.toDoubleArray(columnCoords);
 
-            double[] columnRatios = ArrayUtils.divide(
-                colCoords, ArrayUtils.toDoubleArray(c.getColumnDimensions()), 0, 0);
 
-            double[] inputCoords = ArrayUtils.multiply(
-                ArrayUtils.toDoubleArray(c.getInputDimensions()), columnRatios, 0, 0);
-
-            var colSpanOverInputs = ArrayUtils.divide(
-                        ArrayUtils.toDoubleArray(c.getInputDimensions()),
-                        ArrayUtils.toDoubleArray(c.getColumnDimensions()), 0, 0);
-
-            inputCoords = ArrayUtils.d_add(inputCoords, ArrayUtils.multiply(colSpanOverInputs, 0.5));
-
-            // Makes sure that inputCoords are in range [0, inpDims]
-            int[] inputCoordInts = ArrayUtils.clip(ArrayUtils.toIntArray(inputCoords), c.getInputDimensions(), -1);
-
-            return c.getInputMatrix().computeIndex(inputCoordInts);
-        }
-
-        /**
-         * Maps a column to its input bits. This method encapsulates the topology of
-         * the region. It takes the index of the column as an argument and determines
-         * what are the indices of the input vector that are located within the
-         * column's potential pool. The return value is a list containing the indices
-         * of the input bits. The current implementation of the base class only
-         * supports a 1 dimensional topology of columns with a 1 dimensional topology
-         * of inputs. To extend this class to support 2-D topology you will need to
-         * override this method. Examples of the expected output of this method:
-         * * If the potentialRadius is greater than or equal to the entire input
-         *   space, (global visibility), then this method returns an array filled with
-         *   all the indices
-         * * If the topology is one dimensional, and the potentialRadius is 5, this
-         *   method will return an array containing 5 consecutive values centered on
-         *   the index of the column (wrapping around if necessary).
-         * * If the topology is two dimensional (not implemented), and the
-         *   potentialRadius is 5, the method should return an array containing 25
-         *   '1's, where the exact indices are to be determined by the mapping from
-         *   1-D index to 2-D position.
-         * 
-         * @param c             {@link Connections} the main memory model
-         * @param columnIndex   The index identifying a column in the permanence, potential
-         *                      and connectivity matrices.
-         * @param wrapAround    A boolean value indicating that boundaries should be
-         *                      ignored.
-         * @return
-         */
-        public int[] mapPotential(Connections c, int columnIndex, bool wrapAround)
-        {
-            int centerInput = mapColumn(c, columnIndex);
-
-            // Here we have Receptive Field (RF)
-            int[] columnInputs = getInputNeighborhood(c, centerInput, c.getPotentialRadius());
-
-            // Select a subset of the receptive field to serve as the the potential pool.
-            int numPotential = (int)(columnInputs.Length * c.getPotentialPct() + 0.5);
-            int[] retVal = new int[numPotential];
-
-            var data = ArrayUtils.sample(columnInputs, retVal, c.getRandom());
-            return data;
-        }
 
 
         private double calcInhibitionDensity(Connections c)
@@ -1642,14 +1478,20 @@ namespace NeoCortexApi
          *                      the spatial pooler.
          * @return
          */
-        public int[] calculateOverlap(Connections c, int[] inputVector)
+        public virtual int[] CalculateOverlap(Connections c, int[] inputVector)
         {
             int[] overlaps = new int[c.NumColumns];
-            c.getConnectedCounts().rightVecSumAtNZ(inputVector, overlaps, c.StimulusThreshold);
-            string st = string.Join(",", overlaps);
+            for (int col = 0; col < c.NumColumns; col++)
+            {
+                overlaps[col] = c.getColumn(col).GetColumnOverlapp(inputVector, c.StimulusThreshold);
+            }
+            //c.getConnectedCounts().rightVecSumAtNZ(inputVector, overlaps, c.StimulusThreshold);
+            //string st = string.Join(",", overlaps);
             //Debug.WriteLine($"Overlap: {st}");
             return overlaps;
         }
+
+
 
         /**
          * Return the overlap to connected counts ratio for a given column
@@ -1657,9 +1499,16 @@ namespace NeoCortexApi
          * @param overlaps
          * @return
          */
-        public double[] calculateOverlapPct(Connections c, int[] overlaps)
+        public double[] CalculateOverlapPct(Connections c, int[] overlaps)
         {
-            return ArrayUtils.divide(overlaps, c.getConnectedCounts().getTrueCounts());
+            int[] columnsCounts = new int[overlaps.Length];
+
+            for (int i = 0; i < c.NumColumns; i++)
+            {
+                columnsCounts[i] = c.getColumn(i).ConnectedInputCounterMatrix.getTrueCounts()[0];
+            }
+
+            return ArrayUtils.divide(overlaps, columnsCounts);
         }
 
         //    /**
@@ -1757,24 +1606,7 @@ namespace NeoCortexApi
 
 
 
-        /**
-         * Gets a neighborhood of inputs.
-         * 
-         * Simply calls topology.wrappingNeighborhood or topology.neighborhood.
-         * 
-         * A subclass can insert different topology behavior by overriding this method.
-         * 
-         * @param c                     the {@link Connections} memory encapsulation
-         * @param centerInput           The center of the neighborhood.
-         * @param potentialRadius       Span of the input field included in each neighborhood
-         * @return                      The input's in the neighborhood. (1D)
-         */
-        public int[] getInputNeighborhood(Connections c, int centerInput, int potentialRadius)
-        {
-            return c.isWrapAround() ?
-                c.getInputTopology().wrappingNeighborhood(centerInput, potentialRadius) :
-                    c.getInputTopology().GetNeighborhood(centerInput, potentialRadius);
-        }
+
 
         public Double getRobustness(Double k, int[] oriOut, int[] realOut)
         {

@@ -22,6 +22,11 @@ namespace NeoCortexApi.Entities
     public interface IRemotelyDistributed
     {
         /// <summary>
+        /// All required HTM configuration in serializable form.
+        /// </summary>
+        HtmConfig HtmConfig { get; set; }
+
+        /// <summary>
         /// Gets number of nodes in distributed cluster.
         /// </summary>
         int Nodes { get; }
@@ -32,5 +37,12 @@ namespace NeoCortexApi.Entities
         /// <returns>
         /// </returns>
         List<(int partId, int minKey, int maxKey)> GetPartitions();
+
+        void InitializeColumnPartitionsDist(ICollection<KeyPair> keyValuePairs);
+
+        List<double> ConnectAndConfigureInputsDist(HtmConfig htmConfig);
+
+        int[] CalculateOverlapDist(int[] inputVector);
+
     }
 }

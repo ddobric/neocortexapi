@@ -165,7 +165,7 @@ namespace NeoCortexApi.Entities
         // @Override
         public override int[] getSparseIndices()
         {
-            return reverse(sparseMap.Keys.ToArray());
+            return Reverse(sparseMap.Keys.ToArray());
         }
 
         /**

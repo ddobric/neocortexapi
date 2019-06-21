@@ -6,7 +6,7 @@ using NeoCortexApi.Utility;
 
 namespace NeoCortexApi.Entities
 {
-   // [Serializable]
+ 
     public class Topology : Coordinator 
     {
    
@@ -28,10 +28,10 @@ namespace NeoCortexApi.Entities
          *                  42x10, the point [1, 4] is index 1*420 + 4*10 = 460.
          * @return          A array of coordinates of length len(dimensions).
          */
-        public int[] GetCoordinatesFromIndex(int index)
-        {
-            return computeCoordinates(index);
-        }
+        //public int[] GetCoordinatesFromIndex(int index)
+        //{
+        //    return calcCoordinatesFrmFlatIndex(index, new HtmModuleTopology(this.dimensions, this.isColumnMajor));
+        //}
 
         /**
          * Translate coordinates into an index, using the given coordinate system.
@@ -42,10 +42,10 @@ namespace NeoCortexApi.Entities
          *                          using the dimensions as a mixed radix definition. For example, in dimensions
          *                          42x10, the point [1, 4] is index 1*420 + 4*10 = 460.
          */
-        public int GetIndexFromCoordinates(int[] coordinates)
-        {
-            return computeIndex(coordinates);
-        }
+        //public int GetIndexFromCoordinates(int[] coordinates)
+        //{
+        //    return computeIndex(coordinates);
+        //}
 
         /**
          * Get the points in the neighborhood of a point.
@@ -61,101 +61,47 @@ namespace NeoCortexApi.Entities
          * @param radius            The radius of this neighborhood about the centerIndex.
          * @return  The points in the neighborhood, including centerIndex.
          */
-        public int[] GetNeighborhood(int centerIndex, int radius)
-        {
-            var centerPosition = GetCoordinatesFromIndex(centerIndex);
+        //public int[] GetNeighborhood(int centerIndex, int radius)
+        //{
+        //    var centerPosition = HtmCompute.GetCoordinatesFromIndex(centerIndex, this.HtmTopology);
 
-            IntGenerator[] intGens = new IntGenerator[dimensions.Length];
-            for (int i = 0; i < dimensions.Length; i++)
-            {
-                intGens[i] = new IntGenerator(Math.Max(0, centerPosition[i] - radius),
-                    Math.Min(dimensions[i] - 1, centerPosition[i] + radius) + 1);
-            }
+        //    IntGenerator[] intGens = new IntGenerator[dimensions.Length];
+        //    for (int i = 0; i < dimensions.Length; i++)
+        //    {
+        //        intGens[i] = new IntGenerator(Math.Max(0, centerPosition[i] - radius),
+        //            Math.Min(dimensions[i] - 1, centerPosition[i] + radius) + 1);
+        //    }
 
-            List<List<int>> result = new List<List<int>>();
+        //    List<List<int>> result = new List<List<int>>();
 
-            result.Add(new List<int>());
+        //    result.Add(new List<int>());
 
-            List<List<int>> interim = new List<List<int>>();
+        //    List<List<int>> interim = new List<List<int>>();
 
-            foreach (IntGenerator gen in intGens)
-            {
-                interim.Clear();
-                interim.AddRange(result);
-                result.Clear();
+        //    foreach (IntGenerator gen in intGens)
+        //    {
+        //        interim.Clear();
+        //        interim.AddRange(result);
+        //        result.Clear();
 
-                foreach (var lx in interim)
-                {
-                    gen.reset();
+        //        foreach (var lx in interim)
+        //        {
+        //            gen.reset();
 
-                    for (int y = 0; y < gen.size(); y++)
-                    {
-                        int py = gen.next();
-                        List<int> tl = new List<int>();
-                        tl.AddRange(lx);
-                        tl.Add(py);
-                        result.Add(tl);
-                    }
-                }
-            }
+        //            for (int y = 0; y < gen.size(); y++)
+        //            {
+        //                int py = gen.next();
+        //                List<int> tl = new List<int>();
+        //                tl.AddRange(lx);
+        //                tl.Add(py);
+        //                result.Add(tl);
+        //            }
+        //        }
+        //    }
 
-            return result.Select((tl) => GetIndexFromCoordinates(tl.ToArray())).ToArray();
-        }
+        //    return result.Select((tl) => GetIndexFromCoordinates(tl.ToArray())).ToArray();
+        //}
 
-        /**
-         * Like {@link #neighborhood(int, int)}, except that the neighborhood isn't truncated when it's
-         * near an edge. It wraps around to the other side.
-         * 
-         * @param centerIndex       The index of the point. The coordinates are expressed as a single index by
-         *                          using the dimensions as a mixed radix definition. For example, in dimensions
-         *                          42x10, the point [1, 4] is index 1*420 + 4*10 = 460.
-         * @param radius            The radius of this neighborhood about the centerIndex.
-         * @return  The points in the neighborhood, including centerIndex.
-         */
-        public int[] wrappingNeighborhood(int centerIndex, int radius)
-        {
-            int[] cp = GetCoordinatesFromIndex(centerIndex);
-
-            // Dims of columns
-            IntGenerator[] intGens = new IntGenerator[dimensions.Length];
-            for (int i = 0; i < dimensions.Length; i++)
-            {
-                intGens[i] = new IntGenerator(cp[i] - radius, Math.Min((cp[i] - radius) + dimensions[i] - 1, cp[i] + radius) + 1);
-            }
-
-            List<List<int>> result = new List<List<int>>();
-
-            result.Add(new List<int>());
-
-            List<List<int>> interim = new List<List<int>>();
-
-            int k = 0;
-            foreach (IntGenerator gen in intGens)
-            {
-                interim.Clear();
-                interim.AddRange(result);
-                result.Clear();
-
-                foreach (var lx in interim)
-                {
-                    gen.reset();
-
-                    for (int y = 0; y < gen.size(); y++)
-                    {
-                        int py = ArrayUtils.modulo(gen.next(), dimensions[k]);
-                        //int py = gen.next() % dimensions[k];
-
-                        List<int> tl = new List<int>();
-                        tl.AddRange(lx);
-                        tl.Add(py);
-                        result.Add(tl);
-                    }
-                }
-
-                k++;
-            }
-
-            return result.Select((tl) => GetIndexFromCoordinates(tl.ToArray())).ToArray();
-        }
+     
     }
 }

@@ -6,6 +6,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="InMemoryArrayMOVETTORNTITIES.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="InMemoryArrayMOVETTORNTITIES.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Akka.Remote" Version="1.3.12" />
     <PackageReference Include="ImageBinarizer" Version="1.0.0" />
     

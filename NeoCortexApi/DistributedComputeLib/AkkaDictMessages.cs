@@ -3,26 +3,11 @@ using System.Collections.Generic;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
-    /// <summary>
-    /// HTM required configuration sent from Akka-client to Akka Actor.
-    /// </summary>
-    public class ActorConfig
-    {
-        public int[] ColumnDimensions { get; set; }
 
-        public bool IsColumnMajor { get; set; } = false;
-
-        public int[] InputDimensions { get; set; }
-
-        /// <summary>
-        /// The name of the actor as set by actor-client.
-        /// </summary>
-        public string Name { get; set; }
-    }
 
     internal class CreateDictNodeMsg
     {
-        public ActorConfig HtmAkkaConfig { get; set; }
+        public HtmConfig HtmAkkaConfig { get; set; }
     }
 
     internal class ContainsMsg
@@ -64,7 +49,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
     internal class GetCountMsg
     {
-      
+
     }
 
 
@@ -73,5 +58,22 @@ namespace NeoCortexApi.DistributedComputeLib
         public bool IsError { get; set; }
 
         public object Value { get; set; }
+    }
+
+
+
+    public class InitColumnsMsg
+    {
+        public IList<KeyPair> Elements { get; set; }
+    }
+
+    public class ConnectAndConfigureColumnsMsg
+    {
+        
+    }
+
+    public class CalculateOverlapMsg
+    {
+        public int[] InputVector { get; set; }
     }
 }

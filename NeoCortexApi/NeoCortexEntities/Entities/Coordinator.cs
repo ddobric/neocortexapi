@@ -4,17 +4,17 @@ using System.Text;
 
 namespace NeoCortexApi.Entities
 {
-    /**
-  * Specializes in handling coordinate transforms for N-dimensional
-  * integer arrays, between flat and coordinate indexing.
-  * 
-  * @author cogmission
-  * @see Topology
-  */
-    // [Serializable]
+
+    /// <summary>
+    /// Transforms coordinates from multidimensional space into the single dimensional space of flat indexes.
+    /// </summary>
+    /// <remarks>
+    /// Authors:
+    /// cogmission, Damir Dobric.
+    /// </remarks>
     public class Coordinator
     {
-      
+
         protected int[] dimensions;
         protected int[] dimensionMultiples;
 
@@ -25,6 +25,15 @@ namespace NeoCortexApi.Entities
 
 
         protected int numDimensions;
+
+
+        public HtmModuleTopology HtmTopology
+        {
+            get
+            {
+                return new HtmModuleTopology(this.dimensions, this.isColumnMajor);
+            }
+        }
 
         /**
          * Constructs a new {@link Coordinator} object to be configured with specified
@@ -51,48 +60,48 @@ namespace NeoCortexApi.Entities
             this.dimensions = shape;
             this.numDimensions = shape.Length;
             this.dimensionMultiples = initDimensionMultiples(
-                useColumnMajorOrdering ? reverse(shape) : shape);
+                useColumnMajorOrdering ? HtmCompute.Reverse(shape) : shape);
             isColumnMajor = useColumnMajorOrdering;
         }
 
-        /**
-         * Returns a flat index computed from the specified coordinates
-         * which represent a "dimensioned" index.
-         * 
-         * @param   coordinates     an array of coordinates
-         * @return  a flat index
-         */
-        public int computeIndex(int[] coordinates)
-        {
-            int[] localMults = isColumnMajor ? reverse(dimensionMultiples) : dimensionMultiples;
-            int baseNum = 0;
-            for (int i = 0; i < coordinates.Length; i++)
-            {
-                baseNum += (localMults[i] * coordinates[i]);
-            }
-            return baseNum;
-        }
+        ///**
+        // * Returns a flat index computed from the specified coordinates
+        // * which represent a "dimensioned" index.
+        // * 
+        // * @param   coordinates     an array of coordinates
+        // * @return  a flat index
+        // */
+        //public int computeIndex(int[] coordinates)
+        //{
+        //    int[] localMults = isColumnMajor ? HtmCompute.Reverse(dimensionMultiples) : dimensionMultiples;
+        //    int baseNum = 0;
+        //    for (int i = 0; i < coordinates.Length; i++)
+        //    {
+        //        baseNum += (localMults[i] * coordinates[i]);
+        //    }
+        //    return baseNum;
+        //}
 
 
-        /// <summary>
-        /// Calculates multidimensional coordinates from flat array index.
-        /// </summary>
-        /// <param name="index">Flat index.</param>
-        /// <returns>Coordinates in multidimensional space.</returns>
-        public int[] computeCoordinates(int index)
-        {
-            int[] returnVal = new int[numDimensions];
-            int baseNum = index;
-            for (int i = 0; i < dimensionMultiples.Length; i++)
-            {
-                int quotient = baseNum / dimensionMultiples[i];
-                baseNum %= dimensionMultiples[i];
-                returnVal[i] = quotient;
-            }
-            return isColumnMajor ? reverse(returnVal) : returnVal;
-        }
+        ///// <summary>
+        ///// Calculates multidimensional coordinates from flat array index.
+        ///// </summary>
+        ///// <param name="index">Flat index.</param>
+        ///// <returns>Coordinates in multidimensional space.</returns>
+        //public static int[] calcCoordinatesFrmFlatIndex(int index, HtmModuleTopology topology)
+        //{
+        //    int[] returnVal = new int[topology.NumDimensions];
+        //    int baseNum = index;
+        //    for (int i = 0; i < topology.DimensionMultiplies.Length; i++)
+        //    {
+        //        int quotient = baseNum / topology.DimensionMultiplies[i];
+        //        baseNum %= topology.DimensionMultiplies[i];
+        //        returnVal[i] = quotient;
+        //    }
+        //    return topology.IsMajorOrdering ? Reverse(returnVal) : returnVal;
+        //}
 
-     
+
 
         /**
          * Initializes internal helper array which is used for multidimensional
@@ -113,19 +122,6 @@ namespace NeoCortexApi.Entities
             return dimensionMultiples;
         }
 
-        /**
-         * Reverses the specified array.
-         * @param input
-         * @return
-         */
-        public static int[] reverse(int[] input)
-        {
-            int[] retVal = new int[input.Length];
-            for (int i = input.Length - 1, j = 0; i >= 0; i--, j++)
-            {
-                retVal[j] = input[i];
-            }
-            return retVal;
-        }
+     
     }
 }

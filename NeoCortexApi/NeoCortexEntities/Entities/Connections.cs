@@ -1,14 +1,10 @@
 ﻿
+using NeoCortexApi.Types;
+using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using NeoCortexApi.Entities;
-using NeoCortexApi.Types;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Linq;
 using System.Collections.ObjectModel;
-using NeoCortexApi.Utility;
+using System.Linq;
 
 namespace NeoCortexApi.Entities
 {
@@ -22,8 +18,6 @@ namespace NeoCortexApi.Entities
     //[Serializable]
     public class Connections //implements Persistable
     {
-        /** keep it simple */
-        private static readonly long serialVersionUID = 1L;
 
         private static readonly double EPSILON = 0.00001;
 
@@ -89,7 +83,7 @@ namespace NeoCortexApi.Entities
          * class, to reduce memory footprint and computation time of algorithms that
          * require iterating over the data structure.
          */
-        private IFlatMatrix<Pool> potentialPools;
+        //private IFlatMatrix<Pool> potentialPools;
         /**
          * Initialize a tiny random tie breaker. This is used to determine winning
          * columns where the overlaps are identical.
@@ -101,7 +95,7 @@ namespace NeoCortexApi.Entities
          * information is readily available from 'connectedSynapses', it is
          * stored separately for efficiency purposes.
          */
-        private AbstractSparseBinaryMatrix connectedCounts;
+        private AbstractSparseBinaryMatrix connectedCounts2;
         /**
          * The inhibition radius determines the size of a column's local
          * neighborhood. of a column. A cortical column must overcome the overlap
@@ -174,6 +168,46 @@ namespace NeoCortexApi.Entities
 
         /** The main data structure containing columns, cells, and synapses */
         private AbstractSparseMatrix<Column> memory;
+
+        public HtmModuleTopology ColumnTopology
+        {
+            get
+            {
+                return getMemory().ModuleTopology;
+            }
+        }
+
+        public HtmModuleTopology InputTopology
+        {
+            get
+            {
+                return getInputMatrix().ModuleTopology;
+            }
+        }
+
+        public HtmConfig HtmConfig
+        {
+            get
+            {
+                HtmConfig cfg = new HtmConfig();
+                cfg.ColumnTopology = this.ColumnTopology;
+                cfg.InputTopology = this.InputTopology;
+                cfg.IsWrapAround = this.isWrapAround();
+                cfg.NumInputs = this.NumInputs;
+                cfg.NumColumns = this.getMemory().getMaxIndex() + 1;
+                cfg.PotentialPct = getPotentialPct();
+                cfg.PotentialRadius = getPotentialRadius();
+                cfg.SynPermConnected = getSynPermConnected();
+                cfg.InitialSynapseConnsPct = this.InitialSynapseConnsPct;
+                cfg.SynPermTrimThreshold = this.getSynPermTrimThreshold();
+                cfg.SynPermBelowStimulusInc = this.synPermBelowStimulusInc;
+                cfg.SynPermMax = this.getSynPermMax();
+                cfg.SynPermMin = this.getSynPermMin();
+                cfg.StimulusThreshold = this.StimulusThreshold;
+                cfg.CellsPerColumn = this.getCellsPerColumn();
+                return cfg;
+            }
+        }
 
         public Cell[] cells { get; set; }
 
@@ -561,15 +595,11 @@ namespace NeoCortexApi.Entities
             }
         }
 
-        /**
-         * Returns the product of the input dimensions
-         * @return  the product of the input dimensions
-         */
-        /**
- * Sets the product of the input dimensions to
- * establish a flat count of bits in the input field.
- * @param n
- */
+
+        /// <summary>
+        /// Gets/Sets the number of input neurons in 1D space. Mathematically, 
+        /// this is the product of the input dimensions.
+        /// </summary>
         public int NumInputs
         {
             get => numInputs;
@@ -673,7 +703,7 @@ namespace NeoCortexApi.Entities
         {
             foreach (int idx in s.getSparseIndices())
             {
-                memory.getObject(idx).setPermanences(this, s.getObject(idx));
+                memory.getObject(idx).setPermanences(this.HtmConfig, s.getObject(idx));
             }
         }
 
@@ -722,9 +752,20 @@ namespace NeoCortexApi.Entities
          * Returns the indexed count of connected synapses per column.
          * @return
          */
-        public AbstractSparseBinaryMatrix getConnectedCounts()
+        //public AbstractSparseBinaryMatrix getConnectedCounts()
+        //{
+        //    return connectedCounts;
+        //}
+
+        public int[] GetTrueCounts()
         {
-            return connectedCounts;
+            int[] counts = new int[NumColumns];
+            for (int i = 0; i < NumColumns; i++)
+            {
+                counts[i] = getColumn(i).ConnectedInputCounterMatrix.getTrueCounts()[0];
+            }
+
+            return counts;
         }
 
         /**
@@ -732,10 +773,10 @@ namespace NeoCortexApi.Entities
          * @param columnIndex
          * @return
          */
-        public int getConnectedCount(int columnIndex)
-        {
-            return connectedCounts.getTrueCount(columnIndex);
-        }
+        //public int getConnectedCount(int columnIndex)
+        //{
+        //    return connectedCounts.getTrueCount(columnIndex);
+        //}
 
         /**
          * Sets the indexed count of synapses connected at the columns in each index.
@@ -745,7 +786,8 @@ namespace NeoCortexApi.Entities
         {
             for (int i = 0; i < counts.Length; i++)
             {
-                connectedCounts.setTrueCount(i, counts[i]);
+                getColumn(i).ConnectedInputCounterMatrix.setTrueCount(0, counts[i]);
+                //connectedCounts.setTrueCount(i, counts[i]);
             }
         }
 
@@ -757,8 +799,21 @@ namespace NeoCortexApi.Entities
          */
         public void setConnectedMatrix(AbstractSparseBinaryMatrix matrix)
         {
-            this.connectedCounts = matrix;
+            for (int col = 0; col < this.NumColumns; col++)
+            {
+                var colMatrix = this.getColumn(col).ConnectedInputCounterMatrix = new SparseBinaryMatrix(new int[] { 1, numInputs });
+
+                int[] row = (int[])matrix.getSlice(col);
+
+                for (int j = 0; j < row.Length; j++)
+                {
+                    colMatrix.set(row[j], 0, j);
+                }
+            }
+
+            // this.connectedCounts = matrix;
         }
+
 
         /**
          * Sets the array holding the random noise added to proximal dendrite overlaps.
@@ -1138,20 +1193,20 @@ namespace NeoCortexApi.Entities
          *
          * @param pools		{@link FlatMatrix} which holds the pools.
          */
-        public void setPotentialPools(IFlatMatrix<Pool> pools)
-        {
-            this.potentialPools = pools;
-        }
+        //public void setPotentialPools(IFlatMatrix<Pool> pools)
+        //{
+        //    this.potentialPools = pools;
+        //}
 
         /**
          * Returns the {@link FlatMatrix} which holds the mapping
          * of column indexes to their lists of potential inputs.
          * @return	the potential pools
          */
-        public IFlatMatrix<Pool> getPotentialPoolsOld()
-        {
-            return this.potentialPools;
-        }
+        //public IFlatMatrix<Pool> getPotentialPoolsOld()
+        //{
+        //    return this.potentialPools;
+        //}
 
         /**
          * Returns the minimum {@link Synapse} permanence.
@@ -2490,7 +2545,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + cells.GetHashCode();
             result = prime * result + cellsPerColumn;
             result = prime * result + columnDimensions.GetHashCode();
-            result = prime * result + ((connectedCounts == null) ? 0 : connectedCounts.GetHashCode());
+            //result = prime * result + ((connectedCounts == null) ? 0 : connectedCounts.GetHashCode());
             long temp;
             temp = BitConverter.DoubleToInt64Bits(connectedPermanence);
             result = prime * result + (int)(temp ^ (temp >> 32));//it was temp >>> 32
@@ -2534,7 +2589,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + (int)(temp ^ (temp >> 32));
             temp = BitConverter.DoubleToInt64Bits(potentialPct);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            result = prime * result + ((potentialPools == null) ? 0 : potentialPools.GetHashCode());
+            //result = prime * result + ((potentialPools == null) ? 0 : potentialPools.GetHashCode());
             result = prime * result + potentialRadius;
             temp = BitConverter.DoubleToInt64Bits(predictedSegmentDecrement);
             result = prime * result + (int)(temp ^ (temp >> 32));
@@ -2603,13 +2658,13 @@ namespace NeoCortexApi.Entities
                 return false;
             if (!Array.Equals(columnDimensions, other.columnDimensions))
                 return false;
-            if (connectedCounts == null)
-            {
-                if (other.connectedCounts != null)
-                    return false;
-            }
-            else if (!connectedCounts.Equals(other.connectedCounts))
-                return false;
+            //if (connectedCounts == null)
+            //{
+            //    if (other.connectedCounts != null)
+            //        return false;
+            //}
+            //else if (!connectedCounts.Equals(other.connectedCounts))
+            //    return false;
             if (BitConverter.DoubleToInt64Bits(connectedPermanence) != BitConverter.DoubleToInt64Bits(other.connectedPermanence))
                 return false;
             if (dutyCyclePeriod != other.dutyCyclePeriod)
@@ -2678,13 +2733,13 @@ namespace NeoCortexApi.Entities
                 return false;
             if (BitConverter.DoubleToInt64Bits(potentialPct) != BitConverter.DoubleToInt64Bits(other.potentialPct))
                 return false;
-            if (potentialPools == null)
-            {
-                if (other.potentialPools != null)
-                    return false;
-            }
-            else if (!potentialPools.Equals(other.potentialPools))
-                return false;
+            //if (potentialPools == null)
+            //{
+            //    if (other.potentialPools != null)
+            //        return false;
+            //}
+            //else if (!potentialPools.Equals(other.potentialPools))
+            //    return false;
             if (potentialRadius != other.potentialRadius)
                 return false;
             if (BitConverter.DoubleToInt64Bits(predictedSegmentDecrement) != BitConverter.DoubleToInt64Bits(other.predictedSegmentDecrement))

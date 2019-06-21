@@ -3,8 +3,11 @@ using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
@@ -14,7 +17,7 @@ namespace NeoCortexApi.DistributedComputeLib
     {
         private Dictionary<object, object> dict = new Dictionary<object, object>();
 
-        private ActorConfig config;
+        private HtmConfig config;
 
         protected override void Unhandled(object msg)
         {
@@ -27,9 +30,32 @@ namespace NeoCortexApi.DistributedComputeLib
             Receive<CreateDictNodeMsg>(msg =>
             {
                 this.config = msg.HtmAkkaConfig;
+
+                //this.ColumnTopology =new Topology(this.config.ColumnDimensions);
+                //this.InputTopology = new Topology(this.config.InputDimensions);
+
                 Console.WriteLine($"Received message: '{msg.GetType().Name}'");
                 Sender.Tell(-1, Self);
             });
+
+            Receive((Action<InitColumnsMsg>)(msg =>
+            {
+                createColumns(msg);
+            }));
+
+            Receive((Action<ConnectAndConfigureColumnsMsg>)(msg =>
+            {
+                createAndConnectColumns(msg);
+            }));
+
+            Receive((Action<CalculateOverlapMsg>)(msg =>
+            {
+                calculateOverlap(msg);
+            }));
+
+
+
+
 
             Receive<AddOrUpdateElementsMsg>(msg =>
             {
@@ -78,21 +104,21 @@ namespace NeoCortexApi.DistributedComputeLib
                 Sender.Tell(msg.Elements.Count, Self);
             });
 
-            Receive<GetElementsMsg>(msg =>
+            Receive<GetElementMsg>(msg =>
             {
                 Console.WriteLine($"Received message: '{msg.GetType().Name}'");
 
                 object element;
 
-                if (msg.Keys == null)
+                if (msg.Key == null)
                     throw new ArgumentException("Key must be specified.");
-                
-                if (dict.TryGetValue(msg.Keys, out element))
+
+                if (dict.TryGetValue(msg.Key, out element))
                     Sender.Tell(new Result { IsError = false, Value = element }, Self);
                 else
                     Sender.Tell(new Result { IsError = true, Value = null }, Self);
             });
-
+            
             Receive<GetElementsMsg>(msg =>
             {
                 Console.WriteLine($"Received message: '{msg.GetType().Name}'");
@@ -146,6 +172,7 @@ namespace NeoCortexApi.DistributedComputeLib
             });
         }
 
+      
         protected override void PreStart()
         {
             Console.WriteLine($"{nameof(DictNodeActor)} started.");
@@ -159,5 +186,124 @@ namespace NeoCortexApi.DistributedComputeLib
         }
 
 
+        //public int[] GetInputNeighborhood(int centerInput, int potentialRadius)
+        //{
+        //    return this.config.IsWrapAround ?
+        //        this.InputTopology.GetWrappingNeighborhood(centerInput, potentialRadius) :
+        //            this.InputTopology.GetNeighborhood(centerInput, potentialRadius);
+        //}
+
+
+        #region Private Methods
+        /// <summary>
+        /// Creates columns on the node.
+        /// </summary>
+        /// <param name="msg"></param>
+        private void createColumns(InitColumnsMsg msg)
+        {
+            Console.WriteLine($"{Self.Path} -  Received message: '{msg.GetType().Name}'");
+
+            if (msg.Elements == null || msg.Elements.Count == 0)
+                throw new DistributedException($"{nameof(DictNodeActor)} failed to create columns. List of elements cannot be empty.");
+
+            foreach (var element in msg.Elements)
+            {
+                HtmConfig cfg = element.Value as HtmConfig;
+                if (cfg == null)
+                    throw new ArgumentException($"Value hast to be of type {nameof(HtmConfig)}");
+
+                this.dict[element.Key] = new Column(cfg.CellsPerColumn, (int)element.Key, cfg.SynPermConnected, cfg.NumInputs);
+            }
+
+            Sender.Tell(msg.Elements.Count, Self);
+        }
+
+
+        /// <summary>
+        /// Initialize all columns inside of partition and connect them to sensory input.
+        /// It returns the average connected span of the partition.
+        /// </summary>
+        /// <param name="msg"></param>
+        private void createAndConnectColumns(ConnectAndConfigureColumnsMsg msg)
+        {
+            Console.WriteLine($"{Self.Path} - Received message: '{msg.GetType().Name}'");
+
+            List<double> avgConnections = new List<double>();
+
+            Random rnd = new Random(42);
+
+            foreach (var element in this.dict)
+            {
+                if (this.config == null)
+                    throw new ArgumentException($"HtmConfig must be set in the message.");
+
+                int colIndx = (int)element.Key;
+
+                // Gets RF
+                var potential = HtmCompute.MapPotential(this.config, colIndx, rnd);
+                var column = (Column)this.dict[colIndx];
+
+                // This line initializes all synases in the potential pool of synapses.
+                // It creates the pool on proximal dendrite segment of the column.
+                // After initialization permancences are set to zero.
+                //connectColumnToInputRF(c.HtmConfig, data.Potential, data.Column);
+                column.CreatePotentialPool(this.config, potential, -1);
+
+                var perms = HtmCompute.InitSynapsePermanences(this.config, potential, rnd);
+
+                avgConnections.Add(HtmCompute.CalcAvgSpanOfConnectedSynapses(column, this.config));
+
+                HtmCompute.UpdatePermanencesForColumn(this.config, perms, column, potential, true);
+            }
+
+            double avgConnectedSpan = ArrayUtils.average(avgConnections.ToArray());
+
+            Sender.Tell(avgConnectedSpan, Self);
+        }
+
+        private void calculateOverlap(CalculateOverlapMsg msg)
+        {
+            Console.WriteLine($"{Self.Path} - Received message: '{msg.GetType().Name}'");
+
+            ConcurrentDictionary<int, int> overlaps = new ConcurrentDictionary<int, int>();
+
+            ParallelOptions opts = new ParallelOptions();
+            opts.MaxDegreeOfParallelism = this.dict.Count;
+
+            Parallel.ForEach(this.dict, opts, (keyPair) =>
+            {
+                Column col = keyPair.Value as Column;
+
+                var overlap = col.GetColumnOverlapp(msg.InputVector, this.config.StimulusThreshold);
+
+                overlaps.TryAdd((int)keyPair.Key, overlap);
+            });
+
+            List<KeyPair> result = new List<KeyPair>();
+            foreach (var item in overlaps)
+            {
+                result.Add(new KeyPair { Key = item.Key, Value = item.Value });
+            }
+
+            var sortedRes = result.OrderBy(k => k.Key).ToList();
+
+            Console.Write($"o = {sortedRes.Count(p => (int)p.Value > 0)}");
+
+            Sender.Tell(sortedRes, Self);
+        }
+
+        public static string StringifyVector(double[] vector)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var vectorBit in vector)
+            {
+                sb.Append(vectorBit);
+                sb.Append(", ");
+            }
+
+            return sb.ToString();
+        }
+        #endregion
     }
 }

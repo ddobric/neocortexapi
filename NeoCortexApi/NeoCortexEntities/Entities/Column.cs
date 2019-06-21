@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 using NeoCortexApi.Entities;
+using NeoCortexApi.Utility;
+using System.Linq;
+using System.Diagnostics;
 
 namespace NeoCortexApi.Entities
 {
@@ -19,6 +22,11 @@ namespace NeoCortexApi.Entities
     //[Serializable]
     public class Column : IEquatable<Column>, IComparable<Column>
     {
+        private AbstractSparseBinaryMatrix connectedInputCounter;
+
+        public AbstractSparseBinaryMatrix ConnectedInputCounterMatrix { get { return connectedInputCounter; } set { connectedInputCounter = value; } }
+
+        public int[] ConnectedInputBits { get => (int[])this.connectedInputCounter.getSlice(0); }
 
         /// <summary>
         /// Column index
@@ -53,27 +61,31 @@ namespace NeoCortexApi.Entities
         /// Creates a new collumn with specified number of cells and a single proximal dendtrite segment.
         /// </summary>
         /// <param name="numCells">Number of cells in the column.</param>
-        /// <param name="index">Colun index.</param>
+        /// <param name="colIndx">Column index.</param>
         /// <param name="synapsePermConnected">Permanence threshold value to declare synapse as connected.</param>
         /// <param name="numInputs">Number of input neorn cells.</param>
-        public Column(int numCells, int index, double synapsePermConnected, int numInputs)
+        public Column(int numCells, int colIndx, double synapsePermConnected, int numInputs)
         {
-            //this.numCells = numCells;
-            this.Index = index;
-            //this.boxedIndex = index;
+            this.Index = colIndx;
+
             this.hashcode = GetHashCode();
+
             Cells = new Cell[numCells];
+
             for (int i = 0; i < numCells; i++)
             {
                 Cells[i] = new Cell(this, i);
             }
 
-            //cellList = new ReadOnlyCollection<Cell>(Cells);
+            // We keep tracking of this column only
+            this.connectedInputCounter = new SparseBinaryMatrix(new int[] { 1, numInputs });
 
-            ProximalDendrite = new ProximalDendrite(index, synapsePermConnected, numInputs);
+            ProximalDendrite = new ProximalDendrite(colIndx, synapsePermConnected, numInputs);
+
+            this.ConnectedInputCounterMatrix = new SparseBinaryMatrix(new int[] { 1, numInputs });
         }
 
-      
+
         /**
          * Returns the {@link Cell} residing at the specified index.
          * <p>
@@ -163,12 +175,12 @@ namespace NeoCortexApi.Entities
          * @param c						the {@link Connections} memory
          * @param inputVectorIndexes	indexes specifying the input vector bit
          */
-        public Pool createPotentialPool(Connections c, int[] inputVectorIndexes, int startSynapseIndex)
+        public Pool CreatePotentialPool(HtmConfig htmConfig, int[] inputVectorIndexes, int startSynapseIndex)
         {
             //var pool = ProximalDendrite.createPool(c, inputVectorIndexes);
             this.ProximalDendrite.Synapses.Clear();
 
-            var pool = new Pool(inputVectorIndexes.Length, c.NumInputs);
+            var pool = new Pool(inputVectorIndexes.Length, htmConfig.NumInputs);
 
             this.ProximalDendrite.RFPool = pool;
 
@@ -177,7 +189,7 @@ namespace NeoCortexApi.Entities
                 //var cnt = c.getProximalSynapseCount();
                 //var synapse = createSynapse(c, c.getSynapses(this), null, this.RFPool, synCount, inputIndexes[i]);
                 var synapse = this.ProximalDendrite.createSynapse(null, startSynapseIndex + i, inputVectorIndexes[i]);
-                this.setPermanence(synapse, c.getSynPermConnected(), 0);
+                this.setPermanence(synapse, htmConfig.SynPermConnected, 0);
                 //c.setProximalSynapseCount(cnt + 1);
             }
 
@@ -211,25 +223,24 @@ namespace NeoCortexApi.Entities
          * @param c			the {@link Connections} memory
          * @param perms		the floating point degree of connectedness
          */
-        public void setPermanences(Connections c, double[] perms)
+        public void setPermanences(HtmConfig htmConfig, double[] perms)
         {
-            var connCounts = c.getConnectedCounts();
+            //var connCounts = c.getConnectedCounts();
 
             this.ProximalDendrite.RFPool.resetConnections();
 
-            connCounts.clearStatistics(this.Index);
-
-            //List<Synapse> synapses = c.getSynapses(this);
+            // Every column contians a single row at index 0.
+            this.ConnectedInputCounterMatrix.clearStatistics(0 /*this.Index*/);
 
             foreach (Synapse s in this.ProximalDendrite.Synapses)
             {
-                int indx = s.getInputIndex();
+                //int indx = s.getInputIndex();
 
-                this.setPermanence(s, c.getSynPermConnected(), perms[indx]);
+                this.setPermanence(s, htmConfig.SynPermConnected, perms[s.InputIndex]);
 
-                if (perms[indx] >= c.getSynPermConnected())
+                if (perms[s.InputIndex] >= htmConfig.SynPermConnected)
                 {
-                    connCounts.set(1, this.Index, s.getInputIndex());
+                    this.ConnectedInputCounterMatrix.set(1, 0 /*this.Index*/, s.InputIndex);
                 }
             }
         }
@@ -251,9 +262,89 @@ namespace NeoCortexApi.Entities
          * @param c				the {@link Connections} memory object
          * @param permanences	floating point degree of connectedness
          */
-        public void setProximalPermanencesSparse(Connections c, double[] permanences, int[] inputVectorIndexes)
+        public void setProximalPermanencesSparse(HtmConfig htmConfig, double[] permanences, int[] inputVectorIndexes)
         {
-            ProximalDendrite.setPermanences(c, permanences, inputVectorIndexes);
+            this.ProximalDendrite.setPermanences(this.ConnectedInputCounterMatrix, htmConfig, permanences, inputVectorIndexes);
+        }
+
+
+        /**
+        * This method updates the permanence matrix with a column's new permanence
+        * values. The column is identified by its index, which reflects the row in
+        * the matrix, and the permanence is given in 'sparse' form, (i.e. an array
+        * whose members are associated with specific indexes). It is in
+        * charge of implementing 'clipping' - ensuring that the permanence values are
+        * always between 0 and 1 - and 'trimming' - enforcing sparseness by zeroing out
+        * all permanence values below 'synPermTrimThreshold'. Every method wishing
+        * to modify the permanence matrix should do so through this method.
+        * 
+        * @param c                 the {@link Connections} which is the memory model.
+        * @param perm              An array of permanence values for a column. The array is
+        *                          "sparse", i.e. it contains an entry for each input bit, even
+        *                          if the permanence value is 0.
+        * @param column            The column in the permanence, potential and connectivity matrices
+        * @param raisePerm         a boolean value indicating whether the permanence values
+        */
+        public void UpdatePermanencesForColumnSparse(Connections c, HtmConfig htmConfig, double[] perm, int[] maskPotential, bool raisePerm)
+        {
+            if (raisePerm)
+            {
+                HtmCompute.RaisePermanenceToThresholdSparse(htmConfig, perm);
+            }
+
+            ArrayUtils.LessOrEqualXThanSetToY(perm, htmConfig.SynPermTrimThreshold, 0);
+            ArrayUtils.Clip(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
+            setProximalPermanencesSparse(htmConfig, perm, maskPotential);
+        }
+
+
+        /// <summary>
+        /// Calculates the overlapp of the column.
+        /// </summary>
+        /// <param name="inputVector"></param>
+        /// <param name="stimulusThreshold"></param>
+        /// <returns></returns>
+        public int GetColumnOverlapp(int[] inputVector, double stimulusThreshold)
+        {
+            int result = 0;
+
+            // Gets the synapse mapping between column-i with input vector.
+            int[] slice = (int[])this.connectedInputCounter.getSlice(0);
+
+            // Go through all connections (synapses) between column and input vector.
+            for (int inpBit = 0; inpBit < slice.Length; inpBit++)
+            {
+                // Result (overlapp) is 1 if 
+                result += (inputVector[inpBit] * slice[inpBit]);
+                //TODO: check if this is needed!
+                if (inpBit == slice.Length - 1)
+                {
+                    // If the overlap (num of connected synapses to TRUE input) is less than stimulusThreshold then we set result on 0.
+                    // If the overlap (num of connected synapses to TRUE input) is greather than stimulusThreshold then result remains as calculated.
+                    // This ensures that only overlaps are calculated, which are over the stimulusThreshold. All less than stimulusThreshold are set on 0.
+                    result -= result < stimulusThreshold ? result : 0;
+                }
+            }
+
+            Debug.WriteLine($"Col {this.Index} - o = {result} - onces: {slice.Count(i=>i == 1)}");
+           // Debug.WriteLine(StringifyVector(slice));
+           // Debug.WriteLine("");
+
+            return result;
+        }
+
+
+        public static string StringifyVector(int[] vector)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var vectorBit in vector)
+            {
+                sb.Append(vectorBit);
+                sb.Append(", ");
+            }
+
+            return sb.ToString();
         }
 
         /**
@@ -266,7 +357,7 @@ namespace NeoCortexApi.Entities
         {
             //var synapseIndex = c.getProximalSynapseCount();
             //c.setProximalSynapseCount(synapseIndex + inputVectorIndexes.Length);
-            this.ProximalDendrite.RFPool = createPotentialPool(c, inputVectorIndexes, -1);
+            this.ProximalDendrite.RFPool = CreatePotentialPool(c.HtmConfig, inputVectorIndexes, -1);
             //ProximalDendrite.setConnectedSynapsesForTest(c, connections);
         }
 

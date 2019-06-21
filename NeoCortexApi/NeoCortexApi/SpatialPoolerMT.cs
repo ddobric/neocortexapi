@@ -14,7 +14,7 @@ namespace NeoCortexApi
         /// </summary>
         /// <param name="c"></param>
         /// <param name="distMem"></param>
-        public virtual void InitMatrices(Connections c, DistributedMemory distMem)
+        public override void InitMatrices(Connections c, DistributedMemory distMem)
         {
             base.InitMatrices(c, distMem);
         }
@@ -37,27 +37,30 @@ namespace NeoCortexApi
 
             Parallel.For(0, numColumns, opts, (indx) =>
             {
+                Random rnd = new Random(42);
+
                 int i = (int)indx;
                 var data = new ProcessingData();
 
                 // Gets RF
-                data.Potential = mapPotential(c, i, c.isWrapAround());
+                data.Potential = HtmCompute.MapPotential(c.HtmConfig, i, rnd /*(c.getRandom()*/);
                 data.Column = c.getColumn(i);
 
                 // This line initializes all synases in the potential pool of synapses.
                 // It creates the pool on proximal dendrite segment of the column.
                 // After initialization permancences are set to zero.
-                connectColumnToInputRF(c, data.Potential, data.Column);
+                data.Column.CreatePotentialPool(c.HtmConfig, data.Potential, -1);
+                //connectColumnToInputRF(c.HtmConfig, data.Potential, data.Column);
 
                 //Interlocked.Add(ref synapseCounter, data.Column.ProximalDendrite.Synapses.Count);
 
                 //colList.Add(new KeyPair() { Key = i, Value = column });
 
-                data.Perm = initSynapsePermanencesForColumn(c, data.Potential, data.Column);
+                data.Perm = HtmCompute.InitSynapsePermanences(c.HtmConfig, data.Potential, c.getRandom());
 
                 data.AvgConnected = GetAvgSpanOfConnectedSynapses(c, i);
 
-                updatePermanencesForColumn(c, data.Perm, data.Column, data.Potential, true);
+                HtmCompute.UpdatePermanencesForColumn( c.HtmConfig, data.Perm, data.Column, data.Potential, true);
 
                 if (!colList2.TryAdd(i, new KeyPair() { Key = i, Value = data }))
                 {

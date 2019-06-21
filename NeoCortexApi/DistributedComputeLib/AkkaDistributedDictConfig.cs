@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NeoCortexApi.Entities;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -18,11 +19,6 @@ namespace NeoCortexApi.DistributedComputeLib
         /// Address of all nodes in cluster.
         /// </summary>
         public List<string> Nodes { get; set; }
-
-        /// <summary>
-        /// Configuration used to initialize HTM actor.
-        /// </summary>
-        public ActorConfig HtmActorConfig { get; set; }
 
         /// <summary>
         /// Upload and Download page size.

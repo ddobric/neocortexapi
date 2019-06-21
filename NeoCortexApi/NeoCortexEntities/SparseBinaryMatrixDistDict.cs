@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using System.Diagnostics;
-using NeoCortexApi.DistributedComputeLib;
+
 
 namespace NeoCortexApi.Entities
 {
@@ -19,11 +19,16 @@ namespace NeoCortexApi.Entities
  */
     public class SparseBinaryMatrix : AbstractSparseBinaryMatrix
     {
-
         /// <summary>
         /// Holds the matrix with connections between columns and inputs.
         /// </summary>
         private IDistributedArray backingArray;
+
+
+        public SparseBinaryMatrix()
+        {
+
+        }
 
         /**
          * Constructs a new {@code SparseBinaryMatrix} with the specified
@@ -61,16 +66,16 @@ namespace NeoCortexApi.Entities
          * @param val
          * @param coordinates
          */
-        private void back(int val, int[] coordinates)
-        {
-            //update true counts
-            DistributedArrayHelpers.setValue(this.backingArray, val, coordinates);
+        //private void back(int val, int[] coordinates)
+        //{
+        //    //update true counts
+        //    this.backingArray.SetValue(val, coordinates);
 
-            var aggVal = this.backingArray.AggregateArray(coordinates[0]);
+        //    var aggVal = this.backingArray.AggregateArray(coordinates[0]);
 
-            setTrueCount(coordinates[0], aggVal);
-            // setTrueCount(coordinates[0], DistributedArrayHelpers.aggregateArray(((Object[])this.backingArray)[coordinates[0]]));
-        }
+        //    setTrueCount(coordinates[0], aggVal);
+        //    // setTrueCount(coordinates[0], DistributedArrayHelpers.aggregateArray(((Object[])this.backingArray)[coordinates[0]]));
+        //}
 
         /**
          * Returns the slice specified by the passed in coordinates.
@@ -89,7 +94,7 @@ namespace NeoCortexApi.Entities
             //Object slice = DistributedArrayHelpers.getValue(this.backingArray, coordinates);
             Object slice;
             if (coordinates.Length == 1)
-                slice = backingArray.GetRow<int>(coordinates[0]);
+                slice = getRow<int>(this.backingArray, coordinates[0]);
 
             // DistributedArrayHelpers.GetRow<int>((int[,])this.backingArray, coordinates[0]);
             //else if (coordinates.Length == 1)
@@ -106,6 +111,29 @@ namespace NeoCortexApi.Entities
             return slice;
         }
 
+        /// <summary>
+        /// Gets the access to a row inside of multidimensional array.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="array"></param>
+        /// <param name="row"></param>
+        /// <returns></returns>
+        //public static T[] GetRow<T>(this T[,] array, int row)
+        private static T[] getRow<T>(IDistributedArray array, int row)
+        {
+            if (array == null)
+                throw new ArgumentNullException("array");
+
+            int cols = array.GetUpperBound(1) + 1;
+            T[] result = new T[cols];
+
+            for (int i = 0; i < cols; i++)
+            {
+                result[i] = (T)array[row, i];
+            }
+
+            return result;
+        }
         /**
          * Fills the specified results array with the result of the 
          * matrix vector multiplication.
@@ -180,7 +208,15 @@ namespace NeoCortexApi.Entities
         //@Override
         public override AbstractSparseBinaryMatrix set(int value, int[] coordinates)
         {
-            back(value, coordinates);
+            //back(value, coordinates);
+
+            //update true counts
+            this.backingArray.SetValue(value, coordinates);
+
+            var aggVal = this.backingArray.AggregateArray(coordinates[0]);
+
+            setTrueCount(coordinates[0], aggVal);
+
             return this;
         }
 
@@ -221,8 +257,10 @@ namespace NeoCortexApi.Entities
         //  @Override
         public override AbstractSparseBinaryMatrix setForTest(int index, int value)
         {
-            DistributedArrayHelpers.setValue(this.backingArray, value,
-                ComputeCoordinates(getNumDimensions(), getDimensionMultiples(), ModuleTopology.IsMajorOrdering, index));
+            this.backingArray.SetValue(value, ComputeCoordinates(getNumDimensions(), getDimensionMultiples(), ModuleTopology.IsMajorOrdering, index));
+
+            //DistributedArrayHelpers.setValue(this.backingArray, value,
+            //    ComputeCoordinates(getNumDimensions(), getDimensionMultiples(), ModuleTopology.IsMajorOrdering, index));
             return this;
         }
 

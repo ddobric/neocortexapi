@@ -36,8 +36,8 @@ namespace UnitTestsProject
         /// <param name="topologies">list of sparse space size. Sparse space has same width and length</param>
         [TestMethod]
         [TestCategory("LongRunning")]
-        [DataRow("MnistPng28x28\\training", "3", new int[] { 28 }, new int[] { 32, 64, 128 })]
-        public void TrainSingleMnistImageTest(string trainingFolder, string digit, int[] imageSizes, int[] topologies)
+        [DataRow("MnistPng28x28\\training", "3", new int[] { 28 }, new int[] { 32, 64, 128 }, PoolerMode.Multicore)]
+        public void TrainSingleMnistImageTest(string trainingFolder, string digit, int[] imageSizes, int[] topologies, PoolerMode poolerMode)
         {
             string TestOutputFolder = $"Output-{nameof(TrainSingleMnistImageTest)}";
 
@@ -87,13 +87,14 @@ namespace UnitTestsProject
                     parameters.Set(KEY.SEED, 1956);
                     parameters.setInputDimensions(new int[] { imageSizes[imSizeIndx], imageSizes[imSizeIndx] });
                     parameters.setColumnDimensions(new int[] { topologies[topologyIndx], topologies[topologyIndx] });
-                    
-                    var sp = new SpatialPoolerMT();
+
+                    SpatialPooler sp = UnitTestHelpers.CreatePooler(poolerMode);
+
                     var mem = new Connections();
 
                     parameters.apply(mem);
 
-                    sp.init(mem);
+                    UnitTestHelpers.InitPooler(poolerMode, sp, mem, parameters);
 
                     int actiColLen = numOfActCols;
 
@@ -176,7 +177,7 @@ namespace UnitTestsProject
         [TestCategory("LongRunning")]
         [DataRow("MnistPng28x28\\training", "5", new int[] { 28 }, new int[] { 32 /*, 64, 128 */})]
         public void TrainSingleMnistImageWithVariableRadiusTest(string trainingFolder, string digit, int[] imageSizes, int[] topologies)
-         {
+        {
             string testOutputFolder = $"Output-{nameof(TrainSingleMnistImageWithVariableRadiusTest)}";
 
             var trainingImages = Directory.GetFiles(Path.Combine(trainingFolder, digit));
@@ -334,7 +335,7 @@ namespace UnitTestsProject
                     var parameters = GetDefaultParams();
                     parameters.Set(KEY.STIMULUS_THRESHOLD, 0);
                     parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.06 * 64 * 64/*imageSizes[imSizeIndx] * imageSizes[imSizeIndx]*/);
-                    parameters.Set(KEY.POTENTIAL_RADIUS, imageSizes[imSizeIndx]* imageSizes[imSizeIndx]/*(int)0.5 * imageSizes[imSizeIndx]*/);
+                    parameters.Set(KEY.POTENTIAL_RADIUS, imageSizes[imSizeIndx] * imageSizes[imSizeIndx]/*(int)0.5 * imageSizes[imSizeIndx]*/);
                     parameters.Set(KEY.POTENTIAL_PCT, 1.0);
                     parameters.Set(KEY.GLOBAL_INHIBITION, true);
                     parameters.Set(KEY.STIMULUS_THRESHOLD, 0.0);
@@ -452,7 +453,7 @@ namespace UnitTestsProject
                                     List<int[,]> bmpArrays = new List<int[,]>();
                                     List<double[,]> overlapArrays = new List<double[,]>();
                                     List<double[,]> bostArrays = new List<double[,]>();
-                                    
+
                                     for (int layer = 0; layer < sp.Layers; layer++)
                                     {
                                         int size = (int)Math.Sqrt(sp.GetActiveColumns(layer).Length);
@@ -1096,7 +1097,7 @@ namespace UnitTestsProject
             return api;
         }
 
-       
+
         #region Private Helpers
 
         internal static Parameters GetDefaultParams()
