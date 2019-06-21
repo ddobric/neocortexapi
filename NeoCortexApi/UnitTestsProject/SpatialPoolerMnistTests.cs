@@ -132,7 +132,7 @@ namespace UnitTestsProject
 
                                 for (int k = 0; k < numIterationsPerImage; k++)
                                 {
-                                    sp.compute(mem, inputVector, activeArray, true);
+                                    sp.compute(inputVector, activeArray, true);
 
                                     var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
                                     var distance = MathHelpers.GetHammingDistance(oldArray, activeArray);
@@ -258,7 +258,7 @@ namespace UnitTestsProject
 
                                     for (int k = 0; k < numIterationsPerImage; k++)
                                     {
-                                        sp.compute(mem, inputVector, activeArray, true);
+                                        sp.compute( inputVector, activeArray, true);
 
                                         var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
                                         var distance = MathHelpers.GetHammingDistance(oldArray, activeArray);
@@ -832,7 +832,7 @@ namespace UnitTestsProject
 
                             for (int k = 0; k < numIterationsPerImage; k++)
                             {
-                                sp.compute(mem, inputVector, activeArray, true);
+                                sp.compute( inputVector, activeArray, true);
 
                                 var distance = MathHelpers.GetHammingDistance(oldArray, activeArray);
 

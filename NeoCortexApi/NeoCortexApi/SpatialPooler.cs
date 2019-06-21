@@ -323,7 +323,7 @@ namespace NeoCortexApi
          *                          and has many uses. For example, you might want to feed in
          *                          various inputs and examine the resulting SDR's.
          */
-        public void compute(Connections c2, int[] inputVector, int[] activeArray, bool learn)
+        public void compute(int[] inputVector, int[] activeArray, bool learn)
         {
             if (inputVector.Length != this.connections.NumInputs)
             {

@@ -144,7 +144,7 @@ namespace UnitTestsProject
             int[] activeArray = new int[] { 0, 0, 0, 0, 0 };
             for (int i = 0; i < 20; i++)
             {
-                mock.compute(mem, inputVector, activeArray, true);
+                mock.compute( inputVector, activeArray, true);
             }
 
             for (int i = 0; i < mem.NumColumns; i++)
@@ -189,7 +189,7 @@ namespace UnitTestsProject
             int[] activeArray = new int[] { 0, 0, 0, 0, 0 };
             for (int i = 0; i < 20; i++)
             {
-                mock.compute(mem, inputVector, activeArray, true);
+                mock.compute( inputVector, activeArray, true);
             }
 
             for (int i = 0; i < mem.NumColumns; i++)
@@ -226,7 +226,7 @@ namespace UnitTestsProject
             sp.init(cn);
 
             int[] activeArray = new int[nColumns];
-            sp.compute(cn, new int[inputSize], activeArray, true);
+            sp.compute(new int[inputSize], activeArray, true);
 
             Assert.IsTrue(3 == activeArray.Count(i => i > 0));//, ArrayUtils.INT_GREATER_THAN_0).length);
         }
@@ -258,7 +258,7 @@ namespace UnitTestsProject
             sp.init(cn);
 
             int[] activeArray = new int[nColumns];
-            sp.compute(cn, new int[inputSize], activeArray, true);
+            sp.compute( new int[inputSize], activeArray, true);
 
             Assert.IsTrue(0 == activeArray.Count(i => i > 0));//, ArrayUtils.INT_GREATER_THAN_0).length);
         }
@@ -289,7 +289,7 @@ namespace UnitTestsProject
             cn.InhibitionRadius = 2;
 
             int[] activeArray = new int[nColumns];
-            sp.compute(cn, new int[inputSize], activeArray, true);
+            sp.compute( new int[inputSize], activeArray, true);
 
             Assert.IsTrue(6 == activeArray.Count(i => i > 0));//, ArrayUtils.INT_GREATER_THAN_0).length);
         }
@@ -319,7 +319,7 @@ namespace UnitTestsProject
             sp.init(cn);
 
             int[] activeArray = new int[nColumns];
-            sp.compute(cn, new int[inputSize], activeArray, true);
+            sp.compute( new int[inputSize], activeArray, true);
 
             Assert.IsTrue(0 == activeArray.Count(i => i > 0));//, ArrayUtils.INT_GREATER_THAN_0).length);
         }
@@ -350,7 +350,7 @@ namespace UnitTestsProject
             int[] expOutput = { 1,1,1 }; // Added during implementation of parallel.
             /*{ 1, 1, 1 }*/ ;
             // { 2, 1, 0 }; This was used originally on Linux with JAVA and Pyhton
-            sp.compute(cn, inputVector, activeArray, true);
+            sp.compute( inputVector, activeArray, true);
 
             double[] boostedOverlaps = cn.BoostedOverlaps;
             int[] overlaps = cn.Overlaps;
@@ -405,7 +405,7 @@ namespace UnitTestsProject
 
             int[] activeArray = new int[2048];
 
-            sp.compute(mem, inputVector, activeArray, true);
+            sp.compute( inputVector, activeArray, true);
 
         }
 
@@ -456,7 +456,7 @@ namespace UnitTestsProject
 
             int[] activeArray = new int[2048];
 
-            sp.compute(mem, inputVector, activeArray, true);
+            sp.compute( inputVector, activeArray, true);
 
             int[] real = activeArray.IndexWhere(i => i > 0).ToArray();
 
@@ -2577,7 +2577,7 @@ namespace UnitTestsProject
             sp.init(c);
             try
             {
-                sp.compute(c, new int[misMatchedDims], new int[25], true);
+                sp.compute(new int[misMatchedDims], new int[25], true);
                 //fail();
                 //Assert.Fail();
             }
@@ -2604,7 +2604,7 @@ namespace UnitTestsProject
             sp.init(c);
             try
             {
-                sp.compute(c, new int[matchedDims], new int[25], true);
+                sp.compute(new int[matchedDims], new int[25], true);
             }
             catch (ArgumentException e)
             {

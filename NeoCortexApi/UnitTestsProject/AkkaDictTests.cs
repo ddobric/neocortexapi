@@ -333,7 +333,7 @@ namespace UnitTestsProject
                         {
                             sw.Reset();
                             sw.Start();
-                            sp.compute(mem, inputVector, activeArray, true);
+                            sp.compute(inputVector, activeArray, true);
                             sw.Stop();
                             Debug.WriteLine($"Compute time: {sw.ElapsedMilliseconds}");
 
