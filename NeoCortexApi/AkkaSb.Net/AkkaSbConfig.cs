@@ -15,7 +15,7 @@ namespace AkkaSb.Net
 
     public class NodeConfig
     {
-        public string SendQueue { get; set; }
+        public string ReplyQueue { get; set; }
 
         public string ReceiveQueue { get; set; }
     }

@@ -16,7 +16,7 @@ namespace AkkaSb.Net
         public const string cMsgType = "MsgType";
         public const string cExpectResponse = "ExpectResponse";
 
-        public TimeSpan MaxProcessingTime { get; set; }
+        public TimeSpan MaxProcessingTime { get; set; } 
 
 
         internal ClientPair ClientPair { get; set; }
@@ -44,7 +44,7 @@ namespace AkkaSb.Net
 
         public async Task<TResponse> Ask<TResponse>(object msg, TimeSpan? timeout = null)
         {
-            var sbMsg = CreateMessage(msg, true);
+            var sbMsg = CreateMessage(msg, true, actorType, actorId);
 
             await this.ClientPair.SenderClient.SendAsync(sbMsg);
 
@@ -55,7 +55,7 @@ namespace AkkaSb.Net
 
         public async Task Tell(object msg, TimeSpan? timeout = null)
         {
-            var sbMsg = CreateMessage(msg, false);
+            var sbMsg = CreateMessage(msg, false, actorType, actorId);
 
             await this.ClientPair.SenderClient.SendAsync(sbMsg);
         }
@@ -78,7 +78,7 @@ namespace AkkaSb.Net
 
                 if (receivedMessages.TryGetValue(sbMsg.MessageId, out sbRcvMsg))
                 {
-                    msg = DeserializeMsg<TResponse>(sbMsg.Body);
+                    msg = DeserializeMsg<TResponse>(sbRcvMsg.Body);
                     break;
                 }
 
@@ -87,18 +87,31 @@ namespace AkkaSb.Net
 
             return msg;
         }
+              
 
-      
-
-        private Message CreateMessage(object msg, bool expectResponse)
+        internal static Message CreateMessage(object msg, bool expectResponse, Type actorType, ActorId actorId)
         {
             Message sbMsg = new Message(SerializeMsg(msg));
-            sbMsg.UserProperties.Add(cActorType, this.actorType.AssemblyQualifiedName);
+         
+            sbMsg.UserProperties.Add(cActorType, actorType.AssemblyQualifiedName);
             sbMsg.UserProperties.Add(cMsgType, msg.GetType().AssemblyQualifiedName);
-            sbMsg.UserProperties.Add(cActorId, (string)this.actorId);
+            sbMsg.UserProperties.Add(cActorId, (string)actorId);
             sbMsg.UserProperties.Add(cExpectResponse, (bool)expectResponse);
 
-            sbMsg.SessionId = $"{this.GetType().Name}/{this.actorId}";
+            sbMsg.SessionId = $"{actorType.Name}/{actorId}";
+            sbMsg.MessageId = $"{sbMsg.SessionId}/{Guid.NewGuid().ToString()}";
+
+            return sbMsg;
+        }
+
+        internal static Message CreateResponseMessage(object msg, string replyToMsgId, Type actorType, ActorId actorId)
+        {
+            Message sbMsg = CreateMessage(msg, false, actorType, actorId);
+
+            sbMsg.ReplyTo = replyToMsgId;
+
+            // Response messages do not use sessions.
+            //sbMsg.SessionId = $"{actorType}/{actorId}";
 
             return sbMsg;
         }
@@ -120,30 +133,6 @@ namespace AkkaSb.Net
 
             return strObj;
         }
-
-
-        ///// <summary>
-        ///// Register two handlers: Message Receive- and Error-handler.
-        ///// </summary>
-        //private void RegisterReceiveHandler<TResponse>()
-        //{
-        //    // Configure the message handler options in terms of exception handling, number of concurrent messages to deliver, etc.
-        //    var messageHandlerOptions = new MessageHandlerOptions(ExceptionReceivedHandler)
-        //    {
-
-        //        // Maximum number of concurrent calls to the callback ProcessMessagesAsync(), set to 1 for simplicity.
-        //        // Set it according to how many messages the application wants to process in parallel.
-        //        MaxConcurrentCalls = 1,
-
-        //        // Indicates whether the message pump should automatically complete the messages after returning from user callback.
-        //        // False below indicates the complete operation is handled by the user callback as in ProcessMessagesAsync().
-        //        AutoComplete = true
-        //    };
-
-
-        //    // Register the function that processes messages with reliable messaging.
-        //    this.ClientPair.ReceiverClient.RegisterMessageHandler(ProcessMessagesAsync, messageHandlerOptions);
-        //}
 
        
 
