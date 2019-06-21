@@ -36,7 +36,7 @@ namespace NeoCortexApi.Network
             return this;
         }
 
-        public int[] Compute(int[] input, bool learn)
+        public IComputeOutput Compute(int[] input, bool learn)
         {
             for (int i = 0; i < this.HtmModules.Count; i++)
             {

@@ -385,6 +385,13 @@ namespace NeoCortexApi.Encoders
          */
         public abstract int[] Encode(object inputData);
 
+        public IComputeOutput Compute(int[] input, bool learn)
+        {
+            var result = Encode(input);
+            //return new NeoCortexApiInArrawyOutput(result);
+            return null;
+        }
+        
         /**
          * Set whether learning is enabled.
          * @param 	learningEnabled		flag indicating whether learning is enabled

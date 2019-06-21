@@ -293,9 +293,13 @@ namespace NeoCortexApi
                 }
         */
 
-        public int[] Compute(int[] input, bool learn)
+        public IComputeOutput Compute(int[] input, bool learn)
         {
-            throw new NotImplementedException();
+            int[] activeColumnsArr = new int[this.connections.HtmConfig.ColumnTopology.NumDimensions];
+
+            this.compute(input, activeColumnsArr, learn);
+
+            return new InArrayOutput(activeColumnsArr);
         }
 
         /**
