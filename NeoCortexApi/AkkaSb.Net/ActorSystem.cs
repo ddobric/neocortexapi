@@ -193,7 +193,7 @@ namespace AkkaSb.Net
 
             rcvEvent.Set();
 
-            await Task.FromResult<bool>(true);
+            await Task.CompletedTask;
         }
 
         private static Task ExceptionReceivedHandler(ExceptionReceivedEventArgs exceptionReceivedEventArgs)

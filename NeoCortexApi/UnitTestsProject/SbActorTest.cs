@@ -31,6 +31,20 @@ namespace UnitTestsProject
             return cfg;
         }
 
+        private List<string> RemoteNodes
+        {
+            get
+            {
+                List<string> list = new List<string>();
+                foreach (var key in getLocaSysConfig().RemoteNodes.Keys)
+                {
+                    list.Add(key);
+                }
+
+                return list;
+            }
+        }
+
         private AkkaSbConfig getRemote1SysConfig()
         {
             var localCfg = getLocaSysConfig();
@@ -43,7 +57,7 @@ namespace UnitTestsProject
         }
 
 
-        private AkkaSbConfig getRemot2SysConfig()
+        private AkkaSbConfig getRemote2SysConfig()
         {
             var localCfg = getLocaSysConfig();
 
@@ -182,7 +196,7 @@ namespace UnitTestsProject
             var cfg = getLocaSysConfig();
             ActorSystem sysLocal = new ActorSystem(cfg);
             ActorSystem sysRemote1 = new ActorSystem(getRemote1SysConfig());
-            ActorSystem sysRemote2 = new ActorSystem(getRemote1SysConfig());
+            ActorSystem sysRemote2 = new ActorSystem(getRemote2SysConfig());
 
             CancellationTokenSource src = new CancellationTokenSource();
 
@@ -227,7 +241,7 @@ namespace UnitTestsProject
             var cfg = getLocaSysConfig();
             ActorSystem sysLocal = new ActorSystem(cfg);
             ActorSystem sysRemote1 = new ActorSystem(getRemote1SysConfig());
-            ActorSystem sysRemote2 = new ActorSystem(getRemote1SysConfig());
+            ActorSystem sysRemote2 = new ActorSystem(getRemote2SysConfig());
 
             CancellationTokenSource src = new CancellationTokenSource();
 
@@ -242,18 +256,20 @@ namespace UnitTestsProject
             });
 
 
-            Parallel.For(0, 3, (i) =>
+            Parallel.For(0, 20, (i) =>
             {
-                ActorReference actorRef = sysLocal.CreateActor<MyActor>(i, cfg.RemoteNodes.FirstOrDefault().Key);
+                var nodeKey = RemoteNodes[i % RemoteNodes.Count];
 
-                for (int k = 0; k < 10; i++)
+                ActorReference actorRef = sysLocal.CreateActor<MyActor>(i, nodeKey);
+
+                for (int k = 0; k < 5; k++)
                 {
                     var response = actorRef.Ask<long>((long)k).Result;
                     Assert.IsTrue(response == k + 1);
 
-                    DateTime dtRes = actorRef.Ask<DateTime>(new DateTime(2019, 1, 1)).Result;
+                    DateTime dtRes = actorRef.Ask<DateTime>(new DateTime(2019, 1, 1 + i % 17)).Result;
 
-                    Assert.IsTrue(dtRes.Day == 2);
+                    Assert.IsTrue(dtRes.Day == 2 + i % 17);
                     Assert.IsTrue(dtRes.Year == 2019);
                     Assert.IsTrue(dtRes.Month == 1);
                 }

@@ -50,6 +50,11 @@ namespace NeoCortexApi.Network
 
             return null;
         }
+
+        //IModuleData IHtmModule.Compute(int[] input, bool learn)
+        //{
+        //    throw new NotImplementedException();
+        //}
         #endregion
 
         #region Private Methods
