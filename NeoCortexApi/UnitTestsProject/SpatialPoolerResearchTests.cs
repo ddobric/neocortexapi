@@ -435,7 +435,7 @@ namespace UnitTestsProject
                 Debug.WriteLine(str);
             }
         }
-
+        /**/
         /// <summary>
         /// Corresponds to git\nupic\examples\sp\sp_tutorial.py
         /// </summary>
@@ -469,7 +469,7 @@ namespace UnitTestsProject
 
         }
 
-
+        /*
         /// <summary>
         /// This test generates neghborhood cells for different radius and center of cell topoogy 64 single dimensional cell array.
         /// Reults are stored in CSV file, which is loaded by Python code 'neighborhood-test.py'to create a plotly diagram.
@@ -519,7 +519,7 @@ namespace UnitTestsProject
                 }
             }
         }
-
+        */
 
         /// <summary>
         /// Generates result of inhibition
@@ -550,7 +550,7 @@ namespace UnitTestsProject
             for (int i = 0; i < 100; i++)
             {
 
-                var overlaps = sp.calculateOverlap(mem, inputVector);
+                var overlaps = sp.CalculateOverlap(mem, inputVector);
                 var strOverlaps = Helpers.StringifyVector(overlaps);
 
                 var inhibitions = sp.inhibitColumns(mem, ArrayUtils.toDoubleArray(overlaps));
