@@ -12,4 +12,9 @@ namespace NeoCortexApi
     {
         //int[] Compute(int[] input, bool learn);
     }
+
+    public interface IComputeOutput
+    {
+
+    }
 }
