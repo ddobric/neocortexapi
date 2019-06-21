@@ -82,6 +82,11 @@ namespace NeoCortexApi
             return cycle;
         }
 
+        public int[] Compute(int[] input, bool learn)
+        {
+            throw new NotImplementedException();
+        }
+
         /**
          * Calculate the active cells, using the current active columns and dendrite
          * segments. Grow and reinforce synapses.

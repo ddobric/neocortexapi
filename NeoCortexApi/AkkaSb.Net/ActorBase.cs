@@ -51,18 +51,28 @@ namespace AkkaSb.Net
 
         public ActorId Id { get; set; }
 
+        public ActorBase()
+        {
+  
+        }
+
         public ActorBase(ActorId id)
         {
             this.Id = id;
+          //  this.Sender = new ActorReference(typeof(TActor), id, pair.Value, receivedMsgQueue, this.rcvEvent, this.MaxProcessingTimeOfMessage);
+
         }
 
-        internal void Invoke(object message)
+       
+        internal object Invoke(object message)
         {
             var pair = dict.FirstOrDefault(o => o.Key == message.GetType());
             if (pair.Key == null)
                 throw new ArgumentException($"Message contains unregistered message type. '{message.GetType()}' was not registerd in Receive() method.");
          
-            pair.Value.DynamicInvoke(message);
+            var res = pair.Value.DynamicInvoke(message);
+
+            return res;
         }
 
         public virtual void Activated()
@@ -75,7 +85,7 @@ namespace AkkaSb.Net
 
         }
 
-        public void Receive<T>(Action<T> handler)
+        public void Receive<T>(Func<T, object> handler)
         {
             dict[typeof(T)] = (Delegate)handler;
         }

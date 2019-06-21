@@ -54,24 +54,36 @@ namespace UnitTestsProject
 
         public class MyActor : ActorBase
         {
-            public MyActor(ActorId id) : base(id)
+            public MyActor(ActorId id):base(id)
             {
                 Receive<string>((str) =>
                 {
                     receivedMessages.TryAdd(str, str);
+                    return null;
                 });
 
                 Receive<TestClass>((c) =>
                 {
                     receivedMessages.TryAdd(c, c.ToString());
+                    return null;
+                });
+
+                Receive<int>((num) =>
+                {
+                    return null;
                 });
             }
-
         }
 
-        [TestMethod]
 
-        public void InitActorSystem()
+        /// <summary>
+        /// Tests if Tell() works as designed.
+        /// </summary>
+
+        [TestMethod]
+        [TestCategory("SbActorTests")]
+
+        public void TellTest()
         {
             var cfg = getLocaSysConfig();
             ActorSystem sysLocal = new ActorSystem(cfg);
@@ -79,9 +91,9 @@ namespace UnitTestsProject
 
             CancellationTokenSource src = new CancellationTokenSource();
 
-            var task = Task.Run(async () =>
+            var task = Task.Run(() =>
             {
-                await sysRemote.Start(src.Token);
+                sysRemote.Start(src.Token);
             });
 
             ActorReference actorRef1 = sysLocal.CreateActor<MyActor>(1, cfg.RemoteNodes.FirstOrDefault().Key);
@@ -91,6 +103,48 @@ namespace UnitTestsProject
 
             ActorReference actorRef2 = sysLocal.CreateActor<MyActor>(2, cfg.RemoteNodes.FirstOrDefault().Key);
             actorRef2.Tell("message 2").Wait();
+
+            while (true)
+            {
+                if (receivedMessages.Count == 3)
+                {
+                    Assert.IsTrue(receivedMessages.Values.Contains("message 1"));
+                    Assert.IsTrue(receivedMessages.Values.Contains("message 2"));
+                    Assert.IsTrue(receivedMessages.Values.Contains("UnitTestsProject.SbAkkaTest+TestClass"));
+                    src.Cancel();
+                    break;
+                }
+                Thread.Sleep(250);
+            }
+
+            task.Wait();
+        }
+
+        /// <summary>
+        /// Tests if Tell() works as designed.
+        /// </summary>
+
+        [TestMethod]
+        [TestCategory("SbActorTests")]
+        public void AskTest()
+        {
+            var cfg = getLocaSysConfig();
+            ActorSystem sysLocal = new ActorSystem(cfg);
+            ActorSystem sysRemote = new ActorSystem(getRemote1SysConfig());
+
+            CancellationTokenSource src = new CancellationTokenSource();
+
+            var task = Task.Run(() =>
+            {
+                sysRemote.Start(src.Token);
+            });
+
+            ActorReference actorRef1 = sysLocal.CreateActor<MyActor>(1, cfg.RemoteNodes.FirstOrDefault().Key);
+        
+            actorRef1.Ask<int>(new TestClass()).Wait();
+
+            //ActorReference actorRef2 = sysLocal.CreateActor<MyActor>(2, cfg.RemoteNodes.FirstOrDefault().Key);
+            //actorRef2.Tell("message 2").Wait();
 
             while (true)
             {

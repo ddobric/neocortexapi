@@ -135,10 +135,10 @@ namespace UnitTestsProject
 
             sp = new SpatialPooler();
             mem = new Connections();
-            parameters.apply(mem);
-            sp.init(mem);
+            parameters.apply(mem);           
 
             SpatialPoolerMock mock = new SpatialPoolerMock(new int[] { 0, 1, 2, 3, 4 });
+            mock.init(mem);
 
             int[] inputVector = new int[] { 1, 0, 1, 0, 1, 0, 0, 1, 1 };
             int[] activeArray = new int[] { 0, 0, 0, 0, 0 };
@@ -179,9 +179,11 @@ namespace UnitTestsProject
             parameters.setMaxBoost(10);
             parameters.setSynPermConnected(0.1);
 
-            initSP();
+            mem = new Connections();
+            parameters.apply(mem);           
 
             SpatialPoolerMock mock = new SpatialPoolerMock(new int[] { 0, 1, 2, 3, 4 });
+            mock.init(mem);
 
             int[] inputVector = new int[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
             int[] activeArray = new int[] { 0, 0, 0, 0, 0 };

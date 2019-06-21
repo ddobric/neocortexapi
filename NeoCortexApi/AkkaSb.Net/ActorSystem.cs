@@ -20,13 +20,15 @@ namespace AkkaSb.Net
 
         internal Dictionary<string, ClientPair> RemoteQueueClients = new Dictionary<string, ClientPair>();
 
-        protected SessionClient SessionClient;
+        protected SessionClient SessionRcvClient;
+
+        protected QueueClient ResponseQueueClient;
 
         private ConcurrentDictionary<string, ActorBase> actorMap = new ConcurrentDictionary<string, ActorBase>();
 
         public ActorSystem(AkkaSbConfig config)
         {
-            this.SessionClient = new SessionClient(config.SbConnStr, config.LocalNode.ReceiveQueue,
+            this.SessionRcvClient = new SessionClient(config.SbConnStr, config.LocalNode.ReceiveQueue,
                 retryPolicy: createRetryPolicy(),
                  receiveMode: ReceiveMode.PeekLock);
 
@@ -79,7 +81,18 @@ namespace AkkaSb.Net
             }
         }
 
-        public async Task Start(CancellationToken cancelToken)
+        /// <summary>
+        /// Should implemented partitioning.
+        /// </summary>
+        /// <typeparam name="TActor"></typeparam>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ActorReference CreateActor<TActor>(ActorId id) where TActor : ActorBase
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Start(CancellationToken cancelToken)
         {
             Task[] tasks = new Task[2];
 
@@ -89,7 +102,7 @@ namespace AkkaSb.Net
                 {
                     try
                     {
-                        var session = await this.SessionClient.AcceptMessageSessionAsync();
+                        var session = await this.SessionRcvClient.AcceptMessageSessionAsync();
                         Debug.WriteLine($"Session: {session.SessionId}");
                         _ = RunDispatcherForActor(session, cancelToken);
                     }
@@ -147,18 +160,9 @@ namespace AkkaSb.Net
 
                     Debug.WriteLine($"Received message: {tp.Name}/{id}");
 
-                    var method = typeof(ActorReference).GetMethod("DeserializeMsg", BindingFlags.Static | BindingFlags.NonPublic);
-
-                    var msgTypeName = new ActorId((string)msg.UserProperties[ActorReference.cMsgType]);
-                    var msgType = Type.GetType(msgTypeName);
-                    if (msgType == null)
-                        throw new ArgumentException($"Cabbot find requested type {msgTypeName}");
-
-                    //MethodInfo genericDeserialize = method.MakeGenericMethod(new[] { msgType });
-                    //var invokingMsg = genericDeserialize.Invoke(null, new object[] { msg.Body });
                     var invokingMsg = ActorReference.DeserializeMsg<object>(msg.Body);
-                    //var invokingMsg = genericDeserialize()
-                    InvokeOperationOnActor(actor, invokingMsg);
+                
+                    InvokeOperationOnActor(actor, invokingMsg, (bool)msg.UserProperties[ActorReference.cExpectResponse]);
 
                     await session.CompleteAsync(msg.SystemProperties.LockToken);
                 }
@@ -194,9 +198,13 @@ namespace AkkaSb.Net
             return Task.CompletedTask;
         }
 
-        private void InvokeOperationOnActor(ActorBase actor, object msg)
+        private void InvokeOperationOnActor(ActorBase actor, object msg, bool expectResponse)
         {
-            actor.Invoke(msg);
+            var res = actor.Invoke(msg);
+            if (expectResponse)
+            {
+              //  this.
+            }
         }
         #endregion
     }

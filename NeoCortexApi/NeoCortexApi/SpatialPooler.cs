@@ -43,6 +43,8 @@ namespace NeoCortexApi
          */
         public SpatialPooler() { }
 
+        private Connections connections;
+
         /**
          * Initializes the specified {@link Connections} object which contains
          * the memory and structural anatomy this spatial pooler uses to implement
@@ -52,6 +54,8 @@ namespace NeoCortexApi
          */
         public void init(Connections c, DistributedMemory distMem = null)
         {
+            this.connections = c;
+
             //Stopwatch sw = new Stopwatch();
             //sw.Start();
 
@@ -289,7 +293,10 @@ namespace NeoCortexApi
                 }
         */
 
-
+        public int[] Compute(int[] input, bool learn)
+        {
+            throw new NotImplementedException();
+        }
 
         /**
          * This is the primary public method of the SpatialPooler class. This
@@ -316,26 +323,26 @@ namespace NeoCortexApi
          *                          and has many uses. For example, you might want to feed in
          *                          various inputs and examine the resulting SDR's.
          */
-        public void compute(Connections c, int[] inputVector, int[] activeArray, bool learn)
+        public void compute(Connections c2, int[] inputVector, int[] activeArray, bool learn)
         {
-            if (inputVector.Length != c.NumInputs)
+            if (inputVector.Length != this.connections.NumInputs)
             {
                 throw new ArgumentException(
-                        "Input array must be same size as the defined number of inputs: From Params: " + c.NumInputs +
+                        "Input array must be same size as the defined number of inputs: From Params: " + this.connections.NumInputs +
                         ", From Input Vector: " + inputVector.Length);
             }
 
-            updateBookeepingVars(c, learn);
+            updateBookeepingVars(this.connections, learn);
 
             // Gets overlap over every single column.
-            var overlaps = CalculateOverlap(c, inputVector);
+            var overlaps = CalculateOverlap(this.connections, inputVector);
 
             //var overlapsStr = Helpers.StringifyVector(overlaps);
             //Debug.WriteLine("overlap: " + overlapsStr);
 
             //totalOverlap = overlapActive * weightActive + overlapPredictedActive * weightPredictedActive
 
-            c.Overlaps = overlaps;
+            this.connections.Overlaps = overlaps;
 
             var overlapsStr = Helpers.StringifyVector(overlaps);
             //Debug.WriteLine("overlap: " + overlapsStr);
@@ -347,27 +354,27 @@ namespace NeoCortexApi
             if (learn)
             {
                 //Debug.WriteLine("Boosted Factor: " + c.BoostFactors);
-                boostedOverlaps = ArrayUtils.multiply(c.BoostFactors, overlaps);
+                boostedOverlaps = ArrayUtils.multiply(this.connections.BoostFactors, overlaps);
             }
             else
             {
                 boostedOverlaps = ArrayUtils.toDoubleArray(overlaps);
             }
 
-            c.BoostedOverlaps = boostedOverlaps;
+            this.connections.BoostedOverlaps = boostedOverlaps;
 
-            int[] activeColumns = inhibitColumns(c, boostedOverlaps);
+            int[] activeColumns = inhibitColumns(this.connections, boostedOverlaps);
 
             if (learn)
             {
-                AdaptSynapses(c, inputVector, activeColumns);
-                updateDutyCycles(c, overlaps, activeColumns);
-                BumpUpWeakColumns(c);
-                updateBoostFactors(c);
-                if (isUpdateRound(c))
+                AdaptSynapses(this.connections, inputVector, activeColumns);
+                updateDutyCycles(this.connections, overlaps, activeColumns);
+                BumpUpWeakColumns(this.connections);
+                updateBoostFactors(this.connections);
+                if (isUpdateRound(this.connections))
                 {
-                    updateInhibitionRadius(c);
-                    updateMinDutyCycles(c);
+                    updateInhibitionRadius(this.connections);
+                    updateMinDutyCycles(this.connections);
                 }
             }
 
@@ -1641,6 +1648,8 @@ namespace NeoCortexApi
             }
             return result;
         }
+
+      
     }
 }
 

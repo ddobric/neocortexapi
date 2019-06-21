@@ -14,6 +14,8 @@ namespace AkkaSb.Net
         public const string cActorType = "ActorType";
         public const string cActorId = "ActorId";
         public const string cMsgType = "MsgType";
+        public const string cExpectResponse = "ExpectResponse";
+
         public TimeSpan MaxProcessingTime { get; set; }
 
 
@@ -42,18 +44,18 @@ namespace AkkaSb.Net
 
         public async Task<TResponse> Ask<TResponse>(object msg, TimeSpan? timeout = null)
         {
-            var sbMsg = CreateMessage(msg);
+            var sbMsg = CreateMessage(msg, true);
 
             await this.ClientPair.SenderClient.SendAsync(sbMsg);
 
-            TResponse res = await WaitOnResponse<TResponse>(sbMsg, timeout);
+            TResponse res = WaitOnResponse<TResponse>(sbMsg, timeout);
 
             return res;
         }
 
         public async Task Tell(object msg, TimeSpan? timeout = null)
         {
-            var sbMsg = CreateMessage(msg);
+            var sbMsg = CreateMessage(msg, false);
 
             await this.ClientPair.SenderClient.SendAsync(sbMsg);
         }
@@ -62,9 +64,7 @@ namespace AkkaSb.Net
 
         #region Private Methods
 
-   
-
-        private async Task<TResponse> WaitOnResponse<TResponse>(Message sbMsg, TimeSpan? timeout = null)
+        private TResponse WaitOnResponse<TResponse>(Message sbMsg, TimeSpan? timeout = null)
         {
             DateTime entered = DateTime.Now;
 
@@ -90,12 +90,13 @@ namespace AkkaSb.Net
 
       
 
-        private Message CreateMessage(object msg)
+        private Message CreateMessage(object msg, bool expectResponse)
         {
             Message sbMsg = new Message(SerializeMsg(msg));
             sbMsg.UserProperties.Add(cActorType, this.actorType.AssemblyQualifiedName);
             sbMsg.UserProperties.Add(cMsgType, msg.GetType().AssemblyQualifiedName);
-            sbMsg.UserProperties.Add(cActorId, (string)this.actorId);            
+            sbMsg.UserProperties.Add(cActorId, (string)this.actorId);
+            sbMsg.UserProperties.Add(cExpectResponse, (bool)expectResponse);
 
             sbMsg.SessionId = $"{this.GetType().Name}/{this.actorId}";
 

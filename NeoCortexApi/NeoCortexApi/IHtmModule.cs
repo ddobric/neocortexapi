@@ -10,5 +10,6 @@ namespace NeoCortexApi
     /// </summary>
     public interface IHtmModule
     {
+        //int[] Compute(int[] input, bool learn);
     }
 }
