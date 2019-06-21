@@ -295,7 +295,7 @@ namespace NeoCortexApi
 
         public IComputeOutput Compute(int[] input, bool learn)
         {
-            int[] activeColumnsArr = new int[this.connections.HtmConfig.ColumnTopology.NumDimensions];
+            int[] activeColumnsArr = new int[this.connections.HtmConfig.NumColumns];
 
             this.compute(input, activeColumnsArr, learn);
 

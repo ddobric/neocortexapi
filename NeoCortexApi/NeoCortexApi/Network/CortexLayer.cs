@@ -36,19 +36,17 @@ namespace NeoCortexApi.Network
             return this;
         }
 
-        public IComputeOutput Compute(int[] input, bool learn)
+        public void Compute(int[] input, bool learn)
         {
-            for (int i = 0; i < this.HtmModules.Count; i++)
-            {
-
-            }
-
             foreach (var module in this.HtmModules)
             {
-              //  var out = module.Compute(...);
+                module.Compute(input, learn);
             }
+        }
 
-            return null;
+        IComputeOutput IHtmModule.Compute(int[] input, bool learn)
+        {
+            throw new NotImplementedException();
         }
         #endregion
 

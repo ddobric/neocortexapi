@@ -18,12 +18,15 @@ namespace UnitTestsProject
         /// </summary>
         [TestMethod]
         [TestCategory("NetworkTests")]
-        public void InitTests(int input)
+        public void InitTests()
         {
             CortexNetwork net = new CortexNetwork("my cortex");
             List<CortexRegion> regions = new List<CortexRegion>();
+            CortexRegion region0 = new CortexRegion("1st Region");
+            regions.Add(region0);
+            CortexRegion region1 = new CortexRegion("2nd Region"); 
             net = new CortexNetwork("my cortex", regions );
-
+            net.AddRegion(region1);
             SpatialPooler sp1 = new SpatialPooler();
             TemporalMemory tm1 = new TemporalMemory();
             EncoderBase encoder = new BooleanEncoder();
