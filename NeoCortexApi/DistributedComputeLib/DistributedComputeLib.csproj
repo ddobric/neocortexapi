@@ -7,16 +7,10 @@
 
   <ItemGroup>
     <Compile Remove="InMemoryArrayMOVETTORNTITIES.cs" />
-    <Compile Remove="SbNodeActor.cs" />
-    <Compile Remove="SbReceiver.cs" />
-    <Compile Remove="SbSender.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="InMemoryArrayMOVETTORNTITIES.cs" />
-    <None Include="SbNodeActor.cs" />
-    <None Include="SbReceiver.cs" />
-    <None Include="SbSender.cs" />
   </ItemGroup>
 
   <ItemGroup>

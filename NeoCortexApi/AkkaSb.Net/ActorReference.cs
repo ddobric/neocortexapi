@@ -15,11 +15,12 @@ namespace AkkaSb.Net
         public const string cActorId = "ActorId";
         public const string cMsgType = "MsgType";
         public const string cExpectResponse = "ExpectResponse";
+        public const string cReply = "ExpectResponse";
 
         public TimeSpan MaxProcessingTime { get; set; } 
 
 
-        internal ClientPair ClientPair { get; set; }
+        internal QueueClient RequestMsgSenderClient  { get; set; }
 
         private ConcurrentDictionary<string, Message> receivedMessages ;
 
@@ -31,22 +32,25 @@ namespace AkkaSb.Net
 
         private string remoteNodeName;
 
-        internal ActorReference(Type actorType, ActorId id, ClientPair remoteNode,  ConcurrentDictionary<string, Message> receivedMsgQueue, ManualResetEvent rcvEvent, TimeSpan maxProcessingTime)
+        private string replyQueueName;
+
+        internal ActorReference(Type actorType, ActorId id, QueueClient requestMsgSenderClient,  string replyQueueName, ConcurrentDictionary<string, Message> receivedMsgQueue, ManualResetEvent rcvEvent, TimeSpan maxProcessingTime)
         {
             this.actorType = actorType;
             this.actorId = id;
-            this.ClientPair = remoteNode;
+            this.RequestMsgSenderClient = requestMsgSenderClient;
             this.MaxProcessingTime = maxProcessingTime;
             this.receivedMessages = receivedMsgQueue;
             this.rcvEvent = rcvEvent;
+            this.replyQueueName = replyQueueName;
         }
 
 
         public async Task<TResponse> Ask<TResponse>(object msg, TimeSpan? timeout = null)
         {
             var sbMsg = CreateMessage(msg, true, actorType, actorId);
-
-            await this.ClientPair.SenderClient.SendAsync(sbMsg);
+            sbMsg.ReplyTo = this.replyQueueName;
+            await this.RequestMsgSenderClient.SendAsync(sbMsg);
 
             TResponse res = WaitOnResponse<TResponse>(sbMsg, timeout);
 
@@ -57,7 +61,7 @@ namespace AkkaSb.Net
         {
             var sbMsg = CreateMessage(msg, false, actorType, actorId);
 
-            await this.ClientPair.SenderClient.SendAsync(sbMsg);
+            await this.RequestMsgSenderClient.SendAsync(sbMsg);
         }
 
    
@@ -107,9 +111,7 @@ namespace AkkaSb.Net
         internal static Message CreateResponseMessage(object msg, string replyToMsgId, Type actorType, ActorId actorId)
         {
             Message sbMsg = CreateMessage(msg, false, actorType, actorId);
-
-            sbMsg.ReplyTo = replyToMsgId;
-
+            sbMsg.CorrelationId = replyToMsgId;
             // Response messages do not use sessions.
             //sbMsg.SessionId = $"{actorType}/{actorId}";
 

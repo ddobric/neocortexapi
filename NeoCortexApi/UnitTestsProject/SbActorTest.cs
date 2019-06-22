@@ -23,52 +23,44 @@ namespace UnitTestsProject
         {
             AkkaSbConfig cfg = new AkkaSbConfig();
             cfg.SbConnStr = sbConnStr;
-            cfg.LocalNode = new NodeConfig() { ReceiveQueue = "actorsystem/rcvlocal", ReplyQueue = "actorsystem/sendlocal" };
-            cfg.RemoteNodes = new Dictionary<string, NodeConfig>();
-            cfg.RemoteNodes.Add("actorsystem/remote1", new NodeConfig() { ReceiveQueue = "actorsystem/rcvnode1", ReplyQueue = "actorsystem/sendnode1" });
-            cfg.RemoteNodes.Add("actorsystem/remote2", new NodeConfig() { ReceiveQueue = "actorsystem/rcvnode2", ReplyQueue = "actorsystem/sendnode2" });
+            cfg.ReplyMsgQueue = "actorsystem/rcvlocal";
+            cfg.RequestMsgQueue = "actorsystem/actorqueue";
+            
+            //cfg.LocalNode = new NodeConfig() { ReplyMsgReceiveQueue = "actorsystem/rcvlocal", RequestMsgQueue = "actorsystem/sendlocal" };
+            //cfg.RemoteNodes = new Dictionary<string, NodeConfig>();
+            //cfg.RemoteNodes.Add("actorsystem/remote1", new NodeConfig() { ReplyMsgReceiveQueue = "actorsystem/rcvnode1", RequestMsgQueue = "actorsystem/actorqueue" });
+            //cfg.RemoteNodes.Add("actorsystem/remote2", new NodeConfig() { ReplyMsgReceiveQueue = "actorsystem/rcvnode2", RequestMsgQueue = "actorsystem/actorqueue" });
 
             return cfg;
         }
 
-        private List<string> RemoteNodes
-        {
-            get
-            {
-                List<string> list = new List<string>();
-                foreach (var key in getLocaSysConfig().RemoteNodes.Keys)
-                {
-                    list.Add(key);
-                }
+        //private List<string> RemoteNodes
+        //{
+        //    get
+        //    {
+        //        List<string> list = new List<string>();
+        //        foreach (var key in getLocaSysConfig().RemoteNodes.Keys)
+        //        {
+        //            list.Add(key);
+        //        }
 
-                return list;
-            }
-        }
+        //        return list;
+        //    }
+        //}
 
-        private AkkaSbConfig getRemote1SysConfig()
-        {
-            var localCfg = getLocaSysConfig();
-
-            AkkaSbConfig cfg = new AkkaSbConfig();
-            cfg.SbConnStr = sbConnStr;
-            cfg.LocalNode = new NodeConfig() { ReceiveQueue = localCfg.RemoteNodes["actorsystem/remote1"].ReplyQueue, ReplyQueue = localCfg.RemoteNodes["actorsystem/remote1"].ReceiveQueue };
-
-            return cfg;
-        }
-
-
-        private AkkaSbConfig getRemote2SysConfig()
+        private AkkaSbConfig getRemoteSysConfig()
         {
             var localCfg = getLocaSysConfig();
 
             AkkaSbConfig cfg = new AkkaSbConfig();
             cfg.SbConnStr = sbConnStr;
-            cfg.LocalNode = new NodeConfig() { ReceiveQueue = localCfg.RemoteNodes["actorsystem/remote2"].ReplyQueue, ReplyQueue = localCfg.RemoteNodes["actorsystem/remote2"].ReceiveQueue };
-
+            cfg.RequestMsgQueue = "actorsystem/actorqueue";
+            cfg.ReplyMsgQueue = null;
+      
             return cfg;
         }
 
-
+               
         static ConcurrentDictionary<object, object> receivedMessages = new ConcurrentDictionary<object, object>();
 
 
@@ -120,8 +112,8 @@ namespace UnitTestsProject
         public void TellTest()
         {
             var cfg = getLocaSysConfig();
-            ActorSystem sysLocal = new ActorSystem(cfg);
-            ActorSystem sysRemote = new ActorSystem(getRemote1SysConfig());
+            ActorSystem sysLocal = new ActorSystem("local", cfg);
+            ActorSystem sysRemote = new ActorSystem("remote", getRemoteSysConfig());
 
             CancellationTokenSource src = new CancellationTokenSource();
 
@@ -130,12 +122,12 @@ namespace UnitTestsProject
                 sysRemote.Start(src.Token);
             });
 
-            ActorReference actorRef1 = sysLocal.CreateActor<MyActor>(1, cfg.RemoteNodes.FirstOrDefault().Key);
+            ActorReference actorRef1 = sysLocal.CreateActor<MyActor>(1);
             actorRef1.Tell("message 1").Wait();
 
             actorRef1.Tell(new TestClass()).Wait();
 
-            ActorReference actorRef2 = sysLocal.CreateActor<MyActor>(2, cfg.RemoteNodes.FirstOrDefault().Key);
+            ActorReference actorRef2 = sysLocal.CreateActor<MyActor>(2);
             actorRef2.Tell("message 2").Wait();
 
             while (true)
@@ -163,8 +155,8 @@ namespace UnitTestsProject
         public void AskTest()
         {
             var cfg = getLocaSysConfig();
-            ActorSystem sysLocal = new ActorSystem(cfg);
-            ActorSystem sysRemote = new ActorSystem(getRemote1SysConfig());
+            ActorSystem sysLocal = new ActorSystem("local", cfg);
+            ActorSystem sysRemote = new ActorSystem("remote", getRemoteSysConfig());
 
             CancellationTokenSource src = new CancellationTokenSource();
 
@@ -173,7 +165,7 @@ namespace UnitTestsProject
                 sysRemote.Start(src.Token);
             });
 
-            ActorReference actorRef1 = sysLocal.CreateActor<MyActor>(1, cfg.RemoteNodes.FirstOrDefault().Key);
+            ActorReference actorRef1 = sysLocal.CreateActor<MyActor>(1);
         
             var response = actorRef1.Ask<long>((long)42).Result;
 
@@ -194,9 +186,9 @@ namespace UnitTestsProject
         public void AskManyNodesTest()
         {
             var cfg = getLocaSysConfig();
-            ActorSystem sysLocal = new ActorSystem(cfg);
-            ActorSystem sysRemote1 = new ActorSystem(getRemote1SysConfig());
-            ActorSystem sysRemote2 = new ActorSystem(getRemote2SysConfig());
+            ActorSystem sysLocal = new ActorSystem("local", cfg);
+            ActorSystem sysRemote1 = new ActorSystem("node1", getRemoteSysConfig());
+            ActorSystem sysRemote2 = new ActorSystem("node2", getRemoteSysConfig());
 
             CancellationTokenSource src = new CancellationTokenSource();
 
@@ -210,15 +202,14 @@ namespace UnitTestsProject
                 sysRemote2.Start(src.Token);
             });
 
-            ActorReference actorRef1 = sysLocal.CreateActor<MyActor>(1, cfg.RemoteNodes.FirstOrDefault().Key);
+            ActorReference actorRef1 = sysLocal.CreateActor<MyActor>(1);
             var response = actorRef1.Ask<long>((long)42).Result;
             Assert.IsTrue(response == 43);
 
             response = actorRef1.Ask<long>((long)7).Result;
             Assert.IsTrue(response == 8);
 
-
-            ActorReference actorRef2 = sysLocal.CreateActor<MyActor>(1, cfg.RemoteNodes.LastOrDefault().Key);
+            ActorReference actorRef2 = sysLocal.CreateActor<MyActor>(7);
             var response2 = actorRef2.Ask<long>((long)10).Result;
             Assert.IsTrue(response2 == 11);
 
@@ -239,9 +230,9 @@ namespace UnitTestsProject
         public void AskManyNodesManyMessagesTest()
         {
             var cfg = getLocaSysConfig();
-            ActorSystem sysLocal = new ActorSystem(cfg);
-            ActorSystem sysRemote1 = new ActorSystem(getRemote1SysConfig());
-            ActorSystem sysRemote2 = new ActorSystem(getRemote2SysConfig());
+            ActorSystem sysLocal = new ActorSystem("local", cfg);
+            ActorSystem sysRemote1 = new ActorSystem("remote1", getRemoteSysConfig());
+            ActorSystem sysRemote2 = new ActorSystem("remote2", getRemoteSysConfig());
 
             CancellationTokenSource src = new CancellationTokenSource();
 
@@ -258,9 +249,7 @@ namespace UnitTestsProject
 
             Parallel.For(0, 20, (i) =>
             {
-                var nodeKey = RemoteNodes[i % RemoteNodes.Count];
-
-                ActorReference actorRef = sysLocal.CreateActor<MyActor>(i, nodeKey);
+                ActorReference actorRef = sysLocal.CreateActor<MyActor>(i);
 
                 for (int k = 0; k < 5; k++)
                 {

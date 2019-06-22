@@ -7,8 +7,8 @@ namespace AkkaSb.Net
 {
     public class ClientPair
     {
-        public QueueClient ReceiverClient { get; set; }
+        public QueueClient ReplyMsgReceiverClient { get; set; }
 
-        public QueueClient SenderClient { get; set; }
+        public QueueClient RequestMsgSenderClient { get; set; }
     }
 }

@@ -14,49 +14,57 @@ namespace AkkaSb.Net
 {
     public class ActorSystem
     {
+        private string sbConnStr;
+
         private ConcurrentDictionary<string, Message> receivedMsgQueue = new ConcurrentDictionary<string, Message>();
 
         private TimeSpan MaxProcessingTimeOfMessage { get; set; } = TimeSpan.FromDays(1);
 
-        internal Dictionary<string, ClientPair> RemoteQueueClients = new Dictionary<string, ClientPair>();
+        internal Dictionary<string, QueueClient> sendReplyQueueClients = new Dictionary<string, QueueClient>();
 
-        protected SessionClient sessionRcvClient;
+        private QueueClient ReplyMsgReceiverQueueClient;
 
-        protected QueueClient sendReplyQueueClient;
+        private SessionClient sessionRcvClient;
+
+        private QueueClient sendRequestQueueClient;
+
 
         private ConcurrentDictionary<string, ActorBase> actorMap = new ConcurrentDictionary<string, ActorBase>();
 
-        public ActorSystem(AkkaSbConfig config)
+        public string Name { get; set; }
+
+        public ActorSystem(string name, AkkaSbConfig config)
         {
-            this.sessionRcvClient = new SessionClient(config.SbConnStr, config.LocalNode.ReceiveQueue,
+            this.Name = name;
+            this.sbConnStr = config.SbConnStr;
+            this.sessionRcvClient = new SessionClient(config.SbConnStr, config.RequestMsgQueue,
             retryPolicy: createRetryPolicy(),
             receiveMode: ReceiveMode.PeekLock);
 
-            this.sendReplyQueueClient = new QueueClient(config.SbConnStr, config.LocalNode.ReplyQueue,
+            this.sendRequestQueueClient = new QueueClient(config.SbConnStr, config.RequestMsgQueue,
             retryPolicy: createRetryPolicy(),
             receiveMode: ReceiveMode.PeekLock);
 
-            foreach (var node in config.RemoteNodes)
+            //this.sendReplyQueueClient = new QueueClient(config.SbConnStr, config.LocalNode.RequestMsgQueue,
+            //retryPolicy: createRetryPolicy(),
+            //receiveMode: ReceiveMode.PeekLock);
+
+            //
+            // Receiving of reply messages is optional. If the actor system does not send messages
+            // then it will also not listen for reply messages.
+            if (config.ReplyMsgQueue != null)
             {
-                ClientPair pair = new ClientPair();
-
-                pair.SenderClient = new QueueClient(config.SbConnStr, node.Value.ReplyQueue,
-                    retryPolicy: createRetryPolicy(),
-                     receiveMode: ReceiveMode.PeekLock);
-
-                pair.ReceiverClient = new QueueClient(config.SbConnStr, node.Value.ReceiveQueue,
-                   retryPolicy: createRetryPolicy(),
-                    receiveMode: ReceiveMode.PeekLock);
-
+                ReplyMsgReceiverQueueClient = new QueueClient(config.SbConnStr, config.ReplyMsgQueue,
+                       retryPolicy: createRetryPolicy(),
+                        receiveMode: ReceiveMode.PeekLock);
 
                 // Configure the message handler options in terms of exception handling, number of concurrent messages to deliver, etc.
                 var messageHandlerOptions = new MessageHandlerOptions(ExceptionReceivedHandler)
                 {
-
                     // Maximum number of concurrent calls to the callback ProcessMessagesAsync(), set to 1 for simplicity.
                     // Set it according to how many messages the application wants to process in parallel.
                     MaxConcurrentCalls = 1,
-
+                     
                     MaxAutoRenewDuration = this.MaxProcessingTimeOfMessage,
 
                     // Indicates whether the message pump should automatically complete the messages after returning from user callback.
@@ -65,36 +73,26 @@ namespace AkkaSb.Net
                 };
 
                 // Register the function that receives reply messages.
-                pair.ReceiverClient.RegisterMessageHandler(OnMessageReceivedAsync, messageHandlerOptions);
-
-                RemoteQueueClients.Add(node.Key, pair);
+                ReplyMsgReceiverQueueClient.RegisterMessageHandler(OnMessageReceivedAsync, messageHandlerOptions);
             }
         }
 
-        public ActorReference CreateActor<TActor>(ActorId id, string remoteNodeName) where TActor : ActorBase
-        {
-            var pair = this.RemoteQueueClients.FirstOrDefault(i => i.Key == remoteNodeName);
-            if (pair.Key == remoteNodeName)
-            {
-                ActorReference actorRef = new ActorReference(typeof(TActor), id, pair.Value, receivedMsgQueue, this.rcvEvent, this.MaxProcessingTimeOfMessage);
-                return actorRef;
-            }
-            else
-            {
-                throw new ArgumentException("Specified remote node is not defined!");
-            }
-        }
-
-        /// <summary>
-        /// Should implemented partitioning.
-        /// </summary>
-        /// <typeparam name="TActor"></typeparam>
-        /// <param name="id"></param>
-        /// <returns></returns>
         public ActorReference CreateActor<TActor>(ActorId id) where TActor : ActorBase
         {
-            throw new NotImplementedException();
+            ActorReference actorRef = new ActorReference(typeof(TActor), id, this.sendRequestQueueClient, this.ReplyMsgReceiverQueueClient.Path,  receivedMsgQueue, this.rcvEvent, this.MaxProcessingTimeOfMessage);
+            return actorRef;
         }
+
+        ///// <summary>
+        ///// Should implemented partitioning.
+        ///// </summary>
+        ///// <typeparam name="TActor"></typeparam>
+        ///// <param name="id"></param>
+        ///// <returns></returns>
+        //public ActorReference CreateActor<TActor>(ActorId id) where TActor : ActorBase
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         public void Start(CancellationToken cancelToken)
         {
@@ -107,7 +105,7 @@ namespace AkkaSb.Net
                     try
                     {
                         var session = await this.sessionRcvClient.AcceptMessageSessionAsync();
-                        Debug.WriteLine($"Accepted new session: {session.SessionId}");
+                        Debug.WriteLine($"{this.Name} - Accepted new session: {session.SessionId}");
                         _ = RunDispatcherForActor(session, cancelToken).ContinueWith(async (t) => { await session.CloseAsync(); });
                     }
                     catch (ServiceBusTimeoutException ex)
@@ -168,18 +166,19 @@ namespace AkkaSb.Net
 
                     actor = actorMap[session.SessionId];
 
-                    Debug.WriteLine($"Received message: {tp.Name}/{id}");
+                    Debug.WriteLine($"{this.Name} - Received message: {tp.Name}/{id}");
 
                     var invokingMsg = ActorReference.DeserializeMsg<object>(msg.Body);
-
-                    await InvokeOperationOnActorAsync(actor, invokingMsg, (bool)msg.UserProperties[ActorReference.cExpectResponse], msg.MessageId);
+                   
+                    await InvokeOperationOnActorAsync(actor, invokingMsg, (bool)msg.UserProperties[ActorReference.cExpectResponse], 
+                        msg.MessageId, msg.ReplyTo);
 
                     await session.CompleteAsync(msg.SystemProperties.LockToken);
                 }
                 else
                 {
-                    Debug.WriteLine($"No more messages received for sesson {session.SessionId}");
-                   
+                    Debug.WriteLine($"{this.Name} - No more messages received for sesson {session.SessionId}");
+
                     //break;
                 }
             }
@@ -189,7 +188,7 @@ namespace AkkaSb.Net
 
         private async Task OnMessageReceivedAsync(Message message, CancellationToken token)
         {
-            receivedMsgQueue.TryAdd(message.ReplyTo, message);
+            receivedMsgQueue.TryAdd(message.CorrelationId, message);
 
             rcvEvent.Set();
 
@@ -204,16 +203,23 @@ namespace AkkaSb.Net
             Console.WriteLine($"- Endpoint: {context.Endpoint}");
             Console.WriteLine($"- Entity Path: {context.EntityPath}");
             Console.WriteLine($"- Executing Action: {context.Action}");
-            return Task.CompletedTask;
+            return Task.FromException(exceptionReceivedEventArgs.Exception);
         }
 
-        private async Task InvokeOperationOnActorAsync(ActorBase actor, object msg, bool expectResponse, string replyMsgId)
+        private async Task InvokeOperationOnActorAsync(ActorBase actor, object msg, bool expectResponse, string replyMsgId, string replyTo)
         {
             var res = actor.Invoke(msg);
             if (expectResponse)
             {
+                if (this.sendReplyQueueClients.ContainsKey(replyTo) == false)
+                {
+                    this.sendReplyQueueClients.Add(replyTo, new QueueClient(this.sbConnStr, replyTo,
+                    retryPolicy: createRetryPolicy(),
+                    receiveMode: ReceiveMode.PeekLock));
+                }
+
                 var sbMsg = ActorReference.CreateResponseMessage(res, replyMsgId, actor.GetType(), actor.Id);
-                await this.sendReplyQueueClient.SendAsync(sbMsg);
+                await this.sendReplyQueueClients[replyTo].SendAsync(sbMsg);
             }
             else
             {
