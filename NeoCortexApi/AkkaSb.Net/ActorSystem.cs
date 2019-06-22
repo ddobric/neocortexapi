@@ -20,7 +20,7 @@ namespace AkkaSb.Net
 
         private TimeSpan MaxProcessingTimeOfMessage { get; set; } = TimeSpan.FromDays(1);
 
-        internal Dictionary<string, QueueClient> sendReplyQueueClients = new Dictionary<string, QueueClient>();
+        internal volatile Dictionary<string, QueueClient> sendReplyQueueClients = new Dictionary<string, QueueClient>();
 
         private QueueClient ReplyMsgReceiverQueueClient;
 
@@ -44,10 +44,6 @@ namespace AkkaSb.Net
             this.sendRequestQueueClient = new QueueClient(config.SbConnStr, config.RequestMsgQueue,
             retryPolicy: createRetryPolicy(),
             receiveMode: ReceiveMode.PeekLock);
-
-            //this.sendReplyQueueClient = new QueueClient(config.SbConnStr, config.LocalNode.RequestMsgQueue,
-            //retryPolicy: createRetryPolicy(),
-            //receiveMode: ReceiveMode.PeekLock);
 
             //
             // Receiving of reply messages is optional. If the actor system does not send messages
@@ -79,20 +75,9 @@ namespace AkkaSb.Net
 
         public ActorReference CreateActor<TActor>(ActorId id) where TActor : ActorBase
         {
-            ActorReference actorRef = new ActorReference(typeof(TActor), id, this.sendRequestQueueClient, this.ReplyMsgReceiverQueueClient.Path,  receivedMsgQueue, this.rcvEvent, this.MaxProcessingTimeOfMessage);
+            ActorReference actorRef = new ActorReference(typeof(TActor), id, this.sendRequestQueueClient, this.ReplyMsgReceiverQueueClient.Path,  receivedMsgQueue, this.rcvEvent, this.MaxProcessingTimeOfMessage, this.Name);
             return actorRef;
         }
-
-        ///// <summary>
-        ///// Should implemented partitioning.
-        ///// </summary>
-        ///// <typeparam name="TActor"></typeparam>
-        ///// <param name="id"></param>
-        ///// <returns></returns>
-        //public ActorReference CreateActor<TActor>(ActorId id) where TActor : ActorBase
-        //{
-        //    throw new NotImplementedException();
-        //}
 
         public void Start(CancellationToken cancelToken)
         {
@@ -188,6 +173,8 @@ namespace AkkaSb.Net
 
         private async Task OnMessageReceivedAsync(Message message, CancellationToken token)
         {
+            Debug.WriteLine($"ActorSystem: {Name} Response received. receivedMsgQueue instance: {receivedMsgQueue.GetHashCode()}");
+
             receivedMsgQueue.TryAdd(message.CorrelationId, message);
 
             rcvEvent.Set();

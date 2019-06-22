@@ -8,6 +8,7 @@ using NeoCortexApi.Utility;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,28 +26,10 @@ namespace UnitTestsProject
             cfg.SbConnStr = sbConnStr;
             cfg.ReplyMsgQueue = "actorsystem/rcvlocal";
             cfg.RequestMsgQueue = "actorsystem/actorqueue";
-            
-            //cfg.LocalNode = new NodeConfig() { ReplyMsgReceiveQueue = "actorsystem/rcvlocal", RequestMsgQueue = "actorsystem/sendlocal" };
-            //cfg.RemoteNodes = new Dictionary<string, NodeConfig>();
-            //cfg.RemoteNodes.Add("actorsystem/remote1", new NodeConfig() { ReplyMsgReceiveQueue = "actorsystem/rcvnode1", RequestMsgQueue = "actorsystem/actorqueue" });
-            //cfg.RemoteNodes.Add("actorsystem/remote2", new NodeConfig() { ReplyMsgReceiveQueue = "actorsystem/rcvnode2", RequestMsgQueue = "actorsystem/actorqueue" });
 
             return cfg;
         }
 
-        //private List<string> RemoteNodes
-        //{
-        //    get
-        //    {
-        //        List<string> list = new List<string>();
-        //        foreach (var key in getLocaSysConfig().RemoteNodes.Keys)
-        //        {
-        //            list.Add(key);
-        //        }
-
-        //        return list;
-        //    }
-        //}
 
         private AkkaSbConfig getRemoteSysConfig()
         {
@@ -111,9 +94,11 @@ namespace UnitTestsProject
 
         public void TellTest()
         {
+            Debug.WriteLine($"Start of {nameof(TellTest)}");
+
             var cfg = getLocaSysConfig();
-            ActorSystem sysLocal = new ActorSystem("local", cfg);
-            ActorSystem sysRemote = new ActorSystem("remote", getRemoteSysConfig());
+            ActorSystem sysLocal = new ActorSystem($"{nameof(TellTest)}/local", cfg);
+            ActorSystem sysRemote = new ActorSystem($"{nameof(TellTest)}/remote", getRemoteSysConfig());
 
             CancellationTokenSource src = new CancellationTokenSource();
 
@@ -144,6 +129,8 @@ namespace UnitTestsProject
             }
 
             task.Wait();
+
+            Debug.WriteLine($"End of {nameof(TellTest)}");
         }
 
         /// <summary>
@@ -154,9 +141,11 @@ namespace UnitTestsProject
         [TestCategory("SbActorTests")]
         public void AskTest()
         {
+            Debug.WriteLine($"Start of {nameof(AskTest)}");
+
             var cfg = getLocaSysConfig();
-            ActorSystem sysLocal = new ActorSystem("local", cfg);
-            ActorSystem sysRemote = new ActorSystem("remote", getRemoteSysConfig());
+            ActorSystem sysLocal = new ActorSystem($"{nameof(AskTest)}/local", cfg);
+            ActorSystem sysRemote = new ActorSystem($"{nameof(AskTest)}/remote", getRemoteSysConfig());
 
             CancellationTokenSource src = new CancellationTokenSource();
 
@@ -174,6 +163,8 @@ namespace UnitTestsProject
             response = actorRef1.Ask<long>((long)7).Result;
 
             Assert.IsTrue(response == 8);
+
+            Debug.WriteLine($"End of {nameof(AskTest)}");
         }
 
 

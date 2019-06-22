@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,7 +23,7 @@ namespace AkkaSb.Net
 
         internal QueueClient RequestMsgSenderClient  { get; set; }
 
-        private ConcurrentDictionary<string, Message> receivedMessages ;
+        private ConcurrentDictionary<string, Message> receivedMsgQueue ;
 
         private ManualResetEvent rcvEvent;
 
@@ -34,15 +35,20 @@ namespace AkkaSb.Net
 
         private string replyQueueName;
 
-        internal ActorReference(Type actorType, ActorId id, QueueClient requestMsgSenderClient,  string replyQueueName, ConcurrentDictionary<string, Message> receivedMsgQueue, ManualResetEvent rcvEvent, TimeSpan maxProcessingTime)
+        private string name;
+
+        internal ActorReference(Type actorType, ActorId id, QueueClient requestMsgSenderClient,  string replyQueueName, ConcurrentDictionary<string, Message> receivedMsgQueue, ManualResetEvent rcvEvent, TimeSpan maxProcessingTime, string name)
         {
+            this.name = name;
             this.actorType = actorType;
             this.actorId = id;
             this.RequestMsgSenderClient = requestMsgSenderClient;
             this.MaxProcessingTime = maxProcessingTime;
-            this.receivedMessages = receivedMsgQueue;
+            this.receivedMsgQueue = receivedMsgQueue;
             this.rcvEvent = rcvEvent;
             this.replyQueueName = replyQueueName;
+
+            Debug.WriteLine($"ActorReference ctor: Actor System: {this.name}, receivedMsgQueue instance: {receivedMsgQueue.GetHashCode()}");
         }
 
 
@@ -70,6 +76,7 @@ namespace AkkaSb.Net
 
         private TResponse WaitOnResponse<TResponse>(Message sbMsg, TimeSpan? timeout = null)
         {
+            Debug.WriteLine($"ActorReference: Actor System: {this.name}, receivedMsgQueue instance: {receivedMsgQueue.GetHashCode()}");
             DateTime entered = DateTime.Now;
 
             TResponse msg = default(TResponse);
@@ -80,7 +87,7 @@ namespace AkkaSb.Net
 
                 Message sbRcvMsg;
 
-                if (receivedMessages.TryGetValue(sbMsg.MessageId, out sbRcvMsg))
+                if (receivedMsgQueue.TryRemove(sbMsg.MessageId, out sbRcvMsg))
                 {
                     msg = DeserializeMsg<TResponse>(sbRcvMsg.Body);
                     break;
