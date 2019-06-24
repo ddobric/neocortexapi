@@ -27,6 +27,8 @@ namespace NeoCortexApi
 
         private Connections connections;
 
+        public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
         /**
          * Uses the specified {@link Connections} object to Build the structural 
          * anatomy needed by this {@code TemporalMemory} to implement its algorithms.
@@ -77,7 +79,7 @@ namespace NeoCortexApi
         }
 
 
-        public IComputeOutput Compute(int[] activeColumns, bool learn)
+        public IModuleData Compute(int[] activeColumns, bool learn)
         {
             ComputeCycle cycle = new ComputeCycle();
             activateCells(this.connections, cycle, activeColumns, learn);

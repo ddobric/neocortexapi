@@ -36,6 +36,8 @@ namespace UnitTestsProject
             layer1.HtmModules.Add(sp1);
             layer1.HtmModules.Add(tm1);
 
+            layer1.ConnectionGraph = 
+            //layer1.Compute();
         }
 
     }

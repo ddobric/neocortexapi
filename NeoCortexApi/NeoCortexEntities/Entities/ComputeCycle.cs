@@ -15,7 +15,7 @@ namespace NeoCortexApi.Entities
      * 
      * @author David Ray
      */
-    public class ComputeCycle : IEquatable<object>, NeoCortexApi.IComputeOutput
+    public class ComputeCycle : IEquatable<object>, NeoCortexApi.IModuleData
     {
 
         private static readonly long serialVersionUID = 1L;

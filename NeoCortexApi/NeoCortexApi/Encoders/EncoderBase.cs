@@ -385,7 +385,7 @@ namespace NeoCortexApi.Encoders
          */
         public abstract int[] Encode(object inputData);
 
-        public IComputeOutput Compute(int[] input, bool learn)
+        public IModuleData Compute(int[] input, bool learn)
         {
             var result = Encode(input);
             //return new NeoCortexApiInArrawyOutput(result);
