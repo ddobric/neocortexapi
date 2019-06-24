@@ -1,4 +1,5 @@
 ﻿using Microsoft.Azure.ServiceBus;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
@@ -37,8 +38,11 @@ namespace AkkaSb.Net
 
         private string name;
 
-        internal ActorReference(Type actorType, ActorId id, QueueClient requestMsgSenderClient,  string replyQueueName, ConcurrentDictionary<string, Message> receivedMsgQueue, ManualResetEvent rcvEvent, TimeSpan maxProcessingTime, string name)
+        private ILogger logger;
+
+        internal ActorReference(Type actorType, ActorId id, QueueClient requestMsgSenderClient,  string replyQueueName, ConcurrentDictionary<string, Message> receivedMsgQueue, ManualResetEvent rcvEvent, TimeSpan maxProcessingTime, string name,  ILogger logger)
         {
+            this.logger = logger;
             this.name = name;
             this.actorType = actorType;
             this.actorId = id;
@@ -48,7 +52,7 @@ namespace AkkaSb.Net
             this.rcvEvent = rcvEvent;
             this.replyQueueName = replyQueueName;
 
-            Debug.WriteLine($"ActorReference ctor: Actor System: {this.name}, receivedMsgQueue instance: {receivedMsgQueue.GetHashCode()}");
+            logger?.LogInformation($"ActorReference ctor: Actor System: {this.name}, receivedMsgQueue instance: {receivedMsgQueue.GetHashCode()}");
         }
 
 
@@ -76,11 +80,11 @@ namespace AkkaSb.Net
 
         private TResponse WaitOnResponse<TResponse>(Message sbMsg, TimeSpan? timeout = null)
         {
-            Debug.WriteLine($"ActorReference: Actor System: {this.name}, receivedMsgQueue instance: {receivedMsgQueue.GetHashCode()}");
+            logger?.LogInformation($"ActorReference: Actor System: {this.name}, receivedMsgQueue instance: {receivedMsgQueue.GetHashCode()}");
             DateTime entered = DateTime.Now;
 
             TResponse msg = default(TResponse);
-
+            
             while (DateTime.Now < entered.AddMinutes(timeout.HasValue ? timeout.Value.TotalMinutes : this.MaxProcessingTime.TotalMinutes))
             {
                 rcvEvent.WaitOne();

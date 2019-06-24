@@ -5,10 +5,10 @@ using System.Text;
 
 namespace AkkaSb.Net
 {
-    public class ClientPair
-    {
-        public QueueClient ReplyMsgReceiverClient { get; set; }
+    //public class ClientPair
+    //{
+    //    public QueueClient ReplyMsgReceiverClient { get; set; }
 
-        public QueueClient RequestMsgSenderClient { get; set; }
-    }
+    //    public QueueClient RequestMsgSenderClient { get; set; }
+    //}
 }

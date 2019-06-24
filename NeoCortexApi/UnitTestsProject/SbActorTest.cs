@@ -167,6 +167,35 @@ namespace UnitTestsProject
             Debug.WriteLine($"End of {nameof(AskTest)}");
         }
 
+        /// <summary>
+        /// Tests if Ask() works as designed.
+        /// </summary>
+
+        [TestMethod]
+        [TestCategory("SbActorTests")]
+        public void AskTestClientOnly()
+        {
+            Thread.Sleep(2000);
+            Debug.WriteLine($"Start of {nameof(AskTest)}");
+
+            var cfg = getLocaSysConfig();
+            ActorSystem sysLocal = new ActorSystem($"{nameof(AskTest)}/local", cfg);
+           
+            CancellationTokenSource src = new CancellationTokenSource();
+
+            ActorReference actorRef1 = sysLocal.CreateActor<MyActor>(1);
+
+            var response = actorRef1.Ask<long>((long)42).Result;
+
+            Assert.IsTrue(response == 43);
+
+            response = actorRef1.Ask<long>((long)7).Result;
+
+            Assert.IsTrue(response == 8);
+
+            Debug.WriteLine($"End of {nameof(AskTest)}");
+        }
+
 
         /// <summary>
         /// Tests if Ask() works as designed.

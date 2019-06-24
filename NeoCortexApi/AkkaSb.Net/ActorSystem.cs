@@ -9,6 +9,7 @@ using System.Linq;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 
 namespace AkkaSb.Net
 {
@@ -28,13 +29,15 @@ namespace AkkaSb.Net
 
         private QueueClient sendRequestQueueClient;
 
+        private ILogger logger;
 
         private ConcurrentDictionary<string, ActorBase> actorMap = new ConcurrentDictionary<string, ActorBase>();
 
         public string Name { get; set; }
 
-        public ActorSystem(string name, AkkaSbConfig config)
+        public ActorSystem(string name, AkkaSbConfig config, ILogger logger = null)
         {
+            this.logger = logger;
             this.Name = name;
             this.sbConnStr = config.SbConnStr;
             this.sessionRcvClient = new SessionClient(config.SbConnStr, config.RequestMsgQueue,
@@ -60,7 +63,7 @@ namespace AkkaSb.Net
                     // Maximum number of concurrent calls to the callback ProcessMessagesAsync(), set to 1 for simplicity.
                     // Set it according to how many messages the application wants to process in parallel.
                     MaxConcurrentCalls = 1,
-                     
+
                     MaxAutoRenewDuration = this.MaxProcessingTimeOfMessage,
 
                     // Indicates whether the message pump should automatically complete the messages after returning from user callback.
@@ -75,35 +78,49 @@ namespace AkkaSb.Net
 
         public ActorReference CreateActor<TActor>(ActorId id) where TActor : ActorBase
         {
-            ActorReference actorRef = new ActorReference(typeof(TActor), id, this.sendRequestQueueClient, this.ReplyMsgReceiverQueueClient.Path,  receivedMsgQueue, this.rcvEvent, this.MaxProcessingTimeOfMessage, this.Name);
+            ActorReference actorRef = new ActorReference(typeof(TActor), id, this.sendRequestQueueClient, this.ReplyMsgReceiverQueueClient.Path, receivedMsgQueue, this.rcvEvent, this.MaxProcessingTimeOfMessage, this.Name, this.logger);
             return actorRef;
         }
 
         public void Start(CancellationToken cancelToken)
         {
+            CancellationTokenSource src = new CancellationTokenSource();
+
             Task[] tasks = new Task[2];
 
             tasks[0] = Task.Run(async () =>
             {
-                while (!cancelToken.IsCancellationRequested)
+                while (!src.Token.IsCancellationRequested)
                 {
                     try
                     {
                         var session = await this.sessionRcvClient.AcceptMessageSessionAsync();
-                        Debug.WriteLine($"{this.Name} - Accepted new session: {session.SessionId}");
-                        _ = RunDispatcherForActor(session, cancelToken).ContinueWith(async (t) => { await session.CloseAsync(); });
+                        logger?.LogInformation($"{this.Name} - Accepted new session: {session.SessionId}");
+                        _ = RunDispatcherForActor(session, cancelToken).ContinueWith(
+                            async (t) =>
+                            {
+                                await session.CloseAsync();
+                                if (t.Exception != null)
+                                {
+                                    logger.LogError(t.Exception, "Error");
+                                    src.Cancel();
+                                }
+                                    //await Task.FromException(t.Exception);
+                                    //throw tt.Exception;
+
+                            });
                     }
                     catch (ServiceBusTimeoutException ex)
                     {
-
+                        logger?.LogDebug("ServiceBusTimeoutException");
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine(ex);
+                        logger?.LogError("Listener has failed.", ex);
                         throw;
                     }
                 }
-            }, cancelToken);
+            }, src.Token);
 
             tasks[1] = Task.Run(async () =>
             {
@@ -151,18 +168,18 @@ namespace AkkaSb.Net
 
                     actor = actorMap[session.SessionId];
 
-                    Debug.WriteLine($"{this.Name} - Received message: {tp.Name}/{id}");
+                    logger?.LogInformation($"{this.Name} - Received message: {tp.Name}/{id}");
 
                     var invokingMsg = ActorReference.DeserializeMsg<object>(msg.Body);
-                   
-                    await InvokeOperationOnActorAsync(actor, invokingMsg, (bool)msg.UserProperties[ActorReference.cExpectResponse], 
+
+                    await InvokeOperationOnActorAsync(actor, invokingMsg, (bool)msg.UserProperties[ActorReference.cExpectResponse],
                         msg.MessageId, msg.ReplyTo);
 
                     await session.CompleteAsync(msg.SystemProperties.LockToken);
                 }
                 else
                 {
-                    Debug.WriteLine($"{this.Name} - No more messages received for sesson {session.SessionId}");
+                    logger?.LogInformation($"{this.Name} - No more messages received for sesson {session.SessionId}");
 
                     //break;
                 }
@@ -173,7 +190,7 @@ namespace AkkaSb.Net
 
         private async Task OnMessageReceivedAsync(Message message, CancellationToken token)
         {
-            Debug.WriteLine($"ActorSystem: {Name} Response received. receivedMsgQueue instance: {receivedMsgQueue.GetHashCode()}");
+            logger?.LogInformation($"ActorSystem: {Name} Response received. receivedMsgQueue instance: {receivedMsgQueue.GetHashCode()}");
 
             receivedMsgQueue.TryAdd(message.CorrelationId, message);
 
