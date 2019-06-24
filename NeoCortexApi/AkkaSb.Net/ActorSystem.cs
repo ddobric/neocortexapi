@@ -96,7 +96,7 @@ namespace AkkaSb.Net
                     {
                         var session = await this.sessionRcvClient.AcceptMessageSessionAsync();
                         logger?.LogInformation($"{this.Name} - Accepted new session: {session.SessionId}");
-                        _ = RunDispatcherForActor(session, cancelToken).ContinueWith(
+                        _ = RunDispatcherForSession(session, cancelToken).ContinueWith(
                             async (t) =>
                             {
                                 await session.CloseAsync();
@@ -143,7 +143,7 @@ namespace AkkaSb.Net
         }
 
 
-        private async Task RunDispatcherForActor(IMessageSession session, CancellationToken cancelToken)
+        private async Task RunDispatcherForSession(IMessageSession session, CancellationToken cancelToken)
         {
             while (cancelToken.IsCancellationRequested == false)
             {
@@ -159,7 +159,7 @@ namespace AkkaSb.Net
                     var id = new ActorId((string)msg.UserProperties[ActorReference.cActorId]);
                     if (!actorMap.ContainsKey(session.SessionId))
                     {
-                        actor = Activator.CreateInstance(tp, id) as ActorBase;
+                        actor = Activator.CreateInstance(tp, id, this.logger) as ActorBase;
 
                         actorMap[session.SessionId] = actor;
 

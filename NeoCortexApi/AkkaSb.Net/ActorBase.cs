@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace AkkaSb.Net
 {
@@ -51,19 +52,28 @@ namespace AkkaSb.Net
 
         public ActorId Id { get; set; }
 
+        protected ILogger Logger { get; private set; }
+
         public ActorBase()
         {
   
         }
 
-        public ActorBase(ActorId id)
+        public ActorBase(ActorId id, ILogger logger = null)
         {
+            this.Logger = logger;
             this.Id = id;
-          //  this.Sender = new ActorReference(typeof(TActor), id, pair.Value, receivedMsgQueue, this.rcvEvent, this.MaxProcessingTimeOfMessage);
+   
+        }
+
+        /// <summary>
+        /// Invoked if the actor receives the message, which cannot be dispatched.
+        /// </summary>
+        public virtual void UnrouteedMessage()
+        {
 
         }
 
-       
         internal object Invoke(object message)
         {
             var pair = dict.FirstOrDefault(o => o.Key == message.GetType());

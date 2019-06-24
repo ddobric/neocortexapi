@@ -64,11 +64,11 @@ namespace UnitTestsProject
                     return null;
                 });
 
-                Receive<TestClass>((c) =>
+                Receive<TestClass>(((c) =>
                 {
                     receivedMessages.TryAdd(c, c.ToString());
                     return null;
-                });
+                }));
 
                 Receive<long>((long num) =>
                 {
