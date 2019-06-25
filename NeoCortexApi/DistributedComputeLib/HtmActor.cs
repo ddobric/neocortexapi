@@ -22,7 +22,7 @@ namespace NeoCortexApi.DistributedComputeLib
         private HtmConfig config;
 
 
-        public HtmActor()
+        public HtmActor(ActorId id) : base(id)
         {
             Receive<PingNodeMsg>((msg) =>
             {

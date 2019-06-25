@@ -99,14 +99,15 @@ namespace AkkaSb.Net
                         _ = RunDispatcherForSession(session, cancelToken).ContinueWith(
                             async (t) =>
                             {
-                                await session.CloseAsync();
                                 if (t.Exception != null)
                                 {
-                                    logger.LogError(t.Exception, "Error");
-                                    src.Cancel();
+                                    logger.LogError(t.Exception, "Session error");
+                                    await session.CloseAsync();
+
+                                    //src.Cancel();
                                 }
-                                    //await Task.FromException(t.Exception);
-                                    //throw tt.Exception;
+                                //await Task.FromException(t.Exception);
+                                //throw tt.Exception;
 
                             });
                     }
@@ -150,32 +151,42 @@ namespace AkkaSb.Net
                 var msg = await session.ReceiveAsync();
                 if (msg != null)
                 {
-                    ActorBase actor;
-
-                    Type tp = Type.GetType((string)msg.UserProperties[ActorReference.cActorType]);
-                    if (tp == null)
-                        throw new ArgumentException($"Cannot find type '{session.SessionId}'");
-
-                    var id = new ActorId((string)msg.UserProperties[ActorReference.cActorId]);
-                    if (!actorMap.ContainsKey(session.SessionId))
+                    try
                     {
-                        actor = Activator.CreateInstance(tp, id, this.logger) as ActorBase;
+                        ActorBase actor;
 
-                        actorMap[session.SessionId] = actor;
+                        Type tp = Type.GetType((string)msg.UserProperties[ActorReference.cActorType]);
+                        if (tp == null)
+                            throw new ArgumentException($"Cannot find type '{session.SessionId}'");
 
-                        actor.Activated();
+                        var id = new ActorId((string)msg.UserProperties[ActorReference.cActorId]);
+                        if (!actorMap.ContainsKey(session.SessionId))
+                        {
+                            actor = Activator.CreateInstance(tp, id) as ActorBase;
+
+                            actor.Logger = logger;
+
+                            actorMap[session.SessionId] = actor;
+
+                            actor.Activated();
+                        }
+
+                        actor = actorMap[session.SessionId];
+
+                        logger?.LogInformation($"{this.Name} - Received message: {tp.Name}/{id}");
+
+                        var invokingMsg = ActorReference.DeserializeMsg<object>(msg.Body);
+
+                        await InvokeOperationOnActorAsync(actor, invokingMsg, (bool)msg.UserProperties[ActorReference.cExpectResponse],
+                            msg.MessageId, msg.ReplyTo);
+
+                        await session.CompleteAsync(msg.SystemProperties.LockToken);
                     }
-
-                    actor = actorMap[session.SessionId];
-
-                    logger?.LogInformation($"{this.Name} - Received message: {tp.Name}/{id}");
-
-                    var invokingMsg = ActorReference.DeserializeMsg<object>(msg.Body);
-
-                    await InvokeOperationOnActorAsync(actor, invokingMsg, (bool)msg.UserProperties[ActorReference.cExpectResponse],
-                        msg.MessageId, msg.ReplyTo);
-
-                    await session.CompleteAsync(msg.SystemProperties.LockToken);
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex, "Messsage processing error");
+                        await session.AbandonAsync(msg.SystemProperties.LockToken);
+                    }
                 }
                 else
                 {

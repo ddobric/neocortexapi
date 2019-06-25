@@ -52,16 +52,15 @@ namespace AkkaSb.Net
 
         public ActorId Id { get; set; }
 
-        protected ILogger Logger { get; private set; }
+        public ILogger Logger { get;  set; }
 
-        public ActorBase()
-        {
+        //public ActorBase()
+        //{
   
-        }
+        //}
 
-        public ActorBase(ActorId id, ILogger logger = null)
+        public ActorBase(ActorId id)
         {
-            this.Logger = logger;
             this.Id = id;
    
         }

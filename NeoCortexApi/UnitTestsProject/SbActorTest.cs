@@ -3,6 +3,7 @@ using AkkaSb.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortex;
 using NeoCortexApi;
+using NeoCortexApi.DistributedComputeLib;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
@@ -175,7 +176,7 @@ namespace UnitTestsProject
         [TestCategory("SbActorTests")]
         public void AskTestClientOnly()
         {
-            Thread.Sleep(2000);
+            //Thread.Sleep(2000);
             Debug.WriteLine($"Start of {nameof(AskTest)}");
 
             var cfg = getLocaSysConfig();
@@ -183,16 +184,12 @@ namespace UnitTestsProject
            
             CancellationTokenSource src = new CancellationTokenSource();
 
-            ActorReference actorRef1 = sysLocal.CreateActor<MyActor>(1);
+            ActorReference actorRef1 = sysLocal.CreateActor<HtmActor>(1);
 
-            var response = actorRef1.Ask<long>((long)42).Result;
+            var response = actorRef1.Ask<string>(new PingNodeMsg() { Msg = ":)" }).Result;
 
-            Assert.IsTrue(response == 43);
-
-            response = actorRef1.Ask<long>((long)7).Result;
-
-            Assert.IsTrue(response == 8);
-
+            Assert.IsTrue(response == $"Ping back - :)");
+           
             Debug.WriteLine($"End of {nameof(AskTest)}");
         }
 
