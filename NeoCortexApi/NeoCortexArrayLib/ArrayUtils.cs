@@ -1159,6 +1159,9 @@ namespace NeoCortexApi.Utility
          */
         public static double average(double[] arr)
         {
+            if (arr.Length == 0)
+                return 0;
+
             double sum = 0;
             for (int i = 0; i < arr.Length; i++)
             {
