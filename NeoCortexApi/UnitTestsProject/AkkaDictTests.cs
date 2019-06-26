@@ -229,7 +229,7 @@ namespace UnitTestsProject
         [TestMethod]
         [TestCategory("AkkaHostRequired")]
         [TestCategory("LongRunning")]
-        [DataRow("MnistPng28x28\\training", "5", 28, 512)]
+        [DataRow("MnistPng28x28\\training", "5", 28, 32)]
         public void SparseSingleMnistImageTest(string trainingFolder, string digit, int imageSize, int columnTopology)
         {
             Thread.Sleep(3000);

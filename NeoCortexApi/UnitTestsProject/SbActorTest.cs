@@ -174,6 +174,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("SbActorTests")]
+        [TestCategory("SbActorHostRequired")]
         public void AskTestClientOnly()
         {
             //Thread.Sleep(2000);

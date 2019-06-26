@@ -14,8 +14,8 @@ namespace HtmAkkaHost
         {
             Console.WriteLine("Hello HTM Actor Model Cluster!");
 
-            //AkkaHostService svc = new AkkaHostService();
-            //svc.Start(args);
+            AkkaHostService svc = new AkkaHostService();
+            svc.Start(args);
             //--port  8081  --sysname HtmCluster  --hostname=localhost --publichostname=localhost
 
             LoggerFactory factory = new LoggerFactory();
@@ -23,8 +23,9 @@ namespace HtmAkkaHost
             factory.AddConsole(LogLevel.Information);
             factory.AddDebug(LogLevel.Information);
 
-            ActorSbHostService svc = new ActorSbHostService(factory.CreateLogger("logger"));
-            svc.Start(args);
+            //--SystemName=node1 RequestMsgQueue=actorsystem/actorqueue ReplyMsgQueue=actorsystem/rcvnode1 --SbConnStr="Endpoint=sb://bastasample.servicebus.windows.net/;SharedAccessKeyName=demo;SharedAccessKey=MvwVbrrJdsMQyhO/0uwaB5mVbuXyvYa3WRNpalHi0LQ="
+            //ActorSbHostService svc = new ActorSbHostService(factory.CreateLogger("logger"));
+            //svc.Start(args);
         }
     }
 }
