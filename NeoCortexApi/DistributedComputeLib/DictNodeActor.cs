@@ -222,6 +222,11 @@ namespace NeoCortexApi.DistributedComputeLib
                 this.dict[i] = new Column(this.config.CellsPerColumn, i, this.config.SynPermConnected, this.config.NumInputs);
             }
 
+            if(this.dict.Count == 0)
+            {
+
+
+            }
             /*
             if (msg.Elements == null || msg.Elements.Count == 0)
                 throw new DistributedException($"{nameof(DictNodeActor)} failed to create columns. List of elements cannot be empty.");

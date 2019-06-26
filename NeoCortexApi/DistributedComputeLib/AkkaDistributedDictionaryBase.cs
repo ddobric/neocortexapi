@@ -309,6 +309,14 @@ namespace NeoCortexApi.DistributedComputeLib
             ParallelOptions opts = new ParallelOptions();
             opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
 
+            foreach (var item in this.ActorMap)
+            {
+                if ((int)(object)item.MinKey > (int)(object)item.MaxKey)
+                {
+
+                }
+            }
+
             runBatched((batchOfElements)=> {
                 // Run overlap calculation on all actors(in all partitions)
                 Parallel.ForEach(batchOfElements, opts, (placement) =>

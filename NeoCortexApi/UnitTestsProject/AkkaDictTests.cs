@@ -13,6 +13,8 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Threading;
+using System.Linq;
+
 
 #if USE_AKKA
 namespace UnitTestsProject
@@ -70,19 +72,31 @@ namespace UnitTestsProject
         /// <param name="expectedNode"></param>
         /// <param name="expectedPartition"></param>
         [TestMethod]
-        [DataRow(new string[] { "url1", "url2", "url3" }, 5, 17, 0, 0)]
-        [DataRow(new string[] { "url1", "url2", "url3" }, 5, 31, 0, 0)]
-        [DataRow(new string[] { "url1" }, 10, 4096, 0, 0)]
-        public void PartitionMapTest(string[] nodes, int partitionsPerNode, int elements, int expectedNode, int expectedPartition)
+        [DataRow(new string[] { "url1" }, 200, 1024)]
+        [DataRow(new string[] { "url1", "url2", "url3" }, 5, 17)]
+        [DataRow(new string[] { "url1", "url2", "url3" }, 5, 31)]
+        [DataRow(new string[] { "url1" }, 10, 4096)]
+        public void PartitionMapTest(string[] nodes, int partitionsPerNode, int elements)
         {
             var nodeList = new List<string>();
             nodeList.AddRange(nodes);
             var map = HtmSparseIntDictionary<Column>.CreatePartitionMap(nodeList, elements, partitionsPerNode);
-                       
-            Assert.IsTrue(map.Count == nodes.Length * partitionsPerNode);
+            
+            // System can allocate less partitions than requested.
+            Assert.IsTrue(map.Count <= nodes.Length * partitionsPerNode);
+
             Assert.IsTrue((map[7].MinKey == 14 && map[7].MaxKey == 15) 
                 || (map[7].MinKey == 21 && map[7].MaxKey == 23)
-                || (map[9].MinKey == 3690 && map[9].MaxKey == 4095));
+                || (map[9].MinKey == 3690 && map[9].MaxKey == 4095)
+                || (map[170].MinKey == 1020 && map[170].MaxKey == 1023));
+
+            Assert.IsTrue((int)(object)map.Last().MaxKey >= (elements - 1));
+
+            foreach (var item in map)
+            {
+                // Partition can hold a single element.
+                Assert.IsTrue((int)(object)item.MaxKey >= (int)(object)item.MinKey);
+            }
         }
 
 
