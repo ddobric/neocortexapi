@@ -66,7 +66,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < 200; i++)
             {
-                sp.compute(mem, inputVector, activeArray, true);
+                sp.compute( inputVector, activeArray, true);
 
                 var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 
@@ -149,7 +149,7 @@ namespace UnitTestsProject
 
                     for (int i = 0; i < 10; i++)
                     {
-                        sp.compute(mem, noisedInput, activeArray, true);
+                        sp.compute( noisedInput, activeArray, true);
                         if (j > 0)
                             Debug.WriteLine($"{ MathHelpers.GetHammingDistance(activeArrayWithZeroNoise[vectorIndex], activeArray, true)} -> {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
                     }
@@ -197,7 +197,7 @@ namespace UnitTestsProject
 
                 int[] activeArray = new int[64 * 64];
 
-                sp.compute(mem, noisedInput, activeArray, false);
+                sp.compute( noisedInput, activeArray, false);
 
                 var dist = MathHelpers.GetHammingDistance(activeArrayWithZeroNoise[vectorIndex], activeArray, true);
                 Debug.WriteLine($"Result for vector {vectorIndex++} with noise {noise} - Ham Dist: {dist}");
@@ -267,7 +267,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < 100; i++)
             {
-                sp.compute(mem, inputVector, activeArray, true);
+                sp.compute( inputVector, activeArray, true);
 
                 var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 
@@ -300,7 +300,7 @@ namespace UnitTestsProject
 
             int[] inputVector = Helpers.GetRandomVector(1000, parameters.Get<Random>(KEY.RANDOM));
 
-            sp.compute(mem, inputVector, activeArray, true);
+            sp.compute( inputVector, activeArray, true);
 
             var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 
@@ -397,7 +397,7 @@ namespace UnitTestsProject
                 var inhibitions = sp.inhibitColumns(mem, ArrayUtils.toDoubleArray(overlaps));
                 var strInhibitions = Helpers.StringifyVector(inhibitions);
 
-                sp.compute(mem, inputVector, activeArray, true);
+                sp.compute( inputVector, activeArray, true);
 
                 var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
                 var strActiveArr = Helpers.StringifyVector(activeArray);
@@ -479,7 +479,7 @@ namespace UnitTestsProject
                                 int[] oldArray = new int[activeArray.Length];
                                 for (int k = 0; k < iterations; k++)
                                 {
-                                    sp.compute(mem, inputVector, activeArray, true);
+                                    sp.compute( inputVector, activeArray, true);
 
                                     var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
                                     var distance = MathHelpers.GetHammingDistance(oldArray, activeArray);

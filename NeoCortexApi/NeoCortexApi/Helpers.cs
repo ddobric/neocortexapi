@@ -100,10 +100,12 @@ namespace NeoCortexApi
 
                 var nodes = new List<string>()
                 {
-                      "akka.tcp://HtmCluster@localhost:8080",
+                     "akka.tcp://HtmCluster@phd-node1.westeurope.cloudapp.azure.com:8080",
+                     "akka.tcp://HtmCluster@phd-node2.westeurope.cloudapp.azure.com:8080"
+
                 };
 
-                
+
                 return nodes;
             }
         }
@@ -116,9 +118,10 @@ namespace NeoCortexApi
             get
             {
                 return new HtmSparseIntDictionaryConfig()
-                {  
+                {
                     Nodes = DefaultNodeList,
-                    PartitionsPerNode = 100
+                    PartitionsPerNode = 200,
+                    ProcessingBatch = 10
                 };
             }
         }

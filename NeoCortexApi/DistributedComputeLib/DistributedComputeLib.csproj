@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AkkaSb.Net\AkkaSb.Net.csproj" />
     <ProjectReference Include="..\NeoCortexArrayLib\NeoCortexArrayLib.csproj" />
     <ProjectReference Include="..\NeoCortexEntities\NeoCortexEntities.csproj" />
   </ItemGroup>

@@ -64,9 +64,6 @@ namespace NeoCortexApi.DistributedComputeLib
             }));
 
 
-
-
-
             Receive<AddOrUpdateElementsMsg>(msg =>
             {
                 Console.WriteLine($"Received message: '{msg.GetType().Name}'");

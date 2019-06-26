@@ -136,7 +136,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < 10; i++)
             {
-                sp.compute(mem, inputVector, activeArray, true);
+                sp.compute( inputVector, activeArray, true);
 
                 var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 
@@ -155,7 +155,7 @@ namespace UnitTestsProject
 
             for (int i = 10; i < 20; i++)
             {
-                sp2.compute(mem, inputVector, activeArray, true);
+                sp2.compute( inputVector, activeArray, true);
 
                 var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 

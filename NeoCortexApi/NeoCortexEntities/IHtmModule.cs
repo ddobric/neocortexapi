@@ -10,5 +10,21 @@ namespace NeoCortexApi
     /// </summary>
     public interface IHtmModule
     {
+        IComputeOutput Compute(int[] input, bool learn);
+    }
+
+    public interface IComputeOutput
+    {
+
+    }
+
+    public class InArrayOutput : IComputeOutput
+    {
+        public int[] Output;
+
+        public InArrayOutput(int[] array)
+        {
+            this.Output = array;
+        }
     }
 }

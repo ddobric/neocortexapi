@@ -12,7 +12,7 @@
     }
 	log-config-on-start = on    
 
-    remote {
+     remote {
 		connection-timeout = 120 s
 		transport-failure-detector {
 			heartbeat-interval = 10 s 

@@ -76,11 +76,12 @@ namespace NeoCortexApi.Network
 
         public void Compute(int[] inputVector, bool train)
         {
-            for (int i = 0; i < poolers.Count; i++)
-            {
-                poolers[i].compute(connections[i], i == 0 ? inputVector : activeArrays[i - 1],
-                    this.activeArrays[i], train);
-            }
+            throw new NotImplementedException();
+            //for (int i = 0; i < poolers.Count; i++)
+            //{
+            //    poolers[i].compute(connections[i], i == 0 ? inputVector : activeArrays[i - 1],
+            //        this.activeArrays[i], train);
+            //}
         }
 
         public int[] GetActiveColumns(int levelIndx)
