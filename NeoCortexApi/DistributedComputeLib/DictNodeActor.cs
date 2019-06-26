@@ -257,7 +257,9 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <param name="msg"></param>
         private void createAndConnectColumns(ConnectAndConfigureColumnsMsg msg)
         {
-            Console.WriteLine($"{Self.Path} - Received message: '{msg.GetType().Name}'");
+            DateTime startTime = DateTime.Now;
+
+            Log(msg, Self, "Entered.");
 
             List<double> avgConnections = new List<double>();
 
@@ -289,14 +291,23 @@ namespace NeoCortexApi.DistributedComputeLib
 
                 avgConnections.Add(HtmCompute.CalcAvgSpanOfConnectedSynapses(column, this.config));
 
+                //Log(msg, Self, $".:). {dict.Count}/{dict.Keys.Min()}/{dict.Keys.Min()} - duration: {(DateTime.Now - startTime).TotalSeconds}");
+
                 HtmCompute.UpdatePermanencesForColumn(this.config, perms, column, potential, true);
             }
 
             double avgConnectedSpan = ArrayUtils.average(avgConnections.ToArray());
 
-            Console.WriteLine($"{Self.Path} - '{msg.GetType().Name}' completed.");
+            Log(msg, Self, "Completed.");
             Sender.Tell(avgConnectedSpan, Self);
-            Console.WriteLine($"{Self.Path} - '{msg.GetType().Name}' response sent.");
+            Log(msg, Self, $"Response sent. {(DateTime.Now - startTime).TotalSeconds}");
+
+        }
+
+        private void Log(object msg, IActorRef aRef, string txt)
+        {
+            Console.WriteLine($"{DateTime.UtcNow} - {aRef.Path.Elements.Last()} - '{msg.GetType().Name}'. {txt}");
+
         }
 
         private void calculateOverlap(CalculateOverlapMsg msg)
