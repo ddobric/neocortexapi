@@ -12,6 +12,7 @@ namespace NeoCortexApi.Encoders
 
         public override int[] Encode(object inputData)
         {
+
             throw new NotImplementedException();
         }
 

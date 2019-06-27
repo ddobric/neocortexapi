@@ -20,6 +20,7 @@ namespace UnitTestsProject
         [TestCategory("NetworkTests")]
         public void InitTests()
         {
+            int[] input = new int[] {1,1,1,1,1,0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,1,1,0,0,1 };
             CortexNetwork net = new CortexNetwork("my cortex");
             List<CortexRegion> regions = new List<CortexRegion>();
             CortexRegion region0 = new CortexRegion("1st Region");
@@ -29,15 +30,14 @@ namespace UnitTestsProject
             net.AddRegion(region1);
             SpatialPooler sp1 = new SpatialPooler();
             TemporalMemory tm1 = new TemporalMemory();
-            EncoderBase encoder = new BooleanEncoder();
+            EncoderBase encoder = new CategoryEncoder();
             //encoder.Encode()
             CortexLayer layer1 = new CortexLayer("L1");
             layer1.HtmModules.Add(encoder);
             layer1.HtmModules.Add(sp1);
             layer1.HtmModules.Add(tm1);
-
-            layer1.ConnectionGraph = 
             //layer1.Compute();
+            layer1.Compute(input,true);
         }
 
     }
