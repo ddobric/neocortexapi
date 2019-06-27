@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AkkaSb.Net
 {
-    public class AkkaSbConfig
+    public class ActorSbConfig
     {
         public string SbConnStr { get; set; }
 
@@ -20,9 +20,15 @@ namespace AkkaSb.Net
         /// </summary>
         public string RequestMsgQueue { get; set; }
 
-        //public NodeConfig LocalNode { get; set; }
+        /// <summary>
+        /// Connection timeout of Ask() method.
+        /// </summary>
+        public TimeSpan ConnectionTimeout { get; set; } = TimeSpan.FromSeconds(15);
 
-        // public Dictionary<string, NodeConfig> RemoteNodes { get; set; } = new Dictionary<string, NodeConfig>();
+        /// <summary>
+        /// Number partitions, which will be concurrentlly dispatched for calculation.
+        /// </summary>
+        public int BatchSize { get; set; } = 100;
     }
 
     //public class NodeConfig

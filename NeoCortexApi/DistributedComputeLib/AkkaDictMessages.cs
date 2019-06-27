@@ -68,6 +68,8 @@ namespace NeoCortexApi.DistributedComputeLib
 
     public class InitColumnsMsg
     {
+        public int PartitionKey { get; set; }
+
         public int MinKey { get; set; }
         public int MaxKey { get; set; }
         public IList<KeyPair> Elements { get; set; }

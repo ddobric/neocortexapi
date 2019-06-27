@@ -1,4 +1,5 @@
 ﻿using Akka.Actor;
+using AkkaSb.Net;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -17,6 +18,8 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public TKey MaxKey { get; set; }
 
-        public IActorRef ActorRef { get; set; }
+        public object ActorRef { get; set; }
+
+        
     }
 }

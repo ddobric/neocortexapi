@@ -17,7 +17,7 @@ namespace NeoCortexApi
 
         public override void InitMatrices(Connections c, DistributedMemory distMem)
         {
-            IRemotelyDistributed remoteHtm = distMem?.ColumnDictionary as IRemotelyDistributed;
+            IHtmDistCalculus remoteHtm = distMem?.ColumnDictionary as IHtmDistCalculus;
             if (remoteHtm == null)
                 throw new ArgumentException("");
 
@@ -97,7 +97,7 @@ namespace NeoCortexApi
         /// <param name="c"></param>
         protected override void ConnectAndConfigureInputs(Connections c)
         {
-            IRemotelyDistributed remoteHtm = this.distMemConfig.ColumnDictionary as IRemotelyDistributed;
+            IHtmDistCalculus remoteHtm = this.distMemConfig.ColumnDictionary as IHtmDistCalculus;
             if (remoteHtm == null)
                 throw new ArgumentException("");
 
@@ -221,7 +221,7 @@ namespace NeoCortexApi
         /// <returns></returns>
         public override int[] CalculateOverlap(Connections c, int[] inputVector)
         {
-            IRemotelyDistributed remoteHtm = this.distMemConfig.ColumnDictionary as IRemotelyDistributed;
+            IHtmDistCalculus remoteHtm = this.distMemConfig.ColumnDictionary as IHtmDistCalculus;
             if (remoteHtm == null)
                 throw new ArgumentException("disMemConfig is not of type IRemotelyDistributed!");
 
@@ -237,7 +237,7 @@ namespace NeoCortexApi
 
         public override void AdaptSynapses(Connections c, int[] inputVector, int[] activeColumns)
         {
-            IRemotelyDistributed remoteHtm = this.distMemConfig.ColumnDictionary as IRemotelyDistributed;
+            IHtmDistCalculus remoteHtm = this.distMemConfig.ColumnDictionary as IHtmDistCalculus;
             if (remoteHtm == null)
                 throw new ArgumentException("disMemConfig is not of type IRemotelyDistributed!");
 
@@ -259,7 +259,7 @@ namespace NeoCortexApi
 
         public override void BumpUpWeakColumns(Connections c)
         {
-            IRemotelyDistributed remoteHtm = this.distMemConfig.ColumnDictionary as IRemotelyDistributed;
+            IHtmDistCalculus remoteHtm = this.distMemConfig.ColumnDictionary as IHtmDistCalculus;
             if (remoteHtm == null)
                 throw new ArgumentException("disMemConfig is not of type IRemotelyDistributed!");
 

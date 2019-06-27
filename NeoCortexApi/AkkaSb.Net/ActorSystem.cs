@@ -35,7 +35,7 @@ namespace AkkaSb.Net
 
         public string Name { get; set; }
 
-        public ActorSystem(string name, AkkaSbConfig config, ILogger logger = null)
+        public ActorSystem(string name, ActorSbConfig config, ILogger logger = null)
         {
             this.logger = logger;
             this.Name = name;

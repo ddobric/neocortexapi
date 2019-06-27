@@ -73,9 +73,9 @@ namespace UnitTestsProject
         /// <param name="expectedPartition"></param>
         [TestMethod]
         [DataRow(new string[] { "url1" }, 200, 1024)]
-        [DataRow(new string[] { "url1", "url2", "url3" }, 5, 17)]
-        [DataRow(new string[] { "url1", "url2", "url3" }, 5, 31)]
-        [DataRow(new string[] { "url1" }, 10, 4096)]
+        //[DataRow(new string[] { "url1", "url2", "url3" }, 5, 17)]
+        //[DataRow(new string[] { "url1", "url2", "url3" }, 5, 31)]
+        //[DataRow(new string[] { "url1" }, 10, 4096)]
         public void PartitionMapTest(string[] nodes, int partitionsPerNode, int elements)
         {
             var nodeList = new List<string>();
@@ -487,7 +487,7 @@ namespace UnitTestsProject
             int i = 0;
             foreach (var item in map)
             {
-                item.ActorRef = list[i++ % nodes.Length];
+                item.SbActorRef = list[i++ % nodes.Length];
             }
 
             var groupedNodes = HtmSparseIntDictionary<object>.GetPartitionsByNode(map);           

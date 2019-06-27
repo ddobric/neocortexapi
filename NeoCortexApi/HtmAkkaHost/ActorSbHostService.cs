@@ -28,7 +28,7 @@ namespace AkkaHostLib
 
         public void Start(string[] args)
         {
-            AkkaSbConfig cfg = new AkkaSbConfig();
+            ActorSbConfig cfg = new ActorSbConfig();
 
             var builder = new ConfigurationBuilder();
             builder.AddCommandLine(args);

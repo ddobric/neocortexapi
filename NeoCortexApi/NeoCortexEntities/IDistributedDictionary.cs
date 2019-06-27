@@ -19,7 +19,7 @@ namespace NeoCortexApi.Entities
     /// <summary>
     /// If imlementation of an object includes Actors, it should be merked with this interface.
     /// </summary>
-    public interface IRemotelyDistributed
+    public interface IHtmDistCalculus
     {
         /// <summary>
         /// All required HTM configuration in serializable form.

@@ -21,9 +21,9 @@ namespace UnitTestsProject
     {
         private const string sbConnStr = "Endpoint=sb://bastasample.servicebus.windows.net/;SharedAccessKeyName=demo;SharedAccessKey=MvwVbrrJdsMQyhO/0uwaB5mVbuXyvYa3WRNpalHi0LQ=";
 
-        private AkkaSbConfig getLocaSysConfig()
+        private ActorSbConfig getLocaSysConfig()
         {
-            AkkaSbConfig cfg = new AkkaSbConfig();
+            ActorSbConfig cfg = new ActorSbConfig();
             cfg.SbConnStr = sbConnStr;
             cfg.ReplyMsgQueue = "actorsystem/rcvlocal";
             cfg.RequestMsgQueue = "actorsystem/actorqueue";
@@ -32,11 +32,11 @@ namespace UnitTestsProject
         }
 
 
-        private AkkaSbConfig getRemoteSysConfig()
+        private ActorSbConfig getRemoteSysConfig()
         {
             var localCfg = getLocaSysConfig();
 
-            AkkaSbConfig cfg = new AkkaSbConfig();
+            ActorSbConfig cfg = new ActorSbConfig();
             cfg.SbConnStr = sbConnStr;
             cfg.RequestMsgQueue = "actorsystem/actorqueue";
             cfg.ReplyMsgQueue = null;

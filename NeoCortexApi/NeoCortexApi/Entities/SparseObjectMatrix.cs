@@ -29,7 +29,7 @@ namespace NeoCortexApi.Entities
         {
             get
             {
-                return this.sparseMap is IRemotelyDistributed;
+                return this.sparseMap is IHtmDistCalculus;
             }
         }
 
@@ -41,7 +41,7 @@ namespace NeoCortexApi.Entities
         {
             if (IsRemotelyDistributed)
             {
-                IRemotelyDistributed map = this.sparseMap as IRemotelyDistributed;
+                IHtmDistCalculus map = this.sparseMap as IHtmDistCalculus;
                 return map.GetPartitions();
             }
             else
@@ -81,7 +81,7 @@ namespace NeoCortexApi.Entities
         {
             //
             // If not distributed in cluster, we add element by element.
-            if (!(this.sparseMap is IRemotelyDistributed))
+            if (!(this.sparseMap is IHtmDistCalculus))
             {
                 if (!sparseMap.ContainsKey(index))
                     sparseMap.Add(index, (T)obj);
