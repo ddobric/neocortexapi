@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NeoCortexApi
 {
-    public interface  IHtmAlgorithm : IHtmModule
+    public interface  IHtmAlgorithm<TIN, TOUT> : IHtmModule<TIN, TOUT>
     {
     }
 }

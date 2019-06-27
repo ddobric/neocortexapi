@@ -16,7 +16,7 @@ namespace NeoCortexApi
      * @author Numenta
      * @author cogmission
      */
-    public class TemporalMemory : IHtmAlgorithm//: IComputeDecorator
+    public class TemporalMemory : IHtmAlgorithm<int[], object>//: IComputeDecorator
     {
         /** simple serial version id */
         private static readonly long serialVersionUID = 1L;
@@ -79,7 +79,7 @@ namespace NeoCortexApi
         }
 
 
-        public IModuleData Compute(int[] activeColumns, bool learn)
+        public object Compute(int[] activeColumns, bool learn)
         {
             ComputeCycle cycle = new ComputeCycle();
             activateCells(this.connections, cycle, activeColumns, learn);

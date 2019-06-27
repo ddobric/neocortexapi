@@ -62,14 +62,13 @@ namespace UnitTestsProject
             parameters.apply(mem);
             sp.init(mem);
 
-            int[] activeArray = new int[64 * 64];
+            //int[] activeArray = new int[64 * 64];
 
             for (int i = 0; i < 10; i++)
             {
                 //sp.compute( inputVector, activeArray, true);
-                IntegerArrayOutput result = sp.Compute(inputVector, true) as IntegerArrayOutput;
-                activeArray = result.Output;
-
+                var activeArray = sp.Compute(inputVector, true) as int[];
+                
                 var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 
                 var str = Helpers.StringifyVector(activeCols);
@@ -128,8 +127,10 @@ namespace UnitTestsProject
                 Debug.WriteLine("");
                 Debug.WriteLine($"----- VECTOR {vectorIndex} ----------");
 
-                int[] activeArray = new int[64 * 64];
+                //int[] activeArray = new int[64 * 64];
                 activeArrayWithZeroNoise[vectorIndex] = new int[64 * 64];
+
+                int[] activeArray = null;
 
                 for (int j = 0; j < 25; j += noiseStepPercent)
                 {
@@ -152,8 +153,8 @@ namespace UnitTestsProject
                     for (int i = 0; i < 10; i++)
                     {
                         //sp.compute( noisedInput, activeArray, true);
-                        IntegerArrayOutput result = sp.Compute(noisedInput, true) as IntegerArrayOutput;
-                        activeArray = result.Output;
+                        activeArray = sp.Compute(noisedInput, true) as int[];
+                   
                         if (j > 0)
                             Debug.WriteLine($"{ MathHelpers.GetHammingDistance(activeArrayWithZeroNoise[vectorIndex], activeArray, true)} -> {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
                     }
@@ -401,8 +402,8 @@ namespace UnitTestsProject
                 var inhibitions = sp.inhibitColumns(mem, ArrayUtils.toDoubleArray(overlaps));
                 var strInhibitions = Helpers.StringifyVector(inhibitions);
 
-                IIntegerArrayData result = sp.Compute(inputVector, true) as IIntegerArrayData;
-                activeArray = result.Data;
+                activeArray = sp.Compute(inputVector, true) as int[];
+               
                //Debug.WriteLine(result);
                 //sp.compute( inputVector, activeArray, true);
 

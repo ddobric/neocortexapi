@@ -20,7 +20,7 @@ namespace UnitTestsProject
         [TestCategory("NetworkTests")]
         public void InitTests()
         {
-            int[] input = new int[] {1,1,1,1,1,0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,1,1,0,0,1 };
+            string[] categories = new string[] {"germany", "england", "island", "china" };
             CortexNetwork net = new CortexNetwork("my cortex");
             List<CortexRegion> regions = new List<CortexRegion>();
             CortexRegion region0 = new CortexRegion("1st Region");
@@ -30,14 +30,25 @@ namespace UnitTestsProject
             net.AddRegion(region1);
             SpatialPooler sp1 = new SpatialPooler();
             TemporalMemory tm1 = new TemporalMemory();
-            EncoderBase encoder = new CategoryEncoder();
+
+            Dictionary<string, object> settings = new Dictionary<string, object>();
+            settings.Add("W", 3);
+            settings.Add("Radius", 1);
+            
+            EncoderBase encoder = new CategoryEncoder(categories, settings);
             //encoder.Encode()
-            CortexLayer layer1 = new CortexLayer("L1");
+            CortexLayer<string, object> layer1 = new CortexLayer<string,object>("L1");
             layer1.HtmModules.Add(encoder);
             layer1.HtmModules.Add(sp1);
             layer1.HtmModules.Add(tm1);
             //layer1.Compute();
-            layer1.Compute(input,true);
+
+            string[] inputs = new string[] { "germany", "china", "french", "russia"};
+            foreach (var input in inputs)
+            {
+                layer1.Compute(input, true);
+            }
+            
         }
 
     }

@@ -30,7 +30,7 @@ using NeoCortexApi.DistributedCompute;
 
 namespace NeoCortexApi
 {
-    public class SpatialPooler : IHtmAlgorithm
+    public class SpatialPooler : IHtmAlgorithm<int[], int[]>
     {
 
         public double MaxInibitionDensity { get; set; } = 0.5;
@@ -294,13 +294,13 @@ namespace NeoCortexApi
                 }
         */
 
-        public IModuleData Compute(int[] input, bool learn)
+        public int[] Compute(int[] input, bool learn)
         {
             int[] activeColumnsArr = new int[this.connections.HtmConfig.NumColumns];
 
             this.compute(input, activeColumnsArr, learn);
 
-            return new IntegerArrayOutput(activeColumnsArr);
+            return activeColumnsArr;
         }
 
         /**

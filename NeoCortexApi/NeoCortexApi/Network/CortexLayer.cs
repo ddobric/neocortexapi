@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace NeoCortexApi.Network
 {
-    public class CortexLayer : IHtmModule
+    public class CortexLayer<TIN, TOUT> : IHtmModule<TIN, TOUT>
     {
         #region Properties
 
@@ -14,7 +14,6 @@ namespace NeoCortexApi.Network
 
         public List<IHtmModule> HtmModules { get; set; }
         #endregion
-
 
         #region Constructors and Initialization
         public CortexLayer(string name) : this(name, new List<IHtmModule>())
@@ -31,30 +30,30 @@ namespace NeoCortexApi.Network
         #endregion
 
         #region Public Methods
-        public CortexLayer AddModule(IHtmModule module)
+        public CortexLayer<TIN, TOUT> AddModule(IHtmModule module)
         {
             this.HtmModules.Add(module);
             // connect
             return this;
         }
 
-        public class CONN
-        {
-            public List<IHtmModule> GetFollowingModules(string moduleName)
-            {
-                return this.ConnectorMap[moduleName];
-            }
+        //public class CONN
+        //{
+        //    public List<IHtmModule> GetFollowingModules(string moduleName)
+        //    {
+        //        return this.ConnectorMap[moduleName];
+        //    }
 
-            public Dictionary<string, List<IHtmModule>> ConnectorMap = new Dictionary<string, List<IHtmModule>>();
-        }
+        //    public Dictionary<string, List<IHtmModule>> ConnectorMap = new Dictionary<string, List<IHtmModule>>();
+        //}
 
-        public void Connect(string inModule, string outModule)
-        {
-            if (this.ConnectionGraph.ConnectorMap.ContainsKey(inModule) == false)
-                this.ConnectionGraph.ConnectorMap.Add(inModule, new List<IHtmModule>());
+        //public void Connect(string inModule, string outModule)
+        //{
+        //    if (this.ConnectionGraph.ConnectorMap.ContainsKey(inModule) == false)
+        //        this.ConnectionGraph.ConnectorMap.Add(inModule, new List<IHtmModule>());
 
-            this.ConnectionGraph.ConnectorMap[inModule].Add(GetModuleByName(outModule));
-        }
+        //    this.ConnectionGraph.ConnectorMap[inModule].Add(GetModuleByName(outModule));
+        //}
 
         private IHtmModule GetModuleByName(string moduleName)
         {
@@ -64,19 +63,30 @@ namespace NeoCortexApi.Network
 
             return module;
         }
-        public CONN ConnectionGraph = new CONN();
+        // public CONN ConnectionGraph = new CONN();
 
-        public void Compute(int[] input, bool learn)
+        public TOUT Compute(TIN input, bool learn)
         {
-            IHtmModule module = this.HtmModules[0];
+            object moduleOutput = null;
 
-            var output = module.Compute(input, learn);
-            if (output is IIntegerArrayData)
+            for (int i = 0; i < this.HtmModules.Count; i++)
             {
-                ComputeFollowingModules(module.Name, ((IIntegerArrayData)output).Data, learn);
+                dynamic module = this.HtmModules[i];
+
+                dynamic moduleInput = (i == 0) ? input : moduleOutput;
+
+                moduleOutput = module.Compute(moduleInput, learn);
             }
-            else
-                throw new NotImplementedException();
+
+            return (TOUT)moduleOutput;
+
+          
+            //if (output is IIntegerArrayData)
+            //{
+            //    ComputeFollowingModules(module.Name, ((IIntegerArrayData)output).Data, learn);
+            //}
+            //else
+            //    throw new NotImplementedException();
 
             //var followingModules = this.Connections.GetFollowingModules(module.Name);
 
@@ -91,33 +101,20 @@ namespace NeoCortexApi.Network
             //    }
             //});
         }
-        protected virtual void ComputeFollowingModules(string moduleName, int[] input, bool learn)
-        {
-            var followingModules = this.ConnectionGraph.GetFollowingModules(moduleName);
-            if (followingModules.Count > 0)
-            {
-                ParallelOptions opts = new ParallelOptions();
-                opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
-
-                Parallel.ForEach(followingModules, opts, (followingModule) =>
-                {
-                    var output = followingModule.Compute(input, learn);
-
-                    if (output is IIntegerArrayData)
-                    {
-                        var output1 = followingModule.Compute(((IIntegerArrayData)output).Data, learn);
-                    }
-                    else
-                        throw new NotImplementedException();
-                });
-            }
-        }
+        //protected virtual TOUT ComputeFollowingModules(string moduleName, int[] input, bool learn)
+        //{
+        //    var followingModules = this.ConnectionGraph.GetFollowingModules(moduleName);
+        //    if (followingModules.Count > 0)
+        //    {
+        //        foreach (var module in followingModules)
+        //        {
+        //            var output = ((dynamic)module).Compute(input, learn);
+        //            return ComputeFollowingModules(module.Name, output, learn);
+        //        }
+        //    }
+        //}
 
 
-        IModuleData IHtmModule.Compute(int[] input, bool learn)
-        {
-            throw new NotImplementedException();
-        }
         #endregion
 
         #region Private Methods

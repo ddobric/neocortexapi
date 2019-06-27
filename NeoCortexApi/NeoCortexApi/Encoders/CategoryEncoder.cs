@@ -55,11 +55,16 @@ namespace NeoCortexApi.Encoders
 
         public override int[] Encode(object inputData)
         {
-            String s = inputData.ToString();
-            int index = scalarNames.IndexOf(inputData.ToString());
+            int index = scalarNames.IndexOf((String)inputData);
             int[] outArray = encoding(index);
             return outArray;
         }
+
+        public int[] Compute(string inputData, bool learn)
+        {
+            return Encode(inputData);
+        }
+
         /// <summary>
         /// First for loop is used to assig array to zeros to avoid garbage value
         /// Second for loop is used for encode the array according to the Width, Radius and the elements 

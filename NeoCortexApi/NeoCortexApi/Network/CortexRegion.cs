@@ -10,16 +10,16 @@ namespace NeoCortexApi.Network
 
         public string Name { get; set; }
 
-        public List<CortexLayer> HtmLayers { get; set; }
+        public List<CortexLayer<object, object>> HtmLayers { get; set; }
         #endregion
 
         #region Constructors and Initialization
-        public CortexRegion(string name) : this(name, new List<CortexLayer>())
+        public CortexRegion(string name) : this(name, new List<CortexLayer<object, object>>())
         {
 
         }
 
-        public CortexRegion(string name, List<CortexLayer> layers)
+        public CortexRegion(string name, List<CortexLayer<object,object>> layers)
         {
             this.Name = name;
             this.HtmLayers = layers;
@@ -29,7 +29,7 @@ namespace NeoCortexApi.Network
 
         #region Public Methods
 
-        public CortexRegion AddLayer(CortexLayer layer)
+        public CortexRegion AddLayer(CortexLayer<object, object> layer)
         {
             this.HtmLayers.Add(layer);
             return this;
