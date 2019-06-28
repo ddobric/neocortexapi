@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AkkaSb.Net
 {
-    public class ActorSbConfig
+    public class ActorSbConfig 
     {
         public string SbConnStr { get; set; }
 
@@ -29,6 +29,11 @@ namespace AkkaSb.Net
         /// Number partitions, which will be concurrentlly dispatched for calculation.
         /// </summary>
         public int BatchSize { get; set; } = 100;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public int NumOfElementsPerPartition { get; set; }
     }
 
     //public class NodeConfig

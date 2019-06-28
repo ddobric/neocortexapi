@@ -37,16 +37,16 @@ namespace NeoCortexApi.Entities
         /// Gets partitions (nodes) with assotiated indexes.
         /// </summary>
         /// <returns></returns>
-        public List<(int partId, int minKey, int maxKey)> GetPartitions()
-        {
-            if (IsRemotelyDistributed)
-            {
-                IHtmDistCalculus map = this.sparseMap as IHtmDistCalculus;
-                return map.GetPartitions();
-            }
-            else
-                throw new InvalidOperationException("GetPartitions can only be ued for remotely distributed collections.");
-        }
+        //public List<(int partId, int minKey, int maxKey)> GetPartitions()
+        //{
+        //    if (IsRemotelyDistributed)
+        //    {
+        //        IHtmDistCalculus map = this.sparseMap as IHtmDistCalculus;
+        //        return map.GetPartitions();
+        //    }
+        //    else
+        //        throw new InvalidOperationException("GetPartitions can only be ued for remotely distributed collections.");
+        //}
 
         /**
          * Constructs a new {@code SparseObjectMatrix}

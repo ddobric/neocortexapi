@@ -11,6 +11,7 @@ using NeoCortexApi.Entities;
 using System.Collections.Concurrent;
 using NeoCortexApi.Utility;
 using System.Threading;
+using Microsoft.Extensions.Logging;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
@@ -26,7 +27,7 @@ namespace NeoCortexApi.DistributedComputeLib
         /// </summary>
         //private IActorRef[] dictActors;
 
-        private List<Placement<TKey, IActorRef>> actorMap;
+        private List<Placement<TKey>> actorMap;
 
         /// <summary>
         /// Maps from Actor partition identifier to actor index in <see cref="dictActors" list./>
@@ -66,7 +67,7 @@ namespace NeoCortexApi.DistributedComputeLib
         /// Creates all required actors, which host partitions.
         /// </summary>
         /// <param name="config"></param>
-        public AkkaDistributedDictionaryBase(object cfg)
+        public AkkaDistributedDictionaryBase(object cfg, ILogger logger = null)
         {
             AkkaDistributedDictConfig config = (AkkaDistributedDictConfig)cfg;
             if (config == null)
@@ -118,13 +119,13 @@ namespace NeoCortexApi.DistributedComputeLib
                 //this.ActorMap[i].ActorRef = sel.ResolveOne(TimeSpan.FromSeconds(1)).Result;
                 //if (this.ActorMap[i].ActorRef == null)
                 {
-                    this.ActorMap[i].SbActorRef =
+                    this.ActorMap[i].ActorRef =
                      actSystem.ActorOf(Props.Create(() => new DictNodeActor())
                      .WithDeploy(Deploy.None.WithScope(new RemoteScope(Address.Parse(this.ActorMap[i].NodeUrl)))),
                      actorName);
                 }
               
-                var result = this.ActorMap[i].SbActorRef.Ask<int>(new CreateDictNodeMsg()
+                var result = ((IActorRef)this.ActorMap[i].ActorRef).Ask<int>(new CreateDictNodeMsg()
                 {
                     HtmAkkaConfig = this.HtmConfig,
                 }, this.Config.ConnectionTimeout).Result;
@@ -149,7 +150,7 @@ namespace NeoCortexApi.DistributedComputeLib
         /// Gets partitions (nodes) with assotiated indexes.
         /// </summary>
         /// <returns></returns>
-        public abstract List<(int partId, int minKey, int maxKey)> GetPartitions();
+        //public abstract List<(int partId, int minKey, int maxKey)> GetPartitions();
 
         public TValue this[TKey key]
         {
@@ -189,9 +190,9 @@ namespace NeoCortexApi.DistributedComputeLib
                 Task<int>[] tasks = new Task<int>[this.ActorMap.Count];
                 int indx = 0;
 
-                foreach (var actor in this.ActorMap.Select(el => el.SbActorRef))
+                foreach (var actor in this.ActorMap.Select(el => el.ActorRef))
                 {
-                    tasks[indx++] = actor.Ask<int>(new GetCountMsg(), this.Config.ConnectionTimeout);
+                    tasks[indx++] = ((IActorRef)actor).Ask<int>(new GetCountMsg(), this.Config.ConnectionTimeout);
                 }
 
                 Task.WaitAll(tasks);
@@ -327,7 +328,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
                     //}
 
-                    var res = placement.SbActorRef.Ask<int>(new InitColumnsMsg()
+                    var res = ((IActorRef)placement.ActorRef).Ask<int>(new InitColumnsMsg()
                     {
                         PartitionKey = placement.PartitionIndx,
                         MinKey = (int)(object)placement.MinKey,
@@ -422,7 +423,7 @@ namespace NeoCortexApi.DistributedComputeLib
                         try
                         {
                             //Debug.WriteLine($"C: {placement.ActorRef.Path}");
-                            var avgSpanOfPart = placement.SbActorRef.Ask<double>(new ConnectAndConfigureColumnsMsg(), this.Config.ConnectionTimeout).Result;
+                            var avgSpanOfPart = ((IActorRef)placement.ActorRef).Ask<double>(new ConnectAndConfigureColumnsMsg(), this.Config.ConnectionTimeout).Result;
                             aggLst.TryAdd(placement.PartitionIndx, avgSpanOfPart);
                             break;
                         }
@@ -448,7 +449,7 @@ namespace NeoCortexApi.DistributedComputeLib
             // Run overlap calculation on all actors(in all partitions)
             Parallel.ForEach(this.ActorMap, opts, (placement) =>
             {
-                var partitionOverlaps = placement.SbActorRef.Ask<List<KeyPair>>(new CalculateOverlapMsg { InputVector = inputVector }, this.Config.ConnectionTimeout).Result;
+                var partitionOverlaps = ((IActorRef)placement.ActorRef).Ask<List<KeyPair>>(new CalculateOverlapMsg { InputVector = inputVector }, this.Config.ConnectionTimeout).Result;
                 overlapList.TryAdd(placement.PartitionIndx, partitionOverlaps);
             });
 

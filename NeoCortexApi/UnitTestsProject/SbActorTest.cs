@@ -98,7 +98,7 @@ namespace UnitTestsProject
             Debug.WriteLine($"Start of {nameof(TellTest)}");
 
             var cfg = getLocaSysConfig();
-            ActorSystem sysLocal = new ActorSystem($"{nameof(TellTest)}/local", cfg);
+            ActorSystem sysLocal = new AkkaSb.Net.ActorSystem($"{nameof(TellTest)}/local", cfg);
             ActorSystem sysRemote = new ActorSystem($"{nameof(TellTest)}/remote", getRemoteSysConfig());
 
             CancellationTokenSource src = new CancellationTokenSource();

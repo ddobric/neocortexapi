@@ -12,7 +12,7 @@ namespace NeoCortexApi.DistributedCompute
     /// <summary>
     /// Acts as distributed dictionary of SparseObjectMatrix.
     /// </summary>
-    public class HtmSparseIntDictionary<T> : ActorSbDistributedDictionaryBase<int, T> //AkkaDistributedDictionaryBase<int, T>
+    public class HtmSparseIntDictionary<T> : AkkaDistributedDictionaryBase<int, T>
     {
         public HtmSparseIntDictionary(object config) : base(config, null)
         {
@@ -23,9 +23,9 @@ namespace NeoCortexApi.DistributedCompute
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        protected override object GetPartitionActorFromKey(int key)
+        protected override IActorRef GetPartitionActorFromKey(int key)
         {
-            return this.ActorMap.Where(p => p.MinKey <= key && p.MaxKey >= key).First().ActorRef;
+            return this.ActorMap.Where(p => p.MinKey <= key && p.MaxKey >= key).First().ActorRef as IActorRef;
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace NeoCortexApi.DistributedCompute
                     if (min >= numElements)
                         break;
 
-                    map.Add(new Placement<int>() { NodeIndx = nodIndx, NodeUrl = nodes[nodIndx], PartitionIndx = globalPartIndx, MinKey = min, MaxKey = max, SbActorRef = null });
+                    map.Add(new Placement<int>() { NodeIndx = nodIndx, NodeUrl = nodes[nodIndx], PartitionIndx = globalPartIndx, MinKey = min, MaxKey = max, ActorRef = null });
 
                 }
             }
@@ -99,22 +99,22 @@ namespace NeoCortexApi.DistributedCompute
         }
 
 
-        /// <summary>
-        /// Gets the list of partitions (nodes) with assotiated keys.
-        /// Key is assotiated to partition if it is hosted at the partition node.
-        /// </summary>
-        /// <returns></returns>
-        public override List<(int partId, int minKey, int maxKey)> GetPartitions()
-        {
-            List<(int partId, int minKey, int maxKey)> map = new List<(int partId, int minKey, int maxKey)>();
+        ///// <summary>
+        ///// Gets the list of partitions (nodes) with assotiated keys.
+        ///// Key is assotiated to partition if it is hosted at the partition node.
+        ///// </summary>
+        ///// <returns></returns>
+        //public override List<(int partId, int minKey, int maxKey)> GetPartitions()
+        //{
+        //    List<(int partId, int minKey, int maxKey)> map = new List<(int partId, int minKey, int maxKey)>();
 
-            foreach (var part in this.ActorMap)
-            {
-                map.Add((part.PartitionIndx, part.MinKey, part.MaxKey));
-            }
+        //    foreach (var part in this.ActorMap)
+        //    {
+        //        map.Add((part.PartitionIndx, part.MinKey, part.MaxKey));
+        //    }
 
-            return map;
-        }
+        //    return map;
+        //}
 
         private int? numColumns = null;
 
@@ -152,10 +152,10 @@ namespace NeoCortexApi.DistributedCompute
                 {
                     if (partition.MinKey <= (int)pair.Key && partition.MaxKey >= (int)pair.Key)
                     {
-                        if (res.ContainsKey(partition.SbActorRef) == false)
-                            res.Add(partition.SbActorRef, new List<KeyPair>());
+                        if (res.ContainsKey(partition.ActorRef as IActorRef) == false)
+                            res.Add(partition.ActorRef as IActorRef, new List<KeyPair>());
 
-                        res[partition.SbActorRef].Add(pair);
+                        res[partition.ActorRef as IActorRef].Add(pair);
                     }
                 }
             }
@@ -170,7 +170,7 @@ namespace NeoCortexApi.DistributedCompute
 
         public static Dictionary<IActorRef, List<KeyPair>> GetPartitionsByNode(List<Placement<int>> actorMap)
         {
-            var groupedByNode = actorMap.GroupBy(i => i.SbActorRef);
+            var groupedByNode = actorMap.GroupBy(i => i.ActorRef);
             foreach (var node in groupedByNode)
             {
                 foreach (var item in node)

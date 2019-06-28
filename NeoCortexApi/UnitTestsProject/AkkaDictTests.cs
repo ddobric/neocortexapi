@@ -73,9 +73,9 @@ namespace UnitTestsProject
         /// <param name="expectedPartition"></param>
         [TestMethod]
         [DataRow(new string[] { "url1" }, 200, 1024)]
-        //[DataRow(new string[] { "url1", "url2", "url3" }, 5, 17)]
-        //[DataRow(new string[] { "url1", "url2", "url3" }, 5, 31)]
-        //[DataRow(new string[] { "url1" }, 10, 4096)]
+        [DataRow(new string[] { "url1", "url2", "url3" }, 5, 17)]
+        [DataRow(new string[] { "url1", "url2", "url3" }, 5, 31)]
+        [DataRow(new string[] { "url1" }, 10, 4096)]
         public void PartitionMapTest(string[] nodes, int partitionsPerNode, int elements)
         {
             var nodeList = new List<string>();
@@ -487,10 +487,37 @@ namespace UnitTestsProject
             int i = 0;
             foreach (var item in map)
             {
-                item.SbActorRef = list[i++ % nodes.Length];
+                item.ActorRef = list[i++ % nodes.Length];
             }
 
             var groupedNodes = HtmSparseIntDictionary<object>.GetPartitionsByNode(map);           
+        }
+
+        [TestMethod]
+     
+        [DataRow(10, 4096)]
+        [DataRow(5, 20)]
+        public void ActorSbPartitionMapTest(int elementsPerPartition, int totalElements)
+        {
+            //var nodeList = new List<string>();
+            //nodeList.AddRange(nodes);
+            var map = ActorSbDistributedDictionaryBase<Column>.CreatePartitionMap(totalElements, elementsPerPartition);
+
+            int lastMax = -1;
+            int elementCnt = 0;
+
+            foreach (var item in map)
+            {
+                Assert.IsTrue(item.MinKey == lastMax + 1);
+                Assert.IsTrue(item.MaxKey > item.MinKey);
+
+                elementCnt += item.MaxKey - item.MinKey + 1;
+
+                lastMax = item.MaxKey;
+            }
+
+            Assert.IsTrue(elementCnt == totalElements);
+           
         }
 
         ///// <summary>

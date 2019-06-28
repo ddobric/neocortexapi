@@ -36,7 +36,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <returns>
         /// </returns>
-        List<(int partId, int minKey, int maxKey)> GetPartitions();
+        //List<(int partId, int minKey, int maxKey)> GetPartitions();
 
         void InitializeColumnPartitionsDist(ICollection<KeyPair> keyValuePairs);
 
