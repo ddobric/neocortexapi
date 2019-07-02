@@ -172,9 +172,9 @@ namespace UnitTestsProject
         /// Tests if Ask() works as designed.
         /// </summary>
 
-        [TestMethod]
-        [TestCategory("SbActorTests")]
-        [TestCategory("SbActorHostRequired")]
+        //[TestMethod]
+        //[TestCategory("SbActorTests")]
+        //[TestCategory("SbActorHostRequired")]
         public void AskTestClientOnly()
         {
             //Thread.Sleep(2000);

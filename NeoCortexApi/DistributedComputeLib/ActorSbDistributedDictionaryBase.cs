@@ -57,10 +57,8 @@ namespace NeoCortexApi.DistributedComputeLib
         /// Creates all required actors, which host partitions.
         /// </summary>
         /// <param name="config"></param>
-        public ActorSbDistributedDictionaryBase(object cfg, ILogger logger)
+        public ActorSbDistributedDictionaryBase(ActorSbConfig config, ILogger logger)
         {
-            ActorSbConfig config = (ActorSbConfig)cfg;
-
             if (config == null)
                 throw new ArgumentException("Configuration must be specified.");
 
@@ -293,39 +291,7 @@ namespace NeoCortexApi.DistributedComputeLib
                     }, this.Config.ConnectionTimeout).Result;
                 });
             }, this.ActorMap, this.Config.BatchSize);
-
-            //int processedItems = 0;
-            //int batchCnt = 0;
-
-            //var shuffledList = ArrayUtils.Shuffle(this.ActorMap);
-
-            //List<Placement<TKey>> batchedList = new List<Placement<TKey>>();
-
-            //while (processedItems < this.ActorMap.Count)
-            //{              
-            //    if (batchCnt < this.Config.ProcessingBatch && processedItems < this.ActorMap.Count)
-            //    {
-            //        batchedList.Add(shuffledList[processedItems]);
-            //        processedItems++;
-            //        batchCnt++;
-            //    }
-            //    else
-            //    {
-
-            //        // Run overlap calculation on all actors(in all partitions)
-            //        Parallel.ForEach(batchedList, opts, (placement) =>
-            //        {
-            //            var res = placement.ActorRef.Ask<int>(new InitColumnsMsg()
-            //            {
-            //                MinKey = (int)(object)placement.MinKey,
-            //                MaxKey = (int)(object)placement.MaxKey
-            //            }, this.Config.ConnectionTimeout).Result;
-            //        });
-
-            //        batchCnt = 0;
-            //        batchedList = new List<Placement<TKey>>();
-            //    }             
-            //}
+                       
         }
 
         private void runBatched(Action<List<Placement<int>>> p, List<Placement<int>> actorMap, object batchSize)
@@ -342,9 +308,9 @@ namespace NeoCortexApi.DistributedComputeLib
 
             List<Placement<int>> batchedList = new List<Placement<int>>();
 
-            while (processedItems < this.ActorMap.Count)
+            while (processedItems <= this.ActorMap.Count)
             {
-                if (batchCnt < batchSize && processedItems < this.ActorMap.Count)
+                if (batchCnt < batchSize && processedItems < shuffledList.Count)
                 {
                     batchedList.Add(shuffledList[processedItems]);
                     processedItems++;
@@ -352,10 +318,15 @@ namespace NeoCortexApi.DistributedComputeLib
                 }
                 else
                 {
-                    func(batchedList);
+                    if (batchedList.Count > 0)
+                    {
+                        func(batchedList);
 
-                    batchCnt = 0;
-                    batchedList = new List<Placement<int>>();
+                        batchCnt = 0;
+                        batchedList = new List<Placement<int>>();
+                    }
+                    else
+                        break;
                 }
             }
         }
@@ -422,7 +393,7 @@ namespace NeoCortexApi.DistributedComputeLib
                 foreach (var keyPair in item.Value)
                 {
                     cnt++;
-                    overlaps.Add((int)keyPair.Value);
+                    overlaps.Add((int)(long)keyPair.Value);
                 }
 
                 Debug.WriteLine($"cnt: {cnt} - key:{item.Key} - cnt:{item.Value.Count}");

@@ -1,4 +1,5 @@
-﻿using ImageBinarizer;
+﻿using AkkaSb.Net;
+using ImageBinarizer;
 using NeoCortexApi.DistributedCompute;
 using NeoCortexApi.Entities;
 using System;
@@ -123,6 +124,27 @@ namespace NeoCortexApi
                     PartitionsPerNode = 200,
                     ProcessingBatch = 10
                 };
+            }
+        }
+
+        /// <summary>
+        /// Gets default sparse dictionary configuration.
+        /// </summary>
+        public static ActorSbConfig DefaultSbConfig
+        {
+            get
+            {
+                string sbConnStr = "Endpoint=sb://bastasample.servicebus.windows.net/;SharedAccessKeyName=demo;SharedAccessKey=MvwVbrrJdsMQyhO/0uwaB5mVbuXyvYa3WRNpalHi0LQ=";
+
+                ActorSbConfig cfg = new ActorSbConfig();
+                cfg.SbConnStr = sbConnStr;
+                cfg.ReplyMsgQueue = "actorsystem/rcvlocal";
+                cfg.RequestMsgQueue = "actorsystem/actorqueue";
+                cfg.NumOfElementsPerPartition = 100;
+                cfg.BatchSize = 5;
+                cfg.ConnectionTimeout = TimeSpan.FromMinutes(5);
+
+                return cfg;
             }
         }
 

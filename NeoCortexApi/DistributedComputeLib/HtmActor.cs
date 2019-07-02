@@ -21,7 +21,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
         private HtmConfig config;
 
-
+    
         public HtmActor(ActorId id) : base(id)
         {
             Receive<PingNodeMsg>((msg) =>
@@ -42,40 +42,50 @@ namespace NeoCortexApi.DistributedComputeLib
 
             Receive<InitColumnsMsg>((msg) =>
             {
-                this.Logger?.LogInformation($"Received message: '{msg.GetType().Name}'");
+                this.Logger?.LogDebug($"Received message: '{msg.GetType().Name}', Id: {this.Id}");
 
                 var res = initializeColumns(msg);
 
-                this.Logger?.LogInformation($"Completed message: '{msg.GetType().Name}'. Result: {res}");
+                this.Logger?.LogInformation($"Completed message: '{msg.GetType().Name}'. min:{msg.MinKey}, max:{msg.MaxKey} ,Column range: {res}, Hashcode: {this.GetHashCode()}, Elements: {this.dict.Count}, Id: {this.Id}");
 
                 return res;
             });
 
             Receive<ConnectAndConfigureColumnsMsg>((msg) =>
             {
-                this.Logger?.LogInformation($"Received message: '{msg.GetType().Name}'");
+                this.Logger?.LogDebug($"{Id} - Received message: '{msg.GetType().Name}',  dict: {dict.Count}, Id: {this.Id}");
 
-                var res =createAndConnectColumns(msg);
+                var res = createAndConnectColumns(msg);
 
-                this.Logger?.LogInformation($"Completed message: '{msg.GetType().Name}'. Result: {res}");
+                if (dict.Count == 0)
+                {
+
+                }
+
+                this.Logger?.LogInformation($"{Id} - Completed message: '{msg.GetType().Name}'. Avg. col. span: {res}, Hashcode: {this.GetHashCode()}, dict: {dict.Count}, Id: {this.Id}");
 
                 return res;
             });
 
             Receive<CalculateOverlapMsg>((msg) =>
             {
-                this.Logger?.LogInformation($"Received message: '{msg.GetType().Name}'");
+                this.Logger?.LogDebug($"Received message: '{msg.GetType().Name}'");
 
                 var res = calculateOverlap(msg);
 
-                this.Logger?.LogInformation($"Completed message: '{msg.GetType().Name}'. Result: {res}");
+                if (res.Count == 0)
+                {
+
+                }
+
+                this.Logger?.LogInformation($"Completed message: '{msg.GetType().Name}', Hashcode: {this.GetHashCode()}, Result: {res.Count}, Id={this.Id} ");
 
                 return res;
             });
 
             Receive<AdaptSynapsesMsg>((msg) =>
             {
-                this.Logger?.LogInformation($"Started message: '{msg.GetType().Name}'");
+                this.Logger?.LogDebug($"Started message: '{msg.GetType().Name}'");
 
                 var res = adaptSynapses(msg);
 
@@ -88,7 +98,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
             Receive<BumUpWeakColumnsMsg>((msg) =>
             {
-                Console.WriteLine($"Started message: '{msg.GetType().Name}'");
+                this.Logger?.LogDebug($"Started message: '{msg.GetType().Name}'");
 
                 var res = bumpUpWeakColumns(msg);
 
@@ -100,8 +110,8 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public override void Activated()
         {
-            Console.WriteLine($"Actor '{this.GetType().Name}' activated.");
-      
+            Console.WriteLine($"Actor '{this.GetType().Name}' activated. Id: {this.Id}");
+
         }
 
         public override void DeActivated()
@@ -114,7 +124,7 @@ namespace NeoCortexApi.DistributedComputeLib
         /// Creates columns on the node.
         /// </summary>
         /// <param name="msg"></param>
-        private object initializeColumns(InitColumnsMsg msg)
+        private int initializeColumns(InitColumnsMsg msg)
         {
             dict = new Dictionary<object, object>();
 
@@ -123,7 +133,7 @@ namespace NeoCortexApi.DistributedComputeLib
                 this.dict[i] = new Column(this.config.CellsPerColumn, i, this.config.SynPermConnected, this.config.NumInputs);
             }
 
-            return msg.MaxKey - msg.MinKey;
+            return msg.MaxKey - msg.MinKey + 1;
         }
 
 
@@ -132,7 +142,7 @@ namespace NeoCortexApi.DistributedComputeLib
         /// It returns the average connected span of the partition.
         /// </summary>
         /// <param name="msg"></param>
-        private object createAndConnectColumns(ConnectAndConfigureColumnsMsg msg)
+        private double createAndConnectColumns(ConnectAndConfigureColumnsMsg msg)
         {
             List<double> avgConnections = new List<double>();
 
@@ -172,7 +182,7 @@ namespace NeoCortexApi.DistributedComputeLib
             return avgConnectedSpan;
         }
 
-        private object calculateOverlap(CalculateOverlapMsg msg)
+        private List<KeyPair> calculateOverlap(CalculateOverlapMsg msg)
         {
             Console.WriteLine($"Received message: '{msg.GetType().Name}'");
 
@@ -210,7 +220,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
             Parallel.ForEach(msg.ColumnKeys, opts, (colPair) =>
             {
-                Column activeColumn = (Column)this.dict[colPair.Key];
+                Column activeColumn = (Column)this.dict[(int)(long)colPair.Key];
                 //Pool pool = c.getPotentialPools().get(activeColumns[i]);
                 Pool pool = activeColumn.ProximalDendrite.RFPool;
                 double[] perm = pool.getDensePermanences(this.config.NumInputs);

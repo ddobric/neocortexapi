@@ -63,7 +63,7 @@ namespace AkkaSb.Net
             await this.RequestMsgSenderClient.SendAsync(sbMsg);
 
             TResponse res = WaitOnResponse<TResponse>(sbMsg, timeout);
-
+            
             return res;
         }
 
@@ -87,18 +87,24 @@ namespace AkkaSb.Net
             
             while (DateTime.Now < entered.AddMinutes(timeout.HasValue ? timeout.Value.TotalMinutes : this.MaxProcessingTime.TotalMinutes))
             {
-                rcvEvent.WaitOne();
-
-                Message sbRcvMsg;
-
-                if (receivedMsgQueue.TryRemove(sbMsg.MessageId, out sbRcvMsg))
+                if (rcvEvent.WaitOne())
                 {
-                    msg = DeserializeMsg<TResponse>(sbRcvMsg.Body);
-                    break;
-                }
+                    Message sbRcvMsg;
 
-                rcvEvent.Reset();
+                    if (receivedMsgQueue.TryRemove(sbMsg.MessageId, out sbRcvMsg))
+                    {
+                        msg = DeserializeMsg<TResponse>(sbRcvMsg.Body);
+                        break;
+                    }
+
+                    rcvEvent.Reset();
+                }
+                else
+                    throw new TimeoutException($"Actor system didn't sent any response after specified timeout interval. This can be a communication issue or actor is still running!");
             }
+            
+            if(msg == null)
+                throw new TimeoutException($"Actor system didn't response after specified timeout interval. This can be a communication issue or actor is still running!");
 
             return msg;
         }
@@ -133,6 +139,7 @@ namespace AkkaSb.Net
         {
             JsonSerializerSettings sett = new JsonSerializerSettings();
             sett.TypeNameHandling = TypeNameHandling.All;
+            
             var strObj = JsonConvert.SerializeObject(msg, sett);
 
             return UTF8Encoding.UTF8.GetBytes(strObj);

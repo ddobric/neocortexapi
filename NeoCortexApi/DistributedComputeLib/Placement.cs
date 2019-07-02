@@ -20,6 +20,9 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public object ActorRef { get; set; }
 
-        
+        public override string ToString()
+        {
+            return $"Partition: {PartitionIndx}, MinKey:{MinKey}, MaxKey: {MaxKey} TotalKeys: {(int)(object)MinKey-(int)(object)MaxKey + 1}" ;
+        }
     }
 }

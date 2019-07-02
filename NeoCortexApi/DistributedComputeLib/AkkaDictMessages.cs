@@ -87,13 +87,13 @@ namespace NeoCortexApi.DistributedComputeLib
 
     public class AdaptSynapsesMsg
     {
-        public List<KeyPair> ColumnKeys { get; internal set; }
-        public double[] PermanenceChanges { get; internal set; }
+        public List<KeyPair> ColumnKeys { get;  set; }
+        public double[] PermanenceChanges { get;  set; }
     }
 
     public class BumUpWeakColumnsMsg
     {
-        public List<KeyPair> ColumnKeys { get; internal set; }
+        public List<KeyPair> ColumnKeys { get;  set; }
  
     }
 }
