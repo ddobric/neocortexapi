@@ -375,8 +375,8 @@ namespace NeoCortexApi.DistributedComputeLib
             ConcurrentDictionary<int, List<KeyPair>> overlapList = new ConcurrentDictionary<int, List<KeyPair>>();
 
             ParallelOptions opts = new ParallelOptions();
-            opts.MaxDegreeOfParallelism = this.ActorMap.Count;
-
+            opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
+            
             // Run overlap calculation on all actors(in all partitions)
             Parallel.ForEach(this.ActorMap, opts, (placement) =>
             {

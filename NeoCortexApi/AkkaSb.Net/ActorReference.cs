@@ -60,7 +60,13 @@ namespace AkkaSb.Net
         {
             var sbMsg = CreateMessage(msg, true, actorType, actorId);
             sbMsg.ReplyTo = this.replyQueueName;
-            await this.RequestMsgSenderClient.SendAsync(sbMsg);
+            try
+            {
+                await this.RequestMsgSenderClient.SendAsync(sbMsg);
+            }
+            catch (Exception exx)
+            {
+            }
 
             TResponse res = WaitOnResponse<TResponse>(sbMsg, timeout);
             
