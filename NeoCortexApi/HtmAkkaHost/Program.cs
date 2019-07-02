@@ -23,7 +23,7 @@ namespace HtmAkkaHost
             factory.AddConsole(LogLevel.Information);
             factory.AddDebug(LogLevel.Information);
 
-            //--SystemName=node1 RequestMsgQueue=actorsystem/actorqueue ReplyMsgQueue=actorsystem/rcvnode1 --SbConnStr="Endpoint=sb://bastasample.servicebus.windows.net/;SharedAccessKeyName=demo;SharedAccessKey=MvwVbrrJdsMQyhO/0uwaB5mVbuXyvYa3WRNpalHi0LQ="
+            //--SystemName=node1 --RequestMsgQueue=actorsystem/actorqueue --ReplyMsgQueue=actorsystem/rcvnode1 --SbConnStr="Endpoint=sb://bastasample.servicebus.windows.net/;SharedAccessKeyName=demo;SharedAccessKey=MvwVbrrJdsMQyhO/0uwaB5mVbuXyvYa3WRNpalHi0LQ="
             ActorSbHostService svc = new ActorSbHostService(factory.CreateLogger("logger"));
             svc.Start(args);
         }

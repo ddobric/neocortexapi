@@ -60,12 +60,27 @@ namespace AkkaSb.Net
         {
             var sbMsg = CreateMessage(msg, true, actorType, actorId);
             sbMsg.ReplyTo = this.replyQueueName;
-            try
+
+            int retries = 5;
+
+            while (true)
             {
-                await this.RequestMsgSenderClient.SendAsync(sbMsg);
-            }
-            catch (Exception exx)
-            {
+                try
+                {
+                    await this.RequestMsgSenderClient.SendAsync(sbMsg);
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    if (retries > 0)
+                    {
+                        this?.logger.LogWarning($"Message timeout. {sbMsg.SessionId}");
+                        Thread.Sleep(1000);
+                        retries--;
+                    }
+                    else
+                        throw;
+                }
             }
 
             TResponse res = WaitOnResponse<TResponse>(sbMsg, timeout);

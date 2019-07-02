@@ -191,7 +191,8 @@ namespace AkkaSb.Net
                 else
                 {
                     logger?.LogInformation($"{this.Name} - No more messages received for sesson {session.SessionId}");
-
+                    await session.CloseAsync();
+                    return;
                     //break;
                 }
             }

@@ -444,7 +444,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
             Parallel.ForEach(partitionMap, opts, (placement) =>
             {
-                placement.Key.Ask<int>(new BumUpWeakColumnsMsg { ColumnKeys = placement.Value }, this.Config.ConnectionTimeout);
+                var res = placement.Key.Ask<int>(new BumUpWeakColumnsMsg { ColumnKeys = placement.Value }, this.Config.ConnectionTimeout).Result;
             });
         }
 

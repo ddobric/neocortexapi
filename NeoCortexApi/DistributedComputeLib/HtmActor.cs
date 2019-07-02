@@ -241,7 +241,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
             Parallel.ForEach(msg.ColumnKeys, opts, (colPair) =>
             {
-                Column weakColumn = (Column)dict[colPair.Key];
+                Column weakColumn = (Column)dict[(int)(long)colPair.Key];
 
                 Pool pool = weakColumn.ProximalDendrite.RFPool;
                 double[] perm = pool.getSparsePermanences();

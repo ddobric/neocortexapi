@@ -140,8 +140,8 @@ namespace NeoCortexApi
                 cfg.SbConnStr = sbConnStr;
                 cfg.ReplyMsgQueue = "actorsystem/rcvlocal";
                 cfg.RequestMsgQueue = "actorsystem/actorqueue";
-                cfg.NumOfElementsPerPartition = 100;
-                cfg.BatchSize = 5;
+                cfg.NumOfElementsPerPartition = 1000;
+                cfg.BatchSize = 1000;
                 cfg.ConnectionTimeout = TimeSpan.FromMinutes(5);
 
                 return cfg;
