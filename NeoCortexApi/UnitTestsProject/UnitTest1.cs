@@ -1,4 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeoCortex;
+using NeoCortexApi;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
@@ -10,69 +12,6 @@ namespace UnitTestsProject
     [TestClass]
     public class UnitTest1
     {
-        [TestMethod]
-        public void ArraySizeTest()
-        {
-            byte[] bb = new byte[Int32.MaxValue - 56];
-
-            for (int i = int.MaxValue - 1000000; i > 0; i--)
-            {
-                try
-                {
-                    //intmax = 2147483647
-                    //2146435071
-                    // intmax-2146435071
-                    int[] ii = new int[i];
-                    Console.Out.WriteLine("MaxValue: " + i);
-                    Environment.Exit(0);
-                }
-                catch (Exception ignored)
-                { }
-            }
-        }
-
-        [TestMethod]
-        public void DictionarySizeTest()
-        {
-            byte[] bb = new byte[Int32.MaxValue - 56];
-
-            int delta= int.MaxValue / -2;
-
-            for (int i = int.MaxValue; i > 0 ; i= i + delta)
-            {
-                try
-                {
-                    //intmax = 2147483647
-                    //2146435071
-                    // intmax-2146435071
-                    Dictionary<int,int> d = new Dictionary<int, int>(i);
-                    Console.Out.WriteLine("MaxValue: " + i);
-
-                    //if (isDecremeted)
-                    //{
-                    //    isDecremeted 
-                    //}
-
-                    Environment.Exit(0);
-                }
-                catch (Exception ignored)
-                {                  
-                  
-                }
-            }
-        }
-
-
-        [TestMethod]
-        public void HugeArryTest()
-        {
-            var x = new int[4096, 250000];
-            for (int i = 0; i < 4096; i++)
-            {
-                int[] y = x.GetRow2(i);
-            }
-        }
-
 
         [TestMethod]
         [DataRow(new int[] { 2048, 6 })]
@@ -104,7 +43,7 @@ namespace UnitTestsProject
         [DataRow(42)]
         public void RandomSeed(int seed)
         {
-            Random x = new Random(seed);
+            ThreadSafeRandom x = new ThreadSafeRandom(seed);
             var res = x.NextDouble();
             Assert.AreEqual(res, 0.668, 0.01);
         }
@@ -116,7 +55,7 @@ namespace UnitTestsProject
         {
             Topology t = new Topology(new int[] { 2048, 40 });
             int[] coords = new int[] { 200, 10 };
-            var indx = t.GndexFromCoordinates(coords);
+            var indx = HtmCompute.GetFlatIndexFromCoordinates(coords, t.HtmTopology);
         }
 
 
@@ -125,8 +64,8 @@ namespace UnitTestsProject
         {
             Topology t = new Topology(new int[] { 2048, 40 });
             int[] coords = new int[] { 200, 10 };
-            var indx = t.GndexFromCoordinates(coords);
-            var coords2 = t.computeCoordinates(indx);
+            var indx = HtmCompute.GetFlatIndexFromCoordinates(coords, t.HtmTopology);
+            var coords2 = HtmCompute.GetCoordinatesFromIndex(indx, t.HtmTopology);
 
             Assert.AreEqual(coords[0], coords2[0]);
             Assert.AreEqual(coords[1], coords2[1]);
@@ -159,8 +98,8 @@ namespace UnitTestsProject
         [TestMethod]
         public void ColumnCompareTest()
         {
-            Column c1 = new Column(10, 0);
-            Column c2 = new Column(10, 1);
+            Column c1 = new Column(10, 0, 0, 0);
+            Column c2 = new Column(10, 1, 0, 0);
 
             List<Column> l = new List<Column>(new Column[] { c1, c2});
 
@@ -196,6 +135,33 @@ namespace UnitTestsProject
             {
 
             }
+        }
+
+        [TestMethod]
+        [DataRow(20)]
+        [DataRow(30)]
+        [DataRow(40)]
+        [DataRow(50)]
+        public void TestHeatmapCreation(int threshold)
+        {
+            List<double[,]> bostArrays = new List<double[,]>();
+            bostArrays.Add(new double[64, 64]);
+            bostArrays.Add(new double[64, 64]);
+
+            double v = 0;
+            for (int i = 0; i < 64; i++)
+            {
+                for (int j = 0; j < 64; j++)
+                {
+                    bostArrays[0][i, j] = v;
+                    bostArrays[1][j, i] = v;
+                }
+
+                v += 1;
+            }
+
+            NeoCortexUtils.DrawHeatmaps(bostArrays, $"tessheat_{threshold}.png", 1024, 1024, 60, threshold, 10);
+
         }
 
         //[TestMethod]

@@ -3,10 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using NeoCortexApi.Entities;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
-    public class InMemoryDistributedDictionary<TKey, TValue> : IDictionary<TKey, TValue>,  IEnumerator<KeyValuePair<TKey, TValue>>
+    /// <summary>
+    /// Distributes huge dictionary across mutliple dictionaries. Used mainly for testing purposes.
+    /// Special case of this dictionary is with number of nodes = 1. In this case dictionary is redused 
+    /// to a single dictionary, which corresponds original none-distributed implementation of SP and TM.
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
+    public class InMemoryDistributedDictionary<TKey, TValue> : IDistributedDictionary<TKey, TValue>
     {
         private Dictionary<TKey, TValue>[] dictList;
 
@@ -19,6 +27,18 @@ namespace NeoCortexApi.DistributedComputeLib
             {
                 dictList[i] = new Dictionary<TKey, TValue>();
             }
+        }
+
+
+        public ICollection<KeyPair> GetObjects(TKey[] keys)
+        {
+            List<KeyPair> objects = new List<KeyPair>();
+            foreach (var key in keys)
+            {
+                objects.Add(new KeyPair { Value = this[key], Key = key });
+            }
+
+            return objects;
         }
 
 
@@ -110,7 +130,18 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public bool IsReadOnly => false;
 
-        
+        /// <summary>
+        /// Adds list of objects to dictioanary.
+        /// </summary>
+        /// <param name="keyValuePairs"></param>
+        public void AddOrUpdate(ICollection<KeyPair> keyValuePairs)
+        {
+            foreach (var item in keyValuePairs)
+            {
+                Add((TKey)item.Key, (TValue)item.Value);
+            }
+        }
+
         public void Add(TKey key, TValue value)
         {
             int partitionInd = getPartitionIndex(numElements++);
@@ -300,6 +331,8 @@ namespace NeoCortexApi.DistributedComputeLib
         {
             this.dictList = null;
         }
+
+   
         #endregion
     }
 }

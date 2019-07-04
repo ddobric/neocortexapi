@@ -101,5 +101,10 @@ namespace NeoCortexApi.Sensors
         {
             this.currentPos = 0;
         }
+
+        public IComputeOutput Compute(int[] input, bool learn)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -286,3 +286,4 @@ __pycache__/
 *.btm.cs
 *.odx.cs
 *.xsd.cs
+/NeoCortexApi/UnitTestsProject/MnistPng28x28

@@ -1,16 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NeoCortexApi;
-using NeoCortexApi.Encoders;
-using NeoCortexApi.Entities;
-using NeoCortexApi.Network;
-using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Text;
 using System.Linq;
 using System.Globalization;
+using NeoCortexApi.Encoders;
+using NeoCortexApi.Network;
 
 namespace UnitTestsProject
 {
@@ -45,7 +39,7 @@ namespace UnitTestsProject
         /// Demonstratses how to create an encoder by explicite invoke of initialization.
         /// </summary>
         [TestMethod]
-        public void InitTest1()
+        public void EncoderInitTest1()
         {
             Dictionary<string, object> encoderSettings = getDefaultSettings();
 
@@ -75,7 +69,7 @@ namespace UnitTestsProject
         /// Initializes encoder and sets mandatory properties.
         /// </summary>
         [TestMethod]
-        public void InitTest2()
+        public void EncoderInitTest2()
         {
             CortexNetworkContext ctx = new CortexNetworkContext();
 
@@ -93,7 +87,7 @@ namespace UnitTestsProject
         /// Demonstratses how to create an encoder and how to set encoder properties by using of context.
         /// </summary>
         [TestMethod]
-        public void InitTest3()
+        public void EncoderInitTest3()
         {
             CortexNetworkContext ctx = new CortexNetworkContext();
 
@@ -123,7 +117,7 @@ namespace UnitTestsProject
         /// Demonstratses how to create an encoder by explicite invoke of initialization.
         /// </summary>
         [TestMethod]
-        public void InitTest4()
+        public void EncoderInitTest4()
         {
             Dictionary<string, object> encoderSettings = getDefaultSettings();
 
@@ -182,6 +176,7 @@ namespace UnitTestsProject
         /// Initializes all encoders.
         /// </summary>
         [TestMethod]
+  
         public void InitializeAllEncodersTest()
         {
             CortexNetworkContext ctx = new CortexNetworkContext();

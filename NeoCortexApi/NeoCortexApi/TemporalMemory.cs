@@ -25,6 +25,8 @@ namespace NeoCortexApi
 
         private static readonly int cIndexofACTIVE_COLUMNS = 0;
 
+        private Connections connections;
+
         /**
          * Uses the specified {@link Connections} object to Build the structural 
          * anatomy needed by this {@code TemporalMemory} to implement its algorithms.
@@ -42,44 +44,48 @@ namespace NeoCortexApi
          */
 
 
-        public static void init(Connections c)
+        public void init(Connections c2)
         {
-            SparseObjectMatrix<Column> matrix = c.getMemory() == null ?
-                new SparseObjectMatrix<Column>(c.getColumnDimensions()) :
-                    c.getMemory();
-            c.setMemory(matrix);
+            this.connections = c2;
+
+            SparseObjectMatrix<Column> matrix = this.connections.getMemory() == null ?
+                new SparseObjectMatrix<Column>(this.connections.getColumnDimensions()) :
+                    (SparseObjectMatrix<Column>)this.connections.getMemory();
+
+            this.connections.setMemory(matrix);
 
             int numColumns = matrix.getMaxIndex() + 1;
-            c.setNumColumns(numColumns);
-            int cellsPerColumn = c.getCellsPerColumn();
+            this.connections.setNumColumns(numColumns);
+            int cellsPerColumn = this.connections.getCellsPerColumn();
             Cell[] cells = new Cell[numColumns * cellsPerColumn];
 
             //Used as flag to determine if Column objects have been created.
             Column colZero = matrix.getObject(0);
             for (int i = 0; i < numColumns; i++)
             {
-                Column column = colZero == null ? new Column(cellsPerColumn, i) : matrix.getObject(i);
+                Column column = colZero == null ? new Column(cellsPerColumn, i, this.connections.getSynPermConnected(), this.connections.NumInputs) : matrix.getObject(i);
                 for (int j = 0; j < cellsPerColumn; j++)
                 {
-                    cells[i * cellsPerColumn + j] = column.getCell(j);
+                    cells[i * cellsPerColumn + j] = column.Cells[j];
                 }
                 //If columns have not been previously configured
                 if (colZero == null)
                     matrix.set(i, column);
             }
             //Only the TemporalMemory initializes cells so no need to test for redundancy
-            c.setCells(cells);
+            this.connections.setCells(cells);
         }
 
 
-        public ComputeCycle Compute(Connections connections, int[] activeColumns, bool learn)
+        public IComputeOutput Compute(int[] activeColumns, bool learn)
         {
             ComputeCycle cycle = new ComputeCycle();
-            activateCells(connections, cycle, activeColumns, learn);
-            activateDendrites(connections, cycle, learn);
+            activateCells(this.connections, cycle, activeColumns, learn);
+            activateDendrites(this.connections, cycle, learn);
 
             return cycle;
         }
+
 
         /**
          * Calculate the active cells, using the current active columns and dendrite
@@ -118,7 +124,7 @@ namespace NeoCortexApi
                 activeColumns.Add(conn.getColumn(indx));
             }
 
-            Func<Object, Column> segToCol = segment => ((DistalDendrite)segment).getParentCell().getColumn();
+            Func<Object, Column> segToCol = segment => ((DistalDendrite)segment).getParentCell().getParentColumn();
 
             Func<object, Column> times1Fnc = x => (Column)x;
 
@@ -234,9 +240,9 @@ namespace NeoCortexApi
             //        Select(indx => conn.GetSegmentForFlatIdx(indx)).ToList();
 
 
-            activeSegments.Sort(conn.GetComparer());
+            activeSegments.Sort(GetComparer(conn.getNextSegmentOrdinal()));
             //Collections.sort(activeSegments, conn.segmentPositionSortKey);
-            matchingSegments.Sort(conn.GetComparer());
+            matchingSegments.Sort(GetComparer(conn.getNextSegmentOrdinal()));
             //Collections.sort(matchingSegments, conn.segmentPositionSortKey);
 
             cycle.activeSegments = activeSegments;
@@ -378,7 +384,7 @@ namespace NeoCortexApi
                 Random random, bool learn)
         {
 
-            IList<Cell> cells = column.getCells();
+            IList<Cell> cells = column.Cells;
             Cell leastUsedCell = null;
 
             if (matchingSegments != null && matchingSegments.Count > 0)
@@ -623,7 +629,7 @@ namespace NeoCortexApi
                 }
                 else
                 {
-                    synapse.setPermanence(conn, permanence);
+                    synapse.setPermanence(conn.getSynPermConnected(), permanence);
                 }
             }
 
@@ -706,6 +712,11 @@ namespace NeoCortexApi
                 else
                     return true;
             }
+        }
+
+        public DentriteComparer GetComparer(int nextSegmentOrdinal)
+        {
+            return new DentriteComparer(nextSegmentOrdinal);
         }
     }
 }

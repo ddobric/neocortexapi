@@ -12,51 +12,93 @@ namespace NeoCortexApi.Entities
    * savings in memory and computational efficiency because iterative algorithms
    * need only query indexes containing valid data.
    * 
-   * @author David Ray
+   * @author David Ray, Damir Dobric
    *
    * @param <T>
    */
-   [Serializable]
     public class SparseObjectMatrix<T> : AbstractSparseMatrix<T>, IEquatable<T> where T : class
     {
+
+        //private IDictionary<int, T> sparseMap = new Dictionary<int, T>();
+        private IDistributedDictionary<int, T> sparseMap;
         
-        private IDictionary<int, T> sparseMap = new Dictionary<int, T>();
-        //private IDictionary<int, T> sparseMap = new InMemoryDistributedDictionary<int, T>(3);
+        /// <summary>
+        /// Returns true if sparse memory is remotely distributed. It means objects has to be synced with remote partitions.
+        /// </summary>
+        public bool IsRemotelyDistributed
+        {
+            get
+            {
+                return this.sparseMap is IHtmDistCalculus;
+            }
+        }
+
+        /// <summary>
+        /// Gets partitions (nodes) with assotiated indexes.
+        /// </summary>
+        /// <returns></returns>
+        //public List<(int partId, int minKey, int maxKey)> GetPartitions()
+        //{
+        //    if (IsRemotelyDistributed)
+        //    {
+        //        IHtmDistCalculus map = this.sparseMap as IHtmDistCalculus;
+        //        return map.GetPartitions();
+        //    }
+        //    else
+        //        throw new InvalidOperationException("GetPartitions can only be ued for remotely distributed collections.");
+        //}
 
         /**
          * Constructs a new {@code SparseObjectMatrix}
          * @param dimensions	the dimensions of this array
          */
-        public SparseObjectMatrix(int[] dimensions) : base(dimensions, false)
-        {
+        //public SparseObjectMatrix(int[] dimensions) : base(dimensions, false)
+        //{
 
-        }
+        //}
 
         /**
          * Constructs a new {@code SparseObjectMatrix}
          * @param dimensions					the dimensions of this array
          * @param useColumnMajorOrdering		where inner index increments most frequently
          */
-        public SparseObjectMatrix(int[] dimensions, bool useColumnMajorOrdering) : base(dimensions, useColumnMajorOrdering)
+        public SparseObjectMatrix(int[] dimensions, bool useColumnMajorOrdering = false, IDistributedDictionary<int, T> dict = null) : base(dimensions, useColumnMajorOrdering)
         {
-
+            if (dict == null)
+                this.sparseMap = new InMemoryDistributedDictionary<int, T>(1);
+            else
+                this.sparseMap = dict;
         }
 
-        /**
-         * Sets the object to occupy the specified index.
-         * 
-         * @param index     the index the object will occupy
-         * @param object    the object to be indexed.
-         */
-        //  @Override
 
+        /// <summary>
+        /// Sets the object to occupy the specified index.
+        /// </summary>
+        /// <param name="index">The index the object will occupy</param>
+        /// <param name="obj">the object to be indexed.</param>
+        /// <returns></returns>
         public override AbstractFlatMatrix<T> set(int index, T obj)
         {
-            if (!sparseMap.ContainsKey(index))
-                sparseMap.Add(index, (T)obj);
+            //
+            // If not distributed in cluster, we add element by element.
+            if (!(this.sparseMap is IHtmDistCalculus))
+            {
+                if (!sparseMap.ContainsKey(index))
+                    sparseMap.Add(index, (T)obj);
+                else
+                    sparseMap[index] = obj;
+            }
             else
+            {
                 sparseMap[index] = obj;
+            }
 
+            return this;
+        }
+
+        public override AbstractFlatMatrix<T> set(List<KeyPair> updatingValues)
+        {
+            sparseMap.AddOrUpdate(updatingValues);
             return this;
         }
 
@@ -66,7 +108,7 @@ namespace NeoCortexApi.Entities
          * @param object        the object to be indexed.
          * @param coordinates   the row major coordinates [outer --> ,...,..., inner]
          */
-        //@Override
+     
         public override AbstractFlatMatrix<T> set(int[] coordinates, T obj)
         {
             set(computeIndex(coordinates), obj);
@@ -80,10 +122,12 @@ namespace NeoCortexApi.Entities
          * @return  the T at the specified index.
          */
         // @Override
-        public T getObject(int index)
+        public override T getObject(int index)
         {
             return get(index);
         }
+
+
 
         /**
          * Returns the T at the index computed from the specified coordinates
@@ -119,9 +163,9 @@ namespace NeoCortexApi.Entities
          * @return  a sorted array of occupied indexes.
          */
         // @Override
-        public int[] getSparseIndices()
+        public override int[] getSparseIndices()
         {
-            return reverse(sparseMap.Keys.ToArray());
+            return Reverse(sparseMap.Keys.ToArray());
         }
 
         /**
@@ -176,6 +220,11 @@ namespace NeoCortexApi.Entities
         public bool Equals(T other)
         {
             return this.Equals((object)other);
+        }
+
+        public override ICollection<KeyPair> GetObjects(int[] indexes)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -22,7 +22,7 @@ namespace UnitTestsProject
         #region Private Methods
         private static Parameters GetDefaultParams()
         {
-            Random rnd = new Random(42);
+            ThreadSafeRandom rnd = new ThreadSafeRandom(42);
 
             var parameters = Parameters.getAllDefaultParameters();
             parameters.Set(KEY.POTENTIAL_RADIUS, 10);
@@ -48,6 +48,7 @@ namespace UnitTestsProject
 
 
         [TestMethod]
+        [TestCategory("LongRunning")]
         public void SerializationTest()
         {
             var parameters = GetDefaultParams();
@@ -111,6 +112,7 @@ namespace UnitTestsProject
         /// set of active columns as SP1.
         /// </summary>
         [TestMethod]
+        [TestCategory("LongRunning")]
         public void StableOutputWithPersistence()
         {
             var parameters = GetDefaultParams();
@@ -134,7 +136,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < 10; i++)
             {
-                sp.compute(mem, inputVector, activeArray, true);
+                sp.compute( inputVector, activeArray, true);
 
                 var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 
@@ -153,7 +155,7 @@ namespace UnitTestsProject
 
             for (int i = 10; i < 20; i++)
             {
-                sp2.compute(mem, inputVector, activeArray, true);
+                sp2.compute( inputVector, activeArray, true);
 
                 var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 

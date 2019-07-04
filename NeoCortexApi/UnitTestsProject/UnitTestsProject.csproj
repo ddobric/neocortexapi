@@ -1,9 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
 
     <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;USE_AKKA</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,28 +17,26 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Helpers.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Helpers.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="ImageBinarizer" Version="1.0.0" />
     <PackageReference Include="LearningApi" Version="1.3.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
-    <PackageReference Include="Microsoft.Office.Excel" Version="14.0.4760.1000" />
-    <PackageReference Include="Microsoft.Office.Interop.Excel" Version="15.0.4795.1000" />
-    <PackageReference Include="MSTest.TestAdapter" Version="1.2.0" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.2.0" />
+    <PackageReference Include="Microsoft.ML" Version="0.11.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.1" />
+
+    <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
     <PackageReference Include="NeuralNet.MLPerceptron" Version="1.2.2" />
     <PackageReference Include="NeuralNetworks.Core" Version="1.2.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AkkaSb.Net\AkkaSb.Net.csproj" />
     <ProjectReference Include="..\DistributedComputeLib\DistributedComputeLib.csproj" />
     <ProjectReference Include="..\NeoCortexApi\NeoCortexApi.csproj" />
+    <ProjectReference Include="..\NeoCortexArrayLib\NeoCortexArrayLib.csproj" />
+    <ProjectReference Include="..\NeoCortexEntities\NeoCortexEntities.csproj" />
     <ProjectReference Include="..\NeoCortexUtils\NeoCortexUtils.csproj" />
   </ItemGroup>
 

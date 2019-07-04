@@ -71,12 +71,12 @@ namespace UnitTestsProject
 
         }
 
-        public override double getAvgSpanOfConnectedSynapsesForColumn(Connections c, int columnIndex)
+        public override double GetAvgSpanOfConnectedSynapses(Connections c, int columnIndex)
         {
             return this.m_avgConnectedSpanForColumnND;
         }
 
-        public override double avgColumnsPerInput(Connections c)
+        public override double calcAvgColumnsPerInput(Connections c)
         {
             return this.m_avgColumnsPerInput;
         }
@@ -94,7 +94,7 @@ namespace UnitTestsProject
 
         }
 
-        public override void raisePermanenceToThreshold(Connections c, double[] perm, int[] maskPotential)
+        public override void RaisePermanenceToThreshold(HtmConfig htmConfig, double[] perm, int[] maskPotential)
         {
             //Mock out
         }
