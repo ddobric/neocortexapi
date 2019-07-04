@@ -5,7 +5,7 @@ import { neoCortexUtils } from '../neocortexutils';
 import { environment as env } from "../environments/environment";
 import { NotificationsService } from 'angular2-notifications';
 import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, NeocortexSettings, InputModel, CellId } from '../neocortexmodel';
-import {Node } from "../binarySearchTree";
+//import {BSTSynapse } from "../binarySearchTree";
 
 
 @Component({

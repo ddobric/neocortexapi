@@ -5,8 +5,8 @@ import { rootRenderNodes } from '@angular/core/src/view';
 
 export class Node {
     permanence: Synapse;
-    leftChild: Synapse;
-    rightChild: Synapse;
+    leftChild: Node;
+    rightChild: Node;
     constructor(permanence: Synapse) {
         this.permanence = permanence;
         this.leftChild = null;
