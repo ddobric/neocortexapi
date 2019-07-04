@@ -5,6 +5,7 @@ import { neoCortexUtils } from '../neocortexutils';
 import { environment as env } from "../environments/environment";
 import { NotificationsService } from 'angular2-notifications';
 import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, NeocortexSettings, InputModel, CellId } from '../neocortexmodel';
+import {Node } from "../binarySearchTree";
 
 
 @Component({
@@ -47,6 +48,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   neuronsHoverInformation: Array<any> = [];
   synapsesHoverInformation: Array<any> = [];
+  testArray = [];
 
 
 
@@ -59,6 +61,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
+    
+   
 
     //this.model = neoCortexUtils.createModel([0, 0, 0, 0, 1, 1, 1, 2, 2, 3], [10, 1], 6);
     this.model = neoCortexUtils.createModel([0, 0, 0, 1, 2, 1], [10, 1], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
