@@ -35,7 +35,20 @@ namespace AkkaSb.Net
 
         public string Name { get; set; }
 
-        public ActorSystem(string name, ActorSbConfig config, ILogger logger = null)
+        private IPersistenceProvider persistenceProvider;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public IPersistenceProvider PersistenceProvider
+        {
+            get
+            {
+                return this.persistenceProvider;
+            }
+        }
+
+        public ActorSystem(string name, ActorSbConfig config, ILogger logger = null, IPersistenceProvider persistenceProvider = null)
         {
             this.logger = logger;
             this.Name = name;
@@ -132,9 +145,7 @@ namespace AkkaSb.Net
             });
 
             Task.WaitAny(tasks);
-
         }
-
 
         #region Private Methods
 
