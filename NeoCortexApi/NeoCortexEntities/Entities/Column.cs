@@ -74,7 +74,7 @@ namespace NeoCortexApi.Entities
 
             for (int i = 0; i < numCells; i++)
             {
-                Cells[i] = new Cell(this, i);
+                Cells[i] = new Cell(this.Index, i, this.getNumCellsPerColumn());
             }
 
             // We keep tracking of this column only

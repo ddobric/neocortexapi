@@ -55,7 +55,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// The column, which owns this cell.
         /// </summary>
-        public Column Column { get; set; }
+        public int ParentColumnIndex { get; set; }
 
         /** Cash this because Cells are immutable */
         private readonly int m_Hashcode;
@@ -69,12 +69,11 @@ namespace NeoCortexApi.Entities
          * @param column    the containing {@link Column}
          * @param colSeq    this index of this {@code Cell} within its column
          */
-        public Cell(Column column, int colSeq)
+        public Cell(int parentColumnIndx, int colSeq, int numCellsPerColumn)
         {
-            this.Column = column;
-            this.Index = column.getIndex() * column.getNumCellsPerColumn() + colSeq;
-            //this.boxedIndex = new Integer(index);
-            //this.hashcode = hashCode();
+            this.ParentColumnIndex = parentColumnIndx;
+            //this.Index = parentColumnIndx.getIndex() * parentColumnIndx.getNumCellsPerColumn() + colSeq;
+            this.Index = parentColumnIndx * numCellsPerColumn + colSeq;  
         }
 
         /**
@@ -90,9 +89,9 @@ namespace NeoCortexApi.Entities
          * Returns the column within which this cell resides
          * @return
          */
-        public Column getParentColumn()
+        public int getParentColumnIndex()
         {
-            return Column;
+            return ParentColumnIndex;
         }
 
         /**
@@ -192,7 +191,7 @@ namespace NeoCortexApi.Entities
 
         public override string ToString()
         {
-            return $"Cell: Indx={this.Index}, [{this.Column}]";
+            return $"Cell: Indx={this.Index}, [{this.ParentColumnIndex}]";
         }
 
 

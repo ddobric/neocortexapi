@@ -71,6 +71,7 @@ namespace NeoCortexApi
                 //If columns have not been previously configured
                 if (colZero == null)
                     matrix.set(i, column);
+
             }
             //Only the TemporalMemory initializes cells so no need to test for redundancy
             this.connections.setCells(cells);
@@ -124,7 +125,14 @@ namespace NeoCortexApi
                 activeColumns.Add(conn.getColumn(indx));
             }
 
-            Func<Object, Column> segToCol = segment => ((DistalDendrite)segment).getParentCell().getParentColumn();
+            //Func<Object, Column> segToCol = segment => ((DistalDendrite)segment).getParentCell().getParentColumnIndex();
+
+            Func<Object, Column> segToCol = (segment) =>
+            {
+                var colIndx = ((DistalDendrite)segment).getParentCell().getParentColumnIndex();
+                var parentCol = this.connections.getMemory().get(colIndx);
+                return parentCol;
+            };
 
             Func<object, Column> times1Fnc = x => (Column)x;
 

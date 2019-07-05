@@ -24,6 +24,18 @@ namespace UnitTestsProject
 
         public class CounterActor : ActorBase
         {
+            /// <summary>
+            /// Not serialized.
+            /// </summary>
+            private long privProp { get; set; } = 1;
+
+            /// <summary>
+            /// Not serialized.
+            /// </summary>
+            private long privField { get; set; } = 1;
+
+            public long PubField { get; set; } = 1;
+
             public long Counter { get; set; }
 
             public CounterActor(ActorId id) : base(id)
@@ -47,6 +59,7 @@ namespace UnitTestsProject
             var json = TableStoragePersistenceProvider.SerializeActor(act1);
 
             CounterActor act2 = TableStoragePersistenceProvider.DeserializeActor<CounterActor>(json);
+
             Assert.IsTrue(act2.Counter == act1.Counter);
         }
 
