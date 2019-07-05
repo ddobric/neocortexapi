@@ -1,4 +1,5 @@
 import { Numeric } from "d3";
+import { BinarySearchTree } from './binarySearchTree';
 
 export class CellId {
 
@@ -31,6 +32,7 @@ export class NeoCortexModel {
    * Multidimensional sensory input.
    */
   public input: InputModel;
+  tree: BinarySearchTree = new BinarySearchTree();
 
 
   constructor(settings: NeocortexSettings = null, input: InputModel = null, X = 0, layer = 0, Z = 0, synapses = []) {
@@ -51,6 +53,14 @@ export class NeoCortexModel {
       // posZ = posZ + settings.zAreaDistance;
 
     }
+    for (let i = 0; i < synapses.length; i++) {
+      let perm = synapses[i].permanence;
+      this.tree.insert(perm);
+      console.log(this.tree,"tree");
+
+    }
+    console.log('inOrder: ' + this.tree.inOrder());
+    console.log('PreOrder: ' + this.tree.preOrder());
 
 
 
@@ -65,8 +75,9 @@ export class NeoCortexModel {
       this.areas[a.preSynaptic.areaIndex].minicolumns[a.preSynaptic.X][a.preSynaptic.Z].cells[a.preSynaptic.Layer].outgoingSynapses.push(this.synapses[i]);
       this.areas[a.postSynaptic.areaIndex].minicolumns[a.postSynaptic.X][a.postSynaptic.Z].cells[a.postSynaptic.Layer].incomingSynapses.push(this.synapses[i]);
     }
-
+  
   }
+  
 }
 
 

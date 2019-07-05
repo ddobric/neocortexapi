@@ -35,9 +35,23 @@ namespace AkkaSb.Net
 
         public string Name { get; set; }
 
-        public ActorSystem(string name, ActorSbConfig config, ILogger logger = null)
+        private IPersistenceProvider persistenceProvider;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public IPersistenceProvider PersistenceProvider
+        {
+            get
+            {
+                return this.persistenceProvider;
+            }
+        }
+
+        public ActorSystem(string name, ActorSbConfig config, ILogger logger = null, IPersistenceProvider persistenceProvider = null)
         {
             this.logger = logger;
+            this.persistenceProvider = persistenceProvider;
             this.Name = name;
             this.sbConnStr = config.SbConnStr;
             this.sessionRcvClient = new SessionClient(config.SbConnStr, config.RequestMsgQueue,
@@ -132,9 +146,7 @@ namespace AkkaSb.Net
             });
 
             Task.WaitAny(tasks);
-
         }
-
 
         #region Private Methods
 
@@ -153,7 +165,7 @@ namespace AkkaSb.Net
                 {
                     try
                     {
-                        ActorBase actor;
+                        ActorBase actor = null;
 
                         Type tp = Type.GetType((string)msg.UserProperties[ActorReference.cActorType]);
                         if (tp == null)
@@ -162,7 +174,13 @@ namespace AkkaSb.Net
                         var id = new ActorId((string)msg.UserProperties[ActorReference.cActorId]);
                         if (!actorMap.ContainsKey(session.SessionId))
                         {
-                            actor = Activator.CreateInstance(tp, id) as ActorBase;
+                            if (this.persistenceProvider != null)
+                                actor = await this.persistenceProvider.LoadActor(id);
+
+                            if (actor == null)
+                                actor = Activator.CreateInstance(tp, id) as ActorBase;
+
+                            actor.PersistenceProvider = this.PersistenceProvider;
 
                             actor.Logger = logger;
 
@@ -191,11 +209,29 @@ namespace AkkaSb.Net
                 else
                 {
                     logger?.LogInformation($"{this.Name} - No more messages received for sesson {session.SessionId}");
+                    if (this.persistenceProvider != null)
+                    {
+                        await this.persistenceProvider.PersistActor(actorMap[session.SessionId]);
+                    }
+
                     //await session.CloseAsync();
-                    return;
+                    //return;
                     //break;
                 }
             }
+        }
+
+
+        /// <summary>
+        /// SessionId = "Actor Type Name/ActorId"
+        /// </summary>
+        /// <param name="sessionId"></param>
+        /// <returns></returns>
+        private ActorId getActorIdFromSession(string sessionId)
+        {
+            var strId = sessionId.Split('/')[1];
+            
+            return new ActorId(strId);
         }
 
         private ManualResetEvent rcvEvent = new ManualResetEvent(false);

@@ -21,7 +21,7 @@ namespace UnitTestsProject
     {
         private const string sbConnStr = "Endpoint=sb://bastasample.servicebus.windows.net/;SharedAccessKeyName=demo;SharedAccessKey=MvwVbrrJdsMQyhO/0uwaB5mVbuXyvYa3WRNpalHi0LQ=";
 
-        private ActorSbConfig getLocaSysConfig()
+        internal static ActorSbConfig GetLocaSysConfig()
         {
             ActorSbConfig cfg = new ActorSbConfig();
             cfg.SbConnStr = sbConnStr;
@@ -32,9 +32,9 @@ namespace UnitTestsProject
         }
 
 
-        private ActorSbConfig getRemoteSysConfig()
+        internal static ActorSbConfig GetRemoteSysConfig()
         {
-            var localCfg = getLocaSysConfig();
+            var localCfg = GetLocaSysConfig();
 
             ActorSbConfig cfg = new ActorSbConfig();
             cfg.SbConnStr = sbConnStr;
@@ -97,9 +97,9 @@ namespace UnitTestsProject
         {
             Debug.WriteLine($"Start of {nameof(TellTest)}");
 
-            var cfg = getLocaSysConfig();
+            var cfg = GetLocaSysConfig();
             ActorSystem sysLocal = new AkkaSb.Net.ActorSystem($"{nameof(TellTest)}/local", cfg);
-            ActorSystem sysRemote = new ActorSystem($"{nameof(TellTest)}/remote", getRemoteSysConfig());
+            ActorSystem sysRemote = new ActorSystem($"{nameof(TellTest)}/remote", GetRemoteSysConfig());
 
             CancellationTokenSource src = new CancellationTokenSource();
 
@@ -144,9 +144,9 @@ namespace UnitTestsProject
         {
             Debug.WriteLine($"Start of {nameof(AskTest)}");
 
-            var cfg = getLocaSysConfig();
+            var cfg = GetLocaSysConfig();
             ActorSystem sysLocal = new ActorSystem($"{nameof(AskTest)}/local", cfg);
-            ActorSystem sysRemote = new ActorSystem($"{nameof(AskTest)}/remote", getRemoteSysConfig());
+            ActorSystem sysRemote = new ActorSystem($"{nameof(AskTest)}/remote", GetRemoteSysConfig());
 
             CancellationTokenSource src = new CancellationTokenSource();
 
@@ -180,7 +180,7 @@ namespace UnitTestsProject
             //Thread.Sleep(2000);
             Debug.WriteLine($"Start of {nameof(AskTest)}");
 
-            var cfg = getLocaSysConfig();
+            var cfg = GetLocaSysConfig();
             ActorSystem sysLocal = new ActorSystem($"{nameof(AskTest)}/local", cfg);
            
             CancellationTokenSource src = new CancellationTokenSource();
@@ -203,10 +203,10 @@ namespace UnitTestsProject
         [TestCategory("SbActorTests")]
         public void AskManyNodesTest()
         {
-            var cfg = getLocaSysConfig();
+            var cfg = GetLocaSysConfig();
             ActorSystem sysLocal = new ActorSystem("local", cfg);
-            ActorSystem sysRemote1 = new ActorSystem("node1", getRemoteSysConfig());
-            ActorSystem sysRemote2 = new ActorSystem("node2", getRemoteSysConfig());
+            ActorSystem sysRemote1 = new ActorSystem("node1", GetRemoteSysConfig());
+            ActorSystem sysRemote2 = new ActorSystem("node2", GetRemoteSysConfig());
 
             CancellationTokenSource src = new CancellationTokenSource();
 
@@ -247,10 +247,10 @@ namespace UnitTestsProject
         [TestCategory("SbActorTests")]
         public void AskManyNodesManyMessagesTest()
         {
-            var cfg = getLocaSysConfig();
+            var cfg = GetLocaSysConfig();
             ActorSystem sysLocal = new ActorSystem("local", cfg);
-            ActorSystem sysRemote1 = new ActorSystem("remote1", getRemoteSysConfig());
-            ActorSystem sysRemote2 = new ActorSystem("remote2", getRemoteSysConfig());
+            ActorSystem sysRemote1 = new ActorSystem("remote1", GetRemoteSysConfig());
+            ActorSystem sysRemote2 = new ActorSystem("remote2", GetRemoteSysConfig());
 
             CancellationTokenSource src = new CancellationTokenSource();
 
