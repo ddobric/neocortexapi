@@ -20,8 +20,7 @@ namespace NeoCortexApi.DistributedComputeLib
         public Dictionary<object, object> Dict = new Dictionary<object, object>();
 
         public HtmConfig HtmConfig;
-
-    
+            
         public HtmActor(ActorId id) : base(id)
         {
             Receive<PingNodeMsg>((msg) =>

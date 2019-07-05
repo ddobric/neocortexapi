@@ -66,7 +66,7 @@ namespace AkkaSb.Net
         public IPersistenceProvider PersistenceProvider;
 
         [JsonIgnore]
-        public ILogger Logger { get;  set; }
+        public ILogger Logger { get; set; }
 
         protected ActorBase()
         {
