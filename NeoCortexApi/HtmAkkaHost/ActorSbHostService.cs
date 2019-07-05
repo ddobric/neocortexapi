@@ -56,7 +56,7 @@ namespace AkkaHostLib
             
             prov.InitializeAsync(cfg.ActorSystemName, new Dictionary<string, object>() { { "StorageConnectionString", cfg.TblStoragePersistenConnStr } }, purgeOnStart: false).Wait();
 
-            akkaClusterSystem = new AkkaSb.Net.ActorSystem($"{systemName}", cfg, logger);
+            akkaClusterSystem = new AkkaSb.Net.ActorSystem($"{systemName}", cfg, logger, prov);
             akkaClusterSystem.Start(tokenSrc.Token);
 
             Console.WriteLine("Press any key to stop Actor SB system.");

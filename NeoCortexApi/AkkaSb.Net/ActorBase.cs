@@ -62,8 +62,10 @@ namespace AkkaSb.Net
 
         public ActorId Id { get; set; }
 
+        [JsonIgnore]
         public IPersistenceProvider PersistenceProvider;
 
+        [JsonIgnore]
         public ILogger Logger { get;  set; }
 
         protected ActorBase()
@@ -73,8 +75,7 @@ namespace AkkaSb.Net
 
         public ActorBase(ActorId id)
         {
-            this.Id = id;
-   
+            this.Id = id;   
         }
 
         /// <summary>
