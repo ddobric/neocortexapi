@@ -6,6 +6,10 @@ namespace AkkaSb.Net
 {
     public class ActorSbConfig 
     {
+        public string ActorSystemName{ get; set; }
+
+        public string TblStoragePersistenConnStr { get; set; }
+
         public string SbConnStr { get; set; }
 
         /// <summary>

@@ -49,6 +49,15 @@ namespace UnitTestsProject
             }
         }
 
+        public class ColumnActor : ActorBase
+        {
+            public Column Col { get; set; }
+
+            public ColumnActor(ActorId id) : base(id)
+            {
+                Col = new Column(30, 1, 0.5, 32);
+            }
+        }
 
         [TestMethod]
         public void SerializeActorTest()
@@ -61,6 +70,21 @@ namespace UnitTestsProject
             CounterActor act2 = TableStoragePersistenceProvider.DeserializeActor<CounterActor>(json);
 
             Assert.IsTrue(act2.Counter == act1.Counter);
+        }
+
+
+
+        [TestMethod]
+        public void SerializeColumnTest()
+        {
+
+            ColumnActor col1 = new ColumnActor(1);
+
+            var json = TableStoragePersistenceProvider.SerializeActor(col1);
+
+            ColumnActor col2 = TableStoragePersistenceProvider.DeserializeActor<ColumnActor>(json);
+
+            Assert.IsTrue(col2.Col.Index == col1.Col.Index);
         }
 
         /// <summary>
