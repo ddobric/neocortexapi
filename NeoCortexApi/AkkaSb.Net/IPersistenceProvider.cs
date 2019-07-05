@@ -8,10 +8,12 @@ namespace AkkaSb.Net
 {
     public interface IPersistenceProvider
     {
-        Task Initialize(string name, Dictionary<string, object> setrtings, ILogger logger);
+        Task InitializeAsync(string name, Dictionary<string, object> setrtings, bool purgeOnStart = false, ILogger logger = null);
 
-        Task SerializeActor(ActorBase actorInstance);
+        Task PersistActor(ActorBase actorInstance);
 
-        Task<ActorBase> DeserializeActor(ActorId actorId);
+        Task<ActorBase> LoadActor(ActorId actorId);
+
+        Task Purge();
     }
 }
