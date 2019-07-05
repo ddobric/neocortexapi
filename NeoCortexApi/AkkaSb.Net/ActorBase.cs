@@ -9,15 +9,25 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleToAttribute("UnitTestsProject")]
 
 namespace AkkaSb.Net
 {
     public class ActorId
     {
+        
         public long? Id { get; set; }
 
         public string IdAsString { get;set; }
-        
+
+
+        public ActorId()
+        {
+
+        }
+
         public ActorId(long id)
         {
             this.Id = id;
@@ -52,12 +62,14 @@ namespace AkkaSb.Net
 
         public ActorId Id { get; set; }
 
+        public IPersistenceProvider PersistenceProvider;
+
         public ILogger Logger { get;  set; }
 
-        //public ActorBase()
-        //{
-  
-        //}
+        protected ActorBase()
+        {
+
+        }
 
         public ActorBase(ActorId id)
         {
@@ -84,9 +96,17 @@ namespace AkkaSb.Net
             return res;
         }
 
+        public async Task Perist()
+        {
+            if (this.PersistenceProvider != null)
+            {
+                await this.PersistenceProvider.PersistActor(this);
+            }
+        }
+
         public virtual void Activated()
         {
-
+           
         }
 
         public virtual void DeActivated()
