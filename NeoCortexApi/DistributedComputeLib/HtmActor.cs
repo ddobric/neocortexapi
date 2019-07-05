@@ -17,11 +17,10 @@ namespace NeoCortexApi.DistributedComputeLib
 
     public class HtmActor : ActorBase
     {
-        private Dictionary<object, object> dict = new Dictionary<object, object>();
+        public Dictionary<object, object> Dict = new Dictionary<object, object>();
 
-        private HtmConfig config;
-
-    
+        public HtmConfig HtmConfig;
+            
         public HtmActor(ActorId id) : base(id)
         {
             Receive<PingNodeMsg>((msg) =>
@@ -33,7 +32,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
             Receive<CreateDictNodeMsg>((msg) =>
             {
-                this.config = msg.HtmAkkaConfig;
+                this.HtmConfig = msg.HtmAkkaConfig;
 
                 this.Logger?.LogInformation($"Received message: '{msg.GetType().Name}'");
 
@@ -46,23 +45,23 @@ namespace NeoCortexApi.DistributedComputeLib
 
                 var res = initializeColumns(msg);
 
-                this.Logger?.LogInformation($"Completed message: '{msg.GetType().Name}'. min:{msg.MinKey}, max:{msg.MaxKey} ,Column range: {res}, Hashcode: {this.GetHashCode()}, Elements: {this.dict.Count}, Id: {this.Id}");
+                this.Logger?.LogInformation($"Completed message: '{msg.GetType().Name}'. min:{msg.MinKey}, max:{msg.MaxKey} ,Column range: {res}, Hashcode: {this.GetHashCode()}, Elements: {this.Dict.Count}, Id: {this.Id}");
 
                 return res;
             });
 
             Receive<ConnectAndConfigureColumnsMsg>((msg) =>
             {
-                this.Logger?.LogDebug($"{Id} - Received message: '{msg.GetType().Name}',  dict: {dict.Count}, Id: {this.Id}");
+                this.Logger?.LogDebug($"{Id} - Received message: '{msg.GetType().Name}',  dict: {Dict.Count}, Id: {this.Id}");
 
                 var res = createAndConnectColumns(msg);
 
-                if (dict.Count == 0)
+                if (Dict.Count == 0)
                 {
 
                 }
 
-                this.Logger?.LogInformation($"{Id} - Completed message: '{msg.GetType().Name}'. Avg. col. span: {res}, Hashcode: {this.GetHashCode()}, dict: {dict.Count}, Id: {this.Id}");
+                this.Logger?.LogInformation($"{Id} - Completed message: '{msg.GetType().Name}'. Avg. col. span: {res}, Hashcode: {this.GetHashCode()}, dict: {Dict.Count}, Id: {this.Id}");
 
                 return res;
             });
@@ -126,11 +125,11 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <param name="msg"></param>
         private int initializeColumns(InitColumnsMsg msg)
         {
-            dict = new Dictionary<object, object>();
+            Dict = new Dictionary<object, object>();
 
             for (int i = msg.MinKey; i <= msg.MaxKey; i++)
             {
-                this.dict[i] = new Column(this.config.CellsPerColumn, i, this.config.SynPermConnected, this.config.NumInputs);
+                this.Dict[i] = new Column(this.HtmConfig.CellsPerColumn, i, this.HtmConfig.SynPermConnected, this.HtmConfig.NumInputs);
             }
 
             return msg.MaxKey - msg.MinKey + 1;
@@ -148,33 +147,33 @@ namespace NeoCortexApi.DistributedComputeLib
 
             Random rnd;
 
-            if (this.config.RandomGenSeed > 0)
-                rnd = new Random(this.config.RandomGenSeed);
+            if (this.HtmConfig.RandomGenSeed > 0)
+                rnd = new Random(this.HtmConfig.RandomGenSeed);
             else
                 rnd = new Random();
 
-            foreach (var element in this.dict)
+            foreach (var element in this.Dict)
             {
-                if (this.config == null)
+                if (this.HtmConfig == null)
                     throw new ArgumentException($"HtmConfig must be set in the message.");
 
                 int colIndx = (int)element.Key;
 
                 // Gets RF
-                var potential = HtmCompute.MapPotential(this.config, colIndx, rnd);
-                var column = (Column)this.dict[colIndx];
+                var potential = HtmCompute.MapPotential(this.HtmConfig, colIndx, rnd);
+                var column = (Column)this.Dict[colIndx];
 
                 // This line initializes all synases in the potential pool of synapses.
                 // It creates the pool on proximal dendrite segment of the column.
                 // After initialization permancences are set to zero.
                 //connectColumnToInputRF(c.HtmConfig, data.Potential, data.Column);
-                column.CreatePotentialPool(this.config, potential, -1);
+                column.CreatePotentialPool(this.HtmConfig, potential, -1);
 
-                var perms = HtmCompute.InitSynapsePermanences(this.config, potential, rnd);
+                var perms = HtmCompute.InitSynapsePermanences(this.HtmConfig, potential, rnd);
 
-                avgConnections.Add(HtmCompute.CalcAvgSpanOfConnectedSynapses(column, this.config));
+                avgConnections.Add(HtmCompute.CalcAvgSpanOfConnectedSynapses(column, this.HtmConfig));
 
-                HtmCompute.UpdatePermanencesForColumn(this.config, perms, column, potential, true);
+                HtmCompute.UpdatePermanencesForColumn(this.HtmConfig, perms, column, potential, true);
             }
 
             double avgConnectedSpan = ArrayUtils.average(avgConnections.ToArray());
@@ -191,11 +190,11 @@ namespace NeoCortexApi.DistributedComputeLib
             ParallelOptions opts = new ParallelOptions();
             opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
 
-            Parallel.ForEach(this.dict, opts, (keyPair) =>
+            Parallel.ForEach(this.Dict, opts, (keyPair) =>
             {
                 Column col = keyPair.Value as Column;
 
-                var overlap = col.GetColumnOverlapp(msg.InputVector, this.config.StimulusThreshold);
+                var overlap = col.GetColumnOverlapp(msg.InputVector, this.HtmConfig.StimulusThreshold);
 
                 overlaps.TryAdd((int)keyPair.Key, overlap);
             });
@@ -220,14 +219,14 @@ namespace NeoCortexApi.DistributedComputeLib
 
             Parallel.ForEach(msg.ColumnKeys, opts, (colPair) =>
             {
-                Column activeColumn = (Column)this.dict[(int)(long)colPair.Key];
+                Column activeColumn = (Column)this.Dict[(int)(long)colPair.Key];
                 //Pool pool = c.getPotentialPools().get(activeColumns[i]);
                 Pool pool = activeColumn.ProximalDendrite.RFPool;
-                double[] perm = pool.getDensePermanences(this.config.NumInputs);
+                double[] perm = pool.getDensePermanences(this.HtmConfig.NumInputs);
                 int[] indexes = pool.getSparsePotential();
                 ArrayUtils.raiseValuesBy(msg.PermanenceChanges, perm);
 
-                HtmCompute.UpdatePermanencesForColumn(this.config, perm, activeColumn, indexes, true);
+                HtmCompute.UpdatePermanencesForColumn(this.HtmConfig, perm, activeColumn, indexes, true);
             });
 
             // We send this to ensure reliable messaging. No other result is required here.
@@ -241,14 +240,14 @@ namespace NeoCortexApi.DistributedComputeLib
 
             Parallel.ForEach(msg.ColumnKeys, opts, (colPair) =>
             {
-                Column weakColumn = (Column)dict[(int)(long)colPair.Key];
+                Column weakColumn = (Column)Dict[(int)(long)colPair.Key];
 
                 Pool pool = weakColumn.ProximalDendrite.RFPool;
                 double[] perm = pool.getSparsePermanences();
-                ArrayUtils.raiseValuesBy(this.config.SynPermBelowStimulusInc, perm);
+                ArrayUtils.raiseValuesBy(this.HtmConfig.SynPermBelowStimulusInc, perm);
                 int[] indexes = pool.getSparsePotential();
 
-                weakColumn.UpdatePermanencesForColumnSparse(this.config, perm, indexes, true);
+                weakColumn.UpdatePermanencesForColumnSparse(this.HtmConfig, perm, indexes, true);
             });
 
             return 0;
