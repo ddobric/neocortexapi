@@ -38,12 +38,23 @@ namespace AkkaHostLib
             cfg.SbConnStr = configArgs["SbConnStr"];
             cfg.ReplyMsgQueue = configArgs["ReplyMsgQueue"];
             cfg.RequestMsgQueue = configArgs["RequestMsgQueue"];
+            cfg.TblStoragePersistenConnStr = configArgs["TblStoragePersistenConnStr"];
+            cfg.ActorSystemName = configArgs["ActorSystemName"]; 
             string systemName = configArgs["SystemName"];
             
             Console.CancelKeyPress += (sender, eventArgs) =>
             {
                 tokenSrc.Cancel();
             };
+
+            TableStoragePersistenceProvider prov = null;
+
+            if (String.IsNullOrEmpty(cfg.TblStoragePersistenConnStr) == false)
+            {
+                prov = new TableStoragePersistenceProvider();
+            }
+            
+            prov.InitializeAsync(cfg.ActorSystemName, new Dictionary<string, object>() { { "StorageConnectionString", cfg.TblStoragePersistenConnStr } }, purgeOnStart: false).Wait();
 
             akkaClusterSystem = new AkkaSb.Net.ActorSystem($"{systemName}", cfg, logger);
             akkaClusterSystem.Start(tokenSrc.Token);
