@@ -643,7 +643,7 @@ namespace NeoCortexApi
 
             foreach (Synapse s in synapsesToDestroy)
             {
-                conn.destroySynapse(s);
+                conn.destroySynapse(s, segment);
             }
 
             if (conn.GetNumSynapses(segment) == 0)
