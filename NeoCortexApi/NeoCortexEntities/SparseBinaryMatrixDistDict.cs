@@ -22,7 +22,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Holds the matrix with connections between columns and inputs.
         /// </summary>
-        private IDistributedArray backingArray;
+        public IDistributedArray backingArray;
 
 
         public SparseBinaryMatrix()

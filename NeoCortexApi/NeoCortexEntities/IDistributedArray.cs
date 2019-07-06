@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NeoCortexApi.Entities
 {
-    public interface IDistributedArray : IEnumerable//ICollection, IEnumerable//, IList
+    public interface IDistributedArray //:// ICollection//ICollection, IEnumerable//, IList
     {
         //
         // Summary:

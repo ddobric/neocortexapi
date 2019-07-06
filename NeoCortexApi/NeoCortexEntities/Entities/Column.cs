@@ -22,7 +22,7 @@ namespace NeoCortexApi.Entities
     //[Serializable]
     public class Column : IEquatable<Column>, IComparable<Column>
     {
-        private AbstractSparseBinaryMatrix connectedInputCounter;
+        public AbstractSparseBinaryMatrix connectedInputCounter;
 
         public AbstractSparseBinaryMatrix ConnectedInputCounterMatrix { get { return connectedInputCounter; } set { connectedInputCounter = value; } }
 

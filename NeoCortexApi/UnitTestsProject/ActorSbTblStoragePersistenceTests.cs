@@ -77,7 +77,6 @@ namespace UnitTestsProject
         [TestMethod]
         public void SerializeColumnTest()
         {
-
             ColumnActor col1 = new ColumnActor(1);
 
             var json = TableStoragePersistenceProvider.SerializeActor(col1);

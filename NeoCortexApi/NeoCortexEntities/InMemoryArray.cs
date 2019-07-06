@@ -3,16 +3,17 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace NeoCortexApi.Entities
 {
     public class InMemoryArray : IDistributedArray
     {
-        private int[] dimensions;
+        public int[] dimensions;
 
-        private Array backingArray;
+        public Array backingArray;
 
-        private int numOfNodes;
+        public int numOfNodes;
 
         public int Rank => this.backingArray.Rank;
 
@@ -107,7 +108,8 @@ namespace NeoCortexApi.Entities
 
         public IEnumerator GetEnumerator()
         {
-            throw new NotImplementedException();
+            return backingArray.GetEnumerator();
+            //throw new NotImplementedException();
         }
 
         //public int IndexOf(object value)
