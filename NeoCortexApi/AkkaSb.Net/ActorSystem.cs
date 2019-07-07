@@ -35,6 +35,8 @@ namespace AkkaSb.Net
 
         public string Name { get; set; }
 
+        public int MaxAccetedSessionsAtOnce = 10;
+
         private IPersistenceProvider persistenceProvider;
 
         /// <summary>
@@ -102,10 +104,19 @@ namespace AkkaSb.Net
 
             Task[] tasks = new Task[2];
 
+            int acceptedSessionAtOnce = 0;
+
             tasks[0] = Task.Run(async () =>
             {
                 while (!src.Token.IsCancellationRequested)
                 {
+                    // This enabes other nodes to accept sessions.
+                    if (acceptedSessionAtOnce++ >= this.MaxAccetedSessionsAtOnce)
+                    {
+                        await Task.Delay(1000);
+                        acceptedSessionAtOnce = 0;
+                    }
+
                     try
                     {
                         var session = await this.sessionRcvClient.AcceptMessageSessionAsync();
