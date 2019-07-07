@@ -21,17 +21,19 @@ namespace UnitTestsProject
     {
         private const string sbConnStr = "Endpoint=sb://bastasample.servicebus.windows.net/;SharedAccessKeyName=demo;SharedAccessKey=MvwVbrrJdsMQyhO/0uwaB5mVbuXyvYa3WRNpalHi0LQ=";
 
+        private const string tblAccountConnStr = "DefaultEndpointsProtocol=https;AccountName=azfunctionsamples;AccountKey=NEjFcvFNL/G7Ugq9RSW59+PonNgql/yLq8qfaVZPhanV9aJUnQi2b6Oy3csvPZPGVJreD+RgVUJJFFTZdUBhAA==;EndpointSuffix=core.windows.net";
+
         internal static ActorSbConfig GetLocaSysConfig()
         {
             ActorSbConfig cfg = new ActorSbConfig();
             cfg.SbConnStr = sbConnStr;
             cfg.ReplyMsgQueue = "actorsystem/rcvlocal";
             cfg.RequestMsgQueue = "actorsystem/actorqueue";
-
+            cfg.TblStoragePersistenConnStr = tblAccountConnStr;
+            cfg.ActorSystemName = "inst701";
             return cfg;
         }
-
-
+        
         internal static ActorSbConfig GetRemoteSysConfig()
         {
             var localCfg = GetLocaSysConfig();
