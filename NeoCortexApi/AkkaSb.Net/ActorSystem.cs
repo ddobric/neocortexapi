@@ -110,40 +110,49 @@ namespace AkkaSb.Net
             {
                 while (!src.Token.IsCancellationRequested)
                 {
-                    // This enabes other nodes to accept sessions.
-                    if (acceptedSessionAtOnce++ >= this.MaxAccetedSessionsAtOnce)
-                    {
-                        await Task.Delay(1000);
-                        acceptedSessionAtOnce = 0;
-                    }
+                    var proc = Process.GetCurrentProcess();
+                    
+                    Debug.WriteLine($"WS={Environment.WorkingSet / 1024 / 1024 } MB, PWS64={proc.WorkingSet64}, PVM={proc.VirtualMemorySize64}");
 
-                    try
+                    if (Environment.WorkingSet / 1024 / 1024 / 1024 > 4)
+                    {  
+                        await Task.Delay(1000);
+                    }
+                    else
                     {
-                        var session = await this.sessionRcvClient.AcceptMessageSessionAsync();
-                        logger?.LogInformation($"{this.Name} - Accepted new session: {session.SessionId}");
-                        _ = RunDispatcherForSession(session, cancelToken).ContinueWith(
-                            async (t) =>
-                            {
-                                if (t.Exception != null)
+                        // This enabes other nodes to accept sessions.
+                        if (acceptedSessionAtOnce++ >= this.MaxAccetedSessionsAtOnce)
+                        {
+                            await Task.Delay(1000);
+                            acceptedSessionAtOnce = 0;
+                        }
+
+                        try
+                        {
+                            var session = await this.sessionRcvClient.AcceptMessageSessionAsync();
+                            logger?.LogInformation($"{this.Name} - Accepted new session: {session.SessionId}");
+                            _ = RunDispatcherForSession(session, cancelToken).ContinueWith(
+                                async (t) =>
                                 {
-                                    logger.LogError(t.Exception, "Session error");
-                                    await session.CloseAsync();
+                                    if (t.Exception != null)
+                                    {
+                                        logger.LogError(t.Exception, "Session error");
+                                        await session.CloseAsync();
 
                                     //src.Cancel();
                                 }
-                                //await Task.FromException(t.Exception);
-                                //throw tt.Exception;
 
-                            });
-                    }
-                    catch (ServiceBusTimeoutException ex)
-                    {
-                        logger?.LogDebug("ServiceBusTimeoutException");
-                    }
-                    catch (Exception ex)
-                    {
-                        logger?.LogError("Listener has failed.", ex);
-                        throw;
+                                });
+                        }
+                        catch (ServiceBusTimeoutException ex)
+                        {
+                            logger?.LogDebug("ServiceBusTimeoutException");
+                        }
+                        catch (Exception ex)
+                        {
+                            logger?.LogError("Listener has failed.", ex);
+                            throw;
+                        }
                     }
                 }
             }, src.Token);
