@@ -69,7 +69,7 @@ namespace UnitTestsProject
         /// </summary>
         [TestMethod]
         [TestCategory("SbActorTests")]
-        public void StatePersistenceTest()
+        public void BlobStatePersistenceTest()
         {
             string instanceName = "instance1603690222";
             // Runs actor counter and persis its state after every increment.

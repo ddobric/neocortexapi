@@ -95,15 +95,9 @@ namespace UnitTestsProject
         /// </summary>
         [TestMethod]
         [TestCategory("SbActorTests")]
-        public void StatePersistenceTest()
+        public void TblStatePersistenceTest()
         {
-            Random rnd = new Random();
-
-            var num = rnd.Next();
-
-            string instanceName = $"instance{num}";
-
-            instanceName = "instance1603690222";
+            string instanceName = "instance1603690222";
             // Runs actor counter and persis its state after every increment.
             //RunStatePersistenceTest1(instanceName);
 
