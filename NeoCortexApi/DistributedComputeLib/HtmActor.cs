@@ -157,7 +157,16 @@ namespace NeoCortexApi.DistributedComputeLib
                 if (this.HtmConfig == null)
                     throw new ArgumentException($"HtmConfig must be set in the message.");
 
-                int colIndx = (int)element.Key;
+
+                int colIndx = -1;
+
+                if (element.Key is string)
+                {
+                    if (!int.TryParse(element.Key as string, out colIndx))
+                        throw new ArgumentException($"The key must be of type 'int' or string convertable to 'int");
+                }
+                else
+                    colIndx = (int)element.Key;
 
                 // Gets RF
                 var potential = HtmCompute.MapPotential(this.HtmConfig, colIndx, rnd);
