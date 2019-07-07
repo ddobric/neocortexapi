@@ -160,17 +160,24 @@ namespace NeoCortexApi.DistributedComputeLib
 
                 int colIndx = -1;
 
+                Column column;
+
                 if (element.Key is string)
                 {
                     if (!int.TryParse(element.Key as string, out colIndx))
                         throw new ArgumentException($"The key must be of type 'int' or string convertable to 'int");
+
+                    column = (Column)this.Dict[element.Key];
                 }
                 else
+                {
                     colIndx = (int)element.Key;
+                    column = (Column)this.Dict[colIndx];                   
+                }
 
                 // Gets RF
                 var potential = HtmCompute.MapPotential(this.HtmConfig, colIndx, rnd);
-                var column = (Column)this.Dict[colIndx];
+               
 
                 // This line initializes all synases in the potential pool of synapses.
                 // It creates the pool on proximal dendrite segment of the column.
