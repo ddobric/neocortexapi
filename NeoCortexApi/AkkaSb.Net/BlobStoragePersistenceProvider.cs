@@ -1,4 +1,6 @@
-﻿using Microsoft.Azure.Cosmos.Table;
+﻿
+using Microsoft.Azure.Storage;
+using Microsoft.Azure.Storage.Blob;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
@@ -14,11 +16,12 @@ namespace AkkaSb.Net
 
         private string actorSystemId;
 
-        private CloudTableClient tableClient;
+        private CloudBlobClient blobClient;
+
+        private CloudBlobContainer cloudBlobContainer;
 
         private ILogger logger;
 
-        private CloudTable table;
 
         public async Task InitializeAsync(string actorSystemId, Dictionary<string, object> settings, bool purgeOnStart = false, ILogger logger = null)
         {
@@ -31,23 +34,24 @@ namespace AkkaSb.Net
 
             CloudStorageAccount storageAccount = CreateFromConnectionString(settings[cConnStr] as string);
 
-            // Create a table client for interacting with the table service
-            tableClient = storageAccount.CreateCloudTableClient(new TableClientConfiguration());
+            CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
 
-            string tableName = $"ActorSystemInstance{actorSystemId}";
+            string containerName = $"actsys{actorSystemId}";
 
-            table = tableClient.GetTableReference(tableName);
+            cloudBlobContainer = cloudBlobClient.GetContainerReference(containerName);
 
             if (purgeOnStart == true)
-                await Purge();
-
-            if (await table.CreateIfNotExistsAsync())
             {
-                this.logger?.LogTrace("Created Table : {0}", tableName);
+                await Purge();
+            }
+
+            if (await cloudBlobContainer.CreateIfNotExistsAsync())
+            {
+                this.logger?.LogTrace("Created container : {0}", containerName);
             }
             else
             {
-                this.logger?.LogTrace("Created Table : {0}", tableName);
+                this.logger?.LogTrace("Created container : {0}", containerName);
             }
         }
 
@@ -70,9 +74,9 @@ namespace AkkaSb.Net
         {
             this.logger?.LogTrace("Persisting actor: {0}", actorInstance.Id);
 
-            var serializedEntity = SerializeActor(actorInstance);
+            var serializedActor = SerializeActor(actorInstance);
 
-            await InsertOrMergeEntityAsync(this.table, new ActorEntity(this.actorSystemId, actorInstance.Id.IdAsString) { SerializedActor = serializedEntity });
+            await SaveActorToBlob(actorInstance.Id, serializedActor);
 
             this.logger?.LogTrace("Persisting actor: {0}", actorInstance.Id);
         }
@@ -82,7 +86,7 @@ namespace AkkaSb.Net
         {
             this.logger?.LogTrace("Purge started");
 
-            await this.table.DeleteIfExistsAsync();
+            await this.cloudBlobContainer.DeleteIfExistsAsync();
 
             this.logger?.LogTrace("Purge completed");
         }
@@ -91,45 +95,38 @@ namespace AkkaSb.Net
 
         private async Task<ActorBase> GetPersistedActorAsync(string actorId)
         {
-            TableOperation retrieveOperation = TableOperation.Retrieve<ActorEntity>(this.actorSystemId, actorId);
-            TableResult result = await this.table.ExecuteAsync(retrieveOperation);
-            ActorEntity customer = result.Result as ActorEntity;
+            string blobName = getBlobNameFromId(actorId);
 
-            if (customer == null)
-                return null;
+            if (await this.cloudBlobContainer.GetBlockBlobReference(blobName).ExistsAsync())
+            {
+                var blob = await this.cloudBlobContainer.GetBlockBlobReference(blobName).DownloadTextAsync();
+                return DeserializeActor<ActorBase>(blob);
+            }
             else
-                return DeserializeActor<ActorBase>(customer.SerializedActor);
+                return null;              
         }
 
-        private static async Task<ActorEntity> InsertOrMergeEntityAsync(CloudTable table, ActorEntity entity)
+        private async Task SaveActorToBlob(string actorId,string serializedActor)
         {
-            if (entity == null)
+            if (serializedActor == null)
             {
                 throw new ArgumentNullException("Entity cannot be null!");
             }
             try
             {
-                // Create the InsertOrReplace table operation
-                TableOperation insertOrMergeOperation = TableOperation.InsertOrMerge(entity);
-
-                // Execute the operation.
-                TableResult result = await table.ExecuteAsync(insertOrMergeOperation);
-                ActorEntity insertedActor = result.Result as ActorEntity;
-
-                // Get the request units consumed by the current operation. RequestCharge of a TableResult is only applied to Azure CosmoS DB 
-                if (result.RequestCharge.HasValue)
-                {
-                    Console.WriteLine("Request Charge of InsertOrMerge Operation: " + result.RequestCharge);
-                }
-
-                return insertedActor;
+                CloudBlockBlob cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference(getBlobNameFromId(actorId));
+                await cloudBlockBlob.UploadTextAsync(serializedActor);
             }
             catch (StorageException ex)
             {
-                Console.WriteLine(ex.Message);
-                Console.ReadLine();
+                this.logger.LogError(ex.Message, "Failed to create the blob.");
                 throw;
             }
+        }
+
+        private static string getBlobNameFromId(string actorId)
+        {
+            return $"{actorId}.txt";
         }
 
         private static CloudStorageAccount CreateFromConnectionString(string storageConnectionString)
@@ -175,7 +172,7 @@ namespace AkkaSb.Net
             return strObj;
         }
 
-      
+
         #endregion
     }
 }
