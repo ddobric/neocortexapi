@@ -115,8 +115,12 @@ namespace AkkaSb.Net
                     Debug.WriteLine($"WS={Environment.WorkingSet / 1024 / 1024 } MB, PWS64={proc.WorkingSet64}, PVM={proc.VirtualMemorySize64}");
 
                     if (Environment.WorkingSet / 1024 / 1024 / 1024 > 4)
-                    {  
-                        await Task.Delay(1000);
+                    {
+                        logger?.LogWarning($"Working set too large: {Environment.WorkingSet / 1024 / 1024 / 1024} MB.");
+
+                        await Task.Delay(10000);
+
+                        GC.Collect();
                     }
                     else
                     {
