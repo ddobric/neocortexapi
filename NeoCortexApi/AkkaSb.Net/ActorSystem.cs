@@ -202,16 +202,25 @@ namespace AkkaSb.Net
                     }
                     catch (Exception ex)
                     {
+                        if (ex is SessionLockLostException && this.persistenceProvider != null)
+                        {
+                            await this.persistenceProvider.PersistActor(actorMap[session.SessionId]);
+                            logger?.LogTrace($"{this.Name} -  Actor for '{session.SessionId}' persisted after session lock lost.");
+                        }
+
                         logger.LogError(ex, "Messsage processing error");
                         await session.AbandonAsync(msg.SystemProperties.LockToken);
                     }
                 }
                 else
                 {
-                    logger?.LogInformation($"{this.Name} - No more messages received for sesson {session.SessionId}");
+                    logger?.LogTrace($"{this.Name} - No more messages received for sesson {session.SessionId}");
+
                     if (this.persistenceProvider != null)
                     {
                         await this.persistenceProvider.PersistActor(actorMap[session.SessionId]);
+                        logger?.LogTrace($"{this.Name} -  Actor for '{session.SessionId}' persisted.");
+
                     }
 
                     //await session.CloseAsync();
