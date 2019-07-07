@@ -156,7 +156,7 @@ namespace AkkaSb.Net
             JsonSerializerSettings sett = new JsonSerializerSettings();
             sett.TypeNameHandling = TypeNameHandling.All;
 
-            var strObj = JsonConvert.SerializeObject(actorInstance, sett);
+            var strObj = JsonConvert.SerializeObject(actorInstance, Formatting.Indented, sett);
 
             return strObj;
         }
