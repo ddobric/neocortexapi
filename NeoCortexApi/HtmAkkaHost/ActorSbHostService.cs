@@ -47,7 +47,7 @@ namespace AkkaHostLib
                 tokenSrc.Cancel();
             };
 
-            TableStoragePersistenceProvider prov = null;
+            BlobStoragePersistenceProvider prov = null;
 
             if (String.IsNullOrEmpty(cfg.TblStoragePersistenConnStr) == false)
             {
