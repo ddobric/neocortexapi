@@ -54,7 +54,7 @@ namespace AkkaHostLib
                 prov = new BlobStoragePersistenceProvider();
             }
             
-            prov.InitializeAsync(cfg.ActorSystemName, new Dictionary<string, object>() { { "StorageConnectionString", cfg.TblStoragePersistenConnStr } }, purgeOnStart: false).Wait();
+            prov.InitializeAsync(cfg.ActorSystemName, new Dictionary<string, object>() { { "StorageConnectionString", cfg.TblStoragePersistenConnStr } }, purgeOnStart: false, logger: this.logger).Wait();
 
             akkaClusterSystem = new AkkaSb.Net.ActorSystem($"{systemName}", cfg, logger, prov);
             akkaClusterSystem.Start(tokenSrc.Token);
