@@ -51,7 +51,7 @@ namespace AkkaHostLib
 
             if (String.IsNullOrEmpty(cfg.TblStoragePersistenConnStr) == false)
             {
-                prov = new TableStoragePersistenceProvider();
+                prov = new BlobStoragePersistenceProvider();
             }
             
             prov.InitializeAsync(cfg.ActorSystemName, new Dictionary<string, object>() { { "StorageConnectionString", cfg.TblStoragePersistenConnStr } }, purgeOnStart: false).Wait();
