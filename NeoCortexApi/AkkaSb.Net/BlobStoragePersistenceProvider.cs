@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AkkaSb.Net
@@ -16,9 +17,11 @@ namespace AkkaSb.Net
 
         private string actorSystemId;
 
-        private CloudBlobClient blobClient;
+        private string containerName;
 
-        private CloudBlobContainer cloudBlobContainer;
+        //private CloudBlobContainer cloudBlobContainer;
+
+        private CloudStorageAccount storageAccount;
 
         private ILogger logger;
 
@@ -32,13 +35,13 @@ namespace AkkaSb.Net
             if (!settings.ContainsKey(cConnStr))
                 throw new ArgumentException($"'{cConnStr}' argument must be contained in settings.");
 
-            CloudStorageAccount storageAccount = CreateFromConnectionString(settings[cConnStr] as string);
+            storageAccount = CreateFromConnectionString(settings[cConnStr] as string);
 
             CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
 
-            string containerName = $"actsys{actorSystemId}";
+            this.containerName = $"actsys{actorSystemId}";
 
-            cloudBlobContainer = cloudBlobClient.GetContainerReference(containerName);
+            var cloudBlobContainer = cloudBlobClient.GetContainerReference(containerName);
 
             if (purgeOnStart == true)
             {
@@ -85,21 +88,29 @@ namespace AkkaSb.Net
         public async Task Purge()
         {
             this.logger?.LogTrace("Purge started");
-
-            await this.cloudBlobContainer.DeleteIfExistsAsync();
+            var cloudBlobContainer = getContainer();
+            await cloudBlobContainer.DeleteIfExistsAsync();
 
             this.logger?.LogTrace("Purge completed");
         }
 
         #region Private Methods
+        private CloudBlobContainer getContainer()
+        {
+            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+            var cloudBlobContainer = blobClient.GetContainerReference(containerName);
+            return cloudBlobContainer;
+        }
 
         private async Task<ActorBase> GetPersistedActorAsync(string actorId)
         {
             string blobName = getBlobNameFromId(actorId);
 
-            if (await this.cloudBlobContainer.GetBlockBlobReference(blobName).ExistsAsync())
+            var cloudBlobContainer = getContainer();
+
+            if (await cloudBlobContainer.GetBlockBlobReference(blobName).ExistsAsync())
             {
-                var blob = await this.cloudBlobContainer.GetBlockBlobReference(blobName).DownloadTextAsync();
+                var blob = await cloudBlobContainer.GetBlockBlobReference(blobName).DownloadTextAsync();
                 return DeserializeActor<ActorBase>(blob);
             }
             else
@@ -112,15 +123,34 @@ namespace AkkaSb.Net
             {
                 throw new ArgumentNullException("Entity cannot be null!");
             }
-            try
+
+            int retryCnt = 3;
+
+            while (true)
             {
-                CloudBlockBlob cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference(getBlobNameFromId(actorId));
-                await cloudBlockBlob.UploadTextAsync(serializedActor);
-            }
-            catch (StorageException ex)
-            {
-                this.logger.LogError(ex.Message, "Failed to create the blob.");
-                throw;
+                try
+                {
+                    var cloudBlobContainer = getContainer();
+                    CloudBlockBlob cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference(getBlobNameFromId(actorId));
+                    await cloudBlockBlob.UploadTextAsync(serializedActor);
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    retryCnt--;
+
+                    if (retryCnt <= 0)
+                    {
+                        this.logger?.LogError(ex.Message, $"Failed to create the blob for actorId {actorId} after {retryCnt} retries.");
+                        throw;
+                    }
+                    else
+                    {
+                        this.logger?.LogWarning(ex.Message, $"Failed to create the blob for actorId {actorId}. Retry started...");
+                        Thread.Sleep(1000);
+                    }
+                  
+                }
             }
         }
 

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using AkkaSb.Net;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
@@ -20,7 +21,7 @@ namespace NeoCortexApi.DistributedComputeLib
         public Dictionary<object, object> Dict = new Dictionary<object, object>();
 
         public HtmConfig HtmConfig;
-            
+
         public HtmActor(ActorId id) : base(id)
         {
             Receive<PingNodeMsg>((msg) =>
@@ -143,6 +144,7 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <param name="msg"></param>
         private double createAndConnectColumns(ConnectAndConfigureColumnsMsg msg)
         {
+            Debug.Write(".");
             List<double> avgConnections = new List<double>();
 
             Random rnd;
@@ -156,8 +158,7 @@ namespace NeoCortexApi.DistributedComputeLib
             {
                 if (this.HtmConfig == null)
                     throw new ArgumentException($"HtmConfig must be set in the message.");
-
-
+                
                 int colIndx = -1;
 
                 Column column;
@@ -172,12 +173,12 @@ namespace NeoCortexApi.DistributedComputeLib
                 else
                 {
                     colIndx = (int)element.Key;
-                    column = (Column)this.Dict[colIndx];                   
+                    column = (Column)this.Dict[colIndx];
                 }
 
                 // Gets RF
                 var potential = HtmCompute.MapPotential(this.HtmConfig, colIndx, rnd);
-               
+
 
                 // This line initializes all synases in the potential pool of synapses.
                 // It creates the pool on proximal dendrite segment of the column.
@@ -192,8 +193,11 @@ namespace NeoCortexApi.DistributedComputeLib
                 HtmCompute.UpdatePermanencesForColumn(this.HtmConfig, perms, column, potential, true);
             }
 
+            Debug.Write(".");
+
             double avgConnectedSpan = ArrayUtils.average(avgConnections.ToArray());
 
+            Debug.Write(".");
             return avgConnectedSpan;
         }
 
@@ -212,7 +216,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
                 var overlap = col.GetColumnOverlapp(msg.InputVector, this.HtmConfig.StimulusThreshold);
 
-                overlaps.TryAdd((int)keyPair.Key, overlap);
+                overlaps.TryAdd(keyPair.Key is string ? int.Parse(keyPair.Key as string) : (int)keyPair.Key, overlap);
             });
 
             List<KeyPair> result = new List<KeyPair>();
@@ -235,7 +239,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
             Parallel.ForEach(msg.ColumnKeys, opts, (colPair) =>
             {
-                Column activeColumn = (Column)this.Dict[(int)(long)colPair.Key];
+                Column activeColumn = (Column)this.Dict[colPair.Key is string ? int.Parse(colPair.Key as string) : (int)(long)colPair.Key];
                 //Pool pool = c.getPotentialPools().get(activeColumns[i]);
                 Pool pool = activeColumn.ProximalDendrite.RFPool;
                 double[] perm = pool.getDensePermanences(this.HtmConfig.NumInputs);
@@ -256,7 +260,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
             Parallel.ForEach(msg.ColumnKeys, opts, (colPair) =>
             {
-                Column weakColumn = (Column)Dict[(int)(long)colPair.Key];
+                Column weakColumn = (Column)Dict[colPair.Key is string ? int.Parse(colPair.Key as string) : (int)(long)colPair.Key];
 
                 Pool pool = weakColumn.ProximalDendrite.RFPool;
                 double[] perm = pool.getSparsePermanences();

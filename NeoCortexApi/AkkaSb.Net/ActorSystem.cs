@@ -31,6 +31,8 @@ namespace AkkaSb.Net
 
         private ILogger logger;
 
+        private int CriticalMemInGb = 10;
+
         private ConcurrentDictionary<string, ActorBase> actorMap = new ConcurrentDictionary<string, ActorBase>();
 
         public string Name { get; set; }
@@ -98,64 +100,62 @@ namespace AkkaSb.Net
             return actorRef;
         }
 
+        long runningTasks = 0;
+
         public void Start(CancellationToken cancelToken)
         {
             CancellationTokenSource src = new CancellationTokenSource();
 
             Task[] tasks = new Task[2];
 
-            int acceptedSessionAtOnce = 0;
-
             tasks[0] = Task.Run(async () =>
-            {
+            {      
                 while (!src.Token.IsCancellationRequested)
                 {
                     var proc = Process.GetCurrentProcess();
-                    
+
                     Debug.WriteLine($"WS={Environment.WorkingSet / 1024 / 1024 } MB, PWS64={proc.WorkingSet64}, PVM={proc.VirtualMemorySize64}");
 
-                    if (Environment.WorkingSet / 1024 / 1024 / 1024 > 4)
-                    {
-                        logger?.LogWarning($"Working set too large: {Environment.WorkingSet / 1024 / 1024 / 1024} MB.");
+                    var val = Interlocked.Read(ref runningTasks);
 
-                        await Task.Delay(10000);
+                    if ( val >= 20)
+                    {
+                        logger?.LogWarning($"Accepted maximal nuber of sessions: {runningTasks}.");
+
+                        await Task.Delay(1000);
 
                         GC.Collect();
                     }
                     else
                     {
-                        // This enabes other nodes to accept sessions.
-                        if (acceptedSessionAtOnce++ >= this.MaxAccetedSessionsAtOnce)
-                        {
-                            await Task.Delay(1000);
-                            acceptedSessionAtOnce = 0;
-                        }
-
                         try
                         {
                             var session = await this.sessionRcvClient.AcceptMessageSessionAsync();
                             logger?.LogInformation($"{this.Name} - Accepted new session: {session.SessionId}");
+                            Interlocked.Increment(ref runningTasks);
+                          
                             _ = RunDispatcherForSession(session, cancelToken).ContinueWith(
                                 async (t) =>
                                 {
+                                    Interlocked.Decrement(ref runningTasks);
                                     if (t.Exception != null)
                                     {
-                                        logger.LogError(t.Exception, "Session error");
-                                        await session.CloseAsync();
+                                        logger.LogError(t.Exception, $"Session error: {session.SessionId}");
+                                    }
 
-                                    //src.Cancel();
-                                }
+                                    await session.CloseAsync();
 
+                                    logger.LogTrace("Session closed.");
                                 });
                         }
                         catch (ServiceBusTimeoutException ex)
                         {
-                            logger?.LogDebug("ServiceBusTimeoutException");
+                            logger?.LogWarning($"ServiceBusTimeoutException");
                         }
                         catch (Exception ex)
                         {
                             logger?.LogError("Listener has failed.", ex);
-                            throw;
+                            //throw;
                         }
                     }
                 }
@@ -184,7 +184,8 @@ namespace AkkaSb.Net
         {
             while (cancelToken.IsCancellationRequested == false)
             {
-                var msg = await session.ReceiveAsync();
+                var msg = await session.ReceiveAsync(TimeSpan.FromSeconds(1));
+
                 if (msg != null)
                 {
                     try
@@ -215,42 +216,62 @@ namespace AkkaSb.Net
 
                         actor = actorMap[session.SessionId];
 
-                        logger?.LogInformation($"{this.Name} - Received message: {tp.Name}/{id}");
+                        logger?.LogInformation($"{this.Name} - Received message: {tp.Name}/{id}, actorMap: {actorMap.Keys.Count}");
 
                         var invokingMsg = ActorReference.DeserializeMsg<object>(msg.Body);
 
                         await InvokeOperationOnActorAsync(actor, invokingMsg, (bool)msg.UserProperties[ActorReference.cExpectResponse],
                             msg.MessageId, msg.ReplyTo);
 
+                        await persistAndCleanupIfRequired(session);
+
                         await session.CompleteAsync(msg.SystemProperties.LockToken);
                     }
                     catch (Exception ex)
                     {
-                        if (ex is SessionLockLostException && this.persistenceProvider != null)
-                        {
-                            await this.persistenceProvider.PersistActor(actorMap[session.SessionId]);
-                            logger?.LogTrace($"{this.Name} -  Actor for '{session.SessionId}' persisted after session lock lost.");
-                        }
+                        //if (ex is SessionLockLostException && this.persistenceProvider != null)
+                        //{
+                        //    // await this.persistenceProvider.PersistActor(actorMap[session.SessionId]);
+                        //    logger?.LogTrace($"{this.Name} -  Actor for '{session.SessionId}' persisted after session lock lost.");
+                        //}
 
-                        logger.LogError(ex, "Messsage processing error");
+                        logger.LogWarning(ex, "Messsage processing error");
+
+                        await persistAndCleanupIfRequired(session);
+
                         await session.AbandonAsync(msg.SystemProperties.LockToken);
+
+                        //return;
                     }
                 }
                 else
                 {
                     logger?.LogTrace($"{this.Name} - No more messages received for sesson {session.SessionId}");
-
-                    if (this.persistenceProvider != null)
-                    {
-                        await this.persistenceProvider.PersistActor(actorMap[session.SessionId]);
-                        logger?.LogTrace($"{this.Name} -  Actor for '{session.SessionId}' persisted.");
-
-                    }
-
-                    //await session.CloseAsync();
+                    await persistAndCleanupIfRequired(session);
                     //return;
-                    //break;
                 }
+
+                if (IsMemoryCritical())
+                {
+                    logger?.LogWarning($"Memory reached critical value: {this.CriticalMemInGb}, {Environment.WorkingSet / 1024 / 1024 / 1024}");
+                }
+
+                break;
+            }
+        }
+
+        private async Task persistAndCleanupIfRequired(IMessageSession session)
+        {
+            if (this.persistenceProvider != null)
+            {
+                ActorBase removed;
+                //if (IsMemoryCritical())
+                if (actorMap.TryRemove(session.SessionId, out removed))
+                    await this.persistenceProvider.PersistActor(removed);
+                else
+                    logger?.LogError($"Cannot remove actor from map. {session.SessionId}");
+
+                logger?.LogTrace($"{this.Name} -  Actor for '{session.SessionId}' persisted.");
             }
         }
 
@@ -263,7 +284,7 @@ namespace AkkaSb.Net
         private ActorId getActorIdFromSession(string sessionId)
         {
             var strId = sessionId.Split('/')[1];
-            
+
             return new ActorId(strId);
         }
 
@@ -311,6 +332,14 @@ namespace AkkaSb.Net
                 if (res != null)
                     throw new InvalidOperationException($"The actor {actor} should return NULL.");
             }
+        }
+
+        private bool IsMemoryCritical()
+        {
+            if (Environment.WorkingSet / 1024 / 1024 / 1024 >= this.CriticalMemInGb)
+                return true;
+            else
+                return false;
         }
         #endregion
     }
