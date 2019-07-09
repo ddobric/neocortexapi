@@ -239,7 +239,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
             Parallel.ForEach(msg.ColumnKeys, opts, (colPair) =>
             {
-                Column activeColumn = (Column)this.Dict[colPair.Key is string ? int.Parse(colPair.Key as string) : (int)(long)colPair.Key];
+                Column activeColumn = (Column)this.Dict[colPair.Key.ToString()];
                 //Pool pool = c.getPotentialPools().get(activeColumns[i]);
                 Pool pool = activeColumn.ProximalDendrite.RFPool;
                 double[] perm = pool.getDensePermanences(this.HtmConfig.NumInputs);
@@ -260,7 +260,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
             Parallel.ForEach(msg.ColumnKeys, opts, (colPair) =>
             {
-                Column weakColumn = (Column)Dict[colPair.Key is string ? int.Parse(colPair.Key as string) : (int)(long)colPair.Key];
+                Column weakColumn = (Column)Dict[colPair.Key.ToString()];
 
                 Pool pool = weakColumn.ProximalDendrite.RFPool;
                 double[] perm = pool.getSparsePermanences();
