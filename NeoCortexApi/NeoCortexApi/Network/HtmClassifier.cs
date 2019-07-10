@@ -55,13 +55,13 @@ namespace NeoCortexApi.Network
         }
 
         
-        private string ComputeHash(byte[] rawData)
+        private string ComputeHash(string rawData)
         {
             // Create a SHA256   
             using (SHA256 sha256Hash = SHA256.Create())
             {
                 // ComputeHash - returns byte array  
-                byte[] bytes = sha256Hash.ComputeHash(rawData);
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
 
                 // Convert byte array to a string   
                 StringBuilder builder = new StringBuilder();
@@ -75,14 +75,17 @@ namespace NeoCortexApi.Network
         
 
         
-        private static byte[] flatArray(Cell[] output)
+        private static string flatArray(Cell[] cells)
         {
-            byte[] arr = new byte[output.Length];
-            for (int i = 0; i < output.Length; i++)
+            StringBuilder sb = new StringBuilder();
+
+            for (int i = 0; i < cells.Length; i++)
             {
-                arr[i] = (byte)output[i].Index;
+                sb.Append(cells[i].Column.Index);
+                sb.Append(cells[i].Index);
             }
-            return arr;
+
+            return sb.ToString();
         }
         
     }
