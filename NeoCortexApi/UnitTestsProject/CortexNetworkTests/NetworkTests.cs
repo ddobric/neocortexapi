@@ -43,19 +43,24 @@ namespace UnitTestsProject
             
             EncoderBase encoder = new CategoryEncoder(categories, settings);
             //encoder.Encode()
-            CortexLayer<object, object> layer1 = new CortexLayer<object,object>("L1");
+            CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
             region0.AddLayer(layer1);
             layer1.HtmModules.Add(encoder);
             layer1.HtmModules.Add(sp1);
             layer1.HtmModules.Add(tm1);
             //layer1.Compute();
-            
+
+            HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
+
             string[] inputs = new string[] {"A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L", "M", "N", "O"};
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 10; i++)
             {
                 foreach (var input in inputs)
                 {
-                    layer1.Compute((object)input, learn);
+                    var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
+
+                    cls.Learn(input, lyrOut.activeCells.ToArray(), lyrOut.activeCells.ToArray());
+
                     Debug.WriteLine("-----------------------------------------------------------\n----------------------------------------------------------");
                 }
             }
