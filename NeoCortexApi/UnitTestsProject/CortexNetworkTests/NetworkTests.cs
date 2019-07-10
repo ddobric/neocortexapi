@@ -6,9 +6,11 @@ using System.Globalization;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Network;
 using NeoCortexApi;
+using NeoCortexApi.Entities;
+using System.Diagnostics;
 
 namespace UnitTestsProject
-{
+{   
     [TestClass]
     public class NetworkTests
     {
@@ -20,34 +22,54 @@ namespace UnitTestsProject
         [TestCategory("NetworkTests")]
         public void InitTests()
         {
-            string[] categories = new string[] {"germany", "england", "island", "china" };
+            bool learn = true;
+            Parameters p = Parameters.getAllDefaultParameters();
+            string[] categories = new string[] {"A", "B", "C", "D","E","F","G","H","J","K","L","M","N","O","P","Q","R","S","T","U"};
             CortexNetwork net = new CortexNetwork("my cortex");
             List<CortexRegion> regions = new List<CortexRegion>();
             CortexRegion region0 = new CortexRegion("1st Region");
             regions.Add(region0);
-            CortexRegion region1 = new CortexRegion("2nd Region"); 
-            net = new CortexNetwork("my cortex", regions );
-            net.AddRegion(region1);
+            
             SpatialPooler sp1 = new SpatialPooler();
             TemporalMemory tm1 = new TemporalMemory();
-
+            var mem = new Connections();
+            p.apply(mem);
+            sp1.init(mem);
+            tm1.init(mem);
             Dictionary<string, object> settings = new Dictionary<string, object>();
-            settings.Add("W", 3);
+            settings.Add("W", 5);
+            //settings.Add("N", 100);
             settings.Add("Radius", 1);
             
             EncoderBase encoder = new CategoryEncoder(categories, settings);
             //encoder.Encode()
-            CortexLayer<string, object> layer1 = new CortexLayer<string,object>("L1");
+            CortexLayer<object, object> layer1 = new CortexLayer<object,object>("L1");
+            region0.AddLayer(layer1);
             layer1.HtmModules.Add(encoder);
             layer1.HtmModules.Add(sp1);
             layer1.HtmModules.Add(tm1);
             //layer1.Compute();
-
-            string[] inputs = new string[] { "germany", "china", "french", "russia"};
-            foreach (var input in inputs)
+            
+            string[] inputs = new string[] {"A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L", "M", "N", "O"};
+            for (int i = 0; i < 1; i++)
             {
-                layer1.Compute(input, true);
+                foreach (var input in inputs)
+                {
+                    layer1.Compute((object)input, learn);
+                    Debug.WriteLine("-----------------------------------------------------------\n----------------------------------------------------------");
+                }
             }
+            //Debug.WriteLine("------------------------------------------------------------------------\n----------------------------------------------------------------------------");
+            /*
+            learn = false;
+            for (int i = 0; i < 19; i++)
+            {
+                foreach (var input in inputs)
+                {
+                    layer1.Compute((object)input, learn);
+                }
+            }
+            */
             
         }
 

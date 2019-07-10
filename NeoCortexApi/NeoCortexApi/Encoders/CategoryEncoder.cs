@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace NeoCortexApi.Encoders
@@ -57,6 +58,7 @@ namespace NeoCortexApi.Encoders
         {
             int index = scalarNames.IndexOf((String)inputData);
             int[] outArray = encoding(index);
+            Debug.WriteLine($"Encode String of  {inputData}: {Helpers.StringifyVector(outArray)}");
             return outArray;
         }
 

@@ -5,7 +5,7 @@ using System.Text;
 using System.Linq;
 using NeoCortexApi.Utility;
 using static NeoCortexApi.Entities.Connections;
-
+using System.Diagnostics;
 
 namespace NeoCortexApi
 {
@@ -84,7 +84,6 @@ namespace NeoCortexApi
             ComputeCycle cycle = new ComputeCycle();
             activateCells(this.connections, cycle, activeColumns, learn);
             activateDendrites(this.connections, cycle, learn);
-
             return cycle;
         }
 
@@ -112,6 +111,7 @@ namespace NeoCortexApi
 
         public void activateCells(Connections conn, ComputeCycle cycle, int[] activeColumnIndices, bool learn)
         {
+
             ColumnData columnData = new ColumnData();
 
             ISet<Cell> prevActiveCells = conn.getActiveCells();
@@ -193,6 +193,14 @@ namespace NeoCortexApi
                     }
                 }
             }
+            int[] arr = new int[200];
+            int count = 0;
+            foreach (Cell activeCell in cycle.winnerCells)
+            {
+                arr[count] = activeCell.Index;
+                count++;
+            }
+            Debug.WriteLine($"Active Cells: {Helpers.StringifyVector(arr)}");
         }
 
         /**
@@ -214,7 +222,8 @@ namespace NeoCortexApi
         public void activateDendrites(Connections conn, ComputeCycle cycle, bool learn)
         {
             SegmentActivity activity = conn.computeActivity(cycle.activeCells, conn.getConnectedPermanence());
-
+            
+            int i = 0;
             var activeSegments = new List<DistalDendrite>();
             foreach (var item in activity.Active)
             {
@@ -257,8 +266,16 @@ namespace NeoCortexApi
             conn.setMatchingSegments(matchingSegments);
             // Forces generation of the predictive cells from the above active segments
             conn.clearPredictiveCells();
-            conn.getPredictiveCells();
-
+            ISet<Cell> predictiveCells = conn.getPredictiveCells();
+            string[] arr = new string[predictiveCells.Count];
+            foreach (Cell c in predictiveCells)
+            {
+                arr[i] = c.Index +"-" + c.Column.Index;
+                i++;
+            }
+            //string output = string.Join("", predictiveCells);
+            Debug.WriteLine($"Predicted cells: {Helpers.StringifyVector(arr)}");
+            Debug.WriteLine("-----------------------------------------------------\n-----------------------------------------------------");
             if (learn)
             {
                 foreach (var segment in activeSegments)
@@ -526,7 +543,7 @@ namespace NeoCortexApi
                     leastUsedCells.Add(cell);
                 }
             }
-
+            random = new Random();
             int i = random.Next(leastUsedCells.Count);
             return leastUsedCells[i];
         }
@@ -552,7 +569,7 @@ namespace NeoCortexApi
         public void growSynapses(Connections conn, ICollection<Cell> prevWinnerCells, DistalDendrite segment,
             double initialPermanence, int nDesiredNewSynapses, Random random)
         {
-
+            random = new Random();
             List<Cell> removingCandidates = new List<Cell>(prevWinnerCells);
             removingCandidates = removingCandidates.OrderBy(c => c).ToList();
 

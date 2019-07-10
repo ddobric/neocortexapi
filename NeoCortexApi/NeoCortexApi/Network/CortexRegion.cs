@@ -35,7 +35,7 @@ namespace NeoCortexApi.Network
             return this;
         }
 
-        public void Compute(int[] input, Boolean learn)
+        public void Compute(object input, Boolean learn)
         {
             foreach (var layer in this.HtmLayers)
             {

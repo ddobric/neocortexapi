@@ -62,10 +62,10 @@ namespace NeoCortexApi.Entities
             /////////// Temporal Memory Parameters ///////////
             MyDictionary<string, Object> defaultTemporalParams = new MyDictionary<string, object>();
             defaultTemporalParams.Add(KEY.COLUMN_DIMENSIONS, new int[] { 2048 });
-            defaultTemporalParams.Add(KEY.CELLS_PER_COLUMN, 32);
-            defaultTemporalParams.Add(KEY.ACTIVATION_THRESHOLD, 13);
+            defaultTemporalParams.Add(KEY.CELLS_PER_COLUMN, 5);
+            defaultTemporalParams.Add(KEY.ACTIVATION_THRESHOLD, 5);
             defaultTemporalParams.Add(KEY.LEARNING_RADIUS, 2048);
-            defaultTemporalParams.Add(KEY.MIN_THRESHOLD, 10);
+            defaultTemporalParams.Add(KEY.MIN_THRESHOLD, 0);
             defaultTemporalParams.Add(KEY.MAX_NEW_SYNAPSE_COUNT, 20);
             defaultTemporalParams.Add(KEY.MAX_SYNAPSES_PER_SEGMENT, 255);
             defaultTemporalParams.Add(KEY.MAX_SEGMENTS_PER_CELL, 255);
@@ -83,14 +83,14 @@ namespace NeoCortexApi.Entities
 
             //////////// Spatial Pooler Parameters ///////////
             MyDictionary<string, Object> defaultSpatialParams = new MyDictionary<string, object>();
-            defaultSpatialParams.Add(KEY.INPUT_DIMENSIONS, new int[] { 64 });
-            defaultSpatialParams.Add(KEY.POTENTIAL_RADIUS, -1);
-            defaultSpatialParams.Add(KEY.POTENTIAL_PCT, 0.5);
-            defaultSpatialParams.Add(KEY.GLOBAL_INHIBITION, false);
-            defaultSpatialParams.Add(KEY.INHIBITION_RADIUS, 0);
+            defaultSpatialParams.Add(KEY.INPUT_DIMENSIONS, new int[] { 100 });
+            defaultSpatialParams.Add(KEY.POTENTIAL_RADIUS, 15);
+            defaultSpatialParams.Add(KEY.POTENTIAL_PCT, 0.75);
+            defaultSpatialParams.Add(KEY.GLOBAL_INHIBITION, true);
+            defaultSpatialParams.Add(KEY.INHIBITION_RADIUS, 15);
             defaultSpatialParams.Add(KEY.LOCAL_AREA_DENSITY, -1.0);
-            defaultSpatialParams.Add(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 10.0);
-            defaultSpatialParams.Add(KEY.STIMULUS_THRESHOLD, 0.0);
+            defaultSpatialParams.Add(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.02 * 2048);
+            defaultSpatialParams.Add(KEY.STIMULUS_THRESHOLD, 5.0);
             defaultSpatialParams.Add(KEY.SYN_PERM_INACTIVE_DEC, 0.008);
             defaultSpatialParams.Add(KEY.SYN_PERM_ACTIVE_INC, 0.05);
             defaultSpatialParams.Add(KEY.SYN_PERM_CONNECTED, 0.10);
@@ -121,7 +121,7 @@ namespace NeoCortexApi.Entities
             defaultEncoderParams.Add(KEY.FORCED, false);
             defaultEncoderParams.Add(KEY.FIELD_NAME, "UNSET");
             defaultEncoderParams.Add(KEY.FIELD_TYPE, "int");
-            defaultEncoderParams.Add(KEY.ENCODER, "ScalarEncoder");
+            defaultEncoderParams.Add(KEY.ENCODER, "CategoryEncoder");
             //defaultEncoderParams.Add(KEY.FIELD_ENCODING_MAP, Collections.emptyMap());
             defaultEncoderParams.Add(KEY.AUTO_CLASSIFY, false);
 
