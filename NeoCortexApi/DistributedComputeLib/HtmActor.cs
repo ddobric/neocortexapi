@@ -228,6 +228,10 @@ namespace NeoCortexApi.DistributedComputeLib
             var sortedRes = result.OrderBy(k => k.Key).ToList();
 
             //Console.Write($"o = {sortedRes.Count(p => (int)p.Value > 0)}");
+            if (sortedRes.Count < this.Dict.Count)
+            {
+
+            }
 
             return sortedRes;
         }
