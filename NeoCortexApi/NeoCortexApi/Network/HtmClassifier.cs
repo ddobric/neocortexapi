@@ -24,9 +24,9 @@ namespace NeoCortexApi.Network
         /// </summary>
         /// <param name="output"></param>
         /// <returns></returns>
-        public TIN GetInputValue(int[,] output)
+        public TIN GetInputValue(Cell output)
         {
-            return default(TIN);
+            return return outputMap[ComputeHash(flatArray(output)];
         }
 
 
