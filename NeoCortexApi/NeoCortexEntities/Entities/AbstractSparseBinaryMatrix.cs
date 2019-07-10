@@ -14,7 +14,7 @@ namespace NeoCortexApi.Entities
         /** keep it simple */
         private static readonly long serialVersionUID = 1L;
 
-        private int[] trueCounts;
+        public int[] trueCounts;
 
         public AbstractSparseBinaryMatrix()
         {

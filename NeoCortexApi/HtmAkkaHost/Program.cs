@@ -16,7 +16,7 @@ namespace HtmAkkaHost
 
             //AkkaHostService svc = new AkkaHostService();
             //svc.Start(args);
-            //--port  8081  --sysname HtmCluster  --hostname=localhost --publichostname=localhost
+            //--port  8081  --sysname HtmCluster  --hosstname=localhost --publichostname=localhost
 
             LoggerFactory factory = new LoggerFactory();
 

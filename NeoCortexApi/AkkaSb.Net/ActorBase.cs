@@ -97,12 +97,15 @@ namespace AkkaSb.Net
             return res;
         }
 
-        public async Task Perist()
+        public Task Perist()
         {
             if (this.PersistenceProvider != null)
             {
-                await this.PersistenceProvider.PersistActor(this);
+                this.PersistenceProvider.PersistActor(this);
+               
             }
+
+            return Task.FromResult<bool>(true);
         }
 
         public virtual void Activated()
