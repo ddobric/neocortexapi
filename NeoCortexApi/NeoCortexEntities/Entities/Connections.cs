@@ -125,7 +125,7 @@ namespace NeoCortexApi.Entities
         /** Total number of cells per column */
         protected int cellsPerColumn = 32;
         /** What will comprise the Layer input. Input (i.e. from encoder) */
-        protected int[] inputDimensions = new int[] { 32, 32 };
+        protected int[] inputDimensions = new int[] {100 };
         /**
          * If the number of active connected synapses on a segment
          * is at least this threshold, the segment is said to be active.

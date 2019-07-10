@@ -193,7 +193,7 @@ namespace NeoCortexApi
                     }
                 }
             }
-            int[] arr = new int[200];
+            int[] arr = new int[cycle.winnerCells.Count];
             int count = 0;
             foreach (Cell activeCell in cycle.winnerCells)
             {

@@ -8,15 +8,21 @@ namespace NeoCortexApi.Network
 {
     public class HtmClassifier<TIN, TOUT>
     {
-        private Dictionary<string, TIN> outputMap = new Dictionary<string, TIN>();
+        private Dictionary<string, TIN> activeMap = new Dictionary<string, TIN>();
 
         private Dictionary<string, TIN> predictMap = new Dictionary<string, TIN>();
 
-        public void Learn(TIN input, Cell output, Cell predictedOutput)
+        public void Learn(TIN input, Cell[] output, Cell[] predictedOutput)
         {
-            this.outputMap.Add(ComputeHash(flatArray(output)), input);
-
-            this.predictMap.Add(ComputeHash(flatArray(predictedOutput)), input);
+            if (!activeMap.ContainsKey(ComputeHash(flatArray(output))))
+            {
+                this.activeMap.Add(ComputeHash(flatArray(output)), input);
+            }
+            
+            if (!predictMap.ContainsKey(ComputeHash(flatArray(predictedOutput))))
+            {
+                this.predictMap.Add(ComputeHash(flatArray(predictedOutput)), input);
+            }
         }
 
         /// <summary>
@@ -24,9 +30,13 @@ namespace NeoCortexApi.Network
         /// </summary>
         /// <param name="output"></param>
         /// <returns></returns>
-        public TIN GetInputValue(Cell output)
+        public TIN GetInputValue(Cell[] output)
         {
-            return return outputMap[ComputeHash(flatArray(output)];
+            if (output.Length != 0 && activeMap.ContainsKey(ComputeHash(flatArray(output))))
+            {
+                return activeMap[ComputeHash(flatArray(output))];
+            }
+            return default(TIN);
         }
 
 
@@ -35,12 +45,16 @@ namespace NeoCortexApi.Network
         /// </summary>
         /// <param name="output"></param>
         /// <returns></returns>
-        public TIN GetPredictedInputValue(int[,] output)
+        public TIN GetPredictedInputValue(Cell[] output)
         {
+            if (output.Length != 0 && activeMap.ContainsKey(ComputeHash(flatArray(output))))
+            {
+                return activeMap[ComputeHash(flatArray(output))];
+            }
             return default(TIN);
         }
 
-
+        
         private string ComputeHash(byte[] rawData)
         {
             // Create a SHA256   
@@ -58,21 +72,18 @@ namespace NeoCortexApi.Network
                 return builder.ToString();
             }
         }
+        
 
-        private static byte[] flatArray(int[,] output)
+        
+        private static byte[] flatArray(Cell[] output)
         {
-            byte[] arr = new byte[output.LongLength];
-            var lenX = output.GetLength(0);
-            var lenY = output.GetLength(1);
-            for (int x = 0; x < lenX; x += 1)
+            byte[] arr = new byte[output.Length];
+            for (int i = 0; i < output.Length; i++)
             {
-                for (int y = 0; y < lenY; y += 1)
-                {
-                   arr[lenX*x+y] = (byte)output[x, y];
-                }
+                arr[i] = (byte)output[i].Index;
             }
-
             return arr;
         }
+        
     }
 }

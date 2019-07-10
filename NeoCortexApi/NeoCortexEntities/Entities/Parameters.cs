@@ -62,10 +62,10 @@ namespace NeoCortexApi.Entities
             /////////// Temporal Memory Parameters ///////////
             MyDictionary<string, Object> defaultTemporalParams = new MyDictionary<string, object>();
             defaultTemporalParams.Add(KEY.COLUMN_DIMENSIONS, new int[] { 2048 });
-            defaultTemporalParams.Add(KEY.CELLS_PER_COLUMN, 5);
-            defaultTemporalParams.Add(KEY.ACTIVATION_THRESHOLD, 5);
-            defaultTemporalParams.Add(KEY.LEARNING_RADIUS, 2048);
-            defaultTemporalParams.Add(KEY.MIN_THRESHOLD, 0);
+            defaultTemporalParams.Add(KEY.CELLS_PER_COLUMN, 32);
+            defaultTemporalParams.Add(KEY.ACTIVATION_THRESHOLD, 10);
+            defaultTemporalParams.Add(KEY.LEARNING_RADIUS,2048);
+            defaultTemporalParams.Add(KEY.MIN_THRESHOLD, 9);
             defaultTemporalParams.Add(KEY.MAX_NEW_SYNAPSE_COUNT, 20);
             defaultTemporalParams.Add(KEY.MAX_SYNAPSES_PER_SEGMENT, 255);
             defaultTemporalParams.Add(KEY.MAX_SEGMENTS_PER_CELL, 255);
