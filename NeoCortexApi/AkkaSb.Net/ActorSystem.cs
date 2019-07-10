@@ -118,7 +118,7 @@ namespace AkkaSb.Net
 
                     var val = Interlocked.Read(ref runningTasks);
 
-                    if ( val >= 15)
+                    if ( val >= 10)
                     {
                         logger?.LogWarning($"Accepted maximal nuber of sessions: {runningTasks}.");
 
