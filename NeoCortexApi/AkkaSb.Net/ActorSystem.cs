@@ -109,7 +109,7 @@ namespace AkkaSb.Net
             Task[] tasks = new Task[2];
 
             tasks[0] = Task.Run(async () =>
-            {      
+            {
                 while (!src.Token.IsCancellationRequested)
                 {
                     var proc = Process.GetCurrentProcess();
@@ -118,7 +118,7 @@ namespace AkkaSb.Net
 
                     var val = Interlocked.Read(ref runningTasks);
 
-                    if ( val >= 10)
+                    if (val >= 10)
                     {
                         logger?.LogWarning($"Accepted maximal nuber of sessions: {runningTasks}.");
 
@@ -133,7 +133,7 @@ namespace AkkaSb.Net
                             var session = await this.sessionRcvClient.AcceptMessageSessionAsync();
                             logger?.LogInformation($"{this.Name} - Accepted new session: {session.SessionId}");
                             Interlocked.Increment(ref runningTasks);
-                          
+
                             _ = RunDispatcherForSession(session, cancelToken).ContinueWith(
                                 async (t) =>
                                 {
@@ -188,6 +188,7 @@ namespace AkkaSb.Net
 
                 if (msg != null)
                 {
+                    bool isPersistedAfterCalculus = false;
                     try
                     {
                         ActorBase actor = null;
@@ -225,23 +226,19 @@ namespace AkkaSb.Net
 
                         await persistAndCleanupIfRequired(session);
 
+                        isPersistedAfterCalculus = true;
+
                         await session.CompleteAsync(msg.SystemProperties.LockToken);
                     }
                     catch (Exception ex)
                     {
-                        //if (ex is SessionLockLostException && this.persistenceProvider != null)
-                        //{
-                        //    // await this.persistenceProvider.PersistActor(actorMap[session.SessionId]);
-                        //    logger?.LogTrace($"{this.Name} -  Actor for '{session.SessionId}' persisted after session lock lost.");
-                        //}
-
                         logger.LogWarning(ex, "Messsage processing error");
 
-                        await persistAndCleanupIfRequired(session);
+                        if (isPersistedAfterCalculus == false)
+                            await persistAndCleanupIfRequired(session);
 
-                        await session.AbandonAsync(msg.SystemProperties.LockToken);
-
-                        //return;
+                        if (!(ex is SessionLockLostException))
+                            await session.AbandonAsync(msg.SystemProperties.LockToken);
                     }
                 }
                 else
