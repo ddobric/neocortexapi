@@ -2,7 +2,7 @@
 #Enter name of the ResourceGroup in which you want to create VM
 $resourceGroupNameNodes ='RG-PHD-VMNODES-TST1'
 
-$nodeSufix = "2"
+$nodeSufix = "3"
 
 #Enter name of the Managed Disk
 $diskName = 'phd-disk-node' + $nodeSufix
