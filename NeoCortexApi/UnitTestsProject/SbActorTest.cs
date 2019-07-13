@@ -28,7 +28,7 @@ namespace UnitTestsProject
             ActorSbConfig cfg = new ActorSbConfig();
             cfg.SbConnStr = sbConnStr;
             cfg.ReplyMsgQueue = "actorsystem/rcvlocal";
-            cfg.RequestMsgQueue = "actorsystem/actorqueue";
+            cfg.RequestMsgTopic = "actorsystem/actortopic";
             cfg.TblStoragePersistenConnStr = tblAccountConnStr;
             cfg.ActorSystemName = "inst701";
             return cfg;
@@ -40,9 +40,10 @@ namespace UnitTestsProject
 
             ActorSbConfig cfg = new ActorSbConfig();
             cfg.SbConnStr = sbConnStr;
-            cfg.RequestMsgQueue = "actorsystem/actorqueue";
+            cfg.RequestMsgTopic = "actorsystem/actortopic";
+            cfg.RequestSubscriptionName = "default";
             cfg.ReplyMsgQueue = null;
-      
+             
             return cfg;
         }
 

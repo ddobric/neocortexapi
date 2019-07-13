@@ -18,11 +18,12 @@ namespace AkkaSb.Net
         public const string cMsgType = "MsgType";
         public const string cExpectResponse = "ExpectResponse";
         public const string cReply = "ExpectResponse";
+        public const string cNodeName = "node";
 
         public TimeSpan MaxProcessingTime { get; set; } 
 
 
-        internal QueueClient RequestMsgSenderClient  { get; set; }
+        internal TopicClient RequestMsgSenderClient  { get; set; }
 
         private ConcurrentDictionary<string, Message> receivedMsgQueue ;
 
@@ -40,7 +41,9 @@ namespace AkkaSb.Net
 
         private ILogger logger;
 
-        internal ActorReference(Type actorType, ActorId id, QueueClient requestMsgSenderClient,  string replyQueueName, ConcurrentDictionary<string, Message> receivedMsgQueue, ManualResetEvent rcvEvent, TimeSpan maxProcessingTime, string name,  ILogger logger)
+       
+
+        internal ActorReference(Type actorType, ActorId id, TopicClient requestMsgSenderClient,  string replyQueueName, ConcurrentDictionary<string, Message> receivedMsgQueue, ManualResetEvent rcvEvent, TimeSpan maxProcessingTime, string name, ILogger logger)
         {
             this.logger = logger;
             this.name = name;
@@ -51,14 +54,20 @@ namespace AkkaSb.Net
             this.receivedMsgQueue = receivedMsgQueue;
             this.rcvEvent = rcvEvent;
             this.replyQueueName = replyQueueName;
-
+          
             logger?.LogInformation($"ActorReference ctor: Actor System: {this.name}, receivedMsgQueue instance: {receivedMsgQueue.GetHashCode()}");
         }
 
-
-        public async Task<TResponse> Ask<TResponse>(object msg, TimeSpan? timeout = null)
+        /// <summary>
+        /// Invokes an actor and waits on reply.
+        /// </summary>
+        /// <typeparam name="TResponse"Type of reply.></typeparam>
+        /// <param name="msg"></param>
+        /// <param name="timeout"></param>
+        /// <returns></returns>
+        public async Task<TResponse> Ask<TResponse>(object msg, TimeSpan? timeout = null, string routeToNode = null)
         {
-            var sbMsg = CreateMessage(msg, true, actorType, actorId);
+            var sbMsg = CreateMessage(msg, true, actorType, actorId, routeToNode);
             sbMsg.ReplyTo = this.replyQueueName;
 
             int retries = 5;
@@ -88,9 +97,16 @@ namespace AkkaSb.Net
             return res;
         }
 
-        public async Task Tell(object msg, TimeSpan? timeout = null)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="timeout"></param>
+        /// <param name="routeToNode">If specified, message is routed directly to specified node.</param>
+        /// <returns></returns>
+        public async Task Tell(object msg, TimeSpan? timeout = null, string routeToNode = null)
         {
-            var sbMsg = CreateMessage(msg, false, actorType, actorId);
+            var sbMsg = CreateMessage(msg, false, actorType, actorId, routeToNode );
 
             await this.RequestMsgSenderClient.SendAsync(sbMsg);
         }
@@ -130,8 +146,17 @@ namespace AkkaSb.Net
             return msg;
         }
               
-
-        internal static Message CreateMessage(object msg, bool expectResponse, Type actorType, ActorId actorId)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="expectResponse"></param>
+        /// <param name="actorType"></param>
+        /// <param name="actorId"></param>
+        /// <param name="node">If specified, message is routed directly to that node. Node will listen on subscription
+        /// rule [node LIKE %node%]</param>
+        /// <returns></returns>
+        internal static Message CreateMessage(object msg, bool expectResponse, Type actorType, ActorId actorId, string node)
         {
             Message sbMsg = new Message(SerializeMsg(msg));
          
@@ -139,6 +164,9 @@ namespace AkkaSb.Net
             sbMsg.UserProperties.Add(cMsgType, msg.GetType().AssemblyQualifiedName);
             sbMsg.UserProperties.Add(cActorId, (string)actorId);
             sbMsg.UserProperties.Add(cExpectResponse, (bool)expectResponse);
+
+            if (!String.IsNullOrEmpty(node))
+                sbMsg.UserProperties.Add(cNodeName, (string)node);
 
             sbMsg.SessionId = $"{actorType.Name}/{actorId}";
             sbMsg.MessageId = $"{sbMsg.SessionId}/{Guid.NewGuid().ToString()}";
@@ -148,8 +176,9 @@ namespace AkkaSb.Net
 
         internal static Message CreateResponseMessage(object msg, string replyToMsgId, Type actorType, ActorId actorId)
         {
-            Message sbMsg = CreateMessage(msg, false, actorType, actorId);
+            Message sbMsg = CreateMessage(msg, false, actorType, actorId, null);
             sbMsg.CorrelationId = replyToMsgId;
+          
             // Response messages do not use sessions.
             //sbMsg.SessionId = $"{actorType}/{actorId}";
 

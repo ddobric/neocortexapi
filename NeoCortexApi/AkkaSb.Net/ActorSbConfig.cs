@@ -22,7 +22,12 @@ namespace AkkaSb.Net
         /// Messages sent to invoke operations on actors. ActorSystem registers a session receiver
         /// on this queue.
         /// </summary>
-        public string RequestMsgQueue { get; set; }
+        public string RequestMsgTopic { get; set; }
+
+        /// <summary>
+        /// The name of subscription, which will receive messages on topic.
+        /// </summary>
+        public string RequestSubscriptionName { get; set; }
 
         /// <summary>
         /// Connection timeout of Ask() method.
