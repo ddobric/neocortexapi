@@ -527,7 +527,7 @@ namespace UnitTestsProject
             if (nodes != null)
                 nodeList.AddRange(nodes);
 
-            var map = ActorSbDistributedDictionaryBase<Column>.CreatePartitionMap(totalElements, elementsPerPartition, nodeList);
+            var map = ActorSbDistributedDictionaryBase<Column>.CreatePartitionMap(totalElements, elementsPerPartition, -1, nodeList);
 
             int lastMax = -1;
             int elementCnt = 0;
