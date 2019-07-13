@@ -243,7 +243,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
             Parallel.ForEach(msg.ColumnKeys, opts, (colPair) =>
             {
-                Column activeColumn = (Column)this.Dict[colPair.Key.ToString()];
+                Column activeColumn = GetColumn(colPair.Key);
                 //Pool pool = c.getPotentialPools().get(activeColumns[i]);
                 Pool pool = activeColumn.ProximalDendrite.RFPool;
                 double[] perm = pool.getDensePermanences(this.HtmConfig.NumInputs);
@@ -264,7 +264,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
             Parallel.ForEach(msg.ColumnKeys, opts, (colPair) =>
             {
-                Column weakColumn = (Column)Dict[colPair.Key.ToString()];
+                Column weakColumn = GetColumn(colPair.Key);
 
                 Pool pool = weakColumn.ProximalDendrite.RFPool;
                 double[] perm = pool.getSparsePermanences();
@@ -275,6 +275,16 @@ namespace NeoCortexApi.DistributedComputeLib
             });
 
             return 0;
+        }
+
+        private Column GetColumn(object key)
+        {            
+            if(this.Dict.ContainsKey(key.ToString()))
+                return (Column)Dict[key.ToString()];
+            else if (this.Dict.ContainsKey((int)(long)key))
+                return (Column)Dict[(int)(long)key];
+            else
+                return (Column)Dict[key];
         }
 
         public static string StringifyVector(double[] vector)
