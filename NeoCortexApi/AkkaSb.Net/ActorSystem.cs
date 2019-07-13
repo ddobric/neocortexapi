@@ -205,10 +205,17 @@ namespace AkkaSb.Net
                         if (!actorMap.ContainsKey(session.SessionId))
                         {
                             if (this.persistenceProvider != null)
+                            {
                                 actor = await this.persistenceProvider.LoadActor(id);
+                                if(actor != null)
+                                    logger?.LogInformation($"{this.Name} - Loaded from pesisted store: {tp.Name}/{id}, actorMap: {actorMap.Keys.Count}");
+                            }
 
                             if (actor == null)
+                            {
                                 actor = Activator.CreateInstance(tp, id) as ActorBase;
+                                logger?.LogInformation($"{this.Name} - New instance created: {tp.Name}/{id}, actorMap: {actorMap.Keys.Count}");
+                            }
 
                             actor.PersistenceProvider = this.PersistenceProvider;
 
@@ -238,9 +245,11 @@ namespace AkkaSb.Net
 
                         // If actor operation was invoked with Ask<>(), then reply is expected.
                         if (replyMsg != null)
+                        {
                             await this.sendReplyQueueClients[msg.ReplyTo].SendAsync(replyMsg);
 
-                        logger?.LogInformation($"{this.Name} - Replied : {tp.Name}/{id}, actorMap: {actorMap.Keys.Count}");
+                            logger?.LogInformation($"{this.Name} - Replied : {tp.Name}/{id}, actorMap: {actorMap.Keys.Count}");
+                        }
 
                         await session.CompleteAsync(msg.SystemProperties.LockToken);
 

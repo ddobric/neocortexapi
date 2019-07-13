@@ -39,28 +39,28 @@ namespace AkkaHostLib
             cfg.ReplyMsgQueue = configArgs["ReplyMsgQueue"];
             cfg.RequestMsgTopic = configArgs["RequestMsgQueue"];
             cfg.TblStoragePersistenConnStr = configArgs["TblStoragePersistenConnStr"];
-            cfg.ActorSystemName = configArgs["ActorSystemName"]; 
+            cfg.ActorSystemName = configArgs["ActorSystemName"];
             string systemName = configArgs["SystemName"];
-            
+
             Console.CancelKeyPress += (sender, eventArgs) =>
             {
                 tokenSrc.Cancel();
             };
 
-            FileStoragePersistenceProvider prov = null;
+            BlobStoragePersistenceProvider prov = null;
 
             if (String.IsNullOrEmpty(cfg.TblStoragePersistenConnStr) == false)
             {
-                prov = new FileStoragePersistenceProvider();
+                prov = new BlobStoragePersistenceProvider();
             }
-            
-            prov.InitializeAsync(cfg.ActorSystemName, new Dictionary<string, object>(), purgeOnStart: false, logger: this.logger).Wait();
+
+            prov.InitializeAsync(cfg.ActorSystemName, new Dictionary<string, object>() { { "StorageConnectionString", cfg.TblStoragePersistenConnStr } }, purgeOnStart: false, logger: this.logger).Wait();
 
             akkaClusterSystem = new AkkaSb.Net.ActorSystem($"{systemName}", cfg, logger, prov);
             akkaClusterSystem.Start(tokenSrc.Token);
 
             Console.WriteLine("Press any key to stop Actor SB system.");
-            
+
         }
 
     }
