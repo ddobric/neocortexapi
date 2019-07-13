@@ -85,7 +85,7 @@ namespace NeoCortexApi.DistributedComputeLib
                 var result = ((ActorReference)this.ActorMap[i].ActorRef).Ask<int>(new CreateDictNodeMsg()
                 {
                     HtmAkkaConfig = this.HtmConfig,
-                }, this.Config.ConnectionTimeout).Result;
+                }, this.Config.ConnectionTimeout, this.actorMap[i].NodePath).Result;
             }
         }
 

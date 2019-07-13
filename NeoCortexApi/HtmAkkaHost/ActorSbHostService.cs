@@ -37,7 +37,7 @@ namespace AkkaHostLib
 
             cfg.SbConnStr = configArgs["SbConnStr"];
             cfg.ReplyMsgQueue = configArgs["ReplyMsgQueue"];
-            cfg.RequestMsgTopic = configArgs["RequestMsgQueue"];
+            cfg.RequestMsgTopic = configArgs["RequestMsgTopic"];
             cfg.TblStoragePersistenConnStr = configArgs["TblStoragePersistenConnStr"];
             cfg.ActorSystemName = configArgs["ActorSystemName"];
             cfg.RequestSubscriptionName = configArgs["SubscriptionName"];
