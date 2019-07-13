@@ -303,7 +303,7 @@ namespace NeoCortexApi.DistributedComputeLib
                         PartitionKey = placement.PartitionIndx,
                         MinKey = (int)(object)placement.MinKey,
                         MaxKey = (int)(object)placement.MaxKey
-                    }, this.Config.ConnectionTimeout).Result;
+                    }, this.Config.ConnectionTimeout, placement.NodePath).Result;
                 });
             }, this.ActorMap, this.Config.BatchSize);
 
@@ -360,20 +360,6 @@ namespace NeoCortexApi.DistributedComputeLib
             ParallelOptions opts = new ParallelOptions();
             opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
 
-            //List<Placement<int>> l = new List<Placement<int>>();
-            //int i = 0;
-            //foreach (var item in this.actorMap)
-            //{
-            //    l.Add(item);
-
-            //    i++;
-
-            //    if (i == 2)
-            //        break;
-            //}
-
-            //l.Add(this.actorMap.First());
-            
             runBatched((batchOfElements) =>
             {
                 Parallel.ForEach(batchOfElements, opts, (placement) =>
@@ -383,7 +369,7 @@ namespace NeoCortexApi.DistributedComputeLib
                         try
                         {
                             //Debug.WriteLine($"C: {placement.ActorRef.Path}");
-                            var avgSpanOfPart = ((ActorReference)placement.ActorRef).Ask<double>(new ConnectAndConfigureColumnsMsg(), this.Config.ConnectionTimeout).Result;
+                            var avgSpanOfPart = ((ActorReference)placement.ActorRef).Ask<double>(new ConnectAndConfigureColumnsMsg(), this.Config.ConnectionTimeout, placement.NodePath).Result;
                             aggLst.TryAdd(placement.PartitionIndx, avgSpanOfPart);
                             break;
                         }
@@ -408,7 +394,7 @@ namespace NeoCortexApi.DistributedComputeLib
             // Run overlap calculation on all actors(in all partitions)
             Parallel.ForEach(this.ActorMap, opts, (placement) =>
             {
-                var partitionOverlaps = ((ActorReference)placement.ActorRef).Ask<List<KeyPair>>(new CalculateOverlapMsg { InputVector = inputVector }, this.Config.ConnectionTimeout).Result;
+                var partitionOverlaps = ((ActorReference)placement.ActorRef).Ask<List<KeyPair>>(new CalculateOverlapMsg { InputVector = inputVector }, this.Config.ConnectionTimeout, placement.NodePath).Result;
                 overlapList.TryAdd(placement.PartitionIndx, partitionOverlaps);
             });
 
@@ -447,12 +433,12 @@ namespace NeoCortexApi.DistributedComputeLib
             Parallel.ForEach(partitions, opts, (placement) =>
             {
                 // Result here should ensure reliable messaging. No semantin meaning.
-                var res = placement.Key.Ask<int>(new AdaptSynapsesMsg
+                var res = ((ActorReference)placement.Key.ActorRef).Ask<int>(new AdaptSynapsesMsg
                 {
                     PermanenceChanges = permChanges,
                     ColumnKeys = placement.Value
                 },
-                    this.Config.ConnectionTimeout).Result;
+                    this.Config.ConnectionTimeout, placement.Key.NodePath).Result;
             });
         }
 
@@ -472,7 +458,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
             Parallel.ForEach(partitionMap, opts, (placement) =>
             {
-                var res = placement.Key.Ask<int>(new BumUpWeakColumnsMsg { ColumnKeys = placement.Value }, this.Config.ConnectionTimeout).Result;
+                var res = ((ActorReference)placement.Key.ActorRef).Ask<int>(new BumUpWeakColumnsMsg { ColumnKeys = placement.Value }, this.Config.ConnectionTimeout, placement.Key.NodePath).Result;
             });
         }
 
@@ -482,9 +468,9 @@ namespace NeoCortexApi.DistributedComputeLib
         /// </summary>
         /// <param name="keyValuePairs"></param>
         /// <returns></returns>
-        public Dictionary<ActorReference, List<KeyPair>> GetPartitionsForKeyset(ICollection<KeyPair> keyValuePairs)
+        public Dictionary<Placement<int>, List<KeyPair>> GetPartitionsForKeyset(ICollection<KeyPair> keyValuePairs)
         {
-            Dictionary<ActorReference, List<KeyPair>> res = new Dictionary<ActorReference, List<KeyPair>>();
+            Dictionary<Placement<int>, List<KeyPair>> res = new Dictionary<Placement<int>, List<KeyPair>>();
 
             foreach (var partition in this.ActorMap)
             {
@@ -492,10 +478,10 @@ namespace NeoCortexApi.DistributedComputeLib
                 {
                     if (partition.MinKey <= (int)pair.Key && partition.MaxKey >= (int)pair.Key)
                     {
-                        if (res.ContainsKey(partition.ActorRef as ActorReference) == false)
-                            res.Add(partition.ActorRef as ActorReference, new List<KeyPair>());
+                        if (res.ContainsKey(partition) == false)
+                            res.Add(partition, new List<KeyPair>());
 
-                        res[partition.ActorRef as ActorReference].Add(pair);
+                        res[partition].Add(pair);
                     }
                 }
             }
