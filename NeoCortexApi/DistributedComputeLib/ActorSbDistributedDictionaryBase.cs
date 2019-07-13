@@ -91,18 +91,19 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public List<Placement<int>> CreatePartitionMap()
         {
-            return this.ActorMap = CreatePartitionMap(this.HtmConfig.NumColumns, this.Config.NumOfElementsPerPartition, this.Config.Nodes);
+            return this.ActorMap = CreatePartitionMap(this.HtmConfig.NumColumns, this.Config.NumOfElementsPerPartition, this.Config.NumOfPartitions, this.Config.Nodes);
         }
 
         /// <summary>
         /// Calculates partition placements on nodes.
         /// </summary>
         /// <returns></returns>
-        public static List<Placement<int>> CreatePartitionMap(int numElements, int numOfElementsPerPartition, List<string> nodes = null)
+        public static List<Placement<int>> CreatePartitionMap(int numElements, int numOfElementsPerPartition, int numOfPartitions = -1, List<string> nodes = null)
         {
             List<Placement<int>> map = new List<Placement<int>>();
 
-            int numOfPartitions = (numOfElementsPerPartition == -1 && nodes != null && nodes.Count > 0 ) ?  nodes.Count : (int)(1 + ((double)numElements / (double)numOfElementsPerPartition));
+            if(numOfPartitions == -1)
+                numOfPartitions = (numOfElementsPerPartition == -1 && nodes != null && nodes.Count > 0 ) ?  nodes.Count : (int)(1 + ((double)numElements / (double)numOfElementsPerPartition));
 
             if (numOfElementsPerPartition == -1)
             {

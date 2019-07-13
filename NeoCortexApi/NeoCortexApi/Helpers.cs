@@ -141,6 +141,7 @@ namespace NeoCortexApi
                 cfg.ReplyMsgQueue = "actorsystem/rcvlocal";
                 cfg.RequestMsgTopic = "actorsystem/actortopic";
                 cfg.NumOfElementsPerPartition = -1; // This means, number of partitions equals number of nodes.
+                cfg.NumOfPartitions = 15;// Should be uniformly distributed across nodes.
                 cfg.BatchSize = 1000;
                 cfg.ConnectionTimeout = TimeSpan.FromMinutes(5);
               

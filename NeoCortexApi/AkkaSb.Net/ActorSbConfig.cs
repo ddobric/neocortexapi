@@ -42,7 +42,12 @@ namespace AkkaSb.Net
         /// <summary>
         /// 
         /// </summary>
-        public int NumOfElementsPerPartition { get; set; }
+        public int NumOfElementsPerPartition { get; set; } = -1;
+
+        /// <summary>
+        /// Should be uniformly distributed across nodes. It cannot be less than number of nodes.
+        /// </summary>
+        public int NumOfPartitions { get; set; } = -1;
 
         /// <summary>
         /// List of nodes in Actor SB cluster. ENtries in the list defines names of SB subscriptions.
