@@ -22,7 +22,12 @@ namespace AkkaSb.Net
         /// Messages sent to invoke operations on actors. ActorSystem registers a session receiver
         /// on this queue.
         /// </summary>
-        public string RequestMsgQueue { get; set; }
+        public string RequestMsgTopic { get; set; }
+
+        /// <summary>
+        /// The name of subscription, which will receive messages on topic.
+        /// </summary>
+        public string RequestSubscriptionName { get; set; } = "default";
 
         /// <summary>
         /// Connection timeout of Ask() method.
@@ -38,12 +43,13 @@ namespace AkkaSb.Net
         /// 
         /// </summary>
         public int NumOfElementsPerPartition { get; set; }
+
+        /// <summary>
+        /// List of nodes in Actor SB cluster. ENtries in the list defines names of SB subscriptions.
+        /// Every node in this list connects to its subscription. RequestSubscriptionName is one of entries in this list.
+        /// If the list is empty system assumes that a single 'default' subscription exists.
+        /// In this case all nodes in cluster connects to same subscription.
+        /// </summary>
+        public List<string> Nodes { get; set; }
     }
-
-    //public class NodeConfig
-    //{
-    //    public string RequestMsgQueue { get; set; }
-
-    //    public string ReplyMsgReceiveQueue { get; set; }
-    //}
 }

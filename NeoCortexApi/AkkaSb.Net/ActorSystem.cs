@@ -18,7 +18,6 @@ namespace AkkaSb.Net
         private string sbConnStr;
 
         private ConcurrentDictionary<string, Message> receivedMsgQueue = new ConcurrentDictionary<string, Message>();
-
         private TimeSpan MaxProcessingTimeOfMessage { get; set; } = TimeSpan.FromDays(1);
 
         internal volatile Dictionary<string, QueueClient> sendReplyQueueClients = new Dictionary<string, QueueClient>();
@@ -27,13 +26,18 @@ namespace AkkaSb.Net
 
         private SessionClient sessionRcvClient;
 
-        private QueueClient sendRequestQueueClient;
+        private TopicClient sendRequestClient;
 
         private ILogger logger;
 
         private int CriticalMemInGb = 10;
 
         private ConcurrentDictionary<string, ActorBase> actorMap = new ConcurrentDictionary<string, ActorBase>();
+
+        /// <summary>
+        /// The name of subscription where to listen messages.
+        /// </summary>
+        private string subscriptionName;
 
         public string Name { get; set; }
 
@@ -58,13 +62,13 @@ namespace AkkaSb.Net
             this.persistenceProvider = persistenceProvider;
             this.Name = name;
             this.sbConnStr = config.SbConnStr;
-            this.sessionRcvClient = new SessionClient(config.SbConnStr, config.RequestMsgQueue,
+            this.subscriptionName = config.RequestSubscriptionName;
+            this.sessionRcvClient = new SessionClient(config.SbConnStr, $"{config.RequestMsgTopic}/Subscriptions/{config.RequestSubscriptionName}",
             retryPolicy: createRetryPolicy(),
             receiveMode: ReceiveMode.PeekLock);
 
-            this.sendRequestQueueClient = new QueueClient(config.SbConnStr, config.RequestMsgQueue,
-            retryPolicy: createRetryPolicy(),
-            receiveMode: ReceiveMode.PeekLock);
+            this.sendRequestClient = new TopicClient(config.SbConnStr, config.RequestMsgTopic,
+            retryPolicy: createRetryPolicy());
 
             //
             // Receiving of reply messages is optional. If the actor system does not send messages
@@ -96,7 +100,7 @@ namespace AkkaSb.Net
 
         public ActorReference CreateActor<TActor>(ActorId id) where TActor : ActorBase
         {
-            ActorReference actorRef = new ActorReference(typeof(TActor), id, this.sendRequestQueueClient, this.ReplyMsgReceiverQueueClient.Path, receivedMsgQueue, this.rcvEvent, this.MaxProcessingTimeOfMessage, this.Name, this.logger);
+            ActorReference actorRef = new ActorReference(typeof(TActor), id, this.sendRequestClient, this.ReplyMsgReceiverQueueClient.Path, receivedMsgQueue, this.rcvEvent, this.MaxProcessingTimeOfMessage, this.Name, this.logger);
             return actorRef;
         }
 
@@ -145,7 +149,7 @@ namespace AkkaSb.Net
 
                                     await session.CloseAsync();
 
-                                    logger.LogTrace("Session closed.");
+                                    logger?.LogTrace("Session closed.");
                                 });
                         }
                         catch (ServiceBusTimeoutException ex)
@@ -201,10 +205,17 @@ namespace AkkaSb.Net
                         if (!actorMap.ContainsKey(session.SessionId))
                         {
                             if (this.persistenceProvider != null)
+                            {
                                 actor = await this.persistenceProvider.LoadActor(id);
+                                if(actor != null)
+                                    logger?.LogInformation($"{this.Name} - Loaded from pesisted store: {tp.Name}/{id}, actorMap: {actorMap.Keys.Count}");
+                            }
 
                             if (actor == null)
+                            {
                                 actor = Activator.CreateInstance(tp, id) as ActorBase;
+                                logger?.LogInformation($"{this.Name} - New instance created: {tp.Name}/{id}, actorMap: {actorMap.Keys.Count}");
+                            }
 
                             actor.PersistenceProvider = this.PersistenceProvider;
 
@@ -233,10 +244,12 @@ namespace AkkaSb.Net
                         isPersistedAfterCalculus = true;
 
                         // If actor operation was invoked with Ask<>(), then reply is expected.
-                        if(replyMsg != null)
+                        if (replyMsg != null)
+                        {
                             await this.sendReplyQueueClients[msg.ReplyTo].SendAsync(replyMsg);
 
-                        logger?.LogInformation($"{this.Name} - Replied : {tp.Name}/{id}, actorMap: {actorMap.Keys.Count}");
+                            logger?.LogInformation($"{this.Name} - Replied : {tp.Name}/{id}, actorMap: {actorMap.Keys.Count}");
+                        }
 
                         await session.CompleteAsync(msg.SystemProperties.LockToken);
 

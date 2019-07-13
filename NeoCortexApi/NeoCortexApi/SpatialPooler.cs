@@ -762,8 +762,7 @@ namespace NeoCortexApi
          */
         public virtual void AdaptSynapses(Connections c, int[] inputVector, int[] activeColumns)
         {
-            //int[] inputIndices = ArrayUtils.where(inputVector, ArrayUtils.INT_GREATER_THAN_0);
-
+         
             // Get all indicies of input vector, which are set on '1'.
             var inputIndices = ArrayUtils.IndexWhere(inputVector, inpBit => inpBit > 0);
 
@@ -772,14 +771,11 @@ namespace NeoCortexApi
             // First we initialize all permChanges to minimum decrement values,
             // which are used in a case of none-connections to input.
             ArrayUtils.fillArray(permChanges, -1 * c.getSynPermInactiveDec());
-            //var permChangesStr = Helpers.StringifyVector(permChanges);
-            //Debug.WriteLine("Initial Permance: " + permChangesStr);
-
+         
             // Then we update all connected permChanges to increment values for connected values.
             // Permanences are set in conencted input bits to default incremental value.
             ArrayUtils.setIndexesTo(permChanges, inputIndices.ToArray(), c.getSynPermActiveInc());
-            //permChangesStr = Helpers.StringifyVector(permChanges);
-            //Debug.WriteLine("Initial Permance: " + permChangesStr);
+
             for (int i = 0; i < activeColumns.Length; i++)
             {
                 //Pool pool = c.getPotentialPools().get(activeColumns[i]);
@@ -1481,7 +1477,7 @@ namespace NeoCortexApi
          * the 'stimulusThreshold' are ignored. The implementation takes advantage of
          * the SpraseBinaryMatrix class to perform this calculation efficiently.
          *  
-         * @param c             the {@link Connections} memory encapsulation
+         * @param c             the {@link Connections}.foreach memory encapsulation
          * @param inputVector   an input array of 0's and 1's that comprises the input to
          *                      the spatial pooler.
          * @return

@@ -81,11 +81,11 @@ namespace UnitTestsProject
             var nodeList = new List<string>();
             nodeList.AddRange(nodes);
             var map = HtmSparseIntDictionary<Column>.CreatePartitionMap(nodeList, elements, partitionsPerNode);
-            
+
             // System can allocate less partitions than requested.
             Assert.IsTrue(map.Count <= nodes.Length * partitionsPerNode);
 
-            Assert.IsTrue((map[7].MinKey == 14 && map[7].MaxKey == 15) 
+            Assert.IsTrue((map[7].MinKey == 14 && map[7].MaxKey == 15)
                 || (map[7].MinKey == 21 && map[7].MaxKey == 23)
                 || (map[9].MinKey == 3690 && map[9].MaxKey == 4095)
                 || (map[170].MinKey == 1020 && map[170].MaxKey == 1023));
@@ -112,7 +112,7 @@ namespace UnitTestsProject
             nodeList.AddRange(nodes);
             var map = HtmSparseIntDictionary<Column>.CreatePartitionMap(nodeList, elements, partitionsPerNode);
 
-            var part = HtmSparseIntDictionary<Column>.GetPlacementSlotForElement(map, key) ;
+            var part = HtmSparseIntDictionary<Column>.GetPlacementSlotForElement(map, key);
 
             Assert.IsTrue(part.NodeIndx == expectedNode && part.PartitionIndx == expectedPartition);
 
@@ -218,7 +218,7 @@ namespace UnitTestsProject
                     sp = new SpatialPoolerParallel();
                 else
                     sp = new SpatialPoolerMT();
-                
+
                 var mem = new Connections();
 
                 parameters.apply(mem);
@@ -243,7 +243,7 @@ namespace UnitTestsProject
         [TestMethod]
         [TestCategory("AkkaHostRequired")]
         [TestCategory("LongRunning")]
-        [DataRow("MnistPng28x28\\training", "5", 28, 300)]
+        [DataRow("MnistPng28x28\\training", "5", 28, 200)]
         public void SparseSingleMnistImageTest(string trainingFolder, string digit, int imageSize, int columnTopology)
         {
             //Thread.Sleep(3000);
@@ -472,9 +472,9 @@ namespace UnitTestsProject
         /// Test if the list of partitions is correctly grouped by nodes.
         /// </summary>
         [TestMethod]
-        [DataRow(new string[] { "url1", "url2", "url3" })]        
+        [DataRow(new string[] { "url1", "url2", "url3" })]
         public void TestGroupingByNode(string[] nodes)
-        {  
+        {
             var nodeList = new List<string>(nodes);
 
             List<IActorRef> list = new List<IActorRef>();
@@ -490,17 +490,15 @@ namespace UnitTestsProject
                 item.ActorRef = list[i++ % nodes.Length];
             }
 
-            var groupedNodes = HtmSparseIntDictionary<object>.GetPartitionsByNode(map);           
+            var groupedNodes = HtmSparseIntDictionary<object>.GetPartitionsByNode(map);
         }
 
         [TestMethod]
-     
         [DataRow(10, 4096)]
         [DataRow(5, 20)]
+      
         public void ActorSbPartitionMapTest(int elementsPerPartition, int totalElements)
         {
-            //var nodeList = new List<string>();
-            //nodeList.AddRange(nodes);
             var map = ActorSbDistributedDictionaryBase<Column>.CreatePartitionMap(totalElements, elementsPerPartition);
 
             int lastMax = -1;
@@ -517,7 +515,35 @@ namespace UnitTestsProject
             }
 
             Assert.IsTrue(elementCnt == totalElements);
-           
+
+        }
+
+        [TestMethod]
+        [DataRow(-1, 20, new string[] { "node1", "node2", "node3" })]
+       // [DataRow(-1, 20, new string[] { "node1", "node2" })]
+        public void ActorSbPartitionMapTestWithNodes(int elementsPerPartition, int totalElements, string[] nodes)
+        {
+            var nodeList = new List<string>();
+            if (nodes != null)
+                nodeList.AddRange(nodes);
+
+            var map = ActorSbDistributedDictionaryBase<Column>.CreatePartitionMap(totalElements, elementsPerPartition, nodeList);
+
+            int lastMax = -1;
+            int elementCnt = 0;
+
+            foreach (var item in map)
+            {
+                Assert.IsTrue(item.MinKey == lastMax + 1);
+                Assert.IsTrue(item.MaxKey > item.MinKey);
+
+                elementCnt += item.MaxKey - item.MinKey + 1;
+
+                lastMax = item.MaxKey;
+            }
+
+            Assert.IsTrue(elementCnt == totalElements);
+
         }
 
         ///// <summary>
