@@ -143,6 +143,7 @@ namespace NeoCortexApi
                 cfg.NumOfElementsPerPartition = 1000;
                 cfg.BatchSize = 1000;
                 cfg.ConnectionTimeout = TimeSpan.FromMinutes(5);
+                cfg.Nodes = new List<string>() { "node1", "node2", "node3" };
 
                 return cfg;
             }

@@ -91,18 +91,27 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public List<Placement<int>> CreatePartitionMap()
         {
-            return this.ActorMap = CreatePartitionMap(this.HtmConfig.NumColumns, this.Config.NumOfElementsPerPartition);
+            return this.ActorMap = CreatePartitionMap(this.HtmConfig.NumColumns, this.Config.NumOfElementsPerPartition, this.Config.Nodes);
         }
 
         /// <summary>
         /// Calculates partition placements on nodes.
         /// </summary>
         /// <returns></returns>
-        public static List<Placement<int>> CreatePartitionMap(int numElements, int numOfElementsPerPartition)
+        public static List<Placement<int>> CreatePartitionMap(int numElements, int numOfElementsPerPartition, List<string> nodes = null)
         {
             List<Placement<int>> map = new List<Placement<int>>();
 
-            int numOfPartitions = (int)(1 + ((double)numElements / (double)numOfElementsPerPartition));
+            int numOfPartitions = (numOfElementsPerPartition == -1 && nodes != null && nodes.Count > 0 ) ?  nodes.Count : (int)(1 + ((double)numElements / (double)numOfElementsPerPartition));
+
+            if (numOfElementsPerPartition == -1)
+            {
+                numOfElementsPerPartition = (int) (0.5 + ((float)numElements / (float)numOfPartitions));
+            }
+
+            int destNodeIndx = 0;
+            string destinationNode = null;
+
             for (int partIndx = 0; partIndx < numOfPartitions; partIndx++)
             {
                 var min = numOfElementsPerPartition * partIndx;
@@ -112,7 +121,13 @@ namespace NeoCortexApi.DistributedComputeLib
                 if (min >= numElements)
                     break;
 
-                map.Add(new Placement<int>() { NodeIndx = -1, NodeUrl = null, PartitionIndx = partIndx, MinKey = min, MaxKey = max, ActorRef = null });
+                if (nodes != null && nodes.Count > 0)
+                {
+                    destNodeIndx = destNodeIndx % nodes.Count;
+                    destinationNode = nodes[destNodeIndx++];
+                }
+
+                map.Add(new Placement<int>() { NodeIndx = -1, NodePath = destinationNode, PartitionIndx = partIndx, MinKey = min, MaxKey = max, ActorRef = null });
             }
 
             return map;
@@ -291,7 +306,7 @@ namespace NeoCortexApi.DistributedComputeLib
                     }, this.Config.ConnectionTimeout).Result;
                 });
             }, this.ActorMap, this.Config.BatchSize);
-                       
+
         }
 
         private void runBatched(Action<List<Placement<int>>> p, List<Placement<int>> actorMap, object batchSize)
@@ -376,7 +391,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
             ParallelOptions opts = new ParallelOptions();
             opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
-            
+
             // Run overlap calculation on all actors(in all partitions)
             Parallel.ForEach(this.ActorMap, opts, (placement) =>
             {
