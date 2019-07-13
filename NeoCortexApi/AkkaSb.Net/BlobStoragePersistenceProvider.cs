@@ -75,13 +75,13 @@ namespace AkkaSb.Net
 
         public async Task PersistActor(ActorBase actorInstance)
         {
-            this.logger?.LogTrace("Persisting actor: {0}", actorInstance.Id);
+            this.logger?.LogInformation("Persisting actor: {0}", actorInstance.Id);
 
             var serializedActor = SerializeActor(actorInstance);
 
             await SaveActorToBlob(actorInstance.Id, serializedActor);
 
-            this.logger?.LogTrace("Persisting actor: {0}", actorInstance.Id);
+            this.logger?.LogInformation($"Persisting actor: {actorInstance.Id}, size={serializedActor.Length});
         }
 
 
