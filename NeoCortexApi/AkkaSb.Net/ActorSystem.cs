@@ -224,7 +224,11 @@ namespace AkkaSb.Net
                         var replyMsg = await InvokeOperationOnActorAsync(actor, invokingMsg, (bool)msg.UserProperties[ActorReference.cExpectResponse],
                             msg.MessageId, msg.ReplyTo);
 
+                        logger?.LogInformation($"{this.Name} - Invoked : {tp.Name}/{id}, actorMap: {actorMap.Keys.Count}");
+
                         await persistAndCleanupIfRequired(session);
+
+                        logger?.LogInformation($"{this.Name} - Persisted : {tp.Name}/{id}, actorMap: {actorMap.Keys.Count}");
 
                         isPersistedAfterCalculus = true;
 
@@ -232,7 +236,12 @@ namespace AkkaSb.Net
                         if(replyMsg != null)
                             await this.sendReplyQueueClients[msg.ReplyTo].SendAsync(replyMsg);
 
+                        logger?.LogInformation($"{this.Name} - Replied : {tp.Name}/{id}, actorMap: {actorMap.Keys.Count}");
+
                         await session.CompleteAsync(msg.SystemProperties.LockToken);
+
+                        logger?.LogInformation($"{this.Name} - Completed : {tp.Name}/{id}, actorMap: {actorMap.Keys.Count}");
+
                     }
                     catch (Exception ex)
                     {
