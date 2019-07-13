@@ -40,6 +40,7 @@ namespace AkkaHostLib
             cfg.RequestMsgTopic = configArgs["RequestMsgQueue"];
             cfg.TblStoragePersistenConnStr = configArgs["TblStoragePersistenConnStr"];
             cfg.ActorSystemName = configArgs["ActorSystemName"];
+            cfg.RequestSubscriptionName = configArgs["SubscriptionName"];
             string systemName = configArgs["SystemName"];
 
             Console.CancelKeyPress += (sender, eventArgs) =>
