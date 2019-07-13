@@ -221,12 +221,16 @@ namespace AkkaSb.Net
 
                         var invokingMsg = ActorReference.DeserializeMsg<object>(msg.Body);
 
-                        await InvokeOperationOnActorAsync(actor, invokingMsg, (bool)msg.UserProperties[ActorReference.cExpectResponse],
+                        var replyMsg = await InvokeOperationOnActorAsync(actor, invokingMsg, (bool)msg.UserProperties[ActorReference.cExpectResponse],
                             msg.MessageId, msg.ReplyTo);
 
                         await persistAndCleanupIfRequired(session);
 
                         isPersistedAfterCalculus = true;
+
+                        // If actor operation was invoked with Ask<>(), then reply is expected.
+                        if(replyMsg != null)
+                            await this.sendReplyQueueClients[msg.ReplyTo].SendAsync(replyMsg);
 
                         await session.CompleteAsync(msg.SystemProperties.LockToken);
                     }
@@ -309,26 +313,32 @@ namespace AkkaSb.Net
             return Task.FromException(exceptionReceivedEventArgs.Exception);
         }
 
-        private async Task InvokeOperationOnActorAsync(ActorBase actor, object msg, bool expectResponse, string replyMsgId, string replyTo)
+        private async Task<Message> InvokeOperationOnActorAsync(ActorBase actor, object msg, bool expectResponse, string replyMsgId, string replyTo)
         {
-            var res = actor.Invoke(msg);
-            if (expectResponse)
+            return await Task<Message>.Run(() =>
             {
-                if (this.sendReplyQueueClients.ContainsKey(replyTo) == false)
+                var res = actor.Invoke(msg);
+                if (expectResponse)
                 {
-                    this.sendReplyQueueClients.Add(replyTo, new QueueClient(this.sbConnStr, replyTo,
-                    retryPolicy: createRetryPolicy(),
-                    receiveMode: ReceiveMode.PeekLock));
-                }
+                    if (this.sendReplyQueueClients.ContainsKey(replyTo) == false)
+                    {
+                        this.sendReplyQueueClients.Add(replyTo, new QueueClient(this.sbConnStr, replyTo,
+                        retryPolicy: createRetryPolicy(),
+                        receiveMode: ReceiveMode.PeekLock));
+                    }
 
-                var sbMsg = ActorReference.CreateResponseMessage(res, replyMsgId, actor.GetType(), actor.Id);
-                await this.sendReplyQueueClients[replyTo].SendAsync(sbMsg);
-            }
-            else
-            {
-                if (res != null)
-                    throw new InvalidOperationException($"The actor {actor} should return NULL.");
-            }
+                    var sbMsg = ActorReference.CreateResponseMessage(res, replyMsgId, actor.GetType(), actor.Id);
+
+                    return sbMsg;
+                }
+                else
+                {
+                    if (res != null)
+                        throw new InvalidOperationException($"The actor {actor} should return NULL.");
+                    else
+                        return null;
+                }
+            });
         }
 
         private bool IsMemoryCritical()
