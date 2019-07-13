@@ -345,6 +345,20 @@ namespace NeoCortexApi.DistributedComputeLib
             ParallelOptions opts = new ParallelOptions();
             opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
 
+            //List<Placement<int>> l = new List<Placement<int>>();
+            //int i = 0;
+            //foreach (var item in this.actorMap)
+            //{
+            //    l.Add(item);
+
+            //    i++;
+
+            //    if (i == 2)
+            //        break;
+            //}
+
+            //l.Add(this.actorMap.First());
+            
             runBatched((batchOfElements) =>
             {
                 Parallel.ForEach(batchOfElements, opts, (placement) =>
@@ -365,7 +379,6 @@ namespace NeoCortexApi.DistributedComputeLib
                     }
                 });
             }, this.ActorMap, this.Config.BatchSize / 2);
-
 
             return aggLst.Values.ToList();
         }
