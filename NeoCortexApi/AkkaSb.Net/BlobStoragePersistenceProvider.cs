@@ -81,7 +81,7 @@ namespace AkkaSb.Net
 
             await SaveActorToBlob(actorInstance.Id, serializedActor);
 
-            this.logger?.LogInformation($"Persisting actor: {actorInstance.Id}, size={serializedActor.Length});
+            this.logger?.LogInformation($"Persisting actor: {actorInstance.Id}, size={serializedActor.Length}");
         }
 
 
