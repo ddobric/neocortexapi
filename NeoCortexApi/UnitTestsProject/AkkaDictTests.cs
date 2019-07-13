@@ -243,7 +243,7 @@ namespace UnitTestsProject
         [TestMethod]
         [TestCategory("AkkaHostRequired")]
         [TestCategory("LongRunning")]
-        [DataRow("MnistPng28x28\\training", "5", 28, 300)]
+        [DataRow("MnistPng28x28\\training", "5", 28, 32)]
         public void SparseSingleMnistImageTest(string trainingFolder, string digit, int imageSize, int columnTopology)
         {
             //Thread.Sleep(3000);
@@ -298,7 +298,7 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { imageSize, imageSize });
             parameters.setColumnDimensions(new int[] { columnTopology, columnTopology });
 
-            var sp = new SpatialPoolerParallel();
+            var sp = new SpatialPoolerMT();
 
             var mem = new Connections();
 
@@ -306,7 +306,7 @@ namespace UnitTestsProject
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            sp.init(mem, UnitTestHelpers.GetMemory(new HtmConfig()));
+            sp.init(mem, UnitTestHelpers.GetMemory(null/*new HtmConfig()*/));
             sw.Stop();
             Debug.WriteLine($"Init time: {sw.ElapsedMilliseconds}");
             int actiColLen = numOfActCols;
