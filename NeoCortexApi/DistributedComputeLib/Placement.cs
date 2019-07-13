@@ -10,7 +10,7 @@ namespace NeoCortexApi.DistributedComputeLib
     {
         public int NodeIndx { get; set; }
 
-        public string NodeUrl { get; set; }
+        public string NodePath { get; set; }
 
         public int PartitionIndx { get; set; }
 
@@ -22,7 +22,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public override string ToString()
         {
-            return $"Partition: {PartitionIndx}, MinKey:{MinKey}, MaxKey: {MaxKey} TotalKeys: {(int)(object)MinKey-(int)(object)MaxKey + 1}" ;
+            return $"Partition: {PartitionIndx}, Node: {NodePath}, MinKey:{MinKey}, MaxKey: {MaxKey} TotalKeys: {(int)(object)MaxKey-(int)(object)MinKey + 1}" ;
         }
     }
 }

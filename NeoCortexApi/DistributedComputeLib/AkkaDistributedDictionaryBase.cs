@@ -121,7 +121,7 @@ namespace NeoCortexApi.DistributedComputeLib
                 {
                     this.ActorMap[i].ActorRef =
                      actSystem.ActorOf(Props.Create(() => new DictNodeActor())
-                     .WithDeploy(Deploy.None.WithScope(new RemoteScope(Address.Parse(this.ActorMap[i].NodeUrl)))),
+                     .WithDeploy(Deploy.None.WithScope(new RemoteScope(Address.Parse(this.ActorMap[i].NodePath)))),
                      actorName);
                 }
               

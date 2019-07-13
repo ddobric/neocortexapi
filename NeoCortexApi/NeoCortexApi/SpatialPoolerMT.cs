@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using NeoCortexApi.Entities;
+using System.Linq;
+using NeoCortexApi.Utility;
 
 namespace NeoCortexApi
 {
@@ -128,6 +130,50 @@ namespace NeoCortexApi
             // updated every learning round. It grows and shrinks with the average
             // number of connected synapses per column.
             updateInhibitionRadius(c, avgSynapsesConnected);
+        }
+
+
+        public override int[] CalculateOverlap(Connections c, int[] inputVector)
+        {
+            ParallelOptions opts = new ParallelOptions();
+            opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
+            ConcurrentDictionary<int, int> overlaps = new ConcurrentDictionary<int, int>();
+
+            Parallel.For(0, c.NumColumns, (col) =>
+            {
+                overlaps[col] = c.getColumn(col).GetColumnOverlapp(inputVector, c.StimulusThreshold);
+            });
+
+          
+            return overlaps.Values.ToArray();
+        }
+
+        public override void AdaptSynapses(Connections c, int[] inputVector, int[] activeColumns)
+        {
+
+            // Get all indicies of input vector, which are set on '1'.
+            var inputIndices = ArrayUtils.IndexWhere(inputVector, inpBit => inpBit > 0);
+
+            double[] permChanges = new double[c.NumInputs];
+
+            // First we initialize all permChanges to minimum decrement values,
+            // which are used in a case of none-connections to input.
+            ArrayUtils.fillArray(permChanges, -1 * c.getSynPermInactiveDec());
+
+            // Then we update all connected permChanges to increment values for connected values.
+            // Permanences are set in conencted input bits to default incremental value.
+            ArrayUtils.setIndexesTo(permChanges, inputIndices.ToArray(), c.getSynPermActiveInc());
+
+            Parallel.For(0, activeColumns.Length, (i) =>
+            {
+                //Pool pool = c.getPotentialPools().get(activeColumns[i]);
+                Pool pool = c.getColumn(activeColumns[i]).ProximalDendrite.RFPool;
+                double[] perm = pool.getDensePermanences(c.NumInputs);
+                int[] indexes = pool.getSparsePotential();
+                ArrayUtils.raiseValuesBy(permChanges, perm);
+                Column col = c.getColumn(activeColumns[i]);
+                HtmCompute.UpdatePermanencesForColumn(c.HtmConfig, perm, col, indexes, true);
+            });
         }
 
         class ProcessingData

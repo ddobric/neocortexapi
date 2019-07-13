@@ -69,7 +69,7 @@ namespace NeoCortexApi.DistributedCompute
                     if (min >= numElements)
                         break;
 
-                    map.Add(new Placement<int>() { NodeIndx = nodIndx, NodeUrl = nodes[nodIndx], PartitionIndx = globalPartIndx, MinKey = min, MaxKey = max, ActorRef = null });
+                    map.Add(new Placement<int>() { NodeIndx = nodIndx, NodePath = nodes[nodIndx], PartitionIndx = globalPartIndx, MinKey = min, MaxKey = max, ActorRef = null });
 
                 }
             }

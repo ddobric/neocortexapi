@@ -139,10 +139,11 @@ namespace NeoCortexApi
                 ActorSbConfig cfg = new ActorSbConfig();
                 cfg.SbConnStr = sbConnStr;
                 cfg.ReplyMsgQueue = "actorsystem/rcvlocal";
-                cfg.RequestMsgQueue = "actorsystem/actorqueue";
+                cfg.RequestMsgTopic = "actorsystem/actorqueue";
                 cfg.NumOfElementsPerPartition = 1000;
                 cfg.BatchSize = 1000;
                 cfg.ConnectionTimeout = TimeSpan.FromMinutes(5);
+                cfg.Nodes = new List<string>() { "node1", "node2", "node3" };
 
                 return cfg;
             }
