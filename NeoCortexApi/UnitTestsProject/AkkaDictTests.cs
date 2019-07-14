@@ -519,6 +519,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [DataRow(-1, 90000, new string[] { "node1", "node2", "node3" })]
         [DataRow(-1, 20, new string[] { "node1", "node2", "node3" })]
        // [DataRow(-1, 20, new string[] { "node1", "node2" })]
         public void ActorSbPartitionMapTestWithNodes(int elementsPerPartition, int totalElements, string[] nodes)
