@@ -107,7 +107,12 @@ namespace NeoCortexApi.DistributedComputeLib
 
             if (numOfElementsPerPartition == -1)
             {
-                numOfElementsPerPartition = (int) (0.5 + ((float)numElements / (float)numOfPartitions));
+                var ratio = (float)numElements / (float)numOfPartitions;
+
+                if (ratio > 0)
+                    numOfElementsPerPartition = (int)(1.0 + ratio);
+                else
+                    numOfElementsPerPartition = (int)ratio;
             }
 
             int destNodeIndx = 0;
