@@ -5,6 +5,8 @@ using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 namespace UnitTestsProject
@@ -162,6 +164,36 @@ namespace UnitTestsProject
 
             NeoCortexUtils.DrawHeatmaps(bostArrays, $"tessheat_{threshold}.png", 1024, 1024, 60, threshold, 10);
 
+        }
+
+        /// <summary>
+        /// Extracts performance data from debut output.
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="token"></param>
+        [TestMethod]
+        [DataRow(@"c:\temp\results 3 nodes.txt", "Compute time: ")]
+        public void CutoutTest(string fileName, string token)
+        {        
+            List<string> data = new List<string>();
+
+            using (StreamReader sr = new StreamReader(fileName))
+            {
+                string line;
+                while ((line = sr.ReadLine()) != null)
+                {                    
+                    if (line.ToLower().Contains(token.ToLower()))
+                    {
+                        var tokens = line.Split(token);
+                        data.Add(tokens[1].Trim());
+                    }
+                }
+            }
+
+            foreach (var item in data)
+            {
+                Debug.WriteLine(item);
+            }
         }
 
         //[TestMethod]

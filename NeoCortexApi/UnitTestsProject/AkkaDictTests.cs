@@ -519,15 +519,16 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [DataRow(-1, 20, new string[] { "node1", "node2", "node3" })]
-       // [DataRow(-1, 20, new string[] { "node1", "node2" })]
-        public void ActorSbPartitionMapTestWithNodes(int elementsPerPartition, int totalElements, string[] nodes)
+        [DataRow(-1, 90000, 35, new string[] { "node1", "node2", "node3" })]
+        //[DataRow(-1, 20, -1, new string[] { "node1", "node2", "node3" })]
+        //[DataRow(-1, 20, -1, new string[] { "node1", "node2" })]
+        public void ActorSbPartitionMapTestWithNodes(int elementsPerPartition, int totalElements, int numOfPartitions, string[] nodes)
         {
             var nodeList = new List<string>();
             if (nodes != null)
                 nodeList.AddRange(nodes);
 
-            var map = ActorSbDistributedDictionaryBase<Column>.CreatePartitionMap(totalElements, elementsPerPartition, -1, nodeList);
+            var map = ActorSbDistributedDictionaryBase<Column>.CreatePartitionMap(totalElements, elementsPerPartition, numOfPartitions, nodeList);
 
             int lastMax = -1;
             int elementCnt = 0;
