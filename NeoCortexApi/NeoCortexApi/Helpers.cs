@@ -139,10 +139,12 @@ namespace NeoCortexApi
                 ActorSbConfig cfg = new ActorSbConfig();
                 cfg.SbConnStr = sbConnStr;
                 cfg.ReplyMsgQueue = "actorsystem/rcvlocal";
-                cfg.RequestMsgTopic = "actorsystem/actorqueue";
-                cfg.NumOfElementsPerPartition = 1000;
+                cfg.RequestMsgTopic = "actorsystem/actortopic";
+                cfg.NumOfElementsPerPartition = -1; // This means, number of partitions equals number of nodes.
+                cfg.NumOfPartitions = 15;// Should be uniformly distributed across nodes.
                 cfg.BatchSize = 1000;
                 cfg.ConnectionTimeout = TimeSpan.FromMinutes(5);
+              
                 cfg.Nodes = new List<string>() { "node1", "node2", "node3" };
 
                 return cfg;
