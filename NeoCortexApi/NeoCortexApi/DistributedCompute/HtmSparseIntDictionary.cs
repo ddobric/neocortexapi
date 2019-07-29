@@ -5,7 +5,7 @@ using System.Text;
 using NeoCortexApi.Entities;
 using Akka.Actor;
 using System.Linq;
-
+using AkkaSb.Net;
 
 namespace NeoCortexApi.DistributedCompute
 {
@@ -14,7 +14,7 @@ namespace NeoCortexApi.DistributedCompute
     /// </summary>
     public class HtmSparseIntDictionary<T> : AkkaDistributedDictionaryBase<int, T>
     {
-        public HtmSparseIntDictionary(HtmSparseIntDictionaryConfig config) : base(config)
+        public HtmSparseIntDictionary(object config) : base(config, null)
         {
         }
 
@@ -25,7 +25,7 @@ namespace NeoCortexApi.DistributedCompute
         /// <returns></returns>
         protected override IActorRef GetPartitionActorFromKey(int key)
         {
-            return this.ActorMap.Where(p => p.MinKey <= key && p.MaxKey >= key).First().ActorRef;
+            return this.ActorMap.Where(p => p.MinKey <= key && p.MaxKey >= key).First().ActorRef as IActorRef;
         }
 
         /// <summary>
@@ -65,7 +65,12 @@ namespace NeoCortexApi.DistributedCompute
                     var min = numOfElementsPerPartition * globalPartIndx;
                     var maxPartEl = numOfElementsPerPartition * (globalPartIndx + 1) - 1;
                     var max = maxPartEl < numElements ? maxPartEl : numElements - 1;
-                    map.Add(new Placement<int>() { NodeIndx = nodIndx, NodeUrl = nodes[nodIndx], PartitionIndx = globalPartIndx, MinKey = min, MaxKey = max, ActorRef = null });
+                   
+                    if (min >= numElements)
+                        break;
+
+                    map.Add(new Placement<int>() { NodeIndx = nodIndx, NodePath = nodes[nodIndx], PartitionIndx = globalPartIndx, MinKey = min, MaxKey = max, ActorRef = null });
+
                 }
             }
 
@@ -94,22 +99,22 @@ namespace NeoCortexApi.DistributedCompute
         }
 
 
-        /// <summary>
-        /// Gets the list of partitions (nodes) with assotiated keys.
-        /// Key is assotiated to partition if it is hosted at the partition node.
-        /// </summary>
-        /// <returns></returns>
-        public override List<(int partId, int minKey, int maxKey)> GetPartitions()
-        {
-            List<(int partId, int minKey, int maxKey)> map = new List<(int partId, int minKey, int maxKey)>();
+        ///// <summary>
+        ///// Gets the list of partitions (nodes) with assotiated keys.
+        ///// Key is assotiated to partition if it is hosted at the partition node.
+        ///// </summary>
+        ///// <returns></returns>
+        //public override List<(int partId, int minKey, int maxKey)> GetPartitions()
+        //{
+        //    List<(int partId, int minKey, int maxKey)> map = new List<(int partId, int minKey, int maxKey)>();
 
-            foreach (var part in this.ActorMap)
-            {
-                map.Add((part.PartitionIndx, part.MinKey, part.MaxKey));
-            }
+        //    foreach (var part in this.ActorMap)
+        //    {
+        //        map.Add((part.PartitionIndx, part.MinKey, part.MaxKey));
+        //    }
 
-            return map;
-        }
+        //    return map;
+        //}
 
         private int? numColumns = null;
 
@@ -147,10 +152,10 @@ namespace NeoCortexApi.DistributedCompute
                 {
                     if (partition.MinKey <= (int)pair.Key && partition.MaxKey >= (int)pair.Key)
                     {
-                        if (res.ContainsKey(partition.ActorRef) == false)
-                            res.Add(partition.ActorRef, new List<KeyPair>());
+                        if (res.ContainsKey(partition.ActorRef as IActorRef) == false)
+                            res.Add(partition.ActorRef as IActorRef, new List<KeyPair>());
 
-                        res[partition.ActorRef].Add(pair);
+                        res[partition.ActorRef as IActorRef].Add(pair);
                     }
                 }
             }

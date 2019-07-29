@@ -9,46 +9,79 @@ using System.Linq;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 
 namespace AkkaSb.Net
 {
     public class ActorSystem
     {
+        private string sbConnStr;
+
         private ConcurrentDictionary<string, Message> receivedMsgQueue = new ConcurrentDictionary<string, Message>();
+        private TimeSpan MaxProcessingTimeOfMessage { get; set; } = TimeSpan.FromDays(1);
 
-        private TimeSpan MaxProcessingTimeOfMessage { get; set; }
+        internal volatile Dictionary<string, QueueClient> sendReplyQueueClients = new Dictionary<string, QueueClient>();
 
-        internal Dictionary<string, ClientPair> RemoteQueueClients = new Dictionary<string, ClientPair>();
+        private QueueClient ReplyMsgReceiverQueueClient;
 
-        protected SessionClient SessionRcvClient;
+        private SessionClient sessionRcvClient;
 
-        protected QueueClient ResponseQueueClient;
+        private TopicClient sendRequestClient;
+
+        private ILogger logger;
+
+        private int CriticalMemInGb = 10;
 
         private ConcurrentDictionary<string, ActorBase> actorMap = new ConcurrentDictionary<string, ActorBase>();
 
-        public ActorSystem(AkkaSbConfig config)
+        /// <summary>
+        /// The name of subscription where to listen messages.
+        /// </summary>
+        private string subscriptionName;
+
+        public string Name { get; set; }
+
+        public int MaxAccetedSessionsAtOnce = 10;
+
+        private IPersistenceProvider persistenceProvider;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public IPersistenceProvider PersistenceProvider
         {
-            this.SessionRcvClient = new SessionClient(config.SbConnStr, config.LocalNode.ReceiveQueue,
-                retryPolicy: createRetryPolicy(),
-                 receiveMode: ReceiveMode.PeekLock);
-
-            foreach (var node in config.RemoteNodes)
+            get
             {
-                ClientPair pair = new ClientPair();
+                return this.persistenceProvider;
+            }
+        }
 
-                pair.SenderClient = new QueueClient(config.SbConnStr, node.Value.SendQueue,
-                    retryPolicy: createRetryPolicy(),
-                     receiveMode: ReceiveMode.PeekLock);
+        public ActorSystem(string name, ActorSbConfig config, ILogger logger = null, IPersistenceProvider persistenceProvider = null)
+        {
+            this.logger = logger;
+            this.persistenceProvider = persistenceProvider;
+            this.Name = name;
+            this.sbConnStr = config.SbConnStr;
+            this.subscriptionName = config.RequestSubscriptionName;
+            this.sessionRcvClient = new SessionClient(config.SbConnStr, $"{config.RequestMsgTopic}/Subscriptions/{config.RequestSubscriptionName}",
+            retryPolicy: createRetryPolicy(),
+            receiveMode: ReceiveMode.PeekLock);
 
-                pair.ReceiverClient = new QueueClient(config.SbConnStr, node.Value.ReceiveQueue,
-                   retryPolicy: createRetryPolicy(),
-                    receiveMode: ReceiveMode.PeekLock);
+            this.sendRequestClient = new TopicClient(config.SbConnStr, config.RequestMsgTopic,
+            retryPolicy: createRetryPolicy());
 
+            //
+            // Receiving of reply messages is optional. If the actor system does not send messages
+            // then it will also not listen for reply messages.
+            if (config.ReplyMsgQueue != null)
+            {
+                ReplyMsgReceiverQueueClient = new QueueClient(config.SbConnStr, config.ReplyMsgQueue,
+                       retryPolicy: createRetryPolicy(),
+                        receiveMode: ReceiveMode.PeekLock);
 
                 // Configure the message handler options in terms of exception handling, number of concurrent messages to deliver, etc.
                 var messageHandlerOptions = new MessageHandlerOptions(ExceptionReceivedHandler)
                 {
-
                     // Maximum number of concurrent calls to the callback ProcessMessagesAsync(), set to 1 for simplicity.
                     // Set it according to how many messages the application wants to process in parallel.
                     MaxConcurrentCalls = 1,
@@ -60,60 +93,80 @@ namespace AkkaSb.Net
                     AutoComplete = true
                 };
 
-                // Register the function that processes messages with reliable messaging.
-                pair.ReceiverClient.RegisterMessageHandler(OnMessageReceivedAsync, messageHandlerOptions);
-
-                RemoteQueueClients.Add(node.Key, pair);
+                // Register the function that receives reply messages.
+                ReplyMsgReceiverQueueClient.RegisterMessageHandler(OnMessageReceivedAsync, messageHandlerOptions);
             }
         }
 
-        public ActorReference CreateActor<TActor>(ActorId id, string remoteNodeName) where TActor : ActorBase
-        {
-            var pair = this.RemoteQueueClients.FirstOrDefault(i => i.Key == remoteNodeName);
-            if (pair.Key == remoteNodeName)
-            {
-                ActorReference actorRef = new ActorReference(typeof(TActor), id, pair.Value, receivedMsgQueue, this.rcvEvent, this.MaxProcessingTimeOfMessage);
-                return actorRef;
-            }
-            else
-            {
-                throw new ArgumentException("Specified remote node is not defined!");
-            }
-        }
-
-        /// <summary>
-        /// Should implemented partitioning.
-        /// </summary>
-        /// <typeparam name="TActor"></typeparam>
-        /// <param name="id"></param>
-        /// <returns></returns>
         public ActorReference CreateActor<TActor>(ActorId id) where TActor : ActorBase
         {
-            throw new NotImplementedException();
+            ActorReference actorRef = new ActorReference(typeof(TActor), id, this.sendRequestClient, this.ReplyMsgReceiverQueueClient.Path, receivedMsgQueue, this.rcvEvent, this.MaxProcessingTimeOfMessage, this.Name, this.logger);
+            return actorRef;
         }
+
+        long runningTasks = 0;
 
         public void Start(CancellationToken cancelToken)
         {
+            CancellationTokenSource src = new CancellationTokenSource();
+
             Task[] tasks = new Task[2];
 
             tasks[0] = Task.Run(async () =>
             {
-                while (!cancelToken.IsCancellationRequested)
+                while (!src.Token.IsCancellationRequested)
                 {
-                    try
+                    var proc = Process.GetCurrentProcess();
+
+                    Debug.WriteLine($"WS={Environment.WorkingSet / 1024 / 1024 } MB, PWS64={proc.WorkingSet64}, PVM={proc.VirtualMemorySize64}");
+
+                    var val = Interlocked.Read(ref runningTasks);
+
+                    if (val >= 10)
                     {
-                        var session = await this.SessionRcvClient.AcceptMessageSessionAsync();
-                        Debug.WriteLine($"Session: {session.SessionId}");
-                        _ = RunDispatcherForActor(session, cancelToken);
+                        logger?.LogWarning($"Accepted maximal nuber of sessions: {runningTasks}.");
+
+                        await Task.Delay(1000);
+
+                        GC.Collect();
                     }
-                    catch (ServiceBusTimeoutException ex)
+                    else
                     {
-                      
+                        try
+                        {
+                            var session = await this.sessionRcvClient.AcceptMessageSessionAsync();
+                            logger?.LogInformation($"{this.Name} - Accepted new session: {session.SessionId}");
+                            Interlocked.Increment(ref runningTasks);
+
+                            _ = RunDispatcherForSession(session, cancelToken).ContinueWith(
+                                async (t) =>
+                                {
+                                    Interlocked.Decrement(ref runningTasks);
+                                    if (t.Exception != null)
+                                    {
+                                        logger.LogError(t.Exception, $"Session error: {session.SessionId}");
+                                    }
+
+                                    await session.CloseAsync();
+
+                                    logger?.LogTrace("Session closed.");
+                                });
+                        }
+                        catch (ServiceBusTimeoutException ex)
+                        {
+                            logger?.LogWarning($"ServiceBusTimeoutException");
+                        }
+                        catch (Exception ex)
+                        {
+                            logger?.LogError("Listener has failed.", ex);
+                            //throw;
+                        }
                     }
                 }
-            }, cancelToken);
+            }, src.Token);
 
-            tasks[1] = Task.Run(async ()=> {
+            tasks[1] = Task.Run(async () =>
+            {
                 while (!cancelToken.IsCancellationRequested)
                 {
                     await Task.Delay(500);
@@ -121,9 +174,7 @@ namespace AkkaSb.Net
             });
 
             Task.WaitAny(tasks);
-
         }
-
 
         #region Private Methods
 
@@ -133,58 +184,145 @@ namespace AkkaSb.Net
         }
 
 
-        private async Task RunDispatcherForActor(IMessageSession session, CancellationToken cancelToken)
+        private async Task RunDispatcherForSession(IMessageSession session, CancellationToken cancelToken)
         {
             while (cancelToken.IsCancellationRequested == false)
             {
-                var msg = await session.ReceiveAsync();
+                var msg = await session.ReceiveAsync(TimeSpan.FromSeconds(1));
+
                 if (msg != null)
                 {
-                    ActorBase actor;
-
-                    Type tp = Type.GetType((string)msg.UserProperties[ActorReference.cActorType]);
-                    if (tp == null)
-                        throw new ArgumentException($"Cannot find type '{session.SessionId}'");
-
-                    var id = new ActorId((string)msg.UserProperties[ActorReference.cActorId]);
-                    if (!actorMap.ContainsKey(session.SessionId))
+                    bool isPersistedAfterCalculus = false;
+                    try
                     {
-                        actor = Activator.CreateInstance(tp, id) as ActorBase;
+                        ActorBase actor = null;
 
-                        actorMap[session.SessionId] = actor;
+                        Type tp = Type.GetType((string)msg.UserProperties[ActorReference.cActorType]);
+                        if (tp == null)
+                            throw new ArgumentException($"Cannot find type '{session.SessionId}'");
 
-                        actor.Activated();
+                        var id = new ActorId((string)msg.UserProperties[ActorReference.cActorId]);
+                        if (!actorMap.ContainsKey(session.SessionId))
+                        {
+                            if (this.persistenceProvider != null)
+                            {
+                                actor = await this.persistenceProvider.LoadActor(id);
+                                if(actor != null)
+                                    logger?.LogInformation($"{this.Name} - Loaded from pesisted store: {tp.Name}/{id}, actorMap: {actorMap.Keys.Count}");
+                            }
+
+                            if (actor == null)
+                            {
+                                actor = Activator.CreateInstance(tp, id) as ActorBase;
+                                logger?.LogInformation($"{this.Name} - New instance created: {tp.Name}/{id}, actorMap: {actorMap.Keys.Count}");
+                            }
+
+                            actor.PersistenceProvider = this.PersistenceProvider;
+
+                            actor.Logger = logger;
+
+                            actorMap[session.SessionId] = actor;
+
+                            actor.Activated();
+                        }
+
+                        actor = actorMap[session.SessionId];
+
+                        logger?.LogInformation($"{this.Name} - Received message: {tp.Name}/{id}, actorMap: {actorMap.Keys.Count}");
+
+                        var invokingMsg = ActorReference.DeserializeMsg<object>(msg.Body);
+
+                        var replyMsg = await InvokeOperationOnActorAsync(actor, invokingMsg, (bool)msg.UserProperties[ActorReference.cExpectResponse],
+                            msg.MessageId, msg.ReplyTo);
+
+                        logger?.LogInformation($"{this.Name} - Invoked : {tp.Name}/{id}, actorMap: {actorMap.Keys.Count}");
+
+                        await persistAndCleanupIfRequired(session);
+
+                        logger?.LogInformation($"{this.Name} - Persisted : {tp.Name}/{id}, actorMap: {actorMap.Keys.Count}");
+
+                        isPersistedAfterCalculus = true;
+
+                        // If actor operation was invoked with Ask<>(), then reply is expected.
+                        if (replyMsg != null)
+                        {
+                            await this.sendReplyQueueClients[msg.ReplyTo].SendAsync(replyMsg);
+
+                            logger?.LogInformation($"{this.Name} - Replied : {tp.Name}/{id}, actorMap: {actorMap.Keys.Count}");
+                        }
+
+                        await session.CompleteAsync(msg.SystemProperties.LockToken);
+
+                        logger?.LogInformation($"{this.Name} - Completed : {tp.Name}/{id}, actorMap: {actorMap.Keys.Count}");
+
                     }
+                    catch (Exception ex)
+                    {
+                        logger.LogWarning(ex, "Messsage processing error");
 
-                    actor = actorMap[session.SessionId];
+                        if (isPersistedAfterCalculus == false)
+                            await persistAndCleanupIfRequired(session);
 
-                    Debug.WriteLine($"Received message: {tp.Name}/{id}");
-
-                    var invokingMsg = ActorReference.DeserializeMsg<object>(msg.Body);
-                
-                    InvokeOperationOnActor(actor, invokingMsg, (bool)msg.UserProperties[ActorReference.cExpectResponse]);
-
-                    await session.CompleteAsync(msg.SystemProperties.LockToken);
+                        if (!(ex is SessionLockLostException))
+                            await session.AbandonAsync(msg.SystemProperties.LockToken);
+                    }
                 }
                 else
                 {
-                    await session.CloseAsync();
-                    break;
+                    logger?.LogTrace($"{this.Name} - No more messages received for sesson {session.SessionId}");
+                    await persistAndCleanupIfRequired(session);
+                    //return;
                 }
+
+                if (IsMemoryCritical())
+                {
+                    logger?.LogWarning($"Memory reached critical value: {this.CriticalMemInGb}, {Environment.WorkingSet / 1024 / 1024 / 1024}");
+                }
+
+                break;
             }
+        }
+
+        private Task persistAndCleanupIfRequired(IMessageSession session)
+        {
+            return Task.CompletedTask;
+            //if (this.persistenceProvider != null)
+            //{
+            //    ActorBase removed;
+            //    //if (IsMemoryCritical())
+            //    if (actorMap.TryRemove(session.SessionId, out removed))
+            //        await this.persistenceProvider.PersistActor(removed);
+            //    else
+            //        logger?.LogError($"Cannot remove actor from map. {session.SessionId}");
+
+            //    logger?.LogTrace($"{this.Name} -  Actor for '{session.SessionId}' persisted.");
+            //}
+        }
+
+
+        /// <summary>
+        /// SessionId = "Actor Type Name/ActorId"
+        /// </summary>
+        /// <param name="sessionId"></param>
+        /// <returns></returns>
+        private ActorId getActorIdFromSession(string sessionId)
+        {
+            var strId = sessionId.Split('/')[1];
+
+            return new ActorId(strId);
         }
 
         private ManualResetEvent rcvEvent = new ManualResetEvent(false);
 
         private async Task OnMessageReceivedAsync(Message message, CancellationToken token)
         {
-            rcvEvent.WaitOne();
+            logger?.LogInformation($"ActorSystem: {Name} Response received. receivedMsgQueue instance: {receivedMsgQueue.GetHashCode()}");
 
-            receivedMsgQueue.TryAdd(message.ReplyTo, message);
+            receivedMsgQueue.TryAdd(message.CorrelationId, message);
 
             rcvEvent.Set();
 
-            await Task.FromResult<bool>(true);
+            await Task.CompletedTask;
         }
 
         private static Task ExceptionReceivedHandler(ExceptionReceivedEventArgs exceptionReceivedEventArgs)
@@ -195,16 +333,43 @@ namespace AkkaSb.Net
             Console.WriteLine($"- Endpoint: {context.Endpoint}");
             Console.WriteLine($"- Entity Path: {context.EntityPath}");
             Console.WriteLine($"- Executing Action: {context.Action}");
-            return Task.CompletedTask;
+            return Task.FromException(exceptionReceivedEventArgs.Exception);
         }
 
-        private void InvokeOperationOnActor(ActorBase actor, object msg, bool expectResponse)
+        private async Task<Message> InvokeOperationOnActorAsync(ActorBase actor, object msg, bool expectResponse, string replyMsgId, string replyTo)
         {
-            var res = actor.Invoke(msg);
-            if (expectResponse)
+            return await Task<Message>.Run(() =>
             {
-              //  this.
-            }
+                var res = actor.Invoke(msg);
+                if (expectResponse)
+                {
+                    if (this.sendReplyQueueClients.ContainsKey(replyTo) == false)
+                    {
+                        this.sendReplyQueueClients.Add(replyTo, new QueueClient(this.sbConnStr, replyTo,
+                        retryPolicy: createRetryPolicy(),
+                        receiveMode: ReceiveMode.PeekLock));
+                    }
+
+                    var sbMsg = ActorReference.CreateResponseMessage(res, replyMsgId, actor.GetType(), actor.Id);
+
+                    return sbMsg;
+                }
+                else
+                {
+                    if (res != null)
+                        throw new InvalidOperationException($"The actor {actor} should return NULL.");
+                    else
+                        return null;
+                }
+            });
+        }
+
+        private bool IsMemoryCritical()
+        {
+            if (Environment.WorkingSet / 1024 / 1024 / 1024 >= this.CriticalMemInGb)
+                return true;
+            else
+                return false;
         }
         #endregion
     }

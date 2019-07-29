@@ -8,15 +8,26 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.Extensions.Logging;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleToAttribute("UnitTestsProject")]
 
 namespace AkkaSb.Net
 {
     public class ActorId
     {
+        
         public long? Id { get; set; }
 
         public string IdAsString { get;set; }
-        
+
+
+        public ActorId()
+        {
+
+        }
+
         public ActorId(long id)
         {
             this.Id = id;
@@ -51,19 +62,30 @@ namespace AkkaSb.Net
 
         public ActorId Id { get; set; }
 
-        public ActorBase()
+        [JsonIgnore]
+        public IPersistenceProvider PersistenceProvider;
+
+        [JsonIgnore]
+        public ILogger Logger { get; set; }
+
+        protected ActorBase()
         {
-  
+
         }
 
         public ActorBase(ActorId id)
         {
-            this.Id = id;
-          //  this.Sender = new ActorReference(typeof(TActor), id, pair.Value, receivedMsgQueue, this.rcvEvent, this.MaxProcessingTimeOfMessage);
+            this.Id = id;   
+        }
+
+        /// <summary>
+        /// Invoked if the actor receives the message, which cannot be dispatched.
+        /// </summary>
+        public virtual void UnrouteedMessage()
+        {
 
         }
 
-       
         internal object Invoke(object message)
         {
             var pair = dict.FirstOrDefault(o => o.Key == message.GetType());
@@ -75,9 +97,20 @@ namespace AkkaSb.Net
             return res;
         }
 
+        public Task Perist()
+        {
+            if (this.PersistenceProvider != null)
+            {
+                this.PersistenceProvider.PersistActor(this);
+               
+            }
+
+            return Task.FromResult<bool>(true);
+        }
+
         public virtual void Activated()
         {
-
+           
         }
 
         public virtual void DeActivated()

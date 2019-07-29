@@ -1692,7 +1692,7 @@ namespace NeoCortexApi.Entities
         {
             while (GetNumSynapses(segment) >= maxSynapsesPerSegment)
             {
-                destroySynapse(minPermanenceSynapse(segment));
+                destroySynapse(minPermanenceSynapse(segment), segment);
             }
 
             Synapse synapse = null;
@@ -1713,12 +1713,13 @@ namespace NeoCortexApi.Entities
          * Destroys the specified {@link Synapse}
          * @param synapse   the Synapse to destroy
          */
-        public void destroySynapse(Synapse synapse)
+        public void destroySynapse(Synapse synapse, DistalDendrite segment)
         {
             --NumSynapses;
 
             removeSynapseFromPresynapticMap(synapse);
 
+            //segment.Synapses.Remove(synapse);
             getSynapses((DistalDendrite)synapse.getSegment()).Remove(synapse);
         }
 

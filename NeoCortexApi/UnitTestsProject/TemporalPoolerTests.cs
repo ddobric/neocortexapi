@@ -828,7 +828,8 @@ namespace UnitTestsProject
                 {
                     Assert.AreEqual(0.2, synapse.getPermanence(), 0.01);
 
-                    Column column = synapse.getPresynapticCell().getParentColumn();
+                    var parentColIndx = synapse.getPresynapticCell().getParentColumnIndex();
+                    Column column = cn.getMemory().get(parentColIndx);
                     Assert.IsTrue(columnCheckList.Contains(column));
                     columnCheckList.Remove(column);
                 }

@@ -13,6 +13,9 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Threading;
+using System.Linq;
+
+
 
 #if USE_AKKA
 namespace UnitTestsProject
@@ -70,19 +73,31 @@ namespace UnitTestsProject
         /// <param name="expectedNode"></param>
         /// <param name="expectedPartition"></param>
         [TestMethod]
-        [DataRow(new string[] { "url1", "url2", "url3" }, 5, 17, 0, 0)]
-        [DataRow(new string[] { "url1", "url2", "url3" }, 5, 31, 0, 0)]
-        [DataRow(new string[] { "url1" }, 10, 4096, 0, 0)]
-        public void PartitionMapTest(string[] nodes, int partitionsPerNode, int elements, int expectedNode, int expectedPartition)
+        [DataRow(new string[] { "url1" }, 200, 1024)]
+        [DataRow(new string[] { "url1", "url2", "url3" }, 5, 17)]
+        [DataRow(new string[] { "url1", "url2", "url3" }, 5, 31)]
+        [DataRow(new string[] { "url1" }, 10, 4096)]
+        public void PartitionMapTest(string[] nodes, int partitionsPerNode, int elements)
         {
             var nodeList = new List<string>();
             nodeList.AddRange(nodes);
             var map = HtmSparseIntDictionary<Column>.CreatePartitionMap(nodeList, elements, partitionsPerNode);
-                       
-            Assert.IsTrue(map.Count == nodes.Length * partitionsPerNode);
-            Assert.IsTrue((map[7].MinKey == 14 && map[7].MaxKey == 15) 
+
+            // System can allocate less partitions than requested.
+            Assert.IsTrue(map.Count <= nodes.Length * partitionsPerNode);
+
+            Assert.IsTrue((map[7].MinKey == 14 && map[7].MaxKey == 15)
                 || (map[7].MinKey == 21 && map[7].MaxKey == 23)
-                || (map[9].MinKey == 3690 && map[9].MaxKey == 4095));
+                || (map[9].MinKey == 3690 && map[9].MaxKey == 4095)
+                || (map[170].MinKey == 1020 && map[170].MaxKey == 1023));
+
+            Assert.IsTrue((int)(object)map.Last().MaxKey >= (elements - 1));
+
+            foreach (var item in map)
+            {
+                // Partition can hold a single element.
+                Assert.IsTrue((int)(object)item.MaxKey >= (int)(object)item.MinKey);
+            }
         }
 
 
@@ -98,7 +113,7 @@ namespace UnitTestsProject
             nodeList.AddRange(nodes);
             var map = HtmSparseIntDictionary<Column>.CreatePartitionMap(nodeList, elements, partitionsPerNode);
 
-            var part = HtmSparseIntDictionary<Column>.GetPlacementSlotForElement(map, key) ;
+            var part = HtmSparseIntDictionary<Column>.GetPlacementSlotForElement(map, key);
 
             Assert.IsTrue(part.NodeIndx == expectedNode && part.PartitionIndx == expectedPartition);
 
@@ -204,7 +219,7 @@ namespace UnitTestsProject
                     sp = new SpatialPoolerParallel();
                 else
                     sp = new SpatialPoolerMT();
-                
+
                 var mem = new Connections();
 
                 parameters.apply(mem);
@@ -229,10 +244,10 @@ namespace UnitTestsProject
         [TestMethod]
         [TestCategory("AkkaHostRequired")]
         [TestCategory("LongRunning")]
-        [DataRow("MnistPng28x28\\training", "5", 28, 512)]
+        [DataRow("MnistPng28x28\\training", "5", 28, 300)]
         public void SparseSingleMnistImageTest(string trainingFolder, string digit, int imageSize, int columnTopology)
         {
-            Thread.Sleep(3000);
+            //Thread.Sleep(3000);
 
             string TestOutputFolder = $"Output-{nameof(SparseSingleMnistImageTest)}";
 
@@ -372,14 +387,17 @@ namespace UnitTestsProject
         /// Ensures that pool instance inside of Column.DentrideSegment.Synapses[n].Pool is correctlly serialized.
         /// </summary>
         [TestMethod]
-        [TestCategory("AkkaHostRequired")]
         public void TestColumnSerialize()
         {
-            Thread.Sleep(5000);
+            //Thread.Sleep(5000);
 
-            Pool pool = new Pool(10, 10);
+            //Pool pool = new Pool(10, 10);
 
-            Synapse syn = new Synapse(null, null, 0, 0);
+            Cell cell = new Cell();
+
+            DistalDendrite dist = new DistalDendrite(cell, 0, 0, 0, 0.5, 10);
+            dist.Synapses.Add(new Synapse(cell, null, 0, 0.5));
+            Synapse syn = new Synapse(cell, dist, 0, 0);
 
             var dict = UnitTestHelpers.GetMemory();
 
@@ -390,6 +408,7 @@ namespace UnitTestsProject
 
             dict.ColumnDictionary.Add(0, col);
 
+            var serCol = AkkaSb.Net.ActorReference.SerializeMsg(col);
             Assert.IsTrue(dict.ColumnDictionary[0].ProximalDendrite.Synapses[0].Segment != null);
         }
 
@@ -458,9 +477,9 @@ namespace UnitTestsProject
         /// Test if the list of partitions is correctly grouped by nodes.
         /// </summary>
         [TestMethod]
-        [DataRow(new string[] { "url1", "url2", "url3" })]        
+        [DataRow(new string[] { "url1", "url2", "url3" })]
         public void TestGroupingByNode(string[] nodes)
-        {  
+        {
             var nodeList = new List<string>(nodes);
 
             List<IActorRef> list = new List<IActorRef>();
@@ -476,7 +495,62 @@ namespace UnitTestsProject
                 item.ActorRef = list[i++ % nodes.Length];
             }
 
-            var groupedNodes = HtmSparseIntDictionary<object>.GetPartitionsByNode(map);           
+            var groupedNodes = HtmSparseIntDictionary<object>.GetPartitionsByNode(map);
+        }
+
+        [TestMethod]
+        [DataRow(10, 4096)]
+        [DataRow(5, 20)]
+      
+        public void ActorSbPartitionMapTest(int elementsPerPartition, int totalElements)
+        {
+            var map = ActorSbDistributedDictionaryBase<Column>.CreatePartitionMap(totalElements, elementsPerPartition);
+
+            int lastMax = -1;
+            int elementCnt = 0;
+
+            foreach (var item in map)
+            {
+                Assert.IsTrue(item.MinKey == lastMax + 1);
+                Assert.IsTrue(item.MaxKey > item.MinKey);
+
+                elementCnt += item.MaxKey - item.MinKey + 1;
+
+                lastMax = item.MaxKey;
+            }
+
+            Assert.IsTrue(elementCnt == totalElements);
+
+        }
+
+        [TestMethod]
+        //[DataRow(-1, 90001, 35, new string[] { "node1", "node2", "node3" })]
+        [DataRow(-1, 90000, 35, new string[] { "node1", "node2", "node3" })]
+        [DataRow(-1, 20, -1, new string[] { "node1", "node2", "node3" })]
+        [DataRow(-1, 20, -1, new string[] { "node1", "node2" })]
+        public void ActorSbPartitionMapTestWithNodes(int elementsPerPartition, int totalElements, int numOfPartitions, string[] nodes)
+        {
+            var nodeList = new List<string>();
+            if (nodes != null)
+                nodeList.AddRange(nodes);
+
+            var map = ActorSbDistributedDictionaryBase<Column>.CreatePartitionMap(totalElements, elementsPerPartition, numOfPartitions, nodeList);
+
+            int lastMax = -1;
+            int elementCnt = 0;
+
+            foreach (var item in map)
+            {
+                Assert.IsTrue(item.MinKey == lastMax + 1);
+                Assert.IsTrue(item.MaxKey > item.MinKey);
+
+                elementCnt += item.MaxKey - item.MinKey + 1;
+
+                lastMax = item.MaxKey;
+            }
+
+            Assert.IsTrue(elementCnt == totalElements);
+
         }
 
         ///// <summary>

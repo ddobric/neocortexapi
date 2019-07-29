@@ -3,36 +3,27 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
-using Akka.Actor;
-using Akka.Configuration;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using NeoCortexApi.Entities;
 using System.Collections.Concurrent;
 using NeoCortexApi.Utility;
 using System.Threading;
+using AkkaSb.Net;
 using Microsoft.Extensions.Logging;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
-    public abstract class AkkaDistributedDictionaryBase<TKey, TValue> : IDistributedDictionary<TKey, TValue>, IHtmDistCalculus
+    public class ActorSbDistributedDictionaryBase<TValue> : IDistributedDictionary<int, TValue>, IHtmDistCalculus
     {
+        private List<Placement<int>> actorMap;
 
-        // not used!
-        private Dictionary<TKey, TValue>[] dictList;
-
-
-        /// <summary>
-        /// List of actors, which hold partitions.
-        /// </summary>
-        //private IActorRef[] dictActors;
-
-        private List<Placement<TKey>> actorMap;
+        private AkkaSb.Net.ActorSystem actorSystem;
 
         /// <summary>
         /// Maps from Actor partition identifier to actor index in <see cref="dictActors" list./>
         /// </summary>
-        protected List<Placement<TKey>> ActorMap
+        protected List<Placement<int>> ActorMap
         {
             get
             {
@@ -49,16 +40,15 @@ namespace NeoCortexApi.DistributedComputeLib
 
         private int numElements = 0;
 
-        private ActorSystem actSystem;
 
         #region Properties
         /// <summary>
-        /// Akka cluster configuration.
+        /// Actor cluster configuration.
         /// </summary>
-        public AkkaDistributedDictConfig Config { get; set; }
+        public ActorSbConfig Config { get; set; }
 
         /// <summary>
-        /// Configuration used to initialize HTM actor.
+        /// Configuration used to initialize HTM calculus in actor.
         /// </summary>
         public HtmConfig HtmConfig { get; set; }
         #endregion
@@ -67,40 +57,14 @@ namespace NeoCortexApi.DistributedComputeLib
         /// Creates all required actors, which host partitions.
         /// </summary>
         /// <param name="config"></param>
-        public AkkaDistributedDictionaryBase(object cfg, ILogger logger = null)
+        public ActorSbDistributedDictionaryBase(ActorSbConfig config, ILogger logger)
         {
-            AkkaDistributedDictConfig config = (AkkaDistributedDictConfig)cfg;
             if (config == null)
                 throw new ArgumentException("Configuration must be specified.");
 
             this.Config = config;
 
-            actSystem = ActorSystem.Create("Deployer", ConfigurationFactory.ParseString(@"
-                akka {  
-                    loglevel=DEBUG
-                    actor{
-                        provider = ""Akka.Remote.RemoteActorRefProvider, Akka.Remote""  		               
-                    }
-                    remote {
-		                connection-timeout = 120 s
-		                transport-failure-detector {
-			                heartbeat-interval = 10 s 
-			                acceptable-heartbeat-pause = 60 s 
-			                unreachable-nodes-reaper-interval = 10 s
-			                expected-response-after = 30 s
-			                retry-gate-closed-for = 5 s
-			                prune-quarantine-marker-after = 2 d
-			                system-message-ack-piggyback-timeout = 3 s
-		                }
-                        dot-netty.tcp {
-                            maximum-frame-size = 64000000b
-		                    port = 8080
-		                    hostname = 0.0.0.0
-                            public-hostname = DADO-SR1
-                        }
-                    }
-                }"));
-
+            this.actorSystem = new ActorSystem("HtmCalculusDriver", config, logger);
         }
 
         /// <summary>
@@ -108,35 +72,72 @@ namespace NeoCortexApi.DistributedComputeLib
         /// </summary>
         protected void InitPartitionActorsDist()
         {
-            // Creates partition placements.
             this.ActorMap = CreatePartitionMap();
 
             for (int i = 0; i < this.ActorMap.Count; i++)
             {
                 string actorName = $"{nameof(DictNodeActor)}-{Guid.NewGuid()}-{this.ActorMap[i].NodeIndx}-{this.ActorMap[i].PartitionIndx}";
-                
-                //var sel = actSystem.ActorSelection($"/user/{actorName}");
-                //this.ActorMap[i].ActorRef = sel.ResolveOne(TimeSpan.FromSeconds(1)).Result;
-                //if (this.ActorMap[i].ActorRef == null)
-                {
-                    this.ActorMap[i].ActorRef =
-                     actSystem.ActorOf(Props.Create(() => new DictNodeActor())
-                     .WithDeploy(Deploy.None.WithScope(new RemoteScope(Address.Parse(this.ActorMap[i].NodePath)))),
-                     actorName);
-                }
-              
-                var result = ((IActorRef)this.ActorMap[i].ActorRef).Ask<int>(new CreateDictNodeMsg()
+
+                ActorReference actorRef1 = actorSystem.CreateActor<HtmActor>(1);
+
+                this.ActorMap[i].ActorRef = actorSystem.CreateActor<HtmActor>(new ActorId(this.ActorMap[i].PartitionIndx));
+
+                var result = ((ActorReference)this.ActorMap[i].ActorRef).Ask<int>(new CreateDictNodeMsg()
                 {
                     HtmAkkaConfig = this.HtmConfig,
-                }, this.Config.ConnectionTimeout).Result;
+                }, this.Config.ConnectionTimeout, this.actorMap[i].NodePath).Result;
             }
+        }
+
+        public List<Placement<int>> CreatePartitionMap()
+        {
+            return this.ActorMap = CreatePartitionMap(this.HtmConfig.NumColumns, this.Config.NumOfElementsPerPartition, this.Config.NumOfPartitions, this.Config.Nodes);
         }
 
         /// <summary>
         /// Calculates partition placements on nodes.
         /// </summary>
         /// <returns></returns>
-        public abstract List<Placement<TKey>> CreatePartitionMap();
+        public static List<Placement<int>> CreatePartitionMap(int numElements, int numOfElementsPerPartition, int numOfPartitions = -1, List<string> nodes = null)
+        {
+            List<Placement<int>> map = new List<Placement<int>>();
+
+            if(numOfPartitions == -1)
+                numOfPartitions = (numOfElementsPerPartition == -1 && nodes != null && nodes.Count > 0 ) ?  nodes.Count : (int)(1 + ((double)numElements / (double)numOfElementsPerPartition));
+
+            if (numOfElementsPerPartition == -1)
+            {
+                var ratio = (float)numElements / (float)numOfPartitions;
+
+                if (ratio > 0)
+                    numOfElementsPerPartition = (int)(1.0 + ratio);
+                else
+                    numOfElementsPerPartition = (int)ratio;
+            }
+
+            int destNodeIndx = 0;
+            string destinationNode = null;
+
+            for (int partIndx = 0; partIndx < numOfPartitions; partIndx++)
+            {
+                var min = numOfElementsPerPartition * partIndx;
+                var maxPartEl = numOfElementsPerPartition * (partIndx + 1) - 1;
+                var max = maxPartEl < numElements ? maxPartEl : numElements - 1;
+
+                if (min >= numElements)
+                    break;
+
+                if (nodes != null && nodes.Count > 0)
+                {
+                    destNodeIndx = destNodeIndx % nodes.Count;
+                    destinationNode = nodes[destNodeIndx++];
+                }
+
+                map.Add(new Placement<int>() { NodeIndx = -1, NodePath = destinationNode, PartitionIndx = partIndx, MinKey = min, MaxKey = max, ActorRef = null });
+            }
+
+            return map;
+        }
 
         /// <summary>
         /// Depending on usage (Key type) different mechanism can be used to partition keys.
@@ -144,7 +145,10 @@ namespace NeoCortexApi.DistributedComputeLib
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        protected abstract IActorRef GetPartitionActorFromKey(TKey key);
+        protected ActorReference GetPartitionActorFromKey(int key)
+        {
+            return this.ActorMap.Where(p => p.MinKey <= key && p.MaxKey >= key).First().ActorRef as ActorReference;
+        }
 
         /// <summary>
         /// Gets partitions (nodes) with assotiated indexes.
@@ -152,7 +156,7 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <returns></returns>
         //public abstract List<(int partId, int minKey, int maxKey)> GetPartitions();
 
-        public TValue this[TKey key]
+        public TValue this[int key]
         {
             get
             {
@@ -192,7 +196,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
                 foreach (var actor in this.ActorMap.Select(el => el.ActorRef))
                 {
-                    tasks[indx++] = ((IActorRef)actor).Ask<int>(new GetCountMsg(), this.Config.ConnectionTimeout);
+                    tasks[indx++] = ((ActorReference)actor).Ask<int>(new GetCountMsg(), this.Config.ConnectionTimeout);
                 }
 
                 Task.WaitAll(tasks);
@@ -209,20 +213,11 @@ namespace NeoCortexApi.DistributedComputeLib
             }
         }
 
-        public ICollection<TKey> Keys
+        public ICollection<int> Keys
         {
             get
             {
-                List<TKey> keys = new List<TKey>();
-                foreach (var item in this.dictList)
-                {
-                    foreach (var k in item.Keys)
-                    {
-                        keys.Add(k);
-                    }
-                }
-
-                return keys;
+                throw new NotImplementedException();
             }
         }
 
@@ -231,16 +226,7 @@ namespace NeoCortexApi.DistributedComputeLib
         {
             get
             {
-                List<TValue> keys = new List<TValue>();
-                foreach (var item in this.dictList)
-                {
-                    foreach (var k in item.Values)
-                    {
-                        keys.Add(k);
-                    }
-                }
-
-                return keys;
+                throw new NotImplementedException();
             }
         }
 
@@ -254,51 +240,53 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <param name="keyValuePairs"></param>
         public void AddOrUpdate(ICollection<KeyPair> keyValuePairs)
         {
-            ParallelOptions opts = new ParallelOptions();
-            opts.MaxDegreeOfParallelism = this.ActorMap.Count;
+            throw new NotImplementedException();
 
-            // We get here keys grouped to actors, which host partitions.
-            var partitions = GetPartitionsForKeyset(keyValuePairs);
+            //ParallelOptions opts = new ParallelOptions();
+            //opts.MaxDegreeOfParallelism = this.ActorMap.Count;
 
-            //
-            // Here is upload performed in context of every actor (partition).
-            // Because keys are grouped by partitions (actors) parallel upload can be done here.
-            Parallel.ForEach(partitions, opts, (partition) =>
-            {
-                Dictionary<IActorRef, AddOrUpdateElementsMsg> list = new Dictionary<IActorRef, AddOrUpdateElementsMsg>();
+            //// We get here keys grouped to actors, which host partitions.
+            //var partitions = GetPartitionsForKeyset(keyValuePairs);
 
-                int pageSize = this.Config.PageSize;
-                int alreadyProcessed = 0;
+            ////
+            //// Here is upload performed in context of every actor (partition).
+            //// Because keys are grouped by partitions (actors) parallel upload can be done here.
+            //Parallel.ForEach(partitions, opts, (partition) =>
+            //{
+            //    Dictionary<ActorReference, AddOrUpdateElementsMsg> list = new Dictionary<ActorReference, AddOrUpdateElementsMsg>();
 
-                while (true)
-                {
-                    foreach (var item in partition.Value.Skip(alreadyProcessed).Take(pageSize))
-                    {
-                        var actorRef = GetPartitionActorFromKey((TKey)item.Key);
-                        if (!list.ContainsKey(actorRef))
-                            list.Add(actorRef, new AddOrUpdateElementsMsg() { Elements = new List<KeyPair>() });
+            //    int pageSize = 100;
+            //    int alreadyProcessed = 0;
 
-                        list[actorRef].Elements.Add(new KeyPair { Key = item.Key, Value = item.Value });
-                    }
+            //    while (true)
+            //    {
+            //        foreach (var item in partition.Value.Skip(alreadyProcessed).Take(pageSize))
+            //        {
+            //            var actorRef = GetPartitionActorFromKey((TKey)item.Key);
+            //            if (!list.ContainsKey(actorRef))
+            //                list.Add(actorRef, new AddOrUpdateElementsMsg() { Elements = new List<KeyPair>() });
 
-                    if (list.Count > 0)
-                    {
-                        List<Task<int>> tasks = new List<Task<int>>();
+            //            list[actorRef].Elements.Add(new KeyPair { Key = item.Key, Value = item.Value });
+            //        }
 
-                        foreach (var item in list)
-                        {
-                            tasks.Add(item.Key.Ask<int>(item.Value, this.Config.ConnectionTimeout));
-                            alreadyProcessed += item.Value.Elements.Count;
-                        }
+            //        if (list.Count > 0)
+            //        {
+            //            List<Task<int>> tasks = new List<Task<int>>();
 
-                        Task.WaitAll(tasks.ToArray());
+            //            foreach (var item in list)
+            //            {
+            //                tasks.Add(item.Key.Ask<int>(item.Value, this.Config.ConnectionTimeout));
+            //                alreadyProcessed += item.Value.Elements.Count;
+            //            }
 
-                        list.Clear();
-                    }
-                    else
-                        break;
-                }
-            });
+            //            Task.WaitAll(tasks.ToArray());
+
+            //            list.Clear();
+            //        }
+            //        else
+            //            break;
+            //    }
+            //});
         }
 
 
@@ -311,78 +299,39 @@ namespace NeoCortexApi.DistributedComputeLib
             ParallelOptions opts = new ParallelOptions();
             opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
 
-            //foreach (var item in this.ActorMap)
-            //{
-            //    if ((int)(object)item.MinKey > (int)(object)item.MaxKey)
-            //    {
-
-            //    }
-            //}
-
-            runBatched((batchOfElements)=> {
+            runBatched((batchOfElements) =>
+            {
                 // Run overlap calculation on all actors(in all partitions)
                 Parallel.ForEach(batchOfElements, opts, (placement) =>
                 {
-                    //if (((int)(object)placement.MinKey) >= ((int)(object)placement.MaxKey))
-                    //{
-
-                    //}
-
-                    var res = ((IActorRef)placement.ActorRef).Ask<int>(new InitColumnsMsg()
+                    var res = ((ActorReference)placement.ActorRef).Ask<int>(new InitColumnsMsg()
                     {
                         PartitionKey = placement.PartitionIndx,
                         MinKey = (int)(object)placement.MinKey,
                         MaxKey = (int)(object)placement.MaxKey
-                    }, this.Config.ConnectionTimeout).Result;
+                    }, this.Config.ConnectionTimeout, placement.NodePath).Result;
                 });
-            }, this.ActorMap, this.Config.ProcessingBatch);
+            }, this.ActorMap, this.Config.BatchSize);
 
-            //int processedItems = 0;
-            //int batchCnt = 0;
-
-            //var shuffledList = ArrayUtils.Shuffle(this.ActorMap);
-
-            //List<Placement<TKey>> batchedList = new List<Placement<TKey>>();
-
-            //while (processedItems < this.ActorMap.Count)
-            //{              
-            //    if (batchCnt < this.Config.ProcessingBatch && processedItems < this.ActorMap.Count)
-            //    {
-            //        batchedList.Add(shuffledList[processedItems]);
-            //        processedItems++;
-            //        batchCnt++;
-            //    }
-            //    else
-            //    {
-          
-            //        // Run overlap calculation on all actors(in all partitions)
-            //        Parallel.ForEach(batchedList, opts, (placement) =>
-            //        {
-            //            var res = placement.ActorRef.Ask<int>(new InitColumnsMsg()
-            //            {
-            //                MinKey = (int)(object)placement.MinKey,
-            //                MaxKey = (int)(object)placement.MaxKey
-            //            }, this.Config.ConnectionTimeout).Result;
-            //        });
-
-            //        batchCnt = 0;
-            //        batchedList = new List<Placement<TKey>>();
-            //    }             
-            //}
         }
 
-        private void runBatched(Action<List<Placement<TKey>>> func, List<Placement<TKey>> list, int batchSize)
+        private void runBatched(Action<List<Placement<int>>> p, List<Placement<int>> actorMap, object batchSize)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void runBatched(Action<List<Placement<int>>> func, List<Placement<int>> list, int batchSize)
         {
             int processedItems = 0;
             int batchCnt = 0;
 
             var shuffledList = ArrayUtils.Shuffle(list);
 
-            List<Placement<TKey>> batchedList = new List<Placement<TKey>>();
+            List<Placement<int>> batchedList = new List<Placement<int>>();
 
-            while (processedItems < this.ActorMap.Count)
+            while (processedItems <= this.ActorMap.Count)
             {
-                if (batchCnt < batchSize && processedItems < this.ActorMap.Count)
+                if (batchCnt < batchSize && processedItems < shuffledList.Count)
                 {
                     batchedList.Add(shuffledList[processedItems]);
                     processedItems++;
@@ -390,10 +339,15 @@ namespace NeoCortexApi.DistributedComputeLib
                 }
                 else
                 {
-                    func(batchedList);
+                    if (batchedList.Count > 0)
+                    {
+                        func(batchedList);
 
-                    batchCnt = 0;
-                    batchedList = new List<Placement<TKey>>();
+                        batchCnt = 0;
+                        batchedList = new List<Placement<int>>();
+                    }
+                    else
+                        break;
                 }
             }
         }
@@ -412,10 +366,8 @@ namespace NeoCortexApi.DistributedComputeLib
             ParallelOptions opts = new ParallelOptions();
             opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
 
-            //var avgSpanOfPart = this.ActorMap.First().ActorRef.Ask<double>(new ConnectAndConfigureColumnsMsg(), this.Config.ConnectionTimeout).Result;
-            //aggLst.TryAdd(this.ActorMap.First().PartitionIndx, avgSpanOfPart);
-
-            runBatched((batchOfElements) => {
+            runBatched((batchOfElements) =>
+            {
                 Parallel.ForEach(batchOfElements, opts, (placement) =>
                 {
                     while (true)
@@ -423,7 +375,7 @@ namespace NeoCortexApi.DistributedComputeLib
                         try
                         {
                             //Debug.WriteLine($"C: {placement.ActorRef.Path}");
-                            var avgSpanOfPart = ((IActorRef)placement.ActorRef).Ask<double>(new ConnectAndConfigureColumnsMsg(), this.Config.ConnectionTimeout).Result;
+                            var avgSpanOfPart = ((ActorReference)placement.ActorRef).Ask<double>(new ConnectAndConfigureColumnsMsg(), this.Config.ConnectionTimeout, placement.NodePath).Result;
                             aggLst.TryAdd(placement.PartitionIndx, avgSpanOfPart);
                             break;
                         }
@@ -433,8 +385,7 @@ namespace NeoCortexApi.DistributedComputeLib
                         }
                     }
                 });
-            }, this.ActorMap, this.Config.ProcessingBatch / 2);
-          
+            }, this.ActorMap, this.Config.BatchSize / 2);
 
             return aggLst.Values.ToList();
         }
@@ -444,12 +395,12 @@ namespace NeoCortexApi.DistributedComputeLib
             ConcurrentDictionary<int, List<KeyPair>> overlapList = new ConcurrentDictionary<int, List<KeyPair>>();
 
             ParallelOptions opts = new ParallelOptions();
-            opts.MaxDegreeOfParallelism = this.ActorMap.Count;
+            opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
 
             // Run overlap calculation on all actors(in all partitions)
             Parallel.ForEach(this.ActorMap, opts, (placement) =>
             {
-                var partitionOverlaps = ((IActorRef)placement.ActorRef).Ask<List<KeyPair>>(new CalculateOverlapMsg { InputVector = inputVector }, this.Config.ConnectionTimeout).Result;
+                var partitionOverlaps = ((ActorReference)placement.ActorRef).Ask<List<KeyPair>>(new CalculateOverlapMsg { InputVector = inputVector }, this.Config.ConnectionTimeout, placement.NodePath).Result;
                 overlapList.TryAdd(placement.PartitionIndx, partitionOverlaps);
             });
 
@@ -462,7 +413,7 @@ namespace NeoCortexApi.DistributedComputeLib
                 foreach (var keyPair in item.Value)
                 {
                     cnt++;
-                    overlaps.Add((int)keyPair.Value);
+                    overlaps.Add((int)(long)keyPair.Value);
                 }
 
                 Debug.WriteLine($"cnt: {cnt} - key:{item.Key} - cnt:{item.Value.Count}");
@@ -488,11 +439,12 @@ namespace NeoCortexApi.DistributedComputeLib
             Parallel.ForEach(partitions, opts, (placement) =>
             {
                 // Result here should ensure reliable messaging. No semantin meaning.
-                var res = placement.Key.Ask<int>(new AdaptSynapsesMsg
+                var res = ((ActorReference)placement.Key.ActorRef).Ask<int>(new AdaptSynapsesMsg
                 {
                     PermanenceChanges = permChanges,
-                    ColumnKeys = placement.Value }, 
-                    this.Config.ConnectionTimeout).Result;
+                    ColumnKeys = placement.Value
+                },
+                    this.Config.ConnectionTimeout, placement.Key.NodePath).Result;
             });
         }
 
@@ -512,38 +464,60 @@ namespace NeoCortexApi.DistributedComputeLib
 
             Parallel.ForEach(partitionMap, opts, (placement) =>
             {
-                placement.Key.Ask<int>(new BumUpWeakColumnsMsg { ColumnKeys = placement.Value }, this.Config.ConnectionTimeout);
+                var res = ((ActorReference)placement.Key.ActorRef).Ask<int>(new BumUpWeakColumnsMsg { ColumnKeys = placement.Value }, this.Config.ConnectionTimeout, placement.Key.NodePath).Result;
             });
         }
 
+
         /// <summary>
-        /// Gets list of partitions, which host specified keys.
+        /// Groups keys by partitions (actors).
         /// </summary>
-        /// <param name="keyValuePairs">Keyvalue pairs.</param>
+        /// <param name="keyValuePairs"></param>
         /// <returns></returns>
-        public abstract Dictionary<IActorRef, List<KeyPair>> GetPartitionsForKeyset(ICollection<KeyPair> keyValuePairs);
+        public Dictionary<Placement<int>, List<KeyPair>> GetPartitionsForKeyset(ICollection<KeyPair> keyValuePairs)
+        {
+            Dictionary<Placement<int>, List<KeyPair>> res = new Dictionary<Placement<int>, List<KeyPair>>();
+
+            foreach (var partition in this.ActorMap)
+            {
+                foreach (var pair in keyValuePairs)
+                {
+                    if (partition.MinKey <= (int)pair.Key && partition.MaxKey >= (int)pair.Key)
+                    {
+                        if (res.ContainsKey(partition) == false)
+                            res.Add(partition, new List<KeyPair>());
+
+                        res[partition].Add(pair);
+                    }
+                }
+            }
+
+            return res;
+        }
+
+
 
         /// <summary>
         /// Gets partitions grouped by nodes.
         /// </summary>
         /// <returns></returns>
-        public abstract Dictionary<IActorRef, List<KeyPair>> GetPartitionsByNode();
+        //public abstract Dictionary<ActorReference, List<KeyPair>> GetPartitionsByNode();
 
         /// <summary>
         /// Ads the value with specified keypair.
         /// </summary>
         /// <param name="item">Keypair of the new item.</param>
-        public void Add(KeyValuePair<TKey, TValue> item)
+        public void Add(KeyValuePair<int, TValue> item)
         {
             Add(item.Key, item.Value);
         }
 
         /// <summary>
-        /// Ads the value with secified key to the right parition.
+        /// Adds the value with secified key to the right parition.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public void Add(TKey key, TValue value)
+        public void Add(int key, TValue value)
         {
             var partActor = GetPartitionActorFromKey(key);
 
@@ -566,7 +540,7 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <param name="key"></param>
         /// <param name="value"></param>time
         /// <returns></returns>
-        public bool TryGetValue(TKey key, out TValue value)
+        public bool TryGetValue(int key, out TValue value)
         {
             var partActor = GetPartitionActorFromKey(key);
 
@@ -588,13 +562,15 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public void Clear()
         {
-            foreach (var item in this.dictList)
-            {
-                item.Clear();
-            }
+            throw new NotImplementedException();
+
+            //foreach (var item in this.dictList)
+            //{
+            //    item.Clear();
+            //}
         }
 
-        public bool Contains(KeyValuePair<TKey, TValue> item)
+        public bool Contains(KeyValuePair<int, TValue> item)
         {
             var actorRef = GetPartitionActorFromKey(item.Key);
 
@@ -615,7 +591,7 @@ namespace NeoCortexApi.DistributedComputeLib
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public bool ContainsKey(TKey key)
+        public bool ContainsKey(int key)
         {
             var actorRef = GetPartitionActorFromKey(key);
 
@@ -625,35 +601,37 @@ namespace NeoCortexApi.DistributedComputeLib
                 return false;
         }
 
-        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+        public void CopyTo(KeyValuePair<int, TValue>[] array, int arrayIndex)
         {
             throw new NotImplementedException();
         }
 
-        public bool Remove(TKey key)
+        public bool Remove(int key)
         {
-            for (int i = 0; i < this.dictList.Length; i++)
-            {
-                if (this.dictList[i].ContainsKey(key))
-                {
-                    return this.dictList[i].Remove(key);
-                }
-            }
+            throw new NotImplementedException();
+            //for (int i = 0; i < this.dictList.Length; i++)
+            //{
+            //    if (this.dictList[i].ContainsKey(key))
+            //    {
+            //        return this.dictList[i].Remove(key);
+            //    }
+            //}
 
-            return false;
+            //return false;
         }
 
-        public bool Remove(KeyValuePair<TKey, TValue> item)
+        public bool Remove(KeyValuePair<int, TValue> item)
         {
-            for (int i = 0; i < this.dictList.Length; i++)
-            {
-                if (this.dictList[i].ContainsKey(item.Key))
-                {
-                    return this.dictList[i].Remove(item.Key);
-                }
-            }
+            throw new NotImplementedException();
+            //for (int i = 0; i < this.dictList.Length; i++)
+            //{
+            //    if (this.dictList[i].ContainsKey(item.Key))
+            //    {
+            //        return this.dictList[i].Remove(item.Key);
+            //    }
+            //}
 
-            return false;
+            //return false;
         }
 
 
@@ -675,17 +653,17 @@ namespace NeoCortexApi.DistributedComputeLib
         /// </summary>
         private int currentIndex = -1;
 
-        public object Current => this.dictList[this.currentDictIndex].ElementAt(currentIndex);
+        public object Current => throw new NotImplementedException();//this.dictList[this.currentDictIndex].ElementAt(currentIndex);
 
-        KeyValuePair<TKey, TValue> IEnumerator<KeyValuePair<TKey, TValue>>.Current => this.dictList[this.currentDictIndex].ElementAt(currentIndex);
+        KeyValuePair<int, TValue> IEnumerator<KeyValuePair<int, TValue>>.Current => throw new NotImplementedException();//this.dictList[this.currentDictIndex].ElementAt(currentIndex);
 
         /// <summary>
         /// Gets number of physical nodes in cluster.
         /// </summary>
-        public int Nodes => this.Config.Nodes.Count;
+        public int Nodes => throw new NotSupportedException();
 
 
-        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+        public IEnumerator<KeyValuePair<int, TValue>> GetEnumerator()
         {
             return this;
         }
@@ -693,30 +671,31 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public bool MoveNext()
         {
-            if (this.currentIndex == -1)
-                this.currentIndex = 0;
+            throw new NotSupportedException();
+            //if (this.currentIndex == -1)
+            //    this.currentIndex = 0;
 
-            if (this.currentDictIndex + 1 < this.dictList.Length)
-            {
-                this.currentDictIndex++;
+            //if (this.currentDictIndex + 1 < this.dictList.Length)
+            //{
+            //    this.currentDictIndex++;
 
-                if (this.dictList[this.currentDictIndex].Count > 0 && this.dictList[this.currentDictIndex].Count > this.currentIndex)
-                    return true;
-                else
-                    return false;
-            }
-            else
-            {
-                this.currentDictIndex = 0;
+            //    if (this.dictList[this.currentDictIndex].Count > 0 && this.dictList[this.currentDictIndex].Count > this.currentIndex)
+            //        return true;
+            //    else
+            //        return false;
+            //}
+            //else
+            //{
+            //    this.currentDictIndex = 0;
 
-                if (this.currentIndex + 1 < this.dictList[this.currentDictIndex].Count)
-                {
-                    this.currentIndex++;
-                    return true;
-                }
-                else
-                    return false;
-            }
+            //    if (this.currentIndex + 1 < this.dictList[this.currentDictIndex].Count)
+            //    {
+            //        this.currentIndex++;
+            //        return true;
+            //    }
+            //    else
+            //        return false;
+            //}
         }
 
 
@@ -728,7 +707,8 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public void Dispose()
         {
-            this.dictList = null;
+            throw new NotSupportedException();
+            //this.dictList = null;
         }
 
 
@@ -738,14 +718,14 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <param name="keys">All keys must belong to same partition. Search object (caller of this method)
         /// should sot keys </param>
         /// <returns></returns>
-        public ICollection<KeyPair> GetObjects(TKey[] keys)
+        public ICollection<KeyPair> GetObjects(int[] keys)
         {
             if (keys == null || keys.Length == 0)
                 throw new ArgumentException("Argument 'keys' must be specified!");
 
             var actorRef = GetPartitionActorFromKey(keys[0]);
 
-            int pageSize = this.Config.PageSize;
+            int pageSize = 100;// this.Config.PageSize;
             int alreadyProcessed = 0;
 
             while (true)

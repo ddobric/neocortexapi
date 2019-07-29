@@ -8,6 +8,7 @@ using System.Linq;
 using System.Diagnostics;
 using NeoCortexApi.Utility;
 using NeoCortexApi.DistributedCompute;
+using NeoCortexApi.DistributedComputeLib;
 
 namespace NeoCortexApi
 {
@@ -17,7 +18,7 @@ namespace NeoCortexApi
 
         public override void InitMatrices(Connections c, DistributedMemory distMem)
         {
-            IRemotelyDistributed remoteHtm = distMem?.ColumnDictionary as IRemotelyDistributed;
+            IHtmDistCalculus remoteHtm = distMem?.ColumnDictionary as IHtmDistCalculus;
             if (remoteHtm == null)
                 throw new ArgumentException("");
 
@@ -49,15 +50,17 @@ namespace NeoCortexApi
 
             if (distMem != null)
             {
-                var distHtmCla = distMem.ColumnDictionary as HtmSparseIntDictionary<Column>;
+                //var distHtmCla = distMem.ColumnDictionary as HtmSparseIntDictionary<Column>;
+                var distHtmCla = distMem.ColumnDictionary as ActorSbDistributedDictionaryBase<Column>;
+
                 distHtmCla.HtmConfig = c.HtmConfig;
             }
 
             //
             // Fill the sparse matrix with column objects
-            var numCells = c.getCellsPerColumn();
+            //var numCells = c.getCellsPerColumn();
 
-            var partitions = mem.GetPartitions();
+           // var partitions = mem.GetPartitions();
 
 
             List<KeyPair> colList = new List<KeyPair>();
@@ -97,7 +100,7 @@ namespace NeoCortexApi
         /// <param name="c"></param>
         protected override void ConnectAndConfigureInputs(Connections c)
         {
-            IRemotelyDistributed remoteHtm = this.distMemConfig.ColumnDictionary as IRemotelyDistributed;
+            IHtmDistCalculus remoteHtm = this.distMemConfig.ColumnDictionary as IHtmDistCalculus;
             if (remoteHtm == null)
                 throw new ArgumentException("");
 
@@ -221,7 +224,7 @@ namespace NeoCortexApi
         /// <returns></returns>
         public override int[] CalculateOverlap(Connections c, int[] inputVector)
         {
-            IRemotelyDistributed remoteHtm = this.distMemConfig.ColumnDictionary as IRemotelyDistributed;
+            IHtmDistCalculus remoteHtm = this.distMemConfig.ColumnDictionary as IHtmDistCalculus;
             if (remoteHtm == null)
                 throw new ArgumentException("disMemConfig is not of type IRemotelyDistributed!");
 
@@ -237,7 +240,7 @@ namespace NeoCortexApi
 
         public override void AdaptSynapses(Connections c, int[] inputVector, int[] activeColumns)
         {
-            IRemotelyDistributed remoteHtm = this.distMemConfig.ColumnDictionary as IRemotelyDistributed;
+            IHtmDistCalculus remoteHtm = this.distMemConfig.ColumnDictionary as IHtmDistCalculus;
             if (remoteHtm == null)
                 throw new ArgumentException("disMemConfig is not of type IRemotelyDistributed!");
 
@@ -259,7 +262,7 @@ namespace NeoCortexApi
 
         public override void BumpUpWeakColumns(Connections c)
         {
-            IRemotelyDistributed remoteHtm = this.distMemConfig.ColumnDictionary as IRemotelyDistributed;
+            IHtmDistCalculus remoteHtm = this.distMemConfig.ColumnDictionary as IHtmDistCalculus;
             if (remoteHtm == null)
                 throw new ArgumentException("disMemConfig is not of type IRemotelyDistributed!");
 

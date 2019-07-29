@@ -19,7 +19,7 @@ namespace NeoCortexApi.Entities
     /// <summary>
     /// If imlementation of an object includes Actors, it should be merked with this interface.
     /// </summary>
-    public interface IRemotelyDistributed
+    public interface IHtmDistCalculus
     {
         /// <summary>
         /// All required HTM configuration in serializable form.
@@ -36,7 +36,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <returns>
         /// </returns>
-        List<(int partId, int minKey, int maxKey)> GetPartitions();
+        //List<(int partId, int minKey, int maxKey)> GetPartitions();
 
         void InitializeColumnPartitionsDist(ICollection<KeyPair> keyValuePairs);
 

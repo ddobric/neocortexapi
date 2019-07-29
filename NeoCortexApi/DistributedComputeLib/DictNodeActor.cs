@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Diagnostics;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
@@ -15,6 +16,8 @@ namespace NeoCortexApi.DistributedComputeLib
 
     public class DictNodeActor : ReceiveActor
     {
+        private int partitionKey;
+
         private Dictionary<object, object> dict = new Dictionary<object, object>();
 
         private HtmConfig config;
@@ -27,6 +30,8 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public DictNodeActor()
         {
+            Debug.WriteLine($"ctor: {this.Self.Path}");
+
             Receive((Action<PingNodeMsg>)(msg =>
             {
                 Sender.Tell($"Ping back - {msg.Msg}", Self);
@@ -44,12 +49,22 @@ namespace NeoCortexApi.DistributedComputeLib
             });
 
             Receive((Action<InitColumnsMsg>)(msg =>
-            {
+            { 
                 initializeColumns(msg);
+
+                if (this.partitionKey == 1)
+                {
+                    Debug.WriteLine($"INIT: this: {this.GetHashCode()} - dict: {this.dict.GetHashCode()}");
+                }
             }));
 
             Receive((Action<ConnectAndConfigureColumnsMsg>)(msg =>
             {
+                if (this.partitionKey == 1)
+                {
+                    Debug.WriteLine($"CONNECT: this: {this.GetHashCode()} - dict: {this.dict.GetHashCode()}");
+                }
+
                 createAndConnectColumns(msg);
             }));
 
@@ -148,13 +163,7 @@ namespace NeoCortexApi.DistributedComputeLib
                 }
             });
 
-            Receive<ContainsMsg>(msg =>
-            {
-                var res = this.dict.ContainsKey(msg.Key);
-
-                Sender.Tell(res, Self);
-            });
-
+         
             Receive<ContainsKeyMsg>(msg =>
             {
                 var res = this.dict.ContainsKey(msg.Key);
@@ -213,9 +222,11 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <param name="msg"></param>
         private void initializeColumns(InitColumnsMsg msg)
         {
+            this.partitionKey = msg.PartitionKey;
+
             dict = new Dictionary<object, object>();
 
-            Console.WriteLine($"{Self.Path} -  Received message: '{msg.GetType().Name}' - min={msg.MinKey}, max={msg.MaxKey}");
+            Console.WriteLine($"{Self.Path} -  Received message: '{msg.GetType().Name}' - min={msg.MinKey}, max={msg.MaxKey}, partitionKey: {this.partitionKey}");
 
             for (int i = msg.MinKey; i <= msg.MaxKey; i++)
             {
@@ -241,6 +252,9 @@ namespace NeoCortexApi.DistributedComputeLib
                 this.dict[element.Key] = new Column(this.config.CellsPerColumn, (int)element.Key, this.config.SynPermConnected, cfg.NumInputs);
             }
             */
+
+            Debug.WriteLine($"Init completed. {msg.PartitionKey} - {this.dict.Count} - min={msg.MinKey}, max={msg.MaxKey}");
+
             Console.WriteLine($"{Self.Path} - Init completed. '{msg.GetType().Name}' - min={msg.MinKey}, max={msg.MaxKey}");
 
             Sender.Tell(msg.MaxKey - msg.MinKey, Self);
@@ -257,7 +271,9 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <param name="msg"></param>
         private void createAndConnectColumns(ConnectAndConfigureColumnsMsg msg)
         {
-            Console.WriteLine($"{Self.Path} - Received message: '{msg.GetType().Name}'");
+            DateTime startTime = DateTime.Now;
+
+            Log(msg, Self, "Entered.");
 
             List<double> avgConnections = new List<double>();
 
@@ -267,6 +283,11 @@ namespace NeoCortexApi.DistributedComputeLib
                 rnd = new Random(this.config.RandomGenSeed);
             else
                 rnd = new Random();
+
+            if (this.dict.Count == 0)
+            {
+
+            }
 
             foreach (var element in this.dict)
             {
@@ -289,14 +310,23 @@ namespace NeoCortexApi.DistributedComputeLib
 
                 avgConnections.Add(HtmCompute.CalcAvgSpanOfConnectedSynapses(column, this.config));
 
+                //Log(msg, Self, $".:). {dict.Count}/{dict.Keys.Min()}/{dict.Keys.Min()} - duration: {(DateTime.Now - startTime).TotalSeconds}");
+
                 HtmCompute.UpdatePermanencesForColumn(this.config, perms, column, potential, true);
             }
 
             double avgConnectedSpan = ArrayUtils.average(avgConnections.ToArray());
 
-            Console.WriteLine($"{Self.Path} - '{msg.GetType().Name}' completed.");
+            Log(msg, Self, "Completed.");
             Sender.Tell(avgConnectedSpan, Self);
-            Console.WriteLine($"{Self.Path} - '{msg.GetType().Name}' response sent.");
+            Log(msg, Self, $"Response sent. {(DateTime.Now - startTime).TotalSeconds}");
+
+        }
+
+        private void Log(object msg, IActorRef aRef, string txt)
+        {
+            Console.WriteLine($"{DateTime.UtcNow} - {aRef.Path.Elements.Last()} - '{msg.GetType().Name}'. {txt}");
+
         }
 
         private void calculateOverlap(CalculateOverlapMsg msg)

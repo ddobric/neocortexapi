@@ -1,4 +1,5 @@
-﻿using NeoCortexApi;
+﻿using Microsoft.Extensions.Logging;
+using NeoCortexApi;
 using NeoCortexApi.DistributedCompute;
 using NeoCortexApi.DistributedComputeLib;
 using NeoCortexApi.Entities;
@@ -19,13 +20,26 @@ namespace UnitTestsProject
                 return GetDistributedDictionary(htmConfig);
         }
 
+        public static ILogger GetLogger(string logger="UnitTest")
+        {
+            LoggerFactory factory = new LoggerFactory();
+
+            factory.AddConsole(LogLevel.Information);
+            factory.AddDebug(LogLevel.Information);
+
+            return factory.CreateLogger(logger);
+
+        }
+
         public static DistributedMemory GetDistributedDictionary(HtmConfig htmConfig)
         {
-            var cfg = Helpers.DefaultHtmSparseIntDictionaryConfig;
+            var cfg = Helpers.DefaultSbConfig;
            
             return new DistributedMemory()
             {
-                ColumnDictionary = new HtmSparseIntDictionary<Column>(cfg),
+                ColumnDictionary = new ActorSbDistributedDictionaryBase<Column>(cfg, UnitTestHelpers.GetLogger()),
+
+                //ColumnDictionary = new HtmSparseIntDictionary<Column>(cfg),
                 //PoolDictionary = new HtmSparseIntDictionary<Pool>(cfg),
             };
         }

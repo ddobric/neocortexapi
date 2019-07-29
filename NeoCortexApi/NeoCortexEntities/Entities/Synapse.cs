@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -34,6 +35,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public Cell SourceCell { get; set; }
 
+        [JsonIgnore]
         public Segment Segment { get; set; }
 
         //public Pool Pool {get;set;}
