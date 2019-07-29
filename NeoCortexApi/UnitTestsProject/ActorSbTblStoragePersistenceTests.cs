@@ -75,7 +75,7 @@ namespace UnitTestsProject
 
 
         [TestMethod]
-        public void SerializeColumnTest()
+        public void SerializeColumnActorTest()
         {
             ColumnActor col1 = new ColumnActor(1);
 

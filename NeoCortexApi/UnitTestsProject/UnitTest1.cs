@@ -167,7 +167,7 @@ namespace UnitTestsProject
         }
 
         /// <summary>
-        /// Extracts performance data from debut output.
+        /// Extracts performance data from debug output of test SparseSingleMnistImageTest.
         /// </summary>
         /// <param name="fileName"></param>
         /// <param name="token"></param>

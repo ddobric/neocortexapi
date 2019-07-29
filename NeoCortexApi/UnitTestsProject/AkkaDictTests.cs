@@ -16,6 +16,7 @@ using System.Threading;
 using System.Linq;
 
 
+
 #if USE_AKKA
 namespace UnitTestsProject
 {
@@ -386,14 +387,17 @@ namespace UnitTestsProject
         /// Ensures that pool instance inside of Column.DentrideSegment.Synapses[n].Pool is correctlly serialized.
         /// </summary>
         [TestMethod]
-        [TestCategory("AkkaHostRequired")]
         public void TestColumnSerialize()
         {
-            Thread.Sleep(5000);
+            //Thread.Sleep(5000);
 
-            Pool pool = new Pool(10, 10);
+            //Pool pool = new Pool(10, 10);
 
-            Synapse syn = new Synapse(null, null, 0, 0);
+            Cell cell = new Cell();
+
+            DistalDendrite dist = new DistalDendrite(cell, 0, 0, 0, 0.5, 10);
+            dist.Synapses.Add(new Synapse(cell, null, 0, 0.5));
+            Synapse syn = new Synapse(cell, dist, 0, 0);
 
             var dict = UnitTestHelpers.GetMemory();
 
@@ -404,6 +408,7 @@ namespace UnitTestsProject
 
             dict.ColumnDictionary.Add(0, col);
 
+            var serCol = AkkaSb.Net.ActorReference.SerializeMsg(col);
             Assert.IsTrue(dict.ColumnDictionary[0].ProximalDendrite.Synapses[0].Segment != null);
         }
 
@@ -519,9 +524,10 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        //[DataRow(-1, 90001, 35, new string[] { "node1", "node2", "node3" })]
         [DataRow(-1, 90000, 35, new string[] { "node1", "node2", "node3" })]
-        //[DataRow(-1, 20, -1, new string[] { "node1", "node2", "node3" })]
-        //[DataRow(-1, 20, -1, new string[] { "node1", "node2" })]
+        [DataRow(-1, 20, -1, new string[] { "node1", "node2", "node3" })]
+        [DataRow(-1, 20, -1, new string[] { "node1", "node2" })]
         public void ActorSbPartitionMapTestWithNodes(int elementsPerPartition, int totalElements, int numOfPartitions, string[] nodes)
         {
             var nodeList = new List<string>();
