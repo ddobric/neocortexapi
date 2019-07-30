@@ -12,6 +12,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DefineConstants>TRACE;USE_AKKA</DefineConstants>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+  </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\NeoCortexArrayLib\NeoCortexArrayLib.csproj" />

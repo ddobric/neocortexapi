@@ -11,10 +11,11 @@ using NeoCortexApi.Entities;
 using System.Collections.Concurrent;
 using NeoCortexApi.Utility;
 using System.Threading;
+using Microsoft.Extensions.Logging;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
-    public abstract class AkkaDistributedDictionaryBase<TKey, TValue> : IDistributedDictionary<TKey, TValue>, IRemotelyDistributed
+    public abstract class AkkaDistributedDictionaryBase<TKey, TValue> : IDistributedDictionary<TKey, TValue>, IHtmDistCalculus
     {
 
         // not used!
@@ -66,8 +67,9 @@ namespace NeoCortexApi.DistributedComputeLib
         /// Creates all required actors, which host partitions.
         /// </summary>
         /// <param name="config"></param>
-        public AkkaDistributedDictionaryBase(AkkaDistributedDictConfig config)
+        public AkkaDistributedDictionaryBase(object cfg, ILogger logger = null)
         {
+            AkkaDistributedDictConfig config = (AkkaDistributedDictConfig)cfg;
             if (config == null)
                 throw new ArgumentException("Configuration must be specified.");
 
@@ -119,14 +121,14 @@ namespace NeoCortexApi.DistributedComputeLib
                 {
                     this.ActorMap[i].ActorRef =
                      actSystem.ActorOf(Props.Create(() => new DictNodeActor())
-                     .WithDeploy(Deploy.None.WithScope(new RemoteScope(Address.Parse(this.ActorMap[i].NodeUrl)))),
+                     .WithDeploy(Deploy.None.WithScope(new RemoteScope(Address.Parse(this.ActorMap[i].NodePath)))),
                      actorName);
                 }
               
-                var result = this.ActorMap[i].ActorRef.Ask<int>(new CreateDictNodeMsg()
+                var result = ((IActorRef)this.ActorMap[i].ActorRef).Ask<int>(new CreateDictNodeMsg()
                 {
                     HtmAkkaConfig = this.HtmConfig,
-                }, this.Config.ConnectionTimout).Result;
+                }, this.Config.ConnectionTimeout).Result;
             }
         }
 
@@ -148,7 +150,7 @@ namespace NeoCortexApi.DistributedComputeLib
         /// Gets partitions (nodes) with assotiated indexes.
         /// </summary>
         /// <returns></returns>
-        public abstract List<(int partId, int minKey, int maxKey)> GetPartitions();
+        //public abstract List<(int partId, int minKey, int maxKey)> GetPartitions();
 
         public TValue this[TKey key]
         {
@@ -171,7 +173,7 @@ namespace NeoCortexApi.DistributedComputeLib
                         new KeyPair { Key=key, Value=value }
                     }
 
-                }, this.Config.ConnectionTimout).Result;
+                }, this.Config.ConnectionTimeout).Result;
 
                 if (isSet != 1)
                     throw new ArgumentException("Cannot find the element with specified key!");
@@ -190,7 +192,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
                 foreach (var actor in this.ActorMap.Select(el => el.ActorRef))
                 {
-                    tasks[indx++] = actor.Ask<int>(new GetCountMsg(), this.Config.ConnectionTimout);
+                    tasks[indx++] = ((IActorRef)actor).Ask<int>(new GetCountMsg(), this.Config.ConnectionTimeout);
                 }
 
                 Task.WaitAll(tasks);
@@ -285,7 +287,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
                         foreach (var item in list)
                         {
-                            tasks.Add(item.Key.Ask<int>(item.Value, this.Config.ConnectionTimout));
+                            tasks.Add(item.Key.Ask<int>(item.Value, this.Config.ConnectionTimeout));
                             alreadyProcessed += item.Value.Elements.Count;
                         }
 
@@ -309,15 +311,29 @@ namespace NeoCortexApi.DistributedComputeLib
             ParallelOptions opts = new ParallelOptions();
             opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
 
+            //foreach (var item in this.ActorMap)
+            //{
+            //    if ((int)(object)item.MinKey > (int)(object)item.MaxKey)
+            //    {
+
+            //    }
+            //}
+
             runBatched((batchOfElements)=> {
                 // Run overlap calculation on all actors(in all partitions)
                 Parallel.ForEach(batchOfElements, opts, (placement) =>
                 {
-                    var res = placement.ActorRef.Ask<int>(new InitColumnsMsg()
+                    //if (((int)(object)placement.MinKey) >= ((int)(object)placement.MaxKey))
+                    //{
+
+                    //}
+
+                    var res = ((IActorRef)placement.ActorRef).Ask<int>(new InitColumnsMsg()
                     {
+                        PartitionKey = placement.PartitionIndx,
                         MinKey = (int)(object)placement.MinKey,
                         MaxKey = (int)(object)placement.MaxKey
-                    }, this.Config.ConnectionTimout).Result;
+                    }, this.Config.ConnectionTimeout).Result;
                 });
             }, this.ActorMap, this.Config.ProcessingBatch);
 
@@ -346,7 +362,7 @@ namespace NeoCortexApi.DistributedComputeLib
             //            {
             //                MinKey = (int)(object)placement.MinKey,
             //                MaxKey = (int)(object)placement.MaxKey
-            //            }, this.Config.ConnectionTimout).Result;
+            //            }, this.Config.ConnectionTimeout).Result;
             //        });
 
             //        batchCnt = 0;
@@ -388,7 +404,7 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <param name="htmConfig"></param>
         /// <returns>List of average spans of all columns on this node in this partition.
         /// This list is agreggated by caller to estimate average span for all system.</returns>
-        public List<double> ConnectAndConfigureInputsDist(HtmConfig htmConfig)
+        public List<double> ConnectAndConfigureInputsDist(HtmConfig htmConfig2)
         {
             // List of results.
             ConcurrentDictionary<int, double> aggLst = new ConcurrentDictionary<int, double>();
@@ -396,7 +412,7 @@ namespace NeoCortexApi.DistributedComputeLib
             ParallelOptions opts = new ParallelOptions();
             opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
 
-            //var avgSpanOfPart = this.ActorMap.First().ActorRef.Ask<double>(new ConnectAndConfigureColumnsMsg(), this.Config.ConnectionTimout).Result;
+            //var avgSpanOfPart = this.ActorMap.First().ActorRef.Ask<double>(new ConnectAndConfigureColumnsMsg(), this.Config.ConnectionTimeout).Result;
             //aggLst.TryAdd(this.ActorMap.First().PartitionIndx, avgSpanOfPart);
 
             runBatched((batchOfElements) => {
@@ -406,8 +422,8 @@ namespace NeoCortexApi.DistributedComputeLib
                     {
                         try
                         {
-                            Debug.WriteLine($"C: {placement.ActorRef.Path}");
-                            var avgSpanOfPart = placement.ActorRef.Ask<double>(new ConnectAndConfigureColumnsMsg(), this.Config.ConnectionTimout).Result;
+                            //Debug.WriteLine($"C: {placement.ActorRef.Path}");
+                            var avgSpanOfPart = ((IActorRef)placement.ActorRef).Ask<double>(new ConnectAndConfigureColumnsMsg(), this.Config.ConnectionTimeout).Result;
                             aggLst.TryAdd(placement.PartitionIndx, avgSpanOfPart);
                             break;
                         }
@@ -433,17 +449,24 @@ namespace NeoCortexApi.DistributedComputeLib
             // Run overlap calculation on all actors(in all partitions)
             Parallel.ForEach(this.ActorMap, opts, (placement) =>
             {
-                var partitionOverlaps = placement.ActorRef.Ask<List<KeyPair>>(new CalculateOverlapMsg { InputVector = inputVector }, this.Config.ConnectionTimout).Result;
+                var partitionOverlaps = ((IActorRef)placement.ActorRef).Ask<List<KeyPair>>(new CalculateOverlapMsg { InputVector = inputVector }, this.Config.ConnectionTimeout).Result;
                 overlapList.TryAdd(placement.PartitionIndx, partitionOverlaps);
             });
 
             List<int> overlaps = new List<int>();
+
+            int cnt = 0;
+
             foreach (var item in overlapList.OrderBy(i => i.Key))
             {
                 foreach (var keyPair in item.Value)
                 {
+                    cnt++;
                     overlaps.Add((int)keyPair.Value);
                 }
+
+                Debug.WriteLine($"cnt: {cnt} - key:{item.Key} - cnt:{item.Value.Count}");
+
             }
 
             return overlaps.ToArray();
@@ -469,7 +492,7 @@ namespace NeoCortexApi.DistributedComputeLib
                 {
                     PermanenceChanges = permChanges,
                     ColumnKeys = placement.Value }, 
-                    this.Config.ConnectionTimout).Result;
+                    this.Config.ConnectionTimeout).Result;
             });
         }
 
@@ -489,7 +512,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
             Parallel.ForEach(partitionMap, opts, (placement) =>
             {
-                placement.Key.Ask<int>(new BumUpWeakColumnsMsg { ColumnKeys = placement.Value }, this.Config.ConnectionTimout);
+                placement.Key.Ask<int>(new BumUpWeakColumnsMsg { ColumnKeys = placement.Value }, this.Config.ConnectionTimeout);
             });
         }
 
@@ -531,7 +554,7 @@ namespace NeoCortexApi.DistributedComputeLib
                         new KeyPair { Key=key, Value=value }
                     }
 
-            }, this.Config.ConnectionTimout).Result;
+            }, this.Config.ConnectionTimeout).Result;
 
             if (isSet != 1)
                 throw new ArgumentException("Cannot add the element with specified key!");
@@ -547,7 +570,7 @@ namespace NeoCortexApi.DistributedComputeLib
         {
             var partActor = GetPartitionActorFromKey(key);
 
-            Result result = partActor.Ask<Result>(new GetElementMsg { Key = key }, this.Config.ConnectionTimout).Result;
+            Result result = partActor.Ask<Result>(new GetElementMsg { Key = key }, this.Config.ConnectionTimeout).Result;
 
             if (result.IsError == false)
             {

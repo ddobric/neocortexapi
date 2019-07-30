@@ -10,5 +10,10 @@ namespace NeoCortexApi.Entities
         public object Key { get; set; }
 
         public object Value { get; set; }
+
+        public override string ToString()
+        {
+            return $"Key: {this.Key} - Val: {Value}";
+        }
     }
 }

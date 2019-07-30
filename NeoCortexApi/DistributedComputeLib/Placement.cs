@@ -1,4 +1,5 @@
 ﻿using Akka.Actor;
+using AkkaSb.Net;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,7 +10,7 @@ namespace NeoCortexApi.DistributedComputeLib
     {
         public int NodeIndx { get; set; }
 
-        public string NodeUrl { get; set; }
+        public string NodePath { get; set; }
 
         public int PartitionIndx { get; set; }
 
@@ -17,6 +18,11 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public TKey MaxKey { get; set; }
 
-        public IActorRef ActorRef { get; set; }
+        public object ActorRef { get; set; }
+
+        public override string ToString()
+        {
+            return $"Partition: {PartitionIndx}, Node: {NodePath}, MinKey:{MinKey}, MaxKey: {MaxKey} TotalKeys: {(int)(object)MaxKey-(int)(object)MinKey + 1}" ;
+        }
     }
 }

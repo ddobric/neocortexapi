@@ -19,7 +19,7 @@ namespace NeoCortexApi.Network
 
         }
 
-        public CortexRegion(string name, List<CortexLayer<object,object>> layers)
+        public CortexRegion(string name, List<CortexLayer<object, object>> layers)
         {
             this.Name = name;
             this.HtmLayers = layers;
@@ -35,11 +35,11 @@ namespace NeoCortexApi.Network
             return this;
         }
 
-        public void Compute(object input, Boolean learn)
+        public void Compute(int[] input, Boolean learn)
         {
             foreach (var layer in this.HtmLayers)
             {
-                  layer.Compute(input, learn);
+                layer.Compute(input, learn);
             }
         }
         #endregion

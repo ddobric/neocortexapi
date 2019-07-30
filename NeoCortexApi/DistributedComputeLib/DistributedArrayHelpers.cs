@@ -18,17 +18,17 @@ namespace NeoCortexApi.DistributedComputeLib
         /** Empty array constant */
         private static int[] EMPTY_ARRAY = new int[0];
 
-        public static string ArrToString(this IDistributedArray arr)
-        {
-            StringBuilder sb = new StringBuilder();
-            foreach (var item in arr)
-            {
-                sb.Append(item.ToString());
-                sb.Append(",");
-            }
-           // var value = string.Join(",", arr.Select(x => x.ToString()).ToArray());
-            return sb.ToString();
-        }
+        //public static string ArrToString(this IDistributedArray arr)
+        //{
+        //    StringBuilder sb = new StringBuilder();
+        //    foreach (var item in arr)
+        //    {
+        //        sb.Append(item.ToString());
+        //        sb.Append(",");
+        //    }
+        //   // var value = string.Join(",", arr.Select(x => x.ToString()).ToArray());
+        //    return sb.ToString();
+        //}
 
         //public static string ArrToString(this /*int[][]*/ IDistributedArray<int> arr)
         //{

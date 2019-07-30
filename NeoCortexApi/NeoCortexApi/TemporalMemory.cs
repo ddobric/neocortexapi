@@ -73,6 +73,7 @@ namespace NeoCortexApi
                 //If columns have not been previously configured
                 if (colZero == null)
                     matrix.set(i, column);
+
             }
             //Only the TemporalMemory initializes cells so no need to test for redundancy
             this.connections.setCells(cells);
@@ -126,7 +127,14 @@ namespace NeoCortexApi
                 activeColumns.Add(conn.getColumn(indx));
             }
 
-            Func<Object, Column> segToCol = segment => ((DistalDendrite)segment).getParentCell().getParentColumn();
+            //Func<Object, Column> segToCol = segment => ((DistalDendrite)segment).getParentCell().getParentColumnIndex();
+
+            Func<Object, Column> segToCol = (segment) =>
+            {
+                var colIndx = ((DistalDendrite)segment).getParentCell().getParentColumnIndex();
+                var parentCol = this.connections.getMemory().get(colIndx);
+                return parentCol;
+            };
 
             Func<object, Column> times1Fnc = x => (Column)x;
 
@@ -270,7 +278,7 @@ namespace NeoCortexApi
             string[] arr = new string[predictiveCells.Count];
             foreach (Cell c in predictiveCells)
             {
-                arr[i] = c.Index +"-" + c.Column.Index;
+                arr[i] = c.Index +"-" + c.ParentColumnIndex;
                 i++;
             }
             //string output = string.Join("", predictiveCells);
@@ -654,7 +662,7 @@ namespace NeoCortexApi
 
             foreach (Synapse s in synapsesToDestroy)
             {
-                conn.destroySynapse(s);
+                conn.destroySynapse(s, segment);
             }
 
             if (conn.GetNumSynapses(segment) == 0)

@@ -6,7 +6,7 @@
               event-stream = on
               unhandled = on
         }
-	loglevel=DEBUG
+	loglevel=INFO
      actor {
            provider = "Akka.Remote.RemoteActorRefProvider, Akka.Remote"	               
     }
@@ -23,9 +23,8 @@
 			prune-quarantine-marker-after = 2 d
 			system-message-ack-piggyback-timeout = 3 s
 		}
-         helios.tcp {
-			maximum-frame-size = 32000000b
-			dns-use-ipv6 = false
+        dot-netty.tcp {
+			maximum-frame-size = 64000000b
             port = @PORT
 			public-hostname = @PUBHOSTNAME
             hostname = @HOSTNAME

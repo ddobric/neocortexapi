@@ -72,13 +72,15 @@ namespace NeoCortexApi.Network
             for (int i = 0; i < this.HtmModules.Count; i++)
             {
                 dynamic module = this.HtmModules[i];
+
                 dynamic moduleInput = (i == 0) ? input : moduleOutput;
+
                 moduleOutput = module.Compute(moduleInput, learn);
             }
 
             return (TOUT)moduleOutput;
 
-          
+
             //if (output is IIntegerArrayData)
             //{
             //    ComputeFollowingModules(module.Name, ((IIntegerArrayData)output).Data, learn);

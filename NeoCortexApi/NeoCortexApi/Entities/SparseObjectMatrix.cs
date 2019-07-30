@@ -29,7 +29,7 @@ namespace NeoCortexApi.Entities
         {
             get
             {
-                return this.sparseMap is IRemotelyDistributed;
+                return this.sparseMap is IHtmDistCalculus;
             }
         }
 
@@ -37,16 +37,16 @@ namespace NeoCortexApi.Entities
         /// Gets partitions (nodes) with assotiated indexes.
         /// </summary>
         /// <returns></returns>
-        public List<(int partId, int minKey, int maxKey)> GetPartitions()
-        {
-            if (IsRemotelyDistributed)
-            {
-                IRemotelyDistributed map = this.sparseMap as IRemotelyDistributed;
-                return map.GetPartitions();
-            }
-            else
-                throw new InvalidOperationException("GetPartitions can only be ued for remotely distributed collections.");
-        }
+        //public List<(int partId, int minKey, int maxKey)> GetPartitions()
+        //{
+        //    if (IsRemotelyDistributed)
+        //    {
+        //        IHtmDistCalculus map = this.sparseMap as IHtmDistCalculus;
+        //        return map.GetPartitions();
+        //    }
+        //    else
+        //        throw new InvalidOperationException("GetPartitions can only be ued for remotely distributed collections.");
+        //}
 
         /**
          * Constructs a new {@code SparseObjectMatrix}
@@ -81,7 +81,7 @@ namespace NeoCortexApi.Entities
         {
             //
             // If not distributed in cluster, we add element by element.
-            if (!(this.sparseMap is IRemotelyDistributed))
+            if (!(this.sparseMap is IHtmDistCalculus))
             {
                 if (!sparseMap.ContainsKey(index))
                     sparseMap.Add(index, (T)obj);

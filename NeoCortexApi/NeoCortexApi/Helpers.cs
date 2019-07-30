@@ -1,4 +1,5 @@
-﻿using ImageBinarizer;
+﻿using AkkaSb.Net;
+using ImageBinarizer;
 using NeoCortexApi.DistributedCompute;
 using NeoCortexApi.Entities;
 using System;
@@ -99,11 +100,11 @@ namespace NeoCortexApi
         {
             get
             {
-                //var nodes = new List<string>()
-                //{
-                //      "akka.tcp://HtmCluster@localhost:8081",
-                //      "akka.tcp://HtmCluster@localhost:8082"
-                //};
+                var nodes = new List<string>()
+                {
+                      "akka.tcp://HtmCluster@localhost:8081",
+                     // "akka.tcp://HtmCluster@localhost:8082"
+                };
 
                 //var nodes = new List<string>()
                 //{
@@ -111,12 +112,12 @@ namespace NeoCortexApi
                 //      "akka.tcp://HtmCluster@htm-node2.westeurope.azurecontainer.io:8081"
                 //};
 
-                var nodes = new List<string>()
-                {
-                     "akka.tcp://HtmCluster@phd-node1.westeurope.cloudapp.azure.com:8080",
-                     "akka.tcp://HtmCluster@phd-node2.westeurope.cloudapp.azure.com:8080"
+                //var nodes = new List<string>()
+                //{
+                //     "akka.tcp://HtmCluster@phd-node1.westeurope.cloudapp.azure.com:8080",
+                //     "akka.tcp://HtmCluster@phd-node2.westeurope.cloudapp.azure.com:8080"
 
-                };
+                //};
 
 
                 return nodes;
@@ -136,6 +137,30 @@ namespace NeoCortexApi
                     PartitionsPerNode = 200,
                     ProcessingBatch = 10
                 };
+            }
+        }
+
+        /// <summary>
+        /// Gets default sparse dictionary configuration.
+        /// </summary>
+        public static ActorSbConfig DefaultSbConfig
+        {
+            get
+            {
+                string sbConnStr = "Endpoint=sb://bastasample.servicebus.windows.net/;SharedAccessKeyName=demo;SharedAccessKey=MvwVbrrJdsMQyhO/0uwaB5mVbuXyvYa3WRNpalHi0LQ=";
+
+                ActorSbConfig cfg = new ActorSbConfig();
+                cfg.SbConnStr = sbConnStr;
+                cfg.ReplyMsgQueue = "actorsystem/rcvlocal";
+                cfg.RequestMsgTopic = "actorsystem/actortopic";
+                cfg.NumOfElementsPerPartition = -1; // This means, number of partitions equals number of nodes.
+                cfg.NumOfPartitions = 35;// Should be uniformly distributed across nodes.
+                cfg.BatchSize = 1000;
+                cfg.ConnectionTimeout = TimeSpan.FromMinutes(5);
+              
+                cfg.Nodes = new List<string>() { "node1", "node2", "node3" };
+
+                return cfg;
             }
         }
 
