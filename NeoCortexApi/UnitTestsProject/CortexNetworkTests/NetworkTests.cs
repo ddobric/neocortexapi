@@ -40,7 +40,7 @@ namespace UnitTestsProject
             Dictionary<string, object> settings = new Dictionary<string, object>();
             settings.Add("W", 25);
             //settings.Add("N", 100);
-            settings.Add("Radius", 1);
+            //settings.Add("Radius", 1);
             
             EncoderBase encoder = new CategoryEncoder(categories, settings);
             //encoder.Encode()
