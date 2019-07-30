@@ -61,13 +61,18 @@ namespace UnitTestsProject
                     var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
 
                     cls.Learn(input, lyrOut.activeCells.ToArray(), lyrOut.predictiveCells.ToArray());
-                    
+
                     Debug.WriteLine($"Current Input: {cls.GetInputValue(lyrOut.activeCells.ToArray())}");
                     Debug.WriteLine($"Predict Input: {cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray())}");
                     Debug.WriteLine("-----------------------------------------------------------\n----------------------------------------------------------");
                 }
+                if (i == 10)
+                {
+                    inputs = new string[] { "A", "B", "D", "D" };
+                }
             }
-            //Debug.WriteLine("------------------------------------------------------------------------\n----------------------------------------------------------------------------");
+            
+            Debug.WriteLine("------------------------------------------------------------------------\n----------------------------------------------------------------------------");
             /*
             learn = false;
             for (int i = 0; i < 19; i++)
