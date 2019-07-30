@@ -297,17 +297,10 @@ namespace NeoCortexApi
         public int[] Compute(int[] input, bool learn)
         {
             int[] activeColumnsArr = new int[this.connections.HtmConfig.NumColumns];
-            //var activeCols = new int[activeColumnsArr.Length] ;
-            for (int i = 0; i < 120; i++)
-            {
-                this.compute(input, activeColumnsArr, learn);
-                //activeCols = ArrayUtils.IndexWhere(activeColumnsArr, (el) => el == 1);
-                //Debug.WriteLine($"Active Column: {Helpers.StringifyVector(activeCols)}");
-            }
-            var activeCols = ArrayUtils.IndexWhere(activeColumnsArr, (el) => el == 1);
-            Debug.WriteLine($"Active Column: {Helpers.StringifyVector(activeCols)}");
-            //Debug.WriteLine("-----------------------------------------------------------------------------\n---------------------------------------------------------------");
-            return activeCols;
+
+            this.compute(input, activeColumnsArr, learn);
+
+            return activeColumnsArr;
         }
 
         /**

@@ -278,7 +278,7 @@ namespace NeoCortexApi
             string[] arr = new string[predictiveCells.Count];
             foreach (Cell c in predictiveCells)
             {
-                arr[i] = c.Index +"-" + c.Column.Index;
+                arr[i] = c.Index +"-" + c.ParentColumnIndex;
                 i++;
             }
             //string output = string.Join("", predictiveCells);
