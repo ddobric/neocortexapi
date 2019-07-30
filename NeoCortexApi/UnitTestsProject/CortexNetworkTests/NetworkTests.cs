@@ -68,6 +68,7 @@ namespace UnitTestsProject
                 }
                 if (i == 10)
                 {
+                    learn = false;
                     inputs = new string[] { "A", "B", "D", "D" };
                 }
             }

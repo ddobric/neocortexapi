@@ -41,9 +41,18 @@ namespace NeoCortexApi.Network
         /// <returns></returns>
         public TIN GetInputValue(Cell[] output)
         {
+            /*
             if (output.Length != 0 && activeMap.ContainsKey(FlatArray1(output)))
             {
                 return activeMap[FlatArray1(output)];
+            }
+            */
+            foreach (int[] arr in activeMap.Keys)
+            {
+                if (arr.SequenceEqual(FlatArray1(output)))
+                {
+                    return activeMap[arr];
+                }
             }
             return default(TIN);
         }
