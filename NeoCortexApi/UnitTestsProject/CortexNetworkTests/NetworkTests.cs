@@ -53,7 +53,8 @@ namespace UnitTestsProject
             HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
 
             string[] inputs = new string[] { "A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L", "M", "N", "O" };
-            for (int i = 0; i < 10; i++)
+            inputs = new string[] { "A", "B", "C", "D", "E" };
+            for (int i = 0; i < 100; i++)
             {
                 foreach (var input in inputs)
                 {
@@ -63,6 +64,8 @@ namespace UnitTestsProject
 
                     Debug.WriteLine("-----------------------------------------------------------\n----------------------------------------------------------");
                 }
+
+                tm1.reset(mem);
             }
             //Debug.WriteLine("------------------------------------------------------------------------\n----------------------------------------------------------------------------");
             /*
