@@ -73,7 +73,7 @@ namespace NeoCortexApi.Entities
             defaultTemporalParams.Add(KEY.CONNECTED_PERMANENCE, 0.5);
             defaultTemporalParams.Add(KEY.PERMANENCE_INCREMENT, 0.10);
             defaultTemporalParams.Add(KEY.PERMANENCE_DECREMENT, 0.10);
-            defaultTemporalParams.Add(KEY.PREDICTED_SEGMENT_DECREMENT, 0.0);
+            defaultTemporalParams.Add(KEY.PREDICTED_SEGMENT_DECREMENT, 0.1);
             defaultTemporalParams.Add(KEY.LEARN, true);
 
             DEFAULTS_TEMPORAL = defaultTemporalParams;

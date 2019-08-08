@@ -1,22 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using NeoCortexApi.Entities;
+using NeoCortexApi.Utility;
 
 namespace NeoCortexApi.Network
 {
     public class HtmClassifier<TIN, TOUT>
     {
-        private Dictionary<string, TIN> outputMap = new Dictionary<string, TIN>();
+        private Dictionary<int[], TIN> activeMap = new Dictionary<int[], TIN>();
 
-        private Dictionary<string, TIN> predictMap = new Dictionary<string, TIN>();
+        private Dictionary<int[], TIN> predictMap = new Dictionary<int[], TIN>();
 
-        public void Learn(TIN input, Cell output, Cell predictedOutput)
+        private Dictionary<TIN, int[]> activeArray = new Dictionary<TIN, int[]>();
+
+        public void Learn(TIN input, Cell[] output, Cell[] predictedOutput)
         {
-            //this.outputMap.Add(ComputeHash(flatArray(output)), input);
+            if (!activeMap.ContainsKey(FlatArray1(output)))
+            {
+                this.activeMap.Add(FlatArray1(output), input);
+            }
 
-            //this.predictMap.Add(ComputeHash(flatArray(predictedOutput)), input);
+            if (!activeArray.ContainsKey(input))
+            {
+                this.activeArray.Add(input, FlatArray1(output));
+            }
+
+            if (!predictMap.ContainsKey(FlatArray1(predictedOutput)))
+            {
+                this.predictMap.Add(FlatArray1(predictedOutput), input);
+            }
         }
 
         /// <summary>
@@ -24,10 +39,23 @@ namespace NeoCortexApi.Network
         /// </summary>
         /// <param name="output"></param>
         /// <returns></returns>
-        //public TIN GetInputValue(Cell output)
-        //{
-        //    return outputMap[ComputeHash(flatArray(output)];
-        //}
+        public TIN GetInputValue(Cell[] output)
+        {
+            /*
+            if (output.Length != 0 && activeMap.ContainsKey(FlatArray1(output)))
+            {
+                return activeMap[FlatArray1(output)];
+            }
+            */
+            foreach (int[] arr in activeMap.Keys)
+            {
+                if (arr.SequenceEqual(FlatArray1(output)))
+                {
+                    return activeMap[arr];
+                }
+            }
+            return default(TIN);
+        }
 
 
         /// <summary>
@@ -35,12 +63,33 @@ namespace NeoCortexApi.Network
         /// </summary>
         /// <param name="output"></param>
         /// <returns></returns>
-        public TIN GetPredictedInputValue(int[,] output)
+        public String GetPredictedInputValue(Cell[] output)
         {
-            return default(TIN);
+            int result = 0;
+            string charOutput = null;
+            int[] arr = new int[output.Length];
+            for (int i = 0; i < output.Length; i++)
+            {
+                arr[i] = output[i].Index;
+            }
+            if (output.Length != 0)
+            {
+                foreach (TIN inputVal in activeArray.Keys)
+                {
+                    int count = predictNextValue(arr, activeArray[inputVal]);
+                    if (count > result)
+                    {
+                        result = count;
+                        charOutput = inputVal as String;
+                    }
+                }
+                return charOutput;
+                //return activeMap[ComputeHash(FlatArray(output))];
+            }
+            return null;
         }
 
-
+        
         private string ComputeHash(byte[] rawData)
         {
             // Create a SHA256   
@@ -58,21 +107,34 @@ namespace NeoCortexApi.Network
                 return builder.ToString();
             }
         }
+        
 
-        private static byte[] flatArray(int[,] output)
+        
+        private static byte[] FlatArray(Cell[] output)
         {
-            byte[] arr = new byte[output.LongLength];
-            var lenX = output.GetLength(0);
-            var lenY = output.GetLength(1);
-            for (int x = 0; x < lenX; x += 1)
+            byte[] arr = new byte[output.Length];
+            for (int i = 0; i < output.Length; i++)
             {
-                for (int y = 0; y < lenY; y += 1)
-                {
-                    arr[lenX * x + y] = (byte)output[x, y];
-                }
+                arr[i] = (byte)output[i].Index;
             }
-
             return arr;
+        }
+
+        private static int[] FlatArray1(Cell[] output)
+        {
+            int[] arr = new int[output.Length];
+            for (int i = 0; i < output.Length; i++)
+            {
+                arr[i] = output[i].Index;
+            }
+            return arr;
+        }
+
+        private int predictNextValue(int[] activeArr, int[] predictedArr)
+        {
+            var same = predictedArr.Intersect(activeArr);
+
+            return same.Count();
         }
     }
 }

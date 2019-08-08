@@ -300,7 +300,7 @@ namespace NeoCortexApi
 
             this.compute(input, activeColumnsArr, learn);
 
-            return activeColumnsArr;
+            return ArrayUtils.IndexWhere(activeColumnsArr, (el) => el == 1);
         }
 
         /**
