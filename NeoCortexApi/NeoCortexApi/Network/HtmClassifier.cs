@@ -92,7 +92,7 @@ namespace NeoCortexApi.Network
         /// <returns></returns>
         public String GetPredictedInputValue(Cell[] output)
         {
-            int result = 0;
+            int maxSameBits = 0;
             string charOutput = null;
             int[] arr = new int[output.Length];
             for (int i = 0; i < output.Length; i++)
@@ -103,10 +103,10 @@ namespace NeoCortexApi.Network
             {
                 foreach (TIN inputVal in activeArray.Keys)
                 {
-                    int count = predictNextValue(arr, activeArray[inputVal]);
-                    if (count > result)
+                    int numOfSameBits = predictNextValue(arr, activeArray[inputVal]);
+                    if (numOfSameBits > maxSameBits)
                     {
-                        result = count;
+                        maxSameBits = numOfSameBits;
                         charOutput = inputVal as String;
                     }
                 }

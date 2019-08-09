@@ -70,7 +70,7 @@ namespace UnitTestsProject
 
             layer1.HtmModules.Add(tm1);
 
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 2000; i++)
             {
                 foreach (var input in inputs)
                 {
@@ -81,9 +81,9 @@ namespace UnitTestsProject
                     Debug.WriteLine($"Current Input: {cls.GetInputValue(lyrOut.activeCells.ToArray())}");
                     Debug.WriteLine($"Predict Input: {cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray())}");
                     Debug.WriteLine("-----------------------------------------------------------\n----------------------------------------------------------");
-
-                    tm1.reset(mem);
                 }
+
+                tm1.reset(mem);
             }
             
             Debug.WriteLine("------------------------------------------------------------------------\n----------------------------------------------------------------------------");
