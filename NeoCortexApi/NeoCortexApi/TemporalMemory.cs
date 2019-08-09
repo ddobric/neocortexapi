@@ -207,8 +207,7 @@ namespace NeoCortexApi
                 arr[count] = activeCell.Index;
                 count++;
             }
-
-            Debug.WriteLine($"TM Active Cells: {Helpers.StringifyVector(arr)}");
+            //Debug.WriteLine($"Active Cells: {Helpers.StringifyVector(arr)}");
         }
 
         /**

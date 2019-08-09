@@ -16,6 +16,7 @@ namespace NeoCortexApi.Network
         private Dictionary<int[], TIN> predictMap = new Dictionary<int[], TIN>();
 
         private Dictionary<TIN, int[]> activeArray = new Dictionary<TIN, int[]>();
+        
 
         public void Learn1(TIN input, Cell[] output, Cell[] predictedOutput)
         {

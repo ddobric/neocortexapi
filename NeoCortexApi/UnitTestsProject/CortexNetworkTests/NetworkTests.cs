@@ -52,35 +52,24 @@ namespace UnitTestsProject
             //layer1.Compute();
 
             HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
+            HtmClassifier_Test<string, ComputeCycle> cls1 = new HtmClassifier_Test<string, ComputeCycle>();
 
-            string[] inputs = new string[] { "A", "B", "C", "D" };
-
-            // This trains SP.
-            foreach (var input in inputs)
-            {
-                Debug.WriteLine($" ** {input} **");
-                for (int i = 0; i < 3; i++)
-                {
-                    var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
-                }              
-
-            }
-
-            // Now, we start with sequence learning.
-
-            layer1.HtmModules.Add(tm1);
-
-            for (int i = 0; i < 2000; i++)
+            string[] inputs = new string[] {"A", "B", "C", "D"};
+            for (int i = 0; i < 200; i++)
             {
                 foreach (var input in inputs)
                 {
                     var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
-
+                    //cls1.Learn(input,lyrOut.activeCells.ToArray(),learn);
+                    //Debug.WriteLine($"Current Input: {input}");
                     cls.Learn(input, lyrOut.activeCells.ToArray(), lyrOut.predictiveCells.ToArray());
-
+                    if (learn == false)
+                    {
+                        //Debug.WriteLine($"Next Input: {cls1.Inference(lyrOut.predictiveCells.ToArray())}");
+                    }
                     Debug.WriteLine($"Current Input: {cls.GetInputValue(lyrOut.activeCells.ToArray())}");
                     Debug.WriteLine($"Predict Input: {cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray())}");
-                    Debug.WriteLine("-----------------------------------------------------------\n----------------------------------------------------------");
+                    //Debug.WriteLine("-----------------------------------------------------------\n----------------------------------------------------------");
                 }
 
                 tm1.reset(mem);
