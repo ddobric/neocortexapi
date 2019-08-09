@@ -52,6 +52,7 @@ namespace UnitTestsProject
             //layer1.Compute();
 
             HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
+            HtmClassifier_Test<string, ComputeCycle> cls1 = new HtmClassifier_Test<string, ComputeCycle>();
 
             string[] inputs = new string[] {"A", "B", "C", "D"};
             for (int i = 0; i < 20; i++)
@@ -59,17 +60,21 @@ namespace UnitTestsProject
                 foreach (var input in inputs)
                 {
                     var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
-
-                    cls.Learn(input, lyrOut.activeCells.ToArray(), lyrOut.predictiveCells.ToArray());
-
-                    Debug.WriteLine($"Current Input: {cls.GetInputValue(lyrOut.activeCells.ToArray())}");
-                    Debug.WriteLine($"Predict Input: {cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray())}");
+                    cls1.Learn(input,lyrOut.activeCells.ToArray(),learn);
+                    Debug.WriteLine($"Current Input: {input}");
+                    //cls.Learn(input, lyrOut.activeCells.ToArray(), lyrOut.predictiveCells.ToArray());
+                    if (learn == false)
+                    {
+                        Debug.WriteLine($"Next Input: {cls1.Inference(lyrOut.predictiveCells.ToArray())}");
+                    }
+                    //Debug.WriteLine($"Current Input: {cls.GetInputValue(lyrOut.activeCells.ToArray())}");
+                    //Debug.WriteLine($"Predict Input: {cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray())}");
                     Debug.WriteLine("-----------------------------------------------------------\n----------------------------------------------------------");
                 }
-                if (i == 10)
+                if (i == 5)
                 {
                     learn = false;
-                    inputs = new string[] { "A", "B", "D", "D" };
+                    
                 }
             }
             
