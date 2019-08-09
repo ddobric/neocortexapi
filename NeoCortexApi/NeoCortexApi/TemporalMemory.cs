@@ -281,10 +281,10 @@ namespace NeoCortexApi
                 i++;
             }
 
-            Debug.WriteLine($"ACT: {activity.Active.Count}, POT: {activity.Potential.Count}");
+            //Debug.WriteLine($"ACT: {activity.Active.Count}, POT: {activity.Potential.Count}");
             //string output = string.Join("", predictiveCells);
-            Debug.WriteLine($"Active Segs: {activeSegments.Count} Matching segs: {matchingSegments.Count}, Predicted cells: {Helpers.StringifyVector(arr)}");
-            Debug.WriteLine("-----------------------------------------------------\n-----------------------------------------------------");
+            //Debug.WriteLine($"Active Segs: {activeSegments.Count} Matching segs: {matchingSegments.Count}, Predicted cells: {Helpers.StringifyVector(arr)}");
+            //Debug.WriteLine("-----------------------------------------------------\n-----------------------------------------------------");
             if (learn)
             {
                 foreach (var segment in activeSegments)
