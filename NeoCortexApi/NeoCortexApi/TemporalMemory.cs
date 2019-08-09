@@ -208,7 +208,7 @@ namespace NeoCortexApi
                 arr[count] = activeCell.Index;
                 count++;
             }
-            Debug.WriteLine($"Active Cells: {Helpers.StringifyVector(arr)}");
+            //Debug.WriteLine($"Active Cells: {Helpers.StringifyVector(arr)}");
         }
 
         /**
@@ -283,7 +283,7 @@ namespace NeoCortexApi
             }
             //string output = string.Join("", predictiveCells);
             Debug.WriteLine($"Predicted cells: {Helpers.StringifyVector(arr)}");
-            Debug.WriteLine("-----------------------------------------------------\n-----------------------------------------------------");
+            //Debug.WriteLine("-----------------------------------------------------\n-----------------------------------------------------");
             if (learn)
             {
                 foreach (var segment in activeSegments)

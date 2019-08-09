@@ -55,25 +55,27 @@ namespace UnitTestsProject
             HtmClassifier_Test<string, ComputeCycle> cls1 = new HtmClassifier_Test<string, ComputeCycle>();
 
             string[] inputs = new string[] {"A", "B", "C", "D"};
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 200; i++)
             {
                 foreach (var input in inputs)
                 {
                     var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
-                    cls1.Learn(input,lyrOut.activeCells.ToArray(),learn);
-                    Debug.WriteLine($"Current Input: {input}");
-                    //cls.Learn(input, lyrOut.activeCells.ToArray(), lyrOut.predictiveCells.ToArray());
+                    //cls1.Learn(input,lyrOut.activeCells.ToArray(),learn);
+                    //Debug.WriteLine($"Current Input: {input}");
+                    cls.Learn(input, lyrOut.activeCells.ToArray(), lyrOut.predictiveCells.ToArray());
                     if (learn == false)
                     {
-                        Debug.WriteLine($"Next Input: {cls1.Inference(lyrOut.predictiveCells.ToArray())}");
+                        //Debug.WriteLine($"Next Input: {cls1.Inference(lyrOut.predictiveCells.ToArray())}");
                     }
-                    //Debug.WriteLine($"Current Input: {cls.GetInputValue(lyrOut.activeCells.ToArray())}");
-                    //Debug.WriteLine($"Predict Input: {cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray())}");
-                    Debug.WriteLine("-----------------------------------------------------------\n----------------------------------------------------------");
+                    Debug.WriteLine($"Current Input: {cls.GetInputValue(lyrOut.activeCells.ToArray())}");
+                    Debug.WriteLine($"Predict Input: {cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray())}");
+                    //Debug.WriteLine("-----------------------------------------------------------\n----------------------------------------------------------");
                 }
+                tm1.reset(mem);
                 if (i == 5)
                 {
                     learn = false;
+                    //tm1.reset(mem);
                     
                 }
             }
