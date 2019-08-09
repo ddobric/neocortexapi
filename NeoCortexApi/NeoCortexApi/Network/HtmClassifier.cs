@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -16,23 +17,44 @@ namespace NeoCortexApi.Network
 
         private Dictionary<TIN, int[]> activeArray = new Dictionary<TIN, int[]>();
 
-        public void Learn(TIN input, Cell[] output, Cell[] predictedOutput)
+        public void Learn1(TIN input, Cell[] output, Cell[] predictedOutput)
         {
-            if (!activeMap.ContainsKey(FlatArray1(output)))
+            var outIndicies = GetCellIndicies(output);
+
+            if (!activeMap.ContainsKey(GetCellIndicies(output)))
             {
-                this.activeMap.Add(FlatArray1(output), input);
+                this.activeMap.Add(GetCellIndicies(output), input);
             }
 
             if (!activeArray.ContainsKey(input))
             {
-                this.activeArray.Add(input, FlatArray1(output));
+                this.activeArray.Add(input, GetCellIndicies(output));
             }
 
-            if (!predictMap.ContainsKey(FlatArray1(predictedOutput)))
+            if (!predictMap.ContainsKey(GetCellIndicies(predictedOutput)))
             {
-                this.predictMap.Add(FlatArray1(predictedOutput), input);
+                this.predictMap.Add(GetCellIndicies(predictedOutput), input);
             }
         }
+
+        public void Learn(TIN input, Cell[] output, Cell[] predictedOutput)
+        {
+            if (!activeMap.ContainsKey(GetCellIndicies(output)))
+            {
+                this.activeMap.Add(GetCellIndicies(output), input);
+            }
+
+            if (!activeArray.ContainsKey(input))
+            {
+                this.activeArray.Add(input, GetCellIndicies(output));
+            }
+
+            if (!predictMap.ContainsKey(GetCellIndicies(predictedOutput)))
+            {
+                this.predictMap.Add(GetCellIndicies(predictedOutput), input);
+            }
+        }
+
 
         /// <summary>
         /// Get corresponding input value for current cycle.
@@ -47,9 +69,14 @@ namespace NeoCortexApi.Network
                 return activeMap[FlatArray1(output)];
             }
             */
+
+            //int k = 0;
             foreach (int[] arr in activeMap.Keys)
             {
-                if (arr.SequenceEqual(FlatArray1(output)))
+                var arr2 = GetCellIndicies(output);
+                var rs = MathHelpers.GetHammingDistance(arr, arr2, true);
+                //Debug.WriteLine($">> {rs}");
+                if (arr.SequenceEqual(arr2))
                 {
                     return activeMap[arr];
                 }
@@ -120,7 +147,7 @@ namespace NeoCortexApi.Network
             return arr;
         }
 
-        private static int[] FlatArray1(Cell[] output)
+        private static int[] GetCellIndicies(Cell[] output)
         {
             int[] arr = new int[output.Length];
             for (int i = 0; i < output.Length; i++)

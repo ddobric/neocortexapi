@@ -72,13 +72,20 @@ namespace NeoCortexApi.Utility
                     {
                         hammingDistance[i] = ((originArray[i].Length - numOfDifferentBits) * 100 / originArray[i].Length);
                     }
-                    
+
                 }
                 else
                     hammingDistance[i] = double.NegativeInfinity;
             }
 
             return hammingDistance;
+        }
+
+        public static bool Match(int[] originArray, int[] comparingArray, float thresholdPct)
+        {
+            var res = GetHammingDistance(originArray, comparingArray, true);
+            return true;
+
         }
 
     }

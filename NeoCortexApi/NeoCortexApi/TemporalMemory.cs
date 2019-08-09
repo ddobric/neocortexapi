@@ -154,7 +154,7 @@ namespace NeoCortexApi
             {
                 columnData = columnData.set(t);
 
-                if (columnData.isExistsAnyActiveCol(cIndexofACTIVE_COLUMNS))
+                if (columnData.IsExistAnyActiveCol(cIndexofACTIVE_COLUMNS))
                 {
                     // If there some active segment already...
                     if (columnData.activeSegments != null && columnData.activeSegments.Count > 0)
@@ -178,8 +178,7 @@ namespace NeoCortexApi
                         //
                         // If no active segments are detected (start of learning) then all cells are activated
                         // and a random single cell is chosen as a winner.
-                        //
-                        BurstingTupple burstingResult = BurstColumn(conn, columnData.Column(), columnData.matchingSegments,
+                        BurstingResult burstingResult = BurstColumn(conn, columnData.Column(), columnData.matchingSegments,
                             prevActiveCells, prevWinnerCells, permanenceIncrement, permanenceDecrement, conn.getRandom(),
                                learn);
 
@@ -208,7 +207,8 @@ namespace NeoCortexApi
                 arr[count] = activeCell.Index;
                 count++;
             }
-            Debug.WriteLine($"Active Cells: {Helpers.StringifyVector(arr)}");
+
+            Debug.WriteLine($"TM Active Cells: {Helpers.StringifyVector(arr)}");
         }
 
         /**
@@ -281,8 +281,10 @@ namespace NeoCortexApi
                 arr[i] = c.Index +"-" + c.ParentColumnIndex;
                 i++;
             }
+
+            Debug.WriteLine($"ACT: {activity.Active.Count}, POT: {activity.Potential.Count}");
             //string output = string.Join("", predictiveCells);
-            Debug.WriteLine($"Predicted cells: {Helpers.StringifyVector(arr)}");
+            Debug.WriteLine($"Active Segs: {activeSegments.Count} Matching segs: {matchingSegments.Count}, Predicted cells: {Helpers.StringifyVector(arr)}");
             Debug.WriteLine("-----------------------------------------------------\n-----------------------------------------------------");
             if (learn)
             {
@@ -406,7 +408,7 @@ namespace NeoCortexApi
          *                  cells       list of the processed column's cells
          *                  bestCell    the best cell
          */
-        public BurstingTupple BurstColumn(Connections conn, Column column, List<DistalDendrite> matchingSegments,
+        public BurstingResult BurstColumn(Connections conn, Column column, List<DistalDendrite> matchingSegments,
             ICollection<Cell> prevActiveCells, ICollection<Cell> prevWinnerCells, double permanenceIncrement, double permanenceDecrement,
                 Random random, bool learn)
         {
@@ -458,7 +460,7 @@ namespace NeoCortexApi
                 }
             }
 
-            return new BurstingTupple(cells, leastUsedCell);
+            return new BurstingResult(cells, leastUsedCell);
         }
 
 
@@ -722,19 +724,14 @@ namespace NeoCortexApi
             }
 
 
-            /**
-             * Returns a boolean flag indicating whether the slot contained by the
-             * tuple at the specified index is filled with the special empty
-             * indicator.
-             * 
-             * @param memberIndex   the index of the tuple to assess.
-             * @return  true if <em><b>not</b></em> none, false if it <em><b>is none</b></em>.
-             */
-            public bool isExistsAnyActiveCol(int memberIndex)
+            /// <summary>
+            /// Result indicates whether the slot at the specified index is empty</summary>
+            /// indicator.<param name="memberIndex">Index of slot.</param>
+            /// <returns></returns>
+            public bool IsExistAnyActiveCol(int memberIndex)
             {
                 if (m_Pair.Value.Count == 0 ||
                     m_Pair.Value[memberIndex].Count == 0 )
-                   // m_Pair.Value[memberIndex][0] == NeoCortexApi.Utility.GroupBy2<Column>.Slot<Pair<object, List<Column>>>.empty() )
                     return false;
                 else
                     return true;

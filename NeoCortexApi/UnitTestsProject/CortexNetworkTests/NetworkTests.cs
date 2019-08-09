@@ -48,12 +48,28 @@ namespace UnitTestsProject
             region0.AddLayer(layer1);
             layer1.HtmModules.Add(encoder);
             layer1.HtmModules.Add(sp1);
-            layer1.HtmModules.Add(tm1);
+            //layer1.HtmModules.Add(tm1);
             //layer1.Compute();
 
             HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
 
-            string[] inputs = new string[] {"A", "B", "C", "D"};
+            string[] inputs = new string[] { "A", "B", "C", "D" };
+
+            // This trains SP.
+            foreach (var input in inputs)
+            {
+                Debug.WriteLine($" ** {input} **");
+                for (int i = 0; i < 3; i++)
+                {
+                    var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
+                }              
+
+            }
+
+            // Now, we start with sequence learning.
+
+            layer1.HtmModules.Add(tm1);
+
             for (int i = 0; i < 20; i++)
             {
                 foreach (var input in inputs)
@@ -65,6 +81,8 @@ namespace UnitTestsProject
                     Debug.WriteLine($"Current Input: {cls.GetInputValue(lyrOut.activeCells.ToArray())}");
                     Debug.WriteLine($"Predict Input: {cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray())}");
                     Debug.WriteLine("-----------------------------------------------------------\n----------------------------------------------------------");
+
+                    tm1.reset(mem);
                 }
             }
             
