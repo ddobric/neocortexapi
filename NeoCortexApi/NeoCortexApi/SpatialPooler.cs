@@ -294,6 +294,12 @@ namespace NeoCortexApi
                 }
         */
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="input">Input vector</param>
+        /// <param name="learn">Learn or Predict.</param>
+        /// <returns>Indicies of active columns.</returns>
         public int[] Compute(int[] input, bool learn)
         {
             int[] activeColumnsArr = new int[this.connections.HtmConfig.NumColumns];
@@ -301,6 +307,27 @@ namespace NeoCortexApi
             this.compute(input, activeColumnsArr, learn);
 
             return ArrayUtils.IndexWhere(activeColumnsArr, (el) => el == 1);
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="input">Input vector</param>
+        /// <param name="learn">Learn or Predict.</param>
+        /// <param name="returnActiveColIndiciesOnly">If set on TRUE indicies of active columns are returned (sparse array of active columns).
+        /// If FALSE, dense aray of all coulmns is returned.</param>
+        /// <returns></returns>
+        public int[] Compute(int[] input, bool learn, bool returnActiveColIndiciesOnly = true)
+        {
+            int[] activeColumnsArr = new int[this.connections.HtmConfig.NumColumns];
+
+            this.compute(input, activeColumnsArr, learn);
+
+            if (returnActiveColIndiciesOnly)
+                return ArrayUtils.IndexWhere(activeColumnsArr, (el) => el == 1);
+            else
+                return activeColumnsArr;
         }
 
         /**
@@ -763,7 +790,7 @@ namespace NeoCortexApi
          */
         public virtual void AdaptSynapses(Connections c, int[] inputVector, int[] activeColumns)
         {
-         
+
             // Get all indicies of input vector, which are set on '1'.
             var inputIndices = ArrayUtils.IndexWhere(inputVector, inpBit => inpBit > 0);
 
@@ -772,7 +799,7 @@ namespace NeoCortexApi
             // First we initialize all permChanges to minimum decrement values,
             // which are used in a case of none-connections to input.
             ArrayUtils.fillArray(permChanges, -1 * c.getSynPermInactiveDec());
-         
+
             // Then we update all connected permChanges to increment values for connected values.
             // Permanences are set in conencted input bits to default incremental value.
             ArrayUtils.setIndexesTo(permChanges, inputIndices.ToArray(), c.getSynPermActiveInc());
@@ -812,7 +839,7 @@ namespace NeoCortexApi
                 double[] perm = pool.getSparsePermanences();
                 ArrayUtils.raiseValuesBy(c.getSynPermBelowStimulusInc(), perm);
                 int[] indexes = pool.getSparsePotential();
-               
+
                 updatePermanencesForColumnSparse(c, perm, col, indexes, true);
                 //var permStr = Helpers.StringifyVector(perm);
                 //Debug.WriteLine("pearm after bump up weak column:" + permStr);
@@ -1650,7 +1677,7 @@ namespace NeoCortexApi
             return result;
         }
 
-      
+
     }
 }
 

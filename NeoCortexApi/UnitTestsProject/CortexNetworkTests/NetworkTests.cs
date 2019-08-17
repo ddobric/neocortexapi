@@ -24,6 +24,8 @@ namespace UnitTestsProject
         {
             bool learn = true;
             Parameters p = Parameters.getAllDefaultParameters();
+            p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
+
             //string[] categories = new string[] {"A", "B", "C", "D","E","F","G","H","J","K"};
             string[] categories = new string[] { "A", "B", "C", "D" };
             CortexNetwork net = new CortexNetwork("my cortex");
@@ -31,11 +33,11 @@ namespace UnitTestsProject
             CortexRegion region0 = new CortexRegion("1st Region");
             regions.Add(region0);
 
-            SpatialPooler sp1 = new SpatialPooler();
+            SpatialPoolerMT sp1 = new SpatialPoolerMT();
             TemporalMemory tm1 = new TemporalMemory();
             var mem = new Connections();
             p.apply(mem);
-            sp1.init(mem);
+            sp1.init(mem, UnitTestHelpers.GetMemory());
             tm1.init(mem);
             Dictionary<string, object> settings = new Dictionary<string, object>();
             settings.Add("W", 25);
@@ -54,6 +56,7 @@ namespace UnitTestsProject
             HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
             HtmClassifier_Test<string, ComputeCycle> cls1 = new HtmClassifier_Test<string, ComputeCycle>();
             string[] inputs = new string[] { "A", "B", "C", "D" };
+            //string[] inputs = new string[] { "A", "A", "B", "B", "C", "C","C" };
 
             //
             // This trains SP.
