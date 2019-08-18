@@ -145,8 +145,8 @@ namespace NeoCortexApi
 
             GroupBy2<Column> grouper = GroupBy2<Column>.of(list);
 
-            double permanenceIncrement = conn.getPermanenceIncrement();
-            double permanenceDecrement = conn.getPermanenceDecrement();
+            double permanenceIncrement = conn.HtmConfig.PermanenceIncrement;
+            double permanenceDecrement = conn.HtmConfig.PermanenceDecrement;
 
             //
             // Grouping by active columns.

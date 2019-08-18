@@ -207,6 +207,8 @@ namespace NeoCortexApi.Entities
                 cfg.StimulusThreshold = this.StimulusThreshold;
                 cfg.CellsPerColumn = this.getCellsPerColumn();
                 cfg.SynPermInactiveDec = this.getSynPermInactiveDec();
+                cfg.PermanenceIncrement = this.getPermanenceIncrement();
+                cfg.PermanenceDecrement = this.getPermanenceDecrement();
 
                 cfg.RandomGenSeed = this.seed;
 
@@ -1810,6 +1812,7 @@ namespace NeoCortexApi.Entities
         }
 
         /**
+         * Returns synapses which hold the specified cell as their source cell.
          * Returns the mapping of {@link Cell}s to their reverse mapped
          * {@link Synapse}s.
          *

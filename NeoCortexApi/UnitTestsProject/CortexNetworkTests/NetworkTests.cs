@@ -25,9 +25,12 @@ namespace UnitTestsProject
             bool learn = true;
             Parameters p = Parameters.getAllDefaultParameters();
             p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
+            p.Set(KEY.INPUT_DIMENSIONS, new int[] { 100 });
+            p.Set(KEY.CELLS_PER_COLUMN, 30);
 
             //string[] categories = new string[] {"A", "B", "C", "D","E","F","G","H","J","K"};
             string[] categories = new string[] { "A", "B", "C", "D" };
+            //string[] categories = new string[] { "A", "B", "C", "D" };
             CortexNetwork net = new CortexNetwork("my cortex");
             List<CortexRegion> regions = new List<CortexRegion>();
             CortexRegion region0 = new CortexRegion("1st Region");
@@ -40,8 +43,8 @@ namespace UnitTestsProject
             sp1.init(mem, UnitTestHelpers.GetMemory());
             tm1.init(mem);
             Dictionary<string, object> settings = new Dictionary<string, object>();
-            settings.Add("W", 25);
-            //settings.Add("N", 100);
+            //settings.Add("W", 25);
+            settings.Add("N", 100);
             //settings.Add("Radius", 1);
 
             EncoderBase encoder = new CategoryEncoder(categories, settings);
@@ -55,8 +58,8 @@ namespace UnitTestsProject
 
             HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
             HtmClassifier_Test<string, ComputeCycle> cls1 = new HtmClassifier_Test<string, ComputeCycle>();
+            //string[] inputs = new string[] { "A", "B", "C", "D" };
             string[] inputs = new string[] { "A", "B", "C", "D" };
-            //string[] inputs = new string[] { "A", "A", "B", "B", "C", "C","C" };
 
             //
             // This trains SP.
