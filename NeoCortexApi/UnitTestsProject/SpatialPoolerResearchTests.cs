@@ -93,7 +93,7 @@ namespace UnitTestsProject
             parameters.Set(KEY.STIMULUS_THRESHOLD, 0.5);
             parameters.Set(KEY.INHIBITION_RADIUS, (int)0.01 * colDimSize * colDimSize);
             parameters.Set(KEY.LOCAL_AREA_DENSITY, -1);
-            parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.02 * 64 * 64);
+            parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.02 * colDimSize * colDimSize);
             parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000);
             parameters.Set(KEY.MAX_BOOST, 0.0);
             parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.008);
@@ -103,7 +103,7 @@ namespace UnitTestsProject
             parameters.Set(KEY.SEED, 42);
 
             parameters.setInputDimensions(new int[] { 32, 32 });
-            parameters.setColumnDimensions(new int[] { 64, 64 });
+            parameters.setColumnDimensions(new int[] { colDimSize, colDimSize });
 
             var sp = new SpatialPoolerMT();
             var mem = new Connections();
@@ -124,11 +124,13 @@ namespace UnitTestsProject
            
             foreach (var inputVector in inputVectors)
             {
+                var x = getNumBits(inputVector);
+
                 Debug.WriteLine("");
                 Debug.WriteLine($"----- VECTOR {vectorIndex} ----------");
 
                 //int[] activeArray = new int[64 * 64];
-                activeArrayWithZeroNoise[vectorIndex] = new int[64 * 64];
+                activeArrayWithZeroNoise[vectorIndex] = new int[colDimSize * colDimSize];
 
                 int[] activeArray = null;
 
@@ -153,7 +155,7 @@ namespace UnitTestsProject
                     for (int i = 0; i < 10; i++)
                     {
                         //sp.compute( noisedInput, activeArray, true);
-                        activeArray = sp.Compute(noisedInput, true) as int[];
+                        activeArray = sp.Compute(noisedInput, true, returnActiveColIndiciesOnly:false) as int[];
                    
                         if (j > 0)
                             Debug.WriteLine($"{ MathHelpers.GetHammingDistance(activeArrayWithZeroNoise[vectorIndex], activeArray, true)} -> {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
@@ -246,6 +248,18 @@ namespace UnitTestsProject
             }
 
             return inputVector;
+        }
+
+        private static int getNumBits(int[] data)
+        {
+            int cnt = 0;
+            foreach (var item in data)
+            {
+                if (item == 1)
+                    cnt++;
+            }
+
+            return cnt;
         }
 
         /// <summary>

@@ -8,10 +8,10 @@ namespace NeoCortexApi.Entities
     /// <summary>
     /// Helper entity for column bursting.
     /// </summary>
-    public class BurstingTupple
+    public class BurstingResult
     {
         
-        public BurstingTupple(IList<Cell> cells, Cell bestCell)
+        public BurstingResult(IList<Cell> cells, Cell bestCell)
         {
             this.Cells = cells;
             this.BestCell = bestCell;
