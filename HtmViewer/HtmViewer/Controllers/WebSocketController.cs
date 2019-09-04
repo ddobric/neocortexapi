@@ -42,7 +42,6 @@ namespace HtmViewer.Controllers
                 m_Logger.LogInformation("Websocket conntect with following ID {}", context.Connection.Id);
 
                 m_Manager.AddConnection(client, webSocket);
-                //sessions.add.TryAdd(context.Connection.Id, context.Connection.RemoteIpAddress.ToString());
                 await handleWebSocketRequestsAsync(client, webSocket);
             }
             else
@@ -55,15 +54,19 @@ namespace HtmViewer.Controllers
 
         private async Task handleWebSocketRequestsAsync(string client, WebSocket webSocket)
         {
-            
+
             //{ "msgType": "init", "data": { "clientType": "NeuroVisualizer"} ""}
             // ws://localhost:5000/ws
+            //ws://localhost:5000/ws/client
+            //ws://localhost:5000/ws/NeuroVisualizer
             // send the data to the relevant cleint by using client id
+
             var buffer = new byte[1024 * 4];
             WebSocketReceiveResult result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
             while (!result.CloseStatus.HasValue)
             {
-               //TODO:await handleReceiveMessageAsync(client, buffer);
+                //TODO:await handleReceiveMessageAsync(client, buffer);
+                await handleReceiveMessageAsync(client, buffer, result.Count, result.MessageType, result.EndOfMessage);
 
                 result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
                 m_Logger.LogDebug("Receive", Encoding.Default.GetString(buffer));
@@ -75,7 +78,7 @@ namespace HtmViewer.Controllers
 
         }
 
-        private async Task handleReceiveMessageAsync(string client, byte[] buffer, int length, WebSocketMessageType messageType, bool endOfMessage)
+        private async Task handleReceiveMessageAsync(string client, byte[] buffer, int lengthOfMessage, WebSocketMessageType messageType, bool endOfMessage)
         {
             if(client == "NeuroVisualizer")
             {
@@ -83,8 +86,9 @@ namespace HtmViewer.Controllers
             }
             else
             {
-                WebSocket neuroViusallizerWbSocket = m_Manager.GetWebSocket("NeuroVisualizer");
-                await neuroViusallizerWbSocket.SendAsync(new ArraySegment<byte>(buffer, 0, length), messageType, endOfMessage, CancellationToken.None);
+                WebSocket neuroViusalizerWebSocket = m_Manager.GetWebSocket("NeuroVisualizer");
+                await neuroViusalizerWebSocket.SendAsync( new ArraySegment<byte>(buffer, 0, lengthOfMessage), messageType, endOfMessage, CancellationToken.None);
+               
 
             }
         }

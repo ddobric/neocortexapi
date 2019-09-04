@@ -22,16 +22,37 @@ namespace HtmViewer
         internal void AddConnection(string client, WebSocket webSocket)
         {
             // TODO Add to dictionary andf overwrite and close overwritten ones.
+            m_Sockets.AddOrUpdate(client, webSocket, (existingClient, existingWebSocket) => 
+            {
+                if (client == existingClient)
+                {
+                    existingWebSocket = webSocket;
+                }
+                return webSocket;
+
+            });
+
         }
 
-        internal WebSocket GetWebSocket(string v)
+        internal WebSocket GetWebSocket(string neuroVisualizer)
         {
-            throw new NotImplementedException();
+            WebSocket webSocket = null;
+            if (m_Sockets.ContainsKey(neuroVisualizer))
+            {
+                m_Sockets.TryGetValue(neuroVisualizer, out webSocket);
+            }
+            else
+            {
+                m_Logger.LogDebug(neuroVisualizer, "is not connected");
+              
+            }
+            return webSocket;
         }
 
         internal void RemoveConnection(string client)
         {
-            throw new NotImplementedException();
+            WebSocket webSocket;
+            m_Sockets.Remove(client, out webSocket); 
         }
     }
 }
