@@ -23,6 +23,8 @@ export class NeoCortexModel {
 
     settings: NeocortexSettings;
 
+    cells: Array<Cell> = new Array();
+
     /**
      * Multidimensional sensory input.
      */
