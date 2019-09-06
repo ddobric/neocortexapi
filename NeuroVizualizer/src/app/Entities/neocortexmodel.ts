@@ -28,7 +28,7 @@ export class NeoCortexModel {
     /**
      * Multidimensional sensory input.
      */
-    input?: InputModel;
+    input: InputModel = new InputModel();
 }
 
 

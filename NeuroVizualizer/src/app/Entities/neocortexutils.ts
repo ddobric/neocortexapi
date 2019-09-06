@@ -22,13 +22,15 @@ export class neoCortexUtils {
 
         // let inpModel: InputModel = new InputModel(sett.minicolumnDims[0], sett.minicolumnDims[1]);
         //var model: NeoCortexModel = new NeoCortexModel(sett, inpModel, 0, 0, 0, []);
+        //let inputModel = new InputModel();
+        var model: NeoCortexModel = this.createNeoCortexModel(sett, null);
 
-        var model: NeoCortexModel = this.createNeoCortexModel(sett);
+        this.createInputModel(sett, model);
 
         return model;
     }
 
-    static createNeoCortexModel(settings: NeocortexSettings): NeoCortexModel {// creating areas
+    static createNeoCortexModel(settings: NeocortexSettings, inputModel: InputModel): NeoCortexModel {// creating areas
         var model: NeoCortexModel = new NeoCortexModel();
         model.synapses = new Array();
 
@@ -46,7 +48,6 @@ export class neoCortexUtils {
         }
 
         this.createSynapses(model);
-
 
         return model;
     }
@@ -126,11 +127,7 @@ export class neoCortexUtils {
             //   this.cells[chooseRandomPreCell].outgoingSynapses.push(synapse);
             //   this.cells[chooseRandomPostCell].incomingSynapses.push(synapse);
 
-
         }
-
-
-
 
     }
 
@@ -139,12 +136,12 @@ export class neoCortexUtils {
         return Math.floor(Math.random() * Math.floor(max));
     }
 
-    createInputModel(cellDim0: any, cellDim1: any, inputModel: InputModel) {
+    static createInputModel(settings: NeocortexSettings, model: NeoCortexModel) {
 
-        for (let dim = 0; dim < cellDim0; dim++) {
+        for (let dim = 0; dim < settings.minicolumnDims[0]; dim++) {
             let row: Array<Cell> = new Array();
 
-            for (let i = 0; i < cellDim1; i++) {
+            for (let i = 0; i < settings.minicolumnDims[1]; i++) {
                 //row.push(new Cell(null, dim, null, i, [], []));
                 row.push(
                     {
@@ -156,8 +153,7 @@ export class neoCortexUtils {
                     });
 
             }
-            inputModel.cells.push(row);
-
+            model.input.cells.push(row);
         }
 
     }
