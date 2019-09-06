@@ -19,7 +19,7 @@ export class SenderComponent implements OnInit {
 
   sendModel() {
 
-    this.model = neoCortexUtils.createModel([0, 0, 0, 1, 2, 1], [2, 1], 3);
+    this.model = neoCortexUtils.createModel([0, 0, 0, 1, 2, 1], [10, 1], 6);
     this.neoUtils.data.next({ dataModel: this.model });
   }
 }

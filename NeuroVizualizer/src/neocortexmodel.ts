@@ -176,16 +176,16 @@ export class InputModel {
 
     this.cells = new Array();
 
-    for (let dim = 0; dim < cellDim0; dim++) {
-      let row: Array<Cell> = new Array();
-
-      for (let i = 0; i < cellDim1; i++) {
-        row.push(new Cell(null, dim, null, i, [], []));
-
-      }
-      this.cells.push(row);
-
-    }
+    /*    for (let dim = 0; dim < cellDim0; dim++) {
+         let row: Array<Cell> = new Array();
+   
+         for (let i = 0; i < cellDim1; i++) {
+           row.push(new Cell(null, dim, null, i, [], []));
+   
+         }
+         this.cells.push(row);
+   
+       } */
 
   }
 }

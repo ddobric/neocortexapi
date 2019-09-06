@@ -1,13 +1,13 @@
 import { NeoCortexModel, Cell, NeocortexSettings, Area, Minicolumn, InputModel } from './neocortexmodel';
-import { NgModel } from '@angular/forms';
-
 
 
 export class neoCortexUtils {
 
     static cells: Array<Cell> = new Array();
+    static cellRegister: Array<Cell> = new Array();
     static cellID = 0;
-    static count;
+    static areaLevelIndex: number;
+
 
     /**
      * createModel (numberOfAreas/DataSeries, [xAxis, zAxis], yAxis)
@@ -30,7 +30,7 @@ export class neoCortexUtils {
         return model;
     }
 
-    static createNeoCortexModel(settings: NeocortexSettings, X: number, layer: number, Z: number): NeoCortexModel {
+    static createNeoCortexModel(settings: NeocortexSettings, X: number, layer: number, Z: number): NeoCortexModel {// creating areas
         var model: NeoCortexModel = new NeoCortexModel();
         model.synapses = new Array();
 
@@ -40,11 +40,10 @@ export class neoCortexUtils {
 
         let areaId: number;
 
-        let levelIndx: number;
+        for (let levelIndx = 0; levelIndx < settings.areaLevels.length; levelIndx++) {
+            this.areaLevelIndex = levelIndx;
+            areaId = levelIndx;
 
-        this.createCells(settings, areaId, X, Z);
-
-        for (levelIndx = 0; levelIndx < settings.areaLevels.length; levelIndx++) {
             model.areas[levelIndx] = this.createArea(settings, areaId, settings.areaLevels[levelIndx]);
         }
 
@@ -52,7 +51,7 @@ export class neoCortexUtils {
         return model;
     }
 
-    static createArea(settings: NeocortexSettings, areaId: number, level: number): Area {
+    static createArea(settings: NeocortexSettings, areaId: number, level: number): Area {// creating minicolumn
         const area = new Area();
         area.areaId = areaId;
         area.level = level;
@@ -63,42 +62,51 @@ export class neoCortexUtils {
             let row: Array<Minicolumn> = new Array();
             for (miniColDim1 = 0; miniColDim1 < settings.minicolumnDims[1]; miniColDim1++) {
 
+                this.cellRegister = [];
+
+                this.createCells(settings, areaId, miniColDim0, miniColDim1);
                 let randomOverlap = Math.random();
-                //row.push(new Minicolumn(settings, areaId, [this.id, miniColDim0, miniColDim1], settings.defaultOverlapValue, (miniColDim0 + X), (miniColDim1 + Z)));
-                // row.push(new Minicolumn(settings, areaId, [this.id + miniColDim0 + miniColDim1], randomOverlap, (miniColDim0 + X), (miniColDim1 + Z)));
+
                 row.push({
                     miniColumnId: areaId + miniColDim0 + miniColDim1,
-                    cells: this.cells,
+                    cells: this.cellRegister,
                     overlap: randomOverlap,
                 });
             }
 
-
             area.minicolumns.push(row);
 
         }
+
         return area;
     }
 
     static createCells(settings: NeocortexSettings, areaId: number, x: number, z: number) {
-
-        areaId = areaId;
         settings = settings;
 
         for (let layer = 0; layer < settings.numLayers; layer++) {
 
-            //let cell: Cell = new Cell(areaId, X, layer, Z, [], []);
-            this.cells.push(
+            this.cellRegister.push(
                 {
                     cellId: this.cellID++,
                     areaIndex: areaId,
                     X: x,
                     Layer: layer,
                     Z: z
-
                 });
+
         }
 
+        this.saveCells(this.cellRegister);
+    }
+
+    static saveCells(minicolumnCells = []) {
+
+        for (let i = 0; i < minicolumnCells.length; i++) {
+            this.cells.push(minicolumnCells[i]);
+
+        }
+        console.log(this.cells);
     }
 
     static createSynapses(model: NeoCortexModel) {

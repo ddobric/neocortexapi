@@ -1,7 +1,7 @@
 export class CellId {
 
     area: number;
-    minicolumn: number[];
+    minicolumn: number;
     layer: number;
 }
 
