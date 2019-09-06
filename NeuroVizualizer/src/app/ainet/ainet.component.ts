@@ -4,7 +4,9 @@ import * as Plotlyjs from 'plotly.js/dist/plotly';
 import { neoCortexUtils } from '../../neocortexutils';
 import { environment as env } from "../../environments/environment.prod";
 import { NotificationsService } from 'angular2-notifications';
-import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, NeocortexSettings, InputModel, CellId } from '../../neocortexmodel';
+import { NeoCortexModel, Cell, } from '../../neocortexmodel';
+//import { NeoCortexModel, Cell } from '../Entities/neocortexmodel';
+import { NeoCortexUtilsService } from '../services/neo-cortex-utils.service';
 
 
 
@@ -14,7 +16,7 @@ import { NeoCortexModel, Area, Synapse, Minicolumn, Cell, NeocortexSettings, Inp
   styleUrls: ['./ainet.component.scss']
 })
 export class AinetComponent implements OnInit, AfterViewInit {
-  public model: NeoCortexModel;
+  model: NeoCortexModel;
   xNeurons: Array<number> = [];
   yNeurons: Array<number> = [];
   zNeurons: Array<number> = [];
@@ -48,15 +50,20 @@ export class AinetComponent implements OnInit, AfterViewInit {
   neuronsHoverInformation: Array<any> = [];
   synapsesHoverInformation: Array<any> = [];
 
+  ioConnection: any;
 
-  constructor(private _service: NotificationsService) {
+
+  constructor(private _service: NotificationsService, private neoUtils: NeoCortexUtilsService) {
   }
 
-  
+
 
 
   ngOnInit() {
     this.notificationConfig();
+    this.neoUtils.data.subscribe(a => {
+      console.log(a);
+    });
 
 
   }
@@ -747,30 +754,30 @@ export class AinetComponent implements OnInit, AfterViewInit {
    * @param postCell 
    */
   createSynapse(permanence: number, preCell: Cell, postCell: Cell) {
-
-    preCell = new Cell(preCell.areaIndex, preCell.X, preCell.Layer, preCell.Z, [], []);
-    postCell = new Cell(postCell.areaIndex, postCell.X, postCell.Layer, postCell.Z, [], []);
-    let incomingSynapse = new Synapse(permanence, preCell, postCell);
-    let outgoingSynapse = new Synapse(permanence, preCell, postCell);
-
-    /*  preCell = new Cell(preCell.areaIndex, preCell.X, preCell.Layer, preCell.Z, [], [outgoingSynapse]);
-     postCell = new Cell(postCell.areaIndex, postCell.X, postCell.Layer, postCell.Z, [incomingSynapse], []); */
-
-    preCell.outgoingSynapses.push(outgoingSynapse);
-    postCell.incomingSynapses.push(incomingSynapse);
-
-    this.model.areas[preCell.areaIndex].minicolumns[preCell.X][preCell.Z].cells[preCell.Layer].outgoingSynapses.push(outgoingSynapse);
-    this.model.areas[postCell.areaIndex].minicolumns[postCell.X][postCell.Z].cells[postCell.Layer].incomingSynapses.push(incomingSynapse);
-
-    //console.log("Synapse will be created");
-    let synapse: Synapse;
-    synapse = new Synapse(permanence, preCell, postCell);
-    this.model.synapses.push(synapse);
-    this.create("Synapse Created", "Finished", 'success');
-    this.fillChart(this.model);
-    this.generateColoursFromOverlap();
-    this.generateColoursFromPermanences();
-    this.plotChart();
+    /*
+        //TODO: Repair
+        preCell = new Cell(preCell.areaIndex, preCell.X, preCell.Layer, preCell.Z, [], []);
+        postCell = new Cell(postCell.areaIndex, postCell.X, postCell.Layer, postCell.Z, [], []);
+        let incomingSynapse = new Synapse(permanence, preCell, postCell);
+        let outgoingSynapse = new Synapse(permanence, preCell, postCell);
+    
+        
+    
+        preCell.outgoingSynapses.push(outgoingSynapse);
+        postCell.incomingSynapses.push(incomingSynapse);
+    
+        this.model.areas[preCell.areaIndex].minicolumns[preCell.X][preCell.Z].cells[preCell.Layer].outgoingSynapses.push(outgoingSynapse);
+        this.model.areas[postCell.areaIndex].minicolumns[postCell.X][postCell.Z].cells[postCell.Layer].incomingSynapses.push(incomingSynapse);
+    
+        //console.log("Synapse will be created");
+        let synapse: Synapse;
+        synapse = new Synapse(permanence, preCell, postCell);
+        this.model.synapses.push(synapse);
+        this.create("Synapse Created", "Finished", 'success');
+        this.fillChart(this.model);
+        this.generateColoursFromOverlap();
+        this.generateColoursFromPermanences();
+        this.plotChart();*/
 
   }
 

@@ -1,36 +1,36 @@
 
+
 export class CellId {
 
-  public area: number;
+  area: number;
 
-  public minicolumn: number[];
+  minicolumn: number[];
 
-  public layer: number;
+  layer: number;
 }
 
 export class NeocortexSettings {
 
-  public areaLevels: Array<number> = [];
-  public minicolumnDims: number[];
-  public numLayers: number;
-  public defaultOverlapValue: number = 0;
-  public defaultPermanence: number = 0;
+  areaLevels: Array<number> = [];
+  minicolumnDims: number[];
+  numLayers: number;
+  defaultOverlapValue: number = 0;
+  defaultPermanence: number = 0;
 
 }
 
 export class NeoCortexModel {
 
-  public areas: Array<Area>;
+  areas: Array<Area>;
 
-  public synapses: Array<Synapse>;
+  synapses: Array<Synapse>;
 
-  public settings: NeocortexSettings;
+  settings: NeocortexSettings;
 
   /**
    * Multidimensional sensory input.
    */
-  public input: InputModel;
- // tree: BinarySearchTree = new BinarySearchTree();
+  input: InputModel;
 
 
   constructor(settings: NeocortexSettings = null, input: InputModel = null, X = 0, layer = 0, Z = 0, synapses = []) {
@@ -45,45 +45,25 @@ export class NeoCortexModel {
     for (var levelIndx = 0; levelIndx < settings.areaLevels.length; levelIndx++) {
       areaId = levelIndx;
       this.areas[levelIndx] = new Area(settings, areaId, settings.areaLevels[levelIndx], X, layer, Z);
-      //areaId = levelIndx + areaId;
-      // posX = posX + settings.xAreaDistance;
-      // posY = posY + settings.yAreaDistance;
-      // posZ = posZ + settings.zAreaDistance;
 
     }
-   /*  for (let i = 0; i < synapses.length; i++) {
-      let perm = synapses[i].permanence;
-      this.tree.insert(perm);
-      console.log(this.tree,"tree");
-
-    }
-    console.log('inOrder: ' + this.tree.inOrder());
-    console.log('PreOrder: ' + this.tree.preOrder()); */
-
-
-
-    /*   this.synapses.forEach(syn => {
-        this.areas[syn.preSynaptic.id.area].minicolumns[syn.preSynaptic.X][syn.preSynaptic.Z].cells[syn.preSynaptic.Layer].outgoingSynapses.push(syn);
-        this.areas[syn.postSynaptic.id.area].minicolumns[syn.postSynaptic.X][syn.postSynaptic.Z].cells[syn.postSynaptic.Layer].incomingSynapses.push(syn);
-      
-       });  */
 
     for (let i = 0; i < this.synapses.length; i++) {
       const a = this.synapses[i];
       this.areas[a.preSynaptic.areaIndex].minicolumns[a.preSynaptic.X][a.preSynaptic.Z].cells[a.preSynaptic.Layer].outgoingSynapses.push(this.synapses[i]);
       this.areas[a.postSynaptic.areaIndex].minicolumns[a.postSynaptic.X][a.postSynaptic.Z].cells[a.postSynaptic.Layer].incomingSynapses.push(this.synapses[i]);
     }
-  
+
   }
-  
+
 }
 
 
 export class Area {
 
   minicolumns: Minicolumn[][] = new Array();
-  public level: number;
-  public id: number;
+  level: number;
+  id: number;
 
   constructor(settings: NeocortexSettings, areaId: number, level: number, X: number, layer: number, Z: number) {
 
@@ -109,15 +89,15 @@ export class Area {
 
 export class Minicolumn {
 
-  public overlap: number;
+  overlap: number;
 
-  public cells: Array<Cell> = new Array();
+  cells: Array<Cell> = new Array();
 
-  public id: number[];
+  id: number[];
 
-  public areaId: number;
+  areaId: number;
 
-  private settings: NeocortexSettings;
+  settings: NeocortexSettings;
 
   constructor(settings: NeocortexSettings, areaId: number, miniColId: number[], overlap: number, X: number, Z: number) {
 
@@ -142,9 +122,10 @@ export class Minicolumn {
  */
 export class Cell {
 
-  public X: number;
-  public Layer: number;
-  public Z: number;
+  Id: number;
+  X: number;
+  Layer: number;
+  Z: number;
   areaIndex: number;
 
 
@@ -172,11 +153,11 @@ export class Cell {
 
 export class Synapse {
 
-  public preSynaptic: Cell;
+  preSynaptic: Cell;
 
-  public postSynaptic: Cell;
+  postSynaptic: Cell;
 
-  public permanence: number;
+  permanence: number;
 
   constructor(permanence: number = 0, preSynaptic: Cell, postSynaptic: Cell) {
     this.preSynaptic = preSynaptic;
@@ -189,7 +170,7 @@ export class Synapse {
 
 export class InputModel {
 
-  public cells: Cell[][] = new Array();
+  cells: Cell[][] = new Array();
 
   constructor(cellDim0: any, cellDim1: any) {
 
@@ -205,35 +186,6 @@ export class InputModel {
       this.cells.push(row);
 
     }
-
-    //TODO. Exception if cellDims > 2
-    /*  try {
- 
-       for (var dim = 0; dim < cellDims.length; dim++) {
-         let row: Array<Cell> = new Array();
-         for (var i = 0; i < cellDims[dim]; i++) {
-           row.push(new Cell(null,null, null, null, null, null));
-         }
- 
-       }
- 
-       for (var dim = 0; dim < cellDims[0]; dim++) {
- 
-         let row: Array<Cell> = new Array();
- 
-         for (var j = 0; j < cellDims[1]; j++) {
- 
-           //row.push(new Cell(settings, 0, [i, j], 0));
-           row.push(new Cell( null, null, null,null, null, null));
-         }
- 
-         this.cells.push(row);
-       }
-     }
-     catch (e) {
-       console.log(e);
-     } */
-
 
   }
 }

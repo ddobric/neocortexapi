@@ -19,6 +19,7 @@
     "@angular/platform-browser": "~8.2.0",
     "@angular/platform-browser-dynamic": "~8.2.0",
     "@angular/router": "~8.2.0",
+    "@types/socket.io-client": "^1.4.32",
     "angular2-notifications": "^2.0.0",
     "bootstrap": "^4.3.1",
     "plotly": "^1.0.6",

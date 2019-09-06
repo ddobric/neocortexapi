@@ -7,12 +7,14 @@ import { AppComponent } from './app.component';
 import { AinetComponent } from './ainet/ainet.component';
 import { HomeComponent } from './home/home.component';
 import { SimpleNotificationsModule } from 'angular2-notifications';
+import { SenderComponent } from './sender/sender.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     AinetComponent,
-    HomeComponent
+    HomeComponent,
+    SenderComponent
   ],
   imports: [
     BrowserModule,
