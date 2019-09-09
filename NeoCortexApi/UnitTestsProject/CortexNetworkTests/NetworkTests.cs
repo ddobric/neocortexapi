@@ -51,8 +51,9 @@ namespace UnitTestsProject
             layer1.HtmModules.Add(tm1);
             //layer1.Compute();
 
+            //IClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
             HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
-            HtmClassifier_Test<string, ComputeCycle> cls1 = new HtmClassifier_Test<string, ComputeCycle>();
+            //IClassifier< string, ComputeCycle> cls = new HtmClassifier_Test<string, ComputeCycle>();
             string[] inputs = new string[] { "A", "B", "C", "D" };
             //string[] inputs = new string[] { "A", "B", "C", "C", "D", "E", "F", "G", "G", "G", "G", "L", "M", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
             for (int i = 0; i < 50; i++)
