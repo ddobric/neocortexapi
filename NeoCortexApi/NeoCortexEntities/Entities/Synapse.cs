@@ -128,6 +128,7 @@ namespace NeoCortexApi.Entities
         /**
          * Sets this {@code Synapse}'s degree of connectedness.
          * @param perm
+         * TODO: Remove synPermConnected. Not used here
          */
         public void setPermanence(double synPermConnected, double perm)
         {

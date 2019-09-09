@@ -13,6 +13,7 @@ using System.Text;
 using System.Linq;
 using NeoCortexApi.Utility;
 using System.Diagnostics;
+using NeoCortex;
 
 namespace UnitTestsProject
 {
@@ -167,6 +168,7 @@ namespace UnitTestsProject
             }
 
         }
+
 
 
         class ContractResolver : DefaultContractResolver
