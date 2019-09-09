@@ -24,8 +24,8 @@ namespace UnitTestsProject
         {
             bool learn = true;
             Parameters p = Parameters.getAllDefaultParameters();
-            //string[] categories = new string[] {"A", "B", "C", "D","E","F","G","H","J","K"};
-            string[] categories = new string[] { "A", "B", "C", "D" };
+            string[] categories = new string[] {"A", "B", "C", "D"};
+            //string[] categories = new string[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "K", "L" , "M", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Ö" };
             CortexNetwork net = new CortexNetwork("my cortex");
             List<CortexRegion> regions = new List<CortexRegion>();
             CortexRegion region0 = new CortexRegion("1st Region");
@@ -53,9 +53,9 @@ namespace UnitTestsProject
 
             HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
             HtmClassifier_Test<string, ComputeCycle> cls1 = new HtmClassifier_Test<string, ComputeCycle>();
-
-            string[] inputs = new string[] {"A", "B", "C", "D"};
-            for (int i = 0; i < 200; i++)
+            string[] inputs = new string[] { "A", "B", "C", "D" };
+            //string[] inputs = new string[] { "A", "B", "C", "C", "D", "E", "F", "G", "G", "G", "G", "L", "M", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
+            for (int i = 0; i < 50; i++)
             {
                 foreach (var input in inputs)
                 {
@@ -63,17 +63,24 @@ namespace UnitTestsProject
                     //cls1.Learn(input,lyrOut.activeCells.ToArray(),learn);
                     //Debug.WriteLine($"Current Input: {input}");
                     cls.Learn(input, lyrOut.activeCells.ToArray(), lyrOut.predictiveCells.ToArray());
+                    Debug.WriteLine($"Current Input: {input}");
                     if (learn == false)
                     {
-                        //Debug.WriteLine($"Next Input: {cls1.Inference(lyrOut.predictiveCells.ToArray())}");
+                        Debug.WriteLine($"Predict Input When Not Learn: {cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray())}");
                     }
-                    Debug.WriteLine($"Current Input: {cls.GetInputValue(lyrOut.activeCells.ToArray())}");
-                    Debug.WriteLine($"Predict Input: {cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray())}");
+                    else
+                    {
+                        Debug.WriteLine($"Predict Input: {cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray())}");
+                    }
+                    
                     //Debug.WriteLine("-----------------------------------------------------------\n----------------------------------------------------------");
                 }
                 tm1.reset(mem);
-                if (i == 5)
+                if (i == 20)
                 {
+                    Debug.WriteLine("Stop Learning From Here-----------------------------------------------------------------------------------------------------\n"
+                        +"-----------------------------------------------------------------------------------------------" +
+                        "-------------------------------------------------------------------------------------------------");
                     learn = false;
                     //tm1.reset(mem);
                     
