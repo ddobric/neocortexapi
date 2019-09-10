@@ -115,9 +115,10 @@ export class neoCortexUtils {
 
             let chooseRandomPreCell = this.getRandomInt(model.cells.length);
             let chooseRandomPostCell = this.getRandomInt(model.cells.length);
+            let randomPerm = Math.random();
 
             const synapse = {
-                permanence: 0,
+                permanence: randomPerm,
                 preSynapticId: model.cells[chooseRandomPreCell].cellId,
                 postSynapticId: model.cells[chooseRandomPostCell].cellId,
 

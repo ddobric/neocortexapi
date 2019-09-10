@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NotificationsService } from 'angular2-notifications';
 import { NeoCortexUtilsService } from '../services/neo-cortex-utils.service';
 import { neoCortexUtils } from '../Entities/neocortexutils';
-import { NeoCortexModel, Cell } from '../Entities/neocortexmodel';
+import { NeoCortexModel } from '../Entities/neocortexmodel';
 
 @Component({
   selector: 'app-sender',
