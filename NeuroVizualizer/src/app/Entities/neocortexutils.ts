@@ -93,7 +93,9 @@ export class neoCortexUtils {
                     areaIndex: areaId,
                     X: x,
                     Layer: layer,
-                    Z: z
+                    Z: z,
+                    incomingSynapses: [],
+                    outgoingSynapses: []
                 });
 
         }
