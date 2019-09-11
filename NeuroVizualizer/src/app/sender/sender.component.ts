@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { NotificationsService } from 'angular2-notifications';
 import { NeoCortexUtilsService } from '../services/neo-cortex-utils.service';
-import { neoCortexUtils } from '../Entities/neocortexutils';
-import { NeoCortexModel } from '../Entities/neocortexmodel';
+import { NeoCortexGenerator } from '../Entities/NeoCortexGenerator';
+import { NeoCortexModel } from '../Entities/NeoCortexModel';
 
 @Component({
   selector: 'app-sender',
@@ -10,16 +10,15 @@ import { NeoCortexModel } from '../Entities/neocortexmodel';
   styleUrls: ['./sender.component.scss']
 })
 export class SenderComponent implements OnInit {
-  model: NeoCortexModel;
 
-  constructor(private _service: NotificationsService, private neoUtils: NeoCortexUtilsService) { }
+  constructor(private _service: NotificationsService, private neoUtils: NeoCortexUtilsService) {
+  }
 
   ngOnInit() {
   }
 
   sendModel() {
-
-    this.model = neoCortexUtils.createModel([0, 0, 0, 1, 2, 1], [10, 1], 6);
-    this.neoUtils.data.next({ dataModel: this.model });
+    let model = new NeoCortexGenerator().createModel([0, 0, 0, 1, 2, 1], [10, 1], 6);
+    this.neoUtils.data.next({ dataModel: model });
   }
 }

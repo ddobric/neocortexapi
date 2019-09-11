@@ -43,8 +43,8 @@ namespace HtmViewer
             }
             else
             {
-                m_Logger.LogDebug(neuroVisualizer, "is not connected");
-              
+                m_Logger.LogInformation("Not Connected {neuroVisualizer}", neuroVisualizer);
+
             }
             return webSocket;
         }

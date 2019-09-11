@@ -6,8 +6,9 @@ import { environment as env } from "../../environments/environment.prod";
 import { NotificationsService } from 'angular2-notifications';
 //import { NeoCortexModel, Cell, } from '../../neocortexmodel';
 import { NeoCortexUtilsService } from '../services/neo-cortex-utils.service';
-import { neoCortexUtils } from '../Entities/neocortexutils';
-import { NeoCortexModel, Cell, Synapse } from '../Entities/neocortexmodel';
+//import { neoCortexUtils, NeoCortexGenerator, NeoCortexGenerator } from '../Entities/neocortexutils';
+import { NeoCortexModel, Cell, Synapse } from '../Entities/NeoCortexModel';
+import { NeoCortexGenerator } from '../Entities/NeoCortexGenerator';
 
 
 
@@ -17,7 +18,7 @@ import { NeoCortexModel, Cell, Synapse } from '../Entities/neocortexmodel';
   styleUrls: ['./ainet.component.scss']
 })
 export class AinetComponent implements OnInit, AfterViewInit {
-  model: NeoCortexModel;
+  model: any;
   xNeurons: Array<number> = [];
   yNeurons: Array<number> = [];
   zNeurons: Array<number> = [];
@@ -73,8 +74,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
 
+    this.model = new NeoCortexGenerator().createModel([0, 0, 0, 1, 2, 1], [10, 1], 6);
     //this.model = neoCortexUtils.createModel([0, 0, 0, 0, 1, 1, 1, 2, 2, 3], [10, 1], 6);
-    this.model = neoCortexUtils.createModel([0, 0, 0, 1, 2, 1], [10, 1], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
+    //this.model = neoCortexUtils.createModel([0, 0, 0, 1, 2, 1], [10, 1], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
     this.fillChart(this.model);
     this.createSynapses();
     this.createSynapsesCoordinates();
@@ -333,7 +335,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
     }
 
-    console.log(this.synapses);
+    //console.log(this.synapses);
 
   }
 
