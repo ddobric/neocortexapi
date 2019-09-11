@@ -52,7 +52,6 @@ export class AinetComponent implements OnInit, AfterViewInit {
   neuronsHoverInformation: Array<any> = [];
   synapsesHoverInformation: Array<any> = [];
 
-  ioConnection: any;
   synapses: Array<Synapse> = new Array();
 
 
@@ -75,17 +74,14 @@ export class AinetComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
 
     this.model = new NeoCortexGenerator().createModel([0, 0, 0, 1, 2, 1], [10, 1], 6);
-    //this.model = neoCortexUtils.createModel([0, 0, 0, 0, 1, 1, 1, 2, 2, 3], [10, 1], 6);
     //this.model = neoCortexUtils.createModel([0, 0, 0, 1, 2, 1], [10, 1], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
     this.fillChart(this.model);
     this.createSynapses();
     this.createSynapsesCoordinates();
-    // this.model = neoCortexUtils.createModel([0, 0, 0, 0, 1, 1, 1, 2, 2, 3], [10, 1], 6);
     this.generateColoursFromOverlap();
     this.generateColoursFromPermanences();
     this.plotChart();
-    this.notificationConfig();
-    //const localConnection = new RTCPeerConnection(servers);
+
   }
 
   /**
@@ -419,6 +415,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.options = {
       position: ["top", "right"],
       timeOut: 3000,
+
     };
 
   }
