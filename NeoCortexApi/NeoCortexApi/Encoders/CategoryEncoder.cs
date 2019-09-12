@@ -13,7 +13,7 @@ namespace NeoCortexApi.Encoders
         /// <param name="category"></param>
         /// <param name="settings"></param>
 
-        public CategoryEncoder(String[] category, Dictionary<string, object> settings)
+        public CategoryEncoder(String[] category, Dictionary<string, object> settings) : base(settings)
         {
             this.Radius = 1;                                 // Radius is fixed in category encoder
             this.scalarNames = new List<string>(category);

@@ -53,6 +53,10 @@ namespace NeoCortexApi.Entities
 
         public int CellsPerColumn { get; set; }
 
-        public double SynPermInactiveDec { get; set; }   
+        public double SynPermInactiveDec { get; set; }
+
+        public double PermanenceIncrement { get;  set; }
+
+        public double PermanenceDecrement { get;  set; }
     }
 }

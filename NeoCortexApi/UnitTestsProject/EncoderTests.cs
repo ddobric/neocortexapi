@@ -16,11 +16,12 @@ namespace UnitTestsProject
         /// Initializes encoder and invokes Encode method.
         /// </summary>
         [TestMethod]
-        [DataRow(281)]
-        [DataRow(42)]
-        [DataRow(123242)]
-        [DataRow(-1)]
-        public void EncodeTest1(int input)
+        [DataRow(2.81)]
+        //[DataRow(281)]
+        //[DataRow(42)]
+        //[DataRow(123242)]
+        //[DataRow(-1)]
+        public void EncodeTest1(double input)
         {
             Dictionary<string, object> encoderSettings = getDefaultSettings();
 

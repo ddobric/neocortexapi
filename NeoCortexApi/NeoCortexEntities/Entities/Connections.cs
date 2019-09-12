@@ -207,6 +207,8 @@ namespace NeoCortexApi.Entities
                 cfg.StimulusThreshold = this.StimulusThreshold;
                 cfg.CellsPerColumn = this.getCellsPerColumn();
                 cfg.SynPermInactiveDec = this.getSynPermInactiveDec();
+                cfg.PermanenceIncrement = this.getPermanenceIncrement();
+                cfg.PermanenceDecrement = this.getPermanenceDecrement();
 
                 cfg.RandomGenSeed = this.seed;
 
@@ -220,7 +222,7 @@ namespace NeoCortexApi.Entities
         /** Reverse mapping from source cell to {@link Synapse} */
         public Dictionary<Cell, LinkedHashSet<Synapse>> receptorSynapses;
 
-        protected Dictionary<Cell, List<DistalDendrite>> segments;
+        protected Dictionary<Cell, List<DistalDendrite>> distalSegments;
 
         /// <summary>
         /// Synapses, which belong to some distal dentrite segment.
@@ -1593,16 +1595,16 @@ namespace NeoCortexApi.Entities
                 throw new ArgumentException("Cell was null");
             }
 
-            if (segments == null)
+            if (distalSegments == null)
             {
-                segments = new Dictionary<Cell, List<DistalDendrite>>();
+                distalSegments = new Dictionary<Cell, List<DistalDendrite>>();
             }
 
             List<DistalDendrite> retVal;
-            if ((segments.TryGetValue(cell, out retVal)) == false)
+            if ((distalSegments.TryGetValue(cell, out retVal)) == false)
             {
                 if (!doLazyCreate) return new List<DistalDendrite>();
-                segments.Add(cell, retVal = new List<DistalDendrite>());
+                distalSegments.Add(cell, retVal = new List<DistalDendrite>());
             }
 
             return retVal;
@@ -1635,7 +1637,7 @@ namespace NeoCortexApi.Entities
          */
         public Dictionary<Cell, List<DistalDendrite>> getSegmentMapping()
         {
-            return new Dictionary<Cell, List<DistalDendrite>>(segments);
+            return new Dictionary<Cell, List<DistalDendrite>>(distalSegments);
         }
 
         /**
@@ -1810,6 +1812,7 @@ namespace NeoCortexApi.Entities
         }
 
         /**
+         * Returns synapses which hold the specified cell as their source cell.
          * Returns the mapping of {@link Cell}s to their reverse mapped
          * {@link Synapse}s.
          *
@@ -2603,7 +2606,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + ((random == null) ? 0 : random.GetHashCode());
             result = prime * result + ((receptorSynapses == null) ? 0 : receptorSynapses.GetHashCode());
             result = prime * result + seed;
-            result = prime * result + ((segments == null) ? 0 : segments.GetHashCode());
+            result = prime * result + ((distalSegments == null) ? 0 : distalSegments.GetHashCode());
             temp = BitConverter.DoubleToInt64Bits(m_StimulusThreshold);
             result = prime * result + (int)(temp ^ (temp >> 32));
             temp = BitConverter.DoubleToInt64Bits(synPermActiveInc);
@@ -2766,12 +2769,12 @@ namespace NeoCortexApi.Entities
                 return false;
             if (seed != other.seed)
                 return false;
-            if (segments == null)
+            if (distalSegments == null)
             {
-                if (other.segments != null)
+                if (other.distalSegments != null)
                     return false;
             }
-            else if (!segments.Equals(other.segments))
+            else if (!distalSegments.Equals(other.distalSegments))
                 return false;
             if (BitConverter.DoubleToInt64Bits(m_StimulusThreshold) != BitConverter.DoubleToInt64Bits(other.m_StimulusThreshold))
                 return false;
