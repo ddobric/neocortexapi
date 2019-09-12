@@ -297,10 +297,7 @@ namespace NeoCortexApi
         public int[] Compute(int[] input, bool learn)
         {
             int[] activeColumnsArr = new int[this.connections.HtmConfig.NumColumns];
-            for (int i = 0; i < 120; i++)
-            {
-                this.compute(input, activeColumnsArr, learn);
-            }
+            this.compute(input, activeColumnsArr, learn);
             return ArrayUtils.IndexWhere(activeColumnsArr, (el) => el == 1);
         }
 

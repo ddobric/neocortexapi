@@ -110,11 +110,11 @@ namespace NeoCortexApi.Entities
 
             ///////////  Encoder Parameters ///////////
             MyDictionary<string, Object> defaultEncoderParams = new MyDictionary<string, object>();
-            defaultEncoderParams.Add(KEY.N, 500);
-            defaultEncoderParams.Add(KEY.W, 21);
+            defaultEncoderParams.Add(KEY.N, 100);
+            defaultEncoderParams.Add(KEY.W, 20);
             defaultEncoderParams.Add(KEY.MIN_VAL, 0.0);
             defaultEncoderParams.Add(KEY.MAX_VAL, 1000.0);
-            defaultEncoderParams.Add(KEY.RADIUS, 21.0);
+            defaultEncoderParams.Add(KEY.RADIUS, 1.0);
             defaultEncoderParams.Add(KEY.RESOLUTION, 1.0);
             defaultEncoderParams.Add(KEY.PERIODIC, false);
             defaultEncoderParams.Add(KEY.CLIP_INPUT, false);
