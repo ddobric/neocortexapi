@@ -243,7 +243,8 @@
                 }
             }
 
-            // Output 1-D array of same length resulted in parameter N            return EncodeIntoArray;
+            // Output 1-D array of same length resulted in parameter N    
+            return EncodeIntoArray;
         }
 
         /// <summary>
