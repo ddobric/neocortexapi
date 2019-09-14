@@ -48,7 +48,7 @@ namespace HtmViewer.Controllers
             {
                 context.Response.StatusCode = 400;
             }
-            
+
 
         }
 
@@ -63,34 +63,48 @@ namespace HtmViewer.Controllers
 
             var buffer = new byte[1024 * 4];
             WebSocketReceiveResult result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+
             while (!result.CloseStatus.HasValue)
             {
                 //TODO:await handleReceiveMessageAsync(client, buffer);
                 await handleReceiveMessageAsync(client, buffer, result.Count, result.MessageType, result.EndOfMessage);
 
                 result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-                m_Logger.LogDebug("Receive", Encoding.Default.GetString(buffer));
+                m_Logger.LogInformation("Receive {message}", Encoding.Default.GetString(buffer, 0, result.Count));
+
             }
             await webSocket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
 
             m_Manager.RemoveConnection(client);
-            
+
 
         }
 
         private async Task handleReceiveMessageAsync(string client, byte[] buffer, int lengthOfMessage, WebSocketMessageType messageType, bool endOfMessage)
         {
-            if(client == "NeuroVisualizer")
+            if (client == "NeuroVisualizer")
             {
                 // No Callback to other clients.
             }
             else
             {
                 WebSocket neuroViusalizerWebSocket = m_Manager.GetWebSocket("NeuroVisualizer");
-                await neuroViusalizerWebSocket.SendAsync( new ArraySegment<byte>(buffer, 0, lengthOfMessage), messageType, endOfMessage, CancellationToken.None);
-               
+                if (neuroViusalizerWebSocket != null)
+                {
+                    await neuroViusalizerWebSocket.SendAsync(new ArraySegment<byte>(buffer, 0, lengthOfMessage), messageType, endOfMessage, CancellationToken.None);
+
+                }
+                else
+                {
+                    m_Logger.LogInformation("Client NeuroVisualizer is not connected");
+                }
+
+
+
 
             }
+            //WebSocket neuroViusalizerWebSocket = m_Manager.GetWebSocket("NeuroVisualizer");
+            //await neuroViusalizerWebSocket.SendAsync(new ArraySegment<byte>(buffer, 0, lengthOfMessage), messageType, endOfMessage, CancellationToken.None);
         }
     }
 }

@@ -1,10 +1,10 @@
-import { NeoCortexModel, Cell, NeocortexSettings, Area, Minicolumn, InputModel } from './neocortexmodel';
+import { NeoCortexModel, Cell, NeocortexSettings, Area, Minicolumn, InputModel } from './NeoCortexModel';
 
 
-export class neoCortexUtils {
+export class NeoCortexGenerator {
 
-    static cellRegister: Array<Cell> = new Array();
-    static cellID = 0;
+    cellRegister: Array<Cell> = new Array();
+    cellID = 0;
 
 
     /**
@@ -13,7 +13,7 @@ export class neoCortexUtils {
      * @param miniColDims 
      * @param numLayers 
      */
-    static createModel(areaLevels: number[], miniColDims: number[], numLayers: number): NeoCortexModel {
+    createModel(areaLevels: number[], miniColDims: number[], numLayers: number): NeoCortexModel {
 
         let sett: NeocortexSettings = new NeocortexSettings();
         sett.minicolumnDims = miniColDims;
@@ -30,7 +30,7 @@ export class neoCortexUtils {
         return model;
     }
 
-    static createNeoCortexModel(settings: NeocortexSettings, inputModel: InputModel): NeoCortexModel {// creating areas
+    createNeoCortexModel(settings: NeocortexSettings, inputModel: InputModel): NeoCortexModel {// creating areas
         var model: NeoCortexModel = new NeoCortexModel();
         model.synapses = new Array();
 
@@ -52,7 +52,7 @@ export class neoCortexUtils {
         return model;
     }
 
-    static createArea(model: NeoCortexModel, settings: NeocortexSettings, areaId: number, level: number): Area {// creating minicolumn
+    createArea(model: NeoCortexModel, settings: NeocortexSettings, areaId: number, level: number): Area {// creating minicolumn
         const area = new Area();
         area.areaId = areaId;
         area.level = level;
@@ -82,7 +82,7 @@ export class neoCortexUtils {
         return area;
     }
 
-    static createCells(model: NeoCortexModel, settings: NeocortexSettings, areaId: number, x: number, z: number) {
+    createCells(model: NeoCortexModel, settings: NeocortexSettings, areaId: number, x: number, z: number) {
         settings = settings;
 
         for (let layer = 0; layer < settings.numLayers; layer++) {
@@ -93,7 +93,9 @@ export class neoCortexUtils {
                     areaIndex: areaId,
                     X: x,
                     Layer: layer,
-                    Z: z
+                    Z: z,
+                    incomingSynapses: [],
+                    outgoingSynapses: []
                 });
 
         }
@@ -101,7 +103,7 @@ export class neoCortexUtils {
         this.saveCells(this.cellRegister, model);
     }
 
-    static saveCells(minicolumnCells = [], model: NeoCortexModel) {
+    saveCells(minicolumnCells = [], model: NeoCortexModel) {
 
         for (let i = 0; i < minicolumnCells.length; i++) {
             model.cells.push(minicolumnCells[i]);
@@ -109,15 +111,16 @@ export class neoCortexUtils {
         }
     }
 
-    static createSynapses(model: NeoCortexModel) {
+    createSynapses(model: NeoCortexModel) {
 
         for (let i = 0; i < 10; i++) {
 
             let chooseRandomPreCell = this.getRandomInt(model.cells.length);
             let chooseRandomPostCell = this.getRandomInt(model.cells.length);
+            let randomPerm = Math.random();
 
             const synapse = {
-                permanence: 0,
+                permanence: randomPerm,
                 preSynapticId: model.cells[chooseRandomPreCell].cellId,
                 postSynapticId: model.cells[chooseRandomPostCell].cellId,
 
@@ -131,12 +134,12 @@ export class neoCortexUtils {
 
     }
 
-    static getRandomInt(max: any) {
+    getRandomInt(max: any) {
 
         return Math.floor(Math.random() * Math.floor(max));
     }
 
-    static createInputModel(settings: NeocortexSettings, model: NeoCortexModel) {
+    createInputModel(settings: NeocortexSettings, model: NeoCortexModel) {
 
         for (let dim = 0; dim < settings.minicolumnDims[0]; dim++) {
             let row: Array<Cell> = new Array();
