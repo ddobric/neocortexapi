@@ -19,6 +19,19 @@ export class SenderComponent implements OnInit {
 
   sendModel() {
     let model = new NeoCortexGenerator().createModel([0, 0, 0, 1, 2, 1], [10, 1], 6);
-    this.neoUtils.data.next({ dataModel: model });
+    //this.neoUtils.data.next({ dataModel: model });
+
+    this.neoUtils.data.next({
+      msgType: "init",
+      clientType: "NeuroVisualizer",
+      dataModel: model
+    });
   }
 }
+/* {
+  "msgType": "init",
+  "data": {
+     "clientType": "NeuroVisualizer"
+  }
+
+} */
