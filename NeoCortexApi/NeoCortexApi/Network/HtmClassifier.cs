@@ -9,14 +9,23 @@ using NeoCortexApi.Utility;
 
 namespace NeoCortexApi.Network
 {
-    public class HtmClassifier<TIN, TOUT>
+    public class HtmClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>
     {
         private Dictionary<int[], TIN> activeMap = new Dictionary<int[], TIN>();
 
         private Dictionary<int[], TIN> predictMap = new Dictionary<int[], TIN>();
 
         private Dictionary<TIN, int[]> activeArray = new Dictionary<TIN, int[]>();
-        
+
+        public void Learn(TIN input, Cell[] activeCells, bool learn)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TOUT Inference(Cell[] activeCells)
+        {
+            throw new NotImplementedException();
+        }
 
         public void Learn1(TIN input, Cell[] output, Cell[] predictedOutput)
         {
@@ -164,5 +173,7 @@ namespace NeoCortexApi.Network
 
             return same.Count();
         }
+
+   
     }
 }
