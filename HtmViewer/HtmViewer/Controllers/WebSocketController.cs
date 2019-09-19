@@ -38,9 +38,9 @@ namespace HtmViewer.Controllers
             if (context.WebSockets.IsWebSocketRequest)
             {
                 WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
-                m_Logger.LogInformation("Websocket conntect from {ip}", context.Connection.RemoteIpAddress);
+                m_Logger.LogInformation("Websocket conntect {client}", client);
                 m_Logger.LogInformation("Websocket conntect with following ID {}", context.Connection.Id);
-
+               
                 m_Manager.AddConnection(client, webSocket);
                 await handleWebSocketRequestsAsync(client, webSocket);
             }
