@@ -18,7 +18,7 @@ import { NeoCortexGenerator } from '../Entities/NeoCortexGenerator';
   styleUrls: ['./ainet.component.scss']
 })
 export class AinetComponent implements OnInit, AfterViewInit {
-  model: any;
+  model: any = null;
   xNeurons: Array<number> = [];
   yNeurons: Array<number> = [];
   zNeurons: Array<number> = [];
@@ -55,9 +55,12 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
 
   constructor(private _service: NotificationsService, private neoUtilsService: NeoCortexUtilsService) {
-    this.neoUtilsService.data.subscribe(model => {
-      this.model = model;
-    });
+    /*  this.neoUtilsService.data.subscribe(a => {
+       this.model = a;
+       console.log(this.model, "Received Model ccc");
+     });
+     console.log(this.model, "Received Model"); */
+
 
   }
 
@@ -66,9 +69,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.notificationConfig();
-    this.neoUtilsService.data.subscribe(a => {
-      console.log(a);
-    });
+
+
 
 
   }
@@ -76,13 +78,86 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
 
-    this.model = new NeoCortexGenerator().createModel([0, 0, 0, 1, 2, 1], [10, 1], 6);
+    if (this.model == null || this.model == undefined) {
+      this.plotDummyChart();
+    }
+
+    this.neoUtilsService.data.subscribe(a => {
+      this.model = a.dataModel;
+      if (this.model != null) {
+        this.xNeurons = [];
+        this.yNeurons = [];
+        this.zNeurons = [];
+        this.xSynapse = [];
+        this.ySynapse = [];
+        this.zSynapse = [];
+        this.neuronsColours = [];
+        this.overlap = [];
+        this.permanence = [];
+        this.synapseColours = [];
+        this.synapsesHoverInformation = [];
+        this.neuronsHoverInformation = [];
+        this.fillChart(this.model);
+        this.generateColoursFromOverlap();
+        this.generateColoursFromPermanences();
+        this.plotChart();
+      }
+
+    });
+    //this.model = new NeoCortexGenerator().createModel([0, 0, 0, 1, 2, 1], [10, 1], 6);
     //this.model = neoCortexUtils.createModel([0, 0, 0, 1, 2, 1], [10, 1], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
-    this.fillChart(this.model);
-    this.createSynapsesCoordinates();
-    this.generateColoursFromOverlap();
-    this.generateColoursFromPermanences();
-    this.plotChart();
+    /*  this.fillChart(this.model);
+     this.generateColoursFromOverlap();
+     this.generateColoursFromPermanences();
+     this.plotChart(); */
+
+  }
+
+  plotDummyChart() {
+    const neurons = {
+      x: [0],
+      y: [0],
+      z: [0],
+      hovertext: [],
+      hoverinfo: 'text',
+      type: 'scatter3d',
+      opacity: [1],
+      size: [0],
+      marker: {
+        color: 'rgba(100, 100, 100, 0.5)',
+        symbol: 'circle'
+      }
+    };
+
+    const neuralChartLayout = {
+      legend: {
+        x: 0.5,
+        y: 1
+      },
+      width: 1500,
+      height: 500,
+      margin: {
+        l: 0,
+        r: 0,
+        b: 0,
+        t: 0,
+        pad: 4
+      },
+
+    };
+
+    const neuralChartConfig = {
+      //displayModeBar: false,
+      title: '3DChart',
+      displaylogo: false,
+      showLink: false,
+      responsive: true
+      // showlegend: false
+    };
+
+    let graphDOM = document.getElementById('graph');
+    Plotlyjs.react(graphDOM, [neurons], neuralChartLayout, neuralChartConfig);
+    //Plotlyjs.newPlot(graphDOM, [PointsT, linesT], neuralChartLayout);
 
   }
 
@@ -305,6 +380,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     }
     this.inputModelData(this.model);
     this.createSynapsesCoordinates();
+    console.log(this.overlap);
 
   }
 

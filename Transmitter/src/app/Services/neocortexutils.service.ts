@@ -7,9 +7,10 @@ import { Cell, Synapse } from '../Entities/NeoCortexModel';
 const URL = "ws://localhost:5000/ws/transmitter";
 
 export interface NeoCortexUtils {
-  dataModel: any;
+  dataModel?: any;
   clientType?: any;
   msgType?: any;
+  update?: any
 
 }
 

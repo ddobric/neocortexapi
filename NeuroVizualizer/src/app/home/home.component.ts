@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Router} from '@angular/router';
+import { Router } from '@angular/router';
+import { NeoCortexUtilsService } from '../services/neo-cortex-utils.service';
 
 @Component({
   selector: 'app-home',
@@ -8,10 +9,10 @@ import { Router} from '@angular/router';
 })
 export class HomeComponent implements OnInit {
 
-  public location = '' ;
-  constructor(public router: Router) { 
-    
-    this.location= router.url;
+  public location = '';
+  constructor(public router: Router, private neoUtilsService: NeoCortexUtilsService) {
+
+    this.location = router.url;
   }
   ngOnInit() {
   }
