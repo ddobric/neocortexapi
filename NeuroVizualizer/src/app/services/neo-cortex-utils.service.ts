@@ -198,8 +198,11 @@ export class NeoCortexUtilsService {
       synapseRegister.push(synapse);
 
       preCell.outgoingSynapses.push(synapse);
+      this.model.areas[preCell.areaIndex].minicolumns[preCell.X][preCell.Z].cells[preCell.Layer].outgoingSynapses.push(synapse);
+
 
       postCell.incomingSynapses.push(synapse);
+      this.model.areas[postCell.areaIndex].minicolumns[postCell.X][postCell.Z].cells[postCell.Layer].incomingSynapses.push(synapse);
 
 
     }
