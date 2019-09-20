@@ -113,7 +113,7 @@ export class NeoCortexGenerator {
 
     createSynapses(model: NeoCortexModel) {
 
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 100; i++) {
 
             let chooseRandomPreCell = this.getRandomInt(model.cells.length);
             let chooseRandomPostCell = this.getRandomInt(model.cells.length);
