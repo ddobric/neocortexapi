@@ -75,7 +75,7 @@ namespace NeoCortexApi.Encoders
         public override int[] Encode(object inputData)
         {
             //this.N = 0;
-            double Input = Convert.ToDouble(inputData);
+            double input = Convert.ToDouble(inputData);
 
             // An occurrence of the following data should throw an Exception;
             // *Value less than MinVal when clipInput == false || periodic == true
@@ -85,26 +85,26 @@ namespace NeoCortexApi.Encoders
 
             if (ClipInput && !Periodic)
             {
-                if (Input < MinVal)
+                if (input < MinVal)
                 {
                     inputData = MinVal;
                 }
 
-                else if (Input > MaxVal)
+                else if (input > MaxVal)
                 {
                     inputData = MaxVal;
                 }
             }
             else if (!ClipInput && Periodic)
             {
-                if (Input < MinVal)
+                if (input < MinVal)
                 {
                     throw new ArgumentException("Input Value should be equal to MinVal or greater than MinVal");
                 }
             }
             else if (Periodic)
             {
-                if (Input > MaxVal)
+                if (input > MaxVal)
                 {
                     throw new ArgumentException("Input Value should be equal to MaxVal or lesser than MaxVal");
                 }
@@ -175,20 +175,20 @@ namespace NeoCortexApi.Encoders
 
             if (Periodic)
             {
-                StartPoint = (Input / Resolution) - (N / RangeInternal) + (N - HalfWidth);
+                StartPoint = (input / Resolution) - (N / RangeInternal) + (N - HalfWidth);
             }
             else
             {
-                StartPoint = (Input / Resolution) - (N / RangeInternal);
+                StartPoint = (input / Resolution) - (N / RangeInternal);
             }
 
             EndingPoint = StartPoint + W;
 
-            if (!Periodic)
-            {
-                NoOfBits = (W) * (RangeInternal / Radius) + (2 * HalfWidth);
-                N = (int)NoOfBits;
-            }
+            //if (!Periodic)
+            //{
+            //    NoOfBits = (W) * (RangeInternal / Radius) + (2 * HalfWidth);
+            //    N = (int)NoOfBits;
+            //}
 
             // Return the no of bits and the position of the first bit to be set in the encoder.
             // For periodic encoders, this can exceed the total no of bits, therefore, it is clipped accordingly,
@@ -208,14 +208,14 @@ namespace NeoCortexApi.Encoders
                     EndingPointForPeriodic = (int)EndingPoint;
                     EndingPoint = N;
 
-                    if (Input > RangeInternal)
+                    if (input > RangeInternal)
                     { StartPoint = StartPoint - N; }
                 }
             }
 
-            for (double i = StartPoint; i < EndingPoint; i++)
+            for (int i = (int)StartPoint; i < (int)EndingPoint; i++)
             {
-                EncodeIntoArray[(int)i] = 1;
+                EncodeIntoArray[i] = 1;
             }
 
             // This loop will only works when the data is periodic and depending upon the data, bits has to be wrapped around.
@@ -225,7 +225,7 @@ namespace NeoCortexApi.Encoders
                 {
                     double LeftOver = Math.Min(EndingPointForPeriodic - N, N);
 
-                    if (Input > RangeInternal)
+                    if (input > RangeInternal)
                     { 
                         LeftOver = LeftOver - N;
                     }
