@@ -128,7 +128,7 @@ namespace NeoCortexApi.Encoders
             }
             else
             {
-                RangeInternal = (MaxVal - MinVal);
+                RangeInternal = (MaxVal- MinVal);
 
             }
 
@@ -183,12 +183,14 @@ namespace NeoCortexApi.Encoders
             }
 
             EndingPoint = StartPoint + W;
+            //if (EndingPoint > N)
+            //    N = (int)EndingPoint;
 
-            //if (!Periodic)
-            //{
-            //    NoOfBits = (W) * (RangeInternal / Radius) + (2 * HalfWidth);
-            //    N = (int)NoOfBits;
-            //}
+            if (!Periodic)
+            {
+                NoOfBits = (W) * (RangeInternal / Radius) + (2 * HalfWidth);
+                N = (int)NoOfBits;
+            }
 
             // Return the no of bits and the position of the first bit to be set in the encoder.
             // For periodic encoders, this can exceed the total no of bits, therefore, it is clipped accordingly,
