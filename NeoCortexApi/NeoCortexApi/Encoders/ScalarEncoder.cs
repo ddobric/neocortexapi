@@ -1,8 +1,11 @@
-﻿namespace ScalerEncoder
+﻿using NeoCortexApi.Encoders;
+using System;
+using System.Collections.Generic;
+
+
+namespace NeoCortexApi.Encoders
 {
-    using NeoCortexApi.Encoders;
-    using System;
-    using System.Collections.Generic;
+
 
     /// <summary>
     /// Defines the <see cref="ScalarEncoder" />
@@ -22,22 +25,22 @@
         /// <summary>
         /// Defines the NoOfBits. Works same as N. It is used to change Type of a variable
         /// </summary>
-        private static double NoOfBits;
+        private  double NoOfBits;
 
         /// <summary>
         /// Defines the Starting point in an array to map active bits
         /// </summary>
-        private static double StartPoint;
+        private  double StartPoint;
 
         /// <summary>
         /// Defines the EndingPoint in an array where active bits ends
         /// </summary>
-        private static double EndingPoint;
+        private  double EndingPoint;
 
         /// <summary>
         /// Defines the EndingPointForPeriodic
         /// </summary>
-        private static double EndingPointForPeriodic;// Ending point in an array where active bits ends only works for periodic data
+        private  double EndingPointForPeriodic;// Ending point in an array where active bits ends only works for periodic data
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ScalarEncoder"/> class.
@@ -116,6 +119,7 @@
 
 
             // Setting the Range in which the encoder works
+            
             HalfWidth = (W - 1) / 2;
 
             if (MinVal >= MaxVal)
@@ -192,13 +196,6 @@
 
             int[] EncodeIntoArray = new int[N];
 
-            // Note: The output array (EncodeIntoArray) is reused, so clear it before updating it.
-
-            foreach (var item in EncodeIntoArray)
-            {
-                EncodeIntoArray[item] = 0;
-            }
-
             // Encodes inputData and puts the encoded value into the output array, which is a 1 - D array of length 
             // returned by EncodeIntoArray
 
@@ -226,10 +223,12 @@
             {
                 if (EndingPointForPeriodic > N)
                 {
-                    double LeftOver = EndingPointForPeriodic - N;
+                    double LeftOver = Math.Min(EndingPointForPeriodic - N, N);
 
                     if (Input > RangeInternal)
-                    { LeftOver = LeftOver - N; }
+                    { 
+                        LeftOver = LeftOver - N;
+                    }
 
                     StartPoint = LeftOver - W;
 
