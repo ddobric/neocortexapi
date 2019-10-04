@@ -71,8 +71,11 @@ namespace UnitTestsProject
                 }
             }
 
+            // Here we add TM module to the layer.
             layer1.HtmModules.Add(tm1);
 
+            //
+            // Now, training with SP+TM. SP is pretrained on pattern.
             for (int i = 0; i < 200; i++)
             {
                 foreach (var input in inputs)

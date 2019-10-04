@@ -557,10 +557,15 @@ namespace UnitTestsProject
         /// </summary>
         [TestMethod]
         [DataRow("TestFiles\\digit8.png", "digit8_binarized.txt")]
+        [DataRow("TestFiles\\digit7.png", "digit7_binarized.txt")]
+        [DataRow("TestFiles\\digit1.png", "digit1_binarized.txt")]
         public void BinarizeImageTest(String sourcePath, String destinationPath)
         {
             Binarizer imageBinarizer = new Binarizer(200, 200, 200, 32, 32);
+
             imageBinarizer.CreateBinary(sourcePath, destinationPath);
+
+            string res = imageBinarizer.GetBinary(sourcePath);
         }
 
         /// <summary>

@@ -71,7 +71,7 @@
         /// <returns>The <see cref="int[]"/></returns>
         public override int[] Encode(object inputData)
         {
-            this.N = 0;
+            //this.N = 0;
             double Input = Convert.ToDouble(inputData);
 
             // An occurrence of the following data should throw an Exception;

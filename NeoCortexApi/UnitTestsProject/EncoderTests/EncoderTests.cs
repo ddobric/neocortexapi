@@ -6,7 +6,7 @@ using System.Globalization;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Network;
 
-namespace UnitTestsProject
+namespace UnitTestsProject.EncoderTests
 {
     [TestClass]
     public class EncoderTests
@@ -17,10 +17,10 @@ namespace UnitTestsProject
         /// </summary>
         [TestMethod]
         [DataRow(2.81)]
-        //[DataRow(281)]
-        //[DataRow(42)]
-        //[DataRow(123242)]
-        //[DataRow(-1)]
+        [DataRow(281)]
+        [DataRow(42)]
+        [DataRow(123242)]
+        [DataRow(-1)]
         public void EncodeTest1(double input)
         {
             Dictionary<string, object> encoderSettings = getDefaultSettings();

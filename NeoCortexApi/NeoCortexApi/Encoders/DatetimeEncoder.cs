@@ -42,7 +42,7 @@ namespace NeoCortexApi.Encoders
         /// <returns></returns>
         public int[] EncodeDateOnly(object inputData)
         {
-            DateTime inputDate = DateTime.Parse((String)inputData);
+            DateTime inputDate = DateTime.Parse((String)inputData, CultureInfo.InvariantCulture);
             int[] monthArray = Encoding(inputDate.Month - 1, (int)(W * 12 / Radius));
             int[] dayArray = Encoding(inputDate.Day - 1, (int)(W * 31 / Radius));
             int[] yearArray = Encoding(inputDate.Year, (int)(W * 10 / Radius));
