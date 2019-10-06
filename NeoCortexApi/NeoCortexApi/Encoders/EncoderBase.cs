@@ -1,10 +1,6 @@
-﻿using NeoCortexApi.Encoders;
-using NeoCortexApi.Entities;
-using NeoCortexApi.Utility;
+﻿using NeoCortexApi.Entities;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
 
 namespace NeoCortexApi.Encoders
 {
@@ -17,8 +13,8 @@ namespace NeoCortexApi.Encoders
         /// List of all encoder properties.
         /// </summary>
         protected Dictionary<string, object> Properties = new Dictionary<string, object>();
-        
-               
+
+
         /** Value used to represent no data */
         //public static readonly double SENTINEL_VALUE_FOR_MISSING_DATA = Double.NaN;
         //protected List<Tuple<string, int>> description = new List<Tuple<string, int>>();   
@@ -28,13 +24,14 @@ namespace NeoCortexApi.Encoders
 
         /** the half width value */
         protected int halfWidth;
-     
-      
+
+
         protected int nInternal;
         protected double rangeInternal;
         //protected double range;
         protected bool encLearningEnabled;
         protected List<FieldMetaType> flattenedFieldTypeList;
+
         protected Dictionary<Dictionary<string, int>, List<FieldMetaType>> decoderFieldTypes;
         /**
          * This matrix is used for the topDownCompute. We build it the first time
@@ -53,7 +50,7 @@ namespace NeoCortexApi.Encoders
         /// </summary>
         public EncoderBase()
         {
-            
+
         }
 
         /// <summary>
@@ -65,19 +62,24 @@ namespace NeoCortexApi.Encoders
             this.Initialize(encoderSettings);
         }
 
-
         /// <summary>
         /// Sets the copy all properties.
+        /// It invokes <see cref="AfterInitialize"./>
         /// </summary>
-        /// <param name="encoderSettings"></param>
+        /// <param name="encoderSettings">If not NULL, then all properties are copied to the new internal instance of properties.</param>
 
         public void Initialize(Dictionary<String, Object> encoderSettings)
         {
-            this.Properties.Clear();
-
-            foreach (var item in encoderSettings)
+            if (encoderSettings != null)
             {
-                this.Properties.Add(item.Key, item.Value);
+                this.Properties.Clear();
+
+                IsRealCortexModel = false;
+
+                foreach (var item in encoderSettings)
+                {
+                    this.Properties.Add(item.Key, item.Value);
+                }
             }
 
             this.AfterInitialize();
@@ -94,7 +96,7 @@ namespace NeoCortexApi.Encoders
         {
 
         }
-        
+
         #region Properties
 
         /// <summary>
@@ -115,14 +117,22 @@ namespace NeoCortexApi.Encoders
             }
         }
 
-        #region Keyval Properties
+        #region Properties
+
+        /// <summary>
+        /// In real cortex mode, W must be >= 21. Empirical value.
+        /// </summary>
+        public bool IsRealCortexModel { get => (bool)this["IsRealCortexModel"]; set => this["IsRealCortexModel"] = (bool)value; } 
+
         /// <summary>
         /// The width of output vector of encoder. 
         /// It specifies the length of array, which will be occupied by output vector.
         /// </summary>
-       
+
         public int N { get => (int)this["N"]; set => this["N"] = (int)value; }
-       
+
+        public int NInternal { get => (int)this["NInternal"]; set => this["NInternal"] = (int)value; }
+                
         /// <summary>
         /// Number of bits set on one, which represents single encoded value.
         /// </summary>
@@ -132,14 +142,19 @@ namespace NeoCortexApi.Encoders
 
         public double MaxVal { get => (double)this["MaxVal"]; set => this["MaxVal"] = (double)value; }
 
+        /// <summary>
+        /// How many input values are represented with W encoding bits. r=W*Res.
+        /// </summary>
         public double Radius { get => (double)this["Radius"]; set => this["Radius"] = (double)value; }
 
+        /// <summary>
+        /// How many input values are embedded in the single encoding bit. Res = (max-min)/N.
+        /// </summary>
         public double Resolution { get => (double)this["Resolution"]; set => this["Resolution"] = (double)value; }
 
         public bool Periodic { get => (bool)this["Periodic"]; set => this["Periodic"] = (bool)value; }
 
-        public bool ClipInput { get => (bool)this["ClipInput"]; set => this["ClipInput"] = (bool)value; } 
-
+        public bool ClipInput { get => (bool)this["ClipInput"]; set => this["ClipInput"] = (bool)value; }
 
         public int Padding { get => (int)this["Padding"]; set => this["Padding"] = value; }
 
@@ -155,9 +170,9 @@ namespace NeoCortexApi.Encoders
         public double RangeInternal { get => rangeInternal; set => this.rangeInternal = value; }
 
         //public int NumOfBits { get => m_NumOfBits; set => this.m_NumOfBits = value; }     
- 
-        public int HalfWidth { get => halfWidth; set => this.halfWidth = value; }   
-     
+
+        public int HalfWidth { get => halfWidth; set => this.halfWidth = value; }
+
 
         ///<summary>
         /// Gets the output width, in bits.
@@ -189,8 +204,8 @@ namespace NeoCortexApi.Encoders
             //return new NeoCortexApiInArrawyOutput(result);
             return null;
         }
-        
-       
+
+
 
         /**
          * Returns a list of items, one for each bucket defined by this encoder.
@@ -210,7 +225,7 @@ namespace NeoCortexApi.Encoders
          */
         public abstract List<T> getBucketValues<T>();
 
-    
+
 
         /**
          * Returns an array containing the sum of the right
@@ -232,6 +247,6 @@ namespace NeoCortexApi.Encoders
                 }
             }
             return retVal;
-        }        
+        }
     }
 }

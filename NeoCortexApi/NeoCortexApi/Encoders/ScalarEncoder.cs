@@ -186,7 +186,7 @@ namespace NeoCortexApi.Encoders
             //if (EndingPoint > N)
             //    N = (int)EndingPoint;
 
-            if (!Periodic)
+            if (!Periodic /* && N == 0*/)
             {
                 NoOfBits = (W) * (RangeInternal / Radius) + (2 * HalfWidth);
                 N = (int)NoOfBits;
