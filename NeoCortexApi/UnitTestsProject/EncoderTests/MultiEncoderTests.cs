@@ -69,7 +69,7 @@ namespace UnitTestsProject.EncoderTests
             encoderSettings.Add("Periodic", (bool)false);
             encoderSettings.Add("ClipInput", (bool)true);
 
-            ScalarEncoder encoder = new ScalarEncoder(encoderSettings);
+            ScalarEncoderExperimental encoder = new ScalarEncoderExperimental(encoderSettings);
 
             var result = encoder.Encode(input);
             Assert.IsTrue(expectedResult.SequenceEqual(result));
@@ -198,7 +198,7 @@ namespace UnitTestsProject.EncoderTests
             // We add here new property.
             encoderSettings.Add("TestProp1", "hello");
 
-            var encoder = new ScalarEncoder();
+            var encoder = new ScalarEncoderExperimental();
 
             // Settings can also be passed by invoking Initialize(sett)
             encoder.Initialize(encoderSettings);

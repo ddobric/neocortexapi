@@ -41,17 +41,17 @@ namespace NeoCortexApi.Encoders
 
         private Precision m_Precision;
 
-        private ScalarEncoder m_DateTimeEncoder;
+        private ScalarEncoderExperimental m_DateTimeEncoder;
 
-        private ScalarEncoder m_SeasonEncoder;
+        private ScalarEncoderExperimental m_SeasonEncoder;
 
-        private ScalarEncoder m_DayOfWeekEncoder;
+        private ScalarEncoderExperimental m_DayOfWeekEncoder;
 
-        private ScalarEncoder m_WeekendEncoder;
+        private ScalarEncoderExperimental m_WeekendEncoder;
 
-        private ScalarEncoder m_CustomDaysEncoder;
+        private ScalarEncoderExperimental m_CustomDaysEncoder;
 
-        private ScalarEncoder m_HolidayEncoder;
+        private ScalarEncoderExperimental m_HolidayEncoder;
 
         #endregion
 
@@ -69,22 +69,22 @@ namespace NeoCortexApi.Encoders
         {
             if (this.m_Settings.ContainsKey("SeasonEncoder"))
             {
-                this.m_SeasonEncoder = new ScalarEncoder(this.m_Settings["SeasonEncoder"]);
+                this.m_SeasonEncoder = new ScalarEncoderExperimental(this.m_Settings["SeasonEncoder"]);
             }
 
             if (this.m_Settings.ContainsKey("DayOfWeekEncoder"))
             {
-                this.m_DayOfWeekEncoder = new ScalarEncoder(this.m_Settings["DayOfWeekEncoder"]);
+                this.m_DayOfWeekEncoder = new ScalarEncoderExperimental(this.m_Settings["DayOfWeekEncoder"]);
             }
 
             if (this.m_Settings.ContainsKey("WeekendEncoder"))
             {
-                this.m_WeekendEncoder = new ScalarEncoder(this.m_Settings["WeekendEncoder"]);
+                this.m_WeekendEncoder = new ScalarEncoderExperimental(this.m_Settings["WeekendEncoder"]);
             }
 
             if (this.m_Settings.ContainsKey("DateTimeEncoder"))
             {
-                this.m_DateTimeEncoder = new ScalarEncoder(this.m_Settings["DateTimeEncoder"]);
+                this.m_DateTimeEncoder = new ScalarEncoderExperimental(this.m_Settings["DateTimeEncoder"]);
                 this.m_DateTimeEncoder.MinVal = 0.0;
                 this.m_DateTimeEncoder.MaxVal = GetValue(this.m_Precision,
                     (DateTimeOffset)this.m_Settings["DateTimeEncoder"]["MaxVal"] - (DateTimeOffset)this.m_Settings["DateTimeEncoder"]["MinVal"]);
