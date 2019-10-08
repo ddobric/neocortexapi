@@ -49,6 +49,11 @@ export class AinetComponent implements OnInit, AfterViewInit {
   neuronsHoverInformation: Array<any> = [];
   synapsesHoverInformation: Array<any> = [];
 
+  overlapInterval: any;
+  permanenceInterval: any;
+  showSynapses: any;
+  cellAreaId: any;
+
 
 
   constructor(private _service: NotificationsService, private neoUtilsService: NeoCortexUtilsService) {
@@ -237,7 +242,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       },
       scene: {
         //"auto" | "cube" | "data" | "manual" 
-        aspectmode: 'cube',
+        aspectmode: 'data',
         aspectratio: {
           x: 1,
           y: 1,
@@ -461,13 +466,13 @@ export class AinetComponent implements OnInit, AfterViewInit {
    * @param areaID 
    * @param cell 
    */
-  showOutgoingIncomingSynapses(areaID: any, cellData: any) {
+  showOutgoingIncomingSynapses() {
 
-    let splitCoordinates = cellData.split(",");
+    let splitCoordinates = this.showSynapses.split(",");
     let cellX = parseInt(splitCoordinates[0]);
     let cellLayer = parseInt(splitCoordinates[1]);
     let cellZ = parseInt(splitCoordinates[2]);
-    let areaIndex = parseInt(areaID);
+    let areaIndex = parseInt(this.cellAreaId);
 
     this.clearData();
 
@@ -569,8 +574,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
    * filterPermanence filters the synapses by permanence according to a definite enclosed interval 
    * @param permanenceInterval 
    */
-  filterPermanence(permanenceInterval: any) {
-    let splitpermanenceInterval = permanenceInterval.split(" ");
+  filterPermanence() {
+    let splitpermanenceInterval = this.permanenceInterval.split(" ");
     let permanenceIntervalStart = parseFloat(splitpermanenceInterval[0]);
     let permanenceIntervalEnd = parseFloat(splitpermanenceInterval[1]);
     console.log(permanenceIntervalStart);
@@ -590,9 +595,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
    * filterOverlap filters the neurons by certain overlap values, that lies in the specified enclosed interval
    * @param overlapInterval 
    */
-  filterOverlap(overlapInterval: any) {
+  filterOverlap() {
 
-    let splitOverlapInterval = overlapInterval.split(" ");
+    let splitOverlapInterval = this.overlapInterval.split(" ");
     let overlapIntervalStart = parseFloat(splitOverlapInterval[0]);
     let overlapIntervalEnd = parseFloat(splitOverlapInterval[1]);
     console.log(overlapIntervalStart);
