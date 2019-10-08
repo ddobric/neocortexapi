@@ -4,16 +4,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NeoCortexApi.Encoders;
-using ScalerEncoder;
 
-namespace UnitTests
+
+namespace UnitTestsProject.EncoderTests
 {
 
     /// <summary>
     /// Defines the <see cref="EncoderTests" />
     /// </summary>
     [TestClass]
-    public class ScalarEncoderTests
+    public class MultiEncoderTests
     {
         /// <summary>
         /// Initializes encoder and invokes Encode() method.
@@ -21,29 +21,6 @@ namespace UnitTests
         /// <param name="input">The input<see cref="double"/></param>
         /// <param name="expectedResult">The expectedResult<see cref="int[]"/></param>
         [TestMethod]
-        ///When Width = 5, MinVal = 1, MaxVal = 10, Radius = 2.5
-        /*      [DataRow(1.0, new int[] { 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 })]
-                [DataRow(1.5, new int[] { 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 })]
-                [DataRow(1.6, new int[] { 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 })]
-                [DataRow(2.0, new int[] { 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 })]
-                [DataRow(3.0, new int[] { 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 })]
-                [DataRow(3.1, new int[] { 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 })]
-                [DataRow(3.3, new int[] { 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 })]
-                [DataRow(3.4, new int[] { 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 })]
-                [DataRow(3.5, new int[] { 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 })]
-                [DataRow(7.0, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 })]
-                [DataRow(7.9, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0 })]
-                [DataRow(9.0, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0 })]
-                [DataRow(9.5, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1 })]
-                [DataRow(9.9, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1 })]*/
-
-        ///When Width = 5, MinVal = 1, MaxVal = 10, Resolution = 0.2
-        /*[DataRow(1.0, new int[] { 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 })]
-        [DataRow(1.2, new int[] { 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 })]
-        [DataRow(1.3, new int[] { 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 })]
-        [DataRow(2.0, new int[] { 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 })]
-        [DataRow(9.9, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1 })] */
-
         ///When Width = 25, MinVal = 1, MaxVal = 50, Radius = 2.5
         [DataRow(1.00, new int[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 })]
         [DataRow(1.10, new int[] { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 })]
@@ -185,22 +162,27 @@ namespace UnitTests
         {
             CortexNetworkContext ctx = new CortexNetworkContext();
 
-            Dictionary<string, object> encoderSettings = getDefaultSettings();
+            Dictionary<string, object> scalarEncoderSettings = getScalarEncoderDefaultSettings();
+            Dictionary<string, object> dateTimeEncoderSettings = getDateTimeEncoderDefaultSettings();
 
-            ScalarEncoder encoder = new ScalarEncoder(encoderSettings);
+            MultiEncoder encoder = new MultiEncoder(
+                new Dictionary<string, Dictionary<string, object>>() 
+                {
+                    {"", scalarEncoderSettings },
+                    {"", scalarEncoderSettings }
+                });
 
             var result = encoder.Encode(input);
 
             Assert.IsTrue(expectedResult.SequenceEqual(result));
         }
 
-        /// <summary>
-        /// The DecodeTest
-        /// </summary>
-        /// <param name="input">The input<see cref="int"/></param>
-        public void DecodeTest(int input)
+        private Dictionary<string, object> getDateTimeEncoderDefaultSettings()
         {
+            throw new NotImplementedException();
         }
+
+
 
         /// <summary>
         /// Demonstrates how to create an encoder by explicit invoke of initialization.
@@ -208,7 +190,7 @@ namespace UnitTests
         [TestMethod]
         public void InitTest1()
         {
-            Dictionary<string, object> encoderSettings = getDefaultSettings();
+            Dictionary<string, object> encoderSettings = getScalarEncoderDefaultSettings();
 
             // We change here value of Name property.
             encoderSettings["Name"] = "hello";
@@ -231,110 +213,13 @@ namespace UnitTests
             Assert.IsTrue((string)encoder["abc"] == "1");
         }
 
-        /// <summary>
-        /// Initializes encoder and sets mandatory properties.
-        /// </summary>
-        [TestMethod]
-        public void InitTest2()
-        {
-            CortexNetworkContext ctx = new CortexNetworkContext();
 
-            Dictionary<string, object> encoderSettings = getDefaultSettings();
-
-            var encoder = ctx.CreateEncoder(typeof(ScalarEncoder).FullName, encoderSettings);
-
-            foreach (var item in encoderSettings)
-            {
-                Assert.IsTrue(item.Value == encoder[item.Key]);
-            }
-        }
-
-        /// <summary>
-        /// Demonstrates how to create an encoder and how to set encoder properties by using of context.
-        /// </summary>
-        [TestMethod]
-        public void InitTest3()
-        {
-            CortexNetworkContext ctx = new CortexNetworkContext();
-
-            // Gets set of default properties, which more or less every encoder requires.
-            Dictionary<string, object> encoderSettings = getDefaultSettings();
-
-            // We change here value of Name property.
-            encoderSettings["Name"] = "hello";
-
-            // We add here new property.
-            encoderSettings.Add("TestProp1", "hello");
-
-            var encoder = ctx.CreateEncoder(typeof(ScalarEncoder).FullName, encoderSettings);
-
-            // Property can also be set this way.
-            encoder["abc"] = "1";
-
-            Assert.IsTrue((string)encoder["TestProp1"] == "hello");
-
-            Assert.IsTrue((string)encoder["Name"] == "hello");
-
-            Assert.IsTrue((string)encoder["abc"] == "1");
-        }
-
-        /// <summary>
-        /// Demonstrates how to create an encoder by explicit invoke of initialization.
-        /// </summary>
-        [TestMethod]
-        public void InitTest4()
-        {
-            Dictionary<string, object> encoderSettings = getDefaultSettings();
-
-            // We change here value of Name property.
-            encoderSettings["Name"] = "hello";
-
-            // We add here new property.
-            encoderSettings.Add("TestProp1", "hello");
-
-            var encoder = new ScalarEncoder();
-
-            // Settings can also be passed by invoking Initialize(sett)
-            encoder.Initialize(encoderSettings);
-
-            // Property can also be set this way.
-            encoder["abc"] = "1";
-
-            Assert.IsTrue((string)encoder["TestProp1"] == "hello");
-
-            Assert.IsTrue((string)encoder["Name"] == "hello");
-
-            Assert.IsTrue((string)encoder["abc"] == "1");
-        }
-
-        /// <summary>
-        /// Initializes all encoders.
-        /// </summary>
-        [TestMethod]
-        public void InitializeAllEncodersTest()
-        {
-            CortexNetworkContext ctx = new CortexNetworkContext();
-
-            Assert.IsTrue(ctx.Encoders != null && ctx.Encoders.Count > 0);
-
-            Dictionary<string, object> encoderSettings = getDefaultSettings();
-
-            foreach (var item in ctx.Encoders)
-            {
-                var encoder = ctx.CreateEncoder(typeof(ScalarEncoder).FullName, encoderSettings);
-
-                foreach (var sett in encoderSettings)
-                {
-                    Assert.IsTrue(sett.Value == encoder[sett.Key]);
-                }
-            }
-        }
 
         /// <summary>
         /// The getDefaultSettings
         /// </summary>
         /// <returns>The <see cref="Dictionary{string, object}"/></returns>
-        private static Dictionary<string, object> getDefaultSettings()
+        private static Dictionary<string, object> getScalarEncoderDefaultSettings()
         {
             Dictionary<String, Object> encoderSettings = new Dictionary<string, object>();
             encoderSettings.Add("W", 11);                       //the number of bits that are set to encode a single value -the "width" of the output signal 
@@ -354,5 +239,7 @@ namespace UnitTests
                                                                 //will be clipped to minval/maxval
             return encoderSettings;
         }
+
+      
     }
 }

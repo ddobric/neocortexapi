@@ -42,10 +42,10 @@ namespace NeoCortexApi.Encoders
         /// <returns></returns>
         public int[] EncodeDateOnly(object inputData)
         {
-            DateTime inputDate = DateTime.Parse((String)inputData);
-            int[] monthArray = Encoding(inputDate.Month - 1, (int)(W * 12 / Radius));
-            int[] dayArray = Encoding(inputDate.Day - 1, (int)(W * 31 / Radius));
-            int[] yearArray = Encoding(inputDate.Year, (int)(W * 10 / Radius));
+            DateTime inputDate = DateTime.Parse((String)inputData, CultureInfo.InvariantCulture);
+            int[] monthArray = CreateEncodingArray(inputDate.Month - 1, (int)(W * 12 / Radius));
+            int[] dayArray = CreateEncodingArray(inputDate.Day - 1, (int)(W * 31 / Radius));
+            int[] yearArray = CreateEncodingArray(inputDate.Year, (int)(W * 10 / Radius));
 
             int[] dateArray = new int[monthArray.Length + dayArray.Length + yearArray.Length];
             foreach (var item in dateArray)
@@ -66,9 +66,9 @@ namespace NeoCortexApi.Encoders
         public int[] EncodeTimeOnly(object inputData)
         {
             DateTime inputTime = DateTime.Parse((String)inputData);
-            int[] hourArray = Encoding(inputTime.Hour, (int)(W * 24 / Radius));
-            int[] minuteArray = Encoding(inputTime.Minute, (int)(W * 60 / Radius));
-            int[] secondArray = Encoding(inputTime.Second, (int)(W * 60 / Radius));
+            int[] hourArray = CreateEncodingArray(inputTime.Hour, (int)(W * 24 / Radius));
+            int[] minuteArray = CreateEncodingArray(inputTime.Minute, (int)(W * 60 / Radius));
+            int[] secondArray = CreateEncodingArray(inputTime.Second, (int)(W * 60 / Radius));
 
             int[] timeArray = new int[hourArray.Length + minuteArray.Length + secondArray.Length];
             foreach (var item in timeArray)
@@ -89,12 +89,12 @@ namespace NeoCortexApi.Encoders
         public override int[] Encode(object inputData)
         {
             DateTime inputDateTime = DateTime.Parse((String)inputData, CultureInfo.InvariantCulture);
-            int[] monthArray = Encoding(inputDateTime.Month - 1, (int)(W * 12 / Radius));
-            int[] dayArray = Encoding(inputDateTime.Day - 1, (int)(W * 31 / Radius));
-            int[] yearArray = Encoding(inputDateTime.Year, (int)(W * 10 / Radius));
-            int[] hourArray = Encoding(inputDateTime.Hour, (int)(W * 24 / Radius));
-            int[] minuteArray = Encoding(inputDateTime.Minute, (int)(W * 60 / Radius));
-            int[] secondArray = Encoding(inputDateTime.Second, (int)(W * 60 / Radius));
+            int[] monthArray = CreateEncodingArray(inputDateTime.Month - 1, (int)(W * 12 / Radius));
+            int[] dayArray = CreateEncodingArray(inputDateTime.Day - 1, (int)(W * 31 / Radius));
+            int[] yearArray = CreateEncodingArray(inputDateTime.Year, (int)(W * 10 / Radius));
+            int[] hourArray = CreateEncodingArray(inputDateTime.Hour, (int)(W * 24 / Radius));
+            int[] minuteArray = CreateEncodingArray(inputDateTime.Minute, (int)(W * 60 / Radius));
+            int[] secondArray = CreateEncodingArray(inputDateTime.Second, (int)(W * 60 / Radius));
 
             int[] outArray = new int[monthArray.Length + dayArray.Length + yearArray.Length + hourArray.Length + minuteArray.Length + secondArray.Length];
             foreach (var item in outArray)
@@ -113,10 +113,10 @@ namespace NeoCortexApi.Encoders
         /// <summary>
         /// Implemented logical condition for encoding bits of date and time. 
         /// </summary>
-        /// <param name="element"></param>
-        /// <param name="numberOfBits"></param>
+        /// <param name="element">The scalar value to be encoded.</param>
+        /// <param name="numberOfBits">Number of required bits.</param>
         /// <returns></returns>
-        private int[] Encoding(int element, int numberOfBits)
+        private int[] CreateEncodingArray(int element, int numberOfBits)
         {
             int[] encoderArray = new int[numberOfBits];
 

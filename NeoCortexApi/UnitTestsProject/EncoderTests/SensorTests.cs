@@ -6,6 +6,7 @@ using NeoCortexApi.Sensors;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using UnitTestsProject.EncoderTests;
 
 namespace UnitTestsProject
 {

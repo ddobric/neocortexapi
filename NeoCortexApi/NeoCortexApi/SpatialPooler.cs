@@ -608,7 +608,7 @@ namespace NeoCortexApi
             if (activeColumns.Length > 0)
             {
                 // After this step, all rows in activeArray are set to 1 at the index of active column.
-                ArrayUtils.setIndexesTo(activeArray, activeColumns, 1);
+                ArrayUtils.SetIndexesTo(activeArray, activeColumns, 1);
             }
 
             int period = c.getDutyCyclePeriod();
@@ -800,7 +800,7 @@ namespace NeoCortexApi
 
             // Then we update all connected permChanges to increment values for connected values.
             // Permanences are set in conencted input bits to default incremental value.
-            ArrayUtils.setIndexesTo(permChanges, inputIndices.ToArray(), c.getSynPermActiveInc());
+            ArrayUtils.SetIndexesTo(permChanges, inputIndices.ToArray(), c.getSynPermActiveInc());
 
             for (int i = 0; i < activeColumns.Length; i++)
             {
@@ -1483,7 +1483,7 @@ namespace NeoCortexApi
                 }
             }
 
-            ArrayUtils.setIndexesTo(boostInterim, filteredIndexes.ToArray(), 1.0d);
+            ArrayUtils.SetIndexesTo(boostInterim, filteredIndexes.ToArray(), 1.0d);
             //var boostInterimStr = Helpers.StringifyVector(boostInterim);
 
 

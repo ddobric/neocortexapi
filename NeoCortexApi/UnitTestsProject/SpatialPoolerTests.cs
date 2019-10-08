@@ -487,21 +487,21 @@ namespace UnitTestsProject
             Assert.IsTrue(trueStripped.SequenceEqual(stripped));
 
             mem.updateActiveDutyCycles(new double[] { 0.9, 0, 0, 0, 0.4, 0.3 });
-            activeColumns = ArrayUtils.range(0, 6);
+            activeColumns = ArrayUtils.Range(0, 6);
             stripped = sp.stripUnlearnedColumns(mem, activeColumns);
             trueStripped = new int[] { 0, 4, 5 };
             Assert.IsTrue(trueStripped.SequenceEqual(stripped));
 
             mem.updateActiveDutyCycles(new double[] { 0, 0, 0, 0, 0, 0 });
-            activeColumns = ArrayUtils.range(0, 6);
+            activeColumns = ArrayUtils.Range(0, 6);
             stripped = sp.stripUnlearnedColumns(mem, activeColumns);
             trueStripped = new int[] { };
             Assert.IsTrue(trueStripped.SequenceEqual(stripped));
 
             mem.updateActiveDutyCycles(new double[] { 1, 1, 1, 1, 1, 1 });
-            activeColumns = ArrayUtils.range(0, 6);
+            activeColumns = ArrayUtils.Range(0, 6);
             stripped = sp.stripUnlearnedColumns(mem, activeColumns);
-            trueStripped = ArrayUtils.range(0, 6);
+            trueStripped = ArrayUtils.Range(0, 6);
             Assert.IsTrue(trueStripped.SequenceEqual(stripped));
         }
 

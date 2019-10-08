@@ -17,7 +17,7 @@ if len(sys.argv) <= 3:
     print("40|11")
     print("...")
     print("10|11")
-    sys.argv = "./LinePlot/plotline.py", "False positive error probability", "./LinePlot/errorProbability.txt", "./figure.png"
+    sys.argv = "./LinePlot/plotline.py", "False positive error probability", "./LinePlot/sparse16-1024.txt", "./figure.png"
 
 print(sys.argv)
 positions = []

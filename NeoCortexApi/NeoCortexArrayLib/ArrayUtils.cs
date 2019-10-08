@@ -1397,7 +1397,7 @@ namespace NeoCortexApi.Utility
          * @param upperBounds
          * @return
          */
-        public static int[] range(int lowerBounds, int upperBounds)
+        public static int[] Range(int lowerBounds, int upperBounds)
         {
             List<int> ints = new List<int>();
             for (int i = lowerBounds; i < upperBounds; i++)
@@ -1607,7 +1607,7 @@ namespace NeoCortexApi.Utility
          * @param indexes the indexes of the values array to alter
          * @param setTo   the value to set at the specified indexes.
          */
-        public static void setIndexesTo(double[] values, int[] indexes, double setTo)
+        public static void SetIndexesTo(double[] values, int[] indexes, double setTo)
         {
             for (int i = 0; i < indexes.Length; i++)
             {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace NeoCortexApi.Encoders
+﻿namespace NeoCortexApi.Encoders
 {
     /// <summary>
     /// List of predefault mostly used encoder properties.

@@ -1,8 +1,11 @@
-﻿namespace ScalerEncoder
+﻿using NeoCortexApi.Encoders;
+using System;
+using System.Collections.Generic;
+
+
+namespace NeoCortexApi.Encoders
 {
-    using NeoCortexApi.Encoders;
-    using System;
-    using System.Collections.Generic;
+
 
     /// <summary>
     /// Defines the <see cref="ScalarEncoder" />
@@ -22,22 +25,22 @@
         /// <summary>
         /// Defines the NoOfBits. Works same as N. It is used to change Type of a variable
         /// </summary>
-        private static double NoOfBits;
+        private  double NoOfBits;
 
         /// <summary>
         /// Defines the Starting point in an array to map active bits
         /// </summary>
-        private static double StartPoint;
+        private  double StartPoint;
 
         /// <summary>
         /// Defines the EndingPoint in an array where active bits ends
         /// </summary>
-        private static double EndingPoint;
+        private  double EndingPoint;
 
         /// <summary>
         /// Defines the EndingPointForPeriodic
         /// </summary>
-        private static double EndingPointForPeriodic;// Ending point in an array where active bits ends only works for periodic data
+        private  double EndingPointForPeriodic;// Ending point in an array where active bits ends only works for periodic data
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ScalarEncoder"/> class.
@@ -71,8 +74,8 @@
         /// <returns>The <see cref="int[]"/></returns>
         public override int[] Encode(object inputData)
         {
-            this.N = 0;
-            double Input = Convert.ToDouble(inputData);
+            //this.N = 0;
+            double input = Convert.ToDouble(inputData);
 
             // An occurrence of the following data should throw an Exception;
             // *Value less than MinVal when clipInput == false || periodic == true
@@ -82,26 +85,26 @@
 
             if (ClipInput && !Periodic)
             {
-                if (Input < MinVal)
+                if (input < MinVal)
                 {
                     inputData = MinVal;
                 }
 
-                else if (Input > MaxVal)
+                else if (input > MaxVal)
                 {
                     inputData = MaxVal;
                 }
             }
             else if (!ClipInput && Periodic)
             {
-                if (Input < MinVal)
+                if (input < MinVal)
                 {
                     throw new ArgumentException("Input Value should be equal to MinVal or greater than MinVal");
                 }
             }
             else if (Periodic)
             {
-                if (Input > MaxVal)
+                if (input > MaxVal)
                 {
                     throw new ArgumentException("Input Value should be equal to MaxVal or lesser than MaxVal");
                 }
@@ -116,6 +119,7 @@
 
 
             // Setting the Range in which the encoder works
+            
             HalfWidth = (W - 1) / 2;
 
             if (MinVal >= MaxVal)
@@ -124,7 +128,7 @@
             }
             else
             {
-                RangeInternal = (MaxVal - MinVal);
+                RangeInternal = (MaxVal- MinVal);
 
             }
 
@@ -171,16 +175,18 @@
 
             if (Periodic)
             {
-                StartPoint = (Input / Resolution) - (N / RangeInternal) + (N - HalfWidth);
+                StartPoint = (input / Resolution) - (N / RangeInternal) + (N - HalfWidth);
             }
             else
             {
-                StartPoint = (Input / Resolution) - (N / RangeInternal);
+                StartPoint = (input / Resolution) - (N / RangeInternal);
             }
 
             EndingPoint = StartPoint + W;
+            //if (EndingPoint > N)
+            //    N = (int)EndingPoint;
 
-            if (!Periodic)
+            if (!Periodic /* && N == 0*/)
             {
                 NoOfBits = (W) * (RangeInternal / Radius) + (2 * HalfWidth);
                 N = (int)NoOfBits;
@@ -191,13 +197,6 @@
             // wraps around in the encoded output 
 
             int[] EncodeIntoArray = new int[N];
-
-            // Note: The output array (EncodeIntoArray) is reused, so clear it before updating it.
-
-            foreach (var item in EncodeIntoArray)
-            {
-                EncodeIntoArray[item] = 0;
-            }
 
             // Encodes inputData and puts the encoded value into the output array, which is a 1 - D array of length 
             // returned by EncodeIntoArray
@@ -211,14 +210,14 @@
                     EndingPointForPeriodic = (int)EndingPoint;
                     EndingPoint = N;
 
-                    if (Input > RangeInternal)
+                    if (input > RangeInternal)
                     { StartPoint = StartPoint - N; }
                 }
             }
 
-            for (double i = StartPoint; i < EndingPoint; i++)
+            for (int i = (int)StartPoint; i < (int)EndingPoint; i++)
             {
-                EncodeIntoArray[(int)i] = 1;
+                EncodeIntoArray[i] = 1;
             }
 
             // This loop will only works when the data is periodic and depending upon the data, bits has to be wrapped around.
@@ -226,10 +225,12 @@
             {
                 if (EndingPointForPeriodic > N)
                 {
-                    double LeftOver = EndingPointForPeriodic - N;
+                    double LeftOver = Math.Min(EndingPointForPeriodic - N, N);
 
-                    if (Input > RangeInternal)
-                    { LeftOver = LeftOver - N; }
+                    if (input > RangeInternal)
+                    { 
+                        LeftOver = LeftOver - N;
+                    }
 
                     StartPoint = LeftOver - W;
 
