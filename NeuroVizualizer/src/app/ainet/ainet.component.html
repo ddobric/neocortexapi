@@ -1,8 +1,42 @@
 <h2>
   Connectionist System
 </h2>
+<div class="container">
+  <form #overlapFilterForm="ngForm">
+    <div class="form-inline">
+      <input [(ngModel)]="overlapInterval" class="form-control input-sm" id="overlapInterval" name="overlapInterval"
+        placeholder="[a... b]" required>
+      <button [disabled]="!overlapInterval" type="submit" id="overlapIntervalButton"
+        (click)='filterOverlap(); overlapFilterForm.reset()' class="btn btn-success ">Filter
+        overlap</button>
+    </div>
+  </form>
+  <br>
+  <form #permanenceFilterForm="ngForm">
+    <div class="form-inline">
+      <input [(ngModel)]="permanenceInterval" class="form-control input-sm" id="filterPermanence"
+        name="filterPermanence" placeholder="[a... b]" required>
+      <button [disabled]="!permanenceInterval" type="submit" (click)="filterPermanence(); permanenceFilterForm.reset()"
+        id="filterPermanence" class="btn btn-success">Filter
+        Permanence</button>
+    </div>
+  </form>
+  <br>
+  <form #showSynapsesForm="ngForm">
+    <div class="form-inline">
+      <input maxlength="2" [(ngModel)]="cellAreaId" class="form-control input-sm" placeholder="Area ID"
+        name="showOutInSynaps" required>
+      <input maxlength="5" [(ngModel)]="showSynapses" class="form-control" id="cell" name="cell"
+        placeholder="Cell=> X,Y,Z" required>
+      <button [disabled]="!cellAreaId && !showSynapses" type="submit"
+        (click)="showOutgoingIncomingSynapses(); showSynapsesForm.reset()" id="showOutInSynaps" name="showOutInSynaps"
+        class="btn btn-info">Filter
+        Permanence</button>
+    </div>
+  </form>
 
-
+</div>
+<!-- 
 <form #formCtrl="ngForm">
 
   <div class="container">
@@ -53,7 +87,7 @@
     </div>
 
   </div>
-</form>
+</form> -->
 
 
 <!-- Plotly chart will be drawn inside this div -->

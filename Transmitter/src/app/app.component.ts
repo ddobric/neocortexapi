@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { NeoCortexGenerator } from './Entities/NeoCortexGenerator';
 import { NeoCortexUtilsService } from './Services/neocortexutils.service';
+import { sendRequest } from 'selenium-webdriver/http';
+import { UpdateNeuralColumn, UpdateSynapse } from './Entities/UpdateProperties';
 
 
 @Component({
@@ -10,9 +12,18 @@ import { NeoCortexUtilsService } from './Services/neocortexutils.service';
 })
 export class AppComponent {
   title = 'Transmitter';
+  updateNeuralColumn: UpdateNeuralColumn;
+  updateSynaspse: UpdateSynapse;
+
   constructor(private neoUtils: NeoCortexUtilsService) {
+    this.updateNeuralColumn = new UpdateNeuralColumn();
+    this.updateSynaspse = new UpdateSynapse();
+
+
   }
+
   sendModel() {
+    //([0, 0, 0, 1, 2, 1], [10, 1], 6)
     let model = new NeoCortexGenerator().createModel([0, 0, 0, 1, 2, 1], [10, 1], 6);
 
     this.neoUtils.data.next({
@@ -21,14 +32,13 @@ export class AppComponent {
       dataModel: model
     });
   }
-  //updateOverlap(areaID.value, miniColumnXDimension.value,miniColumnZDimension.value,newOverlapValue.value)'>Update
-  updateOverlap(areaIDOfCell: any, minColXDim: any, minColZDim: any, updateOverlapValue: any) {
-    // updateOverlap(areaID, miniColumnXDimension, miniColumnZDimension, newOverlapValue) {
 
-    let areaID = parseInt(areaIDOfCell);
-    let miniColumnXDimension = parseInt(minColXDim);
-    let miniColumnZDimension = parseInt(minColZDim);
-    let newOverlapValue = parseFloat(updateOverlapValue);
+  updateOverlapInNeuralColumn() {
+    // updateOverlap(areaID, miniColumnXDimension, miniColumnZDimension, newOverlapValue) {
+    let areaID = parseInt(this.updateNeuralColumn.areaID);
+    let miniColumnXDimension = parseInt(this.updateNeuralColumn.miniColXDim);
+    let miniColumnZDimension = parseInt(this.updateNeuralColumn.miniColZDim);
+    let newOverlapValue = parseFloat(this.updateNeuralColumn.updateOverlap);
 
     const updateOverlap = {
       areaIDOfCell: areaID,
@@ -45,16 +55,16 @@ export class AppComponent {
   }
 
   // (click)='updateOrAddSynapse(preCellAreaID.value, postCellAreaID.value, pre_Cell.value, post_Cell.value, permanence.value )'>
-  updateOrAddSynapse(preCellAreaID: any, postCellAreaID: any, preCell: any, postCell: any, permanence: any) {
-    let permaValue = parseFloat(permanence);
-    let preCellArea = parseInt(preCellAreaID);
-    let postCellArea = parseInt(postCellAreaID);
-    let prX = parseInt(preCell[0]);
-    let prY = parseInt(preCell[2]);
-    let prZ = parseInt(preCell[4]);
-    let poX = parseInt(postCell[0]);
-    let poY = parseInt(postCell[2]);
-    let poZ = parseInt(postCell[4]);
+  updateOrAddSynapse() {
+    let permaValue = parseFloat(this.updateSynaspse.updatePermanence);
+    let preCellArea = parseInt(this.updateSynaspse.preCellAreaID);
+    let postCellArea = parseInt(this.updateSynaspse.postCellAreaID);
+    let prX = parseInt(this.updateSynaspse.preCell[0]);
+    let prY = parseInt(this.updateSynaspse.preCell[2]);
+    let prZ = parseInt(this.updateSynaspse.preCell[4]);
+    let poX = parseInt(this.updateSynaspse.postCell[0]);
+    let poY = parseInt(this.updateSynaspse.postCell[2]);
+    let poZ = parseInt(this.updateSynaspse.postCell[4]);
 
     const updateOrAddSynapse = {
       preCellAreaId: preCellArea,
