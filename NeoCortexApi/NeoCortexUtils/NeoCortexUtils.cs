@@ -13,7 +13,7 @@ namespace NeoCortex
         /// <param name="twoDimArray">Array of active columns.</param>
         /// <param name="width">Output width.</param>
         /// <param name="height">Output height.</param>
-        /// <param name="filePath">The bitmap filename.</param>
+        /// <param name="filePath">The bitmap PNG filename.</param>
         public static void DrawBitmap(int[,] twoDimArray, int width, int height, String filePath)
         {
             DrawBitmap(twoDimArray, width, height, filePath, Color.Black, Color.Green);
@@ -25,7 +25,7 @@ namespace NeoCortex
         /// <param name="twoDimArray">Array of active columns.</param>
         /// <param name="width">Output width.</param>
         /// <param name="height">Output height.</param>
-        /// <param name="filePath">The bitmap filename.</param>
+        /// <param name="filePath">The bitmap PNG filename.</param>
         public static void DrawBitmap(int[,] twoDimArray, int width, int height, String filePath, Color inactiveCellColor, Color activeCellColor)
         {
             int w = twoDimArray.GetLength(0);

@@ -117,14 +117,13 @@ namespace NeoCortexApi.Encoders
                 case Precision.Miliseconds:
                     val = span.TotalMilliseconds;
                     break;
-
-
+                    
                 case Precision.Microseconds:
-                    val = span.Ticks * 100 * 1000;
+                    val = span.Ticks / 100 / 1000;
                     break;
 
                 case Precision.Nanoseconds:
-                    val = span.Ticks * 100;
+                    val = span.Ticks / 100;
                     break;
 
                 case Precision.Ticks:
