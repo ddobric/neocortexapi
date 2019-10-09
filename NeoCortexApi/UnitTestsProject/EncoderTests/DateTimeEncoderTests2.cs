@@ -51,7 +51,7 @@ namespace UnitTestsProject.EncoderTests
                     { "Padding", 5},
                 });
 
-            var encoder = new DateTimeEncoder2(encoderSettings, DateTimeEncoder2.Precision.Days);
+            var encoder = new DateTimeEncoder(encoderSettings, DateTimeEncoder.Precision.Days);
 
             var result = encoder.Encode(DateTimeOffset.Parse(input.ToString()));
 
@@ -90,7 +90,7 @@ namespace UnitTestsProject.EncoderTests
 
             Dictionary<string, Dictionary<string, object>> encoderSettings = getFullEncoderSettings();
 
-            var encoder = new DateTimeEncoder2(encoderSettings, DateTimeEncoder2.Precision.Days);
+            var encoder = new DateTimeEncoder(encoderSettings, DateTimeEncoder.Precision.Days);
 
             var result = encoder.Encode(DateTimeOffset.Parse(input.ToString()));
 
@@ -154,7 +154,7 @@ namespace UnitTestsProject.EncoderTests
 
             Dictionary<string, Dictionary<string, object>> encoderSettings = getFullEncoderSettings();
 
-            var encoder = new DateTimeEncoder2(encoderSettings, DateTimeEncoder2.Precision.Days);
+            var encoder = new DateTimeEncoder(encoderSettings, DateTimeEncoder.Precision.Days);
 
             var result = encoder.Encode(DateTimeOffset.Parse(input.ToString(), CultureInfo.InvariantCulture));
 

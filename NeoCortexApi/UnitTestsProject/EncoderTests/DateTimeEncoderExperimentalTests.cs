@@ -11,7 +11,7 @@ namespace UnitTestsProject.EncoderTests
     /// <summary>
     /// Performing the unit tests for the datetime encoder, date encoder only and time encoder only by using class of DateTimeEncoderTests_1.
     /// </summary>
-    [TestClass]
+    //[TestClass]
 
     public class DateTimeEncoderTests
     {
@@ -37,7 +37,7 @@ namespace UnitTestsProject.EncoderTests
             encoderSettings["W"] = w;
             encoderSettings["Radius"] = r;
 
-            DateTimeEncoder encoder = new DateTimeEncoder(encoderSettings);
+            DateTimeEncoderExperimental encoder = new DateTimeEncoderExperimental(encoderSettings);
 
             var result = encoder.Encode(input);
 
@@ -70,7 +70,7 @@ namespace UnitTestsProject.EncoderTests
 
             Dictionary<string, object> encoderSettings = getDefaultSettings();
 
-            DateTimeEncoder encoder = new DateTimeEncoder(encoderSettings);
+            DateTimeEncoderExperimental encoder = new DateTimeEncoderExperimental(encoderSettings);
 
             var result = encoder.Encode(input);
 
@@ -107,7 +107,7 @@ namespace UnitTestsProject.EncoderTests
 
             Dictionary<string, object> encoderSettings = getDefaultSettings();
 
-            DateTimeEncoder encoder = new DateTimeEncoder(encoderSettings);
+            DateTimeEncoderExperimental encoder = new DateTimeEncoderExperimental(encoderSettings);
 
             var result = encoder.EncodeDateOnly(input);
 
@@ -139,7 +139,7 @@ namespace UnitTestsProject.EncoderTests
 
             Dictionary<string, object> encoderSettings = getDefaultSettings();
 
-            DateTimeEncoder encoder = new DateTimeEncoder(encoderSettings);
+            DateTimeEncoderExperimental encoder = new DateTimeEncoderExperimental(encoderSettings);
 
             var result = encoder.EncodeTimeOnly(input);
 
@@ -171,7 +171,7 @@ namespace UnitTestsProject.EncoderTests
 
             Dictionary<string, object> encoderSettings = getDefaultSettings();
 
-            DateTimeEncoder encoder = new DateTimeEncoder(encoderSettings);
+            DateTimeEncoderExperimental encoder = new DateTimeEncoderExperimental(encoderSettings);
 
             var result = encoder.Encode(input);
 
@@ -202,7 +202,7 @@ namespace UnitTestsProject.EncoderTests
 
             Dictionary<string, object> encoderSettings = getDefaultSettings();
 
-            DateTimeEncoder encoder = new DateTimeEncoder(encoderSettings);
+            DateTimeEncoderExperimental encoder = new DateTimeEncoderExperimental(encoderSettings);
 
             var result = encoder.EncodeDateOnly(input);
 
@@ -217,7 +217,7 @@ namespace UnitTestsProject.EncoderTests
         /// <param name="input"></param>
         /// <param name="expectedOutput"></param>
 
-        [TestMethod]
+        //[TestMethod]
 
         //When width (W) = 3 and radius = 3:
         [DataRow("14:55:00", new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 })]
@@ -233,7 +233,7 @@ namespace UnitTestsProject.EncoderTests
 
             Dictionary<string, object> encoderSettings = getDefaultSettings();
 
-            DateTimeEncoder encoder = new DateTimeEncoder(encoderSettings);
+            DateTimeEncoderExperimental encoder = new DateTimeEncoderExperimental(encoderSettings);
 
             var result = encoder.EncodeTimeOnly(input);
 
