@@ -39,19 +39,24 @@ namespace NeoCortexApi.Encoders
 
         private Dictionary<string, Dictionary<string, object>> m_Settings;
 
+        /// <summary>
+        /// Minimum time encoded by encoder.
+        /// </summary>
+        private DateTimeOffset m_MinDateTime;
+
         private Precision m_Precision;
 
-        private ScalarEncoderExperimental m_DateTimeEncoder;
+        private ScalarEncoder m_DateTimeEncoder;
 
-        private ScalarEncoderExperimental m_SeasonEncoder;
+        private ScalarEncoder m_SeasonEncoder;
 
-        private ScalarEncoderExperimental m_DayOfWeekEncoder;
+        private ScalarEncoder m_DayOfWeekEncoder;
 
-        private ScalarEncoderExperimental m_WeekendEncoder;
+        private ScalarEncoder m_WeekendEncoder;
 
-        private ScalarEncoderExperimental m_CustomDaysEncoder;
+        private ScalarEncoder m_CustomDaysEncoder;
 
-        private ScalarEncoderExperimental m_HolidayEncoder;
+        private ScalarEncoder m_HolidayEncoder;
 
         #endregion
 
@@ -61,6 +66,7 @@ namespace NeoCortexApi.Encoders
         {
             this.m_Settings = settings;
             this.m_Precision = precision;
+
             Initialize();
         }
 
@@ -69,25 +75,31 @@ namespace NeoCortexApi.Encoders
         {
             if (this.m_Settings.ContainsKey("SeasonEncoder"))
             {
-                this.m_SeasonEncoder = new ScalarEncoderExperimental(this.m_Settings["SeasonEncoder"]);
+                this.m_SeasonEncoder = new ScalarEncoder(this.m_Settings["SeasonEncoder"]);
             }
 
             if (this.m_Settings.ContainsKey("DayOfWeekEncoder"))
             {
-                this.m_DayOfWeekEncoder = new ScalarEncoderExperimental(this.m_Settings["DayOfWeekEncoder"]);
+                this.m_DayOfWeekEncoder = new ScalarEncoder(this.m_Settings["DayOfWeekEncoder"]);
             }
 
             if (this.m_Settings.ContainsKey("WeekendEncoder"))
             {
-                this.m_WeekendEncoder = new ScalarEncoderExperimental(this.m_Settings["WeekendEncoder"]);
+                this.m_WeekendEncoder = new ScalarEncoder(this.m_Settings["WeekendEncoder"]);
             }
 
             if (this.m_Settings.ContainsKey("DateTimeEncoder"))
             {
-                this.m_DateTimeEncoder = new ScalarEncoderExperimental(this.m_Settings["DateTimeEncoder"]);
-                this.m_DateTimeEncoder.MinVal = 0.0;
-                this.m_DateTimeEncoder.MaxVal = GetValue(this.m_Precision,
-                    (DateTimeOffset)this.m_Settings["DateTimeEncoder"]["MaxVal"] - (DateTimeOffset)this.m_Settings["DateTimeEncoder"]["MinVal"]);
+                // We keep this value, because it is needued in encoding process.
+                this.m_MinDateTime = (DateTimeOffset)this.m_Settings["DateTimeEncoder"]["MinVal"];
+
+                this.m_Settings["DateTimeEncoder"]["MaxVal"] = GetValue(this.m_Precision, (DateTimeOffset)this.m_Settings["DateTimeEncoder"]["MaxVal"] - (DateTimeOffset)this.m_Settings["DateTimeEncoder"]["MinVal"]);
+                this.m_Settings["DateTimeEncoder"]["MinVal"] = 0.0;
+                
+                this.m_DateTimeEncoder = new ScalarEncoder(this.m_Settings["DateTimeEncoder"]);
+                //this.m_DateTimeEncoder.MinVal = 0.0;
+                //this.m_DateTimeEncoder.MaxVal = GetValue(this.m_Precision,
+                //    (DateTimeOffset)this.m_Settings["DateTimeEncoder"]["MaxVal"] - (DateTimeOffset)this.m_Settings["DateTimeEncoder"]["MinVal"]);
             }
         }
         #endregion
@@ -142,17 +154,14 @@ namespace NeoCortexApi.Encoders
 
             if (this.m_DateTimeEncoder != null)
             {
-                var max = (DateTimeOffset)this.m_Settings["DateTimeEncoder"]["MaxVal"];
-                var min = (DateTimeOffset)this.m_Settings["DateTimeEncoder"]["MinVal"];
-
-                var v = GetValue(this.m_Precision, input - min);
-
-                var sdr = this.m_DateTimeEncoder.Encode(v);
+                var val = GetValue(this.m_Precision, input - this.m_MinDateTime);
+                
+                var sdr = this.m_DateTimeEncoder.Encode(val);
 
                 result.AddRange(sdr);
 
-                if (this.m_Settings["DateTimeEncoder"].ContainsKey("Padding"))
-                    result.AddRange(new int[(int)this.m_Settings["DateTimeEncoder"]["Padding"]]);
+                if (this.m_Settings["DateTimeEncoder"].ContainsKey("Offset"))
+                    result.AddRange(new int[(int)this.m_Settings["DateTimeEncoder"]["Offset"]]);
             }
 
             if (this.m_DayOfWeekEncoder != null)
@@ -161,8 +170,8 @@ namespace NeoCortexApi.Encoders
 
                 result.AddRange(sdr);
 
-                if (this.m_Settings["DayOfWeekEncoder"].ContainsKey("Padding"))
-                    result.AddRange(new int[(int)this.m_Settings["DayOfWeekEncoder"]["Padding"]]);
+                if (this.m_Settings["DayOfWeekEncoder"].ContainsKey("Offset"))
+                    result.AddRange(new int[(int)this.m_Settings["DayOfWeekEncoder"]["Offset"]]);
             }
 
             if (this.m_SeasonEncoder != null)
@@ -171,8 +180,8 @@ namespace NeoCortexApi.Encoders
 
                 result.AddRange(sdr);
 
-                if (this.m_Settings["SeasonEncoder"].ContainsKey("Padding"))
-                    result.AddRange(new int[(int)this.m_Settings["SeasonEncoder"]["Padding"]]);
+                if (this.m_Settings["SeasonEncoder"].ContainsKey("Offset"))
+                    result.AddRange(new int[(int)this.m_Settings["SeasonEncoder"]["Offset"]]);
             }
 
             if (this.m_WeekendEncoder != null)
@@ -181,8 +190,8 @@ namespace NeoCortexApi.Encoders
 
                 result.AddRange(sdr);
 
-                if (this.m_Settings["WeekendEncoder"].ContainsKey("Padding"))
-                    result.AddRange(new int[(int)this.m_Settings["WeekendEncoder"]["Padding"]]);
+                if (this.m_Settings["WeekendEncoder"].ContainsKey("Offset"))
+                    result.AddRange(new int[(int)this.m_Settings["WeekendEncoder"]["Offset"]]);
             }
 
             return result.ToArray();
