@@ -13,7 +13,7 @@ namespace UnitTestsProject.EncoderTests
     /// </summary>
     //[TestClass]
 
-    public class DateTimeEncoderTests
+    public class DateTimeEncoderExperimentalTests
     {
         /// <summary>
         /// Performing unit test when width = 1 and radius = 1, to verify the datetime encoder. 

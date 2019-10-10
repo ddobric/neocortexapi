@@ -17,7 +17,7 @@ namespace UnitTestsProject.EncoderTests
     /// </summary>
     [TestClass]
 
-    public class DateTimeEncoderTests2
+    public class DateTimeEncoderTests
     {
         /// <summary>
         /// Encoding of DateTime only 
