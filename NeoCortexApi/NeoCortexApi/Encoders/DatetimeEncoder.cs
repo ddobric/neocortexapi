@@ -8,13 +8,13 @@ namespace NeoCortexApi.Encoders
     /// <summary>
     /// For the implemention of encoder for the datetime encoder, date encoder only and time encoder only by using DateTimeEncoder class by using abstract class of EncoderBase.
     /// </summary>
-    public class DateTimeEncoder : EncoderBase
+    public class DatetimeEncoder : EncoderBase
     {
         /// <summary>
         /// For the setting of radius and the width.
         /// </summary>
         /// <param name="settings"></param>
-        public DateTimeEncoder(Dictionary<string, object> settings)
+        public DatetimeEncoder(Dictionary<string, object> settings)
         {
             if (settings.TryGetValue("Radius", out object radius) && (double)radius > 0)
             {
@@ -137,7 +137,7 @@ namespace NeoCortexApi.Encoders
         /// <summary>
         /// From InitTest method for the setting of radius and width.
         /// </summary>
-        public DateTimeEncoder()
+        public DatetimeEncoder()
         {
 
         }
