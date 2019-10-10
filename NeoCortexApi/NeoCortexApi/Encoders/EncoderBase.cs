@@ -74,6 +74,7 @@ namespace NeoCortexApi.Encoders
             {
                 this.Properties.Clear();
 
+                Name = this.GetType().Name;
                 IsRealCortexModel = false;
                 N = 0;
                 Resolution = -1.0;
@@ -175,6 +176,8 @@ namespace NeoCortexApi.Encoders
         public bool IsForced { get => (bool)this["IsForced"]; set => this["IsForced"] = value; }
 
         public string Name { get => (string)this["Name"]; set => this["Name"] = value; }
+
+        public int Offset{ get => (int)this["Offset"]; set => this["Offset"] = value; }
 
         #endregion
 

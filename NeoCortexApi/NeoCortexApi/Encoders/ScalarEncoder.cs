@@ -3,6 +3,7 @@ using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace NeoCortexApi.Encoders
 {
@@ -245,7 +246,7 @@ namespace NeoCortexApi.Encoders
         {
             int[] output = null;
 
-            double input = Convert.ToDouble(inputData);
+            double input = Convert.ToDouble(inputData, CultureInfo.InvariantCulture);
             if (input == Double.NaN)
             {
                 return output;
