@@ -6,7 +6,7 @@ using System.Text;
 
 namespace NeoCortexApi.Network
 {
-    public class HtmClassifier_Test<TIN, TOUT> : IClassifier<TIN, TOUT>
+    public class HtmUnionClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>
     {
         private Dictionary<TIN, int[]> activeMap = new Dictionary<TIN, int[]>();
 

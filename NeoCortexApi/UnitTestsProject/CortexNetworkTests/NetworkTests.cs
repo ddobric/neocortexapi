@@ -56,7 +56,7 @@ namespace UnitTestsProject
 
             //IClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
             HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
-            HtmClassifier_Test<string, ComputeCycle> cls1 = new HtmClassifier_Test<string, ComputeCycle>();
+            HtmUnionClassifier<string, ComputeCycle> cls1 = new HtmUnionClassifier<string, ComputeCycle>();
             //string[] inputs = new string[] { "A", "B", "C", "D" };
             string[] inputs = new string[] { "A", "B", "C", "D" };
 

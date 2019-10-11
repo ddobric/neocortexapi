@@ -5,6 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using NeoCortexApi.Encoders;
 using System.Diagnostics;
+using NeoCortexApi.Utility;
+using System.Drawing;
+using NeoCortex;
+using System.IO;
 
 namespace UnitTestsProject.EncoderTests
 {
@@ -167,6 +171,40 @@ namespace UnitTestsProject.EncoderTests
             //Assert.IsTrue(expectedResult.SequenceEqual(result));
         }
 
+
+        [TestMethod]      
+        public void ScalarEncodingExperiment()
+        {
+            string outFolder = nameof(ScalarEncodingExperiment);
+
+            Directory.CreateDirectory(outFolder);
+
+            CortexNetworkContext ctx = new CortexNetworkContext();
+
+            DateTime now = DateTime.Now;
+
+            ScalarEncoder encoder = new ScalarEncoder(new Dictionary<string, object>()
+            {
+                { "W", 21},
+                { "N", 1024},
+                { "Radius", -1.0},
+                { "MinVal", 0.0},
+                { "MaxVal", 100.0 },
+                { "Periodic", false},
+                { "Name", "scalar"},
+                { "ClipInput", false},
+            });
+
+            for (double i = 0.0; i < (long)encoder.MaxVal; i += 0.1)
+            {              
+               var result = encoder.Encode(i);
+
+                int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(result, (int)Math.Sqrt(result.Length), (int)Math.Sqrt(result.Length));
+                var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
+
+                NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"{outFolder}\\{i}.png", Color.Yellow, Color.Black, text:i.ToString());
+            }
+        }
 
         /// <summary>
         /// The DecodeTest
@@ -335,3 +373,5 @@ namespace UnitTestsProject.EncoderTests
         }
     }
 }
+
+

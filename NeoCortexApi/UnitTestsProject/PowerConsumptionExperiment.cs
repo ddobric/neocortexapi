@@ -26,7 +26,7 @@ namespace UnitTestsProject
         [TestCategory("LongRunning")]
         public void PowerPredictionExperiment()
         {
-              string outFolder = nameof(PowerPredictionExperiment);
+            string outFolder = nameof(PowerPredictionExperiment);
 
             Directory.CreateDirectory(outFolder);
 
