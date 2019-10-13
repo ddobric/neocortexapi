@@ -166,7 +166,7 @@ namespace NeoCortexApi.Encoders
 
             if (this.m_DayOfWeekEncoder != null)
             {
-                var sdr = this.m_DayOfWeekEncoder.Encode(input.Day);
+                var sdr = this.m_DayOfWeekEncoder.Encode(input.DayOfWeek);
 
                 result.AddRange(sdr);
 

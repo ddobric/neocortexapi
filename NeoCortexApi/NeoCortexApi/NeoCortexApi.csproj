@@ -28,6 +28,7 @@
     <Compile Remove="Encoders\EncoderBuilder.cs" />
     <Compile Remove="Entities\SparseBinaryMatrixDistDict.cs" />
     <Compile Remove="Entities\SparseBinaryMatrixOriginal.cs" />
+    <Compile Remove="Network\NearestClassifier.cs" />
     <Compile Remove="Network_Old\CortexNetwork.cs" />
     <Compile Remove="Network_Old\Header.cs" />
     <Compile Remove="Network_Old\ICheckPointOP.cs" />
@@ -50,6 +51,7 @@
     <None Include="Encoders\EncoderBuilder.cs" />
     <None Include="Entities\SparseBinaryMatrixDistDict.cs" />
     <None Include="Entities\SparseBinaryMatrixOriginal.cs" />
+    <None Include="Network\NearestClassifier.cs" />
     <None Include="Network_Old\CortexNetwork.cs" />
     <None Include="Network_Old\Header.cs" />
     <None Include="Network_Old\ICheckPointOP.cs" />

@@ -80,7 +80,7 @@ namespace UnitTestsProject
             {
                 foreach (var input in inputs)
                 {
-                    var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
+                    var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
                     //cls1.Learn(input, lyrOut.activeCells.ToArray(), learn);
                     //Debug.WriteLine($"Current Input: {input}");
                     cls.Learn(input, lyrOut.activeCells.ToArray(), lyrOut.predictiveCells.ToArray());
@@ -98,7 +98,7 @@ namespace UnitTestsProject
                 }
 
                 tm1.reset(mem);
-                if (i == 20)
+                if (i == 10)
                 {
                     Debug.WriteLine("Stop Learning From Here-----------------------------------------------------------------------------------------------------\n"
                         +"-----------------------------------------------------------------------------------------------" +

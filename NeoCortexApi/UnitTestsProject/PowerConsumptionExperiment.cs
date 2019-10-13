@@ -1,19 +1,14 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
+using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
-using NeoCortexApi.Utility;
+using NeoCortexApi.Network;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Text;
-using ImageBinarizer;
-using System.Drawing;
-using NeoCortex;
-using NeoCortexApi.Network;
-using System.Linq;
-using NeoCortexApi.Encoders;
 using System.Globalization;
+using System.IO;
+using System.Linq;
 
 namespace UnitTestsProject
 {
@@ -22,11 +17,66 @@ namespace UnitTestsProject
     {
         private const int OutImgSize = 1024;
 
+
         [TestMethod]
         [TestCategory("LongRunning")]
-        public void PowerPredictionExperiment()
+        public void RunPowerPredictionExperiment()
         {
-            string outFolder = nameof(PowerPredictionExperiment);
+            const int inputBits = 10404;
+
+            Parameters p = Parameters.getAllDefaultParameters();
+            p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
+            p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 2048 });          
+            p.Set(KEY.INPUT_DIMENSIONS, new int[] { inputBits });
+            p.Set(KEY.CELLS_PER_COLUMN, 30);
+            p.Set(KEY.GLOBAL_INHIBITION, false);
+
+            p.Set(KEY.POTENTIAL_RADIUS, 300 );
+            p.Set(KEY.POTENTIAL_PCT, 0.5);
+            //p.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 42);
+
+            //p.Set(KEY.LOCAL_AREA_DENSITY, -1);
+
+            CortexRegion region0 = new CortexRegion("1st Region");
+
+            SpatialPoolerMT sp1 = new SpatialPoolerMT();
+            TemporalMemory tm1 = new TemporalMemory();
+            var mem = new Connections();
+            p.apply(mem);
+            sp1.init(mem, UnitTestHelpers.GetMemory());
+            tm1.init(mem);
+
+            Dictionary<string, object> settings = new Dictionary<string, object>();
+
+            CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
+            region0.AddLayer(layer1);
+            layer1.HtmModules.Add(sp1);
+
+            HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            Train(inputBits, layer1, cls);
+            sw.Stop();
+
+            Debug.WriteLine($"NewBorn stage duration: {sw.ElapsedMilliseconds / 1000} s");
+
+            layer1.AddModule(tm1);
+
+            sw.Start();
+
+            Train(inputBits, layer1, cls, false);
+
+            sw.Stop();
+
+            Debug.WriteLine($"Training duration: {sw.ElapsedMilliseconds / 1000} s");
+
+
+        }
+
+        private void Train(int inpBits, IHtmModule<object, object> network, HtmClassifier<double, ComputeCycle> cls, bool isNewBornMode = true)
+        {
+            string outFolder = nameof(RunPowerPredictionExperiment);
 
             Directory.CreateDirectory(outFolder);
 
@@ -37,13 +87,21 @@ namespace UnitTestsProject
 
             ScalarEncoder scalarEncoder = new ScalarEncoder(scalarEncoderSettings);
             DateTimeEncoder dtEncoder = new DateTimeEncoder(dateTimeEncoderSettings, DateTimeEncoder.Precision.Hours);
-                      
-            using (StreamReader sr = new StreamReader("TestFiles\\rec-center-hourly.csv"))
+
+            string fileName = "TestFiles\\rec-center-hourly.csv";
+
+            using (StreamReader sr = new StreamReader(fileName))
             {
                 string line;
 
+                int cnt = 0;
+
                 while ((line = sr.ReadLine()) != null)
                 {
+                    cnt++;
+
+                    if (cnt > 50) break;
+
                     List<int> output = new List<int>();
 
                     string[] tokens = line.Split(",");
@@ -62,17 +120,44 @@ namespace UnitTestsProject
 
                     output.AddRange(result);
 
-                    output.AddRange(new int[scalarEncoder.Offset]);
+                    // This performs a padding to the inputBits = 10404 = 102*102.
+                    output.AddRange(new int[inpBits - output.Count]);
 
                     var outArr = output.ToArray();
 
-                    int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(outArr, (int)Math.Sqrt(outArr.Length), (int)Math.Sqrt(output.Count));
-                    var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
+                    Debug.WriteLine($"--- {tokens[1]} ---");
+
+                    if (isNewBornMode)
+                    {
+                        for (int j = 0; j < 2; j++)
+                        {
+                            // Output here are active cells.
+                            var res = network.Compute(output.ToArray(), true);
+
+                            Debug.WriteLine(Helpers.StringifyVector(((int[])res)));
+                        }
+                    }
+                    else
+                    {
+                        var lyrOut = network.Compute(output.ToArray(), true) as ComputeCycle; ;
+
+                        double input = Convert.ToDouble(tokens[1], CultureInfo.InvariantCulture);
+                       
+                        cls.Learn(input, lyrOut.activeCells.ToArray(), lyrOut.predictiveCells.ToArray());
+
+                        Debug.WriteLine($"Current input: {input} Predicted Input: {cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray())}");
+                    }
+
+                    Debug.WriteLine($"NewBorn stage: {isNewBornMode} - record: {cnt}");
+                    //int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(outArr, (int)Math.Sqrt(outArr.Length), (int)Math.Sqrt(output.Count));
+                    //var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
 
                     //NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"{outFolder}\\{tokens[0].Replace("/", "-").Replace(":", "-")}.png", Color.Yellow, Color.Black);
                 }
             }
         }
+
+
 
 
         /// <summary>
@@ -98,7 +183,7 @@ namespace UnitTestsProject
             encoderSettings.Add("ClipInput", (bool)false);       //if true, non-periodic inputs smaller than minval or greater than maxval 
                                                                  //will be clipped to minval/maxval
 
-            encoderSettings.Add("Offset", 100);
+            encoderSettings.Add("Offset", 108);
 
             return encoderSettings;
         }
@@ -113,32 +198,32 @@ namespace UnitTestsProject
         {
             Dictionary<string, Dictionary<string, object>> encoderSettings = new Dictionary<string, Dictionary<string, object>>();
 
-            //encoderSettings.Add("SeasonEncoder",
-            //  new Dictionary<string, object>()
-            //  {
-            //        { "W", 3},
-            //        { "N", 12},
-            //        //{ "Radius", 365/4},
-            //        { "MinVal", 1.0},
-            //        { "MaxVal", 367.0},
-            //        { "Periodic", true},
-            //        { "Name", "SeasonEncoder"},
-            //        { "ClipInput", true},
-            //        { "Offset", 100},
-            //  }
-            //  );
+            encoderSettings.Add("SeasonEncoder",
+              new Dictionary<string, object>()
+              {
+                    { "W", 21},
+                    { "N", 128},
+                    //{ "Radius", 365/4},
+                    { "MinVal", 1.0},
+                    { "MaxVal", 367.0},
+                    { "Periodic", true},
+                    { "Name", "SeasonEncoder"},
+                    { "ClipInput", true},
+                    { "Offset", 50},
+              }
+              );
 
             encoderSettings.Add("DayOfWeekEncoder",
                 new Dictionary<string, object>()
                 {
                     { "W", 21},
-                    { "N", 66},
-                    { "MinVal", 1.0},
-                    { "MaxVal", 8.0},
+                    { "N", 128},
+                    { "MinVal", 0.0},
+                    { "MaxVal", 7.0},
                     { "Periodic", false},
                     { "Name", "DayOfWeekEncoder"},
-                    { "ClipInput", true},
-                    { "Offset", 90},
+                    { "ClipInput", false},
+                    { "Offset", 50},
                 });
 
             encoderSettings.Add("WeekendEncoder", new Dictionary<string, object>()
@@ -150,20 +235,21 @@ namespace UnitTestsProject
                     { "Periodic", false},
                     { "Name", "WeekendEncoder"},
                     { "ClipInput", true},
-                    { "Offset", 100},
+                    { "Offset", 50},
                 });
 
 
             encoderSettings.Add("DateTimeEncoder", new Dictionary<string, object>()
                 {
                     { "W", 21},
-                    { "N", 1024},
+                    { "N", 8640},
+                     // This means 8640 hours.
                     { "MinVal", new DateTimeOffset(new DateTime(2010, 1, 1), TimeSpan.FromHours(0))},
                     { "MaxVal", new DateTimeOffset(new DateTime(2010, 12, 31), TimeSpan.FromHours(0))},
                     { "Periodic", false},
                     { "Name", "DateTimeEncoder"},
                     { "ClipInput", false},
-                    { "Offset", 100},
+                    { "Offset", 128},
                 });
 
             return encoderSettings;
