@@ -100,10 +100,10 @@ namespace NeoCortexApi.Network
         /// </summary>
         /// <param name="output"></param>
         /// <returns></returns>
-        public String GetPredictedInputValue(Cell[] output)
+        public TIN GetPredictedInputValue(Cell[] output)
         {
             int maxSameBits = 0;
-            string charOutput = null;
+            TIN charOutput = default(TIN);
             int[] arr = new int[output.Length];
             for (int i = 0; i < output.Length; i++)
             {
@@ -117,13 +117,13 @@ namespace NeoCortexApi.Network
                     if (numOfSameBits > maxSameBits)
                     {
                         maxSameBits = numOfSameBits;
-                        charOutput = inputVal as String;
+                        charOutput = (TIN)inputVal;
                     }
                 }
                 return charOutput;
                 //return activeMap[ComputeHash(FlatArray(output))];
             }
-            return null;
+            return default(TIN);
         }
 
         

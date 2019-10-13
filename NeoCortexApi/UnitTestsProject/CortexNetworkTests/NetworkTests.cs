@@ -22,7 +22,8 @@ namespace UnitTestsProject
         /// We first start learning of region with SP algorithm only. This is called NewBorn-stage. In this stage
         /// SP simply learn patterns to enter a stable stage. To eneter stable stage SP needs 2-3 iterations.
         /// After NewBorn-stage we add TM as second algorithm and start learning sequences.
-        /// We do learn sequences 10 iterations. When startign the 11th iteration (experimentaly detected)
+        /// We do learn sequences 10 iterations with learn=true. When starting the 11th iteration (experimentaly detected) learn is set to false
+        /// and inference mode is entered to predict newxt step.
         /// </summary>
         [TestMethod]
         [TestCategory("NetworkTests")]
@@ -136,12 +137,12 @@ namespace UnitTestsProject
         /// </summary>
         [TestMethod]
         [TestCategory("NetworkTests")]
-        public void SequenceEperiment()
+        public void SequenceExperiment()
         {
             bool learn = true;
             Parameters p = Parameters.getAllDefaultParameters();
             p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
-            p.Set(KEY.INPUT_DIMENSIONS, new int[] { 100 });
+            p.Set(KEY.INPUT_DIMENSIONS, new int[] { 1024 });
             p.Set(KEY.CELLS_PER_COLUMN, 30);
 
             CortexNetwork net = new CortexNetwork("my cortex");
@@ -179,7 +180,7 @@ namespace UnitTestsProject
             layer1.HtmModules.Add(sp1);
 
             HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
-            double[] inputs = new double[] { 1.0, 2.0, 3.0, 4.0, 3.0, 2.0, 1.0 };
+            double[] inputs = new double[] { 1.0, 2.0, 3.0, 4.0 };
 
             //
             // This trains SP.
@@ -206,6 +207,7 @@ namespace UnitTestsProject
                     cls.Learn(input, lyrOut.activeCells.ToArray(), lyrOut.predictiveCells.ToArray());
 
                     Debug.WriteLine($"Current Input: {input}");
+                   
                     if (learn == false)
                         Debug.WriteLine($"Inference mode");
 
@@ -214,9 +216,9 @@ namespace UnitTestsProject
 
                 tm1.reset(mem);
 
-                if (i == 10)
+                if (i == 50)
                 {
-                    Debug.WriteLine("Stop Learning From Here");
+                    Debug.WriteLine("Stop Learning From Here. Entering inference mode.");
                     learn = false;
                 }
 
