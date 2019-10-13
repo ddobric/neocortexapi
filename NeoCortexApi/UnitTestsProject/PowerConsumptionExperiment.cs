@@ -28,8 +28,11 @@ namespace UnitTestsProject
             p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
             p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 2048 });          
             p.Set(KEY.INPUT_DIMENSIONS, new int[] { inputBits });
-            p.Set(KEY.CELLS_PER_COLUMN, 30);
+            p.Set(KEY.CELLS_PER_COLUMN, 32);
             p.Set(KEY.GLOBAL_INHIBITION, false);
+            p.Set(KEY.MAX_SYNAPSES_PER_SEGMENT, 32);
+            p.Set(KEY.MAX_SEGMENTS_PER_CELL, 128);
+            p.Set(KEY.MAX_NEW_SYNAPSE_COUNT, 20);
 
             p.Set(KEY.POTENTIAL_RADIUS, 300 );
             p.Set(KEY.POTENTIAL_PCT, 0.5);
