@@ -56,7 +56,7 @@ namespace UnitTestsProject
 
             //IClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
             HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
-            HtmClassifier_Test<string, ComputeCycle> cls1 = new HtmClassifier_Test<string, ComputeCycle>();
+            HtmUnionClassifier<string, ComputeCycle> cls1 = new HtmUnionClassifier<string, ComputeCycle>();
             //string[] inputs = new string[] { "A", "B", "C", "D" };
             string[] inputs = new string[] { "A", "B", "C", "D" };
 
@@ -80,7 +80,7 @@ namespace UnitTestsProject
             {
                 foreach (var input in inputs)
                 {
-                    var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
+                    var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
                     //cls1.Learn(input, lyrOut.activeCells.ToArray(), learn);
                     //Debug.WriteLine($"Current Input: {input}");
                     cls.Learn(input, lyrOut.activeCells.ToArray(), lyrOut.predictiveCells.ToArray());
@@ -98,7 +98,7 @@ namespace UnitTestsProject
                 }
 
                 tm1.reset(mem);
-                if (i == 20)
+                if (i == 10)
                 {
                     Debug.WriteLine("Stop Learning From Here-----------------------------------------------------------------------------------------------------\n"
                         +"-----------------------------------------------------------------------------------------------" +

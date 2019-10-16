@@ -174,7 +174,7 @@ namespace NeoCortexApi.Entities
         {
             get
             {
-                return getMemory().ModuleTopology;
+                return getMemory()?.ModuleTopology;
             }
         }
 
@@ -182,37 +182,44 @@ namespace NeoCortexApi.Entities
         {
             get
             {
-                return getInputMatrix().ModuleTopology;
+                return getInputMatrix()?.ModuleTopology;
             }
         }
+
+        private HtmConfig m_HtmConfig;
 
         public HtmConfig HtmConfig
         {
             get
             {
-                HtmConfig cfg = new HtmConfig();
-                cfg.ColumnTopology = this.ColumnTopology;
-                cfg.InputTopology = this.InputTopology;
-                cfg.IsWrapAround = this.isWrapAround();
-                cfg.NumInputs = this.NumInputs;
-                cfg.NumColumns = this.getMemory().getMaxIndex() + 1;
-                cfg.PotentialPct = getPotentialPct();
-                cfg.PotentialRadius = getPotentialRadius();
-                cfg.SynPermConnected = getSynPermConnected();
-                cfg.InitialSynapseConnsPct = this.InitialSynapseConnsPct;
-                cfg.SynPermTrimThreshold = this.getSynPermTrimThreshold();
-                cfg.SynPermBelowStimulusInc = this.synPermBelowStimulusInc;
-                cfg.SynPermMax = this.getSynPermMax();
-                cfg.SynPermMin = this.getSynPermMin();
-                cfg.StimulusThreshold = this.StimulusThreshold;
-                cfg.CellsPerColumn = this.getCellsPerColumn();
-                cfg.SynPermInactiveDec = this.getSynPermInactiveDec();
-                cfg.PermanenceIncrement = this.getPermanenceIncrement();
-                cfg.PermanenceDecrement = this.getPermanenceDecrement();
+                if (m_HtmConfig == null)
+                {
+                    HtmConfig cfg = new HtmConfig();
+                    cfg.ColumnTopology = this.ColumnTopology;
+                    cfg.InputTopology = this.InputTopology;
+                    cfg.IsWrapAround = this.isWrapAround();
+                    cfg.NumInputs = this.NumInputs;
+                    cfg.NumColumns = this.getMemory().getMaxIndex() + 1;
+                    cfg.PotentialPct = getPotentialPct();
+                    cfg.PotentialRadius = getPotentialRadius();
+                    cfg.SynPermConnected = getSynPermConnected();
+                    cfg.InitialSynapseConnsPct = this.InitialSynapseConnsPct;
+                    cfg.SynPermTrimThreshold = this.getSynPermTrimThreshold();
+                    cfg.SynPermBelowStimulusInc = this.synPermBelowStimulusInc;
+                    cfg.SynPermMax = this.getSynPermMax();
+                    cfg.SynPermMin = this.getSynPermMin();
+                    cfg.StimulusThreshold = this.StimulusThreshold;
+                    cfg.CellsPerColumn = this.getCellsPerColumn();
+                    cfg.SynPermInactiveDec = this.getSynPermInactiveDec();
+                    cfg.PermanenceIncrement = this.getPermanenceIncrement();
+                    cfg.PermanenceDecrement = this.getPermanenceDecrement();
 
-                cfg.RandomGenSeed = this.seed;
+                    cfg.RandomGenSeed = this.seed;
 
-                return cfg;
+                    m_HtmConfig = cfg;
+                }
+
+                return m_HtmConfig;
             }
         }
 

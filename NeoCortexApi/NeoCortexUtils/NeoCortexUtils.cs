@@ -13,10 +13,11 @@ namespace NeoCortex
         /// <param name="twoDimArray">Array of active columns.</param>
         /// <param name="width">Output width.</param>
         /// <param name="height">Output height.</param>
-        /// <param name="filePath">The bitmap filename.</param>
-        public static void DrawBitmap(int[,] twoDimArray, int width, int height, String filePath)
+        /// <param name="filePath">The bitmap PNG filename.</param>
+        /// <param name="text">Text to be written.</param>
+        public static void DrawBitmap(int[,] twoDimArray, int width, int height, String filePath, string text = null)
         {
-            DrawBitmap(twoDimArray, width, height, filePath, Color.Black, Color.Green);
+            DrawBitmap(twoDimArray, width, height, filePath, Color.Black, Color.Green, text);
         }
 
         /// <summary>
@@ -25,8 +26,9 @@ namespace NeoCortex
         /// <param name="twoDimArray">Array of active columns.</param>
         /// <param name="width">Output width.</param>
         /// <param name="height">Output height.</param>
-        /// <param name="filePath">The bitmap filename.</param>
-        public static void DrawBitmap(int[,] twoDimArray, int width, int height, String filePath, Color inactiveCellColor, Color activeCellColor)
+        /// <param name="filePath">The bitmap PNG filename.</param>
+        /// <param name="text">Text to be written.</param>
+        public static void DrawBitmap(int[,] twoDimArray, int width, int height, String filePath, Color inactiveCellColor, Color activeCellColor, string text = null)
         {
             int w = twoDimArray.GetLength(0);
             int h = twoDimArray.GetLength(1);
@@ -39,7 +41,7 @@ namespace NeoCortex
             if (scale * w < width)
                 scale++;
 
-            DrawBitmap(twoDimArray, scale, filePath, inactiveCellColor, activeCellColor);
+            DrawBitmap(twoDimArray, scale, filePath, inactiveCellColor, activeCellColor, text);
 
         }
 
@@ -49,7 +51,8 @@ namespace NeoCortex
         /// <param name="twoDimArray">Array of active columns.</param>
         /// <param name="scale">Scale of bitmap. If array of active columns is 10x10 and scale is 5 then output bitmap will be 50x50.</param>
         /// <param name="filePath">The bitmap filename.</param>
-        public static void DrawBitmap(int[,] twoDimArray, int scale, String filePath, Color inactiveCellColor, Color activeCellColor)
+        /// <param name="text">Text to be written.</param>
+        public static void DrawBitmap(int[,] twoDimArray, int scale, String filePath, Color inactiveCellColor, Color activeCellColor, string text = null)
         {
             int w = twoDimArray.GetLength(0);
             int h = twoDimArray.GetLength(1);
@@ -75,12 +78,16 @@ namespace NeoCortex
                                 //myBitmap.SetPixel(Xcount, Ycount, System.Drawing.Color.Black); // HERE IS YOUR LOGIC
                                 myBitmap.SetPixel(Xcount * scale + padX, Ycount * scale + padY, inactiveCellColor); // HERE IS YOUR LOGIC
                                 k++;
-                            }
+                            }                        
                         }
                     }
-
                 }
             }
+
+            Graphics g = Graphics.FromImage(myBitmap);
+            var fontFamily = new FontFamily(System.Drawing.Text.GenericFontFamilies.SansSerif);
+            g.DrawString(text, new Font(fontFamily, 32), SystemBrushes.Control, new PointF(0, 0));
+
             myBitmap.Save(filePath, ImageFormat.Png);
         }
 

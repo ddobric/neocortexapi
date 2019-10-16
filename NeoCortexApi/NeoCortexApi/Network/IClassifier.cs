@@ -8,6 +8,6 @@ namespace NeoCortexApi.Network
     public interface IClassifier<TIN,TOUT>
     {
         void Learn(TIN input, Cell[] activeCells, bool learn);
-        TOUT Inference(Cell[] activeCells);
+        TOUT Inference(Cell[] predictiveCells);
     }
 }

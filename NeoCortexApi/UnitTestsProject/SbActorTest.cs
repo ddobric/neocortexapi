@@ -147,8 +147,6 @@ namespace UnitTestsProject
         {
             Debug.WriteLine($"Start of {nameof(AskTest)}");
 
-            var cfg = GetLocaSysConfig();
-            ActorSystem sysLocal = new ActorSystem($"{nameof(AskTest)}/local", cfg);
             ActorSystem sysRemote = new ActorSystem($"{nameof(AskTest)}/remote", GetRemoteSysConfig());
 
             CancellationTokenSource src = new CancellationTokenSource();
@@ -157,6 +155,10 @@ namespace UnitTestsProject
             {
                 sysRemote.Start(src.Token);
             });
+
+            var cfg = GetLocaSysConfig();
+
+            ActorSystem sysLocal = new ActorSystem($"{nameof(AskTest)}/local", cfg);
 
             ActorReference actorRef1 = sysLocal.CreateActor<MyActor>(1);
         

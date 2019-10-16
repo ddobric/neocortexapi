@@ -31,7 +31,7 @@ namespace UnitTestsProject.EncoderTests
 
             Assert.IsTrue(result.Length == 2);
 
-            Assert.IsTrue(result[0] == input + 1);
+            Assert.IsTrue(result[0] == Convert.ToInt32(input) + 1);
 
             Assert.IsTrue(result[1] == 1);
         }
@@ -339,7 +339,7 @@ namespace UnitTestsProject.EncoderTests
         {
             if (inputData.GetType() == typeof(int) || inputData.GetType() == typeof(double))
             {
-                return new int[] { (int)(inputData) + 1, 1 };
+                return new int[] { Convert.ToInt32(inputData) + 1, 1 };
             }
             else
                 throw new NotSupportedException();

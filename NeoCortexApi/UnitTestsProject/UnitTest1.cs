@@ -27,6 +27,27 @@ namespace UnitTestsProject
             res = initDimensionMultiples(data, 2);
         }
 
+
+        [TestMethod]       
+        public void KeyTest()
+        {
+            Dictionary<int[], string> dict = new Dictionary<int[], string>();
+            List<int[]> list = new List<int[]>();
+            list.Add(new int[] { 0, 1, 0, 1});
+            list.Add(new int[] { 0, 0, 0, 1 });
+            list.Add(new int[] { 0, 1, 0, 1 });
+
+            dict.Add(list[0], "A");
+            dict.Add(list[1], "B");
+            dict.Add(list[2], "C");
+
+            dict[new int[] { 0, 0, 0, 0 }] = "0";
+            dict[new int[] { 0, 1, 0, 1 }] = "0";
+
+            // Assert.IsTrue(dict.ContainsKey(list[0]]));
+
+        }
+
         protected int[] initDimensionMultiples(int[] dimensions, int numDimensions)
         {
             int holder = 1;

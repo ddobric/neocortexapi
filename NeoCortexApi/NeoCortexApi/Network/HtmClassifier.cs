@@ -66,33 +66,33 @@ namespace NeoCortexApi.Network
         }
 
 
-        /// <summary>
-        /// Get corresponding input value for current cycle.
-        /// </summary>
-        /// <param name="output"></param>
-        /// <returns></returns>
-        public TIN GetInputValue(Cell[] output)
-        {
-            /*
-            if (output.Length != 0 && activeMap.ContainsKey(FlatArray1(output)))
-            {
-                return activeMap[FlatArray1(output)];
-            }
-            */
+        ///// <summary>
+        ///// Get corresponding input value for current cycle.
+        ///// </summary>
+        ///// <param name="output"></param>
+        ///// <returns></returns>
+        //public TIN GetInputValue(Cell[] output)
+        //{
+        //    /*
+        //    if (output.Length != 0 && activeMap.ContainsKey(FlatArray1(output)))
+        //    {
+        //        return activeMap[FlatArray1(output)];
+        //    }
+        //    */
 
-            //int k = 0;
-            foreach (int[] arr in activeMap.Keys)
-            {
-                var arr2 = GetCellIndicies(output);
-                var rs = MathHelpers.GetHammingDistance(arr, arr2, true);
-                //Debug.WriteLine($">> {rs}");
-                if (arr.SequenceEqual(arr2))
-                {
-                    return activeMap[arr];
-                }
-            }
-            return default(TIN);
-        }
+        //    //int k = 0;
+        //    foreach (int[] arr in activeMap.Keys)
+        //    {
+        //        var arr2 = GetCellIndicies(output);
+        //        var rs = MathHelpers.GetHammingDistance(arr, arr2, true);
+        //        //Debug.WriteLine($">> {rs}");
+        //        if (arr.SequenceEqual(arr2))
+        //        {
+        //            return activeMap[arr];
+        //        }
+        //    }
+        //    return default(TIN);
+        //}
 
 
         /// <summary>

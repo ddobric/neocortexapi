@@ -14,25 +14,11 @@ namespace NeoCortexApi.Encoders
         /// </summary>
         private List<EncoderBase> encoders = new List<EncoderBase>();
 
-        public MultiEncoder(Dictionary<String, Dictionary<String, Object>> encoderSettings, CortexNetworkContext context = null)
+        public MultiEncoder(List<EncoderBase> encoders)
         {
-            if (context == null)
-                throw new ArgumentException("Context must be specified.");
-
-            foreach (var sett in encoderSettings)
-            {
-                if (sett.Value[EncoderProperties.EncoderQualifiedName] == null)
-                    throw new ArgumentException("Context must be specified.");
-                var encoder = context.CreateEncoder(EncoderProperties.EncoderQualifiedName, sett.Value);
-
-                this.encoders.Add(encoder);
-            }
+            this.encoders = encoders;
         }
 
-        public override void AfterInitialize()
-        {
-
-        }
 
         /// <summary>
         /// Encodes data from all underlying encoders.
@@ -43,21 +29,13 @@ namespace NeoCortexApi.Encoders
         {
             Dictionary<string, object> input = inputData as Dictionary<string, object>;
 
-            if (!(inputData is Dictionary<string, object>))
-            {
-                throw new ArgumentException($"{nameof(MultiEncoder)} must have a dictionary as input.");
-            }
-
             List<int> output = new List<int>();
 
             foreach (var encoder in this.encoders)
-            {
-                if (input.ContainsKey(encoder.Name) == false)
-                    throw new ArgumentException($"No settings specified for encoder '{encoder.Name}'.");
-
-                int[] tempArray = new int[encoder.N];
-
+            {              
                 output.AddRange(encoder.Encode(input[encoder.Name]));
+
+                output.AddRange(new int[encoder.Offset]);
             }
 
             return output.ToArray();

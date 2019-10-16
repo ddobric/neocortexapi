@@ -1,162 +1,202 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Globalization;
+using System.Linq;
+
 
 namespace NeoCortexApi.Encoders
 {
-    /// <summary>
-    /// For the implemention of encoder for the datetime encoder, date encoder only and time encoder only by using DateTimeEncoder class by using abstract class of EncoderBase.
-    /// </summary>
     public class DateTimeEncoder : EncoderBase
     {
         /// <summary>
-        /// For the setting of radius and the width.
+        /// Defines the precision of DateTime encoder.
         /// </summary>
-        /// <param name="settings"></param>
-        public DateTimeEncoder(Dictionary<string, object> settings)
+        public enum Precision
         {
-            if (settings.TryGetValue("Radius", out object radius) && (double)radius > 0)
-            {
-                this.Radius = (double)radius;
-            }
-            else
-            {
-                this.Radius = 1;
-            }
+            Days,
 
-            if (settings.TryGetValue("W", out object width) && (int)width > 0)
-            {
-                this.W = (int)width;
-            }
-            else
-            {
-                this.W = 1;
-            }
+            Hours,
+
+            Minutes,
+
+            Seconds,
+
+            Miliseconds,
+
+            Nanoseconds,
+
+            Microseconds,
+
+            Ticks
         }
 
-        /// <summary>
-        /// Implementation of only Date encoder.  
-        /// </summary>
-        /// <param name="inputData"></param>
-        /// <returns></returns>
-        public int[] EncodeDateOnly(object inputData)
-        {
-            DateTime inputDate = DateTime.Parse((String)inputData, CultureInfo.InvariantCulture);
-            int[] monthArray = CreateEncodingArray(inputDate.Month - 1, (int)(W * 12 / Radius));
-            int[] dayArray = CreateEncodingArray(inputDate.Day - 1, (int)(W * 31 / Radius));
-            int[] yearArray = CreateEncodingArray(inputDate.Year, (int)(W * 10 / Radius));
+        #region Private Fields
 
-            int[] dateArray = new int[monthArray.Length + dayArray.Length + yearArray.Length];
-            foreach (var item in dateArray)
-            {
-                dateArray[item] = 0;
-            }
-            monthArray.CopyTo(dateArray, 0);
-            dayArray.CopyTo(dateArray, monthArray.Length);
-            yearArray.CopyTo(dateArray, monthArray.Length + dayArray.Length);
-            return dateArray;
-        }
 
-        /// <summary>
-        ///  Implementation of only Time encoder.  
-        /// </summary>
-        /// <param name="inputData"></param>
-        /// <returns></returns>
-        public int[] EncodeTimeOnly(object inputData)
-        {
-            DateTime inputTime = DateTime.Parse((String)inputData);
-            int[] hourArray = CreateEncodingArray(inputTime.Hour, (int)(W * 24 / Radius));
-            int[] minuteArray = CreateEncodingArray(inputTime.Minute, (int)(W * 60 / Radius));
-            int[] secondArray = CreateEncodingArray(inputTime.Second, (int)(W * 60 / Radius));
+        public override int Width => throw new NotImplementedException();
 
-            int[] timeArray = new int[hourArray.Length + minuteArray.Length + secondArray.Length];
-            foreach (var item in timeArray)
-            {
-                timeArray[item] = 0;
-            }
-            hourArray.CopyTo(timeArray, 0);
-            minuteArray.CopyTo(timeArray, hourArray.Length);
-            secondArray.CopyTo(timeArray, hourArray.Length + minuteArray.Length);
-            return timeArray;
-        }
-
-        /// <summary>
-        /// Implementation of n = width * (radius / range) forumla. 
-        /// </summary>
-        /// <param name="inputData"></param>
-        /// <returns></returns>
-        public override int[] Encode(object inputData)
-        {
-            DateTime inputDateTime = DateTime.Parse((String)inputData, CultureInfo.InvariantCulture);
-            int[] monthArray = CreateEncodingArray(inputDateTime.Month - 1, (int)(W * 12 / Radius));
-            int[] dayArray = CreateEncodingArray(inputDateTime.Day - 1, (int)(W * 31 / Radius));
-            int[] yearArray = CreateEncodingArray(inputDateTime.Year, (int)(W * 10 / Radius));
-            int[] hourArray = CreateEncodingArray(inputDateTime.Hour, (int)(W * 24 / Radius));
-            int[] minuteArray = CreateEncodingArray(inputDateTime.Minute, (int)(W * 60 / Radius));
-            int[] secondArray = CreateEncodingArray(inputDateTime.Second, (int)(W * 60 / Radius));
-
-            int[] outArray = new int[monthArray.Length + dayArray.Length + yearArray.Length + hourArray.Length + minuteArray.Length + secondArray.Length];
-            foreach (var item in outArray)
-            {
-                outArray[item] = 0;
-            }
-            monthArray.CopyTo(outArray, 0);
-            dayArray.CopyTo(outArray, monthArray.Length);
-            yearArray.CopyTo(outArray, monthArray.Length + dayArray.Length);
-            hourArray.CopyTo(outArray, monthArray.Length + dayArray.Length + yearArray.Length);
-            minuteArray.CopyTo(outArray, monthArray.Length + dayArray.Length + yearArray.Length + hourArray.Length);
-            secondArray.CopyTo(outArray, monthArray.Length + dayArray.Length + yearArray.Length + hourArray.Length + minuteArray.Length);
-            return outArray;
-        }
-
-        /// <summary>
-        /// Implemented logical condition for encoding bits of date and time. 
-        /// </summary>
-        /// <param name="element">The scalar value to be encoded.</param>
-        /// <param name="numberOfBits">Number of required bits.</param>
-        /// <returns></returns>
-        private int[] CreateEncodingArray(int element, int numberOfBits)
-        {
-            int[] encoderArray = new int[numberOfBits];
-
-            foreach (var item in encoderArray)
-            {
-                encoderArray[item] = 0;
-            }
-
-            for (int i = element * (W - (int)Radius + 1); i < element * (W - (int)Radius + 1) + W; i++)
-            {
-                int j = i % encoderArray.Length;
-                encoderArray[j] = 1;
-            }
-
-            return encoderArray;
-        }
-
-        /// <summary>
-        /// From InitTest method for the setting of radius and width.
-        /// </summary>
-        public DateTimeEncoder()
-        {
-
-        }
-
-        /// <summary>
-        /// Overriding the width of encoder.
-        /// </summary>
-        public override int Width => W;
-
-        /// <summary>
-        /// Overriding the IsDelta for the encoder. 
-        /// </summary>
         public override bool IsDelta => throw new NotImplementedException();
 
+        private Dictionary<string, Dictionary<string, object>> m_Settings;
+
         /// <summary>
-        /// To get the bucket values in encoder. 
+        /// Minimum time encoded by encoder.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
+        private DateTimeOffset m_MinDateTime;
+
+        private Precision m_Precision;
+
+        private ScalarEncoder m_DateTimeEncoder;
+
+        private ScalarEncoder m_SeasonEncoder;
+
+        private ScalarEncoder m_DayOfWeekEncoder;
+
+        private ScalarEncoder m_WeekendEncoder;
+
+        private ScalarEncoder m_CustomDaysEncoder;
+
+        private ScalarEncoder m_HolidayEncoder;
+
+        #endregion
+
+        #region Init
+
+        public DateTimeEncoder(Dictionary<string, Dictionary<string, object>> settings, Precision precision)
+        {
+            this.m_Settings = settings;
+            this.m_Precision = precision;
+
+            Initialize();
+        }
+
+
+        public void Initialize()
+        {
+            if (this.m_Settings.ContainsKey("SeasonEncoder"))
+            {
+                this.m_SeasonEncoder = new ScalarEncoder(this.m_Settings["SeasonEncoder"]);
+            }
+
+            if (this.m_Settings.ContainsKey("DayOfWeekEncoder"))
+            {
+                this.m_DayOfWeekEncoder = new ScalarEncoder(this.m_Settings["DayOfWeekEncoder"]);
+            }
+
+            if (this.m_Settings.ContainsKey("WeekendEncoder"))
+            {
+                this.m_WeekendEncoder = new ScalarEncoder(this.m_Settings["WeekendEncoder"]);
+            }
+
+            if (this.m_Settings.ContainsKey("DateTimeEncoder"))
+            {
+                // We keep this value, because it is needued in encoding process.
+                this.m_MinDateTime = (DateTimeOffset)this.m_Settings["DateTimeEncoder"]["MinVal"];
+
+                this.m_Settings["DateTimeEncoder"]["MaxVal"] = GetValue(this.m_Precision, (DateTimeOffset)this.m_Settings["DateTimeEncoder"]["MaxVal"] - (DateTimeOffset)this.m_Settings["DateTimeEncoder"]["MinVal"]);
+                this.m_Settings["DateTimeEncoder"]["MinVal"] = 0.0;
+                
+                this.m_DateTimeEncoder = new ScalarEncoder(this.m_Settings["DateTimeEncoder"]);
+                //this.m_DateTimeEncoder.MinVal = 0.0;
+                //this.m_DateTimeEncoder.MaxVal = GetValue(this.m_Precision,
+                //    (DateTimeOffset)this.m_Settings["DateTimeEncoder"]["MaxVal"] - (DateTimeOffset)this.m_Settings["DateTimeEncoder"]["MinVal"]);
+            }
+        }
+        #endregion
+
+        private static double GetValue(Precision precision, TimeSpan span)
+        {
+            double val = 0.0;
+
+            switch (precision)
+            {
+                case Precision.Days:
+                    val = span.TotalDays;
+                    break;
+
+                case Precision.Hours:
+                    val = span.TotalHours;
+                    break;
+
+                case Precision.Minutes:
+                    val = span.TotalMinutes;
+                    break;
+
+                case Precision.Seconds:
+                    val = span.TotalSeconds;
+                    break;
+
+                case Precision.Miliseconds:
+                    val = span.TotalMilliseconds;
+                    break;
+                    
+                case Precision.Microseconds:
+                    val = span.Ticks / 100 / 1000;
+                    break;
+
+                case Precision.Nanoseconds:
+                    val = span.Ticks / 100;
+                    break;
+
+                case Precision.Ticks:
+                    val = span.Ticks;
+                    break;
+            }
+
+            return val;
+        }
+
+        public override int[] Encode(object inputData)
+        {
+            DateTimeOffset input = (DateTimeOffset)inputData;
+
+            List<int> result = new List<int>();
+
+            if (this.m_DateTimeEncoder != null)
+            {
+                var val = GetValue(this.m_Precision, input - this.m_MinDateTime);
+                
+                var sdr = this.m_DateTimeEncoder.Encode(val);
+
+                result.AddRange(sdr);
+
+                if (this.m_Settings["DateTimeEncoder"].ContainsKey("Offset"))
+                    result.AddRange(new int[(int)this.m_Settings["DateTimeEncoder"]["Offset"]]);
+            }
+
+            if (this.m_DayOfWeekEncoder != null)
+            {
+                var sdr = this.m_DayOfWeekEncoder.Encode(input.DayOfWeek);
+
+                result.AddRange(sdr);
+
+                if (this.m_Settings["DayOfWeekEncoder"].ContainsKey("Offset"))
+                    result.AddRange(new int[(int)this.m_Settings["DayOfWeekEncoder"]["Offset"]]);
+            }
+
+            if (this.m_SeasonEncoder != null)
+            {
+                var sdr = this.m_SeasonEncoder.Encode(input.DayOfYear);
+
+                result.AddRange(sdr);
+
+                if (this.m_Settings["SeasonEncoder"].ContainsKey("Offset"))
+                    result.AddRange(new int[(int)this.m_Settings["SeasonEncoder"]["Offset"]]);
+            }
+
+            if (this.m_WeekendEncoder != null)
+            {
+                var sdr = this.m_WeekendEncoder.Encode(input.DayOfWeek == DayOfWeek.Sunday || input.DayOfWeek == DayOfWeek.Saturday ? true : false);
+
+                result.AddRange(sdr);
+
+                if (this.m_Settings["WeekendEncoder"].ContainsKey("Offset"))
+                    result.AddRange(new int[(int)this.m_Settings["WeekendEncoder"]["Offset"]]);
+            }
+
+            return result.ToArray();
+        }
+
         public override List<T> getBucketValues<T>()
         {
             throw new NotImplementedException();

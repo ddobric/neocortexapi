@@ -74,11 +74,20 @@ namespace NeoCortexApi.Encoders
             {
                 this.Properties.Clear();
 
+                Name = this.GetType().Name;
                 IsRealCortexModel = false;
+                N = 0;
+                Resolution = -1.0;
+                Radius = - 1.0;
+                Periodic = false;
+                ClipInput = false;
 
                 foreach (var item in encoderSettings)
                 {
-                    this.Properties.Add(item.Key, item.Value);
+                    if (!this.Properties.ContainsKey(item.Key))
+                        this.Properties.Add(item.Key, item.Value);
+                    else
+                        this.Properties[item.Key] = item.Value;
                 }
             }
 
@@ -154,6 +163,10 @@ namespace NeoCortexApi.Encoders
 
         public bool Periodic { get => (bool)this["Periodic"]; set => this["Periodic"] = (bool)value; }
 
+        /// <summary>
+        /// It cats bits at the beginning with negative position and at th eend after last bit.
+        /// This happens only if Periodic is set on false.
+        /// </summary>
         public bool ClipInput { get => (bool)this["ClipInput"]; set => this["ClipInput"] = (bool)value; }
 
         public int Padding { get => (int)this["Padding"]; set => this["Padding"] = value; }
@@ -163,6 +176,8 @@ namespace NeoCortexApi.Encoders
         public bool IsForced { get => (bool)this["IsForced"]; set => this["IsForced"] = value; }
 
         public string Name { get => (string)this["Name"]; set => this["Name"] = value; }
+
+        public int Offset{ get => (int)this["Offset"]; set => this["Offset"] = value; }
 
         #endregion
 
