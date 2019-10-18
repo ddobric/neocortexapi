@@ -133,10 +133,10 @@ namespace NeoCortexApi.Network
                     //int numOfSameBits = predictNextValue(arr, activeArray[inputVal]);
                     if (numOfSameBits > maxSameBits)
                     {
-                        Debug.WriteLine($"cnt:{n}\t{n++}\t{pair.Value} = bits {numOfSameBits}");
+                        Debug.WriteLine($"cnt:{n}\t{n}\t{pair.Value} = bits {numOfSameBits}");
                         maxSameBits = numOfSameBits;
                         charOutput = pair.Value;
-                        indx = n;
+                        indx = n++;
                     }
                 }
 
