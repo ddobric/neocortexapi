@@ -20,7 +20,7 @@ steps:
 - task: NuGetCommand@2
   inputs:
    feedsToUse: 'config'
-   nugetConfigPath: '$(Build.WorkingDirectory)/NuGet.config'
+   nugetConfigPath: '$(Build.WorkingDirectory)/nuget/NuGet.config'
    restoreSolution: '$(solution)'
 
 - task: VSBuild@1
