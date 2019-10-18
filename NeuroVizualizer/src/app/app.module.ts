@@ -10,16 +10,22 @@ import { HomeComponent } from './home/home.component';
 import { SimpleNotificationsModule } from 'angular2-notifications';
 import { SenderComponent } from './sender/sender.component';
 
+import * as PlotlyJS from 'plotly.js/dist/plotly.js';
+import { PlotlyModule } from 'angular-plotly.js';
+PlotlyModule.plotlyjs = PlotlyJS;
+
 @NgModule({
   declarations: [
     AppComponent,
     AinetComponent,
     HomeComponent,
     SenderComponent
+
   ],
   imports: [
     BrowserModule,
     FormsModule,
+    PlotlyModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     SimpleNotificationsModule.forRoot()
