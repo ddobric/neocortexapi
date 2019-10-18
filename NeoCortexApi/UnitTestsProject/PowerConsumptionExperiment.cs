@@ -26,7 +26,7 @@ namespace UnitTestsProject
 
             Parameters p = Parameters.getAllDefaultParameters();
             p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
-            p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 2048 });          
+            p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 2048 });
             p.Set(KEY.INPUT_DIMENSIONS, new int[] { inputBits });
             p.Set(KEY.CELLS_PER_COLUMN, 32);
             p.Set(KEY.GLOBAL_INHIBITION, false);
@@ -34,7 +34,7 @@ namespace UnitTestsProject
             p.Set(KEY.MAX_SEGMENTS_PER_CELL, 128);
             p.Set(KEY.MAX_NEW_SYNAPSE_COUNT, 20);
 
-            p.Set(KEY.POTENTIAL_RADIUS, 300 );
+            p.Set(KEY.POTENTIAL_RADIUS, 300);
             p.Set(KEY.POTENTIAL_PCT, 0.5);
             //p.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 42);
 
@@ -69,6 +69,7 @@ namespace UnitTestsProject
             sw.Start();
 
             Train(inputBits, layer1, cls, false);
+            Train(inputBits, layer1, cls, false);
 
             sw.Stop();
 
@@ -91,7 +92,7 @@ namespace UnitTestsProject
             ScalarEncoder scalarEncoder = new ScalarEncoder(scalarEncoderSettings);
             DateTimeEncoder dtEncoder = new DateTimeEncoder(dateTimeEncoderSettings, DateTimeEncoder.Precision.Hours);
 
-            string fileName = "TestFiles\\rec-center-hourly.csv";
+            string fileName = "TestFiles\\rec-center-hourly-short.csv";
 
             using (StreamReader sr = new StreamReader(fileName))
             {
@@ -99,63 +100,84 @@ namespace UnitTestsProject
 
                 int cnt = 0;
 
-                while ((line = sr.ReadLine()) != null)
+                double lastPredictedValue = 0.0;
+
+                using (StreamWriter sw = new StreamWriter("out.csv"))
                 {
-                    cnt++;
-
-                    if (cnt > 50) break;
-
-                    List<int> output = new List<int>();
-
-                    string[] tokens = line.Split(",");
-
-                    // Encode scalar value
-                    var result = scalarEncoder.Encode(tokens[1]);
-
-                    output.AddRange(result);
-
-                    output.AddRange(new int[scalarEncoder.Offset]);
-
-                    DateTime dt = DateTime.Parse(tokens[0], CultureInfo.InvariantCulture);
-
-                    // Encode date/time/hour.
-                    result = dtEncoder.Encode(new DateTimeOffset(dt, TimeSpan.FromMilliseconds(0)));
-
-                    output.AddRange(result);
-
-                    // This performs a padding to the inputBits = 10404 = 102*102.
-                    output.AddRange(new int[inpBits - output.Count]);
-
-                    var outArr = output.ToArray();
-
-                    Debug.WriteLine($"--- {tokens[1]} ---");
-
-                    if (isNewBornMode)
+                    while ((line = sr.ReadLine()) != null)
                     {
-                        for (int j = 0; j < 2; j++)
+                        cnt++;
+
+                        //if (isNewBornMode && cnt > 100) break;
+
+                        bool x = false;
+                        if (x)
                         {
-                            // Output here are active cells.
-                            var res = network.Compute(output.ToArray(), true);
-
-                            Debug.WriteLine(Helpers.StringifyVector(((int[])res)));
+                            break   ;
                         }
+                        List<int> output = new List<int>();
+
+                        string[] tokens = line.Split(",");
+
+                        // Encode scalar value
+                        var result = scalarEncoder.Encode(tokens[1]);
+
+                        output.AddRange(result);
+
+                        output.AddRange(new int[scalarEncoder.Offset]);
+
+                        DateTime dt = DateTime.Parse(tokens[0], CultureInfo.InvariantCulture);
+
+                        // Encode date/time/hour.
+                        result = dtEncoder.Encode(new DateTimeOffset(dt, TimeSpan.FromMilliseconds(0)));
+
+                        output.AddRange(result);
+
+                        // This performs a padding to the inputBits = 10404 = 102*102.
+                        output.AddRange(new int[inpBits - output.Count]);
+
+                        var outArr = output.ToArray();
+
+                        Debug.WriteLine($"-------------- {tokens[1]} --------------");
+
+                        if (isNewBornMode)
+                        {
+                            for (int j = 0; j < 2; j++)
+                            {
+                                // Output here are active cells.
+                                var res = network.Compute(output.ToArray(), true);
+
+                                Debug.WriteLine(Helpers.StringifyVector(((int[])res)));
+                            }
+                        }
+                        else
+                        {
+                            var lyrOut = network.Compute(output.ToArray(), true) as ComputeCycle; ;
+
+                            double input = Convert.ToDouble(tokens[1], CultureInfo.InvariantCulture);
+
+                            if (input == lastPredictedValue)
+                                Debug.WriteLine($"Match {input}");
+                            else
+                                Debug.WriteLine($"Missmatch Actual value: {input} - Predicted value: {lastPredictedValue}");
+
+                            cls.Learn(input, lyrOut.activeCells.ToArray(), lyrOut.predictiveCells.ToArray());
+
+                            lastPredictedValue = cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray());
+
+                            sw.WriteLine($"{tokens[0]};{input.ToString(CultureInfo.InvariantCulture)};{lastPredictedValue.ToString(CultureInfo.InvariantCulture)}");
+
+                            Debug.WriteLine($"W: {Helpers.StringifyVector(lyrOut.winnerCells.Select(c => c.Index).ToArray())}");
+                            Debug.WriteLine($"P: {Helpers.StringifyVector(lyrOut.predictiveCells.Select(c => c.Index).ToArray())}");
+                            Debug.WriteLine($"Current input: {input} Predicted Input: {lastPredictedValue}");
+                        }
+
+                        Debug.WriteLine($"NewBorn stage: {isNewBornMode} - record: {cnt}");
+                        //int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(outArr, (int)Math.Sqrt(outArr.Length), (int)Math.Sqrt(output.Count));
+                        //var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
+
+                        //NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"{outFolder}\\{tokens[0].Replace("/", "-").Replace(":", "-")}.png", Color.Yellow, Color.Black);
                     }
-                    else
-                    {
-                        var lyrOut = network.Compute(output.ToArray(), true) as ComputeCycle; ;
-
-                        double input = Convert.ToDouble(tokens[1], CultureInfo.InvariantCulture);
-                       
-                        cls.Learn(input, lyrOut.activeCells.ToArray(), lyrOut.predictiveCells.ToArray());
-
-                        Debug.WriteLine($"Current input: {input} Predicted Input: {cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray())}");
-                    }
-
-                    Debug.WriteLine($"NewBorn stage: {isNewBornMode} - record: {cnt}");
-                    //int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(outArr, (int)Math.Sqrt(outArr.Length), (int)Math.Sqrt(output.Count));
-                    //var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
-
-                    //NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"{outFolder}\\{tokens[0].Replace("/", "-").Replace(":", "-")}.png", Color.Yellow, Color.Black);
                 }
             }
         }
@@ -248,7 +270,7 @@ namespace UnitTestsProject
                     { "N", 8640},
                      // This means 8640 hours.
                     { "MinVal", new DateTimeOffset(new DateTime(2010, 1, 1), TimeSpan.FromHours(0))},
-                    { "MaxVal", new DateTimeOffset(new DateTime(2010, 12, 31), TimeSpan.FromHours(0))},
+                    { "MaxVal", new DateTimeOffset(new DateTime(2011, 1, 1), TimeSpan.FromHours(0))},
                     { "Periodic", false},
                     { "Name", "DateTimeEncoder"},
                     { "ClipInput", false},

@@ -264,6 +264,9 @@ namespace NeoCortexApi
             //Collections.sort(matchingSegments, conn.segmentPositionSortKey);
 
             cycle.activeSegments = activeSegments;
+
+            //var r = cycle.predictiveCells;
+
             cycle.matchingSegments = matchingSegments;
 
             conn.lastActivity = activity;

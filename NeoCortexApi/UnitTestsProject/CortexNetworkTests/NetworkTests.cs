@@ -107,9 +107,7 @@ namespace UnitTestsProject
                 tm1.reset(mem);
                 if (i == 10)
                 {
-                    Debug.WriteLine("Stop Learning From Here-----------------------------------------------------------------------------------------------------\n"
-                        + "-----------------------------------------------------------------------------------------------" +
-                        "-------------------------------------------------------------------------------------------------");
+                    Debug.WriteLine("Stop Learning From Here----------------------------");
                     learn = false;
                     //tm1.reset(mem);
 
@@ -133,7 +131,7 @@ namespace UnitTestsProject
         }
 
         /// <summary>
-        /// It learns the sequence of elements.
+        /// It learns the sequence of elements of type double.
         /// </summary>
         [TestMethod]
         [TestCategory("NetworkTests")]
@@ -180,7 +178,7 @@ namespace UnitTestsProject
             layer1.HtmModules.Add(sp1);
 
             HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
-            double[] inputs = new double[] { 1.0, 2.0, 3.0, 4.0 };
+            double[] inputs = new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0 };
 
             //
             // This trains SP.
@@ -206,12 +204,15 @@ namespace UnitTestsProject
 
                     cls.Learn(input, lyrOut.activeCells.ToArray(), lyrOut.predictiveCells.ToArray());
 
-                    Debug.WriteLine($"Current Input: {input}");
+                    Debug.WriteLine($"-------------- {input} ---------------");
                    
                     if (learn == false)
                         Debug.WriteLine($"Inference mode");
 
-                    Debug.WriteLine($"Predict Input: {cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray())}");
+                    Debug.WriteLine($"W: {Helpers.StringifyVector(lyrOut.winnerCells.Select(c => c.Index).ToArray())}");
+                    Debug.WriteLine($"P: {Helpers.StringifyVector(lyrOut.predictiveCells.Select(c => c.Index).ToArray())}");
+
+                    Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray())}");
                 }
 
                 tm1.reset(mem);
