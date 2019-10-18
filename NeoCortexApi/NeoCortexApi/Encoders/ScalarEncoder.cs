@@ -298,6 +298,17 @@ namespace NeoCortexApi.Encoders
         }
 
         /// <summary>
+        /// This method enables running in the network.
+        /// </summary>
+        /// <param name="inputData"></param>
+        /// <param name="learn"></param>
+        /// <returns></returns>
+        public int[] Compute(object inputData, bool learn)
+        {
+            return Encode(inputData);
+        }
+
+        /// <summary>
         /// The getBucketValues
         /// </summary>
         /// <typeparam name="T"></typeparam>

@@ -3728,7 +3728,7 @@
     <None Update="TestFiles\digit8_binary_32bit.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TestFiles\rec-center-hourly.csv">
+    <None Update="TestFiles\rec-center-hourly-short.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

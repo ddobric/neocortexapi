@@ -11,9 +11,13 @@ namespace NeoCortexApi.Network
 {
     public class HtmClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>
     {
+        private List<TIN> inputSequence = new List<TIN>();
+
+        private Dictionary<int[], int> inputSequenceMap = new Dictionary<int[], int>();
+
         private Dictionary<int[], TIN> activeMap = new Dictionary<int[], TIN>();
 
-        private Dictionary<int[], TIN> predictMap = new Dictionary<int[], TIN>();
+        //private Dictionary<int[], TIN> predictMap = new Dictionary<int[], TIN>();
 
         private Dictionary<TIN, int[]> activeArray = new Dictionary<TIN, int[]>();
 
@@ -31,6 +35,7 @@ namespace NeoCortexApi.Network
         {
             var outIndicies = GetCellIndicies(output);
 
+          
             if (!activeMap.ContainsKey(GetCellIndicies(output)))
             {
                 this.activeMap.Add(GetCellIndicies(output), input);
@@ -41,14 +46,18 @@ namespace NeoCortexApi.Network
                 this.activeArray.Add(input, GetCellIndicies(output));
             }
 
-            if (!predictMap.ContainsKey(GetCellIndicies(predictedOutput)))
-            {
-                this.predictMap.Add(GetCellIndicies(predictedOutput), input);
-            }
+            //if (!predictMap.ContainsKey(GetCellIndicies(predictedOutput)))
+            //{
+            //    this.predictMap.Add(GetCellIndicies(predictedOutput), input);
+            //}
         }
 
         public void Learn(TIN input, Cell[] output, Cell[] predictedOutput)
         {
+            this.inputSequence.Add(input);
+
+            this.inputSequenceMap.Add(GetCellIndicies(output), this.inputSequence.Count -1);
+
             if (!activeMap.ContainsKey(GetCellIndicies(output)))
             {
                 this.activeMap.Add(GetCellIndicies(output), input);
@@ -59,10 +68,10 @@ namespace NeoCortexApi.Network
                 this.activeArray.Add(input, GetCellIndicies(output));
             }
 
-            if (!predictMap.ContainsKey(GetCellIndicies(predictedOutput)))
-            {
-                this.predictMap.Add(GetCellIndicies(predictedOutput), input);
-            }
+            //if (!predictMap.ContainsKey(GetCellIndicies(predictedOutput)))
+            //{
+            //    this.predictMap.Add(GetCellIndicies(predictedOutput), input);
+            //}
         }
 
 
@@ -100,30 +109,52 @@ namespace NeoCortexApi.Network
         /// </summary>
         /// <param name="output"></param>
         /// <returns></returns>
-        public String GetPredictedInputValue(Cell[] output)
+        public TIN GetPredictedInputValue(Cell[] output)
         {
+            bool x = false;
             int maxSameBits = 0;
-            string charOutput = null;
+            TIN charOutput = default(TIN);
             int[] arr = new int[output.Length];
             for (int i = 0; i < output.Length; i++)
             {
                 arr[i] = output[i].Index;
             }
+
             if (output.Length != 0)
             {
-                foreach (TIN inputVal in activeArray.Keys)
+                int indx = 0;
+                Debug.WriteLine($"Item length: {output.Length}\t Items: {this.activeMap.Keys.Count}");
+                int n = 0;
+                //foreach (TIN inputVal in activeArray.Keys)
+                foreach (var pair in this.activeMap)
                 {
-                    int numOfSameBits = predictNextValue(arr, activeArray[inputVal]);
+                    //int numOfSameBits = predictNextValue(arr, activeArray[inputVal]);
+                    int numOfSameBits = pair.Key.Intersect(arr).Count();
+                    //int numOfSameBits = predictNextValue(arr, activeArray[inputVal]);
                     if (numOfSameBits > maxSameBits)
                     {
+                        Debug.WriteLine($"cnt:{n}\t{n++}\t{pair.Value} = bits {numOfSameBits}");
                         maxSameBits = numOfSameBits;
-                        charOutput = inputVal as String;
+                        charOutput = pair.Value;
+                        indx = n;
                     }
                 }
+
+                Debug.Write("[ ");
+                for (int i = Math.Max(0, indx-3); i < Math.Min(indx + 2, this.activeMap.Keys.Count); i++)
+                {
+                    if (i == indx) Debug.Write("* ");
+                    Debug.Write($"{this.inputSequence[i]}");
+                    if (i == indx) Debug.Write(" *");
+
+                    Debug.Write(", ");
+                }
+                Debug.WriteLine(" ]");
+
                 return charOutput;
                 //return activeMap[ComputeHash(FlatArray(output))];
             }
-            return null;
+            return default(TIN);
         }
 
         

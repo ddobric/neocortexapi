@@ -19,7 +19,9 @@ steps:
 
 - task: NuGetCommand@2
   inputs:
-    restoreSolution: '$(solution)'
+   feedsToUse: 'config'
+   nugetConfigPath: './NeoCortexApi/NuGet.config'
+   restoreSolution: '$(solution)'
 
 - task: VSBuild@1
   inputs:
