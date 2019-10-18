@@ -55,7 +55,6 @@ export class AinetComponent implements OnInit, AfterViewInit {
   cellAreaId: any;
 
 
-
   constructor(private _service: NotificationsService, private neoUtilsService: NeoCortexUtilsService) {
     /*  this.neoUtilsService.data.subscribe(a => {
        this.model = a;
@@ -202,6 +201,139 @@ export class AinetComponent implements OnInit, AfterViewInit {
         //colorscale: 'Viridis'
       }
     };
+    /* const inputModel = {
+      x: this.xInputModel,
+      y: this.yInputModel,
+      z: this.zInputModel,
+      text: this.inputModelOverlap,
+      name: 'InputModel',
+      mode: 'markers',
+      marker: {
+        opacity: env.opacityOfNeuron,
+        size: env.sizeOfNeuron,
+        color: this.inputModelOverlap,
+        symbol: 'circle',
+
+      },
+      type: 'scatter3d',
+    }; */
+
+    const neuralChartLayout = {
+      //showlegend: false, Thgis option is to show the name of legend/DataSeries 
+      /*    scene: {
+           aspectmode: "manual",
+           aspectratio: {
+             x: env.xRatio, y: env.yRatio, z: env.zRatio,
+           }
+         }, */
+      legend: {
+        x: 0.5,
+        y: 1
+      },
+      width: 1500,
+      height: 500,
+      margin: {
+        l: 0,
+        r: 0,
+        b: 0,
+        t: 0,
+        pad: 4
+      },
+      scene: {
+        //"auto" | "cube" | "data" | "manual" 
+        aspectmode: 'data',
+        aspectratio: {
+          x: 1,
+          y: 1,
+          z: 1
+        },
+        camera: {
+          center: {
+            x: 0,
+            y: 0,
+            z: 0
+          },
+          eye: {
+            x: 2,
+            y: 2,
+            z: 0.1
+            /*  x:2.5, y:0.1, z:0.1 */
+          },
+          up: {
+            x: 0,
+            y: 0,
+            z: 1
+          }
+        },
+      },
+      uirevision: true,
+    };
+
+    const neuralChartConfig = {
+      //displayModeBar: false,
+      title: '3DChart',
+      displaylogo: false,
+      showLink: false,
+      responsive: true
+      // showlegend: false
+    };
+
+    let graphDOM = document.getElementById('graph');
+    Plotlyjs.react(graphDOM, [neurons, synapses], neuralChartLayout, neuralChartConfig);
+    //Plotlyjs.newPlot(graphDOM, [PointsT, linesT], neuralChartLayout);
+
+  }
+  updatePlot() {
+    const neurons = {
+      x: this.xNeurons,
+      y: this.yNeurons,
+      z: this.zNeurons,
+      hovertext: this.neuronsHoverInformation,
+      hoverinfo: 'text',
+      name: 'Neuron',
+      mode: 'markers',
+      //connectgaps: true,
+      /*  visible: true,
+       legendgroup: true, */
+      /* line: {
+        width: 4,
+        colorscale: 'Viridis',
+        color: '#7CFC00'
+      }, */
+      marker: {
+        opacity: env.opacityOfNeuron,
+        size: env.sizeOfNeuron,
+        // color: '#00BFFF',
+        color: this.neuronsColours,
+        symbol: 'circle',
+        line: {
+          //color: '#7B68EE',
+          // width:10
+        },
+      },
+      type: 'scatter3d',
+      //scene: "scene1",
+    };
+
+    const synapses = {
+      //the first point in the array will be joined with a line with the next one in the array ans so on...
+      type: 'scatter3d',
+      mode: 'lines',
+      name: 'Synapse',
+      x: this.xSynapse,
+      y: this.ySynapse,
+      z: this.zSynapse,
+      //text: this.permanence,
+      hovertext: this.synapsesHoverInformation,
+      hoverinfo: 'text',
+      opacity: env.opacityOfSynapse,
+      line: {
+        width: env.lineWidthOfSynapse,
+        color: this.synapseColours,
+        //color: '#7CFC00'
+        //colorscale: 'Viridis'
+      }
+    };
     const inputModel = {
       x: this.xInputModel,
       y: this.yInputModel,
@@ -264,7 +396,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
             x: 0,
             y: 0,
             z: 1
-          }
+          },
+
         },
       },
     };
@@ -279,8 +412,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
     };
 
     let graphDOM = document.getElementById('graph');
-    Plotlyjs.react(graphDOM, [neurons, synapses, inputModel], neuralChartLayout, neuralChartConfig);
+    Plotlyjs.react(graphDOM, [neurons, synapses], neuralChartLayout, neuralChartConfig);
     //Plotlyjs.newPlot(graphDOM, [PointsT, linesT], neuralChartLayout);
+
 
   }
 
@@ -589,6 +723,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.generateColoursFromOverlap();
     this.generateColoursFromPermanences();
     this.plotChart();
+    this.permanenceIntervalStart = null;
+    this.permanenceIntervalEnd = null;
   }
 
   /**
@@ -611,6 +747,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.generateColoursFromOverlap();
     this.generateColoursFromPermanences();
     this.plotChart();
+    //this.updatePlot();
+    this.overlapIntervalStart = null;
+    this.overlapIntervalEnd = null;
 
   }
 

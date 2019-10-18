@@ -17,7 +17,7 @@
       <input [(ngModel)]="permanenceInterval" class="form-control input-sm" id="filterPermanence"
         name="filterPermanence" placeholder="[a... b]" required>
       <button [disabled]="!permanenceInterval" type="submit" (click)="filterPermanence(); permanenceFilterForm.reset()"
-        id="filterPermanence" class="btn btn-success">Filter
+        id="filterPermanence" class="btn btn-warning">Filter
         Permanence</button>
     </div>
   </form>
@@ -30,8 +30,8 @@
         placeholder="Cell=> X,Y,Z" required>
       <button [disabled]="!cellAreaId && !showSynapses" type="submit"
         (click)="showOutgoingIncomingSynapses(); showSynapsesForm.reset()" id="showOutInSynaps" name="showOutInSynaps"
-        class="btn btn-info">Filter
-        Permanence</button>
+        class="btn btn-info">
+        Out/in Synapses</button>
     </div>
   </form>
 
