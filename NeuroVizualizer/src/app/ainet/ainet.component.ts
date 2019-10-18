@@ -54,13 +54,10 @@ export class AinetComponent implements OnInit, AfterViewInit {
   showSynapses: any;
   cellAreaId: any;
 
+  neuralchart: object = {};
+
 
   constructor(private _service: NotificationsService, private neoUtilsService: NeoCortexUtilsService) {
-    /*  this.neoUtilsService.data.subscribe(a => {
-       this.model = a;
-       console.log(this.model, "Received Model ccc");
-     });
-     console.log(this.model, "Received Model"); */
 
 
   }
@@ -70,11 +67,11 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.notificationConfig();
+
   }
 
 
   ngAfterViewInit() {
-
     if (this.model == null || this.model == undefined) {
       this.plotDummyChart();
     }
@@ -90,6 +87,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
       }
 
     });
+
+
     //this.model = new NeoCortexGenerator().createModel([0, 0, 0, 1, 2, 1], [10, 1], 6);
     //this.model = neoCortexUtils.createModel([0, 0, 0, 1, 2, 1], [10, 1], 6); // createModel (numberOfAreas, [xAxis, zAxis], yAxis)
     /*  this.fillChart(this.model);
@@ -98,6 +97,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
      this.plotChart(); */
 
   }
+
 
   plotDummyChart() {
     const neurons = {
@@ -144,146 +144,18 @@ export class AinetComponent implements OnInit, AfterViewInit {
     let graphDOM = document.getElementById('graph');
     Plotlyjs.react(graphDOM, [neurons], neuralChartLayout, neuralChartConfig);
     //Plotlyjs.newPlot(graphDOM, [PointsT, linesT], neuralChartLayout);
-
+    window.onresize = function () {
+      Plotlyjs.relayout(graphDOM, {
+        width: 0.9 * window.innerWidth,
+        height: 0.9 * window.innerHeight
+      });
+    }
   }
 
   /**
    * plotChart just plot the chart by using plotly library 
    */
   plotChart() {
-    const neurons = {
-      x: this.xNeurons,
-      y: this.yNeurons,
-      z: this.zNeurons,
-      hovertext: this.neuronsHoverInformation,
-      hoverinfo: 'text',
-      name: 'Neuron',
-      mode: 'markers',
-      //connectgaps: true,
-      /*  visible: true,
-       legendgroup: true, */
-      /* line: {
-        width: 4,
-        colorscale: 'Viridis',
-        color: '#7CFC00'
-      }, */
-      marker: {
-        opacity: env.opacityOfNeuron,
-        size: env.sizeOfNeuron,
-        // color: '#00BFFF',
-        color: this.neuronsColours,
-        symbol: 'circle',
-        line: {
-          //color: '#7B68EE',
-          // width:10
-        },
-      },
-      type: 'scatter3d',
-      //scene: "scene1",
-    };
-
-    const synapses = {
-      //the first point in the array will be joined with a line with the next one in the array ans so on...
-      type: 'scatter3d',
-      mode: 'lines',
-      name: 'Synapse',
-      x: this.xSynapse,
-      y: this.ySynapse,
-      z: this.zSynapse,
-      //text: this.permanence,
-      hovertext: this.synapsesHoverInformation,
-      hoverinfo: 'text',
-      opacity: env.opacityOfSynapse,
-      line: {
-        width: env.lineWidthOfSynapse,
-        color: this.synapseColours,
-        //color: '#7CFC00'
-        //colorscale: 'Viridis'
-      }
-    };
-    /* const inputModel = {
-      x: this.xInputModel,
-      y: this.yInputModel,
-      z: this.zInputModel,
-      text: this.inputModelOverlap,
-      name: 'InputModel',
-      mode: 'markers',
-      marker: {
-        opacity: env.opacityOfNeuron,
-        size: env.sizeOfNeuron,
-        color: this.inputModelOverlap,
-        symbol: 'circle',
-
-      },
-      type: 'scatter3d',
-    }; */
-
-    const neuralChartLayout = {
-      //showlegend: false, Thgis option is to show the name of legend/DataSeries 
-      /*    scene: {
-           aspectmode: "manual",
-           aspectratio: {
-             x: env.xRatio, y: env.yRatio, z: env.zRatio,
-           }
-         }, */
-      legend: {
-        x: 0.5,
-        y: 1
-      },
-      width: 1500,
-      height: 500,
-      margin: {
-        l: 0,
-        r: 0,
-        b: 0,
-        t: 0,
-        pad: 4
-      },
-      scene: {
-        //"auto" | "cube" | "data" | "manual" 
-        aspectmode: 'data',
-        aspectratio: {
-          x: 1,
-          y: 1,
-          z: 1
-        },
-        camera: {
-          center: {
-            x: 0,
-            y: 0,
-            z: 0
-          },
-          eye: {
-            x: 2,
-            y: 2,
-            z: 0.1
-            /*  x:2.5, y:0.1, z:0.1 */
-          },
-          up: {
-            x: 0,
-            y: 0,
-            z: 1
-          }
-        },
-      },
-      uirevision: true,
-    };
-
-    const neuralChartConfig = {
-      //displayModeBar: false,
-      title: '3DChart',
-      displaylogo: false,
-      showLink: false,
-      responsive: true
-      // showlegend: false
-    };
-
-    let graphDOM = document.getElementById('graph');
-    Plotlyjs.react(graphDOM, [neurons, synapses], neuralChartLayout, neuralChartConfig);
-    //Plotlyjs.newPlot(graphDOM, [PointsT, linesT], neuralChartLayout);
-
-  }
-  updatePlot() {
     const neurons = {
       x: this.xNeurons,
       y: this.yNeurons,
@@ -363,8 +235,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
         x: 0.5,
         y: 1
       },
-      width: 1500,
-      height: 500,
+      /*  width: 1500,
+       height: 500, */
       margin: {
         l: 0,
         r: 0,
@@ -396,10 +268,10 @@ export class AinetComponent implements OnInit, AfterViewInit {
             x: 0,
             y: 0,
             z: 1
-          },
-
+          }
         },
       },
+      uirevision: true,
     };
 
     const neuralChartConfig = {
@@ -411,12 +283,20 @@ export class AinetComponent implements OnInit, AfterViewInit {
       // showlegend: false
     };
 
+
+
     let graphDOM = document.getElementById('graph');
-    Plotlyjs.react(graphDOM, [neurons, synapses], neuralChartLayout, neuralChartConfig);
+    Plotlyjs.react(graphDOM, [neurons, synapses, inputModel], neuralChartLayout, neuralChartConfig);
     //Plotlyjs.newPlot(graphDOM, [PointsT, linesT], neuralChartLayout);
 
-
+    window.onresize = function () {
+      Plotlyjs.relayout(graphDOM, {
+        width: 0.9 * window.innerWidth,
+        height: 0.9 * window.innerHeight
+      });
+    }
   }
+
 
 
   /**

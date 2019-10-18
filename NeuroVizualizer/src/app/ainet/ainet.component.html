@@ -1,29 +1,26 @@
 <h2>
   Connectionist System
 </h2>
-<div class="container">
-  <form #overlapFilterForm="ngForm">
-    <div class="form-inline">
+<div>
+  <div class="form-inline">
+
+    <form #overlapFilterForm="ngForm">
       <input [(ngModel)]="overlapInterval" class="form-control input-sm" id="overlapInterval" name="overlapInterval"
         placeholder="[a... b]" required>
       <button [disabled]="!overlapInterval" type="submit" id="overlapIntervalButton"
-        (click)='filterOverlap(); overlapFilterForm.reset()' class="btn btn-success ">Filter
+        (click)='filterOverlap(); overlapFilterForm.reset()' class="btn btn-success  mr-4 ">Filter
         overlap</button>
-    </div>
-  </form>
-  <br>
-  <form #permanenceFilterForm="ngForm">
-    <div class="form-inline">
+    </form>
+
+    <form #permanenceFilterForm="ngForm">
       <input [(ngModel)]="permanenceInterval" class="form-control input-sm" id="filterPermanence"
         name="filterPermanence" placeholder="[a... b]" required>
       <button [disabled]="!permanenceInterval" type="submit" (click)="filterPermanence(); permanenceFilterForm.reset()"
-        id="filterPermanence" class="btn btn-warning">Filter
+        id="filterPermanence" class="btn btn-warning mr-4  ">Filter
         Permanence</button>
-    </div>
-  </form>
-  <br>
-  <form #showSynapsesForm="ngForm">
-    <div class="form-inline">
+    </form>
+
+    <form #showSynapsesForm="ngForm">
       <input maxlength="2" [(ngModel)]="cellAreaId" class="form-control input-sm" placeholder="Area ID"
         name="showOutInSynaps" required>
       <input maxlength="5" [(ngModel)]="showSynapses" class="form-control" id="cell" name="cell"
@@ -32,9 +29,9 @@
         (click)="showOutgoingIncomingSynapses(); showSynapsesForm.reset()" id="showOutInSynaps" name="showOutInSynaps"
         class="btn btn-info">
         Out/in Synapses</button>
-    </div>
-  </form>
+    </form>
 
+  </div>
 </div>
 <!-- 
 <form #formCtrl="ngForm">
