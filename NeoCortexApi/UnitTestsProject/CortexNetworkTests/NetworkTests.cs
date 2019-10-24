@@ -104,16 +104,14 @@ namespace UnitTestsProject
                     //Debug.WriteLine("-----------------------------------------------------------\n----------------------------------------------------------");
                 }
 
-                tm1.reset(mem);
+               
                 if (i == 10)
                 {
                     Debug.WriteLine("Stop Learning From Here----------------------------");
                     learn = false;
-                    //tm1.reset(mem);
-
                 }
 
-                tm1.reset(mem);
+               // tm1.reset(mem);
             }
 
             Debug.WriteLine("------------------------------------------------------------------------\n----------------------------------------------------------------------------");
@@ -137,11 +135,14 @@ namespace UnitTestsProject
         [TestCategory("NetworkTests")]
         public void SequenceExperiment()
         {
+            int inputBits = 1024;
+
             bool learn = true;
             Parameters p = Parameters.getAllDefaultParameters();
             p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
-            p.Set(KEY.INPUT_DIMENSIONS, new int[] { 1024 });
-            p.Set(KEY.CELLS_PER_COLUMN, 30);
+            p.Set(KEY.INPUT_DIMENSIONS, new int[] { inputBits });
+            p.Set(KEY.CELLS_PER_COLUMN, 10);
+            p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 2048 });
 
             CortexNetwork net = new CortexNetwork("my cortex");
             List<CortexRegion> regions = new List<CortexRegion>();
@@ -158,15 +159,22 @@ namespace UnitTestsProject
             Dictionary<string, object> settings = new Dictionary<string, object>()
             {
                 { "W", 21},
-                { "N", 1024},
+                { "N", inputBits},
                 { "Radius", -1.0},
                 { "MinVal", 0.0},
-                { "MaxVal", 100.0 },
+               // { "MaxVal", 20.0 },
                 { "Periodic", false},
                 { "Name", "scalar"},
                 { "ClipInput", false},
             };
 
+            double max = 50;
+            List<double> lst = new List<double>();
+            for (double i = 0; i < max; i++)
+            {
+                lst.Add(i);
+            }
+            settings["MaxVal"] = max;
 
             EncoderBase encoder = new ScalarEncoder(settings);
 
@@ -178,7 +186,14 @@ namespace UnitTestsProject
             layer1.HtmModules.Add(sp1);
 
             HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
-            double[] inputs = new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0 };
+            // Example, which creates two sequences from one.  1.4->1.5 and 1.4->1.6
+            //double[] inputs = new double[] { 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.3, 1.4, 1.6}; I=0-10
+            //double[] inputs = new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0 }; //I=0-10
+            //OK double[] inputs = new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 20.0, 19.0, 18.0, 17.0, 16.0, 15.0, 7.0, 8.0, 9.0 }; I=0-20
+            //Not OK double[] inputs = new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 20.0, 19.0, 18.0, 17.0, 16.0, 15.0, 7.0, 8.0, 9.0 }; //I=0-1000
+            //double[] inputs = new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 20.0, 19.0, 18.0, 17.0, 16.0, 15.0, 7.0, 8.0, 9.0 }; //I=0-1000
+        
+            double[] inputs = lst.ToArray();
 
             //
             // This trains SP.
@@ -215,8 +230,6 @@ namespace UnitTestsProject
                     Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray())}");
                 }
 
-                tm1.reset(mem);
-
                 if (i == 50)
                 {
                     Debug.WriteLine("Stop Learning From Here. Entering inference mode.");
@@ -225,6 +238,8 @@ namespace UnitTestsProject
 
                 tm1.reset(mem);
             }
+
+            cls.TraceState();
 
             Debug.WriteLine("------------------------------------------------------------------------\n----------------------------------------------------------------------------");
         }

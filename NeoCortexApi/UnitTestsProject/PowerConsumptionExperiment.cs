@@ -1,11 +1,14 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeoCortex;
 using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Network;
+using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -22,20 +25,22 @@ namespace UnitTestsProject
         [TestCategory("LongRunning")]
         public void RunPowerPredictionExperiment()
         {
-            const int inputBits = 10404;
+            const int inputBits = 4096; /* without datetime component */ // 13420; /* with 4096 scalar bits */ // 10404 /* with 1024 bits */;
 
             Parameters p = Parameters.getAllDefaultParameters();
             p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
             p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 2048 });
             p.Set(KEY.INPUT_DIMENSIONS, new int[] { inputBits });
-            p.Set(KEY.CELLS_PER_COLUMN, 32);
-            p.Set(KEY.GLOBAL_INHIBITION, false);
-            p.Set(KEY.MAX_SYNAPSES_PER_SEGMENT, 32);
-            p.Set(KEY.MAX_SEGMENTS_PER_CELL, 128);
-            p.Set(KEY.MAX_NEW_SYNAPSE_COUNT, 20);
+            //p.Set(KEY.CELLS_PER_COLUMN, 32);
+            p.Set(KEY.GLOBAL_INHIBITION, true);
+            //p.Set(KEY.GLOBAL_INHIBITION, true);
 
-            p.Set(KEY.POTENTIAL_RADIUS, 300);
-            p.Set(KEY.POTENTIAL_PCT, 0.5);
+            //p.Set(KEY.MAX_SYNAPSES_PER_SEGMENT, 32);
+            //p.Set(KEY.MAX_SEGMENTS_PER_CELL, 128);
+            //p.Set(KEY.MAX_NEW_SYNAPSE_COUNT, 200);
+
+            //p.Set(KEY.POTENTIAL_RADIUS, 700);
+            //p.Set(KEY.POTENTIAL_PCT, 0.5);
             //p.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 42);
 
             //p.Set(KEY.LOCAL_AREA_DENSITY, -1);
@@ -68,14 +73,17 @@ namespace UnitTestsProject
 
             sw.Start();
 
-            Train(inputBits, layer1, cls, false);
-            Train(inputBits, layer1, cls, false);
+            for (int i = 0; i < 100; i++)
+            {
+                Train(inputBits, layer1, cls, false);
+                tm1.reset(mem);
+            }
+         
+            cls.TraceState();
 
             sw.Stop();
 
             Debug.WriteLine($"Training duration: {sw.ElapsedMilliseconds / 1000} s");
-
-
         }
 
         private void Train(int inpBits, IHtmModule<object, object> network, HtmClassifier<double, ComputeCycle> cls, bool isNewBornMode = true)
@@ -92,7 +100,7 @@ namespace UnitTestsProject
             ScalarEncoder scalarEncoder = new ScalarEncoder(scalarEncoderSettings);
             DateTimeEncoder dtEncoder = new DateTimeEncoder(dateTimeEncoderSettings, DateTimeEncoder.Precision.Hours);
 
-            string fileName = "TestFiles\\rec-center-hourly-short.csv";
+            string fileName = "TestFiles\\rec-center-hourly-very-short.csv";
 
             using (StreamReader sr = new StreamReader(fileName))
             {
@@ -124,14 +132,12 @@ namespace UnitTestsProject
 
                         output.AddRange(result);
 
-                        output.AddRange(new int[scalarEncoder.Offset]);
-
-                        DateTime dt = DateTime.Parse(tokens[0], CultureInfo.InvariantCulture);
-
+                        // This part adds datetime components to the input vector.
+                        //output.AddRange(new int[scalarEncoder.Offset]);
+                        //DateTime dt = DateTime.Parse(tokens[0], CultureInfo.InvariantCulture);
                         // Encode date/time/hour.
-                        result = dtEncoder.Encode(new DateTimeOffset(dt, TimeSpan.FromMilliseconds(0)));
-
-                        output.AddRange(result);
+                        //result = dtEncoder.Encode(new DateTimeOffset(dt, TimeSpan.FromMilliseconds(0)));
+                        //output.AddRange(result);
 
                         // This performs a padding to the inputBits = 10404 = 102*102.
                         output.AddRange(new int[inpBits - output.Count]);
@@ -170,14 +176,16 @@ namespace UnitTestsProject
                             Debug.WriteLine($"W: {Helpers.StringifyVector(lyrOut.winnerCells.Select(c => c.Index).ToArray())}");
                             Debug.WriteLine($"P: {Helpers.StringifyVector(lyrOut.predictiveCells.Select(c => c.Index).ToArray())}");
                             Debug.WriteLine($"Current input: {input} Predicted Input: {lastPredictedValue}");
+
+                            int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(outArr, (int)Math.Sqrt(outArr.Length), (int)Math.Sqrt(output.Count));
+                            var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
+                            NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"{outFolder}\\{tokens[0].Replace("/", "-").Replace(":", "-")}.png", Color.Yellow, Color.Black, text: input.ToString());
+
                         }
 
                         Debug.WriteLine($"NewBorn stage: {isNewBornMode} - record: {cnt}");
-                        //int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(outArr, (int)Math.Sqrt(outArr.Length), (int)Math.Sqrt(output.Count));
-                        //var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
 
-                        //NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"{outFolder}\\{tokens[0].Replace("/", "-").Replace(":", "-")}.png", Color.Yellow, Color.Black);
-                    }
+                       }
                 }
             }
         }
@@ -194,9 +202,9 @@ namespace UnitTestsProject
             Dictionary<String, Object> encoderSettings = new Dictionary<string, object>();
             encoderSettings.Add("W", 21);                       //the number of bits that are set to encode a single value -the "width" of the output signal 
                                                                 //restriction: w must be odd to avoid centering problems.
-            encoderSettings.Add("N", 1024);                     //The number of bits in the output. Must be greater than or equal to w
+            encoderSettings.Add("N", 4096);                     //The number of bits in the output. Must be greater than or equal to w
             encoderSettings.Add("MinVal", (double)0.0);         //The minimum value of the input signal.
-            encoderSettings.Add("MaxVal", (double)150.0);       //The upper bound of the input signal
+            encoderSettings.Add("MaxVal", (double)20);       //The upper bound of the input signal
                                                                 //encoderSettings.Add("Radius", (double)0);         //Two inputs separated by more than the radius have non-overlapping representations.
                                                                 //Two inputs separated by less than the radius will in general overlap in at least some
                                                                 //of their bits. You can think of this as the radius of the input.
