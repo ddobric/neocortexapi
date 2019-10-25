@@ -123,9 +123,7 @@ namespace NeoCortexApi.Network
                 //foreach (TIN inputVal in activeArray.Keys)
                 foreach (var pair in this.activeMap)
                 {
-                    //int numOfSameBits = predictNextValue(arr, activeArray[inputVal]);
                     int numOfSameBits = pair.Key.Intersect(arr).Count();
-                    //int numOfSameBits = predictNextValue(arr, activeArray[inputVal]);
                     if (numOfSameBits > maxSameBits)
                     {
                         Debug.WriteLine($"cnt:{n}\t{n}\t{pair.Value} = bits {numOfSameBits}");

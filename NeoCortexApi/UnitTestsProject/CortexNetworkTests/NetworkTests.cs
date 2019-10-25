@@ -129,11 +129,12 @@ namespace UnitTestsProject
         }
 
         /// <summary>
-        /// It learns the sequence of elements of type double.
+        /// It learns the sequence of elements of type double. Useful to test sequence stability in dependence on cells, num of elements
+        /// topology etc.
         /// </summary>
         [TestMethod]
         [TestCategory("NetworkTests")]
-        public void SequenceExperiment()
+        public void LongerSequenceExperiment()
         {
             int inputBits = 1024;
 
@@ -186,13 +187,7 @@ namespace UnitTestsProject
             layer1.HtmModules.Add(sp1);
 
             HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
-            // Example, which creates two sequences from one.  1.4->1.5 and 1.4->1.6
-            //double[] inputs = new double[] { 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.3, 1.4, 1.6}; I=0-10
-            //double[] inputs = new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0 }; //I=0-10
-            //OK double[] inputs = new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 20.0, 19.0, 18.0, 17.0, 16.0, 15.0, 7.0, 8.0, 9.0 }; I=0-20
-            //Not OK double[] inputs = new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 20.0, 19.0, 18.0, 17.0, 16.0, 15.0, 7.0, 8.0, 9.0 }; //I=0-1000
-            //double[] inputs = new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 20.0, 19.0, 18.0, 17.0, 16.0, 15.0, 7.0, 8.0, 9.0 }; //I=0-1000
-        
+       
             double[] inputs = lst.ToArray();
 
             //
@@ -244,5 +239,139 @@ namespace UnitTestsProject
             Debug.WriteLine("------------------------------------------------------------------------\n----------------------------------------------------------------------------");
         }
 
+
+        /// <summary>
+        ///
+        /// </summary>
+        [TestMethod]
+        [TestCategory("NetworkTests")]
+        public void SimpleSequenceExperiment()
+        {
+            int inputBits = 50;
+
+            bool learn = true;
+            Parameters p = Parameters.getAllDefaultParameters();
+            p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
+            p.Set(KEY.INPUT_DIMENSIONS, new int[] { inputBits });
+            p.Set(KEY.CELLS_PER_COLUMN, 100);
+            p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 500 });
+
+            CortexNetwork net = new CortexNetwork("my cortex");
+            List<CortexRegion> regions = new List<CortexRegion>();
+            CortexRegion region0 = new CortexRegion("1st Region");
+
+            regions.Add(region0);
+
+            SpatialPoolerMT sp1 = new SpatialPoolerMT();
+            TemporalMemory tm1 = new TemporalMemory();
+            var mem = new Connections();
+            p.apply(mem);
+            sp1.init(mem, UnitTestHelpers.GetMemory());
+            tm1.init(mem);
+
+            Dictionary<string, object> settings = new Dictionary<string, object>()
+            {
+                { "W", 7},
+                { "N", inputBits},
+                { "Radius", -1.0},
+                { "MinVal", 0.0},
+               // { "MaxVal", 20.0 },
+                { "Periodic", false},
+                { "Name", "scalar"},
+                { "ClipInput", false},
+            };
+
+            double max = 10;
+            List<double> lst = new List<double>();
+            for (double i = 0; i < max; i++)
+            {
+                lst.Add(i);
+            }
+            settings["MaxVal"] = max;
+
+            EncoderBase encoder = new ScalarEncoder(settings);
+
+            CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
+            //
+            // NewBorn learning stage.
+            region0.AddLayer(layer1);
+            layer1.HtmModules.Add(encoder);
+            layer1.HtmModules.Add(sp1);
+
+            HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
+
+            double[] inputs = lst.ToArray();
+
+            //
+            // This trains SP.
+            foreach (var input in inputs)
+            {
+                Debug.WriteLine($" ** {input} **");
+                for (int i = 0; i < 3; i++)
+                {
+                    var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
+                }
+            }
+
+            // Here we add TM module to the layer.
+            layer1.HtmModules.Add(tm1);
+
+            int cycle = 0;
+            int matches = 0;
+
+            //
+            // Now, training with SP+TM. SP is pretrained on pattern.
+            for (int i = 0; i < 460; i++)
+            {
+                matches = 0;
+
+                cycle++;
+
+                double lastPredictedValue = 0;
+
+                foreach (var input in inputs)
+                {
+                    var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
+
+                    cls.Learn(input, lyrOut.activeCells.ToArray(), lyrOut.predictiveCells.ToArray());
+
+                    Debug.WriteLine($"-------------- {input} ---------------");
+
+                    if (learn == false)
+                        Debug.WriteLine($"Inference mode");
+
+                    Debug.WriteLine($"W: {Helpers.StringifyVector(lyrOut.winnerCells.Select(c => c.Index).ToArray())}");
+                    Debug.WriteLine($"P: {Helpers.StringifyVector(lyrOut.predictiveCells.Select(c => c.Index).ToArray())}");
+
+                    Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray())}");
+
+                    if (input == lastPredictedValue)
+                    {
+                        matches++;
+                        Debug.WriteLine($"Match {input}");
+                    }
+                    else
+                        Debug.WriteLine($"Missmatch Actual value: {input} - Predicted value: {lastPredictedValue}");
+
+                    cls.Learn(input, lyrOut.activeCells.ToArray(), lyrOut.predictiveCells.ToArray());
+
+                    lastPredictedValue = cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray());
+                }
+
+                if (i == 500)
+                {
+                    Debug.WriteLine("Stop Learning From Here. Entering inference mode.");
+                    learn = false;
+                }
+
+                tm1.reset(mem);
+
+                Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {inputs.Length}\t {(double)matches / (double)inputs.Length * 100.0}%");
+            }
+
+            cls.TraceState();
+
+            Debug.WriteLine("------------------------------------------------------------------------\n----------------------------------------------------------------------------");
+        }
     }
 }

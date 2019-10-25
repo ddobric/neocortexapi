@@ -229,7 +229,7 @@ namespace NeoCortexApi
         public void activateDendrites(Connections conn, ComputeCycle cycle, bool learn)
         {
             SegmentActivity activity = conn.computeActivity(cycle.activeCells, conn.getConnectedPermanence());
-            
+
             int i = 0;
             var activeSegments = new List<DistalDendrite>();
             foreach (var item in activity.Active)
@@ -280,7 +280,7 @@ namespace NeoCortexApi
             string[] arr = new string[predictiveCells.Count];
             foreach (Cell c in predictiveCells)
             {
-                arr[i] = c.Index +"-" + c.ParentColumnIndex;
+                arr[i] = c.Index + "-" + c.ParentColumnIndex;
                 i++;
             }
 
@@ -449,7 +449,7 @@ namespace NeoCortexApi
             }
             else
             {
-                leastUsedCell = this.leastUsedCell(conn, cells, random);
+                leastUsedCell = this.GetLeastUsedCell(conn, cells, random);
                 if (learn)
                 {
                     int nGrowExact = Math.Min(conn.getMaxNewSynapseCount(), prevWinnerCells.Count);
@@ -526,17 +526,15 @@ namespace NeoCortexApi
         //     Helper Methods     //
         ////////////////////////////
 
-        /**
-         * Gets the cell with the smallest number of segments.
-         * Break ties randomly.
-         * 
-         * @param conn      Connections instance for the tm
-         * @param cells     List of {@link Cell}s
-         * @param random    Random Number Generator
-         * 
-         * @return  the least used {@code Cell}
-         */
-        public Cell leastUsedCell(Connections conn, IList<Cell> cells, Random random)
+
+        /// <summary>
+        /// Gets the cell with the smallest number of segments.
+        /// </summary>
+        /// <param name="conn">Connections instance currentlly in use.</param>
+        /// <param name="cells">List of cells.</param>
+        /// <param name="random">Random generator.</param>
+        /// <returns></returns>
+        public Cell GetLeastUsedCell(Connections conn, IList<Cell> cells, Random random)
         {
             List<Cell> leastUsedCells = new List<Cell>();
             int minNumSegments = Integer.MaxValue;
@@ -733,7 +731,7 @@ namespace NeoCortexApi
             public bool IsExistAnyActiveCol(int memberIndex)
             {
                 if (m_Pair.Value.Count == 0 ||
-                    m_Pair.Value[memberIndex].Count == 0 )
+                    m_Pair.Value[memberIndex].Count == 0)
                     return false;
                 else
                     return true;

@@ -49,8 +49,10 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public int Index { get; set; }
 
-        /** Remove boxing where necessary */
-        //readonly Integer boxedIndex;
+        public List<DistalDendrite> Segments
+        {
+            get;
+        }
 
         /// <summary>
         /// The column, which owns this cell.
@@ -73,17 +75,9 @@ namespace NeoCortexApi.Entities
         {
             this.ParentColumnIndex = parentColumnIndx;
             //this.Index = parentColumnIndx.getIndex() * parentColumnIndx.getNumCellsPerColumn() + colSeq;
-            this.Index = parentColumnIndx * numCellsPerColumn + colSeq;  
+            this.Index = parentColumnIndx * numCellsPerColumn + colSeq;
         }
 
-        /**
-         * Returns this {@code Cell}'s index.
-         * @return
-         */
-        //public int getIndex()
-        //{
-        //    return Index;
-        //}
 
         /**
          * Returns the column within which this cell resides

@@ -9,4 +9,6 @@
 	2048			0-30			40		27	| 21, 26 |	
 reset	2048			0-30			40		-	
 reset	1024			0-30			40		-	
-reset	1024			0-100			40		-	
+reset	1024			0-100			40		Some errors detected	
+reset	1024			0-50			100		- (after few iterations gets stable)	
+reset	1024			0-100			40		Some errors detected	
