@@ -368,6 +368,7 @@ namespace UnitTestsProject
             Assert.AreEqual(1, winnerCells.Count);
 
             List<DistalDendrite> segments = winnerCells[0].getSegments(cn);
+            //List<DistalDendrite> segments = winnerCells[0].Segments;
             Assert.AreEqual(1, segments.Count);
 
             List<Synapse> synapses = cn.getSynapses(segments[0]);
@@ -401,6 +402,7 @@ namespace UnitTestsProject
             List<Cell> winnerCells = new List<Cell>(cc.winnerCells);
             Assert.AreEqual(1, winnerCells.Count);
             List<DistalDendrite> segments = winnerCells[0].getSegments(cn);
+            //List<DistalDendrite> segments = winnerCells[0].Segments;
             Assert.AreEqual(1, segments.Count);
             List<Synapse> synapses = segments[0].getAllSynapses(cn);
 
