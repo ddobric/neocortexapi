@@ -617,8 +617,8 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public int NumInputs
         {
-            get => numInputs;
-            set => this.numInputs = value;
+            get => this.HtmConfig.NumInputs = numInputs;
+            set => this.HtmConfig.NumInputs = value; // this.numInputs = value;
         }
 
 
