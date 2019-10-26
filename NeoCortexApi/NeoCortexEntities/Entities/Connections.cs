@@ -213,6 +213,7 @@ namespace NeoCortexApi.Entities
                     cfg.SynPermInactiveDec = this.getSynPermInactiveDec();
                     cfg.PermanenceIncrement = this.getPermanenceIncrement();
                     cfg.PermanenceDecrement = this.getPermanenceDecrement();
+                    cfg.MaxNewSynapseCount = this.getMaxNewSynapseCount();
 
                     cfg.RandomGenSeed = this.seed;
 
@@ -1356,21 +1357,9 @@ namespace NeoCortexApi.Entities
         ////////////////////////////////////////
 
 
-        /**
-  //* Compute each segment's number of active synapses for a given input.
-  //* In the returned lists, a segment's active synapse count is stored at index
-  //* `segment.flatIdx`.
-  //* 
-  //* @param activePresynapticCells
-  //* @param connectedPermanence
-  //* @return
-  //*/
-
-
 
         /// <summary>
-        /// Compute each segment's number of active synapses for a given input.
-        /// 
+        /// Compute the number of active synapses of the each segment for a given input.
         /// </summary>
         /// <param name="activePresynapticCells"></param>
         /// <param name="connectedPermanence"></param>
@@ -1378,7 +1367,7 @@ namespace NeoCortexApi.Entities
         public SegmentActivity computeActivity(ICollection<Cell> activePresynapticCells, double connectedPermanence)
         {
             Dictionary<int, int> active = new Dictionary<int, int>();
-            Dictionary<int, int> potential = new Dictionary<int, int>();
+            Dictionary<int, int> potentialSynapses = new Dictionary<int, int>();
 
             // Every receptor synapse on active cell, which has permanence over threshold is by default connected.
             int[] numActiveConnectedSynapsesForSegment = new int[nextFlatIdx];
@@ -1395,10 +1384,10 @@ namespace NeoCortexApi.Entities
                 foreach (Synapse synapse in getReceptorSynapses(cell))
                 {
                     int flatIdx = synapse.getSegment().getIndex();
-                    if (potential.ContainsKey(flatIdx) == false)
-                        potential.Add(flatIdx, 0);
+                    if (potentialSynapses.ContainsKey(flatIdx) == false)
+                        potentialSynapses.Add(flatIdx, 0);
 
-                    potential[flatIdx] = potential[flatIdx] + 1;
+                    potentialSynapses[flatIdx] = potentialSynapses[flatIdx] + 1;
 
                     ++numActivePotentialSynapsesForSegment[flatIdx];
 
@@ -1413,18 +1402,14 @@ namespace NeoCortexApi.Entities
                 }
             }
 
-            //return lastActivity = new Activity(
-            //    numActiveConnectedSynapsesForSegment,
-            //        numActivePotentialSynapsesForSegment);
-            return new SegmentActivity() { Active = active, Potential = potential };
+            return new SegmentActivity() { Active = active, PotentialSynapses = potentialSynapses };
         }
 
-        /**
-         * Returns the last {@link Activity} computed during the most
-         * recently executed cycle.
-         * 
-         * @return  the last activity to be computed.
-         */
+
+        /// <summary>
+        /// Returns the last activity computed during the most recent cycle.
+        /// </summary>
+        /// <returns></returns>
         public SegmentActivity getLastActivity()
         {
             return lastActivity;
@@ -2333,30 +2318,30 @@ namespace NeoCortexApi.Entities
          * @param cells		the indexes of the {@link Cell}s to return
          * @return	the specified list of cells
          */
-        public List<Cell> asCellObjects(Collection<Integer> cells)
-        {
-            List<Cell> objs = new List<Cell>();
-            foreach (int i in cells)
-            {
-                objs.Add(this.cells[i]);
-            }
-            return objs;
-        }
+        //public List<Cell> asCellObjects(Collection<Integer> cells)
+        //{
+        //    List<Cell> objs = new List<Cell>();
+        //    foreach (int i in cells)
+        //    {
+        //        objs.Add(this.cells[i]);
+        //    }
+        //    return objs;
+        //}
 
         /**
          * Returns a list of the {@link Column}s specified.
          * @param cols		the indexes of the {@link Column}s to return
          * @return		the specified list of columns
          */
-        public List<Column> asColumnObjects(Collection<Integer> cols)
-        {
-            List<Column> objs = new List<Column>();
-            foreach (int i in cols)
-            {
-                objs.Add(this.memory.getObject(i));
-            }
-            return objs;
-        }
+        //public List<Column> asColumnObjects(Collection<Integer> cols)
+        //{
+        //    List<Column> objs = new List<Column>();
+        //    foreach (int i in cols)
+        //    {
+        //        objs.Add(this.memory.getObject(i));
+        //    }
+        //    return objs;
+        //}
 
         /**
          * Returns a {@link Set} view of the {@link Column}s specified by

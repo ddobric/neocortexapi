@@ -1,46 +1,12 @@
-﻿/* ---------------------------------------------------------------------
- * Numenta Platform for Intelligent Computing (NuPIC)
- * Copyright (C) 2014, Numenta, Inc.  Unless you have an agreement
- * with Numenta, Inc., for a separate license for this software code, the
- * following terms and conditions apply:
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero Public License version 3 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Affero Public License for more details.
- *
- * You should have received a copy of the GNU Affero Public License
- * along with this program.  If not, see http://www.gnu.org/licenses.
- *
- * http://numenta.org/licenses/
- * ---------------------------------------------------------------------
- */
-
-//package org.numenta.nupic.model;
-
-//import java.io.Serializable;
-//import java.util.List;
-//import java.util.Set;
-
-
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using NeoCortexApi.Entities;
 
 namespace NeoCortexApi.Entities
 {
-
-
-
     /// <summary>
     /// Defines a single cell (neuron).
     /// </summary>
-   // [Serializable]
     public class Cell : IEquatable<Cell>, IComparable<Cell>
     {
 
@@ -49,10 +15,10 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public int Index { get; set; }
 
-        public List<DistalDendrite> Segments
-        {
-            get;
-        }
+        //public List<DistalDendrite> Segments
+        //{
+        //    get;
+        //}
 
         /// <summary>
         /// The column, which owns this cell.
@@ -64,7 +30,7 @@ namespace NeoCortexApi.Entities
 
         public Cell()
         {
-
+            //this.Segments = new List<DistalDendrite>(); 
         }
         /**
          * Constructs a new {@code Cell} object
@@ -76,6 +42,7 @@ namespace NeoCortexApi.Entities
             this.ParentColumnIndex = parentColumnIndx;
             //this.Index = parentColumnIndx.getIndex() * parentColumnIndx.getNumCellsPerColumn() + colSeq;
             this.Index = parentColumnIndx * numCellsPerColumn + colSeq;
+            //this.Segments = new List<DistalDendrite>();
         }
 
 
@@ -130,14 +97,14 @@ namespace NeoCortexApi.Entities
             return getSegments(c, false);
         }
 
-        /**
-         * Returns a {@link List} of this {@code Cell}'s {@link DistalDendrite}s
-         * 
-         * @param   c               the connections state of the temporal memory
-         * @param doLazyCreate      create a container for future use if true, if false
-         *                          return an orphaned empty set.
-         * @return  a {@link List} of this {@code Cell}'s {@link DistalDendrite}s
-         */
+        ///**
+        // * Returns a {@link List} of this {@code Cell}'s {@link DistalDendrite}s
+        // * 
+        // * @param   c               the connections state of the temporal memory
+        // * @param doLazyCreate      create a container for future use if true, if false
+        // *                          return an orphaned empty set.
+        // * @return  a {@link List} of this {@code Cell}'s {@link DistalDendrite}s
+        // */
         public List<DistalDendrite> getSegments(Connections c, bool doLazyCreate)
         {
             return c.getSegments(this, doLazyCreate);
