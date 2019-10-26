@@ -337,6 +337,7 @@ namespace UnitTestsProject
             parameters.setSynPermActiveInc(0.1);
             parameters.setSynPermInactiveDec(0.1);
             parameters.setSeed(42);
+            parameters.setStimulusThreshold(4);
             parameters.setRandom(new ThreadSafeRandom(42));
 
             var sp = new SpatialPoolerMT();
@@ -347,7 +348,7 @@ namespace UnitTestsProject
             cn.BoostFactors = (new double[] { 2.0, 2.0, 2.0 });
             int[] inputVector = { 1, 1, 1, 1, 1 };
             int[] activeArray = { 0, 0, 0 };
-            int[] expOutput = { 1,1,1 }; // Added during implementation of parallel.
+            int[] expOutput = { 4,4,4 }; // Added during implementation of parallel.
             /*{ 1, 1, 1 }*/ ;
             // { 2, 1, 0 }; This was used originally on Linux with JAVA and Pyhton
             sp.compute( inputVector, activeArray, true);
