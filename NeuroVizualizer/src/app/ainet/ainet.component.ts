@@ -892,8 +892,4 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.plotChart();
   }
 
-  notifyTest() {
-    this.notifier.notify("success", "Done");
-  }
-
 }

@@ -72,39 +72,46 @@ export class NeoCortexUtilsService {
   }
 
   private lookUpSynapse(searchSynapse) {
+    try {
+
+      let preCell = this.model.areas[searchSynapse.preCellAreaId].minicolumns[searchSynapse.preCell.cellX][searchSynapse.preCell.cellZ].cells[searchSynapse.preCell.cellY];
+      let postCell = this.model.areas[searchSynapse.postCellAreaId].minicolumns[searchSynapse.postCell.cellX][searchSynapse.postCell.cellZ].cells[searchSynapse.postCell.cellY];
 
 
-    let preCell = this.model.areas[searchSynapse.preCellAreaId].minicolumns[searchSynapse.preCell.cellX][searchSynapse.preCell.cellZ].cells[searchSynapse.preCell.cellY];
-    let postCell = this.model.areas[searchSynapse.postCellAreaId].minicolumns[searchSynapse.postCell.cellX][searchSynapse.postCell.cellZ].cells[searchSynapse.postCell.cellY];
+      let synapseFound = false;
+      loop:
+      for (let out = 0; out < preCell.outgoingSynapses.length; out++) {
+        for (let inc = 0; inc < postCell.incomingSynapses.length; inc++) {
+
+          if ((preCell.outgoingSynapses[out].postSynaptic.X === postCell.X &&
+            preCell.outgoingSynapses[out].postSynaptic.Layer === postCell.Layer &&
+            preCell.outgoingSynapses[out].postSynaptic.Z === postCell.Z) &&
+
+            (postCell.incomingSynapses[inc].preSynaptic.X === preCell.X &&
+              postCell.incomingSynapses[inc].preSynaptic.Layer === preCell.Layer &&
+              postCell.incomingSynapses[inc].preSynaptic.Z === preCell.Z)) {
+
+            //  console.log("Synapse Exists", "Permanence will be updated", 'info');
+            this.updatePermanenceOfSynapse(searchSynapse.permanence, preCell, postCell);
+            synapseFound = true;
+            break loop;
+          }
 
 
-    let synapseFound = false;
-    loop:
-    for (let out = 0; out < preCell.outgoingSynapses.length; out++) {
-      for (let inc = 0; inc < postCell.incomingSynapses.length; inc++) {
-
-        if ((preCell.outgoingSynapses[out].postSynaptic.X === postCell.X &&
-          preCell.outgoingSynapses[out].postSynaptic.Layer === postCell.Layer &&
-          preCell.outgoingSynapses[out].postSynaptic.Z === postCell.Z) &&
-
-          (postCell.incomingSynapses[inc].preSynaptic.X === preCell.X &&
-            postCell.incomingSynapses[inc].preSynaptic.Layer === preCell.Layer &&
-            postCell.incomingSynapses[inc].preSynaptic.Z === preCell.Z)) {
-
-          //  console.log("Synapse Exists", "Permanence will be updated", 'info');
-          this.updatePermanenceOfSynapse(searchSynapse.permanence, preCell, postCell);
-          synapseFound = true;
-          break loop;
         }
-
-
       }
-    }
-    if (synapseFound === false) {
-      //Console.log("Synapse doesn't Exists", "It will be created", 'info');
-      this.generateNewSynapse(searchSynapse.permanence, preCell, postCell);
-    }
+      if (synapseFound === false) {
+        //Console.log("Synapse doesn't Exists", "It will be created", 'info');
+        this.generateNewSynapse(searchSynapse.permanence, preCell, postCell);
+      }
 
+
+
+    } catch (error) {
+      this.notifyTyp = "error";
+      this.notifyMsg = error;
+
+    }
 
 
   }
@@ -165,10 +172,18 @@ export class NeoCortexUtilsService {
 
 
   private updateOverlap(updateOverlapCo: any) {
+    try {
+      this.model.areas[updateOverlapCo.areaIDOfCell].minicolumns[updateOverlapCo.minColXDim][updateOverlapCo.minColZDim].overlap = updateOverlapCo.updateOverlapValue;
+      this.notifyTyp = "success";
+      this.notifyMsg = "Overlap Updated";
 
-    this.model.areas[updateOverlapCo.areaIDOfCell].minicolumns[updateOverlapCo.minColXDim][updateOverlapCo.minColZDim].overlap = updateOverlapCo.updateOverlapValue;
-    this.notifyTyp = "success";
-    this.notifyMsg = "Overlap Updated";
+    } catch (error) {
+      this.notifyTyp = "error";
+      this.notifyMsg = error;
+
+    }
+
+
 
   }
 
