@@ -6,6 +6,7 @@ import { NotificationsService } from 'angular2-notifications';
 import { NeoCortexUtilsService } from '../services/neocortexutils.service';
 import { NeoCortexModel, Cell, Synapse } from '../Entities/NeoCortexModel';
 import { NotifierService } from "angular-notifier";
+import { throwError } from 'rxjs';
 
 
 
@@ -36,8 +37,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
   yCoordinatesForOneArea: Array<any> = [];
   zCoordinatesForOneArea: Array<any> = [];
 
-  overlapIntervalStart: number = null;
-  overlapIntervalEnd: number = null;
+  overlapIntervalStart: number;
+  overlapIntervalEnd: number;
   permanenceIntervalStart: number = null;
   permanenceIntervalEnd: number = null;
 
@@ -353,7 +354,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
             let yCoorvalue = (areaYWidth * model.areas[areaIndx].level + cellIndx * env.cellYRatio);
             let zCoorvalue = (areaZWidth * j);
 
-            if (this.overlapIntervalStart != null && this.overlapIntervalEnd != null) {
+            if (!(!this.overlapIntervalStart && !this.overlapIntervalEnd)) {
               if (this.overlapIntervalStart <= model.areas[areaIndx].minicolumns[i][j].overlap && this.overlapIntervalEnd >= model.areas[areaIndx].minicolumns[i][j].overlap) {
 
                 this.drawNeuronsCoordinates(model, areaIndx, i, j, cellIndx, areaYWidth, xOffset, areaZWidth);
@@ -607,22 +608,33 @@ export class AinetComponent implements OnInit, AfterViewInit {
    * @param permanenceInterval 
    */
   filterPermanence() {
-    let splitpermanenceInterval = this.permanenceInterval.split(" ");
-    let permanenceIntervalStart = parseFloat(splitpermanenceInterval[0]);
-    let permanenceIntervalEnd = parseFloat(splitpermanenceInterval[1]);
-    console.log(permanenceIntervalStart);
-    console.log(permanenceIntervalEnd);
-    this.permanenceIntervalStart = permanenceIntervalStart;
-    this.permanenceIntervalEnd = permanenceIntervalEnd;
+    try {
+      let splitpermanenceInterval = this.permanenceInterval.split(" ");
+      let permanenceIntervalStart = parseFloat(splitpermanenceInterval[0]);
+      let permanenceIntervalEnd = parseFloat(splitpermanenceInterval[1]);
+      console.log(permanenceIntervalStart);
+      console.log(permanenceIntervalEnd);
+      if (permanenceIntervalStart >= 0 && permanenceIntervalEnd <= 1) {
+        this.permanenceIntervalStart = permanenceIntervalStart;
+        this.permanenceIntervalEnd = permanenceIntervalEnd;
 
-    this.clearData();
-    this.clearCoordinates();
-    this.fillChart(this.model);
-    this.generateColoursFromOverlap();
-    this.generateColoursFromPermanences();
-    this.plotChart();
-    this.permanenceIntervalStart = null;
-    this.permanenceIntervalEnd = null;
+        this.clearData();
+        this.clearCoordinates();
+        this.fillChart(this.model);
+        this.generateColoursFromOverlap();
+        this.generateColoursFromPermanences();
+        this.plotChart();
+        this.permanenceIntervalStart = null;
+        this.permanenceIntervalEnd = null;
+        this.notifier.notify("success", "Permanence filtered");
+      }
+      else {
+        throw new Error('Interval is defined as 0 to 1');
+      }
+    } catch (error) {
+      this.notifier.notify("error", error);
+    }
+
   }
 
   /**
@@ -636,19 +648,26 @@ export class AinetComponent implements OnInit, AfterViewInit {
       let overlapIntervalEnd = parseFloat(splitOverlapInterval[1]);
       console.log(overlapIntervalStart);
       console.log(overlapIntervalEnd);
-      this.overlapIntervalStart = overlapIntervalStart;
-      this.overlapIntervalEnd = overlapIntervalEnd;
+      if (overlapIntervalStart >= 0 && overlapIntervalEnd <= 1) {
+        this.overlapIntervalStart = overlapIntervalStart;
+        this.overlapIntervalEnd = overlapIntervalEnd;
 
-      this.clearData();
-      this.clearCoordinates();
-      this.fillChart(this.model);
-      this.generateColoursFromOverlap();
-      this.generateColoursFromPermanences();
-      this.plotChart();
-      //this.updatePlot();
-      this.overlapIntervalStart = null;
-      this.overlapIntervalEnd = null;
-      this.notifier.notify("success", "Overlap updated");
+        this.clearData();
+        this.clearCoordinates();
+        this.fillChart(this.model);
+        this.generateColoursFromOverlap();
+        this.generateColoursFromPermanences();
+        this.plotChart();
+        //this.updatePlot();
+        this.overlapIntervalStart = undefined;
+        this.overlapIntervalEnd = undefined;
+        this.notifier.notify("success", "Overlap filtered");
+
+      }
+      else {
+        throw new Error('Interval is defined as 0 to 1');
+      }
+
     } catch (error) {
       this.notifier.notify("error", error);
 
