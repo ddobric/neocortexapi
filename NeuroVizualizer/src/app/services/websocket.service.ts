@@ -6,14 +6,18 @@ import { Observable, Subject, Observer } from "rxjs";
   providedIn: 'root'
 })
 export class WebsocketService {
-
-  constructor() { }
   private subject: Subject<MessageEvent>;
+
+  constructor() {
+
+  }
+
 
   public connect(url): Subject<MessageEvent> {
     if (!this.subject) {
       this.subject = this.create(url);
       console.log("Successfully connected: " + url);
+
     }
     return this.subject;
   }

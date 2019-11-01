@@ -3,8 +3,9 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import * as Plotlyjs from 'plotly.js/dist/plotly';
 import { environment as env } from "../../environments/environment.prod";
 import { NotificationsService } from 'angular2-notifications';
-import { NeoCortexUtilsService } from '../services/neo-cortex-utils.service';
+import { NeoCortexUtilsService } from '../services/neocortexutils.service';
 import { NeoCortexModel, Cell, Synapse } from '../Entities/NeoCortexModel';
+import { NotifierService } from "angular-notifier";
 
 
 
@@ -15,7 +16,8 @@ import { NeoCortexModel, Cell, Synapse } from '../Entities/NeoCortexModel';
   styleUrls: ['./ainet.component.scss']
 })
 export class AinetComponent implements OnInit, AfterViewInit {
-  model: any = null;
+  private readonly notifier: NotifierService;
+  model: any;
   xNeurons: Array<number> = [];
   yNeurons: Array<number> = [];
   zNeurons: Array<number> = [];
@@ -55,9 +57,12 @@ export class AinetComponent implements OnInit, AfterViewInit {
   cellAreaId: any;
 
   neuralchart: object = {};
+  pattern: string | RegExp;
 
 
-  constructor(private _service: NotificationsService, private neoUtilsService: NeoCortexUtilsService) {
+  constructor(private _service: NotificationsService, private neoUtilsService: NeoCortexUtilsService, notifierService: NotifierService) {
+    this.notifier = notifierService;
+
 
 
   }
@@ -69,24 +74,35 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.notificationConfig();
 
   }
+  /*  let reg1 = new RegExp(/^\d+[.,]?\d{0,2}$/g);
+     let reg = new RegExp(/^\d[.,]?\d{0,4}$/g); */
+  /* restrictNumbers(e) {
 
-
-  ngAfterViewInit() {
-    if (this.model == null || this.model == undefined) {
-      this.plotDummyChart();
+    let input = String.fromCharCode(e.charCode);
+    let reg2 = new RegExp(/^[0][.,][0-9]{0,4}$/);
+    if (!reg2.test(input)) {
+      e.preventDefault();
     }
 
+  } */
+
+  ngAfterViewInit() {
+
+
+    if (!this.model) {
+      this.plotDummyChart();
+    }
     this.neoUtilsService.data.subscribe(a => {
       this.model = a.dataModel;
-      if (this.model != null) {
-        this.clearData();
-        this.fillChart(this.model);
-        this.generateColoursFromOverlap();
-        this.generateColoursFromPermanences();
-        this.plotChart();
-      }
-
+      this.clearData();
+      this.fillChart(this.model);
+      this.generateColoursFromOverlap();
+      this.generateColoursFromPermanences();
+      this.plotChart();
+      this.pushNotification(a.notification);
     });
+
+
 
 
     //this.model = new NeoCortexGenerator().createModel([0, 0, 0, 1, 2, 1], [10, 1], 6);
@@ -96,6 +112,10 @@ export class AinetComponent implements OnInit, AfterViewInit {
      this.generateColoursFromPermanences();
      this.plotChart(); */
 
+  }
+  pushNotification(notify) {
+    console.log(notify);
+    this.notifier.notify(notify.type, notify.msg);
   }
 
 
@@ -613,6 +633,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
    */
   filterOverlap() {
 
+
     let splitOverlapInterval = this.overlapInterval.split(" ");
     let overlapIntervalStart = parseFloat(splitOverlapInterval[0]);
     let overlapIntervalEnd = parseFloat(splitOverlapInterval[1]);
@@ -630,6 +651,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     //this.updatePlot();
     this.overlapIntervalStart = null;
     this.overlapIntervalEnd = null;
+
 
   }
 
@@ -861,6 +883,17 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
     this._service.create(title, content, type, override);
 
+  }
+  showEntireModel() {
+    this.clearData();
+    this.fillChart(this.model);
+    this.generateColoursFromOverlap();
+    this.generateColoursFromPermanences();
+    this.plotChart();
+  }
+
+  notifyTest() {
+    this.notifier.notify("success", "Done");
   }
 
 }

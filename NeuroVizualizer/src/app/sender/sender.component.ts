@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NotificationsService } from 'angular2-notifications';
-import { NeoCortexUtilsService } from '../services/neo-cortex-utils.service';
+import { NeoCortexUtilsService } from '../services/neocortexutils.service';
 import { NeoCortexGenerator } from '../Entities/NeoCortexGenerator';
 import { NeoCortexModel } from '../Entities/NeoCortexModel';
 

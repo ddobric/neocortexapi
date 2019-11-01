@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { NeoCortexUtilsService } from '../services/neo-cortex-utils.service';
+import { NeoCortexUtilsService } from '../services/neocortexutils.service';
 
 @Component({
   selector: 'app-home',
