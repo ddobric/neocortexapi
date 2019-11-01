@@ -337,6 +337,7 @@ namespace UnitTestsProject
             parameters.setSynPermActiveInc(0.1);
             parameters.setSynPermInactiveDec(0.1);
             parameters.setSeed(42);
+            parameters.setStimulusThreshold(4);
             parameters.setRandom(new ThreadSafeRandom(42));
 
             var sp = new SpatialPoolerMT();
@@ -347,7 +348,7 @@ namespace UnitTestsProject
             cn.BoostFactors = (new double[] { 2.0, 2.0, 2.0 });
             int[] inputVector = { 1, 1, 1, 1, 1 };
             int[] activeArray = { 0, 0, 0 };
-            int[] expOutput = { 1,1,1 }; // Added during implementation of parallel.
+            int[] expOutput = { 4,4,4 }; // Added during implementation of parallel.
             /*{ 1, 1, 1 }*/ ;
             // { 2, 1, 0 }; This was used originally on Linux with JAVA and Pyhton
             sp.compute( inputVector, activeArray, true);
@@ -579,6 +580,7 @@ namespace UnitTestsProject
 
             // Test without wrapAround and potentialPct = 1
             int[] expected = new int[] { 0, 1, 2, 3 };
+            mem.HtmConfig.IsWrapAround = false;
             mem.setWrapAround(false);
             int[] mask = HtmCompute.MapPotential(mem.HtmConfig, 0, mem.getRandom());
             Assert.IsTrue(expected.SequenceEqual(mask));
@@ -590,6 +592,7 @@ namespace UnitTestsProject
             // Test with wrapAround and potentialPct = 1
           
             expected = new int[] { 0, 1, 2, 3, 11 };
+            mem.HtmConfig.IsWrapAround = true;
             mem.setWrapAround(true);
             mask = HtmCompute.MapPotential(mem.HtmConfig, 0, mem.getRandom());
             Assert.IsTrue(expected.SequenceEqual(mask));
@@ -1916,10 +1919,10 @@ namespace UnitTestsProject
             mem = new Connections();
             parameters.apply(mem);
             sp.init(mem);
-            mem.NumInputs = 10;
+            mem.HtmConfig.NumInputs = mem.NumInputs = 10;
 
             mem.setPotentialRadius(2);
-            mem.InitialSynapseConnsPct = 1;
+            mem.HtmConfig.InitialSynapseConnsPct = mem.InitialSynapseConnsPct = 1;
             int[] mask = new int[] { 0, 1, 2, 8, 9 };
 
             //var dendriteSeg = mem.getColumn(0).ProximalDendrite;
@@ -1937,14 +1940,14 @@ namespace UnitTestsProject
             // Because of connectedPct=1 all 5 specified synapses have to be connected.
             Assert.AreEqual(5, numcon);
 
-            mem.InitialSynapseConnsPct = 0;
+            mem.HtmConfig.InitialSynapseConnsPct = mem.InitialSynapseConnsPct = 0;
             perm = HtmCompute.InitSynapsePermanences(mem.HtmConfig, mask, mem.getRandom());
             numcon = ArrayUtils.valueGreaterCount(mem.getSynPermConnected(), perm);
             Assert.AreEqual(0, numcon);
 
-            mem.InitialSynapseConnsPct = 0.5;
+            mem.HtmConfig.InitialSynapseConnsPct = mem.InitialSynapseConnsPct = 0.5;
             mem.setPotentialRadius(100);
-            mem.NumInputs = 100;
+            mem.HtmConfig.NumInputs = mem.NumInputs = 100;
             mask = new int[100];
             for (int i = 0; i < 100; i++) mask[i] = i;
             double[] perma = HtmCompute.InitSynapsePermanences(mem.HtmConfig, mask,  mem.getRandom());
@@ -1970,31 +1973,17 @@ namespace UnitTestsProject
             setupParameters();
 
             sp = new SpatialPoolerMock4();
-            //    sp = new SpatialPooler()
-            //    {
-            //            private static  long serialVersionUID = 1L;
-            //public void raisePermanenceToThreshold(Connections c, double[] perm, int[] maskPotential)
-            //{
-            //    //Mock out
-            //}
-            //        };
+         
             mem = new Connections();
             parameters.apply(mem);
             sp.init(mem);
 
-            mem.NumInputs = 10;
+            mem.HtmConfig.NumInputs = mem.NumInputs = 10;
             double connectedPct = 1;
             int[] mask = new int[] { 0, 1 };
             double[] perm = HtmCompute.InitSynapsePermanences( mem.HtmConfig, mask, mem.getRandom());
             int[] trueConnected = new int[] { 0, 1 };
 
-            //Condition<?> cond = new Condition.Adapter<Object>()
-            //{
-            //            public boolean eval(double d)
-            //{
-            //    return d > 0;
-            //}
-            //        };
             ArrayUtils.toDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
 
             connectedPct = 1;

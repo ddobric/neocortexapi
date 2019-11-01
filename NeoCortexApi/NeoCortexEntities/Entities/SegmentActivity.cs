@@ -5,7 +5,7 @@ using System.Text;
 namespace NeoCortexApi.Entities
 {
     /// <summary>
-    /// Used as tupple in temporal cycle calculus.
+    /// Calculus of a temporal cycle.
     /// </summary>
     //[Serializable]
     public class SegmentActivity
@@ -18,11 +18,11 @@ namespace NeoCortexApi.Entities
         public Dictionary<int, int> Active = new Dictionary<int, int>();
 
         /// <summary>
-        /// Contains the index of segments with number of synapses with permanence higher than minimum threshold,
-        /// which makes synapse potential one.
+        /// Dictionary, which holds the number of potential synapses fro every segment.
+        /// Potential synspses are synapses with permanence higher than minimum threshold, which makes synapse potential one.
         /// Dictionary [segment index, number of potential synapses].
         /// </summary>
-        public Dictionary<int, int> Potential = new Dictionary<int, int>();
+        public Dictionary<int, int> PotentialSynapses = new Dictionary<int, int>();
 
         public SegmentActivity()
         {

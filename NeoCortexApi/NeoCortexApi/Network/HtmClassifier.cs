@@ -19,7 +19,7 @@ namespace NeoCortexApi.Network
 
         //private Dictionary<int[], TIN> predictMap = new Dictionary<int[], TIN>();
 
-        private Dictionary<TIN, int[]> activeArray = new Dictionary<TIN, int[]>();
+        //private Dictionary<TIN, int[]> activeArray = new Dictionary<TIN, int[]>();
 
         public void Learn(TIN input, Cell[] activeCells, bool learn)
         {
@@ -41,10 +41,10 @@ namespace NeoCortexApi.Network
                 this.activeMap.Add(GetCellIndicies(output), input);
             }
 
-            if (!activeArray.ContainsKey(input))
-            {
-                this.activeArray.Add(input, GetCellIndicies(output));
-            }
+            //if (!activeArray.ContainsKey(input))
+            //{
+            //    this.activeArray.Add(input, GetCellIndicies(output));
+            //}
 
             //if (!predictMap.ContainsKey(GetCellIndicies(predictedOutput)))
             //{
@@ -63,10 +63,10 @@ namespace NeoCortexApi.Network
                 this.activeMap.Add(GetCellIndicies(output), input);
             }
 
-            if (!activeArray.ContainsKey(input))
-            {
-                this.activeArray.Add(input, GetCellIndicies(output));
-            }
+            //if (!activeArray.ContainsKey(input))
+            //{
+            //    this.activeArray.Add(input, GetCellIndicies(output));
+            //}
 
             //if (!predictMap.ContainsKey(GetCellIndicies(predictedOutput)))
             //{
@@ -75,34 +75,29 @@ namespace NeoCortexApi.Network
         }
 
 
-        ///// <summary>
-        ///// Get corresponding input value for current cycle.
-        ///// </summary>
-        ///// <param name="output"></param>
-        ///// <returns></returns>
-        //public TIN GetInputValue(Cell[] output)
-        //{
-        //    /*
-        //    if (output.Length != 0 && activeMap.ContainsKey(FlatArray1(output)))
-        //    {
-        //        return activeMap[FlatArray1(output)];
-        //    }
-        //    */
+        /// <summary>
+        /// Traces out all cell indicies grouped by input value.
+        /// </summary>
+        public void TraceState()
+        {
+            List<TIN> processedValues = new List<TIN>();
 
-        //    //int k = 0;
-        //    foreach (int[] arr in activeMap.Keys)
-        //    {
-        //        var arr2 = GetCellIndicies(output);
-        //        var rs = MathHelpers.GetHammingDistance(arr, arr2, true);
-        //        //Debug.WriteLine($">> {rs}");
-        //        if (arr.SequenceEqual(arr2))
-        //        {
-        //            return activeMap[arr];
-        //        }
-        //    }
-        //    return default(TIN);
-        //}
+            foreach (var item in activeMap.Values)
+            {
+                if (processedValues.Contains(item) == false)
+                {
+                    Debug.WriteLine("");
+                    Debug.WriteLine($"{item}");
 
+                    foreach (var inp in this.activeMap.Where(i => EqualityComparer<TIN>.Default.Equals((TIN)i.Value, item)))
+                    {
+                        Debug.WriteLine($"{Helpers.StringifyVector(inp.Key)}");                        
+                    }
+
+                    processedValues.Add(item);
+                }
+            }
+        }
 
         /// <summary>
         /// Gets predicted value for next cycle
@@ -128,20 +123,20 @@ namespace NeoCortexApi.Network
                 //foreach (TIN inputVal in activeArray.Keys)
                 foreach (var pair in this.activeMap)
                 {
-                    //int numOfSameBits = predictNextValue(arr, activeArray[inputVal]);
                     int numOfSameBits = pair.Key.Intersect(arr).Count();
-                    //int numOfSameBits = predictNextValue(arr, activeArray[inputVal]);
                     if (numOfSameBits > maxSameBits)
                     {
-                        Debug.WriteLine($"cnt:{n}\t{n++}\t{pair.Value} = bits {numOfSameBits}");
+                        Debug.WriteLine($"cnt:{n}\t{n}\t{pair.Value} = bits {numOfSameBits}");
                         maxSameBits = numOfSameBits;
                         charOutput = pair.Value;
                         indx = n;
                     }
+
+                    n++;
                 }
 
                 Debug.Write("[ ");
-                for (int i = Math.Max(0, indx-3); i < Math.Min(indx + 2, this.activeMap.Keys.Count); i++)
+                for (int i = Math.Max(0, indx-3); i < Math.Min(indx + 3, this.activeMap.Keys.Count); i++)
                 {
                     if (i == indx) Debug.Write("* ");
                     Debug.Write($"{this.inputSequence[i]}");

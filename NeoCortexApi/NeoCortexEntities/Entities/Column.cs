@@ -139,8 +139,8 @@ namespace NeoCortexApi.Entities
 
             foreach (var cell in Cells)
             {
-
                 int numSegments = cell.getSegments(c).Count;
+                //int numSegments = cell.Segments.Count;
 
                 if (numSegments < minNumSegments)
                 {

@@ -58,5 +58,6 @@ namespace NeoCortexApi.Entities
         public double PermanenceIncrement { get;  set; }
 
         public double PermanenceDecrement { get;  set; }
+        public int MaxNewSynapseCount { get; internal set; }
     }
 }
