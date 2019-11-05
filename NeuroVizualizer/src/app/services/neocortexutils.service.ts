@@ -5,7 +5,7 @@ import { map } from "rxjs/operators";
 import { Cell, Synapse, NeoCortexModel } from '../Entities/NeoCortexModel';
 import { NeoCortexGenerator } from '../Entities/NeoCortexGenerator';
 
-const URL = "ws://localhost:5000/ws/NeuroVisualizer";
+const URL = "ws://localhost:5011/ws/NeuroVisualizer";
 
 export interface NeoCortexUtils {
   dataModel: any;

@@ -4,7 +4,7 @@ import { WebsocketService } from "./websocket.service";
 import { map } from "rxjs/operators";
 import { Cell, Synapse } from '../Entities/NeoCortexModel';
 
-const URL = "ws://localhost:5000/ws/transmitter";
+const URL = "ws://localhost:5011/ws/transmitter";
 
 export interface NeoCortexUtils {
   dataModel?: any;
