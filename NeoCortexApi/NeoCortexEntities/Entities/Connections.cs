@@ -1383,21 +1383,21 @@ namespace NeoCortexApi.Entities
                 // Then step through all receptor synapses on presynaptic cell.
                 foreach (Synapse synapse in getReceptorSynapses(cell))
                 {
-                    int flatIdx = synapse.getSegment().getIndex();
-                    if (potentialSynapses.ContainsKey(flatIdx) == false)
-                        potentialSynapses.Add(flatIdx, 0);
+                    int segFlatIndx = synapse.getSegment().getIndex();
+                    if (potentialSynapses.ContainsKey(segFlatIndx) == false)
+                        potentialSynapses.Add(segFlatIndx, 0);
 
-                    potentialSynapses[flatIdx] = potentialSynapses[flatIdx] + 1;
+                    potentialSynapses[segFlatIndx] = potentialSynapses[segFlatIndx] + 1;
 
-                    ++numActivePotentialSynapsesForSegment[flatIdx];
+                    ++numActivePotentialSynapsesForSegment[segFlatIndx];
 
                     if (synapse.getPermanence() > threshold)
                     {
-                        if (active.ContainsKey(flatIdx) == false)
-                            active.Add(flatIdx, 0);
+                        if (active.ContainsKey(segFlatIndx) == false)
+                            active.Add(segFlatIndx, 0);
 
-                        active[flatIdx] = active[flatIdx] + 1;
-                        ++numActiveConnectedSynapsesForSegment[flatIdx];
+                        active[segFlatIndx] = active[segFlatIndx] + 1;
+                        ++numActiveConnectedSynapsesForSegment[segFlatIndx];
                     }
                 }
             }

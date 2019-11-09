@@ -12,3 +12,4 @@ reset	1024			0-30			40		-
 reset	1024			0-100			40		Some errors detected	
 reset	1024			0-50			100		- (after few iterations gets stable)	
 reset	1024			0-100			40		Some errors detected	
+reset	2024			0-100			5000		99% acurrcy afte 40 cycles

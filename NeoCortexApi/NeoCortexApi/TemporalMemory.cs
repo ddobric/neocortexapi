@@ -129,7 +129,7 @@ namespace NeoCortexApi
             Func<Object, Column> segToCol = (segment) =>
             {
                 var colIndx = ((DistalDendrite)segment).getParentCell().getParentColumnIndex();
-                var parentCol = this.connections.getMemory().get(colIndx);
+                var parentCol = this.connections.getMemory().GetColumn(colIndx);
                 return parentCol;
             };
 
@@ -199,13 +199,14 @@ namespace NeoCortexApi
                 }
             }
 
-            int[] arr = new int[cycle.winnerCells.Count];
-            int count = 0;
-            foreach (Cell activeCell in cycle.winnerCells)
-            {
-                arr[count] = activeCell.Index;
-                count++;
-            }
+
+            //int[] arr = new int[cycle.winnerCells.Count];
+            //int count = 0;
+            //foreach (Cell activeCell in cycle.winnerCells)
+            //{
+            //    arr[count] = activeCell.Index;
+            //    count++;
+            //}
 
             return cycle;
         }
@@ -328,7 +329,7 @@ namespace NeoCortexApi
          * @return A list of predicted cells that will be added to active cells and winner
          *         cells.
          */
-        private List<Cell> ActivatePredictedColumn(Connections conn, List<DistalDendrite> activeSegments,
+        private List<Cell> ActivatePredictedColumn(Connections conn, List<DistalDendrite> columnActiveSegments,
             List<DistalDendrite> matchingSegments, ICollection<Cell> prevActiveCells, ICollection<Cell> prevWinnerCells,
                 double permanenceIncrement, double permanenceDecrement, bool learn)
         {
@@ -336,12 +337,17 @@ namespace NeoCortexApi
             Cell previousCell = null;
             Cell currCell;
            
-            foreach (DistalDendrite segment in activeSegments)
+            foreach (DistalDendrite segment in columnActiveSegments)
             {
-                if ((currCell = segment.getParentCell()) != previousCell)
+                currCell = segment.getParentCell();
+                if ( currCell != previousCell)
                 {
                     cellsToAdd.Add(currCell);
                     previousCell = currCell;
+                }
+                else
+                { 
+                
                 }
 
                 if (learn)
@@ -358,6 +364,12 @@ namespace NeoCortexApi
                     }
                 }
             }
+
+            //foreach (var cell in cellsToAdd)
+            //{
+            //    var cnt = cellsToAdd.Count(c => c.Index == cell.Index);
+            //    Debug.WriteLine($"SAME CELLS = {cell.Index} - {cnt}");
+            //}
 
             return cellsToAdd;
         }

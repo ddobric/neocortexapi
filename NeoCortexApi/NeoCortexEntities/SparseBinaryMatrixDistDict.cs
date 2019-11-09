@@ -272,7 +272,7 @@ namespace NeoCortexApi.Entities
 
 
         // @Override
-        public override int get(int index)
+        public override int GetColumn(int index)
         {
             int[] coordinates = ComputeCoordinates(getNumDimensions(), getDimensionMultiples(), this.ModuleTopology.IsMajorOrdering, index);
             if (coordinates.Length == 1)

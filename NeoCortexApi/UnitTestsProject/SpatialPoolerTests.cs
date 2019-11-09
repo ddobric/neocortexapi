@@ -135,7 +135,7 @@ namespace UnitTestsProject
 
             sp = new SpatialPooler();
             mem = new Connections();
-            parameters.apply(mem);           
+            parameters.apply(mem);
 
             SpatialPoolerMock mock = new SpatialPoolerMock(new int[] { 0, 1, 2, 3, 4 });
             mock.init(mem);
@@ -144,7 +144,7 @@ namespace UnitTestsProject
             int[] activeArray = new int[] { 0, 0, 0, 0, 0 };
             for (int i = 0; i < 20; i++)
             {
-                mock.compute( inputVector, activeArray, true);
+                mock.compute(inputVector, activeArray, true);
             }
 
             for (int i = 0; i < mem.NumColumns; i++)
@@ -180,7 +180,7 @@ namespace UnitTestsProject
             parameters.setSynPermConnected(0.1);
 
             mem = new Connections();
-            parameters.apply(mem);           
+            parameters.apply(mem);
 
             SpatialPoolerMock mock = new SpatialPoolerMock(new int[] { 0, 1, 2, 3, 4 });
             mock.init(mem);
@@ -189,7 +189,7 @@ namespace UnitTestsProject
             int[] activeArray = new int[] { 0, 0, 0, 0, 0 };
             for (int i = 0; i < 20; i++)
             {
-                mock.compute( inputVector, activeArray, true);
+                mock.compute(inputVector, activeArray, true);
             }
 
             for (int i = 0; i < mem.NumColumns; i++)
@@ -258,7 +258,7 @@ namespace UnitTestsProject
             sp.init(cn);
 
             int[] activeArray = new int[nColumns];
-            sp.compute( new int[inputSize], activeArray, true);
+            sp.compute(new int[inputSize], activeArray, true);
 
             Assert.IsTrue(0 == activeArray.Count(i => i > 0));//, ArrayUtils.INT_GREATER_THAN_0).length);
         }
@@ -289,7 +289,7 @@ namespace UnitTestsProject
             cn.InhibitionRadius = 2;
 
             int[] activeArray = new int[nColumns];
-            sp.compute( new int[inputSize], activeArray, true);
+            sp.compute(new int[inputSize], activeArray, true);
 
             Assert.IsTrue(6 == activeArray.Count(i => i > 0));//, ArrayUtils.INT_GREATER_THAN_0).length);
         }
@@ -319,7 +319,7 @@ namespace UnitTestsProject
             sp.init(cn);
 
             int[] activeArray = new int[nColumns];
-            sp.compute( new int[inputSize], activeArray, true);
+            sp.compute(new int[inputSize], activeArray, true);
 
             Assert.IsTrue(0 == activeArray.Count(i => i > 0));//, ArrayUtils.INT_GREATER_THAN_0).length);
         }
@@ -348,10 +348,11 @@ namespace UnitTestsProject
             cn.BoostFactors = (new double[] { 2.0, 2.0, 2.0 });
             int[] inputVector = { 1, 1, 1, 1, 1 };
             int[] activeArray = { 0, 0, 0 };
-            int[] expOutput = { 4,4,4 }; // Added during implementation of parallel.
-            /*{ 1, 1, 1 }*/ ;
+            int[] expOutput = { 4, 4, 4 }; // Added during implementation of parallel.
+                                           /*{ 1, 1, 1 }*/
+            ;
             // { 2, 1, 0 }; This was used originally on Linux with JAVA and Pyhton
-            sp.compute( inputVector, activeArray, true);
+            sp.compute(inputVector, activeArray, true);
 
             double[] boostedOverlaps = cn.BoostedOverlaps;
             int[] overlaps = cn.Overlaps;
@@ -364,12 +365,13 @@ namespace UnitTestsProject
         }
 
 
-        [TestMethod]
-        [TestCategory("LongRunning")]
+        // This throws OUT OF MEMORY.
+        // [TestMethod]
+        // [TestCategory("LongRunning")]
         public void perfTest()
         {
             setupParameters();
-            parameters.setInputDimensions(new int[] { 1, 1 });
+            parameters.setInputDimensions(new int[] { 188, 1 });
             parameters.setColumnDimensions(new int[] { 2048, 10 });
             parameters.setPotentialRadius(94);
             parameters.setPotentialPct(0.5);
@@ -406,7 +408,7 @@ namespace UnitTestsProject
 
             int[] activeArray = new int[2048];
 
-            sp.compute( inputVector, activeArray, true);
+            sp.compute(inputVector, activeArray, true);
 
         }
 
@@ -457,7 +459,7 @@ namespace UnitTestsProject
 
             int[] activeArray = new int[2048];
 
-            sp.compute( inputVector, activeArray, true);
+            sp.compute(inputVector, activeArray, true);
 
             int[] real = activeArray.IndexWhere(i => i > 0).ToArray();
 
@@ -546,10 +548,10 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 36, 12 });
             initSP();
 
-            Assert.IsTrue(13 == HtmCompute.MapColumn( 0, mem.ColumnTopology, mem.InputTopology));
-            Assert.IsTrue(49 == HtmCompute.MapColumn( 4, mem.ColumnTopology, mem.InputTopology));
-            Assert.IsTrue(52 == HtmCompute.MapColumn( 5, mem.ColumnTopology, mem.InputTopology));
-            Assert.IsTrue(58 == HtmCompute.MapColumn( 7, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(13 == HtmCompute.MapColumn(0, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(49 == HtmCompute.MapColumn(4, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(52 == HtmCompute.MapColumn(5, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(58 == HtmCompute.MapColumn(7, mem.ColumnTopology, mem.InputTopology));
             Assert.IsTrue(418 == HtmCompute.MapColumn(47, mem.ColumnTopology, mem.InputTopology));
 
             // Test 2D with some input dimensions smaller than column dimensions.
@@ -558,8 +560,8 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 3, 5 });
             initSP();
 
-            Assert.IsTrue(0 == HtmCompute.MapColumn( 0, mem.ColumnTopology, mem.InputTopology));
-            Assert.IsTrue(4 == HtmCompute.MapColumn( 3, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(0 == HtmCompute.MapColumn(0, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(4 == HtmCompute.MapColumn(3, mem.ColumnTopology, mem.InputTopology));
             Assert.IsTrue(14 == HtmCompute.MapColumn(15, mem.ColumnTopology, mem.InputTopology));
         }
 
@@ -590,7 +592,7 @@ namespace UnitTestsProject
             Assert.IsTrue(expected.SequenceEqual(mask));
 
             // Test with wrapAround and potentialPct = 1
-          
+
             expected = new int[] { 0, 1, 2, 3, 11 };
             mem.HtmConfig.IsWrapAround = true;
             mem.setWrapAround(true);
@@ -1226,7 +1228,7 @@ namespace UnitTestsProject
             parameters.setMaxBoost(10);
             parameters.setRandom(new ThreadSafeRandom(42));
             initSP();
-                        
+
             mem.InhibitionRadius = 1;
 
             for (int i = 0; i < mem.NumColumns; i++)
@@ -1250,7 +1252,7 @@ namespace UnitTestsProject
                 //Assert.IsTrue(potential1.SequenceEqual(potential2) || !potential1.SequenceEqual(potential2));
             }
         }
-             
+
 
         /// <summary>
         /// Ensures that neighborhod calculation is thread-safe.
@@ -1289,9 +1291,9 @@ namespace UnitTestsProject
             {
                 Parallel.For(0, 8, (i) =>
                 {
-                    int[] neighborhood =HtmCompute.GetNeighborhood(i, inhibitionRadius, mem.getColumnTopology().HtmTopology);
-                     
-                    Assert.IsTrue(expectedList[i].SequenceEqual(neighborhood));                    
+                    int[] neighborhood = HtmCompute.GetNeighborhood(i, inhibitionRadius, mem.getColumnTopology().HtmTopology);
+
+                    Assert.IsTrue(expectedList[i].SequenceEqual(neighborhood));
                 });
             }
         }
@@ -1314,7 +1316,7 @@ namespace UnitTestsProject
 
             expectedList[0] = new int[] { 2047, 0, 1 };
             expectedList[1] = new int[] { 2046, 2047, 0 };
-          
+
             setupParameters();
             parameters.setInputDimensions(new int[] { 1, 188 });
             parameters.setColumnDimensions(new int[] { 2048, 1 });
@@ -1339,7 +1341,7 @@ namespace UnitTestsProject
             {
                 Parallel.For(0, 2048, (i) =>
                 //for (int i = 0; i < 2048; i++)
-                {   
+                {
                     int[] neighborhood = HtmCompute.GetWrappingNeighborhood(i, inhibitionRadius, mem.getColumnTopology().HtmTopology);
 
                     if (i == 0)
@@ -1349,7 +1351,7 @@ namespace UnitTestsProject
                     else
                     {
                         Assert.IsTrue(neighborhood[0] == i - 1);
-                        Assert.IsTrue(neighborhood[1] == i );
+                        Assert.IsTrue(neighborhood[1] == i);
                         Assert.IsTrue(neighborhood[2] == i + 1);
                     }
                 });
@@ -1737,7 +1739,7 @@ namespace UnitTestsProject
             for (int i = 0; i < mem.NumColumns; i++)
             {
                 mem.getColumn(i).setPermanences(mem.HtmConfig, permanences[i]);
-                HtmCompute.UpdatePermanencesForColumn( mem.HtmConfig, permanences[i], mem.getColumn(i), connectedDense[i], true);
+                HtmCompute.UpdatePermanencesForColumn(mem.HtmConfig, permanences[i], mem.getColumn(i), connectedDense[i], true);
                 int[] dense = mem.getColumn(i).getProximalDendrite().getConnectedSynapsesDense();
                 trueConnectedSynapses[i].ArrToString().SequenceEqual(dense.ArrToString());
             }
@@ -1913,7 +1915,7 @@ namespace UnitTestsProject
         public void testInitPermanence1()
         {
             setupParameters();
-        
+
             sp = new SpatialPoolerMock4();
 
             mem = new Connections();
@@ -1950,7 +1952,7 @@ namespace UnitTestsProject
             mem.HtmConfig.NumInputs = mem.NumInputs = 100;
             mask = new int[100];
             for (int i = 0; i < 100; i++) mask[i] = i;
-            double[] perma = HtmCompute.InitSynapsePermanences(mem.HtmConfig, mask,  mem.getRandom());
+            double[] perma = HtmCompute.InitSynapsePermanences(mem.HtmConfig, mask, mem.getRandom());
             numcon = ArrayUtils.valueGreaterOrEqualCount(mem.getSynPermConnected(), perma);
             Assert.IsTrue(numcon > 0);
             Assert.IsTrue(numcon < mem.NumInputs);
@@ -1973,7 +1975,7 @@ namespace UnitTestsProject
             setupParameters();
 
             sp = new SpatialPoolerMock4();
-         
+
             mem = new Connections();
             parameters.apply(mem);
             sp.init(mem);
@@ -1981,14 +1983,14 @@ namespace UnitTestsProject
             mem.HtmConfig.NumInputs = mem.NumInputs = 10;
             double connectedPct = 1;
             int[] mask = new int[] { 0, 1 };
-            double[] perm = HtmCompute.InitSynapsePermanences( mem.HtmConfig, mask, mem.getRandom());
+            double[] perm = HtmCompute.InitSynapsePermanences(mem.HtmConfig, mask, mem.getRandom());
             int[] trueConnected = new int[] { 0, 1 };
 
             ArrayUtils.toDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
 
             connectedPct = 1;
             mask = new int[] { 4, 5, 6 };
-            perm = HtmCompute.InitSynapsePermanences(mem.HtmConfig, mask, mem.getRandom() );
+            perm = HtmCompute.InitSynapsePermanences(mem.HtmConfig, mask, mem.getRandom());
             trueConnected = new int[] { 4, 5, 6 };
             ArrayUtils.toDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
 
@@ -2449,7 +2451,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [DataRow(PoolerMode.SingleThreaded)]
-        [DataRow(PoolerMode.Multicore)]      
+        [DataRow(PoolerMode.Multicore)]
         public void testInit(PoolerMode poolerMode)
         {
             setupParameters();

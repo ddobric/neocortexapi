@@ -22,7 +22,7 @@ namespace NeoCortexApi.Entities
     public interface IFlatMatrix<T> : IMatrix<T>
     {
 
-        T get(int index);
+        T GetColumn(int index);
 
         /// <summary>
         /// Sets the single value in the array.

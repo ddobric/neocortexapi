@@ -189,7 +189,7 @@ namespace NeoCortexApi.Entities
 
         public Integer get(int[] coordinates)
         {
-            return get(computeIndex(coordinates));
+            return GetColumn(computeIndex(coordinates));
         }
 
 
@@ -278,7 +278,7 @@ namespace NeoCortexApi.Entities
          */
         public new int getIntValue(params int[] coordinates)
         {
-            return get(computeIndex(coordinates));
+            return GetColumn(computeIndex(coordinates));
         }
 
         /**
@@ -290,7 +290,7 @@ namespace NeoCortexApi.Entities
         //@Override
         public new int getIntValue(int index)
         {
-            return get(index);
+            return GetColumn(index);
         }
 
         /**
@@ -304,7 +304,7 @@ namespace NeoCortexApi.Entities
             //TIntList indexes = new TIntArrayList();
             for (int i = 0; i <= getMaxIndex(); i++)
             {
-                if (get(i) > 0)
+                if (GetColumn(i) > 0)
                 {
                     indexes.Add(i);
                 }
