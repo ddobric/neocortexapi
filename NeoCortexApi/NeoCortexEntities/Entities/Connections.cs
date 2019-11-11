@@ -1359,12 +1359,12 @@ namespace NeoCortexApi.Entities
 
 
         /// <summary>
-        /// Compute the number of active synapses of the each segment for a given input.
+        /// Computes the number of active and potential synapses of the each segment for a given input.
         /// </summary>
-        /// <param name="activePresynapticCells"></param>
+        /// <param name="activeCellsInCurrentCycle"></param>
         /// <param name="connectedPermanence"></param>
         /// <returns></returns>
-        public SegmentActivity computeActivity(ICollection<Cell> activePresynapticCells, double connectedPermanence)
+        public SegmentActivity ComputeActivity(ICollection<Cell> activeCellsInCurrentCycle, double connectedPermanence)
         {
             Dictionary<int, int> active = new Dictionary<int, int>();
             Dictionary<int, int> potentialSynapses = new Dictionary<int, int>();
@@ -1377,8 +1377,9 @@ namespace NeoCortexApi.Entities
 
             double threshold = connectedPermanence - EPSILON;
 
+            //
             // Step through all presynaptic cells.
-            foreach (Cell cell in activePresynapticCells)
+            foreach (Cell cell in activeCellsInCurrentCycle)
             {
                 // Then step through all receptor synapses on presynaptic cell.
                 foreach (Synapse synapse in getReceptorSynapses(cell))
@@ -1402,7 +1403,7 @@ namespace NeoCortexApi.Entities
                 }
             }
 
-            return new SegmentActivity() { Active = active, PotentialSynapses = potentialSynapses };
+            return new SegmentActivity() { ActiveSynapses = active, PotentialSynapses = potentialSynapses };
         }
 
 

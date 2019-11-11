@@ -420,7 +420,7 @@ namespace NeoCortexApi
         {
             if (maskPotential.Length < htmConfig.StimulusThreshold)
             {
-                throw new ArgumentException("StimulusThreshold as number of required connected synapses cannot be lgreather than number of neurons in receptive field.");
+                throw new ArgumentException("StimulusThreshold as number of required connected synapses cannot be greather than number of neurons in receptive field.");
             }
 
             ArrayUtils.Clip(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);

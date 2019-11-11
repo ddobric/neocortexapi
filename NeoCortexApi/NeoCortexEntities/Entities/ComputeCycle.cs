@@ -20,9 +20,9 @@ namespace NeoCortexApi.Entities
 
         private static readonly long serialVersionUID = 1L;
 
-        public List<DistalDendrite> activeSegments = new List<DistalDendrite>();
+        public List<DistalDendrite> CctiveSegments = new List<DistalDendrite>();
 
-        public List<DistalDendrite> matchingSegments = new List<DistalDendrite>();
+        public List<DistalDendrite> MatchingSegments = new List<DistalDendrite>();
 
         public ISet<Cell> m_predictiveCells = new LinkedHashSet<Cell>();
 
@@ -53,8 +53,8 @@ namespace NeoCortexApi.Entities
             this.activeCells = new LinkedHashSet<Cell>(c.getWinnerCells());//TODO potential bug. activeCells or winnerCells?!
             this.winnerCells = new LinkedHashSet<Cell>(c.getWinnerCells());
             this.m_predictiveCells = new LinkedHashSet<Cell>(c.getPredictiveCells());
-            this.activeSegments = new List<DistalDendrite>(c.getActiveSegments());
-            this.matchingSegments = new List<DistalDendrite>(c.getMatchingSegments());
+            this.CctiveSegments = new List<DistalDendrite>(c.getActiveSegments());
+            this.MatchingSegments = new List<DistalDendrite>(c.getMatchingSegments());
         }
 
         /**
@@ -78,7 +78,7 @@ namespace NeoCortexApi.Entities
                     Cell previousCell = null;
                     Cell currCell = null;
 
-                    foreach (DistalDendrite activeSegment in activeSegments)
+                    foreach (DistalDendrite activeSegment in CctiveSegments)
                     {
                         if ((currCell = activeSegment.getParentCell()) != previousCell)
                         {
@@ -102,8 +102,8 @@ namespace NeoCortexApi.Entities
             result = prime * result + ((activeCells == null) ? 0 : activeCells.GetHashCode());
             result = prime * result + ((predictiveCells == null) ? 0 : predictiveCells.GetHashCode());
             result = prime * result + ((winnerCells == null) ? 0 : winnerCells.GetHashCode());
-            result = prime * result + ((activeSegments == null) ? 0 : activeSegments.GetHashCode());
-            result = prime * result + ((matchingSegments == null) ? 0 : matchingSegments.GetHashCode());
+            result = prime * result + ((CctiveSegments == null) ? 0 : CctiveSegments.GetHashCode());
+            result = prime * result + ((MatchingSegments == null) ? 0 : MatchingSegments.GetHashCode());
             return result;
         }
 
@@ -141,19 +141,19 @@ namespace NeoCortexApi.Entities
             }
             else if (!winnerCells.Equals(other.winnerCells))
                 return false;
-            if (activeSegments == null)
+            if (CctiveSegments == null)
             {
-                if (other.activeSegments != null)
+                if (other.CctiveSegments != null)
                     return false;
             }
-            else if (!activeSegments.Equals(other.activeSegments))
+            else if (!CctiveSegments.Equals(other.CctiveSegments))
                 return false;
-            if (matchingSegments == null)
+            if (MatchingSegments == null)
             {
-                if (other.matchingSegments != null)
+                if (other.MatchingSegments != null)
                     return false;
             }
-            else if (!matchingSegments.Equals(other.matchingSegments))
+            else if (!MatchingSegments.Equals(other.MatchingSegments))
                 return false;
             return true;
         }

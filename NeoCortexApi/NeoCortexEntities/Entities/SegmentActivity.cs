@@ -15,7 +15,7 @@ namespace NeoCortexApi.Entities
         /// which makes synapse active.
         /// [segment index, number of active synapses].
         /// </summary>
-        public Dictionary<int, int> Active = new Dictionary<int, int>();
+        public Dictionary<int, int> ActiveSynapses = new Dictionary<int, int>();
 
         /// <summary>
         /// Dictionary, which holds the number of potential synapses fro every segment.

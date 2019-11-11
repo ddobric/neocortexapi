@@ -605,8 +605,9 @@ namespace UnitTestsProject
          
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 1);
+            Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 30);
             p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 100 });
+            //p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 5 });
             p = getDefaultParameters(p, KEY.MIN_THRESHOLD, 1);
             p = getDefaultParameters(p, KEY.PERMANENCE_INCREMENT, 0.02);
             p = getDefaultParameters(p, KEY.PERMANENCE_DECREMENT, 0.02);

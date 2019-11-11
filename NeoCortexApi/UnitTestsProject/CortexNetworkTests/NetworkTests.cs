@@ -27,7 +27,7 @@ namespace UnitTestsProject
         /// </summary>
         [TestMethod]
         [TestCategory("NetworkTests")]
-        public void InitTests()
+        public void CategorySequenceExperiment()
         {
             bool learn = true;
             Parameters p = Parameters.getAllDefaultParameters();
@@ -101,7 +101,7 @@ namespace UnitTestsProject
                         Debug.WriteLine($"Predict Input: {cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray())}");
                     }
 
-                    //Debug.WriteLine("-----------------------------------------------------------\n----------------------------------------------------------");
+                    Debug.WriteLine("-----------------------------------------------------------\n----------------------------------------------------------");
                 }
 
                
@@ -248,13 +248,18 @@ namespace UnitTestsProject
         public void SimpleSequenceExperiment()
         {
             int inputBits = 50;
+            //int inputBits = 5;
 
             bool learn = true;
             Parameters p = Parameters.getAllDefaultParameters();
             p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
             p.Set(KEY.INPUT_DIMENSIONS, new int[] { inputBits });
-            p.Set(KEY.CELLS_PER_COLUMN, 100);
+            //p.Set(KEY.CELLS_PER_COLUMN, 100);
+            p.Set(KEY.CELLS_PER_COLUMN, 5);
             p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 500 });
+            //p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 5 });
+            //p.setStimulusThreshold(1);
+            //p.setMinThreshold(1);
 
             CortexNetwork net = new CortexNetwork("my cortex");
             List<CortexRegion> regions = new List<CortexRegion>();
@@ -272,6 +277,7 @@ namespace UnitTestsProject
             Dictionary<string, object> settings = new Dictionary<string, object>()
             {
                 { "W", 7},
+                //{ "W", 1},
                 { "N", inputBits},
                 { "Radius", -1.0},
                 { "MinVal", 0.0},
@@ -282,11 +288,13 @@ namespace UnitTestsProject
             };
 
             double max = 10;
+      
             List<double> lst = new List<double>();
-            for (double i = 0; i < max; i++)
+            for (double i = max - 1; i >= 0; i--)
             {
                 lst.Add(i);
             }
+
             settings["MaxVal"] = max;
 
             EncoderBase encoder = new ScalarEncoder(settings);
@@ -319,6 +327,7 @@ namespace UnitTestsProject
             int cycle = 0;
             int matches = 0;
 
+            double lastPredictedValue = 0;
             //
             // Now, training with SP+TM. SP is pretrained on pattern.
             for (int i = 0; i < 460; i++)
@@ -326,8 +335,6 @@ namespace UnitTestsProject
                 matches = 0;
 
                 cycle++;
-
-                double lastPredictedValue = 0;
 
                 foreach (var input in inputs)
                 {
@@ -364,7 +371,7 @@ namespace UnitTestsProject
                     learn = false;
                 }
 
-                tm1.reset(mem);
+                //tm1.reset(mem);
 
                 Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {inputs.Length}\t {(double)matches / (double)inputs.Length * 100.0}%");
             }
