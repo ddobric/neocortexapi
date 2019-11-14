@@ -4,8 +4,8 @@ import { WebsocketService } from "./websocket.service";
 import { map } from "rxjs/operators";
 import { Cell, Synapse, NeoCortexModel } from '../Entities/NeoCortexModel';
 import { NeoCortexGenerator } from '../Entities/NeoCortexGenerator';
+import { environment as env } from '../../environments/environment.prod';
 
-const URL = "ws://localhost:5000/ws/NeuroVisualizer";
 
 export interface NeoCortexUtils {
   dataModel: any;
@@ -29,7 +29,7 @@ export class NeoCortexUtilsService {
   //{ "msgType": "init", "data": { "clientType": "NeuroVisualizer"} }
   constructor(socketService: WebsocketService) {
 
-    this.data = <Subject<NeoCortexUtils>>socketService.connect(URL).pipe(map(
+    this.data = <Subject<NeoCortexUtils>>socketService.connect(env.URL).pipe(map(
       (response: MessageEvent): NeoCortexUtils => {
         let JSONObject = JSON.parse(response.data);
         /*  return {

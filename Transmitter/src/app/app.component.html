@@ -19,7 +19,7 @@
                 placeholder="MiniColumn Z Dim." required>
             <input [(ngModel)]="updateNeuralColumn.updateOverlap" class="form-control" id="updateOverlap"
                 name="updateOverlap" placeholder="Overlap, ranging 0 to 1" required>
-            <button (click)="updateOverlapInNeuralColumn(); overlapForm.reset()"
+            <button (click)="updateOverlapInNeuralColumn();"
                 [disabled]="!updateNeuralColumn.areaID || !updateNeuralColumn.miniColXDim ||!updateNeuralColumn.updateOverlap ||!updateNeuralColumn.updateOverlap"
                 type="submit" class="btn btn-danger">Update Overlap</button>
         </div>
@@ -37,7 +37,7 @@
                 name="postCell" placeholder="PostCell=> X,Y,Z" required>
             <input [(ngModel)]="updateSynaspse.updatePermanence" class="form-control" id="updatePermanence"
                 name="updatePermanence" placeholder="Perm., ranging 0 to 1" required>
-            <button (click)="updateOrAddSynapse(); synapseForm.reset()"
+            <button (click)="updateOrAddSynapse();"
                 [disabled]="!updateSynaspse.preCellAreaID || !updateSynaspse.postCellAreaID || !updateSynaspse.preCell || !updateSynaspse.postCell || !updateSynaspse.updatePermanence"
                 type="submit" class="btn btn-warning">Update or Add Synapse</button>
         </div>
