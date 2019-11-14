@@ -255,7 +255,7 @@ namespace NeoCortexApi.Entities
 
        
 
-        public abstract T get(int index);
+        public abstract T GetColumn(int index);
 
         public abstract T get(params int[] index);
 

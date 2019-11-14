@@ -413,6 +413,8 @@ namespace NeoCortexApi
             {
                 ArrayUtils.setIndexesTo(activeArray, activeColumns, 1);
             }
+
+            Debug.WriteLine($"SP-OUT: {Helpers.StringifyVector(activeArray)}");
         }
 
         /**

@@ -41,6 +41,7 @@
     <ProjectReference Include="..\NeoCortexArrayLib\NeoCortexArrayLib.csproj" />
     <ProjectReference Include="..\NeoCortexEntities\NeoCortexEntities.csproj" />
     <ProjectReference Include="..\NeoCortexUtils\NeoCortexUtils.csproj" />
+    <ProjectReference Include="..\WebSocketNeuroVisualizer\WebSocketNeuroVisualizer.csproj" />
   </ItemGroup>
 
   <ItemGroup>

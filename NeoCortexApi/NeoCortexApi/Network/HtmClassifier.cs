@@ -9,6 +9,11 @@ using NeoCortexApi.Utility;
 
 namespace NeoCortexApi.Network
 {
+    /// <summary>
+    /// Classifier implementation which memorize all seen values.
+    /// </summary>
+    /// <typeparam name="TIN"></typeparam>
+    /// <typeparam name="TOUT"></typeparam>
     public class HtmClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>
     {
         private List<TIN> inputSequence = new List<TIN>();
@@ -16,10 +21,6 @@ namespace NeoCortexApi.Network
         private Dictionary<int[], int> inputSequenceMap = new Dictionary<int[], int>();
 
         private Dictionary<int[], TIN> activeMap = new Dictionary<int[], TIN>();
-
-        //private Dictionary<int[], TIN> predictMap = new Dictionary<int[], TIN>();
-
-        //private Dictionary<TIN, int[]> activeArray = new Dictionary<TIN, int[]>();
 
         public void Learn(TIN input, Cell[] activeCells, bool learn)
         {
@@ -40,16 +41,6 @@ namespace NeoCortexApi.Network
             {
                 this.activeMap.Add(GetCellIndicies(output), input);
             }
-
-            //if (!activeArray.ContainsKey(input))
-            //{
-            //    this.activeArray.Add(input, GetCellIndicies(output));
-            //}
-
-            //if (!predictMap.ContainsKey(GetCellIndicies(predictedOutput)))
-            //{
-            //    this.predictMap.Add(GetCellIndicies(predictedOutput), input);
-            //}
         }
 
         public void Learn(TIN input, Cell[] output, Cell[] predictedOutput)
@@ -62,16 +53,6 @@ namespace NeoCortexApi.Network
             {
                 this.activeMap.Add(GetCellIndicies(output), input);
             }
-
-            //if (!activeArray.ContainsKey(input))
-            //{
-            //    this.activeArray.Add(input, GetCellIndicies(output));
-            //}
-
-            //if (!predictMap.ContainsKey(GetCellIndicies(predictedOutput)))
-            //{
-            //    this.predictMap.Add(GetCellIndicies(predictedOutput), input);
-            //}
         }
 
 
@@ -126,7 +107,7 @@ namespace NeoCortexApi.Network
                     int numOfSameBits = pair.Key.Intersect(arr).Count();
                     if (numOfSameBits > maxSameBits)
                     {
-                        Debug.WriteLine($"cnt:{n}\t{n}\t{pair.Value} = bits {numOfSameBits}");
+                        Debug.WriteLine($"cnt:{n}\t{pair.Value} = bits {numOfSameBits}\t {Helpers.StringifyVector(pair.Key)}");
                         maxSameBits = numOfSameBits;
                         charOutput = pair.Value;
                         indx = n;
@@ -134,7 +115,7 @@ namespace NeoCortexApi.Network
 
                     n++;
                 }
-
+                
                 Debug.Write("[ ");
                 for (int i = Math.Max(0, indx-3); i < Math.Min(indx + 3, this.activeMap.Keys.Count); i++)
                 {
@@ -171,7 +152,6 @@ namespace NeoCortexApi.Network
             }
         }
         
-
         
         private static byte[] FlatArray(Cell[] output)
         {

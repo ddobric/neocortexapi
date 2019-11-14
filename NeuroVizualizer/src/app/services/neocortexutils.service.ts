@@ -7,6 +7,7 @@ import { NeoCortexGenerator } from '../Entities/NeoCortexGenerator';
 import { environment as env } from '../../environments/environment.prod';
 
 
+
 export interface NeoCortexUtils {
   dataModel: any;
   clientType?: any;

@@ -124,7 +124,7 @@ namespace NeoCortexApi.Entities
         // @Override
         public override T getObject(int index)
         {
-            return get(index);
+            return GetColumn(index);
         }
 
 
@@ -137,7 +137,7 @@ namespace NeoCortexApi.Entities
         // @Override
         public T get(int[] coordinates)
         {
-            return get(computeIndex(coordinates));
+            return GetColumn(computeIndex(coordinates));
         }
 
 
@@ -148,7 +148,7 @@ namespace NeoCortexApi.Entities
          * @return  the T at the specified index.
          */
         // @Override
-        public override T get(int index)
+        public override T GetColumn(int index)
         {
             T val = null;
 

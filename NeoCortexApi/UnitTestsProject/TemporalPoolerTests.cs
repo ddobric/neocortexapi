@@ -105,7 +105,7 @@ namespace UnitTestsProject
             Assert.IsTrue(cc.predictiveCells.SequenceEqual(expectedActiveCells));
 
             ComputeCycle cc2 = tm.Compute(activeColumns, true) as ComputeCycle;
-            Assert.IsTrue(cc2.activeCells.SequenceEqual(expectedActiveCells));
+            Assert.IsTrue(cc2.ActiveCells.SequenceEqual(expectedActiveCells));
         }
 
         [TestMethod]
@@ -122,7 +122,7 @@ namespace UnitTestsProject
 
             ComputeCycle cc = tm.Compute( activeColumns, true) as ComputeCycle;
 
-            Assert.IsTrue(cc.activeCells.SequenceEqual(burstingCells));
+            Assert.IsTrue(cc.ActiveCells.SequenceEqual(burstingCells));
         }
 
 
@@ -145,14 +145,14 @@ namespace UnitTestsProject
             cn.createSynapse(activeSegment, cn.getCell(3), 0.5);
 
             ComputeCycle cc = tm.Compute( previousActiveColumns, true) as ComputeCycle;
-            Assert.IsFalse(cc.activeCells.Count == 0);
-            Assert.IsFalse(cc.winnerCells.Count == 0);
+            Assert.IsFalse(cc.ActiveCells.Count == 0);
+            Assert.IsFalse(cc.WinnerCells.Count == 0);
             Assert.IsFalse(cc.predictiveCells.Count == 0);
 
             int[] zeroColumns = new int[0];
             ComputeCycle cc2 = tm.Compute( zeroColumns, true) as ComputeCycle;
-            Assert.IsTrue(cc2.activeCells.Count == 0);
-            Assert.IsTrue(cc2.winnerCells.Count == 0);
+            Assert.IsTrue(cc2.ActiveCells.Count == 0);
+            Assert.IsTrue(cc2.WinnerCells.Count == 0);
             Assert.IsTrue(cc2.predictiveCells.Count == 0);
         }
 
@@ -183,7 +183,7 @@ namespace UnitTestsProject
             ComputeCycle cc = tm.Compute( previousActiveColumns, false) as ComputeCycle; // learn=false
             cc = tm.Compute( activeColumns, false) as ComputeCycle; // learn=false
 
-            Assert.IsTrue(cc.winnerCells.SequenceEqual(new LinkedHashSet<Cell>(expectedWinnerCells)));
+            Assert.IsTrue(cc.WinnerCells.SequenceEqual(new LinkedHashSet<Cell>(expectedWinnerCells)));
         }
 
 
@@ -359,12 +359,12 @@ namespace UnitTestsProject
 
             ComputeCycle cc = tm.Compute( previousActiveColumns, true) as ComputeCycle;
 
-            ISet<Cell> prevWinnerCells = cc.winnerCells;
+            ISet<Cell> prevWinnerCells = cc.WinnerCells;
             Assert.AreEqual(3, prevWinnerCells.Count);
 
             cc = tm.Compute( activeColumns, true) as ComputeCycle;
 
-            List<Cell> winnerCells = new List<Cell>(cc.winnerCells);
+            List<Cell> winnerCells = new List<Cell>(cc.WinnerCells);
             Assert.AreEqual(1, winnerCells.Count);
 
             List<DistalDendrite> segments = winnerCells[0].getSegments(cn);
@@ -394,12 +394,12 @@ namespace UnitTestsProject
             int[] activeColumns = { 4 };
 
             ComputeCycle cc = tm.Compute( previousActiveColumns, true) as ComputeCycle;
-            List<Cell> prevWinnerCells = new List<Cell>(cc.winnerCells);
+            List<Cell> prevWinnerCells = new List<Cell>(cc.WinnerCells);
             Assert.AreEqual(3, prevWinnerCells.Count);
 
             cc = tm.Compute( activeColumns, true) as ComputeCycle;
 
-            List<Cell> winnerCells = new List<Cell>(cc.winnerCells);
+            List<Cell> winnerCells = new List<Cell>(cc.WinnerCells);
             Assert.AreEqual(1, winnerCells.Count);
             List<DistalDendrite> segments = winnerCells[0].getSegments(cn);
             //List<DistalDendrite> segments = winnerCells[0].Segments;
@@ -436,7 +436,7 @@ namespace UnitTestsProject
             cn.createSynapse(matchingSegment, cn.getCell(0), 0.5);
 
             ComputeCycle cc = tm.Compute( previousActiveColumns, true) as ComputeCycle;
-            Assert.IsTrue(cc.winnerCells.SequenceEqual(prevWinnerCells));
+            Assert.IsTrue(cc.WinnerCells.SequenceEqual(prevWinnerCells));
             cc = tm.Compute( activeColumns, true) as ComputeCycle;
 
             List<Synapse> synapses = cn.getSynapses(matchingSegment);
@@ -473,7 +473,7 @@ namespace UnitTestsProject
             cn.createSynapse(matchingSegment, cn.getCell(0), 0.5);
 
             ComputeCycle cc = tm.Compute( previousActiveColumns, true) as ComputeCycle;
-            Assert.IsTrue(cc.winnerCells.SequenceEqual(prevWinnerCells));
+            Assert.IsTrue(cc.WinnerCells.SequenceEqual(prevWinnerCells));
 
             cc = tm.Compute( activeColumns, true) as ComputeCycle;
 
@@ -521,7 +521,7 @@ namespace UnitTestsProject
             cn.createSynapse(activeSegment, cn.getCell(2), 0.2);
 
             ComputeCycle cc = tm.Compute( previousActiveColumns, true) as ComputeCycle;
-            Assert.IsTrue(prevWinnerCells.SequenceEqual(cc.winnerCells));
+            Assert.IsTrue(prevWinnerCells.SequenceEqual(cc.WinnerCells));
             cc = tm.Compute( activeColumns, true) as ComputeCycle;
 
             List<Cell> presynapticCells = new List<Cell>();
@@ -605,8 +605,9 @@ namespace UnitTestsProject
          
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 1);
+            Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 30);
             p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 100 });
+            //p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 5 });
             p = getDefaultParameters(p, KEY.MIN_THRESHOLD, 1);
             p = getDefaultParameters(p, KEY.PERMANENCE_INCREMENT, 0.02);
             p = getDefaultParameters(p, KEY.PERMANENCE_DECREMENT, 0.02);
@@ -626,7 +627,7 @@ namespace UnitTestsProject
             cn.createSynapse(matchingSegment, cn.getCell(0), 0.11);
 
             ComputeCycle cc = tm.Compute( prevActiveColumns, true) as ComputeCycle;
-            Assert.IsTrue(prevWinnerCells.SequenceEqual(cc.winnerCells));
+            Assert.IsTrue(prevWinnerCells.SequenceEqual(cc.WinnerCells));
             tm.Compute( activeColumns, true) ;
 
             List<Synapse> synapses = cn.getSynapses(matchingSegment);
@@ -799,7 +800,7 @@ namespace UnitTestsProject
                 tm.Compute( prevActiveColumns, true);
                 ComputeCycle cc = tm.Compute( activeColumns, true)as ComputeCycle;
 
-                Assert.IsTrue(cc.activeCells.SequenceEqual(activeCells));
+                Assert.IsTrue(cc.ActiveCells.SequenceEqual(activeCells));
 
                 Assert.AreEqual(3, cn.numSegments());
                 Assert.AreEqual(1, cn.numSegments(cn.getCell(0)));
@@ -831,7 +832,7 @@ namespace UnitTestsProject
                     Assert.AreEqual(0.2, synapse.getPermanence(), 0.01);
 
                     var parentColIndx = synapse.getPresynapticCell().getParentColumnIndex();
-                    Column column = cn.getMemory().get(parentColIndx);
+                    Column column = cn.getMemory().GetColumn(parentColIndx);
                     Assert.IsTrue(columnCheckList.Contains(column));
                     columnCheckList.Remove(column);
                 }

@@ -129,7 +129,7 @@ namespace NeoCortexApi
             Func<Object, Column> segToCol = (segment) =>
             {
                 var colIndx = ((DistalDendrite)segment).getParentCell().getParentColumnIndex();
-                var parentCol = this.connections.getMemory().get(colIndx);
+                var parentCol = this.connections.getMemory().GetColumn(colIndx);
                 return parentCol;
             };
 
@@ -151,6 +151,8 @@ namespace NeoCortexApi
             {
                 columnData = columnData.set(t);
 
+               // Debug.WriteLine($"COLUMN ACTIVE SEGMENTS {columnData.activeSegments.Count}");
+
                 if (columnData.IsExistAnyActiveCol(cIndexofACTIVE_COLUMNS))
                 {
                     // If there some active segment already...
@@ -162,13 +164,15 @@ namespace NeoCortexApi
 
                         foreach (var item in cellsToAdd)
                         {
-                            cycle.activeCells.Add(item);
+                            cycle.ActiveCells.Add(item);
                         }
 
                         foreach (var item in cellsToAdd)
                         {
-                            cycle.winnerCells.Add(item);
+                            cycle.WinnerCells.Add(item);
                         }
+
+                        //Debug.WriteLine($"cellsToAdd {cellsToAdd.Count}");
                     }
                     else
                     {
@@ -183,10 +187,10 @@ namespace NeoCortexApi
                         // Here we activate all cells by putting them to list of active cells.
                         foreach (var item in burstingResult.Cells)
                         {
-                            cycle.activeCells.Add(item);
+                            cycle.ActiveCells.Add(item);
                         }
 
-                        cycle.winnerCells.Add((Cell)burstingResult.BestCell);
+                        cycle.WinnerCells.Add((Cell)burstingResult.BestCell);
                     }
                 }
                 else
@@ -199,13 +203,14 @@ namespace NeoCortexApi
                 }
             }
 
-            int[] arr = new int[cycle.winnerCells.Count];
-            int count = 0;
-            foreach (Cell activeCell in cycle.winnerCells)
-            {
-                arr[count] = activeCell.Index;
-                count++;
-            }
+
+            //int[] arr = new int[cycle.winnerCells.Count];
+            //int count = 0;
+            //foreach (Cell activeCell in cycle.winnerCells)
+            //{
+            //    arr[count] = activeCell.Index;
+            //    count++;
+            //}
 
             return cycle;
         }
@@ -228,11 +233,11 @@ namespace NeoCortexApi
          */
         protected void ActivateDendrites(Connections conn, ComputeCycle cycle, bool learn)
         {
-            SegmentActivity activity = conn.computeActivity(cycle.activeCells, conn.getConnectedPermanence());
+            SegmentActivity activity = conn.ComputeActivity(cycle.ActiveCells, conn.getConnectedPermanence());
 
             int i = 0;
             var activeSegments = new List<DistalDendrite>();
-            foreach (var item in activity.Active)
+            foreach (var item in activity.ActiveSynapses)
             {
                 if (item.Value >= conn.getActivationThreshold())
                     activeSegments.Add(conn.GetSegmentForFlatIdx(item.Key));
@@ -251,16 +256,15 @@ namespace NeoCortexApi
             // Step through all synapses on active cells with permanence over threshold (conencted synapses)
             // and find involved segments.         
             activeSegments.Sort(GetComparer(conn.getNextSegmentOrdinal()));
-            //Collections.sort(activeSegments, conn.segmentPositionSortKey);
+           
             matchingSegments.Sort(GetComparer(conn.getNextSegmentOrdinal()));
-            //Collections.sort(matchingSegments, conn.segmentPositionSortKey);
-
-            cycle.activeSegments = activeSegments;
-            cycle.matchingSegments = matchingSegments;
+           
+            cycle.ActiveSegments = activeSegments;
+            cycle.MatchingSegments = matchingSegments;
 
             conn.lastActivity = activity;
-            conn.setActiveCells(new HashSet<Cell>(cycle.activeCells));
-            conn.setWinnerCells(new HashSet<Cell>(cycle.winnerCells));
+            conn.setActiveCells(new HashSet<Cell>(cycle.ActiveCells));
+            conn.setWinnerCells(new HashSet<Cell>(cycle.WinnerCells));
             conn.setActiveSegments(activeSegments);
             conn.setMatchingSegments(matchingSegments);
             // Forces generation of the predictive cells from the above active segments
@@ -304,44 +308,66 @@ namespace NeoCortexApi
         }
 
         /**
-         * Determines which cells in a predicted column should be added to winner cells
-         * list, and learns on the segments that correctly predicted this column.
-         * 
-         * @param conn                 the connections
-         * @param activeSegments       Active segments in the specified column
-         * @param matchingSegments     Matching segments in the specified column
-         * @param prevActiveCells      Active cells in `t-1`
-         * @param prevWinnerCells      Winner cells in `t-1`
-         * @param learn                If true, grow and reinforce synapses
-         * 
-         * <pre>
-         * Pseudocode:
-         *   for each cell in the column that has an active distal dendrite segment
-         *     mark the cell as active
-         *     mark the cell as a winner cell
-         *     (learning) for each active distal dendrite segment
-         *       strengthen active synapses
-         *       weaken inactive synapses
-         *       grow synapses to previous winner cells
-         * </pre>
-         * 
-         * @return A list of predicted cells that will be added to active cells and winner
-         *         cells.
-         */
-        private List<Cell> ActivatePredictedColumn(Connections conn, List<DistalDendrite> activeSegments,
+ * Determines which cells in a predicted column should be added to winner cells
+ * list, and learns on the segments that correctly predicted this column.
+ * 
+ * @param conn                 the connections
+ * @param activeSegments       Active segments in the specified column
+ * @param matchingSegments     Matching segments in the specified column
+ * @param prevActiveCells      Active cells in `t-1`
+ * @param prevWinnerCells      Winner cells in `t-1`
+ * @param learn                If true, grow and reinforce synapses
+ * 
+ * <pre>
+ * Pseudocode:
+ *   for each cell in the column that has an active distal dendrite segment
+ *     mark the cell as active
+ *     mark the cell as a winner cell
+ *     (learning) for each active distal dendrite segment
+ *       strengthen active synapses
+ *       weaken inactive synapses
+ *       grow synapses to previous winner cells
+ * </pre>
+ * 
+ * @return A list of predicted cells that will be added to active cells and winner
+ *         cells.
+ */
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="conn"></param>
+        /// <param name="columnActiveSegments"></param>
+        /// <param name="matchingSegments"></param>
+        /// <param name="prevActiveCells"></param>
+        /// <param name="prevWinnerCells"></param>
+        /// <param name="permanenceIncrement"></param>
+        /// <param name="permanenceDecrement"></param>
+        /// <param name="learn"></param>
+        /// <returns></returns>
+        private List<Cell> ActivatePredictedColumn(Connections conn, List<DistalDendrite> columnActiveSegments,
             List<DistalDendrite> matchingSegments, ICollection<Cell> prevActiveCells, ICollection<Cell> prevWinnerCells,
                 double permanenceIncrement, double permanenceDecrement, bool learn)
         {
             List<Cell> cellsToAdd = new List<Cell>();
             Cell previousCell = null;
-            Cell currCell;
-           
-            foreach (DistalDendrite segment in activeSegments)
-            {
-                if ((currCell = segment.getParentCell()) != previousCell)
+            Cell segmOwnerCell;
+                    
+            foreach (DistalDendrite segment in columnActiveSegments)
+            {              
+                // TODO
+                // Review this. not only previous cell should be consiered.
+                // We sold rather here consider all current list and look if the cell is already in.
+                segmOwnerCell = segment.getParentCell();
+                if ( segmOwnerCell != previousCell)
                 {
-                    cellsToAdd.Add(currCell);
-                    previousCell = currCell;
+                    cellsToAdd.Add(segmOwnerCell);
+                    previousCell = segmOwnerCell;
+                }
+                else
+                { 
+                
                 }
 
                 if (learn)
@@ -358,6 +384,12 @@ namespace NeoCortexApi
                     }
                 }
             }
+
+            //foreach (var cell in cellsToAdd)
+            //{
+            //    var cnt = cellsToAdd.Count(c => c.Index == cell.Index);
+            //    Debug.WriteLine($"SAME CELLS = {cell.Index} - {cnt}");
+            //}
 
             return cellsToAdd;
         }
