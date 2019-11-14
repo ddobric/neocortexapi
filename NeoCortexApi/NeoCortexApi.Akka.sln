@@ -35,6 +35,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexEntities", "NeoCor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AkkaSb.Net", "AkkaSb.Net\AkkaSb.Net.csproj", "{A3B8131A-DA87-44BB-A0A4-BD683383E984}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebSocketNeuroVisualizer", "WebSocketNeuroVisualizer\WebSocketNeuroVisualizer.csproj", "{414D1FFF-BA4B-49B0-B7B1-4AEDB2F7689D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,10 @@ Global
 		{A3B8131A-DA87-44BB-A0A4-BD683383E984}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A3B8131A-DA87-44BB-A0A4-BD683383E984}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A3B8131A-DA87-44BB-A0A4-BD683383E984}.Release|Any CPU.Build.0 = Release|Any CPU
+		{414D1FFF-BA4B-49B0-B7B1-4AEDB2F7689D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{414D1FFF-BA4B-49B0-B7B1-4AEDB2F7689D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{414D1FFF-BA4B-49B0-B7B1-4AEDB2F7689D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{414D1FFF-BA4B-49B0-B7B1-4AEDB2F7689D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -8,6 +8,8 @@ using NeoCortexApi.Network;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
 using System.Diagnostics;
+using NeoCortexEntities.NeuroVisualizer;
+using WebSocketNeuroVisualizer;
 
 namespace UnitTestsProject
 {
@@ -90,7 +92,7 @@ namespace UnitTestsProject
                     var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
                     //cls1.Learn(input, lyrOut.activeCells.ToArray(), learn);
                     //Debug.WriteLine($"Current Input: {input}");
-                    cls.Learn(input, lyrOut.activeCells.ToArray(), lyrOut.predictiveCells.ToArray());
+                    cls.Learn(input, lyrOut.ActiveCells.ToArray(), lyrOut.predictiveCells.ToArray());
                     Debug.WriteLine($"Current Input: {input}");
                     if (learn == false)
                     {
@@ -104,14 +106,14 @@ namespace UnitTestsProject
                     Debug.WriteLine("-----------------------------------------------------------\n----------------------------------------------------------");
                 }
 
-               
+
                 if (i == 10)
                 {
                     Debug.WriteLine("Stop Learning From Here----------------------------");
                     learn = false;
                 }
 
-               // tm1.reset(mem);
+                // tm1.reset(mem);
             }
 
             Debug.WriteLine("------------------------------------------------------------------------\n----------------------------------------------------------------------------");
@@ -187,7 +189,7 @@ namespace UnitTestsProject
             layer1.HtmModules.Add(sp1);
 
             HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
-       
+
             double[] inputs = lst.ToArray();
 
             //
@@ -212,14 +214,14 @@ namespace UnitTestsProject
                 {
                     var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
 
-                    cls.Learn(input, lyrOut.activeCells.ToArray(), lyrOut.predictiveCells.ToArray());
+                    cls.Learn(input, lyrOut.ActiveCells.ToArray(), lyrOut.predictiveCells.ToArray());
 
                     Debug.WriteLine($"-------------- {input} ---------------");
-                   
+
                     if (learn == false)
                         Debug.WriteLine($"Inference mode");
 
-                    Debug.WriteLine($"W: {Helpers.StringifyVector(lyrOut.winnerCells.Select(c => c.Index).ToArray())}");
+                    Debug.WriteLine($"W: {Helpers.StringifyVector(lyrOut.WinnerCells.Select(c => c.Index).ToArray())}");
                     Debug.WriteLine($"P: {Helpers.StringifyVector(lyrOut.predictiveCells.Select(c => c.Index).ToArray())}");
 
                     Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray())}");
@@ -288,7 +290,7 @@ namespace UnitTestsProject
             };
 
             double max = 10;
-      
+
             List<double> lst = new List<double>();
             for (double i = max - 1; i >= 0; i--)
             {
@@ -340,17 +342,19 @@ namespace UnitTestsProject
                 {
                     var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
 
-                    cls.Learn(input, lyrOut.activeCells.ToArray(), lyrOut.predictiveCells.ToArray());
+                    cls.Learn(input, lyrOut.ActiveCells.ToArray(), lyrOut.predictiveCells.ToArray());
 
                     Debug.WriteLine($"-------------- {input} ---------------");
 
                     if (learn == false)
                         Debug.WriteLine($"Inference mode");
 
-                    Debug.WriteLine($"W: {Helpers.StringifyVector(lyrOut.winnerCells.Select(c => c.Index).ToArray())}");
+                    Debug.WriteLine($"W: {Helpers.StringifyVector(lyrOut.WinnerCells.Select(c => c.Index).ToArray())}");
                     Debug.WriteLine($"P: {Helpers.StringifyVector(lyrOut.predictiveCells.Select(c => c.Index).ToArray())}");
 
-                    Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray())}");
+                    var predictedValue = cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray());
+
+                    Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {predictedValue}");
 
                     if (input == lastPredictedValue)
                     {
@@ -360,9 +364,7 @@ namespace UnitTestsProject
                     else
                         Debug.WriteLine($"Missmatch Actual value: {input} - Predicted value: {lastPredictedValue}");
 
-                    cls.Learn(input, lyrOut.activeCells.ToArray(), lyrOut.predictiveCells.ToArray());
-
-                    lastPredictedValue = cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray());
+                    lastPredictedValue = predictedValue;
                 }
 
                 if (i == 500)
@@ -379,6 +381,176 @@ namespace UnitTestsProject
             cls.TraceState();
 
             Debug.WriteLine("------------------------------------------------------------------------\n----------------------------------------------------------------------------");
+        }
+
+
+
+        /// <summary>
+        ///
+        /// </summary>
+        [TestMethod]
+        [TestCategory("NetworkTests")]
+        [TestCategory("Experiment")]
+        public void MusicNotesExperiment()
+        {
+            int inputBits = 100;
+            int numColumns = 2048;
+            Parameters p = Parameters.getAllDefaultParameters();
+            p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
+            p.Set(KEY.INPUT_DIMENSIONS, new int[] { inputBits });
+            p.Set(KEY.CELLS_PER_COLUMN, 10);
+            p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
+
+            // N of 40 (40= 0.02*2048 columns) active cells required to activate the segment.
+            p.setActivationThreshold(10);
+            p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
+            p.setInhibitionRadius(15);
+
+            // Max number of synapses on the segment.
+            p.setMaxNewSynapseCount((int)(0.02 * numColumns));
+            double max = 8;
+
+            Dictionary<string, object> settings = new Dictionary<string, object>()
+            {
+                { "W", 15},
+                { "N", inputBits},
+                { "Radius", -1.0},
+                { "MinVal", 0.0},
+                { "Periodic", false},
+                { "Name", "scalar"},
+                { "ClipInput", false},
+                { "MaxVal", max}
+            };
+
+            EncoderBase encoder = new ScalarEncoder(settings);
+
+            //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 2.0, 0.0, 0.1, 2.0 });
+            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0 });
+
+            RunExperiment(inputBits, p, encoder, inputValues);
+        }
+
+
+        /// <summary>
+        ///
+        /// </summary>
+        private void RunExperiment(int inputBits, Parameters p, EncoderBase encoder, List<double> inputValues)
+        {
+            bool learn = true;
+
+            CortexNetwork net = new CortexNetwork("my cortex");
+            List<CortexRegion> regions = new List<CortexRegion>();
+            CortexRegion region0 = new CortexRegion("1st Region");
+
+            regions.Add(region0);
+
+            SpatialPoolerMT sp1 = new SpatialPoolerMT();
+            TemporalMemory tm1 = new TemporalMemory();
+            var mem = new Connections();
+            p.apply(mem);
+            sp1.init(mem, UnitTestHelpers.GetMemory());
+            tm1.init(mem);
+
+            CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
+
+            //
+            // NewBorn learning stage.
+            region0.AddLayer(layer1);
+            layer1.HtmModules.Add(encoder);
+            layer1.HtmModules.Add(sp1);
+
+            HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
+
+            double[] inputs = inputValues.ToArray();
+
+            //
+            // This trains SP.
+            foreach (var input in inputs)
+            {
+                Debug.WriteLine($" ** {input} **");
+                for (int i = 0; i < 3; i++)
+                {
+                    var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
+                }
+            }
+
+            // Here we add TM module to the layer.
+            layer1.HtmModules.Add(tm1);
+
+            int cycle = 0;
+            int matches = 0;
+
+            double lastPredictedValue = 0;
+
+            //
+            // Now, training with SP+TM. SP is pretrained on pattern.
+            for (int i = 0; i < 460; i++)
+            {
+                matches = 0;
+
+                cycle++;
+
+                Debug.WriteLine($"-------------- Cycle {cycle} ---------------");
+
+                foreach (var input in inputs)
+                {
+                    Debug.WriteLine($"-------------- {input} ---------------");
+
+                    var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
+
+                    cls.Learn(input, lyrOut.ActiveCells.ToArray(), lyrOut.predictiveCells.ToArray());
+
+                    if (learn == false)
+                        Debug.WriteLine($"Inference mode");
+
+                    Debug.WriteLine($"W: {Helpers.StringifyVector(lyrOut.WinnerCells.Select(c => c.Index).ToArray())}");
+                    Debug.WriteLine($"P: {Helpers.StringifyVector(lyrOut.predictiveCells.Select(c => c.Index).ToArray())}");
+
+                    if (input == lastPredictedValue)
+                    {
+                        matches++;
+                        Debug.WriteLine($"Match {input}");
+                    }
+                    else
+                        Debug.WriteLine($"Missmatch Actual value: {input} - Predicted value: {lastPredictedValue}");
+
+                    if (lyrOut.predictiveCells.Count > 0)
+                    {
+                        var predictedInputValue = cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray());
+
+                        Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {predictedInputValue}");
+
+                        lastPredictedValue = predictedInputValue;
+                    }
+                    else
+                        Debug.WriteLine($"NO CELLS PREDICTED for next cycle.");
+                }
+
+
+                if (i == 500)
+                {
+                    Debug.WriteLine("Stop Learning From Here. Entering inference mode.");
+                    learn = false;
+                }
+
+                //tm1.reset(mem);
+
+                Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {inputs.Length}\t {(double)matches / (double)inputs.Length * 100.0}%");
+            }
+
+            cls.TraceState();
+
+            Debug.WriteLine("------------------------------------------------------------------------\n----------------------------------------------------------------------------");
+        }
+
+
+        [TestMethod]
+        public void Abc()
+        {
+            INeuroVisualizer vis = new WSNeuroVisualizer();
+
+            //vis.InitModel();
+            //vis.UpdateColumnOverlaps
         }
     }
 }

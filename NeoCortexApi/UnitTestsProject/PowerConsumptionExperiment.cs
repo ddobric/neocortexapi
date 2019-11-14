@@ -167,13 +167,13 @@ namespace UnitTestsProject
                             else
                                 Debug.WriteLine($"Missmatch Actual value: {input} - Predicted value: {lastPredictedValue}");
 
-                            cls.Learn(input, lyrOut.activeCells.ToArray(), lyrOut.predictiveCells.ToArray());
+                            cls.Learn(input, lyrOut.ActiveCells.ToArray(), lyrOut.predictiveCells.ToArray());
 
                             lastPredictedValue = cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray());
 
                             sw.WriteLine($"{tokens[0]};{input.ToString(CultureInfo.InvariantCulture)};{lastPredictedValue.ToString(CultureInfo.InvariantCulture)}");
 
-                            Debug.WriteLine($"W: {Helpers.StringifyVector(lyrOut.winnerCells.Select(c => c.Index).ToArray())}");
+                            Debug.WriteLine($"W: {Helpers.StringifyVector(lyrOut.WinnerCells.Select(c => c.Index).ToArray())}");
                             Debug.WriteLine($"P: {Helpers.StringifyVector(lyrOut.predictiveCells.Select(c => c.Index).ToArray())}");
                             Debug.WriteLine($"Current input: {input} Predicted Input: {lastPredictedValue}");
 

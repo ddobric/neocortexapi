@@ -164,12 +164,12 @@ namespace NeoCortexApi
 
                         foreach (var item in cellsToAdd)
                         {
-                            cycle.activeCells.Add(item);
+                            cycle.ActiveCells.Add(item);
                         }
 
                         foreach (var item in cellsToAdd)
                         {
-                            cycle.winnerCells.Add(item);
+                            cycle.WinnerCells.Add(item);
                         }
 
                         //Debug.WriteLine($"cellsToAdd {cellsToAdd.Count}");
@@ -187,10 +187,10 @@ namespace NeoCortexApi
                         // Here we activate all cells by putting them to list of active cells.
                         foreach (var item in burstingResult.Cells)
                         {
-                            cycle.activeCells.Add(item);
+                            cycle.ActiveCells.Add(item);
                         }
 
-                        cycle.winnerCells.Add((Cell)burstingResult.BestCell);
+                        cycle.WinnerCells.Add((Cell)burstingResult.BestCell);
                     }
                 }
                 else
@@ -233,7 +233,7 @@ namespace NeoCortexApi
          */
         protected void ActivateDendrites(Connections conn, ComputeCycle cycle, bool learn)
         {
-            SegmentActivity activity = conn.ComputeActivity(cycle.activeCells, conn.getConnectedPermanence());
+            SegmentActivity activity = conn.ComputeActivity(cycle.ActiveCells, conn.getConnectedPermanence());
 
             int i = 0;
             var activeSegments = new List<DistalDendrite>();
@@ -259,12 +259,12 @@ namespace NeoCortexApi
            
             matchingSegments.Sort(GetComparer(conn.getNextSegmentOrdinal()));
            
-            cycle.CctiveSegments = activeSegments;
+            cycle.ActiveSegments = activeSegments;
             cycle.MatchingSegments = matchingSegments;
 
             conn.lastActivity = activity;
-            conn.setActiveCells(new HashSet<Cell>(cycle.activeCells));
-            conn.setWinnerCells(new HashSet<Cell>(cycle.winnerCells));
+            conn.setActiveCells(new HashSet<Cell>(cycle.ActiveCells));
+            conn.setWinnerCells(new HashSet<Cell>(cycle.WinnerCells));
             conn.setActiveSegments(activeSegments);
             conn.setMatchingSegments(matchingSegments);
             // Forces generation of the predictive cells from the above active segments

@@ -17,43 +17,51 @@ namespace NeoCortexApi.Entities
      */
     public class ComputeCycle : IEquatable<object>, NeoCortexApi.IModuleData
     {
+        /// <summary>
+        /// Segment is understood as active one if the number of connected synapses (with permanence value higher than specified connected permanence threshold) 
+        /// of active cells on that segment, is higher than segment activation threshold.
+        /// </summary>
+        public List<DistalDendrite> ActiveSegments = new List<DistalDendrite>();
 
-        private static readonly long serialVersionUID = 1L;
-
-        public List<DistalDendrite> CctiveSegments = new List<DistalDendrite>();
-
+        /// <summary>
+        /// Segment is understood as matching one if number of synapses of active cells on that segment 
+        /// is higher than specified segment minimum threshold value.
+        /// </summary>
         public List<DistalDendrite> MatchingSegments = new List<DistalDendrite>();
 
-        public ISet<Cell> m_predictiveCells = new LinkedHashSet<Cell>();
+        /// <summary>
+        /// During temporal learning process, dendrite segments are declared as active, 
+        /// if the number of active synapses (permanence higher than connectedPermanence) on that segment is higher than activationThreshold value.
+        /// A Cell is by default in predictive state (depolarized state) if it owns the active dendrite segment.
+        /// </summary>
+        public ISet<Cell> PredictiveCells = new LinkedHashSet<Cell>();
 
         /// <summary>
         /// Gets the list of active cells.
         /// </summary>
-        public ISet<Cell> activeCells { get; set; } = new LinkedHashSet<Cell>();
+        public ISet<Cell> ActiveCells { get; set; } = new LinkedHashSet<Cell>();
 
         /// <summary>
         /// Gets the list of winner cells.
         /// </summary>
-        public ISet<Cell> winnerCells { get; set; } = new LinkedHashSet<Cell>();
+        public ISet<Cell> WinnerCells { get; set; } = new LinkedHashSet<Cell>();
 
-        /**
-         * Constructs a new {@code ComputeCycle}
-         */
+        /// <summary>
+        /// 
+        /// </summary>
         public ComputeCycle() { }
 
-        /**
-         * Constructs a new {@code ComputeCycle} initialized with
-         * the connections relevant to the current calling {@link Thread} for
-         * the specified {@link TemporalMemory}
-         * 
-         * @param   c       the current connections state of the TemporalMemory
-         */
+       
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="c"></param>
         public ComputeCycle(Connections c)
         {
-            this.activeCells = new LinkedHashSet<Cell>(c.getWinnerCells());//TODO potential bug. activeCells or winnerCells?!
-            this.winnerCells = new LinkedHashSet<Cell>(c.getWinnerCells());
-            this.m_predictiveCells = new LinkedHashSet<Cell>(c.getPredictiveCells());
-            this.CctiveSegments = new List<DistalDendrite>(c.getActiveSegments());
+            this.ActiveCells = new LinkedHashSet<Cell>(c.getWinnerCells());//TODO potential bug. activeCells or winnerCells?!
+            this.WinnerCells = new LinkedHashSet<Cell>(c.getWinnerCells());
+            this.PredictiveCells = new LinkedHashSet<Cell>(c.getPredictiveCells());
+            this.ActiveSegments = new List<DistalDendrite>(c.getActiveSegments());
             this.MatchingSegments = new List<DistalDendrite>(c.getMatchingSegments());
         }
 
@@ -73,21 +81,21 @@ namespace NeoCortexApi.Entities
         {
             get
             {
-                if (m_predictiveCells == null || m_predictiveCells.Count == 0)
+                if (PredictiveCells == null || PredictiveCells.Count == 0)
                 {
                     Cell previousCell = null;
                     Cell currCell = null;
 
-                    foreach (DistalDendrite activeSegment in CctiveSegments)
+                    foreach (DistalDendrite activeSegment in ActiveSegments)
                     {
                         if ((currCell = activeSegment.getParentCell()) != previousCell)
                         {
-                            m_predictiveCells.Add(previousCell = currCell);
+                            PredictiveCells.Add(previousCell = currCell);
                         }
                     }
                 }
 
-                return m_predictiveCells;
+                return PredictiveCells;
             }
         }
 
@@ -99,10 +107,10 @@ namespace NeoCortexApi.Entities
         {
             int prime = 31;
             int result = 1;
-            result = prime * result + ((activeCells == null) ? 0 : activeCells.GetHashCode());
+            result = prime * result + ((ActiveCells == null) ? 0 : ActiveCells.GetHashCode());
             result = prime * result + ((predictiveCells == null) ? 0 : predictiveCells.GetHashCode());
-            result = prime * result + ((winnerCells == null) ? 0 : winnerCells.GetHashCode());
-            result = prime * result + ((CctiveSegments == null) ? 0 : CctiveSegments.GetHashCode());
+            result = prime * result + ((WinnerCells == null) ? 0 : WinnerCells.GetHashCode());
+            result = prime * result + ((ActiveSegments == null) ? 0 : ActiveSegments.GetHashCode());
             result = prime * result + ((MatchingSegments == null) ? 0 : MatchingSegments.GetHashCode());
             return result;
         }
@@ -120,12 +128,12 @@ namespace NeoCortexApi.Entities
             if (this.GetType() != obj.GetType())
                 return false;
             ComputeCycle other = (ComputeCycle)obj;
-            if (activeCells == null)
+            if (ActiveCells == null)
             {
-                if (other.activeCells != null)
+                if (other.ActiveCells != null)
                     return false;
             }
-            else if (!activeCells.Equals(other.activeCells))
+            else if (!ActiveCells.Equals(other.ActiveCells))
                 return false;
             if (predictiveCells == null)
             {
@@ -134,19 +142,19 @@ namespace NeoCortexApi.Entities
             }
             else if (!predictiveCells.Equals(other.predictiveCells))
                 return false;
-            if (winnerCells == null)
+            if (WinnerCells == null)
             {
-                if (other.winnerCells != null)
+                if (other.WinnerCells != null)
                     return false;
             }
-            else if (!winnerCells.Equals(other.winnerCells))
+            else if (!WinnerCells.Equals(other.WinnerCells))
                 return false;
-            if (CctiveSegments == null)
+            if (ActiveSegments == null)
             {
-                if (other.CctiveSegments != null)
+                if (other.ActiveSegments != null)
                     return false;
             }
-            else if (!CctiveSegments.Equals(other.CctiveSegments))
+            else if (!ActiveSegments.Equals(other.ActiveSegments))
                 return false;
             if (MatchingSegments == null)
             {

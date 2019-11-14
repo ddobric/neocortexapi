@@ -168,13 +168,14 @@ namespace NeoCortexApi.Entities
             return ProximalDendrite;
         }
 
-        /**
-         * This method creates connections between columns and inputs.
-         * It delegates the potential synapse creation to the one {@link ProximalDendrite}.
-         * 
-         * @param c						the {@link Connections} memory
-         * @param inputVectorIndexes	indexes specifying the input vector bit
-         */
+
+        /// <summary>
+        /// Creates connections between columns and inputs.
+        /// </summary>
+        /// <param name="htmConfig"></param>
+        /// <param name="inputVectorIndexes"></param>
+        /// <param name="startSynapseIndex"></param>
+        /// <returns></returns>
         public Pool CreatePotentialPool(HtmConfig htmConfig, int[] inputVectorIndexes, int startSynapseIndex)
         {
             //var pool = ProximalDendrite.createPool(c, inputVectorIndexes);

@@ -2112,7 +2112,7 @@ namespace NeoCortexApi.Entities
         }
 
         /**
-         * Returns the minimum threshold of active synapses to be picked as best.
+         * Returns the minimum threshold of the number of active synapses to be picked as best.
          * @return
          */
         public int getMinThreshold()
