@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject, Observer } from "rxjs";
+import { ViewportScroller } from '@angular/common';
 
 
 @Injectable({
@@ -31,6 +32,8 @@ export class WebsocketService {
       ws.onclose = obs.complete.bind(obs);
       return ws.close.bind(ws);
     });
+
+
     let observer = {
       next: (data: Object) => {
         if (ws.readyState === WebSocket.OPEN) {
@@ -40,5 +43,6 @@ export class WebsocketService {
     };
     return Subject.create(observer, observable);
   }
+
 
 }

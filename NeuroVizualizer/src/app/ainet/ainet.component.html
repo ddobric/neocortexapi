@@ -8,16 +8,16 @@
   <form #overlapFilterForm="ngForm">
     <input [(ngModel)]="overlapInterval" class="form-control input-sm" id="overlapInterval" name="overlapInterval"
       placeholder="[a... b]" required>
-    <button [disabled]="!overlapInterval" type="submit" id="overlapIntervalButton"
-      (click)='filterOverlap(); overlapFilterForm.reset()' class="btn btn-success  mr-4 ">Filter
+    <button [disabled]="!overlapInterval" type="submit" id="overlapIntervalButton" (click)='filterOverlap();'
+      class="btn btn-success  mr-4 ">Filter
       overlap</button>
   </form>
 
   <form #permanenceFilterForm="ngForm">
     <input [(ngModel)]="permanenceInterval" class="form-control input-sm" id="filterPermanence" name="filterPermanence"
       placeholder="[a... b]" required>
-    <button [disabled]="!permanenceInterval" type="submit" (click)="filterPermanence(); permanenceFilterForm.reset()"
-      id="filterPermanence" class="btn btn-warning mr-4  ">Filter
+    <button [disabled]="!permanenceInterval" type="submit" (click)="filterPermanence();" id="filterPermanence"
+      class="btn btn-warning mr-4  ">Filter
       Permanence</button>
   </form>
 
@@ -26,9 +26,8 @@
       name="showOutInSynaps" required>
     <input maxlength="5" [(ngModel)]="showSynapses" class="form-control" id="cell" name="cell"
       placeholder="Cell=> X,Y,Z" required>
-    <button [disabled]="!cellAreaId && !showSynapses" type="submit"
-      (click)="showOutgoingIncomingSynapses(); showSynapsesForm.reset()" id="showOutInSynaps" name="showOutInSynaps"
-      class="btn btn-info mr-4  ">
+    <button [disabled]="!cellAreaId && !showSynapses" type="submit" (click)="showOutgoingIncomingSynapses();"
+      id="showOutInSynaps" name="showOutInSynaps" class="btn btn-info mr-4  ">
       Out/in Synapses</button>
   </form>
 
