@@ -1376,12 +1376,16 @@ namespace NeoCortexApi.Entities
             int[] numActivePotentialSynapsesForSegment = new int[nextFlatIdx];
 
             double threshold = connectedPermanence - EPSILON;
-
-            //
-            // Step through all presynaptic cells.
+           
+            // Step through all currently active cells.
             foreach (Cell cell in activeCellsInCurrentCycle)
             {
-                // Then step through all receptor synapses on presynaptic cell.
+                //
+                // This cell is the active in the current cycle. As any other cell, this cell 
+                // is a presynaptic cell, which points to some other cell, which is expected as 
+                // active in the next cycle. Receptor synapses connect this 'cell' to the cell,
+                // which is predicted to be active in the nexxt cycle.
+                // Then we step through all receptor synapses on presynaptic cell.
                 foreach (Synapse synapse in getReceptorSynapses(cell))
                 {
                     int segFlatIndx = synapse.getSegment().getIndex();
@@ -1799,6 +1803,12 @@ namespace NeoCortexApi.Entities
          * @return          the mapping of {@link Cell}s to their reverse mapped
          *                  {@link Synapse}s.
          */
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cell"></param>
+        /// <returns></returns>
         public LinkedHashSet<Synapse> getReceptorSynapses(Cell cell)
         {
             return getReceptorSynapses(cell, false);
@@ -1951,10 +1961,11 @@ namespace NeoCortexApi.Entities
             this.winnerCells = cells;
         }
 
-        /**
-         * Returns the {@link Set} of predictive cells.
-         * @return
-         */
+      
+        /// <summary>
+        /// Generates the list of predictive cells from parent cells of active segments.
+        /// </summary>
+        /// <returns></returns>
         public ISet<Cell> getPredictiveCells()
         {
             if (predictiveCells.Count == 0)

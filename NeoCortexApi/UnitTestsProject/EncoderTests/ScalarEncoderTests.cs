@@ -171,15 +171,15 @@ namespace UnitTestsProject.EncoderTests
             //Assert.IsTrue(expectedResult.SequenceEqual(result));
         }
 
-
+        /// <summary>
+        /// Encodes a set of numbers and produces bitmap output.
+        /// </summary>
         [TestMethod]      
         public void ScalarEncodingExperiment()
         {
             string outFolder = nameof(ScalarEncodingExperiment);
 
             Directory.CreateDirectory(outFolder);
-
-            CortexNetworkContext ctx = new CortexNetworkContext();
 
             DateTime now = DateTime.Now;
 

@@ -45,7 +45,7 @@ namespace UnitTestsProject
             return new int[] { 1 };
         }
 
-        public override int[] inhibitColumnsLocal(Connections c, double[] overlap, double density)
+        public override int[] InhibitColumnsLocal(Connections c, double[] overlap, double density)
         {
             m_CallBackLocal?.Invoke(density);
             //setGlobalCalled(true);

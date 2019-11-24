@@ -20,8 +20,11 @@ namespace UnitTestsProject
     {
         private const int OutImgSize = 1024;
 
+
+     
         [TestMethod]
         [TestCategory("LongRunning")]
+        [TestCategory("Experiment")]
         public void StableOutputOnSameInputTest()
         {
             var parameters = GetDefaultParams();
@@ -44,7 +47,7 @@ namespace UnitTestsProject
             //intList.Clear();
 
             //List<int> intList = new List<int>();
-            
+
 
             int[] inputVector = new int[1024];
 
@@ -68,7 +71,7 @@ namespace UnitTestsProject
             {
                 //sp.compute( inputVector, activeArray, true);
                 var activeArray = sp.Compute(inputVector, true) as int[];
-                
+
                 var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 
                 var str = Helpers.StringifyVector(activeCols);
@@ -80,6 +83,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("LongRunning")]
+        [TestCategory("Experiment")]
         public void NoiseTest()
         {
             const int colDimSize = 64;
@@ -121,7 +125,7 @@ namespace UnitTestsProject
             int vectorIndex = 0;
 
             int[][] activeArrayWithZeroNoise = new int[inputVectors.Count][];
-           
+
             foreach (var inputVector in inputVectors)
             {
                 var x = getNumBits(inputVector);
@@ -155,8 +159,8 @@ namespace UnitTestsProject
                     for (int i = 0; i < 10; i++)
                     {
                         //sp.compute( noisedInput, activeArray, true);
-                        activeArray = sp.Compute(noisedInput, true, returnActiveColIndiciesOnly:false) as int[];
-                   
+                        activeArray = sp.Compute(noisedInput, true, returnActiveColIndiciesOnly: false) as int[];
+
                         if (j > 0)
                             Debug.WriteLine($"{ MathHelpers.GetHammingDistance(activeArrayWithZeroNoise[vectorIndex], activeArray, true)} -> {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
                     }
@@ -204,7 +208,7 @@ namespace UnitTestsProject
 
                 int[] activeArray = new int[64 * 64];
 
-                sp.compute( noisedInput, activeArray, false);
+                sp.compute(noisedInput, activeArray, false);
 
                 var dist = MathHelpers.GetHammingDistance(activeArrayWithZeroNoise[vectorIndex], activeArray, true);
                 Debug.WriteLine($"Result for vector {vectorIndex++} with noise {noise} - Ham Dist: {dist}");
@@ -286,7 +290,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < 100; i++)
             {
-                sp.compute( inputVector, activeArray, true);
+                sp.compute(inputVector, activeArray, true);
 
                 var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 
@@ -319,7 +323,7 @@ namespace UnitTestsProject
 
             int[] inputVector = Helpers.GetRandomVector(1000, parameters.Get<Random>(KEY.RANDOM));
 
-            sp.compute( inputVector, activeArray, true);
+            sp.compute(inputVector, activeArray, true);
 
             var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 
@@ -401,9 +405,9 @@ namespace UnitTestsProject
             parameters.apply(mem);
             sp.init(mem);
             //int[] inputVector = NeoCortexUtils.ReadCsvFileTest("Testfiles\\digit8_binary_32bit.txt").ToArray();
-           // var inputString = Helpers.StringifyVector(inputVector);
+            // var inputString = Helpers.StringifyVector(inputVector);
             //Debug.WriteLine("Input Array: " + inputString);
-            int[] inputVector = new int[] { 1, 0, 0, 0, 1, 1, 1, 0, 1, 1};
+            int[] inputVector = new int[] { 1, 0, 0, 0, 1, 1, 1, 0, 1, 1 };
             int[] activeArray = new int[32 * 32];
             //int iteration = -1;
             String str = "";
@@ -417,8 +421,8 @@ namespace UnitTestsProject
                 var strInhibitions = Helpers.StringifyVector(inhibitions);
 
                 activeArray = sp.Compute(inputVector, true) as int[];
-               
-               //Debug.WriteLine(result);
+
+                //Debug.WriteLine(result);
                 //sp.compute( inputVector, activeArray, true);
 
                 var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
@@ -501,7 +505,7 @@ namespace UnitTestsProject
                                 int[] oldArray = new int[activeArray.Length];
                                 for (int k = 0; k < iterations; k++)
                                 {
-                                    sp.compute( inputVector, activeArray, true);
+                                    sp.compute(inputVector, activeArray, true);
 
                                     var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
                                     var distance = MathHelpers.GetHammingDistance(oldArray, activeArray);

@@ -10,6 +10,9 @@ using UnitTestsProject.EncoderTests;
 
 namespace UnitTestsProject
 {
+    /// <summary>
+    /// NOT USED!
+    /// </summary>
     [TestClass]
     public class SensorTests 
     {
