@@ -7,10 +7,10 @@ namespace NeoCortexEntities.NeuroVisualizer
 {
     public interface INeuroVisualizer
     {
-        Task InitModel(NeuroModel model);
+        Task InitModelAsync(NeuroModel model);
         
-        Task UpdateColumnOverlaps(List<ColumnData> columns );
+        Task UpdateColumnOverlapsAsync(List<ColumnData> columns );
 
-        Task UpdateSynapses(List<SynapseData> synapses);
+        Task UpdateSynapsesAsync(List<SynapseData> synapses);
     }
 }

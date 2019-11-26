@@ -551,6 +551,8 @@ namespace UnitTestsProject
 
             //vis.InitModel();
             //vis.UpdateColumnOverlaps
+            List<ColumnData> colData = new List<ColumnData>();
+            vis.UpdateColumnOverlapsAsync(colData);
         }
     }
 }

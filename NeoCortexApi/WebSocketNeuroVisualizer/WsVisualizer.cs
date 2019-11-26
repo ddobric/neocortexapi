@@ -3,31 +3,57 @@ using NeoCortexEntities.NeuroVisualizer;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 namespace WebSocketNeuroVisualizer
 {
- 
+
     public class WSNeuroVisualizer : INeuroVisualizer
     {
-        string url = "ws://localhost:5011/ws/client1";
 
-        public Task InitModel(NeuroModel model)
+        static string ipAddress = "ws://localhost:";
+        static string port = "5011/";
+        static string route = "ws/";
+        static string clientName = "client1";
+        readonly string url = string.Concat(ipAddress, port, route, clientName);
+        //readonly string url = "ws://localhost:5011/ws/client1";
+
+        ClientWebSocket websocket = new ClientWebSocket();
+        string msgType = "";
+
+        public async Task InitModelAsync(NeuroModel model)
         {
-            throw new NotImplementedException();
+            model = new NeuroModel
+            {
+                msgType = "init"
+
+            };
+            ;
+           await SendData(websocket,  model.ToString(), true);
         }
 
-        public Task UpdateColumnOverlaps(List<ColumnData> columns)
+        public async Task UpdateColumnOverlapsAsync(List<ColumnData> columns)
         {
-            throw new NotImplementedException();
-        }
+            ColumnData obj= null;
+            for (int i = 0; i < columns.Count; i++)
+            {
+                 obj = new ColumnData
+                {
+                    Overlap = columns[i].Overlap,
+                    ColDims = columns[i].ColDims,
+                    msgType = "updateOverlap"
 
-        public Task UpdateSynapses(List<SynapseData> synapses)
+                };
+
+            }
+            await SendData(websocket, obj.ToString(), true);
+        }
+        public async Task UpdateSynapsesAsync(List<SynapseData> synapses)
         {
-            throw new NotImplementedException();
+
+      
             foreach (var syn in synapses)
             {
                 //syn.Synapse.SourceCell
@@ -43,13 +69,16 @@ namespace WebSocketNeuroVisualizer
                     // DImZ = 4;
                 }
             }
-            
+            await SendData(websocket, synapses.ToString(), true);
+
         }
         public async Task Connect(string url, CancellationToken cancellationToken)
         {
             try
             {
-                ClientWebSocket websocket = new ClientWebSocket();
+                // once per Minute H:M:S
+                websocket.Options.KeepAliveInterval = new TimeSpan(0, 1, 0);
+                // ClientWebSocket websocket = new ClientWebSocket();
                 await websocket.ConnectAsync((new Uri(url)), CancellationToken.None);
             }
             catch (Exception ex)
@@ -62,6 +91,7 @@ namespace WebSocketNeuroVisualizer
 
         public async Task SendData(ClientWebSocket websocket, string message, bool endOfMessage)
         {
+
             if (websocket != null && websocket.State == WebSocketState.Open)
             {
                 var msg = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
@@ -71,6 +101,7 @@ namespace WebSocketNeuroVisualizer
             }
 
         }
+
     }
 
 }
