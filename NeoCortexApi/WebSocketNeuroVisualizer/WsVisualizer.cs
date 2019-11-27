@@ -38,7 +38,7 @@ namespace WebSocketNeuroVisualizer
                 {
                     Overlap = columns[i].Overlap,
                     ColDims = columns[i].ColDims,
-                    msgType = "updateOverlap"
+                    msgType = columns[i].msgType
 
                 };
 
@@ -67,7 +67,7 @@ namespace WebSocketNeuroVisualizer
                 {
                     preCell = synapses[syn].Synapse.SourceCell,
                     postCell = postSynapCell,
-                    msgType = "updateSynapse"
+                    msgType = synapses[syn].msgType
                 };
 
 

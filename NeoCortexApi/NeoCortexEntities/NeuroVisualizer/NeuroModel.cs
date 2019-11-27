@@ -14,7 +14,7 @@ namespace NeoCortexEntities.NeuroVisualizer
     {
         public long[,] ColDims { get; set; }
         public Cell[] cell;
-        public float Overlap { get; set; } 
+        public double Overlap { get; set; } 
         public string msgType { get; set; }
     }
     public class SynapseData
