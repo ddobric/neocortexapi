@@ -13,12 +13,7 @@ namespace WebSocketNeuroVisualizer
     public class WSNeuroVisualizer : INeuroVisualizer
     {
 
-        static string ipAddress = "ws://localhost:";
-        static string port = "5011/";
-        static string route = "ws/";
-        static string clientName = "client1";
-        readonly string url = string.Concat(ipAddress, port, route, clientName);
-        //readonly string url = "ws://localhost:5011/ws/client1";
+        readonly string url = "ws://localhost:5011/ws/client1";
 
         ClientWebSocket websocket = new ClientWebSocket();
         string msgType = "";
@@ -30,7 +25,7 @@ namespace WebSocketNeuroVisualizer
                 msgType = "init"
 
             };
-            ;
+
            await SendData(websocket,  model.ToString(), true);
         }
 
@@ -78,7 +73,6 @@ namespace WebSocketNeuroVisualizer
             {
                 // once per Minute H:M:S
                 websocket.Options.KeepAliveInterval = new TimeSpan(0, 1, 0);
-                // ClientWebSocket websocket = new ClientWebSocket();
                 await websocket.ConnectAsync((new Uri(url)), CancellationToken.None);
             }
             catch (Exception ex)
