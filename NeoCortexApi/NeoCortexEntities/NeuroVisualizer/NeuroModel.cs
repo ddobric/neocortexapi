@@ -23,7 +23,10 @@ namespace NeoCortexEntities.NeuroVisualizer
 
         public CellType SegmentCellType;
 
-        public Synapse Synapse { get; set; }    
+        public Synapse Synapse { get; set; }
+        public Cell preCell { get; set; }
+        public Cell postCell { get; set; }
+        public string msgType { get; set; }
     }
     public class Area
     {
