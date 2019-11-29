@@ -9,7 +9,7 @@ namespace NeoCortexEntities.NeuroVisualizer
     {
         Task InitModelAsync(NeuroModel model);
         
-        Task UpdateColumnOverlapsAsync(List<ColumnData> columns );
+        Task UpdateColumnOverlapsAsync(List<MiniColumn> columns );
 
         Task UpdateSynapsesAsync(List<SynapseData> synapses);
     }

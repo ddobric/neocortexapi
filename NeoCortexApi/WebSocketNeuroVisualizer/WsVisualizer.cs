@@ -13,32 +13,31 @@ namespace WebSocketNeuroVisualizer
     public class WSNeuroVisualizer : INeuroVisualizer
     {
 
-        readonly string url = "ws://localhost:5011/ws/client1";
+        readonly string url = "ws://localhost:5000/ws/client1";
 
         ClientWebSocket websocket = new ClientWebSocket();
-        string msgType = "";
 
         public async Task InitModelAsync(NeuroModel model)
         {
             model = new NeuroModel
             {
-                msgType = "init"
+                MsgType = "init"
 
             };
 
            await SendData(websocket,  model.ToString(), true);
         }
 
-        public async Task UpdateColumnOverlapsAsync(List<ColumnData> columns)
+        public async Task UpdateColumnOverlapsAsync(List<MiniColumn> columns)
         {
-            ColumnData obj= null;
+            MiniColumn obj= null;
             for (int i = 0; i < columns.Count; i++)
             {
-                 obj = new ColumnData
+                 obj = new MiniColumn
                 {
                     Overlap = columns[i].Overlap,
                     ColDims = columns[i].ColDims,
-                    msgType = columns[i].msgType
+                    MsgType = columns[i].MsgType
 
                 };
 
@@ -60,14 +59,15 @@ namespace WebSocketNeuroVisualizer
                 else if (synapses[syn].Synapse.Segment is ProximalDendrite)
                 {
                     ProximalDendrite seg = (ProximalDendrite)synapses[syn].Synapse.Segment;
+                    
                     // DimX = seg.ParentColumnIndex
                     // DImZ = 4;
                 }
                 updateSynapses = new SynapseData
                 {
-                    preCell = synapses[syn].Synapse.SourceCell,
-                    postCell = postSynapCell,
-                    msgType = synapses[syn].msgType
+                    PreCell = synapses[syn].Synapse.SourceCell,
+                    PostCell = postSynapCell,
+                    MsgType = synapses[syn].MsgType
                 };
 
 
