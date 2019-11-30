@@ -58,7 +58,7 @@ namespace UnitTestsProject
 
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
             region0.AddLayer(layer1);
-            layer1.HtmModules.Add(sp1);
+            layer1.HtmModules.Add("sp", sp1);
 
             HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
 
@@ -69,7 +69,7 @@ namespace UnitTestsProject
 
             Debug.WriteLine($"NewBorn stage duration: {sw.ElapsedMilliseconds / 1000} s");
 
-            layer1.AddModule(tm1);
+            layer1.AddModule("tm", tm1);
 
             sw.Start();
 
