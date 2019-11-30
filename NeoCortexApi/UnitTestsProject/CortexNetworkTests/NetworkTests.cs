@@ -427,15 +427,19 @@ namespace UnitTestsProject
             //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 2.0, 0.0, 0.1, 2.0 });
             List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0 });
 
-            RunExperiment(inputBits, p, encoder, inputValues);
+           // RunExperiment(inputBits, p, encoder, inputValues);
+            RunExperimentDbg(inputBits, p, encoder, inputValues);
         }
 
 
         /// <summary>
         ///
         /// </summary>
-        private void RunExperiment(int inputBits, Parameters p, EncoderBase encoder, List<double> inputValues)
+        private void RunExperimentDbg(int inputBits, Parameters p, EncoderBase encoder, List<double> inputValues)
         {
+            INeuroVisualizer vis = new WSNeuroVisualizer();
+            vis.InitModelAsync(new NeuroModel(null, (new long [10, 0]), 6));
+
             bool learn = true;
 
             CortexNetwork net = new CortexNetwork("my cortex");
@@ -502,6 +506,7 @@ namespace UnitTestsProject
                     var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
                     
                     cls.Learn(input, lyrOut.ActiveCells.ToArray(), lyrOut.predictiveCells.ToArray());
+                    //vis.UpdateSynapsesAsync();
 
                     if (learn == false)
                         Debug.WriteLine($"Inference mode");
@@ -554,6 +559,14 @@ namespace UnitTestsProject
 
             //vis.InitModel();
             //vis.UpdateColumnOverlaps
+            List<MiniColumn> colData = new List<MiniColumn>();
+            MiniColumn updateOverlap = new MiniColumn();
+            updateOverlap.Overlap = 0.9;
+            updateOverlap.MsgType = "updateOverlap";
+            updateOverlap.ColDims = new long [0 , 0];
+
+            colData.Add(updateOverlap);
+            vis.UpdateColumnOverlapsAsync(colData);
         }
     }
 }
