@@ -297,11 +297,12 @@ namespace NeoCortexApi
             }
         }
 
-        /**
-         * Indicates the start of a new sequence. Clears any predictions and makes sure
-         * synapses don't grow to the currently active cells in the next time step.
-         */
 
+        /// <summary>
+        /// Indicates the start of a new sequence. 
+        /// Clears any predictions and makes sure synapses don't grow to the currently active cells in the next time step.
+        /// </summary>
+        /// <param name="connections"></param>
         public void reset(Connections connections)
         {
             connections.getActiveCells().Clear();

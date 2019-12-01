@@ -131,6 +131,11 @@ namespace UnitTestsProject.EncoderTests
         }
 
 
+        /// <summary>
+        /// Encodes one year in a time-tick resolution.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="expectedResult"></param>
         [TestMethod]
         [DataRow(1.0, new int[] { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 })]
     
@@ -165,8 +170,7 @@ namespace UnitTestsProject.EncoderTests
                 Debug.WriteLine(NeoCortexApi.Helpers.StringifyVector(result));
 
                 Assert.IsTrue(result.Count(k=>k==1) == encoder.W);
-            }
-                   
+            }                   
 
             //Assert.IsTrue(expectedResult.SequenceEqual(result));
         }
