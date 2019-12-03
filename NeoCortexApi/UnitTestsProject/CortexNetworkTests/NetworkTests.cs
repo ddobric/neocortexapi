@@ -436,7 +436,9 @@ namespace UnitTestsProject
         private void RunExperimentDbg(int inputBits, Parameters p, EncoderBase encoder, List<double> inputValues)
         {
             INeuroVisualizer vis = new WSNeuroVisualizer();
-            vis.InitModelAsync(new NeuroModel(null, (new long[10, 0]), 6));
+            int[] areas = new int[] {0,0,0,1,2,3};
+            
+            vis.InitModelAsync(new NeuroModel(areas, (new long[10, 0]), 6));
 
             bool learn = true;
 
@@ -474,8 +476,9 @@ namespace UnitTestsProject
                 {
                     var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
                     var activeColumns = layer1.GetResult("sp") as int[];
-                    // TODO: @Atta
                     // vis.UpdateColumnOverlapsAsync();
+                    // TODO: @Atta
+
                 }
             }
 
