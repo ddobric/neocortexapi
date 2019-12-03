@@ -17,6 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtmAkkaHost", "HtmAkkaHost\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{23838D99-F23D-47B6-BC70-92FA0A34FF1C}"
 	ProjectSection(SolutionItems) = preProject
+		nuget-vsonline.config = nuget-vsonline.config
 		nuget.config = nuget.config
 	EndProjectSection
 EndProject
@@ -35,7 +36,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexEntities", "NeoCor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AkkaSb.Net", "AkkaSb.Net\AkkaSb.Net.csproj", "{A3B8131A-DA87-44BB-A0A4-BD683383E984}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebSocketNeuroVisualizer", "WebSocketNeuroVisualizer\WebSocketNeuroVisualizer.csproj", "{414D1FFF-BA4B-49B0-B7B1-4AEDB2F7689D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebSocketNeuroVisualizer", "WebSocketNeuroVisualizer\WebSocketNeuroVisualizer.csproj", "{414D1FFF-BA4B-49B0-B7B1-4AEDB2F7689D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 namespace HtmViewer
 {
@@ -14,6 +16,8 @@ namespace HtmViewer
     {
         public static void Main(string[] args)
         {
+
+
             //CreateWebHostBuilder(args).Build().Run();
             var host = new WebHostBuilder()
                 .UseContentRoot(Directory.GetCurrentDirectory())

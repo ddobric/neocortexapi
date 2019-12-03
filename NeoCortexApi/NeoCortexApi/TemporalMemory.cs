@@ -1,4 +1,6 @@
-﻿using NeoCortexApi.Entities;
+﻿// Copyright (c) Damir Dobric. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using NeoCortexApi.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -267,6 +269,7 @@ namespace NeoCortexApi
             conn.setWinnerCells(new HashSet<Cell>(cycle.WinnerCells));
             conn.setActiveSegments(activeSegments);
             conn.setMatchingSegments(matchingSegments);
+
             // Forces generation of the predictive cells from the above active segments
             conn.clearPredictiveCells();
 
@@ -358,7 +361,7 @@ namespace NeoCortexApi
             {              
                 // TODO
                 // Review this. not only previous cell should be consiered.
-                // We sold rather here consider all current list and look if the cell is already in.
+                // We should rather consider all current list and look if the cell is already in.
                 segmOwnerCell = segment.getParentCell();
                 if ( segmOwnerCell != previousCell)
                 {
@@ -657,6 +660,8 @@ namespace NeoCortexApi
             {
                 double permanence = synapse.getPermanence();
 
+                //
+                // If synapse's presynaptic cell was active in the previous cycle then streng it.
                 if (prevActiveCells.Contains(synapse.getPresynapticCell()))
                 {
                     permanence += permanenceIncrement;

@@ -56,8 +56,8 @@ namespace UnitTestsProject
             //encoder.Encode()
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
             region0.AddLayer(layer1);
-            layer1.HtmModules.Add(encoder);
-            layer1.HtmModules.Add(sp1);
+            layer1.HtmModules.Add("encoder", encoder);
+            layer1.HtmModules.Add("sp", sp1);
             //layer1.HtmModules.Add(tm1);
             //layer1.Compute();
 
@@ -79,7 +79,7 @@ namespace UnitTestsProject
             }
 
             // Here we add TM module to the layer.
-            layer1.HtmModules.Add(tm1);
+            layer1.HtmModules.Add("tm", tm1);
 
             //
             // Now, training with SP+TM. SP is pretrained on pattern.
@@ -183,8 +183,8 @@ namespace UnitTestsProject
             //
             // NewBorn learning stage.
             region0.AddLayer(layer1);
-            layer1.HtmModules.Add(encoder);
-            layer1.HtmModules.Add(sp1);
+            layer1.HtmModules.Add("encoder", encoder);
+            layer1.HtmModules.Add("sp", sp1);
 
             HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
 
@@ -202,7 +202,7 @@ namespace UnitTestsProject
             }
 
             // Here we add TM module to the layer.
-            layer1.HtmModules.Add(tm1);
+            layer1.HtmModules.Add("tm", tm1);
 
             //
             // Now, training with SP+TM. SP is pretrained on pattern.
@@ -303,8 +303,8 @@ namespace UnitTestsProject
             //
             // NewBorn learning stage.
             region0.AddLayer(layer1);
-            layer1.HtmModules.Add(encoder);
-            layer1.HtmModules.Add(sp1);
+            layer1.HtmModules.Add("encoder", encoder);
+            layer1.HtmModules.Add("sp", sp1);
 
             HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
 
@@ -322,7 +322,7 @@ namespace UnitTestsProject
             }
 
             // Here we add TM module to the layer.
-            layer1.HtmModules.Add(tm1);
+            layer1.HtmModules.Add("tm", tm1);
 
             int cycle = 0;
             int matches = 0;
@@ -458,8 +458,8 @@ namespace UnitTestsProject
             //
             // NewBorn learning stage.
             region0.AddLayer(layer1);
-            layer1.HtmModules.Add(encoder);
-            layer1.HtmModules.Add(sp1);
+            layer1.HtmModules.Add("encoder", encoder);
+            layer1.HtmModules.Add("sp", sp1);
 
             HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
 
@@ -473,12 +473,14 @@ namespace UnitTestsProject
                 for (int i = 0; i < 3; i++)
                 {
                     var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
+                    var activeColumns = layer1.GetResult("sp") as int[];
+                    // TODO: @Atta
                     // vis.UpdateColumnOverlapsAsync();
                 }
             }
 
             // Here we add TM module to the layer.
-            layer1.HtmModules.Add(tm1);
+            layer1.HtmModules.Add("tm", tm1);
 
             int cycle = 0;
             int matches = 0;
@@ -500,7 +502,7 @@ namespace UnitTestsProject
                     Debug.WriteLine($"-------------- {input} ---------------");
 
                     var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
-
+                    
                     cls.Learn(input, lyrOut.ActiveCells.ToArray(), lyrOut.predictiveCells.ToArray());
                     //vis.UpdateSynapsesAsync();
 
