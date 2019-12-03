@@ -1,14 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Globalization;
-using NeoCortexApi.Encoders;
-using NeoCortexApi.Network;
 using NeoCortexApi;
+using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
-using System.Diagnostics;
+using NeoCortexApi.Network;
 using NeoCortexEntities.NeuroVisualizer;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using WebSocketNeuroVisualizer;
 
 namespace UnitTestsProject
@@ -427,7 +425,7 @@ namespace UnitTestsProject
             //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 2.0, 0.0, 0.1, 2.0 });
             List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0 });
 
-           // RunExperiment(inputBits, p, encoder, inputValues);
+            // RunExperiment(inputBits, p, encoder, inputValues);
             RunExperimentDbg(inputBits, p, encoder, inputValues);
         }
 
@@ -438,7 +436,7 @@ namespace UnitTestsProject
         private void RunExperimentDbg(int inputBits, Parameters p, EncoderBase encoder, List<double> inputValues)
         {
             INeuroVisualizer vis = new WSNeuroVisualizer();
-            vis.InitModelAsync(new NeuroModel(null, (new long [10, 0]), 6));
+            vis.InitModelAsync(new NeuroModel(null, (new long[10, 0]), 6));
 
             bool learn = true;
 
@@ -475,7 +473,7 @@ namespace UnitTestsProject
                 for (int i = 0; i < 3; i++)
                 {
                     var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
-                   // vis.UpdateColumnOverlapsAsync();
+                    // vis.UpdateColumnOverlapsAsync();
                 }
             }
 
@@ -557,11 +555,9 @@ namespace UnitTestsProject
 
             //vis.InitModel();
             //vis.UpdateColumnOverlaps
+
             List<MiniColumn> colData = new List<MiniColumn>();
-            MiniColumn updateOverlap = new MiniColumn();
-            updateOverlap.Overlap = 0.9;
-            updateOverlap.MsgType = "updateOverlap";
-            updateOverlap.ColDims = new long [0 , 0];
+            MiniColumn updateOverlap = new MiniColumn(0,0.78,0,0);//A MiniColumn is defined as X and Z dimensional
 
             colData.Add(updateOverlap);
             vis.UpdateColumnOverlapsAsync(colData);

@@ -16,37 +16,30 @@ namespace WebSocketNeuroVisualizer
         readonly string url = "ws://localhost:5000/ws/client1";
 
         ClientWebSocket websocket = new ClientWebSocket();
+        string messageType = "";
 
         public async Task InitModelAsync(NeuroModel model)
         {
-            model = new NeuroModel
-            {
-                MsgType = "init"
+            messageType = "init";
 
-            };
-
-           await SendData(websocket,  model.ToString(), true);
+            await SendData(websocket, (messageType + model.ToString()), true);
         }
 
         public async Task UpdateColumnOverlapsAsync(List<MiniColumn> columns)
         {
-            MiniColumn obj= null;
+            messageType = "updateOverlap";
+            // MiniColumn minCol = new MiniColumn(columns[i].AreaId, columns[i].Overlap, columns[i].ColDims.GetLength(0), columns[i].ColDims.GetLength(1));
+            string updateOverlap = "";
             for (int i = 0; i < columns.Count; i++)
             {
-                 obj = new MiniColumn
-                {
-                    Overlap = columns[i].Overlap,
-                    ColDims = columns[i].ColDims,
-                    MsgType = columns[i].MsgType
-
-                };
+                updateOverlap = columns[i].ToString();
 
             }
-            await SendData(websocket, obj.ToString(), true);
+            await SendData(websocket, (messageType + updateOverlap), true);
         }
         public async Task UpdateSynapsesAsync(List<SynapseData> synapses)
         {
-
+            messageType = "updateSynapse";
             SynapseData updateSynapses = null;
             Cell postSynapCell = null;
             for (int syn = 0; syn < synapses.Count; syn++)
@@ -59,21 +52,20 @@ namespace WebSocketNeuroVisualizer
                 else if (synapses[syn].Synapse.Segment is ProximalDendrite)
                 {
                     ProximalDendrite seg = (ProximalDendrite)synapses[syn].Synapse.Segment;
-                    
+
                     // DimX = seg.ParentColumnIndex
                     // DImZ = 4;
                 }
                 updateSynapses = new SynapseData
                 {
                     PreCell = synapses[syn].Synapse.SourceCell,
-                    PostCell = postSynapCell,
-                    MsgType = synapses[syn].MsgType
+                    PostCell = postSynapCell
                 };
 
 
             }
- 
-            await SendData(websocket, updateSynapses.ToString(), true);
+
+            await SendData(websocket, (messageType + updateSynapses.ToString()), true);
 
         }
         public async Task Connect(string url, CancellationToken cancellationToken)
