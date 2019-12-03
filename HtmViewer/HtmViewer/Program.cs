@@ -20,9 +20,16 @@ namespace HtmViewer
                 .UseKestrel()
                 .UseIISIntegration()
                 .UseStartup<Startup>()
+                
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                {
+                    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+                })
+                //.UseUrls($"http://localhost:{config.GetValue<int>("Host:Port")}")
                 .ConfigureKestrel((context, options) =>
                 {
                     // Set properties and call methods on options
+                    context.Configuration.GetSection("Kestrel");
                 })
                 .ConfigureLogging((hostingcontext, logging) =>
                 {
@@ -30,6 +37,7 @@ namespace HtmViewer
                     logging.AddConsole();
 
                 })
+
                 .Build();
             host.Run();
 
