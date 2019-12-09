@@ -50,11 +50,11 @@ namespace UnitTestsProject.NoiseExperiments
             {
                 for (int i = 0; i < 3; i++)
                 {
-                    var activeArray = sp.Compute(inputVector, true) as int[];
+                    var activeIndicies = sp.Compute(inputVector, true, true) as int[];
+                    var activeArray = sp.Compute(inputVector, true, false) as int[];
 
-                    var str = Helpers.StringifyVector(activeArray);
-
-                    Debug.WriteLine(str);
+                    Debug.WriteLine(Helpers.StringifyVector(activeArray));
+                    Debug.WriteLine(Helpers.StringifyVector(activeIndicies));
                 }
             }
         }

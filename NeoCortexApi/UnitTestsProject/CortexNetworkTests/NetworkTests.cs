@@ -354,7 +354,7 @@ namespace UnitTestsProject
 
                     var predictedValue = cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray());
 
-                    Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {predictedValue}");
+                    Debug.WriteLine($"Current Input: {input} \t| - Predicted value in previous cycle: {lastPredictedValue} \t| Predicted Input for the next cycle: {predictedValue}");
 
                     if (input == lastPredictedValue)
                     {
@@ -475,6 +475,7 @@ namespace UnitTestsProject
                 for (int i = 0; i < 3; i++)
                 {
                     var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
+
                     var activeColumns = layer1.GetResult("sp") as int[];
                     // TODO: @Atta
 

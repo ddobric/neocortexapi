@@ -34,14 +34,14 @@ namespace UnitTestsProject
             return cfg;
         }
         
-        internal static ActorSbConfig GetRemoteSysConfig()
+        internal static ActorSbConfig GetRemoteSysConfig(string node = "default")
         {
             var localCfg = GetLocaSysConfig();
 
             ActorSbConfig cfg = new ActorSbConfig();
             cfg.SbConnStr = sbConnStr;
             cfg.RequestMsgTopic = "actorsystem/actortopic";
-            cfg.RequestSubscriptionName = "default";
+            cfg.RequestSubscriptionName = node;
             cfg.ReplyMsgQueue = null;
              
             return cfg;
@@ -269,6 +269,7 @@ namespace UnitTestsProject
                 sysRemote2.Start(src.Token);
             });
 
+            //Thread.Sleep(int.MaxValue);
 
             Parallel.For(0, 20, (i) =>
             {

@@ -19,11 +19,11 @@ namespace WebSocketNeuroVisualizer
 
         public async Task InitModelAsync(NeuroModel model)
         {
-            model = new NeuroModel
-            {
-                MsgType = "init"
+            //model = new NeuroModel
+            //{
+            //    MsgType = "init"
 
-            };
+            //};
 
            await SendData(websocket,  model.ToString(), true);
         }
