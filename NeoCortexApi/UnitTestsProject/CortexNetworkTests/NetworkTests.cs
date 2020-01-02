@@ -438,7 +438,7 @@ namespace UnitTestsProject
             INeuroVisualizer vis = new WSNeuroVisualizer();
             int[] areas = new int[] {0,0,0,1,2,3};
             
-            vis.InitModelAsync(new NeuroModel(areas, (new long[10, 0]), 6));
+            vis.InitModelAsync(new NeuroModel(areas, (new long[10, 1]), 6));
 
             bool learn = true;
 
@@ -566,6 +566,17 @@ namespace UnitTestsProject
 
             colData.Add(updateOverlap);
             vis.UpdateColumnOverlapsAsync(colData);
+        }
+
+        [TestMethod]
+        public void TestModel()
+        {
+            INeuroVisualizer vis = new WSNeuroVisualizer();
+
+            int[] areas = new int[] { 0, 0, 0};
+
+             vis.InitModelAsync(new NeuroModel(areas, (new long[10, 1]), 6));
+
         }
     }
 }
