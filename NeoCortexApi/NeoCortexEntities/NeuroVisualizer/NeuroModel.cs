@@ -11,15 +11,15 @@ namespace NeoCortexEntities.NeuroVisualizer
 
         public static List<Synapse> Synapse { get; set; }
 
-        public static Settings CellsPerColumn { get; set; }
+        public static int CellsPerColumn { get; set; }
 
         public NeuroModel(int[] areaLevels, long[,] colDims, int numCells)
         {
 
             Cells = new List<Cell>();
             Synapse = new List<Synapse>();
-            CellsPerColumn = new Settings();
-            CellsPerColumn.NumberOfCells = numCells;
+
+            CellsPerColumn = numCells;
 
             Areas = new List<Area>(areaLevels.Length);
             //Areas = new Area[areaLevels.Length];
@@ -37,10 +37,6 @@ namespace NeoCortexEntities.NeuroVisualizer
             };
 
         }
-    }
-    public class Settings
-    {
-        public int NumberOfCells { get; set; }
     }
 
     public class Area
@@ -87,8 +83,7 @@ namespace NeoCortexEntities.NeuroVisualizer
             int parentColumnIndx = colDim0; // Can I set dimO/X is equal to parentColumnIndex??
             //Dim1 remains in this case always 0/1 , because of 2-Dimensional cells
 
-           // Cells = new Cell[Model.CellsPerCol];
-            Cells = new Cell[NeuroModel.CellsPerColumn.NumberOfCells];
+            Cells = new Cell[NeuroModel.CellsPerColumn];
             
 
 

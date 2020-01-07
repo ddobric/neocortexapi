@@ -575,7 +575,8 @@ namespace UnitTestsProject
 
             int[] areas = new int[] { 0, 0, 0};
 
-             vis.InitModelAsync(new NeuroModel(areas, (new long[10, 3]), 6));
+             vis.InitModelAsync(new NeuroModel(areas, (new long[10, 1]), 6));
+            // vis.InitModelAsync(new NeuroModel(areas, (new long[10, 5]), 8));
 
         }
     }
