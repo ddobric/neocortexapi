@@ -1376,12 +1376,14 @@ namespace NeoCortexApi.Entities
             int[] numActivePotentialSynapsesForSegment = new int[nextFlatIdx];
 
             double threshold = connectedPermanence - EPSILON;
-
-            //
-            // Step through all presynaptic cells.
+           
+            // Step through all currently active cells.
             foreach (Cell cell in activeCellsInCurrentCycle)
             {
-                // Then step through all receptor synapses on presynaptic cell.
+                //
+                // This cell is the active in the current cycle. 
+                // We step through all receptor synapses and check the permanence value of related synapses.
+                // Receptor synapses are synapses whose source cell (pre-synaptic cell) is the given cell.
                 foreach (Synapse synapse in getReceptorSynapses(cell))
                 {
                     int segFlatIndx = synapse.getSegment().getIndex();
@@ -1448,8 +1450,11 @@ namespace NeoCortexApi.Entities
          * @param cell  the Cell to which a segment is added.
          * @return  the newly created segment or a reused segment
          */
-        public DistalDendrite createSegment(Cell cell)
+        public DistalDendrite CreateDistalSegment(Cell cell)
         {
+            //
+            // If there are more segments than maximal allowed number of segments per cell,
+            // least used segments will be destroyed.
             while (numSegments(cell) >= maxSegmentsPerCell)
             {
                 destroySegment(leastRecentlyUsedSegment(cell));
@@ -1498,7 +1503,7 @@ namespace NeoCortexApi.Entities
             NumSynapses -= len;
 
             // Remove the segment from the cell's list.
-            getSegments(segment.getParentCell()).Remove(segment);
+            getSegments(segment.GetParentCell()).Remove(segment);
 
             // Remove the segment from the map
             distalSynapses.Remove(segment);
@@ -1621,7 +1626,7 @@ namespace NeoCortexApi.Entities
          */
         public int columnIndexForSegment(DistalDendrite segment)
         {
-            return segment.getParentCell().Index / cellsPerColumn;
+            return segment.GetParentCell().Index / cellsPerColumn;
         }
 
         /**
@@ -1799,6 +1804,12 @@ namespace NeoCortexApi.Entities
          * @return          the mapping of {@link Cell}s to their reverse mapped
          *                  {@link Synapse}s.
          */
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cell"></param>
+        /// <returns></returns>
         public LinkedHashSet<Synapse> getReceptorSynapses(Cell cell)
         {
             return getReceptorSynapses(cell, false);
@@ -1951,10 +1962,11 @@ namespace NeoCortexApi.Entities
             this.winnerCells = cells;
         }
 
-        /**
-         * Returns the {@link Set} of predictive cells.
-         * @return
-         */
+      
+        /// <summary>
+        /// Generates the list of predictive cells from parent cells of active segments.
+        /// </summary>
+        /// <returns></returns>
         public ISet<Cell> getPredictiveCells()
         {
             if (predictiveCells.Count == 0)
@@ -1965,7 +1977,7 @@ namespace NeoCortexApi.Entities
                 List<DistalDendrite> temp = new List<DistalDendrite>(activeSegments);
                 foreach (DistalDendrite activeSegment in temp)
                 {
-                    if ((currCell = activeSegment.getParentCell()) != previousCell)
+                    if ((currCell = activeSegment.GetParentCell()) != previousCell)
                     {
                         predictiveCells.Add(previousCell = currCell);
                     }

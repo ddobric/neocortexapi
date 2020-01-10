@@ -65,3 +65,6 @@ $disk = New-AzureRmDiskConfig -AccountType $storageType -Location $location -Cre
 $diskName = '<Name of the Disk to be created>'
 
 New-AzureRmDisk -Disk $disk -ResourceGroupName $resourceGroupName -DiskName $diskName
+
+## Example Debug Args
+--SystemName=node1 --RequestMsgQueue=actorsystem/actorqueue --ReplyMsgQueue=actorsystem/rcvnode1 --SbConnStr="Endpoint=sb://bastasample.servicebus.windows.net/;SharedAccessKeyName=demo;SharedAccessKey=MvwVbrrJdsMQyhO/0uwaB5mVbuXyvYa3WRNpalHi0LQ="

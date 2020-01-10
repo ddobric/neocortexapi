@@ -98,9 +98,9 @@ namespace AkkaSb.Net
         }
 
         /// <summary>
-        /// 
+        /// Sends the 'fire and forget' message to the remote actor without of waiting on a response.
         /// </summary>
-        /// <param name="msg"></param>
+        /// <param name="msg">The message to be sent. Any serializable object.</param>
         /// <param name="timeout"></param>
         /// <param name="routeToNode">If specified, message is routed directly to specified node.</param>
         /// <returns></returns>

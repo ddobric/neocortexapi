@@ -980,10 +980,10 @@ namespace NeoCortexApi.Entities
         }
 
         ///**
-        // * The maximum number of new synapses
+        // * The maximum number of new synapses per segment.
         // * @param count
         // */
-        public void setMaxNewSynapseCount(int count)
+        public void setMaxNewSynapsesPerSegmentCount(int count)
         {
             paramMap.Add(KEY.MAX_NEW_SYNAPSE_COUNT, count);
         }

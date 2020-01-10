@@ -115,7 +115,7 @@ namespace UnitTestsProject
 
             GroupBy<DistalDendrite, Column> grouper = GroupBy<DistalDendrite, Column>.From(l, c =>
             {
-                var parentColIndx = c.getParentCell().getParentColumnIndex();
+                var parentColIndx = c.GetParentCell().getParentColumnIndex();
                 return list.FirstOrDefault(col=>col.Index == parentColIndx);
             });
 

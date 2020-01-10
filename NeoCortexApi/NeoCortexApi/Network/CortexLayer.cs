@@ -12,16 +12,16 @@ namespace NeoCortexApi.Network
 
         public string Name { get; set; }
 
-        public List<IHtmModule> HtmModules { get; set; }
+        public Dictionary<string, IHtmModule> HtmModules { get; set; }
         #endregion
 
         #region Constructors and Initialization
-        public CortexLayer(string name) : this(name, new List<IHtmModule>())
+        public CortexLayer(string name) : this(name, new Dictionary<string, IHtmModule>())
         {
 
         }
 
-        public CortexLayer(string name, List<IHtmModule> modules)
+        public CortexLayer(string name, Dictionary<string, IHtmModule> modules)
         {
             this.Name = name;
             this.HtmModules = modules;
@@ -30,76 +30,64 @@ namespace NeoCortexApi.Network
         #endregion
 
         #region Public Methods
-        public CortexLayer<TIN, TOUT> AddModule(IHtmModule module)
+        public CortexLayer<TIN, TOUT> AddModule(string moduleName, IHtmModule module)
         {
-            this.HtmModules.Add(module);
+            this.HtmModules.Add(moduleName, module);
             // connect
             return this;
         }
 
-        //public class CONN
-        //{
-        //    public List<IHtmModule> GetFollowingModules(string moduleName)
-        //    {
-        //        return this.ConnectorMap[moduleName];
-        //    }
-
-        //    public Dictionary<string, List<IHtmModule>> ConnectorMap = new Dictionary<string, List<IHtmModule>>();
-        //}
-
-        //public void Connect(string inModule, string outModule)
-        //{
-        //    if (this.ConnectionGraph.ConnectorMap.ContainsKey(inModule) == false)
-        //        this.ConnectionGraph.ConnectorMap.Add(inModule, new List<IHtmModule>());
-
-        //    this.ConnectionGraph.ConnectorMap[inModule].Add(GetModuleByName(outModule));
-        //}
-
         private IHtmModule GetModuleByName(string moduleName)
         {
-            var module = this.HtmModules.FirstOrDefault(m => m.Name == moduleName);
-            if (module == null)
+            if (this.HtmModules.ContainsKey(moduleName) == false)
                 throw new ArgumentException($"Cannot find module with name {moduleName}");
 
-            return module;
+            return this.HtmModules[moduleName];
         }
-        // public CONN ConnectionGraph = new CONN();
 
+        /// <summary>
+        /// Outputs of evey module in the pipeline.
+        /// </summary>
+        private Dictionary<string, object> results = new Dictionary<string, object>();
+
+        /// <summary>
+        /// Gets the result of the specific module inside of the layer's pipeline.
+        /// </summary>
+        /// <param name="moduleName"></param>
+        /// <returns></returns>
+        public object GetResult(string moduleName)
+        {
+            return this.results[moduleName];
+        }
+
+        /// <summary>
+        /// Computes over the pipeline of installed modules.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="learn">FALSE: Infering mode, TRUE: Learning Mode.</param>
+        /// <returns></returns>
         public TOUT Compute(TIN input, bool learn)
         {
+            results.Clear();
+
             object moduleOutput = null;
 
-            for (int i = 0; i < this.HtmModules.Count; i++)
+            int i = 0;
+
+            foreach (var moduleKeyPair in this.HtmModules)
             {
-                dynamic module = this.HtmModules[i];
+                dynamic module = moduleKeyPair.Value;
 
                 dynamic moduleInput = (i == 0) ? input : moduleOutput;
 
                 moduleOutput = module.Compute(moduleInput, learn);
+
+                results.Add(moduleKeyPair.Key, moduleOutput);
+
+                i++;
             }
 
             return (TOUT)moduleOutput;
-
-
-            //if (output is IIntegerArrayData)
-            //{
-            //    ComputeFollowingModules(module.Name, ((IIntegerArrayData)output).Data, learn);
-            //}
-            //else
-            //    throw new NotImplementedException();
-
-            //var followingModules = this.Connections.GetFollowingModules(module.Name);
-
-            //ParallelOptions opts = new ParallelOptions();
-            //opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
-
-            //Parallel.ForEach(followingModules, opts, (followingModule) =>
-            //{
-            //    if (output is IIntegerArrayData)
-            //    {
-            //        var output1 = followingModule.Compute(((IIntegerArrayData)output).Data, learn);
-            //    }
-            //});
         }
         //protected virtual TOUT ComputeFollowingModules(string moduleName, int[] input, bool learn)
         //{

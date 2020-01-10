@@ -69,7 +69,10 @@ namespace UnitTestsProject
             sp.init(mem);
         }
 
+
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void confirmSPConstruction()
         {
             setupParameters();
@@ -104,6 +107,8 @@ namespace UnitTestsProject
          * permanence values: either zeros or ones, but no fractions
          */
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testCompute1()
         {
             setupParameters();
@@ -160,6 +165,8 @@ namespace UnitTestsProject
          * inputs that are within their potential pool
          */
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testCompute2()
         {
             setupParameters();
@@ -206,6 +213,8 @@ namespace UnitTestsProject
          * active. This test focuses on the global inhibition code path.
          */
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testZeroOverlap_NoStimulusThreshold_GlobalInhibition()
         {
             int inputSize = 10;
@@ -238,6 +247,8 @@ namespace UnitTestsProject
         [TestMethod]
         [DataRow(PoolerMode.SingleThreaded)]
         [DataRow(PoolerMode.Multicore)]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testZeroOverlap_StimulusThreshold_GlobalInhibition(PoolerMode poolerMode)
         {
             int inputSize = 10;
@@ -264,6 +275,8 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testZeroOverlap_NoStimulusThreshold_LocalInhibition()
         {
             int inputSize = 10;
@@ -299,6 +312,8 @@ namespace UnitTestsProject
          * become active. This test focuses on the local inhibition code path.
          */
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testZeroOverlap_StimulusThreshold_LocalInhibition()
         {
             int inputSize = 10;
@@ -326,6 +341,8 @@ namespace UnitTestsProject
 
         // DD
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testOverlapsOutput()
         {
             parameters = Parameters.getSpatialDefaultParameters();
@@ -419,6 +436,8 @@ namespace UnitTestsProject
          * Previously output varied between platforms (OSX/Linux etc) == (in Python)
          */
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testExactOutput()
         {
             setupParameters();
@@ -475,6 +494,8 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testStripNeverLearned()
         {
             setupParameters();
@@ -510,6 +531,8 @@ namespace UnitTestsProject
 
 
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testMapColumn()
         {
             // Test 1D
@@ -566,6 +589,8 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testMapPotential1D()
         {
             setupParameters();
@@ -622,6 +647,8 @@ namespace UnitTestsProject
         /// Test for mapping of 2D columns to 2D inputs.
         /// </summary>
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testMapPotential2D()
         {
             setupParameters();
@@ -675,6 +702,8 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testMapPotential1Column1Input()
         {
             setupParameters();
@@ -722,6 +751,8 @@ namespace UnitTestsProject
 
 
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testInhibitColumns()
         {
             setupParameters();
@@ -828,6 +859,8 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testUpdateBoostFactors()
         {
             setupParameters();
@@ -893,6 +926,8 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testUpdateInhibitionRadius()
         {
             setupParameters();
@@ -989,6 +1024,8 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testAvgColumnsPerInput()
         {
             setupParameters();
@@ -1025,6 +1062,8 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testAvgConnectedSpanForColumnND()
         {
             sp = new SpatialPooler();
@@ -1108,6 +1147,8 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testBumpUpWeakColumns()
         {
             setupParameters();
@@ -1181,6 +1222,8 @@ namespace UnitTestsProject
         /// 
         /// </summary>
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void RandomGenMultithreadTest()
         {
             ThreadSafeRandom rnd = new ThreadSafeRandom();
@@ -1204,6 +1247,8 @@ namespace UnitTestsProject
         /// This is because of a Random generator.
         /// </summary>
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void TestMapPotentialUndeterminismus()
         {
             int[][] expectedList = new int[2][];
@@ -1265,6 +1310,8 @@ namespace UnitTestsProject
         ///{0 - [0,1]}
         /// </summary>
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void TestParallelNeighborhood()
         {
             int[][] expectedList = new int[8][];
@@ -1310,6 +1357,8 @@ namespace UnitTestsProject
         ///{0 - [0,1]}
         /// </summary>
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void TestParallelWrappingNeighborhood()
         {
             int[][] expectedList = new int[2][];
@@ -1359,6 +1408,8 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testUpdateMinDutyCycleLocal()
         {
             setupDefaultParameters();
@@ -1435,6 +1486,8 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testUpdateMinDutyCycleGlobal()
         {
             setupParameters();
@@ -1491,6 +1544,8 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testIsUpdateRound()
         {
             setupParameters();
@@ -1527,6 +1582,8 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testAdaptSynapses()
         {
             setupParameters();
@@ -1641,6 +1698,8 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testRaisePermanenceThreshold()
         {
             setupParameters();
@@ -1699,6 +1758,8 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testUpdatePermanencesForColumn()
         {
             setupParameters();
@@ -1748,6 +1809,8 @@ namespace UnitTestsProject
             trueConnectedCounts.ArrToString().SequenceEqual(mem.GetTrueCounts().ArrToString());
         }
 
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         [TestMethod]
         public void testCalculateOverlap()
         {
@@ -1912,6 +1975,8 @@ namespace UnitTestsProject
          * the correct ranges
          */
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testInitPermanence1()
         {
             setupParameters();
@@ -1970,6 +2035,8 @@ namespace UnitTestsProject
          * are only assigned to bits within a column's potential pool.
          */
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testInitPermanence2()
         {
             setupParameters();
@@ -2013,6 +2080,8 @@ namespace UnitTestsProject
          * supplying a maxPeriod to the function.
          */
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testUpdateDutyCycleHelper()
         {
             setupParameters();
@@ -2057,6 +2126,8 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testInhibitColumnsGlobal()
         {
             setupParameters();
@@ -2091,6 +2162,8 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testInhibitColumnsLocal()
         {
             setupParameters();
@@ -2107,12 +2180,12 @@ namespace UnitTestsProject
 
             mem.setWrapAround(true);
             int[] trueActive = new int[] { 1, 2, 5, 6, 8, 9 };
-            int[] active = sp.inhibitColumnsLocal(mem, overlaps, density);
+            int[] active = sp.InhibitColumnsLocal(mem, overlaps, density);
             Assert.IsTrue(trueActive.SequenceEqual(active));
 
             mem.setWrapAround(false);
             trueActive = new int[] { 1, 2, 5, 6, 9 };
-            active = sp.inhibitColumnsLocal(mem, overlaps, density);
+            active = sp.InhibitColumnsLocal(mem, overlaps, density);
             Assert.IsTrue(trueActive.SequenceEqual(active));
 
             density = 0.5;
@@ -2123,12 +2196,12 @@ namespace UnitTestsProject
 
             mem.setWrapAround(true);
             trueActive = new int[] { 1, 2, 4, 5, 6, 9 };
-            active = sp.inhibitColumnsLocal(mem, overlaps, density);
+            active = sp.InhibitColumnsLocal(mem, overlaps, density);
             Assert.IsTrue(trueActive.SequenceEqual(active));
 
             mem.setWrapAround(false);
             trueActive = new int[] { 1, 2, 4, 5, 6, 9 };
-            active = sp.inhibitColumnsLocal(mem, overlaps, density);
+            active = sp.InhibitColumnsLocal(mem, overlaps, density);
             Assert.IsTrue(trueActive.SequenceEqual(active));
 
             // Test add to winners
@@ -2140,32 +2213,32 @@ namespace UnitTestsProject
 
             mem.setWrapAround(true);
             trueActive = new int[] { 0, 1, 4, 5 };
-            active = sp.inhibitColumnsLocal(mem, overlaps, density);
+            active = sp.InhibitColumnsLocal(mem, overlaps, density);
             Assert.IsTrue(trueActive.SequenceEqual(active));
 
             density = 0.20;
             overlaps = new double[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
             mem.setWrapAround(false);
             trueActive = new int[] { 0, 4, 8 };
-            active = sp.inhibitColumnsLocal(mem, overlaps, density);
+            active = sp.InhibitColumnsLocal(mem, overlaps, density);
             Assert.IsTrue(trueActive.SequenceEqual(active));
 
             //overlaps = new double[] { 1, 2, 7, 0.1, 3, 4, 16, 1, 1.5, 1.7 };
             mem.setWrapAround(false);
             density = 0.10;
-            active = sp.inhibitColumnsLocal(mem, overlaps, density);
+            active = sp.InhibitColumnsLocal(mem, overlaps, density);
 
             density = 0.20;
-            active = sp.inhibitColumnsLocal(mem, overlaps, density);
+            active = sp.InhibitColumnsLocal(mem, overlaps, density);
 
             density = 0.30;
-            active = sp.inhibitColumnsLocal(mem, overlaps, density);
+            active = sp.InhibitColumnsLocal(mem, overlaps, density);
 
             density = 0.40;
-            active = sp.inhibitColumnsLocal(mem, overlaps, density);
+            active = sp.InhibitColumnsLocal(mem, overlaps, density);
 
             density = 0.50;
-            active = sp.inhibitColumnsLocal(mem, overlaps, density);
+            active = sp.InhibitColumnsLocal(mem, overlaps, density);
         }
 
         //    /**
@@ -2452,6 +2525,8 @@ namespace UnitTestsProject
         [TestMethod]
         [DataRow(PoolerMode.SingleThreaded)]
         [DataRow(PoolerMode.Multicore)]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testInit(PoolerMode poolerMode)
         {
             setupParameters();
@@ -2554,6 +2629,8 @@ namespace UnitTestsProject
         /// Input dimensions do not fit inpout vector.
         /// </summary>
         [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("SpatialPooler")]
         public void testComputeInputMismatch()
         {
             setupParameters();

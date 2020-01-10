@@ -19,8 +19,8 @@ namespace AkkaSb.Net
         public string ReplyMsgQueue { get; set; }
 
         /// <summary>
-        /// Messages sent to invoke operations on actors. ActorSystem registers a session receiver
-        /// on this queue.
+        /// Messages sent to invoke operations on actors. ActorSystem registers a session receivers
+        /// on this topic.
         /// </summary>
         public string RequestMsgTopic { get; set; }
 

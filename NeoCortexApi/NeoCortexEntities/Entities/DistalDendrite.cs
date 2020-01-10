@@ -45,7 +45,7 @@ namespace NeoCortexApi.Entities
          * 
          * @return
          */
-        public Cell getParentCell()
+        public Cell GetParentCell()
         {
             return ParentCell;
         }

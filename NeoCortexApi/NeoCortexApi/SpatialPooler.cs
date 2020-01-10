@@ -1,4 +1,6 @@
-﻿using NeoCortexApi.Entities;
+﻿// Copyright (c) Damir Dobric. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
@@ -295,7 +297,7 @@ namespace NeoCortexApi
         */
 
         /// <summary>
-        /// 
+        /// Performs SpatialPooler compute algorithm.
         /// </summary>
         /// <param name="input">Input vector</param>
         /// <param name="learn">Learn or Predict.</param>
@@ -309,7 +311,7 @@ namespace NeoCortexApi
 
 
         /// <summary>
-        /// 
+        /// Performs SPatialPooler compute algorithm.
         /// </summary>
         /// <param name="input">Input vector</param>
         /// <param name="learn">Learn or Predict.</param>
@@ -1073,7 +1075,7 @@ namespace NeoCortexApi
             {
                 return inhibitColumnsGlobal(c, overlaps, density);
             }
-            return inhibitColumnsLocal(c, overlaps, density);
+            return InhibitColumnsLocal(c, overlaps, density);
             //return inhibitColumnsLocalNewApproach(c, overlaps);
         }
 
@@ -1121,9 +1123,9 @@ namespace NeoCortexApi
             return sortedWinnerIndices.Skip(start).Select(p => (int)p.Key).ToArray();
         }
 
-        public virtual int[] inhibitColumnsLocal(Connections c, double[] overlaps, double density)
+        public virtual int[] InhibitColumnsLocal(Connections c, double[] overlaps, double density)
         {
-            return inhibitColumnsLocalOriginal(c, overlaps, density);
+            return InhibitColumnsLocalOriginal(c, overlaps, density);
         }
 
         /**
@@ -1142,7 +1144,7 @@ namespace NeoCortexApi
          *                  of surviving columns is likely to vary.
          * @return  indices of the winning columns
          */
-        public virtual int[] inhibitColumnsLocalOriginal(Connections c, double[] overlaps, double density)
+        public virtual int[] InhibitColumnsLocalOriginal(Connections c, double[] overlaps, double density)
         {
             double winnerDelta = ArrayUtils.max(overlaps) / 1000.0d;
             if (winnerDelta == 0)
