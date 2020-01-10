@@ -444,10 +444,10 @@ namespace UnitTestsProject
             //vis.InitModelAsync(new NeuroModel(null, (new long [10, 0]), 6));
             int maxMatchCnt = 0;
             bool learn = true;
-            //INeuroVisualizer vis = new WSNeuroVisualizer();
-            //GenerateNeuroModel model = new GenerateNeuroModel();
+            INeuroVisualizer vis = new WSNeuroVisualizer();
+            GenerateNeuroModel model = new GenerateNeuroModel();
             
-            //vis.InitModel(model.CreateNeuroModel(new int[] { 1}, (long[,])p[KEY.COLUMN_DIMENSIONS], (int)p[KEY.CELLS_PER_COLUMN]));
+            vis.InitModelAsync(model.CreateNeuroModel(new int[] { 1}, (long[,])p[KEY.COLUMN_DIMENSIONS], (int)p[KEY.CELLS_PER_COLUMN]));
 
             CortexNetwork net = new CortexNetwork("my cortex");
             List<CortexRegion> regions = new List<CortexRegion>();
@@ -514,7 +514,7 @@ namespace UnitTestsProject
                     var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
 
                     cls.Learn(input, lyrOut.ActiveCells.ToArray(), lyrOut.predictiveCells.ToArray());
-                    //vis.UpdateSynapsesAsync();
+                  //  vis.UpdateSynapsesAsync();
 
                     if (learn == false)
                         Debug.WriteLine($"Inference mode");

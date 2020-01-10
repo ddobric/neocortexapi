@@ -40,32 +40,40 @@ namespace WebSocketNeuroVisualizer
         public async Task UpdateSynapsesAsync(List<SynapseData> synapses)
         {
             messageType = "updateSynapse";
-            SynapseData updateSynapses = null;
-            Cell postSynapCell = null;
+            SynapseData synData = null;
+      
+
             for (int syn = 0; syn < synapses.Count; syn++)
             {
+                synData = new SynapseData
+                {
+                    PreCell = synapses[syn].Synapse.SourceCell,
+                
+
+                };
+
                 if (synapses[syn].Synapse.Segment is DistalDendrite)
                 {
                     DistalDendrite seg = (DistalDendrite)synapses[syn].Synapse.Segment;
-                    postSynapCell = seg.ParentCell;
+                    synData.PostCell = seg.ParentCell;
                 }
                 else if (synapses[syn].Synapse.Segment is ProximalDendrite)
                 {
                     ProximalDendrite seg = (ProximalDendrite)synapses[syn].Synapse.Segment;
-
+                   // synData.PostCell = seg.
+                       
                     // DimX = seg.ParentColumnIndex
                     // DImZ = 4;
                 }
-                updateSynapses = new SynapseData
-                {
-                    PreCell = synapses[syn].Synapse.SourceCell,
-                    PostCell = postSynapCell
-                };
+                else
+                    throw new ApplicationException("");
+
+               
 
 
             }
 
-            await SendData(websocket, (messageType + updateSynapses.ToString()), true);
+            await SendData(websocket, (messageType + synData.ToString()), true);
 
         }
         public async Task Connect(string url, CancellationToken cancellationToken)
