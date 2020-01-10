@@ -437,6 +437,10 @@ namespace UnitTestsProject
         private void RunExperiment(int inputBits, Parameters p, EncoderBase encoder, List<double> inputValues)
         {
             bool learn = true;
+            //INeuroVisualizer vis = new WSNeuroVisualizer();
+            //GenerateNeuroModel model = new GenerateNeuroModel();
+            
+            //vis.InitModel(model.CreateNeuroModel(new int[] { 1}, (long[,])p[KEY.COLUMN_DIMENSIONS], (int)p[KEY.CELLS_PER_COLUMN]));
 
             CortexNetwork net = new CortexNetwork("my cortex");
             List<CortexRegion> regions = new List<CortexRegion>();
