@@ -92,7 +92,7 @@ namespace UnitTestsProject
             ISet<Cell> expectedActiveCells = new HashSet<Cell>(new Cell[] { cell4 });
 
             // We add distal dentrite at column1.cell4
-            DistalDendrite activeSegment = cn.createSegment(cell4);
+            DistalDendrite activeSegment = cn.CreateDistalSegment(cell4);
 
             //
             // We add here synapses between column0.cells[0-3] and segment.
@@ -138,7 +138,7 @@ namespace UnitTestsProject
             int[] previousActiveColumns = { 0 };
             Cell cell4 = cn.getCell(4);
 
-            DistalDendrite activeSegment = cn.createSegment(cell4);
+            DistalDendrite activeSegment = cn.CreateDistalSegment(cell4);
             cn.createSynapse(activeSegment, cn.getCell(0), 0.5);
             cn.createSynapse(activeSegment, cn.getCell(1), 0.5);
             cn.createSynapse(activeSegment, cn.getCell(2), 0.5);
@@ -170,12 +170,12 @@ namespace UnitTestsProject
             Cell[] previousActiveCells = { cn.getCell(0), cn.getCell(1), cn.getCell(2), cn.getCell(3) };
             List<Cell> expectedWinnerCells = new List<Cell>(cn.getCellSet(new int[] { 4, 6 }));
 
-            DistalDendrite activeSegment1 = cn.createSegment(expectedWinnerCells[0]);
+            DistalDendrite activeSegment1 = cn.CreateDistalSegment(expectedWinnerCells[0]);
             cn.createSynapse(activeSegment1, previousActiveCells[0], 0.5);
             cn.createSynapse(activeSegment1, previousActiveCells[1], 0.5);
             cn.createSynapse(activeSegment1, previousActiveCells[2], 0.5);
 
-            DistalDendrite activeSegment2 = cn.createSegment(expectedWinnerCells[1]);
+            DistalDendrite activeSegment2 = cn.CreateDistalSegment(expectedWinnerCells[1]);
             cn.createSynapse(activeSegment2, previousActiveCells[0], 0.5);
             cn.createSynapse(activeSegment2, previousActiveCells[1], 0.5);
             cn.createSynapse(activeSegment2, previousActiveCells[2], 0.5);
@@ -204,7 +204,7 @@ namespace UnitTestsProject
             Cell[] previousActiveCells = { cn.getCell(0), cn.getCell(1), cn.getCell(2), cn.getCell(3) };
             Cell activeCell = cn.getCell(5);
 
-            DistalDendrite activeSegment = cn.createSegment(activeCell);
+            DistalDendrite activeSegment = cn.CreateDistalSegment(activeCell);
             Synapse as1 = cn.createSynapse(activeSegment, previousActiveCells[0], 0.5);
             Synapse as2 = cn.createSynapse(activeSegment, previousActiveCells[1], 0.5);
             Synapse as3 = cn.createSynapse(activeSegment, previousActiveCells[2], 0.5);
@@ -233,13 +233,13 @@ namespace UnitTestsProject
             Cell[] previousActiveCells = { cn.getCell(0), cn.getCell(1), cn.getCell(2), cn.getCell(3) };
             Cell[] burstingCells = { cn.getCell(4), cn.getCell(5) };
 
-            DistalDendrite activeSegment = cn.createSegment(burstingCells[0]);
+            DistalDendrite activeSegment = cn.CreateDistalSegment(burstingCells[0]);
             Synapse as1 = cn.createSynapse(activeSegment, previousActiveCells[0], 0.3);
             Synapse as2 = cn.createSynapse(activeSegment, previousActiveCells[0], 0.3);
             Synapse as3 = cn.createSynapse(activeSegment, previousActiveCells[0], 0.3);
             Synapse is1 = cn.createSynapse(activeSegment, cn.getCell(81), 0.3);
 
-            DistalDendrite otherMatchingSegment = cn.createSegment(burstingCells[1]);
+            DistalDendrite otherMatchingSegment = cn.CreateDistalSegment(burstingCells[1]);
             cn.createSynapse(otherMatchingSegment, previousActiveCells[0], 0.3);
             cn.createSynapse(otherMatchingSegment, previousActiveCells[1], 0.3);
             cn.createSynapse(otherMatchingSegment, cn.getCell(81), 0.3);
@@ -267,13 +267,13 @@ namespace UnitTestsProject
             Cell[] previousActiveCells = { cn.getCell(0), cn.getCell(1), cn.getCell(2), cn.getCell(3) };
             Cell[] burstingCells = { cn.getCell(4), cn.getCell(5) };
 
-            DistalDendrite selectedMatchingSegment = cn.createSegment(burstingCells[0]);
+            DistalDendrite selectedMatchingSegment = cn.CreateDistalSegment(burstingCells[0]);
             cn.createSynapse(selectedMatchingSegment, previousActiveCells[0], 0.3);
             cn.createSynapse(selectedMatchingSegment, previousActiveCells[1], 0.3);
             cn.createSynapse(selectedMatchingSegment, previousActiveCells[2], 0.3);
             cn.createSynapse(selectedMatchingSegment, cn.getCell(81), 0.3);
 
-            DistalDendrite otherMatchingSegment = cn.createSegment(burstingCells[1]);
+            DistalDendrite otherMatchingSegment = cn.CreateDistalSegment(burstingCells[1]);
             Synapse as1 = cn.createSynapse(otherMatchingSegment, previousActiveCells[0], 0.3);
             Synapse as2 = cn.createSynapse(otherMatchingSegment, previousActiveCells[1], 0.3);
             Synapse is1 = cn.createSynapse(otherMatchingSegment, cn.getCell(81), 0.3);
@@ -302,17 +302,17 @@ namespace UnitTestsProject
             List<Cell> expectedActiveCells = new List<Cell>(new Cell[] { expectedActiveCell });
             Cell otherBurstingCell = cn.getCell(5);
 
-            DistalDendrite activeSegment = cn.createSegment(expectedActiveCell);
+            DistalDendrite activeSegment = cn.CreateDistalSegment(expectedActiveCell);
             cn.createSynapse(activeSegment, previousActiveCells[0], 0.5);
             cn.createSynapse(activeSegment, previousActiveCells[1], 0.5);
             cn.createSynapse(activeSegment, previousActiveCells[2], 0.5);
             cn.createSynapse(activeSegment, previousActiveCells[3], 0.5);
 
-            DistalDendrite matchingSegmentOnSameCell = cn.createSegment(expectedActiveCell);
+            DistalDendrite matchingSegmentOnSameCell = cn.CreateDistalSegment(expectedActiveCell);
             Synapse s1 = cn.createSynapse(matchingSegmentOnSameCell, previousActiveCells[0], 0.3);
             Synapse s2 = cn.createSynapse(matchingSegmentOnSameCell, previousActiveCells[1], 0.3);
 
-            DistalDendrite matchingSegmentOnOtherCell = cn.createSegment(otherBurstingCell);
+            DistalDendrite matchingSegmentOnOtherCell = cn.CreateDistalSegment(otherBurstingCell);
             Synapse s3 = cn.createSynapse(matchingSegmentOnOtherCell, previousActiveCells[0], 0.3);
             Synapse s4 = cn.createSynapse(matchingSegmentOnOtherCell, previousActiveCells[1], 0.3);
 
@@ -432,7 +432,7 @@ namespace UnitTestsProject
             ISet<Cell> prevWinnerCells = cn.getCellSet(new int[] { 0, 1, 2, 3 });
             int[] activeColumns = { 4 };
 
-            DistalDendrite matchingSegment = cn.createSegment(cn.getCell(4));
+            DistalDendrite matchingSegment = cn.CreateDistalSegment(cn.getCell(4));
             cn.createSynapse(matchingSegment, cn.getCell(0), 0.5);
 
             ComputeCycle cc = tm.Compute( previousActiveColumns, true) as ComputeCycle;
@@ -469,7 +469,7 @@ namespace UnitTestsProject
             ISet<Cell> prevWinnerCells = cn.getCellSet(new int[] { 0, 1 });
             int[] activeColumns = { 4 };
 
-            DistalDendrite matchingSegment = cn.createSegment(cn.getCell(4));
+            DistalDendrite matchingSegment = cn.CreateDistalSegment(cn.getCell(4));
             cn.createSynapse(matchingSegment, cn.getCell(0), 0.5);
 
             ComputeCycle cc = tm.Compute( previousActiveColumns, true) as ComputeCycle;
@@ -515,7 +515,7 @@ namespace UnitTestsProject
 
             int[] activeColumns = { 5 };
 
-            DistalDendrite activeSegment = cn.createSegment(cn.getCell(5));
+            DistalDendrite activeSegment = cn.CreateDistalSegment(cn.getCell(5));
             cn.createSynapse(activeSegment, cn.getCell(0), 0.5);
             cn.createSynapse(activeSegment, cn.getCell(1), 0.5);
             cn.createSynapse(activeSegment, cn.getCell(2), 0.2);
@@ -557,7 +557,7 @@ namespace UnitTestsProject
             int[] activeColumns = { 2 };
             Cell expectedActiveCell = cn.getCell(5);
 
-            DistalDendrite activeSegment = cn.createSegment(expectedActiveCell);
+            DistalDendrite activeSegment = cn.CreateDistalSegment(expectedActiveCell);
             cn.createSynapse(activeSegment, previousActiveCells[0], 0.5);
             cn.createSynapse(activeSegment, previousActiveCells[1], 0.5);
             cn.createSynapse(activeSegment, previousActiveCells[2], 0.5);
@@ -586,7 +586,7 @@ namespace UnitTestsProject
             int[] activeColumns = { 2 };
             Cell expectedActiveCell = cn.getCell(5);
 
-            DistalDendrite activeSegment = cn.createSegment(expectedActiveCell);
+            DistalDendrite activeSegment = cn.CreateDistalSegment(expectedActiveCell);
             cn.createSynapse(activeSegment, previousActiveCells[0], 0.5);
             cn.createSynapse(activeSegment, previousActiveCells[1], 0.5);
             cn.createSynapse(activeSegment, previousActiveCells[2], 0.5);
@@ -621,7 +621,7 @@ namespace UnitTestsProject
             ISet<Cell> prevWinnerCells = cn.getCellSet(new int[] { 0, 1, 2 });
             int[] activeColumns = { 4 };
 
-            DistalDendrite matchingSegment = cn.createSegment(cn.getCell(4));
+            DistalDendrite matchingSegment = cn.CreateDistalSegment(cn.getCell(4));
             cn.createSynapse(matchingSegment, cn.getCell(81), 0.6);
             // Weakest Synapse
             cn.createSynapse(matchingSegment, cn.getCell(0), 0.11);
@@ -719,7 +719,7 @@ namespace UnitTestsProject
             int[] activeColumns = { 2 };
             Cell expectedActiveCell = cn.getCell(5);
 
-            DistalDendrite matchingSegment = cn.createSegment(cn.getCell(5));
+            DistalDendrite matchingSegment = cn.CreateDistalSegment(cn.getCell(5));
             cn.createSynapse(matchingSegment, prevActiveCells[0], .015);
             cn.createSynapse(matchingSegment, prevActiveCells[1], .015);
             cn.createSynapse(matchingSegment, prevActiveCells[2], .015);
@@ -747,13 +747,13 @@ namespace UnitTestsProject
             int[] activeColumns = { 1 };
             Cell previousInactiveCell = cn.getCell(81);
 
-            DistalDendrite activeSegment = cn.createSegment(cn.getCell(42));
+            DistalDendrite activeSegment = cn.CreateDistalSegment(cn.getCell(42));
             Synapse as1 = cn.createSynapse(activeSegment, prevActiveCells[0], .5);
             Synapse as2 = cn.createSynapse(activeSegment, prevActiveCells[1], .5);
             Synapse as3 = cn.createSynapse(activeSegment, prevActiveCells[2], .5);
             Synapse is1 = cn.createSynapse(activeSegment, previousInactiveCell, .5);
 
-            DistalDendrite matchingSegment = cn.createSegment(cn.getCell(43));
+            DistalDendrite matchingSegment = cn.CreateDistalSegment(cn.getCell(43));
             Synapse as4 = cn.createSynapse(matchingSegment, prevActiveCells[0], .5);
             Synapse as5 = cn.createSynapse(matchingSegment, prevActiveCells[1], .5);
             Synapse is2 = cn.createSynapse(matchingSegment, previousInactiveCell, .5);
@@ -792,9 +792,9 @@ namespace UnitTestsProject
                 Cell[] nonMatchingCells = { cn.getCell(0), cn.getCell(3) };
                 ISet<Cell> activeCells = cn.getCellSet(new int[] { 0, 1, 2, 3 });
 
-                DistalDendrite segment1 = cn.createSegment(nonMatchingCells[0]);
+                DistalDendrite segment1 = cn.CreateDistalSegment(nonMatchingCells[0]);
                 cn.createSynapse(segment1, prevActiveCells[0], 0.5);
-                DistalDendrite segment2 = cn.createSegment(nonMatchingCells[1]);
+                DistalDendrite segment2 = cn.CreateDistalSegment(nonMatchingCells[1]);
                 cn.createSynapse(segment2, prevActiveCells[1], 0.5);
 
                 tm.Compute( prevActiveColumns, true);
@@ -862,12 +862,12 @@ namespace UnitTestsProject
             Cell prevInactiveCell = cn.getCell(81);
             Cell expectedActiveCell = cn.getCell(4);
 
-            DistalDendrite correctActiveSegment = cn.createSegment(expectedActiveCell);
+            DistalDendrite correctActiveSegment = cn.CreateDistalSegment(expectedActiveCell);
             cn.createSynapse(correctActiveSegment, prevActiveCells[0], 0.5);
             cn.createSynapse(correctActiveSegment, prevActiveCells[1], 0.5);
             cn.createSynapse(correctActiveSegment, prevActiveCells[2], 0.5);
 
-            DistalDendrite wrongMatchingSegment = cn.createSegment(cn.getCell(43));
+            DistalDendrite wrongMatchingSegment = cn.CreateDistalSegment(cn.getCell(43));
             cn.createSynapse(wrongMatchingSegment, prevActiveCells[0], 0.5);
             cn.createSynapse(wrongMatchingSegment, prevActiveCells[1], 0.5);
             cn.createSynapse(wrongMatchingSegment, prevInactiveCell, 0.5);
@@ -895,7 +895,7 @@ namespace UnitTestsProject
             p.apply(cn);
             tm.init(cn);
 
-            DistalDendrite dd = cn.createSegment(cn.getCell(0));
+            DistalDendrite dd = cn.CreateDistalSegment(cn.getCell(0));
             cn.createSynapse(dd, cn.getCell(3), 0.3);
 
             for (int i = 0; i < 100; i++)
@@ -913,7 +913,7 @@ namespace UnitTestsProject
             p.apply(cn);
             tm.init(cn);
 
-            DistalDendrite dd = cn.createSegment(cn.getCell(0));
+            DistalDendrite dd = cn.CreateDistalSegment(cn.getCell(0));
             Synapse s1 = cn.createSynapse(dd, cn.getCell(23), 0.6);
             Synapse s2 = cn.createSynapse(dd, cn.getCell(37), 0.4);
             Synapse s3 = cn.createSynapse(dd, cn.getCell(477), 0.9);
@@ -934,7 +934,7 @@ namespace UnitTestsProject
             p.apply(cn);
             tm.init(cn);
 
-            DistalDendrite dd = cn.createSegment(cn.getCell(0));
+            DistalDendrite dd = cn.CreateDistalSegment(cn.getCell(0));
             Synapse s1 = cn.createSynapse(dd, cn.getCell(23), 0.9);
 
             tm.adaptSegment(cn, dd, cn.getCellSet(new int[] { 23 }), cn.getPermanenceIncrement(), cn.getPermanenceDecrement());
@@ -954,7 +954,7 @@ namespace UnitTestsProject
             p.apply(cn);
             tm.init(cn);
 
-            DistalDendrite dd = cn.createSegment(cn.getCell(0));
+            DistalDendrite dd = cn.CreateDistalSegment(cn.getCell(0));
             Synapse s1 = cn.createSynapse(dd, cn.getCell(23), 0.1);
             cn.createSynapse(dd, cn.getCell(1), 0.3);
 
