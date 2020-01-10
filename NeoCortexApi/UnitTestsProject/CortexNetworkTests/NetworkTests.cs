@@ -614,13 +614,11 @@ namespace UnitTestsProject
             //vis.InitModel();
             //vis.UpdateColumnOverlaps
             List<MiniColumn> colData = new List<MiniColumn>();
-            MiniColumn updateOverlap = new MiniColumn();
+            MiniColumn updateOverlap = new MiniColumn(0,0,0,0);
             updateOverlap.Overlap = 0.9;
-            updateOverlap.MsgType = "updateOverlap";
-            updateOverlap.ColDims = new long[0, 0];
 
             colData.Add(updateOverlap);
-            vis.UpdateColumnOverlapsAsync(colData);
+// vis.UpdateColumnOverlapsAsync(colData);
         }
     }
 }
