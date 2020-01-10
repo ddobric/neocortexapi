@@ -447,7 +447,7 @@ namespace UnitTestsProject
             INeuroVisualizer vis = new WSNeuroVisualizer();
             GenerateNeuroModel model = new GenerateNeuroModel();
             
-            vis.InitModelAsync(model.CreateNeuroModel(new int[] { 1}, (long[,])p[KEY.COLUMN_DIMENSIONS], (int)p[KEY.CELLS_PER_COLUMN]));
+            vis.InitModelAsync(model.CreateNeuroModel(new int[] {1}, (long[,])p[KEY.COLUMN_DIMENSIONS], (int)p[KEY.CELLS_PER_COLUMN]));
 
             CortexNetwork net = new CortexNetwork("my cortex");
             List<CortexRegion> regions = new List<CortexRegion>();
@@ -620,5 +620,21 @@ namespace UnitTestsProject
             colData.Add(updateOverlap);
 // vis.UpdateColumnOverlapsAsync(colData);
         }
+
+        [TestMethod]
+        public void TestModel()
+        {
+            INeuroVisualizer vis = new WSNeuroVisualizer();
+
+            int[] areas = new int[] { 0, 0, 0 };
+            GenerateNeuroModel model = new GenerateNeuroModel();
+            model.CreateNeuroModel(areas, (new long[10, 1]), 6);
+            // vis.InitModelAsync(new NeuroModel(areas, (new long[10, 1]), 6));
+            // vis.InitModelAsync(new NeuroModel(areas, (new long[10, 5]), 8));
+            vis.InitModelAsync(model.CreateNeuroModel(areas, (new long[10, 1]), 6));
+
+
+        }
     }
 }
+
