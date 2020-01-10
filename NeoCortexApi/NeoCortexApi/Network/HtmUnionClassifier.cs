@@ -10,14 +10,14 @@ namespace NeoCortexApi.Network
     {
         private Dictionary<TIN, int[]> activeMap = new Dictionary<TIN, int[]>();
 
-        public TOUT Inference(Cell[] activeCells)
+        public TIN GetPredictedInputValue(Cell[] predictiveCells)
         {
             int result = 0;
             dynamic charOutput = null;
-            int[] arr = new int[activeCells.Length];
-            for (int i = 0; i < activeCells.Length; i++)
+            int[] arr = new int[predictiveCells.Length];
+            for (int i = 0; i < predictiveCells.Length; i++)
             {
-                arr[i] = activeCells[i].Index;
+                arr[i] = predictiveCells[i].Index;
             }
             foreach (var key in activeMap.Keys)
             {
@@ -27,7 +27,7 @@ namespace NeoCortexApi.Network
                     charOutput = key as String;
                 }
             }
-            return (TOUT)charOutput;
+            return (TIN)charOutput;
         }
 
         /*
@@ -108,5 +108,7 @@ public String Inference(Cell[] activeCells)
 
             return same.Count();
         }
+
+     
     }
 }

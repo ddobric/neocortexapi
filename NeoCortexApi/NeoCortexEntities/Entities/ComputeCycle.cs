@@ -88,7 +88,7 @@ namespace NeoCortexApi.Entities
 
                     foreach (DistalDendrite activeSegment in ActiveSegments)
                     {
-                        if ((currCell = activeSegment.getParentCell()) != previousCell)
+                        if ((currCell = activeSegment.GetParentCell()) != previousCell)
                         {
                             PredictiveCells.Add(previousCell = currCell);
                         }

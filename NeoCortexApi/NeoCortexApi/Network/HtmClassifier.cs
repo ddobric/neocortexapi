@@ -27,22 +27,13 @@ namespace NeoCortexApi.Network
             throw new NotImplementedException();
         }
 
-        public TOUT Inference(Cell[] activeCells)
-        {
-            throw new NotImplementedException();
-        }
 
-        public void Learn1(TIN input, Cell[] output, Cell[] predictedOutput)
-        {
-            var outIndicies = GetCellIndicies(output);
-
-          
-            if (!activeMap.ContainsKey(GetCellIndicies(output)))
-            {
-                this.activeMap.Add(GetCellIndicies(output), input);
-            }
-        }
-
+        /// <summary>
+        /// Assotiate specified input to the given set of predictive cells.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="output"></param>
+        /// <param name="predictedOutput"></param>
         public void Learn(TIN input, Cell[] output, Cell[] predictedOutput)
         {
             this.inputSequence.Add(input);
@@ -53,6 +44,59 @@ namespace NeoCortexApi.Network
             {
                 this.activeMap.Add(GetCellIndicies(output), input);
             }
+        }
+
+        /// <summary>
+        /// Gets predicted value for next cycle
+        /// </summary>
+        /// <param name="predictiveCells">The list of predictive cells.</param>
+        /// <returns></returns>
+        public TIN GetPredictedInputValue(Cell[] predictiveCells)
+        {
+            bool x = false;
+            int maxSameBits = 0;
+            TIN charOutput = default(TIN);
+            int[] arr = new int[predictiveCells.Length];
+            for (int i = 0; i < predictiveCells.Length; i++)
+            {
+                arr[i] = predictiveCells[i].Index;
+            }
+
+            if (predictiveCells.Length != 0)
+            {
+                int indx = 0;
+                Debug.WriteLine($"Item length: {predictiveCells.Length}\t Items: {this.activeMap.Keys.Count}");
+                int n = 0;
+                //foreach (TIN inputVal in activeArray.Keys)
+                foreach (var pair in this.activeMap)
+                {
+                    int numOfSameBits = pair.Key.Intersect(arr).Count();
+                    if (numOfSameBits > maxSameBits)
+                    {
+                        Debug.WriteLine($"cnt:{n}\t{pair.Value} = bits {numOfSameBits}\t {Helpers.StringifyVector(pair.Key)}");
+                        maxSameBits = numOfSameBits;
+                        charOutput = pair.Value;
+                        indx = n;
+                    }
+
+                    n++;
+                }
+
+                Debug.Write("[ ");
+                for (int i = Math.Max(0, indx - 3); i < Math.Min(indx + 3, this.activeMap.Keys.Count); i++)
+                {
+                    if (i == indx) Debug.Write("* ");
+                    Debug.Write($"{this.inputSequence[i]}");
+                    if (i == indx) Debug.Write(" *");
+
+                    Debug.Write(", ");
+                }
+                Debug.WriteLine(" ]");
+
+                return charOutput;
+                //return activeMap[ComputeHash(FlatArray(output))];
+            }
+            return default(TIN);
         }
 
 
@@ -80,58 +124,7 @@ namespace NeoCortexApi.Network
             }
         }
 
-        /// <summary>
-        /// Gets predicted value for next cycle
-        /// </summary>
-        /// <param name="output"></param>
-        /// <returns></returns>
-        public TIN GetPredictedInputValue(Cell[] output)
-        {
-            bool x = false;
-            int maxSameBits = 0;
-            TIN charOutput = default(TIN);
-            int[] arr = new int[output.Length];
-            for (int i = 0; i < output.Length; i++)
-            {
-                arr[i] = output[i].Index;
-            }
-
-            if (output.Length != 0)
-            {
-                int indx = 0;
-                Debug.WriteLine($"Item length: {output.Length}\t Items: {this.activeMap.Keys.Count}");
-                int n = 0;
-                //foreach (TIN inputVal in activeArray.Keys)
-                foreach (var pair in this.activeMap)
-                {
-                    int numOfSameBits = pair.Key.Intersect(arr).Count();
-                    if (numOfSameBits > maxSameBits)
-                    {
-                        Debug.WriteLine($"cnt:{n}\t{pair.Value} = bits {numOfSameBits}\t {Helpers.StringifyVector(pair.Key)}");
-                        maxSameBits = numOfSameBits;
-                        charOutput = pair.Value;
-                        indx = n;
-                    }
-
-                    n++;
-                }
-                
-                Debug.Write("[ ");
-                for (int i = Math.Max(0, indx-3); i < Math.Min(indx + 3, this.activeMap.Keys.Count); i++)
-                {
-                    if (i == indx) Debug.Write("* ");
-                    Debug.Write($"{this.inputSequence[i]}");
-                    if (i == indx) Debug.Write(" *");
-
-                    Debug.Write(", ");
-                }
-                Debug.WriteLine(" ]");
-
-                return charOutput;
-                //return activeMap[ComputeHash(FlatArray(output))];
-            }
-            return default(TIN);
-        }
+       
 
         
         private string ComputeHash(byte[] rawData)

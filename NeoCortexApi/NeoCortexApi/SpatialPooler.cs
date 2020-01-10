@@ -297,7 +297,7 @@ namespace NeoCortexApi
         */
 
         /// <summary>
-        /// 
+        /// Performs SpatialPooler compute algorithm.
         /// </summary>
         /// <param name="input">Input vector</param>
         /// <param name="learn">Learn or Predict.</param>
@@ -311,7 +311,7 @@ namespace NeoCortexApi
 
 
         /// <summary>
-        /// 
+        /// Performs SPatialPooler compute algorithm.
         /// </summary>
         /// <param name="input">Input vector</param>
         /// <param name="learn">Learn or Predict.</param>

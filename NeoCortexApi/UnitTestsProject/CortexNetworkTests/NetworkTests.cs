@@ -1,12 +1,14 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NeoCortexApi;
-using NeoCortexApi.Encoders;
-using NeoCortexApi.Entities;
-using NeoCortexApi.Network;
-using NeoCortexEntities.NeuroVisualizer;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
+using System.Globalization;
+using NeoCortexApi.Encoders;
+using NeoCortexApi.Network;
+using NeoCortexApi;
+using NeoCortexApi.Entities;
+using System.Diagnostics;
+using NeoCortexEntities.NeuroVisualizer;
 using WebSocketNeuroVisualizer;
 
 namespace UnitTestsProject
@@ -352,7 +354,7 @@ namespace UnitTestsProject
 
                     var predictedValue = cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray());
 
-                    Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {predictedValue}");
+                    Debug.WriteLine($"Current Input: {input} \t| - Predicted value in previous cycle: {lastPredictedValue} \t| Predicted Input for the next cycle: {predictedValue}");
 
                     if (input == lastPredictedValue)
                     {
@@ -405,8 +407,8 @@ namespace UnitTestsProject
             p.setInhibitionRadius(15);
 
             // Max number of synapses on the segment.
-            p.setMaxNewSynapseCount((int)(0.02 * numColumns));
-            double max = 8;
+            p.setMaxNewSynapsesPerSegmentCount((int)(0.02 * numColumns));
+            double max = 20;
 
             Dictionary<string, object> settings = new Dictionary<string, object>()
             {
@@ -423,24 +425,29 @@ namespace UnitTestsProject
             EncoderBase encoder = new ScalarEncoder(settings);
 
             //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 2.0, 0.0, 0.1, 2.0 });
-            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0 });
+            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0 });
 
             // RunExperiment(inputBits, p, encoder, inputValues);
-            RunExperimentDbg(inputBits, p, encoder, inputValues);
+            RunExperiment(inputBits, p, encoder, inputValues);
         }
 
 
         /// <summary>
         ///
         /// </summary>
-        private void RunExperimentDbg(int inputBits, Parameters p, EncoderBase encoder, List<double> inputValues)
+        private void RunExperiment(int inputBits, Parameters p, EncoderBase encoder, List<double> inputValues)
         {
-            INeuroVisualizer vis = new WSNeuroVisualizer();
-            int[] areas = new int[] {0,0,0,1,2,3};
-            
-            //vis.InitModelAsync(new NeuroModel(areas, (new long[10, 1]), 6));
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
 
+            //INeuroVisualizer vis = new WSNeuroVisualizer();
+            //vis.InitModelAsync(new NeuroModel(null, (new long [10, 0]), 6));
+            int maxMatchCnt = 0;
             bool learn = true;
+            //INeuroVisualizer vis = new WSNeuroVisualizer();
+            //GenerateNeuroModel model = new GenerateNeuroModel();
+            
+            //vis.InitModel(model.CreateNeuroModel(new int[] { 1}, (long[,])p[KEY.COLUMN_DIMENSIONS], (int)p[KEY.CELLS_PER_COLUMN]));
 
             CortexNetwork net = new CortexNetwork("my cortex");
             List<CortexRegion> regions = new List<CortexRegion>();
@@ -468,17 +475,17 @@ namespace UnitTestsProject
             double[] inputs = inputValues.ToArray();
 
             //
-            // This trains SP.
+            // This trains SP on input pattern.
+            // It performs some kind of unsupervised new-born learning.
             foreach (var input in inputs)
             {
                 Debug.WriteLine($" ** {input} **");
                 for (int i = 0; i < 3; i++)
                 {
                     var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
-                    var activeColumns = layer1.GetResult("sp") as int[];
-                    // vis.UpdateColumnOverlapsAsync();
-                    // TODO: @Atta
 
+                    var activeColumns = layer1.GetResult("sp") as int[];
+                    // TODO: @Atta
                 }
             }
 
@@ -491,8 +498,8 @@ namespace UnitTestsProject
             double lastPredictedValue = 0;
 
             //
-            // Now, training with SP+TM. SP is pretrained on pattern.
-            for (int i = 0; i < 460; i++)
+            // Now training with SP+TM. SP is pretrained on the given input pattern.
+            for (int i = 0; i < 1460; i++)
             {
                 matches = 0;
 
@@ -505,7 +512,7 @@ namespace UnitTestsProject
                     Debug.WriteLine($"-------------- {input} ---------------");
 
                     var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
-                    
+
                     cls.Learn(input, lyrOut.ActiveCells.ToArray(), lyrOut.predictiveCells.ToArray());
                     //vis.UpdateSynapsesAsync();
 
@@ -535,16 +542,62 @@ namespace UnitTestsProject
                         Debug.WriteLine($"NO CELLS PREDICTED for next cycle.");
                 }
 
-
-                if (i == 500)
-                {
-                    Debug.WriteLine("Stop Learning From Here. Entering inference mode.");
-                    learn = false;
-                }
-
                 //tm1.reset(mem);
 
-                Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {inputs.Length}\t {(double)matches / (double)inputs.Length * 100.0}%");
+                double res = (double)matches / (double)inputs.Length * 100.0;
+
+                Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {inputs.Length}\t {res}%");
+
+                if (res == 100.0)
+                {
+                    maxMatchCnt++;
+                    Debug.WriteLine($"Best match {maxMatchCnt}");
+                    if (maxMatchCnt >= 10)
+                    {
+                        sw.Stop();
+                        Debug.WriteLine($"Exit experiment in the stable state. Elapsed time: {sw.ElapsedMilliseconds/1000/60} min.");
+
+                        var testInputs = new double[] {0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 0.0, 1.0 };
+
+                        double predictedInputValue = 0.0;
+
+                        // Traverse the sequence and check prediction.
+                        foreach (var input in testInputs)
+                        {
+                            var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
+                            predictedInputValue = cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray());
+                            Debug.WriteLine($"I={input} - P={predictedInputValue}");
+                        }
+
+                        //
+                        // Here we let the HTM predict seuence five times on its own.
+                        // We start with last predicted value.
+                        int cnt = 5 * testInputs.Length;
+                        
+                        Debug.WriteLine("---- Start Predicting the Sequence -----");
+
+                        List<double> predictedValues = new List<double>();
+
+                        while (--cnt > 0)
+                        {
+                            var lyrOut = layer1.Compute(predictedInputValue, learn) as ComputeCycle;
+                            predictedInputValue = cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray());
+                            predictedValues.Add(predictedInputValue);
+                        };
+
+                        foreach (var item in predictedValues)
+                        {
+                            Debug.Write(item);
+                            Debug.Write(" ,");
+                        }
+                        break;
+                    }
+                }
+                else
+                {
+                    maxMatchCnt = 0;
+                    Debug.WriteLine($"At 100% match we get a lower raten agai:{res}");
+                }
             }
 
             cls.TraceState();
@@ -560,27 +613,12 @@ namespace UnitTestsProject
 
             //vis.InitModel();
             //vis.UpdateColumnOverlaps
-
             List<MiniColumn> colData = new List<MiniColumn>();
-            MiniColumn updateOverlap = new MiniColumn(0,0.78,0,0);//A MiniColumn is defined as X and Z dimensional
+            MiniColumn updateOverlap = new MiniColumn(0,0,0,0);
+            updateOverlap.Overlap = 0.9;
 
             colData.Add(updateOverlap);
-            vis.UpdateColumnOverlapsAsync(colData);
-        }
-
-        [TestMethod]
-        public void TestModel()
-        {
-            INeuroVisualizer vis = new WSNeuroVisualizer();
-
-            int[] areas = new int[] { 0, 0, 0};
-            GenerateNeuroModel model = new GenerateNeuroModel();
-            model.CreateNeuroModel(areas, (new long[10, 1]), 6);
-            // vis.InitModelAsync(new NeuroModel(areas, (new long[10, 1]), 6));
-            // vis.InitModelAsync(new NeuroModel(areas, (new long[10, 5]), 8));
-            vis.InitModelAsync(model.CreateNeuroModel(areas, (new long[10, 1]), 6));
-
-
+// vis.UpdateColumnOverlapsAsync(colData);
         }
     }
 }

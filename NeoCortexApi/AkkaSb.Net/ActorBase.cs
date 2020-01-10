@@ -78,13 +78,6 @@ namespace AkkaSb.Net
             this.Id = id;   
         }
 
-        /// <summary>
-        /// Invoked if the actor receives the message, which cannot be dispatched.
-        /// </summary>
-        public virtual void UnrouteedMessage()
-        {
-
-        }
 
         internal object Invoke(object message)
         {
@@ -108,16 +101,36 @@ namespace AkkaSb.Net
             return Task.FromResult<bool>(true);
         }
 
+
+        /// <summary>
+        /// Invoked if the actor receives the message, which cannot be dispatched.
+        /// </summary>
+        public virtual void UnrouteedMessage()
+        {
+
+        }
+
+        /// <summary>
+        /// Invoked when the actor is activated.
+        /// </summary>
         public virtual void Activated()
         {
            
         }
 
+        /// <summary>
+        /// Invoked when actor is deactivated.
+        /// </summary>
         public virtual void DeActivated()
         {
 
         }
 
+        /// <summary>
+        /// You must invoke this method to register the reciever handler.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="handler"></param>
         public void Receive<T>(Func<T, object> handler)
         {
             dict[typeof(T)] = (Delegate)handler;
