@@ -438,7 +438,7 @@ namespace UnitTestsProject
             INeuroVisualizer vis = new WSNeuroVisualizer();
             int[] areas = new int[] {0,0,0,1,2,3};
             
-            vis.InitModelAsync(new NeuroModel(areas, (new long[10, 1]), 6));
+            //vis.InitModelAsync(new NeuroModel(areas, (new long[10, 1]), 6));
 
             bool learn = true;
 
@@ -574,9 +574,12 @@ namespace UnitTestsProject
             INeuroVisualizer vis = new WSNeuroVisualizer();
 
             int[] areas = new int[] { 0, 0, 0};
-
-             vis.InitModelAsync(new NeuroModel(areas, (new long[10, 1]), 6));
+            GenerateNeuroModel model = new GenerateNeuroModel();
+            model.CreateNeuroModel(areas, (new long[10, 1]), 6);
+            // vis.InitModelAsync(new NeuroModel(areas, (new long[10, 1]), 6));
             // vis.InitModelAsync(new NeuroModel(areas, (new long[10, 5]), 8));
+            vis.InitModelAsync(model.CreateNeuroModel(areas, (new long[10, 1]), 6));
+
 
         }
     }
