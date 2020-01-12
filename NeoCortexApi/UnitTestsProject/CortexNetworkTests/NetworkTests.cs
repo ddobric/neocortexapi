@@ -446,7 +446,7 @@ namespace UnitTestsProject
             bool learn = true;
             //INeuroVisualizer vis = new WSNeuroVisualizer();
             //GenerateNeuroModel model = new GenerateNeuroModel();
-            
+
             //vis.InitModel(model.CreateNeuroModel(new int[] { 1}, (long[,])p[KEY.COLUMN_DIMENSIONS], (int)p[KEY.CELLS_PER_COLUMN]));
 
             CortexNetwork net = new CortexNetwork("my cortex");
@@ -555,9 +555,9 @@ namespace UnitTestsProject
                     if (maxMatchCnt >= 10)
                     {
                         sw.Stop();
-                        Debug.WriteLine($"Exit experiment in the stable state. Elapsed time: {sw.ElapsedMilliseconds/1000/60} min.");
-
-                        var testInputs = new double[] {0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 0.0, 1.0 };
+                        Debug.WriteLine($"Exit experiment in the stable state. Elapsed time: {sw.ElapsedMilliseconds / 1000 / 60} min.");
+                        learn = false;
+                        var testInputs = new double[] { 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 0.0, 1.0 };
 
                         double predictedInputValue = 0.0;
 
@@ -573,7 +573,7 @@ namespace UnitTestsProject
                         // Here we let the HTM predict seuence five times on its own.
                         // We start with last predicted value.
                         int cnt = 5 * testInputs.Length;
-                        
+
                         Debug.WriteLine("---- Start Predicting the Sequence -----");
 
                         List<double> predictedValues = new List<double>();
@@ -614,11 +614,11 @@ namespace UnitTestsProject
             //vis.InitModel();
             //vis.UpdateColumnOverlaps
             List<MiniColumn> colData = new List<MiniColumn>();
-            MiniColumn updateOverlap = new MiniColumn(0,0,0,0);
+            MiniColumn updateOverlap = new MiniColumn(0, 0, 0, 0);
             updateOverlap.Overlap = 0.9;
 
             colData.Add(updateOverlap);
-// vis.UpdateColumnOverlapsAsync(colData);
+            // vis.UpdateColumnOverlapsAsync(colData);
         }
     }
 }

@@ -1366,7 +1366,7 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public SegmentActivity ComputeActivity(ICollection<Cell> activeCellsInCurrentCycle, double connectedPermanence)
         {
-            Dictionary<int, int> active = new Dictionary<int, int>();
+            Dictionary<int, int> activeSynapses = new Dictionary<int, int>();
             Dictionary<int, int> potentialSynapses = new Dictionary<int, int>();
 
             // Every receptor synapse on active cell, which has permanence over threshold is by default connected.
@@ -1396,16 +1396,16 @@ namespace NeoCortexApi.Entities
 
                     if (synapse.getPermanence() > threshold)
                     {
-                        if (active.ContainsKey(segFlatIndx) == false)
-                            active.Add(segFlatIndx, 0);
+                        if (activeSynapses.ContainsKey(segFlatIndx) == false)
+                            activeSynapses.Add(segFlatIndx, 0);
 
-                        active[segFlatIndx] = active[segFlatIndx] + 1;
+                        activeSynapses[segFlatIndx] = activeSynapses[segFlatIndx] + 1;
                         ++numActiveConnectedSynapsesForSegment[segFlatIndx];
                     }
                 }
             }
 
-            return new SegmentActivity() { ActiveSynapses = active, PotentialSynapses = potentialSynapses };
+            return new SegmentActivity() { ActiveSynapses = activeSynapses, PotentialSynapses = potentialSynapses };
         }
 
 
