@@ -12,6 +12,7 @@ namespace WebSocketNeuroVisualizer
 
     public class WSNeuroVisualizer : INeuroVisualizer
     {
+        // To Fix if list of update or a single update send over the websocket
 
         readonly string url = "ws://localhost:5000/ws/client1";
 

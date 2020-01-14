@@ -611,14 +611,14 @@ namespace UnitTestsProject
         {
             INeuroVisualizer vis = new WSNeuroVisualizer();
 
-            //vis.InitModel();
-            //vis.UpdateColumnOverlaps
             List<MiniColumn> colData = new List<MiniColumn>();
-            MiniColumn updateOverlap = new MiniColumn(0,0,0,0);
-            updateOverlap.Overlap = 0.9;
+            MiniColumn minCol = new MiniColumn(0,0,0,0);
+            MiniColumn minCol1 = new MiniColumn(0, 01, 0, 0);
 
-            colData.Add(updateOverlap);
-// vis.UpdateColumnOverlapsAsync(colData);
+            colData.Add(minCol);
+            colData.Add(minCol1);
+
+            vis.UpdateColumnOverlapsAsync(colData);
         }
 
         [TestMethod]
@@ -628,7 +628,6 @@ namespace UnitTestsProject
 
             int[] areas = new int[] { 0, 0, 0 };
             GenerateNeuroModel model = new GenerateNeuroModel();
-            model.CreateNeuroModel(areas, (new long[10, 1]), 6);
             // vis.InitModelAsync(new NeuroModel(areas, (new long[10, 1]), 6));
             // vis.InitModelAsync(new NeuroModel(areas, (new long[10, 5]), 8));
             vis.InitModelAsync(model.CreateNeuroModel(areas, (new long[10, 1]), 6));
