@@ -14,16 +14,17 @@ namespace WebSocketNeuroVisualizer
     {
         // To Fix if list of update or a single update send over the websocket
 
-        readonly string url = "ws://localhost:5000/ws/client1";
 
-        ClientWebSocket websocket = new ClientWebSocket();
+       // ClientWebSocket websocket = new ClientWebSocket();
+       public ClientWebSocket Websocket { get; set; }
+
         string messageType = "";
 
         public async Task InitModelAsync(NeuroModel model)
         {
             messageType = "init";
 
-            await SendData(websocket, (messageType + model.ToString()), true);
+            await SendData(Websocket, (messageType + model.ToString()), true);
         }
 
         public async Task UpdateColumnOverlapsAsync(List<MiniColumn> columns)
@@ -36,7 +37,7 @@ namespace WebSocketNeuroVisualizer
                 updateOverlap = columns[i].ToString();
 
             }
-            await SendData(websocket, (messageType + updateOverlap), true);
+            await SendData(Websocket, (messageType + updateOverlap), true);
         }
         public async Task UpdateSynapsesAsync(List<SynapseData> synapses)
         {
@@ -74,16 +75,21 @@ namespace WebSocketNeuroVisualizer
 
             }
 
-            await SendData(websocket, (messageType + synData.ToString()), true);
+            await SendData(Websocket, (messageType + synData.ToString()),true);
 
         }
-        public async Task Connect(string url, CancellationToken cancellationToken)
+        public async Task Connect(string url,  ClientWebSocket websocket)
         {
+            Websocket = websocket;
             try
             {
                 // once per Minute H:M:S
-                websocket.Options.KeepAliveInterval = new TimeSpan(0, 1, 0);
+                //Days, housr, minutes, seconds, milliseconds
+                websocket.Options.KeepAliveInterval = new TimeSpan(0, 0, 5, 0, 0);
                 await websocket.ConnectAsync((new Uri(url)), CancellationToken.None);
+
+               
+ 
             }
             catch (Exception ex)
             {
@@ -95,13 +101,21 @@ namespace WebSocketNeuroVisualizer
 
         public async Task SendData(ClientWebSocket websocket, string message, bool endOfMessage)
         {
-
-            if (websocket != null && websocket.State == WebSocketState.Open)
+            try
             {
-                var msg = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
 
-                await websocket.SendAsync(new ArraySegment<byte>(msg), WebSocketMessageType.Text, endOfMessage, CancellationToken.None);
+                while (websocket.State == WebSocketState.Open)
+            {
+                    var encodeMsg = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
+                    var buffer = new ArraySegment<Byte>(encodeMsg, 0, encodeMsg.Length);
 
+                   await websocket.SendAsync(buffer, WebSocketMessageType.Text, endOfMessage, CancellationToken.None);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception: {0}", ex);
             }
 
         }

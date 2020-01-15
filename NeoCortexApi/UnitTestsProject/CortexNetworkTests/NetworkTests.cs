@@ -10,6 +10,8 @@ using NeoCortexApi.Entities;
 using System.Diagnostics;
 using NeoCortexEntities.NeuroVisualizer;
 using WebSocketNeuroVisualizer;
+using System.Threading;
+using System.Net.WebSockets;
 
 namespace UnitTestsProject
 {
@@ -447,7 +449,7 @@ namespace UnitTestsProject
             INeuroVisualizer vis = new WSNeuroVisualizer();
             GenerateNeuroModel model = new GenerateNeuroModel();
             
-            vis.InitModelAsync(model.CreateNeuroModel(new int[] {1}, (long[,])p[KEY.COLUMN_DIMENSIONS], (int)p[KEY.CELLS_PER_COLUMN]));
+          //  vis.InitModelAsync(model.CreateNeuroModel(new int[] {1}, (long[,])p[KEY.COLUMN_DIMENSIONS], (int)p[KEY.CELLS_PER_COLUMN]));
 
             CortexNetwork net = new CortexNetwork("my cortex");
             List<CortexRegion> regions = new List<CortexRegion>();
@@ -618,18 +620,24 @@ namespace UnitTestsProject
             colData.Add(minCol);
             colData.Add(minCol1);
 
-            vis.UpdateColumnOverlapsAsync(colData);
+            //vis.UpdateColumnOverlapsAsync(colData);
         }
 
         [TestMethod]
         public void TestModel()
         {
-            INeuroVisualizer vis = new WSNeuroVisualizer();
+             string url = "ws://localhost:5000/ws/client1";
 
-            int[] areas = new int[] { 0, 0, 0 };
+            ClientWebSocket websocket = new ClientWebSocket();
+
+            INeuroVisualizer vis = new WSNeuroVisualizer();
+            int[] areas = new int[] { 1 };
             GenerateNeuroModel model = new GenerateNeuroModel();
             // vis.InitModelAsync(new NeuroModel(areas, (new long[10, 1]), 6));
             // vis.InitModelAsync(new NeuroModel(areas, (new long[10, 5]), 8));
+
+
+            vis.Connect(url, websocket);
             vis.InitModelAsync(model.CreateNeuroModel(areas, (new long[10, 1]), 6));
 
 
