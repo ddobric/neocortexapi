@@ -402,8 +402,9 @@ namespace UnitTestsProject
             p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
 
             // N of 40 (40= 0.02*2048 columns) active cells required to activate the segment.
-            p.setActivationThreshold(10);
-            p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
+            p.setNumActiveColumnsPerInhArea(0.02 * numColumns); 
+            // Activation threshold is 10 active cells of 40 cells in inhibition area.
+            p.setActivationThreshold(10);           
             p.setInhibitionRadius(15);
 
             // Max number of synapses on the segment.
@@ -426,6 +427,7 @@ namespace UnitTestsProject
 
             //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 2.0, 0.0, 0.1, 2.0 });
             List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0 });
+            inputValues = new List<double>(new double[] { 1.0, 2.0, 3.0, 1.0, 5.0, 1.0, 6.0, });
 
             // RunExperiment(inputBits, p, encoder, inputValues);
             RunExperiment(inputBits, p, encoder, inputValues);
@@ -544,20 +546,23 @@ namespace UnitTestsProject
 
                 //tm1.reset(mem);
 
-                double res = (double)matches / (double)inputs.Length * 100.0;
+                double accuracy = (double)matches / (double)inputs.Length * 100.0;
 
-                Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {inputs.Length}\t {res}%");
+                Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {inputs.Length}\t {accuracy}%");
 
-                if (res == 100.0)
+                if (accuracy == 100.0)
                 {
                     maxMatchCnt++;
-                    Debug.WriteLine($"Best match {maxMatchCnt}");
+                    Debug.WriteLine($"100% accuracy reched {maxMatchCnt} times.");
                     if (maxMatchCnt >= 10)
                     {
                         sw.Stop();
-                        Debug.WriteLine($"Exit experiment in the stable state. Elapsed time: {sw.ElapsedMilliseconds / 1000 / 60} min.");
+                        Debug.WriteLine($"Exit experiment in the stable state after 10 repeats with 100% of accuracy. Elapsed time: {sw.ElapsedMilliseconds / 1000 / 60} min.");
                         learn = false;
-                        var testInputs = new double[] { 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 0.0, 1.0 };
+                        //var testInputs = new double[] { 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 0.0, 1.0 };
+                       
+                        // C-0, D-1, E-2, F-3, G-4, H-5
+                        var testInputs = new double[] { 0.0, 0.0, 4.0, 4.0, 5.0, 5.0, 4.0, 3.0, 3.0, 2.0, 2.0, 1.0, 1.0, 0.0 };
 
                         double predictedInputValue = 0.0;
 
@@ -593,10 +598,12 @@ namespace UnitTestsProject
                         break;
                     }
                 }
-                else
+                else if(maxMatchCnt>0)
                 {
+                    
+                    
+                    Debug.WriteLine($"At 100% accuracy after {maxMatchCnt} repeats we get a drop of accuracy with {accuracy}. This indicates instable state. Learning will be continued.");
                     maxMatchCnt = 0;
-                    Debug.WriteLine($"At 100% match we get a lower raten agai:{res}");
                 }
             }
 
@@ -605,6 +612,10 @@ namespace UnitTestsProject
             Debug.WriteLine("------------------------------------------------------------------------\n----------------------------------------------------------------------------");
         }
 
+        private void PlaySong(double[] notes)
+        {
+            // C-0, D-1, E-2, F-3, G-4, H-5
+        }
 
         [TestMethod]
         public void Abc()
