@@ -627,8 +627,9 @@ namespace UnitTestsProject
         public void TestModel()
         {
              string url = "ws://localhost:5000/ws/client1";
-
-            ClientWebSocket websocket = new ClientWebSocket();
+           
+            ClientWebSocket ws1 = new ClientWebSocket();
+        
 
             INeuroVisualizer vis = new WSNeuroVisualizer();
             int[] areas = new int[] { 1 };
@@ -637,9 +638,8 @@ namespace UnitTestsProject
             // vis.InitModelAsync(new NeuroModel(areas, (new long[10, 5]), 8));
 
 
-            vis.Connect(url, websocket);
-            vis.InitModelAsync(model.CreateNeuroModel(areas, (new long[10, 1]), 6));
-
+            vis.Connect(url, ws1);
+            vis.InitModelAsync(model.CreateNeuroModel(areas, (new long[10, 1]), 6), ws1);
 
         }
     }
