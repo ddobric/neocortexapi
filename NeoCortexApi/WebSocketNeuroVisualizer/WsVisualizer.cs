@@ -19,7 +19,7 @@ namespace WebSocketNeuroVisualizer
         {
             messageType = "init";
 
-            await SendData(websocket, (messageType + model.ToString()), true);
+            await SendDataAsync(websocket, (messageType + model.ToString()), true);
         }
 
         public async Task UpdateColumnOverlapsAsync(List<MiniColumn> columns, ClientWebSocket websocket)
@@ -32,7 +32,7 @@ namespace WebSocketNeuroVisualizer
                 updateOverlap = columns[i].ToString();
 
             }
-            await SendData(websocket, (messageType + updateOverlap), true);
+            await SendDataAsync(websocket, (messageType + updateOverlap), true);
         }
         public async Task UpdateSynapsesAsync(List<SynapseData> synapses, ClientWebSocket websocket)
         {
@@ -70,10 +70,10 @@ namespace WebSocketNeuroVisualizer
 
             }
 
-            await SendData(websocket, (messageType + synData.ToString()),true);
+            await SendDataAsync(websocket, (messageType + synData.ToString()),true);
 
         }
-        public async Task Connect(string url,  ClientWebSocket websocket)
+        public async Task ConnectToWSServerAsync(string url,  ClientWebSocket websocket)
         {
             try
             {
@@ -95,7 +95,7 @@ namespace WebSocketNeuroVisualizer
 
         }
 
-        public async Task SendData(ClientWebSocket websocket, string message, bool endOfMessage)
+        public async Task SendDataAsync(ClientWebSocket websocket, string message, bool endOfMessage)
         {
 
             try

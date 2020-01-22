@@ -13,6 +13,6 @@ namespace NeoCortexEntities.NeuroVisualizer
 
         Task UpdateSynapsesAsync(List<SynapseData> synapses, ClientWebSocket websocket);
 
-        Task Connect(string url, ClientWebSocket websocket);
+        Task ConnectToWSServerAsync(string url, ClientWebSocket websocket);
     }
 }

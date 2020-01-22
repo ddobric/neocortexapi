@@ -638,7 +638,7 @@ namespace UnitTestsProject
             // vis.InitModelAsync(new NeuroModel(areas, (new long[10, 5]), 8));
 
 
-            vis.Connect(url, ws1);
+            vis.ConnectToWSServerAsync(url, ws1);
             vis.InitModelAsync(model.CreateNeuroModel(areas, (new long[10, 1]), 6), ws1);
 
         }
