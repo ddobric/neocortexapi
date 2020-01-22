@@ -13,7 +13,6 @@ namespace WebSocketNeuroVisualizer
     public class WSNeuroVisualizer : INeuroVisualizer
     {
         // To Fix if list of update or a single update send over the websocket
-        private static readonly TimeSpan delay = TimeSpan.FromMilliseconds(30000);
         string messageType = "";
 
         public async Task InitModelAsync(NeuroModel model, ClientWebSocket websocket)
@@ -87,9 +86,6 @@ namespace WebSocketNeuroVisualizer
                 websocket.Options.KeepAliveInterval = new TimeSpan(0, 0, 5, 0, 0);
                 await websocket.ConnectAsync((new Uri(url)), CancellationToken.None);
 
-
-               
- 
             }
             catch (Exception ex)
             {
@@ -104,7 +100,6 @@ namespace WebSocketNeuroVisualizer
 
             try
             {
-               
 
                 while (websocket.State == WebSocketState.Open)
             {
@@ -112,9 +107,9 @@ namespace WebSocketNeuroVisualizer
 
                     await websocket.SendAsync(buffer, WebSocketMessageType.Text, endOfMessage, CancellationToken.None);
 
-                    //var incomingData = new ArraySegment<byte>(new byte[1024]);
-                    //WebSocketReceiveResult result = await websocket.ReceiveAsync(incomingData, CancellationToken.None);
-                    await Task.Delay(delay);
+                    //var receiveData = new ArraySegment<byte>();
+                    //WebSocketReceiveResult result = await websocket.ReceiveAsync(receiveData, CancellationToken.None);
+                    //await websocket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
 
                 }
             }
