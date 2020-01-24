@@ -626,10 +626,9 @@ namespace UnitTestsProject
         [TestMethod]
         public void TestModel()
         {
-             string url = "ws://localhost:5000/ws/client1";
+             string url = "ws://localhost:5000/ws/client13";
            
             ClientWebSocket ws1 = new ClientWebSocket();
-        
 
             INeuroVisualizer vis = new WSNeuroVisualizer();
             int[] areas = new int[] { 1 };
@@ -641,6 +640,25 @@ namespace UnitTestsProject
             vis.ConnectToWSServerAsync(url, ws1);
             vis.InitModelAsync(model.CreateNeuroModel(areas, (new long[10, 1]), 6), ws1);
 
+        }
+
+        [TestMethod]
+        public void updateOverlap()
+        {
+
+            string url = "ws://localhost:5000/ws/client13";
+
+            ClientWebSocket ws2 = new ClientWebSocket();
+
+
+            INeuroVisualizer vis = new WSNeuroVisualizer();
+
+            vis.ConnectToWSServerAsync(url, ws2);
+
+            List<MiniColumn> columnList = new List<MiniColumn>();
+            MiniColumn minCol = new MiniColumn(0, 0.80, 8, 0);
+            columnList.Add(minCol);
+            vis.UpdateColumnOverlapsAsync(columnList, ws2);
         }
     }
 }
