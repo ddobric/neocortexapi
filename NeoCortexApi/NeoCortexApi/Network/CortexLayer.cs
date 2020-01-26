@@ -60,6 +60,14 @@ namespace NeoCortexApi.Network
             return this.results[moduleName];
         }
 
+        private void SetResult(string moduleName, object result)
+        {
+            if (this.results.ContainsKey(moduleName))
+                this.results[moduleName] = result;
+            else
+                this.results.Add(moduleName, result);
+        }
+
         /// <summary>
         /// Computes over the pipeline of installed modules.
         /// </summary>
@@ -68,7 +76,7 @@ namespace NeoCortexApi.Network
         /// <returns></returns>
         public TOUT Compute(TIN input, bool learn)
         {
-            results.Clear();
+            //results.Clear();
 
             object moduleOutput = null;
 
@@ -82,7 +90,7 @@ namespace NeoCortexApi.Network
 
                 moduleOutput = module.Compute(moduleInput, learn);
 
-                results.Add(moduleKeyPair.Key, moduleOutput);
+                SetResult(moduleKeyPair.Key, moduleOutput);
 
                 i++;
             }

@@ -25,7 +25,7 @@ namespace UnitTestsProject
         [TestCategory("LongRunning")]
         public void RunPowerPredictionExperiment()
         {
-            const int inputBits = 100; /* without datetime component */ // 13420; /* with 4096 scalar bits */ // 10404 /* with 1024 bits */;
+            const int inputBits = 300; /* without datetime component */ // 13420; /* with 4096 scalar bits */ // 10404 /* with 1024 bits */;
 
             Parameters p = Parameters.getAllDefaultParameters();
             p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
@@ -39,7 +39,7 @@ namespace UnitTestsProject
             // Activation threshold is 10 active cells of 40 cells in inhibition area.
             p.setActivationThreshold(10 /*15*/);
             p.setInhibitionRadius(15);
-
+            p.Set(KEY.MAX_BOOST, 0.0);
             //p.Set(KEY.GLOBAL_INHIBITION, true);
 
             //p.Set(KEY.MAX_SYNAPSES_PER_SEGMENT, 32);
@@ -132,7 +132,7 @@ namespace UnitTestsProject
             ScalarEncoder scalarEncoder = new ScalarEncoder(scalarEncoderSettings);
             //DateTimeEncoder dtEncoder = new DateTimeEncoder(dateTimeEncoderSettings, DateTimeEncoder.Precision.Hours);
 
-            string fileName = "TestFiles\\rec-center-hourly-very-short.csv";
+            string fileName = "TestFiles\\rec-center-hourly-short.csv";
 
             using (StreamReader sr = new StreamReader(fileName))
             {
@@ -241,7 +241,7 @@ namespace UnitTestsProject
                                                                 //restriction: w must be odd to avoid centering problems.
             encoderSettings.Add("N", inputBits /*4096*/);                     //The number of bits in the output. Must be greater than or equal to w
             encoderSettings.Add("MinVal", (double)0.0);         //The minimum value of the input signal.
-            encoderSettings.Add("MaxVal", (double)20);       //The upper bound of the input signal
+            encoderSettings.Add("MaxVal", (double)60);       //The upper bound of the input signal
                                                              //encoderSettings.Add("Radius", (double)0);         //Two inputs separated by more than the radius have non-overlapping representations.
                                                              //Two inputs separated by less than the radius will in general overlap in at least some
                                                              //of their bits. You can think of this as the radius of the input.

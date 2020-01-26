@@ -10,6 +10,7 @@ using NeoCortexApi.Entities;
 using System.Diagnostics;
 using NeoCortexEntities.NeuroVisualizer;
 using WebSocketNeuroVisualizer;
+using NeoCortexApi.Utility;
 
 namespace UnitTestsProject
 {
@@ -400,7 +401,9 @@ namespace UnitTestsProject
             p.Set(KEY.INPUT_DIMENSIONS, new int[] { inputBits });
             p.Set(KEY.CELLS_PER_COLUMN, 10);
             p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
-
+            //p.Set(KEY.MAX_BOOST, 1.0);
+            //p.Set(KEY.DUTY_CYCLE_PERIOD, 100000);
+           
             // N of 40 (40= 0.02*2048 columns) active cells required to activate the segment.
             p.setNumActiveColumnsPerInhArea(0.02 * numColumns); 
             // Activation threshold is 10 active cells of 40 cells in inhibition area.
@@ -427,7 +430,10 @@ namespace UnitTestsProject
 
             //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 2.0, 0.0, 0.1, 2.0 });
             List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0 });
-            inputValues = new List<double>(new double[] { 1.0, 2.0, 3.0, 1.0, 5.0, 1.0, 6.0, });
+            // C-0, D-1, E-2, F-3, G-4, H-5
+            //var inputValues = new double[] { 0.0, 0.0, 4.0, 4.0, 5.0, 5.0, 4.0, 3.0, 3.0, 2.0, 2.0, 1.0, 1.0, 0.0 };
+
+            //inputValues = new List<double>(new double[] { 1.0, 2.0, 3.0, 1.0, 5.0, 1.0, 6.0, });
 
             // RunExperiment(inputBits, p, encoder, inputValues);
             RunExperiment(inputBits, p, encoder, inputValues);
@@ -475,18 +481,26 @@ namespace UnitTestsProject
             HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
 
             double[] inputs = inputValues.ToArray();
+            int[] lastActiveCols = new int[0] ;
 
             //
             // This trains SP on input pattern.
             // It performs some kind of unsupervised new-born learning.
             foreach (var input in inputs)
             {
-                Debug.WriteLine($" ** {input} **");
-                for (int i = 0; i < 3; i++)
+                Debug.WriteLine($"Learning  ** {input} **");
+              
+                for (int i = 0; i < 10; i++)
                 {
                     var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
 
                     var activeColumns = layer1.GetResult("sp") as int[];
+
+                    var actCols = activeColumns.OrderBy(c => c).ToArray();
+                    Debug.WriteLine($"SP-OUT: [{actCols.Length}/{MathHelpers.CalcArraySimilarity(lastActiveCols, actCols)}] - {Helpers.StringifyVector(actCols)}");
+                    lastActiveCols = activeColumns;
+                 
+                    //MathHelpers
                     // TODO: @Atta
                 }
             }
@@ -554,7 +568,7 @@ namespace UnitTestsProject
                 {
                     maxMatchCnt++;
                     Debug.WriteLine($"100% accuracy reched {maxMatchCnt} times.");
-                    if (maxMatchCnt >= 10)
+                    if (maxMatchCnt >= 20)
                     {
                         sw.Stop();
                         Debug.WriteLine($"Exit experiment in the stable state after 10 repeats with 100% of accuracy. Elapsed time: {sw.ElapsedMilliseconds / 1000 / 60} min.");
@@ -562,24 +576,25 @@ namespace UnitTestsProject
                         //var testInputs = new double[] { 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 0.0, 1.0 };
                        
                         // C-0, D-1, E-2, F-3, G-4, H-5
-                        var testInputs = new double[] { 0.0, 0.0, 4.0, 4.0, 5.0, 5.0, 4.0, 3.0, 3.0, 2.0, 2.0, 1.0, 1.0, 0.0 };
+                        //var testInputs = new double[] { 0.0, 0.0, 4.0, 4.0, 5.0, 5.0, 4.0, 3.0, 3.0, 2.0, 2.0, 1.0, 1.0, 0.0 };
 
-                        double predictedInputValue = 0.0;
-
-                        // Traverse the sequence and check prediction.
-                        foreach (var input in testInputs)
-                        {
-                            var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
-                            predictedInputValue = cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray());
-                            Debug.WriteLine($"I={input} - P={predictedInputValue}");
-                        }
+                        //// Traverse the sequence and check prediction.
+                        //foreach (var input in inputValues)
+                        //{
+                        //    var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
+                        //    predictedInputValue = cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray());
+                        //    Debug.WriteLine($"I={input} - P={predictedInputValue}");
+                        //}
 
                         //
                         // Here we let the HTM predict seuence five times on its own.
                         // We start with last predicted value.
-                        int cnt = 5 * testInputs.Length;
+                        int cnt = 5 * inputValues.Count;
 
                         Debug.WriteLine("---- Start Predicting the Sequence -----");
+
+                        // We take a random value to start somwhere in the sequence.
+                        double predictedInputValue = inputValues[new Random().Next(0, inputValues.Count - 1)];
 
                         List<double> predictedValues = new List<double>();
 

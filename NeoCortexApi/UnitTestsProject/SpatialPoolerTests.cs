@@ -880,7 +880,7 @@ namespace UnitTestsProject
             mem.setActiveDutyCycles(activeDutyCycles);
 
             double[] trueBoostFactors = new double[] { 1, 1, 1, 1, 1, 1 };
-            sp.updateBoostFactors(mem);
+            sp.UpdateBoostFactors(mem);
             double[] boostFactors = mem.BoostFactors;
             for (int i = 0; i < boostFactors.Length; i++)
             {
@@ -891,7 +891,7 @@ namespace UnitTestsProject
             minActiveDutyCycles = new double[] { 0.1, 0.3, 0.02, 0.04, 0.7, 0.12 };
             mem.setMinActiveDutyCycles(minActiveDutyCycles);
             ArrayUtils.fillArray(mem.BoostFactors, 0);
-            sp.updateBoostFactors(mem);
+            sp.UpdateBoostFactors(mem);
             boostFactors = mem.BoostFactors;
             for (int i = 0; i < boostFactors.Length; i++)
             {
@@ -904,7 +904,7 @@ namespace UnitTestsProject
             activeDutyCycles = new double[] { 0.01, 0.02, 0.002, 0.003, 0.07, 0.012 };
             mem.setActiveDutyCycles(activeDutyCycles);
             trueBoostFactors = new double[] { 9.1, 9.1, 9.1, 9.1, 9.1, 9.1 };
-            sp.updateBoostFactors(mem);
+            sp.UpdateBoostFactors(mem);
             boostFactors = mem.BoostFactors;
             for (int i = 0; i < boostFactors.Length; i++)
             {
@@ -917,7 +917,7 @@ namespace UnitTestsProject
             ArrayUtils.fillArray(activeDutyCycles, 0);
             mem.setActiveDutyCycles(activeDutyCycles);
             ArrayUtils.fillArray(trueBoostFactors, 10.0);
-            sp.updateBoostFactors(mem);
+            sp.UpdateBoostFactors(mem);
             boostFactors = mem.BoostFactors;
             for (int i = 0; i < boostFactors.Length; i++)
             {

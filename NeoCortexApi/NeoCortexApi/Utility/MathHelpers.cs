@@ -88,5 +88,32 @@ namespace NeoCortexApi.Utility
 
         }
 
+
+        /// <summary>
+        /// Calculates how many elements of the array are same in percents.
+        /// </summary>
+        /// <param name="originArray"></param>
+        /// <param name="comparingArray"></param>
+        /// <returns>Similarity between arrays 0.0-1.0</returns>
+        public static double CalcArraySimilarity(int[] originArray, int[] comparingArray)
+        {
+            if (originArray.Length > 0 && comparingArray.Length > 0)
+            {
+                int cnt = 0;
+
+                foreach (var item in comparingArray)
+                {
+                    if (originArray.Contains(item))
+                        cnt++;
+                }
+
+                return ((double)cnt / (double)Math.Max(originArray.Length, comparingArray.Length)) * 100.0;
+            }
+            else
+            {
+                return -1.0;
+            }
+        }
+
     }
 }

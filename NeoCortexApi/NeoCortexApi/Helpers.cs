@@ -77,6 +77,27 @@ namespace NeoCortexApi
             return sb.ToString();
         }
 
+
+        /// <summary>
+        /// Stringifies the vector by using of custom conversdion function.
+        /// </summary>
+        /// <param name="vector">The vector to be stringified.</param>
+        /// <param name="fnc">Conversion function.</param>
+        /// <returns></returns>
+        public static string StringifyVector<T>(T[] vector, Func<int, T, string> fnc)
+        {
+            StringBuilder sb = new StringBuilder();
+            int indx = 0;
+            foreach (var vectorBit in vector)
+            {
+                sb.Append(fnc(indx++, vectorBit));
+                sb.Append(", ");
+            }
+
+            return sb.ToString();
+        }
+
+
         /// <summary>
         /// Creates string representation from one dimensional vector.
         /// </summary>
