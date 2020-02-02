@@ -650,7 +650,8 @@ namespace UnitTestsProject
             p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
             p.Set(KEY.MAX_BOOST, 1.0);
             p.Set(KEY.DUTY_CYCLE_PERIOD, 100000);
-            p.Set(KEY.IS_BUMPUP_WEAKCOLUMNS_DISABLED, true);
+            p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0);
+            //p.Set(KEY.IS_BUMPUP_WEAKCOLUMNS_DISABLED, true);
             // N of 40 (40= 0.02*2048 columns) active cells required to activate the segment.
             p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
             // Activation threshold is 10 active cells of 40 cells in inhibition area.
