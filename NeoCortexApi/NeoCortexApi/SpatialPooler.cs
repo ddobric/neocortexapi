@@ -1,4 +1,4 @@
-﻿//#define REPAIR_STABILITY
+﻿#define REPAIR_STABILITY
 // Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using NeoCortexApi.Entities;
@@ -413,7 +413,7 @@ namespace NeoCortexApi
 #if REPAIR_STABILITY
             // REPAIR STABILITY FEATURE
             var similarity = MathHelpers.CalcArraySimilarity(prevActCols, activeColumns);
-            if (prevSimilarity == 100.0 && similarity < 90.0)
+            if (prevSimilarity == 100.0 && similarity < 70.0)
             {
                 Debug.WriteLine(" O: " + Helpers.StringifyVector<double>(prevOverlaps.OrderBy(x => x).ToArray(), (indx, val) => $"{indx}-{val}"));
                 Debug.WriteLine(" O: " + Helpers.StringifyVector<double>(boostedOverlaps.OrderBy(x => x).ToArray(), (indx, val) => $"{indx}-{val}"));
@@ -426,7 +426,7 @@ namespace NeoCortexApi
             }
 
             // REPAIR STABILITY FEATURE
-            if (similarity >= 95.0 && prevSimilarity == 95.0 && inRepair)
+            if (similarity >= 95.0 && inRepair)
             {
                 inRepair = false;
                 Debug.WriteLine("Entered stable state again!");
@@ -665,12 +665,9 @@ namespace NeoCortexApi
 
             int period = c.getDutyCyclePeriod();
             if (period > c.getIterationNum())
-            {
-                //Debug.Write("P E R I O D");
+            {              
                 period = c.getIterationNum();
             }
-
-            //Debug.WriteLine("period is: " + period);
 
             c.setOverlapDutyCycles(updateDutyCyclesHelper(c, c.getOverlapDutyCycles(), overlapArray, period));
 
@@ -871,16 +868,19 @@ namespace NeoCortexApi
             //Debug.WriteLine("Permance after update in adaptSynapses: " + permChangesStr);
         }
 
-        /**
-         * This method increases the permanence values of synapses of columns whose
-         * activity level has been too low. Such columns are identified by having an
-         * overlap duty cycle that drops too much below those of their peers. The
-         * permanence values for such columns are increased.
-         *  
-         * @param c
-         */
+
+        /// <summary>
+        /// This method increases the permanence values of synapses of columns whose 
+        /// activity level has been too low. Such columns are identified by having an 
+        /// overlap duty cycle that drops too much below those of their peers. The 
+        /// permanence values for such columns are increased. 
+        /// </summary>
+        /// <param name="c"></param>
         public virtual void BumpUpWeakColumns(Connections c)
         {
+            if(c.IsBumpUpWeakColumnsDisabled)
+                return;
+
             var weakColumns = c.getMemory().get1DIndexes().Where(i => c.getOverlapDutyCycles()[i] < c.getMinOverlapDutyCycles()[i]).ToArray();
             //var weakColumnsStr = Helpers.StringifyVector(weakColumns);
             //Debug.WriteLine("weak Columns:" + weakColumnsStr);
@@ -1509,6 +1509,7 @@ namespace NeoCortexApi
             }
 
             double[] boostInterim;
+
 
             //
             // Boost factors are NOT recalculated if minimum active duty cycles are all set on 0.

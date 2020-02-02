@@ -44,6 +44,7 @@ namespace NeoCortexApi.Entities
         private int dutyCyclePeriod = 1000;
         private double maxBoost = 10.0;
         private bool wrapAround = true;
+        private bool isBumpUpWeakColumnsDisabled = false;
 
         private int numInputs = 1;  //product of input dimensions
         private int numColumns = 1; //product of column dimensions
@@ -1350,6 +1351,11 @@ namespace NeoCortexApi.Entities
  * @param boostFactors	the array of boost factors
  */
         public double[] BoostFactors { get => m_BoostFactors; set => this.m_BoostFactors = value; }
+        
+        /// <summary>
+        /// Controls if bumping-up of weak columns shell be done.
+        /// </summary>
+        public bool IsBumpUpWeakColumnsDisabled { get => isBumpUpWeakColumnsDisabled; set => isBumpUpWeakColumnsDisabled = value; }
 
 
         ////////////////////////////////////////
