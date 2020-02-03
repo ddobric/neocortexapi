@@ -21,7 +21,7 @@ namespace UnitTestsProject
         private const int OutImgSize = 1024;
 
 
-     
+
         [TestMethod]
         [TestCategory("LongRunning")]
         [TestCategory("Experiment")]
@@ -102,7 +102,7 @@ namespace UnitTestsProject
             parameters.Set(KEY.MAX_BOOST, 0.0);
             parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.008);
             parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0.01);
-            parameters.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.001);
+            parameters.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.0);
 
             parameters.Set(KEY.SEED, 42);
 
@@ -111,8 +111,6 @@ namespace UnitTestsProject
 
             var sp = new SpatialPoolerMT();
             var mem = new Connections();
-
-            //var rnd = new Random();
 
             parameters.apply(mem);
             sp.init(mem);
@@ -124,7 +122,7 @@ namespace UnitTestsProject
 
             int vectorIndex = 0;
 
-            int[][] activeArrayWithZeroNoise = new int[inputVectors.Count][];
+            int[][] activeColumnsWithZeroNoise = new int[inputVectors.Count][];
 
             foreach (var inputVector in inputVectors)
             {
@@ -133,8 +131,8 @@ namespace UnitTestsProject
                 Debug.WriteLine("");
                 Debug.WriteLine($"----- VECTOR {vectorIndex} ----------");
 
-                //int[] activeArray = new int[64 * 64];
-                activeArrayWithZeroNoise[vectorIndex] = new int[colDimSize * colDimSize];
+                // Array of active columns with zero noise. The reference (ideal) output.
+                activeColumnsWithZeroNoise[vectorIndex] = new int[colDimSize * colDimSize];
 
                 int[] activeArray = null;
 
@@ -158,23 +156,22 @@ namespace UnitTestsProject
 
                     for (int i = 0; i < 10; i++)
                     {
-                        //sp.compute( noisedInput, activeArray, true);
                         activeArray = sp.Compute(noisedInput, true, returnActiveColIndiciesOnly: false) as int[];
 
                         if (j > 0)
-                            Debug.WriteLine($"{ MathHelpers.GetHammingDistance(activeArrayWithZeroNoise[vectorIndex], activeArray, true)} -> {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
+                            Debug.WriteLine($"{ MathHelpers.GetHammingDistance(activeColumnsWithZeroNoise[vectorIndex], activeArray, true)} -> {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
                     }
 
                     if (j == 0)
                     {
-                        Array.Copy(activeArray, activeArrayWithZeroNoise[vectorIndex], activeArrayWithZeroNoise[vectorIndex].Length);
+                        Array.Copy(activeArray, activeColumnsWithZeroNoise[vectorIndex], activeColumnsWithZeroNoise[vectorIndex].Length);
                     }
 
                     var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 
-                    var d2 = MathHelpers.GetHammingDistance(activeArrayWithZeroNoise[vectorIndex], activeArray, true);
+                    var d2 = MathHelpers.GetHammingDistance(activeColumnsWithZeroNoise[vectorIndex], activeArray, true);
                     Debug.WriteLine($"Output with noise {j} - Ham Dist: {d2}");
-                    Debug.WriteLine($"Original: {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArrayWithZeroNoise[vectorIndex], (el) => el == 1))}");
+                    Debug.WriteLine($"Original: {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeColumnsWithZeroNoise[vectorIndex], (el) => el == 1))}");
                     Debug.WriteLine($"Noised:   {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
 
                     List<int[,]> arrays = new List<int[,]>();
@@ -203,14 +200,22 @@ namespace UnitTestsProject
 
             foreach (var inputVector in inputVectors)
             {
-                double noise = 7;
+                double noise = ((double)(new Random().Next(10, 20)))/100.0;
+
                 var noisedInput = ArrayUtils.flipBit(inputVector, noise / 100.00);
 
                 int[] activeArray = new int[64 * 64];
 
-                sp.compute(noisedInput, activeArray, false);
+                for (int i = 0; i < 3; i++)
+                {
+                    sp.compute(noisedInput, activeArray, false);
+                }           
 
-                var dist = MathHelpers.GetHammingDistance(activeArrayWithZeroNoise[vectorIndex], activeArray, true);
+                var dist = MathHelpers.GetHammingDistance(activeColumnsWithZeroNoise[vectorIndex], activeArray, true);
+               
+                Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1));
+                Helpers.StringifyVector(ArrayUtils.IndexWhere(activeColumnsWithZeroNoise[vectorIndex], (el) => el == 1));
+
                 Debug.WriteLine($"Result for vector {vectorIndex++} with noise {noise} - Ham Dist: {dist}");
 
                 Assert.IsTrue(dist >= 95);

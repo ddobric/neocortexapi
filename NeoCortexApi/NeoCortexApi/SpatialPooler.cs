@@ -881,6 +881,7 @@ namespace NeoCortexApi
             if(c.IsBumpUpWeakColumnsDisabled)
                 return;
 
+            // This condition is wrong. It brings teh SP in scillation state.
             var weakColumns = c.getMemory().get1DIndexes().Where(i => c.getOverlapDutyCycles()[i] < c.getMinOverlapDutyCycles()[i]).ToArray();
             //var weakColumnsStr = Helpers.StringifyVector(weakColumns);
             //Debug.WriteLine("weak Columns:" + weakColumnsStr);

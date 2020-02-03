@@ -66,11 +66,11 @@ namespace UnitTestsProject
 
             var settings = new JsonSerializerSettings { ContractResolver = new ContractResolver(), Formatting = Formatting.Indented };
 
+            sp.init(mem1);
+
             var jsonMem = JsonConvert.SerializeObject(mem1, settings);
 
-            var mem2 = JsonConvert.DeserializeObject<Connections>(jsonMem, settings);
-
-            sp.init(mem1);
+            var mem2 = JsonConvert.DeserializeObject<Connections>(jsonMem, settings);          
 
             var jsonSp = JsonConvert.SerializeObject(sp, settings);
 
