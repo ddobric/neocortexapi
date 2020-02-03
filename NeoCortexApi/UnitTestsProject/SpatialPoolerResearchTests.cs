@@ -206,6 +206,10 @@ namespace UnitTestsProject
 
                 int[] activeArray = new int[64 * 64];
 
+                //
+                // SP needs few cycles to enter a stable state for some pattern.
+                // If this vector was seen before, it will immediatelly enter trained (stable) state.
+                // If not, then it needs 2-3 cycles to learn. After that we can compare it.
                 for (int i = 0; i < 3; i++)
                 {
                     sp.compute(noisedInput, activeArray, false);
