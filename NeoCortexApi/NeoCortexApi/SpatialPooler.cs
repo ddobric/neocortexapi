@@ -1,4 +1,4 @@
-﻿#define REPAIR_STABILITY
+﻿//#define REPAIR_STABILITY
 // Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using NeoCortexApi.Entities;
