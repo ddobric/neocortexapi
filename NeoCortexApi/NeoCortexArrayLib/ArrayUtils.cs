@@ -2827,7 +2827,7 @@ namespace NeoCortexApi.Utility
             return true;
         }
         /*This method is used to flip bits of an binary array*/
-        public static int[] flipBit(int[] oriArr, Double bitPerc)
+        public static int[] FlipBit(int[] oriArr, Double bitPerc)
         {
             int[] result = new List<int>(oriArr).ToArray();
             List<int> arr = new List<int>();
