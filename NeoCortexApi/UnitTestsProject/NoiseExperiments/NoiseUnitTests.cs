@@ -234,21 +234,28 @@ namespace UnitTestsProject.NoiseExperiments
                 vectorIndex++;
             }
 
-            //
-            // Prediction code.
-            // This part of code takes a single sample of every input vector and add
-            // some noise to it. Then it predicts it.
-            // Calculated hamming distance (percent overlap) between predicted output and output 
-            // trained without noise is final result, which should be higher than 95% (realistic guess).
+            vectorIndex = OutputPredictionResult(sp, inputVectors, activeColumnsWithZeroNoise);
+        }
 
-            vectorIndex = 0;
 
+        /// <summary>
+        ///  Prediction code.
+        ///  This method takes a single sample of every input vector and adds
+        ///  some noise to it. Then it predicts it.<param name="sp"></param>
+        ///  Calculated hamming distance (percent overlap) between predicted output and output <param name="inputVectors"></param>
+        ///  trained without noise is final result, which should be higher than 95% (realistic guess).
+        /// </summary>
+        /// <param name="activeColumnsWithZeroNoise"></param>
+        /// <returns></returns>
+        private static int OutputPredictionResult(SpatialPoolerMT sp, List<int[]> inputVectors, int[][] activeColumnsWithZeroNoise)
+        {
+            int vectorIndex = 0;
             foreach (var inputVector in inputVectors)
             {
                 for (int tstIndx = 0; tstIndx < 100; tstIndx++)
                 {
-                    double noise = ((double)(new Random().Next(20, 40))) / 100.0;
-                   
+                    double noise = ((double)(new Random().Next(5, 25))) / 100.0;
+
                     var noisedInput = ArrayUtils.FlipBit(inputVector, noise);
 
                     var distIn = MathHelpers.GetHammingDistance(inputVector, noisedInput, true);
@@ -271,8 +278,9 @@ namespace UnitTestsProject.NoiseExperiments
 
                 vectorIndex++;
             }
-        }
 
+            return vectorIndex;
+        }
 
         private static int[] getInputVector1()
         {

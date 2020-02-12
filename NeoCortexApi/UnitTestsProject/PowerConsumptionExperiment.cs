@@ -40,7 +40,10 @@ namespace UnitTestsProject
             p.setActivationThreshold(10 /*15*/);
             p.setInhibitionRadius(15);
             p.Set(KEY.MAX_BOOST, 0.0);
-            //p.Set(KEY.GLOBAL_INHIBITION, true);
+            p.Set(KEY.DUTY_CYCLE_PERIOD, 100000);
+            p.setActivationThreshold(10);
+            p.setMaxNewSynapsesPerSegmentCount((int)(0.02 * 2048));
+            p.setPermanenceIncrement(0.17);
 
             //p.Set(KEY.MAX_SYNAPSES_PER_SEGMENT, 32);
             //p.Set(KEY.MAX_SEGMENTS_PER_CELL, 128);
@@ -178,7 +181,7 @@ namespace UnitTestsProject
 
                         if (isNewBornMode)
                         {
-                            for (int j = 0; j < 2; j++)
+                            for (int j = 0; j < 10; j++)
                             {
                                 // Output here are active cells.
                                 var res = network.Compute(output.ToArray(), true);

@@ -396,14 +396,32 @@ namespace UnitTestsProject
         [TestCategory("Experiment")]
         public void MusicNotesExperiment()
         {
+            //Cycle: 884  Matches = 16 of 16     100 %
+            //100 % accuracy reched 20 times.
+            //Exit experiment in the stable state after 10 repeats with 100 % of accuracy.Elapsed time: 57 min.
+            //p.Set(KEY.CELLS_PER_COLUMN, 10);
+            //p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
+            //p.Set(KEY.MAX_BOOST, 10.0);
+            //p.Set(KEY.DUTY_CYCLE_PERIOD, 100000);
+
+            //p.Set(KEY.CELLS_PER_COLUMN, 10);
+            //p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
+            //p.Set(KEY.MAX_BOOST, 10.0);
+            //p.Set(KEY.DUTY_CYCLE_PERIOD, 100000);
+            //p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.0);
+            //Cycle: 993  Matches = 16 of 16     100 %
+            //100 % accuracy reched 20 times.
+            //Exit experiment in the stable state after 10 repeats with 100 % of accuracy.Elapsed time: 73 min.
+
+
             int inputBits = 100;
             int numColumns = 2048;
             Parameters p = Parameters.getAllDefaultParameters();
             p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
             p.Set(KEY.INPUT_DIMENSIONS, new int[] { inputBits });
-            p.Set(KEY.CELLS_PER_COLUMN, 10);
+            p.Set(KEY.CELLS_PER_COLUMN, 20);
             p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
-            p.Set(KEY.MAX_BOOST, 1.0);
+            p.Set(KEY.MAX_BOOST, 10.0);
             p.Set(KEY.DUTY_CYCLE_PERIOD, 100000);
 
             // N of 40 (40= 0.02*2048 columns) active cells required to activate the segment.
@@ -412,8 +430,12 @@ namespace UnitTestsProject
             p.setActivationThreshold(10);
             p.setInhibitionRadius(15);
 
+            // Stops the bumping of inactive columns.
+            p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.0);
+
             // Max number of synapses on the segment.
             p.setMaxNewSynapsesPerSegmentCount((int)(0.02 * numColumns));
+            p.setPermanenceIncrement(0.21);
             double max = 20;
 
             Dictionary<string, object> settings = new Dictionary<string, object>()
@@ -520,7 +542,7 @@ namespace UnitTestsProject
 
             //
             // Now training with SP+TM. SP is pretrained on the given input pattern.
-            for (int i = 0; i < 1460; i++)
+            for (int i = 0; i < 3460; i++)
             {
                 matches = 0;
 
@@ -540,8 +562,8 @@ namespace UnitTestsProject
                     if (learn == false)
                         Debug.WriteLine($"Inference mode");
 
-                    Debug.WriteLine($"W: {Helpers.StringifyVector(lyrOut.WinnerCells.Select(c => c.Index).ToArray())}");
-                    Debug.WriteLine($"P: {Helpers.StringifyVector(lyrOut.predictiveCells.Select(c => c.Index).ToArray())}");
+                    //Debug.WriteLine($"W: {Helpers.StringifyVector(lyrOut.WinnerCells.Select(c => c.Index).ToArray())}");
+                    //Debug.WriteLine($"P: {Helpers.StringifyVector(lyrOut.predictiveCells.Select(c => c.Index).ToArray())}");
 
                     if (input == lastPredictedValue)
                     {
@@ -650,8 +672,11 @@ namespace UnitTestsProject
             p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
             p.Set(KEY.MAX_BOOST, 1.0);
             p.Set(KEY.DUTY_CYCLE_PERIOD, 100000);
+
+            // Stops the bumping of inactive columns.
             p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0);
             //p.Set(KEY.IS_BUMPUP_WEAKCOLUMNS_DISABLED, true);
+
             // N of 40 (40= 0.02*2048 columns) active cells required to activate the segment.
             p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
             // Activation threshold is 10 active cells of 40 cells in inhibition area.
@@ -677,8 +702,7 @@ namespace UnitTestsProject
             EncoderBase encoder = new ScalarEncoder(settings);
 
             List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0});
-            //List<double> inputValues = new List<double>(new double[] { 0.0, });
-
+        
             RunSpStabilityExperiment(inputBits, p, encoder, inputValues);
         }
 

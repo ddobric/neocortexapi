@@ -455,7 +455,12 @@ namespace UnitTestsProject
             parameters.setMinPctActiveDutyCycles(0.001);
             parameters.setDutyCyclePeriod(1000);
             parameters.setMaxBoost(10);
-            initSP();
+            //initSP();
+
+            var sp = new SpatialPooler();
+            mem = new Connections();
+            parameters.apply(mem);
+            sp.init(mem);
 
             int[] inputVector = {
                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,

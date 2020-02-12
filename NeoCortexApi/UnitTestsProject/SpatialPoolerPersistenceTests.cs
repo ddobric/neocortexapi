@@ -135,7 +135,7 @@ namespace UnitTestsProject
 
             string str1 = String.Empty;
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 2; i++)
             {
                 sp.compute( inputVector, activeArray, true);
 
