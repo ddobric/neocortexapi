@@ -331,6 +331,7 @@ namespace NeoCortexApi
                 return activeColumnsArr;
         }
 
+ #if REPAIR_STABILITY
         bool inRepair = false;
 
         private int[] prevActCols = new int[0];
@@ -340,6 +341,7 @@ namespace NeoCortexApi
         private double[] prevOverlaps = new double[0];
 
         double prevSimilarity = 0.0;
+#endif
 
         /**
          * This is the primary public method of the SpatialPooler class. This

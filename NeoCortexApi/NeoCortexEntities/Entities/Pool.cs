@@ -229,15 +229,15 @@ namespace NeoCortexApi.Entities
          * 
          * @param synapse
          */
-        public void destroySynapse(Synapse synapse)
-        {
-            synapseConnections.Remove(synapse.getInputIndex());
-            synapsesBySourceIndex.Remove(synapse.getInputIndex());
-            if (synapse.getSegment() is DistalDendrite)
-            {
-                destroy();
-            }
-        }
+        //public void destroySynapse(Synapse synapse)
+        //{
+        //    synapseConnections.Remove(synapse.getInputIndex());
+        //    synapsesBySourceIndex.Remove(synapse.getInputIndex());
+        //    if (synapse.getSegment() is DistalDendrite)
+        //    {
+        //        destroy();
+        //    }
+        //}
 
         /**
          * Clears the state of this {@code Pool}
