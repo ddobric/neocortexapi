@@ -1392,7 +1392,7 @@ namespace NeoCortexApi.Entities
                 // Receptor synapses are synapses whose source cell (pre-synaptic cell) is the given cell.
                 foreach (Synapse synapse in getReceptorSynapses(cell))
                 {
-                    int segFlatIndx = synapse.getSegment().getIndex();
+                    int segFlatIndx = synapse.SegmentIndex;
                     if (potentialSynapses.ContainsKey(segFlatIndx) == false)
                         potentialSynapses.Add(segFlatIndx, 0);
 
@@ -1704,7 +1704,7 @@ namespace NeoCortexApi.Entities
             Synapse synapse = null;
             getSynapses(segment).Add(
                 synapse = new Synapse(
-                    presynapticCell, segment, nextSynapseOrdinal, permanence));
+                    presynapticCell, segment.getIndex(), nextSynapseOrdinal, permanence));
 
             getReceptorSynapses(presynapticCell, true).Add(synapse);
 
@@ -1726,7 +1726,7 @@ namespace NeoCortexApi.Entities
             removeSynapseFromPresynapticMap(synapse);
 
             //segment.Synapses.Remove(synapse);
-            getSynapses((DistalDendrite)synapse.getSegment()).Remove(synapse);
+            getSynapses(segment).Remove(synapse);
         }
 
         /**
