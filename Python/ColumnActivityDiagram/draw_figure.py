@@ -9,7 +9,9 @@ import csv
 
 parser = argparse.ArgumentParser(description='Draw convergence figure')
 parser.add_argument(
-    '--filename', '-f', help='Filename from which data is supposed to be red')
+    '--filename', '-f', help='Filename from which data is supposed to be red', required=True)
+parser.add_argument(
+    '--graphename', '-g', help='Graphname where data is supposed to be plot', required=True)
 parser.add_argument('--axis', '-a', nargs='?', default=None,
                     help='Cells are placed on desired x or y axis')
 args = parser.parse_args()
@@ -123,7 +125,7 @@ def plotActivityHorizontally(activeCellsColumn, highlightTouch):
     fig['layout'].update(layout)
 
     # Save plots as HTM and/or PDF
-    basename = 'plots/activity_c' + str(numColumns)
+    basename = args.graphename + str(numColumns)
     plotly.offline.plot(fig, filename=basename + '.html', auto_open=True)
 
     # Can't save image files in offline mode
@@ -233,7 +235,7 @@ def plotActivityVertically(activeCellsColumn, highlightTouch):
     fig['layout'].update(layout)
 
     # Save plots as HTM and/or PDF
-    basename = 'plots/activity_c' + str(numColumns)
+    basename = args.graphename + str(numColumns)
     plotly.offline.plot(fig, filename=basename + '.html', auto_open=True)
 
     # Can't save image files in offline mode
