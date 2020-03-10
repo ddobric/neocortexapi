@@ -183,51 +183,52 @@ def plotActivityHorizontally(activeCellsColumn, highlightTouch):
                         },
                     )
 
-    # Legend for x-axis and appropriate title
-    fig['layout']['annotations'].append({
-        'font': {'size': 20},
-        'xanchor': 'center',
-        'yanchor': 'bottom',
-        'text': 'Number of touches',
-        'xref': 'paper',
-        'yref': 'paper',
-        'x': 0.5,
-        'y': -0.15,
-        'showarrow': False,
-    })
+    # Legend for y-axis and appropriate title
     fig['layout']['annotations'].append({
         'font': {'size': 24},
         'xanchor': 'center',
         'yanchor': 'bottom',
         'text': ['', '<b>One cortical column</b>', '',
                  '<b>Three cortical columns</b>'][numColumns],
+        'text': 'Neuron #',
         'xref': 'paper',
         'yref': 'paper',
         'x': 0.5,
         'y': 1.1,
         'showarrow': False,
     })
+    fig['layout']['annotations'].append({
+        'font': {'size': 20},
+        'xanchor': 'center',
+        'yanchor': 'bottom',
+        'text': '',  # also checked
+        'xref': 'paper',
+        'yref': 'paper',
+        'x': 0.5,
+        'y': -0.15,
+        'showarrow': False,
+    })
     layout = {
-        'height': 600,
+        'width': 600,
         'font': {'size': 18},
         'yaxis': {
-            'title': "Neuron #",
-            'range': [-100, 4201],
+            'title': "Number of touches",  # checked
+            'range': [0, numTouches],
             'showgrid': False,
         },
         'shapes': shapes,
     }
 
     if numColumns == 1:
-        layout.update(width=320)
+        layout.update(height=320)
     else:
-        layout.update(width=700)
+        layout.update(height=700)
 
     for c in range(numColumns):
         fig.append_trace(data, 1, c + 1)
-        fig['layout']['xaxis' + str(c + 1)].update({
+        fig['layout']['yaxis' + str(c + 1)].update({
             'title': "",
-            'range': [0, numTouches],
+            'range': [-100, 4201],
             'showgrid': False,
             'showticklabels': True,
         }),
