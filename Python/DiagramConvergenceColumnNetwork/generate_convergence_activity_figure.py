@@ -260,7 +260,7 @@ def runExperiment():
         sensorInputSize=1024,
         externalInputSize=1024,
         numCorticalColumns=3,
-        seed=40,
+        seed=40
     )
     objectMachine.createRandomObjects(numObjects, numPoints=numPoints,
                                       numLocations=numLocations,
