@@ -23,7 +23,7 @@ if plotlyAPIKey is not None:
     plotly.plotly.sign_in(plotlyUser, plotlyAPIKey)
 
 
-def plotActivityHorizontally(activeCellsColumn, highlightTouch):
+def plotActivityVertically(activeCellsColumn, highlightTouch):
     maxTouches = 15
     numTouches = min(maxTouches, len(activeCellsColumn))
     numColumns = len(activeCellsColumn[0])
@@ -133,7 +133,7 @@ def plotActivityHorizontally(activeCellsColumn, highlightTouch):
         plotly.plotly.image.save_as(fig, filename=basename + '.pdf', scale=4)
 
 
-def plotActivityVertically(activeCellsColumn, highlightTouch):
+def plotActivityHorizontally(activeCellsColumn, highlightTouch):
     maxTouches = 15
     numTouches = min(maxTouches, len(activeCellsColumn))
     numColumns = len(activeCellsColumn[0])
@@ -253,6 +253,6 @@ with open(args.filename) as datafile:
     print(len(dataSets))
 
 if args.axis == 'x':
-    plotActivityVertically(dataSets, 7)
-else:
     plotActivityHorizontally(dataSets, 7)
+else:
+    plotActivityVertically(dataSets, 7)
