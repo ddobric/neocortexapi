@@ -6,14 +6,32 @@ import plotly.graph_objs as go
 import argparse
 import csv
 
-
+# python draw_figure.py -fn sample.txt -gn test1 -mt 19 -ht 8 -yt yaxis -xt xaxis -min 50 -max 4000 -st 'single column' -fign CortialColumn
+# python draw_figure.py -fn sample.txt -gn test1 -mt 19 -ht 8 -yt yaxis -xt xaxis -min 50 -max 4000 -st 'single column' -fign CortialColumn -a x
 parser = argparse.ArgumentParser(description='Draw convergence figure')
 parser.add_argument(
-    '--filename', '-f', help='Filename from which data is supposed to be red', required=True)
+    '--filename', '-fn', help='Filename from which data is supposed to be red', required=True)
 parser.add_argument(
-    '--graphename', '-g', help='Graphname where data is supposed to be plot', required=True)
+    '--graphename', '-gn', help='Graphname where data is supposed to be plot', required=True)
+parser.add_argument(
+    '--maxtouches', '-mt', help='Number of maximum touches/iterations ', required=True, type=int)
+parser.add_argument(
+    '--highlighttouch', '-ht', help='Number of highlight touches', required=True, type=int)
 parser.add_argument('--axis', '-a', nargs='?', default=None,
-                    help='Cells are placed on desired x or y axis')
+                    help='Cells are placed on desired x or y axis, enter x or y')
+parser.add_argument(
+    '--yaxistitle', '-yt', help='The title of the y-axis', required=True, type=str)
+parser.add_argument(
+    '--xaxistitle', '-xt', help='The title of the x-axis', required=True, type=str)
+parser.add_argument(
+    '--mincellrange', '-min', help='Minimun range of the cells', required=True, type=int)
+parser.add_argument(
+    '--maxcellrange', '-max', help='Maximum range of the cells', required=True, type=int)
+parser.add_argument(
+    '--subplottitle', '-st', help='The title of the subplot', required=True, type=str)
+parser.add_argument(
+    '--figurename', '-fign', help='The name of the figure', required=True, type=str)
+
 args = parser.parse_args()
 
 # Plotly requires a valid user to be able to save High Res images
@@ -22,14 +40,24 @@ plotlyAPIKey = os.environ.get('PLOTLY_API_KEY')
 if plotlyAPIKey is not None:
     plotly.plotly.sign_in(plotlyUser, plotlyAPIKey)
 
+#text = args.   # Neuron #
+maxTouches = args.maxtouches
+highlight_touch = args.highlighttouch
+yAxisTitle = args.yaxistitle
+xAxisTitle = args.xaxistitle
+minCellRange = args.mincellrange
+maxCellRange = args.maxcellrange
+subPlotTitle = args.subplottitle
+figureName = args.figurename
+
 
 def plotActivityVertically(activeCellsColumn, highlightTouch):
-    maxTouches = 15
     numTouches = min(maxTouches, len(activeCellsColumn))
     numColumns = len(activeCellsColumn[0])
     fig = plotly.tools.make_subplots(
         rows=1, cols=numColumns, shared_yaxes=True,
-        subplot_titles=('Column 1', 'Column 2', 'Column 3')[0:numColumns]
+        subplot_titles=(subPlotTitle, 'Column 2', 'Column 3')[0:numColumns]
+        #subplot_titles=('Column 1', 'Column 2', 'Column 3')[0:numColumns]
     )
 
     data = go.Scatter(x=[], y=[])
@@ -38,7 +66,6 @@ def plotActivityVertically(activeCellsColumn, highlightTouch):
     for t, sdrs in enumerate(activeCellsColumn):
         if t <= numTouches:
             for c, activeCells in enumerate(sdrs):
-                # print t, c, len(activeCells)
                 for cell in activeCells:
                     shapes.append(
                         {
@@ -78,7 +105,8 @@ def plotActivityVertically(activeCellsColumn, highlightTouch):
         'font': {'size': 20},
         'xanchor': 'center',
         'yanchor': 'bottom',
-        'text': 'Number of touches',
+        # 'text': 'Number of touches',
+        'text': xAxisTitle,
         'xref': 'paper',
         'yref': 'paper',
         'x': 0.5,
@@ -89,7 +117,8 @@ def plotActivityVertically(activeCellsColumn, highlightTouch):
         'font': {'size': 24},
         'xanchor': 'center',
         'yanchor': 'bottom',
-        'text': ['', '<b>One cortical column</b>', '',
+        # 'text': ['', '<b>One cortical column</b>', '', '<b>Three cortical columns</b>'][numColumns],
+        'text': ['', figureName, '',
                  '<b>Three cortical columns</b>'][numColumns],
         'xref': 'paper',
         'yref': 'paper',
@@ -101,8 +130,10 @@ def plotActivityVertically(activeCellsColumn, highlightTouch):
         'height': 600,
         'font': {'size': 18},
         'yaxis': {
-            'title': "Neuron #",
-            'range': [-100, 4201],
+            # 'title': "Neuron #",
+            'title': yAxisTitle,
+            # 'range': [-100, 4201],
+            'range': [minCellRange, maxCellRange],
             'showgrid': False,
         },
         'shapes': shapes,
@@ -134,12 +165,11 @@ def plotActivityVertically(activeCellsColumn, highlightTouch):
 
 
 def plotActivityHorizontally(activeCellsColumn, highlightTouch):
-    maxTouches = 15
     numTouches = min(maxTouches, len(activeCellsColumn))
     numColumns = len(activeCellsColumn[0])
     fig = plotly.tools.make_subplots(
         rows=1, cols=numColumns, shared_yaxes=True,
-        subplot_titles=('Column 1', 'Column 2', 'Column 3')[0:numColumns]
+        subplot_titles=(subPlotTitle, 'Column 2', 'Column 3')[0:numColumns]
     )
 
     data = go.Scatter(x=[], y=[])
@@ -148,7 +178,6 @@ def plotActivityHorizontally(activeCellsColumn, highlightTouch):
     for t, sdrs in enumerate(activeCellsColumn):
         if t <= numTouches:
             for c, activeCells in enumerate(sdrs):
-                # print t, c, len(activeCells)
                 for cell in activeCells:
                     shapes.append(
                         {
@@ -188,9 +217,8 @@ def plotActivityHorizontally(activeCellsColumn, highlightTouch):
         'font': {'size': 24},
         'xanchor': 'center',
         'yanchor': 'bottom',
-        'text': ['', '<b>One cortical column</b>', '',
+        'text': ['', figureName, '',
                  '<b>Three cortical columns</b>'][numColumns],
-        'text': 'Neuron #',
         'xref': 'paper',
         'yref': 'paper',
         'x': 0.5,
@@ -201,7 +229,7 @@ def plotActivityHorizontally(activeCellsColumn, highlightTouch):
         'font': {'size': 20},
         'xanchor': 'center',
         'yanchor': 'bottom',
-        'text': '',  # also checked
+        'text': xAxisTitle,  # also checked
         'xref': 'paper',
         'yref': 'paper',
         'x': 0.5,
@@ -212,7 +240,8 @@ def plotActivityHorizontally(activeCellsColumn, highlightTouch):
         'width': 600,
         'font': {'size': 18},
         'yaxis': {
-            'title': "Number of touches",  # checked
+            'title': yAxisTitle,  # checked
+            # 'title': numTouches,  # checked
             'range': [0, numTouches],
             'showgrid': False,
         },
@@ -228,7 +257,7 @@ def plotActivityHorizontally(activeCellsColumn, highlightTouch):
         fig.append_trace(data, 1, c + 1)
         fig['layout']['yaxis' + str(c + 1)].update({
             'title': "",
-            'range': [-100, 4201],
+            'range': [minCellRange, maxCellRange],
             'showgrid': False,
             'showticklabels': True,
         }),
@@ -254,6 +283,6 @@ with open(args.filename) as datafile:
     print(len(dataSets))
 
 if args.axis == 'x':
-    plotActivityHorizontally(dataSets, 7)
+    plotActivityHorizontally(dataSets, highlight_touch)
 else:
-    plotActivityVertically(dataSets, 7)
+    plotActivityVertically(dataSets, highlight_touch)
