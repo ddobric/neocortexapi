@@ -276,7 +276,7 @@ def plotActivityHorizontally(activeCellsColumn, highlightTouch):
 dataSets = []
 # with open("C:\\Users\\ataul\\source\\repos\\NeoCortex\\Python\\ColumnActivityDiagram\\sample.txt") as datafile:
 with open(args.filename) as datafile:
-    csv_reader = csv.reader(datafile, delimiter=';')
+    csv_reader = csv.reader(datafile, delimiter=',')
     for row in csv_reader:
         cells = map(int, row)
         dataSets.append([set(cells)])
