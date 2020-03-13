@@ -6,11 +6,12 @@ import plotly.graph_objs as go
 import argparse
 import csv
 
+import os
+
 # python draw_figure.py -fn sample.txt -gn test1 -mt 19 -ht 8 -yt yaxis -xt xaxis -min 50 -max 4000 -st 'single column' -fign CortialColumn
 # python draw_figure.py -fn sample.txt -gn test1 -mt 19 -ht 8 -yt yaxis -xt xaxis -min 50 -max 4000 -st 'single column' -fign CortialColumn -a x
 parser = argparse.ArgumentParser(description='Draw convergence figure')
-parser.add_argument(
-    '--filename', '-fn', help='Filename from which data is supposed to be red', required=True)
+#parser.add_argument('--filename', '-fn',help='Filename from which data is supposed to be red', required=True)
 parser.add_argument(
     '--graphename', '-gn', help='Graphname where data is supposed to be plot', required=True)
 parser.add_argument(
@@ -24,9 +25,9 @@ parser.add_argument(
 parser.add_argument(
     '--xaxistitle', '-xt', help='The title of the x-axis', required=True, type=str)
 parser.add_argument(
-    '--mincellrange', '-min', help='Minimun range of the cells', required=True, type=int)
+    '--mincellrange', '-min', help='Minimun range of the cells', nargs='?',  type=int)
 parser.add_argument(
-    '--maxcellrange', '-max', help='Maximum range of the cells', required=True, type=int)
+    '--maxcellrange', '-max', help='Maximum range of the cells', nargs='?',  type=int)
 parser.add_argument(
     '--subplottitle', '-st', help='The title of the subplot', required=True, type=str)
 parser.add_argument(
@@ -49,6 +50,9 @@ minCellRange = args.mincellrange
 maxCellRange = args.maxcellrange
 subPlotTitle = args.subplottitle
 figureName = args.figurename
+
+
+# os.path.realpath(__file__)
 
 
 def plotActivityVertically(activeCellsColumn, highlightTouch):
@@ -133,7 +137,7 @@ def plotActivityVertically(activeCellsColumn, highlightTouch):
             # 'title': "Neuron #",
             'title': yAxisTitle,
             # 'range': [-100, 4201],
-            'range': [minCellRange, maxCellRange],
+            'range': [minCell, maxCell],
             'showgrid': False,
         },
         'shapes': shapes,
@@ -257,7 +261,7 @@ def plotActivityHorizontally(activeCellsColumn, highlightTouch):
         fig.append_trace(data, 1, c + 1)
         fig['layout']['yaxis' + str(c + 1)].update({
             'title': "",
-            'range': [minCellRange, maxCellRange],
+            'range': [minCell, maxCell],
             'showgrid': False,
             'showticklabels': True,
         }),
@@ -274,15 +278,33 @@ def plotActivityHorizontally(activeCellsColumn, highlightTouch):
 
 
 dataSets = []
-# with open("C:\\Users\\ataul\\source\\repos\\NeoCortex\\Python\\ColumnActivityDiagram\\sample.txt") as datafile:
-with open(args.filename) as datafile:
-    csv_reader = csv.reader(datafile, delimiter=',')
+allCells = []
+cell = []
+# with open("C:\\Users\\ataul\\source\\repos\\NeoCortex\\Python\\ColumnActivityDiagram\\sampleOne.txt") as datafile:
+with open("C:\\Users\\ataul\\source\\repos\\NeoCortex\\Python\\ColumnActivityDiagram\\sampleZero.txt", 'rb') as datafile:
+    csv_reader = csv.reader(datafile, skipinitialspace=False,
+                            delimiter=',', quoting=csv.QUOTE_NONE)
     for row in csv_reader:
-        cells = map(int, row)
-        dataSets.append([set(cells)])
-    print(len(dataSets))
+        if row[-1] == '' or row[-1] == ' ' or row[-1] == ',':
+            del row[-1]
+        for i in row:
+            if i == '':
+                del row[i]
+            j = i.strip()
+            cell.append(int(j))
+            allCells.append(int(j))
+        dataSets.append([set(cell)])
+        cell = []
+
+
+maxCell = max(allCells)+100
+minCell = min(allCells)-100
+
+# print(len(dataSets))
 
 if args.axis == 'x':
     plotActivityHorizontally(dataSets, highlight_touch)
 else:
     plotActivityVertically(dataSets, highlight_touch)
+
+# if args.maxCellRange:
