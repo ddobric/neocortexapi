@@ -1,4 +1,5 @@
-﻿// Copyright (c) Damir Dobric. All rights reserved.
+﻿//#define REPAIR_STABILITY
+// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
@@ -36,7 +37,7 @@ namespace NeoCortexApi
     {
 
         public double MaxInibitionDensity { get; set; } = 0.5;
-        public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string Name { get; set; }
 
         /** Default Serial Version  */
         private static readonly long serialVersionUID = 1L;
@@ -330,6 +331,18 @@ namespace NeoCortexApi
                 return activeColumnsArr;
         }
 
+ #if REPAIR_STABILITY
+        bool inRepair = false;
+
+        private int[] prevActCols = new int[0];
+
+        private int[] stableActCols = new int[0];
+
+        private double[] prevOverlaps = new double[0];
+
+        double prevSimilarity = 0.0;
+#endif
+
         /**
          * This is the primary public method of the SpatialPooler class. This
          * function takes a input vector and outputs the indices of the active columns.
@@ -376,9 +389,6 @@ namespace NeoCortexApi
 
             this.connections.Overlaps = overlaps;
 
-            var overlapsStr = Helpers.StringifyVector(overlaps);
-            //Debug.WriteLine("overlap: " + overlapsStr);
-
             double[] boostedOverlaps;
 
             //
@@ -386,23 +396,55 @@ namespace NeoCortexApi
             if (learn)
             {
                 //Debug.WriteLine("Boosted Factor: " + c.BoostFactors);
-                boostedOverlaps = ArrayUtils.multiply(this.connections.BoostFactors, overlaps);
+                boostedOverlaps = ArrayUtils.Multiply(this.connections.BoostFactors, overlaps);
             }
             else
             {
                 boostedOverlaps = ArrayUtils.toDoubleArray(overlaps);
             }
 
+            //Debug.WriteLine("BO: " + Helpers.StringifyVector(boostedOverlaps));
+
             this.connections.BoostedOverlaps = boostedOverlaps;
 
             int[] activeColumns = inhibitColumns(this.connections, boostedOverlaps);
+
+            //var indexes = ArrayUtils.IndexWhere(this.connections.BoostFactors.OrderBy(i => i).ToArray(), x => x > 1.0);
+            //Debug.WriteLine($"Boost factors: {indexes.Length} -" + Helpers.StringifyVector(indexes));
+
+#if REPAIR_STABILITY
+            // REPAIR STABILITY FEATURE
+            var similarity = MathHelpers.CalcArraySimilarity(prevActCols, activeColumns);
+            if (prevSimilarity == 100.0 && similarity < 70.0)
+            {
+                Debug.WriteLine(" O: " + Helpers.StringifyVector<double>(prevOverlaps.OrderBy(x => x).ToArray(), (indx, val) => $"{indx}-{val}"));
+                Debug.WriteLine(" O: " + Helpers.StringifyVector<double>(boostedOverlaps.OrderBy(x => x).ToArray(), (indx, val) => $"{indx}-{val}"));
+                Debug.WriteLine("prevActCols: " + Helpers.StringifyVector(prevActCols.OrderBy(x => x).ToArray()));
+                Debug.WriteLine("    ActCols: " + Helpers.StringifyVector(activeColumns.OrderBy(x => x).ToArray()));
+
+                stableActCols = prevActCols;
+
+                inRepair = true;
+            }
+
+            // REPAIR STABILITY FEATURE
+            if (similarity >= 95.0 && inRepair)
+            {
+                inRepair = false;
+                Debug.WriteLine("Entered stable state again!");
+            }
+
+            prevOverlaps = boostedOverlaps;
+            prevActCols = activeColumns;
+            prevSimilarity = similarity;
+#endif
 
             if (learn)
             {
                 AdaptSynapses(this.connections, inputVector, activeColumns);
                 updateDutyCycles(this.connections, overlaps, activeColumns);
                 BumpUpWeakColumns(this.connections);
-                updateBoostFactors(this.connections);
+                UpdateBoostFactors(this.connections);
                 if (isUpdateRound(this.connections))
                 {
                     updateInhibitionRadius(this.connections);
@@ -410,13 +452,21 @@ namespace NeoCortexApi
                 }
             }
 
+            // REPAIR STABILITY FEATURE
+#if REPAIR_STABILITY
+            if (inRepair)
+            {
+                Debug.WriteLine("Stable columns output..");
+                activeColumns = stableActCols;
+            }
+#endif
             ArrayUtils.fillArray(activeArray, 0);
             if (activeColumns.Length > 0)
             {
                 ArrayUtils.setIndexesTo(activeArray, activeColumns, 1);
             }
 
-            Debug.WriteLine($"SP-OUT: {Helpers.StringifyVector(activeArray)}");
+            //Debug.WriteLine($"SP-OUT: {Helpers.StringifyVector(activeColumns.OrderBy(c=>c).ToArray())}");
         }
 
         /**
@@ -617,14 +667,14 @@ namespace NeoCortexApi
 
             int period = c.getDutyCyclePeriod();
             if (period > c.getIterationNum())
-            {
+            {              
                 period = c.getIterationNum();
             }
-            //Debug.WriteLine("period is: " + period);
+
             c.setOverlapDutyCycles(updateDutyCyclesHelper(c, c.getOverlapDutyCycles(), overlapArray, period));
 
-            c.setActiveDutyCycles(
-                    updateDutyCyclesHelper(c, c.getActiveDutyCycles(), activeArray, period));
+            c.setActiveDutyCycles(updateDutyCyclesHelper(c, c.getActiveDutyCycles(), activeArray, period));
+
             //var strActiveArray = Helpers.StringifyVector(activeArray);
             //Debug.WriteLine("Active Array:" + strActiveArray);
             //var strOverlapArray = Helpers.StringifyVector(overlapArray);
@@ -653,7 +703,7 @@ namespace NeoCortexApi
          */
         public double[] updateDutyCyclesHelper(Connections c, double[] dutyCycles, double[] newInput, double period)
         {
-            return ArrayUtils.divide(ArrayUtils.d_add(ArrayUtils.multiply(dutyCycles, period - 1), newInput), period);
+            return ArrayUtils.divide(ArrayUtils.AddOffset(ArrayUtils.multiply(dutyCycles, period - 1), newInput), period);
         }
 
         /**
@@ -820,16 +870,20 @@ namespace NeoCortexApi
             //Debug.WriteLine("Permance after update in adaptSynapses: " + permChangesStr);
         }
 
-        /**
-         * This method increases the permanence values of synapses of columns whose
-         * activity level has been too low. Such columns are identified by having an
-         * overlap duty cycle that drops too much below those of their peers. The
-         * permanence values for such columns are increased.
-         *  
-         * @param c
-         */
+
+        /// <summary>
+        /// This method increases the permanence values of synapses of columns whose 
+        /// activity level has been too low. Such columns are identified by having an 
+        /// overlap duty cycle that drops too much below those of their peers. The 
+        /// permanence values for such columns are increased. 
+        /// </summary>
+        /// <param name="c"></param>
         public virtual void BumpUpWeakColumns(Connections c)
         {
+            if(c.IsBumpUpWeakColumnsDisabled)
+                return;
+
+            // This condition is wrong. It brings teh SP in scillation state.
             var weakColumns = c.getMemory().get1DIndexes().Where(i => c.getOverlapDutyCycles()[i] < c.getMinOverlapDutyCycles()[i]).ToArray();
             //var weakColumnsStr = Helpers.StringifyVector(weakColumns);
             //Debug.WriteLine("weak Columns:" + weakColumnsStr);
@@ -1441,7 +1495,7 @@ namespace NeoCortexApi
          *                |
          *         minActiveDutyCycle
          */
-        public void updateBoostFactors(Connections c)
+        public void UpdateBoostFactors(Connections c)
         {
             double[] activeDutyCycles = c.getActiveDutyCycles();
             //var strActiveDutyCycles = Helpers.StringifyVector(activeDutyCycles);
@@ -1457,10 +1511,8 @@ namespace NeoCortexApi
                     mask.Add(i);
             }
 
-
-            //        int[] mask = ArrayUtils.where(minActiveDutyCycles, ArrayUtils.GREATER_THAN_0);
-
             double[] boostInterim;
+
 
             //
             // Boost factors are NOT recalculated if minimum active duty cycles are all set on 0.
@@ -1488,30 +1540,27 @@ namespace NeoCortexApi
             }
 
             ArrayUtils.SetIndexesTo(boostInterim, filteredIndexes.ToArray(), 1.0d);
-            //var boostInterimStr = Helpers.StringifyVector(boostInterim);
 
+            var bostIndexes = ArrayUtils.IndexWhere(boostInterim, x => x > 1.0);
 
-            //    ArrayUtils.setIndexesTo(boostInterim, ArrayUtils.where(activeDutyCycles, new Condition.Adapter<Object>() {
-            //        int i = 0;
-            //    @Override public boolean eval(double d) { return d > minActiveDutyCycles[i++]; }
-            //}), 1.0d);
-            //Debug.WriteLine("new boost factor:" + boostInterimStr);
+            //if (bostIndexes.Length > 0)
+            //    Debug.WriteLine("**New boost factors:" + Helpers.StringifyVector(bostIndexes.OrderBy(i => i).ToArray()));
+
             c.BoostFactors = boostInterim;
         }
 
-        /**
-         * This function determines each column's overlap with the current input
-         * vector. The overlap of a column is the number of synapses for that column
-         * that are connected (permanence value is greater than '_synPermConnected')
-         * to input bits which are turned on. Overlap values that are lower than
-         * the 'stimulusThreshold' are ignored. The implementation takes advantage of
-         * the SpraseBinaryMatrix class to perform this calculation efficiently.
-         *  
-         * @param c             the {@link Connections}.foreach memory encapsulation
-         * @param inputVector   an input array of 0's and 1's that comprises the input to
-         *                      the spatial pooler.
-         * @return
-         */
+
+
+        /// <summary>
+        /// This function determines each column's overlap with the current input
+        /// vector.The overlap of a column is the number of synapses for that column)
+        /// to input bits which are turned on.Overlap values that are lower than
+        /// the 'stimulusThreshold' are ignored.The implementation takes advantage of
+        /// the SpraseBinaryMatrix class to perform this calculation efficiently.
+        /// </summary>
+        /// <param name="c"></param>
+        /// <param name="inputVector"></param>
+        /// <returns></returns>
         public virtual int[] CalculateOverlap(Connections c, int[] inputVector)
         {
             int[] overlaps = new int[c.NumColumns];
@@ -1524,7 +1573,6 @@ namespace NeoCortexApi
             //Debug.WriteLine($"Overlap: {st}");
             return overlaps;
         }
-
 
 
         /**

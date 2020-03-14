@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿// Copyright (c) Damir Dobric. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -6,28 +7,30 @@ using System.Text;
 
 namespace NeoCortexApi.Entities
 {
-    /**
-  * Represents a connection with varying strength which when above 
-  * a configured threshold represents a valid connection. 
-  * 
-  * IMPORTANT: 	For DistalDendrites, there is only one synapse per pool, so the
-  * 				synapse's index doesn't really matter (in terms of tracking its
-  * 				order within the pool). In that case, the index is a global counter
-  * 				of all distal dendrite synapses.
-  * 
-  * 				For ProximalDendrites, there are many synapses within a pool, and in
-  * 				that case, the index specifies the synapse's sequence order within
-  * 				the pool object, and may be referenced by that index.
-  *    
-  * 
-  * @author Chetan Surpur
-  * @author David Ray
-  * 
-  * @see DistalDendrite
-  * @see Connections
-  */
 
-    // [System.SerializableAttribute] 
+
+    /**
+     * THI SSGOULD BE VALIDATED. IT SEEMS TO BE WRONG
+* Represents a connection with varying strength which when above 
+* a configured threshold represents a valid connection. 
+* 
+* IMPORTANT: 	For DistalDendrites, there is only one synapse per pool, so the
+* 				synapse's index doesn't really matter (in terms of tracking its
+* 				order within the pool). In that case, the index is a global counter
+* 				of all distal dendrite synapses.
+* 
+* 				For ProximalDendrites, there are many synapses within a pool, and in
+* 				that case, the index specifies the synapse's sequence order within
+* 				the pool object, and may be referenced by that index.
+*    
+
+*/
+
+    /// <summary>
+    /// Implements the synaptic connection.
+    /// ProximalDendrites hold many synapses, which connect columns to the sensory input.
+    /// DistalDendrites build synaptic connections to cells inside of columns.
+    /// </summary>
     public class Synapse : IEquatable<Synapse>, IComparable<Synapse>
     {
         /// <summary>
@@ -35,10 +38,13 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public Cell SourceCell { get; set; }
 
-        [JsonIgnore]
-        public Segment Segment { get; set; }
+        //[JsonIgnore]
+        //public Segment Segment { get; set; }
 
-        //public Pool Pool {get;set;}
+        /// <summary>
+        /// The index of the segment.
+        /// </summary>
+        public int SegmentIndex { get; set; }
 
         public int SynapseIndex { get; set; }
 
@@ -53,45 +59,40 @@ namespace NeoCortexApi.Entities
 
         public bool m_Isdestroyed { get; set; }
 
-        /**
-         * Constructor used when setting parameters later.
-         */
+        /// <summary>
+        /// 
+        /// </summary>
         public Synapse() { }
 
-        /**
-         * Constructs a new {@code Synapse} for a {@link DistalDendrite}
-         * @param sourceCell    the {@link Cell} which will activate this {@code Synapse};
-         * @param segment       the owning dendritic segment
-         * @param pool          this {@link Pool} of which this synapse is a member
-         * @param index         this {@code Synapse}'s index
-         * @param permanence    
-         */
-        public Synapse(Cell presynapticCell, Segment segment, int index, double permanence)
+
+        /// <summary>
+        /// Creates the synapse on the distal segment, which connect cells during temporal learning process.
+        /// </summary>
+        /// <param name="presynapticCell">The cell which connects to the segment.</param>
+        /// <param name="segmentIndex">The index of the segment.</param>
+        /// <param name="synapseIndex">The index of the synapse.</param>
+        /// <param name="permanence">The permanmence value.</param>
+        public Synapse(Cell presynapticCell, int segmentIndex, int synapseIndex, double permanence)
         {
             this.SourceCell = presynapticCell;
-            this.Segment = segment;
-            this.SynapseIndex = index;
-            this.BoxedIndex = new Integer(index);
+            this.SegmentIndex = segmentIndex;
+            this.SynapseIndex = synapseIndex;
+            this.BoxedIndex = new Integer(synapseIndex);
             this.InputIndex = presynapticCell.Index;
             this.Permanence = permanence;
         }
 
-        /**
-         * Constructs a new {@code Synapse}
-         * 
-         * @param c             the connections state of the temporal memory
-         * @param sourceCell    the {@link Cell} which will activate this {@code Synapse};
-         *                      Null if this Synapse is proximal
-         * @param segment       the owning dendritic segment
-         * @param pool		    this {@link Pool} of which this synapse is a member
-         * @param index         this {@code Synapse}'s index
-         * @param inputIndex	the index of this {@link Synapse}'s input; be it a Cell or InputVector bit.
-         */
-        public Synapse(Cell sourceCell, Segment segment, int synapseIndex, int inputIndex)
+
+        /// <summary>
+        /// Creates the synapse on the PriximalDendrite segment, which connects columns to sensory input.
+        /// </summary>
+        /// <param name="presynapticCell">The cell which connects to the segment.</param>
+        /// <param name="segmentIndex">The index of the segment.</param>
+        /// <param name="inputIndex">The index of the synapse.</param>
+        public Synapse(Cell sourceCell, int segmentIndex, int synapseIndex, int inputIndex)
         {
             this.SourceCell = sourceCell;
-            this.Segment = segment;
-            //this.Pool = pool;
+            this.SegmentIndex = segmentIndex;
             this.SynapseIndex = synapseIndex;
             this.BoxedIndex = new Integer(synapseIndex);
             this.InputIndex = inputIndex;
@@ -141,14 +142,14 @@ namespace NeoCortexApi.Entities
             //}
         }
 
-        /**
-         * Returns the owning dendritic segment
-         * @return
-         */
-        public Segment getSegment()
-        {
-            return Segment;
-        }
+        ///**
+        // * Returns the owning dendritic segment
+        // * @return
+        // */
+        //public Segment getSegment()
+        //{
+        //    return Segment;
+        //}
 
         /**
          * Called by {@link Connections#destroySynapse(Synapse)} to assign
@@ -198,17 +199,17 @@ namespace NeoCortexApi.Entities
                 srcCell = $"[SrcCell: {SourceCell.ToString()}]";
             }
 
-            return $"Syn: synIndx:{SynapseIndex}, inpIndx:{InputIndex}, perm:{this.Permanence}[{Segment}], {srcCell}";
+            return $"Syn: synIndx:{SynapseIndex}, inpIndx:{InputIndex}, perm:{this.Permanence}[ segIndx: {SegmentIndex}], {srcCell}";
         }
 
-    
+
 
         public override int GetHashCode()
         {
             int prime = 31;
             int result = 1;
             result = prime * result + InputIndex;
-            result = prime * result + ((Segment == null) ? 0 : Segment.GetHashCode());
+            result = prime * result + this.SegmentIndex;
             result = prime * result + ((SourceCell == null) ? 0 : SourceCell.GetHashCode());
             result = prime * result + SynapseIndex;
             return result;
@@ -218,8 +219,8 @@ namespace NeoCortexApi.Entities
         /* (non-Javadoc)
          * @see java.lang.Object#equals(java.lang.Object)
          */
-       // @Override
-    public bool Equals(Object obj)
+        // @Override
+        public bool Equals(Object obj)
         {
             if (this == obj)
                 return true;
@@ -230,13 +231,10 @@ namespace NeoCortexApi.Entities
             Synapse other = (Synapse)obj;
             if (InputIndex != other.InputIndex)
                 return false;
-            if (Segment == null)
+            if (SegmentIndex != ((Synapse)obj).SegmentIndex)
             {
-                if (other.Segment != null)
-                    return false;
-            }
-            else if (!Segment.Equals(other.Segment))
                 return false;
+            }
             if (SourceCell == null)
             {
                 if (other.SourceCell != null)
@@ -264,11 +262,7 @@ namespace NeoCortexApi.Entities
 
             //
             // Synapses are equal if they belong to the same segment.
-            if (Segment == null && obj.Segment != null)
-            {
-                return false;
-            }
-            else if (!Segment.Equals(obj.Segment))
+            if (this.SegmentIndex != ((Synapse)obj).SegmentIndex)
                 return false;
 
             if (SourceCell == null)

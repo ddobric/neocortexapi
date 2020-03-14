@@ -445,7 +445,7 @@ namespace NeoCortexApi
             // Matching segments result from number of potential synapses. These are segments with number of potential
             // synapses permanence higher than some minimum threshold value.
             // Potential synapses are synapses from presynaptc cells connected to the active cell.
-            // In other words, presynaptic cells define a statistical prediction that active cell will become the active in the next cycle.
+            // In other words, synapse permanence between presynaptic cell and the active cell defines a statistical prediction that active cell will become the active in the next cycle.
             // Bursting will create new segments if there are no matching segments until some matching segments appear. 
             // Once that happen, segment adoption will start.
             // If some matching segments exist, bursting will grab the segment with most potential synapses and adapt it.

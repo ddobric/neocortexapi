@@ -3732,6 +3732,9 @@
     <None Update="TestFiles\rec-center-hourly-short.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="TestFiles\simple-sequence.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="TestFiles\rec-center-hourly-very-short.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -3739,6 +3742,7 @@
 
   <ItemGroup>
     <Folder Include="MnistPng28x28\" />
+    <Folder Include="NewBornBumpUpExperiments\" />
     <Folder Include="Output\" />
   </ItemGroup>
 

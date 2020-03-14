@@ -137,7 +137,7 @@ namespace NeoCortexApi
                         ArrayUtils.toDoubleArray(inpTop.Dimensions),
                         ArrayUtils.toDoubleArray(colTop.Dimensions), 0, 0);
 
-            inputCoords = ArrayUtils.d_add(inputCoords, ArrayUtils.multiply(colSpanOverInputs, 0.5));
+            inputCoords = ArrayUtils.AddOffset(inputCoords, ArrayUtils.multiply(colSpanOverInputs, 0.5));
 
             // Makes sure that inputCoords are in range [0, inpDims]
             int[] inputCoordInts = ArrayUtils.clip(ArrayUtils.toIntArray(inputCoords), inpTop.Dimensions, -1);

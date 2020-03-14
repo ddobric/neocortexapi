@@ -1050,7 +1050,7 @@ namespace NeoCortexApi.Utility
          * @return
          * @throws IllegalArgumentException if the two argument arrays are not the same length
          */
-        public static double[] multiply(double[] multiplicand, int[] factor)
+        public static double[] Multiply(double[] multiplicand, int[] factor)
         {
 
             if (multiplicand.Length != factor.Length)
@@ -1247,11 +1247,11 @@ namespace NeoCortexApi.Utility
          * @param amount
          * @return
          */
-        public static double[] d_add(double[] arr, double[] amount)
+        public static double[] AddOffset(double[] arr, double[] offset)
         {
             for (int i = 0; i < arr.Length; i++)
             {
-                arr[i] += amount[i];
+                arr[i] += offset[i];
             }
             return arr;
         }
@@ -2827,7 +2827,7 @@ namespace NeoCortexApi.Utility
             return true;
         }
         /*This method is used to flip bits of an binary array*/
-        public static int[] flipBit(int[] oriArr, Double bitPerc)
+        public static int[] FlipBit(int[] oriArr, Double bitPerc)
         {
             int[] result = new List<int>(oriArr).ToArray();
             List<int> arr = new List<int>();

@@ -66,11 +66,11 @@ namespace UnitTestsProject
 
             var settings = new JsonSerializerSettings { ContractResolver = new ContractResolver(), Formatting = Formatting.Indented };
 
+            sp.init(mem1);
+
             var jsonMem = JsonConvert.SerializeObject(mem1, settings);
 
-            var mem2 = JsonConvert.DeserializeObject<Connections>(jsonMem, settings);
-
-            sp.init(mem1);
+            var mem2 = JsonConvert.DeserializeObject<Connections>(jsonMem, settings);          
 
             var jsonSp = JsonConvert.SerializeObject(sp, settings);
 
@@ -135,7 +135,7 @@ namespace UnitTestsProject
 
             string str1 = String.Empty;
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 2; i++)
             {
                 sp.compute( inputVector, activeArray, true);
 

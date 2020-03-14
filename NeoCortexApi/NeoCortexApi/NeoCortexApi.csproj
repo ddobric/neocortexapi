@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>NeoCortexApi</PackageId>
-    <Version>1.0.7</Version>
+    <Version>1.0.8</Version>
     <Authors>Damir Dobric</Authors>
     <Company>daenet GmbH</Company>
     <Product>Hierarchical Temporal Framework in C#</Product>
@@ -13,7 +13,9 @@
     <PackageProjectUrl>https://github.com/ddobric/neocortexapi</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ddobric/neocortexapi</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>htm</PackageTags>
+    <PackageTags>htm, temporal memory, spatial pooler, neocortex</PackageTags>
+    <PackageLicenseExpression></PackageLicenseExpression>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -46,6 +48,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\..\..\me\neocortexapi\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
     <None Include="Anomaly.cs" />
     <None Include="Classification.cs" />
     <None Include="Encoders\EncoderBuilder.cs" />

@@ -10,6 +10,9 @@ using NeoCortexApi.Entities;
 using System.Diagnostics;
 using NeoCortexEntities.NeuroVisualizer;
 using WebSocketNeuroVisualizer;
+using NeoCortexApi.Utility;
+using System.Text;
+using System.IO;
 using System.Threading;
 using System.Net.WebSockets;
 
@@ -94,7 +97,7 @@ namespace UnitTestsProject
                     var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
                     //cls1.Learn(input, lyrOut.activeCells.ToArray(), learn);
                     //Debug.WriteLine($"Current Input: {input}");
-                    cls.Learn(input, lyrOut.ActiveCells.ToArray(), lyrOut.predictiveCells.ToArray());
+                    cls.Learn(input, lyrOut.ActiveCells.ToArray());
                     Debug.WriteLine($"Current Input: {input}");
                     if (learn == false)
                     {
@@ -216,7 +219,7 @@ namespace UnitTestsProject
                 {
                     var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
 
-                    cls.Learn(input, lyrOut.ActiveCells.ToArray(), lyrOut.predictiveCells.ToArray());
+                    cls.Learn(input, lyrOut.ActiveCells.ToArray());
 
                     Debug.WriteLine($"-------------- {input} ---------------");
 
@@ -344,7 +347,7 @@ namespace UnitTestsProject
                 {
                     var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
 
-                    cls.Learn(input, lyrOut.ActiveCells.ToArray(), lyrOut.predictiveCells.ToArray());
+                    cls.Learn(input, lyrOut.ActiveCells.ToArray());
 
                     Debug.WriteLine($"-------------- {input} ---------------");
 
@@ -395,21 +398,52 @@ namespace UnitTestsProject
         [TestCategory("Experiment")]
         public void MusicNotesExperiment()
         {
+            //Cycle: 884  Matches = 16 of 16     100 %
+            //100 % accuracy reched 20 times.
+            //Exit experiment in the stable state after 10 repeats with 100 % of accuracy.Elapsed time: 57 min.
+            //p.Set(KEY.CELLS_PER_COLUMN, 10);
+            //p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
+            //p.Set(KEY.MAX_BOOST, 10.0);
+            //p.Set(KEY.DUTY_CYCLE_PERIOD, 100000);
+
+            //p.Set(KEY.CELLS_PER_COLUMN, 10);
+            //p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
+            //p.Set(KEY.MAX_BOOST, 10.0);
+            //p.Set(KEY.DUTY_CYCLE_PERIOD, 100000);
+            //p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.0);
+            //Cycle: 993  Matches = 16 of 16     100 %
+            //100 % accuracy reched 20 times.
+            //Exit experiment in the stable state after 10 repeats with 100 % of accuracy.Elapsed time: 73 min.
+
+
             int inputBits = 100;
             int numColumns = 2048;
             Parameters p = Parameters.getAllDefaultParameters();
+            
             p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
             p.Set(KEY.INPUT_DIMENSIONS, new int[] { inputBits });
-            p.Set(KEY.CELLS_PER_COLUMN, 10);
+            p.Set(KEY.CELLS_PER_COLUMN, 15);
             p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
+            p.Set(KEY.MAX_BOOST, 10.0);
 
+            p.Set(KEY.DUTY_CYCLE_PERIOD, 100000);
+
+            //p.Set(KEY.POTENTIAL_RADIUS, 50);
+            //p.Set(KEY.GLOBAL_INHIBITION, false);
+
+            //p.setNumActiveColumnsPerInhArea(10);
             // N of 40 (40= 0.02*2048 columns) active cells required to activate the segment.
-            p.setActivationThreshold(10);
             p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
+            // Activation threshold is 10 active cells of 40 cells in inhibition area.
+            p.setActivationThreshold(10);
             p.setInhibitionRadius(15);
+
+            // Stops the bumping of inactive columns.
+            p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.0);
 
             // Max number of synapses on the segment.
             p.setMaxNewSynapsesPerSegmentCount((int)(0.02 * numColumns));
+            p.setPermanenceIncrement(0.15);
             double max = 20;
 
             Dictionary<string, object> settings = new Dictionary<string, object>()
@@ -428,6 +462,10 @@ namespace UnitTestsProject
 
             //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 2.0, 0.0, 0.1, 2.0 });
             List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0 });
+            // C-0, D-1, E-2, F-3, G-4, H-5
+            //var inputValues = new double[] { 0.0, 0.0, 4.0, 4.0, 5.0, 5.0, 4.0, 3.0, 3.0, 2.0, 2.0, 1.0, 1.0, 0.0 };
+
+            //inputValues = new List<double>(new double[] { 1.0, 2.0, 3.0, 1.0, 5.0, 1.0, 6.0, });
 
             // RunExperiment(inputBits, p, encoder, inputValues);
             RunExperiment(inputBits, p, encoder, inputValues);
@@ -444,12 +482,12 @@ namespace UnitTestsProject
 
             //INeuroVisualizer vis = new WSNeuroVisualizer();
             //vis.InitModelAsync(new NeuroModel(null, (new long [10, 0]), 6));
+
             int maxMatchCnt = 0;
             bool learn = true;
-            INeuroVisualizer vis = new WSNeuroVisualizer();
-            GenerateNeuroModel model = new GenerateNeuroModel();
-            
-          //  vis.InitModelAsync(model.CreateNeuroModel(new int[] {1}, (long[,])p[KEY.COLUMN_DIMENSIONS], (int)p[KEY.CELLS_PER_COLUMN]));
+            //INeuroVisualizer vis = new WSNeuroVisualizer();
+            //GenerateNeuroModel model = new GenerateNeuroModel();
+            //vis.InitModel(model.CreateNeuroModel(new int[] { 1}, (long[,])p[KEY.COLUMN_DIMENSIONS], (int)p[KEY.CELLS_PER_COLUMN]));
 
             CortexNetwork net = new CortexNetwork("my cortex");
             List<CortexRegion> regions = new List<CortexRegion>();
@@ -475,21 +513,38 @@ namespace UnitTestsProject
             HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
 
             double[] inputs = inputValues.ToArray();
+            int[] prevActiveCols = new int[0];
+
+            int maxSPLearningCycles = 50;
+            //List<(double Element, (int Cycle, double Similarity)[] Oscilations)> oscilationResult2 = new List<(double Element, (int Cycle, double Similarity)[] Oscilations)>();
 
             //
             // This trains SP on input pattern.
             // It performs some kind of unsupervised new-born learning.
             foreach (var input in inputs)
             {
-                Debug.WriteLine($" ** {input} **");
-                for (int i = 0; i < 3; i++)
+                List<(int Cycle, double Similarity)> elementOscilationResult = new List<(int Cycle, double Similarity)>();
+
+                Debug.WriteLine($"Learning  ** {input} **");
+
+                for (int i = 0; i < maxSPLearningCycles; i++)
                 {
                     var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
 
                     var activeColumns = layer1.GetResult("sp") as int[];
-                    // TODO: @Atta
+
+                    var actCols = activeColumns.OrderBy(c => c).ToArray();
+
+                    var similarity = MathHelpers.CalcArraySimilarity(prevActiveCols, actCols);
+
+                    Debug.WriteLine($" {i.ToString("D4")} SP-OUT: [{actCols.Length}/{similarity.ToString("0.##")}] - {Helpers.StringifyVector(actCols)}");
+
+                    prevActiveCols = activeColumns;
                 }
             }
+
+            // Stops the bumping of inactive columns.
+            p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.0);
 
             // Here we add TM module to the layer.
             layer1.HtmModules.Add("tm", tm1);
@@ -501,7 +556,7 @@ namespace UnitTestsProject
 
             //
             // Now training with SP+TM. SP is pretrained on the given input pattern.
-            for (int i = 0; i < 1460; i++)
+            for (int i = 0; i < 3460; i++)
             {
                 matches = 0;
 
@@ -515,14 +570,14 @@ namespace UnitTestsProject
 
                     var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
 
-                    cls.Learn(input, lyrOut.ActiveCells.ToArray(), lyrOut.predictiveCells.ToArray());
-                  //  vis.UpdateSynapsesAsync();
+                    cls.Learn(input, lyrOut.ActiveCells.ToArray());
+                    //vis.UpdateSynapsesAsync();
 
                     if (learn == false)
                         Debug.WriteLine($"Inference mode");
 
-                    Debug.WriteLine($"W: {Helpers.StringifyVector(lyrOut.WinnerCells.Select(c => c.Index).ToArray())}");
-                    Debug.WriteLine($"P: {Helpers.StringifyVector(lyrOut.predictiveCells.Select(c => c.Index).ToArray())}");
+                    //Debug.WriteLine($"W: {Helpers.StringifyVector(lyrOut.WinnerCells.Select(c => c.Index).ToArray())}");
+                    //Debug.WriteLine($"P: {Helpers.StringifyVector(lyrOut.predictiveCells.Select(c => c.Index).ToArray())}");
 
                     if (input == lastPredictedValue)
                     {
@@ -546,37 +601,41 @@ namespace UnitTestsProject
 
                 //tm1.reset(mem);
 
-                double res = (double)matches / (double)inputs.Length * 100.0;
+                double accuracy = (double)matches / (double)inputs.Length * 100.0;
 
-                Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {inputs.Length}\t {res}%");
+                Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {inputs.Length}\t {accuracy}%");
 
-                if (res == 100.0)
+                if (accuracy == 100.0)
                 {
                     maxMatchCnt++;
-                    Debug.WriteLine($"Best match {maxMatchCnt}");
-                    if (maxMatchCnt >= 10)
+                    Debug.WriteLine($"100% accuracy reched {maxMatchCnt} times.");
+                    if (maxMatchCnt >= 20)
                     {
                         sw.Stop();
-                        Debug.WriteLine($"Exit experiment in the stable state. Elapsed time: {sw.ElapsedMilliseconds/1000/60} min.");
+                        Debug.WriteLine($"Exit experiment in the stable state after 10 repeats with 100% of accuracy. Elapsed time: {sw.ElapsedMilliseconds / 1000 / 60} min.");
+                        learn = false;
+                        //var testInputs = new double[] { 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 0.0, 1.0 };
 
-                        var testInputs = new double[] {0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 0.0, 1.0 };
+                        // C-0, D-1, E-2, F-3, G-4, H-5
+                        //var testInputs = new double[] { 0.0, 0.0, 4.0, 4.0, 5.0, 5.0, 4.0, 3.0, 3.0, 2.0, 2.0, 1.0, 1.0, 0.0 };
 
-                        double predictedInputValue = 0.0;
-
-                        // Traverse the sequence and check prediction.
-                        foreach (var input in testInputs)
-                        {
-                            var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
-                            predictedInputValue = cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray());
-                            Debug.WriteLine($"I={input} - P={predictedInputValue}");
-                        }
+                        //// Traverse the sequence and check prediction.
+                        //foreach (var input in inputValues)
+                        //{
+                        //    var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
+                        //    predictedInputValue = cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray());
+                        //    Debug.WriteLine($"I={input} - P={predictedInputValue}");
+                        //}
 
                         //
                         // Here we let the HTM predict seuence five times on its own.
                         // We start with last predicted value.
-                        int cnt = 5 * testInputs.Length;
-                        
+                        int cnt = 5 * inputValues.Count;
+
                         Debug.WriteLine("---- Start Predicting the Sequence -----");
+
+                        // We take a random value to start somwhere in the sequence.
+                        double predictedInputValue = inputValues[new Random().Next(0, inputValues.Count - 1)];
 
                         List<double> predictedValues = new List<double>();
 
@@ -595,10 +654,10 @@ namespace UnitTestsProject
                         break;
                     }
                 }
-                else
+                else if (maxMatchCnt > 0)
                 {
+                    Debug.WriteLine($"At 100% accuracy after {maxMatchCnt} repeats we get a drop of accuracy with {accuracy}. This indicates instable state. Learning will be continued.");
                     maxMatchCnt = 0;
-                    Debug.WriteLine($"At 100% match we get a lower raten agai:{res}");
                 }
             }
 
@@ -607,6 +666,176 @@ namespace UnitTestsProject
             Debug.WriteLine("------------------------------------------------------------------------\n----------------------------------------------------------------------------");
         }
 
+
+
+        /// <summary>
+        /// It learns SP and shows the convergence of SDR for the given input.
+        /// It repeats the learning process for every input many times (i.e.: 10000+ cycles) and writes out
+        /// the state of SDR. Then it counts number or instabe states. It means once SP generates stable SDR, it 
+        /// can hapen that in some hihg cycle SDR changes. NUmber of such instable cycles is counted and outputed as a result.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("NetworkTests")]
+        [TestCategory("Experiment")]
+        public void SpatialPooler_Stability_Experiment()
+        {
+            int inputBits = 100;
+            int numColumns = 2048;
+            Parameters p = Parameters.getAllDefaultParameters();
+            p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
+            p.Set(KEY.INPUT_DIMENSIONS, new int[] { inputBits });
+            p.Set(KEY.CELLS_PER_COLUMN, 10);
+            p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
+            p.Set(KEY.MAX_BOOST, 1.0);
+            p.Set(KEY.DUTY_CYCLE_PERIOD, 100000);
+
+            // Stops the bumping of inactive columns.
+            p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0);
+            //p.Set(KEY.IS_BUMPUP_WEAKCOLUMNS_DISABLED, true);
+
+            // N of 40 (40= 0.02*2048 columns) active cells required to activate the segment.
+            p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
+            // Activation threshold is 10 active cells of 40 cells in inhibition area.
+            p.setActivationThreshold(10);
+            p.setInhibitionRadius(15);
+
+            // Max number of synapses on the segment.
+            p.setMaxNewSynapsesPerSegmentCount((int)(0.02 * numColumns));
+            double max = 20;
+
+            Dictionary<string, object> settings = new Dictionary<string, object>()
+            {
+                { "W", 15},
+                { "N", inputBits},
+                { "Radius", -1.0},
+                { "MinVal", 0.0},
+                { "Periodic", false},
+                { "Name", "scalar"},
+                { "ClipInput", false},
+                { "MaxVal", max}
+            };
+
+            EncoderBase encoder = new ScalarEncoder(settings);
+
+            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0});
+        
+            RunSpStabilityExperiment(inputBits, p, encoder, inputValues);
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        private void RunSpStabilityExperiment(int inputBits, Parameters p, EncoderBase encoder, List<double> inputValues)
+        {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            bool learn = true;
+
+            CortexNetwork net = new CortexNetwork("my cortex");
+            List<CortexRegion> regions = new List<CortexRegion>();
+            CortexRegion region0 = new CortexRegion("1st Region");
+
+            regions.Add(region0);
+
+            SpatialPooler sp1 = new SpatialPooler();
+            var mem = new Connections();
+            p.apply(mem);
+            sp1.init(mem, UnitTestHelpers.GetMemory());
+
+            CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
+
+            //
+            // NewBorn learning stage.
+            region0.AddLayer(layer1);
+            layer1.HtmModules.Add("encoder", encoder);
+            layer1.HtmModules.Add("sp", sp1);
+
+            HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
+
+            double[] inputs = inputValues.ToArray();
+            int[] prevActiveCols = new int[0];
+
+            int maxSPLearningCycles = 25000;
+
+
+            List<(double Element, (int Cycle, double Similarity)[] Oscilations)> oscilationResult = new List<(double Element, (int Cycle, double Similarity)[] Oscilations)>();
+
+            //
+            // This trains SP on input pattern.
+            // It performs some kind of unsupervised new-born learning.
+            foreach (var input in inputs)
+            {
+                using (StreamWriter writer = new StreamWriter($"Oscilations_Boost_10_{input}.csv"))
+                {
+                    Debug.WriteLine($"Learning Cycles: {maxSPLearningCycles}");
+                    Debug.WriteLine($"MAX_BOOST={p[KEY.MAX_BOOST]}, DUTY ={p[KEY.DUTY_CYCLE_PERIOD]}");
+                    Debug.WriteLine("Cycle;Similarity");
+
+                    double similarity = 0;
+                    double prevSimilarity = 0;
+
+                    List<(int Cycle, double Similarity)> elementOscilationResult = new List<(int Cycle, double Similarity)>();
+
+                    Debug.WriteLine($"Learning  ** {input} **");
+
+                    for (int cycle = 0; cycle < maxSPLearningCycles; cycle++)
+                    {
+                        var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
+
+                        var activeColumns = layer1.GetResult("sp") as int[];
+
+                        var actCols = activeColumns.OrderBy(c => c).ToArray();
+
+                        Debug.WriteLine($" {cycle.ToString("D4")} SP-OUT: [{actCols.Length}/{MathHelpers.CalcArraySimilarity(prevActiveCols, actCols)}] - {Helpers.StringifyVector(actCols)}");
+
+                        similarity = MathHelpers.CalcArraySimilarity(activeColumns, prevActiveCols);
+
+                        if (similarity < 60.0)
+                        {
+                            var tp = (Cycle: cycle, Similarity: similarity);
+
+                            elementOscilationResult.Add(tp);
+                        }
+
+                        prevActiveCols = activeColumns;
+                        prevSimilarity = similarity;
+
+                        writer.WriteLine($"{cycle};{similarity}");
+                    }
+
+                    writer.Flush();
+                    oscilationResult.Add((Element: input, Oscilations: elementOscilationResult.ToArray()));
+                }
+            }
+
+            foreach (var item in oscilationResult)
+            {
+                int oscilationPeeks = 0;
+                int lastCycle = -1;
+                StringBuilder sb = new StringBuilder();
+
+                foreach (var o in item.Oscilations)
+                {
+                    sb.Append($"({o.Cycle}/{o.Similarity})");
+
+                    if (lastCycle + 1 != o.Cycle)
+                        oscilationPeeks++;
+
+                    lastCycle = o.Cycle;
+                }
+
+                Debug.WriteLine($"{item.Element};{oscilationPeeks};{item.Oscilations.Length};[{sb.ToString()}]");
+            }
+
+            Debug.WriteLine("------------------------------------------------------------------------\n----------------------------------------------------------------------------");
+        }
+
+
+        private void PlaySong(double[] notes)
+        {
+            // C-0, D-1, E-2, F-3, G-4, H-5
+        }
 
         [TestMethod]
         public void Abc()

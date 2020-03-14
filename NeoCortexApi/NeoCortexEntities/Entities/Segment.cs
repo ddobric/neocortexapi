@@ -12,7 +12,7 @@ namespace NeoCortexApi.Entities
    // [Serializable]
     public abstract class Segment : IEquatable<Segment>
     {       
-        public int ParentColumnIndex { get; set; }
+        public int SegmentIndex { get; set; }
 
         public Integer boxedIndex { get; set; }
 
@@ -39,7 +39,7 @@ namespace NeoCortexApi.Entities
             this.NumInputs = NumInputs;
             this.SynapsePermConnected = synapsePermConnected;
             this.Synapses = new List<Synapse>();
-            this.ParentColumnIndex = index;
+            this.SegmentIndex = index;
             this.boxedIndex = new Integer(index);
         }
     
@@ -51,7 +51,7 @@ namespace NeoCortexApi.Entities
         /// <returns>Index</returns>
         public int getIndex()
         {
-            return ParentColumnIndex;
+            return SegmentIndex;
         }
 
         /**
@@ -93,7 +93,7 @@ namespace NeoCortexApi.Entities
         /// <seealso cref="Synapse"/>
         public Synapse createSynapse(Cell sourceCell, int index, int inputIndex)
         {
-            Synapse synapse = new Synapse(sourceCell, this, index, inputIndex);
+            Synapse synapse = new Synapse(sourceCell, this.getIndex(), index, inputIndex);
             this.Synapses.Add(synapse);
             return synapse;
         }
@@ -107,7 +107,7 @@ namespace NeoCortexApi.Entities
         {
             int prime = 31;
             int result = 1;
-            result = prime * result + ParentColumnIndex;
+            result = prime * result + SegmentIndex;
             return result;
         }
 
@@ -123,7 +123,7 @@ namespace NeoCortexApi.Entities
             if (obj == null)
                 return false;
 
-            if (ParentColumnIndex != obj.ParentColumnIndex)
+            if (SegmentIndex != obj.SegmentIndex)
                 return false;
             else
                 return true;
@@ -131,7 +131,7 @@ namespace NeoCortexApi.Entities
 
         public override string ToString()
         {
-            return $"Seg: {this.ParentColumnIndex}";
+            return $"Seg: {this.SegmentIndex}";
         }
     }
 }

@@ -396,8 +396,8 @@ namespace UnitTestsProject
             Cell cell = new Cell();
 
             DistalDendrite dist = new DistalDendrite(cell, 0, 0, 0, 0.5, 10);
-            dist.Synapses.Add(new Synapse(cell, null, 0, 0.5));
-            Synapse syn = new Synapse(cell, dist, 0, 0);
+            dist.Synapses.Add(new Synapse(cell, -1, 0, 0.5));
+            Synapse syn = new Synapse(cell, dist.SegmentIndex, 0, 0);
 
             var dict = UnitTestHelpers.GetMemory();
 
@@ -409,7 +409,7 @@ namespace UnitTestsProject
             dict.ColumnDictionary.Add(0, col);
 
             var serCol = AkkaSb.Net.ActorReference.SerializeMsg(col);
-            Assert.IsTrue(dict.ColumnDictionary[0].ProximalDendrite.Synapses[0].Segment != null);
+            Assert.IsTrue(dict.ColumnDictionary[0].ProximalDendrite.Synapses.Count> 0);
         }
 
         [TestMethod]

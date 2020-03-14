@@ -44,6 +44,7 @@ namespace NeoCortexApi.Entities
         private int dutyCyclePeriod = 1000;
         private double maxBoost = 10.0;
         private bool wrapAround = true;
+        private bool isBumpUpWeakColumnsDisabled = false;
 
         private int numInputs = 1;  //product of input dimensions
         private int numColumns = 1; //product of column dimensions
@@ -1350,6 +1351,11 @@ namespace NeoCortexApi.Entities
  * @param boostFactors	the array of boost factors
  */
         public double[] BoostFactors { get => m_BoostFactors; set => this.m_BoostFactors = value; }
+        
+        /// <summary>
+        /// Controls if bumping-up of weak columns shell be done.
+        /// </summary>
+        public bool IsBumpUpWeakColumnsDisabled { get => isBumpUpWeakColumnsDisabled; set => isBumpUpWeakColumnsDisabled = value; }
 
 
         ////////////////////////////////////////
@@ -1366,7 +1372,7 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public SegmentActivity ComputeActivity(ICollection<Cell> activeCellsInCurrentCycle, double connectedPermanence)
         {
-            Dictionary<int, int> active = new Dictionary<int, int>();
+            Dictionary<int, int> activeSynapses = new Dictionary<int, int>();
             Dictionary<int, int> potentialSynapses = new Dictionary<int, int>();
 
             // Every receptor synapse on active cell, which has permanence over threshold is by default connected.
@@ -1386,7 +1392,7 @@ namespace NeoCortexApi.Entities
                 // Receptor synapses are synapses whose source cell (pre-synaptic cell) is the given cell.
                 foreach (Synapse synapse in getReceptorSynapses(cell))
                 {
-                    int segFlatIndx = synapse.getSegment().getIndex();
+                    int segFlatIndx = synapse.SegmentIndex;
                     if (potentialSynapses.ContainsKey(segFlatIndx) == false)
                         potentialSynapses.Add(segFlatIndx, 0);
 
@@ -1396,16 +1402,16 @@ namespace NeoCortexApi.Entities
 
                     if (synapse.getPermanence() > threshold)
                     {
-                        if (active.ContainsKey(segFlatIndx) == false)
-                            active.Add(segFlatIndx, 0);
+                        if (activeSynapses.ContainsKey(segFlatIndx) == false)
+                            activeSynapses.Add(segFlatIndx, 0);
 
-                        active[segFlatIndx] = active[segFlatIndx] + 1;
+                        activeSynapses[segFlatIndx] = activeSynapses[segFlatIndx] + 1;
                         ++numActiveConnectedSynapsesForSegment[segFlatIndx];
                     }
                 }
             }
 
-            return new SegmentActivity() { ActiveSynapses = active, PotentialSynapses = potentialSynapses };
+            return new SegmentActivity() { ActiveSynapses = activeSynapses, PotentialSynapses = potentialSynapses };
         }
 
 
@@ -1698,7 +1704,7 @@ namespace NeoCortexApi.Entities
             Synapse synapse = null;
             getSynapses(segment).Add(
                 synapse = new Synapse(
-                    presynapticCell, segment, nextSynapseOrdinal, permanence));
+                    presynapticCell, segment.getIndex(), nextSynapseOrdinal, permanence));
 
             getReceptorSynapses(presynapticCell, true).Add(synapse);
 
@@ -1720,7 +1726,7 @@ namespace NeoCortexApi.Entities
             removeSynapseFromPresynapticMap(synapse);
 
             //segment.Synapses.Remove(synapse);
-            getSynapses((DistalDendrite)synapse.getSegment()).Remove(synapse);
+            getSynapses(segment).Remove(synapse);
         }
 
         /**

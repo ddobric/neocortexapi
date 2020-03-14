@@ -6,10 +6,17 @@ namespace NeoCortexApi.Entities
 {
     public static class KEY
     {
-           /////////// Universal Parameters ///////////
-        /**
-         * Total number of columns
-         */
+        /// <summary>
+        /// If set on true, no bump-up of weak columns will be done.
+        /// Note that bumping-up can cause Spatial Pooler to get instable.
+        /// </summary>
+        public const string IS_BUMPUP_WEAKCOLUMNS_DISABLED = "isBumpUpWeakColumnsDisabled";
+
+        /////////// Universal Parameters ///////////
+
+        /// <summary>
+        /// Total number of columns.
+        /// </summary>
         public const string COLUMN_DIMENSIONS = "columnDimensions";//, int[].class),
 
         /**
