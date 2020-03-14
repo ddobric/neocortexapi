@@ -48,47 +48,45 @@ namespace WebSocketNeuroVisualizer
         }
         public async Task UpdateSynapsesAsync(List<SynapseData> synapses, ClientWebSocket websocket)
         {
-            WebsocketData updateSynapses = new WebsocketData()
-            {
-                MsgType = "updateSynapse",
-                Synapses = synapses
+            throw new NotImplementedException();
+            //WebsocketData updateSynapses = new WebsocketData()
+            //{
+            //    MsgType = "updateSynapse",
+            //    Synapses = synapses
 
-            };
+            //};
 
-            SynapseData synData = null;
-      
-
-            for (int syn = 0; syn < synapses.Count; syn++)
-            {
-                synData = new SynapseData
-                {
-                    PreCell = synapses[syn].Synapse.SourceCell,
-                
-
-                };
-
-                if (synapses[syn].Synapse.Segment is DistalDendrite)
-                {
-                    DistalDendrite seg = (DistalDendrite)synapses[syn].Synapse.Segment;
-                    synData.PostCell = seg.ParentCell;
-                }
-                else if (synapses[syn].Synapse.Segment is ProximalDendrite)
-                {
-                    ProximalDendrite seg = (ProximalDendrite)synapses[syn].Synapse.Segment;
-                   // synData.PostCell = seg.
-                       
-                    // DimX = seg.ParentColumnIndex
-                    // DImZ = 4;
-                }
-                else
-                    throw new ApplicationException("");
-
-               
+            //SynapseData synData = null;
 
 
-            }
+            //for (int syn = 0; syn < synapses.Count; syn++)
+            //{
+            //    synData = new SynapseData
+            //    {
+            //        PreCell = synapses[syn].Synapse.SourceCell,
 
-            await SendDataAsync(websocket, updateSynapses);
+
+            //    };
+
+            //    if (synapses[syn].Synapse.Segment is DistalDendrite)
+            //    {
+            //        DistalDendrite seg = (DistalDendrite)synapses[syn].Synapse.Segment;
+            //        synData.PostCell = seg.ParentCell;
+            //    }
+            //    else if (synapses[syn].Synapse.Segment is ProximalDendrite)
+            //    {
+            //        ProximalDendrite seg = (ProximalDendrite)synapses[syn].Synapse.Segment;
+            //        // synData.PostCell = seg.
+
+            //        // DimX = seg.ParentColumnIndex
+            //        // DImZ = 4;
+            //    }
+            //    else
+            //        throw new ApplicationException("");
+
+            //}
+
+            //await SendDataAsync(websocket, updateSynapses);
 
         }
         public async Task ConnectToWSServerAsync(string url,  ClientWebSocket websocket)
