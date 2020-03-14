@@ -1,6 +1,6 @@
 import os
 import random
-
+import sys
 import plotly
 import plotly.graph_objs as go
 import argparse
@@ -11,7 +11,7 @@ import os
 # python draw_figure.py -fn sample.txt -gn test1 -mt 19 -ht 8 -yt yaxis -xt xaxis -min 50 -max 4000 -st 'single column' -fign CortialColumn
 # python draw_figure.py -fn sample.txt -gn test1 -mt 19 -ht 8 -yt yaxis -xt xaxis -min 50 -max 4000 -st 'single column' -fign CortialColumn -a x
 parser = argparse.ArgumentParser(description='Draw convergence figure')
-#parser.add_argument('--filename', '-fn',help='Filename from which data is supposed to be red', required=True)
+parser.add_argument('--filename', '-fn',help='Filename from which data is supposed to be red', required=True)
 parser.add_argument(
     '--graphename', '-gn', help='Graphname where data is supposed to be plot', required=True)
 parser.add_argument(
@@ -50,8 +50,9 @@ minCellRange = args.mincellrange
 maxCellRange = args.maxcellrange
 subPlotTitle = args.subplottitle
 figureName = args.figurename
+filename = args.filename
 
-
+print (filename)
 # os.path.realpath(__file__)
 
 
@@ -281,7 +282,7 @@ dataSets = []
 allCells = []
 cell = []
 # with open("C:\\Users\\ataul\\source\\repos\\NeoCortex\\Python\\ColumnActivityDiagram\\sampleOne.txt") as datafile:
-with open("C:\\Users\\ataul\\source\\repos\\NeoCortex\\Python\\ColumnActivityDiagram\\sampleZero.txt", 'rb') as datafile:
+with open(filename, 'r') as datafile:
     csv_reader = csv.reader(datafile, skipinitialspace=False,
                             delimiter=',', quoting=csv.QUOTE_NONE)
     for row in csv_reader:
