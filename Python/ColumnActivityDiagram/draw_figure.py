@@ -11,7 +11,8 @@ import os
 # python draw_figure.py -fn sample.txt -gn test1 -mt 19 -ht 8 -yt yaxis -xt xaxis -min 50 -max 4000 -st 'single column' -fign CortialColumn
 # python draw_figure.py -fn sample.txt -gn test1 -mt 19 -ht 8 -yt yaxis -xt xaxis -min 50 -max 4000 -st 'single column' -fign CortialColumn -a x
 parser = argparse.ArgumentParser(description='Draw convergence figure')
-#parser.add_argument('--filename', '-fn',help='Filename from which data is supposed to be red', required=True)
+parser.add_argument('--filename', '-fn',
+                    help='Filename from which data is supposed to be red', required=True)
 parser.add_argument(
     '--graphename', '-gn', help='Graphname where data is supposed to be plot', required=True)
 parser.add_argument(
@@ -61,7 +62,7 @@ def plotActivityVertically(activeCellsColumn, highlightTouch):
     fig = plotly.tools.make_subplots(
         rows=1, cols=numColumns, shared_yaxes=True,
         subplot_titles=(subPlotTitle, 'Column 2', 'Column 3')[0:numColumns]
-        #subplot_titles=('Column 1', 'Column 2', 'Column 3')[0:numColumns]
+        # subplot_titles=('Column 1', 'Column 2', 'Column 3')[0:numColumns]
     )
 
     data = go.Scatter(x=[], y=[])
@@ -281,7 +282,7 @@ dataSets = []
 allCells = []
 cell = []
 # with open("C:\\Users\\ataul\\source\\repos\\NeoCortex\\Python\\ColumnActivityDiagram\\sampleOne.txt") as datafile:
-with open("C:\\Users\\ataul\\source\\repos\\NeoCortex\\Python\\ColumnActivityDiagram\\sampleZero.txt", 'rb') as datafile:
+with open(args.filename, 'rb') as datafile:
     csv_reader = csv.reader(datafile, skipinitialspace=False,
                             delimiter=',', quoting=csv.QUOTE_NONE)
     for row in csv_reader:
@@ -306,5 +307,3 @@ if args.axis == 'x':
     plotActivityHorizontally(dataSets, highlight_touch)
 else:
     plotActivityVertically(dataSets, highlight_touch)
-
-# if args.maxCellRange:
