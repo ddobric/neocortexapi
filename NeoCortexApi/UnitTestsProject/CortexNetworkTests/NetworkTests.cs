@@ -13,6 +13,8 @@ using WebSocketNeuroVisualizer;
 using NeoCortexApi.Utility;
 using System.Text;
 using System.IO;
+using System.Threading;
+using System.Net.WebSockets;
 
 namespace UnitTestsProject
 {
@@ -831,14 +833,53 @@ namespace UnitTestsProject
         {
             INeuroVisualizer vis = new WSNeuroVisualizer();
 
-            //vis.InitModel();
-            //vis.UpdateColumnOverlaps
             List<MiniColumn> colData = new List<MiniColumn>();
-            MiniColumn updateOverlap = new MiniColumn(0, 0, 0, 0);
-            updateOverlap.Overlap = 0.9;
+            MiniColumn minCol = new MiniColumn(0,0,0,0);
+            MiniColumn minCol1 = new MiniColumn(0, 01, 0, 0);
 
-            colData.Add(updateOverlap);
-            // vis.UpdateColumnOverlapsAsync(colData);
+            colData.Add(minCol);
+            colData.Add(minCol1);
+
+            //vis.UpdateColumnOverlapsAsync(colData);
+        }
+
+        [TestMethod]
+        public void TestModel()
+        {
+             string url = "ws://localhost:5000/ws/client13";
+           
+            ClientWebSocket ws1 = new ClientWebSocket();
+
+            INeuroVisualizer vis = new WSNeuroVisualizer();
+            int[] areas = new int[] { 1 };
+            GenerateNeuroModel model = new GenerateNeuroModel();
+            // vis.InitModelAsync(new NeuroModel(areas, (new long[10, 1]), 6));
+            // vis.InitModelAsync(new NeuroModel(areas, (new long[10, 5]), 8));
+
+
+            vis.ConnectToWSServerAsync(url, ws1);
+            vis.InitModelAsync(model.CreateNeuroModel(areas, (new long[10, 1]), 6), ws1);
+
+        }
+
+        [TestMethod]
+        public void updateOverlap()
+        {
+
+            string url = "ws://localhost:5000/ws/client13";
+
+            ClientWebSocket ws2 = new ClientWebSocket();
+
+
+            INeuroVisualizer vis = new WSNeuroVisualizer();
+
+            vis.ConnectToWSServerAsync(url, ws2);
+
+            List<MiniColumn> columnList = new List<MiniColumn>();
+            MiniColumn minCol = new MiniColumn(0, 0.80, 8, 0);
+            columnList.Add(minCol);
+            vis.UpdateColumnOverlapsAsync(columnList, ws2);
         }
     }
 }
+

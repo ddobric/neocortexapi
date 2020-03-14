@@ -23,7 +23,7 @@ namespace NeoCortexEntities.NeuroVisualizer
 
             return model;
         }
-        private Area CreateArea(NeuroModel model, int areaID, long[,] colDims, int cellsPerColumn)
+       private Area CreateArea(NeuroModel model, int areaID, long[,] colDims, int cellsPerColumn)
         {
             Area area = new Area(areaID, colDims);
 
@@ -44,7 +44,7 @@ namespace NeoCortexEntities.NeuroVisualizer
                     }
 
 
-
+                    
                 }
 
             }
@@ -54,7 +54,7 @@ namespace NeoCortexEntities.NeuroVisualizer
 
         }
 
-        private Cell[] CreateCells(int cellsPerColumn, int areaID, int colDim0, int colDim1)
+       private Cell[] CreateCells(int cellsPerColumn, int areaID, int colDim0, int colDim1)
         {
             Cell[] cells = new Cell[cellsPerColumn];
             int parentColumnIndx = 0;
@@ -62,7 +62,7 @@ namespace NeoCortexEntities.NeuroVisualizer
             for (int i = 0; i < cells.Length; i++)
             {
 
-                Cell cell = new Cell(areaID, i, parentColumnIndx);
+                Cell cell = new Cell(areaID, i, parentColumnIndx );
 
                 cells[i] = cell;
             }
@@ -79,7 +79,7 @@ namespace NeoCortexEntities.NeuroVisualizer
 
         public List<Cell> Cells { get; set; }
 
-        public List<Synapse> Synapse { get; set; }
+        public  List<Synapse> Synapse { get; set; }
 
         public int CellsPerColumn { get; set; }
 
@@ -91,9 +91,9 @@ namespace NeoCortexEntities.NeuroVisualizer
             Synapse = new List<Synapse>();
 
         }
+       
 
-
-
+      
 
     }
 
@@ -107,7 +107,7 @@ namespace NeoCortexEntities.NeuroVisualizer
         {
             AreaId = areaID;
             MiniColumns = new MiniColumn[colDims.GetLength(0), colDims.GetLength(1)];
-
+            
         }
 
     }
