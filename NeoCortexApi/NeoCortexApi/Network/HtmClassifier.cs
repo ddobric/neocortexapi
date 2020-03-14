@@ -34,7 +34,7 @@ namespace NeoCortexApi.Network
         /// <param name="input"></param>
         /// <param name="output"></param>
         /// <param name="predictedOutput"></param>
-        public void Learn(TIN input, Cell[] output, Cell[] predictedOutput)
+        public void Learn(TIN input, Cell[] output)
         {
             this.inputSequence.Add(input);
 

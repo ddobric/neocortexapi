@@ -203,7 +203,7 @@ namespace UnitTestsProject
                             else
                                 Debug.WriteLine($"Missmatch Actual value: {input} - Predicted value: {lastPredictedValue}");
 
-                            cls.Learn(input, lyrOut.ActiveCells.ToArray(), lyrOut.predictiveCells.ToArray());
+                            cls.Learn(input, lyrOut.ActiveCells.ToArray());
 
                             lastPredictedValue = cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray());
 

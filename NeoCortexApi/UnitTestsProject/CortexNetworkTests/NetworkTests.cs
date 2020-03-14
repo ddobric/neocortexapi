@@ -95,7 +95,7 @@ namespace UnitTestsProject
                     var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
                     //cls1.Learn(input, lyrOut.activeCells.ToArray(), learn);
                     //Debug.WriteLine($"Current Input: {input}");
-                    cls.Learn(input, lyrOut.ActiveCells.ToArray(), lyrOut.predictiveCells.ToArray());
+                    cls.Learn(input, lyrOut.ActiveCells.ToArray());
                     Debug.WriteLine($"Current Input: {input}");
                     if (learn == false)
                     {
@@ -217,7 +217,7 @@ namespace UnitTestsProject
                 {
                     var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
 
-                    cls.Learn(input, lyrOut.ActiveCells.ToArray(), lyrOut.predictiveCells.ToArray());
+                    cls.Learn(input, lyrOut.ActiveCells.ToArray());
 
                     Debug.WriteLine($"-------------- {input} ---------------");
 
@@ -345,7 +345,7 @@ namespace UnitTestsProject
                 {
                     var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
 
-                    cls.Learn(input, lyrOut.ActiveCells.ToArray(), lyrOut.predictiveCells.ToArray());
+                    cls.Learn(input, lyrOut.ActiveCells.ToArray());
 
                     Debug.WriteLine($"-------------- {input} ---------------");
 
@@ -417,25 +417,30 @@ namespace UnitTestsProject
             int inputBits = 100;
             int numColumns = 2048;
             Parameters p = Parameters.getAllDefaultParameters();
+            
             p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
             p.Set(KEY.INPUT_DIMENSIONS, new int[] { inputBits });
-            p.Set(KEY.CELLS_PER_COLUMN, 20);
+            p.Set(KEY.CELLS_PER_COLUMN, 15);
             p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
             p.Set(KEY.MAX_BOOST, 10.0);
+
             p.Set(KEY.DUTY_CYCLE_PERIOD, 100000);
 
+            p.Set(KEY.POTENTIAL_RADIUS, 50);
+            p.Set(KEY.GLOBAL_INHIBITION, false);
             // N of 40 (40= 0.02*2048 columns) active cells required to activate the segment.
-            p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
+            p.setNumActiveColumnsPerInhArea(10);
+            //p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
             // Activation threshold is 10 active cells of 40 cells in inhibition area.
             p.setActivationThreshold(10);
             p.setInhibitionRadius(15);
 
             // Stops the bumping of inactive columns.
-            p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.0);
+            p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.1);
 
             // Max number of synapses on the segment.
             p.setMaxNewSynapsesPerSegmentCount((int)(0.02 * numColumns));
-            p.setPermanenceIncrement(0.21);
+            p.setPermanenceIncrement(0.15);
             double max = 20;
 
             Dictionary<string, object> settings = new Dictionary<string, object>()
@@ -474,11 +479,11 @@ namespace UnitTestsProject
 
             //INeuroVisualizer vis = new WSNeuroVisualizer();
             //vis.InitModelAsync(new NeuroModel(null, (new long [10, 0]), 6));
+
             int maxMatchCnt = 0;
             bool learn = true;
             //INeuroVisualizer vis = new WSNeuroVisualizer();
             //GenerateNeuroModel model = new GenerateNeuroModel();
-
             //vis.InitModel(model.CreateNeuroModel(new int[] { 1}, (long[,])p[KEY.COLUMN_DIMENSIONS], (int)p[KEY.CELLS_PER_COLUMN]));
 
             CortexNetwork net = new CortexNetwork("my cortex");
@@ -508,7 +513,7 @@ namespace UnitTestsProject
             int[] prevActiveCols = new int[0];
 
             int maxSPLearningCycles = 5;
-            List<(double Element, (int Cycle, double Similarity)[] Oscilations)> oscilationResult = new List<(double Element, (int Cycle, double Similarity)[] Oscilations)>();
+            //List<(double Element, (int Cycle, double Similarity)[] Oscilations)> oscilationResult2 = new List<(double Element, (int Cycle, double Similarity)[] Oscilations)>();
 
             //
             // This trains SP on input pattern.
@@ -531,6 +536,8 @@ namespace UnitTestsProject
                 }
             }
 
+            // Stops the bumping of inactive columns.
+            p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.0);
 
             // Here we add TM module to the layer.
             layer1.HtmModules.Add("tm", tm1);
@@ -556,7 +563,7 @@ namespace UnitTestsProject
 
                     var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
 
-                    cls.Learn(input, lyrOut.ActiveCells.ToArray(), lyrOut.predictiveCells.ToArray());
+                    cls.Learn(input, lyrOut.ActiveCells.ToArray());
                     //vis.UpdateSynapsesAsync();
 
                     if (learn == false)
@@ -642,8 +649,6 @@ namespace UnitTestsProject
                 }
                 else if (maxMatchCnt > 0)
                 {
-
-
                     Debug.WriteLine($"At 100% accuracy after {maxMatchCnt} repeats we get a drop of accuracy with {accuracy}. This indicates instable state. Learning will be continued.");
                     maxMatchCnt = 0;
                 }
