@@ -428,17 +428,18 @@ namespace UnitTestsProject
 
             p.Set(KEY.DUTY_CYCLE_PERIOD, 100000);
 
-            p.Set(KEY.POTENTIAL_RADIUS, 50);
-            p.Set(KEY.GLOBAL_INHIBITION, false);
+            //p.Set(KEY.POTENTIAL_RADIUS, 50);
+            //p.Set(KEY.GLOBAL_INHIBITION, false);
+
+            //p.setNumActiveColumnsPerInhArea(10);
             // N of 40 (40= 0.02*2048 columns) active cells required to activate the segment.
-            p.setNumActiveColumnsPerInhArea(10);
-            //p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
+            p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
             // Activation threshold is 10 active cells of 40 cells in inhibition area.
             p.setActivationThreshold(10);
             p.setInhibitionRadius(15);
 
             // Stops the bumping of inactive columns.
-            p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.1);
+            p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.0);
 
             // Max number of synapses on the segment.
             p.setMaxNewSynapsesPerSegmentCount((int)(0.02 * numColumns));
@@ -514,7 +515,7 @@ namespace UnitTestsProject
             double[] inputs = inputValues.ToArray();
             int[] prevActiveCols = new int[0];
 
-            int maxSPLearningCycles = 5;
+            int maxSPLearningCycles = 50;
             //List<(double Element, (int Cycle, double Similarity)[] Oscilations)> oscilationResult2 = new List<(double Element, (int Cycle, double Similarity)[] Oscilations)>();
 
             //
@@ -534,7 +535,11 @@ namespace UnitTestsProject
 
                     var actCols = activeColumns.OrderBy(c => c).ToArray();
 
-                    Debug.WriteLine($" {i.ToString("D4")} SP-OUT: [{actCols.Length}/{MathHelpers.CalcArraySimilarity(prevActiveCols, actCols)}] - {Helpers.StringifyVector(actCols)}");
+                    var similarity = MathHelpers.CalcArraySimilarity(prevActiveCols, actCols);
+
+                    Debug.WriteLine($" {i.ToString("D4")} SP-OUT: [{actCols.Length}/{similarity.ToString("0.##")}] - {Helpers.StringifyVector(actCols)}");
+
+                    prevActiveCols = activeColumns;
                 }
             }
 
@@ -663,7 +668,11 @@ namespace UnitTestsProject
 
 
 
-        ///
+        /// <summary>
+        /// It learns SP and shows the convergence of SDR for the given input.
+        /// It repeats the learning process for every input many times (i.e.: 10000+ cycles) and writes out
+        /// the state of SDR. Then it counts number or instabe states. It means once SP generates stable SDR, it 
+        /// can hapen that in some hihg cycle SDR changes. NUmber of such instable cycles is counted and outputed as a result.
         /// </summary>
         [TestMethod]
         [TestCategory("NetworkTests")]
