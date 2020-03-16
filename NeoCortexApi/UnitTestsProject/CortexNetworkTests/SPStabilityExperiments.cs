@@ -32,7 +32,7 @@ namespace UnitTestsProject
         [TestMethod]
         [TestCategory("NetworkTests")]
         [TestCategory("Experiment")]
-        public void SpatialPooler_Stability_Experiment()
+        public void SpatialPooler_Stability_Experiment_1()
         {
             int inputBits = 100;
             int numColumns = 2048;
@@ -41,18 +41,28 @@ namespace UnitTestsProject
             p.Set(KEY.INPUT_DIMENSIONS, new int[] { inputBits });
             p.Set(KEY.CELLS_PER_COLUMN, 10);
             p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
-            p.Set(KEY.MAX_BOOST, 1.0);
-            p.Set(KEY.DUTY_CYCLE_PERIOD, 100000);
 
+            p.Set(KEY.MAX_BOOST, 0.0);
+            p.Set(KEY.DUTY_CYCLE_PERIOD, 10);
+            p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.0);
+
+            // Local inhibition
             // Stops the bumping of inactive columns.
-            p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0);
-            //p.Set(KEY.IS_BUMPUP_WEAKCOLUMNS_DISABLED, true);
+            //p.Set(KEY.IS_BUMPUP_WEAKCOLUMNS_DISABLED, true); Obsolete.use KEY.MIN_PCT_OVERLAP_DUTY_CYCLES = 0;
+            p.Set(KEY.POTENTIAL_RADIUS, 50);
+            p.Set(KEY.GLOBAL_INHIBITION, false);
+            p.setInhibitionRadius(15);
 
+            // Global inhibition
             // N of 40 (40= 0.02*2048 columns) active cells required to activate the segment.
-            p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
+            //p.Set(KEY.GLOBAL_INHIBITION, true);
+            //p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
+            //p.Set(KEY.POTENTIAL_RADIUS, inputBits);
+            //p.Set(KEY.LOCAL_AREA_DENSITY, -1); // In a case of global inhibition.
+            //p.setInhibitionRadius( Automatically set on the columns pace in a case of global inhibition.);
+
             // Activation threshold is 10 active cells of 40 cells in inhibition area.
             p.setActivationThreshold(10);
-            p.setInhibitionRadius(15);
 
             // Max number of synapses on the segment.
             p.setMaxNewSynapsesPerSegmentCount((int)(0.02 * numColumns));
@@ -74,12 +84,26 @@ namespace UnitTestsProject
 
             List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0 });
 
-            RunSpStabilityExperiment(inputBits, p, encoder, inputValues);
+            RunSpStabilityExperiment_1(inputBits, p, encoder, inputValues);
         }
 
 
-        private void RunSpStabilityExperiment(int inputBits, Parameters p, EncoderBase encoder, List<double> inputValues)
+        private void RunSpStabilityExperiment_1(int inputBits, Parameters p, EncoderBase encoder, List<double> inputValues)
         {
+            string path = nameof(SpatialPooler_Stability_Experiment_1);
+
+            if (Directory.Exists(path))
+                Directory.Delete(path, true);
+
+            while (true)
+            {                
+                Directory.CreateDirectory(path);
+                if (Directory.Exists(path) == false)
+                    Thread.Sleep(300);
+                else
+                    break;
+            }
+            
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
@@ -109,8 +133,7 @@ namespace UnitTestsProject
             double[] inputs = inputValues.ToArray();
             int[] prevActiveCols = new int[0];
 
-            int maxSPLearningCycles = 25000;
-
+            int maxSPLearningCycles = 10000;
 
             List<(double Element, (int Cycle, double Similarity)[] Oscilations)> oscilationResult = new List<(double Element, (int Cycle, double Similarity)[] Oscilations)>();
 
@@ -119,7 +142,7 @@ namespace UnitTestsProject
             // It performs some kind of unsupervised new-born learning.
             foreach (var input in inputs)
             {
-                using (StreamWriter writer = new StreamWriter($"Oscilations_Boost_10_{input}.csv"))
+                using (StreamWriter writer = new StreamWriter(Path.Combine(path, $"Oscilations_Boost_10_{input}.csv")))
                 {
                     Debug.WriteLine($"Learning Cycles: {maxSPLearningCycles}");
                     Debug.WriteLine($"MAX_BOOST={p[KEY.MAX_BOOST]}, DUTY ={p[KEY.DUTY_CYCLE_PERIOD]}");
@@ -155,9 +178,10 @@ namespace UnitTestsProject
                         prevSimilarity = similarity;
 
                         writer.WriteLine($"{cycle};{similarity}");
+
+                        writer.Flush();
                     }
 
-                    writer.Flush();
                     oscilationResult.Add((Element: input, Oscilations: elementOscilationResult.ToArray()));
                 }
             }
@@ -205,19 +229,31 @@ namespace UnitTestsProject
             p.Set(KEY.INPUT_DIMENSIONS, new int[] { inputBits });
             p.Set(KEY.CELLS_PER_COLUMN, 10);
             p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
-            p.Set(KEY.MAX_BOOST, 1.0);
-            p.Set(KEY.DUTY_CYCLE_PERIOD, 100000);
 
-            double minverlapCycles = 0.0;
-            // Stops the bumping of inactive columns.
+            double minverlapCycles = 0.1;
+
+            p.Set(KEY.MAX_BOOST, 0.0);
+            p.Set(KEY.DUTY_CYCLE_PERIOD, 10);
             p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, minverlapCycles);
-            //p.Set(KEY.IS_BUMPUP_WEAKCOLUMNS_DISABLED, true);
+            // Stops the bumping of inactive columns.
+            //p.Set(KEY.IS_BUMPUP_WEAKCOLUMNS_DISABLED, true); Obsolete.use KEY.MIN_PCT_OVERLAP_DUTY_CYCLES = 0;
 
-            // N of 40 (40= 0.02*2048 columns) active cells required to activate the segment.
-            p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
             // Activation threshold is 10 active cells of 40 cells in inhibition area.
             p.setActivationThreshold(10);
-            p.setInhibitionRadius(15);
+            
+            // Local inhibition
+            //p.Set(KEY.POTENTIAL_RADIUS, 50);
+            //p.Set(KEY.GLOBAL_INHIBITION, false);
+            //p.setInhibitionRadius(15);
+
+            // Global inhibition
+            // N of 40 (40= 0.02*2048 columns) active cells required to activate the segment.
+            //p.Set(KEY.GLOBAL_INHIBITION, true);
+            //p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
+            //p.Set(KEY.POTENTIAL_RADIUS, inputBits);
+            //p.Set(KEY.LOCAL_AREA_DENSITY, -1);
+            //p.setInhibitionRadius( Automatically set on the columns pace in a case of global inhibition.)
+
 
             // Max number of synapses on the segment.
             p.setMaxNewSynapsesPerSegmentCount((int)(0.02 * numColumns));
@@ -290,8 +326,8 @@ namespace UnitTestsProject
 
             for (int cycle = 0; cycle < maxSPLearningCycles; cycle++)
             {
-                if (cycle >= 100)
-                    p.setMinPctOverlapDutyCycles(0.0);
+                //if (cycle >= 300)
+                //    mem.updateMinPctOverlapDutyCycles(0.0);
 
                 Debug.WriteLine($"Cycle  ** {cycle} **");
 
@@ -340,7 +376,7 @@ namespace UnitTestsProject
 
                                 similarityWriter.WriteLine($"{cycle};{similarity}");
 
-                                sdrPlotlyWriter.Flush();                           
+                                sdrPlotlyWriter.Flush();
                             }
                             sdrWriter.Flush();
                         }

@@ -126,7 +126,7 @@ namespace NeoCortexApi.Entities
         /** Total number of cells per column */
         protected int cellsPerColumn = 32;
         /** What will comprise the Layer input. Input (i.e. from encoder) */
-        protected int[] inputDimensions = new int[] {100 };
+        protected int[] inputDimensions = new int[] { 100 };
         /**
          * If the number of active connected synapses on a segment
          * is at least this threshold, the segment is said to be active.
@@ -594,17 +594,17 @@ namespace NeoCortexApi.Entities
             this.updatePeriod = period;
         }
 
-        /**
-         * Returns the inhibition radius
-         * @return
-         */
-        /**
- * Sets the inhibition radius
- * @param radius
- */
+
+
+        /// <summary>
+        /// Radius of inhibition area. Called when the density of inhibition area is calculated.
+        /// </summary>
         public int InhibitionRadius
         {
-            get { return m_InhibitionRadius; }
+            get
+            {
+                return m_InhibitionRadius;
+            }
             set
             {
                 this.m_InhibitionRadius = value;
@@ -1066,6 +1066,14 @@ namespace NeoCortexApi.Entities
             return minPctOverlapDutyCycles;
         }
 
+        /// <summary>
+        /// NEW
+        /// </summary>
+        /// <param name="val"></param>
+        public void updateMinPctOverlapDutyCycles(double val)
+        {
+            minPctOverlapDutyCycles = val;
+        }
         /**
          * A number between 0 and 1.0, used to set a floor on
          * how often a column should be activate.
@@ -1351,7 +1359,7 @@ namespace NeoCortexApi.Entities
  * @param boostFactors	the array of boost factors
  */
         public double[] BoostFactors { get => m_BoostFactors; set => this.m_BoostFactors = value; }
-        
+
         /// <summary>
         /// Controls if bumping-up of weak columns shell be done.
         /// </summary>
@@ -1382,7 +1390,7 @@ namespace NeoCortexApi.Entities
             int[] numActivePotentialSynapsesForSegment = new int[nextFlatIdx];
 
             double threshold = connectedPermanence - EPSILON;
-           
+
             // Step through all currently active cells.
             foreach (Cell cell in activeCellsInCurrentCycle)
             {
@@ -1968,7 +1976,7 @@ namespace NeoCortexApi.Entities
             this.winnerCells = cells;
         }
 
-      
+
         /// <summary>
         /// Generates the list of predictive cells from parent cells of active segments.
         /// </summary>
