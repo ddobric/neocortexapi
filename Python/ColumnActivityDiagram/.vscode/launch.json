@@ -8,11 +8,24 @@
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal",
-            "args":[
-
-                "-fn DATAFILE -gn GRAPHNAME -mt MAXIMUMTOUCH -ht HIGHLIGHTTOUCH -yt yaxis -xt xaxis -st 'single column' -fign CortialColumn"
+            "program": "${workspaceFolder}/draw_figure.py",
+            "args": [
+                "--filename",
+                "sampleZero.csv",
+                "--graphename",
+                "digit_Zero_",
+                "--maxcycles",
+                "200",
+                "--highlighttouch",
+                "7",
+                "--yaxistitle",
+                "yaxis",
+                "--xaxistitle",
+                "xaxis",
+                "--subplottitle",
+                "Digit_Zero",
+                "--figurename",
+                "CortialColumn"
             ]
             // "args":[
             //     "-fn DATAFILE",
