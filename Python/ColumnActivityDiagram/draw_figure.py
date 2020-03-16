@@ -1,6 +1,6 @@
 import os
 import random
-
+import sys
 import plotly
 import plotly.graph_objs as go
 import argparse
@@ -8,15 +8,16 @@ import csv
 
 import os
 
-# python draw_figure.py -fn sample.txt -gn test1 -mt 19 -ht 8 -yt yaxis -xt xaxis -min 50 -max 4000 -st 'single column' -fign CortialColumn
-# python draw_figure.py -fn sample.txt -gn test1 -mt 19 -ht 8 -yt yaxis -xt xaxis -min 50 -max 4000 -st 'single column' -fign CortialColumn -a x
+# python draw_figure.py -fn "C:\dev\git\NeoCortex\Results\Spatial Pooler Stability\SpStability Experiment 2 Boost 00 - digits 0 1 2 stable\ActiveColumns_Boost_0_0_plotly-input.csv" -gn GRAPHNAME -mc 200 -ht 2 -yt yaxis -xt xaxis -st singlecolumn -fign CortialColumn
+# python draw_figure.py -fn "C:\dev\git\NeoCortex\Results\Spatial Pooler Stability\SpStability Experiment 2 Boost 00 - digits 0 1 2 stable\ActiveColumns_Boost_0_0_plotly-input.csv" -gn "Digit 0" -mc 700 -ht 320 -yt "Column Index" -xt Cycle -st "MinvOverlapCycles=0.1, first 300 cycles" -fign CortialColumn
+# python draw_figure.py -fn sample.txt -gn test1 -mc 19 -ht 8 -yt yaxis -xt xaxis -min 50 -max 4000 -st 'single column' -fign CortialColumn
+# python draw_figure.py -fn sample.txt -gn test1 -mc 19 -ht 8 -yt yaxis -xt xaxis -min 50 -max 4000 -st 'single column' -fign CortialColumn -a x
 parser = argparse.ArgumentParser(description='Draw convergence figure')
-parser.add_argument('--filename', '-fn',
-                    help='Filename from which data is supposed to be red', required=True)
+parser.add_argument('--filename', '-fn',help='Filename from which data is supposed to be red', required=True)
 parser.add_argument(
     '--graphename', '-gn', help='Graphname where data is supposed to be plot', required=True)
 parser.add_argument(
-    '--maxtouches', '-mt', help='Number of maximum touches/iterations ', required=True, type=int)
+    '--maxcycles', '-mc', help='Number of maximum touches/iterations ', required=True, type=int)
 parser.add_argument(
     '--highlighttouch', '-ht', help='Number of highlight touches', required=True, type=int)
 parser.add_argument('--axis', '-a', nargs='?', default=None,
@@ -43,26 +44,27 @@ if plotlyAPIKey is not None:
     plotly.plotly.sign_in(plotlyUser, plotlyAPIKey)
 
 #text = args.   # Neuron #
-maxTouches = args.maxtouches
+maxcycles = args.maxcycles
 highlight_touch = args.highlighttouch
 yAxisTitle = args.yaxistitle
 xAxisTitle = args.xaxistitle
 minCellRange = args.mincellrange
 maxCellRange = args.maxcellrange
 subPlotTitle = args.subplottitle
-figureName = args.figurename
+figureName = args.graphename
+filename = args.filename
 
-
+print (filename)
 # os.path.realpath(__file__)
 
 
 def plotActivityVertically(activeCellsColumn, highlightTouch):
-    numTouches = min(maxTouches, len(activeCellsColumn))
+    numTouches = min(maxcycles, len(activeCellsColumn))
     numColumns = len(activeCellsColumn[0])
     fig = plotly.tools.make_subplots(
         rows=1, cols=numColumns, shared_yaxes=True,
         subplot_titles=(subPlotTitle, 'Column 2', 'Column 3')[0:numColumns]
-        # subplot_titles=('Column 1', 'Column 2', 'Column 3')[0:numColumns]
+        #subplot_titles=('Column 1', 'Column 2', 'Column 3')[0:numColumns]
     )
 
     data = go.Scatter(x=[], y=[])
@@ -170,7 +172,7 @@ def plotActivityVertically(activeCellsColumn, highlightTouch):
 
 
 def plotActivityHorizontally(activeCellsColumn, highlightTouch):
-    numTouches = min(maxTouches, len(activeCellsColumn))
+    numTouches = min(maxcycles, len(activeCellsColumn))
     numColumns = len(activeCellsColumn[0])
     fig = plotly.tools.make_subplots(
         rows=1, cols=numColumns, shared_yaxes=True,
@@ -282,7 +284,7 @@ dataSets = []
 allCells = []
 cell = []
 # with open("C:\\Users\\ataul\\source\\repos\\NeoCortex\\Python\\ColumnActivityDiagram\\sampleOne.txt") as datafile:
-with open(args.filename, 'rb') as datafile:
+with open(filename, 'r') as datafile:
     csv_reader = csv.reader(datafile, skipinitialspace=False,
                             delimiter=',', quoting=csv.QUOTE_NONE)
     for row in csv_reader:
@@ -307,3 +309,5 @@ if args.axis == 'x':
     plotActivityHorizontally(dataSets, highlight_touch)
 else:
     plotActivityVertically(dataSets, highlight_touch)
+
+# if args.maxCellRange:
