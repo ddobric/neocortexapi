@@ -5,28 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: draw_figure.py",
+            "name": "Python: Current File",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/ColumnActivityDiagram/draw_figure.py",
-            "args": [
-                "--graphename",
-                "digit_Two_",
-                "--maxtouches",
-                "19",
-                "--highlighttouch",
-                "8",
-                "--yaxistitle",
-                "yaxis",
-                "--xaxistitle",
-                "xaxis",
-                "--subplottitle",
-                "Digit_Two",
-                "--figurename",
-                "CortialColumn",
-                "--axis",
-                "x"
-            ]
-        }
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+        },
     ],
 }

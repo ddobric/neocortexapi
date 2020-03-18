@@ -16,25 +16,24 @@ namespace HtmViewer
     {
         public static void Main(string[] args)
         {
-
-
             //CreateWebHostBuilder(args).Build().Run();
             var host = new WebHostBuilder()
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseKestrel()
                 .UseIISIntegration()
                 .UseStartup<Startup>()
-                
+                //.UseUrls("http://localhost:5050")
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
                     config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+                    
                 })
-                //.UseUrls($"http://localhost:{config.GetValue<int>("Host:Port")}")
                 .ConfigureKestrel((context, options) =>
                 {
                     // Set properties and call methods on options
-                    context.Configuration.GetSection("Kestrel");
+                    options.Configure(context.Configuration.GetSection("Kestrel"));
                 })
+                
                 .ConfigureLogging((hostingcontext, logging) =>
                 {
                     logging.AddConfiguration(hostingcontext.Configuration.GetSection("Logging"));
@@ -44,7 +43,6 @@ namespace HtmViewer
 
                 .Build();
             host.Run();
-
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>

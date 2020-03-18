@@ -855,7 +855,7 @@ namespace UnitTestsProject
         [TestMethod]
         public void TestModel()
         {
-             string url = "ws://localhost:5000/ws/client13";
+             string url = "ws://localhost:5555/ws/client13";
            
             ClientWebSocket ws1 = new ClientWebSocket();
 
