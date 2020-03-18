@@ -15,6 +15,7 @@ using System.Text;
 using System.IO;
 using System.Threading;
 using System.Net.WebSockets;
+using System.Threading.Tasks;
 
 namespace UnitTestsProject
 {
@@ -853,7 +854,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        public void TestModel()
+        public async Task TestModel()
         {
              string url = "ws://localhost:5555/ws/client13";
            
@@ -866,8 +867,8 @@ namespace UnitTestsProject
             // vis.InitModelAsync(new NeuroModel(areas, (new long[10, 5]), 8));
 
 
-            vis.ConnectToWSServerAsync(url, ws1);
-            vis.InitModelAsync(model.CreateNeuroModel(areas, (new long[10, 1]), 6), ws1);
+            await vis.ConnectToWSServerAsync(url, ws1);
+            await  vis.InitModelAsync(model.CreateNeuroModel(areas, (new long[10, 1]), 6), ws1);
 
         }
 
@@ -875,7 +876,7 @@ namespace UnitTestsProject
         public void updateOverlap()
         {
 
-            string url = "ws://localhost:5000/ws/client13";
+            string url = "ws://localhost:5555/ws/client13";
 
             ClientWebSocket ws2 = new ClientWebSocket();
 
@@ -888,6 +889,21 @@ namespace UnitTestsProject
             MiniColumn minCol = new MiniColumn(0, 0.80, 8, 0);
             columnList.Add(minCol);
             vis.UpdateColumnOverlapsAsync(columnList, ws2);
+        }
+
+        [TestMethod]
+        public async Task TestConectivity()
+        {
+            string url = "ws://localhost:5555/ws/client13";
+
+            ClientWebSocket ws2 = new ClientWebSocket();
+
+            INeuroVisualizer vis = new WSNeuroVisualizer();
+
+
+          await  vis.ConnectToWSServerAsync(url, ws2);
+          //await  vis.TestMethod("Testing phase", ws2);
+
         }
     }
 }

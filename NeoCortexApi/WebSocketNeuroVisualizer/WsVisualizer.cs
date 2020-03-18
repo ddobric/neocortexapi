@@ -103,7 +103,7 @@ namespace WebSocketNeuroVisualizer
 
                 Uri uri = new Uri(url);
                 await websocket.ConnectAsync(uri, CancellationToken.None);
-                //await websocket.CloseAsync(websocket.CloseStatus.Value, websocket.CloseStatusDescription, CancellationToken.None);
+                await websocket.CloseAsync(websocket.CloseStatus.Value, websocket.CloseStatusDescription, CancellationToken.None);
 
             }
             catch (Exception ex)

@@ -37,22 +37,22 @@ export class NeoCortexUtilsService {
            dataModel: JSONObject
          }; */
 
-        if (JSONObject.msgType == "init") {
-          this.model = JSONObject.dataModel;
+        if (JSONObject.MsgType == "init") {
+          this.model = JSONObject.Model;
           this.createSynapses();
           return {
             dataModel: this.model,
             notification: { type: this.notifyTyp, msg: this.notifyMsg }
           }
         }
-        else if (JSONObject.msgType == "updateOverlap") {
+        else if (JSONObject.MsgType == "updateOverlap") {
           this.updateOverlap(JSONObject.update);
           return {
             dataModel: this.model,
             notification: { type: this.notifyTyp, msg: this.notifyMsg }
           }
         }
-        else if (JSONObject.msgType == "updateOrAddSynapse") {
+        else if (JSONObject.MsgType == "updateOrAddSynapse") {
           this.updateOrAddSynapse(JSONObject.update);
           return {
             dataModel: this.model,
