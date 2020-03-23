@@ -1,5 +1,7 @@
 ﻿using NeoCortexApi.Entities;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NeoCortexEntities.NeuroVisualizer
 {
@@ -17,6 +19,19 @@ namespace NeoCortexEntities.NeuroVisualizer
 
                 //Areas.Insert(levelIndex, new Area(levelIndex, colDims));
                 model.Areas.Insert(levelIndex, CreateArea(model, levelIndex, colDims, numCells));
+
+                for (int i = 0; i < 20; i++)//How to get the total number of synapses, for now 20
+                {
+                    SynapseData synap = new SynapseData
+                    {
+                        Permanence = new Random().NextDouble(),//for now generatin random permanences ranging 0 to 1
+                        PreCellIndex = model.Cells[new Random().Next(0, (model.Cells.Count()))].Index,//selecting random cell from already generated cells 
+                        PostCellIndex = model.Cells[new Random().Next(0, (model.Cells.Count()))].Index,//selecting random cell from already generated cells 
+                        // SourceCell = cell id
+                        // destination Cell = cell id
+                    }; 
+                    model.Synapse.Insert(i, synap);
+                }
 
             }
 
@@ -79,7 +94,7 @@ namespace NeoCortexEntities.NeuroVisualizer
 
         public List<Cell> Cells { get; set; }
 
-        public  List<Synapse> Synapse { get; set; }
+        public  List<SynapseData> Synapse { get; set; }
 
         public int CellsPerColumn { get; set; }
 
@@ -88,7 +103,7 @@ namespace NeoCortexEntities.NeuroVisualizer
         {
 
             Cells = new List<Cell>();
-            Synapse = new List<Synapse>();
+            Synapse = new List<SynapseData>();
 
         }
        
@@ -148,29 +163,9 @@ namespace NeoCortexEntities.NeuroVisualizer
     {
 
         public CellType SegmentCellType;
-        public Synapse Synapse { get; set; }
-        public Cell PreCell { get; set; }
-        public Cell PostCell { get; set; }
-
-        public void insertSynapses()
-        {
-            double permanence = 0;
-
-
-            for (int i = 0; i < 100; i++)//How to get the total number of synapses
-            {
-                // How to create a synapse
-                Synapse synapse = new Synapse
-                {
-                    Permanence = permanence,
-                    // SourceCell = cell id
-                    // destination Cell = cell id
-                };
-
-                //NeuroModel.Synapse.Insert(i, synapse);
-            }
-
-        }
+        public int PreCellIndex { get; set; }
+        public int PostCellIndex { get; set; }
+        public double Permanence { get; set; }
 
     }
 
