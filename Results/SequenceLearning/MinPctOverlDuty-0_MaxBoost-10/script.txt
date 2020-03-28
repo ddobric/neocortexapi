@@ -1,5 +1,7 @@
 
-
+--------------------------------------------------------------------------------------------------------
+Run experiment, copy output resulting files to WorkFolder and execute theses scripts to create diagrams
+--------------------------------------------------------------------------------------------------------
 																	
 python draw_figure.py -fn "C:\dev\git\NeoCortex\Results\SequenceLearning\WorkFolder\cellState_MinPctOverlDuty-0_MaxBoost-10_Digit_-1.0-0.csv" -gn "Digit - 0" -mc 500 -ht 20000 -yt cells -xt cycles -st "" -fign ""
 python draw_figure.py -fn "C:\dev\git\NeoCortex\Results\SequenceLearning\WorkFolder\cellState_MinPctOverlDuty-0_MaxBoost-10_Digit_0-1.csv" -gn "Digit 0 - 1" -mc 500 -ht 20000 -yt cells -xt cycles -st "" -fign  ""
