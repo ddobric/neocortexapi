@@ -419,17 +419,18 @@ namespace UnitTestsProject
             int inputBits = 100;
             int numColumns = 2048;
             Parameters p = Parameters.getAllDefaultParameters();
-            
+
             p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
             p.Set(KEY.INPUT_DIMENSIONS, new int[] { inputBits });
             p.Set(KEY.CELLS_PER_COLUMN, 15);
             p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
-            p.Set(KEY.MAX_BOOST, 10.0);
 
-            p.Set(KEY.DUTY_CYCLE_PERIOD, 100000);
 
             //p.Set(KEY.POTENTIAL_RADIUS, 50);
             //p.Set(KEY.GLOBAL_INHIBITION, false);
+
+            p.Set(KEY.GLOBAL_INHIBITION, true);
+            p.Set(KEY.LOCAL_AREA_DENSITY, -1); // In a case of global inhibition.
 
             //p.setNumActiveColumnsPerInhArea(10);
             // N of 40 (40= 0.02*2048 columns) active cells required to activate the segment.
@@ -438,7 +439,10 @@ namespace UnitTestsProject
             p.setActivationThreshold(10);
             p.setInhibitionRadius(15);
 
+            //
             // Stops the bumping of inactive columns.
+            p.Set(KEY.MAX_BOOST, 0.0);
+            p.Set(KEY.DUTY_CYCLE_PERIOD, 100000);
             p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.0);
 
             // Max number of synapses on the segment.
@@ -510,13 +514,13 @@ namespace UnitTestsProject
             layer1.HtmModules.Add("encoder", encoder);
             layer1.HtmModules.Add("sp", sp1);
 
-            HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
+            //HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
+            HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
 
             double[] inputs = inputValues.ToArray();
             int[] prevActiveCols = new int[0];
 
             int maxSPLearningCycles = 50;
-            //List<(double Element, (int Cycle, double Similarity)[] Oscilations)> oscilationResult2 = new List<(double Element, (int Cycle, double Similarity)[] Oscilations)>();
 
             //
             // This trains SP on input pattern.
@@ -543,20 +547,27 @@ namespace UnitTestsProject
                 }
             }
 
-            // Stops the bumping of inactive columns.
-            p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.0);
-
             // Here we add TM module to the layer.
             layer1.HtmModules.Add("tm", tm1);
 
             int cycle = 0;
             int matches = 0;
 
-            double lastPredictedValue = 0;
+            string lastPredictedValue = "0";
+
+            Dictionary<double, List<List<int>>> activeColumnsLst = new Dictionary<double, List<List<int>>>();
+
+            foreach (var input in inputs)
+            {
+                if (activeColumnsLst.ContainsKey(input) == false)
+                    activeColumnsLst.Add(input, new List<List<int>>());
+            }
+
+            int maxCycles = 3500;
 
             //
             // Now training with SP+TM. SP is pretrained on the given input pattern.
-            for (int i = 0; i < 3460; i++)
+            for (int i = 0; i < maxCycles; i++)
             {
                 matches = 0;
 
@@ -564,28 +575,39 @@ namespace UnitTestsProject
 
                 Debug.WriteLine($"-------------- Cycle {cycle} ---------------");
 
+                string prevInput = "-1.0";
+
+                //if (i > 100)
+                //{
+                //    mem.setMaxBoost(0.0);
+                //    mem.updateMinPctOverlapDutyCycles(0.0);
+                //}
+
                 foreach (var input in inputs)
                 {
                     Debug.WriteLine($"-------------- {input} ---------------");
 
                     var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
 
-                    cls.Learn(input, lyrOut.ActiveCells.ToArray());
+                    var activeColumns = layer1.GetResult("sp") as int[];
+
+                    activeColumnsLst[input].Add(activeColumns.ToList());
+
+                    //cls.Learn(input, lyrOut.ActiveCells.ToArray());
+                    cls.Learn(GetKey(prevInput, input), lyrOut.ActiveCells.ToArray());
+
                     //vis.UpdateSynapsesAsync();
 
                     if (learn == false)
                         Debug.WriteLine($"Inference mode");
 
-                    //Debug.WriteLine($"W: {Helpers.StringifyVector(lyrOut.WinnerCells.Select(c => c.Index).ToArray())}");
-                    //Debug.WriteLine($"P: {Helpers.StringifyVector(lyrOut.predictiveCells.Select(c => c.Index).ToArray())}");
-
-                    if (input == lastPredictedValue)
+                    if (GetKey(prevInput, input) == lastPredictedValue)
                     {
                         matches++;
                         Debug.WriteLine($"Match {input}");
                     }
                     else
-                        Debug.WriteLine($"Missmatch Actual value: {input} - Predicted value: {lastPredictedValue}");
+                        Debug.WriteLine($"Missmatch Actual value: {GetKey(prevInput, input)} - Predicted value: {lastPredictedValue}");
 
                     if (lyrOut.predictiveCells.Count > 0)
                     {
@@ -597,6 +619,8 @@ namespace UnitTestsProject
                     }
                     else
                         Debug.WriteLine($"NO CELLS PREDICTED for next cycle.");
+
+                    prevInput = input.ToString();
                 }
 
                 //tm1.reset(mem);
@@ -635,13 +659,14 @@ namespace UnitTestsProject
                         Debug.WriteLine("---- Start Predicting the Sequence -----");
 
                         // We take a random value to start somwhere in the sequence.
-                        double predictedInputValue = inputValues[new Random().Next(0, inputValues.Count - 1)];
+                        var predictedInputValue = inputValues[new Random().Next(0, inputValues.Count - 1)].ToString();
 
-                        List<double> predictedValues = new List<double>();
+                        List<string> predictedValues = new List<string>();
 
                         while (--cnt > 0)
                         {
-                            var lyrOut = layer1.Compute(predictedInputValue, learn) as ComputeCycle;
+                            //var lyrOut = layer1.Compute(predictedInputValue, learn) as ComputeCycle;
+                            var lyrOut = layer1.Compute(double.Parse(predictedInputValue[predictedInputValue.Length - 1].ToString()), learn) as ComputeCycle;
                             predictedInputValue = cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray());
                             predictedValues.Add(predictedInputValue);
                         };
@@ -661,9 +686,32 @@ namespace UnitTestsProject
                 }
             }
 
-            cls.TraceState();
+            Debug.WriteLine("---- cell state trace ----");
 
-            Debug.WriteLine("------------------------------------------------------------------------\n----------------------------------------------------------------------------");
+            cls.TraceState($"cellState_MinPctOverlDuty-{p[KEY.MIN_PCT_OVERLAP_DUTY_CYCLES]}_MaxBoost-{p[KEY.MAX_BOOST]}.csv");
+
+            Debug.WriteLine("---- column state trace ----");
+
+            foreach (var input in activeColumnsLst)
+            {
+                using (StreamWriter colSw = new StreamWriter($"ColumState_MinPctOverlDuty-{p[KEY.MIN_PCT_OVERLAP_DUTY_CYCLES]}_MaxBoost-{p[KEY.MAX_BOOST]}_input-{input.Key}.csv"))
+                {
+                    Debug.WriteLine($"------------ {input} ------------");
+
+                    foreach (var actCols in input.Value)
+                    {
+                        Debug.WriteLine(Helpers.StringifyVector(actCols.ToArray()));
+                        colSw.WriteLine(Helpers.StringifyVector(actCols.ToArray()));
+                    }
+                }
+            }
+
+            Debug.WriteLine("------------ END ------------");
+        }
+
+        private static string GetKey(string prevInput, double input)
+        {
+            return $"{prevInput}-{input.ToString()}";
         }
 
 
@@ -717,8 +765,8 @@ namespace UnitTestsProject
 
             EncoderBase encoder = new ScalarEncoder(settings);
 
-            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0});
-        
+            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0 });
+
             RunSpStabilityExperiment(inputBits, p, encoder, inputValues);
         }
 
@@ -843,7 +891,7 @@ namespace UnitTestsProject
             INeuroVisualizer vis = new WSNeuroVisualizer();
 
             List<MiniColumn> colData = new List<MiniColumn>();
-            MiniColumn minCol = new MiniColumn(0,0,0,0);
+            MiniColumn minCol = new MiniColumn(0, 0, 0, 0);
             MiniColumn minCol1 = new MiniColumn(0, 01, 0, 0);
 
             colData.Add(minCol);
@@ -855,8 +903,8 @@ namespace UnitTestsProject
         [TestMethod]
         public void TestModel()
         {
-             string url = "ws://localhost:5000/ws/client13";
-           
+            string url = "ws://localhost:5000/ws/client13";
+
             ClientWebSocket ws1 = new ClientWebSocket();
 
             INeuroVisualizer vis = new WSNeuroVisualizer();

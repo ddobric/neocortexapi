@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -38,7 +39,7 @@ namespace NeoCortexApi.Network
         {
             this.inputSequence.Add(input);
 
-            this.inputSequenceMap.Add(GetCellIndicies(output), this.inputSequence.Count -1);
+            this.inputSequenceMap.Add(GetCellIndicies(output), this.inputSequence.Count - 1);
 
             if (!activeMap.ContainsKey(GetCellIndicies(output)))
             {
@@ -103,30 +104,42 @@ namespace NeoCortexApi.Network
         /// <summary>
         /// Traces out all cell indicies grouped by input value.
         /// </summary>
-        public void TraceState()
-        {
+        public void TraceState(string fileName = null)
+        {          
+
             List<TIN> processedValues = new List<TIN>();
 
             foreach (var item in activeMap.Values)
             {
                 if (processedValues.Contains(item) == false)
                 {
+                    StreamWriter sw = null;
+
+                    if (fileName != null)
+                        sw = new StreamWriter(fileName.Replace(".csv", $"_Digit_{item}.csv"));
+
                     Debug.WriteLine("");
                     Debug.WriteLine($"{item}");
 
                     foreach (var inp in this.activeMap.Where(i => EqualityComparer<TIN>.Default.Equals((TIN)i.Value, item)))
                     {
-                        Debug.WriteLine($"{Helpers.StringifyVector(inp.Key)}");                        
+                        Debug.WriteLine($"{Helpers.StringifyVector(inp.Key)}");
+
+                        if (sw != null)
+                            sw.WriteLine($"{Helpers.StringifyVector(inp.Key)}");
                     }
+
+                    sw.Flush();
+                    sw.Close();
 
                     processedValues.Add(item);
                 }
             }
         }
 
-       
 
-        
+
+
         private string ComputeHash(byte[] rawData)
         {
             // Create a SHA256   
@@ -144,8 +157,8 @@ namespace NeoCortexApi.Network
                 return builder.ToString();
             }
         }
-        
-        
+
+
         private static byte[] FlatArray(Cell[] output)
         {
             byte[] arr = new byte[output.Length];
@@ -173,6 +186,6 @@ namespace NeoCortexApi.Network
             return same.Count();
         }
 
-   
+
     }
 }
