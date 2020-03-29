@@ -239,16 +239,16 @@ namespace UnitTestsProject
             // Local inhibition
             // Stops the bumping of inactive columns.
             //p.Set(KEY.IS_BUMPUP_WEAKCOLUMNS_DISABLED, true); Obsolete.use KEY.MIN_PCT_OVERLAP_DUTY_CYCLES = 0;
-            p.Set(KEY.POTENTIAL_RADIUS, 50);
-            p.Set(KEY.GLOBAL_INHIBITION, false);
-            p.setInhibitionRadius(15);
+            //p.Set(KEY.POTENTIAL_RADIUS, 50);
+            //p.Set(KEY.GLOBAL_INHIBITION, false);
+            //p.setInhibitionRadius(15);
 
             // Global inhibition
             // N of 40 (40= 0.02*2048 columns) active cells required to activate the segment.
-            //p.Set(KEY.GLOBAL_INHIBITION, true);
-            //p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
+            p.Set(KEY.GLOBAL_INHIBITION, true);
+            p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
             //p.Set(KEY.POTENTIAL_RADIUS, inputBits);
-            //p.Set(KEY.LOCAL_AREA_DENSITY, -1); // In a case of global inhibition.
+            p.Set(KEY.LOCAL_AREA_DENSITY, -1); // In a case of global inhibition.
             //p.setInhibitionRadius( Automatically set on the columns pace in a case of global inhibition.);
 
             // Activation threshold is 10 active cells of 40 cells in inhibition area.
@@ -272,7 +272,7 @@ namespace UnitTestsProject
 
             EncoderBase encoder = new ScalarEncoder(settings);
 
-            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0 });
+            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0 , 11.0, 12.0});
 
             RunSpStabilityExperiment2(maxBoost, minOctOverlapCycles, inputBits, p, encoder, inputValues);
         }
@@ -325,6 +325,7 @@ namespace UnitTestsProject
 
             for (int cycle = 0; cycle < maxSPLearningCycles; cycle++)
             {
+                // New Born effect
                 if (cycle >= 300)
                 {
                     mem.setMaxBoost(0.0);
