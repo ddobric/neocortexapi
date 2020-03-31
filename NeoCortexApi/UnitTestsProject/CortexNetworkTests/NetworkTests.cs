@@ -577,7 +577,15 @@ namespace UnitTestsProject
                     var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
 
                     cls.Learn(input, lyrOut.ActiveCells.ToArray());
-                    //vis.UpdateSynapsesAsync();
+
+
+                    //List<MiniColumn> columns = new List<MiniColumn>();
+                    //MiniColumn col = new MiniColumn(0, 0, 1, 0);
+                    //columns.Add(col);
+                    List<Synapse> synapses = new List<Synapse>();
+                    Synapse synap = new Synapse();
+                    synapses.Add(synap);
+                   await vis.UpdateSynapsesAsync(synapses, ws);//upadte Synapse
 
                     if (learn == false)
                         Debug.WriteLine($"Inference mode");

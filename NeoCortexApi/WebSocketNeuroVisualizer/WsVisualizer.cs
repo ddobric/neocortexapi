@@ -31,12 +31,20 @@ namespace WebSocketNeuroVisualizer
 
         public async Task UpdateColumnOverlapsAsync(List<MiniColumn> columns, ClientWebSocket websocket)
         {
-            WebsocketData updateOverlap = new WebsocketData()
+            List<object> updateO = new List<object>();
+            
+            for (int i = 0; i < columns.Count; i++)
             {
-                MsgType = "updateOverlap",
-                Columns = columns
+                WebsocketData updateOverlap = new WebsocketData()
+                {
+                    MsgType = "updateOverlap",
+                    Columns = columns[i]
 
-            };
+                };
+                updateO.Add(updateOverlap);
+
+            }
+           
             // MiniColumn minCol = new MiniColumn(columns[i].AreaId, columns[i].Overlap, columns[i].ColDims.GetLength(0), columns[i].ColDims.GetLength(1));
             
             //for (int i = 0; i < columns.Count; i++)
@@ -44,11 +52,24 @@ namespace WebSocketNeuroVisualizer
             //    updateOverlap = columns[i].ToString();
 
             //}
-            await SendDataAsync(websocket, updateOverlap);
+            await SendDataAsync(websocket, updateO);
         }
-        public async Task UpdateSynapsesAsync(List<SynapseData> synapses, ClientWebSocket websocket)
+        public async Task UpdateSynapsesAsync(List<Synapse> synapses, ClientWebSocket websocket)
         {
-            throw new NotImplementedException();
+            List<object> updateS = new List<object>();
+
+            for (int i = 0; i < synapses.Count; i++)
+            {
+                WebsocketData updateSynapse = new WebsocketData()
+                {
+                    MsgType = "updateOrAddSynapse",
+                    Synapses = synapses[i]
+
+                };
+                updateS.Add(updateSynapse);
+
+            }
+            await SendDataAsync(websocket, updateS);
             //WebsocketData updateSynapses = new WebsocketData()
             //{
             //    MsgType = "updateSynapse",
@@ -152,10 +173,13 @@ namespace WebSocketNeuroVisualizer
 
         public NeuroModel Model { get; set; }
 
-        public List<SynapseData> Synapses { get; set; }
+        public List<SynapseData> SynapsesData { get; set; }
 
-        public List<MiniColumn> Columns { get; set; }
+        public List<MiniColumn> ColumnsList { get; set; }
 
+        public MiniColumn Columns { get; set; }
+
+        public Synapse Synapses { get; set; }
 
     }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using NeoCortexApi.Entities;
+using System.Collections.Generic;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace NeoCortexEntities.NeuroVisualizer
 
         Task UpdateColumnOverlapsAsync(List<MiniColumn> columns, ClientWebSocket websocket);
 
-        Task UpdateSynapsesAsync(List<SynapseData> synapses, ClientWebSocket websocket);
+        Task UpdateSynapsesAsync(List<Synapse> synapses, ClientWebSocket websocket);
 
         Task ConnectToWSServerAsync(string url, ClientWebSocket websocket);
 
