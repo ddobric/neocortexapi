@@ -5,6 +5,7 @@ import { map } from "rxjs/operators";
 import { Cell, Synapse, NeoCortexModel } from '../Entities/NeoCortexModel';
 import { NeoCortexGenerator } from '../Entities/NeoCortexGenerator';
 import { environment as env } from '../../environments/environment.prod';
+import { isNullOrUndefined } from 'util';
 
 
 
@@ -22,6 +23,7 @@ export interface NeoCortexUtils {
 })
 
 export class NeoCortexUtilsService {
+
   data: Subject<NeoCortexUtils>;
   model: any;
   notifyTyp: any;
@@ -37,22 +39,25 @@ export class NeoCortexUtilsService {
            dataModel: JSONObject
          }; */
 
-        if (JSONObject.MsgType == "init") {
+        if (JSONObject.msgType == "init" || JSONObject.MsgType == "init") {
           this.model = JSONObject.Model;
+          if (!this.model.Cells[0].Z) {
+            this.addPlaceholder();
+          }
           this.createSynapses();
           return {
             dataModel: this.model,
             notification: { type: this.notifyTyp, msg: this.notifyMsg }
           }
         }
-        else if (JSONObject.MsgType == "updateOverlap") {
+        else if (JSONObject.msgType == "updateOverlap" || JSONObject.MsgType == "updateOverlap") {
           this.updateOverlap(JSONObject.update);
           return {
             dataModel: this.model,
             notification: { type: this.notifyTyp, msg: this.notifyMsg }
           }
         }
-        else if (JSONObject.MsgType == "updateOrAddSynapse") {
+        else if (JSONObject.msgType == "updateOrAddSynapse" || JSONObject.MsgType == "updateOrAddSynapse") {
           this.updateOrAddSynapse(JSONObject.update);
           return {
             dataModel: this.model,
@@ -66,6 +71,32 @@ export class NeoCortexUtilsService {
       }
     ));
 
+  }
+  addPlaceholder() {
+    for (let i = 0; i < this.model.Areas.length; i++) {
+      for (let j = 0; j < this.model.Areas[i].MiniColumns.length; j++) {
+        for (let k = 0; k < this.model.Areas[i].MiniColumns[j][0].Cells.length; k++) {
+          let cell = {
+            CellId: this.model.Areas[i].MiniColumns[j][0].Cells[k].CellId,
+            Index: this.model.Areas[i].MiniColumns[j][0].Cells[k].Index,
+            ParentColumnIndex: this.model.Areas[i].MiniColumns[j][0].Cells[k].ParentColumnIndex,
+            Z: 0
+          };
+          this.model.Areas[i].MiniColumns[j][0].Cells[k] = cell;
+        }
+
+      }
+
+    }
+    for (let l = 0; l < this.model.Cells.length; l++) {
+      let cell1 = {
+        CellId: this.model.Cells[l].CellId,
+        Index: this.model.Cells[l].Index,
+        ParentColumnIndex: this.model.Cells[l].ParentColumnIndex,
+        Z: 0
+      };
+      this.model.Cells[l] = cell1;
+    }
   }
   private updateOrAddSynapse(updateOrAddSynap) {
     this.lookUpSynapse(updateOrAddSynap);
@@ -198,12 +229,12 @@ export class NeoCortexUtilsService {
 
     let midElement = Math.round((lower + upper) / 2);
 
-    if (this.model.cells[midElement].cellId == synapticId) {
-      cell = this.model.cells[midElement]
+    if (this.model.Cells[midElement].CellId == synapticId) {
+      cell = this.model.Cells[midElement];
       return cell;
     }
     else {
-      if (synapticId < this.model.cells[midElement].cellId) {
+      if (synapticId < this.model.Cells[midElement].CellId) {
         return this.binaryCellSearch(synapticId, lower, midElement - 1);
 
       }
@@ -216,13 +247,13 @@ export class NeoCortexUtilsService {
 
   private createSynapses() {
     let synapseRegister = [];
-    let upper = this.model.cells.length;
+    let upper = this.model.Cells.length;
 
-    for (let i = 0; i < this.model.synapses.length; i++) {
+    for (let i = 0; i < this.model.Synapse.length; i++) {
 
-      let perm = this.model.synapses[i].permanence;
-      let preCell: Cell = this.binaryCellSearch(this.model.synapses[i].preSynapticId, 0, upper);
-      let postCell: Cell = this.binaryCellSearch(this.model.synapses[i].postSynapticId, 0, upper);
+      let perm = this.model.Synapse[i].Permanence;
+      let preCell: Cell = this.binaryCellSearch(this.model.Synapse[i].PreSynapticCellIndex, 0, upper);
+      let postCell: Cell = this.binaryCellSearch(this.model.Synapse[i].PostSynapticCellIndex, 0, upper);
 
 
       let synapse: Synapse = {
@@ -234,11 +265,11 @@ export class NeoCortexUtilsService {
       synapseRegister.push(synapse);
 
       preCell.outgoingSynapses.push(synapse);
-      this.model.areas[preCell.areaIndex].minicolumns[preCell.X][preCell.Z].cells[preCell.Layer].outgoingSynapses.push(synapse);
+      this.model.Areas[preCell.ParentColumnIndex].MiniColumns[preCell.Index][preCell.Z].Cells[preCell.Index].outgoingSynapses.push(synapse);
 
 
       postCell.incomingSynapses.push(synapse);
-      this.model.areas[postCell.areaIndex].minicolumns[postCell.X][postCell.Z].cells[postCell.Layer].incomingSynapses.push(synapse);
+      this.model.Areas[postCell.ParentColumnIndex].MiniColumns[postCell.Index][postCell.Z].Cells[postCell.Index].incomingSynapses.push(synapse);
 
     }
 

@@ -476,7 +476,7 @@ namespace UnitTestsProject
         /// <summary>
         ///
         /// </summary>
-        private void RunExperiment(int inputBits, Parameters p, EncoderBase encoder, List<double> inputValues)
+        private async Task RunExperiment(int inputBits, Parameters p, EncoderBase encoder, List<double> inputValues)
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -486,9 +486,14 @@ namespace UnitTestsProject
 
             int maxMatchCnt = 0;
             bool learn = true;
-            //INeuroVisualizer vis = new WSNeuroVisualizer();
-            //GenerateNeuroModel model = new GenerateNeuroModel();
-            //vis.InitModel(model.CreateNeuroModel(new int[] { 1}, (long[,])p[KEY.COLUMN_DIMENSIONS], (int)p[KEY.CELLS_PER_COLUMN]));
+
+            INeuroVisualizer vis = new WSNeuroVisualizer();
+            GenerateNeuroModel model = new GenerateNeuroModel();
+            string url = "ws://localhost:5555/ws/client13";
+
+            ClientWebSocket ws = new ClientWebSocket();
+            await vis.ConnectToWSServerAsync(url, ws);
+            await vis.InitModelAsync(model.CreateNeuroModel(new int[] { 1}, (long[,])p[KEY.COLUMN_DIMENSIONS], (int)p[KEY.CELLS_PER_COLUMN]), ws);
 
             CortexNetwork net = new CortexNetwork("my cortex");
             List<CortexRegion> regions = new List<CortexRegion>();
@@ -868,7 +873,7 @@ namespace UnitTestsProject
 
 
             await vis.ConnectToWSServerAsync(url, ws1);
-            await  vis.InitModelAsync(model.CreateNeuroModel(areas, (new long[10, 1]), 6), ws1);
+            await vis.InitModelAsync(model.CreateNeuroModel(areas, (new long[10, 1]), 6), ws1);
 
         }
 

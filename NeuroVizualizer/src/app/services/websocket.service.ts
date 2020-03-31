@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject, Observer } from "rxjs";
-import { ViewportScroller } from '@angular/common';
+import { WebSocketSubject, webSocket } from "rxjs/webSocket";
+import { filter, map, switchMap, retryWhen, delay } from 'rxjs/operators';
+import { environment as env } from '../../environments/environment.prod';
+
 
 
 @Injectable({
@@ -8,10 +11,14 @@ import { ViewportScroller } from '@angular/common';
 })
 export class WebsocketService {
   private subject: Subject<MessageEvent>;
+  connection$: WebSocketSubject<any>;
+  RETRY_SECONDS = 10;
+  store: any;
 
   constructor() {
 
   }
+
 
 
   public connect(url): Subject<MessageEvent> {

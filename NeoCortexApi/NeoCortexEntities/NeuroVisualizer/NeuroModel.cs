@@ -25,8 +25,8 @@ namespace NeoCortexEntities.NeuroVisualizer
                     SynapseData synap = new SynapseData
                     {
                         Permanence = new Random().NextDouble(),//for now generatin random permanences ranging 0 to 1
-                        PreCellIndex = model.Cells[new Random().Next(0, (model.Cells.Count()))].Index,//selecting random cell from already generated cells 
-                        PostCellIndex = model.Cells[new Random().Next(0, (model.Cells.Count()))].Index,//selecting random cell from already generated cells 
+                        PreSynapticCellIndex = model.Cells[new Random().Next(0, (model.Cells.Count()))].Index,//selecting random cell from already generated cells 
+                        PostSynapticCellIndex = model.Cells[new Random().Next(0, (model.Cells.Count()))].Index,//selecting random cell from already generated cells 
                         // SourceCell = cell id
                         // destination Cell = cell id
                     }; 
@@ -73,11 +73,11 @@ namespace NeoCortexEntities.NeuroVisualizer
         {
             Cell[] cells = new Cell[cellsPerColumn];
             int parentColumnIndx = 0;
-
+            int cellId = 0;
             for (int i = 0; i < cells.Length; i++)
             {
-
-                Cell cell = new Cell(areaID, i, parentColumnIndx );
+                cellId = cellId + 1;
+                Cell cell = new Cell(areaID, i, cellId, parentColumnIndx );
 
                 cells[i] = cell;
             }
@@ -163,8 +163,8 @@ namespace NeoCortexEntities.NeuroVisualizer
     {
 
         public CellType SegmentCellType;
-        public int PreCellIndex { get; set; }
-        public int PostCellIndex { get; set; }
+        public int PreSynapticCellIndex { get; set; }
+        public int PostSynapticCellIndex { get; set; }
         public double Permanence { get; set; }
 
     }

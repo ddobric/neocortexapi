@@ -50,11 +50,13 @@ export class Minicolumn {
 
 export class Cell {
 
-    cellId: number;
-    areaIndex: number;
-    X: number;
-    Layer: number;
-    Z: number;
+    cellId?: number;
+    areaIndex?: number;
+    X?: number;
+    Layer?: number;
+    Z?: number;
+    Index?: number;
+    ParentColumnIndex?: number;
     incomingSynapses?: Array<Synapse> = new Array();
     outgoingSynapses?: Array<Synapse> = new Array();
 }

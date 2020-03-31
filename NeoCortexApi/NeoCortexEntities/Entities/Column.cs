@@ -47,6 +47,7 @@ namespace NeoCortexApi.Entities
         /// All cells of the column.
         /// </summary>
         public Cell[] Cells { get; set; }
+        public int CellId { get; set; }
 
         //private ReadOnlyCollection<Cell> cellList;
 
@@ -74,7 +75,7 @@ namespace NeoCortexApi.Entities
 
             for (int i = 0; i < numCells; i++)
             {
-                Cells[i] = new Cell(this.Index, i, this.getNumCellsPerColumn());
+                Cells[i] = new Cell(this.Index, i, this.getNumCellsPerColumn(), this.CellId);
             }
 
             // We keep tracking of this column only
