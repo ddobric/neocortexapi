@@ -420,7 +420,7 @@ namespace UnitTestsProject
             int inputBits = 100;
             int numColumns = 2048;
             Parameters p = Parameters.getAllDefaultParameters();
-            
+
             p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
             p.Set(KEY.INPUT_DIMENSIONS, new int[] { inputBits });
             p.Set(KEY.CELLS_PER_COLUMN, 15);
@@ -489,11 +489,11 @@ namespace UnitTestsProject
 
             INeuroVisualizer vis = new WSNeuroVisualizer();
             GenerateNeuroModel model = new GenerateNeuroModel();
-            string url = "ws://localhost:5555/ws/client13";
+            string url = "ws://localhost:5555/ws/RunExperimentClient";
 
             ClientWebSocket ws = new ClientWebSocket();
             await vis.ConnectToWSServerAsync(url, ws);
-            await vis.InitModelAsync(model.CreateNeuroModel(new int[] { 1}, (long[,])p[KEY.COLUMN_DIMENSIONS], (int)p[KEY.CELLS_PER_COLUMN]), ws);
+            await vis.InitModelAsync(model.CreateNeuroModel(new int[] { 1 }, (long[,])p[KEY.COLUMN_DIMENSIONS], (int)p[KEY.CELLS_PER_COLUMN]), ws);
 
             CortexNetwork net = new CortexNetwork("my cortex");
             List<CortexRegion> regions = new List<CortexRegion>();
@@ -579,13 +579,11 @@ namespace UnitTestsProject
                     cls.Learn(input, lyrOut.ActiveCells.ToArray());
 
 
-                    //List<MiniColumn> columns = new List<MiniColumn>();
-                    //MiniColumn col = new MiniColumn(0, 0, 1, 0);
-                    //columns.Add(col);
                     List<Synapse> synapses = new List<Synapse>();
-                    Synapse synap = new Synapse();
+                    Cell cell = new Cell(0, 1, 6, 0);// where to get all these values
+                    Synapse synap = new Synapse(cell, 1, 1, 0.78);// here is just supposed to update the permanence, all other values remains same; where do we get all other values
                     synapses.Add(synap);
-                   await vis.UpdateSynapsesAsync(synapses, ws);//upadte Synapse
+                    await vis.UpdateSynapsesAsync(synapses, ws);//update Synapse or add new ones
 
                     if (learn == false)
                         Debug.WriteLine($"Inference mode");
@@ -731,8 +729,8 @@ namespace UnitTestsProject
 
             EncoderBase encoder = new ScalarEncoder(settings);
 
-            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0});
-        
+            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0 });
+
             RunSpStabilityExperiment(inputBits, p, encoder, inputValues);
         }
 
@@ -857,7 +855,7 @@ namespace UnitTestsProject
             INeuroVisualizer vis = new WSNeuroVisualizer();
 
             List<MiniColumn> colData = new List<MiniColumn>();
-            MiniColumn minCol = new MiniColumn(0,0,0,0);
+            MiniColumn minCol = new MiniColumn(0, 0, 0, 0);
             MiniColumn minCol1 = new MiniColumn(0, 01, 0, 0);
 
             colData.Add(minCol);
@@ -869,8 +867,7 @@ namespace UnitTestsProject
         [TestMethod]
         public async Task TestModel()
         {
-             string url = "ws://localhost:5555/ws/client13";
-           
+            string url = "ws://localhost:5555/ws/client13";
             ClientWebSocket ws1 = new ClientWebSocket();
 
             INeuroVisualizer vis = new WSNeuroVisualizer();
@@ -884,24 +881,44 @@ namespace UnitTestsProject
             await vis.InitModelAsync(model.CreateNeuroModel(areas, (new long[10, 1]), 6), ws1);
 
         }
-
         [TestMethod]
-        public void updateOverlap()
+        public async Task updateOrAddSynapse()
         {
-
-            string url = "ws://localhost:5555/ws/client13";
-
-            ClientWebSocket ws2 = new ClientWebSocket();
-
+            string url = "ws://localhost:5555/ws/clientSynapse";
+            ClientWebSocket ws1 = new ClientWebSocket();
 
             INeuroVisualizer vis = new WSNeuroVisualizer();
+            int[] areas = new int[] { 1 };
+            GenerateNeuroModel model = new GenerateNeuroModel();
+            await vis.ConnectToWSServerAsync(url, ws1);
+            await vis.InitModelAsync(model.CreateNeuroModel(areas, (new long[10, 1]), 6), ws1);
 
-            vis.ConnectToWSServerAsync(url, ws2);
+
+            List<Synapse> synapses = new List<Synapse>();
+            Cell cell = new Cell(0, 1, 6, 1);
+            Synapse synap = new Synapse(cell, 1, 1, 0.75);
+            synapses.Add(synap);
+
+            await vis.UpdateSynapsesAsync(synapses, ws1);
+        }
+
+        [TestMethod]
+        public async Task updateOverlap()
+        {
+
+            string url = "ws://localhost:5555/ws/clientUpdateOve";
+            ClientWebSocket ws1 = new ClientWebSocket();
+
+            INeuroVisualizer vis = new WSNeuroVisualizer();
+            int[] areas = new int[] { 1 };
+            GenerateNeuroModel model = new GenerateNeuroModel();
+            await vis.ConnectToWSServerAsync(url, ws1);
+            await vis.InitModelAsync(model.CreateNeuroModel(areas, (new long[10, 1]), 6), ws1);
 
             List<MiniColumn> columnList = new List<MiniColumn>();
             MiniColumn minCol = new MiniColumn(0, 0.80, 8, 0);
             columnList.Add(minCol);
-            vis.UpdateColumnOverlapsAsync(columnList, ws2);
+            await vis.UpdateColumnOverlapsAsync(columnList, ws1);
         }
 
         [TestMethod]
@@ -914,8 +931,8 @@ namespace UnitTestsProject
             INeuroVisualizer vis = new WSNeuroVisualizer();
 
 
-          await  vis.ConnectToWSServerAsync(url, ws2);
-          //await  vis.TestMethod("Testing phase", ws2);
+            await vis.ConnectToWSServerAsync(url, ws2);
+            //await  vis.TestMethod("Testing phase", ws2);
 
         }
     }

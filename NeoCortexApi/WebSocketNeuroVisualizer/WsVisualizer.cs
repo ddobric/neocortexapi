@@ -13,8 +13,6 @@ namespace WebSocketNeuroVisualizer
 
     public class WSNeuroVisualizer : INeuroVisualizer
     {
-        // To Fix if list of update or a single update send over the websocket
-
         
         public async Task InitModelAsync(NeuroModel model, ClientWebSocket websocket)
         {
@@ -44,14 +42,7 @@ namespace WebSocketNeuroVisualizer
                 updateO.Add(updateOverlap);
 
             }
-           
-            // MiniColumn minCol = new MiniColumn(columns[i].AreaId, columns[i].Overlap, columns[i].ColDims.GetLength(0), columns[i].ColDims.GetLength(1));
-            
-            //for (int i = 0; i < columns.Count; i++)
-            //{
-            //    updateOverlap = columns[i].ToString();
 
-            //}
             await SendDataAsync(websocket, updateO);
         }
         public async Task UpdateSynapsesAsync(List<Synapse> synapses, ClientWebSocket websocket)
@@ -153,10 +144,6 @@ namespace WebSocketNeuroVisualizer
 
                     await websocket.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
 
-                    //var receiveData = new ArraySegment<byte>();
-                    //WebSocketReceiveResult result = await websocket.ReceiveAsync(receiveData, CancellationToken.None);
-                    //await websocket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
-
                 }
             }
             catch (Exception ex)
@@ -172,10 +159,6 @@ namespace WebSocketNeuroVisualizer
         public string MsgType { get; set; }
 
         public NeuroModel Model { get; set; }
-
-        public List<SynapseData> SynapsesData { get; set; }
-
-        public List<MiniColumn> ColumnsList { get; set; }
 
         public MiniColumn Columns { get; set; }
 
