@@ -133,19 +133,19 @@ namespace NeoCortexEntities.NeuroVisualizer
         public List<Cell> Cells { get; set; }
         public double Overlap { get; set; }
         public int AreaId { get; set; }
-        public int ColDim0 { get; set; }
-        public int ColDim1 { get; set; }
+        public int MiniColDim0 { get; set; }
+        public int MiniColDim1 { get; set; }
 
 
 
 
-        public MiniColumn(int areaId, double overlap, int colDim0, int colDim1)//areaId, overlap, colDim0, colDim1
+        public MiniColumn(int areaId, double overlap, int miniColDim0, int miniColDim1)//areaId, overlap, colDim0, colDim1
         {
 
             AreaId = areaId;
             Overlap = overlap;
-            ColDim0 = colDim0;
-            ColDim1 = colDim1;
+            MiniColDim0 = miniColDim0;
+            MiniColDim1 = miniColDim1;
             Cells = new List<Cell>();
             //int parentColumnIndx = columnDims.GetLength(0); // Can I set dimO/X is equal to parentColumnIndex??
             // int parentColumnIndx = colDim0; // Can I set dimO/X is equal to parentColumnIndex??

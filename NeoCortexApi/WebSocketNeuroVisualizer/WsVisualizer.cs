@@ -28,39 +28,27 @@ namespace WebSocketNeuroVisualizer
         }
 
         public async Task UpdateColumnOverlapsAsync(List<MiniColumn> columns, ClientWebSocket websocket)
-        {
-            List<object> updateO = new List<object>();
-            
-            for (int i = 0; i < columns.Count; i++)
-            {
-                WebsocketData updateOverlap = new WebsocketData()
+        {      
+                WebsocketData update = new WebsocketData()
                 {
                     MsgType = "updateOverlap",
-                    Columns = columns[i]
+                    Columns = columns
 
                 };
-                updateO.Add(updateOverlap);
 
-            }
 
-            await SendDataAsync(websocket, updateO);
+            await SendDataAsync(websocket, update);
         }
         public async Task UpdateSynapsesAsync(List<Synapse> synapses, ClientWebSocket websocket)
         {
-            List<object> updateS = new List<object>();
-
-            for (int i = 0; i < synapses.Count; i++)
-            {
-                WebsocketData updateSynapse = new WebsocketData()
+                WebsocketData update = new WebsocketData()
                 {
                     MsgType = "updateOrAddSynapse",
-                    Synapses = synapses[i]
+                    Synapses = synapses
 
                 };
-                updateS.Add(updateSynapse);
 
-            }
-            await SendDataAsync(websocket, updateS);
+            await SendDataAsync(websocket, update);
             //WebsocketData updateSynapses = new WebsocketData()
             //{
             //    MsgType = "updateSynapse",
@@ -160,9 +148,9 @@ namespace WebSocketNeuroVisualizer
 
         public NeuroModel Model { get; set; }
 
-        public MiniColumn Columns { get; set; }
+        public List<MiniColumn> Columns { get; set; }
 
-        public Synapse Synapses { get; set; }
+        public List<Synapse> Synapses { get; set; }
 
     }
 

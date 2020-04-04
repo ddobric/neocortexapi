@@ -891,7 +891,7 @@ namespace UnitTestsProject
             int[] areas = new int[] { 1 };
             GenerateNeuroModel model = new GenerateNeuroModel();
             await vis.ConnectToWSServerAsync(url, ws1);
-            await vis.InitModelAsync(model.CreateNeuroModel(areas, (new long[10, 1]), 6), ws1);
+           // await vis.InitModelAsync(model.CreateNeuroModel(areas, (new long[10, 1]), 6), ws1);
 
 
             List<Synapse> synapses = new List<Synapse>();
