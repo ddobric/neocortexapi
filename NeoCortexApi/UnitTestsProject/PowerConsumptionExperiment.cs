@@ -205,12 +205,12 @@ namespace UnitTestsProject
 
                             cls.Learn(input, lyrOut.ActiveCells.ToArray());
 
-                            lastPredictedValue = cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray());
+                            lastPredictedValue = cls.GetPredictedInputValue(lyrOut.PredictiveCells.ToArray());
 
                             sw.WriteLine($"{tokens[0]};{input.ToString(CultureInfo.InvariantCulture)};{lastPredictedValue.ToString(CultureInfo.InvariantCulture)}");
 
                             Debug.WriteLine($"W: {Helpers.StringifyVector(lyrOut.WinnerCells.Select(c => c.Index).ToArray())}");
-                            Debug.WriteLine($"P: {Helpers.StringifyVector(lyrOut.predictiveCells.Select(c => c.Index).ToArray())}");
+                            Debug.WriteLine($"P: {Helpers.StringifyVector(lyrOut.PredictiveCells.Select(c => c.Index).ToArray())}");
                             Debug.WriteLine($"Current input: {input} Predicted Input: {lastPredictedValue}");
 
                             int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(outArr, (int)Math.Sqrt(outArr.Length), (int)Math.Sqrt(output.Count));
