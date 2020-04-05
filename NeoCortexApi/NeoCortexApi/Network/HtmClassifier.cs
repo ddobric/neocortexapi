@@ -129,8 +129,11 @@ namespace NeoCortexApi.Network
                             sw.WriteLine($"{Helpers.StringifyVector(inp.Key)}");
                     }
 
-                    sw.Flush();
-                    sw.Close();
+                    if (sw != null)
+                    {
+                        sw.Flush();
+                        sw.Close();
+                    }
 
                     processedValues.Add(item);
                 }
