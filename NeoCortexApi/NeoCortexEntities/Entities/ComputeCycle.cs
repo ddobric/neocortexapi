@@ -6,15 +6,9 @@ using NeoCortexApi;
 
 namespace NeoCortexApi.Entities
 {
-    /**
-     * Contains a snapshot of the state attained during one computational
-     * call to the {@link TemporalMemory}. The {@code TemporalMemory} uses
-     * data from previous compute cycles to derive new data for the current cycle
-     * through a comparison between states of those different cycles, therefore
-     * this state container is necessary.
-     * 
-     * @author David Ray
-     */
+    /// <summary>
+    /// Holds all important states calculated during a TM computational cycle.
+    /// </summary>
     public class ComputeCycle : IEquatable<object>, NeoCortexApi.IModuleData
     {
         /// <summary>
@@ -34,7 +28,7 @@ namespace NeoCortexApi.Entities
         /// if the number of active synapses (permanence higher than connectedPermanence) on that segment is higher than activationThreshold value.
         /// A Cell is by default in predictive state (depolarized state) if it owns the active dendrite segment.
         /// </summary>
-        public ISet<Cell> PredictiveCells = new LinkedHashSet<Cell>();
+        private ISet<Cell> m_PredictiveCells = new LinkedHashSet<Cell>();
 
         /// <summary>
         /// Gets the list of active cells.
@@ -60,42 +54,36 @@ namespace NeoCortexApi.Entities
         {
             this.ActiveCells = new LinkedHashSet<Cell>(c.getWinnerCells());//TODO potential bug. activeCells or winnerCells?!
             this.WinnerCells = new LinkedHashSet<Cell>(c.getWinnerCells());
-            this.PredictiveCells = new LinkedHashSet<Cell>(c.getPredictiveCells());
+            this.m_PredictiveCells = new LinkedHashSet<Cell>(c.getPredictiveCells());
             this.ActiveSegments = new List<DistalDendrite>(c.getActiveSegments());
             this.MatchingSegments = new List<DistalDendrite>(c.getMatchingSegments());
         }
 
-        /**
-         * Returns the current {@link Set} of active cells
-         * 
-         * @return  the current {@link Set} of active cells
-         */
 
-
-
-        /**
-         * Returns the {@link List} of sorted predictive cells.
-         * @return
-         */
-        public ISet<Cell> predictiveCells
+        /// <summary>
+        /// Gets the list of cells in predictive state for the current compute cycle.
+        /// It traverses all active segments (<see cref="ActiveSegments"/>) and declares there parent cells as predictive cells.
+        /// The TM algorithm does not calculate PredictiveCells. It activates instead distal segments
+        /// </summary>
+        public ISet<Cell> PredictiveCells
         {
             get
             {
-                if (PredictiveCells == null || PredictiveCells.Count == 0)
+                if (m_PredictiveCells == null || m_PredictiveCells.Count == 0)
                 {
                     Cell previousCell = null;
                     Cell currCell = null;
 
                     foreach (DistalDendrite activeSegment in ActiveSegments)
                     {
-                        if ((currCell = activeSegment.GetParentCell()) != previousCell)
+                        if ((currCell = activeSegment.ParentCell) != previousCell)
                         {
-                            PredictiveCells.Add(previousCell = currCell);
+                            m_PredictiveCells.Add(previousCell = currCell);
                         }
                     }
                 }
 
-                return PredictiveCells;
+                return m_PredictiveCells;
             }
         }
 
@@ -108,7 +96,7 @@ namespace NeoCortexApi.Entities
             int prime = 31;
             int result = 1;
             result = prime * result + ((ActiveCells == null) ? 0 : ActiveCells.GetHashCode());
-            result = prime * result + ((predictiveCells == null) ? 0 : predictiveCells.GetHashCode());
+            result = prime * result + ((PredictiveCells == null) ? 0 : PredictiveCells.GetHashCode());
             result = prime * result + ((WinnerCells == null) ? 0 : WinnerCells.GetHashCode());
             result = prime * result + ((ActiveSegments == null) ? 0 : ActiveSegments.GetHashCode());
             result = prime * result + ((MatchingSegments == null) ? 0 : MatchingSegments.GetHashCode());
@@ -135,12 +123,12 @@ namespace NeoCortexApi.Entities
             }
             else if (!ActiveCells.Equals(other.ActiveCells))
                 return false;
-            if (predictiveCells == null)
+            if (PredictiveCells == null)
             {
-                if (other.predictiveCells != null)
+                if (other.PredictiveCells != null)
                     return false;
             }
-            else if (!predictiveCells.Equals(other.predictiveCells))
+            else if (!PredictiveCells.Equals(other.PredictiveCells))
                 return false;
             if (WinnerCells == null)
             {

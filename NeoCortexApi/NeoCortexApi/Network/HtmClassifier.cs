@@ -19,7 +19,7 @@ namespace NeoCortexApi.Network
     {
         private List<TIN> inputSequence = new List<TIN>();
 
-        private Dictionary<int[], int> inputSequenceMap = new Dictionary<int[], int>();
+        //private Dictionary<int[], int> inputSequenceMap = new Dictionary<int[], int>();
 
         private Dictionary<int[], TIN> activeMap = new Dictionary<int[], TIN>();
 
@@ -39,7 +39,7 @@ namespace NeoCortexApi.Network
         {
             this.inputSequence.Add(input);
 
-            this.inputSequenceMap.Add(GetCellIndicies(output), this.inputSequence.Count - 1);
+            //this.inputSequenceMap.Add(GetCellIndicies(output), this.inputSequence.Count - 1);
 
             if (!activeMap.ContainsKey(GetCellIndicies(output)))
             {

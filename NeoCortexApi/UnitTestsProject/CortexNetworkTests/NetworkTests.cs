@@ -101,11 +101,11 @@ namespace UnitTestsProject
                     Debug.WriteLine($"Current Input: {input}");
                     if (learn == false)
                     {
-                        Debug.WriteLine($"Predict Input When Not Learn: {cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray())}");
+                        Debug.WriteLine($"Predict Input When Not Learn: {cls.GetPredictedInputValue(lyrOut.PredictiveCells.ToArray())}");
                     }
                     else
                     {
-                        Debug.WriteLine($"Predict Input: {cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray())}");
+                        Debug.WriteLine($"Predict Input: {cls.GetPredictedInputValue(lyrOut.PredictiveCells.ToArray())}");
                     }
 
                     Debug.WriteLine("-----------------------------------------------------------\n----------------------------------------------------------");
@@ -227,9 +227,9 @@ namespace UnitTestsProject
                         Debug.WriteLine($"Inference mode");
 
                     Debug.WriteLine($"W: {Helpers.StringifyVector(lyrOut.WinnerCells.Select(c => c.Index).ToArray())}");
-                    Debug.WriteLine($"P: {Helpers.StringifyVector(lyrOut.predictiveCells.Select(c => c.Index).ToArray())}");
+                    Debug.WriteLine($"P: {Helpers.StringifyVector(lyrOut.PredictiveCells.Select(c => c.Index).ToArray())}");
 
-                    Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray())}");
+                    Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {cls.GetPredictedInputValue(lyrOut.PredictiveCells.ToArray())}");
                 }
 
                 if (i == 50)
@@ -355,9 +355,9 @@ namespace UnitTestsProject
                         Debug.WriteLine($"Inference mode");
 
                     Debug.WriteLine($"W: {Helpers.StringifyVector(lyrOut.WinnerCells.Select(c => c.Index).ToArray())}");
-                    Debug.WriteLine($"P: {Helpers.StringifyVector(lyrOut.predictiveCells.Select(c => c.Index).ToArray())}");
+                    Debug.WriteLine($"P: {Helpers.StringifyVector(lyrOut.PredictiveCells.Select(c => c.Index).ToArray())}");
 
-                    var predictedValue = cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray());
+                    var predictedValue = cls.GetPredictedInputValue(lyrOut.PredictiveCells.ToArray());
 
                     Debug.WriteLine($"Current Input: {input} \t| - Predicted value in previous cycle: {lastPredictedValue} \t| Predicted Input for the next cycle: {predictedValue}");
 
@@ -397,25 +397,7 @@ namespace UnitTestsProject
         [TestCategory("NetworkTests")]
         [TestCategory("Experiment")]
         public void MusicNotesExperiment()
-        {
-            //Cycle: 884  Matches = 16 of 16     100 %
-            //100 % accuracy reched 20 times.
-            //Exit experiment in the stable state after 10 repeats with 100 % of accuracy.Elapsed time: 57 min.
-            //p.Set(KEY.CELLS_PER_COLUMN, 10);
-            //p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
-            //p.Set(KEY.MAX_BOOST, 10.0);
-            //p.Set(KEY.DUTY_CYCLE_PERIOD, 100000);
-
-            //p.Set(KEY.CELLS_PER_COLUMN, 10);
-            //p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
-            //p.Set(KEY.MAX_BOOST, 10.0);
-            //p.Set(KEY.DUTY_CYCLE_PERIOD, 100000);
-            //p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.0);
-            //Cycle: 993  Matches = 16 of 16     100 %
-            //100 % accuracy reched 20 times.
-            //Exit experiment in the stable state after 10 repeats with 100 % of accuracy.Elapsed time: 73 min.
-
-
+        {   
             int inputBits = 100;
             int numColumns = 2048;
             Parameters p = Parameters.getAllDefaultParameters();
@@ -425,8 +407,7 @@ namespace UnitTestsProject
             p.Set(KEY.CELLS_PER_COLUMN, 15);
             p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
 
-
-            //p.Set(KEY.POTENTIAL_RADIUS, 50);
+           
             //p.Set(KEY.GLOBAL_INHIBITION, false);
 
             p.Set(KEY.GLOBAL_INHIBITION, true);
@@ -436,17 +417,19 @@ namespace UnitTestsProject
             // N of 40 (40= 0.02*2048 columns) active cells required to activate the segment.
             p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
             // Activation threshold is 10 active cells of 40 cells in inhibition area.
+            p.Set(KEY.POTENTIAL_RADIUS, 50);
             p.setActivationThreshold(10);
             p.setInhibitionRadius(15);
 
             //
             // Stops the bumping of inactive columns.
-            p.Set(KEY.MAX_BOOST, 0.0);
+            p.Set(KEY.MAX_BOOST, 10.0);
             p.Set(KEY.DUTY_CYCLE_PERIOD, 100000);
-            p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.0);
+            p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.5);
 
             // Max number of synapses on the segment.
             p.setMaxNewSynapsesPerSegmentCount((int)(0.02 * numColumns));
+           
             p.setPermanenceIncrement(0.15);
             double max = 20;
 
@@ -577,11 +560,13 @@ namespace UnitTestsProject
 
                 string prevInput = "-1.0";
 
-                //if (i > 100)
-                //{
-                //    mem.setMaxBoost(0.0);
-                //    mem.updateMinPctOverlapDutyCycles(0.0);
-                //}
+                //
+                // Activate the 'New - Born' effect.
+                if (i > 300)
+                {
+                    mem.setMaxBoost(0.0);
+                    mem.updateMinPctOverlapDutyCycles(0.0);
+                }
 
                 foreach (var input in inputs)
                 {
@@ -609,9 +594,9 @@ namespace UnitTestsProject
                     else
                         Debug.WriteLine($"Missmatch Actual value: {GetKey(prevInput, input)} - Predicted value: {lastPredictedValue}");
 
-                    if (lyrOut.predictiveCells.Count > 0)
+                    if (lyrOut.PredictiveCells.Count > 0)
                     {
-                        var predictedInputValue = cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray());
+                        var predictedInputValue = cls.GetPredictedInputValue(lyrOut.PredictiveCells.ToArray());
 
                         Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {predictedInputValue}");
 
@@ -667,7 +652,7 @@ namespace UnitTestsProject
                         {
                             //var lyrOut = layer1.Compute(predictedInputValue, learn) as ComputeCycle;
                             var lyrOut = layer1.Compute(double.Parse(predictedInputValue[predictedInputValue.Length - 1].ToString()), learn) as ComputeCycle;
-                            predictedInputValue = cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray());
+                            predictedInputValue = cls.GetPredictedInputValue(lyrOut.PredictiveCells.ToArray());
                             predictedValues.Add(predictedInputValue);
                         };
 

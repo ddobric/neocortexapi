@@ -1517,7 +1517,7 @@ namespace NeoCortexApi.Entities
             NumSynapses -= len;
 
             // Remove the segment from the cell's list.
-            getSegments(segment.GetParentCell()).Remove(segment);
+            getSegments(segment.ParentCell).Remove(segment);
 
             // Remove the segment from the map
             distalSynapses.Remove(segment);
@@ -1640,7 +1640,7 @@ namespace NeoCortexApi.Entities
          */
         public int columnIndexForSegment(DistalDendrite segment)
         {
-            return segment.GetParentCell().Index / cellsPerColumn;
+            return segment.ParentCell.Index / cellsPerColumn;
         }
 
         /**
@@ -1991,7 +1991,7 @@ namespace NeoCortexApi.Entities
                 List<DistalDendrite> temp = new List<DistalDendrite>(activeSegments);
                 foreach (DistalDendrite activeSegment in temp)
                 {
-                    if ((currCell = activeSegment.GetParentCell()) != previousCell)
+                    if ((currCell = activeSegment.ParentCell) != previousCell)
                     {
                         predictiveCells.Add(previousCell = currCell);
                     }
