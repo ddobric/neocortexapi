@@ -28,6 +28,10 @@ namespace NeoCortexApi.Network
             throw new NotImplementedException();
         }
 
+        public void ClearState()
+        {
+            this.activeMap.Clear();
+        }
 
         /// <summary>
         /// Assotiate specified input to the given set of predictive cells.
@@ -55,7 +59,7 @@ namespace NeoCortexApi.Network
         public TIN GetPredictedInputValue(Cell[] predictiveCells)
         {
             bool x = false;
-            int maxSameBits = 0;
+            double maxSameBits = 0;
             TIN charOutput = default(TIN);
             int[] arr = new int[predictiveCells.Length];
             for (int i = 0; i < predictiveCells.Length; i++)
@@ -71,7 +75,7 @@ namespace NeoCortexApi.Network
                 //foreach (TIN inputVal in activeArray.Keys)
                 foreach (var pair in this.activeMap)
                 {
-                    int numOfSameBits = pair.Key.Intersect(arr).Count();
+                    double numOfSameBits = (double)((double)(pair.Key.Intersect(arr).Count() / (double)arr.Length));
                     if (numOfSameBits > maxSameBits)
                     {
                         Debug.WriteLine($"cnt:{n}\t{pair.Value} = bits {numOfSameBits}\t {Helpers.StringifyVector(pair.Key)}");
