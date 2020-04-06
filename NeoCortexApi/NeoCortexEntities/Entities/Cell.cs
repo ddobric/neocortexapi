@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using NeoCortexApi.Entities;
+using NeoCortexEntities.NeuroVisualizer;
 
 namespace NeoCortexApi.Entities
 {
@@ -38,7 +39,7 @@ namespace NeoCortexApi.Entities
          * @param column    the containing {@link Column}
          * @param colSeq    this index of this {@code Cell} within its column
          */
-        public Cell(int parentColumnIndx, int colSeq, int numCellsPerColumn, int cellId)
+        public Cell(int parentColumnIndx, int colSeq, int numCellsPerColumn, int cellId, CellActivity cellActivity)
         {
             this.ParentColumnIndex = parentColumnIndx;
             //this.Index = parentColumnIndx.getIndex() * parentColumnIndx.getNumCellsPerColumn() + colSeq;

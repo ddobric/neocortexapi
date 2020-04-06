@@ -49,7 +49,7 @@ namespace NeoCortexEntities.NeuroVisualizer
                 for (int colDim1 = 0; colDim1 < colDims.GetLength(1); colDim1++)
                 {
 
-                    area.MiniColumns[colDim0, colDim1] = new MiniColumn(areaID, overlap, colDim0, colDim1);
+                    area.MiniColumns[colDim0, colDim1] = new MiniColumn(areaID, overlap, colDim0, colDim1, ColumnActivity.Inactive);
                     Cell[] cells = CreateCells(cellsPerColumn, areaID, colDim0, colDim1);
                     for (int i = 0; i < cells.Length; i++)
                     {
@@ -77,7 +77,7 @@ namespace NeoCortexEntities.NeuroVisualizer
             for (int i = 0; i < cells.Length; i++)
             {
                 cellId += 1;
-                Cell cell = new Cell(areaID, i, cellId, parentColumnIndx );
+                Cell cell = new Cell(areaID, i, cellId, parentColumnIndx, CellActivity.PredictiveCell);
 
                 cells[i] = cell;
             }
@@ -138,7 +138,7 @@ namespace NeoCortexEntities.NeuroVisualizer
 
 
 
-        public MiniColumn(int areaId, double overlap, int miniColDim0, int miniColDim1)//areaId, overlap, colDim0, colDim1
+        public MiniColumn(int areaId, double overlap, int miniColDim0, int miniColDim1, ColumnActivity colActivity)//areaId, overlap, colDim0, colDim1
         {
 
             AreaId = areaId;
@@ -160,16 +160,22 @@ namespace NeoCortexEntities.NeuroVisualizer
     }
     public class SynapseData
     {
-
-        public CellType SegmentCellType;
+        //public CellType SegmentCellType;
         public int PreSynapticCellIndex { get; set; }
         public int PostSynapticCellIndex { get; set; }
         public double Permanence { get; set; }
 
     }
 
+    public enum ColumnActivity
+    {
+        Active,
 
-    public enum CellType
+        Inactive
+    }
+        
+
+    public enum CellActivity
     {
         ActiveCell,
 

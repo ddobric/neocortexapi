@@ -8,14 +8,13 @@ namespace NeoCortexEntities.NeuroVisualizer
 {
     public interface INeuroVisualizer
     {
-        Task InitModelAsync(NeuroModel model, ClientWebSocket websocket);
+        Task InitModelAsync(NeuroModel model);
 
-        Task UpdateColumnOverlapsAsync(List<MiniColumn> columns, ClientWebSocket websocket);
+        Task UpdateColumnAsync(List<MiniColumn> columns);
 
-        Task UpdateSynapsesAsync(List<Synapse> synapses, ClientWebSocket websocket);
+        Task UpdateSynapsesAsync(List<Synapse> synapses);
 
-        Task ConnectToWSServerAsync(string url, ClientWebSocket websocket);
+        Task ConnectToWSServerAsync();
 
-        //Task TestMethod(string str, ClientWebSocket ws);
     }
 }

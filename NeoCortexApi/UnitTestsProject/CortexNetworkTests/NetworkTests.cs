@@ -476,7 +476,7 @@ namespace UnitTestsProject
         /// <summary>
         ///
         /// </summary>
-        private async Task RunExperiment(int inputBits, Parameters p, EncoderBase encoder, List<double> inputValues)
+        private async Task RunExperimentNeuroVisualizer(int inputBits, Parameters p, EncoderBase encoder, List<double> inputValues)
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -489,11 +489,10 @@ namespace UnitTestsProject
 
             INeuroVisualizer vis = new WSNeuroVisualizer();
             GenerateNeuroModel model = new GenerateNeuroModel();
-            string url = "ws://localhost:5555/ws/RunExperimentClient";
 
-            ClientWebSocket ws = new ClientWebSocket();
-            await vis.ConnectToWSServerAsync(url, ws);
-            await vis.InitModelAsync(model.CreateNeuroModel(new int[] { 1 }, (long[,])p[KEY.COLUMN_DIMENSIONS], (int)p[KEY.CELLS_PER_COLUMN]), ws);
+            await vis.ConnectToWSServerAsync();
+            await vis.InitModelAsync(model.CreateNeuroModel(new int[] { 1 }, (long[,])p[KEY.COLUMN_DIMENSIONS], (int)p[KEY.CELLS_PER_COLUMN]));
+
 
             CortexNetwork net = new CortexNetwork("my cortex");
             List<CortexRegion> regions = new List<CortexRegion>();
@@ -542,7 +541,7 @@ namespace UnitTestsProject
                     var actCols = activeColumns.OrderBy(c => c).ToArray();
 
                     var similarity = MathHelpers.CalcArraySimilarity(prevActiveCols, actCols);
-
+                    await vis.UpdateColumnAsync(GetColumns(actCols));
                     Debug.WriteLine($" {i.ToString("D4")} SP-OUT: [{actCols.Length}/{similarity.ToString("0.##")}] - {Helpers.StringifyVector(actCols)}");
 
                     prevActiveCols = activeColumns;
@@ -579,14 +578,17 @@ namespace UnitTestsProject
                     cls.Learn(input, lyrOut.ActiveCells.ToArray());
 
 
+
                     List<Synapse> synapses = new List<Synapse>();
-                    Cell cell = new Cell(0, 1, 6, 0);// where to get all these values
+                    Cell cell = new Cell(0, 1, 6, 0, CellActivity.ActiveCell);// where to get all these values
                     Synapse synap = new Synapse(cell, 1, 1, 0.78);// here is just supposed to update the permanence, all other values remains same; where do we get all other values
                     synapses.Add(synap);
-                    await vis.UpdateSynapsesAsync(synapses, ws);//update Synapse or add new ones
+                    await vis.UpdateSynapsesAsync(synapses);//update Synapse or add new ones
 
+                    //vis.UpdateCells(GetCells(lyrOut.ActiveCells))
                     if (learn == false)
                         Debug.WriteLine($"Inference mode");
+
 
                     //Debug.WriteLine($"W: {Helpers.StringifyVector(lyrOut.WinnerCells.Select(c => c.Index).ToArray())}");
                     //Debug.WriteLine($"P: {Helpers.StringifyVector(lyrOut.predictiveCells.Select(c => c.Index).ToArray())}");
@@ -678,7 +680,213 @@ namespace UnitTestsProject
             Debug.WriteLine("------------------------------------------------------------------------\n----------------------------------------------------------------------------");
         }
 
+        private List<MiniColumn> GetColumns(int[] actCols)
+        {
+            List<MiniColumn> miniColumns = new List<MiniColumn>();
+            foreach (var col in actCols)
+            {
+                MiniColumn mC = new MiniColumn(0, 0.0, col, 0, ColumnActivity.Active);
+                miniColumns.Add(mC);
+            }
 
+            return miniColumns;
+        }
+
+        private List<Cell> GetCCells(Cell[] actCells)
+        {
+            List<Cell> cells = new List<Cell>();
+
+            //foreach (var cell in actCells)
+            //{        // cellIndex1, CellActivit1, ellIndex1, CellActivit1,, perm
+
+            //    MiniColumn mC = new MiniColumn(0, 0.0, col, 0, ColumnActivity.Active);
+            //}
+            return cells;
+        }
+
+        private void RunExperiment(int inputBits, Parameters p, EncoderBase encoder, List<double> inputValues)
+        {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            int maxMatchCnt = 0;
+            bool learn = true;
+
+            CortexNetwork net = new CortexNetwork("my cortex");
+            List<CortexRegion> regions = new List<CortexRegion>();
+            CortexRegion region0 = new CortexRegion("1st Region");
+
+            regions.Add(region0);
+
+            SpatialPoolerMT sp1 = new SpatialPoolerMT();
+            TemporalMemory tm1 = new TemporalMemory();
+            var mem = new Connections();
+            p.apply(mem);
+            sp1.init(mem, UnitTestHelpers.GetMemory());
+            tm1.init(mem);
+
+            CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
+
+            //
+            // NewBorn learning stage.
+            region0.AddLayer(layer1);
+            layer1.HtmModules.Add("encoder", encoder);
+            layer1.HtmModules.Add("sp", sp1);
+
+            HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
+
+            double[] inputs = inputValues.ToArray();
+            int[] prevActiveCols = new int[0];
+
+            int maxSPLearningCycles = 50;
+            //List<(double Element, (int Cycle, double Similarity)[] Oscilations)> oscilationResult2 = new List<(double Element, (int Cycle, double Similarity)[] Oscilations)>();
+
+            //
+            // This trains SP on input pattern.
+            // It performs some kind of unsupervised new-born learning.
+            foreach (var input in inputs)
+            {
+                List<(int Cycle, double Similarity)> elementOscilationResult = new List<(int Cycle, double Similarity)>();
+
+                Debug.WriteLine($"Learning  ** {input} **");
+
+                for (int i = 0; i < maxSPLearningCycles; i++)
+                {
+                    var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
+
+                    var activeColumns = layer1.GetResult("sp") as int[];
+
+                    var actCols = activeColumns.OrderBy(c => c).ToArray();
+
+                    var similarity = MathHelpers.CalcArraySimilarity(prevActiveCols, actCols);
+                    Debug.WriteLine($" {i.ToString("D4")} SP-OUT: [{actCols.Length}/{similarity.ToString("0.##")}] - {Helpers.StringifyVector(actCols)}");
+
+                    prevActiveCols = activeColumns;
+                }
+            }
+
+            // Stops the bumping of inactive columns.
+            p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.0);
+
+            // Here we add TM module to the layer.
+            layer1.HtmModules.Add("tm", tm1);
+
+            int cycle = 0;
+            int matches = 0;
+
+            double lastPredictedValue = 0;
+
+            //
+            // Now training with SP+TM. SP is pretrained on the given input pattern.
+            for (int i = 0; i < 3460; i++)
+            {
+                matches = 0;
+
+                cycle++;
+
+                Debug.WriteLine($"-------------- Cycle {cycle} ---------------");
+
+                foreach (var input in inputs)
+                {
+                    Debug.WriteLine($"-------------- {input} ---------------");
+
+                    var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
+
+                    cls.Learn(input, lyrOut.ActiveCells.ToArray());
+
+                    if (learn == false)
+                        Debug.WriteLine($"Inference mode");
+
+
+                    //Debug.WriteLine($"W: {Helpers.StringifyVector(lyrOut.WinnerCells.Select(c => c.Index).ToArray())}");
+                    //Debug.WriteLine($"P: {Helpers.StringifyVector(lyrOut.predictiveCells.Select(c => c.Index).ToArray())}");
+
+                    if (input == lastPredictedValue)
+                    {
+                        matches++;
+                        Debug.WriteLine($"Match {input}");
+                    }
+                    else
+                        Debug.WriteLine($"Missmatch Actual value: {input} - Predicted value: {lastPredictedValue}");
+
+                    if (lyrOut.predictiveCells.Count > 0)
+                    {
+                        var predictedInputValue = cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray());
+
+                        Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {predictedInputValue}");
+
+                        lastPredictedValue = predictedInputValue;
+                    }
+                    else
+                        Debug.WriteLine($"NO CELLS PREDICTED for next cycle.");
+                }
+
+                //tm1.reset(mem);
+
+                double accuracy = (double)matches / (double)inputs.Length * 100.0;
+
+                Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {inputs.Length}\t {accuracy}%");
+
+                if (accuracy == 100.0)
+                {
+                    maxMatchCnt++;
+                    Debug.WriteLine($"100% accuracy reched {maxMatchCnt} times.");
+                    if (maxMatchCnt >= 20)
+                    {
+                        sw.Stop();
+                        Debug.WriteLine($"Exit experiment in the stable state after 10 repeats with 100% of accuracy. Elapsed time: {sw.ElapsedMilliseconds / 1000 / 60} min.");
+                        learn = false;
+                        //var testInputs = new double[] { 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 0.0, 1.0 };
+
+                        // C-0, D-1, E-2, F-3, G-4, H-5
+                        //var testInputs = new double[] { 0.0, 0.0, 4.0, 4.0, 5.0, 5.0, 4.0, 3.0, 3.0, 2.0, 2.0, 1.0, 1.0, 0.0 };
+
+                        //// Traverse the sequence and check prediction.
+                        //foreach (var input in inputValues)
+                        //{
+                        //    var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
+                        //    predictedInputValue = cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray());
+                        //    Debug.WriteLine($"I={input} - P={predictedInputValue}");
+                        //}
+
+                        //
+                        // Here we let the HTM predict seuence five times on its own.
+                        // We start with last predicted value.
+                        int cnt = 5 * inputValues.Count;
+
+                        Debug.WriteLine("---- Start Predicting the Sequence -----");
+
+                        // We take a random value to start somwhere in the sequence.
+                        double predictedInputValue = inputValues[new Random().Next(0, inputValues.Count - 1)];
+
+                        List<double> predictedValues = new List<double>();
+
+                        while (--cnt > 0)
+                        {
+                            var lyrOut = layer1.Compute(predictedInputValue, learn) as ComputeCycle;
+                            predictedInputValue = cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray());
+                            predictedValues.Add(predictedInputValue);
+                        };
+
+                        foreach (var item in predictedValues)
+                        {
+                            Debug.Write(item);
+                            Debug.Write(" ,");
+                        }
+                        break;
+                    }
+                }
+                else if (maxMatchCnt > 0)
+                {
+                    Debug.WriteLine($"At 100% accuracy after {maxMatchCnt} repeats we get a drop of accuracy with {accuracy}. This indicates instable state. Learning will be continued.");
+                    maxMatchCnt = 0;
+                }
+            }
+
+            cls.TraceState();
+
+            Debug.WriteLine("------------------------------------------------------------------------\n----------------------------------------------------------------------------");
+        }
 
         /// <summary>
         /// It learns SP and shows the convergence of SDR for the given input.
@@ -855,21 +1063,18 @@ namespace UnitTestsProject
             INeuroVisualizer vis = new WSNeuroVisualizer();
 
             List<MiniColumn> colData = new List<MiniColumn>();
-            MiniColumn minCol = new MiniColumn(0, 0, 0, 0);
-            MiniColumn minCol1 = new MiniColumn(0, 01, 0, 0);
+            MiniColumn minCol = new MiniColumn(0, 0, 0, 0, ColumnActivity.Active);
+            MiniColumn minCol1 = new MiniColumn(0, 01, 0, 0, ColumnActivity.Active);
 
             colData.Add(minCol);
             colData.Add(minCol1);
 
-            //vis.UpdateColumnOverlapsAsync(colData);
+            vis.UpdateColumnAsync(colData);
         }
 
         [TestMethod]
         public async Task TestModel()
         {
-            string url = "ws://localhost:5555/ws/client13";
-            ClientWebSocket ws1 = new ClientWebSocket();
-
             INeuroVisualizer vis = new WSNeuroVisualizer();
             int[] areas = new int[] { 1 };
             GenerateNeuroModel model = new GenerateNeuroModel();
@@ -877,61 +1082,49 @@ namespace UnitTestsProject
             // vis.InitModelAsync(new NeuroModel(areas, (new long[10, 5]), 8));
 
 
-            await vis.ConnectToWSServerAsync(url, ws1);
-            await vis.InitModelAsync(model.CreateNeuroModel(areas, (new long[10, 1]), 6), ws1);
+            await vis.ConnectToWSServerAsync();
+            await vis.InitModelAsync(model.CreateNeuroModel(areas, (new long[10, 1]), 6));
 
         }
         [TestMethod]
         public async Task updateOrAddSynapse()
         {
-            string url = "ws://localhost:5555/ws/clientSynapse";
-            ClientWebSocket ws1 = new ClientWebSocket();
-
             INeuroVisualizer vis = new WSNeuroVisualizer();
             int[] areas = new int[] { 1 };
             GenerateNeuroModel model = new GenerateNeuroModel();
-            await vis.ConnectToWSServerAsync(url, ws1);
-           // await vis.InitModelAsync(model.CreateNeuroModel(areas, (new long[10, 1]), 6), ws1);
+            await vis.ConnectToWSServerAsync();
+            await vis.InitModelAsync(model.CreateNeuroModel(areas, (new long[10, 1]), 6));
 
 
             List<Synapse> synapses = new List<Synapse>();
-            Cell cell = new Cell(0, 1, 6, 1);
+            Cell cell = new Cell(0, 1, 6, 1, CellActivity.PredictiveCell);
             Synapse synap = new Synapse(cell, 1, 1, 0.75);
             synapses.Add(synap);
 
-            await vis.UpdateSynapsesAsync(synapses, ws1);
+            await vis.UpdateSynapsesAsync(synapses);
         }
 
         [TestMethod]
         public async Task updateOverlap()
         {
-
-            string url = "ws://localhost:5555/ws/clientUpdateOve";
-            ClientWebSocket ws1 = new ClientWebSocket();
-
             INeuroVisualizer vis = new WSNeuroVisualizer();
             int[] areas = new int[] { 1 };
             GenerateNeuroModel model = new GenerateNeuroModel();
-            await vis.ConnectToWSServerAsync(url, ws1);
-            await vis.InitModelAsync(model.CreateNeuroModel(areas, (new long[10, 1]), 6), ws1);
+            await vis.ConnectToWSServerAsync();
+            await vis.InitModelAsync(model.CreateNeuroModel(areas, (new long[10, 1]), 6));
 
             List<MiniColumn> columnList = new List<MiniColumn>();
-            MiniColumn minCol = new MiniColumn(0, 0.80, 8, 0);
+            MiniColumn minCol = new MiniColumn(0, 0.80, 8, 0, ColumnActivity.Active);
             columnList.Add(minCol);
-            await vis.UpdateColumnOverlapsAsync(columnList, ws1);
+            await vis.UpdateColumnAsync(columnList);
         }
 
         [TestMethod]
         public async Task TestConectivity()
         {
-            string url = "ws://localhost:5555/ws/client13";
-
-            ClientWebSocket ws2 = new ClientWebSocket();
-
             INeuroVisualizer vis = new WSNeuroVisualizer();
 
-
-            await vis.ConnectToWSServerAsync(url, ws2);
+            await vis.ConnectToWSServerAsync();
             //await  vis.TestMethod("Testing phase", ws2);
 
         }

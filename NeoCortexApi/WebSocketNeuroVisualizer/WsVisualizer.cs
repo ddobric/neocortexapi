@@ -9,46 +9,47 @@ using System.Threading;
 using System.Threading.Tasks;
 namespace WebSocketNeuroVisualizer
 {
-  
+
 
     public class WSNeuroVisualizer : INeuroVisualizer
     {
-        
-        public async Task InitModelAsync(NeuroModel model, ClientWebSocket websocket)
+        public ClientWebSocket WS { get; set; }
+
+        public async Task InitModelAsync(NeuroModel model)
         {
             WebsocketData dataModel = new WebsocketData()
             {
-               MsgType = "init",
-               Model = model
+                MsgType = "init",
+                Model = model
 
             };
 
 
-            await SendDataAsync(websocket, dataModel);
+            await SendDataAsync(WS, dataModel);
         }
 
-        public async Task UpdateColumnOverlapsAsync(List<MiniColumn> columns, ClientWebSocket websocket)
-        {      
-                WebsocketData update = new WebsocketData()
-                {
-                    MsgType = "updateOverlap",
-                    Columns = columns
-
-                };
-
-
-            await SendDataAsync(websocket, update);
-        }
-        public async Task UpdateSynapsesAsync(List<Synapse> synapses, ClientWebSocket websocket)
+        public async Task UpdateColumnAsync(List<MiniColumn> columns)
         {
-                WebsocketData update = new WebsocketData()
-                {
-                    MsgType = "updateOrAddSynapse",
-                    Synapses = synapses
+            WebsocketData update = new WebsocketData()
+            {
+                MsgType = "updateOverlap",
+                Columns = columns
 
-                };
+            };
 
-            await SendDataAsync(websocket, update);
+
+            await SendDataAsync(WS, update);
+        }
+        public async Task UpdateSynapsesAsync(List<Synapse> synapses)
+        {
+            WebsocketData update = new WebsocketData()
+            {
+                MsgType = "updateOrAddSynapse",
+                Synapses = synapses
+
+            };
+
+            await SendDataAsync(WS, update);
             //WebsocketData updateSynapses = new WebsocketData()
             //{
             //    MsgType = "updateSynapse",
@@ -89,28 +90,25 @@ namespace WebSocketNeuroVisualizer
             //await SendDataAsync(websocket, updateSynapses);
 
         }
-        public async Task ConnectToWSServerAsync(string url,  ClientWebSocket websocket)
+        public async Task ConnectToWSServerAsync()
         {
             try
             {
-                if (url == null)
-                {
-                    throw new ArgumentNullException("url");
-                }
+                WS = new ClientWebSocket();
+
                 //// once per Minute H:M:S
                 ////Days, housr, minutes, seconds, milliseconds
                 //websocket.Options.KeepAliveInterval = new TimeSpan(0, 0, 10, 0, 0);
 
-                Uri uri = new Uri(url);
-                await websocket.ConnectAsync(uri, CancellationToken.None);
-                await websocket.CloseAsync(websocket.CloseStatus.Value, websocket.CloseStatusDescription, CancellationToken.None);
+                Uri uri = new Uri("ws://localhost:5555/ws/RunExperimentClient");
+                await WS.ConnectAsync(uri, CancellationToken.None);
+                await WS.CloseAsync(WS.CloseStatus.Value, WS.CloseStatusDescription, CancellationToken.None);
 
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Exception: {0}", ex);
             }
-
 
         }
 
