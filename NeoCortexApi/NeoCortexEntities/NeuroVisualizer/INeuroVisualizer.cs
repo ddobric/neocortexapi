@@ -16,6 +16,8 @@ namespace NeoCortexEntities.NeuroVisualizer
 
         Task UpdateSynapsesAsync(List<Synapse> synapses);
 
+        Task UpdateCellsAsync(List<Cell> cells);
+
         Task ConnectToWSServerAsync();
 
     }

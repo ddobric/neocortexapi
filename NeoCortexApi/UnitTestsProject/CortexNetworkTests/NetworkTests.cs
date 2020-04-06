@@ -829,7 +829,7 @@ namespace UnitTestsProject
                     synapses.Add(synap);
                     await vis.UpdateSynapsesAsync(synapses);//update Synapse or add new ones
 
-                    //vis.UpdateCells(GetCells(lyrOut.ActiveCells))
+                    await vis.UpdateCellsAsync(GetCells(lyrOut.ActiveCells));
 
                     if (learn == false)
                         Debug.WriteLine($"Inference mode");
@@ -943,6 +943,19 @@ namespace UnitTestsProject
 
         }
 
+        private List<Cell> GetCells(ISet<Cell> activeCells)
+        {
+            //throw new NotImplementedException();
+            List<Cell> cells = new List<Cell>();
+
+            //foreach (var cell in actCells)
+            //{        // cellIndex1, CellActivit1, ellIndex1, CellActivit1,, perm
+
+            //    MiniColumn mC = new MiniColumn(0, 0.0, col, 0, ColumnActivity.Active);
+            //}
+            return cells;
+        }
+
         private List<MiniColumn> GetColumns(int[] actCols)
         {
             List<MiniColumn> miniColumns = new List<MiniColumn>();
@@ -953,18 +966,6 @@ namespace UnitTestsProject
             }
 
             return miniColumns;
-        }
-
-        private List<Cell> GetCCells(Cell[] actCells)
-        {
-            List<Cell> cells = new List<Cell>();
-
-            //foreach (var cell in actCells)
-            //{        // cellIndex1, CellActivit1, ellIndex1, CellActivit1,, perm
-
-            //    MiniColumn mC = new MiniColumn(0, 0.0, col, 0, ColumnActivity.Active);
-            //}
-            return cells;
         }
 
         private static string GetKey(string prevInput, double input)
