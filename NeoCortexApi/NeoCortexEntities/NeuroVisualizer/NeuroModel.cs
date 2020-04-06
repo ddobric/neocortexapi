@@ -76,7 +76,7 @@ namespace NeoCortexEntities.NeuroVisualizer
             int cellId = 0;
             for (int i = 0; i < cells.Length; i++)
             {
-                cellId = cellId + 1;
+                cellId += 1;
                 Cell cell = new Cell(areaID, i, cellId, parentColumnIndx );
 
                 cells[i] = cell;
@@ -129,7 +129,6 @@ namespace NeoCortexEntities.NeuroVisualizer
 
     public class MiniColumn
     {
-        //public Cell[] Cells { get; set; }
         public List<Cell> Cells { get; set; }
         public double Overlap { get; set; }
         public int AreaId { get; set; }

@@ -36,7 +36,7 @@ export class NeoCortexGenerator {
 
         model.settings = settings;
         //model.input = input;
-        model.areas = new Array(settings.areaLevels.length);
+        model.Areas = new Array(settings.areaLevels.length);
 
         let areaId: number;
 
@@ -44,7 +44,7 @@ export class NeoCortexGenerator {
 
             areaId = levelIndx;
 
-            model.areas[levelIndx] = this.createArea(model, settings, areaId, settings.areaLevels[levelIndx]);
+            model.Areas[levelIndx] = this.createArea(model, settings, areaId, settings.areaLevels[levelIndx]);
         }
 
         this.createSynapses(model);
@@ -70,12 +70,12 @@ export class NeoCortexGenerator {
 
                 row.push({
                     miniColumnId: areaId + miniColDim0 + miniColDim1,
-                    cells: this.cellRegister,
+                    Cells: this.cellRegister,
                     overlap: randomOverlap,
                 });
             }
 
-            area.minicolumns.push(row);
+            area.Minicolumns.push(row);
 
         }
 
