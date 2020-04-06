@@ -6,6 +6,7 @@ using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System.Linq;
 using System.Diagnostics;
+using NeoCortexEntities.NeuroVisualizer;
 
 namespace NeoCortexApi.Entities
 {
@@ -75,7 +76,7 @@ namespace NeoCortexApi.Entities
 
             for (int i = 0; i < numCells; i++)
             {
-                Cells[i] = new Cell(this.Index, i, this.getNumCellsPerColumn(), this.CellId);
+                Cells[i] = new Cell(this.Index, i, this.getNumCellsPerColumn(), this.CellId, CellActivity.ActiveCell);
             }
 
             // We keep tracking of this column only
