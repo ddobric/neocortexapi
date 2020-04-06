@@ -8,6 +8,7 @@ import csv
 
 import os
 
+
 # python draw_figure.py -fn "C:\dev\git\NeoCortex\Results\Spatial Pooler Stability\SpStability Experiment 2 Boost 00 - digits 0 1 2 stable\ActiveColumns_Boost_0_0_plotly-input.csv" -gn GRAPHNAME -mc 200 -ht 2 -yt yaxis -xt xaxis -st singlecolumn -fign CortialColumn
 # python draw_figure.py -fn "C:\dev\git\NeoCortex\Results\Spatial Pooler Stability\SpStability Experiment 2 Boost 00 - digits 0 1 2 stable\ActiveColumns_Boost_0_0_plotly-input.csv" -gn "Digit 0" -mc 700 -ht 320 -yt "Column Index" -xt Cycle -st "MinvOverlapCycles=0.1, first 300 cycles" -fign CortialColumn
 # python draw_figure.py -fn sample.txt -gn test1 -mc 19 -ht 8 -yt yaxis -xt xaxis -min 50 -max 4000 -st 'single column' -fign CortialColumn
@@ -61,7 +62,7 @@ print (filename)
 def plotActivityVertically(activeCellsColumn, highlightTouch):
     numTouches = min(maxcycles, len(activeCellsColumn))
     numColumns = len(activeCellsColumn[0])
-    fig = plotly.tools.make_subplots(
+    fig = plotly.subplots.make_subplots(
         rows=1, cols=numColumns, shared_yaxes=True,
         subplot_titles=(subPlotTitle, 'Column 2', 'Column 3')[0:numColumns]
         #subplot_titles=('Column 1', 'Column 2', 'Column 3')[0:numColumns]
@@ -174,7 +175,7 @@ def plotActivityVertically(activeCellsColumn, highlightTouch):
 def plotActivityHorizontally(activeCellsColumn, highlightTouch):
     numTouches = min(maxcycles, len(activeCellsColumn))
     numColumns = len(activeCellsColumn[0])
-    fig = plotly.tools.make_subplots(
+    fig = plotly.subplots.make_subplots(
         rows=1, cols=numColumns, shared_yaxes=True,
         subplot_titles=(subPlotTitle, 'Column 2', 'Column 3')[0:numColumns]
     )

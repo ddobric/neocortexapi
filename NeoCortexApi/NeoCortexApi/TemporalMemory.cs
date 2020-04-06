@@ -131,7 +131,7 @@ namespace NeoCortexApi
 
             Func<Object, Column> segToCol = (segment) =>
             {
-                var colIndx = ((DistalDendrite)segment).GetParentCell().getParentColumnIndex();
+                var colIndx = ((DistalDendrite)segment).ParentCell.getParentColumnIndex();
                 var parentCol = this.connections.getMemory().GetColumn(colIndx);
                 return parentCol;
             };
@@ -365,7 +365,7 @@ namespace NeoCortexApi
                 // TODO
                 // Review this. not only previous cell should be consiered.
                 // We should rather consider all current list and look if the cell is already in.
-                segmOwnerCell = segment.GetParentCell();
+                segmOwnerCell = segment.ParentCell;
                 if (segmOwnerCell != previousCell)
                 {
                     cellsOwnersOfActiveSegments.Add(segmOwnerCell);
@@ -458,7 +458,7 @@ namespace NeoCortexApi
                     matchingSegments[i].getIndex();
                 }
 
-                leastUsedCell = maxPotentialSeg.GetParentCell();
+                leastUsedCell = maxPotentialSeg.ParentCell;
 
                 if (learn)
                 {

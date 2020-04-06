@@ -224,6 +224,8 @@ namespace UnitTestsProject
         [TestCategory("Experiment")]
         public void SpatialPooler_Stability_Experiment2()
         {
+            double minOctOverlapCycles = 1.0;
+            double maxBoost = 5.0;
             int inputBits = 100;
             int numColumns = 2048;
             Parameters p = Parameters.getAllDefaultParameters();
@@ -232,30 +234,27 @@ namespace UnitTestsProject
             p.Set(KEY.CELLS_PER_COLUMN, 10);
             p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
 
-            double minverlapCycles = 0.1;
+            p.Set(KEY.MAX_BOOST, maxBoost);
+            p.Set(KEY.DUTY_CYCLE_PERIOD, 100);
+            p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, minOctOverlapCycles);
 
-            p.Set(KEY.MAX_BOOST, 0.0);
-            p.Set(KEY.DUTY_CYCLE_PERIOD, 10);
-            p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, minverlapCycles);
+            // Local inhibition
             // Stops the bumping of inactive columns.
             //p.Set(KEY.IS_BUMPUP_WEAKCOLUMNS_DISABLED, true); Obsolete.use KEY.MIN_PCT_OVERLAP_DUTY_CYCLES = 0;
-
-            // Activation threshold is 10 active cells of 40 cells in inhibition area.
-            p.setActivationThreshold(10);
-            
-            // Local inhibition
             //p.Set(KEY.POTENTIAL_RADIUS, 50);
             //p.Set(KEY.GLOBAL_INHIBITION, false);
             //p.setInhibitionRadius(15);
 
             // Global inhibition
             // N of 40 (40= 0.02*2048 columns) active cells required to activate the segment.
-            //p.Set(KEY.GLOBAL_INHIBITION, true);
-            //p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
+            p.Set(KEY.GLOBAL_INHIBITION, true);
+            p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
             //p.Set(KEY.POTENTIAL_RADIUS, inputBits);
-            //p.Set(KEY.LOCAL_AREA_DENSITY, -1);
-            //p.setInhibitionRadius( Automatically set on the columns pace in a case of global inhibition.)
+            p.Set(KEY.LOCAL_AREA_DENSITY, -1); // In a case of global inhibition.
+            //p.setInhibitionRadius( Automatically set on the columns pace in a case of global inhibition.);
 
+            // Activation threshold is 10 active cells of 40 cells in inhibition area.
+            p.setActivationThreshold(10);
 
             // Max number of synapses on the segment.
             p.setMaxNewSynapsesPerSegmentCount((int)(0.02 * numColumns));
@@ -275,14 +274,14 @@ namespace UnitTestsProject
 
             EncoderBase encoder = new ScalarEncoder(settings);
 
-            //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0 });
-            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, });
-            RunSpStabilityExperiment2(minverlapCycles, inputBits, p, encoder, inputValues);
+            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0 , 11.0, 12.0});
+
+            RunSpStabilityExperiment2(maxBoost, minOctOverlapCycles, inputBits, p, encoder, inputValues);
         }
 
-        private void RunSpStabilityExperiment2(double minOverlapCycles, int inputBits, Parameters p, EncoderBase encoder, List<double> inputValues)
+        private void RunSpStabilityExperiment2(double maxBoost, double minOverlapCycles, int inputBits, Parameters p, EncoderBase encoder, List<double> inputValues)
         {
-            string path = nameof(SpatialPooler_Stability_Experiment2);
+            string path = "SpatialPooler_Stability_Experiment 2";// nameof(SpatialPooler_Stability_Experiment2);
 
             if (Directory.Exists(path))
                 Directory.Delete(path, true);
@@ -322,14 +321,18 @@ namespace UnitTestsProject
                 prevActiveCols.Add(input, new int[0]);
             }
 
-            int maxSPLearningCycles = 25000;
+            int maxSPLearningCycles = 5000;
 
             List<(double Element, (int Cycle, double Similarity)[] Oscilations)> oscilationResult = new List<(double Element, (int Cycle, double Similarity)[] Oscilations)>();
 
             for (int cycle = 0; cycle < maxSPLearningCycles; cycle++)
             {
-                //if (cycle >= 300)
-                //    mem.updateMinPctOverlapDutyCycles(0.0);
+                // New Born effect
+                if (cycle >= 300)
+                {
+                    mem.setMaxBoost(0.0);
+                    mem.updateMinPctOverlapDutyCycles(0.0);
+                }
 
                 Debug.WriteLine($"Cycle  ** {cycle} **");
 
@@ -342,11 +345,11 @@ namespace UnitTestsProject
                 {
                     double similarity;
 
-                    using (StreamWriter similarityWriter = new StreamWriter(Path.Combine(path, $"Oscilations_Boost_{minOverlapCycles}_{input}.csv"), true))
+                    using (StreamWriter similarityWriter = new StreamWriter(Path.Combine(path, $"Oscilations_MaxBoost_{maxBoost}_MinOverl_{minOverlapCycles}_{input}.csv"), true))
                     {
                         using (StreamWriter sdrWriter = new StreamWriter(Path.Combine(path, $"ActiveColumns_Boost_{minOverlapCycles}_{input}.csv"), true))
                         {
-                            using (StreamWriter sdrPlotlyWriter = new StreamWriter(Path.Combine(path, $"ActiveColumns_Boost_{minOverlapCycles}_{input}_plotly-input.csv"), true))
+                            using (StreamWriter sdrPlotlyWriter = new StreamWriter(Path.Combine(path, $"ActiveColumns_MaxBoost_{maxBoost}_MinOverl_{minOverlapCycles}_{input}_plotly-input.csv"), true))
                             {
                                 Debug.WriteLine($"Learning Cycles: {maxSPLearningCycles}");
                                 Debug.WriteLine($"MAX_BOOST={p[KEY.MAX_BOOST]}, DUTY ={p[KEY.DUTY_CYCLE_PERIOD]}");
