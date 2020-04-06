@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using NeoCortexApi.Entities;
 using System.Collections.Generic;
 using System.Net.WebSockets;
 using System.Threading;
@@ -9,12 +10,13 @@ namespace NeoCortexEntities.NeuroVisualizer
 {
     public interface INeuroVisualizer
     {
-        Task InitModelAsync(NeuroModel model, ClientWebSocket websocket);
+        Task InitModelAsync(NeuroModel model);
 
-        Task UpdateColumnOverlapsAsync(List<MiniColumn> columns, ClientWebSocket websocket);
+        Task UpdateColumnAsync(List<MiniColumn> columns);
 
-        Task UpdateSynapsesAsync(List<SynapseData> synapses, ClientWebSocket websocket);
+        Task UpdateSynapsesAsync(List<Synapse> synapses);
 
-        Task ConnectToWSServerAsync(string url, ClientWebSocket websocket);
+        Task ConnectToWSServerAsync();
+
     }
 }
