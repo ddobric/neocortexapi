@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { WebsocketService } from "./websocket.service";
 import { map } from "rxjs/operators";
-import { Cell, Synapse, NeoCortexModel } from '../Entities/NeoCortexModel';
-import { NeoCortexGenerator } from '../Entities/NeoCortexGenerator';
+import { Cell, Synapse } from '../Entities/NeoCortexModel';
 import { environment as env } from '../../environments/environment.prod';
+
 
 
 
@@ -22,8 +22,9 @@ export interface NeoCortexUtils {
 })
 
 export class NeoCortexUtilsService {
+
   data: Subject<NeoCortexUtils>;
-  model: any;
+  Model: any;
   notifyTyp: any;
   notifyMsg?: any;
 
@@ -37,25 +38,28 @@ export class NeoCortexUtilsService {
            dataModel: JSONObject
          }; */
 
-        if (JSONObject.msgType == "init") {
-          this.model = JSONObject.dataModel;
+        if (JSONObject.msgType == "init" || JSONObject.MsgType == "init") {
+          this.Model = JSONObject.Model;
+          if (!this.Model.Cells[0].Z) {
+            this.addPlaceholder();
+          }
           this.createSynapses();
           return {
-            dataModel: this.model,
+            dataModel: this.Model,
             notification: { type: this.notifyTyp, msg: this.notifyMsg }
           }
         }
-        else if (JSONObject.msgType == "updateOverlap") {
-          this.updateOverlap(JSONObject.update);
+        else if (JSONObject.msgType == "updateOverlap" || JSONObject.MsgType == "updateOverlap") {
+          this.updateOverlap(JSONObject.Columns);
           return {
-            dataModel: this.model,
+            dataModel: this.Model,
             notification: { type: this.notifyTyp, msg: this.notifyMsg }
           }
         }
-        else if (JSONObject.msgType == "updateOrAddSynapse") {
-          this.updateOrAddSynapse(JSONObject.update);
+        else if (JSONObject.msgType == "updateOrAddSynapse" || JSONObject.MsgType == "updateOrAddSynapse") {
+          this.updateOrAddSynapse(JSONObject.Synapses);
           return {
-            dataModel: this.model,
+            dataModel: this.Model,
             notification: { type: this.notifyTyp, msg: this.notifyMsg }
           }
 
@@ -67,6 +71,32 @@ export class NeoCortexUtilsService {
     ));
 
   }
+  addPlaceholder() {
+    for (let i = 0; i < this.Model.Areas.length; i++) {
+      for (let j = 0; j < this.Model.Areas[i].MiniColumns.length; j++) {
+        for (let k = 0; k < this.Model.Areas[i].MiniColumns[j][0].Cells.length; k++) {
+          let cell = {
+            CellId: this.Model.Areas[i].MiniColumns[j][0].Cells[k].CellId,
+            Index: this.Model.Areas[i].MiniColumns[j][0].Cells[k].Index,
+            ParentColumnIndex: this.Model.Areas[i].MiniColumns[j][0].Cells[k].ParentColumnIndex,
+            Z: 0
+          };
+          this.Model.Areas[i].MiniColumns[j][0].Cells[k] = cell;
+        }
+
+      }
+
+    }
+    for (let l = 0; l < this.Model.Cells.length; l++) {
+      let cell1 = {
+        CellId: this.Model.Cells[l].CellId,
+        Index: this.Model.Cells[l].Index,
+        ParentColumnIndex: this.Model.Cells[l].ParentColumnIndex,
+        Z: 0
+      };
+      this.Model.Cells[l] = cell1;
+    }
+  }
   private updateOrAddSynapse(updateOrAddSynap) {
     this.lookUpSynapse(updateOrAddSynap);
 
@@ -75,37 +105,40 @@ export class NeoCortexUtilsService {
   private lookUpSynapse(searchSynapse) {
     try {
 
-      let preCell = this.model.areas[searchSynapse.preCellAreaId].minicolumns[searchSynapse.preCell.cellX][searchSynapse.preCell.cellZ].cells[searchSynapse.preCell.cellY];
-      let postCell = this.model.areas[searchSynapse.postCellAreaId].minicolumns[searchSynapse.postCell.cellX][searchSynapse.postCell.cellZ].cells[searchSynapse.postCell.cellY];
+      for (let i = 0; i < searchSynapse.length; i++) {
+
+        let preCell = this.Model.Areas[searchSynapse[i].preCellAreaId].Minicolumns[searchSynapse[i].preCell.cellX][searchSynapse[i].preCell.cellZ].Cells[searchSynapse[i].preCell.cellY];
+        let postCell = this.Model.Areas[searchSynapse[i].postCellAreaId].Minicolumns[searchSynapse[i].postCell.cellX][searchSynapse[i].postCell.cellZ].Cells[searchSynapse[i].postCell.cellY];
 
 
-      let synapseFound = false;
-      loop:
-      for (let out = 0; out < preCell.outgoingSynapses.length; out++) {
-        for (let inc = 0; inc < postCell.incomingSynapses.length; inc++) {
+        let synapseFound = false;
+        loop:
+        for (let out = 0; out < preCell.outgoingSynapses.length; out++) {
+          for (let inc = 0; inc < postCell.incomingSynapses.length; inc++) {
 
-          if ((preCell.outgoingSynapses[out].postSynaptic.X === postCell.X &&
-            preCell.outgoingSynapses[out].postSynaptic.Layer === postCell.Layer &&
-            preCell.outgoingSynapses[out].postSynaptic.Z === postCell.Z) &&
+            if ((preCell.outgoingSynapses[out].postSynaptic.X === postCell.X &&
+              preCell.outgoingSynapses[out].postSynaptic.Layer === postCell.Layer &&
+              preCell.outgoingSynapses[out].postSynaptic.Z === postCell.Z) &&
 
-            (postCell.incomingSynapses[inc].preSynaptic.X === preCell.X &&
-              postCell.incomingSynapses[inc].preSynaptic.Layer === preCell.Layer &&
-              postCell.incomingSynapses[inc].preSynaptic.Z === preCell.Z)) {
+              (postCell.incomingSynapses[inc].preSynaptic.X === preCell.X &&
+                postCell.incomingSynapses[inc].preSynaptic.Layer === preCell.Layer &&
+                postCell.incomingSynapses[inc].preSynaptic.Z === preCell.Z)) {
 
-            //  console.log("Synapse Exists", "Permanence will be updated", 'info');
-            this.updatePermanenceOfSynapse(searchSynapse.permanence, preCell, postCell);
-            synapseFound = true;
-            break loop;
+              //  console.log("Synapse Exists", "Permanence will be updated", 'info');
+              this.updatePermanenceOfSynapse(searchSynapse[i].permanence, preCell, postCell);
+              synapseFound = true;
+              break loop;
+            }
+
+
           }
-
-
         }
-      }
-      if (synapseFound === false) {
-        //Console.log("Synapse doesn't Exists", "It will be created", 'info');
-        this.generateNewSynapse(searchSynapse.permanence, preCell, postCell);
-      }
+        if (synapseFound === false) {
+          //Console.log("Synapse doesn't Exists", "It will be created", 'info');
+          this.generateNewSynapse(searchSynapse[i].permanence, preCell, postCell);
+        }
 
+      }
 
 
     } catch (error) {
@@ -118,19 +151,19 @@ export class NeoCortexUtilsService {
   }
   private updatePermanenceOfSynapse(newPermanence: number, preCell: Cell, postCell: Cell) {
 
-    for (let findSynapse = 0; findSynapse < this.model.synapses.length; findSynapse++) {
+    for (let findSynapse = 0; findSynapse < this.Model.Synapses.length; findSynapse++) {
 
-      if (this.model.synapses[findSynapse].preSynaptic.areaIndex === preCell.areaIndex &&
-        this.model.synapses[findSynapse].preSynaptic.X === preCell.X &&
-        this.model.synapses[findSynapse].preSynaptic.Layer === preCell.Layer &&
-        this.model.synapses[findSynapse].preSynaptic.Z === preCell.Z &&
+      if (this.Model.Synapses[findSynapse].preSynaptic.areaIndex === preCell.areaIndex &&
+        this.Model.Synapses[findSynapse].preSynaptic.X === preCell.X &&
+        this.Model.Synapses[findSynapse].preSynaptic.Layer === preCell.Layer &&
+        this.Model.Synapses[findSynapse].preSynaptic.Z === preCell.Z &&
 
-        this.model.synapses[findSynapse].postSynaptic.areaIndex === postCell.areaIndex &&
-        this.model.synapses[findSynapse].postSynaptic.X === postCell.X &&
-        this.model.synapses[findSynapse].postSynaptic.Layer === postCell.Layer &&
-        this.model.synapses[findSynapse].postSynaptic.Z === postCell.Z) {
+        this.Model.Synapses[findSynapse].postSynaptic.areaIndex === postCell.areaIndex &&
+        this.Model.Synapses[findSynapse].postSynaptic.X === postCell.X &&
+        this.Model.Synapses[findSynapse].postSynaptic.Layer === postCell.Layer &&
+        this.Model.Synapses[findSynapse].postSynaptic.Z === postCell.Z) {
 
-        this.model.synapses[findSynapse].permanence = newPermanence;
+        this.Model.Synapses[findSynapse].permanence = newPermanence;
         this.notifyTyp = "success";
         this.notifyMsg = "Synapse found, permanence updated";
 
@@ -160,12 +193,12 @@ export class NeoCortexUtilsService {
     preCell.outgoingSynapses.push(newSynapse);
     postCell.incomingSynapses.push(newSynapse);
 
-    this.model.areas[preCell.areaIndex].minicolumns[preCell.X][preCell.Z].cells[preCell.Layer].outgoingSynapses.push(newSynapse);
-    this.model.areas[postCell.areaIndex].minicolumns[postCell.X][postCell.Z].cells[postCell.Layer].incomingSynapses.push(newSynapse);
+    this.Model.Areas[preCell.areaIndex].Minicolumns[preCell.X][preCell.Z].Cells[preCell.Layer].outgoingSynapses.push(newSynapse);
+    this.Model.Areas[postCell.areaIndex].Minicolumns[postCell.X][postCell.Z].Cells[postCell.Layer].incomingSynapses.push(newSynapse);
 
     //console.log("Synapse will be created");
 
-    this.model.synapses.push(newSynapse);
+    this.Model.Synapses.push(newSynapse);
     this.notifyTyp = "success";
     this.notifyMsg = "Synapse doesn't found, new created";
 
@@ -174,7 +207,7 @@ export class NeoCortexUtilsService {
 
   private updateOverlap(updateOverlapCo: any) {
     try {
-      this.model.areas[updateOverlapCo.areaIDOfCell].minicolumns[updateOverlapCo.minColXDim][updateOverlapCo.minColZDim].overlap = updateOverlapCo.updateOverlapValue;
+      this.Model.Areas[updateOverlapCo.areaIDOfCell].Minicolumns[updateOverlapCo.minColXDim][updateOverlapCo.minColZDim].overlap = updateOverlapCo.updateOverlapValue;
       this.notifyTyp = "success";
       this.notifyMsg = "Overlap Updated";
 
@@ -198,12 +231,12 @@ export class NeoCortexUtilsService {
 
     let midElement = Math.round((lower + upper) / 2);
 
-    if (this.model.cells[midElement].cellId == synapticId) {
-      cell = this.model.cells[midElement]
+    if (this.Model.Cells[midElement].CellId == synapticId) {
+      cell = this.Model.Cells[midElement];
       return cell;
     }
     else {
-      if (synapticId < this.model.cells[midElement].cellId) {
+      if (synapticId < this.Model.Cells[midElement].CellId) {
         return this.binaryCellSearch(synapticId, lower, midElement - 1);
 
       }
@@ -216,13 +249,13 @@ export class NeoCortexUtilsService {
 
   private createSynapses() {
     let synapseRegister = [];
-    let upper = this.model.cells.length;
+    let upper = this.Model.Cells.length;
 
-    for (let i = 0; i < this.model.synapses.length; i++) {
+    for (let i = 0; i < this.Model.Synapse.length; i++) {
 
-      let perm = this.model.synapses[i].permanence;
-      let preCell: Cell = this.binaryCellSearch(this.model.synapses[i].preSynapticId, 0, upper);
-      let postCell: Cell = this.binaryCellSearch(this.model.synapses[i].postSynapticId, 0, upper);
+      let perm = this.Model.Synapse[i].Permanence;
+      let preCell: Cell = this.binaryCellSearch(this.Model.Synapse[i].PreSynapticCellIndex, 0, upper);
+      let postCell: Cell = this.binaryCellSearch(this.Model.Synapse[i].PostSynapticCellIndex, 0, upper);
 
 
       let synapse: Synapse = {
@@ -234,19 +267,19 @@ export class NeoCortexUtilsService {
       synapseRegister.push(synapse);
 
       preCell.outgoingSynapses.push(synapse);
-      this.model.areas[preCell.areaIndex].minicolumns[preCell.X][preCell.Z].cells[preCell.Layer].outgoingSynapses.push(synapse);
+      this.Model.Areas[preCell.ParentColumnIndex].MiniColumns[preCell.Index][preCell.Z].Cells[preCell.Index].outgoingSynapses.push(synapse);
 
 
       postCell.incomingSynapses.push(synapse);
-      this.model.areas[postCell.areaIndex].minicolumns[postCell.X][postCell.Z].cells[postCell.Layer].incomingSynapses.push(synapse);
+      this.Model.Areas[postCell.ParentColumnIndex].MiniColumns[postCell.Index][postCell.Z].Cells[postCell.Index].incomingSynapses.push(synapse);
 
     }
 
-    this.model.synapses = [];
-    this.model.synapses = synapseRegister;
+    this.Model.Synapses = [];
+    this.Model.Synapses = synapseRegister;
     this.notifyTyp = "success";
     this.notifyMsg = "New Data Model";
-    return this.model;
+    return this.Model;
   }
 
 }

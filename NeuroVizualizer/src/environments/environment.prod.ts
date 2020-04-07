@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
 
-  URL: "ws://localhost:5011/ws/NeuroVisualizer",
+  URL: "ws://localhost:5555/ws/NeuroVisualizer",
 
   //change numberOfColours to specify the total numbers of colours for neurons
   //The colour scale lasts from 0 to 1, 0 == blue and 1 == red 
