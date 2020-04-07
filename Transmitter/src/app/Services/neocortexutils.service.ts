@@ -9,8 +9,10 @@ const URL = "ws://localhost:5000/ws/transmitter";
 export interface NeoCortexUtils {
   dataModel?: any;
   clientType?: any;
-  msgType?: any;
-  update?: any
+  MsgType?: any;
+  Columns?: any;
+  Synapses?: any;
+
 
 }
 

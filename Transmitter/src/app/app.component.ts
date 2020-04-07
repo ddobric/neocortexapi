@@ -24,12 +24,12 @@ export class AppComponent {
 
   sendModel() {
     //([0, 0, 0, 1, 2, 1], [10, 1], 6)
-    let model = new NeoCortexGenerator().createModel([0, 0, 0, 1, 2, 1], [10, 1], 6);
+    let Model = new NeoCortexGenerator().createModel([0, 0, 0, 1, 2, 1], [10, 1], 6);
 
     this.neoUtils.data.next({
-      msgType: "init",
+      MsgType: "init",
       clientType: "Transmitter",
-      dataModel: model
+      dataModel: Model
     });
   }
 
@@ -47,9 +47,9 @@ export class AppComponent {
       updateOverlapValue: newOverlapValue
     };
     this.neoUtils.data.next({
-      msgType: "updateOverlap",
+      MsgType: "updateOverlap",
       clientType: "Transmitter",
-      update: updateOverlap
+      Columns: updateOverlap
     });
 
   }
@@ -83,9 +83,9 @@ export class AppComponent {
       permanence: permaValue
     };
     this.neoUtils.data.next({
-      msgType: "updateOrAddSynapse",
+      MsgType: "updateOrAddSynapse",
       clientType: "Transmitter",
-      update: updateOrAddSynapse
+      Synapses: updateOrAddSynapse
 
     });
 
