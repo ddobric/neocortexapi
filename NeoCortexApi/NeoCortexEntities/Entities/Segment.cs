@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright (c) Damir Dobric. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -7,9 +9,9 @@ namespace NeoCortexApi.Entities
 
 
     /// <summary>
-    /// Base class which handles the creation of <seealso cref="Synapse"/> on behalf of inheriting class types.
+    /// Base class for different types of segments. It which handles the creation of synapses (<seealso cref="Synapse"/>) on behalf of inheriting class types.
     /// </summary>
-   // [Serializable]
+   
     public abstract class Segment : IEquatable<Segment>
     {       
         public int SegmentIndex { get; set; }

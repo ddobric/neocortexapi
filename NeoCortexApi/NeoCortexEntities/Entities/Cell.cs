@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright (c) Damir Dobric. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using System;
 using System.Collections.Generic;
 using NeoCortexApi.Entities;
 using NeoCortexEntities.NeuroVisualizer;
@@ -15,7 +17,7 @@ namespace NeoCortexApi.Entities
         /// Index of the cell.
         /// </summary>
         public int Index { get; set; }
-        public int CellId { get; set; }
+        public int CellId { get; }
 
         //public List<DistalDendrite> Segments
         //{

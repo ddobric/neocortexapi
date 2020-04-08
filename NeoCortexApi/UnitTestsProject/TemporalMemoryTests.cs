@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿// Copyright (c) Damir Dobric. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
@@ -102,7 +104,7 @@ namespace UnitTestsProject
             cn.createSynapse(activeSegment, cn.getCell(3), 0.5);
 
             ComputeCycle cc = tm.Compute(previousActiveColumns, true) as ComputeCycle;
-            Assert.IsTrue(cc.predictiveCells.SequenceEqual(expectedActiveCells));
+            Assert.IsTrue(cc.PredictiveCells.SequenceEqual(expectedActiveCells));
 
             ComputeCycle cc2 = tm.Compute(activeColumns, true) as ComputeCycle;
             Assert.IsTrue(cc2.ActiveCells.SequenceEqual(expectedActiveCells));
@@ -147,13 +149,13 @@ namespace UnitTestsProject
             ComputeCycle cc = tm.Compute( previousActiveColumns, true) as ComputeCycle;
             Assert.IsFalse(cc.ActiveCells.Count == 0);
             Assert.IsFalse(cc.WinnerCells.Count == 0);
-            Assert.IsFalse(cc.predictiveCells.Count == 0);
+            Assert.IsFalse(cc.PredictiveCells.Count == 0);
 
             int[] zeroColumns = new int[0];
             ComputeCycle cc2 = tm.Compute( zeroColumns, true) as ComputeCycle;
             Assert.IsTrue(cc2.ActiveCells.Count == 0);
             Assert.IsTrue(cc2.WinnerCells.Count == 0);
-            Assert.IsTrue(cc2.predictiveCells.Count == 0);
+            Assert.IsTrue(cc2.PredictiveCells.Count == 0);
         }
 
         [TestMethod]
@@ -317,7 +319,7 @@ namespace UnitTestsProject
             Synapse s4 = cn.createSynapse(matchingSegmentOnOtherCell, previousActiveCells[1], 0.3);
 
             ComputeCycle cc = tm.Compute( previousActiveColumns, true) as ComputeCycle;
-            Assert.IsTrue(cc.predictiveCells.SequenceEqual(expectedActiveCells));
+            Assert.IsTrue(cc.PredictiveCells.SequenceEqual(expectedActiveCells));
             tm.Compute( activeColumns, true) ;
 
             Assert.AreEqual(0.3, s1.getPermanence(), 0.01);

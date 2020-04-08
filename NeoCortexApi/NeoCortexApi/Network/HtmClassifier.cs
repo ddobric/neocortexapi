@@ -1,6 +1,9 @@
-﻿using System;
+﻿// Copyright (c) Damir Dobric. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -18,7 +21,7 @@ namespace NeoCortexApi.Network
     {
         private List<TIN> inputSequence = new List<TIN>();
 
-        private Dictionary<int[], int> inputSequenceMap = new Dictionary<int[], int>();
+        //private Dictionary<int[], int> inputSequenceMap = new Dictionary<int[], int>();
 
         private Dictionary<int[], TIN> activeMap = new Dictionary<int[], TIN>();
 
@@ -27,6 +30,10 @@ namespace NeoCortexApi.Network
             throw new NotImplementedException();
         }
 
+        public void ClearState()
+        {
+            this.activeMap.Clear();
+        }
 
         /// <summary>
         /// Assotiate specified input to the given set of predictive cells.
@@ -38,7 +45,7 @@ namespace NeoCortexApi.Network
         {
             this.inputSequence.Add(input);
 
-            this.inputSequenceMap.Add(GetCellIndicies(output), this.inputSequence.Count -1);
+            //this.inputSequenceMap.Add(GetCellIndicies(output), this.inputSequence.Count - 1);
 
             if (!activeMap.ContainsKey(GetCellIndicies(output)))
             {
@@ -54,7 +61,7 @@ namespace NeoCortexApi.Network
         public TIN GetPredictedInputValue(Cell[] predictiveCells)
         {
             bool x = false;
-            int maxSameBits = 0;
+            double maxSameBits = 0;
             TIN charOutput = default(TIN);
             int[] arr = new int[predictiveCells.Length];
             for (int i = 0; i < predictiveCells.Length; i++)
@@ -70,7 +77,7 @@ namespace NeoCortexApi.Network
                 //foreach (TIN inputVal in activeArray.Keys)
                 foreach (var pair in this.activeMap)
                 {
-                    int numOfSameBits = pair.Key.Intersect(arr).Count();
+                    double numOfSameBits = (double)((double)(pair.Key.Intersect(arr).Count() / (double)arr.Length));
                     if (numOfSameBits > maxSameBits)
                     {
                         Debug.WriteLine($"cnt:{n}\t{pair.Value} = bits {numOfSameBits}\t {Helpers.StringifyVector(pair.Key)}");
@@ -103,20 +110,35 @@ namespace NeoCortexApi.Network
         /// <summary>
         /// Traces out all cell indicies grouped by input value.
         /// </summary>
-        public void TraceState()
-        {
+        public void TraceState(string fileName = null)
+        {          
+
             List<TIN> processedValues = new List<TIN>();
 
             foreach (var item in activeMap.Values)
             {
                 if (processedValues.Contains(item) == false)
                 {
+                    StreamWriter sw = null;
+
+                    if (fileName != null)
+                        sw = new StreamWriter(fileName.Replace(".csv", $"_Digit_{item}.csv"));
+
                     Debug.WriteLine("");
                     Debug.WriteLine($"{item}");
 
                     foreach (var inp in this.activeMap.Where(i => EqualityComparer<TIN>.Default.Equals((TIN)i.Value, item)))
                     {
-                        Debug.WriteLine($"{Helpers.StringifyVector(inp.Key)}");                        
+                        Debug.WriteLine($"{Helpers.StringifyVector(inp.Key)}");
+
+                        if (sw != null)
+                            sw.WriteLine($"{Helpers.StringifyVector(inp.Key)}");
+                    }
+
+                    if (sw != null)
+                    {
+                        sw.Flush();
+                        sw.Close();
                     }
 
                     processedValues.Add(item);
@@ -124,9 +146,9 @@ namespace NeoCortexApi.Network
             }
         }
 
-       
 
-        
+
+
         private string ComputeHash(byte[] rawData)
         {
             // Create a SHA256   
@@ -144,8 +166,8 @@ namespace NeoCortexApi.Network
                 return builder.ToString();
             }
         }
-        
-        
+
+
         private static byte[] FlatArray(Cell[] output)
         {
             byte[] arr = new byte[output.Length];
@@ -173,6 +195,6 @@ namespace NeoCortexApi.Network
             return same.Count();
         }
 
-   
+
     }
 }

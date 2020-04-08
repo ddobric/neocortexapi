@@ -1,4 +1,6 @@
-﻿#if USE_AKKA
+﻿// Copyright (c) Damir Dobric. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+#if USE_AKKA
 
 using NeoCortexApi.Utility;
 using System;

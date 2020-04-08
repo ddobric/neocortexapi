@@ -1,38 +1,44 @@
-﻿using NeoCortexApi.Types;
+﻿// Copyright (c) Damir Dobric. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using NeoCortexApi.Types;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace NeoCortexApi.Entities
 {
+
     /**
-     * Represents a proximal or distal dendritic segment. Segments are owned by
-     * {@link Cell}s and in turn own {@link Synapse}s which are obversely connected
-     * to by a "source cell", which is the {@link Cell} which will activate a given
-     * {@link Synapse} owned by this {@code Segment}.
-     * 
-     * @author Chetan Surpur
-     * @author David Ray
-     */
+    *  Segments are owned by
+    * {@link Cell}s and in turn own {@link Synapse}s which are obversely connected
+    * to by a "source cell", which is the {@link Cell} which will activate a given
+    * {@link Synapse} owned by this {@code Segment}.
+    * 
+    * @author Chetan Surpur
+    * @author David Ray
+    */
     //[Serializable]
+
+    /// <summary>
+    /// Implements a distal dendritic segment.
+    /// </summary>
     public class DistalDendrite : Segment, IComparable<DistalDendrite>
     {
-        /** keep it simple */
-        private static readonly long serialVersionUID = 1L;
-
         public Cell ParentCell;
 
         private long m_LastUsedIteration;
 
         public int ordinal = -1;
 
-        /**
-         * Constructs a new {@code Segment} object with the specified owner
-         * {@link Cell} and the specified index.
-         * 
-         * @param cell      the owner
-         * @param flatIdx     this {@code Segment}'s index.
-         */
+        /// <summary>
+        /// Creates the Distal Segment.
+        /// </summary>
+        /// <param name="parentCell">The cell, which owns the segment.</param>
+        /// <param name="flatIdx">The flat index of the cell.</param>
+        /// <param name="lastUsedIteration"></param>
+        /// <param name="ordinal"></param>
+        /// <param name="synapsePermConnected"></param>
+        /// <param name="numInputs"></param>
         public DistalDendrite(Cell parentCell, int flatIdx, long lastUsedIteration, int ordinal, double synapsePermConnected, int numInputs) : base(flatIdx, synapsePermConnected, numInputs)
         {
             this.ParentCell = parentCell;
@@ -45,10 +51,10 @@ namespace NeoCortexApi.Entities
          * 
          * @return
          */
-        public Cell GetParentCell()
-        {
-            return ParentCell;
-        }
+        //public Cell GetParentCell()
+        //{
+        //    return ParentCell;
+        //}
 
 
         /// <summary>

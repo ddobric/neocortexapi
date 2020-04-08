@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿// Copyright (c) Damir Dobric. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
@@ -115,7 +117,7 @@ namespace UnitTestsProject
 
             GroupBy<DistalDendrite, Column> grouper = GroupBy<DistalDendrite, Column>.From(l, c =>
             {
-                var parentColIndx = c.GetParentCell().getParentColumnIndex();
+                var parentColIndx = c.ParentCell.getParentColumnIndex();
                 return list.FirstOrDefault(col=>col.Index == parentColIndx);
             });
 

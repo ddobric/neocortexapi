@@ -1,4 +1,6 @@
-﻿using NeoCortexApi.Entities;
+﻿// Copyright (c) Damir Dobric. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license
+using NeoCortexApi.Entities;
 using NeoCortexEntities.NeuroVisualizer;
 using Newtonsoft.Json;
 using System;
@@ -90,6 +92,17 @@ namespace WebSocketNeuroVisualizer
             //await SendDataAsync(websocket, updateSynapses);
 
         }
+        public async Task UpdateCellsAsync(List<Cell> cells)
+        {
+            WebsocketData update = new WebsocketData()
+            {
+                MsgType = "updateCells",
+                Cells = cells
+
+            };
+
+            await SendDataAsync(WS, update);
+        }
         public async Task ConnectToWSServerAsync()
         {
             try
@@ -150,6 +163,7 @@ namespace WebSocketNeuroVisualizer
 
         public List<Synapse> Synapses { get; set; }
 
+        public List<Cell> Cells { get; set; }
     }
 
 }

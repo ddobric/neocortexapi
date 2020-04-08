@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright (c) Damir Dobric. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
@@ -48,7 +50,7 @@ namespace NeoCortexApi.Entities
         /// All cells of the column.
         /// </summary>
         public Cell[] Cells { get; set; }
-        public int CellId { get; set; }
+        public int CellId { get; }
 
         //private ReadOnlyCollection<Cell> cellList;
 

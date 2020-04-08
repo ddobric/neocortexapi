@@ -1,4 +1,6 @@
-﻿using NeoCortexApi.Entities;
+﻿// Copyright (c) Damir Dobric. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using NeoCortexApi.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +31,7 @@ namespace NeoCortexEntities.NeuroVisualizer
                         PostSynapticCellIndex = model.Cells[new Random().Next(0, (model.Cells.Count()))].Index,//selecting random cell from already generated cells 
                         // SourceCell = cell id
                         // destination Cell = cell id
-                    }; 
+                    };
                     model.Synapse.Insert(i, synap);
                 }
 
@@ -38,7 +40,7 @@ namespace NeoCortexEntities.NeuroVisualizer
 
             return model;
         }
-       private Area CreateArea(NeuroModel model, int areaID, long[,] colDims, int cellsPerColumn)
+        private Area CreateArea(NeuroModel model, int areaID, long[,] colDims, int cellsPerColumn)
         {
             Area area = new Area(areaID, colDims);
 
@@ -59,7 +61,7 @@ namespace NeoCortexEntities.NeuroVisualizer
                     }
 
 
-                    
+
                 }
 
             }
@@ -69,7 +71,7 @@ namespace NeoCortexEntities.NeuroVisualizer
 
         }
 
-       private Cell[] CreateCells(int cellsPerColumn, int areaID, int colDim0, int colDim1)
+        private Cell[] CreateCells(int cellsPerColumn, int areaID, int colDim0, int colDim1)
         {
             Cell[] cells = new Cell[cellsPerColumn];
             int parentColumnIndx = 0;
@@ -94,7 +96,7 @@ namespace NeoCortexEntities.NeuroVisualizer
 
         public List<Cell> Cells { get; set; }
 
-        public  List<SynapseData> Synapse { get; set; }
+        public List<SynapseData> Synapse { get; set; }
 
         public int CellsPerColumn { get; set; }
 
@@ -106,9 +108,9 @@ namespace NeoCortexEntities.NeuroVisualizer
             Synapse = new List<SynapseData>();
 
         }
-       
 
-      
+
+
 
     }
 
@@ -122,7 +124,7 @@ namespace NeoCortexEntities.NeuroVisualizer
         {
             AreaId = areaID;
             MiniColumns = new MiniColumn[colDims.GetLength(0), colDims.GetLength(1)];
-            
+
         }
 
     }
@@ -173,7 +175,7 @@ namespace NeoCortexEntities.NeuroVisualizer
 
         Inactive
     }
-        
+
 
     public enum CellActivity
     {
