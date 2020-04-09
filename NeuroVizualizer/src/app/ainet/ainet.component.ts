@@ -2,7 +2,7 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 //import * as Plotly from 'plotly.js';
 import * as Plotlyjs from 'plotly.js/dist/plotly';
 import { environment as env } from "../../environments/environment.prod";
-import { NotificationsService } from 'angular2-notifications';
+//import { NotificationsService } from 'angular2-notifications';
 import { NeoCortexUtilsService } from '../services/neocortexutils.service';
 import { NeoCortexModel, Cell, Synapse } from '../Entities/NeoCortexModel';
 import { NotifierService } from "angular-notifier";
@@ -16,7 +16,7 @@ import { NotifierService } from "angular-notifier";
   styleUrls: ['./ainet.component.scss']
 })
 export class AinetComponent implements OnInit, AfterViewInit {
-  private readonly notifier: NotifierService;
+  //private readonly notifier: NotifierService;
   Model: any;
   xNeurons: Array<number> = [];
   yNeurons: Array<number> = [];
@@ -60,8 +60,8 @@ export class AinetComponent implements OnInit, AfterViewInit {
   pattern: string | RegExp;
 
 
-  constructor(private _service: NotificationsService, private neoUtilsService: NeoCortexUtilsService, notifierService: NotifierService) {
-    this.notifier = notifierService;
+  constructor(private neoUtilsService: NeoCortexUtilsService) {
+    //this.notifier = notifierService;
 
 
 
@@ -98,7 +98,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       this.generateColoursFromOverlap();
       this.generateColoursFromPermanences();
       this.plotChart();
-      this.pushNotification(a.notification);
+      //this.pushNotification(a.notification);
     });
 
 
@@ -114,7 +114,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
   }
   pushNotification(notify) {
     console.log(notify);
-    this.notifier.notify(notify.type, notify.msg);
+    //this.notifier.notify(notify.type, notify.msg);
   }
 
 
@@ -591,10 +591,10 @@ export class AinetComponent implements OnInit, AfterViewInit {
       this.generateColoursFromOverlap();
       this.generateColoursFromPermanences();
       this.plotChart();
-      this.notifier.notify("success", "Done");
+      // this.notifier.notify("success", "Done");
 
     } catch (error) {
-      this.notifier.notify("error", error);
+      // this.notifier.notify("error", error);
 
     }
 
@@ -647,9 +647,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
       //this.updatePlot();
       this.overlapIntervalStart = null;
       this.overlapIntervalEnd = null;
-      this.notifier.notify("success", "Overlap updated");
+      //this.notifier.notify("success", "Overlap updated");
     } catch (error) {
-      this.notifier.notify("error", error);
+      //this.notifier.notify("error", error);
 
     }
 

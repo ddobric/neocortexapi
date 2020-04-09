@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NotificationsService } from 'angular2-notifications';
+//import { NotificationsService } from 'angular2-notifications';
 import { NeoCortexUtilsService } from '../services/neocortexutils.service';
 import { NeoCortexGenerator } from '../Entities/NeoCortexGenerator';
 import { NeoCortexModel } from '../Entities/NeoCortexModel';
@@ -11,7 +11,7 @@ import { NeoCortexModel } from '../Entities/NeoCortexModel';
 })
 export class SenderComponent implements OnInit {
 
-  constructor(private _service: NotificationsService, private neoUtils: NeoCortexUtilsService) {
+  constructor(private neoUtils: NeoCortexUtilsService) {
   }
 
   ngOnInit() {
