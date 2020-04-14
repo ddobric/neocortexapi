@@ -8,12 +8,16 @@ import { environment as env } from '../../environments/environment.prod';
 
 
 
-export interface NeoCortexUtils {
+export class NeoCortexUtils {
   dataModel: any;
   clientType?: any;
   msgType?: any;
-  notification?: any;
-
+  //notification?: any;
+  notification?= {
+    msg: "",
+    title: "",
+    type: ""
+  }
 
 }
 
@@ -26,11 +30,11 @@ export class NeoCortexUtilsService {
   data: Subject<NeoCortexUtils>;
   Model: any;
   notifyTyp: any;
-  notifyMsg?: any;
+  notifyMsg: any;
+  notifyTitle: any;
 
   //{ "msgType": "init", "data": { "clientType": "NeuroVisualizer"} }
   constructor(socketService: WebsocketService) {
-
     this.data = <Subject<NeoCortexUtils>>socketService.connect(env.URL).pipe(map(
       (response: MessageEvent): NeoCortexUtils => {
         let JSONObject = JSON.parse(response.data);
@@ -46,21 +50,21 @@ export class NeoCortexUtilsService {
           this.createSynapses();
           return {
             dataModel: this.Model,
-            notification: { type: this.notifyTyp, msg: this.notifyMsg }
+            notification: { type: this.notifyTyp, msg: this.notifyMsg, title: this.notifyTitle }
           }
         }
         else if (JSONObject.msgType == "updateOverlap" || JSONObject.MsgType == "updateOverlap") {
           this.updateOverlap(JSONObject.Columns);
           return {
             dataModel: this.Model,
-            notification: { type: this.notifyTyp, msg: this.notifyMsg }
+            notification: { type: this.notifyTyp, msg: this.notifyMsg, title: this.notifyTitle }
           }
         }
         else if (JSONObject.msgType == "updateOrAddSynapse" || JSONObject.MsgType == "updateOrAddSynapse") {
           this.updateOrAddSynapse(JSONObject.Synapses);
           return {
             dataModel: this.Model,
-            notification: { type: this.notifyTyp, msg: this.notifyMsg }
+            notification: { type: this.notifyTyp, msg: this.notifyMsg, title: this.notifyTitle }
           }
 
         } else {
@@ -141,9 +145,10 @@ export class NeoCortexUtilsService {
       }
 
 
-    } catch (error) {
+    } catch (ex) {
       this.notifyTyp = "error";
-      this.notifyMsg = error;
+      this.notifyMsg = ex;
+      this.notifyTitle = "Error";
 
     }
 
@@ -164,8 +169,9 @@ export class NeoCortexUtilsService {
         this.Model.Synapses[findSynapse].postSynaptic.Z === postCell.Z) {
 
         this.Model.Synapses[findSynapse].permanence = newPermanence;
-        this.notifyTyp = "success";
-        this.notifyMsg = "Synapse found, permanence updated";
+        this.notifyTyp = "info";
+        this.notifyMsg = "Synapse found";
+        this.notifyTitle = "Permanence updated";
 
       }
 
@@ -200,7 +206,8 @@ export class NeoCortexUtilsService {
 
     this.Model.Synapses.push(newSynapse);
     this.notifyTyp = "success";
-    this.notifyMsg = "Synapse doesn't found, new created";
+    this.notifyMsg = "Synapse doesn't found";
+    this.notifyTitle = "New Synapse created";
 
   }
 
@@ -209,15 +216,15 @@ export class NeoCortexUtilsService {
     try {
       this.Model.Areas[updateOverlapCo.areaIDOfCell].Minicolumns[updateOverlapCo.minColXDim][updateOverlapCo.minColZDim].overlap = updateOverlapCo.updateOverlapValue;
       this.notifyTyp = "success";
-      this.notifyMsg = "Overlap Updated";
+      this.notifyMsg = "Overlap";
+      this.notifyTitle = "Update";
 
-    } catch (error) {
+    } catch (ex) {
       this.notifyTyp = "error";
-      this.notifyMsg = error;
+      this.notifyMsg = ex;
+      this.notifyTitle = "Error";
 
     }
-
-
 
   }
 
@@ -278,7 +285,8 @@ export class NeoCortexUtilsService {
     this.Model.Synapses = [];
     this.Model.Synapses = synapseRegister;
     this.notifyTyp = "success";
-    this.notifyMsg = "New Data Model";
+    this.notifyMsg = "New Data";
+    this.notifyTitle = "Model";
     return this.Model;
   }
 

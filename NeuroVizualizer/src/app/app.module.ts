@@ -7,9 +7,9 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AinetComponent } from './ainet/ainet.component';
 import { HomeComponent } from './home/home.component';
-//import { SimpleNotificationsModule } from 'angular2-notifications';
+
 import { SenderComponent } from './sender/sender.component';
-import { NotifierModule } from "angular-notifier";
+import { ToastrModule } from 'ngx-toastr';
 
 import * as PlotlyJS from 'plotly.js/dist/plotly.js';
 import { PlotlyModule } from 'angular-plotly.js';
@@ -28,7 +28,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     FormsModule,
     PlotlyModule,
     AppRoutingModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    ToastrModule.forRoot()
   ],
   providers: [],
   bootstrap: [AppComponent]

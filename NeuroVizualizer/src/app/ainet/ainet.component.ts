@@ -5,7 +5,8 @@ import { environment as env } from "../../environments/environment.prod";
 //import { NotificationsService } from 'angular2-notifications';
 import { NeoCortexUtilsService } from '../services/neocortexutils.service';
 import { NeoCortexModel, Cell, Synapse } from '../Entities/NeoCortexModel';
-import { NotifierService } from "angular-notifier";
+
+import { NotificationService } from '../services/notification.service';
 
 
 
@@ -41,8 +42,6 @@ export class AinetComponent implements OnInit, AfterViewInit {
   permanenceIntervalStart: number = null;
   permanenceIntervalEnd: number = null;
 
-  options: any;
-
   xInputModel: Array<any> = [];
   zInputModel: Array<any> = [];
   yInputModel: Array<any> = [];
@@ -56,14 +55,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
   showSynapses: any;
   cellAreaId: any;
 
-  neuralchart: object = {};
-  pattern: string | RegExp;
 
 
-  constructor(private neoUtilsService: NeoCortexUtilsService) {
-    //this.notifier = notifierService;
-
-
+  constructor(private notifyService: NotificationService, private neoUtilsService: NeoCortexUtilsService) {
 
   }
 
@@ -90,6 +84,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
     if (!this.Model) {
       this.plotDummyChart();
+      this.notifyService.showWarning("No data model is available", "");
     }
     this.neoUtilsService.data.subscribe(a => {
       this.Model = a.dataModel;
@@ -98,7 +93,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       this.generateColoursFromOverlap();
       this.generateColoursFromPermanences();
       this.plotChart();
-      //this.pushNotification(a.notification);
+      this.pushNotification(a.notification);
     });
 
 
@@ -113,8 +108,19 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
   }
   pushNotification(notify) {
-    console.log(notify);
-    //this.notifier.notify(notify.type, notify.msg);
+    //console.log(notify);
+    if (notify.type == "success") {
+      this.notifyService.showSuccess(notify.msg, notify.title);
+    }
+    if (notify.type == "info") {
+      this.notifyService.showInfo(notify.msg, notify.title);
+    }
+    if (notify.type == "error") {
+      this.notifyService.showError(notify.msg, notify.title);
+    }
+    if (notify.type == "warning") {
+      this.notifyService.showWarning(notify.msg, notify.title);
+    }
   }
 
 
