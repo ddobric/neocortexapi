@@ -29,7 +29,7 @@ export class AppComponent {
     this.neoUtils.data.next({
       MsgType: "init",
       clientType: "Transmitter",
-      dataModel: Model
+      Model: Model
     });
   }
 

@@ -19,7 +19,7 @@ export class NeoCortexModel {
 
     Areas: Array<Area>;
 
-    Synapses: Array<Synapse>;
+    Synapse: Array<Synapse>;
 
     settings: NeocortexSettings;
 
@@ -34,7 +34,7 @@ export class NeoCortexModel {
 
 export class Area {
 
-    Minicolumns: Minicolumn[][] = new Array();
+    MiniColumns: Minicolumn[][] = new Array();
     Level: number;
     AreaId: number;
 
@@ -50,23 +50,24 @@ export class Minicolumn {
 
 export class Cell {
 
-    cellId: number;
-    areaIndex: number;
-    X: number;
-    Layer: number;
+    CellId: number;
+    AreaID: number;
+    Index: number;
+    ParentColumnIndex: number;
     Z: number;
     incomingSynapses?: Array<Synapse> = new Array();
     outgoingSynapses?: Array<Synapse> = new Array();
+    //areaID, i, cellId, parentColumnIndx, CellActivity.PredictiveCell
 }
 
 
 export class Synapse {
 
-    preSynaptic?: Cell;
-    postSynaptic?: Cell;
-    preSynapticId?: number;
-    postSynapticId?: number;
-    permanence: number;
+    PreSynaptic?: Cell;
+    PostSynaptic?: Cell;
+    PreSynapticCellId?: number;
+    PostSynapticCellId?: number;
+    Permanence: number;
 
 }
 

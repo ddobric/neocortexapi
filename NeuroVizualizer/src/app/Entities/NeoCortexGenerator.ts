@@ -32,9 +32,9 @@ export class NeoCortexGenerator {
 
     createNeoCortexModel(settings: NeocortexSettings, inputModel: InputModel): NeoCortexModel {// creating areas
         var model: NeoCortexModel = new NeoCortexModel();
-        model.synapses = new Array();
+        model.Synapse = new Array();
 
-        model.settings = settings;
+        model.Settings = settings;
         //model.input = input;
         model.Areas = new Array(settings.areaLevels.length);
 
@@ -54,8 +54,8 @@ export class NeoCortexGenerator {
 
     createArea(model: NeoCortexModel, settings: NeocortexSettings, areaId: number, level: number): Area {// creating minicolumn
         const area = new Area();
-        area.areaId = areaId;
-        area.level = level;
+        area.AreaId = areaId;
+        area.Level = level;
         let miniColDim0: any;
         let miniColDim1: any;
 
@@ -69,13 +69,13 @@ export class NeoCortexGenerator {
                 let randomOverlap = Math.random();
 
                 row.push({
-                    miniColumnId: areaId + miniColDim0 + miniColDim1,
+                    MiniColumnId: areaId + miniColDim0 + miniColDim1,
                     Cells: this.cellRegister,
-                    overlap: randomOverlap,
+                    Overlap: randomOverlap,
                 });
             }
 
-            area.Minicolumns.push(row);
+            area.MiniColumns.push(row);
 
         }
 
@@ -89,10 +89,10 @@ export class NeoCortexGenerator {
 
             this.cellRegister.push(
                 {
-                    cellId: this.cellID++,
-                    areaIndex: areaId,
-                    X: x,
-                    Layer: layer,
+                    CellId: this.cellID++,
+                    AreaID: areaId,
+                    Index: x,
+                    ParentColumnIndex: layer,
                     Z: z,
                     incomingSynapses: [],
                     outgoingSynapses: []
@@ -106,7 +106,7 @@ export class NeoCortexGenerator {
     saveCells(minicolumnCells = [], model: NeoCortexModel) {
 
         for (let i = 0; i < minicolumnCells.length; i++) {
-            model.cells.push(minicolumnCells[i]);
+            model.Cells.push(minicolumnCells[i]);
 
         }
     }
@@ -115,17 +115,17 @@ export class NeoCortexGenerator {
 
         for (let i = 0; i < 10; i++) {
 
-            let chooseRandomPreCell = this.getRandomInt(model.cells.length);
-            let chooseRandomPostCell = this.getRandomInt(model.cells.length);
+            let chooseRandomPreCell = this.getRandomInt(model.Cells.length);
+            let chooseRandomPostCell = this.getRandomInt(model.Cells.length);
             let randomPerm = Math.random();
 
             const synapse = {
-                permanence: randomPerm,
-                preSynapticId: model.cells[chooseRandomPreCell].cellId,
-                postSynapticId: model.cells[chooseRandomPostCell].cellId,
+                Permanence: randomPerm,
+                PreSynapticId: model.Cells[chooseRandomPreCell].CellId,
+                PostSynapticId: model.Cells[chooseRandomPostCell].CellId,
 
             };
-            model.synapses.push(synapse);
+            model.Synapse.push(synapse);
 
             //   this.cells[chooseRandomPreCell].outgoingSynapses.push(synapse);
             //   this.cells[chooseRandomPostCell].incomingSynapses.push(synapse);
@@ -148,15 +148,15 @@ export class NeoCortexGenerator {
                 //row.push(new Cell(null, dim, null, i, [], []));
                 row.push(
                     {
-                        areaIndex: null,
-                        cellId: null,
-                        X: dim,
-                        Layer: null,
+                        AreaID: null,
+                        CellId: null,
+                        Index: dim,
+                        ParentColumnIndex: null,
                         Z: i
                     });
 
             }
-            model.input.cells.push(row);
+            model.input.Cells.push(row);
         }
 
     }

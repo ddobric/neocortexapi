@@ -27,8 +27,8 @@ namespace NeoCortexEntities.NeuroVisualizer
                     SynapseData synap = new SynapseData
                     {
                         Permanence = new Random().NextDouble(),//for now generatin random permanences ranging 0 to 1
-                        PreSynapticCellIndex = model.Cells[new Random().Next(0, (model.Cells.Count()))].Index,//selecting random cell from already generated cells 
-                        PostSynapticCellIndex = model.Cells[new Random().Next(0, (model.Cells.Count()))].Index,//selecting random cell from already generated cells 
+                        PreSynapticCellId = model.Cells[new Random().Next(0, (model.Cells.Count()))].Index,//selecting random cell from already generated cells 
+                        PostSynapticCellId = model.Cells[new Random().Next(0, (model.Cells.Count()))].Index,//selecting random cell from already generated cells 
                         // SourceCell = cell id
                         // destination Cell = cell id
                     };
@@ -163,8 +163,8 @@ namespace NeoCortexEntities.NeuroVisualizer
     public class SynapseData
     {
         //public CellType SegmentCellType;
-        public int PreSynapticCellIndex { get; set; }
-        public int PostSynapticCellIndex { get; set; }
+        public int PreSynapticCellId { get; set; }
+        public int PostSynapticCellId { get; set; }
         public double Permanence { get; set; }
 
     }

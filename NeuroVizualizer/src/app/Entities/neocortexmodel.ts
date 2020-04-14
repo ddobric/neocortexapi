@@ -19,11 +19,11 @@ export class NeoCortexModel {
 
     Areas: Array<Area>;
 
-    synapses: Array<Synapse>;
+    Synapse: Array<Synapse>;
 
-    settings: NeocortexSettings;
+    Settings: NeocortexSettings;
 
-    cells: Array<Cell> = new Array();
+    Cells: Array<Cell> = new Array();
 
     /**
      * Multidimensional sensory input.
@@ -34,23 +34,23 @@ export class NeoCortexModel {
 
 export class Area {
 
-    Minicolumns: Minicolumn[][] = new Array();
-    level: number;
-    areaId: number;
+    MiniColumns: Minicolumn[][] = new Array();
+    Level: number;
+    AreaId: number;
 
 }
 
 export class Minicolumn {
-    miniColumnId?: number;
-    overlap: number;
+    MiniColumnId?: number;
+    Overlap: number;
     Cells: Array<Cell> = new Array();
-    settings?: NeocortexSettings;
+    Settings?: NeocortexSettings;
 
 }
 
 export class Cell {
 
-    cellId?: number;
+    /* cellId?: number;
     areaIndex?: number;
     X?: number;
     Layer?: number;
@@ -59,23 +59,31 @@ export class Cell {
     ParentColumnIndex?: number;
     incomingSynapses?: Array<Synapse> = new Array();
     outgoingSynapses?: Array<Synapse> = new Array();
+    areaID: any; */
+    CellId: number;
+    AreaID: number;
+    Index: number;
+    ParentColumnIndex: number;
+    Z: number;
+    incomingSynapses?: Array<Synapse> = new Array();
+    outgoingSynapses?: Array<Synapse> = new Array();
 }
 
 
 export class Synapse {
 
-    preSynaptic?: Cell;
-    postSynaptic?: Cell;
-    preSynapticId?: number;
-    postSynapticId?: number;
-    permanence: number;
+    PreSynaptic?: Cell;
+    PostSynaptic?: Cell;
+    PreSynapticCellId?: number;
+    PostSynapticCellId?: number;
+    Permanence: number;
 
 }
 
 
 export class InputModel {
 
-    cells: Cell[][] = new Array();
+    Cells: Cell[][] = new Array();
 
 }
 

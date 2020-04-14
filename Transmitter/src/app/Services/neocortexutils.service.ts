@@ -7,7 +7,7 @@ import { Cell, Synapse } from '../Entities/NeoCortexModel';
 const URL = "ws://localhost:5555/ws/transmitter";
 
 export interface NeoCortexUtils {
-  dataModel?: any;
+  Model?: any;
   clientType?: any;
   MsgType?: any;
   Columns?: any;
@@ -31,7 +31,7 @@ export class NeoCortexUtilsService {
       (response: MessageEvent): NeoCortexUtils => {
         let JSONObject = JSON.parse(response.data);
         return {
-          dataModel: JSONObject
+          Model: JSONObject
         };
 
       }

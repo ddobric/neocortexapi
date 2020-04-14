@@ -32,7 +32,7 @@ export class NeoCortexGenerator {
 
     createNeoCortexModel(settings: NeocortexSettings, inputModel: InputModel): NeoCortexModel {// creating areas
         var Model: NeoCortexModel = new NeoCortexModel();
-        Model.Synapses = new Array();
+        Model.Synapse = new Array();
 
         Model.settings = settings;
         //model.input = input;
@@ -75,7 +75,7 @@ export class NeoCortexGenerator {
                 });
             }
 
-            area.Minicolumns.push(row);
+            area.MiniColumns.push(row);
 
         }
 
@@ -89,10 +89,10 @@ export class NeoCortexGenerator {
 
             this.cellRegister.push(
                 {
-                    cellId: this.cellID++,
-                    areaIndex: areaId,
-                    X: x,
-                    Layer: layer,
+                    CellId: this.cellID++,
+                    AreaID: areaId,
+                    Index: x,
+                    ParentColumnIndex: layer,
                     Z: z,
                     incomingSynapses: [],
                     outgoingSynapses: []
@@ -120,12 +120,12 @@ export class NeoCortexGenerator {
             let randomPerm = Math.random();
 
             const synapse = {
-                permanence: randomPerm,
-                preSynapticId: Model.Cells[chooseRandomPreCell].cellId,
-                postSynapticId: Model.Cells[chooseRandomPostCell].cellId,
+                Permanence: randomPerm,
+                PreSynapticCellId: Model.Cells[chooseRandomPreCell].CellId,
+                PostSynapticCellId: Model.Cells[chooseRandomPostCell].CellId,
 
             };
-            Model.Synapses.push(synapse);
+            Model.Synapse.push(synapse);
 
             //   this.cells[chooseRandomPreCell].outgoingSynapses.push(synapse);
             //   this.cells[chooseRandomPostCell].incomingSynapses.push(synapse);
@@ -148,10 +148,10 @@ export class NeoCortexGenerator {
                 //row.push(new Cell(null, dim, null, i, [], []));
                 row.push(
                     {
-                        areaIndex: null,
-                        cellId: null,
-                        X: dim,
-                        Layer: null,
+                        AreaID: null,
+                        CellId: null,
+                        Index: dim,
+                        ParentColumnIndex: null,
                         Z: i
                     });
 
