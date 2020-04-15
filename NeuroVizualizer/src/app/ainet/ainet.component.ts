@@ -457,11 +457,11 @@ export class AinetComponent implements OnInit, AfterViewInit {
   }
 
   inputModelData(model: NeoCortexModel) {
-    for (let inputmodel = 0; inputmodel < model.input.Cells.length; inputmodel++) {
+    for (let inputmodel = 0; inputmodel < model.Input.Cells.length; inputmodel++) {
       for (let inputModelDim1 = 0; inputModelDim1 < model.Settings.minicolumnDims[1]; inputModelDim1++) {
-        this.xInputModel.push(model.input.Cells[inputmodel][inputModelDim1].Index);
+        this.xInputModel.push(model.Input.Cells[inputmodel][inputModelDim1].Index);
         this.yInputModel.push(0);
-        this.zInputModel.push(model.input.Cells[inputmodel][inputModelDim1].Z);
+        this.zInputModel.push(model.Input.Cells[inputmodel][inputModelDim1].Z);
         this.inputModelOverlap.push(0);
       }
     }

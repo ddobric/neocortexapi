@@ -28,7 +28,7 @@ export class NeoCortexModel {
     /**
      * Multidimensional sensory input.
      */
-    input: InputModel = new InputModel();
+    Input: InputModel = new InputModel();
 }
 
 
@@ -45,6 +45,7 @@ export class Minicolumn {
     Overlap: number;
     Cells: Array<Cell> = new Array();
     Settings?: NeocortexSettings;
+    ColActivity: ColumnActivity;
 
 }
 
@@ -65,6 +66,7 @@ export class Cell {
     Index: number;
     ParentColumnIndex: number;
     Z: number;
+    CellActivity: CellActivity;
     incomingSynapses?: Array<Synapse> = new Array();
     outgoingSynapses?: Array<Synapse> = new Array();
 }
@@ -86,6 +88,19 @@ export class InputModel {
     Cells: Cell[][] = new Array();
 
 }
+export enum ColumnActivity {
 
+    Inactive,
+    Active,
+}
+
+export enum CellActivity {
+
+    ActiveCell,
+
+    PredictiveCell,
+
+    WinnerCell,
+}
 
 

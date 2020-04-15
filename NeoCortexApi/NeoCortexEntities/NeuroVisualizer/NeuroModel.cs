@@ -136,8 +136,7 @@ namespace NeoCortexEntities.NeuroVisualizer
         public int AreaId { get; set; }
         public int MiniColDim0 { get; set; }
         public int MiniColDim1 { get; set; }
-
-
+        public ColumnActivity ColActivity { get; set; }
 
 
         public MiniColumn(int areaId, double overlap, int miniColDim0, int miniColDim1, ColumnActivity colActivity)//areaId, overlap, colDim0, colDim1
@@ -147,6 +146,7 @@ namespace NeoCortexEntities.NeuroVisualizer
             Overlap = overlap;
             MiniColDim0 = miniColDim0;
             MiniColDim1 = miniColDim1;
+            ColActivity = colActivity;
             Cells = new List<Cell>();
             //int parentColumnIndx = columnDims.GetLength(0); // Can I set dimO/X is equal to parentColumnIndex??
             // int parentColumnIndx = colDim0; // Can I set dimO/X is equal to parentColumnIndex??

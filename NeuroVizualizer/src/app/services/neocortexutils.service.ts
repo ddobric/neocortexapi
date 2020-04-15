@@ -53,15 +53,22 @@ export class NeoCortexUtilsService {
             notification: { type: this.notifyTyp, msg: this.notifyMsg, title: this.notifyTitle }
           }
         }
-        else if (JSONObject.msgType == "updateOverlap" || JSONObject.MsgType == "updateOverlap") {
+        else if (JSONObject.MsgType == "updateColumn") {
           this.updateOverlap(JSONObject.Columns);
           return {
             dataModel: this.Model,
             notification: { type: this.notifyTyp, msg: this.notifyMsg, title: this.notifyTitle }
           }
         }
-        else if (JSONObject.msgType == "updateOrAddSynapse" || JSONObject.MsgType == "updateOrAddSynapse") {
+        else if (JSONObject.MsgType == "updateOrAddSynapse") {
           this.updateOrAddSynapse(JSONObject.Synapses);
+          return {
+            dataModel: this.Model,
+            notification: { type: this.notifyTyp, msg: this.notifyMsg, title: this.notifyTitle }
+          }
+        }
+        else if (JSONObject.MsgType == "updateCells") {
+          this.updateCells(JSONObject.Cells);
           return {
             dataModel: this.Model,
             notification: { type: this.notifyTyp, msg: this.notifyMsg, title: this.notifyTitle }
@@ -75,6 +82,12 @@ export class NeoCortexUtilsService {
     ));
 
   }
+
+  updateCells(Cells: any) {
+    throw new Error("Method not implemented.");
+  }
+
+
   addPlaceholder() {
     for (let i = 0; i < this.Model.Areas.length; i++) {
       for (let j = 0; j < this.Model.Areas[i].MiniColumns.length; j++) {

@@ -17,7 +17,8 @@ namespace NeoCortexApi.Entities
         /// Index of the cell.
         /// </summary>
         public int Index { get; set; }
-        public int CellId { get; }
+        public int CellId { get; set; }
+        public CellActivity CellActivity { get; set; }
 
         //public List<DistalDendrite> Segments
         //{
@@ -48,6 +49,7 @@ namespace NeoCortexApi.Entities
             this.Index = parentColumnIndx * numCellsPerColumn + colSeq;
             //this.Segments = new List<DistalDendrite>();
             this.CellId = cellId;
+            this.CellActivity = cellActivity;
         }
 
 

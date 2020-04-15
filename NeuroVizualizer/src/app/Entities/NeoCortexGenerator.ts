@@ -1,4 +1,4 @@
-import { NeoCortexModel, Cell, NeocortexSettings, Area, Minicolumn, InputModel } from './NeoCortexModel';
+import { NeoCortexModel, Cell, NeocortexSettings, Area, Minicolumn, InputModel, ColumnActivity } from './NeoCortexModel';
 
 
 export class NeoCortexGenerator {
@@ -67,8 +67,10 @@ export class NeoCortexGenerator {
 
                 this.createCells(model, settings, areaId, miniColDim0, miniColDim1);
                 let randomOverlap = Math.random();
+                let colActivity = this.getRandomInt(2);
 
                 row.push({
+                    ColActivity: colActivity,
                     MiniColumnId: areaId + miniColDim0 + miniColDim1,
                     Cells: this.cellRegister,
                     Overlap: randomOverlap,
@@ -86,9 +88,10 @@ export class NeoCortexGenerator {
         settings = settings;
 
         for (let layer = 0; layer < settings.numLayers; layer++) {
-
+            let cellActivity = this.getRandomInt(3);
             this.cellRegister.push(
                 {
+                    CellActivity: cellActivity,
                     CellId: this.cellID++,
                     AreaID: areaId,
                     Index: x,
@@ -152,11 +155,12 @@ export class NeoCortexGenerator {
                         CellId: null,
                         Index: dim,
                         ParentColumnIndex: null,
-                        Z: i
+                        Z: i,
+                        CellActivity: null
                     });
 
             }
-            model.input.Cells.push(row);
+            model.Input.Cells.push(row);
         }
 
     }

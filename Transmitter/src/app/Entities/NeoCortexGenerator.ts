@@ -34,7 +34,7 @@ export class NeoCortexGenerator {
         var Model: NeoCortexModel = new NeoCortexModel();
         Model.Synapse = new Array();
 
-        Model.settings = settings;
+        Model.Settings = settings;
         //model.input = input;
         Model.Areas = new Array(settings.areaLevels.length);
 
@@ -67,9 +67,11 @@ export class NeoCortexGenerator {
 
                 this.createCells(model, settings, areaId, miniColDim0, miniColDim1);
                 let randomOverlap = Math.random();
+                let colActivity = this.getRandomInt(2)
 
                 row.push({
-                    miniColumnId: areaId + miniColDim0 + miniColDim1,
+                    ColActivity: colActivity,
+                    MiniColumnId: areaId + miniColDim0 + miniColDim1,
                     Cells: this.cellRegister,
                     Overlap: randomOverlap,
                 });
@@ -86,9 +88,11 @@ export class NeoCortexGenerator {
         settings = settings;
 
         for (let layer = 0; layer < settings.numLayers; layer++) {
+            let colActivity = this.getRandomInt(2);
 
             this.cellRegister.push(
                 {
+                    CellActivity: colActivity,
                     CellId: this.cellID++,
                     AreaID: areaId,
                     Index: x,
@@ -145,9 +149,10 @@ export class NeoCortexGenerator {
             let row: Array<Cell> = new Array();
 
             for (let i = 0; i < settings.minicolumnDims[1]; i++) {
-                //row.push(new Cell(null, dim, null, i, [], []));
+                //row.push(new Cell(null, dim, null, i, [], []));               
                 row.push(
                     {
+                        CellActivity: null,
                         AreaID: null,
                         CellId: null,
                         Index: dim,
@@ -156,7 +161,7 @@ export class NeoCortexGenerator {
                     });
 
             }
-            model.input.cells.push(row);
+            model.Input.Cells.push(row);
         }
 
     }

@@ -34,7 +34,7 @@ namespace WebSocketNeuroVisualizer
         {
             WebsocketData update = new WebsocketData()
             {
-                MsgType = "updateOverlap",
+                MsgType = "updateColumn",
                 Columns = columns
 
             };
