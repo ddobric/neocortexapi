@@ -88,7 +88,7 @@ export class NeoCortexGenerator {
         settings = settings;
 
         for (let layer = 0; layer < settings.numLayers; layer++) {
-            let colActivity = this.getRandomInt(2);
+            let colActivity = this.getRandomInt(3);
 
             this.cellRegister.push(
                 {

@@ -55,6 +55,9 @@ export class AinetComponent implements OnInit, AfterViewInit {
   showSynapses: any;
   cellAreaId: any;
 
+  cellState: Array<any> = [];
+  activity: boolean = true;
+
 
 
   constructor(private notifyService: NotificationService, private neoUtilsService: NeoCortexUtilsService) {
@@ -90,7 +93,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       this.Model = a.dataModel;
       this.clearData();
       this.fillChart(this.Model);
-      this.generateColoursFromOverlap();
+      this.generateNeuronsColours();
       this.generateColoursFromPermanences();
       this.plotChart();
       this.pushNotification(a.notification);
@@ -363,6 +366,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
                 this.drawNeuronsCoordinates(model, areaIndx, i, j, cellIndx, areaYWidth, xOffset, areaZWidth);
                 this.bijection(areaIndx, i, cellIndx, j, xCoorvalue, yCoorvalue, zCoorvalue);
+                this.cellState.push(model.Areas[areaIndx].MiniColumns[i][j].Cells[cellIndx].CellActivity);
 
               }
 
@@ -371,6 +375,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
 
               this.drawNeuronsCoordinates(model, areaIndx, i, j, cellIndx, areaYWidth, xOffset, areaZWidth);
               this.bijection(areaIndx, i, cellIndx, j, xCoorvalue, yCoorvalue, zCoorvalue);
+              this.cellState.push(model.Areas[areaIndx].MiniColumns[i][j].Cells[cellIndx].CellActivity);
 
 
 
@@ -481,6 +486,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.synapseColours = [];
     this.synapsesHoverInformation = [];
     this.neuronsHoverInformation = [];
+    this.cellState = [];
   }
 
   clearCoordinates() {
@@ -595,7 +601,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
          console.log(this.permanence); */
       console.log(this.neuronsHoverInformation);
       console.log(this.synapsesHoverInformation);
-      this.generateColoursFromOverlap();
+      this.generateNeuronsColours();
       this.generateColoursFromPermanences();
       this.plotChart();
       // this.notifier.notify("success", "Done");
@@ -624,7 +630,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.clearData();
     this.clearCoordinates();
     this.fillChart(this.Model);
-    this.generateColoursFromOverlap();
+    this.generateNeuronsColours();
     this.generateColoursFromPermanences();
     this.plotChart();
     this.permanenceIntervalStart = null;
@@ -648,7 +654,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       this.clearData();
       this.clearCoordinates();
       this.fillChart(this.Model);
-      this.generateColoursFromOverlap();
+      this.generateNeuronsColours();
       this.generateColoursFromPermanences();
       this.plotChart();
       //this.updatePlot();
@@ -661,6 +667,20 @@ export class AinetComponent implements OnInit, AfterViewInit {
     }
 
 
+  }
+
+  showCellActivity() {
+    this.activity = false;
+    this.neuronsColours = [];
+    this.generateNeuronsColours();
+    this.plotChart();
+  }
+
+  showColumnActivity() {
+    this.activity = true;
+    this.neuronsColours = [];
+    this.generateNeuronsColours();
+    this.plotChart();
   }
 
   updateSynapses(preCellAreaId: any, postCellAreaID: any, preCell: Cell, postCell: Cell, permanenc: any) {
@@ -782,7 +802,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     }
     //this.create("Permanence Updated", "Finished", 'success');
     this.fillChart(this.Model);
-    this.generateColoursFromOverlap();
+    this.generateNeuronsColours();
     this.generateColoursFromPermanences();
     this.plotChart();
   }
@@ -815,7 +835,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.Model.Synapses.push(newSynapse);
     //this.create("Synapse Created", "Finished", 'success');
     this.fillChart(this.Model);
-    this.generateColoursFromOverlap();
+    this.generateNeuronsColours();
     this.generateColoursFromPermanences();
     this.plotChart();
 
@@ -844,7 +864,7 @@ export class AinetComponent implements OnInit, AfterViewInit {
       }
     }
     this.fillChart(this.Model);
-    this.generateColoursFromOverlap();
+    this.generateNeuronsColours();
     this.generateColoursFromPermanences();
     this.plotChart();
   }
@@ -858,18 +878,25 @@ export class AinetComponent implements OnInit, AfterViewInit {
     this.clearData();
     this.Model.Areas[areaIDOfCell].Minicolumns[minColXDim][minColZDim].overlap = updateOverlapValue;
     this.fillChart(this.Model);
-    this.generateColoursFromOverlap();
+    this.generateNeuronsColours();
     this.generateColoursFromPermanences();
     this.plotChart();
   }
 
-  generateColoursFromOverlap() {
-
-    for (const overlapVal of this.overlap) {
-      let H = (1.0 - overlapVal) * 240;
-      this.neuronsColours.push("hsl(" + H + ", 100%, 50%)");
+  generateNeuronsColours() {
+    if (this.activity == true) {
+      for (const overlapVal of this.overlap) {
+        let H = (1.0 - overlapVal) * 240;
+        this.neuronsColours.push("hsl(" + H + ", 100%, 50%)");
+      }
     }
-
+    else {
+      console.log(this.cellState);
+      for (const colActivity of this.cellState) {
+        let H = (1.0 - colActivity) * 240;
+        this.neuronsColours.push("hsl(" + H + ", 100%, 50%)");
+      }
+    }
   }
 
   generateColoursFromPermanences() {
@@ -878,19 +905,19 @@ export class AinetComponent implements OnInit, AfterViewInit {
       let H = (1.0 - permanenceVal) * 240;
       this.synapseColours.push("hsl(" + H + ", 100%, 50%)");
     }
+
     /*  for (let permanenceValue = 0; permanenceValue < this.xSynapse.length; permanenceValue++) {
        let H = (1.0 - this.permanence[permanenceValue]) * 240;
        this.synapseColours.push("hsl(" + H + ", 100%, 50%)");
      } */
     //console.log(this.synapseColours);
-
-
   }
+
 
   showEntireModel() {
     this.clearData();
     this.fillChart(this.Model);
-    this.generateColoursFromOverlap();
+    this.generateNeuronsColours();
     this.generateColoursFromPermanences();
     this.plotChart();
   }
