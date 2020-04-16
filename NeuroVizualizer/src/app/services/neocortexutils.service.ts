@@ -228,11 +228,11 @@ export class NeoCortexUtilsService {
   }
 
 
-  private updateOverlap(updateOverlap: any) {
+  private updateOverlap(updateOverlap = []) {
     try {
 
       for (let i = 0; i < updateOverlap.length; i++) {
-        this.Model.Areas[updateOverlap[i].areaIDOfCell].MiniColumns[updateOverlap[i].minColXDim][updateOverlap[i].minColZDim].overlap = updateOverlap[i].updateOverlapValue;
+        this.Model.Areas[updateOverlap[i].areaIDOfCell].MiniColumns[updateOverlap[i].minColXDim][updateOverlap[i].minColZDim].Overlap = updateOverlap[i].updateOverlapValue;
         this.notifyTyp = "success";
         this.notifyMsg = "Overlap";
         this.notifyTitle = "Update";

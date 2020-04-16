@@ -47,7 +47,7 @@ export class AppComponent {
       updateOverlapValue: newOverlapValue
     };
     this.neoUtils.data.next({
-      MsgType: "updateOverlap",
+      MsgType: "updateColumn",
       clientType: "Transmitter",
       Columns: [updateOverlap]
     });
