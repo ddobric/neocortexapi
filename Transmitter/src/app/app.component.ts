@@ -49,7 +49,7 @@ export class AppComponent {
     this.neoUtils.data.next({
       MsgType: "updateOverlap",
       clientType: "Transmitter",
-      Columns: updateOverlap
+      Columns: [updateOverlap]
     });
 
   }
@@ -85,7 +85,7 @@ export class AppComponent {
     this.neoUtils.data.next({
       MsgType: "updateOrAddSynapse",
       clientType: "Transmitter",
-      Synapses: updateOrAddSynapse
+      Synapses: [updateOrAddSynapse]
 
     });
 
