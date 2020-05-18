@@ -425,7 +425,7 @@ namespace UnitTestsProject
             // Stops the bumping of inactive columns.
             p.Set(KEY.MAX_BOOST, 10.0);
             p.Set(KEY.DUTY_CYCLE_PERIOD, 100000);
-            p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.25);
+            p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.75);
 
             // Max number of synapses on the segment.
             p.setMaxNewSynapsesPerSegmentCount((int)(0.02 * numColumns));
@@ -562,12 +562,17 @@ namespace UnitTestsProject
 
                 //
                 // Activate the 'New - Born' effect.
-                //if (i == 300)
-                //{
-                //    mem.setMaxBoost(0.0);
-                //    mem.updateMinPctOverlapDutyCycles(0.0);
-                //    cls.ClearState();
-                //}
+                if (i == 100)
+                {
+                    mem.setMaxBoost(0.0);
+                    mem.updateMinPctOverlapDutyCycles(0.0);
+                    cls.ClearState();
+                }
+
+                if (i == 200)
+                {
+                    cls.ClearState();
+                }
 
                 foreach (var input in inputs)
                 {
@@ -581,8 +586,7 @@ namespace UnitTestsProject
 
                     //cls.Learn(input, lyrOut.ActiveCells.ToArray());
                     cls.Learn(GetKey(prevInput, input), lyrOut.ActiveCells.ToArray());
-
-                    //vis.UpdateSynapsesAsync();
+                    
 
                     if (learn == false)
                         Debug.WriteLine($"Inference mode");

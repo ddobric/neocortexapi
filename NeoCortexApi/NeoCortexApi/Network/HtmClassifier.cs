@@ -31,6 +31,7 @@ namespace NeoCortexApi.Network
         public void ClearState()
         {
             this.activeMap.Clear();
+            this.inputSequence.Clear();
         }
 
         /// <summary>
@@ -45,9 +46,11 @@ namespace NeoCortexApi.Network
 
             //this.inputSequenceMap.Add(GetCellIndicies(output), this.inputSequence.Count - 1);
 
-            if (!activeMap.ContainsKey(GetCellIndicies(output)))
+            //if (!activeMap.ContainsKey(GetCellIndicies(output)))
             {
-                this.activeMap.Add(GetCellIndicies(output), input);
+                var celIndicies = GetCellIndicies(output);
+                Debug.WriteLine($"CellState: {Helpers.StringifyVector(celIndicies)}");
+                this.activeMap.Add(celIndicies, input);
             }
         }
 
@@ -60,7 +63,7 @@ namespace NeoCortexApi.Network
         {
             bool x = false;
             double maxSameBits = 0;
-            TIN charOutput = default(TIN);
+            TIN predictedValue = default(TIN);
             int[] arr = new int[predictiveCells.Length];
             for (int i = 0; i < predictiveCells.Length; i++)
             {
@@ -80,7 +83,7 @@ namespace NeoCortexApi.Network
                     {
                         Debug.WriteLine($"cnt:{n}\t{pair.Value} = bits {numOfSameBits}\t {Helpers.StringifyVector(pair.Key)}");
                         maxSameBits = numOfSameBits;
-                        charOutput = pair.Value;
+                        predictedValue = pair.Value;
                         indx = n;
                     }
 
@@ -98,7 +101,7 @@ namespace NeoCortexApi.Network
                 }
                 Debug.WriteLine(" ]");
 
-                return charOutput;
+                return predictedValue;
                 //return activeMap[ComputeHash(FlatArray(output))];
             }
             return default(TIN);

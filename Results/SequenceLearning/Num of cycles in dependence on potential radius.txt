@@ -39,13 +39,14 @@
 
 
 Without New-Born effect:
-PotRadius / MIN_PCT_OVERLAP_DUTY_CYCLES/Classic/NewBorn
---------------------------------------------------------
-50	0.00	?  min
-50	0.01	 ? min  	?? min
-50	0.25	? min  	18 min
-50	0.50	 9 min		19 min
-50	1.00   >>60 min
+PotRadius / MIN_PCT_OVERLAP_DUTY_CYCLES/ NewBorn  /	Classic
+---------------------------------------------------------------------
+50	0.00				 ? min
+50	0.01				 ? min  	?? min
+50	0.25				 17 min  	>>60 min
+50	0.50				 12/9 min	32/19 min (zwei Messungen)
+50	0.75				   min		>>60 min
+50	1.00   				 11/13 min		>>60min	
 
 
 
