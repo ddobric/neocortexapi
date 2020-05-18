@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright (c) Damir Dobric. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -136,8 +138,11 @@ namespace NeoCortexApi.Network
                             sw.WriteLine($"{Helpers.StringifyVector(inp.Key)}");
                     }
 
-                    sw.Flush();
-                    sw.Close();
+                    if (sw != null)
+                    {
+                        sw.Flush();
+                        sw.Close();
+                    }
 
                     processedValues.Add(item);
                 }

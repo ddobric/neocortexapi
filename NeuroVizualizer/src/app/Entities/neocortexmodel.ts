@@ -17,7 +17,7 @@ export class NeocortexSettings {
 
 export class NeoCortexModel {
 
-    areas: Array<Area>;
+    Areas: Array<Area>;
 
     synapses: Array<Synapse>;
 
@@ -34,7 +34,7 @@ export class NeoCortexModel {
 
 export class Area {
 
-    minicolumns: Minicolumn[][] = new Array();
+    Minicolumns: Minicolumn[][] = new Array();
     level: number;
     areaId: number;
 
@@ -43,18 +43,20 @@ export class Area {
 export class Minicolumn {
     miniColumnId?: number;
     overlap: number;
-    cells: Array<Cell> = new Array();
+    Cells: Array<Cell> = new Array();
     settings?: NeocortexSettings;
 
 }
 
 export class Cell {
 
-    cellId: number;
-    areaIndex: number;
-    X: number;
-    Layer: number;
-    Z: number;
+    cellId?: number;
+    areaIndex?: number;
+    X?: number;
+    Layer?: number;
+    Z?: number;
+    Index?: number;
+    ParentColumnIndex?: number;
     incomingSynapses?: Array<Synapse> = new Array();
     outgoingSynapses?: Array<Synapse> = new Array();
 }

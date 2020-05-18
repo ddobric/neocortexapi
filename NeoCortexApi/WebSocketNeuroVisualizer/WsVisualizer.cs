@@ -1,4 +1,6 @@
-﻿using NeoCortexApi.Entities;
+﻿// Copyright (c) Damir Dobric. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license
+using NeoCortexApi.Entities;
 using NeoCortexEntities.NeuroVisualizer;
 using Newtonsoft.Json;
 using System;
@@ -9,46 +11,47 @@ using System.Threading;
 using System.Threading.Tasks;
 namespace WebSocketNeuroVisualizer
 {
-  
+
 
     public class WSNeuroVisualizer : INeuroVisualizer
     {
-        // To Fix if list of update or a single update send over the websocket
+        public ClientWebSocket WS { get; set; }
 
-        
-        public async Task InitModelAsync(NeuroModel model, ClientWebSocket websocket)
+        public async Task InitModelAsync(NeuroModel model)
         {
             WebsocketData dataModel = new WebsocketData()
             {
-               MsgType = "init",
-               Model = model
+                MsgType = "init",
+                Model = model
 
             };
 
 
-            await SendDataAsync(websocket, dataModel);
+            await SendDataAsync(WS, dataModel);
         }
 
-        public async Task UpdateColumnOverlapsAsync(List<MiniColumn> columns, ClientWebSocket websocket)
+        public async Task UpdateColumnAsync(List<MiniColumn> columns)
         {
-            WebsocketData updateOverlap = new WebsocketData()
+            WebsocketData update = new WebsocketData()
             {
                 MsgType = "updateOverlap",
                 Columns = columns
 
             };
-            // MiniColumn minCol = new MiniColumn(columns[i].AreaId, columns[i].Overlap, columns[i].ColDims.GetLength(0), columns[i].ColDims.GetLength(1));
-            
-            //for (int i = 0; i < columns.Count; i++)
-            //{
-            //    updateOverlap = columns[i].ToString();
 
-            //}
-            await SendDataAsync(websocket, updateOverlap);
+
+            await SendDataAsync(WS, update);
         }
-        public async Task UpdateSynapsesAsync(List<SynapseData> synapses, ClientWebSocket websocket)
+        public async Task UpdateSynapsesAsync(List<Synapse> synapses)
         {
-            throw new NotImplementedException();
+            WebsocketData update = new WebsocketData()
+            {
+                MsgType = "updateOrAddSynapse",
+                Synapses = synapses
+
+            };
+
+            await SendDataAsync(WS, update);
             //WebsocketData updateSynapses = new WebsocketData()
             //{
             //    MsgType = "updateSynapse",
@@ -89,28 +92,36 @@ namespace WebSocketNeuroVisualizer
             //await SendDataAsync(websocket, updateSynapses);
 
         }
-        public async Task ConnectToWSServerAsync(string url,  ClientWebSocket websocket)
+        public async Task UpdateCellsAsync(List<Cell> cells)
+        {
+            WebsocketData update = new WebsocketData()
+            {
+                MsgType = "updateCells",
+                Cells = cells
+
+            };
+
+            await SendDataAsync(WS, update);
+        }
+        public async Task ConnectToWSServerAsync()
         {
             try
             {
-                if (url == null)
-                {
-                    throw new ArgumentNullException("url");
-                }
+                WS = new ClientWebSocket();
+
                 //// once per Minute H:M:S
                 ////Days, housr, minutes, seconds, milliseconds
                 //websocket.Options.KeepAliveInterval = new TimeSpan(0, 0, 10, 0, 0);
 
-                Uri uri = new Uri(url);
-                await websocket.ConnectAsync(uri, CancellationToken.None);
-                //await websocket.CloseAsync(websocket.CloseStatus.Value, websocket.CloseStatusDescription, CancellationToken.None);
+                Uri uri = new Uri("ws://localhost:5555/ws/RunExperimentClient");
+                await WS.ConnectAsync(uri, CancellationToken.None);
+                await WS.CloseAsync(WS.CloseStatus.Value, WS.CloseStatusDescription, CancellationToken.None);
 
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Exception: {0}", ex);
             }
-
 
         }
 
@@ -132,10 +143,6 @@ namespace WebSocketNeuroVisualizer
 
                     await websocket.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
 
-                    //var receiveData = new ArraySegment<byte>();
-                    //WebSocketReceiveResult result = await websocket.ReceiveAsync(receiveData, CancellationToken.None);
-                    //await websocket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
-
                 }
             }
             catch (Exception ex)
@@ -152,11 +159,11 @@ namespace WebSocketNeuroVisualizer
 
         public NeuroModel Model { get; set; }
 
-        public List<SynapseData> Synapses { get; set; }
-
         public List<MiniColumn> Columns { get; set; }
 
+        public List<Synapse> Synapses { get; set; }
 
+        public List<Cell> Cells { get; set; }
     }
 
 }

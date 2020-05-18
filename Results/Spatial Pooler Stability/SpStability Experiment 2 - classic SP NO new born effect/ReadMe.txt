@@ -1,10 +1,18 @@
 Global inhibition
 MaxBoost 5.0
 MIN_PCT_OVERLAP_DUTY_CYCLES = 1.0
+After 300 cycles boost disabled
 
+NewBorn effect is DISABLED.
+		//if (cycle >= 300)
+                //{
+                //    mem.setMaxBoost(0.0);
+                //    mem.updateMinPctOverlapDutyCycles(0.0);
+                //}
 
-Result for all inputs stable after 300 cycles.
-----------------------------------------------------------------------------
+Result for all inputs stable after 300 cycles. Before 300 cycles some inputs arce encoded with just few columns and some even without any column.
+Digit 0 - without  new born effect1.html shows digit 1. For example, for Digit 6 diagram cannot be created for cycles 1-300.
+----------------------------------------------------------------------------------------------------------
 
  double minOctOverlapCycles = 1.0;
             double maxBoost = 5.0;

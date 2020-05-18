@@ -17,13 +17,13 @@ export class NeocortexSettings {
 
 export class NeoCortexModel {
 
-    areas: Array<Area>;
+    Areas: Array<Area>;
 
-    synapses: Array<Synapse>;
+    Synapses: Array<Synapse>;
 
     settings: NeocortexSettings;
 
-    cells: Array<Cell> = new Array();
+    Cells: Array<Cell> = new Array();
 
     /**
      * Multidimensional sensory input.
@@ -34,16 +34,16 @@ export class NeoCortexModel {
 
 export class Area {
 
-    minicolumns: Minicolumn[][] = new Array();
-    level: number;
-    areaId: number;
+    Minicolumns: Minicolumn[][] = new Array();
+    Level: number;
+    AreaId: number;
 
 }
 
 export class Minicolumn {
     miniColumnId?: number;
-    overlap: number;
-    cells: Array<Cell> = new Array();
+    Overlap: number;
+    Cells: Array<Cell> = new Array();
     settings?: NeocortexSettings;
 
 }

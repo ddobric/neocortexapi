@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright (c) Damir Dobric. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
@@ -6,6 +8,7 @@ using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System.Linq;
 using System.Diagnostics;
+using NeoCortexEntities.NeuroVisualizer;
 
 namespace NeoCortexApi.Entities
 {
@@ -47,6 +50,7 @@ namespace NeoCortexApi.Entities
         /// All cells of the column.
         /// </summary>
         public Cell[] Cells { get; set; }
+        public int CellId { get; }
 
         //private ReadOnlyCollection<Cell> cellList;
 
@@ -74,7 +78,7 @@ namespace NeoCortexApi.Entities
 
             for (int i = 0; i < numCells; i++)
             {
-                Cells[i] = new Cell(this.Index, i, this.getNumCellsPerColumn());
+                Cells[i] = new Cell(this.Index, i, this.getNumCellsPerColumn(), this.CellId, CellActivity.ActiveCell);
             }
 
             // We keep tracking of this column only

@@ -1,6 +1,9 @@
-﻿using System;
+﻿// Copyright (c) Damir Dobric. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using System;
 using System.Collections.Generic;
 using NeoCortexApi.Entities;
+using NeoCortexEntities.NeuroVisualizer;
 
 namespace NeoCortexApi.Entities
 {
@@ -14,6 +17,7 @@ namespace NeoCortexApi.Entities
         /// Index of the cell.
         /// </summary>
         public int Index { get; set; }
+        public int CellId { get; }
 
         //public List<DistalDendrite> Segments
         //{
@@ -37,12 +41,13 @@ namespace NeoCortexApi.Entities
          * @param column    the containing {@link Column}
          * @param colSeq    this index of this {@code Cell} within its column
          */
-        public Cell(int parentColumnIndx, int colSeq, int numCellsPerColumn)
+        public Cell(int parentColumnIndx, int colSeq, int numCellsPerColumn, int cellId, CellActivity cellActivity)
         {
             this.ParentColumnIndex = parentColumnIndx;
             //this.Index = parentColumnIndx.getIndex() * parentColumnIndx.getNumCellsPerColumn() + colSeq;
             this.Index = parentColumnIndx * numCellsPerColumn + colSeq;
             //this.Segments = new List<DistalDendrite>();
+            this.CellId = cellId;
         }
 
 

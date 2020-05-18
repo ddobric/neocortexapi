@@ -1,5 +1,9 @@
-﻿using NeoCortexApi.Entities;
+﻿// Copyright (c) Damir Dobric. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using NeoCortexApi.Entities;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NeoCortexEntities.NeuroVisualizer
 {
@@ -18,12 +22,25 @@ namespace NeoCortexEntities.NeuroVisualizer
                 //Areas.Insert(levelIndex, new Area(levelIndex, colDims));
                 model.Areas.Insert(levelIndex, CreateArea(model, levelIndex, colDims, numCells));
 
+                for (int i = 0; i < 20; i++)//How to get the total number of synapses, for now 20
+                {
+                    SynapseData synap = new SynapseData
+                    {
+                        Permanence = new Random().NextDouble(),//for now generatin random permanences ranging 0 to 1
+                        PreSynapticCellIndex = model.Cells[new Random().Next(0, (model.Cells.Count()))].Index,//selecting random cell from already generated cells 
+                        PostSynapticCellIndex = model.Cells[new Random().Next(0, (model.Cells.Count()))].Index,//selecting random cell from already generated cells 
+                        // SourceCell = cell id
+                        // destination Cell = cell id
+                    };
+                    model.Synapse.Insert(i, synap);
+                }
+
             }
 
 
             return model;
         }
-       private Area CreateArea(NeuroModel model, int areaID, long[,] colDims, int cellsPerColumn)
+        private Area CreateArea(NeuroModel model, int areaID, long[,] colDims, int cellsPerColumn)
         {
             Area area = new Area(areaID, colDims);
 
@@ -34,7 +51,7 @@ namespace NeoCortexEntities.NeuroVisualizer
                 for (int colDim1 = 0; colDim1 < colDims.GetLength(1); colDim1++)
                 {
 
-                    area.MiniColumns[colDim0, colDim1] = new MiniColumn(areaID, overlap, colDim0, colDim1);
+                    area.MiniColumns[colDim0, colDim1] = new MiniColumn(areaID, overlap, colDim0, colDim1, ColumnActivity.Inactive);
                     Cell[] cells = CreateCells(cellsPerColumn, areaID, colDim0, colDim1);
                     for (int i = 0; i < cells.Length; i++)
                     {
@@ -44,7 +61,7 @@ namespace NeoCortexEntities.NeuroVisualizer
                     }
 
 
-                    
+
                 }
 
             }
@@ -54,15 +71,15 @@ namespace NeoCortexEntities.NeuroVisualizer
 
         }
 
-       private Cell[] CreateCells(int cellsPerColumn, int areaID, int colDim0, int colDim1)
+        private Cell[] CreateCells(int cellsPerColumn, int areaID, int colDim0, int colDim1)
         {
             Cell[] cells = new Cell[cellsPerColumn];
             int parentColumnIndx = 0;
-
+            int cellId = 0;
             for (int i = 0; i < cells.Length; i++)
             {
-
-                Cell cell = new Cell(areaID, i, parentColumnIndx );
+                cellId += 1;
+                Cell cell = new Cell(areaID, i, cellId, parentColumnIndx, CellActivity.PredictiveCell);
 
                 cells[i] = cell;
             }
@@ -79,7 +96,7 @@ namespace NeoCortexEntities.NeuroVisualizer
 
         public List<Cell> Cells { get; set; }
 
-        public  List<Synapse> Synapse { get; set; }
+        public List<SynapseData> Synapse { get; set; }
 
         public int CellsPerColumn { get; set; }
 
@@ -88,12 +105,12 @@ namespace NeoCortexEntities.NeuroVisualizer
         {
 
             Cells = new List<Cell>();
-            Synapse = new List<Synapse>();
+            Synapse = new List<SynapseData>();
 
         }
-       
 
-      
+
+
 
     }
 
@@ -107,30 +124,29 @@ namespace NeoCortexEntities.NeuroVisualizer
         {
             AreaId = areaID;
             MiniColumns = new MiniColumn[colDims.GetLength(0), colDims.GetLength(1)];
-            
+
         }
 
     }
 
     public class MiniColumn
     {
-        //public Cell[] Cells { get; set; }
         public List<Cell> Cells { get; set; }
         public double Overlap { get; set; }
         public int AreaId { get; set; }
-        public int ColDim0 { get; set; }
-        public int ColDim1 { get; set; }
+        public int MiniColDim0 { get; set; }
+        public int MiniColDim1 { get; set; }
 
 
 
 
-        public MiniColumn(int areaId, double overlap, int colDim0, int colDim1)//areaId, overlap, colDim0, colDim1
+        public MiniColumn(int areaId, double overlap, int miniColDim0, int miniColDim1, ColumnActivity colActivity)//areaId, overlap, colDim0, colDim1
         {
 
             AreaId = areaId;
             Overlap = overlap;
-            ColDim0 = colDim0;
-            ColDim1 = colDim1;
+            MiniColDim0 = miniColDim0;
+            MiniColDim1 = miniColDim1;
             Cells = new List<Cell>();
             //int parentColumnIndx = columnDims.GetLength(0); // Can I set dimO/X is equal to parentColumnIndex??
             // int parentColumnIndx = colDim0; // Can I set dimO/X is equal to parentColumnIndex??
@@ -146,36 +162,22 @@ namespace NeoCortexEntities.NeuroVisualizer
     }
     public class SynapseData
     {
-
-        public CellType SegmentCellType;
-        public Synapse Synapse { get; set; }
-        public Cell PreCell { get; set; }
-        public Cell PostCell { get; set; }
-
-        public void insertSynapses()
-        {
-            double permanence = 0;
-
-
-            for (int i = 0; i < 100; i++)//How to get the total number of synapses
-            {
-                // How to create a synapse
-                Synapse synapse = new Synapse
-                {
-                    Permanence = permanence,
-                    // SourceCell = cell id
-                    // destination Cell = cell id
-                };
-
-                //NeuroModel.Synapse.Insert(i, synapse);
-            }
-
-        }
+        //public CellType SegmentCellType;
+        public int PreSynapticCellIndex { get; set; }
+        public int PostSynapticCellIndex { get; set; }
+        public double Permanence { get; set; }
 
     }
 
+    public enum ColumnActivity
+    {
+        Active,
 
-    public enum CellType
+        Inactive
+    }
+
+
+    public enum CellActivity
     {
         ActiveCell,
 
