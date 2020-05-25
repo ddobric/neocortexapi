@@ -28,8 +28,10 @@ namespace UnitTestsProject
         /// <summary>
         /// It learns SP and shows the convergence of SDR for the given input.
         /// It repeats the learning process for every input many times (i.e.: 10000+ cycles) and writes out
-        /// the state of SDR. Then it counts number or instabe states. It means once SP generates stable SDR, it 
-        /// can hapen that in some hihg cycle SDR changes. NUmber of such instable cycles is counted and outputed as a result.
+        /// the state of SDR. Usually SP enter the stable stat after few cycles. However, once the SP generates the stable SDR, it 
+        /// can hapen that in some hihger cycle the output SDR changes, because the boosting gets active. 
+        /// In this experiment we trains for very large number of cycles to be sure that this effect can be noticed.
+        /// Number of such instable cycles is counted and outputed as a result.
         /// </summary>
         [TestMethod]
         [TestCategory("NetworkTests")]
@@ -215,10 +217,9 @@ namespace UnitTestsProject
         #region Experiment 2
         /// <summary>
         /// It learns SP and shows the convergence of SDR for the given input.
-        /// It repeats the learning process for every input many times (i.e.: 10000+ cycles) and writes out
-        /// the state of SDR. Then it counts number or instabe states. It means once SP generates stable SDR, it 
-        /// can hapen that in some hihg cycle SDR changes. NUmber of such instable cycles is counted and outputed as a result.
-        /// </summary>
+        /// In contrast to Experiment_1, the os called 'New Born' effect is activated.That means, SP is learning as usual, with activated column boosting.
+        /// After 300 cycles, boosting is disabled. This will cause SP to remain in th elearned SDR state, because no more boosting will be activated. 
+        /// /// </summary>
         [TestMethod]
         [TestCategory("NetworkTests")]
         [TestCategory("Experiment")]

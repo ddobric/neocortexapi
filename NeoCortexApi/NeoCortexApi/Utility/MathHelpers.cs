@@ -94,8 +94,8 @@ namespace NeoCortexApi.Utility
         /// <summary>
         /// Calculates how many elements of the array are same in percents.
         /// </summary>
-        /// <param name="originArray"></param>
-        /// <param name="comparingArray"></param>
+        /// <param name="originArray">Indexes</param>
+        /// <param name="comparingArray">Indexes</param>
         /// <returns>Similarity between arrays 0.0-1.0</returns>
         public static double CalcArraySimilarity(int[] originArray, int[] comparingArray)
         {
