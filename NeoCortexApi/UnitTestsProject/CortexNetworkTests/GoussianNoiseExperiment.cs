@@ -82,9 +82,16 @@ namespace UnitTestsProject.CortexNetworkTests
             p.Set(KEY.SYN_PERM_CONNECTED, 0.10);
             p.Set(KEY.SYN_PERM_BELOW_STIMULUS_INC, 0.01);
             p.Set(KEY.SYN_PERM_TRIM_THRESHOLD, 0.05);
-            p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.001);
+           
+            p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 1);
             p.Set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.001);
             p.Set(KEY.DUTY_CYCLE_PERIOD, 100);
+
+            // These values activate powerfull boosting.
+            p.Set(KEY.MAX_BOOST, 5);
+            p.Set(KEY.DUTY_CYCLE_PERIOD, 100);
+            p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 1);
+
             p.Set(KEY.MAX_BOOST, 10);
             p.Set(KEY.WRAP_AROUND, true);
             p.Set(KEY.LEARN, true);
@@ -116,9 +123,17 @@ namespace UnitTestsProject.CortexNetworkTests
             HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
 
             Encoding(E_outBits);
+
             // Can adjust the number of SP learning cycles below
-            for (int j = 0; j < 200; j++)
+            for (int cycle = 0; cycle < 320; cycle++)
             {
+                if (cycle >= 300)
+                {
+                    // These activates ew-born effect which switch offs the boosting.
+                    mem.setMaxBoost(0.0);
+                    mem.updateMinPctOverlapDutyCycles(0.0);
+                }
+
                 using (StreamReader sr = new StreamReader(SP_inFile))
                 {
                     string line;
