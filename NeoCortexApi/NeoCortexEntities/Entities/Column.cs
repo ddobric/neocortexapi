@@ -13,16 +13,13 @@ using NeoCortexEntities.NeuroVisualizer;
 namespace NeoCortexApi.Entities
 {
 
-    /**
-     * Abstraction of both an input bit and a columnal collection of
-     * {@link Cell}s which have behavior associated with membership to
-     * a given {@code Column}
-     * 
-     * @author Chetan Surpur
-     * @author David Ray
-     *
-     */
-    //[Serializable]
+   
+    /// <summary>
+    /// Implementation of the mini-column.
+    /// </summary>
+    /// <remarks>
+    /// Authors of the JAVA implementaiton:Chetan Surpur, David Ray
+    /// </remarks>
     public class Column : IEquatable<Column>, IComparable<Column>
     {
         public AbstractSparseBinaryMatrix connectedInputCounter;
@@ -35,14 +32,9 @@ namespace NeoCortexApi.Entities
         /// Column index
         /// </summary>
         public int Index { get; set; }
-
-        /** Stored boxed form to eliminate need for boxing on the fly */
-        // private readonly Integer boxedIndex;
-        /** Configuration of cell count */
-        //private readonly int numCells;
-
+            
         /// <summary>
-        /// Dendrites connected to <see cref="SpatialPooler"/> input pools
+        /// Dendrites connected to <see cref="SpatialPooler"/> input neural cells.
         /// </summary>
         public ProximalDendrite ProximalDendrite { get; set; }
 
@@ -50,6 +42,10 @@ namespace NeoCortexApi.Entities
         /// All cells of the column.
         /// </summary>
         public Cell[] Cells { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public int CellId { get; }
 
         //private ReadOnlyCollection<Cell> cellList;
@@ -88,26 +84,6 @@ namespace NeoCortexApi.Entities
 
             this.ConnectedInputCounterMatrix = new SparseBinaryMatrix(new int[] { 1, numInputs });
         }
-
-
-        /**
-         * Returns the {@link Cell} residing at the specified index.
-         * <p>
-         * <b>IMPORTANT NOTE:</b> the index provided is the index of the Cell within this
-         * column and is <b>not</b> the actual index of the Cell within the total
-         * list of Cells of all columns. Each Cell maintains it's own <i><b>GLOBAL</i></b>
-         * index which is the index describing the occurrence of a cell within the
-         * total list of all cells. Thus, {@link Cell#getIndex()} returns the <i><b>GLOBAL</i></b>
-         * index and <b>not</b> the index within this column.
-         * 
-         * @param index     the index of the {@link Cell} to return.
-         * @return          the {@link Cell} residing at the specified index.
-         */
-        //public Cell getCell(int index)
-        //{
-        //    return Cells[index];
-        //}
-
 
 
         /**

@@ -355,7 +355,7 @@ namespace NeoCortexApi.DistributedComputeLib
         }
 
         /// <summary>
-        /// Performs remote initialization and configuration of all coulms in all partitions.
+        /// Performs remote initialization and configuration of all coulmns in all partitions.
         /// </summary>
         /// <param name="htmConfig"></param>
         /// <returns>List of average spans of all columns on this node in this partition.

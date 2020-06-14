@@ -217,8 +217,8 @@ namespace UnitTestsProject
         #region Experiment 2
         /// <summary>
         /// It learns SP and shows the convergence of SDR for the given input.
-        /// In contrast to Experiment_1, the os called 'New Born' effect is activated.That means, SP is learning as usual, with activated column boosting.
-        /// After 300 cycles, boosting is disabled. This will cause SP to remain in th elearned SDR state, because no more boosting will be activated. 
+        /// In contrast to Experiment_1, the new feature called 'New Born' effect is activated.That means, SP is learning as usual, with activated column boosting.
+        /// After 300 cycles, boosting is disabled. This will cause SP to remain in the learned SDR state, because no more boosting will be activated. 
         /// /// </summary>
         [TestMethod]
         [TestCategory("NetworkTests")]

@@ -177,7 +177,7 @@ namespace UnitTestsProject
         /// <param name="topologies">list of sparse space size. Sparse space has same width and length</param>
         [TestMethod]
         [TestCategory("LongRunning")]
-        [DataRow("MnistPng28x28\\training", "5", new int[] { 28 }, new int[] { 32 /*, 64, 128 */})]
+        [DataRow("MnistPng28x28_smallerdataset\\training", "5", new int[] { 28 }, new int[] { 32 /*, 64, 128 */})]
         public void TrainSingleMnistImageWithVariableRadiusTest(string trainingFolder, string digit, int[] imageSizes, int[] topologies)
         {
             string testOutputFolder = $"Output-{nameof(TrainSingleMnistImageWithVariableRadiusTest)}";
