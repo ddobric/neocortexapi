@@ -2,13 +2,15 @@ import os
 import random
 import sys
 import plotly
+import plotly.subplots
+import itertools
 import plotly.graph_objs as go
 import argparse
 import csv
 
 import os
 
-
+#  py draw_figure.py -fn "C:\dev\devops-daenet\NeoCortexApi\Results\Spatial Pooler Stability\SpStability Experiment 2 - with new born effect\ActiveColumns_MaxBoost_5_MinOverl_1_4_plotly-input.csv" -gn GRAPHNAME -mc 1000 -ht 2 -yt column -xt cycle -st singlecolumn -fign CortialColumn        
 # python draw_figure.py -fn "C:\dev\git\NeoCortex\Results\Spatial Pooler Stability\SpStability Experiment 2 Boost 00 - digits 0 1 2 stable\ActiveColumns_Boost_0_0_plotly-input.csv" -gn GRAPHNAME -mc 200 -ht 2 -yt yaxis -xt xaxis -st singlecolumn -fign CortialColumn
 # python draw_figure.py -fn "C:\dev\git\NeoCortex\Results\Spatial Pooler Stability\SpStability Experiment 2 Boost 00 - digits 0 1 2 stable\ActiveColumns_Boost_0_0_plotly-input.csv" -gn "Digit 0" -mc 700 -ht 320 -yt "Column Index" -xt Cycle -st "MinvOverlapCycles=0.1, first 300 cycles" -fign CortialColumn
 # python draw_figure.py -fn sample.txt -gn test1 -mc 19 -ht 8 -yt yaxis -xt xaxis -min 50 -max 4000 -st 'single column' -fign CortialColumn
@@ -109,7 +111,9 @@ def plotActivityVertically(activeCellsColumn, highlightTouch):
                     )
 
     # Legend for x-axis and appropriate title
-    fig['layout']['annotations'].append({
+    
+    # depending on the python version you might have to remove the list(..)
+    list(fig['layout']['annotations']).append({
         'font': {'size': 20},
         'xanchor': 'center',
         'yanchor': 'bottom',
@@ -121,7 +125,9 @@ def plotActivityVertically(activeCellsColumn, highlightTouch):
         'y': -0.15,
         'showarrow': False,
     })
-    fig['layout']['annotations'].append({
+
+    # depending on the python version you might have to remove the list(..)
+    list(fig['layout']['annotations']).append({
         'font': {'size': 24},
         'xanchor': 'center',
         'yanchor': 'bottom',

@@ -306,6 +306,8 @@ namespace NeoCortexApi.Entities
         public const string DATEFIELD_TOFD = "timeOfDay";//, Tuple.class),
         public const string DATEFIELD_CUSTOM = "customDays";//, Tuple.class), // e.g. Tuple(bits:int, List<String>:"mon,tue,fri")
         public const string DATEFIELD_PATTERN = "formatPattern";//, String.class);
+
+      
     }
 }
           

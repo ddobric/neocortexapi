@@ -33,29 +33,37 @@ using NeoCortexApi.DistributedCompute;
 
 namespace NeoCortexApi
 {
+    /// <summary>
+    /// Spatial Pooler algorithm. Single-threaded version.
+    /// Original version by David Ray, migrated from HTM JAVA. Over time, more and more code has been changed.
+    /// </summary>
     public class SpatialPooler : IHtmAlgorithm<int[], int[]>
     {
+        /// <summary>
+        /// The instance of the <see cref="HomeostaticPlasticityActivator"/>.
+        /// </summary>
+        private HomeostaticPlasticityActivator homeoPlastAct;
 
         public double MaxInibitionDensity { get; set; } = 0.5;
+
         public string Name { get; set; }
 
-        /** Default Serial Version  */
-        private static readonly long serialVersionUID = 1L;
-
-        /**
-         * Constructs a new {@code SpatialPooler}
-         */
-        public SpatialPooler() { }
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+        /// <param name="homeostaticPlasticityActivator">Includes the newborn effect in the SP. This feture was not a part of SP in the original version.</param>
+        public SpatialPooler(HomeostaticPlasticityActivator homeostaticPlasticityActivator= null) 
+        {
+            homeoPlastAct = homeostaticPlasticityActivator;
+        }
 
         private Connections connections;
 
-        /**
-         * Initializes the specified {@link Connections} object which contains
-         * the memory and structural anatomy this spatial pooler uses to implement
-         * its algorithms.
-         * 
-         * @param c     a {@link Connections} object
-         */
+        /// <summary>
+        /// Initializes the Spatial Pooler algorithm.
+        /// </summary>
+        /// <param name="c">The HTM memory instance.</param>
+        /// <param name="distMem"></param>
         public void init(Connections c, DistributedMemory distMem = null)
         {
             this.connections = c;
@@ -75,9 +83,11 @@ namespace NeoCortexApi
 
             ConnectAndConfigureInputs(c);
 
+       
             //sw.Stop();
             //Console.WriteLine($"Init time: {(float)sw.ElapsedMilliseconds / (float)1000} s");
         }
+
 
         /**
          * Called to initialize the structural anatomy with configured values and prepare
@@ -331,7 +341,7 @@ namespace NeoCortexApi
                 return activeColumnsArr;
         }
 
- #if REPAIR_STABILITY
+#if REPAIR_STABILITY
         bool inRepair = false;
 
         private int[] prevActCols = new int[0];
@@ -465,6 +475,10 @@ namespace NeoCortexApi
             {
                 ArrayUtils.setIndexesTo(activeArray, activeColumns, 1);
             }
+
+            // Involve homeostatic plasticity newborn effect, which will disable boosting.
+            if (this.homeoPlastAct != null)
+                this.homeoPlastAct.Compute(inputVector, activeArray);
 
             //Debug.WriteLine($"SP-OUT: {Helpers.StringifyVector(activeColumns.OrderBy(c=>c).ToArray())}");
         }
@@ -667,7 +681,7 @@ namespace NeoCortexApi
 
             int period = c.getDutyCyclePeriod();
             if (period > c.getIterationNum())
-            {              
+            {
                 period = c.getIterationNum();
             }
 
@@ -880,7 +894,7 @@ namespace NeoCortexApi
         /// <param name="c"></param>
         public virtual void BumpUpWeakColumns(Connections c)
         {
-            if(c.IsBumpUpWeakColumnsDisabled)
+            if (c.IsBumpUpWeakColumnsDisabled)
                 return;
 
             // This condition is wrong. It brings teh SP in scillation state.

@@ -341,7 +341,8 @@ namespace NeoCortexApi
 
 
         /// <summary>
-        /// 
+        /// TM acitivates segments on the column in the previous cycle. This method locates such segments and 
+        /// adapts them. 
         /// </summary>
         /// <param name="conn"></param>
         /// <param name="columnActiveSegments">Active segments as calculated (activated) in the previous step.</param>
@@ -639,16 +640,19 @@ namespace NeoCortexApi
             }
         }
 
-        /**
-         * Updates synapses on segment.
-         * Strengthens active synapses; weakens inactive synapses.
-         *  
-         * @param conn                      {@link Connections} instance for the tm
-         * @param segment                   {@link DistalDendrite} to adapt
-         * @param prevActiveCells           Active {@link Cell}s in `t-1`
-         * @param permanenceIncrement       Amount to increment active synapses    
-         * @param permanenceDecrement       Amount to decrement inactive synapses
-         */
+
+
+        /// <summary>
+        /// Increments the permanence of the segment's synapse if the synapse's presynaptic cell 
+        /// was active in the previous cycle.
+        /// If it was not active, the if will decrement the permanence value. 
+        /// If the permamence is below EPSILON, synapse is destroyed.
+        /// </summary>
+        /// <param name="conn"></param>
+        /// <param name="segment">The segment to adapt.</param>
+        /// <param name="prevActiveCells">List of previously active cells.</param>
+        /// <param name="permanenceIncrement"></param>
+        /// <param name="permanenceDecrement"></param>
         public void adaptSegment(Connections conn, DistalDendrite segment, ICollection<Cell> prevActiveCells,
             double permanenceIncrement, double permanenceDecrement)
         {

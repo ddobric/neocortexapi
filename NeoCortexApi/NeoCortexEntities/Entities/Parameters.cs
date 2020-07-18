@@ -48,8 +48,8 @@ namespace NeoCortexApi.Entities
 
         public static Random GetDefaultRandomGen(int seed)
         {
-                return new ThreadSafeRandom(seed);
-            
+            return new ThreadSafeRandom(seed);
+
         }
         static Dictionary<string, Object> defaultParams;
 
@@ -66,7 +66,7 @@ namespace NeoCortexApi.Entities
             defaultTemporalParams.Add(KEY.COLUMN_DIMENSIONS, new int[] { 2048 });
             defaultTemporalParams.Add(KEY.CELLS_PER_COLUMN, 32);
             defaultTemporalParams.Add(KEY.ACTIVATION_THRESHOLD, 10);
-            defaultTemporalParams.Add(KEY.LEARNING_RADIUS,10);
+            defaultTemporalParams.Add(KEY.LEARNING_RADIUS, 10);
             defaultTemporalParams.Add(KEY.MIN_THRESHOLD, 9);
             defaultTemporalParams.Add(KEY.MAX_NEW_SYNAPSE_COUNT, 20);
             defaultTemporalParams.Add(KEY.MAX_SYNAPSES_PER_SEGMENT, 225);
@@ -287,11 +287,11 @@ namespace NeoCortexApi.Entities
                     {
                         throw new ArgumentException($"Error when setting parameter '{key}'", ex);
                     }
-                               
+
                 var properties = cn.GetType().GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
                 var prop = properties.FirstOrDefault(m => m.Name == $"{key.First().ToString().ToUpper()}{key.Substring(1)}");
                 if (prop != null && prop.CanWrite)
-                    prop.SetValue(cn, paramMap[key] );
+                    prop.SetValue(cn, paramMap[key]);
                 //beanUtil.setSimpleProperty(cn, key.fieldName, get(key));
                 //}
             }

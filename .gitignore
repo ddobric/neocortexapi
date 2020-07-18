@@ -287,3 +287,4 @@ __pycache__/
 *.odx.cs
 *.xsd.cs
 /NeoCortexApi/UnitTestsProject/MnistPng28x28
+/Python/ColumnActivityDiagram/.venv

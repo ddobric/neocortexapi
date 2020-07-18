@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
+
 namespace NeoCortex
 {
     public class NeoCortexUtils
@@ -339,5 +341,22 @@ namespace NeoCortex
             }
             return intList;
         }
+
+        private static Random  rnd = new Random(42);
+
+        public static int[] CreateRandomVector(int bits, int nonZeroPct)
+        {
+            int[] inputVector = new int[bits];
+
+            var nonZeroBits = (float)(nonZeroPct / 100.0) * bits;
+
+            while (inputVector.Count(k => k == 1) < nonZeroBits)
+            {
+                inputVector[rnd.Next(bits)] = 1;
+            }
+
+            return inputVector;
+        }
+
     }
 }
