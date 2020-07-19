@@ -223,7 +223,7 @@ namespace UnitTestsProject
         [TestMethod]
         [TestCategory("NetworkTests")]
         [TestCategory("Experiment")]
-        public void SpatialPooler_Stability_Experiment2()
+        public void SpatialPooler_Stability_Experiment_2()
         {
             double minOctOverlapCycles = 1.0;
             double maxBoost = 5.0;
@@ -282,7 +282,7 @@ namespace UnitTestsProject
 
         private void RunSpStabilityExperiment2(double maxBoost, double minOverlapCycles, int inputBits, Parameters p, EncoderBase encoder, List<double> inputValues)
         {
-            string path = "SpatialPooler_Stability_Experiment 2";// nameof(SpatialPooler_Stability_Experiment2);
+            string path =  nameof(SpatialPooler_Stability_Experiment_2);
 
             if (Directory.Exists(path))
                 Directory.Delete(path, true);
@@ -417,7 +417,7 @@ namespace UnitTestsProject
         }
         #endregion
 
-        #region Experiment 2
+        #region Experiment 3
         /// <summary>
         /// It learns SP and shows the convergence of SDR for the given input.
         /// In contrast to Experiment_1, the new feature called 'New Born' effect is activated.That means, SP is learning as usual, with activated column boosting.
@@ -426,7 +426,7 @@ namespace UnitTestsProject
         [TestMethod]
         [TestCategory("NetworkTests")]
         [TestCategory("Experiment")]
-        public void SpatialPooler_Stability_Experiment3()
+        public void SpatialPooler_Stability_Experiment_3()
         {
             double minOctOverlapCycles = 1.0;
             double maxBoost = 5.0;
@@ -471,14 +471,22 @@ namespace UnitTestsProject
 
             EncoderBase encoder = new ScalarEncoder(settings);
 
-            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0 });
+            //  List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0 });
+
+            // We create here 100 random input values.
+            List<double> inputValues = new List<double>();
+          
+            for (int i = 0; i < (int)max; i++)
+            {
+                inputValues.Add((double)i);
+            }
 
             RunSpStabilityExperiment3(maxBoost, minOctOverlapCycles, inputBits, p, encoder, inputValues);
         }
 
         private void RunSpStabilityExperiment3(double maxBoost, double minOverlapCycles, int inputBits, Parameters p, EncoderBase encoder, List<double> inputValues)
         {
-            string path = "SpatialPooler_Stability_Experiment 2";// nameof(SpatialPooler_Stability_Experiment2);
+            string path =  nameof(SpatialPooler_Stability_Experiment_3);
 
             if (Directory.Exists(path))
                 Directory.Delete(path, true);
@@ -498,7 +506,10 @@ namespace UnitTestsProject
 
             var mem = new Connections();
 
-            HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem);
+            HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem, inputValues.Count * 100, (isStable, numPatterns, actColAvg)=>{
+                Assert.IsTrue(isStable);
+                Assert.IsTrue(numPatterns == inputValues.Count);
+            });
 
             SpatialPooler sp1 = new SpatialPooler(hpa);
           
@@ -527,14 +538,7 @@ namespace UnitTestsProject
             List<(double Element, (int Cycle, double Similarity)[] Oscilations)> oscilationResult = new List<(double Element, (int Cycle, double Similarity)[] Oscilations)>();
 
             for (int cycle = 0; cycle < maxSPLearningCycles; cycle++)
-            {
-                // New Born effect
-                if (cycle >= 300)
-                {
-                    mem.setMaxBoost(0.0);
-                    mem.updateMinPctOverlapDutyCycles(0.0);
-                }
-
+            { 
                 Debug.WriteLine($"Cycle  ** {cycle} **");
 
                 List<(int Cycle, double Similarity)> elementOscilationResult = new List<(int Cycle, double Similarity)>();

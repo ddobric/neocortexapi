@@ -39,8 +39,6 @@ namespace UnitTestsProject
 
             var mem = new Connections();
 
-            HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem);
-
             List<int[]> inputs = new List<int[]>();
             List<int[]> outputs = new List<int[]>();
 
@@ -54,15 +52,25 @@ namespace UnitTestsProject
                 outputs.Add(outp);
             }
 
+            bool isBoostOff = true;
+
+            int learningCycles = 100;
+
+            HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem, inputs.Count * learningCycles,
+                (isStable, numPatterns, actColAvg)=> { });
+
             for (int cycle = 0; cycle < 1000; cycle++)
             {
                 for (int i = 0; i < inputs.Count; i++)
                 {
-                    var isBoostOff = hpa.Compute(inputs[i], outputs[i]);
+                    isBoostOff = hpa.Compute(inputs[i], outputs[i]);
+
+                    if (isBoostOff)
+                        Assert.IsTrue(cycle >= learningCycles);
                 }
             }
 
-            //Assert.IsTrue(i1.Equals(i2));
+            Assert.IsTrue(isBoostOff);
         }
 
 
