@@ -507,6 +507,8 @@ namespace UnitTestsProject
             var mem = new Connections();
 
             HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem, inputValues.Count * 100, (isStable, numPatterns, actColAvg)=>{
+                // Event should only be fired when entering the stable state.
+                // Ideal SP should never enter unstable state after stable state.
                 Assert.IsTrue(isStable);
                 Assert.IsTrue(numPatterns == inputValues.Count);
             });
