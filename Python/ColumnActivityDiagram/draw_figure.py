@@ -295,7 +295,8 @@ with open(filename, 'r') as datafile:
     csv_reader = csv.reader(datafile, skipinitialspace=False,
                             delimiter=',', quoting=csv.QUOTE_NONE)
     for row in csv_reader:
-        if row[-1] == '' or row[-1] == ' ' or row[-1] == ',':
+        
+        if len(row)>0 and (row[-1] == '' or row[-1] == ' ' or row[-1] == ','):
             del row[-1]
         for i in row:
             if i == '':
