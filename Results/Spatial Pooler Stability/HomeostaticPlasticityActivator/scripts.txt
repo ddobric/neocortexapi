@@ -1,0 +1,31 @@
+py draw_figure.py -fn "C:\dev\devops-daenet\NeoCortexApi\NeoCortexApi\UnitTestsProject\bin\Debug\netcoreapp3.1\SpatialPooler_Stability_Experiment_3\ActiveColumns_MaxBoost_5_MinOverl_1_47_plotly-input.csv" -gn GRAPHNAME -mc 1000 -ht 2 -yt column -xt cycle -st singlecolumn -fign CortialColumn
+
+
+
+py draw_figure.py -fn "C:\dev\devops-daenet\NeoCortexApi\NeoCortexApi\UnitTestsProject\bin\Debug\netcoreapp3.1\SpatialPooler_Stability_Experiment_3\ActiveColumns_MaxBoost_5_MinOverl_1_1_plotly-input.csv" -gn digit-1 -mc 1300 -ht 101 -yt column -xt cycle -st digit-1 -fign CortialColumn
+
+py draw_figure.py -fn "C:\dev\devops-daenet\NeoCortexApi\NeoCortexApi\UnitTestsProject\bin\Debug\netcoreapp3.1\SpatialPooler_Stability_Experiment_3\ActiveColumns_MaxBoost_5_MinOverl_1_2_plotly-input.csv" -gn digit-2 -mc 1300 -ht 101 -yt column -xt cycle -st digit-2 -fign CortialColumn
+
+py draw_figure.py -fn "C:\dev\devops-daenet\NeoCortexApi\NeoCortexApi\UnitTestsProject\bin\Debug\netcoreapp3.1\SpatialPooler_Stability_Experiment_3\ActiveColumns_MaxBoost_5_MinOverl_1_3_plotly-input.csv" -gn digit-3 -mc 1300 -ht 101 -yt column -xt cycle -st digit-3 -fign CortialColumn
+
+py draw_figure.py -fn "C:\dev\devops-daenet\NeoCortexApi\NeoCortexApi\UnitTestsProject\bin\Debug\netcoreapp3.1\SpatialPooler_Stability_Experiment_3\ActiveColumns_MaxBoost_5_MinOverl_1_4_plotly-input.csv" -gn digit-4 -mc 1300 -ht 101 -yt column -xt cycle -st digit-4 -fign CortialColumn
+
+py draw_figure.py -fn "C:\dev\devops-daenet\NeoCortexApi\NeoCortexApi\UnitTestsProject\bin\Debug\netcoreapp3.1\SpatialPooler_Stability_Experiment_3\ActiveColumns_MaxBoost_5_MinOverl_1_5_plotly-input.csv" -gn digit-5 -mc 1300 -ht 101 -yt column -xt cycle -st digit-5 -fign CortialColumn
+
+py draw_figure.py -fn "C:\dev\devops-daenet\NeoCortexApi\NeoCortexApi\UnitTestsProject\bin\Debug\netcoreapp3.1\SpatialPooler_Stability_Experiment_3\ActiveColumns_MaxBoost_5_MinOverl_1_6_plotly-input.csv" -gn digit-6 -mc 1300 -ht 101 -yt column -xt cycle -st digit-6 -fign CortialColumn
+
+py draw_figure.py -fn "C:\dev\devops-daenet\NeoCortexApi\NeoCortexApi\UnitTestsProject\bin\Debug\netcoreapp3.1\SpatialPooler_Stability_Experiment_3\ActiveColumns_MaxBoost_5_MinOverl_1_7_plotly-input.csv" -gn digit-7 -mc 1300 -ht 101 -yt column -xt cycle -st digit-7 -fign CortialColumn
+
+py draw_figure.py -fn "C:\dev\devops-daenet\NeoCortexApi\NeoCortexApi\UnitTestsProject\bin\Debug\netcoreapp3.1\SpatialPooler_Stability_Experiment_3\ActiveColumns_MaxBoost_5_MinOverl_1_8_plotly-input.csv" -gn digit-8 -mc 1300 -ht 101 -yt column -xt cycle -st digit-8 -fign CortialColumn
+
+py draw_figure.py -fn "C:\dev\devops-daenet\NeoCortexApi\NeoCortexApi\UnitTestsProject\bin\Debug\netcoreapp3.1\SpatialPooler_Stability_Experiment_3\ActiveColumns_MaxBoost_5_MinOverl_1_9_plotly-input.csv" -gn digit-9 -mc 1300 -ht 101 -yt column -xt cycle -st digit-9 -fign CortialColumn
+
+py draw_figure.py -fn "C:\dev\devops-daenet\NeoCortexApi\NeoCortexApi\UnitTestsProject\bin\Debug\netcoreapp3.1\SpatialPooler_Stability_Experiment_3\ActiveColumns_MaxBoost_5_MinOverl_1_10_plotly-input.csv" -gn digit-10 -mc 1300 -ht 101 -yt column -xt cycle -st digit-10 -fign CortialColumn
+
+py draw_figure.py -fn "C:\dev\devops-daenet\NeoCortexApi\NeoCortexApi\UnitTestsProject\bin\Debug\netcoreapp3.1\SpatialPooler_Stability_Experiment_3\ActiveColumns_MaxBoost_5_MinOverl_1_11_plotly-input.csv" -gn digit-11 -mc 1300 -ht 101 -yt column -xt cycle -st digit-11 -fign CortialColumn
+
+py draw_figure.py -fn "C:\dev\devops-daenet\NeoCortexApi\NeoCortexApi\UnitTestsProject\bin\Debug\netcoreapp3.1\SpatialPooler_Stability_Experiment_3\ActiveColumns_MaxBoost_5_MinOverl_1_12_plotly-input.csv" -gn digit-12 -mc 1300 -ht 101 -yt column -xt cycle -st digit-12 -fign CortialColumn
+
+py draw_figure.py -fn "C:\dev\devops-daenet\NeoCortexApi\NeoCortexApi\UnitTestsProject\bin\Debug\netcoreapp3.1\SpatialPooler_Stability_Experiment_3\ActiveColumns_MaxBoost_5_MinOverl_1_13_plotly-input.csv" -gn digit-13 -mc 1300 -ht 101 -yt column -xt cycle -st digit-13 -fign CortialColumn
+
+py draw_figure.py -fn "C:\dev\devops-daenet\NeoCortexApi\NeoCortexApi\UnitTestsProject\bin\Debug\netcoreapp3.1\SpatialPooler_Stability_Experiment_3\ActiveColumns_MaxBoost_5_MinOverl_1_12_plotly-input.csv" -gn digit-14 -mc 1300 -ht 101 -yt column -xt cycle -st digit-14 -fign CortialColumn

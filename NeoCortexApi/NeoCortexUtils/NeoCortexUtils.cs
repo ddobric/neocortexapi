@@ -358,5 +358,64 @@ namespace NeoCortex
             return inputVector;
         }
 
+        /// <summary>
+        /// Calculate mean value of array of numbers. 
+        /// </summary>
+        /// <param name="colData"> array of values </param>
+        /// <returns>calculated mean</returns>
+        public static double MeanOf(double[] colData)
+        {
+            if (colData == null || colData.Length < 2)
+                throw new ArgumentException("'coldData' cannot be null or empty!");
+
+            //calculate summ of the values
+            double sum = 0;
+            for (int i = 0; i < colData.Length; i++)
+                sum += colData[i];
+
+            //calculate mean
+            double retVal = sum / colData.Length;
+
+            return retVal;
+        }
+
+        /// <summary>
+        /// Calculates Pearson correlation coefficient of two data sets
+        /// </summary>
+        /// <param name="data1"> first data set</param>
+        /// <param name="data2">second data set </param>
+        /// <returns></returns>
+        public static double CorrelationPearson(double[] data1, double[] data2)
+        {
+            if (data1 == null || data1.Length < 2)
+                throw new ArgumentException("'xData' cannot be null or empty!");
+
+            if (data2 == null || data2.Length < 2)
+                throw new ArgumentException("'yData' cannot be null or empty!");
+
+            if (data1.Length != data2.Length)
+                throw new ArgumentException("Both datasets must be of the same size!");
+
+            //calculate average for each dataset
+            double aav = MeanOf(data1);
+            double bav = MeanOf(data2);
+
+            double corr = 0;
+            double ab = 0, aa = 0, bb = 0;
+            for (int i = 0; i < data1.Length; i++)
+            {
+                var a = data1[i] - aav;
+                var b = data2[i] - bav;
+
+                ab += a * b;
+                aa += a * a;
+                bb += b * b;
+            }
+
+            corr = ab / Math.Sqrt(aa * bb);
+
+            return corr;
+        }
+
     }
 }

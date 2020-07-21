@@ -430,7 +430,7 @@ namespace UnitTestsProject
         {
             double minOctOverlapCycles = 1.0;
             double maxBoost = 5.0;
-            int inputBits = 100;
+            int inputBits = 200;
             int numColumns = 2048;
             Parameters p = Parameters.getAllDefaultParameters();
             p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
@@ -455,7 +455,7 @@ namespace UnitTestsProject
 
             // Max number of synapses on the segment.
             p.setMaxNewSynapsesPerSegmentCount((int)(0.02 * numColumns));
-            double max = 20;
+            double max = 100;
 
             Dictionary<string, object> settings = new Dictionary<string, object>()
             {
@@ -506,11 +506,15 @@ namespace UnitTestsProject
 
             var mem = new Connections();
 
-            HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem, inputValues.Count * 100, (isStable, numPatterns, actColAvg)=>{
+            bool isInStableState = false;
+
+            HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem, inputValues.Count * 100, (isStable, numPatterns, actColAvg, seenInputs)=>{
                 // Event should only be fired when entering the stable state.
                 // Ideal SP should never enter unstable state after stable state.
                 Assert.IsTrue(isStable);
                 Assert.IsTrue(numPatterns == inputValues.Count);
+                isInStableState = true;
+                Debug.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs/numPatterns}");
             });
 
             SpatialPooler sp1 = new SpatialPooler(hpa);
@@ -539,8 +543,14 @@ namespace UnitTestsProject
 
             List<(double Element, (int Cycle, double Similarity)[] Oscilations)> oscilationResult = new List<(double Element, (int Cycle, double Similarity)[] Oscilations)>();
 
+            Debug.WriteLine($"Learning Cycles: {maxSPLearningCycles}");
+            Debug.WriteLine($"MAX_BOOST={p[KEY.MAX_BOOST]}, DUTY ={p[KEY.DUTY_CYCLE_PERIOD]}");
+
             for (int cycle = 0; cycle < maxSPLearningCycles; cycle++)
-            { 
+            {
+                if (isInStableState)
+                    Debug.WriteLine($"STABILITY entered at cycle {cycle}.");
+
                 Debug.WriteLine($"Cycle  ** {cycle} **");
 
                 List<(int Cycle, double Similarity)> elementOscilationResult = new List<(int Cycle, double Similarity)>();
@@ -558,8 +568,6 @@ namespace UnitTestsProject
                         {
                             using (StreamWriter sdrPlotlyWriter = new StreamWriter(Path.Combine(path, $"ActiveColumns_MaxBoost_{maxBoost}_MinOverl_{minOverlapCycles}_{input}_plotly-input.csv"), true))
                             {
-                                Debug.WriteLine($"Learning Cycles: {maxSPLearningCycles}");
-                                Debug.WriteLine($"MAX_BOOST={p[KEY.MAX_BOOST]}, DUTY ={p[KEY.DUTY_CYCLE_PERIOD]}");
                                 Debug.WriteLine("Cycle;Similarity");
 
                                 Debug.WriteLine($"Input: {input}");

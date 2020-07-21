@@ -57,7 +57,7 @@ namespace UnitTestsProject
             int learningCycles = 100;
 
             HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem, inputs.Count * learningCycles,
-                (isStable, numPatterns, actColAvg)=> { });
+                (isStable, numPatterns, actColAvg, seenInputs) => { });
 
             for (int cycle = 0; cycle < 1000; cycle++)
             {
@@ -73,6 +73,49 @@ namespace UnitTestsProject
             Assert.IsTrue(isBoostOff);
         }
 
+        [TestMethod]
+        public void TestCorrelation1()
+        {
+            int[] arr1 = new int[] { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 };
+            int[] arr2 = new int[] { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 };
 
+            var res = HomeostaticPlasticityActivator.Correlate(arr1, arr2);
+
+            Assert.IsTrue(res == 1.0);
+        }
+
+        [TestMethod]
+        public void TestCorrelation2()
+        {
+            int[] arr1 = new int[] { 0, 1, 0, 1, 0, 1, 0, 0, 0, 1 };
+            int[] arr2 = new int[] { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 };
+
+            var res = HomeostaticPlasticityActivator.Correlate(arr1, arr2);
+
+            Assert.IsTrue(res == 0.9);
+        }
+
+        [TestMethod]
+        public void TestCorrelation3()
+        {
+            int[] arr1 = new int[] { 0, 1, 0, 1, 0, 1, 0, 0, 0 };
+            int[] arr2 = new int[] { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 };
+
+            var res = HomeostaticPlasticityActivator.Correlate(arr1, arr2);
+
+            Assert.IsTrue(res == 0.8);
+        }
+
+        [TestMethod]
+        public void TestCorrelation4()
+        {
+           
+            int[] arr1 = new int[] { 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0 };
+            int[] arr2 = new int[] { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 };
+
+            var res = HomeostaticPlasticityActivator.Correlate(arr1, arr2);
+
+            Assert.IsTrue(res == 0.75);
+        }
     }
 }
