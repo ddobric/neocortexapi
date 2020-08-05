@@ -424,7 +424,6 @@ namespace UnitTestsProject
         /// In contrast to Experiment2, this experiment uses newborn effect as built-in feature of SP. It uses the homeostatic plasticity activator.
         /// /// </summary>
         [TestMethod]
-        [TestCategory("NetworkTests")]
         [TestCategory("Experiment")]
         public void SpatialPooler_Stability_Experiment_3()
         {
@@ -508,7 +507,7 @@ namespace UnitTestsProject
 
             bool isInStableState = false;
 
-            HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem, inputValues.Count * 100, (isStable, numPatterns, actColAvg, seenInputs)=>{
+            HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem, inputValues.Count * 15, (isStable, numPatterns, actColAvg, seenInputs)=>{
                 // Event should only be fired when entering the stable state.
                 // Ideal SP should never enter unstable state after stable state.
                 Assert.IsTrue(isStable);

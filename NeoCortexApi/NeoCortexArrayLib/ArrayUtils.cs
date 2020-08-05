@@ -2925,5 +2925,51 @@ namespace NeoCortexApi.Utility
             return result;
         }
 
+        /// <summary>
+        /// Adds the new element to the list, which must contain the specified number of elements.
+        /// Old elements are replaced.
+        /// </summary>
+        /// <param name="list">The list.</param>
+        /// <param name="maxNumOfElements">Maximum allowed number of elements.</param>
+        /// <param name="newElement">The new value.</param>
+        public static int[] AddToHistoryList(int[] list, int maxNumOfElements, int newElement)
+        {
+            //
+            // Shift all elements.
+            for (int i = 0; i < maxNumOfElements-1; i++)
+            {
+                //Shift the element to the next position.
+                list[i + 1] = list[i];
+            }
+
+            list[0] = newElement;
+
+            return list;
+        }
+
+        /// <summary>
+        /// Calculates the average delta over the list.
+        /// 1/N * (x2-x1 + X3-X2, + .. + XN-XN-1)
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static double AvgDelta(int[] list)
+        {
+            double avgDerivation;
+
+            //
+            // We calculate here the derivation of the the active column function across 
+            // all inputs.
+            double sum = 0;
+            for (int i = 0; i < list.Length - 1; i++)
+            {
+                // Sum of derivations
+                sum += Math.Abs(list[i] - list[i + 1]);
+            }
+
+            avgDerivation = sum / (double)list.Length;
+
+            return avgDerivation;
+        }
     }
 }
