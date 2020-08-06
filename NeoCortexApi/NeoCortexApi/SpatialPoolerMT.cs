@@ -15,6 +15,11 @@ namespace NeoCortexApi
 {
     public class SpatialPoolerMT : SpatialPooler
     {
+        public SpatialPoolerMT(HomeostaticPlasticityActivator homeostaticPlasticityActivator = null) : base(homeostaticPlasticityActivator)
+        { 
+        
+        }
+
         /// <summary>
         /// Uses the same implementation as Single-Threaded.
         /// </summary>

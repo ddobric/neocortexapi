@@ -485,10 +485,22 @@ namespace UnitTestsProject
 
             regions.Add(region0);
 
+            var mem = new Connections();
+
+            p.apply(mem);
+
+            HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem, inputValues.Count * 15, (isStable, numPatterns, actColAvg, seenInputs) => {
+                // Event should only be fired when entering the stable state.
+                // Ideal SP should never enter unstable state after stable state.
+                Assert.IsTrue(isStable);
+                Assert.IsTrue(numPatterns == inputValues.Count);
+                isInStableState = true;
+                Debug.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+            });
+
             SpatialPoolerMT sp1 = new SpatialPoolerMT();
             TemporalMemory tm1 = new TemporalMemory();
-            var mem = new Connections();
-            p.apply(mem);
+          
             sp1.init(mem, UnitTestHelpers.GetMemory());
             tm1.init(mem);
 
