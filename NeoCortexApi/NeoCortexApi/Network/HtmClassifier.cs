@@ -21,8 +21,6 @@ namespace NeoCortexApi.Network
     {
         private List<TIN> inputSequence = new List<TIN>();
 
-        //private Dictionary<int[], int> inputSequenceMap = new Dictionary<int[], int>();
-
         private Dictionary<int[], TIN> activeMap = new Dictionary<int[], TIN>();
 
         public void Learn(TIN input, Cell[] activeCells, bool learn)
@@ -46,14 +44,9 @@ namespace NeoCortexApi.Network
         {
             this.inputSequence.Add(input);
 
-            //this.inputSequenceMap.Add(GetCellIndicies(output), this.inputSequence.Count - 1);
-
-            //if (!activeMap.ContainsKey(GetCellIndicies(output)))
-            {
-                var celIndicies = GetCellIndicies(output);
-                Debug.WriteLine($"CellState: {Helpers.StringifyVector(celIndicies)}");
-                this.activeMap.Add(celIndicies, input);
-            }
+            var celIndicies = GetCellIndicies(output);
+            Debug.WriteLine($"CellState: {Helpers.StringifyVector(celIndicies)}");
+            this.activeMap.Add(celIndicies, input);
         }
 
         /// <summary>
@@ -63,7 +56,7 @@ namespace NeoCortexApi.Network
         /// <returns></returns>
         public TIN GetPredictedInputValue(Cell[] predictiveCells)
         {
-            bool x = false;
+           // bool x = false;
             double maxSameBits = 0;
             TIN predictedValue = default(TIN);
             int[] arr = new int[predictiveCells.Length];
@@ -74,30 +67,50 @@ namespace NeoCortexApi.Network
 
             if (predictiveCells.Length != 0)
             {
-                int indx = 0;
+                int indxOfMatchingInp = 0;
                 Debug.WriteLine($"Item length: {predictiveCells.Length}\t Items: {this.activeMap.Keys.Count}");
                 int n = 0;
-                //foreach (TIN inputVal in activeArray.Keys)
+
+                List<int> sortedMatches = new List<int>();
+
+                //
+                // This loop peeks the best input
                 foreach (var pair in this.activeMap)
                 {
-                    double numOfSameBits = (double)((double)(pair.Key.Intersect(arr).Count() / (double)arr.Length));
-                    if (numOfSameBits > maxSameBits)
+                    double numOfSameBitsPct = (double)((double)(pair.Key.Intersect(arr).Count() / (double)arr.Length));
+                    if (numOfSameBitsPct > maxSameBits)
                     {
-                        Debug.WriteLine($"cnt:{n}\t{pair.Value} = bits {numOfSameBits}\t {Helpers.StringifyVector(pair.Key)}");
-                        maxSameBits = numOfSameBits;
+                        Debug.WriteLine($"indx:{n}\tbits/arrbits: {pair.Key.Length}/{arr.Length}\t{pair.Value} = similarity {numOfSameBitsPct}\t {Helpers.StringifyVector(pair.Key)}");
+                        maxSameBits = numOfSameBitsPct;
                         predictedValue = pair.Value;
-                        indx = n;
+                        indxOfMatchingInp = n;
                     }
+
+                    //if (maxSameBits > 0.9)
+                    //{
+                    //    sortedMatches.Add(n);
+                    //    // We might have muliple matchin candidates.
+                    //    // For example: Let the matchin input be i1
+                    //    // I1 - c1, c2, c3, c4
+                    //    // I2 - c1, c2, c3, c4, c5, c6
+
+                    //    Debug.WriteLine($"cnt:{n}\t{pair.Value} = bits {numOfSameBitsPct}\t {Helpers.StringifyVector(pair.Key)}");
+                    //}
 
                     n++;
                 }
 
-                Debug.Write("[ ");
-                for (int i = Math.Max(0, indx - 3); i < Math.Min(indx + 3, this.activeMap.Keys.Count); i++)
+                foreach (var item in sortedMatches)
                 {
-                    if (i == indx) Debug.Write("* ");
+
+                }
+
+                Debug.Write("[ ");
+                for (int i = Math.Max(0, indxOfMatchingInp - 3); i < Math.Min(indxOfMatchingInp + 3, this.activeMap.Keys.Count); i++)
+                {
+                    if (i == indxOfMatchingInp) Debug.Write("* ");
                     Debug.Write($"{this.inputSequence[i]}");
-                    if (i == indx) Debug.Write(" *");
+                    if (i == indxOfMatchingInp) Debug.Write(" *");
 
                     Debug.Write(", ");
                 }
@@ -114,7 +127,7 @@ namespace NeoCortexApi.Network
         /// Traces out all cell indicies grouped by input value.
         /// </summary>
         public void TraceState(string fileName = null)
-        {          
+        {
 
             List<TIN> processedValues = new List<TIN>();
 

@@ -523,7 +523,7 @@ namespace UnitTestsProject
             double[] inputs = inputValues.ToArray();
             int[] prevActiveCols = new int[0];
 
-            int maxSPLearningCycles = 50;
+            //int maxSPLearningCycles = 50;
 
             //
             // This trains SP on input pattern.
