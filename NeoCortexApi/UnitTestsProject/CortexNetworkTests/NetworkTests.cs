@@ -489,16 +489,24 @@ namespace UnitTestsProject
 
             p.apply(mem);
 
-            HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem, inputValues.Count * 15, (isStable, numPatterns, actColAvg, seenInputs) => {
+            bool isInStableState = false;
+
+            //HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
+            HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
+
+            var numInputs = inputValues.Distinct<double>().ToList().Count;
+
+            HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem, numInputs * 15, (isStable, numPatterns, actColAvg, seenInputs) => {
                 // Event should only be fired when entering the stable state.
                 // Ideal SP should never enter unstable state after stable state.
                 Assert.IsTrue(isStable);
-                Assert.IsTrue(numPatterns == inputValues.Count);
+                Assert.IsTrue(numPatterns == numInputs);
                 isInStableState = true;
+                cls.ClearState();
                 Debug.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
             });
 
-            SpatialPoolerMT sp1 = new SpatialPoolerMT();
+            SpatialPoolerMT sp1 = new SpatialPoolerMT(hpa);
             TemporalMemory tm1 = new TemporalMemory();
           
             sp1.init(mem, UnitTestHelpers.GetMemory());
@@ -512,9 +520,6 @@ namespace UnitTestsProject
             layer1.HtmModules.Add("encoder", encoder);
             layer1.HtmModules.Add("sp", sp1);
 
-            //HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
-            HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
-
             double[] inputs = inputValues.ToArray();
             int[] prevActiveCols = new int[0];
 
@@ -523,27 +528,27 @@ namespace UnitTestsProject
             //
             // This trains SP on input pattern.
             // It performs some kind of unsupervised new-born learning.
-            foreach (var input in inputs)
-            {
-                List<(int Cycle, double Similarity)> elementOscilationResult = new List<(int Cycle, double Similarity)>();
+            //foreach (var input in inputs)
+            //{
+            //    List<(int Cycle, double Similarity)> elementOscilationResult = new List<(int Cycle, double Similarity)>();
 
-                Debug.WriteLine($"Learning  ** {input} **");
+            //    Debug.WriteLine($"Learning  ** {input} **");
 
-                for (int i = 0; i < maxSPLearningCycles; i++)
-                {
-                    var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
+            //    for (int i = 0; i < maxSPLearningCycles; i++)
+            //    {
+            //        var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
 
-                    var activeColumns = layer1.GetResult("sp") as int[];
+            //        var activeColumns = layer1.GetResult("sp") as int[];
 
-                    var actCols = activeColumns.OrderBy(c => c).ToArray();
+            //        var actCols = activeColumns.OrderBy(c => c).ToArray();
 
-                    var similarity = MathHelpers.CalcArraySimilarity(prevActiveCols, actCols);
+            //        var similarity = MathHelpers.CalcArraySimilarity(prevActiveCols, actCols);
 
-                    Debug.WriteLine($" {i.ToString("D4")} SP-OUT: [{actCols.Length}/{similarity.ToString("0.##")}] - {Helpers.StringifyVector(actCols)}");
+            //        Debug.WriteLine($" {i.ToString("D4")} SP-OUT: [{actCols.Length}/{similarity.ToString("0.##")}] - {Helpers.StringifyVector(actCols)}");
 
-                    prevActiveCols = activeColumns;
-                }
-            }
+            //        prevActiveCols = activeColumns;
+            //    }
+            //}
 
             // Here we add TM module to the layer.
             layer1.HtmModules.Add("tm", tm1);
@@ -577,17 +582,17 @@ namespace UnitTestsProject
 
                 //
                 // Activate the 'New - Born' effect.
-                if (i == 100)
-                {
-                    mem.setMaxBoost(0.0);
-                    mem.updateMinPctOverlapDutyCycles(0.0);
-                    cls.ClearState();
-                }
+                //if (i == 100)
+                //{
+                //    mem.setMaxBoost(0.0);
+                //    mem.updateMinPctOverlapDutyCycles(0.0);
+                //    cls.ClearState();
+                //}
 
-                if (i == 200)
-                {
-                    cls.ClearState();
-                }
+                //if (i == 200)
+                //{
+                //    cls.ClearState();
+                //}
 
                 foreach (var input in inputs)
                 {
@@ -602,7 +607,6 @@ namespace UnitTestsProject
                     //cls.Learn(input, lyrOut.ActiveCells.ToArray());
                     cls.Learn(GetKey(prevInput, input), lyrOut.ActiveCells.ToArray());
                     
-
                     if (learn == false)
                         Debug.WriteLine($"Inference mode");
 

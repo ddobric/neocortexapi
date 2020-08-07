@@ -127,16 +127,16 @@ namespace NeoCortexApi
                     {
                         this.htmMemory.setMaxBoost(0.0);
                         this.htmMemory.updateMinPctOverlapDutyCycles(0.0);
-                    }
 
-                    if (numOfStableCyclesForInput[inpHash] > requiredNumOfStableCycles && IsInStableState(numOfStableCyclesForInput, requiredNumOfStableCycles))
-                    {
-                        // We fire event when changed from instable to stable.
-                        if (!isStable)
-                            this.onStabilityStatusChanged(true, inputs.Keys.Count, avgDerivation, cycle);
+                        if (numOfStableCyclesForInput[inpHash] > requiredNumOfStableCycles && IsInStableState(numOfStableCyclesForInput, requiredNumOfStableCycles))
+                        {
+                            // We fire event when changed from instable to stable.
+                            if (!isStable)
+                                this.onStabilityStatusChanged(true, inputs.Keys.Count, avgDerivation, cycle);
 
-                        isStable = true;
-                        res = true;                    
+                            isStable = true;
+                            res = true;
+                        }
                     }
                 }
                 else
