@@ -489,12 +489,17 @@ namespace UnitTestsProject
 
             p.apply(mem);
 
+            //HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
+            HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
+
             HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem, inputValues.Count * 15, (isStable, numPatterns, actColAvg, seenInputs) => {
                 // Event should only be fired when entering the stable state.
                 // Ideal SP should never enter unstable state after stable state.
                 Assert.IsTrue(isStable);
                 Assert.IsTrue(numPatterns == inputValues.Count);
-                isInStableState = true;
+
+                cls.ClearState();
+
                 Debug.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
             });
 
@@ -511,9 +516,6 @@ namespace UnitTestsProject
             region0.AddLayer(layer1);
             layer1.HtmModules.Add("encoder", encoder);
             layer1.HtmModules.Add("sp", sp1);
-
-            //HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
-            HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
 
             double[] inputs = inputValues.ToArray();
             int[] prevActiveCols = new int[0];
@@ -577,17 +579,17 @@ namespace UnitTestsProject
 
                 //
                 // Activate the 'New - Born' effect.
-                if (i == 100)
-                {
-                    mem.setMaxBoost(0.0);
-                    mem.updateMinPctOverlapDutyCycles(0.0);
-                    cls.ClearState();
-                }
+                //if (i == 100)
+                //{
+                //    mem.setMaxBoost(0.0);
+                //    mem.updateMinPctOverlapDutyCycles(0.0);
+                //    cls.ClearState();
+                //}
 
-                if (i == 200)
-                {
-                    cls.ClearState();
-                }
+                //if (i == 200)
+                //{
+                //    cls.ClearState();
+                //}
 
                 foreach (var input in inputs)
                 {
