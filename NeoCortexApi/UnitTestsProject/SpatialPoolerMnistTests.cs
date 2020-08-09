@@ -125,7 +125,7 @@ namespace UnitTestsProject
                                 string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
 
                                 //Read input csv file into array
-                                int[] inputVector = NeoCortexUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+                                int[] inputVector = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageFile).ToArray();
 
                                 int numIterationsPerImage = 5;
                                 int[] oldArray = new int[activeArray.Length];
@@ -253,7 +253,7 @@ namespace UnitTestsProject
                                     string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
 
                                     //Read input csv file into array
-                                    int[] inputVector = NeoCortexUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+                                    int[] inputVector = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageFile).ToArray();
 
                                     int numIterationsPerImage = 5;
                                     int[] oldArray = new int[activeArray.Length];
@@ -421,7 +421,7 @@ namespace UnitTestsProject
                                     string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
 
                                     //Read input csv file into array
-                                    int[] inputVector = NeoCortexUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+                                    int[] inputVector = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageFile).ToArray();
 
                                     int numIterationsPerImage = 10;
                                     int[] oldArray = new int[sp.GetActiveColumns(targetLyrIndx).Length];
@@ -569,7 +569,7 @@ namespace UnitTestsProject
                             string inputBinaryImageFile = Helpers.BinarizeImage($"{testImage}", imgSize, testName);
 
                             // Read input csv file into array
-                            int[] inputVector = NeoCortexUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+                            int[] inputVector = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageFile).ToArray();
 
                             trainedSpatialPooler.Compute(inputVector, false);
 
@@ -824,7 +824,7 @@ namespace UnitTestsProject
                             string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
 
                             //Read input csv file into array
-                            int[] inputVector = NeoCortexUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+                            int[] inputVector = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageFile).ToArray();
 
                             int numIterationsPerImage = 5;
 
@@ -993,7 +993,7 @@ namespace UnitTestsProject
                     string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imgSize, testName);
 
                     //Read input csv file into array
-                    int[] inputVector = NeoCortexUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+                    int[] inputVector = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageFile).ToArray();
 
                     sp.Compute(inputVector, false);
 

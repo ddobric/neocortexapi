@@ -325,7 +325,7 @@ namespace NeoCortex
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static List<int> ReadCsvFileTest(String path)
+        public static List<int> ReadCsvIntegers(String path)
         {
             string fileContent = File.ReadAllText(path);
             string[] integerStrings = fileContent.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);

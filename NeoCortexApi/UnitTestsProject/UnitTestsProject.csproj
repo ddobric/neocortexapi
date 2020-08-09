@@ -3696,6 +3696,15 @@
     <None Update="MnistPng28x28\training\y\9.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Similarity\TestFiles\Vertical_1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Similarity\TestFiles\Vertical_2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Similarity\TestFiles\Vertical_3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="TestFiles\digit1.PNG">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -3760,6 +3769,7 @@
     <Folder Include="NewBornBumpUpExperiments\" />
     <Folder Include="NoiseExperiments\Output\" />
     <Folder Include="Output\" />
+    <Folder Include="Similarity\TestFiles\" />
   </ItemGroup>
 
 </Project>

@@ -92,7 +92,8 @@ namespace NeoCortexApi.Utility
 
 
         /// <summary>
-        /// Calculates how many elements of the array are same in percents.
+        /// Calculates how many elements of the array are same in percents. This method is useful to compare 
+        /// two arays that contains indicies of active columns.
         /// </summary>
         /// <param name="originArray">Indexes</param>
         /// <param name="comparingArray">Indexes</param>

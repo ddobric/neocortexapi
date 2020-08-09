@@ -316,7 +316,7 @@ namespace UnitTestsProject
                                 int[] activeArray = new int[actiColLen];
 
                                 //Read input csv file into array
-                                int[] inputVector = NeoCortexUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+                                int[] inputVector = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageFile).ToArray();
                                 sw.Restart();
 
                                 int iterations = 2;
@@ -513,7 +513,7 @@ namespace UnitTestsProject
                                 int[] activeArray = new int[actiColLen];
 
                                 //Read input csv file into array
-                                int[] inputVector = NeoCortexUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+                                int[] inputVector = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageFile).ToArray();
 
                                 var inputOverlap = new List<double>();
                                 var outputOverlap = new List<double>();
@@ -563,9 +563,9 @@ namespace UnitTestsProject
                                 var str = Helpers.StringifyVector(activeCols);
 
 
-                                int[] oldInputVector = NeoCortexUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+                                int[] oldInputVector = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageFile).ToArray();
 
-                                int[] inputVectorShifted = NeoCortexUtils.ReadCsvFileTest(inputBinaryImageShiftedFile).ToArray();
+                                int[] inputVectorShifted = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageShiftedFile).ToArray();
 
                                 int[] activeArrayShifted = new int[topologies[topologyIndx] * topologies[topologyIndx]];
                                 double[][] activeArrayShiftedDouble = new double[1][];

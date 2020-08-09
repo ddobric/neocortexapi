@@ -339,7 +339,7 @@ namespace UnitTestsProject
                         string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imageSize, testName);
 
                         //Read input csv file into array
-                        int[] inputVector = NeoCortexUtils.ReadCsvFileTest(inputBinaryImageFile).ToArray();
+                        int[] inputVector = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageFile).ToArray();
 
                         int numIterationsPerImage = 5;
                         int[] oldArray = new int[activeArray.Length];
