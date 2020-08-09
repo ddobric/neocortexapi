@@ -56,7 +56,7 @@ namespace NeoCortexApi.Network
         /// <returns></returns>
         public TIN GetPredictedInputValue(Cell[] predictiveCells)
         {
-           // bool x = false;
+            // bool x = false;
             double maxSameBits = 0;
             TIN predictedValue = default(TIN);
             int[] arr = new int[predictiveCells.Length];
@@ -77,26 +77,33 @@ namespace NeoCortexApi.Network
                 // This loop peeks the best input
                 foreach (var pair in this.activeMap)
                 {
-                    double numOfSameBitsPct = (double)((double)(pair.Key.Intersect(arr).Count() / (double)arr.Length));
-                    if (numOfSameBitsPct > maxSameBits)
+                    //
+                    // We compare only outputs which are similar in the length.
+                    // This is important, because some utputs, which are not related to the comparing output
+                    // might have much mode cells (length) than the current output. With this, outputs with much more cells
+                    // would be declared as matching outputs even if they are not.
+                    if (Math.Abs(arr.Length / pair.Key.Length) > 0.9)
                     {
-                        Debug.WriteLine($"indx:{n}\tbits/arrbits: {pair.Key.Length}/{arr.Length}\t{pair.Value} = similarity {numOfSameBitsPct}\t {Helpers.StringifyVector(pair.Key)}");
-                        maxSameBits = numOfSameBitsPct;
-                        predictedValue = pair.Value;
-                        indxOfMatchingInp = n;
+                        double numOfSameBitsPct = (double)((double)(pair.Key.Intersect(arr).Count() / (double)arr.Length));
+                        if (numOfSameBitsPct > maxSameBits)
+                        {
+                            Debug.WriteLine($"indx:{n}\tbits/arrbits: {pair.Key.Length}/{arr.Length}\t{pair.Value} = similarity {numOfSameBitsPct}\t {Helpers.StringifyVector(pair.Key)}");
+                            maxSameBits = numOfSameBitsPct;
+                            predictedValue = pair.Value;
+                            indxOfMatchingInp = n;
+                        }
+
+                        //if (maxSameBits > 0.9)
+                        //{
+                        //    sortedMatches.Add(n);
+                        //    // We might have muliple matchin candidates.
+                        //    // For example: Let the matchin input be i1
+                        //    // I1 - c1, c2, c3, c4
+                        //    // I2 - c1, c2, c3, c4, c5, c6
+
+                        //    Debug.WriteLine($"cnt:{n}\t{pair.Value} = bits {numOfSameBitsPct}\t {Helpers.StringifyVector(pair.Key)}");
+                        //}
                     }
-
-                    //if (maxSameBits > 0.9)
-                    //{
-                    //    sortedMatches.Add(n);
-                    //    // We might have muliple matchin candidates.
-                    //    // For example: Let the matchin input be i1
-                    //    // I1 - c1, c2, c3, c4
-                    //    // I2 - c1, c2, c3, c4, c5, c6
-
-                    //    Debug.WriteLine($"cnt:{n}\t{pair.Value} = bits {numOfSameBitsPct}\t {Helpers.StringifyVector(pair.Key)}");
-                    //}
-
                     n++;
                 }
 

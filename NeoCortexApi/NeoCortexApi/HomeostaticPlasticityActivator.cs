@@ -111,7 +111,7 @@ namespace NeoCortexApi
                 // SDR appear with few more or less bits than in the previous cycle.
                 // If this happen we take the new SDR (output) as the winner and put it in the map.
                 if (similarity > 0.96)
-                {
+                { 
                     // We calculate here the average change of the SDR for the given input.
                     avgDerivation = ArrayUtils.AvgDelta(numOfActiveColsForInput[inpHash]);
 
