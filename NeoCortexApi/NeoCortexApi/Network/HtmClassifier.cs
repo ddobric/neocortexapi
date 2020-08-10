@@ -79,7 +79,7 @@ namespace NeoCortexApi.Network
                 {
                     //
                     // We compare only outputs which are similar in the length.
-                    // This is important, because some utputs, which are not related to the comparing output
+                    // This is important, because some outputs, which are not related to the comparing output
                     // might have much mode cells (length) than the current output. With this, outputs with much more cells
                     // would be declared as matching outputs even if they are not.
                     if (Math.Abs(arr.Length / pair.Key.Length) > 0.9)
