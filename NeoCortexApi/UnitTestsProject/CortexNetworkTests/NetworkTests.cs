@@ -397,7 +397,6 @@ namespace UnitTestsProject
         ///
         /// </summary>
         [TestMethod]
-        [TestCategory("NetworkTests")]
         [TestCategory("Experiment")]
         public void MusicNotesExperiment()
         {
@@ -451,7 +450,8 @@ namespace UnitTestsProject
             EncoderBase encoder = new ScalarEncoder(settings);
 
             //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 2.0, 0.0, 0.1, 2.0 });
-            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0 });
+           // List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0 });
+            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 15.0 });
             // C-0, D-1, E-2, F-3, G-4, H-5
             //var inputValues = new double[] { 0.0, 0.0, 4.0, 4.0, 5.0, 5.0, 4.0, 3.0, 3.0, 2.0, 2.0, 1.0, 1.0, 0.0 };
 
@@ -496,7 +496,7 @@ namespace UnitTestsProject
 
             var numInputs = inputValues.Distinct<double>().ToList().Count;
 
-            HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem, numInputs * 15, (isStable, numPatterns, actColAvg, seenInputs) => {
+            HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem, numInputs * 25, (isStable, numPatterns, actColAvg, seenInputs) => {
                 // Event should only be fired when entering the stable state.
                 // Ideal SP should never enter unstable state after stable state.
                 Assert.IsTrue(isStable);
@@ -642,7 +642,7 @@ namespace UnitTestsProject
                 {
                     maxMatchCnt++;
                     Debug.WriteLine($"100% accuracy reched {maxMatchCnt} times.");
-                    if (maxMatchCnt >= 20)
+                    if (maxMatchCnt >= 25)
                     {
                         sw.Stop();
                         Debug.WriteLine($"Exit experiment in the stable state after 10 repeats with 100% of accuracy. Elapsed time: {sw.ElapsedMilliseconds / 1000 / 60} min.");

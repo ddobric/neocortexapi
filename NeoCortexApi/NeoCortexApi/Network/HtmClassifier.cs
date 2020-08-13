@@ -21,7 +21,9 @@ namespace NeoCortexApi.Network
     {
         private List<TIN> inputSequence = new List<TIN>();
 
-        private Dictionary<int[], TIN> activeMap = new Dictionary<int[], TIN>();
+        //private Dictionary<int[], TIN> activeMap = new Dictionary<int[], TIN>();
+
+        private Dictionary<TIN, int[]> activeMap2 = new Dictionary<TIN, int[]>();
 
         public void Learn(TIN input, Cell[] activeCells, bool learn)
         {
@@ -30,23 +32,29 @@ namespace NeoCortexApi.Network
 
         public void ClearState()
         {
-            this.activeMap.Clear();
+            //this.activeMap.Clear();
+            this.activeMap2.Clear();
             this.inputSequence.Clear();
         }
 
         /// <summary>
         /// Assotiate specified input to the given set of predictive cells.
         /// </summary>
-        /// <param name="input"></param>
-        /// <param name="output"></param>
+        /// <param name="input">Any kind of input.</param>
+        /// <param name="output">The SDR of the input as calculated by SP.</param>
         /// <param name="predictedOutput"></param>
         public void Learn(TIN input, Cell[] output)
         {
             this.inputSequence.Add(input);
 
             var celIndicies = GetCellIndicies(output);
-            Debug.WriteLine($"CellState: {Helpers.StringifyVector(celIndicies)}");
-            this.activeMap.Add(celIndicies, input);
+            Debug.WriteLine($"SDR: {Helpers.StringifyVector(celIndicies)}");
+            //this.activeMap.Add(celIndicies, input);
+
+            if (this.activeMap2.ContainsKey(input))
+                this.activeMap2[input] = celIndicies;
+            else
+                this.activeMap2.Add(input, celIndicies);
         }
 
         /// <summary>
@@ -68,66 +76,86 @@ namespace NeoCortexApi.Network
             if (predictiveCells.Length != 0)
             {
                 int indxOfMatchingInp = 0;
-                Debug.WriteLine($"Item length: {predictiveCells.Length}\t Items: {this.activeMap.Keys.Count}");
+                Debug.WriteLine($"Item length: {predictiveCells.Length}\t Items: {this.activeMap2.Keys.Count}");
                 int n = 0;
 
                 List<int> sortedMatches = new List<int>();
 
-                //
-                // This loop peeks the best input
-                foreach (var pair in this.activeMap)
+                var celIndicies = GetCellIndicies(predictiveCells);
+                foreach (var pair in this.activeMap2)
                 {
-                    //
-                    // We compare only outputs which are similar in the length.
-                    // This is important, because some utputs, which are not related to the comparing output
-                    // might have much mode cells (length) than the current output. With this, outputs with much more cells
-                    // would be declared as matching outputs even if they are not.
-                    if (Math.Abs(arr.Length / pair.Key.Length) > 0.9)
+                    if (pair.Value.SequenceEqual(celIndicies))
+                        return pair.Key;
+
+                    double numOfSameBitsPct = (double)((double)(pair.Value.Intersect(arr).Count() / (double)arr.Length));
+                    if (numOfSameBitsPct > maxSameBits)
                     {
-                        double numOfSameBitsPct = (double)((double)(pair.Key.Intersect(arr).Count() / (double)arr.Length));
-                        if (numOfSameBitsPct > maxSameBits)
-                        {
-                            Debug.WriteLine($"indx:{n}\tbits/arrbits: {pair.Key.Length}/{arr.Length}\t{pair.Value} = similarity {numOfSameBitsPct}\t {Helpers.StringifyVector(pair.Key)}");
-                            maxSameBits = numOfSameBitsPct;
-                            predictedValue = pair.Value;
-                            indxOfMatchingInp = n;
-                        }
-
-                        //if (maxSameBits > 0.9)
-                        //{
-                        //    sortedMatches.Add(n);
-                        //    // We might have muliple matchin candidates.
-                        //    // For example: Let the matchin input be i1
-                        //    // I1 - c1, c2, c3, c4
-                        //    // I2 - c1, c2, c3, c4, c5, c6
-
-                        //    Debug.WriteLine($"cnt:{n}\t{pair.Value} = bits {numOfSameBitsPct}\t {Helpers.StringifyVector(pair.Key)}");
-                        //}
+                        Debug.WriteLine($"indx:{n}\tbits/arrbits: {pair.Value}/{arr.Length}\t{pair.Value} = similarity {numOfSameBitsPct}\t {Helpers.StringifyVector(pair.Value)}");
+                        maxSameBits = numOfSameBitsPct;
+                        predictedValue = pair.Key;
+                        indxOfMatchingInp = n;
                     }
-                    n++;
                 }
-
-                foreach (var item in sortedMatches)
-                {
-
-                }
-
-                Debug.Write("[ ");
-                for (int i = Math.Max(0, indxOfMatchingInp - 3); i < Math.Min(indxOfMatchingInp + 3, this.activeMap.Keys.Count); i++)
-                {
-                    if (i == indxOfMatchingInp) Debug.Write("* ");
-                    Debug.Write($"{this.inputSequence[i]}");
-                    if (i == indxOfMatchingInp) Debug.Write(" *");
-
-                    Debug.Write(", ");
-                }
-                Debug.WriteLine(" ]");
-
-                return predictedValue;
-                //return activeMap[ComputeHash(FlatArray(output))];
             }
-            return default(TIN);
+
+            return predictedValue;
         }
+        /*
+        //
+        // This loop peeks the best input
+        foreach (var pair in this.activeMap)
+        {
+            //
+            // We compare only outputs which are similar in the length.
+            // This is important, because some outputs, which are not related to the comparing output
+            // might have much mode cells (length) than the current output. With this, outputs with much more cells
+            // would be declared as matching outputs even if they are not.
+            if ((Math.Min(arr.Length, pair.Key.Length) / Math.Max(arr.Length, pair.Key.Length)) > 0.9)
+            {
+                double numOfSameBitsPct = (double)((double)(pair.Key.Intersect(arr).Count() / (double)arr.Length));
+                if (numOfSameBitsPct > maxSameBits)
+                {
+                    Debug.WriteLine($"indx:{n}\tbits/arrbits: {pair.Key.Length}/{arr.Length}\t{pair.Value} = similarity {numOfSameBitsPct}\t {Helpers.StringifyVector(pair.Key)}");
+                    maxSameBits = numOfSameBitsPct;
+                    predictedValue = pair.Value;
+                    indxOfMatchingInp = n;
+                }
+
+                //if (maxSameBits > 0.9)
+                //{
+                //    sortedMatches.Add(n);
+                //    // We might have muliple matchin candidates.
+                //    // For example: Let the matchin input be i1
+                //    // I1 - c1, c2, c3, c4
+                //    // I2 - c1, c2, c3, c4, c5, c6
+
+                //    Debug.WriteLine($"cnt:{n}\t{pair.Value} = bits {numOfSameBitsPct}\t {Helpers.StringifyVector(pair.Key)}");
+                //}
+            }
+            n++;
+        }
+
+        foreach (var item in sortedMatches)
+        {
+
+        }
+
+        Debug.Write("[ ");
+        for (int i = Math.Max(0, indxOfMatchingInp - 3); i < Math.Min(indxOfMatchingInp + 3, this.activeMap.Keys.Count); i++)
+        {
+            if (i == indxOfMatchingInp) Debug.Write("* ");
+            Debug.Write($"{this.inputSequence[i]}");
+            if (i == indxOfMatchingInp) Debug.Write(" *");
+
+            Debug.Write(", ");
+        }
+        Debug.WriteLine(" ]");
+
+        return predictedValue;
+        //return activeMap[ComputeHash(FlatArray(output))];
+    }
+    return default(TIN);
+    }*/
 
 
         /// <summary>
@@ -135,41 +163,71 @@ namespace NeoCortexApi.Network
         /// </summary>
         public void TraceState(string fileName = null)
         {
+            StreamWriter sw = null;
+            if (fileName != null)
+                sw = new StreamWriter(fileName);
+            else
+                sw = new StreamWriter(fileName.Replace(".csv", "HtmClassifier.state.csv"));
 
             List<TIN> processedValues = new List<TIN>();
 
-            foreach (var item in activeMap.Values)
+            foreach (var item in activeMap2)
             {
-                if (processedValues.Contains(item) == false)
-                {
-                    StreamWriter sw = null;
+                Debug.WriteLine("");
+                Debug.WriteLine($"{item.Key}");
 
-                    if (fileName != null)
-                        sw = new StreamWriter(fileName.Replace(".csv", $"_Digit_{item}.csv"));
+                Debug.WriteLine($"{Helpers.StringifyVector(item.Value)}");
+            }
 
-                    Debug.WriteLine("");
-                    Debug.WriteLine($"{item}");
-
-                    foreach (var inp in this.activeMap.Where(i => EqualityComparer<TIN>.Default.Equals((TIN)i.Value, item)))
-                    {
-                        Debug.WriteLine($"{Helpers.StringifyVector(inp.Key)}");
-
-                        if (sw != null)
-                            sw.WriteLine($"{Helpers.StringifyVector(inp.Key)}");
-                    }
-
-                    if (sw != null)
-                    {
-                        sw.Flush();
-                        sw.Close();
-                    }
-
-                    processedValues.Add(item);
-                }
+            if (sw != null)
+            {
+                sw.Flush();
+                sw.Close();
             }
         }
 
 
+
+        /*
+    /// <summary>
+    /// Traces out all cell indicies grouped by input value.
+    /// </summary>
+    public void TraceState2(string fileName = null)
+    {
+
+        List<TIN> processedValues = new List<TIN>();
+
+        foreach (var item in activeMap.Values)
+        {
+            if (processedValues.Contains(item) == false)
+            {
+                StreamWriter sw = null;
+
+                if (fileName != null)
+                    sw = new StreamWriter(fileName.Replace(".csv", $"_Digit_{item}.csv"));
+
+                Debug.WriteLine("");
+                Debug.WriteLine($"{item}");
+
+                foreach (var inp in this.activeMap.Where(i => EqualityComparer<TIN>.Default.Equals((TIN)i.Value, item)))
+                {
+                    Debug.WriteLine($"{Helpers.StringifyVector(inp.Key)}");
+
+                    if (sw != null)
+                        sw.WriteLine($"{Helpers.StringifyVector(inp.Key)}");
+                }
+
+                if (sw != null)
+                {
+                    sw.Flush();
+                    sw.Close();
+                }
+
+                processedValues.Add(item);
+            }
+        }
+    }
+     */
 
 
         private string ComputeHash(byte[] rawData)
