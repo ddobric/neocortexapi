@@ -60,7 +60,8 @@ namespace UnitTestsProject
             // Global inhibition
             // N of 40 (40= 0.02*2048 columns) active cells required to activate the segment.
             //p.Set(KEY.GLOBAL_INHIBITION, true);
-            //p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
+            p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
+            
             //p.Set(KEY.POTENTIAL_RADIUS, inputBits);
             //p.Set(KEY.LOCAL_AREA_DENSITY, -1); // In a case of global inhibition.
             //p.setInhibitionRadius( Automatically set on the columns pace in a case of global inhibition.);
