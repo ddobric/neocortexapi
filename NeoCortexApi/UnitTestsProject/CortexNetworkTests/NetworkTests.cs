@@ -409,7 +409,6 @@ namespace UnitTestsProject
             p.Set(KEY.CELLS_PER_COLUMN, 15);
             p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
 
-
             //p.Set(KEY.GLOBAL_INHIBITION, false);
 
             p.Set(KEY.GLOBAL_INHIBITION, true);
@@ -426,7 +425,7 @@ namespace UnitTestsProject
             //
             // Stops the bumping of inactive columns.
             p.Set(KEY.MAX_BOOST, 10.0);
-            p.Set(KEY.DUTY_CYCLE_PERIOD, 100000);
+            p.Set(KEY.DUTY_CYCLE_PERIOD, 50);
             p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.75);
 
             // Max number of synapses on the segment.
@@ -496,13 +495,14 @@ namespace UnitTestsProject
 
             var numInputs = inputValues.Distinct<double>().ToList().Count;
 
-            HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem, numInputs * 25, (isStable, numPatterns, actColAvg, seenInputs) => {
+            HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem, numInputs * 15, (isStable, numPatterns, actColAvg, seenInputs) => {
                 // Event should only be fired when entering the stable state.
                 // Ideal SP should never enter unstable state after stable state.
                 Assert.IsTrue(isStable);
                 Assert.IsTrue(numPatterns == numInputs);
                 isInStableState = true;
                 cls.ClearState();
+                
                 Debug.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
             });
 
@@ -526,7 +526,7 @@ namespace UnitTestsProject
             //int maxSPLearningCycles = 50;
 
             //
-            // This trains SP on input pattern.
+            // This trains SP on input pattern. Not needed when HomeostaticPlasticityActivator is used.
             // It performs some kind of unsupervised new-born learning.
             //foreach (var input in inputs)
             //{
@@ -632,7 +632,8 @@ namespace UnitTestsProject
                     prevInput = input.ToString();
                 }
 
-                //tm1.reset(mem);
+                // The brain does not do that this way, so we don't use it.
+                // tm1.reset(mem);
 
                 double accuracy = (double)matches / (double)inputs.Length * 100.0;
 
@@ -661,12 +662,15 @@ namespace UnitTestsProject
                         //}
 
                         //
-                        // Here we let the HTM predict seuence five times on its own.
+                        // Here we let the HTM predict sequence five times on its own.
                         // We start with last predicted value.
                         int cnt = 5 * inputValues.Count;
 
                         Debug.WriteLine("---- Start Predicting the Sequence -----");
 
+                        //
+                        // This code snippet starts with some input value and tries to predict all next inputs
+                        // as they have been learned as a sequence.
                         // We take a random value to start somwhere in the sequence.
                         var predictedInputValue = inputValues[new Random().Next(0, inputValues.Count - 1)].ToString();
 
@@ -675,11 +679,12 @@ namespace UnitTestsProject
                         while (--cnt > 0)
                         {
                             //var lyrOut = layer1.Compute(predictedInputValue, learn) as ComputeCycle;
-                            var lyrOut = layer1.Compute(double.Parse(predictedInputValue[predictedInputValue.Length - 1].ToString()), learn) as ComputeCycle;
+                            var lyrOut = layer1.Compute(double.Parse(predictedInputValue[predictedInputValue.Length - 1].ToString()), false) as ComputeCycle;
                             predictedInputValue = cls.GetPredictedInputValue(lyrOut.PredictiveCells.ToArray());
                             predictedValues.Add(predictedInputValue);
                         };
 
+                        // Now we have a sequence of elements and watch in the trace if it matches to defined input set.
                         foreach (var item in predictedValues)
                         {
                             Debug.Write(item);
@@ -699,13 +704,13 @@ namespace UnitTestsProject
 
             cls.TraceState($"cellState_MinPctOverlDuty-{p[KEY.MIN_PCT_OVERLAP_DUTY_CYCLES]}_MaxBoost-{p[KEY.MAX_BOOST]}.csv");
 
-            Debug.WriteLine("---- column state trace ----");
+            Debug.WriteLine("---- Spatial Pooler column state  ----");
 
             foreach (var input in activeColumnsLst)
             {
                 using (StreamWriter colSw = new StreamWriter($"ColumState_MinPctOverlDuty-{p[KEY.MIN_PCT_OVERLAP_DUTY_CYCLES]}_MaxBoost-{p[KEY.MAX_BOOST]}_input-{input.Key}.csv"))
                 {
-                    Debug.WriteLine($"------------ {input} ------------");
+                    Debug.WriteLine($"------------ {input.Key} ------------");
 
                     foreach (var actCols in input.Value)
                     {

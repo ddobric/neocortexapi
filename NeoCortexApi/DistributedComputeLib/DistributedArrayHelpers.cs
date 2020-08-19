@@ -37,6 +37,17 @@ namespace NeoCortexApi.DistributedComputeLib
         //    return value;
         //}
 
+        //public static bool Contains<T>(this IEnumerable<T> data, IEnumerable<T> otherData)
+        //{
+        //    var dataLength = data.Count();
+        //    var otherDataLength = otherData.Count();
+
+        //    if (dataLength < otherDataLength)
+        //        return false;
+
+        //    return Enumerable.Range(0, dataLength - otherDataLength + 1);
+        //}
+
         /**
          * Returns the product of each integer in the specified array.
          * 
