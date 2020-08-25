@@ -347,7 +347,7 @@ namespace NeoCortexApi
         /// <param name="conn"></param>
         /// <param name="columnActiveSegments">Active segments as calculated (activated) in the previous step.</param>
         /// <param name="matchingSegments"></param>
-        /// <param name="prevActiveCells"></param>
+        /// <param name="prevActiveCells">Cells active in the current cycle.</param>
         /// <param name="prevWinnerCells"></param>
         /// <param name="permanenceIncrement"></param>
         /// <param name="permanenceDecrement"></param>
@@ -379,7 +379,7 @@ namespace NeoCortexApi
 
                 if (learn)
                 {
-                    adaptSegment(conn, segment, prevActiveCells, permanenceIncrement, permanenceDecrement);
+                    AdaptSegment(conn, segment, prevActiveCells, permanenceIncrement, permanenceDecrement);
 
                     int numActive = conn.getLastActivity().PotentialSynapses[segment.getIndex()];
                     int nGrowDesired = conn.HtmConfig.MaxNewSynapseCount - numActive;
@@ -463,7 +463,7 @@ namespace NeoCortexApi
 
                 if (learn)
                 {
-                    adaptSegment(conn, maxPotentialSeg, prevActiveCells, permanenceIncrement, permanenceDecrement);
+                    AdaptSegment(conn, maxPotentialSeg, prevActiveCells, permanenceIncrement, permanenceDecrement);
 
                     int nGrowDesired = conn.getMaxNewSynapseCount() - conn.getLastActivity().PotentialSynapses[maxPotentialSeg.getIndex()];
 
@@ -543,7 +543,7 @@ namespace NeoCortexApi
             {
                 foreach (DistalDendrite segment in matchingSegments)
                 {
-                    adaptSegment(conn, segment, prevActiveCells, -conn.getPredictedSegmentDecrement(), 0);
+                    AdaptSegment(conn, segment, prevActiveCells, -conn.getPredictedSegmentDecrement(), 0);
                 }
             }
         }
@@ -650,10 +650,10 @@ namespace NeoCortexApi
         /// </summary>
         /// <param name="conn"></param>
         /// <param name="segment">The segment to adapt.</param>
-        /// <param name="prevActiveCells">List of previously active cells.</param>
+        /// <param name="prevActiveCells">List of active cells in the current cycle (calculated in the previous cycle).</param>
         /// <param name="permanenceIncrement"></param>
         /// <param name="permanenceDecrement"></param>
-        public void adaptSegment(Connections conn, DistalDendrite segment, ICollection<Cell> prevActiveCells,
+        public void AdaptSegment(Connections conn, DistalDendrite segment, ICollection<Cell> prevActiveCells,
             double permanenceIncrement, double permanenceDecrement)
         {
 
