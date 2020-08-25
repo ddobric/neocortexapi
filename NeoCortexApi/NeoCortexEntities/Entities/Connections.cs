@@ -1381,18 +1381,20 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public SegmentActivity ComputeActivity(ICollection<Cell> activeCellsInCurrentCycle, double connectedPermanence)
         {
-            Dictionary<int, int> activeSynapses = new Dictionary<int, int>();
-            Dictionary<int, int> potentialSynapses = new Dictionary<int, int>();
+            Dictionary<int, int> numOfActiveSynapses = new Dictionary<int, int>();
+            Dictionary<int, int> numOfPotentialSynapses = new Dictionary<int, int>();
 
             // Every receptor synapse on active cell, which has permanence over threshold is by default connected.
-            int[] numActiveConnectedSynapsesForSegment = new int[nextFlatIdx];
+            int[] numActiveConnectedSynapsesForSegment = new int[nextFlatIdx]; // not needed
 
             // Every receptor synapse on active cell is active-potential one.
-            int[] numActivePotentialSynapsesForSegment = new int[nextFlatIdx];
+            int[] numActivePotentialSynapsesForSegment = new int[nextFlatIdx]; // not needed
 
             double threshold = connectedPermanence - EPSILON;
 
+            //
             // Step through all currently active cells.
+            // Find synapses that points to this cell. (receptor synapses)
             foreach (Cell cell in activeCellsInCurrentCycle)
             {
                 //
@@ -1401,26 +1403,27 @@ namespace NeoCortexApi.Entities
                 // Receptor synapses are synapses whose source cell (pre-synaptic cell) is the given cell.
                 foreach (Synapse synapse in getReceptorSynapses(cell))
                 {
+                    // Now, we get the segment of the synapse of the pre-synaptic cell.
                     int segFlatIndx = synapse.SegmentIndex;
-                    if (potentialSynapses.ContainsKey(segFlatIndx) == false)
-                        potentialSynapses.Add(segFlatIndx, 0);
+                    if (numOfPotentialSynapses.ContainsKey(segFlatIndx) == false)
+                        numOfPotentialSynapses.Add(segFlatIndx, 0);
 
-                    potentialSynapses[segFlatIndx] = potentialSynapses[segFlatIndx] + 1;
+                    numOfPotentialSynapses[segFlatIndx] = numOfPotentialSynapses[segFlatIndx] + 1;
 
                     ++numActivePotentialSynapsesForSegment[segFlatIndx];
 
                     if (synapse.getPermanence() > threshold)
                     {
-                        if (activeSynapses.ContainsKey(segFlatIndx) == false)
-                            activeSynapses.Add(segFlatIndx, 0);
+                        if (numOfActiveSynapses.ContainsKey(segFlatIndx) == false)
+                            numOfActiveSynapses.Add(segFlatIndx, 0);
 
-                        activeSynapses[segFlatIndx] = activeSynapses[segFlatIndx] + 1;
+                        numOfActiveSynapses[segFlatIndx] = numOfActiveSynapses[segFlatIndx] + 1;
                         ++numActiveConnectedSynapsesForSegment[segFlatIndx];
                     }
                 }
             }
 
-            return new SegmentActivity() { ActiveSynapses = activeSynapses, PotentialSynapses = potentialSynapses };
+            return new SegmentActivity() { ActiveSynapses = numOfActiveSynapses, PotentialSynapses = numOfPotentialSynapses };
         }
 
 

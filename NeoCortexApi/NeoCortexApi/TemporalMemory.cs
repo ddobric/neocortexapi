@@ -224,7 +224,7 @@ namespace NeoCortexApi
          * 
          * <pre>
          * Pseudocode:
-         *   for each distal dendrite segment with activity >= activationThreshold
+         *   for each distal dendrite segment with number of active synapses >= activationThreshold
          *     mark the segment as active
          *   for each distal dendrite segment with unconnected activity >= minThreshold
          *     mark the segment as matching
@@ -352,7 +352,7 @@ namespace NeoCortexApi
         /// <param name="permanenceIncrement"></param>
         /// <param name="permanenceDecrement"></param>
         /// <param name="learn"></param>
-        /// <returns>Cells, which own active columnActiveSegments as calculated in the previous step.</returns>
+        /// <returns>Cells which own active column segments as calculated in the previous step.</returns>
         private List<Cell> ActivatePredictedColumn(Connections conn, List<DistalDendrite> columnActiveSegments,
             List<DistalDendrite> matchingSegments, ICollection<Cell> prevActiveCells, ICollection<Cell> prevWinnerCells,
                 double permanenceIncrement, double permanenceDecrement, bool learn)
@@ -374,7 +374,7 @@ namespace NeoCortexApi
                 }
                 else
                 { 
-                
+                    // for debugging.
                 }
 
                 if (learn)
@@ -386,6 +386,7 @@ namespace NeoCortexApi
 
                     if (nGrowDesired > 0)
                     {
+                        // Create new synapses on the segment from winner (pre-synaptic cells) cells.
                         growSynapses(conn, prevWinnerCells, segment, conn.getInitialPermanence(),
                             nGrowDesired, conn.getRandom());
                     }
@@ -645,7 +646,7 @@ namespace NeoCortexApi
         /// <summary>
         /// Increments the permanence of the segment's synapse if the synapse's presynaptic cell 
         /// was active in the previous cycle.
-        /// If it was not active, the if will decrement the permanence value. 
+        /// If it was not active, then it will decrement the permanence value. 
         /// If the permamence is below EPSILON, synapse is destroyed.
         /// </summary>
         /// <param name="conn"></param>
