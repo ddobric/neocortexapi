@@ -63,7 +63,7 @@ namespace NeoCortexApi.Network
                 if (!this.activeMap2[input].SequenceEqual(cellIndicies))
                 {
                     // double numOfSameBitsPct = (double)(((double)(this.activeMap2[input].Intersect(cellIndicies).Count()) / Math.Max((double)cellIndicies.Length, this.activeMap2[input].Length)));
-                    double numOfSameBitsPct = (double)(((double)(this.activeMap2[input].Intersect(cellIndicies).Count()) / (double)cellIndicies.Length));
+                    double numOfSameBitsPct = (double)(((double)(this.activeMap2[input].Intersect(cellIndicies).Count()) / (double)this.activeMap2[input].Length));
                     Debug.WriteLine($"Differnt={numOfSameBitsPct}");
                 }
 
@@ -110,7 +110,7 @@ namespace NeoCortexApi.Network
                     }
 
                     //double numOfSameBitsPct = (double)(((double)(pair.Value.Intersect(arr).Count()) / Math.Max(arr.Length, pair.Value.Count())));
-                    double numOfSameBitsPct = (double)(((double)(pair.Value.Intersect(celIndicies).Count()) / (double)celIndicies.Length));
+                    double numOfSameBitsPct = (double)(((double)(pair.Value.Intersect(celIndicies).Count()) / (double)pair.Value.Length));
                     if (numOfSameBitsPct > maxSameBits)
                     {
                         Debug.WriteLine($">indx:{n}\tinp/len: {pair.Key}/{celIndicies.Length}\t{pair.Value} = similarity {numOfSameBitsPct}\t {Helpers.StringifyVector(pair.Value)}");

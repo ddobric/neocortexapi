@@ -12,7 +12,7 @@ namespace NeoCortexApi.Entities
     public class SegmentActivity
     {
         /// <summary>
-        /// Contains the index of segments with number of synapses with permanence higher than threshol (connectedPermanence),
+        /// Contains the index of segments with number of synapses with permanence higher than threshold (connectedPermanence),
         /// which makes synapse active.
         /// Dictionary[segment index, number of active synapses].
         /// </summary>
