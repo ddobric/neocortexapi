@@ -20,9 +20,12 @@ namespace UnitTestsProject
     [TestClass]
     public class SbAkkaTest
     {
-        private const string sbConnStr = "Endpoint=sb://bastasample.servicebus.windows.net/;SharedAccessKeyName=demo;SharedAccessKey=MvwVbrrJdsMQyhO/0uwaB5mVbuXyvYa3WRNpalHi0LQ=";
+        //private const string sbConnStr = "Endpoint=sb://bastasample.servicebus.windows.net/;SharedAccessKeyName=demo;SharedAccessKey=MvwVbrrJdsMQyhO/0uwaB5mVbuXyvYa3WRNpalHi0LQ=";
 
-        private const string tblAccountConnStr = "DefaultEndpointsProtocol=https;AccountName=azfunctionsamples;AccountKey=NEjFcvFNL/G7Ugq9RSW59+PonNgql/yLq8qfaVZPhanV9aJUnQi2b6Oy3csvPZPGVJreD+RgVUJJFFTZdUBhAA==;EndpointSuffix=core.windows.net";
+        private const string sbConnStr = "Endpoint=sb://students.servicebus.windows.net/;SharedAccessKeyName=stud-2018;SharedAccessKey=AQiFJiPtD0G/7y8hXStqt8CXZR+M1LSzOfGPiEoL0cc=";
+
+
+            private const string tblAccountConnStr = "DefaultEndpointsProtocol=https;AccountName=azfunctionsamples;AccountKey=NEjFcvFNL/G7Ugq9RSW59+PonNgql/yLq8qfaVZPhanV9aJUnQi2b6Oy3csvPZPGVJreD+RgVUJJFFTZdUBhAA==;EndpointSuffix=core.windows.net";
 
         internal static ActorSbConfig GetLocaSysConfig()
         {
@@ -34,7 +37,7 @@ namespace UnitTestsProject
             cfg.ActorSystemName = "inst701";
             return cfg;
         }
-        
+
         internal static ActorSbConfig GetRemoteSysConfig(string node = "default")
         {
             var localCfg = GetLocaSysConfig();
@@ -44,11 +47,11 @@ namespace UnitTestsProject
             cfg.RequestMsgTopic = "actorsystem/actortopic";
             cfg.RequestSubscriptionName = node;
             cfg.ReplyMsgQueue = null;
-             
+
             return cfg;
         }
 
-               
+
         static ConcurrentDictionary<object, object> receivedMessages = new ConcurrentDictionary<object, object>();
 
 
@@ -61,7 +64,7 @@ namespace UnitTestsProject
 
         public class MyActor : ActorBase
         {
-            public MyActor(ActorId id):base(id)
+            public MyActor(ActorId id) : base(id)
             {
                 Receive<string>((str) =>
                 {
@@ -78,7 +81,7 @@ namespace UnitTestsProject
                 Receive<long>((long num) =>
                 {
                     receivedMessages.TryAdd(num, num);
-                    return num+1;
+                    return num + 1;
                 });
 
                 Receive<DateTime>((DateTime dt) =>
@@ -162,7 +165,7 @@ namespace UnitTestsProject
             ActorSystem sysLocal = new ActorSystem($"{nameof(AskTest)}/local", cfg);
 
             ActorReference actorRef1 = sysLocal.CreateActor<MyActor>(1);
-        
+
             var response = actorRef1.Ask<long>((long)42).Result;
 
             Assert.IsTrue(response == 43);
@@ -188,7 +191,7 @@ namespace UnitTestsProject
 
             var cfg = GetLocaSysConfig();
             ActorSystem sysLocal = new ActorSystem($"{nameof(AskTest)}/local", cfg);
-           
+
             CancellationTokenSource src = new CancellationTokenSource();
 
             ActorReference actorRef1 = sysLocal.CreateActor<HtmActor>(1);
@@ -196,7 +199,7 @@ namespace UnitTestsProject
             var response = actorRef1.Ask<string>(new PingNodeMsg() { Msg = ":)" }).Result;
 
             Assert.IsTrue(response == $"Ping back - :)");
-           
+
             Debug.WriteLine($"End of {nameof(AskTest)}");
         }
 

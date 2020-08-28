@@ -923,7 +923,7 @@ namespace UnitTestsProject
             Synapse s2 = cn.createSynapse(dd, cn.getCell(37), 0.4);
             Synapse s3 = cn.createSynapse(dd, cn.getCell(477), 0.9);
 
-            tm.adaptSegment(cn, dd, cn.getCellSet(new int[] { 23, 37 }), cn.getPermanenceIncrement(), cn.getPermanenceDecrement());
+            tm.AdaptSegment(cn, dd, cn.getCellSet(new int[] { 23, 37 }), cn.getPermanenceIncrement(), cn.getPermanenceDecrement());
 
             Assert.AreEqual(0.7, s1.getPermanence(), 0.01);
             Assert.AreEqual(0.5, s2.getPermanence(), 0.01);
@@ -942,11 +942,11 @@ namespace UnitTestsProject
             DistalDendrite dd = cn.CreateDistalSegment(cn.getCell(0));
             Synapse s1 = cn.createSynapse(dd, cn.getCell(23), 0.9);
 
-            tm.adaptSegment(cn, dd, cn.getCellSet(new int[] { 23 }), cn.getPermanenceIncrement(), cn.getPermanenceDecrement());
+            tm.AdaptSegment(cn, dd, cn.getCellSet(new int[] { 23 }), cn.getPermanenceIncrement(), cn.getPermanenceDecrement());
             Assert.AreEqual(1.0, s1.getPermanence(), 0.1);
 
             // Now permanence should be at max
-            tm.adaptSegment(cn, dd, cn.getCellSet(new int[] { 23 }), cn.getPermanenceIncrement(), cn.getPermanenceDecrement());
+            tm.AdaptSegment(cn, dd, cn.getCellSet(new int[] { 23 }), cn.getPermanenceIncrement(), cn.getPermanenceDecrement());
             Assert.AreEqual(1.0, s1.getPermanence(), 0.1);
         }
 
@@ -963,7 +963,7 @@ namespace UnitTestsProject
             Synapse s1 = cn.createSynapse(dd, cn.getCell(23), 0.1);
             cn.createSynapse(dd, cn.getCell(1), 0.3);
 
-            tm.adaptSegment(cn, dd, cn.getCellSet(new int[] { }), cn.getPermanenceIncrement(), cn.getPermanenceDecrement());
+            tm.AdaptSegment(cn, dd, cn.getCellSet(new int[] { }), cn.getPermanenceIncrement(), cn.getPermanenceDecrement());
             Assert.IsFalse(cn.getSynapses(dd).Contains(s1));
         }
 
