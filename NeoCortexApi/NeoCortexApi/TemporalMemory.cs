@@ -362,19 +362,25 @@ namespace NeoCortexApi
             Cell segmOwnerCell;
                     
             foreach (DistalDendrite segment in columnActiveSegments)
-            {              
-                // TODO
-                // Review this. not only previous cell should be consiered.
-                // We should rather consider all current list and look if the cell is already in.
-                segmOwnerCell = segment.ParentCell;
-                if (segmOwnerCell != previousCell)
+            {
+                foreach (Synapse synapse in conn.getSynapses(segment))
                 {
-                    cellsOwnersOfActiveSegments.Add(segmOwnerCell);
-                    previousCell = segmOwnerCell;
-                }
-                else
-                { 
-                    // for debugging.
+                    if (prevActiveCells.Contains(synapse.getPresynapticCell()))
+                    {
+                        // TODO
+                        // Review this. not only previous cell should be consiered.
+                        // We should rather consider all current list and look if the cell is already in.
+                        segmOwnerCell = segment.ParentCell;
+                        if (segmOwnerCell != previousCell)
+                        {
+                            cellsOwnersOfActiveSegments.Add(segmOwnerCell);
+                            previousCell = segmOwnerCell;
+                        }
+                        else
+                        {
+                            // for debugging.
+                        }
+                    }
                 }
 
                 if (learn)
