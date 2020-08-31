@@ -353,6 +353,7 @@ namespace NeoCortexApi
             {
                 foreach (Synapse synapse in conn.getSynapses(segment))
                 {
+                    // WORKING DRAFT
                     if (prevActiveCells.Contains(synapse.getPresynapticCell()))
                     {
                         // TODO
