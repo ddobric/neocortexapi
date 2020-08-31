@@ -21,7 +21,7 @@ namespace NeoCortexApi.Entities
     public class Connections //implements Persistable
     {
 
-        private static readonly double EPSILON = 0.00001;
+        public static readonly double EPSILON = 0.00001;
 
         /////////////////////////////////////// Spatial Pooler Vars ///////////////////////////////////////////
         /** <b>WARNING:</b> potentialRadius **must** be set to 
@@ -1385,10 +1385,10 @@ namespace NeoCortexApi.Entities
             Dictionary<int, int> numOfPotentialSynapses = new Dictionary<int, int>();
 
             // Every receptor synapse on active cell, which has permanence over threshold is by default connected.
-            int[] numActiveConnectedSynapsesForSegment = new int[nextFlatIdx]; // not needed
+            //int[] numActiveConnectedSynapsesForSegment = new int[nextFlatIdx]; // not needed
 
             // Every receptor synapse on active cell is active-potential one.
-            int[] numActivePotentialSynapsesForSegment = new int[nextFlatIdx]; // not needed
+            //int[] numActivePotentialSynapsesForSegment = new int[nextFlatIdx]; // not needed
 
             double threshold = connectedPermanence - EPSILON;
 
@@ -1410,7 +1410,7 @@ namespace NeoCortexApi.Entities
 
                     numOfPotentialSynapses[segFlatIndx] = numOfPotentialSynapses[segFlatIndx] + 1;
 
-                    ++numActivePotentialSynapsesForSegment[segFlatIndx];
+                    //++numActivePotentialSynapsesForSegment[segFlatIndx];
 
                     if (synapse.getPermanence() > threshold)
                     {
@@ -1418,7 +1418,7 @@ namespace NeoCortexApi.Entities
                             numOfActiveSynapses.Add(segFlatIndx, 0);
 
                         numOfActiveSynapses[segFlatIndx] = numOfActiveSynapses[segFlatIndx] + 1;
-                        ++numActiveConnectedSynapsesForSegment[segFlatIndx];
+                        //++numActiveConnectedSynapsesForSegment[segFlatIndx];
                     }
                 }
             }

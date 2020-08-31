@@ -64,8 +64,8 @@ namespace NeoCortexApi.Entities
 
         /// <summary>
         /// Gets the list of cells in predictive state for the current compute cycle.
-        /// It traverses all active segments (<see cref="ActiveSegments"/>) and declares there parent cells as predictive cells.
-        /// The TM algorithm does not calculate PredictiveCells. It activates instead distal segments
+        /// It traverses all active segments (<see cref="ActiveSegments"/>) and declares their parent cells as predictive cells.
+        /// The TM algorithm does not calculate PredictiveCells. It activates instead distal segments.
         /// </summary>
         public ISet<Cell> PredictiveCells
         {

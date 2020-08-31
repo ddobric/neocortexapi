@@ -63,7 +63,8 @@ namespace NeoCortexApi.Network
                 if (!this.activeMap2[input].SequenceEqual(cellIndicies))
                 {
                     // double numOfSameBitsPct = (double)(((double)(this.activeMap2[input].Intersect(cellIndicies).Count()) / Math.Max((double)cellIndicies.Length, this.activeMap2[input].Length)));
-                    double numOfSameBitsPct = (double)(((double)(this.activeMap2[input].Intersect(cellIndicies).Count()) / (double)this.activeMap2[input].Length));
+                    // double numOfSameBitsPct = (double)(((double)(this.activeMap2[input].Intersect(cellIndicies).Count()) / (double)this.activeMap2[input].Length));
+                    var numOfSameBitsPct = this.activeMap2[input].Intersect(cellIndicies).Count();
                     Debug.WriteLine($"Differnt={numOfSameBitsPct}");
                 }
 
@@ -105,12 +106,13 @@ namespace NeoCortexApi.Network
                 {
                     if (pair.Value.SequenceEqual(celIndicies))
                     {
-                        Debug.WriteLine($"indx:{n}\tinp/len: {pair.Key}/{celIndicies.Length}\tsimilarity {1.0}\t {Helpers.StringifyVector(pair.Value)}");
+                        Debug.WriteLine($">indx:{n}\tinp/len: {pair.Key}/{celIndicies.Length}\tsimilarity {1.0}\t {Helpers.StringifyVector(pair.Value)}");
                         return pair.Key;
                     }
 
                     //double numOfSameBitsPct = (double)(((double)(pair.Value.Intersect(arr).Count()) / Math.Max(arr.Length, pair.Value.Count())));
-                    double numOfSameBitsPct = (double)(((double)(pair.Value.Intersect(celIndicies).Count()) / (double)pair.Value.Length));
+                    //double numOfSameBitsPct = (double)(((double)(pair.Value.Intersect(celIndicies).Count()) / (double)pair.Value.Length));// ;
+                    var numOfSameBitsPct = pair.Value.Intersect(celIndicies).Count();
                     if (numOfSameBitsPct > maxSameBits)
                     {
                         Debug.WriteLine($">indx:{n}\tinp/len: {pair.Key}/{celIndicies.Length}\t{pair.Value} = similarity {numOfSameBitsPct}\t {Helpers.StringifyVector(pair.Value)}");
