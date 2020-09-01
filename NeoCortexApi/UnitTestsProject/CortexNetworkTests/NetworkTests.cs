@@ -394,7 +394,8 @@ namespace UnitTestsProject
 
 
         /// <summary>
-        ///
+        /// Experiment that defines a template code structure for general testing of sequence learning.
+        /// Originally, it was designed to learn music notes, but it can be used with any kind of input.
         /// </summary>
         [TestMethod]
         [TestCategory("Experiment")]

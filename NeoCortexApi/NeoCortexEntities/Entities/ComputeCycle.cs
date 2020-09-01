@@ -43,6 +43,11 @@ namespace NeoCortexApi.Entities
         public ISet<Cell> WinnerCells { get; set; } = new LinkedHashSet<Cell>();
 
         /// <summary>
+        /// Synapses that create connections to currentlly active cells owners of active segments.
+        /// </summary>
+        public IList<Synapse> Synapses { get; set; } = new List<Synapse>();
+
+        /// <summary>
         /// 
         /// </summary>
         public ComputeCycle() { }
@@ -64,10 +69,25 @@ namespace NeoCortexApi.Entities
 
         /// <summary>
         /// Gets the list of cells in predictive state for the current compute cycle.
-        /// It traverses all active segments (<see cref="ActiveSegments"/>) and declares there parent cells as predictive cells.
+        /// It traverses all active segments (<see cref="ActiveSegments"/>) and declares their parent cells as predictive cells.
         /// The TM algorithm does not calculate PredictiveCells. It activates instead distal segments
         /// </summary>
         public ISet<Cell> PredictiveCells
+        {
+            get
+            {
+                if (m_PredictiveCells == null || m_PredictiveCells.Count == 0)
+                {
+                    foreach (Synapse syn in this.Synapses)
+                    {
+                        m_PredictiveCells.Add(syn.SourceCell);
+                    }
+                }
+
+                return m_PredictiveCells;
+            }
+        }
+        public ISet<Cell> PredictiveCells2
         {
             get
             {
