@@ -109,10 +109,11 @@ namespace NeoCortexApi.Entities
             }
         }
 
-        /* (non-Javadoc)
-         * @see java.lang.Object#hashCode()
-         */
-
+       
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
             int prime = 31;

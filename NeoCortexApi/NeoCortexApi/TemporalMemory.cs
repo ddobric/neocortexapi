@@ -239,7 +239,6 @@ namespace NeoCortexApi
         {
             SegmentActivity activity = conn.ComputeActivity(cycle.ActiveCells, conn.getConnectedPermanence());
 
-            int i = 0;
             var activeSegments = new List<DistalDendrite>();
             foreach (var item in activity.ActiveSynapses)
             {
@@ -275,19 +274,6 @@ namespace NeoCortexApi
             // Forces generation of the predictive cells from the above active segments
             conn.clearPredictiveCells();
 
-            //ISet<Cell> predictiveCells = conn.getPredictiveCells();
-            //string[] arr = new string[predictiveCells.Count];
-            //foreach (Cell c in predictiveCells)
-            //{
-            //    arr[i] = c.Index + "-" + c.ParentColumnIndex;
-            //    i++;
-            //}
-
-            //Debug.WriteLine($"ACT: {activity.Active.Count}, POT: {activity.Potential.Count}");
-            //string output = string.Join("", predictiveCells);
-            //Debug.WriteLine($"Active Segs: {activeSegments.Count} Matching segs: {matchingSegments.Count}, Predicted cells: {Helpers.StringifyVector(arr)}");
-            //Debug.WriteLine("-----------------------------------------------------\n-----------------------------------------------------");
-         
             if (learn)
             {
                 foreach (var segment in activeSegments)
@@ -297,6 +283,8 @@ namespace NeoCortexApi
 
                 conn.startNewIteration();
             }
+
+            Debug.WriteLine($"Active segments: {activeSegments.Count}, Matching segments: {matchingSegments.Count}");
         }
 
 
@@ -360,21 +348,27 @@ namespace NeoCortexApi
             List<Cell> cellsOwnersOfActiveSegments = new List<Cell>();
             Cell previousCell = null;
             Cell segmOwnerCell;
-                    
+
             foreach (DistalDendrite segment in columnActiveSegments)
-            {              
-                // TODO
-                // Review this. not only previous cell should be consiered.
-                // We should rather consider all current list and look if the cell is already in.
-                segmOwnerCell = segment.ParentCell;
-                if (segmOwnerCell != previousCell)
+            {
+                foreach (Synapse synapse in conn.getSynapses(segment))
                 {
-                    cellsOwnersOfActiveSegments.Add(segmOwnerCell);
-                    previousCell = segmOwnerCell;
-                }
-                else
-                { 
-                    // for debugging.
+                    if (prevActiveCells.Contains(synapse.getPresynapticCell()))
+                    {
+                        // TODO
+                        // Review this. not only previous cell should be consiered.
+                        // We should rather consider all current list and look if the cell is already in.
+                        segmOwnerCell = segment.ParentCell;
+                        if (segmOwnerCell != previousCell)
+                        {
+                            cellsOwnersOfActiveSegments.Add(segmOwnerCell);
+                            previousCell = segmOwnerCell;
+                        }
+                        else
+                        {
+                            // for debugging.
+                        }
+                    }
                 }
 
                 if (learn)
