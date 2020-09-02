@@ -254,7 +254,7 @@ namespace NeoCortexApi
                 if (item.Value >= conn.getMinThreshold())
                     matchingSegments.Add(conn.GetSegmentForFlatIdx(item.Key));
             }
-
+          
             //
             // Step through all synapses on active cells with permanence over threshold (conencted synapses)
             // and find involved segments.         
@@ -351,9 +351,9 @@ namespace NeoCortexApi
 
             foreach (DistalDendrite segment in columnActiveSegments)
             {
-                foreach (Synapse synapse in conn.getSynapses(segment))
+                foreach (Synapse synapse in conn.getSynapses(segment))  // FIX
                 {
-                    if (prevActiveCells.Contains(synapse.getPresynapticCell()))
+                    if (prevActiveCells.Contains(synapse.getPresynapticCell())) // FIX
                     {
                         // TODO
                         // Review this. not only previous cell should be consiered.

@@ -115,13 +115,13 @@ namespace NeoCortexApi.Network
                     var numOfSameBitsPct = pair.Value.Intersect(celIndicies).Count();
                     if (numOfSameBitsPct > maxSameBits)
                     {
-                        Debug.WriteLine($">indx:{n}\tinp/len: {pair.Key}/{celIndicies.Length}\t{pair.Value} = similarity {numOfSameBitsPct}\t {Helpers.StringifyVector(pair.Value)}");
+                        Debug.WriteLine($">indx:{n}\tinp/len: {pair.Key}/{celIndicies.Length} = similarity {numOfSameBitsPct}\t {Helpers.StringifyVector(pair.Value)}");
                         maxSameBits = numOfSameBitsPct;
                         predictedValue = pair.Key;
                         indxOfMatchingInp = n;
                     }
                     else
-                        Debug.WriteLine($"<indx:{n}\tinp/len: {pair.Key}/{celIndicies.Length}\t{pair.Value} = similarity {numOfSameBitsPct}\t {Helpers.StringifyVector(pair.Value)}");
+                        Debug.WriteLine($"<indx:{n}\tinp/len: {pair.Key}/{celIndicies.Length} = similarity {numOfSameBitsPct}\t {Helpers.StringifyVector(pair.Value)}");
 
                     indx++;
                 }
