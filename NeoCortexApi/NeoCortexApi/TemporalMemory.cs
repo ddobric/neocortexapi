@@ -284,7 +284,7 @@ namespace NeoCortexApi
                 conn.startNewIteration();
             }
 
-            Debug.WriteLine($"Active segments: {activeSegments.Count}, Matching segments: {matchingSegments.Count}");
+            Debug.WriteLine($"\nActive segments: {activeSegments.Count}, Matching segments: {matchingSegments.Count}");
         }
 
 

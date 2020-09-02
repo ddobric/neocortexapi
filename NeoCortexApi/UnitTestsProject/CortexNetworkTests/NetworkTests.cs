@@ -971,7 +971,7 @@ namespace UnitTestsProject
 
         }
 
-        private List<Cell> GetCells(ISet<Cell> activeCells)
+        private List<Cell> GetCells(IList<Cell> activeCells)
         {
             //throw new NotImplementedException();
             List<Cell> cells = new List<Cell>();

@@ -30,17 +30,17 @@ namespace NeoCortexApi.Entities
         /// if the number of active synapses (permanence higher than connectedPermanence) on that segment is higher than activationThreshold value.
         /// A Cell is by default in predictive state (depolarized state) if it owns the active dendrite segment.
         /// </summary>
-        private ISet<Cell> m_PredictiveCells = new LinkedHashSet<Cell>();
+        private IList<Cell> m_PredictiveCells = new List<Cell>();
 
         /// <summary>
         /// Gets the list of active cells.
         /// </summary>
-        public ISet<Cell> ActiveCells { get; set; } = new LinkedHashSet<Cell>();
+        public IList<Cell> ActiveCells { get; set; } = new List<Cell>();
 
         /// <summary>
         /// Gets the list of winner cells.
         /// </summary>
-        public ISet<Cell> WinnerCells { get; set; } = new LinkedHashSet<Cell>();
+        public IList<Cell> WinnerCells { get; set; } = new List<Cell>();
 
         /// <summary>
         /// Synapses that create connections to currentlly active cells owners of active segments.
@@ -59,9 +59,9 @@ namespace NeoCortexApi.Entities
         /// <param name="c"></param>
         public ComputeCycle(Connections c)
         {
-            this.ActiveCells = new LinkedHashSet<Cell>(c.getWinnerCells());//TODO potential bug. activeCells or winnerCells?!
-            this.WinnerCells = new LinkedHashSet<Cell>(c.getWinnerCells());
-            this.m_PredictiveCells = new LinkedHashSet<Cell>(c.getPredictiveCells());
+            this.ActiveCells = new List<Cell>(c.getWinnerCells());//TODO potential bug. activeCells or winnerCells?!
+            this.WinnerCells = new List<Cell>(c.getWinnerCells());
+            this.m_PredictiveCells = new List<Cell>(c.getPredictiveCells());
             this.ActiveSegments = new List<DistalDendrite>(c.getActiveSegments());
             this.MatchingSegments = new List<DistalDendrite>(c.getMatchingSegments());
         }
@@ -72,22 +72,23 @@ namespace NeoCortexApi.Entities
         /// It traverses all active segments (<see cref="ActiveSegments"/>) and declares their parent cells as predictive cells.
         /// The TM algorithm does not calculate PredictiveCells. It activates instead distal segments
         /// </summary>
-        public ISet<Cell> PredictiveCells
-        {
-            get
-            {
-                if (m_PredictiveCells == null || m_PredictiveCells.Count == 0)
-                {
-                    foreach (Synapse syn in this.Synapses)
-                    {
-                        m_PredictiveCells.Add(syn.SourceCell);
-                    }
-                }
+        //public IList<Cell> PredictiveCells
+        //{
+        //    get
+        //    {
+        //        if (m_PredictiveCells == null || m_PredictiveCells.Count == 0)
+        //        {
+        //            foreach (Synapse syn in this.Synapses)
+        //            {
+        //                m_PredictiveCells.Add(syn.SourceCell);
+        //            }
+        //        }
 
-                return m_PredictiveCells;
-            }
-        }
-        public ISet<Cell> PredictiveCells2
+        //        return m_PredictiveCells;
+        //    }
+        //}
+
+        public IList<Cell> PredictiveCells
         {
             get
             {
