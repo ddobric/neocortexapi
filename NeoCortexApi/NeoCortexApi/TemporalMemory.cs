@@ -254,7 +254,7 @@ namespace NeoCortexApi
                 if (item.Value >= conn.getMinThreshold())
                     matchingSegments.Add(conn.GetSegmentForFlatIdx(item.Key));
             }
-
+          
             //
             // Step through all synapses on active cells with permanence over threshold (conencted synapses)
             // and find involved segments.         
@@ -284,7 +284,7 @@ namespace NeoCortexApi
                 conn.startNewIteration();
             }
 
-            Debug.WriteLine($"Active segments: {activeSegments.Count}, Matching segments: {matchingSegments.Count}");
+            Debug.WriteLine($"\nActive segments: {activeSegments.Count}, Matching segments: {matchingSegments.Count}");
         }
 
 

@@ -394,7 +394,8 @@ namespace UnitTestsProject
 
 
         /// <summary>
-        ///
+        /// Experiment that defines a template code structure for general testing of sequence learning.
+        /// Originally, it was designed to learn music notes, but it can be used with any kind of input.
         /// </summary>
         [TestMethod]
         [TestCategory("Experiment")]
@@ -509,6 +510,8 @@ namespace UnitTestsProject
 
             var numInputs = inputValues.Distinct<double>().ToList().Count;
 
+            TemporalMemory tm1 = new TemporalMemory();
+
             HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem, numInputs * 15, (isStable, numPatterns, actColAvg, seenInputs) => {
                 // Event should only be fired when entering the stable state.
                 // Ideal SP should never enter unstable state after stable state.
@@ -517,55 +520,30 @@ namespace UnitTestsProject
                 isInStableState = true;
                 cls.ClearState();
                 
+                tm1.reset(mem);
+
                 Debug.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
             });
 
             SpatialPoolerMT sp1 = new SpatialPoolerMT(hpa);
-            TemporalMemory tm1 = new TemporalMemory();
-          
+            CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
+           
             sp1.init(mem, UnitTestHelpers.GetMemory());
             tm1.init(mem);
 
-            CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
-
+          
             //
             // NewBorn learning stage.
             region0.AddLayer(layer1);
             layer1.HtmModules.Add("encoder", encoder);
             layer1.HtmModules.Add("sp", sp1);
+            layer1.HtmModules.Add("tm", tm1);
 
             double[] inputs = inputValues.ToArray();
             int[] prevActiveCols = new int[0];
 
-            //int maxSPLearningCycles = 50;
-
-            //
-            // This trains SP on input pattern. Not needed when HomeostaticPlasticityActivator is used.
-            // It performs some kind of unsupervised new-born learning.
-            //foreach (var input in inputs)
-            //{
-            //    List<(int Cycle, double Similarity)> elementOscilationResult = new List<(int Cycle, double Similarity)>();
-
-            //    Debug.WriteLine($"Learning  ** {input} **");
-
-            //    for (int i = 0; i < maxSPLearningCycles; i++)
-            //    {
-            //        var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
-
-            //        var activeColumns = layer1.GetResult("sp") as int[];
-
-            //        var actCols = activeColumns.OrderBy(c => c).ToArray();
-
-            //        var similarity = MathHelpers.CalcArraySimilarity(prevActiveCols, actCols);
-
-            //        Debug.WriteLine($" {i.ToString("D4")} SP-OUT: [{actCols.Length}/{similarity.ToString("0.##")}] - {Helpers.StringifyVector(actCols)}");
-
-            //        prevActiveCols = activeColumns;
-            //    }
-            //}
-
             // Here we add TM module to the layer.
-            layer1.HtmModules.Add("tm", tm1);
+            //layer1.HtmModules.Add("tm", tm1);
 
             int cycle = 0;
             int matches = 0;
@@ -593,20 +571,6 @@ namespace UnitTestsProject
                 Debug.WriteLine($"-------------- Cycle {cycle} ---------------");
 
                 string prevInput = "-1.0";
-
-                //
-                // Activate the 'New - Born' effect.
-                //if (i == 100)
-                //{
-                //    mem.setMaxBoost(0.0);
-                //    mem.updateMinPctOverlapDutyCycles(0.0);
-                //    cls.ClearState();
-                //}
-
-                //if (i == 200)
-                //{
-                //    cls.ClearState();
-                //}
 
                 foreach (var input in inputs)
                 {
@@ -982,7 +946,7 @@ namespace UnitTestsProject
 
         }
 
-        private List<Cell> GetCells(ISet<Cell> activeCells)
+        private List<Cell> GetCells(IList<Cell> activeCells)
         {
             //throw new NotImplementedException();
             List<Cell> cells = new List<Cell>();
