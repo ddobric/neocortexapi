@@ -351,9 +351,10 @@ namespace NeoCortexApi
 
             foreach (DistalDendrite segment in columnActiveSegments)
             {
-                foreach (Synapse synapse in conn.getSynapses(segment))  // FIX
+                foreach (Synapse synapse in new List<Synapse>(conn.getSynapses(segment)))
                 {
-                    if (prevActiveCells.Contains(synapse.getPresynapticCell())) // FIX
+                    // WORKING DRAFT
+                    if (prevActiveCells.Contains(synapse.getPresynapticCell()))
                     {
                         // TODO
                         // Review this. not only previous cell should be consiered.
@@ -368,23 +369,38 @@ namespace NeoCortexApi
                         {
                             // for debugging.
                         }
+
+                        if (learn)
+                        {
+                            AdaptSegment(conn, segment, prevActiveCells, permanenceIncrement, permanenceDecrement);
+
+                            int numActive = conn.getLastActivity().PotentialSynapses[segment.getIndex()];
+                            int nGrowDesired = conn.HtmConfig.MaxNewSynapseCount - numActive;
+
+                            if (nGrowDesired > 0)
+                            {
+                                // Create new synapses on the segment from winner (pre-synaptic cells) cells.
+                                growSynapses(conn, prevWinnerCells, segment, conn.getInitialPermanence(),
+                                    nGrowDesired, conn.getRandom());
+                            }
+                        }
                     }
                 }
 
-                if (learn)
-                {
-                    AdaptSegment(conn, segment, prevActiveCells, permanenceIncrement, permanenceDecrement);
+                //if (learn)
+                //{
+                //    AdaptSegment(conn, segment, prevActiveCells, permanenceIncrement, permanenceDecrement);
 
-                    int numActive = conn.getLastActivity().PotentialSynapses[segment.getIndex()];
-                    int nGrowDesired = conn.HtmConfig.MaxNewSynapseCount - numActive;
+                //    int numActive = conn.getLastActivity().PotentialSynapses[segment.getIndex()];
+                //    int nGrowDesired = conn.HtmConfig.MaxNewSynapseCount - numActive;
 
-                    if (nGrowDesired > 0)
-                    {
-                        // Create new synapses on the segment from winner (pre-synaptic cells) cells.
-                        growSynapses(conn, prevWinnerCells, segment, conn.getInitialPermanence(),
-                            nGrowDesired, conn.getRandom());
-                    }
-                }
+                //    if (nGrowDesired > 0)
+                //    {
+                //        // Create new synapses on the segment from winner (pre-synaptic cells) cells.
+                //        growSynapses(conn, prevWinnerCells, segment, conn.getInitialPermanence(),
+                //            nGrowDesired, conn.getRandom());
+                //    }
+                //}
             }
 
             return cellsOwnersOfActiveSegments;
