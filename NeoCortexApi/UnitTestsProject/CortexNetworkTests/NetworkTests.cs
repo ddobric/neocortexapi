@@ -454,10 +454,10 @@ namespace UnitTestsProject
             // List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 15.0 });
 
             // not stable with 2048 cols 15 cells per column and 1000 synapses on segment.
-            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0 });
+            //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0 });
 
             // Exit experiment in the stable state after 30 repeats with 100 % of accuracy.Elapsed time: 5 min.
-            //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 12.0 });
+            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 12.0 });
 
             // 112 cycles. Exit experiment in the stable state after 30 repeats with 100% of accuracy. Elapsed time: 8 min.
             //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 15.0, 7.0, 5.0 });
@@ -570,7 +570,10 @@ namespace UnitTestsProject
 
                 Debug.WriteLine($"-------------- Cycle {cycle} ---------------");
 
-                string prevInput = "-1.0";
+                int maxPrevInputs = 1;
+                List<string> previousInputs = new List<string>();
+                previousInputs.Add("-1.0");
+               // string prevInput = "-1.0";
 
                 foreach (var input in inputs)
                 {
@@ -582,19 +585,21 @@ namespace UnitTestsProject
 
                     activeColumnsLst[input].Add(activeColumns.ToList());
 
-                    //cls.Learn(input, lyrOut.ActiveCells.ToArray());
-                    cls.Learn(GetKey(prevInput, input), lyrOut.ActiveCells.ToArray());
-                    
+                    string key = GetKey(previousInputs, input);
+
+                    //cls.Learn(GetKey(prevInput, input), lyrOut.ActiveCells.ToArray());
+                    cls.Learn(key, lyrOut.ActiveCells.ToArray());
+
                     if (learn == false)
                         Debug.WriteLine($"Inference mode");
 
-                    if (GetKey(prevInput, input) == lastPredictedValue)
+                    if (key == lastPredictedValue)
                     {
                         matches++;
                         Debug.WriteLine($"Match {input}");
                     }
                     else
-                        Debug.WriteLine($"Missmatch Actual value: {GetKey(prevInput, input)} - Predicted value: {lastPredictedValue}");
+                        Debug.WriteLine($"Missmatch Actual value: {key} - Predicted value: {lastPredictedValue}");
 
                     if (lyrOut.PredictiveCells.Count > 0)
                     {
@@ -607,7 +612,11 @@ namespace UnitTestsProject
                     else
                         Debug.WriteLine($"NO CELLS PREDICTED for next cycle.");
 
-                    prevInput = input.ToString();
+                    previousInputs.Add(input.ToString());
+                    if (previousInputs.Count > (maxPrevInputs + 1))
+                        previousInputs.RemoveAt(0);
+
+                    //prevInput = input.ToString();
                 }
 
                 // The brain does not do that this way, so we don't use it.
@@ -976,6 +985,16 @@ namespace UnitTestsProject
             return $"{prevInput}-{input.ToString()}";
         }
 
+
+        private static string GetKey(List<string> prevInputs, double input)
+        {
+            string key = String.Empty;
+            foreach (var item in prevInputs)
+            {
+                key += (item + "-");
+            }
+            return key;
+        }
 
 
         /// <summary>

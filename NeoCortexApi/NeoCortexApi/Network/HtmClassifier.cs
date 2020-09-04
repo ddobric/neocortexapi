@@ -106,7 +106,7 @@ namespace NeoCortexApi.Network
                 {
                     if (pair.Value.SequenceEqual(celIndicies))
                     {
-                        Debug.WriteLine($">indx:{n}\tinp/len: {pair.Key}/{celIndicies.Length}\tsimilarity {1.0}\t {Helpers.StringifyVector(pair.Value)}");
+                        Debug.WriteLine($">indx:{n}\tinp/len: {pair.Key}/{celIndicies.Length}\tsimilarity 100pct\t {Helpers.StringifyVector(pair.Value)}");
                         return pair.Key;
                     }
 
