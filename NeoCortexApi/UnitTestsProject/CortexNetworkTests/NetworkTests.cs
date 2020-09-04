@@ -367,10 +367,10 @@ namespace UnitTestsProject
                     if (input == lastPredictedValue)
                     {
                         matches++;
-                        Debug.WriteLine($"Match {input}");
+                        Debug.WriteLine($"Match. Actual value: {input} - Predicted value: {lastPredictedValue}");
                     }
                     else
-                        Debug.WriteLine($"Missmatch Actual value: {input} - Predicted value: {lastPredictedValue}");
+                        Debug.WriteLine($"Missmatch! Actual value: {input} - Predicted value: {lastPredictedValue}");
 
                     lastPredictedValue = predictedValue;
                 }
@@ -512,14 +512,15 @@ namespace UnitTestsProject
 
             TemporalMemory tm1 = new TemporalMemory();
 
-            HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem, numInputs * 15, (isStable, numPatterns, actColAvg, seenInputs) => {
+            HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem, numInputs * 15, (isStable, numPatterns, actColAvg, seenInputs) =>
+            {
                 // Event should only be fired when entering the stable state.
                 // Ideal SP should never enter unstable state after stable state.
                 Assert.IsTrue(isStable);
                 Assert.IsTrue(numPatterns == numInputs);
                 isInStableState = true;
                 cls.ClearState();
-                
+
                 tm1.reset(mem);
 
                 Debug.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
@@ -527,11 +528,11 @@ namespace UnitTestsProject
 
             SpatialPoolerMT sp1 = new SpatialPoolerMT(hpa);
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
-           
+
             sp1.init(mem, UnitTestHelpers.GetMemory());
             tm1.init(mem);
 
-          
+
             //
             // NewBorn learning stage.
             region0.AddLayer(layer1);
@@ -573,7 +574,7 @@ namespace UnitTestsProject
                 int maxPrevInputs = 1;
                 List<string> previousInputs = new List<string>();
                 previousInputs.Add("-1.0");
-               // string prevInput = "-1.0";
+                // string prevInput = "-1.0";
 
                 foreach (var input in inputs)
                 {
@@ -989,10 +990,15 @@ namespace UnitTestsProject
         private static string GetKey(List<string> prevInputs, double input)
         {
             string key = String.Empty;
-            foreach (var item in prevInputs)
+
+            for (int i = 0; i < prevInputs.Count; i++)
             {
-                key += (item + "-");
+                if (i > 0)
+                    key += "-";
+
+                key += (prevInputs[i]);
             }
+
             return key;
         }
 
