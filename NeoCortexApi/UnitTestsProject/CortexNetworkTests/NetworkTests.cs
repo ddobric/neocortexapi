@@ -570,7 +570,7 @@ namespace UnitTestsProject
 
                 Debug.WriteLine($"-------------- Cycle {cycle} ---------------");
 
-                int maxPrevInputs = 1;
+                int maxPrevInputs = 2;
                 List<string> previousInputs = new List<string>();
                 previousInputs.Add("-1.0");
                // string prevInput = "-1.0";
@@ -647,7 +647,7 @@ namespace UnitTestsProject
                         //    predictedInputValue = cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray());
                         //    Debug.WriteLine($"I={input} - P={predictedInputValue}");
                         //}
-
+                        /*
                         //
                         // Here we let the HTM predict sequence five times on its own.
                         // We start with last predicted value.
@@ -676,7 +676,7 @@ namespace UnitTestsProject
                         {
                             Debug.Write(item);
                             Debug.Write(" ,");
-                        }
+                        }*/
                         break;
                     }
                 }
@@ -989,10 +989,14 @@ namespace UnitTestsProject
         private static string GetKey(List<string> prevInputs, double input)
         {
             string key = String.Empty;
-            foreach (var item in prevInputs)
+            for (int i = 0; i < prevInputs.Count; i++)
             {
-                key += (item + "-");
-            }
+                if (i > 0)
+                    key = key + "-";
+
+                key += prevInputs[i];              
+            }        
+            
             return key;
         }
 
