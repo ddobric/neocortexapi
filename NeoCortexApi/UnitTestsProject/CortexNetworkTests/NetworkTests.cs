@@ -454,10 +454,10 @@ namespace UnitTestsProject
             // List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 15.0 });
 
             // not stable with 2048 cols 15 cells per column and 1000 synapses on segment.
-            //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0 });
+            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0 });
 
             // Exit experiment in the stable state after 30 repeats with 100 % of accuracy.Elapsed time: 5 min.
-            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 12.0 });
+            //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 12.0 });
 
             // 112 cycles. Exit experiment in the stable state after 30 repeats with 100% of accuracy. Elapsed time: 8 min.
             //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 15.0, 7.0, 5.0 });
@@ -585,6 +585,10 @@ namespace UnitTestsProject
 
                     activeColumnsLst[input].Add(activeColumns.ToList());
 
+                    previousInputs.Add(input.ToString());
+                    if (previousInputs.Count > (maxPrevInputs + 1))
+                        previousInputs.RemoveAt(0);
+
                     string key = GetKey(previousInputs, input);
 
                     //cls.Learn(GetKey(prevInput, input), lyrOut.ActiveCells.ToArray());
@@ -596,10 +600,10 @@ namespace UnitTestsProject
                     if (key == lastPredictedValue)
                     {
                         matches++;
-                        Debug.WriteLine($"Match {input}");
+                        Debug.WriteLine($"Match. Actual value: {key} - Predicted value: {lastPredictedValue}");
                     }
                     else
-                        Debug.WriteLine($"Missmatch Actual value: {key} - Predicted value: {lastPredictedValue}");
+                        Debug.WriteLine($"Missmatch! Actual value: {key} - Predicted value: {lastPredictedValue}");
 
                     if (lyrOut.PredictiveCells.Count > 0)
                     {
@@ -611,10 +615,6 @@ namespace UnitTestsProject
                     }
                     else
                         Debug.WriteLine($"NO CELLS PREDICTED for next cycle.");
-
-                    previousInputs.Add(input.ToString());
-                    if (previousInputs.Count > (maxPrevInputs + 1))
-                        previousInputs.RemoveAt(0);
 
                     //prevInput = input.ToString();
                 }
