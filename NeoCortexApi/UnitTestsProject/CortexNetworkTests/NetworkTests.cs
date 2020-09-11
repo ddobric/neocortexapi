@@ -394,7 +394,8 @@ namespace UnitTestsProject
 
 
         /// <summary>
-        ///
+        /// Experiment that defines a template code structure for general testing of sequence learning.
+        /// Originally, it was designed to learn music notes, but it can be used with any kind of input.
         /// </summary>
         [TestMethod]
         [TestCategory("Experiment")]
@@ -449,9 +450,21 @@ namespace UnitTestsProject
             EncoderBase encoder = new ScalarEncoder(settings);
 
             //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 2.0, 0.0, 0.1, 2.0 });
-           // List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0 });
-            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 15.0 });
-           // List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 15.0, 7.0, 5.0 });
+            // List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0 });
+            // List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 15.0 });
+
+            // not stable with 2048 cols 15 cells per column and 1000 synapses on segment.
+            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0 });
+
+            // Exit experiment in the stable state after 30 repeats with 100 % of accuracy.Elapsed time: 5 min.
+            //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 12.0 });
+
+            // 112 cycles. Exit experiment in the stable state after 30 repeats with 100% of accuracy. Elapsed time: 8 min.
+            //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 15.0, 7.0, 5.0 });
+
+            // 91.6% accuracy with 2048 with 15 cells per column.
+            //                     3000 with 15 cells per column.
+            //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 15.0, 17.0, 11.00, 12.00, 17.00 });
 
             // C-0, D-1, E-2, F-3, G-4, H-5
             //var inputValues = new double[] { 0.0, 0.0, 4.0, 4.0, 5.0, 5.0, 4.0, 3.0, 3.0, 2.0, 2.0, 1.0, 1.0, 0.0 };
@@ -497,6 +510,8 @@ namespace UnitTestsProject
 
             var numInputs = inputValues.Distinct<double>().ToList().Count;
 
+            TemporalMemory tm1 = new TemporalMemory();
+
             HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem, numInputs * 15, (isStable, numPatterns, actColAvg, seenInputs) => {
                 // Event should only be fired when entering the stable state.
                 // Ideal SP should never enter unstable state after stable state.
@@ -505,55 +520,30 @@ namespace UnitTestsProject
                 isInStableState = true;
                 cls.ClearState();
                 
+                tm1.reset(mem);
+
                 Debug.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
             });
 
             SpatialPoolerMT sp1 = new SpatialPoolerMT(hpa);
-            TemporalMemory tm1 = new TemporalMemory();
-          
+            CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
+           
             sp1.init(mem, UnitTestHelpers.GetMemory());
             tm1.init(mem);
 
-            CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
-
+          
             //
             // NewBorn learning stage.
             region0.AddLayer(layer1);
             layer1.HtmModules.Add("encoder", encoder);
             layer1.HtmModules.Add("sp", sp1);
+            layer1.HtmModules.Add("tm", tm1);
 
             double[] inputs = inputValues.ToArray();
             int[] prevActiveCols = new int[0];
 
-            //int maxSPLearningCycles = 50;
-
-            //
-            // This trains SP on input pattern. Not needed when HomeostaticPlasticityActivator is used.
-            // It performs some kind of unsupervised new-born learning.
-            //foreach (var input in inputs)
-            //{
-            //    List<(int Cycle, double Similarity)> elementOscilationResult = new List<(int Cycle, double Similarity)>();
-
-            //    Debug.WriteLine($"Learning  ** {input} **");
-
-            //    for (int i = 0; i < maxSPLearningCycles; i++)
-            //    {
-            //        var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
-
-            //        var activeColumns = layer1.GetResult("sp") as int[];
-
-            //        var actCols = activeColumns.OrderBy(c => c).ToArray();
-
-            //        var similarity = MathHelpers.CalcArraySimilarity(prevActiveCols, actCols);
-
-            //        Debug.WriteLine($" {i.ToString("D4")} SP-OUT: [{actCols.Length}/{similarity.ToString("0.##")}] - {Helpers.StringifyVector(actCols)}");
-
-            //        prevActiveCols = activeColumns;
-            //    }
-            //}
-
             // Here we add TM module to the layer.
-            layer1.HtmModules.Add("tm", tm1);
+            //layer1.HtmModules.Add("tm", tm1);
 
             int cycle = 0;
             int matches = 0;
@@ -580,21 +570,10 @@ namespace UnitTestsProject
 
                 Debug.WriteLine($"-------------- Cycle {cycle} ---------------");
 
-                string prevInput = "-1.0";
-
-                //
-                // Activate the 'New - Born' effect.
-                //if (i == 100)
-                //{
-                //    mem.setMaxBoost(0.0);
-                //    mem.updateMinPctOverlapDutyCycles(0.0);
-                //    cls.ClearState();
-                //}
-
-                //if (i == 200)
-                //{
-                //    cls.ClearState();
-                //}
+                int maxPrevInputs = 2;
+                List<string> previousInputs = new List<string>();
+                previousInputs.Add("-1.0");
+               // string prevInput = "-1.0";
 
                 foreach (var input in inputs)
                 {
@@ -606,19 +585,25 @@ namespace UnitTestsProject
 
                     activeColumnsLst[input].Add(activeColumns.ToList());
 
-                    //cls.Learn(input, lyrOut.ActiveCells.ToArray());
-                    cls.Learn(GetKey(prevInput, input), lyrOut.ActiveCells.ToArray());
-                    
+                    previousInputs.Add(input.ToString());
+                    if (previousInputs.Count > (maxPrevInputs + 1))
+                        previousInputs.RemoveAt(0);
+
+                    string key = GetKey(previousInputs, input);
+
+                    //cls.Learn(GetKey(prevInput, input), lyrOut.ActiveCells.ToArray());
+                    cls.Learn(key, lyrOut.ActiveCells.ToArray());
+
                     if (learn == false)
                         Debug.WriteLine($"Inference mode");
 
-                    if (GetKey(prevInput, input) == lastPredictedValue)
+                    if (key == lastPredictedValue)
                     {
                         matches++;
-                        Debug.WriteLine($"Match {input}");
+                        Debug.WriteLine($"Match. Actual value: {key} - Predicted value: {lastPredictedValue}");
                     }
                     else
-                        Debug.WriteLine($"Missmatch Actual value: {GetKey(prevInput, input)} - Predicted value: {lastPredictedValue}");
+                        Debug.WriteLine($"Missmatch! Actual value: {key} - Predicted value: {lastPredictedValue}");
 
                     if (lyrOut.PredictiveCells.Count > 0)
                     {
@@ -631,7 +616,7 @@ namespace UnitTestsProject
                     else
                         Debug.WriteLine($"NO CELLS PREDICTED for next cycle.");
 
-                    prevInput = input.ToString();
+                    //prevInput = input.ToString();
                 }
 
                 // The brain does not do that this way, so we don't use it.
@@ -645,10 +630,10 @@ namespace UnitTestsProject
                 {
                     maxMatchCnt++;
                     Debug.WriteLine($"100% accuracy reched {maxMatchCnt} times.");
-                    if (maxMatchCnt >= 100)
+                    if (maxMatchCnt >= 30)
                     {
                         sw.Stop();
-                        Debug.WriteLine($"Exit experiment in the stable state after 100 repeats with 100% of accuracy. Elapsed time: {sw.ElapsedMilliseconds / 1000 / 60} min.");
+                        Debug.WriteLine($"Exit experiment in the stable state after 30 repeats with 100% of accuracy. Elapsed time: {sw.ElapsedMilliseconds / 1000 / 60} min.");
                         learn = false;
                         //var testInputs = new double[] { 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 0.0, 1.0 };
 
@@ -662,7 +647,7 @@ namespace UnitTestsProject
                         //    predictedInputValue = cls.GetPredictedInputValue(lyrOut.predictiveCells.ToArray());
                         //    Debug.WriteLine($"I={input} - P={predictedInputValue}");
                         //}
-
+                        /*
                         //
                         // Here we let the HTM predict sequence five times on its own.
                         // We start with last predicted value.
@@ -691,7 +676,7 @@ namespace UnitTestsProject
                         {
                             Debug.Write(item);
                             Debug.Write(" ,");
-                        }
+                        }*/
                         break;
                     }
                 }
@@ -970,7 +955,7 @@ namespace UnitTestsProject
 
         }
 
-        private List<Cell> GetCells(ISet<Cell> activeCells)
+        private List<Cell> GetCells(IList<Cell> activeCells)
         {
             //throw new NotImplementedException();
             List<Cell> cells = new List<Cell>();
@@ -1000,6 +985,20 @@ namespace UnitTestsProject
             return $"{prevInput}-{input.ToString()}";
         }
 
+
+        private static string GetKey(List<string> prevInputs, double input)
+        {
+            string key = String.Empty;
+            for (int i = 0; i < prevInputs.Count; i++)
+            {
+                if (i > 0)
+                    key = key + "-";
+
+                key += prevInputs[i];              
+            }        
+            
+            return key;
+        }
 
 
         /// <summary>
