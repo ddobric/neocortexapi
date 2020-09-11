@@ -407,7 +407,7 @@ namespace UnitTestsProject
 
             p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
             p.Set(KEY.INPUT_DIMENSIONS, new int[] { inputBits });
-            p.Set(KEY.CELLS_PER_COLUMN, 15);
+            p.Set(KEY.CELLS_PER_COLUMN, 25);
             p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
 
             //p.Set(KEY.GLOBAL_INHIBITION, false);
@@ -453,8 +453,20 @@ namespace UnitTestsProject
             // List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0 });
             // List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 15.0 });
 
-            // not stable with 2048 cols 15 cells per column and 1000 synapses on segment.
-            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0 });
+            // not stable with 2048 cols 25 cells per column and 0.02 * numColumns synapses on segment.
+            //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 });
+
+            // Stable with 2048 cols 25 cells per column and 0.02 * numColumns synapses on segment.8min, 154 min, maxPrevInputs=5
+            // Stable with 2048 cols 25 cells per column and 0.02 * numColumns synapses on segment.8min, 9min.
+            // not stable with 2048 cols 15 cells per column and 0.02 * numColumns synapses on segment.
+            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0 });
+
+            // Stable with 2048 cols AND 15 cells per column and 1000 0.02 * numColumns on segment. 7min,8min
+            //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0 });
+
+            // not stable with 2048 cols 10 cells per column and 0.02 * numColumns synapses on segment.
+            // Stable with 2048 cols AND 15 cells per column and 1000 0.02 * numColumns on segment. 9 min
+            //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0 });
 
             // Exit experiment in the stable state after 30 repeats with 100 % of accuracy.Elapsed time: 5 min.
             //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 12.0 });
@@ -570,7 +582,7 @@ namespace UnitTestsProject
 
                 Debug.WriteLine($"-------------- Cycle {cycle} ---------------");
 
-                int maxPrevInputs = 2;
+                int maxPrevInputs = 5;
                 List<string> previousInputs = new List<string>();
                 previousInputs.Add("-1.0");
                // string prevInput = "-1.0";
