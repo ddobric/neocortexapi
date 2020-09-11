@@ -75,13 +75,17 @@ namespace NeoCortexApi
         }
 
         /// <summary>
-        /// 
+        /// Performs the whole calculation of Temporal memory algorithm.
+        /// Calculation takes two parts:
+        /// 1. Calculation of the cells, which become active in the current cycle.
+        /// 2. Calculation of dendrite segments which becom active in the current cycle.
+        /// Note: PredictiveCells are not calculated here. They are calculated on demand from active segments.
         /// </summary>
         /// <param name="activeColumns"></param>
         /// <param name="learn"></param>
         /// <returns></returns>
         public ComputeCycle Compute(int[] activeColumns, bool learn)
-        {  
+        {
             ComputeCycle cycle = ActivateCells(this.connections, activeColumns, learn);
             ActivateDendrites(this.connections, cycle, learn);
             Debug.WriteLine("");
@@ -161,7 +165,7 @@ namespace NeoCortexApi
                     if (activeColumnData.ActiveSegments != null && activeColumnData.ActiveSegments.Count > 0)
                     {
                         Debug.Write(".");
-                        
+
                         List<Cell> cellsOwnersOfActSegs = ActivatePredictedColumn(conn, activeColumnData.ActiveSegments,
                             activeColumnData.MatchingSegments, prevActiveCells, prevWinnerCells,
                                 permanenceIncrement, permanenceDecrement, learn);
@@ -254,14 +258,14 @@ namespace NeoCortexApi
                 if (item.Value >= conn.getMinThreshold())
                     matchingSegments.Add(conn.GetSegmentForFlatIdx(item.Key));
             }
-          
+
             //
             // Step through all synapses on active cells with permanence over threshold (conencted synapses)
             // and find involved segments.         
             activeSegments.Sort(GetComparer(conn.getNextSegmentOrdinal()));
-           
+
             matchingSegments.Sort(GetComparer(conn.getNextSegmentOrdinal()));
-           
+
             cycle.ActiveSegments = activeSegments;
             cycle.MatchingSegments = matchingSegments;
 

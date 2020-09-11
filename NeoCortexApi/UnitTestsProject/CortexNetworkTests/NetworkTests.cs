@@ -407,7 +407,7 @@ namespace UnitTestsProject
 
             p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
             p.Set(KEY.INPUT_DIMENSIONS, new int[] { inputBits });
-            p.Set(KEY.CELLS_PER_COLUMN, 15);
+            p.Set(KEY.CELLS_PER_COLUMN, 25);
             p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
 
             //p.Set(KEY.GLOBAL_INHIBITION, false);
@@ -451,12 +451,13 @@ namespace UnitTestsProject
 
             //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 2.0, 0.0, 0.1, 2.0 });
             // List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0 });
-            // List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 15.0 });
+            // List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.
 
-            // not stable with 2048 cols 15 cells per column and 1000 synapses on segment.
+            // Stable with 2048 cols 25 cells per column 0.02 * 2048 synapses on segment. 5 Min time. maxPrevInputs = 5
+            // not stable with 2048 cols 15 cells per column and  0.02 * 2048 synapses on segment. 
             List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0 });
 
-            // Exit experiment in the stable state after 30 repeats with 100 % of accuracy.Elapsed time: 5 min.
+            // Exit experiment in the stable state after 30 repeats with 100 % of accuracy.Elapsed time: 5 min and 55 cycles. 
             //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 12.0 });
 
             // 112 cycles. Exit experiment in the stable state after 30 repeats with 100% of accuracy. Elapsed time: 8 min.
@@ -571,7 +572,7 @@ namespace UnitTestsProject
 
                 Debug.WriteLine($"-------------- Cycle {cycle} ---------------");
 
-                int maxPrevInputs = 2;
+                int maxPrevInputs = 7;
                 List<string> previousInputs = new List<string>();
                 previousInputs.Add("-1.0");
                 // string prevInput = "-1.0";

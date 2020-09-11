@@ -142,52 +142,56 @@ namespace UnitTestsProject
 
             List<(double Element, (int Cycle, double Similarity)[] Oscilations)> oscilationResult = new List<(double Element, (int Cycle, double Similarity)[] Oscilations)>();
 
-            //
-            // This trains SP on input pattern.
-            // It performs some kind of unsupervised new-born learning.
-            foreach (var input in inputs)
+            for (int k = 0; k < 2; k++)
             {
-                using (StreamWriter writer = new StreamWriter(Path.Combine(path, $"Oscilations_Boost_10_{input}.csv")))
+
+                //
+                // This trains SP on input pattern.
+                // It performs some kind of unsupervised new-born learning.
+                foreach (var input in inputs)
                 {
-                    Debug.WriteLine($"Learning Cycles: {maxSPLearningCycles}");
-                    Debug.WriteLine($"MAX_BOOST={p[KEY.MAX_BOOST]}, DUTY ={p[KEY.DUTY_CYCLE_PERIOD]}");
-                    Debug.WriteLine("Cycle;Similarity");
-
-                    double similarity = 0;
-                    double prevSimilarity = 0;
-
-                    List<(int Cycle, double Similarity)> elementOscilationResult = new List<(int Cycle, double Similarity)>();
-
-                    Debug.WriteLine($"Learning  ** {input} **");
-
-                    for (int cycle = 0; cycle < maxSPLearningCycles; cycle++)
+                    using (StreamWriter writer = new StreamWriter(Path.Combine(path, $"Oscilations_Boost_10_{input}.csv")))
                     {
-                        var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
+                        Debug.WriteLine($"Learning Cycles: {maxSPLearningCycles}");
+                        Debug.WriteLine($"MAX_BOOST={p[KEY.MAX_BOOST]}, DUTY ={p[KEY.DUTY_CYCLE_PERIOD]}");
+                        Debug.WriteLine("Cycle;Similarity");
 
-                        var activeColumns = layer1.GetResult("sp") as int[];
+                        double similarity = 0;
+                        double prevSimilarity = 0;
 
-                        var actCols = activeColumns.OrderBy(c => c).ToArray();
+                        List<(int Cycle, double Similarity)> elementOscilationResult = new List<(int Cycle, double Similarity)>();
 
-                        Debug.WriteLine($" {cycle.ToString("D4")} SP-OUT: [{actCols.Length}/{MathHelpers.CalcArraySimilarity(prevActiveCols, actCols)}] - {Helpers.StringifyVector(actCols)}");
+                        Debug.WriteLine($"Learning  ** {input} **");
 
-                        similarity = MathHelpers.CalcArraySimilarity(activeColumns, prevActiveCols);
-
-                        if (similarity < 60.0)
+                        for (int cycle = 0; cycle < maxSPLearningCycles; cycle++)
                         {
-                            var tp = (Cycle: cycle, Similarity: similarity);
+                            var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
 
-                            elementOscilationResult.Add(tp);
+                            var activeColumns = layer1.GetResult("sp") as int[];
+
+                            var actCols = activeColumns.OrderBy(c => c).ToArray();
+
+                            Debug.WriteLine($" {cycle.ToString("D4")} SP-OUT: [{actCols.Length}/{MathHelpers.CalcArraySimilarity(prevActiveCols, actCols)}] - {Helpers.StringifyVector(actCols)}");
+
+                            similarity = MathHelpers.CalcArraySimilarity(activeColumns, prevActiveCols);
+
+                            if (similarity < 60.0)
+                            {
+                                var tp = (Cycle: cycle, Similarity: similarity);
+
+                                elementOscilationResult.Add(tp);
+                            }
+
+                            prevActiveCols = activeColumns;
+                            prevSimilarity = similarity;
+
+                            writer.WriteLine($"{cycle};{similarity}");
+
+                            writer.Flush();
                         }
 
-                        prevActiveCols = activeColumns;
-                        prevSimilarity = similarity;
-
-                        writer.WriteLine($"{cycle};{similarity}");
-
-                        writer.Flush();
+                        oscilationResult.Add((Element: input, Oscilations: elementOscilationResult.ToArray()));
                     }
-
-                    oscilationResult.Add((Element: input, Oscilations: elementOscilationResult.ToArray()));
                 }
             }
 

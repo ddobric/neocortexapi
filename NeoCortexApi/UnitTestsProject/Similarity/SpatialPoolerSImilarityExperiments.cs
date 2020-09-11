@@ -21,6 +21,7 @@ using NeuralNet.MLPerceptron;
 using Microsoft.ML;
 using Microsoft.ML.Data;
 using NeoCortexApi.DistributedCompute;
+using NeoCortexApi.Encoders;
 
 namespace UnitTestsProject
 {
@@ -123,15 +124,15 @@ namespace UnitTestsProject
 
                     while (!isInStableState)
                     {
-                        foreach (var mnistImage in trainingImages)
+                        foreach (var trainingImage in trainingImages)
                         {
-                            FileInfo fI = new FileInfo(mnistImage);
+                            FileInfo fI = new FileInfo(trainingImage);
 
                             string outputImage = $"{outFolder}\\digit_{digit}_cycle_{counter}_{fI.Name}";
 
                             string testName = $"{outFolder}\\digit_{digit}_{fI.Name}";
 
-                            string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imgSize, testName);
+                            string inputBinaryImageFile = Helpers.BinarizeImage($"{trainingImage}", imgSize, testName);
 
                             // Read input csv file into array
                             int[] inputVector = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageFile).ToArray();
@@ -142,13 +143,16 @@ namespace UnitTestsProject
 
                             sp.compute(inputVector, activeArray, true);
 
+                            var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
+
+                            Debug.WriteLine($"{trainingImage}");
+                            Debug.WriteLine($"{Helpers.StringifyVector(activeCols)}\n");
+
                             if (isInStableState)
                             {
-                                var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
-
                                 var distance = MathHelpers.GetHammingDistance(oldArray, activeArray, true);
                                 //var similarity = MathHelpers.CalcArraySimilarity(oldArray, activeArray, true);
-                                sdrs.Add(mnistImage, activeCols);
+                                sdrs.Add(trainingImage, activeCols);
                                 swHam.WriteLine($"{counter++}|{distance} ");
 
                                 oldArray = new int[numOfActCols];
@@ -179,6 +183,198 @@ namespace UnitTestsProject
                 }
             }
         }
+
+        /// <summary>
+        /// This test do spatial pooling and save hamming distance, active columns 
+        /// and speed of processing in text files in Output directory.
+        /// </summary>
+        /// <param name="digit"></param>
+        [TestMethod]
+        [TestCategory("LongRunning")]
+        public void SimilarityExperimentWithEncoder()
+        {
+            double minOctOverlapCycles = 1.0;
+            double maxBoost = 10.0;
+            int inputBits = 100;
+            var colDims = new int[] { 64 * 64 };
+            int numOfActCols = colDims[0];
+            int numColumns = colDims[0];
+            string TestOutputFolder = $"Output-{nameof(SimilarityExperiment)}";
+
+            Directory.CreateDirectory($"{nameof(SimilarityExperiment)}");
+
+            int counter = 0;
+            //var parameters = GetDefaultParams();
+            ////parameters.Set(KEY.DUTY_CYCLE_PERIOD, 20);
+            ////parameters.Set(KEY.MAX_BOOST, 1);
+            ////parameters.setInputDimensions(new int[] { imageSize[imSizeIndx], imageSize[imSizeIndx] });
+            ////parameters.setColumnDimensions(new int[] { topologies[topologyIndx], topologies[topologyIndx] });
+            ////parameters.setNumActiveColumnsPerInhArea(0.02 * numOfActCols);
+            //parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.06 * 4096); // TODO. Experiment with different sizes
+            //parameters.Set(KEY.POTENTIAL_RADIUS, inputBits);
+            //parameters.Set(KEY.POTENTIAL_PCT, 1.0);
+            //parameters.Set(KEY.GLOBAL_INHIBITION, true); // TODO: Experiment with local inhibition too. Note also the execution time of the experiment.
+
+            //// Num of active synapces in order to activate the column.
+            //parameters.Set(KEY.STIMULUS_THRESHOLD, 50.0);
+            //parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.008);
+            //parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0.05);
+
+            //parameters.Set(KEY.INHIBITION_RADIUS, (int)0.15 * inputBits); // TODO. check if this has influence in a case of the global inhibition. ALso check how this parameter influences the similarity of SDR.
+
+            //parameters.Set(KEY.SYN_PERM_CONNECTED, 0.2);
+            //parameters.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 1.0);
+            //parameters.Set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.001);
+            //parameters.Set(KEY.DUTY_CYCLE_PERIOD, 100);
+            //parameters.Set(KEY.MAX_BOOST, 10);
+            //parameters.Set(KEY.WRAP_AROUND, true);
+            //parameters.Set(KEY.SEED, 1969);
+            //parameters.setInputDimensions(new int[] {inputBits });
+            //parameters.setColumnDimensions(colDims);
+
+            Parameters p = Parameters.getAllDefaultParameters();
+            p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
+            p.Set(KEY.INPUT_DIMENSIONS, new int[] { inputBits });
+            p.Set(KEY.COLUMN_DIMENSIONS, colDims); 
+            p.Set(KEY.CELLS_PER_COLUMN, 10);
+            
+            p.Set(KEY.MAX_BOOST, maxBoost);
+            p.Set(KEY.DUTY_CYCLE_PERIOD, 50);
+            p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, minOctOverlapCycles);
+
+            // Global inhibition
+            // N of 40 (40= 0.02*2048 columns) active cells required to activate the segment.
+            p.Set(KEY.GLOBAL_INHIBITION, true);
+            p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
+            p.Set(KEY.POTENTIAL_RADIUS, inputBits);
+            p.Set(KEY.LOCAL_AREA_DENSITY, -1); // In a case of global inhibition.
+            //p.setInhibitionRadius( Automatically set on the columns pace in a case of global inhibition.);
+
+            // Activation threshold is 10 active cells of 40 cells in inhibition area.
+            p.setActivationThreshold(10);
+
+            // Max number of synapses on the segment.
+            p.setMaxNewSynapsesPerSegmentCount((int)(0.02 * numColumns));
+            double max = 20;
+
+            Dictionary<string, object> settings = new Dictionary<string, object>()
+            {
+                { "W", 15},
+                { "N", inputBits},
+                { "Radius", -1.0},
+                { "MinVal", 0.0},
+                { "Periodic", false},
+                { "Name", "scalar"},
+                { "ClipInput", false},
+                { "MaxVal", max}
+            };
+
+            var encoder = new ScalarEncoder(settings);
+
+            bool isInStableState = false;
+
+            var mem = new Connections();
+
+            p.apply(mem);
+
+            var inputs = new int[] { 0, 1, 2, 3, 4, 5 };
+
+            HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem, inputs.Length * 30, (isStable, numPatterns, actColAvg, seenInputs) =>
+            {
+                // Event should only be fired when entering the stable state.
+                // Ideal SP should never enter unstable state after stable state.
+                Assert.IsTrue(isStable);
+                //Assert.IsTrue(numPatterns == inputs.Length);
+                isInStableState = true;
+                Debug.WriteLine($"Entered STABLE state: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+            });
+
+            SpatialPooler sp = new SpatialPoolerMT(hpa);
+
+            sp.init(mem, UnitTestHelpers.GetMemory());
+
+            int[] activeArray = new int[numOfActCols];
+
+            string outFolder = $"{TestOutputFolder}";
+
+            Directory.CreateDirectory(outFolder);
+
+            string outputHamDistFile = $"{outFolder}\\hamming.txt";
+
+            string outputActColFile = $"{outFolder}\\activeCol.txt";
+
+            using (StreamWriter swHam = new StreamWriter(outputHamDistFile))
+            {
+                using (StreamWriter swActCol = new StreamWriter(outputActColFile))
+                {
+                    int cycle = 0;
+
+                    Dictionary<string, int[]> sdrs = new Dictionary<string, int[]>();
+
+                    while (!isInStableState)
+                    {
+                        foreach (var digit in inputs)
+                        { 
+                            int[] oldArray = new int[activeArray.Length];
+                            List<double[,]> overlapArrays = new List<double[,]>();
+                            List<double[,]> bostArrays = new List<double[,]>();
+
+                            var inputVector = encoder.Encode(digit);
+
+                            sp.compute(inputVector, activeArray, true);
+
+                            var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
+
+                            Debug.WriteLine($"'{digit}'");
+                            Debug.WriteLine($"IN :{Helpers.StringifyVector(inputVector)}");
+                            Debug.WriteLine($"OUT:{Helpers.StringifyVector(activeCols)}\n");
+
+                            if (isInStableState)
+                            {
+                                swActCol.WriteLine($"\nDigit {digit}");
+
+                                sdrs.Add(digit.ToString(), activeCols);
+
+                                for (int i = 0; i < 100; i++)
+                                {
+                                    var distance = MathHelpers.GetHammingDistance(oldArray, activeArray, true);
+                                    //var similarity = MathHelpers.CalcArraySimilarity(oldArray, activeArray, true);
+                                    swHam.WriteLine($"{counter++}|{distance} ");
+
+                                    oldArray = new int[numOfActCols];
+                                    activeArray.CopyTo(oldArray, 0);
+
+                                    //overlapArrays.Add(ArrayUtils.Make2DArray<double>(ArrayUtils.toDoubleArray(mem.Overlaps), colDims[0], colDims[1]));
+                                    //bostArrays.Add(ArrayUtils.Make2DArray<double>(mem.BoostedOverlaps, colDims[0], colDims[1]));
+
+                                    var activeStr = Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, i => i == 1));
+                                    swActCol.WriteLine($"{activeStr}");
+                                    Debug.WriteLine($"Digit {digit}: {activeStr}");
+
+                                    //int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(activeArray, colDims[0], colDims[1]);
+                                    //twoDimenArray = ArrayUtils.Transpose(twoDimenArray);
+                                    //List<int[,]> arrays = new List<int[,]>();
+                                    //arrays.Add(twoDimenArray);
+                                    //arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray<int>(inputVector, (int)Math.Sqrt(inputVector.Length), (int)Math.Sqrt(inputVector.Length))));
+
+                                    string outputImage = $"{outFolder}\\digit_{digit}_cycle_{counter}";
+
+                                    //NeoCortexUtils.DrawBitmaps(arrays, outputImage, Color.Yellow, Color.Gray, OutImgSize, OutImgSize);
+                                    //NeoCortexUtils.DrawHeatmaps(overlapArrays, $"{outputImage}_overlap.png", 1024, 1024, 150, 50, 5);
+                                    //NeoCortexUtils.DrawHeatmaps(bostArrays, $"{outputImage}_boost.png", 1024, 1024, 150, 50, 5);
+                                }
+                            }
+
+                            Debug.WriteLine($"Cycle {cycle++}");
+                        }
+                    }
+
+                    CalculateResult(sdrs);
+                }
+            }
+        }
+
+
 
         /// <summary>
         /// Calculate all required results.
