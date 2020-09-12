@@ -45,6 +45,7 @@ namespace UnitTestsProject
         //[DataRow("Horizontal")]
         public void SimilarityExperiment(string inputPrefix)
         {
+            int stableStateCnt = 100;
             double minOctOverlapCycles = 1.0;
             double maxBoost = 10.0;
             //int inputBits = 100;
@@ -177,7 +178,7 @@ namespace UnitTestsProject
 
                             var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 
-                            Debug.WriteLine($"{trainingImage}");
+                            Debug.WriteLine($"Cycle: {cycle++} - Input: {trainingImage}");
                             Debug.WriteLine($"{Helpers.StringifyVector(activeCols)}\n");
 
                             if (isInStableState)
@@ -205,9 +206,7 @@ namespace UnitTestsProject
                                 NeoCortexUtils.DrawBitmaps(arrays, outputImage, Color.Yellow, Color.Gray, OutImgSize, OutImgSize);
                                 NeoCortexUtils.DrawHeatmaps(overlapArrays, $"{outputImage}_overlap.png", 1024, 1024, 150, 50, 5);
                                 NeoCortexUtils.DrawHeatmaps(bostArrays, $"{outputImage}_boost.png", 1024, 1024, 150, 50, 5);
-                            }
-
-                            Debug.WriteLine($"Cycle {cycle++}");
+                            } 
                         }
                     }
 
@@ -225,6 +224,7 @@ namespace UnitTestsProject
         [TestCategory("LongRunning")]
         public void SimilarityExperimentWithEncoder()
         {
+            int stableStateCnt = 100;
             double minOctOverlapCycles = 1.0;
             double maxBoost = 10.0;
             int inputBits = 100;
@@ -278,7 +278,7 @@ namespace UnitTestsProject
             // N of 40 (40= 0.02*2048 columns) active cells required to activate the segment.
             p.Set(KEY.GLOBAL_INHIBITION, true);
             p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
-            //p.Set(KEY.POTENTIAL_RADIUS,(int) (.2 * inputBits));
+            p.Set(KEY.POTENTIAL_RADIUS,(int) (.7 * inputBits));
             p.Set(KEY.LOCAL_AREA_DENSITY, -1); // In a case of global inhibition.
             //p.setInhibitionRadius( Automatically set on the columns pace in a case of global inhibition.);
 
@@ -354,12 +354,28 @@ namespace UnitTestsProject
 
                             sp.compute(inputVector, activeArray, true);
 
+                            string actColFileName = Path.Combine(outFolder, $"{digit}.actcols.txt");
+
+                            if (cycle == 0 && File.Exists(actColFileName))
+                                File.Delete(actColFileName);
+                            
                             var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 
-                            Debug.WriteLine($"'{digit}'");
+                            using (StreamWriter swCols = new StreamWriter(actColFileName, true))
+                            {
+                                swCols.WriteLine(Helpers.StringifyVector(activeCols));
+                            }
+
+                            Debug.WriteLine($"'Cycle: {cycle} - {digit}'");
                             Debug.WriteLine($"IN :{Helpers.StringifyVector(inputVector)}");
                             Debug.WriteLine($"OUT:{Helpers.StringifyVector(activeCols)}\n");
 
+                            if (isInStableState)
+                            {
+                                if (--stableStateCnt <= 0)
+                                    return;
+                            }
+                            /*
                             if (isInStableState)
                             {
                                 swActCol.WriteLine($"\nDigit {digit}");
@@ -395,8 +411,10 @@ namespace UnitTestsProject
                                 }
                             }
 
-                            Debug.WriteLine($"Cycle {cycle++}");
+                            Debug.WriteLine($"Cycle {cycle++}");*/
                         }
+
+                        cycle++;
                     }
 
                     CalculateResult(sdrs);

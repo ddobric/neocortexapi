@@ -46,7 +46,7 @@ namespace NeoCortexApi
         /// Keeps the list of hash values of all seen input patterns.
         /// List of hashes. [key, val] = [hash(input), hash(output)]
         /// </summary>
-        private Dictionary<string, int[]> inputs = new Dictionary<string, int[]>();
+        private Dictionary<string, int[]> inOutMap = new Dictionary<string, int[]>();
 
         /// <summary>
         /// Action to be invoked when the SP become stable or instable.
@@ -60,7 +60,7 @@ namespace NeoCortexApi
         /// </summary>
         private bool isStable = false;
 
-        public HomeostaticPlasticityActivator(Connections htmMemory, int minCycles, Action<bool, int, double, int> onStabilityStatusChanged, int numOfCyclesToWaitOnChange = 5)
+        public HomeostaticPlasticityActivator(Connections htmMemory, int minCycles, Action<bool, int, double, int> onStabilityStatusChanged, int numOfCyclesToWaitOnChange = 50)
         {
             this.onStabilityStatusChanged = onStabilityStatusChanged;
             this.htmMemory = htmMemory;
@@ -91,17 +91,26 @@ namespace NeoCortexApi
 
             //
             // If the pattern appears for the first time, add it to dictionary of seen patterns.
-            if (!inputs.ContainsKey(inpHash))
+            if (!inOutMap.ContainsKey(inpHash))
             {
-                inputs.Add(inpHash, output);
+                inOutMap.Add(inpHash, output);
                 numOfActiveColsForInput.Add(inpHash, new int[maxPreviousElements]);
                 numOfStableCyclesForInput.Add(inpHash, 0);
             }
             else
             {
+                if (cycle >= this.minCycles)
+                {
+                    this.htmMemory.setMaxBoost(0.0);
+                    this.htmMemory.updateMinPctOverlapDutyCycles(0.0);
+                }
+
                 // If the input has been already seen, we calculate the similarity between already seen input
                 // and the new input. The similarity is calculated as a correlation function.
-                var similarity = Correlate(inputs[inpHash], output);
+                var similarity = Correlate(ArrayUtils.IndexWhere(inOutMap[inpHash], k => k == 1), ArrayUtils.IndexWhere(output, k => k == 1));
+
+                // We replace the existing value with the new one.
+                inOutMap[inpHash] = output;
 
                 //
                 // We cannot expect the 100% for the entire learning cycle. Sometimes some
@@ -109,9 +118,6 @@ namespace NeoCortexApi
                 // If this happen we take the new SDR (output) as the winner and put it in the map.
                 if (similarity > 0.96)
                 {
-                    // We replace the existing value with the new one.
-                    inputs[inpHash] = output;
-
                     // We calculate here the average change of the SDR for the given input.
                     avgDerivation = ArrayUtils.AvgDelta(numOfActiveColsForInput[inpHash]);
 
@@ -124,15 +130,12 @@ namespace NeoCortexApi
                         numOfStableCyclesForInput[inpHash] = 0;
 
                     if (cycle >= this.minCycles)
-                    {
-                        this.htmMemory.setMaxBoost(0.0);
-                        this.htmMemory.updateMinPctOverlapDutyCycles(0.0);
-
+                    {                      
                         if (numOfStableCyclesForInput[inpHash] > requiredNumOfStableCycles && IsInStableState(numOfStableCyclesForInput, requiredNumOfStableCycles))
                         {
                             // We fire event when changed from instable to stable.
                             if (!isStable)
-                                this.onStabilityStatusChanged(true, inputs.Keys.Count, avgDerivation, cycle);
+                                this.onStabilityStatusChanged(true, inOutMap.Keys.Count, avgDerivation, cycle);
 
                             isStable = true;
                             res = true;
@@ -141,13 +144,15 @@ namespace NeoCortexApi
                 }
                 else
                 {
+                    numOfStableCyclesForInput[inpHash] = 0;
+
                     // If the new SDR output for the already seen input
 
                     if (isStable)
                     {
                         // THIS SHOULD NEVER HAPPEN! MEANS FROM STABLE TO INSTABLE!
                         isStable = false;
-                        this.onStabilityStatusChanged(false, inputs.Keys.Count, avgDerivation, cycle);
+                        this.onStabilityStatusChanged(false, inOutMap.Keys.Count, avgDerivation, cycle);
                     }
                 }
             }
