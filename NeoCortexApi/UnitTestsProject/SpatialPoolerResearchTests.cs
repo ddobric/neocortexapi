@@ -74,9 +74,9 @@ namespace UnitTestsProject
                 //sp.compute( inputVector, activeArray, true);
                 var activeArray = sp.Compute(inputVector, true) as int[];
 
-                var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
+                //var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 
-                var str = Helpers.StringifyVector(activeCols);
+                var str = Helpers.StringifyVector(activeArray);
 
                 Debug.WriteLine(str);
             }

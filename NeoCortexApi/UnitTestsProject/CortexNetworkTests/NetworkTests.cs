@@ -367,10 +367,10 @@ namespace UnitTestsProject
                     if (input == lastPredictedValue)
                     {
                         matches++;
-                        Debug.WriteLine($"Match {input}");
+                        Debug.WriteLine($"Match. Actual value: {input} - Predicted value: {lastPredictedValue}");
                     }
                     else
-                        Debug.WriteLine($"Missmatch Actual value: {input} - Predicted value: {lastPredictedValue}");
+                        Debug.WriteLine($"Missmatch! Actual value: {input} - Predicted value: {lastPredictedValue}");
 
                     lastPredictedValue = predictedValue;
                 }
@@ -451,7 +451,7 @@ namespace UnitTestsProject
 
             //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 2.0, 0.0, 0.1, 2.0 });
             // List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0 });
-            // List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 15.0 });
+            // List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.
 
             // not stable with 2048 cols 25 cells per column and 0.02 * numColumns synapses on segment.
             //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 });
@@ -468,7 +468,7 @@ namespace UnitTestsProject
             // Stable with 2048 cols AND 15 cells per column and 1000 0.02 * numColumns on segment. 9 min
             //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0 });
 
-            // Exit experiment in the stable state after 30 repeats with 100 % of accuracy.Elapsed time: 5 min.
+            // Exit experiment in the stable state after 30 repeats with 100 % of accuracy.Elapsed time: 5 min and 55 cycles. 
             //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 12.0 });
 
             // 112 cycles. Exit experiment in the stable state after 30 repeats with 100% of accuracy. Elapsed time: 8 min.
@@ -524,14 +524,15 @@ namespace UnitTestsProject
 
             TemporalMemory tm1 = new TemporalMemory();
 
-            HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem, numInputs * 15, (isStable, numPatterns, actColAvg, seenInputs) => {
+            HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem, numInputs * 15, (isStable, numPatterns, actColAvg, seenInputs) =>
+            {
                 // Event should only be fired when entering the stable state.
                 // Ideal SP should never enter unstable state after stable state.
                 Assert.IsTrue(isStable);
                 Assert.IsTrue(numPatterns == numInputs);
                 isInStableState = true;
                 cls.ClearState();
-                
+
                 tm1.reset(mem);
 
                 Debug.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
@@ -539,11 +540,11 @@ namespace UnitTestsProject
 
             SpatialPoolerMT sp1 = new SpatialPoolerMT(hpa);
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
-           
+
             sp1.init(mem, UnitTestHelpers.GetMemory());
             tm1.init(mem);
 
-          
+
             //
             // NewBorn learning stage.
             region0.AddLayer(layer1);
@@ -585,7 +586,7 @@ namespace UnitTestsProject
                 int maxPrevInputs = 5;
                 List<string> previousInputs = new List<string>();
                 previousInputs.Add("-1.0");
-               // string prevInput = "-1.0";
+                // string prevInput = "-1.0";
 
                 foreach (var input in inputs)
                 {
@@ -1001,14 +1002,15 @@ namespace UnitTestsProject
         private static string GetKey(List<string> prevInputs, double input)
         {
             string key = String.Empty;
+
             for (int i = 0; i < prevInputs.Count; i++)
             {
                 if (i > 0)
-                    key = key + "-";
+                    key += "-";
 
-                key += prevInputs[i];              
-            }        
-            
+                key += (prevInputs[i]);
+            }
+
             return key;
         }
 
