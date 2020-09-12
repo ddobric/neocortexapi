@@ -103,15 +103,15 @@ namespace NeoCortexApi
                 // and the new input. The similarity is calculated as a correlation function.
                 var similarity = Correlate(inputs[inpHash], output);
 
-                // We replace the existing value with the new one.
-                inputs[inpHash] = output;
-
                 //
                 // We cannot expect the 100% for the entire learning cycle. Sometimes some
                 // SDR appear with few more or less bits than in the previous cycle.
                 // If this happen we take the new SDR (output) as the winner and put it in the map.
                 if (similarity > 0.96)
-                { 
+                {
+                    // We replace the existing value with the new one.
+                    inputs[inpHash] = output;
+
                     // We calculate here the average change of the SDR for the given input.
                     avgDerivation = ArrayUtils.AvgDelta(numOfActiveColsForInput[inpHash]);
 
