@@ -3705,6 +3705,9 @@
     <None Update="Similarity\TestFiles\Vertical_1.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Similarity\TestFiles\Vertical_1b.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Similarity\TestFiles\Vertical_2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
