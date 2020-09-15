@@ -456,10 +456,12 @@ namespace UnitTestsProject
             // not stable with 2048 cols 25 cells per column and 0.02 * numColumns synapses on segment.
             //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 });
 
+            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 3.0, 2.0, 1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 0.0, 1.0, 2.0, 3.0, 3.0, 2.0, 1.0, 0.0, 1.0});
+
             // Stable with 2048 cols 25 cells per column and 0.02 * numColumns synapses on segment.8min, 154 min, maxPrevInputs=5
             // Stable with 2048 cols 25 cells per column and 0.02 * numColumns synapses on segment.8min, 9min.
             // not stable with 2048 cols 15 cells per column and 0.02 * numColumns synapses on segment.
-            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0 });
+            //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0 });
 
             // Stable with 2048 cols AND 15 cells per column and 1000 0.02 * numColumns on segment. 7min,8min
             //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0 });
@@ -515,7 +517,7 @@ namespace UnitTestsProject
 
             p.apply(mem);
 
-            bool isInStableState = false;
+            bool isInStableState;
 
             //HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
             HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
@@ -526,24 +528,25 @@ namespace UnitTestsProject
 
             HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem, numInputs * 15, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
-                // Event should only be fired when entering the stable state.
-                // Ideal SP should never enter unstable state after stable state.
-                Assert.IsTrue(isStable);
+                if (isStable)
+                    // Event should be fired when entering the stable state.
+                    Debug.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+                else
+                    // Ideal SP should never enter unstable state after stable state.
+                    Debug.WriteLine($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+
                 Assert.IsTrue(numPatterns == numInputs);
                 isInStableState = true;
                 cls.ClearState();
 
                 tm1.reset(mem);
-
-                Debug.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
-            });
+            }, numOfCyclesToWaitOnChange: 25);
 
             SpatialPoolerMT sp1 = new SpatialPoolerMT(hpa);
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
 
             sp1.init(mem, UnitTestHelpers.GetMemory());
             tm1.init(mem);
-
 
             //
             // NewBorn learning stage.
@@ -572,6 +575,9 @@ namespace UnitTestsProject
             }
 
             int maxCycles = 3500;
+            int maxPrevInputs = 8;
+            List<string> previousInputs = new List<string>();
+            previousInputs.Add("-1.0");
 
             //
             // Now training with SP+TM. SP is pretrained on the given input pattern.
@@ -582,10 +588,7 @@ namespace UnitTestsProject
                 cycle++;
 
                 Debug.WriteLine($"-------------- Cycle {cycle} ---------------");
-
-                int maxPrevInputs = 5;
-                List<string> previousInputs = new List<string>();
-                previousInputs.Add("-1.0");
+                               
                 // string prevInput = "-1.0";
 
                 foreach (var input in inputs)

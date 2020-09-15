@@ -100,28 +100,29 @@ namespace NeoCortexApi.Network
                 int indx = 0;
                 var celIndicies = GetCellIndicies(predictiveCells);
 
-                Debug.WriteLine($"Predictive cells: {Helpers.StringifyVector(celIndicies)}");
+                Debug.WriteLine($"Predictive cells: {celIndicies.Length} \t {Helpers.StringifyVector(celIndicies)}");
 
                 foreach (var pair in this.activeMap2)
                 {
                     if (pair.Value.SequenceEqual(celIndicies))
                     {
-                        Debug.WriteLine($">indx:{n}\tinp/len: {pair.Key}/{celIndicies.Length}\tsimilarity 100pct\t {Helpers.StringifyVector(pair.Value)}");
+                        Debug.WriteLine($">indx:{n}\tinp/len: {pair.Key}/{pair.Value.Length}\tsimilarity 100pct\t {Helpers.StringifyVector(pair.Value)}");
                         return pair.Key;
                     }
 
+                    // Tried following:
                     //double numOfSameBitsPct = (double)(((double)(pair.Value.Intersect(arr).Count()) / Math.Max(arr.Length, pair.Value.Count())));
                     //double numOfSameBitsPct = (double)(((double)(pair.Value.Intersect(celIndicies).Count()) / (double)pair.Value.Length));// ;
                     var numOfSameBitsPct = pair.Value.Intersect(celIndicies).Count();
                     if (numOfSameBitsPct > maxSameBits)
                     {
-                        Debug.WriteLine($">indx:{n}\tinp/len: {pair.Key}/{celIndicies.Length} = similarity {numOfSameBitsPct}\t {Helpers.StringifyVector(pair.Value)}");
+                        Debug.WriteLine($">indx:{n}\tinp/len: {pair.Key}/{pair.Value.Length} = similarity {numOfSameBitsPct}\t {Helpers.StringifyVector(pair.Value)}");
                         maxSameBits = numOfSameBitsPct;
                         predictedValue = pair.Key;
                         indxOfMatchingInp = n;
                     }
                     else
-                        Debug.WriteLine($"<indx:{n}\tinp/len: {pair.Key}/{celIndicies.Length} = similarity {numOfSameBitsPct}\t {Helpers.StringifyVector(pair.Value)}");
+                        Debug.WriteLine($"<indx:{n}\tinp/len: {pair.Key}/{pair.Value.Length} = similarity {numOfSameBitsPct}\t {Helpers.StringifyVector(pair.Value)}");
 
                     indx++;
                 }

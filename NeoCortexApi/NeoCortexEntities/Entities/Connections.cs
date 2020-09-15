@@ -1392,6 +1392,8 @@ namespace NeoCortexApi.Entities
 
             double threshold = connectedPermanence - EPSILON;
 
+            Debug.WriteLine($"\nActive cells: {activeCellsInCurrentCycle.Count}");
+
             //
             // Step through all currently active cells.
             // Find synapses that points to this cell. (receptor synapses)

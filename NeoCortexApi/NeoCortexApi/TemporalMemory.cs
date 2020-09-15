@@ -88,7 +88,6 @@ namespace NeoCortexApi
         {
             ComputeCycle cycle = ActivateCells(this.connections, activeColumns, learn);
             ActivateDendrites(this.connections, cycle, learn);
-            Debug.WriteLine("");
             return cycle;
         }
 
@@ -165,21 +164,17 @@ namespace NeoCortexApi
                     if (activeColumnData.ActiveSegments != null && activeColumnData.ActiveSegments.Count > 0)
                     {
                         Debug.Write(".");
+                        cycle.ActiveSynapses = new List<Synapse>();
 
                         List<Cell> cellsOwnersOfActSegs = ActivatePredictedColumn(conn, activeColumnData.ActiveSegments,
                             activeColumnData.MatchingSegments, prevActiveCells, prevWinnerCells,
-                                permanenceIncrement, permanenceDecrement, learn);
+                                permanenceIncrement, permanenceDecrement, learn, cycle.ActiveSynapses);
 
                         foreach (var item in cellsOwnersOfActSegs)
                         {
                             cycle.ActiveCells.Add(item);
                             cycle.WinnerCells.Add(item);
-                        }
-
-                        //foreach (var item in cellsOwnersOfActSegs)
-                        //{
-                        //    cycle.WinnerCells.Add(item);
-                        //}
+                        }                       
                     }
                     else
                     {
@@ -347,7 +342,7 @@ namespace NeoCortexApi
         /// <returns>Cells which own active column segments as calculated in the previous step.</returns>
         private List<Cell> ActivatePredictedColumn(Connections conn, List<DistalDendrite> columnActiveSegments,
             List<DistalDendrite> matchingSegments, ICollection<Cell> prevActiveCells, ICollection<Cell> prevWinnerCells,
-                double permanenceIncrement, double permanenceDecrement, bool learn)
+                double permanenceIncrement, double permanenceDecrement, bool learn, IList<Synapse> activeSynapses)
         {
             List<Cell> cellsOwnersOfActiveSegments = new List<Cell>();
             Cell previousCell = null;
@@ -366,6 +361,7 @@ namespace NeoCortexApi
                         segmOwnerCell = segment.ParentCell;
                         if (segmOwnerCell != previousCell)
                         {
+                            activeSynapses.Add(synapse);
                             cellsOwnersOfActiveSegments.Add(segmOwnerCell);
                             previousCell = segmOwnerCell;
                         }

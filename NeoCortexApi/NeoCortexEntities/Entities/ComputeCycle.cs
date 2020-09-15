@@ -45,7 +45,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Synapses that create connections to currentlly active cells owners of active segments.
         /// </summary>
-        public IList<Synapse> Synapses { get; set; } = new List<Synapse>();
+        public IList<Synapse> ActiveSynapses { get; set; } = new List<Synapse>();
 
         /// <summary>
         /// 
@@ -72,43 +72,43 @@ namespace NeoCortexApi.Entities
         /// It traverses all active segments (<see cref="ActiveSegments"/>) and declares their parent cells as predictive cells.
         /// The TM algorithm does not calculate PredictiveCells. It activates instead distal segments
         /// </summary>
-        //public IList<Cell> PredictiveCells
-        //{
-        //    get
-        //    {
-        //        if (m_PredictiveCells == null || m_PredictiveCells.Count == 0)
-        //        {
-        //            foreach (Synapse syn in this.Synapses)
-        //            {
-        //                m_PredictiveCells.Add(syn.SourceCell);
-        //            }
-        //        }
-
-        //        return m_PredictiveCells;
-        //    }
-        //}
-
         public IList<Cell> PredictiveCells
         {
             get
             {
                 if (m_PredictiveCells == null || m_PredictiveCells.Count == 0)
                 {
-                    Cell previousCell = null;
-                    Cell currCell = null;
-
-                    foreach (DistalDendrite activeSegment in ActiveSegments)
+                    foreach (Synapse syn in this.ActiveSynapses)
                     {
-                        if ((currCell = activeSegment.ParentCell) != previousCell)
-                        {
-                            m_PredictiveCells.Add(previousCell = currCell);
-                        }
+                        m_PredictiveCells.Add(syn.SourceCell);
                     }
                 }
 
                 return m_PredictiveCells;
             }
         }
+
+        //public IList<Cell> PredictiveCells
+        //{
+        //    get
+        //    {
+        //        if (m_PredictiveCells == null || m_PredictiveCells.Count == 0)
+        //        {
+        //            Cell previousCell = null;
+        //            Cell currCell = null;
+
+        //            foreach (DistalDendrite activeSegment in ActiveSegments)
+        //            {
+        //                if ((currCell = activeSegment.ParentCell) != previousCell)
+        //                {
+        //                    m_PredictiveCells.Add(previousCell = currCell);
+        //                }
+        //            }
+        //        }
+
+        //        return m_PredictiveCells;
+        //    }
+        //}
 
        
         /// <summary>
