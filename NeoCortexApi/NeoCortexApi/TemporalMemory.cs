@@ -150,7 +150,7 @@ namespace NeoCortexApi
 
             double permanenceIncrement = conn.HtmConfig.PermanenceIncrement;
             double permanenceDecrement = conn.HtmConfig.PermanenceDecrement;
-
+                        
             //
             // Grouping by columns, which have active and matching segments.
             foreach (var tuple in grouper)
@@ -164,8 +164,7 @@ namespace NeoCortexApi
                     if (activeColumnData.ActiveSegments != null && activeColumnData.ActiveSegments.Count > 0)
                     {
                         Debug.Write(".");
-                        cycle.ActiveSynapses = new List<Synapse>();
-
+                       
                         List<Cell> cellsOwnersOfActSegs = ActivatePredictedColumn(conn, activeColumnData.ActiveSegments,
                             activeColumnData.MatchingSegments, prevActiveCells, prevWinnerCells,
                                 permanenceIncrement, permanenceDecrement, learn, cycle.ActiveSynapses);
@@ -186,12 +185,20 @@ namespace NeoCortexApi
                             prevActiveCells, prevWinnerCells, permanenceIncrement, permanenceDecrement, conn.getRandom(),
                                learn);
 
+                        cycle.ActiveCells.Add(burstingResult.BestCell);
+
                         //
                         // Here we activate all cells by putting them to list of active cells.
                         foreach (var item in burstingResult.Cells)
                         {
                             cycle.ActiveCells.Add(item);
                         }
+
+                        //var actSyns = conn.getReceptorSynapses(burstingResult.BestCell).Where(s=>prevActiveCells.Contains(s.SourceCell));
+                        //foreach (var syn in actSyns)
+                        //{
+                        //    cycle.ActiveSynapses.Add(syn);
+                        //}
 
                         cycle.WinnerCells.Add((Cell)burstingResult.BestCell);
                     }
@@ -272,6 +279,7 @@ namespace NeoCortexApi
 
             // Forces generation of the predictive cells from the above active segments
             conn.clearPredictiveCells();
+            //cycle.DepolirizeCells(conn);
 
             if (learn)
             {

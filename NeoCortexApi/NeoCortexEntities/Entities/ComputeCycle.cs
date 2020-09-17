@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using NeoCortexApi;
+using System.Linq;
 
 namespace NeoCortexApi.Entities
 {
@@ -72,15 +73,34 @@ namespace NeoCortexApi.Entities
         /// It traverses all active segments (<see cref="ActiveSegments"/>) and declares their parent cells as predictive cells.
         /// The TM algorithm does not calculate PredictiveCells. It activates instead distal segments
         /// </summary>
-        public IList<Cell> PredictiveCells
+        public IList<Cell> PredictiveCellsDraft
         {
+            //get
+            //{
+            //    if (m_PredictiveCells == null || m_PredictiveCells.Count == 0)
+            //    {
+            //        foreach (Synapse syn in this.ActiveSynapses)
+            //        {
+            //            m_PredictiveCells.Add(syn.SourceCell);
+            //        }
+            //    }
+
+            //    return m_PredictiveCells;
+            //}
+
             get
             {
-                if (m_PredictiveCells == null || m_PredictiveCells.Count == 0)
+                if (m_PredictiveCells.Count == 0)
                 {
-                    foreach (Synapse syn in this.ActiveSynapses)
+                    Cell previousCell = null;
+                    Cell currCell = null;
+
+                    foreach (DistalDendrite activeSegment in ActiveSegments)
                     {
-                        m_PredictiveCells.Add(syn.SourceCell);
+                        if ((currCell = activeSegment.ParentCell) != previousCell && this.ActiveSynapses.Count(s => s.SegmentIndex == activeSegment.SegmentIndex) > 0)
+                        {
+                            m_PredictiveCells.Add(previousCell = currCell);
+                        }
                     }
                 }
 
@@ -88,29 +108,57 @@ namespace NeoCortexApi.Entities
             }
         }
 
-        //public IList<Cell> PredictiveCells
+        //public void DepolirizeCells(Connections conn)
         //{
-        //    get
+        //    //if (m_PredictiveCells == null || m_PredictiveCells.Count == 0)
+        //    //{
+        //    //    foreach (Synapse syn in this.ActiveSynapses)
+        //    //    {
+        //    //        var seg = conn.GetSegmentForFlatIdx(syn.SegmentIndex);
+        //    //        if (seg != null)
+        //    //            m_PredictiveCells.Add(seg.ParentCell);
+        //    //        else
+        //    //        { 
+
+        //    //        }
+        //    //    }
+        //    //}
+
+        //    Cell previousCell = null;
+        //    Cell currCell = null;
+
+        //    foreach (DistalDendrite activeSegment in ActiveSegments)
         //    {
-        //        if (m_PredictiveCells == null || m_PredictiveCells.Count == 0)
+        //        if ((currCell = activeSegment.ParentCell) != previousCell && this.ActiveSynapses.Count(s=>s.SegmentIndex == activeSegment.SegmentIndex) > 0)
         //        {
-        //            Cell previousCell = null;
-        //            Cell currCell = null;
-
-        //            foreach (DistalDendrite activeSegment in ActiveSegments)
-        //            {
-        //                if ((currCell = activeSegment.ParentCell) != previousCell)
-        //                {
-        //                    m_PredictiveCells.Add(previousCell = currCell);
-        //                }
-        //            }
+        //            m_PredictiveCells.Add(previousCell = currCell);
         //        }
-
-        //        return m_PredictiveCells;
         //    }
         //}
 
-       
+        public IList<Cell> PredictiveCells
+        {
+            get
+            {
+                if (m_PredictiveCells == null || m_PredictiveCells.Count == 0)
+                {
+                    Cell previousCell = null;
+                    Cell currCell = null;
+
+                    foreach (DistalDendrite activeSegment in ActiveSegments)
+                    {
+                        if ((currCell = activeSegment.ParentCell) != previousCell)
+                        {
+                            m_PredictiveCells.Add(previousCell = currCell);
+                        }
+                    }
+                }
+
+                return m_PredictiveCells;
+            }
+        }
+
+
         /// <summary>
         /// 
         /// </summary>

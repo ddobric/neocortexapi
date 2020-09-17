@@ -26,7 +26,7 @@ namespace NeoCortexApi.Entities
 
 
         /// <summary>
-        /// Best rated cell.
+        /// Chosen as the active cell.
         /// </summary>
         public Cell BestCell { get; set; }
     }

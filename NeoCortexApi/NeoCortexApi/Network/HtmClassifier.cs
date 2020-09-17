@@ -65,7 +65,7 @@ namespace NeoCortexApi.Network
                     // double numOfSameBitsPct = (double)(((double)(this.activeMap2[input].Intersect(cellIndicies).Count()) / Math.Max((double)cellIndicies.Length, this.activeMap2[input].Length)));
                     // double numOfSameBitsPct = (double)(((double)(this.activeMap2[input].Intersect(cellIndicies).Count()) / (double)this.activeMap2[input].Length));
                     var numOfSameBitsPct = this.activeMap2[input].Intersect(cellIndicies).Count();
-                    Debug.WriteLine($"Differnt={numOfSameBitsPct}");
+                    Debug.WriteLine($"Prev/Now/Same={this.activeMap2[input].Length}/{cellIndicies.Length}/{numOfSameBitsPct}");
                 }
 
                 this.activeMap2[input] = cellIndicies;
