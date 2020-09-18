@@ -85,7 +85,7 @@ namespace NeoCortexApi
             int numPotential = (int)(columnInputs.Length * htmConfig.PotentialPct + 0.5);
             int[] retVal = new int[numPotential];
 
-            var data = ArrayUtils.sample(columnInputs, retVal, rnd);
+            var data = ArrayUtils.Sample(columnInputs, retVal, rnd);
 
             return data;
         }
@@ -127,22 +127,22 @@ namespace NeoCortexApi
             int[] columnCoords = AbstractFlatMatrix.ComputeCoordinates(colTop.NumDimensions,
                 colTop.DimensionMultiplies, colTop.IsMajorOrdering, columnIndex);
 
-            double[] colCoords = ArrayUtils.toDoubleArray(columnCoords);
+            double[] colCoords = ArrayUtils.ToDoubleArray(columnCoords);
 
-            double[] columnRatios = ArrayUtils.divide(
-                colCoords, ArrayUtils.toDoubleArray(colTop.Dimensions), 0, 0);
+            double[] columnRatios = ArrayUtils.Divide(
+                colCoords, ArrayUtils.ToDoubleArray(colTop.Dimensions), 0, 0);
 
-            double[] inputCoords = ArrayUtils.multiply(
-                ArrayUtils.toDoubleArray(inpTop.Dimensions), columnRatios, 0, 0);
+            double[] inputCoords = ArrayUtils.Multiply(
+                ArrayUtils.ToDoubleArray(inpTop.Dimensions), columnRatios, 0, 0);
 
-            var colSpanOverInputs = ArrayUtils.divide(
-                        ArrayUtils.toDoubleArray(inpTop.Dimensions),
-                        ArrayUtils.toDoubleArray(colTop.Dimensions), 0, 0);
+            var colSpanOverInputs = ArrayUtils.Divide(
+                        ArrayUtils.ToDoubleArray(inpTop.Dimensions),
+                        ArrayUtils.ToDoubleArray(colTop.Dimensions), 0, 0);
 
-            inputCoords = ArrayUtils.AddOffset(inputCoords, ArrayUtils.multiply(colSpanOverInputs, 0.5));
+            inputCoords = ArrayUtils.AddOffset(inputCoords, ArrayUtils.Multiply(colSpanOverInputs, 0.5));
 
             // Makes sure that inputCoords are in range [0, inpDims]
-            int[] inputCoordInts = ArrayUtils.clip(ArrayUtils.toIntArray(inputCoords), inpTop.Dimensions, -1);
+            int[] inputCoordInts = ArrayUtils.Clip(ArrayUtils.ToIntArray(inputCoords), inpTop.Dimensions, -1);
 
             return AbstractFlatMatrix.ComputeIndex(inputCoordInts, inpTop.Dimensions, inpTop.NumDimensions,
                  inpTop.DimensionMultiplies, inpTop.IsMajorOrdering, true);
@@ -188,7 +188,7 @@ namespace NeoCortexApi
 
                     for (int y = 0; y < gen.size(); y++)
                     {
-                        int py = ArrayUtils.modulo(gen.next(), topology.Dimensions[k]);
+                        int py = ArrayUtils.Modulo(gen.next(), topology.Dimensions[k]);
                         //int py = gen.next() % dimensions[k];
 
                         List<int> tl = new List<int>();
@@ -388,21 +388,21 @@ namespace NeoCortexApi
 
             int[] maxCoord = new int[htmConfig.InputTopology.Dimensions.Length];
             int[] minCoord = new int[maxCoord.Length];
-            ArrayUtils.fillArray(maxCoord, -1);
-            ArrayUtils.fillArray(minCoord, ArrayUtils.max(htmConfig.InputTopology.Dimensions));
+            ArrayUtils.FillArray(maxCoord, -1);
+            ArrayUtils.FillArray(minCoord, ArrayUtils.Max(htmConfig.InputTopology.Dimensions));
 
             //
             // It takes all connected synapses
             for (int i = 0; i < connected.Length; i++)
             {
-                maxCoord = ArrayUtils.maxBetween(maxCoord, AbstractFlatMatrix.ComputeCoordinates(htmConfig.InputTopology.Dimensions.Length,
+                maxCoord = ArrayUtils.MaxBetween(maxCoord, AbstractFlatMatrix.ComputeCoordinates(htmConfig.InputTopology.Dimensions.Length,
                    htmConfig.InputTopology.DimensionMultiplies, htmConfig.InputTopology.IsMajorOrdering, connected[i]));
 
-                minCoord = ArrayUtils.minBetween(minCoord, AbstractFlatMatrix.ComputeCoordinates(htmConfig.InputTopology.Dimensions.Length,
+                minCoord = ArrayUtils.MinBetween(minCoord, AbstractFlatMatrix.ComputeCoordinates(htmConfig.InputTopology.Dimensions.Length,
                    htmConfig.InputTopology.DimensionMultiplies, htmConfig.InputTopology.IsMajorOrdering, connected[i]));
             }
 
-            return ArrayUtils.average(ArrayUtils.add(ArrayUtils.subtract(maxCoord, minCoord), 1));
+            return ArrayUtils.Average(ArrayUtils.add(ArrayUtils.Subtract(maxCoord, minCoord), 1));
         }
 
 
@@ -437,7 +437,7 @@ namespace NeoCortexApi
 
                 // If number of connected synapses is below threshold, 
                 // then permanences of all synapses will be incremented (raised) until column is connected.
-                ArrayUtils.raiseValuesBy(htmConfig.SynPermBelowStimulusInc, perm, maskPotential);
+                ArrayUtils.RaiseValuesBy(htmConfig.SynPermBelowStimulusInc, perm, maskPotential);
             }
         }
 
@@ -446,9 +446,9 @@ namespace NeoCortexApi
             ArrayUtils.Clip(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
             while (true)
             {
-                int numConnected = ArrayUtils.valueGreaterCount(htmConfig.SynPermConnected, perm);
+                int numConnected = ArrayUtils.ValueGreaterCount(htmConfig.SynPermConnected, perm);
                 if (numConnected >= htmConfig.StimulusThreshold) return;
-                ArrayUtils.raiseValuesBy(htmConfig.SynPermBelowStimulusInc, perm);
+                ArrayUtils.RaiseValuesBy(htmConfig.SynPermBelowStimulusInc, perm);
             }
         }
 

@@ -144,7 +144,7 @@ namespace UnitTestsProject
                                     activeArray.CopyTo(oldArray, 0);
 
                                     //var mem = sp.GetMemory(layer);
-                                    overlapArrays.Add(ArrayUtils.Make2DArray<double>(ArrayUtils.toDoubleArray(mem.Overlaps), topologies[topologyIndx], topologies[topologyIndx]));
+                                    overlapArrays.Add(ArrayUtils.Make2DArray<double>(ArrayUtils.ToDoubleArray(mem.Overlaps), topologies[topologyIndx], topologies[topologyIndx]));
                                     bostArrays.Add(ArrayUtils.Make2DArray<double>(mem.BoostedOverlaps, topologies[topologyIndx], topologies[topologyIndx]));
                                 }
 
@@ -464,7 +464,7 @@ namespace UnitTestsProject
                                         bmpArrays.Add(arr);
 
                                         var mem = sp.GetMemory(layer);
-                                        overlapArrays.Add(ArrayUtils.Make2DArray<double>(ArrayUtils.toDoubleArray(mem.Overlaps), size, size));
+                                        overlapArrays.Add(ArrayUtils.Make2DArray<double>(ArrayUtils.ToDoubleArray(mem.Overlaps), size, size));
                                         bostArrays.Add(ArrayUtils.Make2DArray<double>(mem.BoostedOverlaps, size, size));
                                     }
 

@@ -191,7 +191,7 @@ namespace UnitTestsProject
                                 oldArray = new int[numOfCols];
                                 activeArray.CopyTo(oldArray, 0);
 
-                                overlapArrays.Add(ArrayUtils.Make2DArray<double>(ArrayUtils.toDoubleArray(mem.Overlaps), colDims[0], colDims[1]));
+                                overlapArrays.Add(ArrayUtils.Make2DArray<double>(ArrayUtils.ToDoubleArray(mem.Overlaps), colDims[0], colDims[1]));
                                 bostArrays.Add(ArrayUtils.Make2DArray<double>(mem.BoostedOverlaps, colDims[0], colDims[1]));
 
                                 var activeStr = Helpers.StringifyVector(activeArray);

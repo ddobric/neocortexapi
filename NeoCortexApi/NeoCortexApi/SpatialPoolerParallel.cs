@@ -93,7 +93,7 @@ namespace NeoCortexApi
             c.setMinOverlapDutyCycles(new double[numColumns]);
             c.setMinActiveDutyCycles(new double[numColumns]);
             c.BoostFactors = (new double[numColumns]);
-            ArrayUtils.fillArray(c.BoostFactors, 1);
+            ArrayUtils.FillArray(c.BoostFactors, 1);
         }
 
         /// <summary>
@@ -253,7 +253,7 @@ namespace NeoCortexApi
 
             // First we initialize all permChanges to minimum decrement values,
             // which are used in a case of none-connections to input.
-            ArrayUtils.fillArray(permChanges, -1 * c.getSynPermInactiveDec());
+            ArrayUtils.FillArray(permChanges, -1 * c.getSynPermInactiveDec());
 
             // Then we update all connected permChanges to increment values for connected values.
             // Permanences are set in conencted input bits to default incremental value.

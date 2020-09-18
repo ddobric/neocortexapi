@@ -362,7 +362,7 @@ namespace UnitTestsProject
                             activeArray.CopyTo(oldArray, 0);
 
                             //var mem = sp.GetMemory(layer);
-                            overlapArrays.Add(ArrayUtils.Make2DArray<double>(ArrayUtils.toDoubleArray(mem.Overlaps), columnTopology, columnTopology));
+                            overlapArrays.Add(ArrayUtils.Make2DArray<double>(ArrayUtils.ToDoubleArray(mem.Overlaps), columnTopology, columnTopology));
                             bostArrays.Add(ArrayUtils.Make2DArray<double>(mem.BoostedOverlaps, columnTopology, columnTopology));
                         }
 

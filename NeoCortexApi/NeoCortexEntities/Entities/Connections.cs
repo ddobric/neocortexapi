@@ -353,7 +353,7 @@ namespace NeoCortexApi.Entities
             synPermTrimThreshold = synPermActiveInc / 2.0;
             if (potentialRadius == -1)
             {
-                potentialRadius = ArrayUtils.product(inputDimensions);
+                potentialRadius = ArrayUtils.Product(inputDimensions);
             }
         }
 
