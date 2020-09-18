@@ -492,7 +492,7 @@ namespace UnitTestsProject
             //inputValues = new List<double>(new double[] { 1.0, 2.0, 3.0, 1.0, 5.0, 1.0, 6.0, });
 
             // RunExperiment(inputBits, p, encoder, inputValues);
-            RunExperiment(inputBits, p, encoder, inputValues);
+            // RunExperiment(inputBits, p, encoder, inputValues);
         }
 
 
