@@ -104,8 +104,8 @@ namespace NeoCortexApi.DistributedComputeLib
         {
             List<Placement<int>> map = new List<Placement<int>>();
 
-            if(numOfPartitions == -1)
-                numOfPartitions = (numOfElementsPerPartition == -1 && nodes != null && nodes.Count > 0 ) ?  nodes.Count : (int)(1 + ((double)numElements / (double)numOfElementsPerPartition));
+            if (numOfPartitions == -1)
+                numOfPartitions = (numOfElementsPerPartition == -1 && nodes != null && nodes.Count > 0) ? nodes.Count : (int)(1 + ((double)numElements / (double)numOfElementsPerPartition));
 
             if (numOfElementsPerPartition == -1)
             {
@@ -301,7 +301,7 @@ namespace NeoCortexApi.DistributedComputeLib
             ParallelOptions opts = new ParallelOptions();
             opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
 
-            runBatched((batchOfElements) =>
+            RunBatched((batchOfElements) =>
             {
                 // Run overlap calculation on all actors(in all partitions)
                 Parallel.ForEach(batchOfElements, opts, (placement) =>
@@ -317,12 +317,18 @@ namespace NeoCortexApi.DistributedComputeLib
 
         }
 
-        private void runBatched(Action<List<Placement<int>>> p, List<Placement<int>> actorMap, object batchSize)
+        private void RunBatched(Action<List<Placement<int>>> p, List<Placement<int>> actorMap, object batchSize)
         {
             throw new NotImplementedException();
         }
 
-        private void runBatched(Action<List<Placement<int>>> func, List<Placement<int>> list, int batchSize)
+        /// <summary>
+        /// TODO to be added
+        /// </summary>
+        /// <param name="func"></param>
+        /// <param name="list"></param>
+        /// <param name="batchSize"></param>
+        private void RunBatched(Action<List<Placement<int>>> func, List<Placement<int>> list, int batchSize)
         {
             int processedItems = 0;
             int batchCnt = 0;
@@ -368,7 +374,7 @@ namespace NeoCortexApi.DistributedComputeLib
             ParallelOptions opts = new ParallelOptions();
             opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
 
-            runBatched((batchOfElements) =>
+            RunBatched((batchOfElements) =>
             {
                 Parallel.ForEach(batchOfElements, opts, (placement) =>
                 {
@@ -392,6 +398,11 @@ namespace NeoCortexApi.DistributedComputeLib
             return aggLst.Values.ToList();
         }
 
+        /// <summary>
+        /// TODO to be added
+        /// </summary>
+        /// <param name="inputVector"></param>
+        /// <returns></returns>
         public int[] CalculateOverlapDist(int[] inputVector)
         {
             ConcurrentDictionary<int, List<KeyPair>> overlapList = new ConcurrentDictionary<int, List<KeyPair>>();
@@ -425,6 +436,12 @@ namespace NeoCortexApi.DistributedComputeLib
             return overlaps.ToArray();
         }
 
+        /// <summary>
+        /// TODO to be added
+        /// </summary>
+        /// <param name="inputVector"></param>
+        /// <param name="permChanges"></param>
+        /// <param name="activeColumns"></param>
         public void AdaptSynapsesDist(int[] inputVector, double[] permChanges, int[] activeColumns)
         {
             List<KeyPair> list = new List<KeyPair>();
@@ -450,7 +467,10 @@ namespace NeoCortexApi.DistributedComputeLib
             });
         }
 
-
+        /// <summary>
+        /// TODO to be added
+        /// </summary>
+        /// <param name="weakColumns"></param>
         public void BumpUpWeakColumnsDist(int[] weakColumns)
         {
             ParallelOptions opts = new ParallelOptions();
@@ -560,10 +580,12 @@ namespace NeoCortexApi.DistributedComputeLib
             }
         }
 
-
-
+        /// <summary>
+        /// TODO to be added
+        /// </summary>
         public void Clear()
         {
+            //TODO Implememtation
             throw new NotImplementedException();
 
             //foreach (var item in this.dictList)
@@ -572,6 +594,11 @@ namespace NeoCortexApi.DistributedComputeLib
             //}
         }
 
+        /// <summary>
+        /// TODO to be added
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public bool Contains(KeyValuePair<int, TValue> item)
         {
             var actorRef = GetPartitionActorFromKey(item.Key);
@@ -603,13 +630,24 @@ namespace NeoCortexApi.DistributedComputeLib
                 return false;
         }
 
+        /// <summary>
+        /// TODO to be added
+        /// </summary>
+        /// <param name="array"></param>
+        /// <param name="arrayIndex"></param>
         public void CopyTo(KeyValuePair<int, TValue>[] array, int arrayIndex)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// TODO to be added
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public bool Remove(int key)
         {
+            // TODO Implementation
             throw new NotImplementedException();
             //for (int i = 0; i < this.dictList.Length; i++)
             //{
@@ -622,8 +660,14 @@ namespace NeoCortexApi.DistributedComputeLib
             //return false;
         }
 
+        /// <summary>
+        /// TODO to be added
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public bool Remove(KeyValuePair<int, TValue> item)
         {
+            // TODO implementation
             throw new NotImplementedException();
             //for (int i = 0; i < this.dictList.Length; i++)
             //{
@@ -636,8 +680,10 @@ namespace NeoCortexApi.DistributedComputeLib
             //return false;
         }
 
-
-
+        /// <summary>
+        /// TODO to be added
+        /// </summary>
+        /// <returns></returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this;
@@ -655,8 +701,14 @@ namespace NeoCortexApi.DistributedComputeLib
         /// </summary>
         private int currentIndex = -1;
 
+        /// <summary>
+        /// TODO to be added
+        /// </summary>
         public object Current => throw new NotImplementedException();//this.dictList[this.currentDictIndex].ElementAt(currentIndex);
 
+        /// <summary>
+        /// TODO to be added
+        /// </summary>
         KeyValuePair<int, TValue> IEnumerator<KeyValuePair<int, TValue>>.Current => throw new NotImplementedException();//this.dictList[this.currentDictIndex].ElementAt(currentIndex);
 
         /// <summary>
@@ -664,13 +716,19 @@ namespace NeoCortexApi.DistributedComputeLib
         /// </summary>
         public int Nodes => throw new NotSupportedException();
 
-
+        /// <summary>
+        /// TODO to be added
+        /// </summary>
+        /// <returns></returns>
         public IEnumerator<KeyValuePair<int, TValue>> GetEnumerator()
         {
             return this;
         }
 
-
+        /// <summary>
+        /// TODO to be added
+        /// </summary>
+        /// <returns></returns>
         public bool MoveNext()
         {
             throw new NotSupportedException();
@@ -700,15 +758,21 @@ namespace NeoCortexApi.DistributedComputeLib
             //}
         }
 
-
+        /// <summary>
+        /// TODO to be added
+        /// </summary>
         public void Reset()
         {
             this.currentDictIndex = -1;
             this.currentIndex = -1;
         }
 
+        /// <summary>
+        /// TODO to be added
+        /// </summary>
         public void Dispose()
         {
+            // TODO Implementation
             throw new NotSupportedException();
             //this.dictList = null;
         }
