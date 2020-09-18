@@ -150,7 +150,7 @@ namespace NeoCortexApi
             c.setMinOverlapDutyCycles(new double[numColumns]);
             c.setMinActiveDutyCycles(new double[numColumns]);
             c.BoostFactors = (new double[numColumns]);
-            ArrayUtils.fillArray(c.BoostFactors, 1);
+            ArrayUtils.FillArray(c.BoostFactors, 1);
         }
 
 
@@ -423,7 +423,7 @@ namespace NeoCortexApi
             }
             else
             {
-                boostedOverlaps = ArrayUtils.toDoubleArray(overlaps);
+                boostedOverlaps = ArrayUtils.ToDoubleArray(overlaps);
             }
 
             //Debug.WriteLine("BO: " + Helpers.StringifyVector(boostedOverlaps));
@@ -483,10 +483,10 @@ namespace NeoCortexApi
                 activeColumns = stableActCols;
             }
 #endif
-            ArrayUtils.fillArray(activeArray, 0);
+            ArrayUtils.FillArray(activeArray, 0);
             if (activeColumns.Length > 0)
             {
-                ArrayUtils.setIndexesTo(activeArray, activeColumns, 1);
+                ArrayUtils.SetIndexesTo(activeArray, activeColumns, 1);
             }
 
             // Involve homeostatic plasticity newborn effect, which will disable boosting.
@@ -584,11 +584,11 @@ namespace NeoCortexApi
          */
         public void updateMinDutyCyclesGlobal(Connections c)
         {
-            ArrayUtils.fillArray(c.getMinOverlapDutyCycles(),
-                   (double)(c.getMinPctOverlapDutyCycles() * ArrayUtils.max(c.getOverlapDutyCycles())));
+            ArrayUtils.FillArray(c.getMinOverlapDutyCycles(),
+                   (double)(c.getMinPctOverlapDutyCycles() * ArrayUtils.Max(c.getOverlapDutyCycles())));
 
-            ArrayUtils.fillArray(c.getMinActiveDutyCycles(),
-                    (double)(c.getMinPctActiveDutyCycles() * ArrayUtils.max(c.getActiveDutyCycles())));
+            ArrayUtils.FillArray(c.getMinActiveDutyCycles(),
+                    (double)(c.getMinPctActiveDutyCycles() * ArrayUtils.Max(c.getActiveDutyCycles())));
         }
 
         /**
@@ -635,8 +635,8 @@ namespace NeoCortexApi
             {
                 int[] neighborhood = getColumnNeighborhood(c, i, inhibitionRadius);
 
-                double maxActiveDuty = ArrayUtils.max(ArrayUtils.ListOfValuesByIndicies(activeDutyCycles, neighborhood));
-                double maxOverlapDuty = ArrayUtils.max(ArrayUtils.ListOfValuesByIndicies(overlapDutyCycles, neighborhood));
+                double maxActiveDuty = ArrayUtils.Max(ArrayUtils.ListOfValuesByIndicies(activeDutyCycles, neighborhood));
+                double maxOverlapDuty = ArrayUtils.Max(ArrayUtils.ListOfValuesByIndicies(overlapDutyCycles, neighborhood));
 
                 // Used for debugging of thread-safe capability.
                 //System.Text.StringBuilder sb = new System.Text.StringBuilder();
@@ -685,7 +685,7 @@ namespace NeoCortexApi
             //
             // if (sourceA[i] > 0) then targetB[i] = 1;
             // This ensures that all values in overlapArray are set to 1, if column has some overlap.
-            ArrayUtils.greaterThanXThanSetToYInB(overlaps, overlapArray, 0, 1);
+            ArrayUtils.GreaterThanXThanSetToYInB(overlaps, overlapArray, 0, 1);
             if (activeColumns.Length > 0)
             {
                 // After this step, all rows in activeArray are set to 1 at the index of active column.
@@ -730,7 +730,7 @@ namespace NeoCortexApi
          */
         public double[] updateDutyCyclesHelper(Connections c, double[] dutyCycles, double[] newInput, double period)
         {
-            return ArrayUtils.divide(ArrayUtils.AddOffset(ArrayUtils.multiply(dutyCycles, period - 1), newInput), period);
+            return ArrayUtils.Divide(ArrayUtils.AddOffset(ArrayUtils.Multiply(dutyCycles, period - 1), newInput), period);
         }
 
         /**
@@ -749,7 +749,7 @@ namespace NeoCortexApi
         {
             if (c.GlobalInhibition)
             {
-                c.InhibitionRadius = ArrayUtils.max(c.getColumnDimensions());
+                c.InhibitionRadius = ArrayUtils.Max(c.getColumnDimensions());
                 return;
             }
 
@@ -763,7 +763,7 @@ namespace NeoCortexApi
                 }
             }
 
-            double avgConnectedSpan = ArrayUtils.average(avgCollected.ToArray());
+            double avgConnectedSpan = ArrayUtils.Average(avgCollected.ToArray());
 
             double diameter = avgConnectedSpan * calcAvgColumnsPerInput(c);
             double radius = (diameter - 1) / 2.0d;
@@ -787,10 +787,10 @@ namespace NeoCortexApi
             int[] inputDim = new int[c.getInputDimensions().Length];
             Array.Copy(c.getInputDimensions(), inputDim, c.getInputDimensions().Length);
 
-            double[] columnsPerInput = ArrayUtils.divide(
-                ArrayUtils.toDoubleArray(colDim), ArrayUtils.toDoubleArray(inputDim), 0, 0);
+            double[] columnsPerInput = ArrayUtils.Divide(
+                ArrayUtils.ToDoubleArray(colDim), ArrayUtils.ToDoubleArray(inputDim), 0, 0);
 
-            return ArrayUtils.average(columnsPerInput);
+            return ArrayUtils.Average(columnsPerInput);
         }
 
         /**
@@ -877,7 +877,7 @@ namespace NeoCortexApi
 
             // First we initialize all permChanges to minimum decrement values,
             // which are used in a case of none-connections to input.
-            ArrayUtils.fillArray(permChanges, -1 * c.getSynPermInactiveDec());
+            ArrayUtils.FillArray(permChanges, -1 * c.getSynPermInactiveDec());
 
             // Then we update all connected permChanges to increment values for connected values.
             // Permanences are set in conencted input bits to default incremental value.
@@ -889,7 +889,7 @@ namespace NeoCortexApi
                 Pool pool = c.getColumn(activeColumns[i]).ProximalDendrite.RFPool;
                 double[] perm = pool.getDensePermanences(c.NumInputs);
                 int[] indexes = pool.getSparsePotential();
-                ArrayUtils.raiseValuesBy(permChanges, perm);
+                ArrayUtils.RaiseValuesBy(permChanges, perm);
                 Column col = c.getColumn(activeColumns[i]);
                 HtmCompute.UpdatePermanencesForColumn(c.HtmConfig, perm, col, indexes, true);
             }
@@ -920,7 +920,7 @@ namespace NeoCortexApi
                 //Pool pool = c.getPotentialPools().get(weakColumns[i]);
                 Pool pool = col.ProximalDendrite.RFPool;
                 double[] perm = pool.getSparsePermanences();
-                ArrayUtils.raiseValuesBy(c.getSynPermBelowStimulusInc(), perm);
+                ArrayUtils.RaiseValuesBy(c.getSynPermBelowStimulusInc(), perm);
                 int[] indexes = pool.getSparsePotential();
 
                 updatePermanencesForColumnSparse(c, perm, col, indexes, true);
@@ -1152,7 +1152,7 @@ namespace NeoCortexApi
             //Add our fixed little bit of random noise to the scores to help break ties.
             //ArrayUtils.d_add(overlaps, c.getTieBreaker());
 
-            if (c.GlobalInhibition || c.InhibitionRadius > ArrayUtils.max(c.getColumnDimensions()))
+            if (c.GlobalInhibition || c.InhibitionRadius > ArrayUtils.Max(c.getColumnDimensions()))
             {
                 return inhibitColumnsGlobal(c, overlaps, density);
             }
@@ -1227,7 +1227,7 @@ namespace NeoCortexApi
          */
         public virtual int[] InhibitColumnsLocalOriginal(Connections c, double[] overlaps, double density)
         {
-            double winnerDelta = ArrayUtils.max(overlaps) / 1000.0d;
+            double winnerDelta = ArrayUtils.Max(overlaps) / 1000.0d;
             if (winnerDelta == 0)
             {
                 winnerDelta = 0.001;
@@ -1404,7 +1404,7 @@ namespace NeoCortexApi
             //             overlap(c) ≥ minLocalActivity then
             //             activeColumns(t).append(c)
 
-            double winnerDelta = ArrayUtils.max(overlaps) / 1000.0d;
+            double winnerDelta = ArrayUtils.Max(overlaps) / 1000.0d;
             if (winnerDelta == 0)
             {
                 winnerDelta = 0.001;
@@ -1448,7 +1448,7 @@ namespace NeoCortexApi
         public virtual int[] inhibitColumnsLocalNew(Connections c, double[] overlaps, double density)
         {
             // WHY IS THIS DONE??
-            double winnerDelta = ArrayUtils.max(overlaps) / 1000.0d;
+            double winnerDelta = ArrayUtils.Max(overlaps) / 1000.0d;
             if (winnerDelta == 0)
             {
                 winnerDelta = 0.001;
@@ -1550,10 +1550,10 @@ namespace NeoCortexApi
             else
             {
                 double[] oneMinusMaxBoostFact = new double[c.NumColumns];
-                ArrayUtils.fillArray(oneMinusMaxBoostFact, 1 - c.getMaxBoost());
-                boostInterim = ArrayUtils.divide(oneMinusMaxBoostFact, minActiveDutyCycles, 0, 0);
-                boostInterim = ArrayUtils.multiply(boostInterim, activeDutyCycles, 0, 0);
-                boostInterim = ArrayUtils.d_add(boostInterim, c.getMaxBoost());
+                ArrayUtils.FillArray(oneMinusMaxBoostFact, 1 - c.getMaxBoost());
+                boostInterim = ArrayUtils.Divide(oneMinusMaxBoostFact, minActiveDutyCycles, 0, 0);
+                boostInterim = ArrayUtils.Multiply(boostInterim, activeDutyCycles, 0, 0);
+                boostInterim = ArrayUtils.D_add(boostInterim, c.getMaxBoost());
             }
 
             List<int> filteredIndexes = new List<int>();
@@ -1617,7 +1617,7 @@ namespace NeoCortexApi
                 columnsCounts[i] = c.getColumn(i).ConnectedInputCounterMatrix.getTrueCounts()[0];
             }
 
-            return ArrayUtils.divide(overlaps, columnsCounts);
+            return ArrayUtils.Divide(overlaps, columnsCounts);
         }
 
         //    /**

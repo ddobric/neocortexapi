@@ -1,4 +1,6 @@
-﻿using Akka.Event;
+﻿// Copyright (c) Damir Dobric. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using Akka.Event;
 using Akka.Pattern;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;

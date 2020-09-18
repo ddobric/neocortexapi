@@ -167,7 +167,7 @@ namespace NeoCortexApi
 
             // First we initialize all permChanges to minimum decrement values,
             // which are used in a case of none-connections to input.
-            ArrayUtils.fillArray(permChanges, -1 * c.getSynPermInactiveDec());
+            ArrayUtils.FillArray(permChanges, -1 * c.getSynPermInactiveDec());
 
             // Then we update all connected permChanges to increment values for connected values.
             // Permanences are set in conencted input bits to default incremental value.
@@ -179,7 +179,7 @@ namespace NeoCortexApi
                 Pool pool = c.getColumn(activeColumns[i]).ProximalDendrite.RFPool;
                 double[] perm = pool.getDensePermanences(c.NumInputs);
                 int[] indexes = pool.getSparsePotential();
-                ArrayUtils.raiseValuesBy(permChanges, perm);
+                ArrayUtils.RaiseValuesBy(permChanges, perm);
                 Column col = c.getColumn(activeColumns[i]);
                 HtmCompute.UpdatePermanencesForColumn(c.HtmConfig, perm, col, indexes, true);
             });

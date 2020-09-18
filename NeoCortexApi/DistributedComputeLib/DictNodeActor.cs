@@ -317,7 +317,7 @@ namespace NeoCortexApi.DistributedComputeLib
                 HtmCompute.UpdatePermanencesForColumn(this.config, perms, column, potential, true);
             }
 
-            double avgConnectedSpan = ArrayUtils.average(avgConnections.ToArray());
+            double avgConnectedSpan = ArrayUtils.Average(avgConnections.ToArray());
 
             Log(msg, Self, "Completed.");
             Sender.Tell(avgConnectedSpan, Self);
@@ -374,7 +374,7 @@ namespace NeoCortexApi.DistributedComputeLib
                 Pool pool = activeColumn.ProximalDendrite.RFPool;
                 double[] perm = pool.getDensePermanences(this.config.NumInputs);
                 int[] indexes = pool.getSparsePotential();
-                ArrayUtils.raiseValuesBy(msg.PermanenceChanges, perm);
+                ArrayUtils.RaiseValuesBy(msg.PermanenceChanges, perm);
 
                 HtmCompute.UpdatePermanencesForColumn(this.config, perm, activeColumn, indexes, true);
             });
@@ -394,7 +394,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
                 Pool pool = weakColumn.ProximalDendrite.RFPool;
                 double[] perm = pool.getSparsePermanences();
-                ArrayUtils.raiseValuesBy(this.config.SynPermBelowStimulusInc, perm);
+                ArrayUtils.RaiseValuesBy(this.config.SynPermBelowStimulusInc, perm);
                 int[] indexes = pool.getSparsePotential();
 
                 weakColumn.UpdatePermanencesForColumnSparse(this.config, perm, indexes, true);

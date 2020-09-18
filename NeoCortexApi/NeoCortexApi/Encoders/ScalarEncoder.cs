@@ -269,18 +269,18 @@ namespace NeoCortexApi.Encoders
                     {
                         int bottombins = maxbin - N + 1;
                         int[] range = ArrayUtils.Range(0, bottombins);
-                        ArrayUtils.setIndexesTo(output, range, 1);
+                        ArrayUtils.SetIndexesTo(output, range, 1);
                         maxbin = N - 1;
                     }
                     if (minbin < 0)
                     {
                         int topbins = -minbin;
-                        ArrayUtils.setIndexesTo(output, ArrayUtils.Range(N - topbins, N), 1);
+                        ArrayUtils.SetIndexesTo(output, ArrayUtils.Range(N - topbins, N), 1);
                         minbin = 0;
                     }
                 }
 
-                ArrayUtils.setIndexesTo(output, ArrayUtils.Range(minbin, maxbin + 1), 1);
+                ArrayUtils.SetIndexesTo(output, ArrayUtils.Range(minbin, maxbin + 1), 1);
             }
 
             // Added guard against immense string concatenation

@@ -99,23 +99,23 @@ namespace UnitTestsProject
         [TestMethod]
         public void ModuloTest()
         {
-            int r = ArrayUtils.modulo(2, 7);
-            r = ArrayUtils.modulo(3, 7);
-            r = ArrayUtils.modulo(6, 7);
-            r = ArrayUtils.modulo(7, 7);
+            int r = ArrayUtils.Modulo(2, 7);
+            r = ArrayUtils.Modulo(3, 7);
+            r = ArrayUtils.Modulo(6, 7);
+            r = ArrayUtils.Modulo(7, 7);
 
-            r = ArrayUtils.modulo(14, 7);
-            r = ArrayUtils.modulo(-14, 7);
-            r = ArrayUtils.modulo(15, 7);
+            r = ArrayUtils.Modulo(14, 7);
+            r = ArrayUtils.Modulo(-14, 7);
+            r = ArrayUtils.Modulo(15, 7);
             Assert.IsTrue(r == 1);
 
-            r = ArrayUtils.modulo(-15, 7);
+            r = ArrayUtils.Modulo(-15, 7);
             Assert.IsTrue(r == 6);
 
-            r = ArrayUtils.modulo(20, 7);
+            r = ArrayUtils.Modulo(20, 7);
             Assert.IsTrue(r == 6);
 
-            r = ArrayUtils.modulo(-20, 7);
+            r = ArrayUtils.Modulo(-20, 7);
             Assert.IsTrue(r == 1);
         }
 

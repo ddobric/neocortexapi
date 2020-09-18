@@ -8,18 +8,26 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: ${{env.WrkDir}}
+    env: 
+      WrkDir: ./NeoCortexApi
+      MainSln: NeoCortexApi.Akka.sln
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.301
-    - name: Install dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
-    - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.x
+      
+      - name: Install dependencies
+        run: dotnet restore ${{env.MainSln}}
+      
+      - name: Build
+        run: dotnet build ${{env.MainSln}} --configuration Release --no-restore
+        
+      # Run test on Test category "SpatialPooler"
+      - name: Test
+        run: dotnet test ${{env.MainSln}} --no-restore --verbosity normal --filter TestCategory=SpatialPooler

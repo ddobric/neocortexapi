@@ -18,8 +18,8 @@ namespace NeoCortexApi.Utility
         public static double GetHammingDistance(int[] originArray, int[] comparingArray, bool countNoneZerosOnly = false)
         {
 
-            double[] arr1 = ArrayUtils.toDoubleArray(originArray);
-            double[] arr2 = ArrayUtils.toDoubleArray(comparingArray);
+            double[] arr1 = ArrayUtils.ToDoubleArray(originArray);
+            double[] arr2 = ArrayUtils.ToDoubleArray(comparingArray);
             return GetHammingDistance(new double[][] { arr1 }, new double[][] { arr2 }, countNoneZerosOnly)[0];
         }
 
