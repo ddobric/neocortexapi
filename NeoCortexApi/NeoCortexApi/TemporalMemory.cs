@@ -116,6 +116,7 @@ namespace NeoCortexApi
         protected ComputeCycle ActivateCells(Connections conn, int[] activeColumnIndices, bool learn)
         {
             ComputeCycle cycle = new ComputeCycle();
+            cycle.ActivColumnIndicies = activeColumnIndices;
 
             ColumnData activeColumnData = new ColumnData();
 
@@ -369,7 +370,7 @@ namespace NeoCortexApi
                         segmOwnerCell = segment.ParentCell;
                         if (segmOwnerCell != previousCell)
                         {
-                            activeSynapses.Add(synapse);
+                            //activeSynapses.Add(synapse);
                             cellsOwnersOfActiveSegments.Add(segmOwnerCell);
                             previousCell = segmOwnerCell;
                         }

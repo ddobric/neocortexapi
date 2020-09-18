@@ -19,7 +19,7 @@ namespace NeoCortexApi.Network
     /// <typeparam name="TOUT"></typeparam>
     public class HtmClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>
     {
-        private List<TIN> inputSequence = new List<TIN>();
+        //private List<TIN> inputSequence = new List<TIN>();
 
         //private Dictionary<int[], TIN> activeMap = new Dictionary<int[], TIN>();
 
@@ -36,7 +36,7 @@ namespace NeoCortexApi.Network
         {
             //this.activeMap.Clear();
             this.activeMap2.Clear();
-            this.inputSequence.Clear();
+           // this.inputSequence.Clear();
         }
 
         /// <summary>
@@ -47,12 +47,10 @@ namespace NeoCortexApi.Network
         /// <param name="predictedOutput"></param>
         public void Learn(TIN input, Cell[] output)
         {
-            this.inputSequence.Add(input);
+           // this.inputSequence.Add(input);
 
             var cellIndicies = GetCellIndicies(output);
-            Debug.WriteLine($"SDR: {Helpers.StringifyVector(cellIndicies)}");
-            //this.activeMap.Add(celIndicies, input);
-
+        
             if (allInputs.ContainsKey(input) == false)
                 allInputs.Add(input, new List<int[]>());
             else

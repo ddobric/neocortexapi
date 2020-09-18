@@ -357,6 +357,8 @@ namespace UnitTestsProject
                     if (learn == false)
                         Debug.WriteLine($"Inference mode");
 
+                    Debug.WriteLine($"Col  SDR: {Helpers.StringifyVector(lyrOut.ActivColumnIndicies)}");
+                    Debug.WriteLine($"Cell SDR: {Helpers.StringifyVector(lyrOut.ActiveCells.Select(c => c.Index).ToArray())}");
                     Debug.WriteLine($"W: {Helpers.StringifyVector(lyrOut.WinnerCells.Select(c => c.Index).ToArray())}");
                     Debug.WriteLine($"P: {Helpers.StringifyVector(lyrOut.PredictiveCells.Select(c => c.Index).ToArray())}");
 
@@ -433,6 +435,9 @@ namespace UnitTestsProject
             p.setMaxNewSynapsesPerSegmentCount((int)(0.02 * numColumns));
 
             p.setPermanenceIncrement(0.15);
+
+            p.setConnectedPermanence(0.35);
+
             double max = 20;
 
             Dictionary<string, object> settings = new Dictionary<string, object>()
@@ -459,10 +464,10 @@ namespace UnitTestsProject
             // Active Experiment
             //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 3.0, 2.0, 1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 0.0, 1.0, 2.0, 3.0, 3.0, 2.0, 1.0, 0.0, 1.0});
 
-            // Stable with 2048 cols 25 cells per column and 0.02 * numColumns synapses on segment.8min, 154 min, maxPrevInputs=5
+            // Stable with 2048 cols 25 cells per column and 0.02 * numColumns synapses on segment.8min, 154 min, maxPrevInputs=5. connected permanence 0.35 or 0.5.
             // Stable with 2048 cols 25 cells per column and 0.02 * numColumns synapses on segment.8min, 9min.
             // not stable with 2048 cols 15 cells per column and 0.02 * numColumns synapses on segment.
-            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0 });
+            //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0 });
 
             // Stable with 2048 cols AND 15 cells per column and 1000 0.02 * numColumns on segment. 7min,8min
             //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0 });
@@ -559,9 +564,6 @@ namespace UnitTestsProject
             double[] inputs = inputValues.ToArray();
             int[] prevActiveCols = new int[0];
 
-            // Here we add TM module to the layer.
-            //layer1.HtmModules.Add("tm", tm1);
-
             int cycle = 0;
             int matches = 0;
 
@@ -590,8 +592,6 @@ namespace UnitTestsProject
 
                 Debug.WriteLine($"-------------- Cycle {cycle} ---------------");
                                
-                // string prevInput = "-1.0";
-
                 foreach (var input in inputs)
                 {
                     Debug.WriteLine($"-------------- {input} ---------------");
@@ -614,6 +614,9 @@ namespace UnitTestsProject
                     if (learn == false)
                         Debug.WriteLine($"Inference mode");
 
+                    Debug.WriteLine($"Col  SDR: {Helpers.StringifyVector(lyrOut.ActivColumnIndicies)}");
+                    Debug.WriteLine($"Cell SDR: {Helpers.StringifyVector(lyrOut.ActiveCells.Select(c => c.Index).ToArray())}");
+
                     if (key == lastPredictedValue)
                     {
                         matches++;
@@ -631,9 +634,11 @@ namespace UnitTestsProject
                         lastPredictedValue = predictedInputValue;
                     }
                     else
+                    {
                         Debug.WriteLine($"NO CELLS PREDICTED for next cycle.");
+                        lastPredictedValue = String.Empty;
+                    }
 
-                    //prevInput = input.ToString();
                 }
 
                 // The brain does not do that this way, so we don't use it.
