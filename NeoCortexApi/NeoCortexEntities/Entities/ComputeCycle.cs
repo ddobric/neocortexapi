@@ -48,6 +48,9 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public IList<Synapse> ActiveSynapses { get; set; } = new List<Synapse>();
 
+
+        public int[] ActivColumnIndicies{ get; set; }
+
         /// <summary>
         /// 
         /// </summary>
@@ -68,12 +71,34 @@ namespace NeoCortexApi.Entities
         }
 
 
+        //public IList<Cell> PredictiveCellsCellDraft
+        //{
+        //    get
+        //    {
+        //        if (m_PredictiveCells.Count == 0)
+        //        {
+        //            Cell previousCell = null;
+        //            Cell currCell = null;
+
+        //            foreach (DistalDendrite activeSegment in ActiveSegments)
+        //            {
+        //                if ((currCell = activeSegment.ParentCell) != previousCell && this.ActivColumnIndicies.Contains(activeSegment.ParentCell.ParentColumnIndex))
+        //                {
+        //                    m_PredictiveCells.Add(previousCell = currCell);
+        //                }
+        //            }
+        //        }
+
+        //        return m_PredictiveCells;
+        //    }
+        //}
+
         /// <summary>
         /// Gets the list of cells in predictive state for the current compute cycle.
         /// It traverses all active segments (<see cref="ActiveSegments"/>) and declares their parent cells as predictive cells.
         /// The TM algorithm does not calculate PredictiveCells. It activates instead distal segments
         /// </summary>
-        public IList<Cell> PredictiveCellsDraft
+        public IList<Cell> PredictiveCellsSynapsesTry
         {
             //get
             //{
