@@ -30,4 +30,4 @@ jobs:
         
       # Run test on Test category "SpatialPooler"
       - name: Test
-        run: dotnet test ${{env.MainSln}} --no-restore --verbosity normal --filter TestCategory=SpatialPooler
+        run: dotnet test ${{env.MainSln}} --no-restore --verbosity normal --filter TestCategory=Prod
