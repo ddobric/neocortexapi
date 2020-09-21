@@ -74,7 +74,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void confirmSPConstruction()
         {
             setupParameters();
@@ -110,7 +110,7 @@ namespace UnitTestsProject
          */
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testCompute1()
         {
             setupParameters();
@@ -168,7 +168,7 @@ namespace UnitTestsProject
          */
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testCompute2()
         {
             setupParameters();
@@ -216,7 +216,7 @@ namespace UnitTestsProject
          */
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testZeroOverlap_NoStimulusThreshold_GlobalInhibition()
         {
             int inputSize = 10;
@@ -250,7 +250,7 @@ namespace UnitTestsProject
         [DataRow(PoolerMode.SingleThreaded)]
         [DataRow(PoolerMode.Multicore)]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testZeroOverlap_StimulusThreshold_GlobalInhibition(PoolerMode poolerMode)
         {
             int inputSize = 10;
@@ -278,7 +278,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testZeroOverlap_NoStimulusThreshold_LocalInhibition()
         {
             int inputSize = 10;
@@ -315,7 +315,7 @@ namespace UnitTestsProject
          */
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testZeroOverlap_StimulusThreshold_LocalInhibition()
         {
             int inputSize = 10;
@@ -344,7 +344,7 @@ namespace UnitTestsProject
         // DD
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testOverlapsOutput()
         {
             parameters = Parameters.getSpatialDefaultParameters();
@@ -439,7 +439,7 @@ namespace UnitTestsProject
          */
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testExactOutput()
         {
             setupParameters();
@@ -502,7 +502,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testStripNeverLearned()
         {
             setupParameters();
@@ -539,7 +539,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testMapColumn()
         {
             // Test 1D
@@ -597,7 +597,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testMapPotential1D()
         {
             setupParameters();
@@ -655,7 +655,7 @@ namespace UnitTestsProject
         /// </summary>
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testMapPotential2D()
         {
             setupParameters();
@@ -710,7 +710,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testMapPotential1Column1Input()
         {
             setupParameters();
@@ -759,7 +759,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testInhibitColumns()
         {
             setupParameters();
@@ -867,7 +867,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testUpdateBoostFactors()
         {
             setupParameters();
@@ -934,7 +934,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testUpdateInhibitionRadius()
         {
             setupParameters();
@@ -1032,7 +1032,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testAvgColumnsPerInput()
         {
             setupParameters();
@@ -1070,7 +1070,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testAvgConnectedSpanForColumnND()
         {
             sp = new SpatialPooler();
@@ -1155,7 +1155,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testBumpUpWeakColumns()
         {
             setupParameters();
@@ -1230,7 +1230,7 @@ namespace UnitTestsProject
         /// </summary>
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void RandomGenMultithreadTest()
         {
             ThreadSafeRandom rnd = new ThreadSafeRandom();
@@ -1255,7 +1255,7 @@ namespace UnitTestsProject
         /// </summary>
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void TestMapPotentialUndeterminismus()
         {
             int[][] expectedList = new int[2][];
@@ -1318,7 +1318,7 @@ namespace UnitTestsProject
         /// </summary>
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void TestParallelNeighborhood()
         {
             int[][] expectedList = new int[8][];
@@ -1365,7 +1365,7 @@ namespace UnitTestsProject
         /// </summary>
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void TestParallelWrappingNeighborhood()
         {
             int[][] expectedList = new int[2][];
@@ -1416,7 +1416,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testUpdateMinDutyCycleLocal()
         {
             setupDefaultParameters();
@@ -1494,7 +1494,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testUpdateMinDutyCycleGlobal()
         {
             setupParameters();
@@ -1552,7 +1552,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testIsUpdateRound()
         {
             setupParameters();
@@ -1590,7 +1590,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testAdaptSynapses()
         {
             setupParameters();
@@ -1706,7 +1706,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testRaisePermanenceThreshold()
         {
             setupParameters();
@@ -1766,7 +1766,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testUpdatePermanencesForColumn()
         {
             setupParameters();
@@ -1817,7 +1817,7 @@ namespace UnitTestsProject
         }
 
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         [TestMethod]
         public void testCalculateOverlap()
         {
@@ -1983,7 +1983,7 @@ namespace UnitTestsProject
          */
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testInitPermanence1()
         {
             setupParameters();
@@ -2043,7 +2043,7 @@ namespace UnitTestsProject
          */
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testInitPermanence2()
         {
             setupParameters();
@@ -2088,7 +2088,7 @@ namespace UnitTestsProject
          */
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testUpdateDutyCycleHelper()
         {
             setupParameters();
@@ -2134,7 +2134,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testInhibitColumnsGlobal()
         {
             setupParameters();
@@ -2170,7 +2170,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testInhibitColumnsLocal()
         {
             setupParameters();
@@ -2533,7 +2533,7 @@ namespace UnitTestsProject
         [DataRow(PoolerMode.SingleThreaded)]
         [DataRow(PoolerMode.Multicore)]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testInit(PoolerMode poolerMode)
         {
             setupParameters();
@@ -2637,7 +2637,7 @@ namespace UnitTestsProject
         /// </summary>
         [TestMethod]
         [TestCategory("UnitTest")]
-        [TestCategory("SpatialPooler")]
+        [TestCategory("Prod")]
         public void testComputeInputMismatch()
         {
             setupParameters();

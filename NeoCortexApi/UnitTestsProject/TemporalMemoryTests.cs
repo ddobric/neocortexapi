@@ -76,6 +76,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("Prod")]
         public void TestActivateCorrectlyPredictiveCells()
         {
             TemporalMemory tm = new TemporalMemory();
@@ -122,13 +123,14 @@ namespace UnitTestsProject
             int[] activeColumns = { 0 };
             ISet<Cell> burstingCells = cn.getCellSet(new int[] { 0, 1, 2, 3 });
 
-            ComputeCycle cc = tm.Compute( activeColumns, true) as ComputeCycle;
+            ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle;
 
             Assert.IsTrue(cc.ActiveCells.SequenceEqual(burstingCells));
         }
 
 
         [TestMethod]
+        [TestCategory("Prod")]
         public void TestZeroActiveColumns()
         {
             TemporalMemory tm = new TemporalMemory();
@@ -146,19 +148,20 @@ namespace UnitTestsProject
             cn.createSynapse(activeSegment, cn.getCell(2), 0.5);
             cn.createSynapse(activeSegment, cn.getCell(3), 0.5);
 
-            ComputeCycle cc = tm.Compute( previousActiveColumns, true) as ComputeCycle;
+            ComputeCycle cc = tm.Compute(previousActiveColumns, true) as ComputeCycle;
             Assert.IsFalse(cc.ActiveCells.Count == 0);
             Assert.IsFalse(cc.WinnerCells.Count == 0);
             Assert.IsFalse(cc.PredictiveCells.Count == 0);
 
             int[] zeroColumns = new int[0];
-            ComputeCycle cc2 = tm.Compute( zeroColumns, true) as ComputeCycle;
+            ComputeCycle cc2 = tm.Compute(zeroColumns, true) as ComputeCycle;
             Assert.IsTrue(cc2.ActiveCells.Count == 0);
             Assert.IsTrue(cc2.WinnerCells.Count == 0);
             Assert.IsTrue(cc2.PredictiveCells.Count == 0);
         }
 
         [TestMethod]
+        [TestCategory("Prod")]
         public void TestPredictedActiveCellsAreAlwaysWinners()
         {
             TemporalMemory tm = new TemporalMemory();
@@ -182,8 +185,8 @@ namespace UnitTestsProject
             cn.createSynapse(activeSegment2, previousActiveCells[1], 0.5);
             cn.createSynapse(activeSegment2, previousActiveCells[2], 0.5);
 
-            ComputeCycle cc = tm.Compute( previousActiveColumns, false) as ComputeCycle; // learn=false
-            cc = tm.Compute( activeColumns, false) as ComputeCycle; // learn=false
+            ComputeCycle cc = tm.Compute(previousActiveColumns, false) as ComputeCycle; // learn=false
+            cc = tm.Compute(activeColumns, false) as ComputeCycle; // learn=false
 
             Assert.IsTrue(cc.WinnerCells.SequenceEqual(new LinkedHashSet<Cell>(expectedWinnerCells)));
         }
@@ -213,7 +216,7 @@ namespace UnitTestsProject
             Synapse is1 = cn.createSynapse(activeSegment, cn.getCell(81), 0.5);
 
             tm.Compute(previousActiveColumns, true);
-            tm.Compute(activeColumns, true) ;
+            tm.Compute(activeColumns, true);
 
             Assert.AreEqual(0.6, as1.getPermanence(), 0.1);
             Assert.AreEqual(0.6, as2.getPermanence(), 0.1);
@@ -222,6 +225,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("Prod")]
         public void TestReinforcedSelectedMatchingSegmentInBurstingColumn()
         {
             TemporalMemory tm = new TemporalMemory();
@@ -246,8 +250,8 @@ namespace UnitTestsProject
             cn.createSynapse(otherMatchingSegment, previousActiveCells[1], 0.3);
             cn.createSynapse(otherMatchingSegment, cn.getCell(81), 0.3);
 
-            tm.Compute( previousActiveColumns, true);
-            tm.Compute( activeColumns, true);
+            tm.Compute(previousActiveColumns, true);
+            tm.Compute(activeColumns, true);
 
             Assert.AreEqual(0.4, as1.getPermanence(), 0.01);
             Assert.AreEqual(0.4, as2.getPermanence(), 0.01);
@@ -256,6 +260,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("Prod")]
         public void TestNoChangeToNonSelectedMatchingSegmentsInBurstingColumn()
         {
             TemporalMemory tm = new TemporalMemory();
@@ -289,6 +294,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("Prod")]
         public void TestNoChangeToMatchingSegmentsInPredictedActiveColumn()
         {
             TemporalMemory tm = new TemporalMemory();
@@ -318,9 +324,9 @@ namespace UnitTestsProject
             Synapse s3 = cn.createSynapse(matchingSegmentOnOtherCell, previousActiveCells[0], 0.3);
             Synapse s4 = cn.createSynapse(matchingSegmentOnOtherCell, previousActiveCells[1], 0.3);
 
-            ComputeCycle cc = tm.Compute( previousActiveColumns, true) as ComputeCycle;
+            ComputeCycle cc = tm.Compute(previousActiveColumns, true) as ComputeCycle;
             Assert.IsTrue(cc.PredictiveCells.SequenceEqual(expectedActiveCells));
-            tm.Compute( activeColumns, true) ;
+            tm.Compute(activeColumns, true);
 
             Assert.AreEqual(0.3, s1.getPermanence(), 0.01);
             Assert.AreEqual(0.3, s2.getPermanence(), 0.01);
@@ -330,6 +336,7 @@ namespace UnitTestsProject
 
 
         [TestMethod]
+        [TestCategory("Prod")]
         public void TestNoNewSegmentIfNotEnoughWinnerCells()
         {
             TemporalMemory tm = new TemporalMemory();
@@ -348,6 +355,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("Prod")]
         public void TestNewSegmentAddSynapsesToSubsetOfWinnerCells()
         {
             TemporalMemory tm = new TemporalMemory();
@@ -359,12 +367,12 @@ namespace UnitTestsProject
             int[] previousActiveColumns = { 0, 1, 2 };
             int[] activeColumns = { 4 };
 
-            ComputeCycle cc = tm.Compute( previousActiveColumns, true) as ComputeCycle;
+            ComputeCycle cc = tm.Compute(previousActiveColumns, true) as ComputeCycle;
 
             IList<Cell> prevWinnerCells = cc.WinnerCells;
             Assert.AreEqual(3, prevWinnerCells.Count);
 
-            cc = tm.Compute( activeColumns, true) as ComputeCycle;
+            cc = tm.Compute(activeColumns, true) as ComputeCycle;
 
             List<Cell> winnerCells = new List<Cell>(cc.WinnerCells);
             Assert.AreEqual(1, winnerCells.Count);
@@ -384,6 +392,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("Prod")]
         public void TestNewSegmentAddSynapsesToAllWinnerCells()
         {
             TemporalMemory tm = new TemporalMemory();
@@ -395,11 +404,11 @@ namespace UnitTestsProject
             int[] previousActiveColumns = { 0, 1, 2 };
             int[] activeColumns = { 4 };
 
-            ComputeCycle cc = tm.Compute( previousActiveColumns, true) as ComputeCycle;
+            ComputeCycle cc = tm.Compute(previousActiveColumns, true) as ComputeCycle;
             List<Cell> prevWinnerCells = new List<Cell>(cc.WinnerCells);
             Assert.AreEqual(3, prevWinnerCells.Count);
 
-            cc = tm.Compute( activeColumns, true) as ComputeCycle;
+            cc = tm.Compute(activeColumns, true) as ComputeCycle;
 
             List<Cell> winnerCells = new List<Cell>(cc.WinnerCells);
             Assert.AreEqual(1, winnerCells.Count);
@@ -437,9 +446,9 @@ namespace UnitTestsProject
             DistalDendrite matchingSegment = cn.CreateDistalSegment(cn.getCell(4));
             cn.createSynapse(matchingSegment, cn.getCell(0), 0.5);
 
-            ComputeCycle cc = tm.Compute( previousActiveColumns, true) as ComputeCycle;
+            ComputeCycle cc = tm.Compute(previousActiveColumns, true) as ComputeCycle;
             Assert.IsTrue(cc.WinnerCells.SequenceEqual(prevWinnerCells));
-            cc = tm.Compute( activeColumns, true) as ComputeCycle;
+            cc = tm.Compute(activeColumns, true) as ComputeCycle;
 
             List<Synapse> synapses = cn.getSynapses(matchingSegment);
             Assert.AreEqual(3, synapses.Count);
@@ -458,6 +467,7 @@ namespace UnitTestsProject
 
 
         [TestMethod]
+        [TestCategory("Prod")]
         public void TestMatchingSegmentAddSynapsesToAllWinnerCells()
         {
             TemporalMemory tm = new TemporalMemory();
@@ -474,10 +484,10 @@ namespace UnitTestsProject
             DistalDendrite matchingSegment = cn.CreateDistalSegment(cn.getCell(4));
             cn.createSynapse(matchingSegment, cn.getCell(0), 0.5);
 
-            ComputeCycle cc = tm.Compute( previousActiveColumns, true) as ComputeCycle;
+            ComputeCycle cc = tm.Compute(previousActiveColumns, true) as ComputeCycle;
             Assert.IsTrue(cc.WinnerCells.SequenceEqual(prevWinnerCells));
 
-            cc = tm.Compute( activeColumns, true) as ComputeCycle;
+            cc = tm.Compute(activeColumns, true) as ComputeCycle;
 
             List<Synapse> synapses = cn.getSynapses(matchingSegment);
             Assert.AreEqual(2, synapses.Count);
@@ -522,9 +532,9 @@ namespace UnitTestsProject
             cn.createSynapse(activeSegment, cn.getCell(1), 0.5);
             cn.createSynapse(activeSegment, cn.getCell(2), 0.2);
 
-            ComputeCycle cc = tm.Compute( previousActiveColumns, true) as ComputeCycle;
+            ComputeCycle cc = tm.Compute(previousActiveColumns, true) as ComputeCycle;
             Assert.IsTrue(prevWinnerCells.SequenceEqual(cc.WinnerCells));
-            cc = tm.Compute( activeColumns, true) as ComputeCycle;
+            cc = tm.Compute(activeColumns, true) as ComputeCycle;
 
             List<Cell> presynapticCells = new List<Cell>();
             foreach (var syn in activeSegment.getAllSynapses(cn))
@@ -543,7 +553,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-
+        [TestCategory("Prod")]
         public void TestDestroyWeakSynapseOnWrongPrediction()
         {
             TemporalMemory tm = new TemporalMemory();
@@ -566,13 +576,14 @@ namespace UnitTestsProject
             // Weak Synapse
             cn.createSynapse(activeSegment, previousActiveCells[3], 0.015);
 
-            tm.Compute( previousActiveColumns, true);
-            tm.Compute( activeColumns, true);
+            tm.Compute(previousActiveColumns, true);
+            tm.Compute(activeColumns, true);
 
             Assert.AreEqual(3, cn.GetNumSynapses(activeSegment));
         }
 
         [TestMethod]
+        [TestCategory("Prod")]
         public void TestDestroyWeakSynapseOnActiveReinforce()
         {
             TemporalMemory tm = new TemporalMemory();
@@ -595,8 +606,8 @@ namespace UnitTestsProject
             // Weak Synapse
             cn.createSynapse(activeSegment, previousActiveCells[3], 0.009);
 
-            tm.Compute( previousActiveColumns, true);
-            tm.Compute( activeColumns, true);
+            tm.Compute(previousActiveColumns, true);
+            tm.Compute(activeColumns, true);
 
             Assert.AreEqual(3, cn.GetNumSynapses(activeSegment));
         }
@@ -629,9 +640,9 @@ namespace UnitTestsProject
             // Weakest Synapse
             cn.createSynapse(matchingSegment, cn.getCell(0), 0.11);
 
-            ComputeCycle cc = tm.Compute( prevActiveColumns, true) as ComputeCycle;
+            ComputeCycle cc = tm.Compute(prevActiveColumns, true) as ComputeCycle;
             Assert.IsTrue(prevWinnerCells.SequenceEqual(cc.WinnerCells));
-            tm.Compute( activeColumns, true) ;
+            tm.Compute(activeColumns, true);
 
             List<Synapse> synapses = cn.getSynapses(matchingSegment);
             Assert.AreEqual(3, synapses.Count);
@@ -648,6 +659,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("Prod")]
         public void TestRecycleLeastRecentlyActiveSegmentToMakeRoomForNewSegment()
         {
             TemporalMemory tm = new TemporalMemory();
@@ -666,8 +678,8 @@ namespace UnitTestsProject
             int[] activeColumns = { 9 };
             Cell cell9 = cn.getCell(9);
 
-            tm.Compute( prevActiveColumns1, true);
-            tm.Compute( activeColumns, true);
+            tm.Compute(prevActiveColumns1, true);
+            tm.Compute(activeColumns, true);
 
             Assert.AreEqual(1, cn.getSegments(cell9).Count);
             DistalDendrite oldestSegment = cn.getSegments(cell9)[0];
@@ -685,8 +697,8 @@ namespace UnitTestsProject
             var oldPresynaptic = cn.getSynapses(oldestSegment).Select(s => s.getPresynapticCell()).ToList();
 
             tm.reset(cn);
-            tm.Compute( prevActiveColumns3, true);
-            tm.Compute( activeColumns, true);
+            tm.Compute(prevActiveColumns3, true);
+            tm.Compute(activeColumns, true);
             Assert.AreEqual(2, cn.getSegments(cell9).Count);
 
             // Verify none of the segments are connected to the cells the old
@@ -707,6 +719,7 @@ namespace UnitTestsProject
 
 
         [TestMethod]
+        [TestCategory("Prod")]
         public void TestDestroySegmentsWithTooFewSynapsesToBeMatching()
         {
             TemporalMemory tm = new TemporalMemory();
@@ -728,13 +741,14 @@ namespace UnitTestsProject
             cn.createSynapse(matchingSegment, prevActiveCells[2], .015);
             cn.createSynapse(matchingSegment, prevActiveCells[3], .015);
 
-            tm.Compute( prevActiveColumns, true);
-            tm.Compute( activeColumns, true);
+            tm.Compute(prevActiveColumns, true);
+            tm.Compute(activeColumns, true);
 
             Assert.AreEqual(0, cn.numSegments(expectedActiveCell));
         }
 
         [TestMethod]
+        [TestCategory("Prod")]
         public void TestPunishMatchingSegmentsInInactiveColumns()
         {
             TemporalMemory tm = new TemporalMemory();
@@ -761,8 +775,8 @@ namespace UnitTestsProject
             Synapse as5 = cn.createSynapse(matchingSegment, prevActiveCells[1], .5);
             Synapse is2 = cn.createSynapse(matchingSegment, previousInactiveCell, .5);
 
-            tm.Compute( prevActiveColumns, true);
-            tm.Compute( activeColumns, true);
+            tm.Compute(prevActiveColumns, true);
+            tm.Compute(activeColumns, true);
 
             Assert.AreEqual(0.48, as1.getPermanence(), 0.01);
             Assert.AreEqual(0.48, as2.getPermanence(), 0.01);
@@ -800,8 +814,8 @@ namespace UnitTestsProject
                 DistalDendrite segment2 = cn.CreateDistalSegment(nonMatchingCells[1]);
                 cn.createSynapse(segment2, prevActiveCells[1], 0.5);
 
-                tm.Compute( prevActiveColumns, true);
-                ComputeCycle cc = tm.Compute( activeColumns, true)as ComputeCycle;
+                tm.Compute(prevActiveColumns, true);
+                ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle;
 
                 Assert.IsTrue(cc.ActiveCells.SequenceEqual(activeCells));
 
@@ -881,14 +895,14 @@ namespace UnitTestsProject
             var synMapBefore = deepCopyPlain<Dictionary<Cell, LinkedHashSet<Synapse>>>(cn.getReceptorSynapseMapping());
             var segMapBefore = deepCopyPlain<Dictionary<Cell, List<DistalDendrite>>>(cn.getSegmentMapping());
 
-            tm.Compute( prevActiveColumns, false);
-            tm.Compute( activeColumns, false);
+            tm.Compute(prevActiveColumns, false);
+            tm.Compute(activeColumns, false);
 
             Assert.IsTrue(synMapBefore != cn.getReceptorSynapseMapping());
             Assert.IsTrue(synMapBefore.Keys.SequenceEqual(cn.getReceptorSynapseMapping().Keys));
 
             Assert.IsTrue(segMapBefore != cn.getSegmentMapping());
-            Assert.IsTrue(segMapBefore.Keys.SequenceEqual( cn.getSegmentMapping().Keys));
+            Assert.IsTrue(segMapBefore.Keys.SequenceEqual(cn.getSegmentMapping().Keys));
         }
 
         public void TestLeastUsedCell()
@@ -910,6 +924,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("Prod")]
         public void TestAdaptSegment()
         {
             TemporalMemory tm = new TemporalMemory();
@@ -931,6 +946,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("Prod")]
         public void TestAdaptSegmentToMax()
         {
             TemporalMemory tm = new TemporalMemory();
@@ -951,6 +967,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("Prod")]
         public void TestAdaptSegmentToMin()
         {
             TemporalMemory tm = new TemporalMemory();
@@ -968,7 +985,8 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-    public void testNumberOfColumns()
+        [TestCategory("Prod")]
+        public void testNumberOfColumns()
         {
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
@@ -982,6 +1000,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("Prod")]
         public void testNumberOfCells()
         {
             TemporalMemory tm = new TemporalMemory();

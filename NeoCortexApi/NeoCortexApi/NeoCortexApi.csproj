@@ -31,20 +31,6 @@
     <Compile Remove="Entities\SparseBinaryMatrixDistDict.cs" />
     <Compile Remove="Entities\SparseBinaryMatrixOriginal.cs" />
     <Compile Remove="Network\NearestClassifier.cs" />
-    <Compile Remove="Network_Old\CortexNetwork.cs" />
-    <Compile Remove="Network_Old\Header.cs" />
-    <Compile Remove="Network_Old\ICheckPointOP.cs" />
-    <Compile Remove="Network_Old\IInference.cs" />
-    <Compile Remove="Network_Old\ISubscription.cs" />
-    <Compile Remove="Network_Old\Layer.cs" />
-    <Compile Remove="Network_Old\ManualInput.cs" />
-    <Compile Remove="Network_Old\Publisher.cs" />
-    <Compile Remove="Network_Old\PublisherSubject.cs" />
-    <Compile Remove="Network_Old\Region.cs" />
-    <Compile Remove="Network_Old\SensorFlags.cs" />
-    <Compile Remove="Network_Old\Subscription.cs" />
-    <Compile Remove="Sensors\CsvFileSensor.cs" />
-    <Compile Remove="Sensors\HtmSensor.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -58,20 +44,6 @@
     <None Include="Entities\SparseBinaryMatrixDistDict.cs" />
     <None Include="Entities\SparseBinaryMatrixOriginal.cs" />
     <None Include="Network\NearestClassifier.cs" />
-    <None Include="Network_Old\CortexNetwork.cs" />
-    <None Include="Network_Old\Header.cs" />
-    <None Include="Network_Old\ICheckPointOP.cs" />
-    <None Include="Network_Old\IInference.cs" />
-    <None Include="Network_Old\ISubscription.cs" />
-    <None Include="Network_Old\Layer.cs" />
-    <None Include="Network_Old\ManualInput.cs" />
-    <None Include="Network_Old\Publisher.cs" />
-    <None Include="Network_Old\PublisherSubject.cs" />
-    <None Include="Network_Old\Region.cs" />
-    <None Include="Network_Old\SensorFlags.cs" />
-    <None Include="Network_Old\Subscription.cs" />
-    <None Include="Sensors\CsvFileSensor.cs" />
-    <None Include="Sensors\HtmSensor.cs" />
   </ItemGroup>
 
   <ItemGroup>
