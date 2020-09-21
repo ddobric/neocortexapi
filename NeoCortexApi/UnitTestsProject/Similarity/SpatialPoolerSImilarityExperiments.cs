@@ -107,7 +107,7 @@ namespace UnitTestsProject
             // N of 40 (40= 0.02*2048 columns) active cells required to activate the segment.
             p.Set(KEY.GLOBAL_INHIBITION, true);
             p.setNumActiveColumnsPerInhArea(0.02 * numOfCols);
-            p.Set(KEY.POTENTIAL_RADIUS,(int) (0.8 * imgSize * imgSize));
+            p.Set(KEY.POTENTIAL_RADIUS, (int)(0.8 * imgSize * imgSize));
             p.Set(KEY.LOCAL_AREA_DENSITY, -1); // In a case of global inhibition.
             //p.setInhibitionRadius( Automatically set on the columns pace in a case of global inhibition.);
 
@@ -153,7 +153,7 @@ namespace UnitTestsProject
 
                     Dictionary<string, int[]> sdrs = new Dictionary<string, int[]>();
 
-                    while (!isInStableState)
+                    while (true)
                     {
                         foreach (var trainingImage in trainingImages)
                         {
@@ -183,6 +183,12 @@ namespace UnitTestsProject
 
                             if (isInStableState)
                             {
+                                if (sdrs.Count == trainingImages.Length)
+                                {
+                                    CalculateResult(sdrs);
+                                    return;
+                                }
+
                                 var distance = MathHelpers.GetHammingDistance(oldArray, activeArray, true);
                                 //var similarity = MathHelpers.CalcArraySimilarity(oldArray, activeArray, true);
                                 sdrs.Add(trainingImage, activeCols);
@@ -206,11 +212,9 @@ namespace UnitTestsProject
                                 NeoCortexUtils.DrawBitmaps(arrays, outputImage, Color.Yellow, Color.Gray, OutImgSize, OutImgSize);
                                 NeoCortexUtils.DrawHeatmaps(overlapArrays, $"{outputImage}_overlap.png", 1024, 1024, 150, 50, 5);
                                 NeoCortexUtils.DrawHeatmaps(bostArrays, $"{outputImage}_boost.png", 1024, 1024, 150, 50, 5);
-                            } 
+                            }
                         }
                     }
-
-                    CalculateResult(sdrs);
                 }
             }
         }
@@ -278,7 +282,7 @@ namespace UnitTestsProject
             // N of 40 (40= 0.02*2048 columns) active cells required to activate the segment.
             p.Set(KEY.GLOBAL_INHIBITION, true);
             p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
-            p.Set(KEY.POTENTIAL_RADIUS,(int) (.7 * inputBits));
+            p.Set(KEY.POTENTIAL_RADIUS, (int)(.7 * inputBits));
             p.Set(KEY.LOCAL_AREA_DENSITY, -1); // In a case of global inhibition.
             //p.setInhibitionRadius( Automatically set on the columns pace in a case of global inhibition.);
 
@@ -358,7 +362,7 @@ namespace UnitTestsProject
 
                             if (cycle == 0 && File.Exists(actColFileName))
                                 File.Delete(actColFileName);
-                            
+
                             var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 
                             using (StreamWriter swCols = new StreamWriter(actColFileName, true))
