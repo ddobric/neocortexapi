@@ -2,12 +2,13 @@
 
 The activity of columns and cells is represented as SDR. To compare the column or cell activity the Python script draw_figure.py can be used.
 
-Example:
-
 ~~~
 py draw_figure.py -fn "CDS FILE WITH SDRs" -gn "OUTPUT FILENAME" -mc NUM-OF-ROWS-TO-PROCESS -ht THRESHOLDLINE-OPTIONAL -yt "Y AXIS TITLE" -xt "X AXIS TITLE" -st "Predicted/Expected/Predictive Cells" -fign NOTUSED
 ~~~
 
+### Example
+
+Assume, following is the file with 5 SDRs.
 
 ~~~
 33, 34, 35, 36, 37, 39, 96, 97, 98, 99, 100, 103, 104, 167, 231, 232, 295, 359, 360, 423, 424, 1078, 1141, 1185, 1191, 1192, 1249, 1255, 1312, 1313, 1320, 1373, 1375, 1376, 1377, 1379, 1381, 1382, 1383, 1384, 1436, 1437, 1438, 1439, 1440, 1441, 1442, 1443, 1444, 1446, 1447, 1505, 1508, 1569, 1571, 1574, 1575, 1576, 1632, 1633, 1634, 1635, 1636, 1639, 1640, 1698, 1699, 1700, 1703, 2848, 2912, 3111, 4000, 4005, 4006, 4007, 4008, 4066, 4067, 4069, 4070, 
@@ -17,7 +18,13 @@ py draw_figure.py -fn "CDS FILE WITH SDRs" -gn "OUTPUT FILENAME" -mc NUM-OF-ROWS
 1057, 1061, 1062, 1182, 1185, 1189, 1249, 1254, 1311, 1312, 1441, 1503, 1566, 1573, 1630, 1694, 1697, 1760, 1822, 1830, 1893, 2014, 2017, 2078, 2081, 2143, 2144, 2149, 2150, 2273, 2336, 2400, 2401, 2405, 2463, 2470, 2528, 2534, 2597, 2655, 2718, 2719, 2847, 2854, 2910, 2911, 2917, 2918, 2974, 2975, 3041, 3166, 3167, 3237, 3238, 3295, 3302, 3360, 3361, 3429, 3487, 3488, 3489, 3550, 3557, 3616, 3622, 3679, 3681, 3686, 3742, 3743, 3745, 3750, 3806, 3807, 3808, 3936, 3937, 4062, 4069, 
 ~~~
 
+Following shows how to create a diagram that visualize SDRs.
+
 ~~~
 py draw_figure.py -fn "C:\temp\exp.csv" -gn Digit -mc 1000 -ht 15 -yt "column indicies" -xt cycle -st "SDR1/SDR2/SDR3/SDR4/SDR5" -fign ""
 C:\temp\exp.csv
 ~~~
+
+### Result
+
+<img src="/NeoCortexApi/Documentation/images/sdr-compare.png" alt="Result of compare" style="float: left; margin-right: 10px;" width=50% height=50% />
