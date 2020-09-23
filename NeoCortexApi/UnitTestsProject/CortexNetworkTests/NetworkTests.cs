@@ -422,11 +422,11 @@ namespace UnitTestsProject
             p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
             // Activation threshold is 10 active cells of 40 cells in inhibition area.
             p.Set(KEY.POTENTIAL_RADIUS, 50);
-            p.setActivationThreshold(10);
             p.setInhibitionRadius(15);
 
             //
-            // Stops the bumping of inactive columns.
+            // Activates the high bumping/boosting of inactive columns.
+            // This exeperiment uses HomeostaticPlasticityActivator, which will deactivate boosting and bumping.
             p.Set(KEY.MAX_BOOST, 10.0);
             p.Set(KEY.DUTY_CYCLE_PERIOD, 50);
             p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.75);
@@ -434,9 +434,14 @@ namespace UnitTestsProject
             // Max number of synapses on the segment.
             p.setMaxNewSynapsesPerSegmentCount((int)(0.02 * numColumns));
 
-            p.setPermanenceIncrement(0.15);
+            // If learning process does not generate active segments, this value should be decreased.
+            // If invalid patterns are predicted then this value should be increased.
+            p.setActivationThreshold(35);
+            p.setConnectedPermanence(0.5);
 
-            p.setConnectedPermanence(0.35);
+            // Learning is slower than forgetting in this case.
+            p.setPermanenceDecrement(0.25);
+            p.setPermanenceIncrement(0.15);
 
             double max = 20;
 
@@ -459,7 +464,9 @@ namespace UnitTestsProject
             // List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.
 
             // not stable with 2048 cols 25 cells per column and 0.02 * numColumns synapses on segment.
-            //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 });
+            // Stable with permanence decrement 0.25/ increment 0.15:  30 repeats with 100% of accuracy. Elapsed time: 11 min.
+            // With increment=0.2 and decrement 0.3 has taken 15 min and didn't entered the stable state.
+            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 });
 
             // Active Experiment
             //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 3.0, 2.0, 1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 0.0, 1.0, 2.0, 3.0, 3.0, 2.0, 1.0, 0.0, 1.0});
@@ -467,7 +474,7 @@ namespace UnitTestsProject
             // Stable with 2048 cols 25 cells per column and 0.02 * numColumns synapses on segment.8min, 154 min, maxPrevInputs=5. connected permanence 0.35 or 0.5.
             // Stable with 2048 cols 25 cells per column and 0.02 * numColumns synapses on segment.8min, 9min.
             // not stable with 2048 cols 15 cells per column and 0.02 * numColumns synapses on segment.
-            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0 });
+            //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0 });
 
             // Stable with 2048 cols AND 15 cells per column and 1000 0.02 * numColumns on segment. 7min,8min
             //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0 });
@@ -491,9 +498,9 @@ namespace UnitTestsProject
 
             //inputValues = new List<double>(new double[] { 1.0, 2.0, 3.0, 1.0, 5.0, 1.0, 6.0, });
 
-            // RunExperiment(inputBits, p, encoder, inputValues);
-            // RunExperiment(inputBits, p, encoder, inputValues);
+            RunExperiment(inputBits, p, encoder, inputValues);
         }
+
 
 
         /// <summary>
