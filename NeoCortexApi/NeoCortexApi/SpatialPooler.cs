@@ -77,7 +77,7 @@ namespace NeoCortexApi
                 throw new ArgumentException("Inhibition parameters are invalid");
             }
 
-            c.doSpatialPoolerPostInit();
+            c.DoSpatialPoolerPostInit();
 
             InitMatrices(c, distMem);
 

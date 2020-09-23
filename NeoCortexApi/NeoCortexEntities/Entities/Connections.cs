@@ -10,14 +10,17 @@ using System.Linq;
 
 namespace NeoCortexApi.Entities
 {
-    /**
- * Contains the definition of the interconnected structural state of the {@link SpatialPooler} and
- * {@link TemporalMemory} as well as the state of all support structures
- * (i.e. Cells, Columns, Segments, Synapses etc.).
- *
- * In the separation of data from logic, this class represents the data/state.
- */
-    //[Serializable]
+    /// <summary>
+    /// 
+    /// Contains the definition of the interconnected structural state of the {@link SpatialPooler}
+    /// and
+    /// { @link TemporalMemory} as well as the state of all support structures
+    /// (i.e. Cells, Columns, Segments, Synapses etc.).
+    /// 
+    /// In the separation of data from logic, this class represents the data/state.
+    ///
+    /// </summary>
+    [Serializable]
     public class Connections //implements Persistable
     {
 
@@ -66,11 +69,17 @@ namespace NeoCortexApi.Entities
         public double[] m_BoostedmOverlaps;
         public int[] m_Overlaps;
 
-        /** Manages input neighborhood transformations */
+        /// <summary>
+        /// Manages input neighborhood transformations
+        /// </summary>
         private Topology inputTopology;
-        /** Manages column neighborhood transformations */
+        /// <summary>
+        /// Manages column neighborhood transformations
+        /// </summary>
         private Topology columnTopology;
-        /** A matrix representing the shape of the input. */
+        /// <summary>
+        /// A matrix representing the shape of the input.
+        /// </summary>
         protected ISparseMatrix<int> inputMatrix;
         /**
          * Store the set of all inputs that are within each column's potential pool.
@@ -87,25 +96,28 @@ namespace NeoCortexApi.Entities
          * require iterating over the data structure.
          */
         //private IFlatMatrix<Pool> potentialPools;
-        /**
-         * Initialize a tiny random tie breaker. This is used to determine winning
-         * columns where the overlaps are identical.
-         */
+
+        /// <summary>
+        /// Initialize a tiny random tie breaker. This is used to determine winning
+        /// columns where the overlaps are identical.
+        /// </summary>
         private double[] tieBreaker;
-        /**
-         * Stores the number of connected synapses for each column. This is simply
-         * a sum of each row of 'connectedSynapses'. again, while this
-         * information is readily available from 'connectedSynapses', it is
-         * stored separately for efficiency purposes.
-         */
+
+        /// <summary>
+        /// Stores the number of connected synapses for each column. This is simply
+        /// a sum of each row of 'connectedSynapses'. again, while this
+        /// information is readily available from 'connectedSynapses', it is
+        /// stored separately for efficiency purposes.
+        /// </summary>
         private AbstractSparseBinaryMatrix connectedCounts2;
-        /**
-         * The inhibition radius determines the size of a column's local
-         * neighborhood. of a column. A cortical column must overcome the overlap
-         * score of columns in its neighborhood in order to become actives. This
-         * radius is updated every learning round. It grows and shrinks with the
-         * average number of connected synapses per column.
-         */
+
+        /// <summary>
+        /// The inhibition radius determines the size of a column's local
+        /// neighborhood. of a column. A cortical column must overcome the overlap
+        /// score of columns in its neighborhood in order to become actives. This
+        /// radius is updated every learning round. It grows and shrinks with the
+        /// average number of connected synapses per column.
+        /// </summary>
         private int m_InhibitionRadius = 0;
 
         private double[] overlapDutyCycles;
@@ -122,54 +134,70 @@ namespace NeoCortexApi.Entities
         protected List<DistalDendrite> activeSegments = new List<DistalDendrite>();
         protected List<DistalDendrite> matchingSegments = new List<DistalDendrite>();
 
-        /** Total number of columns */
+        /// <summary>
+        /// Total number of columns
+        /// </summary>
         protected int[] columnDimensions = new int[] { 2048 };
-        /** Total number of cells per column */
+        /// <summary>
+        /// Total number of cells per column
+        /// </summary>
         protected int cellsPerColumn = 32;
-        /** What will comprise the Layer input. Input (i.e. from encoder) */
+        /// <summary>
+        /// What will comprise the Layer input. Input (i.e. from encoder)
+        /// </summary>
         protected int[] inputDimensions = new int[] { 100 };
-        /**
-         * If the number of active connected synapses on a segment
-         * is at least this threshold, the segment is said to be active.
-         */
+        /// <summary>
+        /// If the number of active connected synapses on a segment
+        /// is at least this threshold, the segment is said to be active.
+        /// </summary>
         private int activationThreshold = 13;
-        /**
-         * Radius around cell from which it can
-         * sample to form distal {@link DistalDendrite} connections.
-         */
+        /// <summary>
+        /// Radius around cell from which it can
+        /// sample to form distal {@link DistalDendrite} connections.
+        /// </summary>
         private int learningRadius = 2048;
-        /**
-         * If the number of synapses active on a segment is at least this
-         * threshold, it is selected as the best matching
-         * cell in a bursting column.
-         */
+        /// <summary>
+        /// If the number of synapses active on a segment is at least this 
+        /// threshold, it is selected as the best matching 
+        /// cell in a bursting column. 
+        /// </summary>
         private int minThreshold = 10;
-        /** The maximum number of synapses added to a segment during learning. */
+        /// <summary>
+        /// The maximum number of synapses added to a segment during learning.
+        /// </summary>
         private int maxNewSynapseCount = 20;
-        /** The maximum number of segments (distal dendrites) allowed on a cell */
+        /// <summary>
+        /// The maximum number of segments (distal dendrites) allowed on a cell
+        /// </summary>
         private int maxSegmentsPerCell = 255;
-        /** The maximum number of synapses allowed on a given segment (distal dendrite) */
+        /// <summary>
+        /// The maximum number of synapses allowed on a given segment (distal dendrite)
+        /// </summary>
         private int maxSynapsesPerSegment = 255;
-        /** Initial permanence of a new synapse */
+        /// <summary>
+        /// Initial permanence of a new synapse
+        /// </summary>
         private double initialPermanence = 0.21;
-        /**
-         * If the permanence value for a synapse
-         * is greater than this value, it is said
-         * to be connected.
-         */
+        /// <summary>
+        /// If the permanence value for a synapse
+        /// is greater than this value, it is said
+        /// to be connected.
+        /// </summary>
         private double connectedPermanence = 0.50;
-        /**
-         * Amount by which permanences of synapses
-         * are incremented during learning.
-         */
+        /// <summary>
+        /// Amount by which permanences of synapses
+        /// are incremented during learning.
+        /// </summary>
         private double permanenceIncrement = 0.10;
-        /**
-         * Amount by which permanences of synapses
-         * are decremented during learning.
-         */
+        /// <summary>
+        /// Amount by which permanences of synapses
+        /// are decremented during learning.
+        /// </summary>
         private double permanenceDecrement = 0.10;
 
-        /** The main data structure containing columns, cells, and synapses */
+        /// <summary>
+        /// The main data structure containing columns, cells, and synapses
+        /// </summary>
         private AbstractSparseMatrix<Column> memory;
 
         public HtmModuleTopology ColumnTopology
@@ -229,7 +257,10 @@ namespace NeoCortexApi.Entities
         public Cell[] cells { get; set; }
 
         ///////////////////////   Structural Elements /////////////////////////
-        /** Reverse mapping from source cell to {@link Synapse} */
+        
+        /// <summary>
+        /// Reverse mapping from source cell to {@link Synapse}
+        /// </summary>
         public Dictionary<Cell, LinkedHashSet<Synapse>> receptorSynapses;
 
         protected Dictionary<Cell, List<DistalDendrite>> distalSegments;
@@ -243,13 +274,22 @@ namespace NeoCortexApi.Entities
 
         /** Helps index each new proximal Synapse */
         //protected int proximalSynapseCounter = -1;
-        /** Global tracker of the next available segment index */
+
+        /// <summary>
+        /// Global tracker of the next available segment index
+        /// </summary>
         protected int nextFlatIdx;
-        /** Global counter incremented for each DD segment creation*/
+        /// <summary>
+        /// Global counter incremented for each DD segment creation
+        /// </summary>
         protected int nextSegmentOrdinal;
-        /** Global counter incremented for each DD synapse creation*/
+        /// <summary>
+        /// Global counter incremented for each DD synapse creation
+        /// </summary>
         protected int nextSynapseOrdinal;
-        /** Total number of synapses */
+        /// <summary>
+        /// Total number of synapses
+        /// </summary>
         protected long NumSynapses { get; set; }
 
         /// <summary>
@@ -262,13 +302,19 @@ namespace NeoCortexApi.Entities
         /// </summary>
         protected List<DistalDendrite> m_SegmentForFlatIdx = new List<DistalDendrite>();
 
-        /** Stores each cycle's most recent activity */
+        /// <summary>
+        /// Stores each cycle's most recent activity
+        /// </summary>
         public SegmentActivity lastActivity;
 
-        /** The default random number seed */
+        /// <summary>
+        /// The default random number seed
+        /// </summary>
         protected int seed = 42;
 
-        /** The random number generator */
+        /// <summary>
+        /// The random number generator
+        /// </summary>
         public Random random;
 
         public int getNextSegmentOrdinal()
@@ -312,16 +358,12 @@ namespace NeoCortexApi.Entities
 
         //};
 
-
-
-        ////////////////////////////////////////
-        //       Connections Constructor      //
-        ////////////////////////////////////////
-        /**
-         * Constructs a new {@code OldConnections} object. This object
-         * is usually configured via the {@link Parameters#apply(Object)}
-         * method.
-         */
+        #region Connections Constructor
+        /// <summary>
+        /// Constructs a new {@code OldConnections} object. This object
+        /// is usually configured via the {@link Parameters#apply(Object)}
+        /// method.
+        /// </summary>
         public Connections()
         {
             synPermTrimThreshold = synPermActiveInc / 2.0;
@@ -343,11 +385,14 @@ namespace NeoCortexApi.Entities
         //        return (Connections)formatter.Deserialize(stream);
         //    }
         //}
+        #endregion
 
-        /**
-         * Sets the derived values of the {@link SpatialPooler}'s initialization.
-         */
-        public void doSpatialPoolerPostInit()
+        #region General Methods
+
+        /// <summary>
+        /// Sets the derived values of the <see cref="SpatialPoller"/> {@link SpatialPooler}'s initialization.
+        /// </summary>
+        public void DoSpatialPoolerPostInit()
         {
             synPermBelowStimulusInc = synPermConnected / 10.0;
             synPermTrimThreshold = synPermActiveInc / 2.0;
@@ -357,43 +402,39 @@ namespace NeoCortexApi.Entities
             }
         }
 
-        /////////////////////////////////////////
-        //         General Methods             //
-        /////////////////////////////////////////
-        /**
-         * Sets the seed used for the internal random number generator.
-         * If the generator has been instantiated, this method will initialize
-         * a new random generator with the specified seed.
-         *
-         * @param seed
-         */
+        /// <summary>
+        /// Sets the seed used for the internal random number generator.
+        /// If the generator has been instantiated, this method will initialize
+        /// a new random generator with the specified seed.
+        /// </summary>
+        /// <param name="seed"></param>
         public void setSeed(int seed)
         {
             this.seed = seed;
         }
 
-        /**
-         * Returns the configured random number seed
-         * @return
-         */
+        /// <summary>
+        /// Returns the configured random number seed
+        /// </summary>
+        /// <returns></returns>
         public int getSeed()
         {
             return seed;
         }
 
-        /**
-         * Returns the thread specific {@link Random} number generator.
-         * @return
-         */
+        /// <summary>
+        /// Returns the thread specific {@link Random} number generator.
+        /// </summary>
+        /// <returns></returns>
         public Random getRandom()
         {
             return random;
         }
 
-        /**
-         * Sets the random number generator.
-         * @param random
-         */
+        /// <summary>
+        /// Sets the random number generator.
+        /// </summary>
+        /// <param name="random"></param>
         public void setRandom(Random random)
         {
             this.random = random;
@@ -2659,10 +2700,11 @@ namespace NeoCortexApi.Entities
             return result;
         }
 
-        /**
-         * {@inheritDoc}
-         */
-        //@Override
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public override bool Equals(Object obj)
         {
             if (this == obj)
@@ -2848,5 +2890,6 @@ namespace NeoCortexApi.Entities
                 return false;
             return true;
         }
+        #endregion
     }
 }
