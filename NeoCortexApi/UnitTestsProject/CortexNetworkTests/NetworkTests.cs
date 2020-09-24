@@ -434,7 +434,7 @@ namespace UnitTestsProject
             // Max number of synapses on the segment.
             p.setMaxNewSynapsesPerSegmentCount((int)(0.02 * numColumns));
 
-            // If learning process does not generate active segments, this value should be decreased.
+            // If learning process does not generate active segments, this value should be decreased. You can notice this with continious burtsing. look in trace for 'B.B.B'
             // If invalid patterns are predicted then this value should be increased.
             p.setActivationThreshold(35);
             p.setConnectedPermanence(0.5);
@@ -464,7 +464,7 @@ namespace UnitTestsProject
             // List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.
 
             // not stable with 2048 cols 25 cells per column and 0.02 * numColumns synapses on segment.
-            // Stable with permanence decrement 0.25/ increment  Host Project mived to 3.10.15:  30 repeats with 100% of accuracy. Elapsed time: 11 min.
+            // Stable with permanence decrement 0.25/ increment 0.15 and ActivationThreshold 25.
             // With increment=0.2 and decrement 0.3 has taken 15 min and didn't entered the stable state.
             List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 });
 
@@ -494,7 +494,8 @@ namespace UnitTestsProject
             //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 15.0, 17.0, 11.00, 12.00, 17.00 });
 
             // C-0, D-1, E-2, F-3, G-4, H-5
-            //var inputValues = new double[] { 0.0, 0.0, 4.0, 4.0, 5.0, 5.0, 4.0, 3.0, 3.0, 2.0, 2.0, 1.0, 1.0, 0.0 };
+            // https://www.bethsnotesplus.com/2013/08/twinkle-twinkle-little-star.html
+            // var inputValues = new List<double>( new double[] { 0.0, 0.0, 4.0, 4.0, 5.0, 5.0, 4.0, 3.0, 3.0, 2.0, 2.0, 1.0, 1.0, 0.0 });
 
             //inputValues = new List<double>(new double[] { 1.0, 2.0, 3.0, 1.0, 5.0, 1.0, 6.0, });
 
