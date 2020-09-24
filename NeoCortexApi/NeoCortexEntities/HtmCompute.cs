@@ -79,7 +79,7 @@ namespace NeoCortexApi
             int centerInput = MapColumn(columnIndex, htmConfig.ColumnTopology, htmConfig.InputTopology);
 
             // Here we have Receptive Field (RF)
-            int[] columnInputs = HtmCompute.GetInputNeighborhood(htmConfig.IsWrapAround, htmConfig.InputTopology, centerInput, htmConfig.PotentialRadius);
+            int[] columnInputs = HtmCompute.GetInputNeighborhood(htmConfig.WrapAround, htmConfig.InputTopology, centerInput, htmConfig.PotentialRadius);
 
             // Select a subset of the receptive field to serve as the the potential pool.
             int numPotential = (int)(columnInputs.Length * htmConfig.PotentialPct + 0.5);

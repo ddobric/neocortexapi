@@ -47,7 +47,7 @@ namespace NeoCortexApi.Entities
         private double predictedSegmentDecrement = 0.0;
         private int dutyCyclePeriod = 1000;
         private double maxBoost = 10.0;
-        private bool wrapAround = true;
+        //private bool wrapAround = true;
         private bool isBumpUpWeakColumnsDisabled = false;
 
         //private int numInputs = 1;  //product of input dimensions
@@ -141,7 +141,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Total number of cells per column
         /// </summary>
-        protected int cellsPerColumn = 32;
+        //protected int cellsPerColumn = 32;
         /// <summary>
         /// What will comprise the Layer input. Input (i.e. from encoder)
         /// </summary>
@@ -173,7 +173,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// The maximum number of synapses allowed on a given segment (distal dendrite)
         /// </summary>
-        private int maxSynapsesPerSegment = 255;
+        //private int maxSynapsesPerSegment = 255;
         /// <summary>
         /// Initial permanence of a new synapse
         /// </summary>
@@ -252,7 +252,7 @@ namespace NeoCortexApi.Entities
 
                 m_HtmConfig.ColumnTopology = this.ColumnTopology;
                 m_HtmConfig.InputTopology = this.InputTopology;
-                m_HtmConfig.IsWrapAround = this.isWrapAround();
+                //m_HtmConfig.IsWrapAround = this.isWrapAround();
                 //m_HtmConfig.NumInputs = this.NumInputs;
                 m_HtmConfig.NumColumns = this.getMemory() != null ? this.getMemory().getMaxIndex() + 1 : -1;
                 //m_HtmConfig.PotentialPct = getPotentialPct();
@@ -1223,26 +1223,26 @@ namespace NeoCortexApi.Entities
             return maxBoost;
         }
 
-        /**
-         * Specifies whether neighborhoods wider than the 
-         * borders wrap around to the other side.
-         * @param b
-         */
-        public void setWrapAround(bool b)
-        {
-            this.wrapAround = b;
-        }
+        ///**
+        // * Specifies whether neighborhoods wider than the 
+        // * borders wrap around to the other side.
+        // * @param b
+        // */
+        //public void setWrapAround(bool b)
+        //{
+        //    this.wrapAround = b;
+        //}
 
-        /**
-         * Returns a flag indicating whether neighborhoods
-         * wider than the borders, wrap around to the other
-         * side.
-         * @return
-         */
-        public bool isWrapAround()
-        {
-            return wrapAround;
-        }
+        ///**
+        // * Returns a flag indicating whether neighborhoods
+        // * wider than the borders, wrap around to the other
+        // * side.
+        // * @return
+        // */
+        //public bool isWrapAround()
+        //{
+        //    return wrapAround;
+        //}
 
         /**
          * Returns the boosted overlap score for each column
@@ -1777,7 +1777,7 @@ namespace NeoCortexApi.Entities
          */
         public Synapse createSynapse(DistalDendrite segment, Cell presynapticCell, double permanence)
         {
-            while (GetNumSynapses(segment) >= maxSynapsesPerSegment)
+            while (GetNumSynapses(segment) >= this.HtmConfig.MaxSynapsesPerSegment)
             {
                 destroySynapse(minPermanenceSynapse(segment), segment);
             }
@@ -2259,23 +2259,23 @@ namespace NeoCortexApi.Entities
         //    return maxSegmentsPerCell;
         //}
 
-        /**
-         * The maximum number of synapses allowed on a given segment
-         * @param maxSynapsesPerSegment
-         */
-        public void setMaxSynapsesPerSegment(int maxSynapsesPerSegment)
-        {
-            this.maxSynapsesPerSegment = maxSynapsesPerSegment;
-        }
+        ///**
+        // * The maximum number of synapses allowed on a given segment
+        // * @param maxSynapsesPerSegment
+        // */
+        //public void setMaxSynapsesPerSegment(int maxSynapsesPerSegment)
+        //{
+        //    this.maxSynapsesPerSegment = maxSynapsesPerSegment;
+        //}
 
-        /**
-         * Returns the maximum number of synapses allowed per segment
-         * @return
-         */
-        public int getMaxSynapsesPerSegment()
-        {
-            return maxSynapsesPerSegment;
-        }
+        ///**
+        // * Returns the maximum number of synapses allowed per segment
+        // * @return
+        // */
+        //public int getMaxSynapsesPerSegment()
+        //{
+        //    return maxSynapsesPerSegment;
+        //}
 
         /**
          * Initial permanence of a new synapse
@@ -2510,7 +2510,7 @@ namespace NeoCortexApi.Entities
             Console.WriteLine("learningRadius             = " + getLearningRadius());
             Console.WriteLine("minThreshold               = " + getMinThreshold());
             Console.WriteLine("maxNewSynapseCount         = " + HtmConfig.MaxNewSynapseCount);
-            Console.WriteLine("maxSynapsesPerSegment      = " + getMaxSynapsesPerSegment());
+            Console.WriteLine("maxSynapsesPerSegment      = " + this.HtmConfig.MaxSynapsesPerSegment);
             Console.WriteLine("maxSegmentsPerCell         = " + this.HtmConfig.MaxSegmentsPerCell);
             Console.WriteLine("initialPermanence          = " + getInitialPermanence());
             Console.WriteLine("connectedPermanence        = " + getConnectedPermanence());

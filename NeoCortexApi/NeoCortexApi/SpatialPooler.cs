@@ -606,7 +606,7 @@ namespace NeoCortexApi
         public int[] getColumnNeighborhood(Connections c, int centerColumn, int inhibitionRadius)
         {
             var topology = c.getColumnTopology().HtmTopology;
-            return c.isWrapAround() ?
+            return c.HtmConfig.WrapAround ?
                 HtmCompute.GetWrappingNeighborhood(centerColumn, inhibitionRadius, topology) :
                     HtmCompute.GetNeighborhood(centerColumn, inhibitionRadius, topology);
         }

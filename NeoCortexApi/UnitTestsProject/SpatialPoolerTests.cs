@@ -614,8 +614,8 @@ namespace UnitTestsProject
 
             // Test without wrapAround and potentialPct = 1
             int[] expected = new int[] { 0, 1, 2, 3 };
-            mem.HtmConfig.IsWrapAround = false;
-            mem.setWrapAround(false);
+            mem.HtmConfig.WrapAround = false;
+            //mem.setWrapAround(false);
             int[] mask = HtmCompute.MapPotential(mem.HtmConfig, 0, mem.getRandom());
             Assert.IsTrue(expected.SequenceEqual(mask));
 
@@ -626,8 +626,8 @@ namespace UnitTestsProject
             // Test with wrapAround and potentialPct = 1
 
             expected = new int[] { 0, 1, 2, 3, 11 };
-            mem.HtmConfig.IsWrapAround = true;
-            mem.setWrapAround(true);
+            mem.HtmConfig.WrapAround = true;
+            //mem.setWrapAround(true);
             mask = HtmCompute.MapPotential(mem.HtmConfig, 0, mem.getRandom());
             Assert.IsTrue(expected.SequenceEqual(mask));
 
@@ -666,7 +666,8 @@ namespace UnitTestsProject
             initSP();
 
             //Test without wrapAround
-            mem.setWrapAround(false);
+            mem.HtmConfig.WrapAround = false;
+            //mem.setWrapAround(false);
             int[] mask = HtmCompute.MapPotential(mem.HtmConfig, 0, mem.getRandom());
             List<int> trueIndices = new List<int>(new int[] { 0, 1, 2, 12, 13, 14, 24, 25, 26 });
             List<int> maskSet = new List<int>(mask);
@@ -690,7 +691,8 @@ namespace UnitTestsProject
                         24, 25, 26, 27, 35,
                         36, 37, 38, 39, 47,
                         60, 61, 62, 63, 71 });
-            mem.setWrapAround(true);
+            mem.HtmConfig.WrapAround = true;
+            //mem.setWrapAround(true);
             mask = HtmCompute.MapPotential(mem.HtmConfig, 0, mem.getRandom());
             maskSet.AddRange(mask);
             Assert.IsTrue(trueIndices.SequenceEqual(maskSet));
@@ -1437,7 +1439,8 @@ namespace UnitTestsProject
 
             for (var i = 0; i < expected0.Length; i++)
             {
-                Console.WriteLine($"{i}: {expected0[i]}-{resultMinActiveDutyCycles[i]}\t = {expected0[i] - resultMinActiveDutyCycles[i]} | {expected0[i] - resultMinActiveDutyCycles[i] <= 0.01}"); Assert.IsTrue(Math.Abs(expected0[i] - resultMinActiveDutyCycles[i]) <= 0.01);
+                Console.WriteLine($"{i}: {expected0[i]}-{resultMinActiveDutyCycles[i]}\t = {expected0[i] - resultMinActiveDutyCycles[i]} | {expected0[i] - resultMinActiveDutyCycles[i] <= 0.01}");
+                Assert.IsTrue(Math.Abs(expected0[i] - resultMinActiveDutyCycles[i]) <= 0.01);
             }
             //IntStream.range(0, expected0.length)
             //    .forEach(i->assertEquals(expected0[i], resultMinActiveDutyCycles[i], 0.01));
@@ -2185,12 +2188,14 @@ namespace UnitTestsProject
             //  L  W  W  L  L  W  W   L   W    W (wrapAround=true)
             //  L  W  W  L  L  W  W   L   L    W (wrapAround=false)
 
-            mem.setWrapAround(true);
+            mem.HtmConfig.WrapAround = true;
+            //mem.setWrapAround(true);
             int[] trueActive = new int[] { 1, 2, 5, 6, 8, 9 };
             int[] active = sp.InhibitColumnsLocal(mem, overlaps, density);
             Assert.IsTrue(trueActive.SequenceEqual(active));
 
-            mem.setWrapAround(false);
+            mem.HtmConfig.WrapAround = false;
+            //mem.setWrapAround(false);
             trueActive = new int[] { 1, 2, 5, 6, 9 };
             active = sp.InhibitColumnsLocal(mem, overlaps, density);
             Assert.IsTrue(trueActive.SequenceEqual(active));
@@ -2201,12 +2206,14 @@ namespace UnitTestsProject
             //  L  W  W  L  W  W  W   L   L    W (wrapAround=true)
             //  L  W  W  L  W  W  W   L   L    L (wrapAround=false)
 
-            mem.setWrapAround(true);
+            mem.HtmConfig.WrapAround = true;
+            //mem.setWrapAround(true);
             trueActive = new int[] { 1, 2, 4, 5, 6, 9 };
             active = sp.InhibitColumnsLocal(mem, overlaps, density);
             Assert.IsTrue(trueActive.SequenceEqual(active));
 
-            mem.setWrapAround(false);
+            mem.HtmConfig.WrapAround = false;
+            //mem.setWrapAround(false);
             trueActive = new int[] { 1, 2, 4, 5, 6, 9 };
             active = sp.InhibitColumnsLocal(mem, overlaps, density);
             Assert.IsTrue(trueActive.SequenceEqual(active));
@@ -2218,20 +2225,25 @@ namespace UnitTestsProject
             //  W  W  L  L  W  W  L  L  L  L (wrapAround=true)
             //  W  W  L  L  W  W  L  L  W  L (wrapAround=false)
 
-            mem.setWrapAround(true);
+            mem.HtmConfig.WrapAround = true;
+            //mem.setWrapAround(true);
             trueActive = new int[] { 0, 1, 4, 5 };
             active = sp.InhibitColumnsLocal(mem, overlaps, density);
             Assert.IsTrue(trueActive.SequenceEqual(active));
 
             density = 0.20;
             overlaps = new double[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
-            mem.setWrapAround(false);
+
+            mem.HtmConfig.WrapAround = false;
+            //mem.setWrapAround(false);
             trueActive = new int[] { 0, 4, 8 };
             active = sp.InhibitColumnsLocal(mem, overlaps, density);
             Assert.IsTrue(trueActive.SequenceEqual(active));
 
             //overlaps = new double[] { 1, 2, 7, 0.1, 3, 4, 16, 1, 1.5, 1.7 };
-            mem.setWrapAround(false);
+
+            mem.HtmConfig.WrapAround = false;
+            //mem.setWrapAround(false);
             density = 0.10;
             active = sp.InhibitColumnsLocal(mem, overlaps, density);
 

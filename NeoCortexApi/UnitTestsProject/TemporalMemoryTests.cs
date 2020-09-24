@@ -629,7 +629,7 @@ namespace UnitTestsProject
             p.apply(cn);
             tm.init(cn);
 
-            Assert.AreEqual(3, cn.getMaxSynapsesPerSegment());
+            Assert.AreEqual(3, cn.HtmConfig.MaxSynapsesPerSegment);
 
             int[] prevActiveColumns = { 0, 1, 2 };
             ISet<Cell> prevWinnerCells = cn.getCellSet(new int[] { 0, 1, 2 });

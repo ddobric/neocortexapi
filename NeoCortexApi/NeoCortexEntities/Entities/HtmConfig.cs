@@ -42,8 +42,8 @@ namespace NeoCortexApi.Entities
         public HtmModuleTopology ColumnTopology { get; set; }
 
         public HtmModuleTopology InputTopology { get; set; }
-        
-        public bool IsWrapAround { get; set; }
+
+        public bool WrapAround { get; set; } = true;
 
         /// <summary>
         /// The name of the actor as set by actor-client.
@@ -82,6 +82,8 @@ namespace NeoCortexApi.Entities
         public int MaxNewSynapseCount { get; internal set; }
 
         public int MaxSegmentsPerCell { get; set; }
+
+        public int MaxSynapsesPerSegment { get; set; }
     }
 
     public class test
