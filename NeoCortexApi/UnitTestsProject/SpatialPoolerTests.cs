@@ -89,14 +89,14 @@ namespace UnitTestsProject
             Assert.AreEqual(-1.0, mem.LocalAreaDensity);//, 0);
             Assert.AreEqual(3, mem.NumActiveColumnsPerInhArea);//, 0);
             Assert.IsTrue(Math.Abs(1 - mem.StimulusThreshold) <= 1);
-            Assert.AreEqual(0.01, mem.getSynPermInactiveDec());//, 0);
+            Assert.AreEqual(0.01, mem.HtmConfig.SynPermInactiveDec);//, 0);
             Assert.AreEqual(0.1, mem.getSynPermActiveInc());//, 0);
             Assert.AreEqual(0.1, mem.getSynPermConnected());//, 0);
             Assert.AreEqual(0.1, mem.getMinPctOverlapDutyCycles());//, 0);
             Assert.AreEqual(0.1, mem.getMinPctActiveDutyCycles());//, 0);
             Assert.AreEqual(10, mem.getDutyCyclePeriod());//, 0);
             Assert.AreEqual(10.0, mem.getMaxBoost());//, 0);
-            Assert.AreEqual(42, mem.getSeed());
+            Assert.AreEqual(42, mem.HtmConfig.RandomGenSeed);
 
             Assert.AreEqual(5, mem.NumInputs);
             Assert.AreEqual(5, mem.NumColumns);

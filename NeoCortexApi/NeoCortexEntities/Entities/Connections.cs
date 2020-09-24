@@ -38,7 +38,7 @@ namespace NeoCortexApi.Entities
         private double m_LocalAreaDensity = -1.0;
         private double m_NumActiveColumnsPerInhArea;
         private double m_StimulusThreshold = 0;
-        private double synPermInactiveDec = 0.008;
+        //private double synPermInactiveDec = 0.008;
         private double synPermActiveInc = 0.05;
         private double synPermConnected = 0.10;
         private double synPermBelowStimulusInc;// = synPermConnected / 10.0;
@@ -188,12 +188,12 @@ namespace NeoCortexApi.Entities
         /// Amount by which permanences of synapses
         /// are incremented during learning.
         /// </summary>
-        private double permanenceIncrement = 0.10;
+        //private double permanenceIncrement = 0.10;
         /// <summary>
         /// Amount by which permanences of synapses
         /// are decremented during learning.
         /// </summary>
-        private double permanenceDecrement = 0.10;
+        //private double permanenceDecrement = 0.10;
 
         /// <summary>
         /// The main data structure containing columns, cells, and synapses
@@ -265,10 +265,10 @@ namespace NeoCortexApi.Entities
                 m_HtmConfig.SynPermMin = this.getSynPermMin();
                 m_HtmConfig.StimulusThreshold = this.StimulusThreshold;
                 m_HtmConfig.CellsPerColumn = this.getCellsPerColumn();
-                m_HtmConfig.SynPermInactiveDec = this.getSynPermInactiveDec();
-                m_HtmConfig.PermanenceIncrement = this.getPermanenceIncrement();
-                m_HtmConfig.PermanenceDecrement = this.getPermanenceDecrement();
-                m_HtmConfig.RandomGenSeed = this.seed;       
+                //m_HtmConfig.SynPermInactiveDec = this.getSynPermInactiveDec();
+                //m_HtmConfig.PermanenceIncrement = this.getPermanenceIncrement();
+                //m_HtmConfig.PermanenceDecrement = this.getPermanenceDecrement();
+                //m_HtmConfig.RandomGenSeed = this.seed;       
 
                 return m_HtmConfig;
             }
@@ -330,7 +330,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// The default random number seed
         /// </summary>
-        protected int seed = 42;
+        //protected int seed = 42;
 
         /// <summary>
         /// The random number generator
@@ -428,25 +428,25 @@ namespace NeoCortexApi.Entities
             }
         }
 
-        /// <summary>
-        /// Sets the seed used for the internal random number generator.
-        /// If the generator has been instantiated, this method will initialize
-        /// a new random generator with the specified seed.
-        /// </summary>
-        /// <param name="seed"></param>
-        public void setSeed(int seed)
-        {
-            this.seed = seed;
-        }
+        ///// <summary>
+        ///// Sets the seed used for the internal random number generator.
+        ///// If the generator has been instantiated, this method will initialize
+        ///// a new random generator with the specified seed.
+        ///// </summary>
+        ///// <param name="seed"></param>
+        //public void setSeed(int seed)
+        //{
+        //    this.seed = seed;
+        //}
 
-        /// <summary>
-        /// Returns the configured random number seed
-        /// </summary>
-        /// <returns></returns>
-        public int getSeed()
-        {
-            return seed;
-        }
+        ///// <summary>
+        ///// Returns the configured random number seed
+        ///// </summary>
+        ///// <returns></returns>
+        //public int getSeed()
+        //{
+        //    return seed;
+        //}
 
         /// <summary>
         /// Returns the thread specific {@link Random} number generator.
@@ -1011,27 +1011,27 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public double StimulusThreshold { get => m_StimulusThreshold; set => this.m_StimulusThreshold = value; }
 
-        /**
-         * The amount by which an inactive synapse is
-         * decremented in each round. Specified as a percent of
-         * a fully grown synapse.
-         *
-         * @param synPermInactiveDec
-         */
-        public void setSynPermInactiveDec(double synPermInactiveDec)
-        {
-            this.synPermInactiveDec = synPermInactiveDec;
-        }
+        ///**
+        // * The amount by which an inactive synapse is
+        // * decremented in each round. Specified as a percent of
+        // * a fully grown synapse.
+        // *
+        // * @param synPermInactiveDec
+        // */
+        //public void setSynPermInactiveDec(double synPermInactiveDec)
+        //{
+        //    this.synPermInactiveDec = synPermInactiveDec;
+        //}
 
-        /**
-         * Returns the synaptic permanence inactive decrement.
-         * @return  the synaptic permanence inactive decrement.
-         * @see setSynPermInactiveDec
-         */
-        public double getSynPermInactiveDec()
-        {
-            return synPermInactiveDec;
-        }
+        ///**
+        // * Returns the synaptic permanence inactive decrement.
+        // * @return  the synaptic permanence inactive decrement.
+        // * @see setSynPermInactiveDec
+        // */
+        //public double getSynPermInactiveDec()
+        //{
+        //    return synPermInactiveDec;
+        //}
 
         /**
          * The amount by which an active synapse is incremented
@@ -2320,45 +2320,45 @@ namespace NeoCortexApi.Entities
             return connectedPermanence;
         }
 
-        /**
-         * Amount by which permanences of synapses
-         * are incremented during learning.
-         *
-         * @param   permanenceIncrement
-         */
-        public void setPermanenceIncrement(double permanenceIncrement)
-        {
-            this.permanenceIncrement = permanenceIncrement;
-        }
+        ///**
+        // * Amount by which permanences of synapses
+        // * are incremented during learning.
+        // *
+        // * @param   permanenceIncrement
+        // */
+        //public void setPermanenceIncrement(double permanenceIncrement)
+        //{
+        //    this.permanenceIncrement = permanenceIncrement;
+        //}
 
-        /**
-         * Amount by which permanences of synapses
-         * are incremented during learning.
-         */
-        public double getPermanenceIncrement()
-        {
-            return this.permanenceIncrement;
-        }
+        ///**
+        // * Amount by which permanences of synapses
+        // * are incremented during learning.
+        // */
+        //public double getPermanenceIncrement()
+        //{
+        //    return this.permanenceIncrement;
+        //}
 
-        /**
-         * Amount by which permanences of synapses
-         * are decremented during learning.
-         *
-         * @param   permanenceDecrement
-         */
-        public void setPermanenceDecrement(double permanenceDecrement)
-        {
-            this.permanenceDecrement = permanenceDecrement;
-        }
+        ///**
+        // * Amount by which permanences of synapses
+        // * are decremented during learning.
+        // *
+        // * @param   permanenceDecrement
+        // */
+        //public void setPermanenceDecrement(double permanenceDecrement)
+        //{
+        //    this.permanenceDecrement = permanenceDecrement;
+        //}
 
-        /**
-         * Amount by which permanences of synapses
-         * are decremented during learning.
-         */
-        public double getPermanenceDecrement()
-        {
-            return this.permanenceDecrement;
-        }
+        ///**
+        // * Amount by which permanences of synapses
+        // * are decremented during learning.
+        // */
+        //public double getPermanenceDecrement()
+        //{
+        //    return this.permanenceDecrement;
+        //}
 
         /**
          * Amount by which active permanences of synapses of previously predicted but inactive segments are decremented.
@@ -2497,7 +2497,7 @@ namespace NeoCortexApi.Entities
             Console.WriteLine("inhibitionRadius           = " + InhibitionRadius);
             Console.WriteLine("stimulusThreshold          = " + StimulusThreshold);
             Console.WriteLine("synPermActiveInc           = " + getSynPermActiveInc());
-            Console.WriteLine("synPermInactiveDec         = " + getSynPermInactiveDec());
+            Console.WriteLine("synPermInactiveDec         = " + this.HtmConfig.SynPermInactiveDec);
             Console.WriteLine("synPermConnected           = " + getSynPermConnected());
             Console.WriteLine("minPctOverlapDutyCycle     = " + getMinPctOverlapDutyCycles());
             Console.WriteLine("minPctActiveDutyCycle      = " + getMinPctActiveDutyCycles());
@@ -2514,8 +2514,8 @@ namespace NeoCortexApi.Entities
             Console.WriteLine("maxSegmentsPerCell         = " + this.HtmConfig.MaxSegmentsPerCell);
             Console.WriteLine("initialPermanence          = " + getInitialPermanence());
             Console.WriteLine("connectedPermanence        = " + getConnectedPermanence());
-            Console.WriteLine("permanenceIncrement        = " + getPermanenceIncrement());
-            Console.WriteLine("permanenceDecrement        = " + getPermanenceDecrement());
+            Console.WriteLine("permanenceIncrement        = " + this.HtmConfig.PermanenceIncrement);
+            Console.WriteLine("permanenceDecrement        = " + this.HtmConfig.PermanenceDecrement);
             Console.WriteLine("predictedSegmentDecrement  = " + getPredictedSegmentDecrement());
         }
 
@@ -2685,9 +2685,9 @@ namespace NeoCortexApi.Entities
             temp = NumSynapses;
             result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + overlapDutyCycles.GetHashCode();
-            temp = permanenceDecrement.GetHashCode();
+            temp = this.HtmConfig.PermanenceDecrement.GetHashCode();
             result = prime * result + (int)(temp ^ (temp >> 32));
-            temp = BitConverter.DoubleToInt64Bits(permanenceIncrement);
+            temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.PermanenceIncrement);
             result = prime * result + (int)(temp ^ (temp >> 32));
             temp = BitConverter.DoubleToInt64Bits(potentialPct);
             result = prime * result + (int)(temp ^ (temp >> 32));
@@ -2698,7 +2698,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + ((predictiveCells == null) ? 0 : predictiveCells.GetHashCode());
             result = prime * result + ((random == null) ? 0 : random.GetHashCode());
             result = prime * result + ((receptorSynapses == null) ? 0 : receptorSynapses.GetHashCode());
-            result = prime * result + seed;
+            result = prime * result + this.HtmConfig.RandomGenSeed;
             result = prime * result + ((distalSegments == null) ? 0 : distalSegments.GetHashCode());
             temp = BitConverter.DoubleToInt64Bits(m_StimulusThreshold);
             result = prime * result + (int)(temp ^ (temp >> 32));
@@ -2708,7 +2708,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + (int)(temp ^ (temp >> 32));
             temp = BitConverter.DoubleToInt64Bits(synPermConnected);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            temp = BitConverter.DoubleToInt64Bits(synPermInactiveDec);
+            temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.SynPermInactiveDec);
             result = prime * result + (int)(temp ^ (temp >> 32));
             temp = BitConverter.DoubleToInt64Bits(synPermMax);
             result = prime * result + (int)(temp ^ (temp >> 32));
@@ -2830,9 +2830,9 @@ namespace NeoCortexApi.Entities
                 return false;
             if (!Array.Equals(overlapDutyCycles, other.overlapDutyCycles))
                 return false;
-            if (BitConverter.DoubleToInt64Bits(permanenceDecrement) != BitConverter.DoubleToInt64Bits(other.permanenceDecrement))
+            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.PermanenceDecrement) != BitConverter.DoubleToInt64Bits(other.HtmConfig.PermanenceDecrement))
                 return false;
-            if (BitConverter.DoubleToInt64Bits(permanenceIncrement) != BitConverter.DoubleToInt64Bits(other.permanenceIncrement))
+            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.PermanenceIncrement) != BitConverter.DoubleToInt64Bits(other.HtmConfig.PermanenceIncrement))
                 return false;
             if (BitConverter.DoubleToInt64Bits(potentialPct) != BitConverter.DoubleToInt64Bits(other.potentialPct))
                 return false;
@@ -2861,7 +2861,7 @@ namespace NeoCortexApi.Entities
             }
             else if (!receptorSynapses.ToString().Equals(other.receptorSynapses.ToString()))
                 return false;
-            if (seed != other.seed)
+            if (this.HtmConfig.RandomGenSeed != other.HtmConfig.RandomGenSeed)
                 return false;
             if (distalSegments == null)
             {
@@ -2878,7 +2878,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (BitConverter.DoubleToInt64Bits(synPermConnected) != BitConverter.DoubleToInt64Bits(other.synPermConnected))
                 return false;
-            if (BitConverter.DoubleToInt64Bits(synPermInactiveDec) != BitConverter.DoubleToInt64Bits(other.synPermInactiveDec))
+            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.SynPermInactiveDec) != BitConverter.DoubleToInt64Bits(other.HtmConfig.SynPermInactiveDec))
                 return false;
             if (BitConverter.DoubleToInt64Bits(synPermMax) != BitConverter.DoubleToInt64Bits(other.synPermMax))
                 return false;
