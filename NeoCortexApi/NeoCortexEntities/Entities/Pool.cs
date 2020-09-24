@@ -191,7 +191,7 @@ namespace NeoCortexApi.Entities
         {
             List<int> newArr = new List<int>();
 
-            for (int i = 0; i < c.NumInputs; i++)
+            for (int i = 0; i < c.HtmConfig.NumInputs; i++)
             {
                 newArr.Add(synapsesBySourceIndex.ContainsKey(i) ? 1 : 0);
                 //    }

@@ -83,8 +83,8 @@ namespace UnitTestsProject
 
             Assert.AreEqual(5, mem.getInputDimensions()[0]);
             Assert.AreEqual(5, mem.getColumnDimensions()[0]);
-            Assert.AreEqual(5, mem.getPotentialRadius());
-            Assert.AreEqual(0.5, mem.getPotentialPct());//, 0);
+            Assert.AreEqual(5, mem.HtmConfig.PotentialRadius);
+            Assert.AreEqual(0.5, mem.HtmConfig.PotentialPct);//, 0);
             Assert.AreEqual(false, mem.GlobalInhibition);
             Assert.AreEqual(-1.0, mem.LocalAreaDensity);//, 0);
             Assert.AreEqual(3, mem.NumActiveColumnsPerInhArea);//, 0);
@@ -98,7 +98,7 @@ namespace UnitTestsProject
             Assert.AreEqual(10.0, mem.getMaxBoost());//, 0);
             Assert.AreEqual(42, mem.HtmConfig.RandomGenSeed);
 
-            Assert.AreEqual(5, mem.NumInputs);
+            Assert.AreEqual(5, mem.HtmConfig.NumInputs);
             Assert.AreEqual(5, mem.NumColumns);
         }
 
@@ -156,7 +156,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < mem.NumColumns; i++)
             {
-                int[] permanences = ArrayUtils.ToIntArray(mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem.NumInputs));
+                int[] permanences = ArrayUtils.ToIntArray(mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem.HtmConfig.NumInputs));
 
                 Assert.IsTrue(inputVector.SequenceEqual(permanences));
             }
@@ -203,7 +203,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < mem.NumColumns; i++)
             {
-                int[] permanences = ArrayUtils.ToIntArray(mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem.NumInputs));
+                int[] permanences = ArrayUtils.ToIntArray(mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem.HtmConfig.NumInputs));
                 //int[] potential = (int[])mem.getConnectedCounts().getSlice(i);
                 int[] potential = (int[])mem.getColumn(i).ConnectedInputBits;
                 Assert.IsTrue(permanences.SequenceEqual(potential));
@@ -610,7 +610,7 @@ namespace UnitTestsProject
 
             Assert.AreEqual(12, mem.getInputDimensions()[0]);
             Assert.AreEqual(4, mem.getColumnDimensions()[0]);
-            Assert.AreEqual(2, mem.getPotentialRadius());
+            Assert.AreEqual(2, mem.HtmConfig.PotentialRadius);
 
             // Test without wrapAround and potentialPct = 1
             int[] expected = new int[] { 0, 1, 2, 3 };
@@ -1094,7 +1094,7 @@ namespace UnitTestsProject
             //[ 45  46  48 105 125 145]
             //mem.getConnectedSynapses().set(0, connected.toArray());
             // mem.getPotentialPools().set(0, new Pool(6, mem.NumInputs));
-            mem.getColumn(0).ProximalDendrite.RFPool = new Pool(6, mem.NumInputs);
+            mem.getColumn(0).ProximalDendrite.RFPool = new Pool(6, mem.HtmConfig.NumInputs);
             mem.getColumn(0).setProximalConnectedSynapsesForTest(mem, connected.ToArray());
 
             connected.Clear();
@@ -1108,7 +1108,7 @@ namespace UnitTestsProject
             //[ 80  85 120 125]
             //mem.getConnectedSynapses().set(1, connected.toArray());
             //mem.getPotentialPools().set(1, new Pool(4, mem.NumInputs));
-            mem.getColumn(1).ProximalDendrite.RFPool = new Pool(4, mem.NumInputs);
+            mem.getColumn(1).ProximalDendrite.RFPool = new Pool(4, mem.HtmConfig.NumInputs);
             mem.getColumn(1).setProximalConnectedSynapsesForTest(mem, connected.ToArray());
 
             connected.Clear();
@@ -1124,7 +1124,7 @@ namespace UnitTestsProject
             //[  1   3   6   9  42 156]
             //mem.getConnectedSynapses().set(2, connected.toArray());
             //mem.getPotentialPools().set(2, new Pool(4, mem.NumInputs));
-            mem.getColumn(2).ProximalDendrite.RFPool = new Pool(4, mem.NumInputs);
+            mem.getColumn(2).ProximalDendrite.RFPool = new Pool(4, mem.HtmConfig.NumInputs);
             mem.getColumn(2).setProximalConnectedSynapsesForTest(mem, connected.ToArray());
 
             connected.Clear();
@@ -1136,13 +1136,13 @@ namespace UnitTestsProject
             //[  0 159]
             //mem.getConnectedSynapses().set(3, connected.toArray());
             //mem.getPotentialPools().set(3, new Pool(4, mem.NumInputs));
-            mem.getColumn(3).ProximalDendrite.RFPool = new Pool(4, mem.NumInputs);
+            mem.getColumn(3).ProximalDendrite.RFPool = new Pool(4, mem.HtmConfig.NumInputs);
             mem.getColumn(3).setProximalConnectedSynapsesForTest(mem, connected.ToArray());
 
             //[]
             connected.Clear();
             //mem.getPotentialPools().set(4, new Pool(4, mem.NumInputs));
-            mem.getColumn(4).ProximalDendrite.RFPool = new Pool(4, mem.NumInputs);
+            mem.getColumn(4).ProximalDendrite.RFPool = new Pool(4, mem.HtmConfig.NumInputs);
             mem.getColumn(4).setProximalConnectedSynapsesForTest(mem, connected.ToArray());
 
             double[] trueAvgConnectedSpan = new double[] { 11.0 / 4d, 6.0 / 4d, 14.0 / 4d, 15.0 / 4d, 0d };
@@ -1217,7 +1217,7 @@ namespace UnitTestsProject
             for (int i = 0; i < mem.NumColumns; i++)
             {
                 //double[] perms = mem.getPotentialPools().get(i).getDensePermanences(mem);
-                double[] perms = mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem.NumInputs);
+                double[] perms = mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem.HtmConfig.NumInputs);
                 for (int j = 0; j < truePermanences[i].Length; j++)
                 {
                     Assert.IsTrue(Math.Abs(truePermanences[i][j] - perms[j]) <= 0.01);
@@ -1652,7 +1652,7 @@ namespace UnitTestsProject
             for (int i = 0; i < mem.NumColumns; i++)
             {
                 //double[] perms = mem.getPotentialPools().get(i).getDensePermanences(mem);
-                double[] perms = mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem.NumInputs);
+                double[] perms = mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem.HtmConfig.NumInputs);
                 for (int j = 0; j < truePermanences[i].Length; j++)
                 {
                     Assert.IsTrue(Math.Abs(truePermanences[i][j] - perms[j]) <= 0.01);
@@ -1696,7 +1696,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < mem.NumColumns; i++)
             {
-                double[] perms = mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem.NumInputs);
+                double[] perms = mem.getColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem.HtmConfig.NumInputs);
                 for (int j = 0; j < truePermanences[i].Length; j++)
                 {
                     Assert.IsTrue(Math.Abs(truePermanences[i][j] - perms[j]) <= 0.01);
@@ -1993,9 +1993,9 @@ namespace UnitTestsProject
             mem = new Connections();
             parameters.apply(mem);
             sp.init(mem);
-            mem.HtmConfig.NumInputs = mem.NumInputs = 10;
+            mem.HtmConfig.NumInputs = mem.HtmConfig.NumInputs = 10;
 
-            mem.setPotentialRadius(2);
+            mem.HtmConfig.PotentialRadius = 2;
             mem.HtmConfig.InitialSynapseConnsPct = mem.InitialSynapseConnsPct = 1;
             int[] mask = new int[] { 0, 1, 2, 8, 9 };
 
@@ -2020,14 +2020,14 @@ namespace UnitTestsProject
             Assert.AreEqual(0, numcon);
 
             mem.HtmConfig.InitialSynapseConnsPct = mem.InitialSynapseConnsPct = 0.5;
-            mem.setPotentialRadius(100);
-            mem.HtmConfig.NumInputs = mem.NumInputs = 100;
+            mem.HtmConfig.PotentialRadius = 100;
+            mem.HtmConfig.NumInputs = mem.HtmConfig.NumInputs = 100;
             mask = new int[100];
             for (int i = 0; i < 100; i++) mask[i] = i;
             double[] perma = HtmCompute.InitSynapsePermanences(mem.HtmConfig, mask, mem.getRandom());
             numcon = ArrayUtils.ValueGreaterOrEqualCount(mem.getSynPermConnected(), perma);
             Assert.IsTrue(numcon > 0);
-            Assert.IsTrue(numcon < mem.NumInputs);
+            Assert.IsTrue(numcon < mem.HtmConfig.NumInputs);
 
             double minThresh = 0.0;
             double maxThresh = mem.getSynPermMax();
@@ -2054,7 +2054,7 @@ namespace UnitTestsProject
             parameters.apply(mem);
             sp.init(mem);
 
-            mem.HtmConfig.NumInputs = mem.NumInputs = 10;
+            mem.HtmConfig.NumInputs = 10;
             double connectedPct = 1;
             int[] mask = new int[] { 0, 1 };
             double[] perm = HtmCompute.InitSynapsePermanences(mem.HtmConfig, mask, mem.getRandom());

@@ -163,7 +163,7 @@ namespace NeoCortexApi
             // Get all indicies of input vector, which are set on '1'.
             var inputIndices = ArrayUtils.IndexWhere(inputVector, inpBit => inpBit > 0);
 
-            double[] permChanges = new double[c.NumInputs];
+            double[] permChanges = new double[c.HtmConfig.NumInputs];
 
             // First we initialize all permChanges to minimum decrement values,
             // which are used in a case of none-connections to input.
@@ -177,7 +177,7 @@ namespace NeoCortexApi
             {
                 //Pool pool = c.getPotentialPools().get(activeColumns[i]);
                 Pool pool = c.getColumn(activeColumns[i]).ProximalDendrite.RFPool;
-                double[] perm = pool.getDensePermanences(c.NumInputs);
+                double[] perm = pool.getDensePermanences(c.HtmConfig.NumInputs);
                 int[] indexes = pool.getSparsePotential();
                 ArrayUtils.RaiseValuesBy(permChanges, perm);
                 Column col = c.getColumn(activeColumns[i]);

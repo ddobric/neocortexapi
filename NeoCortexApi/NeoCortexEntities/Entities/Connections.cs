@@ -32,8 +32,8 @@ namespace NeoCortexApi.Entities
          * using the Network API (which sets this automatically) 
          */
 
-        private int potentialRadius = 16;
-        private double potentialPct = 0.5;
+        //private int potentialRadius = 16;
+        //private double potentialPct = 0.5;
         private bool m_GlobalInhibition = false;
         private double m_LocalAreaDensity = -1.0;
         private double m_NumActiveColumnsPerInhArea;
@@ -50,7 +50,7 @@ namespace NeoCortexApi.Entities
         private bool wrapAround = true;
         private bool isBumpUpWeakColumnsDisabled = false;
 
-        private int numInputs = 1;  //product of input dimensions
+        //private int numInputs = 1;  //product of input dimensions
         private int numColumns = 1; //product of column dimensions
 
         //Extra parameter settings
@@ -253,10 +253,10 @@ namespace NeoCortexApi.Entities
                 m_HtmConfig.ColumnTopology = this.ColumnTopology;
                 m_HtmConfig.InputTopology = this.InputTopology;
                 m_HtmConfig.IsWrapAround = this.isWrapAround();
-                m_HtmConfig.NumInputs = this.NumInputs;
+                //m_HtmConfig.NumInputs = this.NumInputs;
                 m_HtmConfig.NumColumns = this.getMemory() != null ? this.getMemory().getMaxIndex() + 1 : -1;
-                m_HtmConfig.PotentialPct = getPotentialPct();
-                m_HtmConfig.PotentialRadius = getPotentialRadius();
+                //m_HtmConfig.PotentialPct = getPotentialPct();
+                //m_HtmConfig.PotentialRadius = getPotentialRadius();
                 m_HtmConfig.SynPermConnected = getSynPermConnected();
                 m_HtmConfig.InitialSynapseConnsPct = this.InitialSynapseConnsPct;
                 m_HtmConfig.SynPermTrimThreshold = this.getSynPermTrimThreshold();
@@ -422,9 +422,9 @@ namespace NeoCortexApi.Entities
         {
             //synPermBelowStimulusInc = synPermConnected / 10.0;
             synPermTrimThreshold = synPermActiveInc / 2.0;
-            if (potentialRadius == -1)
+            if (HtmConfig.PotentialRadius == -1)
             {
-                potentialRadius = ArrayUtils.Product(inputDimensions);
+                this.HtmConfig.PotentialRadius = ArrayUtils.Product(inputDimensions);
             }
         }
 
@@ -680,15 +680,15 @@ namespace NeoCortexApi.Entities
         }
 
 
-        /// <summary>
-        /// Gets/Sets the number of input neurons in 1D space. Mathematically, 
-        /// this is the product of the input dimensions.
-        /// </summary>
-        public int NumInputs
-        {
-            get => numInputs;
-            set => this.numInputs = value;
-        }
+        ///// <summary>
+        ///// Gets/Sets the number of input neurons in 1D space. Mathematically, 
+        ///// this is the product of the input dimensions.
+        ///// </summary>
+        //public int NumInputs
+        //{
+        //    get => numInputs;
+        //    set => this.numInputs = value;
+        //}
 
 
         /// <summary>
@@ -712,70 +712,70 @@ namespace NeoCortexApi.Entities
             this.numColumns = n;
         }
 
-        /**
-         * This parameter determines the extent of the input
-         * that each column can potentially be connected to.
-         * This can be thought of as the input bits that
-         * are visible to each column, or a 'receptiveField' of
-         * the field of vision. A large enough value will result
-         * in 'global coverage', meaning that each column
-         * can potentially be connected to every input bit. This
-         * parameter defines a square (or hyper square) area: a
-         * column will have a max square potential pool with
-         * sides of length 2 * potentialRadius + 1.
-         * 
-         * <b>WARNING:</b> potentialRadius **must** be set to 
-         * the inputWidth if using "globalInhibition" and if not 
-         * using the Network API (which sets this automatically) 
-         *
-         *
-         * @param potentialRadius
-         */
-        public void setPotentialRadius(int potentialRadius)
-        {
-            this.potentialRadius = potentialRadius;
-        }
+        ///**
+        // * This parameter determines the extent of the input
+        // * that each column can potentially be connected to.
+        // * This can be thought of as the input bits that
+        // * are visible to each column, or a 'receptiveField' of
+        // * the field of vision. A large enough value will result
+        // * in 'global coverage', meaning that each column
+        // * can potentially be connected to every input bit. This
+        // * parameter defines a square (or hyper square) area: a
+        // * column will have a max square potential pool with
+        // * sides of length 2 * potentialRadius + 1.
+        // * 
+        // * <b>WARNING:</b> potentialRadius **must** be set to 
+        // * the inputWidth if using "globalInhibition" and if not 
+        // * using the Network API (which sets this automatically) 
+        // *
+        // *
+        // * @param potentialRadius
+        // */
+        //public void setPotentialRadius(int potentialRadius)
+        //{
+        //    this.potentialRadius = potentialRadius;
+        //}
 
-        /**
-         * Returns the configured potential radius
-         * 
-         * @return  the configured potential radius
-         * @see setPotentialRadius
-         */
-        public int getPotentialRadius()
-        {
-            return potentialRadius;
-        }
+        ///**
+        // * Returns the configured potential radius
+        // * 
+        // * @return  the configured potential radius
+        // * @see setPotentialRadius
+        // */
+        //public int getPotentialRadius()
+        //{
+        //    return potentialRadius;
+        //}
 
-        /**
-         * The percent of the inputs, within a column's
-         * potential radius, that a column can be connected to.
-         * If set to 1, the column will be connected to every
-         * input within its potential radius. This parameter is
-         * used to give each column a unique potential pool when
-         * a large potentialRadius causes overlap between the
-         * columns. At initialization time we choose
-         * ((2*potentialRadius + 1)^(# inputDimensions) *
-         * potentialPct) input bits to comprise the column's
-         * potential pool.
-         *
-         * @param potentialPct
-         */
-        public void setPotentialPct(double potentialPct)
-        {
-            this.potentialPct = potentialPct;
-        }
+        ///**
+        // * The percent of the inputs, within a column's
+        // * potential radius, that a column can be connected to.
+        // * If set to 1, the column will be connected to every
+        // * input within its potential radius. This parameter is
+        // * used to give each column a unique potential pool when
+        // * a large potentialRadius causes overlap between the
+        // * columns. At initialization time we choose
+        // * ((2*potentialRadius + 1)^(# inputDimensions) *
+        // * potentialPct) input bits to comprise the column's
+        // * potential pool.
+        // *
+        // * @param potentialPct
+        // */
+        //public void setPotentialPct(double potentialPct)
+        //{
+        //    this.potentialPct = potentialPct;
+        //}
 
-        /**
-         * Returns the configured potential pct
-         *
-         * @return the configured potential pct
-         * @see setPotentialPct
-         */
-        public double getPotentialPct()
-        {
-            return potentialPct;
-        }
+        ///**
+        // * Returns the configured potential pct
+        // *
+        // * @return the configured potential pct
+        // * @see setPotentialPct
+        // */
+        //public double getPotentialPct()
+        //{
+        //    return potentialPct;
+        //}
 
         /**
          * Sets the {@link SparseObjectMatrix} which represents the
@@ -885,7 +885,7 @@ namespace NeoCortexApi.Entities
         {
             for (int col = 0; col < this.NumColumns; col++)
             {
-                var colMatrix = this.getColumn(col).ConnectedInputCounterMatrix = new SparseBinaryMatrix(new int[] { 1, numInputs });
+                var colMatrix = this.getColumn(col).ConnectedInputCounterMatrix = new SparseBinaryMatrix(new int[] { 1, this.HtmConfig.NumInputs });
 
                 int[] row = (int[])matrix.getSlice(col);
 
@@ -1564,7 +1564,7 @@ namespace NeoCortexApi.Entities
             int ordinal = nextSegmentOrdinal;
             ++nextSegmentOrdinal;
 
-            DistalDendrite segment = new DistalDendrite(cell, flatIdx, tmIteration, ordinal, this.HtmConfig.SynPermConnected, this.NumInputs);
+            DistalDendrite segment = new DistalDendrite(cell, flatIdx, tmIteration, ordinal, this.HtmConfig.SynPermConnected, this.HtmConfig.NumInputs);
             getSegments(cell, true).Add(segment);
             m_SegmentForFlatIdx[flatIdx] = segment;
 
@@ -2485,13 +2485,13 @@ namespace NeoCortexApi.Entities
         public void printParameters()
         {
             Console.WriteLine("------------ SpatialPooler Parameters ------------------");
-            Console.WriteLine("numInputs                  = " + NumInputs);
+            Console.WriteLine("numInputs                  = " + this.HtmConfig.NumInputs);
             Console.WriteLine("numColumns                 = " + NumColumns);
             Console.WriteLine("cellsPerColumn             = " + this.HtmConfig.CellsPerColumn);
             Console.WriteLine("columnDimensions           = " + getColumnDimensions().ToString());
             Console.WriteLine("numActiveColumnsPerInhArea = " + NumActiveColumnsPerInhArea);
-            Console.WriteLine("potentialPct               = " + getPotentialPct());
-            Console.WriteLine("potentialRadius            = " + getPotentialRadius());
+            Console.WriteLine("potentialPct               = " + this.HtmConfig.PotentialPct);
+            Console.WriteLine("potentialRadius            = " + this.HtmConfig.PotentialRadius);
             Console.WriteLine("globalInhibition           = " + GlobalInhibition);
             Console.WriteLine("localAreaDensity           = " + LocalAreaDensity);
             Console.WriteLine("inhibitionRadius           = " + InhibitionRadius);
@@ -2624,7 +2624,7 @@ namespace NeoCortexApi.Entities
             {
                 //Pool pool = getPotentialPools().get(i);
                 Pool pool = getColumn(i).ProximalDendrite.RFPool;
-                double[] perm = pool.getDensePermanences(this.NumInputs);
+                double[] perm = pool.getDensePermanences(this.HtmConfig.NumInputs);
                 retVal[i] = perm;
             }
 
@@ -2681,7 +2681,7 @@ namespace NeoCortexApi.Entities
             temp = BitConverter.DoubleToInt64Bits(m_NumActiveColumnsPerInhArea);
             result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + numColumns;
-            result = prime * result + numInputs;
+            result = prime * result + this.HtmConfig.NumInputs;
             temp = NumSynapses;
             result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + overlapDutyCycles.GetHashCode();
@@ -2689,10 +2689,10 @@ namespace NeoCortexApi.Entities
             result = prime * result + (int)(temp ^ (temp >> 32));
             temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.PermanenceIncrement);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            temp = BitConverter.DoubleToInt64Bits(potentialPct);
+            temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.PotentialPct);
             result = prime * result + (int)(temp ^ (temp >> 32));
             //result = prime * result + ((potentialPools == null) ? 0 : potentialPools.GetHashCode());
-            result = prime * result + potentialRadius;
+            result = prime * result + this.HtmConfig.PotentialRadius;
             temp = BitConverter.DoubleToInt64Bits(predictedSegmentDecrement);
             result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + ((predictiveCells == null) ? 0 : predictiveCells.GetHashCode());
@@ -2824,7 +2824,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (numColumns != other.numColumns)
                 return false;
-            if (numInputs != other.numInputs)
+            if (this.HtmConfig.NumInputs != other.HtmConfig.NumInputs)
                 return false;
             if (NumSynapses != other.NumSynapses)
                 return false;
@@ -2834,7 +2834,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (BitConverter.DoubleToInt64Bits(this.HtmConfig.PermanenceIncrement) != BitConverter.DoubleToInt64Bits(other.HtmConfig.PermanenceIncrement))
                 return false;
-            if (BitConverter.DoubleToInt64Bits(potentialPct) != BitConverter.DoubleToInt64Bits(other.potentialPct))
+            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.PotentialPct) != BitConverter.DoubleToInt64Bits(other.HtmConfig.PotentialPct))
                 return false;
             //if (potentialPools == null)
             //{
@@ -2843,7 +2843,7 @@ namespace NeoCortexApi.Entities
             //}
             //else if (!potentialPools.Equals(other.potentialPools))
             //    return false;
-            if (potentialRadius != other.potentialRadius)
+            if (this.HtmConfig.PotentialRadius != other.HtmConfig.PotentialRadius)
                 return false;
             if (BitConverter.DoubleToInt64Bits(predictedSegmentDecrement) != BitConverter.DoubleToInt64Bits(other.predictedSegmentDecrement))
                 return false;

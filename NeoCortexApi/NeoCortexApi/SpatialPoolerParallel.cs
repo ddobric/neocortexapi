@@ -47,7 +47,7 @@ namespace NeoCortexApi
             {
                 throw new ArgumentException("Invalid number of inputs: " + numInputs);
             }
-            c.NumInputs = numInputs;
+            c.HtmConfig.NumInputs = numInputs;
             c.setNumColumns(numColumns);
 
             if (distMem != null)
@@ -249,7 +249,7 @@ namespace NeoCortexApi
             // Get all indicies of input vector, which are set on '1'.
             var inputIndices = ArrayUtils.IndexWhere(inputVector, inpBit => inpBit > 0);
 
-            double[] permChanges = new double[c.NumInputs];
+            double[] permChanges = new double[c.HtmConfig.NumInputs];
 
             // First we initialize all permChanges to minimum decrement values,
             // which are used in a case of none-connections to input.

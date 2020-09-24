@@ -118,7 +118,7 @@ namespace NeoCortexApi
             {
                 throw new ArgumentException("Invalid number of inputs: " + numInputs);
             }
-            c.NumInputs = numInputs;
+            c.HtmConfig.NumInputs = numInputs;
             c.setNumColumns(numColumns);
 
             //
@@ -128,7 +128,7 @@ namespace NeoCortexApi
             List<KeyPair> colList = new List<KeyPair>();
             for (int i = 0; i < numColumns; i++)
             {
-                colList.Add(new KeyPair() { Key = i, Value = new Column(numCells, i, c.HtmConfig.SynPermConnected, c.NumInputs) });
+                colList.Add(new KeyPair() { Key = i, Value = new Column(numCells, i, c.HtmConfig.SynPermConnected, c.HtmConfig.NumInputs) });
             }
 
             Stopwatch sw = new Stopwatch();
@@ -393,10 +393,10 @@ namespace NeoCortexApi
          */
         public void compute(int[] inputVector, int[] activeArray, bool learn)
         {
-            if (inputVector.Length != this.connections.NumInputs)
+            if (inputVector.Length != this.connections.HtmConfig.NumInputs)
             {
                 throw new ArgumentException(
-                        "Input array must be same size as the defined number of inputs: From Params: " + this.connections.NumInputs +
+                        "Input array must be same size as the defined number of inputs: From Params: " + this.connections.HtmConfig.NumInputs +
                         ", From Input Vector: " + inputVector.Length);
             }
 
@@ -562,7 +562,7 @@ namespace NeoCortexApi
          */
         public void updateMinDutyCycles(Connections c)
         {
-            if (c.GlobalInhibition || c.InhibitionRadius > c.NumInputs)
+            if (c.GlobalInhibition || c.InhibitionRadius > c.HtmConfig.NumInputs)
             {
                 updateMinDutyCyclesGlobal(c);
             }
@@ -873,7 +873,7 @@ namespace NeoCortexApi
             // Get all indicies of input vector, which are set on '1'.
             var inputIndices = ArrayUtils.IndexWhere(inputVector, inpBit => inpBit > 0);
 
-            double[] permChanges = new double[c.NumInputs];
+            double[] permChanges = new double[c.HtmConfig.NumInputs];
 
             // First we initialize all permChanges to minimum decrement values,
             // which are used in a case of none-connections to input.
@@ -887,7 +887,7 @@ namespace NeoCortexApi
             {
                 //Pool pool = c.getPotentialPools().get(activeColumns[i]);
                 Pool pool = c.getColumn(activeColumns[i]).ProximalDendrite.RFPool;
-                double[] perm = pool.getDensePermanences(c.NumInputs);
+                double[] perm = pool.getDensePermanences(c.HtmConfig.NumInputs);
                 int[] indexes = pool.getSparsePotential();
                 ArrayUtils.RaiseValuesBy(permChanges, perm);
                 Column col = c.getColumn(activeColumns[i]);
