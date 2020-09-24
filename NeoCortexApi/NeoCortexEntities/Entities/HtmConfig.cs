@@ -11,6 +11,25 @@ namespace NeoCortexApi.Entities
     /// </summary>
     public class HtmConfig
     {
+        public HtmConfig()
+        {
+            
+        }
+        public class TemporalMemoryConfig
+        { 
+        
+        }
+
+        public class SpatialPoolerConfig
+        {
+
+        }
+
+        public TemporalMemoryConfig TemporalMemory { get; set; } = new TemporalMemoryConfig();
+
+        public SpatialPoolerConfig SpatialPooler { get; set; } = new SpatialPoolerConfig();
+
+
         //public int[] ColumnDimensions { get; set; }
 
         //public bool IsColumnMajor { get; set; } = false;
@@ -61,5 +80,20 @@ namespace NeoCortexApi.Entities
 
         public double PermanenceDecrement { get;  set; }
         public int MaxNewSynapseCount { get; internal set; }
+
+        public int MaxSegmentsPerCell { get; set; }
+    }
+
+    public class test
+    {
+        public test()
+        {
+            HtmConfig htm = new HtmConfig();
+
+            Connections c = new Connections(htm);
+
+            HtmConfig.TemporalMemoryConfig x = new HtmConfig.TemporalMemoryConfig();
+
+        }
     }
 }

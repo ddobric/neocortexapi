@@ -485,7 +485,7 @@ namespace NeoCortexApi
                 {
                     AdaptSegment(conn, maxPotentialSeg, prevActiveCells, permanenceIncrement, permanenceDecrement);
 
-                    int nGrowDesired = conn.getMaxNewSynapseCount() - conn.getLastActivity().PotentialSynapses[maxPotentialSeg.getIndex()];
+                    int nGrowDesired = conn.HtmConfig.MaxNewSynapseCount - conn.getLastActivity().PotentialSynapses[maxPotentialSeg.getIndex()];
 
                     if (nGrowDesired > 0)
                     {
@@ -499,7 +499,7 @@ namespace NeoCortexApi
                 leastUsedCell = this.GetLeastUsedCell(conn, cells, random);
                 if (learn)
                 {
-                    int nGrowExact = Math.Min(conn.getMaxNewSynapseCount(), prevWinnerCells.Count);
+                    int nGrowExact = Math.Min(conn.HtmConfig.MaxNewSynapseCount, prevWinnerCells.Count);
                     if (nGrowExact > 0)
                     {
                         DistalDendrite bestSegment = conn.CreateDistalSegment(leastUsedCell);

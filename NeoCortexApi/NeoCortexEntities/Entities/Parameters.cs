@@ -279,6 +279,7 @@ namespace NeoCortexApi.Entities
                 string methodName = $"set{key.First().ToString().ToUpper()}{key.Substring(1)}";
                 var method = methods.FirstOrDefault(m => m.Name == methodName);
                 if (method != null)
+                {
                     try
                     {
                         method.Invoke(cn, new object[] { paramMap[key] });
@@ -287,11 +288,34 @@ namespace NeoCortexApi.Entities
                     {
                         throw new ArgumentException($"Error when setting parameter '{key}'", ex);
                     }
+                }
+                else
+                {
+                    var properties = cn.GetType().GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                    var prop = properties.FirstOrDefault(m => m.Name == $"{key.First().ToString().ToUpper()}{key.Substring(1)}");
+                    if (prop != null)
+                    {
+                        if (prop.CanWrite)
+                            prop.SetValue(cn, paramMap[key]);
+                    }
+                    else
+                    {
+                        var htmCfgProperty = properties.FirstOrDefault(m => m.Name == "HtmConfig");
+                        if (htmCfgProperty != null)
+                        {
+                            prop = htmCfgProperty.PropertyType.GetProperties().FirstOrDefault(m => m.Name == $"{key.First().ToString().ToUpper()}{key.Substring(1)}");
+                            if (prop != null)
+                            {
+                                var htmCfgInst = htmCfgProperty.GetValue(cn);
+                                prop.SetValue(htmCfgInst, paramMap[key]);
+                            }
+                            else
+                            {
 
-                var properties = cn.GetType().GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-                var prop = properties.FirstOrDefault(m => m.Name == $"{key.First().ToString().ToUpper()}{key.Substring(1)}");
-                if (prop != null && prop.CanWrite)
-                    prop.SetValue(cn, paramMap[key]);
+                            }
+                        }
+                    }
+                }
                 //beanUtil.setSimpleProperty(cn, key.fieldName, get(key));
                 //}
             }

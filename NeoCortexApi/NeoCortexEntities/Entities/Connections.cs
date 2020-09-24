@@ -165,11 +165,11 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// The maximum number of synapses added to a segment during learning.
         /// </summary>
-        private int maxNewSynapseCount = 20;
+        //private int maxNewSynapseCount = 20;
         /// <summary>
         /// The maximum number of segments (distal dendrites) allowed on a cell
         /// </summary>
-        private int maxSegmentsPerCell = 255;
+        //private int maxSegmentsPerCell = 255;
         /// <summary>
         /// The maximum number of synapses allowed on a given segment (distal dendrite)
         /// </summary>
@@ -216,39 +216,59 @@ namespace NeoCortexApi.Entities
             }
         }
 
-        private HtmConfig m_HtmConfig;
+        private HtmConfig m_HtmConfig = new HtmConfig();
 
         public HtmConfig HtmConfig
         {
             get
             {
-                if (m_HtmConfig == null)
-                {
-                    HtmConfig cfg = new HtmConfig();
-                    cfg.ColumnTopology = this.ColumnTopology;
-                    cfg.InputTopology = this.InputTopology;
-                    cfg.IsWrapAround = this.isWrapAround();
-                    cfg.NumInputs = this.NumInputs;
-                    cfg.NumColumns = this.getMemory().getMaxIndex() + 1;
-                    cfg.PotentialPct = getPotentialPct();
-                    cfg.PotentialRadius = getPotentialRadius();
-                    cfg.SynPermConnected = getSynPermConnected();
-                    cfg.InitialSynapseConnsPct = this.InitialSynapseConnsPct;
-                    cfg.SynPermTrimThreshold = this.getSynPermTrimThreshold();
-                    cfg.SynPermBelowStimulusInc = this.synPermBelowStimulusInc;
-                    cfg.SynPermMax = this.getSynPermMax();
-                    cfg.SynPermMin = this.getSynPermMin();
-                    cfg.StimulusThreshold = this.StimulusThreshold;
-                    cfg.CellsPerColumn = this.getCellsPerColumn();
-                    cfg.SynPermInactiveDec = this.getSynPermInactiveDec();
-                    cfg.PermanenceIncrement = this.getPermanenceIncrement();
-                    cfg.PermanenceDecrement = this.getPermanenceDecrement();
-                    cfg.MaxNewSynapseCount = this.getMaxNewSynapseCount();
+                //if (m_HtmConfig == null)
+                //{
+                //    HtmConfig cfg = new HtmConfig();
+                //    cfg.ColumnTopology = this.ColumnTopology;
+                //    cfg.InputTopology = this.InputTopology;
+                //    cfg.IsWrapAround = this.isWrapAround();
+                //    cfg.NumInputs = this.NumInputs;
+                //    cfg.NumColumns = this.getMemory() != null? this.getMemory().getMaxIndex() + 1 : -1;
+                //    cfg.PotentialPct = getPotentialPct();
+                //    cfg.PotentialRadius = getPotentialRadius();
+                //    cfg.SynPermConnected = getSynPermConnected();
+                //    cfg.InitialSynapseConnsPct = this.InitialSynapseConnsPct;
+                //    cfg.SynPermTrimThreshold = this.getSynPermTrimThreshold();
+                //    cfg.SynPermBelowStimulusInc = this.synPermBelowStimulusInc;
+                //    cfg.SynPermMax = this.getSynPermMax();
+                //    cfg.SynPermMin = this.getSynPermMin();
+                //    cfg.StimulusThreshold = this.StimulusThreshold;
+                //    cfg.CellsPerColumn = this.getCellsPerColumn();
+                //    cfg.SynPermInactiveDec = this.getSynPermInactiveDec();
+                //    cfg.PermanenceIncrement = this.getPermanenceIncrement();
+                //    cfg.PermanenceDecrement = this.getPermanenceDecrement();
+                //    //cfg.MaxNewSynapseCount = this.getMaxNewSynapseCount();
 
-                    cfg.RandomGenSeed = this.seed;
+                //    cfg.RandomGenSeed = this.seed;
 
-                    m_HtmConfig = cfg;
-                }
+                //    m_HtmConfig = cfg;
+                //}
+
+                m_HtmConfig.ColumnTopology = this.ColumnTopology;
+                m_HtmConfig.InputTopology = this.InputTopology;
+                m_HtmConfig.IsWrapAround = this.isWrapAround();
+                m_HtmConfig.NumInputs = this.NumInputs;
+                m_HtmConfig.NumColumns = this.getMemory() != null ? this.getMemory().getMaxIndex() + 1 : -1;
+                m_HtmConfig.PotentialPct = getPotentialPct();
+                m_HtmConfig.PotentialRadius = getPotentialRadius();
+                m_HtmConfig.SynPermConnected = getSynPermConnected();
+                m_HtmConfig.InitialSynapseConnsPct = this.InitialSynapseConnsPct;
+                m_HtmConfig.SynPermTrimThreshold = this.getSynPermTrimThreshold();
+                m_HtmConfig.SynPermBelowStimulusInc = this.synPermBelowStimulusInc;
+                m_HtmConfig.SynPermMax = this.getSynPermMax();
+                m_HtmConfig.SynPermMin = this.getSynPermMin();
+                m_HtmConfig.StimulusThreshold = this.StimulusThreshold;
+                m_HtmConfig.CellsPerColumn = this.getCellsPerColumn();
+                m_HtmConfig.SynPermInactiveDec = this.getSynPermInactiveDec();
+                m_HtmConfig.PermanenceIncrement = this.getPermanenceIncrement();
+                m_HtmConfig.PermanenceDecrement = this.getPermanenceDecrement();
+                m_HtmConfig.RandomGenSeed = this.seed;       
 
                 return m_HtmConfig;
             }
@@ -369,6 +389,12 @@ namespace NeoCortexApi.Entities
             synPermTrimThreshold = synPermActiveInc / 2.0;
             synPermBelowStimulusInc = synPermConnected / 10.0;
             //random = new Random(seed);
+        }
+
+        public Connections(HtmConfig prms)
+        {
+            //this.permanenceDecrement = (double)prms[KEY.PERMANENCE_DECREMENT];
+            //this.permanenceDecrement = prms.TemporalMemory.PermanenceDecrement;
         }
 
         ///**
@@ -1516,7 +1542,7 @@ namespace NeoCortexApi.Entities
             //
             // If there are more segments than maximal allowed number of segments per cell,
             // least used segments will be destroyed.
-            while (numSegments(cell) >= maxSegmentsPerCell)
+            while (numSegments(cell) >= this.HtmConfig.MaxSegmentsPerCell)
             {
                 destroySegment(leastRecentlyUsedSegment(cell));
             }
@@ -2193,44 +2219,45 @@ namespace NeoCortexApi.Entities
             return minThreshold;
         }
 
+        int bla;
         /**
          * The maximum number of synapses added to a segment during learning.
          *
          * @param   maxNewSynapseCount
          */
-        public void setMaxNewSynapseCount(int maxNewSynapseCount)
-        {
-            this.maxNewSynapseCount = maxNewSynapseCount;
-        }
+        //public void setMaxNewSynapseCount(int maxNewSynapseCount)
+        //{
+        //    this.maxNewSynapseCount = maxNewSynapseCount;
+        //}
 
-        /**
-         * Returns the maximum number of synapses added to a segment during
-         * learning.
-         *
-         * @return
-         */
-        public int getMaxNewSynapseCount()
-        {
-            return maxNewSynapseCount;
-        }
+        ///**
+        // * Returns the maximum number of synapses added to a segment during
+        // * learning.
+        // *
+        // * @return
+        // */
+        //public int getMaxNewSynapseCount()
+        //{
+        //    return maxNewSynapseCount;
+        //}
 
         /**
          * The maximum number of segments allowed on a given cell
          * @param maxSegmentsPerCell
          */
-        public void setMaxSegmentsPerCell(int maxSegmentsPerCell)
-        {
-            this.maxSegmentsPerCell = maxSegmentsPerCell;
-        }
+        //public void setMaxSegmentsPerCell(int maxSegmentsPerCell)
+        //{
+        //    this.maxSegmentsPerCell = maxSegmentsPerCell;
+        //}
 
-        /**
-         * Returns the maximum number of segments allowed on a given cell
-         * @return
-         */
-        public int getMaxSegmentsPerCell()
-        {
-            return maxSegmentsPerCell;
-        }
+        ///**
+        // * Returns the maximum number of segments allowed on a given cell
+        // * @return
+        // */
+        //public int getMaxSegmentsPerCell()
+        //{
+        //    return maxSegmentsPerCell;
+        //}
 
         /**
          * The maximum number of synapses allowed on a given segment
@@ -2482,9 +2509,9 @@ namespace NeoCortexApi.Entities
             Console.WriteLine("activationThreshold        = " + getActivationThreshold());
             Console.WriteLine("learningRadius             = " + getLearningRadius());
             Console.WriteLine("minThreshold               = " + getMinThreshold());
-            Console.WriteLine("maxNewSynapseCount         = " + getMaxNewSynapseCount());
+            Console.WriteLine("maxNewSynapseCount         = " + HtmConfig.MaxNewSynapseCount);
             Console.WriteLine("maxSynapsesPerSegment      = " + getMaxSynapsesPerSegment());
-            Console.WriteLine("maxSegmentsPerCell         = " + getMaxSegmentsPerCell());
+            Console.WriteLine("maxSegmentsPerCell         = " + this.HtmConfig.MaxSegmentsPerCell);
             Console.WriteLine("initialPermanence          = " + getInitialPermanence());
             Console.WriteLine("connectedPermanence        = " + getConnectedPermanence());
             Console.WriteLine("permanenceIncrement        = " + getPermanenceIncrement());
@@ -2642,7 +2669,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + (int)(temp ^ (temp >> 32));
             temp = BitConverter.DoubleToInt64Bits(maxBoost);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            result = prime * result + maxNewSynapseCount;
+            result = prime * result + this.HtmConfig.MaxNewSynapseCount;
             result = prime * result + ((memory == null) ? 0 : memory.GetHashCode());
             result = prime * result + minActiveDutyCycles.GetHashCode();
             result = prime * result + minOverlapDutyCycles.GetHashCode();
@@ -2774,7 +2801,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (BitConverter.DoubleToInt64Bits(maxBoost) != BitConverter.DoubleToInt64Bits(other.maxBoost))
                 return false;
-            if (maxNewSynapseCount != other.maxNewSynapseCount)
+            if (this.HtmConfig.MaxNewSynapseCount != other.HtmConfig.MaxNewSynapseCount)
                 return false;
             if (memory == null)
             {
