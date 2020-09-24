@@ -204,7 +204,7 @@ namespace NeoCortexApi.Entities
          * @see java.lang.Object#equals(java.lang.Object)
          */
 
-        public bool Equals(Object obj)
+        public override bool Equals(object obj)
         {
             if (this == obj)
                 return true;
