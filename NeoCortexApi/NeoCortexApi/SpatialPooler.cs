@@ -123,12 +123,12 @@ namespace NeoCortexApi
 
             //
             // Fill the sparse matrix with column objects
-            var numCells = c.getCellsPerColumn();
+            var numCells = c.HtmConfig.CellsPerColumn;
 
             List<KeyPair> colList = new List<KeyPair>();
             for (int i = 0; i < numColumns; i++)
             {
-                colList.Add(new KeyPair() { Key = i, Value = new Column(numCells, i, c.getSynPermConnected(), c.NumInputs) });
+                colList.Add(new KeyPair() { Key = i, Value = new Column(numCells, i, c.HtmConfig.SynPermConnected, c.NumInputs) });
             }
 
             Stopwatch sw = new Stopwatch();
@@ -1185,7 +1185,7 @@ namespace NeoCortexApi
 
             // Enforce the stimulus threshold. This is a minimum number of synapses that must be ON in order for a columns to turn ON. 
             // The purpose of this is to prevent noise input from activating columns. Specified as a percent of a fully grown synapse.
-            double stimulusThreshold = c.StimulusThreshold;
+            double stimulusThreshold = c.HtmConfig.StimulusThreshold;
 
             // Calculate difference between num of columns and num of active. Num of active is less than 
             // num of columns, because of specified density.
@@ -1241,7 +1241,7 @@ namespace NeoCortexApi
             //Debug.WriteLine("Inhibition Radius: " + inhibitionRadius);
             for (int column = 0; column < overlaps.Length; column++)
             {
-                if (overlaps[column] >= c.StimulusThreshold)
+                if (overlaps[column] >= c.HtmConfig.StimulusThreshold)
                 {
                     int[] neighborhood = getColumnNeighborhood(c, column, inhibitionRadius);
                     // Take overlapps of neighbors
@@ -1278,7 +1278,7 @@ namespace NeoCortexApi
             int maxInhibitionRadius = (int)((Math.Sqrt((preActive / (overlaps.Length * 0.02)) + 1) / 2) - 1);
             maxInhibitionRadius = Math.Max(1, maxInhibitionRadius);
             int count = (int)(0.02 * overlaps.Length);
-            var activeCols = ArrayUtils.IndexWhere(overlaps, (el) => el > c.StimulusThreshold);
+            var activeCols = ArrayUtils.IndexWhere(overlaps, (el) => el > c.HtmConfig.StimulusThreshold);
             double max = 0;
             int colNum = 0;
             for (int i = 0; i < count; i++)
@@ -1418,7 +1418,7 @@ namespace NeoCortexApi
             Parallel.ForEach(overlaps, (val, b, index) =>
             {
                 // int column = i;
-                if ((int)index >= c.StimulusThreshold)
+                if ((int)index >= c.HtmConfig.StimulusThreshold)
                 {
                     // GETS INDEXES IN THE ARRAY FOR THE NEIGHBOURS WITHIN THE INHIBITION RADIUS.
                     List<int> neighborhood = getColumnNeighborhood(c, (int)index, inhibitionRadius).ToList();
@@ -1465,7 +1465,7 @@ namespace NeoCortexApi
             for (int column = 0; column < overlaps.Length; column++)
             {
                 // int column = i;
-                if (overlaps[column] >= c.StimulusThreshold)
+                if (overlaps[column] >= c.HtmConfig.StimulusThreshold)
                 {
                     // GETS INDEXES IN THE ARRAY FOR THE NEIGHBOURS WITHIN THE INHIBITION RADIUS.
                     int[] neighborhood = getColumnNeighborhood(c, column, inhibitionRadius);
@@ -1593,7 +1593,7 @@ namespace NeoCortexApi
             int[] overlaps = new int[c.NumColumns];
             for (int col = 0; col < c.NumColumns; col++)
             {
-                overlaps[col] = c.getColumn(col).GetColumnOverlapp(inputVector, c.StimulusThreshold);
+                overlaps[col] = c.getColumn(col).GetColumnOverlapp(inputVector, c.HtmConfig.StimulusThreshold);
             }
             //c.getConnectedCounts().rightVecSumAtNZ(inputVector, overlaps, c.StimulusThreshold);
             //string st = string.Join(",", overlaps);

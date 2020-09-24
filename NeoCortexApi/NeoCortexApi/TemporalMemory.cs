@@ -53,7 +53,7 @@ namespace NeoCortexApi
 
             int numColumns = matrix.getMaxIndex() + 1;
             this.connections.setNumColumns(numColumns);
-            int cellsPerColumn = this.connections.getCellsPerColumn();
+            int cellsPerColumn = this.connections.HtmConfig.CellsPerColumn;
             Cell[] cells = new Cell[numColumns * cellsPerColumn];
 
             //Used as flag to determine if Column objects have been created.

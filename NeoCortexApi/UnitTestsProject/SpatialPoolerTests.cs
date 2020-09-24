@@ -88,7 +88,7 @@ namespace UnitTestsProject
             Assert.AreEqual(false, mem.GlobalInhibition);
             Assert.AreEqual(-1.0, mem.LocalAreaDensity);//, 0);
             Assert.AreEqual(3, mem.NumActiveColumnsPerInhArea);//, 0);
-            Assert.IsTrue(Math.Abs(1 - mem.StimulusThreshold) <= 1);
+            Assert.IsTrue(Math.Abs(1 - mem.HtmConfig.StimulusThreshold) <= 1);
             Assert.AreEqual(0.01, mem.HtmConfig.SynPermInactiveDec);//, 0);
             Assert.AreEqual(0.1, mem.getSynPermActiveInc());//, 0);
             Assert.AreEqual(0.1, mem.getSynPermConnected());//, 0);

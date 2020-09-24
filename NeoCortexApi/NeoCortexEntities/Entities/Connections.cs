@@ -37,7 +37,7 @@ namespace NeoCortexApi.Entities
         private bool m_GlobalInhibition = false;
         private double m_LocalAreaDensity = -1.0;
         private double m_NumActiveColumnsPerInhArea;
-        private double m_StimulusThreshold = 0;
+        //private double m_StimulusThreshold = 0;
         //private double synPermInactiveDec = 0.008;
         private double synPermActiveInc = 0.05;
         private double synPermConnected = 0.10;
@@ -54,7 +54,7 @@ namespace NeoCortexApi.Entities
         private int numColumns = 1; //product of column dimensions
 
         //Extra parameter settings
-        private double synPermMin = 0.0;
+        //private double synPermMin = 0.0;
         private double synPermMax = 1.0;
         private double synPermTrimThreshold;// = synPermActiveInc / 2.0;
         private int updatePeriod = 50;
@@ -262,9 +262,9 @@ namespace NeoCortexApi.Entities
                 m_HtmConfig.SynPermTrimThreshold = this.getSynPermTrimThreshold();
                 m_HtmConfig.SynPermBelowStimulusInc = this.synPermBelowStimulusInc;
                 m_HtmConfig.SynPermMax = this.getSynPermMax();
-                m_HtmConfig.SynPermMin = this.getSynPermMin();
-                m_HtmConfig.StimulusThreshold = this.StimulusThreshold;
-                m_HtmConfig.CellsPerColumn = this.getCellsPerColumn();
+                //m_HtmConfig.SynPermMin = this.getSynPermMin();
+                //m_HtmConfig.StimulusThreshold = this.StimulusThreshold;
+                //m_HtmConfig.CellsPerColumn = this.getCellsPerColumn();
                 //m_HtmConfig.SynPermInactiveDec = this.getSynPermInactiveDec();
                 //m_HtmConfig.PermanenceIncrement = this.getPermanenceIncrement();
                 //m_HtmConfig.PermanenceDecrement = this.getPermanenceDecrement();
@@ -420,7 +420,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public void DoSpatialPoolerPostInit()
         {
-            synPermBelowStimulusInc = synPermConnected / 10.0;
+            //synPermBelowStimulusInc = synPermConnected / 10.0;
             synPermTrimThreshold = synPermActiveInc / 2.0;
             if (potentialRadius == -1)
             {
@@ -1009,7 +1009,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Minimum number of connected synapses to make column active. Specified as a percent of a fully grown synapse.
         /// </summary>
-        public double StimulusThreshold { get => m_StimulusThreshold; set => this.m_StimulusThreshold = value; }
+        //public double StimulusThreshold { get => m_StimulusThreshold; set => this.m_StimulusThreshold = value; }
 
         ///**
         // * The amount by which an inactive synapse is
@@ -1300,14 +1300,14 @@ namespace NeoCortexApi.Entities
         //    return this.potentialPools;
         //}
 
-        /**
-         * Returns the minimum {@link Synapse} permanence.
-         * @return
-         */
-        public double getSynPermMin()
-        {
-            return synPermMin;
-        }
+        ///**
+        // * Returns the minimum {@link Synapse} permanence.
+        // * @return
+        // */
+        //public double getSynPermMin()
+        //{
+        //    return synPermMin;
+        //}
 
         /**
          * Returns the maximum {@link Synapse} permanence.
@@ -1564,7 +1564,7 @@ namespace NeoCortexApi.Entities
             int ordinal = nextSegmentOrdinal;
             ++nextSegmentOrdinal;
 
-            DistalDendrite segment = new DistalDendrite(cell, flatIdx, tmIteration, ordinal, this.getSynPermConnected(), this.NumInputs);
+            DistalDendrite segment = new DistalDendrite(cell, flatIdx, tmIteration, ordinal, this.HtmConfig.SynPermConnected, this.NumInputs);
             getSegments(cell, true).Add(segment);
             m_SegmentForFlatIdx[flatIdx] = segment;
 
@@ -1713,7 +1713,7 @@ namespace NeoCortexApi.Entities
          */
         public int columnIndexForSegment(DistalDendrite segment)
         {
-            return segment.ParentCell.Index / cellsPerColumn;
+            return segment.ParentCell.Index / this.HtmConfig.CellsPerColumn;
         }
 
         /**
@@ -2137,24 +2137,24 @@ namespace NeoCortexApi.Entities
             return inputDimensions;
         }
 
-        /**
-         * Sets the number of {@link Cell}s per {@link Column}
-         * @param cellsPerColumn
-         */
-        public void setCellsPerColumn(int cellsPerColumn)
-        {
-            this.cellsPerColumn = cellsPerColumn;
-        }
+        ///**
+        // * Sets the number of {@link Cell}s per {@link Column}
+        // * @param cellsPerColumn
+        // */
+        //public void setCellsPerColumn(int cellsPerColumn)
+        //{
+        //    this.cellsPerColumn = cellsPerColumn;
+        //}
 
-        /**
-         * Gets the number of {@link Cell}s per {@link Column}.
-         *
-         * @return cellsPerColumn
-         */
-        public int getCellsPerColumn()
-        {
-            return this.cellsPerColumn;
-        }
+        ///**
+        // * Gets the number of {@link Cell}s per {@link Column}.
+        // *
+        // * @return cellsPerColumn
+        // */
+        //public int getCellsPerColumn()
+        //{
+        //    return this.cellsPerColumn;
+        //}
 
         /**
          * Sets the activation threshold.
@@ -2487,7 +2487,7 @@ namespace NeoCortexApi.Entities
             Console.WriteLine("------------ SpatialPooler Parameters ------------------");
             Console.WriteLine("numInputs                  = " + NumInputs);
             Console.WriteLine("numColumns                 = " + NumColumns);
-            Console.WriteLine("cellsPerColumn             = " + getCellsPerColumn());
+            Console.WriteLine("cellsPerColumn             = " + this.HtmConfig.CellsPerColumn);
             Console.WriteLine("columnDimensions           = " + getColumnDimensions().ToString());
             Console.WriteLine("numActiveColumnsPerInhArea = " + NumActiveColumnsPerInhArea);
             Console.WriteLine("potentialPct               = " + getPotentialPct());
@@ -2495,10 +2495,10 @@ namespace NeoCortexApi.Entities
             Console.WriteLine("globalInhibition           = " + GlobalInhibition);
             Console.WriteLine("localAreaDensity           = " + LocalAreaDensity);
             Console.WriteLine("inhibitionRadius           = " + InhibitionRadius);
-            Console.WriteLine("stimulusThreshold          = " + StimulusThreshold);
+            Console.WriteLine("stimulusThreshold          = " + this.HtmConfig.StimulusThreshold);
             Console.WriteLine("synPermActiveInc           = " + getSynPermActiveInc());
             Console.WriteLine("synPermInactiveDec         = " + this.HtmConfig.SynPermInactiveDec);
-            Console.WriteLine("synPermConnected           = " + getSynPermConnected());
+            Console.WriteLine("synPermConnected           = " + this.HtmConfig.SynPermConnected);
             Console.WriteLine("minPctOverlapDutyCycle     = " + getMinPctOverlapDutyCycles());
             Console.WriteLine("minPctActiveDutyCycle      = " + getMinPctActiveDutyCycles());
             Console.WriteLine("dutyCyclePeriod            = " + getDutyCyclePeriod());
@@ -2645,7 +2645,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + activeDutyCycles.GetHashCode();
             result = prime * result + m_BoostFactors.GetHashCode();
             result = prime * result + cells.GetHashCode();
-            result = prime * result + cellsPerColumn;
+            result = prime * result + this.HtmConfig.CellsPerColumn;
             result = prime * result + columnDimensions.GetHashCode();
             //result = prime * result + ((connectedCounts == null) ? 0 : connectedCounts.GetHashCode());
             long temp;
@@ -2700,19 +2700,19 @@ namespace NeoCortexApi.Entities
             result = prime * result + ((receptorSynapses == null) ? 0 : receptorSynapses.GetHashCode());
             result = prime * result + this.HtmConfig.RandomGenSeed;
             result = prime * result + ((distalSegments == null) ? 0 : distalSegments.GetHashCode());
-            temp = BitConverter.DoubleToInt64Bits(m_StimulusThreshold);
+            temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.StimulusThreshold);
             result = prime * result + (int)(temp ^ (temp >> 32));
             temp = BitConverter.DoubleToInt64Bits(synPermActiveInc);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            temp = BitConverter.DoubleToInt64Bits(synPermBelowStimulusInc);
+            temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.SynPermBelowStimulusInc);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            temp = BitConverter.DoubleToInt64Bits(synPermConnected);
+            temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.SynPermConnected);
             result = prime * result + (int)(temp ^ (temp >> 32));
             temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.SynPermInactiveDec);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            temp = BitConverter.DoubleToInt64Bits(synPermMax);
+            temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.SynPermMax);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            temp = BitConverter.DoubleToInt64Bits(synPermMin);
+            temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.SynPermMin);
             result = prime * result + (int)(temp ^ (temp >> 32));
             temp = BitConverter.DoubleToInt64Bits(synPermTrimThreshold);
             result = prime * result + (int)(temp ^ (temp >> 32));
@@ -2757,7 +2757,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (!Array.Equals(cells, other.cells))
                 return false;
-            if (cellsPerColumn != other.cellsPerColumn)
+            if (this.HtmConfig.CellsPerColumn != other.HtmConfig.CellsPerColumn)
                 return false;
             if (!Array.Equals(columnDimensions, other.columnDimensions))
                 return false;
@@ -2870,7 +2870,7 @@ namespace NeoCortexApi.Entities
             }
             else if (!distalSegments.Equals(other.distalSegments))
                 return false;
-            if (BitConverter.DoubleToInt64Bits(m_StimulusThreshold) != BitConverter.DoubleToInt64Bits(other.m_StimulusThreshold))
+            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.StimulusThreshold) != BitConverter.DoubleToInt64Bits(other.HtmConfig.StimulusThreshold))
                 return false;
             if (BitConverter.DoubleToInt64Bits(synPermActiveInc) != BitConverter.DoubleToInt64Bits(other.synPermActiveInc))
                 return false;
@@ -2882,7 +2882,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (BitConverter.DoubleToInt64Bits(synPermMax) != BitConverter.DoubleToInt64Bits(other.synPermMax))
                 return false;
-            if (BitConverter.DoubleToInt64Bits(synPermMin) != BitConverter.DoubleToInt64Bits(other.synPermMin))
+            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.SynPermMin) != BitConverter.DoubleToInt64Bits(other.HtmConfig.SynPermMin))
                 return false;
             if (BitConverter.DoubleToInt64Bits(synPermTrimThreshold) != BitConverter.DoubleToInt64Bits(other.synPermTrimThreshold))
                 return false;
