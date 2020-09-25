@@ -1255,15 +1255,8 @@ namespace NeoCortexApi.Entities
  * Sets and Returns the boosted overlap score for each column
  * @param boostedOverlaps
  * @return
- */
-        public double[] BoostedOverlaps { get => m_BoostedmOverlaps; set => this.m_BoostedmOverlaps = value; }
-
-
-        /// <summary>
-        /// Set/Get ovrlapps for each column.
-        /// </summary>
-        public int[] Overlaps { get => m_Overlaps; set => this.m_Overlaps = value; }
-
+ * 
+ * 
         ///**
         // * Sets the synPermTrimThreshold
         // * @param threshold
@@ -1320,6 +1313,302 @@ namespace NeoCortexApi.Entities
         //{
         //    return synPermMax;
         //}
+
+        ///**
+        // * Sets the number of {@link Column}.
+        // *
+        // * @param columnDimensions
+        // */
+        //public void setColumnDimensions(int[] columnDimensions)
+        //{
+        //    this.columnDimensions = columnDimensions;
+        //}
+
+        ///**
+        // * Gets the number of {@link Column}.
+        // *
+        // * @return columnDimensions
+        // */
+        //public int[] getColumnDimensions()
+        //{
+        //    return this.columnDimensions;
+        //}
+
+        ///**
+        // * A list representing the dimensions of the input
+        // * vector. Format is [height, width, depth, ...], where
+        // * each value represents the size of the dimension. For a
+        // * topology of one dimension with 100 inputs use 100, or
+        // * [100]. For a two dimensional topology of 10x5 use
+        // * [10,5].
+        // *
+        // * @param inputDimensions
+        // */
+        //public void setInputDimensions(int[] inputDimensions)
+        //{
+        //    this.inputDimensions = inputDimensions;
+        //}
+
+        ///**
+        // * Returns the configured input dimensions
+        // * see {@link #setInputDimensions(int[])}
+        // * @return the configured input dimensions
+        // */
+        //public int[] getInputDimensions()
+        //{
+        //    return inputDimensions;
+        //}
+
+        ///**
+        // * Sets the number of {@link Cell}s per {@link Column}
+        // * @param cellsPerColumn
+        // */
+        //public void setCellsPerColumn(int cellsPerColumn)
+        //{
+        //    this.cellsPerColumn = cellsPerColumn;
+        //}
+
+        ///**
+        // * Gets the number of {@link Cell}s per {@link Column}.
+        // *
+        // * @return cellsPerColumn
+        // */
+        //public int getCellsPerColumn()
+        //{
+        //    return this.cellsPerColumn;
+        //}
+
+        ///**
+        // * Sets the activation threshold.
+        // *
+        // * If the number of active connected synapses on a segment
+        // * is at least this threshold, the segment is said to be active.
+        // *
+        // * @param activationThreshold
+        // */
+        //public void setActivationThreshold(int activationThreshold)
+        //{
+        //    this.activationThreshold = activationThreshold;
+        //}
+
+        ///**
+        // * Returns the activation threshold.
+        // * @return
+        // */
+        //public int getActivationThreshold()
+        //{
+        //    return activationThreshold;
+        //}
+
+        ///**
+        // * Radius around cell from which it can
+        // * sample to form distal dendrite connections.
+        // *
+        // * @param   learningRadius
+        // */
+        //public void setLearningRadius(int learningRadius)
+        //{
+        //    this.learningRadius = learningRadius;
+        //}
+
+        ///**
+        // * Returns the learning radius.
+        // * @return
+        // */
+        //public int getLearningRadius()
+        //{
+        //    return learningRadius;
+        //}
+
+        ///**
+        // * If the number of synapses active on a segment is at least this
+        // * threshold, it is selected as the best matching
+        // * cell in a bursting column.
+        // *
+        // * @param   minThreshold
+        // */
+        //public void setMinThreshold(int minThreshold)
+        //{
+        //    this.minThreshold = minThreshold;
+        //}
+
+        ///**
+        // * Returns the minimum threshold of the number of active synapses to be picked as best.
+        // * @return
+        // */
+        //public int getMinThreshold()
+        //{
+        //    return minThreshold;
+        //}
+
+        /**
+         * The maximum number of synapses added to a segment during learning.
+         *
+         * @param   maxNewSynapseCount
+         */
+        //public void setMaxNewSynapseCount(int maxNewSynapseCount)
+        //{
+        //    this.maxNewSynapseCount = maxNewSynapseCount;
+        //}
+
+        ///**
+        // * Returns the maximum number of synapses added to a segment during
+        // * learning.
+        // *
+        // * @return
+        // */
+        //public int getMaxNewSynapseCount()
+        //{
+        //    return maxNewSynapseCount;
+        //}
+
+        /**
+         * The maximum number of segments allowed on a given cell
+         * @param maxSegmentsPerCell
+         */
+        //public void setMaxSegmentsPerCell(int maxSegmentsPerCell)
+        //{
+        //    this.maxSegmentsPerCell = maxSegmentsPerCell;
+        //}
+
+        ///**
+        // * Returns the maximum number of segments allowed on a given cell
+        // * @return
+        // */
+        //public int getMaxSegmentsPerCell()
+        //{
+        //    return maxSegmentsPerCell;
+        //}
+
+        ///**
+        // * The maximum number of synapses allowed on a given segment
+        // * @param maxSynapsesPerSegment
+        // */
+        //public void setMaxSynapsesPerSegment(int maxSynapsesPerSegment)
+        //{
+        //    this.maxSynapsesPerSegment = maxSynapsesPerSegment;
+        //}
+
+        ///**
+        // * Returns the maximum number of synapses allowed per segment
+        // * @return
+        // */
+        //public int getMaxSynapsesPerSegment()
+        //{
+        //    return maxSynapsesPerSegment;
+        //}
+
+        ///**
+        // * Initial permanence of a new synapse
+        // *
+        // * @param   initialPermanence
+        // */
+        //public void setInitialPermanence(double initialPermanence)
+        //{
+        //    this.initialPermanence = initialPermanence;
+        //}
+
+        ///**
+        // * Returns the initial permanence setting.
+        // * @return
+        // */
+        //public double getInitialPermanence()
+        //{
+        //    return initialPermanence;
+        //}
+
+        ///**
+        // * If the permanence value for a synapse
+        // * is greater than this value, it is said
+        // * to be connected.
+        // *
+        // * @param connectedPermanence
+        // */
+        //public void setConnectedPermanence(double connectedPermanence)
+        //{
+        //    this.connectedPermanence = connectedPermanence;
+        //}
+
+        ///**
+        // * If the permanence value for a synapse
+        // * is greater than this value, it is said
+        // * to be connected.
+        // *
+        // * @return
+        // */
+        //public double getConnectedPermanence()
+        //{
+        //    return connectedPermanence;
+        //}
+
+        ///**
+        // * Amount by which permanences of synapses
+        // * are incremented during learning.
+        // *
+        // * @param   permanenceIncrement
+        // */
+        //public void setPermanenceIncrement(double permanenceIncrement)
+        //{
+        //    this.permanenceIncrement = permanenceIncrement;
+        //}
+
+        ///**
+        // * Amount by which permanences of synapses
+        // * are incremented during learning.
+        // */
+        //public double getPermanenceIncrement()
+        //{
+        //    return this.permanenceIncrement;
+        //}
+
+        ///**
+        // * Amount by which permanences of synapses
+        // * are decremented during learning.
+        // *
+        // * @param   permanenceDecrement
+        // */
+        //public void setPermanenceDecrement(double permanenceDecrement)
+        //{
+        //    this.permanenceDecrement = permanenceDecrement;
+        //}
+
+        ///**
+        // * Amount by which permanences of synapses
+        // * are decremented during learning.
+        // */
+        //public double getPermanenceDecrement()
+        //{
+        //    return this.permanenceDecrement;
+        //}
+
+        ///**
+        // * Amount by which active permanences of synapses of previously predicted but inactive segments are decremented.
+        // * @param predictedSegmentDecrement
+        // */
+        //public void setPredictedSegmentDecrement(double predictedSegmentDecrement)
+        //{
+        //    this.predictedSegmentDecrement = predictedSegmentDecrement;
+        //}
+
+        ///**
+        // * Returns the predictedSegmentDecrement amount.
+        // * @return
+        // */
+        //public double getPredictedSegmentDecrement()
+        //{
+        //    return this.predictedSegmentDecrement;
+        //}
+
+
+
+        public double[] BoostedOverlaps { get => m_BoostedmOverlaps; set => this.m_BoostedmOverlaps = value; }
+
+
+        /// <summary>
+        /// Set/Get ovrlapps for each column.
+        /// </summary>
+        public int[] Overlaps { get => m_Overlaps; set => this.m_Overlaps = value; }
+
 
         /**
          * Returns the version number
@@ -2094,291 +2383,7 @@ namespace NeoCortexApi.Entities
             return this.HtmConfig.Memory.getObject(index);
         }
 
-
-        ///**
-        // * Sets the number of {@link Column}.
-        // *
-        // * @param columnDimensions
-        // */
-        //public void setColumnDimensions(int[] columnDimensions)
-        //{
-        //    this.columnDimensions = columnDimensions;
-        //}
-
-        ///**
-        // * Gets the number of {@link Column}.
-        // *
-        // * @return columnDimensions
-        // */
-        //public int[] getColumnDimensions()
-        //{
-        //    return this.columnDimensions;
-        //}
-
-        ///**
-        // * A list representing the dimensions of the input
-        // * vector. Format is [height, width, depth, ...], where
-        // * each value represents the size of the dimension. For a
-        // * topology of one dimension with 100 inputs use 100, or
-        // * [100]. For a two dimensional topology of 10x5 use
-        // * [10,5].
-        // *
-        // * @param inputDimensions
-        // */
-        //public void setInputDimensions(int[] inputDimensions)
-        //{
-        //    this.inputDimensions = inputDimensions;
-        //}
-
-        ///**
-        // * Returns the configured input dimensions
-        // * see {@link #setInputDimensions(int[])}
-        // * @return the configured input dimensions
-        // */
-        //public int[] getInputDimensions()
-        //{
-        //    return inputDimensions;
-        //}
-
-        ///**
-        // * Sets the number of {@link Cell}s per {@link Column}
-        // * @param cellsPerColumn
-        // */
-        //public void setCellsPerColumn(int cellsPerColumn)
-        //{
-        //    this.cellsPerColumn = cellsPerColumn;
-        //}
-
-        ///**
-        // * Gets the number of {@link Cell}s per {@link Column}.
-        // *
-        // * @return cellsPerColumn
-        // */
-        //public int getCellsPerColumn()
-        //{
-        //    return this.cellsPerColumn;
-        //}
-
-        ///**
-        // * Sets the activation threshold.
-        // *
-        // * If the number of active connected synapses on a segment
-        // * is at least this threshold, the segment is said to be active.
-        // *
-        // * @param activationThreshold
-        // */
-        //public void setActivationThreshold(int activationThreshold)
-        //{
-        //    this.activationThreshold = activationThreshold;
-        //}
-
-        ///**
-        // * Returns the activation threshold.
-        // * @return
-        // */
-        //public int getActivationThreshold()
-        //{
-        //    return activationThreshold;
-        //}
-
-        ///**
-        // * Radius around cell from which it can
-        // * sample to form distal dendrite connections.
-        // *
-        // * @param   learningRadius
-        // */
-        //public void setLearningRadius(int learningRadius)
-        //{
-        //    this.learningRadius = learningRadius;
-        //}
-
-        ///**
-        // * Returns the learning radius.
-        // * @return
-        // */
-        //public int getLearningRadius()
-        //{
-        //    return learningRadius;
-        //}
-
-        ///**
-        // * If the number of synapses active on a segment is at least this
-        // * threshold, it is selected as the best matching
-        // * cell in a bursting column.
-        // *
-        // * @param   minThreshold
-        // */
-        //public void setMinThreshold(int minThreshold)
-        //{
-        //    this.minThreshold = minThreshold;
-        //}
-
-        ///**
-        // * Returns the minimum threshold of the number of active synapses to be picked as best.
-        // * @return
-        // */
-        //public int getMinThreshold()
-        //{
-        //    return minThreshold;
-        //}
-
-        /**
-         * The maximum number of synapses added to a segment during learning.
-         *
-         * @param   maxNewSynapseCount
-         */
-        //public void setMaxNewSynapseCount(int maxNewSynapseCount)
-        //{
-        //    this.maxNewSynapseCount = maxNewSynapseCount;
-        //}
-
-        ///**
-        // * Returns the maximum number of synapses added to a segment during
-        // * learning.
-        // *
-        // * @return
-        // */
-        //public int getMaxNewSynapseCount()
-        //{
-        //    return maxNewSynapseCount;
-        //}
-
-        /**
-         * The maximum number of segments allowed on a given cell
-         * @param maxSegmentsPerCell
-         */
-        //public void setMaxSegmentsPerCell(int maxSegmentsPerCell)
-        //{
-        //    this.maxSegmentsPerCell = maxSegmentsPerCell;
-        //}
-
-        ///**
-        // * Returns the maximum number of segments allowed on a given cell
-        // * @return
-        // */
-        //public int getMaxSegmentsPerCell()
-        //{
-        //    return maxSegmentsPerCell;
-        //}
-
-        ///**
-        // * The maximum number of synapses allowed on a given segment
-        // * @param maxSynapsesPerSegment
-        // */
-        //public void setMaxSynapsesPerSegment(int maxSynapsesPerSegment)
-        //{
-        //    this.maxSynapsesPerSegment = maxSynapsesPerSegment;
-        //}
-
-        ///**
-        // * Returns the maximum number of synapses allowed per segment
-        // * @return
-        // */
-        //public int getMaxSynapsesPerSegment()
-        //{
-        //    return maxSynapsesPerSegment;
-        //}
-
-        ///**
-        // * Initial permanence of a new synapse
-        // *
-        // * @param   initialPermanence
-        // */
-        //public void setInitialPermanence(double initialPermanence)
-        //{
-        //    this.initialPermanence = initialPermanence;
-        //}
-
-        ///**
-        // * Returns the initial permanence setting.
-        // * @return
-        // */
-        //public double getInitialPermanence()
-        //{
-        //    return initialPermanence;
-        //}
-
-        ///**
-        // * If the permanence value for a synapse
-        // * is greater than this value, it is said
-        // * to be connected.
-        // *
-        // * @param connectedPermanence
-        // */
-        //public void setConnectedPermanence(double connectedPermanence)
-        //{
-        //    this.connectedPermanence = connectedPermanence;
-        //}
-
-        ///**
-        // * If the permanence value for a synapse
-        // * is greater than this value, it is said
-        // * to be connected.
-        // *
-        // * @return
-        // */
-        //public double getConnectedPermanence()
-        //{
-        //    return connectedPermanence;
-        //}
-
-        ///**
-        // * Amount by which permanences of synapses
-        // * are incremented during learning.
-        // *
-        // * @param   permanenceIncrement
-        // */
-        //public void setPermanenceIncrement(double permanenceIncrement)
-        //{
-        //    this.permanenceIncrement = permanenceIncrement;
-        //}
-
-        ///**
-        // * Amount by which permanences of synapses
-        // * are incremented during learning.
-        // */
-        //public double getPermanenceIncrement()
-        //{
-        //    return this.permanenceIncrement;
-        //}
-
-        ///**
-        // * Amount by which permanences of synapses
-        // * are decremented during learning.
-        // *
-        // * @param   permanenceDecrement
-        // */
-        //public void setPermanenceDecrement(double permanenceDecrement)
-        //{
-        //    this.permanenceDecrement = permanenceDecrement;
-        //}
-
-        ///**
-        // * Amount by which permanences of synapses
-        // * are decremented during learning.
-        // */
-        //public double getPermanenceDecrement()
-        //{
-        //    return this.permanenceDecrement;
-        //}
-
-        ///**
-        // * Amount by which active permanences of synapses of previously predicted but inactive segments are decremented.
-        // * @param predictedSegmentDecrement
-        // */
-        //public void setPredictedSegmentDecrement(double predictedSegmentDecrement)
-        //{
-        //    this.predictedSegmentDecrement = predictedSegmentDecrement;
-        //}
-
-        ///**
-        // * Returns the predictedSegmentDecrement amount.
-        // * @return
-        // */
-        //public double getPredictedSegmentDecrement()
-        //{
-        //    return this.predictedSegmentDecrement;
-        //}
+       
 
         /**
          * Converts a {@link Collection} of {@link Cell}s to a list
