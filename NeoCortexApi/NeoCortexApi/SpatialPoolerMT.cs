@@ -124,7 +124,7 @@ namespace NeoCortexApi
                 colList.Add(new KeyPair() { Key = i, Value = data.Column });
             }
 
-            SparseObjectMatrix<Column> mem = (SparseObjectMatrix<Column>)c.getMemory();
+            SparseObjectMatrix<Column> mem = (SparseObjectMatrix<Column>)c.HtmConfig.Memory;
             
             if (mem.IsRemotelyDistributed)
             {
@@ -150,7 +150,7 @@ namespace NeoCortexApi
 
             Parallel.For(0, c.NumColumns, (col) =>
             {
-                overlaps[col] = c.getColumn(col).GetColumnOverlapp(inputVector, c.StimulusThreshold);
+                overlaps[col] = c.getColumn(col).GetColumnOverlapp(inputVector, c.HtmConfig.StimulusThreshold);
             });
 
           
@@ -163,21 +163,21 @@ namespace NeoCortexApi
             // Get all indicies of input vector, which are set on '1'.
             var inputIndices = ArrayUtils.IndexWhere(inputVector, inpBit => inpBit > 0);
 
-            double[] permChanges = new double[c.NumInputs];
+            double[] permChanges = new double[c.HtmConfig.NumInputs];
 
             // First we initialize all permChanges to minimum decrement values,
             // which are used in a case of none-connections to input.
-            ArrayUtils.FillArray(permChanges, -1 * c.getSynPermInactiveDec());
+            ArrayUtils.FillArray(permChanges, -1 * c.HtmConfig.SynPermInactiveDec);
 
             // Then we update all connected permChanges to increment values for connected values.
             // Permanences are set in conencted input bits to default incremental value.
-            ArrayUtils.SetIndexesTo(permChanges, inputIndices.ToArray(), c.getSynPermActiveInc());
+            ArrayUtils.SetIndexesTo(permChanges, inputIndices.ToArray(), c.HtmConfig.SynPermActiveInc);
 
             Parallel.For(0, activeColumns.Length, (i) =>
             {
                 //Pool pool = c.getPotentialPools().get(activeColumns[i]);
                 Pool pool = c.getColumn(activeColumns[i]).ProximalDendrite.RFPool;
-                double[] perm = pool.getDensePermanences(c.NumInputs);
+                double[] perm = pool.getDensePermanences(c.HtmConfig.NumInputs);
                 int[] indexes = pool.getSparsePotential();
                 ArrayUtils.RaiseValuesBy(permChanges, perm);
                 Column col = c.getColumn(activeColumns[i]);

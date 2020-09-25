@@ -97,19 +97,19 @@ namespace NeoCortexApi
          */
         public virtual void InitMatrices(Connections c, DistributedMemory distMem)
         {
-            SparseObjectMatrix<Column> memory = (SparseObjectMatrix<Column>)c.getMemory();
+            SparseObjectMatrix<Column> memory = (SparseObjectMatrix<Column>)c.HtmConfig.Memory;
 
-            c.setMemory(memory == null ? memory = new SparseObjectMatrix<Column>(c.getColumnDimensions(), dict: null) : memory);
+            c.HtmConfig.Memory = memory == null ? memory = new SparseObjectMatrix<Column>(c.HtmConfig.ColumnDimensions, dict: null) : memory;
 
-            c.setInputMatrix(new SparseBinaryMatrix(c.getInputDimensions()));
+            c.HtmConfig.InputMatrix = new SparseBinaryMatrix(c.HtmConfig.InputDimensions);
 
             // Initiate the topologies
-            c.setColumnTopology(new Topology(c.getColumnDimensions()));
-            c.setInputTopology(new Topology(c.getInputDimensions()));
+            c.setColumnTopology(new Topology(c.HtmConfig.ColumnDimensions));
+            c.setInputTopology(new Topology(c.HtmConfig.InputDimensions));
 
             //Calculate numInputs and numColumns
-            int numInputs = c.getInputMatrix().getMaxIndex() + 1;
-            int numColumns = c.getMemory().getMaxIndex() + 1;
+            int numInputs = c.HtmConfig.InputMatrix.getMaxIndex() + 1;
+            int numColumns = c.HtmConfig.Memory.getMaxIndex() + 1;
             if (numColumns <= 0)
             {
                 throw new ArgumentException("Invalid number of columns: " + numColumns);
@@ -118,17 +118,17 @@ namespace NeoCortexApi
             {
                 throw new ArgumentException("Invalid number of inputs: " + numInputs);
             }
-            c.NumInputs = numInputs;
+            c.HtmConfig.NumInputs = numInputs;
             c.setNumColumns(numColumns);
 
             //
             // Fill the sparse matrix with column objects
-            var numCells = c.getCellsPerColumn();
+            var numCells = c.HtmConfig.CellsPerColumn;
 
             List<KeyPair> colList = new List<KeyPair>();
             for (int i = 0; i < numColumns; i++)
             {
-                colList.Add(new KeyPair() { Key = i, Value = new Column(numCells, i, c.getSynPermConnected(), c.NumInputs) });
+                colList.Add(new KeyPair() { Key = i, Value = new Column(numCells, i, c.HtmConfig.SynPermConnected, c.HtmConfig.NumInputs) });
             }
 
             Stopwatch sw = new Stopwatch();
@@ -393,10 +393,10 @@ namespace NeoCortexApi
          */
         public void compute(int[] inputVector, int[] activeArray, bool learn)
         {
-            if (inputVector.Length != this.connections.NumInputs)
+            if (inputVector.Length != this.connections.HtmConfig.NumInputs)
             {
                 throw new ArgumentException(
-                        "Input array must be same size as the defined number of inputs: From Params: " + this.connections.NumInputs +
+                        "Input array must be same size as the defined number of inputs: From Params: " + this.connections.HtmConfig.NumInputs +
                         ", From Input Vector: " + inputVector.Length);
             }
 
@@ -562,7 +562,7 @@ namespace NeoCortexApi
          */
         public void updateMinDutyCycles(Connections c)
         {
-            if (c.GlobalInhibition || c.InhibitionRadius > c.NumInputs)
+            if (c.GlobalInhibition || c.InhibitionRadius > c.HtmConfig.NumInputs)
             {
                 updateMinDutyCyclesGlobal(c);
             }
@@ -606,7 +606,7 @@ namespace NeoCortexApi
         public int[] getColumnNeighborhood(Connections c, int centerColumn, int inhibitionRadius)
         {
             var topology = c.getColumnTopology().HtmTopology;
-            return c.isWrapAround() ?
+            return c.HtmConfig.WrapAround ?
                 HtmCompute.GetWrappingNeighborhood(centerColumn, inhibitionRadius, topology) :
                     HtmCompute.GetNeighborhood(centerColumn, inhibitionRadius, topology);
         }
@@ -749,7 +749,7 @@ namespace NeoCortexApi
         {
             if (c.GlobalInhibition)
             {
-                c.InhibitionRadius = ArrayUtils.Max(c.getColumnDimensions());
+                c.InhibitionRadius = ArrayUtils.Max(c.HtmConfig.ColumnDimensions);
                 return;
             }
 
@@ -781,11 +781,11 @@ namespace NeoCortexApi
         public virtual double calcAvgColumnsPerInput(Connections c)
         {
             //int[] colDim = Array.Copy(c.getColumnDimensions(), c.getColumnDimensions().Length);
-            int[] colDim = new int[c.getColumnDimensions().Length];
-            Array.Copy(c.getColumnDimensions(), colDim, c.getColumnDimensions().Length);
+            int[] colDim = new int[c.HtmConfig.ColumnDimensions.Length];
+            Array.Copy(c.HtmConfig.ColumnDimensions, colDim, c.HtmConfig.ColumnDimensions.Length);
 
-            int[] inputDim = new int[c.getInputDimensions().Length];
-            Array.Copy(c.getInputDimensions(), inputDim, c.getInputDimensions().Length);
+            int[] inputDim = new int[c.HtmConfig.InputDimensions.Length];
+            Array.Copy(c.HtmConfig.InputDimensions, inputDim, c.HtmConfig.InputDimensions.Length);
 
             double[] columnsPerInput = ArrayUtils.Divide(
                 ArrayUtils.ToDoubleArray(colDim), ArrayUtils.ToDoubleArray(inputDim), 0, 0);
@@ -873,21 +873,21 @@ namespace NeoCortexApi
             // Get all indicies of input vector, which are set on '1'.
             var inputIndices = ArrayUtils.IndexWhere(inputVector, inpBit => inpBit > 0);
 
-            double[] permChanges = new double[c.NumInputs];
+            double[] permChanges = new double[c.HtmConfig.NumInputs];
 
             // First we initialize all permChanges to minimum decrement values,
             // which are used in a case of none-connections to input.
-            ArrayUtils.FillArray(permChanges, -1 * c.getSynPermInactiveDec());
+            ArrayUtils.FillArray(permChanges, -1 * c.HtmConfig.SynPermInactiveDec);
 
             // Then we update all connected permChanges to increment values for connected values.
             // Permanences are set in conencted input bits to default incremental value.
-            ArrayUtils.SetIndexesTo(permChanges, inputIndices.ToArray(), c.getSynPermActiveInc());
+            ArrayUtils.SetIndexesTo(permChanges, inputIndices.ToArray(), c.HtmConfig.SynPermActiveInc);
 
             for (int i = 0; i < activeColumns.Length; i++)
             {
                 //Pool pool = c.getPotentialPools().get(activeColumns[i]);
                 Pool pool = c.getColumn(activeColumns[i]).ProximalDendrite.RFPool;
-                double[] perm = pool.getDensePermanences(c.NumInputs);
+                double[] perm = pool.getDensePermanences(c.HtmConfig.NumInputs);
                 int[] indexes = pool.getSparsePotential();
                 ArrayUtils.RaiseValuesBy(permChanges, perm);
                 Column col = c.getColumn(activeColumns[i]);
@@ -911,7 +911,7 @@ namespace NeoCortexApi
                 return;
 
             // This condition is wrong. It brings teh SP in scillation state.
-            var weakColumns = c.getMemory().get1DIndexes().Where(i => c.getOverlapDutyCycles()[i] < c.getMinOverlapDutyCycles()[i]).ToArray();
+            var weakColumns = c.HtmConfig.Memory.get1DIndexes().Where(i => c.getOverlapDutyCycles()[i] < c.getMinOverlapDutyCycles()[i]).ToArray();
             //var weakColumnsStr = Helpers.StringifyVector(weakColumns);
             //Debug.WriteLine("weak Columns:" + weakColumnsStr);
             for (int i = 0; i < weakColumns.Length; i++)
@@ -920,7 +920,7 @@ namespace NeoCortexApi
                 //Pool pool = c.getPotentialPools().get(weakColumns[i]);
                 Pool pool = col.ProximalDendrite.RFPool;
                 double[] perm = pool.getSparsePermanences();
-                ArrayUtils.RaiseValuesBy(c.getSynPermBelowStimulusInc(), perm);
+                ArrayUtils.RaiseValuesBy(c.HtmConfig.SynPermBelowStimulusInc, perm);
                 int[] indexes = pool.getSparsePotential();
 
                 updatePermanencesForColumnSparse(c, perm, col, indexes, true);
@@ -1119,7 +1119,7 @@ namespace NeoCortexApi
                 // inhibition area can be higher than num of all columns, if 
                 // radius is near to number of columns of a dimension with highest number of columns.
                 // In that case we limit it to number of all columns.
-                inhibitionArea = Math.Pow(2 * c.InhibitionRadius + 1, c.getColumnDimensions().Length);
+                inhibitionArea = Math.Pow(2 * c.InhibitionRadius + 1, c.HtmConfig.ColumnDimensions.Length);
                 inhibitionArea = Math.Min(c.NumColumns, inhibitionArea);
 
                 density = c.NumActiveColumnsPerInhArea / inhibitionArea;
@@ -1152,7 +1152,7 @@ namespace NeoCortexApi
             //Add our fixed little bit of random noise to the scores to help break ties.
             //ArrayUtils.d_add(overlaps, c.getTieBreaker());
 
-            if (c.GlobalInhibition || c.InhibitionRadius > ArrayUtils.Max(c.getColumnDimensions()))
+            if (c.GlobalInhibition || c.InhibitionRadius > ArrayUtils.Max(c.HtmConfig.ColumnDimensions))
             {
                 return inhibitColumnsGlobal(c, overlaps, density);
             }
@@ -1185,7 +1185,7 @@ namespace NeoCortexApi
 
             // Enforce the stimulus threshold. This is a minimum number of synapses that must be ON in order for a columns to turn ON. 
             // The purpose of this is to prevent noise input from activating columns. Specified as a percent of a fully grown synapse.
-            double stimulusThreshold = c.StimulusThreshold;
+            double stimulusThreshold = c.HtmConfig.StimulusThreshold;
 
             // Calculate difference between num of columns and num of active. Num of active is less than 
             // num of columns, because of specified density.
@@ -1241,7 +1241,7 @@ namespace NeoCortexApi
             //Debug.WriteLine("Inhibition Radius: " + inhibitionRadius);
             for (int column = 0; column < overlaps.Length; column++)
             {
-                if (overlaps[column] >= c.StimulusThreshold)
+                if (overlaps[column] >= c.HtmConfig.StimulusThreshold)
                 {
                     int[] neighborhood = getColumnNeighborhood(c, column, inhibitionRadius);
                     // Take overlapps of neighbors
@@ -1278,7 +1278,7 @@ namespace NeoCortexApi
             int maxInhibitionRadius = (int)((Math.Sqrt((preActive / (overlaps.Length * 0.02)) + 1) / 2) - 1);
             maxInhibitionRadius = Math.Max(1, maxInhibitionRadius);
             int count = (int)(0.02 * overlaps.Length);
-            var activeCols = ArrayUtils.IndexWhere(overlaps, (el) => el > c.StimulusThreshold);
+            var activeCols = ArrayUtils.IndexWhere(overlaps, (el) => el > c.HtmConfig.StimulusThreshold);
             double max = 0;
             int colNum = 0;
             for (int i = 0; i < count; i++)
@@ -1418,7 +1418,7 @@ namespace NeoCortexApi
             Parallel.ForEach(overlaps, (val, b, index) =>
             {
                 // int column = i;
-                if ((int)index >= c.StimulusThreshold)
+                if ((int)index >= c.HtmConfig.StimulusThreshold)
                 {
                     // GETS INDEXES IN THE ARRAY FOR THE NEIGHBOURS WITHIN THE INHIBITION RADIUS.
                     List<int> neighborhood = getColumnNeighborhood(c, (int)index, inhibitionRadius).ToList();
@@ -1465,7 +1465,7 @@ namespace NeoCortexApi
             for (int column = 0; column < overlaps.Length; column++)
             {
                 // int column = i;
-                if (overlaps[column] >= c.StimulusThreshold)
+                if (overlaps[column] >= c.HtmConfig.StimulusThreshold)
                 {
                     // GETS INDEXES IN THE ARRAY FOR THE NEIGHBOURS WITHIN THE INHIBITION RADIUS.
                     int[] neighborhood = getColumnNeighborhood(c, column, inhibitionRadius);
@@ -1593,7 +1593,7 @@ namespace NeoCortexApi
             int[] overlaps = new int[c.NumColumns];
             for (int col = 0; col < c.NumColumns; col++)
             {
-                overlaps[col] = c.getColumn(col).GetColumnOverlapp(inputVector, c.StimulusThreshold);
+                overlaps[col] = c.getColumn(col).GetColumnOverlapp(inputVector, c.HtmConfig.StimulusThreshold);
             }
             //c.getConnectedCounts().rightVecSumAtNZ(inputVector, overlaps, c.StimulusThreshold);
             //string st = string.Join(",", overlaps);

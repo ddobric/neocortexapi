@@ -45,22 +45,22 @@ namespace NeoCortexApi
         {
             this.connections = conn;
 
-            SparseObjectMatrix<Column> matrix = this.connections.getMemory() == null ?
-                new SparseObjectMatrix<Column>(this.connections.getColumnDimensions()) :
-                    (SparseObjectMatrix<Column>)this.connections.getMemory();
+            SparseObjectMatrix<Column> matrix = this.connections.HtmConfig.Memory == null ?
+                new SparseObjectMatrix<Column>(this.connections.HtmConfig.ColumnDimensions) :
+                    (SparseObjectMatrix<Column>)this.connections.HtmConfig.Memory;
 
-            this.connections.setMemory(matrix);
+            this.connections.HtmConfig.Memory = matrix;
 
             int numColumns = matrix.getMaxIndex() + 1;
             this.connections.setNumColumns(numColumns);
-            int cellsPerColumn = this.connections.getCellsPerColumn();
+            int cellsPerColumn = this.connections.HtmConfig.CellsPerColumn;
             Cell[] cells = new Cell[numColumns * cellsPerColumn];
 
             //Used as flag to determine if Column objects have been created.
             Column colZero = matrix.getObject(0);
             for (int i = 0; i < numColumns; i++)
             {
-                Column column = colZero == null ? new Column(cellsPerColumn, i, this.connections.getSynPermConnected(), this.connections.NumInputs) : matrix.getObject(i);
+                Column column = colZero == null ? new Column(cellsPerColumn, i, this.connections.HtmConfig.SynPermConnected, this.connections.HtmConfig.NumInputs) : matrix.getObject(i);
                 for (int j = 0; j < cellsPerColumn; j++)
                 {
                     cells[i * cellsPerColumn + j] = column.Cells[j];
@@ -136,7 +136,7 @@ namespace NeoCortexApi
             Func<Object, Column> segToCol = (segment) =>
             {
                 var colIndx = ((DistalDendrite)segment).ParentCell.getParentColumnIndex();
-                var parentCol = this.connections.getMemory().GetColumn(colIndx);
+                var parentCol = this.connections.HtmConfig.Memory.GetColumn(colIndx);
                 return parentCol;
             };
 
@@ -710,7 +710,7 @@ namespace NeoCortexApi
                 }
                 else
                 {
-                    synapse.setPermanence(conn.getSynPermConnected(), permanence);
+                    synapse.setPermanence(conn.HtmConfig.SynPermConnected, permanence);
                 }
             }
 

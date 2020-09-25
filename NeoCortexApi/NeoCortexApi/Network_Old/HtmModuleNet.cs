@@ -27,7 +27,7 @@ namespace NeoCortexApi.Network
                     levelIn = levelOut = levels[levelIndx];
                 else
                 {
-                    levelIn = connections[levelIndx - 1].getColumnDimensions()[0];
+                    levelIn = connections[levelIndx - 1].HtmConfig.ColumnDimensions[0];
                     levelOut = levels[levelIndx];
                 }
 
