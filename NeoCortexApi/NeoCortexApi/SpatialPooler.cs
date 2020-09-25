@@ -881,7 +881,7 @@ namespace NeoCortexApi
 
             // Then we update all connected permChanges to increment values for connected values.
             // Permanences are set in conencted input bits to default incremental value.
-            ArrayUtils.SetIndexesTo(permChanges, inputIndices.ToArray(), c.getSynPermActiveInc());
+            ArrayUtils.SetIndexesTo(permChanges, inputIndices.ToArray(), c.HtmConfig.SynPermActiveInc);
 
             for (int i = 0; i < activeColumns.Length; i++)
             {
@@ -920,7 +920,7 @@ namespace NeoCortexApi
                 //Pool pool = c.getPotentialPools().get(weakColumns[i]);
                 Pool pool = col.ProximalDendrite.RFPool;
                 double[] perm = pool.getSparsePermanences();
-                ArrayUtils.RaiseValuesBy(c.getSynPermBelowStimulusInc(), perm);
+                ArrayUtils.RaiseValuesBy(c.HtmConfig.SynPermBelowStimulusInc, perm);
                 int[] indexes = pool.getSparsePotential();
 
                 updatePermanencesForColumnSparse(c, perm, col, indexes, true);

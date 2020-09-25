@@ -39,9 +39,9 @@ namespace NeoCortexApi.Entities
         private double m_NumActiveColumnsPerInhArea;
         //private double m_StimulusThreshold = 0;
         //private double synPermInactiveDec = 0.008;
-        private double synPermActiveInc = 0.05;
-        private double synPermConnected = 0.10;
-        private double synPermBelowStimulusInc;// = synPermConnected / 10.0;
+        //private double synPermActiveInc = 0.05;
+        //private double synPermConnected = 0.10;
+        //private double synPermBelowStimulusInc;// = synPermConnected / 10.0;
         private double minPctOverlapDutyCycles = 0.001;
         private double minPctActiveDutyCycles = 0.001;
         private double predictedSegmentDecrement = 0.0;
@@ -56,7 +56,7 @@ namespace NeoCortexApi.Entities
         //Extra parameter settings
         //private double synPermMin = 0.0;
         private double synPermMax = 1.0;
-        private double synPermTrimThreshold;// = synPermActiveInc / 2.0;
+        //private double synPermTrimThreshold;// = synPermActiveInc / 2.0;
         private int updatePeriod = 50;
         private double initConnectedPct = 0.5;
 
@@ -250,6 +250,8 @@ namespace NeoCortexApi.Entities
                 //    m_HtmConfig = cfg;
                 //}
 
+                m_HtmConfig.SynPermBelowStimulusInc = m_HtmConfig.SynPermConnected / 10.0;
+                m_HtmConfig.SynPermTrimThreshold = m_HtmConfig.SynPermActiveInc / 2.0;
                 m_HtmConfig.ColumnTopology = this.ColumnTopology;
                 m_HtmConfig.InputTopology = this.InputTopology;
                 //m_HtmConfig.IsWrapAround = this.isWrapAround();
@@ -257,10 +259,10 @@ namespace NeoCortexApi.Entities
                 m_HtmConfig.NumColumns = this.getMemory() != null ? this.getMemory().getMaxIndex() + 1 : -1;
                 //m_HtmConfig.PotentialPct = getPotentialPct();
                 //m_HtmConfig.PotentialRadius = getPotentialRadius();
-                m_HtmConfig.SynPermConnected = getSynPermConnected();
+                //m_HtmConfig.SynPermConnected = getSynPermConnected();
                 m_HtmConfig.InitialSynapseConnsPct = this.InitialSynapseConnsPct;
-                m_HtmConfig.SynPermTrimThreshold = this.getSynPermTrimThreshold();
-                m_HtmConfig.SynPermBelowStimulusInc = this.synPermBelowStimulusInc;
+                //m_HtmConfig.SynPermTrimThreshold = this.getSynPermTrimThreshold();
+                //m_HtmConfig.SynPermBelowStimulusInc = this.synPermBelowStimulusInc;
                 m_HtmConfig.SynPermMax = this.getSynPermMax();
                 //m_HtmConfig.SynPermMin = this.getSynPermMin();
                 //m_HtmConfig.StimulusThreshold = this.StimulusThreshold;
@@ -386,8 +388,8 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public Connections()
         {
-            synPermTrimThreshold = synPermActiveInc / 2.0;
-            synPermBelowStimulusInc = synPermConnected / 10.0;
+            //synPermTrimThreshold = synPermActiveInc / 2.0;
+            //synPermBelowStimulusInc = synPermConnected / 10.0;
             //random = new Random(seed);
         }
 
@@ -421,7 +423,7 @@ namespace NeoCortexApi.Entities
         public void DoSpatialPoolerPostInit()
         {
             //synPermBelowStimulusInc = synPermConnected / 10.0;
-            synPermTrimThreshold = synPermActiveInc / 2.0;
+            //synPermTrimThreshold = synPermActiveInc / 2.0;
             if (HtmConfig.PotentialRadius == -1)
             {
                 this.HtmConfig.PotentialRadius = ArrayUtils.Product(inputDimensions);
@@ -1033,71 +1035,71 @@ namespace NeoCortexApi.Entities
         //    return synPermInactiveDec;
         //}
 
-        /**
-         * The amount by which an active synapse is incremented
-         * in each round. Specified as a percent of a
-         * fully grown synapse.
-         *
-         * @param synPermActiveInc
-         */
-        public void setSynPermActiveInc(double synPermActiveIncValue)
-        {
-            synPermActiveInc = synPermActiveIncValue;
-        }
+        ///**
+        // * The amount by which an active synapse is incremented
+        // * in each round. Specified as a percent of a
+        // * fully grown synapse.
+        // *
+        // * @param synPermActiveInc
+        // */
+        //public void setSynPermActiveInc(double synPermActiveIncValue)
+        //{
+        //    synPermActiveInc = synPermActiveIncValue;
+        //}
 
-        /**
-         * Returns the configured active permanence increment
-         * @return the configured active permanence increment
-         * @see setSynPermActiveInc
-         */
-        public double getSynPermActiveInc()
-        {
-            return synPermActiveInc;
-        }
+        ///**
+        // * Returns the configured active permanence increment
+        // * @return the configured active permanence increment
+        // * @see setSynPermActiveInc
+        // */
+        //public double getSynPermActiveInc()
+        //{
+        //    return synPermActiveInc;
+        //}
 
-        /**
-         * The default connected threshold. Any synapse whose
-         * permanence value is above the connected threshold is
-         * a "connected synapse", meaning it can contribute to
-         * the cell's firing.
-         *
-         * @param synPermConnected
-         */
-        public void setSynPermConnected(double synPermConnectedValue)
-        {
-            this.synPermConnected = synPermConnectedValue;
-        }
+        ///**
+        // * The default connected threshold. Any synapse whose
+        // * permanence value is above the connected threshold is
+        // * a "connected synapse", meaning it can contribute to
+        // * the cell's firing.
+        // *
+        // * @param synPermConnected
+        // */
+        //public void setSynPermConnected(double synPermConnectedValue)
+        //{
+        //    this.synPermConnected = synPermConnectedValue;
+        //}
 
-        /**
-         * Returns the synapse permanence connected threshold
-         * @return the synapse permanence connected threshold
-         * @see setSynPermConnected
-         */
-        public double getSynPermConnected()
-        {
-            return synPermConnected;
-        }
+        ///**
+        // * Returns the synapse permanence connected threshold
+        // * @return the synapse permanence connected threshold
+        // * @see setSynPermConnected
+        // */
+        //public double getSynPermConnected()
+        //{
+        //    return synPermConnected;
+        //}
 
-        /**
-         * Sets the stimulus increment for synapse permanences below
-         * the measured threshold.
-         * @param stim
-         */
-        public void setSynPermBelowStimulusInc(double stim)
-        {
-            this.synPermBelowStimulusInc = stim;
-        }
+        ///**
+        // * Sets the stimulus increment for synapse permanences below
+        // * the measured threshold.
+        // * @param stim
+        // */
+        //public void setSynPermBelowStimulusInc(double stim)
+        //{
+        //    this.synPermBelowStimulusInc = stim;
+        //}
 
-        /**
-         * Returns the stimulus increment for synapse permanences below
-         * the measured threshold.
-         *
-         * @return
-         */
-        public double getSynPermBelowStimulusInc()
-        {
-            return synPermBelowStimulusInc;
-        }
+        ///**
+        // * Returns the stimulus increment for synapse permanences below
+        // * the measured threshold.
+        // *
+        // * @return
+        // */
+        //public double getSynPermBelowStimulusInc()
+        //{
+        //    return synPermBelowStimulusInc;
+        //}
 
         /**
          * A number between 0 and 1.0, used to set a floor on
@@ -1261,23 +1263,23 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public int[] Overlaps { get => m_Overlaps; set => this.m_Overlaps = value; }
 
-        /**
-         * Sets the synPermTrimThreshold
-         * @param threshold
-         */
-        public void setSynPermTrimThreshold(double threshold)
-        {
-            this.synPermTrimThreshold = threshold;
-        }
+        ///**
+        // * Sets the synPermTrimThreshold
+        // * @param threshold
+        // */
+        //public void setSynPermTrimThreshold(double threshold)
+        //{
+        //    this.synPermTrimThreshold = threshold;
+        //}
 
-        /**
-         * Returns the synPermTrimThreshold
-         * @return
-         */
-        public double getSynPermTrimThreshold()
-        {
-            return synPermTrimThreshold;
-        }
+        ///**
+        // * Returns the synPermTrimThreshold
+        // * @return
+        // */
+        //public double getSynPermTrimThreshold()
+        //{
+        //    return synPermTrimThreshold;
+        //}
 
         /**
          * Sets the {@link FlatMatrix} which holds the mapping
@@ -2496,7 +2498,7 @@ namespace NeoCortexApi.Entities
             Console.WriteLine("localAreaDensity           = " + LocalAreaDensity);
             Console.WriteLine("inhibitionRadius           = " + InhibitionRadius);
             Console.WriteLine("stimulusThreshold          = " + this.HtmConfig.StimulusThreshold);
-            Console.WriteLine("synPermActiveInc           = " + getSynPermActiveInc());
+            Console.WriteLine("synPermActiveInc           = " + this.HtmConfig.SynPermActiveInc);
             Console.WriteLine("synPermInactiveDec         = " + this.HtmConfig.SynPermInactiveDec);
             Console.WriteLine("synPermConnected           = " + this.HtmConfig.SynPermConnected);
             Console.WriteLine("minPctOverlapDutyCycle     = " + getMinPctOverlapDutyCycles());
@@ -2702,7 +2704,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + ((distalSegments == null) ? 0 : distalSegments.GetHashCode());
             temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.StimulusThreshold);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            temp = BitConverter.DoubleToInt64Bits(synPermActiveInc);
+            temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.SynPermActiveInc);
             result = prime * result + (int)(temp ^ (temp >> 32));
             temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.SynPermBelowStimulusInc);
             result = prime * result + (int)(temp ^ (temp >> 32));
@@ -2714,7 +2716,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + (int)(temp ^ (temp >> 32));
             temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.SynPermMin);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            temp = BitConverter.DoubleToInt64Bits(synPermTrimThreshold);
+            temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.SynPermTrimThreshold);
             result = prime * result + (int)(temp ^ (temp >> 32));
             //result = prime * result + proximalSynapseCounter;
             //result = prime * result + ((proximalSynapses == null) ? 0 : proximalSynapses.GetHashCode());
@@ -2872,11 +2874,11 @@ namespace NeoCortexApi.Entities
                 return false;
             if (BitConverter.DoubleToInt64Bits(this.HtmConfig.StimulusThreshold) != BitConverter.DoubleToInt64Bits(other.HtmConfig.StimulusThreshold))
                 return false;
-            if (BitConverter.DoubleToInt64Bits(synPermActiveInc) != BitConverter.DoubleToInt64Bits(other.synPermActiveInc))
+            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.SynPermActiveInc) != BitConverter.DoubleToInt64Bits(other.HtmConfig.SynPermActiveInc))
                 return false;
-            if (BitConverter.DoubleToInt64Bits(synPermBelowStimulusInc) != BitConverter.DoubleToInt64Bits(other.synPermBelowStimulusInc))
+            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.SynPermBelowStimulusInc) != BitConverter.DoubleToInt64Bits(other.HtmConfig.SynPermBelowStimulusInc))
                 return false;
-            if (BitConverter.DoubleToInt64Bits(synPermConnected) != BitConverter.DoubleToInt64Bits(other.synPermConnected))
+            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.SynPermConnected) != BitConverter.DoubleToInt64Bits(other.HtmConfig.SynPermConnected))
                 return false;
             if (BitConverter.DoubleToInt64Bits(this.HtmConfig.SynPermInactiveDec) != BitConverter.DoubleToInt64Bits(other.HtmConfig.SynPermInactiveDec))
                 return false;
@@ -2884,7 +2886,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (BitConverter.DoubleToInt64Bits(this.HtmConfig.SynPermMin) != BitConverter.DoubleToInt64Bits(other.HtmConfig.SynPermMin))
                 return false;
-            if (BitConverter.DoubleToInt64Bits(synPermTrimThreshold) != BitConverter.DoubleToInt64Bits(other.synPermTrimThreshold))
+            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.SynPermTrimThreshold) != BitConverter.DoubleToInt64Bits(other.HtmConfig.SynPermTrimThreshold))
                 return false;
             //if (proximalSynapseCounter != other.proximalSynapseCounter)
             //    return false;

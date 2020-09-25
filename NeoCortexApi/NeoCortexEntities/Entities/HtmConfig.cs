@@ -75,6 +75,7 @@ namespace NeoCortexApi.Entities
         public int CellsPerColumn { get; set; } = 32;
 
         public double SynPermInactiveDec { get; set; }
+        public double SynPermActiveInc { get; set; }
 
         public double PermanenceIncrement { get;  set; }
 
@@ -84,6 +85,8 @@ namespace NeoCortexApi.Entities
         public int MaxSegmentsPerCell { get; set; }
 
         public int MaxSynapsesPerSegment { get; set; }
+
+        public int[] InputDimensions { get; set; }
     }
 
     public class test

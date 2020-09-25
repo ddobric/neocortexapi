@@ -90,8 +90,8 @@ namespace UnitTestsProject
             Assert.AreEqual(3, mem.NumActiveColumnsPerInhArea);//, 0);
             Assert.IsTrue(Math.Abs(1 - mem.HtmConfig.StimulusThreshold) <= 1);
             Assert.AreEqual(0.01, mem.HtmConfig.SynPermInactiveDec);//, 0);
-            Assert.AreEqual(0.1, mem.getSynPermActiveInc());//, 0);
-            Assert.AreEqual(0.1, mem.getSynPermConnected());//, 0);
+            Assert.AreEqual(0.1, mem.HtmConfig.SynPermActiveInc);//, 0);
+            Assert.AreEqual(0.1, mem.HtmConfig.SynPermConnected);//, 0);
             Assert.AreEqual(0.1, mem.getMinPctOverlapDutyCycles());//, 0);
             Assert.AreEqual(0.1, mem.getMinPctActiveDutyCycles());//, 0);
             Assert.AreEqual(10, mem.getDutyCyclePeriod());//, 0);
@@ -1165,8 +1165,10 @@ namespace UnitTestsProject
             parameters.setColumnDimensions(new int[] { 5 });
             initSP();
 
-            mem.setSynPermBelowStimulusInc(0.01);
-            mem.setSynPermTrimThreshold(0.05);
+            //mem.setSynPermBelowStimulusInc(0.01);
+            mem.HtmConfig.SynPermBelowStimulusInc = 0.01;
+            //mem.setSynPermTrimThreshold(0.05);
+            mem.HtmConfig.SynPermTrimThreshold = 0.05;
             mem.setOverlapDutyCycles(new double[] { 0, 0.009, 0.1, 0.001, 0.002 });
             mem.setMinOverlapDutyCycles(new double[] { .01, .01, .01, .01, .01 });
 
@@ -1603,7 +1605,8 @@ namespace UnitTestsProject
             parameters.setSynPermActiveInc(0.1);
             initSP();
 
-            mem.setSynPermTrimThreshold(0.05);
+            //mem.setSynPermTrimThreshold(0.05);
+            mem.HtmConfig.SynPermTrimThreshold = 0.05;
 
             int[][] potentialPools = new int[][] {
             new int[]{ 1, 1, 1, 1, 0, 0, 0, 0 },
@@ -2012,14 +2015,14 @@ namespace UnitTestsProject
             //}
 
             double[] perm = HtmCompute.InitSynapsePermanences(mem.HtmConfig, mask, mem.getRandom());
-            int numcon = ArrayUtils.ValueGreaterCount(mem.getSynPermConnected(), perm);
+            int numcon = ArrayUtils.ValueGreaterCount(mem.HtmConfig.SynPermConnected, perm);
 
             // Because of connectedPct=1 all 5 specified synapses have to be connected.
             Assert.AreEqual(5, numcon);
 
             mem.HtmConfig.InitialSynapseConnsPct = mem.InitialSynapseConnsPct = 0;
             perm = HtmCompute.InitSynapsePermanences(mem.HtmConfig, mask, mem.getRandom());
-            numcon = ArrayUtils.ValueGreaterCount(mem.getSynPermConnected(), perm);
+            numcon = ArrayUtils.ValueGreaterCount(mem.HtmConfig.SynPermConnected, perm);
             Assert.AreEqual(0, numcon);
 
             mem.HtmConfig.InitialSynapseConnsPct = mem.InitialSynapseConnsPct = 0.5;
@@ -2028,7 +2031,7 @@ namespace UnitTestsProject
             mask = new int[100];
             for (int i = 0; i < 100; i++) mask[i] = i;
             double[] perma = HtmCompute.InitSynapsePermanences(mem.HtmConfig, mask, mem.getRandom());
-            numcon = ArrayUtils.ValueGreaterOrEqualCount(mem.getSynPermConnected(), perma);
+            numcon = ArrayUtils.ValueGreaterOrEqualCount(mem.HtmConfig.SynPermConnected, perma);
             Assert.IsTrue(numcon > 0);
             Assert.IsTrue(numcon < mem.HtmConfig.NumInputs);
 

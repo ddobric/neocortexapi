@@ -257,7 +257,7 @@ namespace NeoCortexApi
 
             // Then we update all connected permChanges to increment values for connected values.
             // Permanences are set in conencted input bits to default incremental value.
-            ArrayUtils.SetIndexesTo(permChanges, inputIndices.ToArray(), c.getSynPermActiveInc());
+            ArrayUtils.SetIndexesTo(permChanges, inputIndices.ToArray(), c.HtmConfig.SynPermActiveInc);
 
             remoteHtm.AdaptSynapsesDist(inputVector, permChanges, activeColumns);
         }
