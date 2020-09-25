@@ -46,7 +46,7 @@ namespace NeoCortexApi
             this.connections = conn;
 
             SparseObjectMatrix<Column> matrix = this.connections.getMemory() == null ?
-                new SparseObjectMatrix<Column>(this.connections.getColumnDimensions()) :
+                new SparseObjectMatrix<Column>(this.connections.HtmConfig.ColumnDimensions) :
                     (SparseObjectMatrix<Column>)this.connections.getMemory();
 
             this.connections.setMemory(matrix);

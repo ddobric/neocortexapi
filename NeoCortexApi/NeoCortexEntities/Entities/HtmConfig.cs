@@ -86,7 +86,8 @@ namespace NeoCortexApi.Entities
 
         public int MaxSynapsesPerSegment { get; set; }
 
-        public int[] InputDimensions { get; set; }
+        public int[] InputDimensions { get; set; } = new int[] { 100 };
+        public int[] ColumnDimensions { get; set; } = new int[] { 2048};
     }
 
     public class test

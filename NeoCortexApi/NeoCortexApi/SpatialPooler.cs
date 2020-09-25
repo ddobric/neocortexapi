@@ -99,13 +99,13 @@ namespace NeoCortexApi
         {
             SparseObjectMatrix<Column> memory = (SparseObjectMatrix<Column>)c.getMemory();
 
-            c.setMemory(memory == null ? memory = new SparseObjectMatrix<Column>(c.getColumnDimensions(), dict: null) : memory);
+            c.setMemory(memory == null ? memory = new SparseObjectMatrix<Column>(c.HtmConfig.ColumnDimensions, dict: null) : memory);
 
-            c.setInputMatrix(new SparseBinaryMatrix(c.getInputDimensions()));
+            c.setInputMatrix(new SparseBinaryMatrix(c.HtmConfig.InputDimensions));
 
             // Initiate the topologies
-            c.setColumnTopology(new Topology(c.getColumnDimensions()));
-            c.setInputTopology(new Topology(c.getInputDimensions()));
+            c.setColumnTopology(new Topology(c.HtmConfig.ColumnDimensions));
+            c.setInputTopology(new Topology(c.HtmConfig.InputDimensions));
 
             //Calculate numInputs and numColumns
             int numInputs = c.getInputMatrix().getMaxIndex() + 1;
@@ -749,7 +749,7 @@ namespace NeoCortexApi
         {
             if (c.GlobalInhibition)
             {
-                c.InhibitionRadius = ArrayUtils.Max(c.getColumnDimensions());
+                c.InhibitionRadius = ArrayUtils.Max(c.HtmConfig.ColumnDimensions);
                 return;
             }
 
@@ -781,11 +781,11 @@ namespace NeoCortexApi
         public virtual double calcAvgColumnsPerInput(Connections c)
         {
             //int[] colDim = Array.Copy(c.getColumnDimensions(), c.getColumnDimensions().Length);
-            int[] colDim = new int[c.getColumnDimensions().Length];
-            Array.Copy(c.getColumnDimensions(), colDim, c.getColumnDimensions().Length);
+            int[] colDim = new int[c.HtmConfig.ColumnDimensions.Length];
+            Array.Copy(c.HtmConfig.ColumnDimensions, colDim, c.HtmConfig.ColumnDimensions.Length);
 
-            int[] inputDim = new int[c.getInputDimensions().Length];
-            Array.Copy(c.getInputDimensions(), inputDim, c.getInputDimensions().Length);
+            int[] inputDim = new int[c.HtmConfig.InputDimensions.Length];
+            Array.Copy(c.HtmConfig.InputDimensions, inputDim, c.HtmConfig.InputDimensions.Length);
 
             double[] columnsPerInput = ArrayUtils.Divide(
                 ArrayUtils.ToDoubleArray(colDim), ArrayUtils.ToDoubleArray(inputDim), 0, 0);
@@ -1119,7 +1119,7 @@ namespace NeoCortexApi
                 // inhibition area can be higher than num of all columns, if 
                 // radius is near to number of columns of a dimension with highest number of columns.
                 // In that case we limit it to number of all columns.
-                inhibitionArea = Math.Pow(2 * c.InhibitionRadius + 1, c.getColumnDimensions().Length);
+                inhibitionArea = Math.Pow(2 * c.InhibitionRadius + 1, c.HtmConfig.ColumnDimensions.Length);
                 inhibitionArea = Math.Min(c.NumColumns, inhibitionArea);
 
                 density = c.NumActiveColumnsPerInhArea / inhibitionArea;
@@ -1152,7 +1152,7 @@ namespace NeoCortexApi
             //Add our fixed little bit of random noise to the scores to help break ties.
             //ArrayUtils.d_add(overlaps, c.getTieBreaker());
 
-            if (c.GlobalInhibition || c.InhibitionRadius > ArrayUtils.Max(c.getColumnDimensions()))
+            if (c.GlobalInhibition || c.InhibitionRadius > ArrayUtils.Max(c.HtmConfig.ColumnDimensions))
             {
                 return inhibitColumnsGlobal(c, overlaps, density);
             }

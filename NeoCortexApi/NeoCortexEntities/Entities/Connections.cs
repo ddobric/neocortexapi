@@ -137,7 +137,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Total number of columns
         /// </summary>
-        protected int[] columnDimensions = new int[] { 2048 };
+        //protected int[] columnDimensions = new int[] { 2048 };
         /// <summary>
         /// Total number of cells per column
         /// </summary>
@@ -145,7 +145,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// What will comprise the Layer input. Input (i.e. from encoder)
         /// </summary>
-        protected int[] inputDimensions = new int[] { 100 };
+        //protected int[] inputDimensions = new int[] { 100 };
         /// <summary>
         /// If the number of active connected synapses on a segment
         /// is at least this threshold, the segment is said to be active.
@@ -426,7 +426,7 @@ namespace NeoCortexApi.Entities
             //synPermTrimThreshold = synPermActiveInc / 2.0;
             if (HtmConfig.PotentialRadius == -1)
             {
-                this.HtmConfig.PotentialRadius = ArrayUtils.Product(inputDimensions);
+                this.HtmConfig.PotentialRadius = ArrayUtils.Product(this.HtmConfig.InputDimensions);
             }
         }
 
@@ -2094,50 +2094,50 @@ namespace NeoCortexApi.Entities
         }
 
 
-        /**
-         * Sets the number of {@link Column}.
-         *
-         * @param columnDimensions
-         */
-        public void setColumnDimensions(int[] columnDimensions)
-        {
-            this.columnDimensions = columnDimensions;
-        }
+        ///**
+        // * Sets the number of {@link Column}.
+        // *
+        // * @param columnDimensions
+        // */
+        //public void setColumnDimensions(int[] columnDimensions)
+        //{
+        //    this.columnDimensions = columnDimensions;
+        //}
 
-        /**
-         * Gets the number of {@link Column}.
-         *
-         * @return columnDimensions
-         */
-        public int[] getColumnDimensions()
-        {
-            return this.columnDimensions;
-        }
+        ///**
+        // * Gets the number of {@link Column}.
+        // *
+        // * @return columnDimensions
+        // */
+        //public int[] getColumnDimensions()
+        //{
+        //    return this.columnDimensions;
+        //}
 
-        /**
-         * A list representing the dimensions of the input
-         * vector. Format is [height, width, depth, ...], where
-         * each value represents the size of the dimension. For a
-         * topology of one dimension with 100 inputs use 100, or
-         * [100]. For a two dimensional topology of 10x5 use
-         * [10,5].
-         *
-         * @param inputDimensions
-         */
-        public void setInputDimensions(int[] inputDimensions)
-        {
-            this.inputDimensions = inputDimensions;
-        }
+        ///**
+        // * A list representing the dimensions of the input
+        // * vector. Format is [height, width, depth, ...], where
+        // * each value represents the size of the dimension. For a
+        // * topology of one dimension with 100 inputs use 100, or
+        // * [100]. For a two dimensional topology of 10x5 use
+        // * [10,5].
+        // *
+        // * @param inputDimensions
+        // */
+        //public void setInputDimensions(int[] inputDimensions)
+        //{
+        //    this.inputDimensions = inputDimensions;
+        //}
 
-        /**
-         * Returns the configured input dimensions
-         * see {@link #setInputDimensions(int[])}
-         * @return the configured input dimensions
-         */
-        public int[] getInputDimensions()
-        {
-            return inputDimensions;
-        }
+        ///**
+        // * Returns the configured input dimensions
+        // * see {@link #setInputDimensions(int[])}
+        // * @return the configured input dimensions
+        // */
+        //public int[] getInputDimensions()
+        //{
+        //    return inputDimensions;
+        //}
 
         ///**
         // * Sets the number of {@link Cell}s per {@link Column}
@@ -2490,7 +2490,7 @@ namespace NeoCortexApi.Entities
             Console.WriteLine("numInputs                  = " + this.HtmConfig.NumInputs);
             Console.WriteLine("numColumns                 = " + NumColumns);
             Console.WriteLine("cellsPerColumn             = " + this.HtmConfig.CellsPerColumn);
-            Console.WriteLine("columnDimensions           = " + getColumnDimensions().ToString());
+            Console.WriteLine("columnDimensions           = " + this.HtmConfig.ColumnDimensions.ToString());
             Console.WriteLine("numActiveColumnsPerInhArea = " + NumActiveColumnsPerInhArea);
             Console.WriteLine("potentialPct               = " + this.HtmConfig.PotentialPct);
             Console.WriteLine("potentialRadius            = " + this.HtmConfig.PotentialRadius);
@@ -2648,7 +2648,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + m_BoostFactors.GetHashCode();
             result = prime * result + cells.GetHashCode();
             result = prime * result + this.HtmConfig.CellsPerColumn;
-            result = prime * result + columnDimensions.GetHashCode();
+            result = prime * result + this.HtmConfig.ColumnDimensions.GetHashCode();
             //result = prime * result + ((connectedCounts == null) ? 0 : connectedCounts.GetHashCode());
             long temp;
             temp = BitConverter.DoubleToInt64Bits(connectedPermanence);
@@ -2660,7 +2660,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + (int)(temp ^ (temp >> 32));
             temp = BitConverter.DoubleToInt64Bits(initialPermanence);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            result = prime * result + inputDimensions.GetHashCode();
+            result = prime * result + this.HtmConfig.InputDimensions.GetHashCode();
             result = prime * result + ((inputMatrix == null) ? 0 : inputMatrix.GetHashCode());
             result = prime * result + spIterationLearnNum;
             result = prime * result + spIterationNum;
@@ -2761,7 +2761,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (this.HtmConfig.CellsPerColumn != other.HtmConfig.CellsPerColumn)
                 return false;
-            if (!Array.Equals(columnDimensions, other.columnDimensions))
+            if (!Array.Equals(this.HtmConfig.ColumnDimensions, other.HtmConfig.ColumnDimensions))
                 return false;
             //if (connectedCounts == null)
             //{
@@ -2782,7 +2782,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (BitConverter.DoubleToInt64Bits(initialPermanence) != BitConverter.DoubleToInt64Bits(other.initialPermanence))
                 return false;
-            if (!Array.Equals(inputDimensions, other.inputDimensions))
+            if (!Array.Equals(this.HtmConfig.InputDimensions, other.HtmConfig.InputDimensions))
                 return false;
             if (inputMatrix == null)
             {

@@ -28,13 +28,13 @@ namespace NeoCortexApi
 
             SparseObjectMatrix<Column> mem = (SparseObjectMatrix<Column>)c.getMemory();
 
-            c.setMemory(mem == null ? mem = new SparseObjectMatrix<Column>(c.getColumnDimensions(), dict: distMem.ColumnDictionary) : mem);
+            c.setMemory(mem == null ? mem = new SparseObjectMatrix<Column>(c.HtmConfig.ColumnDimensions, dict: distMem.ColumnDictionary) : mem);
 
-            c.setInputMatrix(new SparseBinaryMatrix(c.getInputDimensions()));
+            c.setInputMatrix(new SparseBinaryMatrix(c.HtmConfig.InputDimensions));
 
             // Initiate the topologies
-            c.setColumnTopology(new Topology(c.getColumnDimensions()));
-            c.setInputTopology(new Topology(c.getInputDimensions()));
+            c.setColumnTopology(new Topology(c.HtmConfig.ColumnDimensions));
+            c.setInputTopology(new Topology(c.HtmConfig.InputDimensions));
 
             //Calculate numInputs and numColumns
             int numInputs = c.getInputMatrix().getMaxIndex() + 1;

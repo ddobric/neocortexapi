@@ -81,8 +81,8 @@ namespace UnitTestsProject
 
             initSP();
 
-            Assert.AreEqual(5, mem.getInputDimensions()[0]);
-            Assert.AreEqual(5, mem.getColumnDimensions()[0]);
+            Assert.AreEqual(5, mem.HtmConfig.InputDimensions[0]);
+            Assert.AreEqual(5, mem.HtmConfig.ColumnDimensions[0]);
             Assert.AreEqual(5, mem.HtmConfig.PotentialRadius);
             Assert.AreEqual(0.5, mem.HtmConfig.PotentialPct);//, 0);
             Assert.AreEqual(false, mem.GlobalInhibition);
@@ -368,7 +368,7 @@ namespace UnitTestsProject
             int[] inputVector = { 1, 1, 1, 1, 1 };
             int[] activeArray = { 0, 0, 0 };
             int[] expOutput = { 4, 4, 4 }; // Added during implementation of parallel.
-                                           /*{ 1, 1, 1 }*/
+            /*{ 1, 1, 1 }*/
             ;
             // { 2, 1, 0 }; This was used originally on Linux with JAVA and Pyhton
             sp.compute(inputVector, activeArray, true);
@@ -608,8 +608,8 @@ namespace UnitTestsProject
             parameters.Set(KEY.WRAP_AROUND, false);
             initSP();
 
-            Assert.AreEqual(12, mem.getInputDimensions()[0]);
-            Assert.AreEqual(4, mem.getColumnDimensions()[0]);
+            Assert.AreEqual(12, mem.HtmConfig.InputDimensions[0]);
+            Assert.AreEqual(4, mem.HtmConfig.ColumnDimensions[0]);
             Assert.AreEqual(2, mem.HtmConfig.PotentialRadius);
 
             // Test without wrapAround and potentialPct = 1
@@ -810,7 +810,8 @@ namespace UnitTestsProject
 
             //////
             reset();
-            mem.setColumnDimensions(new int[] { 50, 10 });
+            //mem.setColumnDimensions(new int[] { 50, 10 });
+            mem.HtmConfig.ColumnDimensions = new int[] { 50, 10 };
             //Internally calculated during init, to overwrite we put after init
             mem.GlobalInhibition = false;
             mem.InhibitionRadius = 7;
@@ -944,7 +945,8 @@ namespace UnitTestsProject
 
             //Test global inhibition case
             mem.GlobalInhibition = true;
-            mem.setColumnDimensions(new int[] { 57, 31, 2 });
+            //mem.setColumnDimensions(new int[] { 57, 31, 2 });
+            mem.HtmConfig.ColumnDimensions = new int[] { 57, 31, 2 };
             // If global inhibition is set, then all columns in the row are inhibited.
             sp.updateInhibitionRadius(mem);
             Assert.IsTrue(57 == mem.InhibitionRadius);
@@ -1028,7 +1030,8 @@ namespace UnitTestsProject
             sp = mock;
             mem.GlobalInhibition = false;
 
-            mem.setInputDimensions(new int[] { 5, 10, 2 });
+            //mem.setInputDimensions(new int[] { 5, 10, 2 });
+            mem.HtmConfig.InputDimensions = new int[] { 5, 10, 2 };
             sp.updateInhibitionRadius(mem);
         }
 
@@ -1040,32 +1043,44 @@ namespace UnitTestsProject
             setupParameters();
             initSP();
 
-            mem.setColumnDimensions(new int[] { 2, 2, 2, 2 });
-            mem.setInputDimensions(new int[] { 4, 4, 4, 4 });
+            //mem.setColumnDimensions(new int[] { 2, 2, 2, 2 });
+            mem.HtmConfig.ColumnDimensions = new int[] { 2, 2, 2, 2 };
+            //mem.setInputDimensions(new int[] { 4, 4, 4, 4 });
+            mem.HtmConfig.InputDimensions = new int[] { 4, 4, 4, 4 };
             Assert.IsTrue(0.5 == sp.calcAvgColumnsPerInput(mem));
 
-            mem.setColumnDimensions(new int[] { 2, 2, 2, 2 });
-            mem.setInputDimensions(new int[] { 7, 5, 1, 3 });
+            //mem.setColumnDimensions(new int[] { 2, 2, 2, 2 });
+            mem.HtmConfig.ColumnDimensions = new int[] { 2, 2, 2, 2 };
+            //mem.setInputDimensions(new int[] { 7, 5, 1, 3 });
+            mem.HtmConfig.InputDimensions = new int[] { 7, 5, 1, 3 };
             double trueAvgColumnPerInput = (2.0 / 7 + 2.0 / 5 + 2.0 / 1 + 2 / 3.0) / 4.0d;
             Assert.IsTrue(trueAvgColumnPerInput == sp.calcAvgColumnsPerInput(mem));
 
-            mem.setColumnDimensions(new int[] { 3, 3 });
-            mem.setInputDimensions(new int[] { 3, 3 });
+            //mem.setColumnDimensions(new int[] { 3, 3 });
+            mem.HtmConfig.ColumnDimensions = new int[] { 3, 3 };
+            //mem.setInputDimensions(new int[] { 3, 3 });
+            mem.HtmConfig.InputDimensions = new int[] { 3, 3 };
             trueAvgColumnPerInput = 1;
             Assert.IsTrue(trueAvgColumnPerInput == sp.calcAvgColumnsPerInput(mem));
 
-            mem.setColumnDimensions(new int[] { 25 });
-            mem.setInputDimensions(new int[] { 5 });
+            //mem.setColumnDimensions(new int[] { 25 });
+            mem.HtmConfig.ColumnDimensions = new int[] { 25 };
+            //mem.setInputDimensions(new int[] { 5 });
+            mem.HtmConfig.InputDimensions = new int[] { 5 };
             trueAvgColumnPerInput = 5;
             Assert.IsTrue(trueAvgColumnPerInput == sp.calcAvgColumnsPerInput(mem));
 
-            mem.setColumnDimensions(new int[] { 3, 3, 3, 5, 5, 6, 6 });
-            mem.setInputDimensions(new int[] { 3, 3, 3, 5, 5, 6, 6 });
+            //mem.setColumnDimensions(new int[] { 3, 3, 3, 5, 5, 6, 6 });
+            mem.HtmConfig.ColumnDimensions = new int[] { 3, 3, 3, 5, 5, 6, 6 };
+            //mem.setInputDimensions(new int[] { 3, 3, 3, 5, 5, 6, 6 });
+            mem.HtmConfig.InputDimensions = new int[] { 3, 3, 3, 5, 5, 6, 6 };
             trueAvgColumnPerInput = 1;
             Assert.IsTrue(trueAvgColumnPerInput == sp.calcAvgColumnsPerInput(mem));
 
-            mem.setColumnDimensions(new int[] { 3, 6, 9, 12 });
-            mem.setInputDimensions(new int[] { 3, 3, 3, 3 });
+            //mem.setColumnDimensions(new int[] { 3, 6, 9, 12 });
+            mem.HtmConfig.ColumnDimensions = new int[] { 3, 6, 9, 12 };
+            //mem.setInputDimensions(new int[] { 3, 3, 3, 3 });
+            mem.HtmConfig.InputDimensions = new int[] { 3, 3, 3, 3 };
             trueAvgColumnPerInput = 2.5;
             Assert.IsTrue(trueAvgColumnPerInput == sp.calcAvgColumnsPerInput(mem));
         }
@@ -1079,8 +1094,10 @@ namespace UnitTestsProject
             mem = new Connections();
 
             int[] inputDimensions = new int[] { 4, 4, 2, 5 };
-            mem.setInputDimensions(inputDimensions);
-            mem.setColumnDimensions(new int[] { 5 });
+            //mem.setInputDimensions(inputDimensions);
+            mem.HtmConfig.InputDimensions = inputDimensions;
+            //mem.setColumnDimensions(new int[] { 5 });
+            mem.HtmConfig.ColumnDimensions = new int[] { 5 };
             sp.InitMatrices(mem, null);
 
             List<int> connected = new List<int>();
