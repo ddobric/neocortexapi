@@ -85,17 +85,17 @@ namespace UnitTestsProject
             Assert.AreEqual(5, mem.HtmConfig.ColumnDimensions[0]);
             Assert.AreEqual(5, mem.HtmConfig.PotentialRadius);
             Assert.AreEqual(0.5, mem.HtmConfig.PotentialPct);//, 0);
-            Assert.AreEqual(false, mem.GlobalInhibition);
-            Assert.AreEqual(-1.0, mem.LocalAreaDensity);//, 0);
-            Assert.AreEqual(3, mem.NumActiveColumnsPerInhArea);//, 0);
+            Assert.AreEqual(false, mem.HtmConfig.GlobalInhibition);
+            Assert.AreEqual(-1.0, mem.HtmConfig.LocalAreaDensity);//, 0);
+            Assert.AreEqual(3, mem.HtmConfig.NumActiveColumnsPerInhArea);//, 0);
             Assert.IsTrue(Math.Abs(1 - mem.HtmConfig.StimulusThreshold) <= 1);
             Assert.AreEqual(0.01, mem.HtmConfig.SynPermInactiveDec);//, 0);
             Assert.AreEqual(0.1, mem.HtmConfig.SynPermActiveInc);//, 0);
             Assert.AreEqual(0.1, mem.HtmConfig.SynPermConnected);//, 0);
-            Assert.AreEqual(0.1, mem.getMinPctOverlapDutyCycles());//, 0);
-            Assert.AreEqual(0.1, mem.getMinPctActiveDutyCycles());//, 0);
-            Assert.AreEqual(10, mem.getDutyCyclePeriod());//, 0);
-            Assert.AreEqual(10.0, mem.getMaxBoost());//, 0);
+            Assert.AreEqual(0.1, mem.HtmConfig.MinPctOverlapDutyCycles);//, 0);
+            Assert.AreEqual(0.1, mem.HtmConfig.MinPctActiveDutyCycles);//, 0);
+            Assert.AreEqual(10, mem.HtmConfig.DutyCyclePeriod);//, 0);
+            Assert.AreEqual(10.0, mem.HtmConfig.MaxBoost);//, 0);
             Assert.AreEqual(42, mem.HtmConfig.RandomGenSeed);
 
             Assert.AreEqual(5, mem.HtmConfig.NumInputs);
@@ -797,11 +797,11 @@ namespace UnitTestsProject
 
 
             double[] overlaps = ArrayUtils.Sample(mem.NumColumns, mem.getRandom());
-            mem.NumActiveColumnsPerInhArea = 5;
-            mem.LocalAreaDensity = 0.1;
-            mem.GlobalInhibition = true;
+            mem.HtmConfig.NumActiveColumnsPerInhArea = 5;
+            mem.HtmConfig.LocalAreaDensity = 0.1;
+            mem.HtmConfig.GlobalInhibition = true;
             mem.InhibitionRadius = 5;
-            double trueDensity = mem.LocalAreaDensity;
+            double trueDensity = mem.HtmConfig.LocalAreaDensity;
             //inhibitColumnsGlobal.inhibitColumns(mem, overlaps);
             mock.inhibitColumns(mem, overlaps);
             Assert.IsTrue(globalCalled);
@@ -813,7 +813,7 @@ namespace UnitTestsProject
             //mem.setColumnDimensions(new int[] { 50, 10 });
             mem.HtmConfig.ColumnDimensions = new int[] { 50, 10 };
             //Internally calculated during init, to overwrite we put after init
-            mem.GlobalInhibition = false;
+            mem.HtmConfig.GlobalInhibition = false;
             mem.InhibitionRadius = 7;
 
             double[] tieBreaker = new double[500];
@@ -822,7 +822,7 @@ namespace UnitTestsProject
             overlaps = ArrayUtils.Sample(mem.NumColumns, mem.getRandom());
             //inhibitColumnsLocal.inhibitColumns(mem, overlaps);
             mock.inhibitColumns(mem, overlaps);
-            trueDensity = mem.LocalAreaDensity;
+            trueDensity = mem.HtmConfig.LocalAreaDensity;
             Assert.IsTrue(!globalCalled);
             Assert.IsTrue(localCalled);
             Assert.IsTrue(Math.Abs(trueDensity - _density) <= .01d);
@@ -851,7 +851,7 @@ namespace UnitTestsProject
 
             //////
             reset();
-            mem.NumActiveColumnsPerInhArea = 7;
+            mem.HtmConfig.NumActiveColumnsPerInhArea = 7;
 
             //Internally calculated during init, to overwrite we put after init
             mem.InhibitionRadius = 1;
@@ -944,7 +944,7 @@ namespace UnitTestsProject
             initSP();
 
             //Test global inhibition case
-            mem.GlobalInhibition = true;
+            mem.HtmConfig.GlobalInhibition = true;
             //mem.setColumnDimensions(new int[] { 57, 31, 2 });
             mem.HtmConfig.ColumnDimensions = new int[] { 57, 31, 2 };
             // If global inhibition is set, then all columns in the row are inhibited.
@@ -967,7 +967,7 @@ namespace UnitTestsProject
             //        return 4;
             //    }
             //};
-            mem.GlobalInhibition = false;
+            mem.HtmConfig.GlobalInhibition = false;
             sp = mock;
             sp.updateInhibitionRadius(mem);
             Assert.IsTrue(6 == mem.InhibitionRadius);
@@ -989,7 +989,7 @@ namespace UnitTestsProject
             //        return 1.2;
             //    }
             //};
-            mem.GlobalInhibition = false;
+            mem.HtmConfig.GlobalInhibition = false;
             sp = mock;
             sp.updateInhibitionRadius(mem);
             Assert.IsTrue(1 == mem.InhibitionRadius);
@@ -1010,7 +1010,7 @@ namespace UnitTestsProject
             //        return 2;
             //    }
             //};
-            mem.GlobalInhibition = false;
+            mem.HtmConfig.GlobalInhibition = false;
             sp = mock;
             //((2 * 2.4) - 1) / 2.0 => round up
             sp.updateInhibitionRadius(mem);
@@ -1019,7 +1019,7 @@ namespace UnitTestsProject
             //...
             sp = new SpatialPoolerMT();
 
-            mem.GlobalInhibition = true;
+            mem.HtmConfig.GlobalInhibition = true;
 
             sp.updateInhibitionRadius(mem);
 
@@ -1028,7 +1028,7 @@ namespace UnitTestsProject
 
             // TODO..
             sp = mock;
-            mem.GlobalInhibition = false;
+            mem.HtmConfig.GlobalInhibition = false;
 
             //mem.setInputDimensions(new int[] { 5, 10, 2 });
             mem.HtmConfig.InputDimensions = new int[] { 5, 10, 2 };
@@ -1449,8 +1449,10 @@ namespace UnitTestsProject
             mem.InhibitionRadius = 1;
             mem.setOverlapDutyCycles(new double[] { 0.7, 0.1, 0.5, 0.01, 0.78, 0.55, 0.1, 0.001 });
             mem.setActiveDutyCycles(new double[] { 0.9, 0.3, 0.5, 0.7, 0.1, 0.01, 0.08, 0.12 });
-            mem.setMinPctActiveDutyCycles(0.1);
-            mem.setMinPctOverlapDutyCycles(0.2);
+            //mem.setMinPctActiveDutyCycles(0.1);
+            mem.HtmConfig.MinPctActiveDutyCycles = 0.1;
+            //mem.setMinPctOverlapDutyCycles(0.2);
+            mem.HtmConfig.MinPctOverlapDutyCycles = 0.2;
             sp.updateMinDutyCyclesLocal(mem);
 
             double[] resultMinActiveDutyCycles = mem.getMinActiveDutyCycles();
@@ -1485,8 +1487,10 @@ namespace UnitTestsProject
             mem.InhibitionRadius = 1;
             mem.setOverlapDutyCycles(new double[] { 0.7, 0.1, 0.5, 0.01, 0.78, 0.55, 0.1, 0.001 });
             mem.setActiveDutyCycles(new double[] { 0.9, 0.3, 0.5, 0.7, 0.1, 0.01, 0.08, 0.12 });
-            mem.setMinPctActiveDutyCycles(0.1);
-            mem.setMinPctOverlapDutyCycles(0.2);
+            //mem.setMinPctActiveDutyCycles(0.1);
+            mem.HtmConfig.MinPctActiveDutyCycles = 0.1;
+            //mem.setMinPctOverlapDutyCycles(0.2);
+            mem.HtmConfig.MinPctOverlapDutyCycles = 0.2;
             sp.updateMinDutyCyclesLocal(mem);
 
             double[] resultMinActiveDutyCycles2 = mem.getMinActiveDutyCycles();
@@ -1525,8 +1529,10 @@ namespace UnitTestsProject
             parameters.setColumnDimensions(new int[] { 5 });
             initSP();
 
-            mem.setMinPctOverlapDutyCycles(0.01);
-            mem.setMinPctActiveDutyCycles(0.02);
+            //mem.setMinPctOverlapDutyCycles(0.01);
+            mem.HtmConfig.MinPctOverlapDutyCycles = 0.01;
+            //mem.setMinPctActiveDutyCycles(0.02);
+            mem.HtmConfig.MinPctActiveDutyCycles = 0.02;
             mem.setOverlapDutyCycles(new double[] { 0.06, 1, 3, 6, 0.5 });
             mem.setActiveDutyCycles(new double[] { 0.6, 0.07, 0.5, 0.4, 0.3 });
 
@@ -1543,8 +1549,10 @@ namespace UnitTestsProject
                 Assert.IsTrue(Math.Abs(trueMinActiveDutyCycles[i] - mem.getMinActiveDutyCycles()[i]) <= 0.01);
             }
 
-            mem.setMinPctOverlapDutyCycles(0.015);
-            mem.setMinPctActiveDutyCycles(0.03);
+            //mem.setMinPctOverlapDutyCycles(0.015);
+            mem.HtmConfig.MinPctOverlapDutyCycles = 0.015;
+            //mem.setMinPctActiveDutyCycles(0.03);
+            mem.HtmConfig.MinPctActiveDutyCycles = 0.03;
             mem.setOverlapDutyCycles(new double[] { 0.86, 2.4, 0.03, 1.6, 1.5 });
             mem.setActiveDutyCycles(new double[] { 0.16, 0.007, 0.15, 0.54, 0.13 });
             sp.updateMinDutyCyclesGlobal(mem);
@@ -1556,8 +1564,10 @@ namespace UnitTestsProject
                 Assert.IsTrue(Math.Abs(trueMinOverlapDutyCycles[i] - mem.getMinOverlapDutyCycles()[i]) <= 0.01);
             }
 
-            mem.setMinPctOverlapDutyCycles(0.015);
-            mem.setMinPctActiveDutyCycles(0.03);
+            //mem.setMinPctOverlapDutyCycles(0.015);
+            mem.HtmConfig.MinPctOverlapDutyCycles = 0.015;
+            //mem.setMinPctActiveDutyCycles(0.03);
+            mem.HtmConfig.MinPctActiveDutyCycles = 0.03;
             mem.setOverlapDutyCycles(new double[5]);
             mem.setActiveDutyCycles(new double[5]);
             sp.updateMinDutyCyclesGlobal(mem);
@@ -1582,7 +1592,7 @@ namespace UnitTestsProject
             parameters.setColumnDimensions(new int[] { 5 });
             initSP();
 
-            mem.setUpdatePeriod(50);
+            mem.HtmConfig.UpdatePeriod = 50;
             mem.setIterationNum(1);
             Assert.IsFalse(sp.isUpdateRound(mem));
             mem.setIterationNum(39);
@@ -1594,7 +1604,7 @@ namespace UnitTestsProject
             mem.setIterationNum(1250);
             Assert.IsTrue(sp.isUpdateRound(mem));
 
-            mem.setUpdatePeriod(125);
+            mem.HtmConfig.UpdatePeriod = 125;
             mem.setIterationNum(0);
             Assert.IsTrue(sp.isUpdateRound(mem));
             mem.setIterationNum(200);

@@ -130,8 +130,10 @@ namespace UnitTestsProject.CortexNetworkTests
                 if (cycle >= 300)
                 {
                     // These activates ew-born effect which switch offs the boosting.
-                    mem.setMaxBoost(0.0);
-                    mem.updateMinPctOverlapDutyCycles(0.0);
+                    //mem.setMaxBoost(0.0);
+                    mem.HtmConfig.MaxBoost = 0.0;
+                    //mem.updateMinPctOverlapDutyCycles(0.0);
+                    mem.HtmConfig.MinPctOverlapDutyCycles = 0.0;
                 }
 
                 using (StreamReader sr = new StreamReader(SP_inFile))

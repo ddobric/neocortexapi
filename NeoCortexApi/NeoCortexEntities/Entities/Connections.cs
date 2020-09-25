@@ -34,21 +34,21 @@ namespace NeoCortexApi.Entities
 
         //private int potentialRadius = 16;
         //private double potentialPct = 0.5;
-        private bool m_GlobalInhibition = false;
-        private double m_LocalAreaDensity = -1.0;
-        private double m_NumActiveColumnsPerInhArea;
+        //private bool m_GlobalInhibition = false;
+        //private double m_LocalAreaDensity = -1.0;
+        //private double m_NumActiveColumnsPerInhArea;
         //private double m_StimulusThreshold = 0;
         //private double synPermInactiveDec = 0.008;
         //private double synPermActiveInc = 0.05;
         //private double synPermConnected = 0.10;
         //private double synPermBelowStimulusInc;// = synPermConnected / 10.0;
-        private double minPctOverlapDutyCycles = 0.001;
-        private double minPctActiveDutyCycles = 0.001;
-        private double predictedSegmentDecrement = 0.0;
-        private int dutyCyclePeriod = 1000;
-        private double maxBoost = 10.0;
+        //private double minPctOverlapDutyCycles = 0.001;
+        //private double minPctActiveDutyCycles = 0.001;
+        //private double predictedSegmentDecrement = 0.0;
+        //private int dutyCyclePeriod = 1000;
+        //private double maxBoost = 10.0;
         //private bool wrapAround = true;
-        private bool isBumpUpWeakColumnsDisabled = false;
+        //private bool isBumpUpWeakColumnsDisabled = false;
 
         //private int numInputs = 1;  //product of input dimensions
         private int numColumns = 1; //product of column dimensions
@@ -57,7 +57,7 @@ namespace NeoCortexApi.Entities
         //private double synPermMin = 0.0;
         //private double synPermMax = 1.0;
         //private double synPermTrimThreshold;// = synPermActiveInc / 2.0;
-        private int updatePeriod = 50;
+        //private int updatePeriod = 50;
         //private double initConnectedPct = 0.5;
 
         //Internal state
@@ -150,18 +150,18 @@ namespace NeoCortexApi.Entities
         /// If the number of active connected synapses on a segment
         /// is at least this threshold, the segment is said to be active.
         /// </summary>
-        private int activationThreshold = 13;
+        //private int activationThreshold = 13;
         /// <summary>
         /// Radius around cell from which it can
         /// sample to form distal {@link DistalDendrite} connections.
         /// </summary>
-        private int learningRadius = 2048;
+        //private int learningRadius = 2048;
         /// <summary>
         /// If the number of synapses active on a segment is at least this 
         /// threshold, it is selected as the best matching 
         /// cell in a bursting column. 
         /// </summary>
-        private int minThreshold = 10;
+        //private int minThreshold = 10;
         /// <summary>
         /// The maximum number of synapses added to a segment during learning.
         /// </summary>
@@ -177,13 +177,13 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Initial permanence of a new synapse
         /// </summary>
-        private double initialPermanence = 0.21;
+        //private double initialPermanence = 0.21;
         /// <summary>
         /// If the permanence value for a synapse
         /// is greater than this value, it is said
         /// to be connected.
         /// </summary>
-        private double connectedPermanence = 0.50;
+        //private double connectedPermanence = 0.50;
         /// <summary>
         /// Amount by which permanences of synapses
         /// are incremented during learning.
@@ -646,24 +646,24 @@ namespace NeoCortexApi.Entities
             this.spIterationNum = num;
         }
 
-        /**
-         * Returns the period count which is the number of cycles
-         * between meta information updates.
-         * @return
-         */
-        public int getUpdatePeriod()
-        {
-            return updatePeriod;
-        }
+        ///**
+        // * Returns the period count which is the number of cycles
+        // * between meta information updates.
+        // * @return
+        // */
+        //public int getUpdatePeriod()
+        //{
+        //    return updatePeriod;
+        //}
 
-        /**
-         * Sets the update period
-         * @param period
-         */
-        public void setUpdatePeriod(int period)
-        {
-            this.updatePeriod = period;
-        }
+        ///**
+        // * Sets the update period
+        // * @param period
+        // */
+        //public void setUpdatePeriod(int period)
+        //{
+        //    this.updatePeriod = period;
+        //}
 
 
 
@@ -927,7 +927,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Enforses using of global inhibition process.
         /// </summary>
-        public bool GlobalInhibition { get => m_GlobalInhibition; set => this.m_GlobalInhibition = value; }
+        //public bool GlobalInhibition { get => m_GlobalInhibition; set => this.m_GlobalInhibition = value; }
 
 
         /**
@@ -954,30 +954,30 @@ namespace NeoCortexApi.Entities
          * @see setLocalAreaDensity
          */
 
-        /// <summary>
-        ///     The desired density of active columns within a local
-        ///     inhibition area(the size of which is set by the
-        ///     internally calculated inhibitionRadius, which is in
-        ///     turn determined from the average size of the
-        ///
-        ///     connected potential pools of all columns). The
-        ///     inhibition logic will insure that at most N columns
-        ///         remain ON within a local inhibition area, where N =
-        ///         localAreaDensity * (total number of columns in
-        ///         inhibition area).
+        ///// <summary>
+        /////     The desired density of active columns within a local
+        /////     inhibition area(the size of which is set by the
+        /////     internally calculated inhibitionRadius, which is in
+        /////     turn determined from the average size of the
+        /////
+        /////     connected potential pools of all columns). The
+        /////     inhibition logic will insure that at most N columns
+        /////         remain ON within a local inhibition area, where N =
+        /////         localAreaDensity * (total number of columns in
+        /////         inhibition area).
 
-        /// </summary>
-        public double LocalAreaDensity
-        {
-            get
-            {
-                return m_LocalAreaDensity;
-            }
-            set
-            {
-                m_LocalAreaDensity = value;
-            }
-        }
+        ///// </summary>
+        //public double LocalAreaDensity
+        //{
+        //    get
+        //    {
+        //        return m_LocalAreaDensity;
+        //    }
+        //    set
+        //    {
+        //        m_LocalAreaDensity = value;
+        //    }
+        //}
 
         /**
          * Returns the configured number of active columns per
@@ -1006,7 +1006,7 @@ namespace NeoCortexApi.Entities
  *
  * @param numActiveColumnsPerInhArea
  */
-        public double NumActiveColumnsPerInhArea { get => m_NumActiveColumnsPerInhArea; set => this.m_NumActiveColumnsPerInhArea = value; }
+        //public double NumActiveColumnsPerInhArea { get => m_NumActiveColumnsPerInhArea; set => this.m_NumActiveColumnsPerInhArea = value; }
 
 
         /// <summary>
@@ -1123,28 +1123,28 @@ namespace NeoCortexApi.Entities
          *
          * @param minPctOverlapDutyCycle
          */
-        public void setMinPctOverlapDutyCycles(double minPctOverlapDutyCycle)
-        {
-            this.minPctOverlapDutyCycles = minPctOverlapDutyCycle;
-        }
+        //public void setMinPctOverlapDutyCycles(double minPctOverlapDutyCycle)
+        //{
+        //    this.minPctOverlapDutyCycles = minPctOverlapDutyCycle;
+        //}
 
-        /**
-         * see {@link #setMinPctOverlapDutyCycles(double)}
-         * @return
-         */
-        public double getMinPctOverlapDutyCycles()
-        {
-            return minPctOverlapDutyCycles;
-        }
+        ///**
+        // * see {@link #setMinPctOverlapDutyCycles(double)}
+        // * @return
+        // */
+        //public double getMinPctOverlapDutyCycles()
+        //{
+        //    return minPctOverlapDutyCycles;
+        //}
 
-        /// <summary>
-        /// NEW
-        /// </summary>
-        /// <param name="val"></param>
-        public void updateMinPctOverlapDutyCycles(double val)
-        {
-            minPctOverlapDutyCycles = val;
-        }
+        ///// <summary>
+        ///// NEW
+        ///// </summary>
+        ///// <param name="val"></param>
+        //public void updateMinPctOverlapDutyCycles(double val)
+        //{
+        //    minPctOverlapDutyCycles = val;
+        //}
         /**
          * A number between 0 and 1.0, used to set a floor on
          * how often a column should be activate.
@@ -1160,71 +1160,71 @@ namespace NeoCortexApi.Entities
          *
          * @param minPctActiveDutyCycle
          */
-        public void setMinPctActiveDutyCycles(double minPctActiveDutyCycle)
-        {
-            this.minPctActiveDutyCycles = minPctActiveDutyCycle;
-        }
+        //public void setMinPctActiveDutyCycles(double minPctActiveDutyCycle)
+        //{
+        //    this.minPctActiveDutyCycles = minPctActiveDutyCycle;
+        //}
 
-        /**
-         * Returns the minPctActiveDutyCycle
-         * see {@link #setMinPctActiveDutyCycles(double)}
-         * @return  the minPctActiveDutyCycle
-         */
-        public double getMinPctActiveDutyCycles()
-        {
-            return minPctActiveDutyCycles;
-        }
+        ///**
+        // * Returns the minPctActiveDutyCycle
+        // * see {@link #setMinPctActiveDutyCycles(double)}
+        // * @return  the minPctActiveDutyCycle
+        // */
+        //public double getMinPctActiveDutyCycles()
+        //{
+        //    return minPctActiveDutyCycles;
+        //}
 
-        /**
-         * The period used to calculate duty cycles. Higher
-         * values make it take longer to respond to changes in
-         * boost or synPerConnectedCell. Shorter values make it
-         * more unstable and likely to oscillate.
-         *
-         * @param dutyCyclePeriod
-         */
-        public void setDutyCyclePeriod(int dutyCyclePeriod)
-        {
-            this.dutyCyclePeriod = dutyCyclePeriod;
-        }
+        ///**
+        // * The period used to calculate duty cycles. Higher
+        // * values make it take longer to respond to changes in
+        // * boost or synPerConnectedCell. Shorter values make it
+        // * more unstable and likely to oscillate.
+        // *
+        // * @param dutyCyclePeriod
+        // */
+        //public void setDutyCyclePeriod(int dutyCyclePeriod)
+        //{
+        //    this.dutyCyclePeriod = dutyCyclePeriod;
+        //}
 
-        /**
-         * Returns the configured duty cycle period
-         * see {@link #setDutyCyclePeriod(double)}
-         * @return  the configured duty cycle period
-         */
-        public int getDutyCyclePeriod()
-        {
-            return dutyCyclePeriod;
-        }
+        ///**
+        // * Returns the configured duty cycle period
+        // * see {@link #setDutyCyclePeriod(double)}
+        // * @return  the configured duty cycle period
+        // */
+        //public int getDutyCyclePeriod()
+        //{
+        //    return dutyCyclePeriod;
+        //}
 
-        /**
-         * The maximum overlap boost factor. Each column's
-         * overlap gets multiplied by a boost factor
-         * before it gets considered for inhibition.
-         * The actual boost factor for a column is number
-         * between 1.0 and maxBoost. A boost factor of 1.0 is
-         * used if the duty cycle is &gt;= minOverlapDutyCycle,
-         * maxBoost is used if the duty cycle is 0, and any duty
-         * cycle in between is linearly extrapolated from these
-         * 2 end points.
-         *
-         * @param maxBoost
-         */
-        public void setMaxBoost(double maxBoost)
-        {
-            this.maxBoost = maxBoost;
-        }
+        ///**
+        // * The maximum overlap boost factor. Each column's
+        // * overlap gets multiplied by a boost factor
+        // * before it gets considered for inhibition.
+        // * The actual boost factor for a column is number
+        // * between 1.0 and maxBoost. A boost factor of 1.0 is
+        // * used if the duty cycle is &gt;= minOverlapDutyCycle,
+        // * maxBoost is used if the duty cycle is 0, and any duty
+        // * cycle in between is linearly extrapolated from these
+        // * 2 end points.
+        // *
+        // * @param maxBoost
+        // */
+        //public void setMaxBoost(double maxBoost)
+        //{
+        //    this.maxBoost = maxBoost;
+        //}
 
-        /**
-         * Returns the max boost
-         * see {@link #setMaxBoost(double)}
-         * @return  the max boost
-         */
-        public double getMaxBoost()
-        {
-            return maxBoost;
-        }
+        ///**
+        // * Returns the max boost
+        // * see {@link #setMaxBoost(double)}
+        // * @return  the max boost
+        // */
+        //public double getMaxBoost()
+        //{
+        //    return maxBoost;
+        //}
 
         ///**
         // * Specifies whether neighborhoods wider than the 
@@ -1434,7 +1434,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Controls if bumping-up of weak columns shell be done.
         /// </summary>
-        public bool IsBumpUpWeakColumnsDisabled { get => isBumpUpWeakColumnsDisabled; set => isBumpUpWeakColumnsDisabled = value; }
+        //public bool IsBumpUpWeakColumnsDisabled { get => isBumpUpWeakColumnsDisabled; set => isBumpUpWeakColumnsDisabled = value; }
 
 
         ////////////////////////////////////////
@@ -2159,70 +2159,69 @@ namespace NeoCortexApi.Entities
         //    return this.cellsPerColumn;
         //}
 
-        /**
-         * Sets the activation threshold.
-         *
-         * If the number of active connected synapses on a segment
-         * is at least this threshold, the segment is said to be active.
-         *
-         * @param activationThreshold
-         */
-        public void setActivationThreshold(int activationThreshold)
-        {
-            this.activationThreshold = activationThreshold;
-        }
+        ///**
+        // * Sets the activation threshold.
+        // *
+        // * If the number of active connected synapses on a segment
+        // * is at least this threshold, the segment is said to be active.
+        // *
+        // * @param activationThreshold
+        // */
+        //public void setActivationThreshold(int activationThreshold)
+        //{
+        //    this.activationThreshold = activationThreshold;
+        //}
 
-        /**
-         * Returns the activation threshold.
-         * @return
-         */
-        public int getActivationThreshold()
-        {
-            return activationThreshold;
-        }
+        ///**
+        // * Returns the activation threshold.
+        // * @return
+        // */
+        //public int getActivationThreshold()
+        //{
+        //    return activationThreshold;
+        //}
 
-        /**
-         * Radius around cell from which it can
-         * sample to form distal dendrite connections.
-         *
-         * @param   learningRadius
-         */
-        public void setLearningRadius(int learningRadius)
-        {
-            this.learningRadius = learningRadius;
-        }
+        ///**
+        // * Radius around cell from which it can
+        // * sample to form distal dendrite connections.
+        // *
+        // * @param   learningRadius
+        // */
+        //public void setLearningRadius(int learningRadius)
+        //{
+        //    this.learningRadius = learningRadius;
+        //}
 
-        /**
-         * Returns the learning radius.
-         * @return
-         */
-        public int getLearningRadius()
-        {
-            return learningRadius;
-        }
+        ///**
+        // * Returns the learning radius.
+        // * @return
+        // */
+        //public int getLearningRadius()
+        //{
+        //    return learningRadius;
+        //}
 
-        /**
-         * If the number of synapses active on a segment is at least this
-         * threshold, it is selected as the best matching
-         * cell in a bursting column.
-         *
-         * @param   minThreshold
-         */
-        public void setMinThreshold(int minThreshold)
-        {
-            this.minThreshold = minThreshold;
-        }
+        ///**
+        // * If the number of synapses active on a segment is at least this
+        // * threshold, it is selected as the best matching
+        // * cell in a bursting column.
+        // *
+        // * @param   minThreshold
+        // */
+        //public void setMinThreshold(int minThreshold)
+        //{
+        //    this.minThreshold = minThreshold;
+        //}
 
-        /**
-         * Returns the minimum threshold of the number of active synapses to be picked as best.
-         * @return
-         */
-        public int getMinThreshold()
-        {
-            return minThreshold;
-        }
+        ///**
+        // * Returns the minimum threshold of the number of active synapses to be picked as best.
+        // * @return
+        // */
+        //public int getMinThreshold()
+        //{
+        //    return minThreshold;
+        //}
 
-        int bla;
         /**
          * The maximum number of synapses added to a segment during learning.
          *
@@ -2280,48 +2279,48 @@ namespace NeoCortexApi.Entities
         //    return maxSynapsesPerSegment;
         //}
 
-        /**
-         * Initial permanence of a new synapse
-         *
-         * @param   initialPermanence
-         */
-        public void setInitialPermanence(double initialPermanence)
-        {
-            this.initialPermanence = initialPermanence;
-        }
+        ///**
+        // * Initial permanence of a new synapse
+        // *
+        // * @param   initialPermanence
+        // */
+        //public void setInitialPermanence(double initialPermanence)
+        //{
+        //    this.initialPermanence = initialPermanence;
+        //}
 
-        /**
-         * Returns the initial permanence setting.
-         * @return
-         */
-        public double getInitialPermanence()
-        {
-            return initialPermanence;
-        }
+        ///**
+        // * Returns the initial permanence setting.
+        // * @return
+        // */
+        //public double getInitialPermanence()
+        //{
+        //    return initialPermanence;
+        //}
 
-        /**
-         * If the permanence value for a synapse
-         * is greater than this value, it is said
-         * to be connected.
-         *
-         * @param connectedPermanence
-         */
-        public void setConnectedPermanence(double connectedPermanence)
-        {
-            this.connectedPermanence = connectedPermanence;
-        }
+        ///**
+        // * If the permanence value for a synapse
+        // * is greater than this value, it is said
+        // * to be connected.
+        // *
+        // * @param connectedPermanence
+        // */
+        //public void setConnectedPermanence(double connectedPermanence)
+        //{
+        //    this.connectedPermanence = connectedPermanence;
+        //}
 
-        /**
-         * If the permanence value for a synapse
-         * is greater than this value, it is said
-         * to be connected.
-         *
-         * @return
-         */
-        public double getConnectedPermanence()
-        {
-            return connectedPermanence;
-        }
+        ///**
+        // * If the permanence value for a synapse
+        // * is greater than this value, it is said
+        // * to be connected.
+        // *
+        // * @return
+        // */
+        //public double getConnectedPermanence()
+        //{
+        //    return connectedPermanence;
+        //}
 
         ///**
         // * Amount by which permanences of synapses
@@ -2363,23 +2362,23 @@ namespace NeoCortexApi.Entities
         //    return this.permanenceDecrement;
         //}
 
-        /**
-         * Amount by which active permanences of synapses of previously predicted but inactive segments are decremented.
-         * @param predictedSegmentDecrement
-         */
-        public void setPredictedSegmentDecrement(double predictedSegmentDecrement)
-        {
-            this.predictedSegmentDecrement = predictedSegmentDecrement;
-        }
+        ///**
+        // * Amount by which active permanences of synapses of previously predicted but inactive segments are decremented.
+        // * @param predictedSegmentDecrement
+        // */
+        //public void setPredictedSegmentDecrement(double predictedSegmentDecrement)
+        //{
+        //    this.predictedSegmentDecrement = predictedSegmentDecrement;
+        //}
 
-        /**
-         * Returns the predictedSegmentDecrement amount.
-         * @return
-         */
-        public double getPredictedSegmentDecrement()
-        {
-            return this.predictedSegmentDecrement;
-        }
+        ///**
+        // * Returns the predictedSegmentDecrement amount.
+        // * @return
+        // */
+        //public double getPredictedSegmentDecrement()
+        //{
+        //    return this.predictedSegmentDecrement;
+        //}
 
         /**
          * Converts a {@link Collection} of {@link Cell}s to a list
@@ -2492,34 +2491,34 @@ namespace NeoCortexApi.Entities
             Console.WriteLine("numColumns                 = " + NumColumns);
             Console.WriteLine("cellsPerColumn             = " + this.HtmConfig.CellsPerColumn);
             Console.WriteLine("columnDimensions           = " + this.HtmConfig.ColumnDimensions.ToString());
-            Console.WriteLine("numActiveColumnsPerInhArea = " + NumActiveColumnsPerInhArea);
+            Console.WriteLine("numActiveColumnsPerInhArea = " + this.HtmConfig.NumActiveColumnsPerInhArea);
             Console.WriteLine("potentialPct               = " + this.HtmConfig.PotentialPct);
             Console.WriteLine("potentialRadius            = " + this.HtmConfig.PotentialRadius);
-            Console.WriteLine("globalInhibition           = " + GlobalInhibition);
-            Console.WriteLine("localAreaDensity           = " + LocalAreaDensity);
+            Console.WriteLine("globalInhibition           = " + this.HtmConfig.GlobalInhibition);
+            Console.WriteLine("localAreaDensity           = " + this.HtmConfig.LocalAreaDensity);
             Console.WriteLine("inhibitionRadius           = " + InhibitionRadius);
             Console.WriteLine("stimulusThreshold          = " + this.HtmConfig.StimulusThreshold);
             Console.WriteLine("synPermActiveInc           = " + this.HtmConfig.SynPermActiveInc);
             Console.WriteLine("synPermInactiveDec         = " + this.HtmConfig.SynPermInactiveDec);
             Console.WriteLine("synPermConnected           = " + this.HtmConfig.SynPermConnected);
-            Console.WriteLine("minPctOverlapDutyCycle     = " + getMinPctOverlapDutyCycles());
-            Console.WriteLine("minPctActiveDutyCycle      = " + getMinPctActiveDutyCycles());
-            Console.WriteLine("dutyCyclePeriod            = " + getDutyCyclePeriod());
-            Console.WriteLine("maxBoost                   = " + getMaxBoost());
+            Console.WriteLine("minPctOverlapDutyCycle     = " + this.HtmConfig.MinPctOverlapDutyCycles);
+            Console.WriteLine("minPctActiveDutyCycle      = " + this.HtmConfig.MinPctActiveDutyCycles);
+            Console.WriteLine("dutyCyclePeriod            = " + this.HtmConfig.DutyCyclePeriod);
+            Console.WriteLine("maxBoost                   = " + this.HtmConfig.MaxBoost);
             Console.WriteLine("version                    = " + getVersion());
 
             Console.WriteLine("\n------------ TemporalMemory Parameters ------------------");
-            Console.WriteLine("activationThreshold        = " + getActivationThreshold());
-            Console.WriteLine("learningRadius             = " + getLearningRadius());
-            Console.WriteLine("minThreshold               = " + getMinThreshold());
+            Console.WriteLine("activationThreshold        = " + this.HtmConfig.ActivationThreshold);
+            Console.WriteLine("learningRadius             = " + this.HtmConfig.LearningRadius);
+            Console.WriteLine("minThreshold               = " + this.HtmConfig.MinThreshold);
             Console.WriteLine("maxNewSynapseCount         = " + HtmConfig.MaxNewSynapseCount);
             Console.WriteLine("maxSynapsesPerSegment      = " + this.HtmConfig.MaxSynapsesPerSegment);
             Console.WriteLine("maxSegmentsPerCell         = " + this.HtmConfig.MaxSegmentsPerCell);
-            Console.WriteLine("initialPermanence          = " + getInitialPermanence());
-            Console.WriteLine("connectedPermanence        = " + getConnectedPermanence());
+            Console.WriteLine("initialPermanence          = " + this.HtmConfig.InitialPermanence);
+            Console.WriteLine("connectedPermanence        = " + this.HtmConfig.ConnectedPermanence);
             Console.WriteLine("permanenceIncrement        = " + this.HtmConfig.PermanenceIncrement);
             Console.WriteLine("permanenceDecrement        = " + this.HtmConfig.PermanenceDecrement);
-            Console.WriteLine("predictedSegmentDecrement  = " + getPredictedSegmentDecrement());
+            Console.WriteLine("predictedSegmentDecrement  = " + this.HtmConfig.PredictedSegmentDecrement);
         }
 
         ///**
@@ -2643,7 +2642,7 @@ namespace NeoCortexApi.Entities
         {
             int prime = 31;
             int result = 1;
-            result = prime * result + activationThreshold;
+            result = prime * result + this.HtmConfig.ActivationThreshold;
             result = prime * result + ((activeCells == null) ? 0 : activeCells.GetHashCode());
             result = prime * result + activeDutyCycles.GetHashCode();
             result = prime * result + m_BoostFactors.GetHashCode();
@@ -2652,14 +2651,14 @@ namespace NeoCortexApi.Entities
             result = prime * result + this.HtmConfig.ColumnDimensions.GetHashCode();
             //result = prime * result + ((connectedCounts == null) ? 0 : connectedCounts.GetHashCode());
             long temp;
-            temp = BitConverter.DoubleToInt64Bits(connectedPermanence);
+            temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.ConnectedPermanence);
             result = prime * result + (int)(temp ^ (temp >> 32));//it was temp >>> 32
-            result = prime * result + dutyCyclePeriod;
-            result = prime * result + (m_GlobalInhibition ? 1231 : 1237);
+            result = prime * result + this.HtmConfig.DutyCyclePeriod;
+            result = prime * result + (this.HtmConfig.GlobalInhibition ? 1231 : 1237);
             result = prime * result + m_InhibitionRadius;
             temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.InitialSynapseConnsPct);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            temp = BitConverter.DoubleToInt64Bits(initialPermanence);
+            temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.InitialPermanence);
             result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + this.HtmConfig.InputDimensions.GetHashCode();
             result = prime * result + ((this.HtmConfig.InputMatrix == null) ? 0 : this.HtmConfig.InputMatrix.GetHashCode());
@@ -2667,21 +2666,21 @@ namespace NeoCortexApi.Entities
             result = prime * result + spIterationNum;
             //result = prime * result + (new Long(tmIteration)).intValue();
             result = prime * result + (int)tmIteration;
-            result = prime * result + learningRadius;
-            temp = BitConverter.DoubleToInt64Bits(m_LocalAreaDensity);
+            result = prime * result + this.HtmConfig.LearningRadius;
+            temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.LocalAreaDensity);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            temp = BitConverter.DoubleToInt64Bits(maxBoost);
+            temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.MaxBoost);
             result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + this.HtmConfig.MaxNewSynapseCount;
             result = prime * result + ((this.HtmConfig.Memory == null) ? 0 : this.HtmConfig.Memory.GetHashCode());
             result = prime * result + minActiveDutyCycles.GetHashCode();
             result = prime * result + minOverlapDutyCycles.GetHashCode();
-            temp = BitConverter.DoubleToInt64Bits(minPctActiveDutyCycles);
+            temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.MinPctActiveDutyCycles);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            temp = BitConverter.DoubleToInt64Bits(minPctOverlapDutyCycles);
+            temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.MinPctOverlapDutyCycles);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            result = prime * result + minThreshold;
-            temp = BitConverter.DoubleToInt64Bits(m_NumActiveColumnsPerInhArea);
+            result = prime * result + this.HtmConfig.MinThreshold;
+            temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.NumActiveColumnsPerInhArea);
             result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + numColumns;
             result = prime * result + this.HtmConfig.NumInputs;
@@ -2696,7 +2695,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + (int)(temp ^ (temp >> 32));
             //result = prime * result + ((potentialPools == null) ? 0 : potentialPools.GetHashCode());
             result = prime * result + this.HtmConfig.PotentialRadius;
-            temp = BitConverter.DoubleToInt64Bits(predictedSegmentDecrement);
+            temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.PredictedSegmentDecrement);
             result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + ((predictiveCells == null) ? 0 : predictiveCells.GetHashCode());
             result = prime * result + ((random == null) ? 0 : random.GetHashCode());
@@ -2723,7 +2722,7 @@ namespace NeoCortexApi.Entities
             //result = prime * result + ((proximalSynapses == null) ? 0 : proximalSynapses.GetHashCode());
             result = prime * result + ((distalSynapses == null) ? 0 : distalSynapses.GetHashCode());
             result = prime * result + tieBreaker.GetHashCode();
-            result = prime * result + updatePeriod;
+            result = prime * result + this.HtmConfig.UpdatePeriod;
             temp = BitConverter.DoubleToInt64Bits(version);
             result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + ((winnerCells == null) ? 0 : winnerCells.GetHashCode());
@@ -2745,7 +2744,7 @@ namespace NeoCortexApi.Entities
                 return false;
 
             Connections other = (Connections)obj;
-            if (activationThreshold != other.activationThreshold)
+            if (this.HtmConfig.ActivationThreshold != other.HtmConfig.ActivationThreshold)
                 return false;
             if (activeCells == null)
             {
@@ -2771,17 +2770,17 @@ namespace NeoCortexApi.Entities
             //}
             //else if (!connectedCounts.Equals(other.connectedCounts))
             //    return false;
-            if (BitConverter.DoubleToInt64Bits(connectedPermanence) != BitConverter.DoubleToInt64Bits(other.connectedPermanence))
+            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.ConnectedPermanence) != BitConverter.DoubleToInt64Bits(other.HtmConfig.ConnectedPermanence))
                 return false;
-            if (dutyCyclePeriod != other.dutyCyclePeriod)
+            if (this.HtmConfig.DutyCyclePeriod != other.HtmConfig.DutyCyclePeriod)
                 return false;
-            if (m_GlobalInhibition != other.m_GlobalInhibition)
+            if (this.HtmConfig.GlobalInhibition != other.HtmConfig.GlobalInhibition)
                 return false;
             if (m_InhibitionRadius != other.m_InhibitionRadius)
                 return false;
             if (BitConverter.DoubleToInt64Bits(this.HtmConfig.InitialSynapseConnsPct) != BitConverter.DoubleToInt64Bits(other.HtmConfig.InitialSynapseConnsPct))
                 return false;
-            if (BitConverter.DoubleToInt64Bits(initialPermanence) != BitConverter.DoubleToInt64Bits(other.initialPermanence))
+            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.InitialPermanence) != BitConverter.DoubleToInt64Bits(other.HtmConfig.InitialPermanence))
                 return false;
             if (!Array.Equals(this.HtmConfig.InputDimensions, other.HtmConfig.InputDimensions))
                 return false;
@@ -2798,11 +2797,11 @@ namespace NeoCortexApi.Entities
                 return false;
             if (tmIteration != other.tmIteration)
                 return false;
-            if (learningRadius != other.learningRadius)
+            if (this.HtmConfig.LearningRadius != other.HtmConfig.LearningRadius)
                 return false;
-            if (BitConverter.DoubleToInt64Bits(m_LocalAreaDensity) != BitConverter.DoubleToInt64Bits(other.m_LocalAreaDensity))
+            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.LocalAreaDensity) != BitConverter.DoubleToInt64Bits(other.HtmConfig.LocalAreaDensity))
                 return false;
-            if (BitConverter.DoubleToInt64Bits(maxBoost) != BitConverter.DoubleToInt64Bits(other.maxBoost))
+            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.MaxBoost) != BitConverter.DoubleToInt64Bits(other.HtmConfig.MaxBoost))
                 return false;
             if (this.HtmConfig.MaxNewSynapseCount != other.HtmConfig.MaxNewSynapseCount)
                 return false;
@@ -2817,13 +2816,13 @@ namespace NeoCortexApi.Entities
                 return false;
             if (!Array.Equals(minOverlapDutyCycles, other.minOverlapDutyCycles))
                 return false;
-            if (BitConverter.DoubleToInt64Bits(minPctActiveDutyCycles) != BitConverter.DoubleToInt64Bits(other.minPctActiveDutyCycles))
+            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.MinPctActiveDutyCycles) != BitConverter.DoubleToInt64Bits(other.HtmConfig.MinPctActiveDutyCycles))
                 return false;
-            if (BitConverter.DoubleToInt64Bits(minPctOverlapDutyCycles) != BitConverter.DoubleToInt64Bits(other.minPctOverlapDutyCycles))
+            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.MinPctOverlapDutyCycles) != BitConverter.DoubleToInt64Bits(other.HtmConfig.MinPctOverlapDutyCycles))
                 return false;
-            if (minThreshold != other.minThreshold)
+            if (this.HtmConfig.MinThreshold != other.HtmConfig.MinThreshold)
                 return false;
-            if (BitConverter.DoubleToInt64Bits(m_NumActiveColumnsPerInhArea) != BitConverter.DoubleToInt64Bits(other.m_NumActiveColumnsPerInhArea))
+            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.NumActiveColumnsPerInhArea) != BitConverter.DoubleToInt64Bits(other.HtmConfig.NumActiveColumnsPerInhArea))
                 return false;
             if (numColumns != other.numColumns)
                 return false;
@@ -2848,7 +2847,7 @@ namespace NeoCortexApi.Entities
             //    return false;
             if (this.HtmConfig.PotentialRadius != other.HtmConfig.PotentialRadius)
                 return false;
-            if (BitConverter.DoubleToInt64Bits(predictedSegmentDecrement) != BitConverter.DoubleToInt64Bits(other.predictedSegmentDecrement))
+            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.PredictedSegmentDecrement) != BitConverter.DoubleToInt64Bits(other.HtmConfig.PredictedSegmentDecrement))
                 return false;
             if (predictiveCells == null)
             {
@@ -2907,7 +2906,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (!Array.Equals(tieBreaker, other.tieBreaker))
                 return false;
-            if (updatePeriod != other.updatePeriod)
+            if (this.HtmConfig.UpdatePeriod != other.HtmConfig.UpdatePeriod)
                 return false;
             if (BitConverter.DoubleToInt64Bits(version) != BitConverter.DoubleToInt64Bits(other.version))
                 return false;

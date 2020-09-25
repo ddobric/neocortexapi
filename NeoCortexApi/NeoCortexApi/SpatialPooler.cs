@@ -71,8 +71,8 @@ namespace NeoCortexApi
             //Stopwatch sw = new Stopwatch();
             //sw.Start();
 
-            if (c.NumActiveColumnsPerInhArea == 0 && (c.LocalAreaDensity == 0 ||
-                c.LocalAreaDensity > 0.5))
+            if (c.HtmConfig.NumActiveColumnsPerInhArea == 0 && (c.HtmConfig.LocalAreaDensity == 0 ||
+                c.HtmConfig.LocalAreaDensity > 0.5))
             {
                 throw new ArgumentException("Inhibition parameters are invalid");
             }
@@ -562,7 +562,7 @@ namespace NeoCortexApi
          */
         public void updateMinDutyCycles(Connections c)
         {
-            if (c.GlobalInhibition || c.InhibitionRadius > c.HtmConfig.NumInputs)
+            if (c.HtmConfig.GlobalInhibition || c.InhibitionRadius > c.HtmConfig.NumInputs)
             {
                 updateMinDutyCyclesGlobal(c);
             }
@@ -585,10 +585,10 @@ namespace NeoCortexApi
         public void updateMinDutyCyclesGlobal(Connections c)
         {
             ArrayUtils.FillArray(c.getMinOverlapDutyCycles(),
-                   (double)(c.getMinPctOverlapDutyCycles() * ArrayUtils.Max(c.getOverlapDutyCycles())));
+                   (double)(c.HtmConfig.MinPctOverlapDutyCycles * ArrayUtils.Max(c.getOverlapDutyCycles())));
 
             ArrayUtils.FillArray(c.getMinActiveDutyCycles(),
-                    (double)(c.getMinPctActiveDutyCycles() * ArrayUtils.Max(c.getActiveDutyCycles())));
+                    (double)(c.HtmConfig.MinPctActiveDutyCycles * ArrayUtils.Max(c.getActiveDutyCycles())));
         }
 
         /**
@@ -625,9 +625,9 @@ namespace NeoCortexApi
             int len = c.NumColumns;
             int inhibitionRadius = c.InhibitionRadius;
             double[] activeDutyCycles = c.getActiveDutyCycles();
-            double minPctActiveDutyCycles = c.getMinPctActiveDutyCycles();
+            double minPctActiveDutyCycles = c.HtmConfig.MinPctActiveDutyCycles;
             double[] overlapDutyCycles = c.getOverlapDutyCycles();
-            double minPctOverlapDutyCycles = c.getMinPctOverlapDutyCycles();
+            double minPctOverlapDutyCycles = c.HtmConfig.MinPctOverlapDutyCycles;
 
             //Console.WriteLine($"{inhibitionRadius: inhibitionRadius}");
 
@@ -692,7 +692,7 @@ namespace NeoCortexApi
                 ArrayUtils.SetIndexesTo(activeArray, activeColumns, 1);
             }
 
-            int period = c.getDutyCyclePeriod();
+            int period = c.HtmConfig.DutyCyclePeriod;
             if (period > c.getIterationNum())
             {
                 period = c.getIterationNum();
@@ -747,7 +747,7 @@ namespace NeoCortexApi
          */
         public void updateInhibitionRadius(Connections c, List<double> avgCollected = null)
         {
-            if (c.GlobalInhibition)
+            if (c.HtmConfig.GlobalInhibition)
             {
                 c.InhibitionRadius = ArrayUtils.Max(c.HtmConfig.ColumnDimensions);
                 return;
@@ -907,7 +907,7 @@ namespace NeoCortexApi
         /// <param name="c"></param>
         public virtual void BumpUpWeakColumns(Connections c)
         {
-            if (c.IsBumpUpWeakColumnsDisabled)
+            if (c.HtmConfig.IsBumpUpWeakColumnsDisabled)
                 return;
 
             // This condition is wrong. It brings teh SP in scillation state.
@@ -1109,7 +1109,7 @@ namespace NeoCortexApi
 
         private double calcInhibitionDensity(Connections c)
         {
-            double density = c.LocalAreaDensity;
+            double density = c.HtmConfig.LocalAreaDensity;
             double inhibitionArea;
 
             // If density is not specified then inhibition radius must be specified.
@@ -1122,7 +1122,7 @@ namespace NeoCortexApi
                 inhibitionArea = Math.Pow(2 * c.InhibitionRadius + 1, c.HtmConfig.ColumnDimensions.Length);
                 inhibitionArea = Math.Min(c.NumColumns, inhibitionArea);
 
-                density = c.NumActiveColumnsPerInhArea / inhibitionArea;
+                density = c.HtmConfig.NumActiveColumnsPerInhArea / inhibitionArea;
 
                 density = Math.Min(density, MaxInibitionDensity);
             }
@@ -1152,7 +1152,7 @@ namespace NeoCortexApi
             //Add our fixed little bit of random noise to the scores to help break ties.
             //ArrayUtils.d_add(overlaps, c.getTieBreaker());
 
-            if (c.GlobalInhibition || c.InhibitionRadius > ArrayUtils.Max(c.HtmConfig.ColumnDimensions))
+            if (c.HtmConfig.GlobalInhibition || c.InhibitionRadius > ArrayUtils.Max(c.HtmConfig.ColumnDimensions))
             {
                 return inhibitColumnsGlobal(c, overlaps, density);
             }
@@ -1550,10 +1550,10 @@ namespace NeoCortexApi
             else
             {
                 double[] oneMinusMaxBoostFact = new double[c.NumColumns];
-                ArrayUtils.FillArray(oneMinusMaxBoostFact, 1 - c.getMaxBoost());
+                ArrayUtils.FillArray(oneMinusMaxBoostFact, 1 - c.HtmConfig.MaxBoost);
                 boostInterim = ArrayUtils.Divide(oneMinusMaxBoostFact, minActiveDutyCycles, 0, 0);
                 boostInterim = ArrayUtils.Multiply(boostInterim, activeDutyCycles, 0, 0);
-                boostInterim = ArrayUtils.D_add(boostInterim, c.getMaxBoost());
+                boostInterim = ArrayUtils.D_add(boostInterim, c.HtmConfig.MaxBoost);
             }
 
             List<int> filteredIndexes = new List<int>();
@@ -1693,7 +1693,7 @@ namespace NeoCortexApi
          */
         public bool isUpdateRound(Connections c)
         {
-            return c.getIterationNum() % c.getUpdatePeriod() == 0;
+            return c.getIterationNum() % c.HtmConfig.UpdatePeriod == 0;
         }
 
         /**

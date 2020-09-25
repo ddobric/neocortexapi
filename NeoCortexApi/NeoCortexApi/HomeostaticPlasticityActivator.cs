@@ -103,8 +103,11 @@ namespace NeoCortexApi
             {
                 if (cycle >= this.minCycles)
                 {
-                    this.htmMemory.setMaxBoost(0.0);
-                    this.htmMemory.updateMinPctOverlapDutyCycles(0.0);
+                    //this.htmMemory.setMaxBoost(0.0);
+                    this.htmMemory.HtmConfig.MaxBoost = 0.0;
+
+                    //this.htmMemory.updateMinPctOverlapDutyCycles(0.0);
+                    this.htmMemory.HtmConfig.MinPctOverlapDutyCycles = 0.0;
                 }
 
                 // If the input has been already seen, we calculate the similarity between already seen input

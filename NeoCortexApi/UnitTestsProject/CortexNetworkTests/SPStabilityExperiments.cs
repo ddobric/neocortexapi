@@ -332,8 +332,10 @@ namespace UnitTestsProject
                 // New Born effect
                 if (cycle >= 300)
                 {
-                    mem.setMaxBoost(0.0);
-                    mem.updateMinPctOverlapDutyCycles(0.0);
+                    //mem.setMaxBoost(0.0);
+                    mem.HtmConfig.MaxBoost = 0.0;
+                    //mem.updateMinPctOverlapDutyCycles(0.0);
+                    mem.HtmConfig.MinPctOverlapDutyCycles = 0.0;
                 }
 
                 Debug.WriteLine($"Cycle  ** {cycle} **");

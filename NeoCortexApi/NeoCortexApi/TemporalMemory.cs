@@ -151,7 +151,7 @@ namespace NeoCortexApi
 
             double permanenceIncrement = conn.HtmConfig.PermanenceIncrement;
             double permanenceDecrement = conn.HtmConfig.PermanenceDecrement;
-                        
+
             //
             // Grouping by columns, which have active and matching segments.
             foreach (var tuple in grouper)
@@ -165,7 +165,7 @@ namespace NeoCortexApi
                     if (activeColumnData.ActiveSegments != null && activeColumnData.ActiveSegments.Count > 0)
                     {
                         Debug.Write(".");
-                       
+
                         List<Cell> cellsOwnersOfActSegs = ActivatePredictedColumn(conn, activeColumnData.ActiveSegments,
                             activeColumnData.MatchingSegments, prevActiveCells, prevWinnerCells,
                                 permanenceIncrement, permanenceDecrement, learn, cycle.ActiveSynapses);
@@ -174,7 +174,7 @@ namespace NeoCortexApi
                         {
                             cycle.ActiveCells.Add(item);
                             cycle.WinnerCells.Add(item);
-                        }                       
+                        }
                     }
                     else
                     {
@@ -209,7 +209,7 @@ namespace NeoCortexApi
                     if (learn)
                     {
                         punishPredictedColumn(conn, activeColumnData.ActiveSegments, activeColumnData.MatchingSegments,
-                            prevActiveCells, prevWinnerCells, conn.getPredictedSegmentDecrement());
+                            prevActiveCells, prevWinnerCells, conn.HtmConfig.PredictedSegmentDecrement);
                     }
                 }
             }
@@ -244,12 +244,12 @@ namespace NeoCortexApi
          */
         protected void ActivateDendrites(Connections conn, ComputeCycle cycle, bool learn)
         {
-            SegmentActivity activity = conn.ComputeActivity(cycle.ActiveCells, conn.getConnectedPermanence());
+            SegmentActivity activity = conn.ComputeActivity(cycle.ActiveCells, conn.HtmConfig.ConnectedPermanence);
 
             var activeSegments = new List<DistalDendrite>();
             foreach (var item in activity.ActiveSynapses)
             {
-                if (item.Value >= conn.getActivationThreshold())
+                if (item.Value >= conn.HtmConfig.ActivationThreshold)
                     activeSegments.Add(conn.GetSegmentForFlatIdx(item.Key));
             }
 
@@ -258,7 +258,7 @@ namespace NeoCortexApi
             var matchingSegments = new List<DistalDendrite>();
             foreach (var item in activity.PotentialSynapses)
             {
-                if (item.Value >= conn.getMinThreshold())
+                if (item.Value >= conn.HtmConfig.MinThreshold)
                     matchingSegments.Add(conn.GetSegmentForFlatIdx(item.Key));
             }
 
@@ -389,7 +389,7 @@ namespace NeoCortexApi
                             if (nGrowDesired > 0)
                             {
                                 // Create new synapses on the segment from winner (pre-synaptic cells) cells.
-                                growSynapses(conn, prevWinnerCells, segment, conn.getInitialPermanence(),
+                                growSynapses(conn, prevWinnerCells, segment, conn.HtmConfig.InitialPermanence,
                                     nGrowDesired, conn.getRandom());
                             }
                         }
@@ -489,7 +489,7 @@ namespace NeoCortexApi
 
                     if (nGrowDesired > 0)
                     {
-                        growSynapses(conn, prevWinnerCells, maxPotentialSeg, conn.getInitialPermanence(),
+                        growSynapses(conn, prevWinnerCells, maxPotentialSeg, conn.HtmConfig.InitialPermanence,
                             nGrowDesired, random);
                     }
                 }
@@ -503,7 +503,7 @@ namespace NeoCortexApi
                     if (nGrowExact > 0)
                     {
                         DistalDendrite bestSegment = conn.CreateDistalSegment(leastUsedCell);
-                        growSynapses(conn, prevWinnerCells, bestSegment, conn.getInitialPermanence(),
+                        growSynapses(conn, prevWinnerCells, bestSegment, conn.HtmConfig.InitialPermanence,
                             nGrowExact, random);
                     }
                 }
@@ -563,7 +563,7 @@ namespace NeoCortexApi
             {
                 foreach (DistalDendrite segment in matchingSegments)
                 {
-                    AdaptSegment(conn, segment, prevActiveCells, -conn.getPredictedSegmentDecrement(), 0);
+                    AdaptSegment(conn, segment, prevActiveCells, -conn.HtmConfig.PredictedSegmentDecrement, 0);
                 }
             }
         }
