@@ -45,11 +45,11 @@ namespace NeoCortexApi
         {
             this.connections = conn;
 
-            SparseObjectMatrix<Column> matrix = this.connections.getMemory() == null ?
+            SparseObjectMatrix<Column> matrix = this.connections.HtmConfig.Memory == null ?
                 new SparseObjectMatrix<Column>(this.connections.HtmConfig.ColumnDimensions) :
-                    (SparseObjectMatrix<Column>)this.connections.getMemory();
+                    (SparseObjectMatrix<Column>)this.connections.HtmConfig.Memory;
 
-            this.connections.setMemory(matrix);
+            this.connections.HtmConfig.Memory = matrix;
 
             int numColumns = matrix.getMaxIndex() + 1;
             this.connections.setNumColumns(numColumns);
@@ -136,7 +136,7 @@ namespace NeoCortexApi
             Func<Object, Column> segToCol = (segment) =>
             {
                 var colIndx = ((DistalDendrite)segment).ParentCell.getParentColumnIndex();
-                var parentCol = this.connections.getMemory().GetColumn(colIndx);
+                var parentCol = this.connections.HtmConfig.Memory.GetColumn(colIndx);
                 return parentCol;
             };
 

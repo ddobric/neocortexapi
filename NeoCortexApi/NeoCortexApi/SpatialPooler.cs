@@ -97,19 +97,19 @@ namespace NeoCortexApi
          */
         public virtual void InitMatrices(Connections c, DistributedMemory distMem)
         {
-            SparseObjectMatrix<Column> memory = (SparseObjectMatrix<Column>)c.getMemory();
+            SparseObjectMatrix<Column> memory = (SparseObjectMatrix<Column>)c.HtmConfig.Memory;
 
-            c.setMemory(memory == null ? memory = new SparseObjectMatrix<Column>(c.HtmConfig.ColumnDimensions, dict: null) : memory);
+            c.HtmConfig.Memory = memory == null ? memory = new SparseObjectMatrix<Column>(c.HtmConfig.ColumnDimensions, dict: null) : memory;
 
-            c.setInputMatrix(new SparseBinaryMatrix(c.HtmConfig.InputDimensions));
+            c.HtmConfig.InputMatrix = new SparseBinaryMatrix(c.HtmConfig.InputDimensions);
 
             // Initiate the topologies
             c.setColumnTopology(new Topology(c.HtmConfig.ColumnDimensions));
             c.setInputTopology(new Topology(c.HtmConfig.InputDimensions));
 
             //Calculate numInputs and numColumns
-            int numInputs = c.getInputMatrix().getMaxIndex() + 1;
-            int numColumns = c.getMemory().getMaxIndex() + 1;
+            int numInputs = c.HtmConfig.InputMatrix.getMaxIndex() + 1;
+            int numColumns = c.HtmConfig.Memory.getMaxIndex() + 1;
             if (numColumns <= 0)
             {
                 throw new ArgumentException("Invalid number of columns: " + numColumns);
@@ -911,7 +911,7 @@ namespace NeoCortexApi
                 return;
 
             // This condition is wrong. It brings teh SP in scillation state.
-            var weakColumns = c.getMemory().get1DIndexes().Where(i => c.getOverlapDutyCycles()[i] < c.getMinOverlapDutyCycles()[i]).ToArray();
+            var weakColumns = c.HtmConfig.Memory.get1DIndexes().Where(i => c.getOverlapDutyCycles()[i] < c.getMinOverlapDutyCycles()[i]).ToArray();
             //var weakColumnsStr = Helpers.StringifyVector(weakColumns);
             //Debug.WriteLine("weak Columns:" + weakColumnsStr);
             for (int i = 0; i < weakColumns.Length; i++)

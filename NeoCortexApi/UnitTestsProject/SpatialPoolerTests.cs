@@ -548,10 +548,10 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 12 });
             initSP();
 
-            Assert.IsTrue(1 == HtmCompute.MapColumn(0, mem.ColumnTopology, mem.InputTopology));
-            Assert.IsTrue(4 == HtmCompute.MapColumn(1, mem.ColumnTopology, mem.InputTopology));
-            Assert.IsTrue(7 == HtmCompute.MapColumn(2, mem.ColumnTopology, mem.InputTopology));
-            Assert.IsTrue(10 == HtmCompute.MapColumn(3, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(1 == HtmCompute.MapColumn(0, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
+            Assert.IsTrue(4 == HtmCompute.MapColumn(1, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
+            Assert.IsTrue(7 == HtmCompute.MapColumn(2, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
+            Assert.IsTrue(10 == HtmCompute.MapColumn(3, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
 
             // Test 1D with same dimension of columns and inputs
             setupParameters();
@@ -559,10 +559,10 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 4 });
             initSP();
 
-            Assert.IsTrue(0 == HtmCompute.MapColumn(0, mem.ColumnTopology, mem.InputTopology));
-            Assert.IsTrue(1 == HtmCompute.MapColumn(1, mem.ColumnTopology, mem.InputTopology));
-            Assert.IsTrue(2 == HtmCompute.MapColumn(2, mem.ColumnTopology, mem.InputTopology));
-            Assert.IsTrue(3 == HtmCompute.MapColumn(3, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(0 == HtmCompute.MapColumn(0, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
+            Assert.IsTrue(1 == HtmCompute.MapColumn(1, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
+            Assert.IsTrue(2 == HtmCompute.MapColumn(2, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
+            Assert.IsTrue(3 == HtmCompute.MapColumn(3, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
 
             // Test 1D with dimensions of length 1
             setupParameters();
@@ -570,7 +570,7 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 1 });
             initSP();
 
-            Assert.IsTrue(0 == HtmCompute.MapColumn(0, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(0 == HtmCompute.MapColumn(0, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
 
             // Test 2D
             setupParameters();
@@ -578,11 +578,11 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 36, 12 });
             initSP();
 
-            Assert.IsTrue(13 == HtmCompute.MapColumn(0, mem.ColumnTopology, mem.InputTopology));
-            Assert.IsTrue(49 == HtmCompute.MapColumn(4, mem.ColumnTopology, mem.InputTopology));
-            Assert.IsTrue(52 == HtmCompute.MapColumn(5, mem.ColumnTopology, mem.InputTopology));
-            Assert.IsTrue(58 == HtmCompute.MapColumn(7, mem.ColumnTopology, mem.InputTopology));
-            Assert.IsTrue(418 == HtmCompute.MapColumn(47, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(13 == HtmCompute.MapColumn(0, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
+            Assert.IsTrue(49 == HtmCompute.MapColumn(4, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
+            Assert.IsTrue(52 == HtmCompute.MapColumn(5, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
+            Assert.IsTrue(58 == HtmCompute.MapColumn(7, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
+            Assert.IsTrue(418 == HtmCompute.MapColumn(47, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
 
             // Test 2D with some input dimensions smaller than column dimensions.
             setupParameters();
@@ -590,9 +590,9 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 3, 5 });
             initSP();
 
-            Assert.IsTrue(0 == HtmCompute.MapColumn(0, mem.ColumnTopology, mem.InputTopology));
-            Assert.IsTrue(4 == HtmCompute.MapColumn(3, mem.ColumnTopology, mem.InputTopology));
-            Assert.IsTrue(14 == HtmCompute.MapColumn(15, mem.ColumnTopology, mem.InputTopology));
+            Assert.IsTrue(0 == HtmCompute.MapColumn(0, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
+            Assert.IsTrue(4 == HtmCompute.MapColumn(3, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
+            Assert.IsTrue(14 == HtmCompute.MapColumn(15, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
         }
 
         [TestMethod]
@@ -1101,12 +1101,12 @@ namespace UnitTestsProject
             sp.InitMatrices(mem, null);
 
             List<int> connected = new List<int>();
-            connected.Add(mem.getInputMatrix().computeIndex(new int[] { 1, 0, 1, 0 }, false));
-            connected.Add(mem.getInputMatrix().computeIndex(new int[] { 1, 0, 1, 1 }, false));
-            connected.Add(mem.getInputMatrix().computeIndex(new int[] { 3, 2, 1, 0 }, false));
-            connected.Add(mem.getInputMatrix().computeIndex(new int[] { 3, 0, 1, 0 }, false));
-            connected.Add(mem.getInputMatrix().computeIndex(new int[] { 1, 0, 1, 3 }, false));
-            connected.Add(mem.getInputMatrix().computeIndex(new int[] { 2, 2, 1, 0 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 1, 0, 1, 0 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 1, 0, 1, 1 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 3, 2, 1, 0 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 3, 0, 1, 0 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 1, 0, 1, 3 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 2, 2, 1, 0 }, false));
             //connected.sort(0, connected.size());
             connected = connected.OrderBy(i => i).ToList();
 
@@ -1117,10 +1117,10 @@ namespace UnitTestsProject
             mem.getColumn(0).setProximalConnectedSynapsesForTest(mem, connected.ToArray());
 
             connected.Clear();
-            connected.Add(mem.getInputMatrix().computeIndex(new int[] { 2, 0, 1, 0 }, false));
-            connected.Add(mem.getInputMatrix().computeIndex(new int[] { 2, 0, 0, 0 }, false));
-            connected.Add(mem.getInputMatrix().computeIndex(new int[] { 3, 0, 0, 0 }, false));
-            connected.Add(mem.getInputMatrix().computeIndex(new int[] { 3, 0, 1, 0 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 2, 0, 1, 0 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 2, 0, 0, 0 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 3, 0, 0, 0 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 3, 0, 1, 0 }, false));
             //connected.sort(0, connected.size());
             connected = connected.OrderBy(i => i).ToList();
 
@@ -1131,12 +1131,12 @@ namespace UnitTestsProject
             mem.getColumn(1).setProximalConnectedSynapsesForTest(mem, connected.ToArray());
 
             connected.Clear();
-            connected.Add(mem.getInputMatrix().computeIndex(new int[] { 0, 0, 1, 4 }, false));
-            connected.Add(mem.getInputMatrix().computeIndex(new int[] { 0, 0, 0, 3 }, false));
-            connected.Add(mem.getInputMatrix().computeIndex(new int[] { 0, 0, 0, 1 }, false));
-            connected.Add(mem.getInputMatrix().computeIndex(new int[] { 1, 0, 0, 2 }, false));
-            connected.Add(mem.getInputMatrix().computeIndex(new int[] { 0, 0, 1, 1 }, false));
-            connected.Add(mem.getInputMatrix().computeIndex(new int[] { 3, 3, 1, 1 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 0, 0, 1, 4 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 0, 0, 0, 3 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 0, 0, 0, 1 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 1, 0, 0, 2 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 0, 0, 1, 1 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 3, 3, 1, 1 }, false));
             connected = connected.OrderBy(i => i).ToList();
             //connected.sort(0, connected.size());
 
@@ -1147,8 +1147,8 @@ namespace UnitTestsProject
             mem.getColumn(2).setProximalConnectedSynapsesForTest(mem, connected.ToArray());
 
             connected.Clear();
-            connected.Add(mem.getInputMatrix().computeIndex(new int[] { 3, 3, 1, 4 }, false));
-            connected.Add(mem.getInputMatrix().computeIndex(new int[] { 0, 0, 0, 0 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 3, 3, 1, 4 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 0, 0, 0, 0 }, false));
             //connected.sort(0, connected.size());
             connected = connected.OrderBy(i => i).ToList();
 
@@ -1773,7 +1773,7 @@ namespace UnitTestsProject
             new double[]{0.101, 0.101, 0.101, 0.101, 0.101}};   // increment 9 times
 
             //FORGOT TO SET PERMANENCES ABOVE - DON'T USE mem.setPermanences() 
-            int[] indices = mem.getMemory().getSparseIndices();
+            int[] indices = mem.HtmConfig.Memory.getSparseIndices();
             for (int i = 0; i < mem.NumColumns; i++)
             {
                 // double[] perm = mem.getPotentialPools().get(i).getSparsePermanences();
@@ -2019,7 +2019,7 @@ namespace UnitTestsProject
             mem.HtmConfig.NumInputs = mem.HtmConfig.NumInputs = 10;
 
             mem.HtmConfig.PotentialRadius = 2;
-            mem.HtmConfig.InitialSynapseConnsPct = mem.InitialSynapseConnsPct = 1;
+            mem.HtmConfig.InitialSynapseConnsPct = 1;
             int[] mask = new int[] { 0, 1, 2, 8, 9 };
 
             //var dendriteSeg = mem.getColumn(0).ProximalDendrite;
@@ -2037,12 +2037,12 @@ namespace UnitTestsProject
             // Because of connectedPct=1 all 5 specified synapses have to be connected.
             Assert.AreEqual(5, numcon);
 
-            mem.HtmConfig.InitialSynapseConnsPct = mem.InitialSynapseConnsPct = 0;
+            mem.HtmConfig.InitialSynapseConnsPct = 0;
             perm = HtmCompute.InitSynapsePermanences(mem.HtmConfig, mask, mem.getRandom());
             numcon = ArrayUtils.ValueGreaterCount(mem.HtmConfig.SynPermConnected, perm);
             Assert.AreEqual(0, numcon);
 
-            mem.HtmConfig.InitialSynapseConnsPct = mem.InitialSynapseConnsPct = 0.5;
+            mem.HtmConfig.InitialSynapseConnsPct = 0.5;
             mem.HtmConfig.PotentialRadius = 100;
             mem.HtmConfig.NumInputs = mem.HtmConfig.NumInputs = 100;
             mask = new int[100];
@@ -2053,7 +2053,7 @@ namespace UnitTestsProject
             Assert.IsTrue(numcon < mem.HtmConfig.NumInputs);
 
             double minThresh = 0.0;
-            double maxThresh = mem.getSynPermMax();
+            double maxThresh = mem.HtmConfig.SynPermMax;
 
             double[] results = perma.Where(d => d > minThresh && d <= maxThresh).ToArray();
 

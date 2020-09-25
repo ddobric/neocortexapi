@@ -26,19 +26,19 @@ namespace NeoCortexApi
 
             this.distMemConfig = distMem;
 
-            SparseObjectMatrix<Column> mem = (SparseObjectMatrix<Column>)c.getMemory();
+            SparseObjectMatrix<Column> mem = (SparseObjectMatrix<Column>)c.HtmConfig.Memory;
 
-            c.setMemory(mem == null ? mem = new SparseObjectMatrix<Column>(c.HtmConfig.ColumnDimensions, dict: distMem.ColumnDictionary) : mem);
+            c.HtmConfig.Memory = mem == null ? mem = new SparseObjectMatrix<Column>(c.HtmConfig.ColumnDimensions, dict: distMem.ColumnDictionary) : mem;
 
-            c.setInputMatrix(new SparseBinaryMatrix(c.HtmConfig.InputDimensions));
+            c.HtmConfig.InputMatrix = new SparseBinaryMatrix(c.HtmConfig.InputDimensions);
 
             // Initiate the topologies
             c.setColumnTopology(new Topology(c.HtmConfig.ColumnDimensions));
             c.setInputTopology(new Topology(c.HtmConfig.InputDimensions));
 
             //Calculate numInputs and numColumns
-            int numInputs = c.getInputMatrix().getMaxIndex() + 1;
-            int numColumns = c.getMemory().getMaxIndex() + 1;
+            int numInputs = c.HtmConfig.InputMatrix.getMaxIndex() + 1;
+            int numColumns = c.HtmConfig.Memory.getMaxIndex() + 1;
             if (numColumns <= 0)
             {
                 throw new ArgumentException("Invalid number of columns: " + numColumns);
@@ -62,7 +62,7 @@ namespace NeoCortexApi
             // Fill the sparse matrix with column objects
             //var numCells = c.getCellsPerColumn();
 
-           // var partitions = mem.GetPartitions();
+            // var partitions = mem.GetPartitions();
 
 
             List<KeyPair> colList = new List<KeyPair>();
@@ -200,7 +200,7 @@ namespace NeoCortexApi
             //    colList.Add(new KeyPair() { Key = i, Value = data.Column });
             //}
 
-            SparseObjectMatrix<Column> mem = (SparseObjectMatrix<Column>)c.getMemory();
+            SparseObjectMatrix<Column> mem = (SparseObjectMatrix<Column>)c.HtmConfig.Memory;
 
             //if (mem.IsRemotelyDistributed)
             //{
@@ -268,7 +268,7 @@ namespace NeoCortexApi
             if (remoteHtm == null)
                 throw new ArgumentException("disMemConfig is not of type IRemotelyDistributed!");
 
-            var weakColumns = c.getMemory().get1DIndexes().Where(i => c.getOverlapDutyCycles()[i] < c.getMinOverlapDutyCycles()[i]).ToArray();
+            var weakColumns = c.HtmConfig.Memory.get1DIndexes().Where(i => c.getOverlapDutyCycles()[i] < c.getMinOverlapDutyCycles()[i]).ToArray();
             if (weakColumns.Length > 0)
                 remoteHtm.BumpUpWeakColumnsDist(weakColumns);
         }

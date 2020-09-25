@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using System;
 using System.Collections.Generic;
+using System.Net.Http.Headers;
 using System.Text;
 
 namespace NeoCortexApi.Entities
@@ -13,11 +14,11 @@ namespace NeoCortexApi.Entities
     {
         public HtmConfig()
         {
-            
+
         }
         public class TemporalMemoryConfig
-        { 
-        
+        {
+
         }
 
         public class SpatialPoolerConfig
@@ -56,17 +57,17 @@ namespace NeoCortexApi.Entities
 
         public double SynPermConnected { get; set; }
 
-        public double StimulusThreshold { get; set; }        
+        public double StimulusThreshold { get; set; }
 
-        public int NumInputs { get;  set; }
+        public int NumInputs { get; set; }
 
         public int NumColumns { get; set; }
 
-        public double SynPermMax { get; set; }
+        public double SynPermMax { get; set; } = 1.0;
 
         public double SynPermMin { get; set; }
 
-        public double InitialSynapseConnsPct { get; set; }
+        public double InitialSynapseConnsPct { get; set; } = 0.5;
 
         public double SynPermTrimThreshold { get; set; }
 
@@ -77,9 +78,9 @@ namespace NeoCortexApi.Entities
         public double SynPermInactiveDec { get; set; }
         public double SynPermActiveInc { get; set; }
 
-        public double PermanenceIncrement { get;  set; }
+        public double PermanenceIncrement { get; set; }
 
-        public double PermanenceDecrement { get;  set; }
+        public double PermanenceDecrement { get; set; }
         public int MaxNewSynapseCount { get; internal set; }
 
         public int MaxSegmentsPerCell { get; set; }
@@ -87,7 +88,10 @@ namespace NeoCortexApi.Entities
         public int MaxSynapsesPerSegment { get; set; }
 
         public int[] InputDimensions { get; set; } = new int[] { 100 };
-        public int[] ColumnDimensions { get; set; } = new int[] { 2048};
+        public int[] ColumnDimensions { get; set; } = new int[] { 2048 };
+
+        public AbstractSparseMatrix<Column> Memory { get; set; }
+        public ISparseMatrix<int> InputMatrix { get; set; }
     }
 
     public class test

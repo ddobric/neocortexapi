@@ -55,10 +55,10 @@ namespace NeoCortexApi.Entities
 
         //Extra parameter settings
         //private double synPermMin = 0.0;
-        private double synPermMax = 1.0;
+        //private double synPermMax = 1.0;
         //private double synPermTrimThreshold;// = synPermActiveInc / 2.0;
         private int updatePeriod = 50;
-        private double initConnectedPct = 0.5;
+        //private double initConnectedPct = 0.5;
 
         //Internal state
         private double version = 1.0;
@@ -80,7 +80,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// A matrix representing the shape of the input.
         /// </summary>
-        protected ISparseMatrix<int> inputMatrix;
+        //protected ISparseMatrix<int> inputMatrix;
         /**
          * Store the set of all inputs that are within each column's potential pool.
          * 'potentialPools' is a matrix, whose rows represent cortical columns, and
@@ -198,23 +198,23 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// The main data structure containing columns, cells, and synapses
         /// </summary>
-        private AbstractSparseMatrix<Column> memory;
+        //private AbstractSparseMatrix<Column> memory;
 
-        public HtmModuleTopology ColumnTopology
-        {
-            get
-            {
-                return getMemory()?.ModuleTopology;
-            }
-        }
+        //public HtmModuleTopology ColumnTopology
+        //{
+        //    get
+        //    {
+        //        return this.HtmConfig.Memory?.ModuleTopology;
+        //    }
+        //}
 
-        public HtmModuleTopology InputTopology
-        {
-            get
-            {
-                return getInputMatrix()?.ModuleTopology;
-            }
-        }
+        //public HtmModuleTopology InputTopology
+        //{
+        //    get
+        //    {
+        //        return this.HtmConfig.InputMatrix?.ModuleTopology;
+        //    }
+        //}
 
         private HtmConfig m_HtmConfig = new HtmConfig();
 
@@ -252,18 +252,19 @@ namespace NeoCortexApi.Entities
 
                 m_HtmConfig.SynPermBelowStimulusInc = m_HtmConfig.SynPermConnected / 10.0;
                 m_HtmConfig.SynPermTrimThreshold = m_HtmConfig.SynPermActiveInc / 2.0;
-                m_HtmConfig.ColumnTopology = this.ColumnTopology;
-                m_HtmConfig.InputTopology = this.InputTopology;
+                m_HtmConfig.ColumnTopology = m_HtmConfig.Memory?.ModuleTopology;
+                m_HtmConfig.InputTopology = m_HtmConfig.InputMatrix?.ModuleTopology;
+                //m_HtmConfig.InputTopology = this.InputTopology;
                 //m_HtmConfig.IsWrapAround = this.isWrapAround();
                 //m_HtmConfig.NumInputs = this.NumInputs;
-                m_HtmConfig.NumColumns = this.getMemory() != null ? this.getMemory().getMaxIndex() + 1 : -1;
+                m_HtmConfig.NumColumns = m_HtmConfig.Memory != null ? m_HtmConfig.Memory.getMaxIndex() + 1 : -1;
                 //m_HtmConfig.PotentialPct = getPotentialPct();
                 //m_HtmConfig.PotentialRadius = getPotentialRadius();
                 //m_HtmConfig.SynPermConnected = getSynPermConnected();
-                m_HtmConfig.InitialSynapseConnsPct = this.InitialSynapseConnsPct;
+                //m_HtmConfig.InitialSynapseConnsPct = this.InitialSynapseConnsPct;
                 //m_HtmConfig.SynPermTrimThreshold = this.getSynPermTrimThreshold();
                 //m_HtmConfig.SynPermBelowStimulusInc = this.synPermBelowStimulusInc;
-                m_HtmConfig.SynPermMax = this.getSynPermMax();
+                //m_HtmConfig.SynPermMax = this.getSynPermMax();
                 //m_HtmConfig.SynPermMin = this.getSynPermMin();
                 //m_HtmConfig.StimulusThreshold = this.StimulusThreshold;
                 //m_HtmConfig.CellsPerColumn = this.getCellsPerColumn();
@@ -530,23 +531,23 @@ namespace NeoCortexApi.Entities
             return retVal;
         }
 
-        /**
-         * Sets the matrix containing the {@link Column}s
-         * @param mem
-         */
-        public void setMemory(AbstractSparseMatrix<Column> mem)
-        {
-            this.memory = mem;
-        }
+        ///**
+        // * Sets the matrix containing the {@link Column}s
+        // * @param mem
+        // */
+        //public void setMemory(AbstractSparseMatrix<Column> mem)
+        //{
+        //    this.memory = mem;
+        //}
 
-        /**
-         * Returns the matrix containing the {@link Column}s
-         * @return
-         */
-        public AbstractSparseMatrix<Column> getMemory()
-        {
-            return memory;
-        }
+        ///**
+        // * Returns the matrix containing the {@link Column}s
+        // * @return
+        // */
+        //public AbstractSparseMatrix<Column> getMemory()
+        //{
+        //    return memory;
+        //}
 
         /**
          * Returns the {@link Topology} overseeing input 
@@ -590,42 +591,42 @@ namespace NeoCortexApi.Entities
             this.columnTopology = topology;
         }
 
-        /**
-         * Returns the input column mapping
-         */
-        public ISparseMatrix<int> getInputMatrix()
-        {
-            return inputMatrix;
-        }
+        ///**
+        // * Returns the input column mapping
+        // */
+        //public ISparseMatrix<int> getInputMatrix()
+        //{
+        //    return inputMatrix;
+        //}
 
-        /**
-         * Sets the input column mapping matrix
-         * @param matrix
-         */
-        public void setInputMatrix(ISparseMatrix<int> matrix)
-        {
-            this.inputMatrix = matrix;
-        }
+        ///**
+        // * Sets the input column mapping matrix
+        // * @param matrix
+        // */
+        //public void setInputMatrix(ISparseMatrix<int> matrix)
+        //{
+        //    this.inputMatrix = matrix;
+        //}
 
         ////////////////////////////////////////
         //       SpatialPooler Methods        //
         ////////////////////////////////////////
 
 
-        /// <summary>
-        /// Percent of initially connected synapses. Typically 50%.
-        /// </summary>
-        public double InitialSynapseConnsPct
-        {
-            get
-            {
-                return this.initConnectedPct;
-            }
-            set
-            {
-                this.initConnectedPct = value;
-            }
-        }
+        ///// <summary>
+        ///// Percent of initially connected synapses. Typically 50%.
+        ///// </summary>
+        //public double InitialSynapseConnsPct
+        //{
+        //    get
+        //    {
+        //        return this.initConnectedPct;
+        //    }
+        //    set
+        //    {
+        //        this.initConnectedPct = value;
+        //    }
+        //}
 
         /**
          * Returns the cycle count.
@@ -789,7 +790,7 @@ namespace NeoCortexApi.Entities
         {
             foreach (int idx in s.getSparseIndices())
             {
-                memory.getObject(idx).setPermanences(this.HtmConfig, s.getObject(idx));
+                this.HtmConfig.Memory.getObject(idx).setPermanences(this.HtmConfig, s.getObject(idx));
             }
         }
 
@@ -1311,14 +1312,14 @@ namespace NeoCortexApi.Entities
         //    return synPermMin;
         //}
 
-        /**
-         * Returns the maximum {@link Synapse} permanence.
-         * @return
-         */
-        public double getSynPermMax()
-        {
-            return synPermMax;
-        }
+        ///**
+        // * Returns the maximum {@link Synapse} permanence.
+        // * @return
+        // */
+        //public double getSynPermMax()
+        //{
+        //    return synPermMax;
+        //}
 
         /**
          * Returns the version number
@@ -2090,7 +2091,7 @@ namespace NeoCortexApi.Entities
          */
         public Column getColumn(int index)
         {
-            return memory.getObject(index);
+            return this.HtmConfig.Memory.getObject(index);
         }
 
 
@@ -2458,7 +2459,7 @@ namespace NeoCortexApi.Entities
             LinkedHashSet<Column> retVal = new LinkedHashSet<Column>();
             for (int i = 0; i < indexes.Length; i++)
             {
-                retVal.Add(memory.getObject(indexes[i]));
+                retVal.Add(this.HtmConfig.Memory.getObject(indexes[i]));
             }
             return retVal;
         }
@@ -2475,7 +2476,7 @@ namespace NeoCortexApi.Entities
             List<Column> retVal = new List<Column>();
             for (int i = 0; i < indexes.Length; i++)
             {
-                retVal.Add(memory.getObject(indexes[i]));
+                retVal.Add(this.HtmConfig.Memory.getObject(indexes[i]));
             }
             return retVal;
         }
@@ -2656,12 +2657,12 @@ namespace NeoCortexApi.Entities
             result = prime * result + dutyCyclePeriod;
             result = prime * result + (m_GlobalInhibition ? 1231 : 1237);
             result = prime * result + m_InhibitionRadius;
-            temp = BitConverter.DoubleToInt64Bits(initConnectedPct);
+            temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.InitialSynapseConnsPct);
             result = prime * result + (int)(temp ^ (temp >> 32));
             temp = BitConverter.DoubleToInt64Bits(initialPermanence);
             result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + this.HtmConfig.InputDimensions.GetHashCode();
-            result = prime * result + ((inputMatrix == null) ? 0 : inputMatrix.GetHashCode());
+            result = prime * result + ((this.HtmConfig.InputMatrix == null) ? 0 : this.HtmConfig.InputMatrix.GetHashCode());
             result = prime * result + spIterationLearnNum;
             result = prime * result + spIterationNum;
             //result = prime * result + (new Long(tmIteration)).intValue();
@@ -2672,7 +2673,7 @@ namespace NeoCortexApi.Entities
             temp = BitConverter.DoubleToInt64Bits(maxBoost);
             result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + this.HtmConfig.MaxNewSynapseCount;
-            result = prime * result + ((memory == null) ? 0 : memory.GetHashCode());
+            result = prime * result + ((this.HtmConfig.Memory == null) ? 0 : this.HtmConfig.Memory.GetHashCode());
             result = prime * result + minActiveDutyCycles.GetHashCode();
             result = prime * result + minOverlapDutyCycles.GetHashCode();
             temp = BitConverter.DoubleToInt64Bits(minPctActiveDutyCycles);
@@ -2778,18 +2779,18 @@ namespace NeoCortexApi.Entities
                 return false;
             if (m_InhibitionRadius != other.m_InhibitionRadius)
                 return false;
-            if (BitConverter.DoubleToInt64Bits(initConnectedPct) != BitConverter.DoubleToInt64Bits(other.initConnectedPct))
+            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.InitialSynapseConnsPct) != BitConverter.DoubleToInt64Bits(other.HtmConfig.InitialSynapseConnsPct))
                 return false;
             if (BitConverter.DoubleToInt64Bits(initialPermanence) != BitConverter.DoubleToInt64Bits(other.initialPermanence))
                 return false;
             if (!Array.Equals(this.HtmConfig.InputDimensions, other.HtmConfig.InputDimensions))
                 return false;
-            if (inputMatrix == null)
+            if (this.HtmConfig.InputMatrix == null)
             {
-                if (other.inputMatrix != null)
+                if (other.HtmConfig.InputMatrix != null)
                     return false;
             }
-            else if (!inputMatrix.Equals(other.inputMatrix))
+            else if (!this.HtmConfig.InputMatrix.Equals(other.HtmConfig.InputMatrix))
                 return false;
             if (spIterationLearnNum != other.spIterationLearnNum)
                 return false;
@@ -2805,12 +2806,12 @@ namespace NeoCortexApi.Entities
                 return false;
             if (this.HtmConfig.MaxNewSynapseCount != other.HtmConfig.MaxNewSynapseCount)
                 return false;
-            if (memory == null)
+            if (this.HtmConfig.Memory == null)
             {
-                if (other.memory != null)
+                if (other.HtmConfig.Memory != null)
                     return false;
             }
-            else if (!memory.Equals(other.memory))
+            else if (!this.HtmConfig.Memory.Equals(other.HtmConfig.Memory))
                 return false;
             if (!Array.Equals(minActiveDutyCycles, other.minActiveDutyCycles))
                 return false;
@@ -2882,7 +2883,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (BitConverter.DoubleToInt64Bits(this.HtmConfig.SynPermInactiveDec) != BitConverter.DoubleToInt64Bits(other.HtmConfig.SynPermInactiveDec))
                 return false;
-            if (BitConverter.DoubleToInt64Bits(synPermMax) != BitConverter.DoubleToInt64Bits(other.synPermMax))
+            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.SynPermMax) != BitConverter.DoubleToInt64Bits(other.HtmConfig.SynPermMax))
                 return false;
             if (BitConverter.DoubleToInt64Bits(this.HtmConfig.SynPermMin) != BitConverter.DoubleToInt64Bits(other.HtmConfig.SynPermMin))
                 return false;
