@@ -112,6 +112,11 @@ namespace NeoCortexApi.Entities
         private AbstractSparseBinaryMatrix connectedCounts2;
 
         /// <summary>
+        /// All cells. Initialized during initialization of the TemporalMemory.
+        /// </summary>
+        public Cell[] Cells { get; set; }
+
+        /// <summary>
         /// The inhibition radius determines the size of a column's local
         /// neighborhood. of a column. A cortical column must overcome the overlap
         /// score of columns in its neighborhood in order to become actives. This
@@ -277,7 +282,7 @@ namespace NeoCortexApi.Entities
             }
         }
 
-        public Cell[] cells { get; set; }
+       
 
         ///////////////////////   Structural Elements /////////////////////////
         
@@ -476,27 +481,10 @@ namespace NeoCortexApi.Entities
          */
         public Cell getCell(int index)
         {
-            return cells[index];
+            return Cells[index];
         }
 
-        /**
-         * Returns an array containing all of the {@link Cell}s.
-         * @return
-         */
-        public Cell[] getCells()
-        {
-            return cells;
-        }
-
-        /**
-         * Sets the flat array of cells
-         * @param cells
-         */
-        public void setCells(Cell[] cells)
-        {
-            this.cells = cells;
-        }
-
+      
         /**
          * Returns an array containing the {@link Cell}s specified
          * by the passed in indexes.
@@ -509,7 +497,7 @@ namespace NeoCortexApi.Entities
             Cell[] retVal = new Cell[cellIndexes.Length];
             for (int i = 0; i < cellIndexes.Length; i++)
             {
-                retVal[i] = cells[cellIndexes[i]];
+                retVal[i] = Cells[cellIndexes[i]];
             }
             return retVal;
         }
@@ -526,7 +514,7 @@ namespace NeoCortexApi.Entities
             LinkedHashSet<Cell> retVal = new LinkedHashSet<Cell>();
             for (int i = 0; i < cellIndexes.Length; i++)
             {
-                retVal.Add(cells[cellIndexes[i]]);
+                retVal.Add(Cells[cellIndexes[i]]);
             }
             return retVal;
         }
@@ -2651,7 +2639,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + ((activeCells == null) ? 0 : activeCells.GetHashCode());
             result = prime * result + activeDutyCycles.GetHashCode();
             result = prime * result + m_BoostFactors.GetHashCode();
-            result = prime * result + cells.GetHashCode();
+            result = prime * result + Cells.GetHashCode();
             result = prime * result + this.HtmConfig.CellsPerColumn;
             result = prime * result + this.HtmConfig.ColumnDimensions.GetHashCode();
             //result = prime * result + ((connectedCounts == null) ? 0 : connectedCounts.GetHashCode());
@@ -2762,7 +2750,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (!Array.Equals(m_BoostFactors, other.m_BoostFactors))
                 return false;
-            if (!Array.Equals(cells, other.cells))
+            if (!Array.Equals(Cells, other.Cells))
                 return false;
             if (this.HtmConfig.CellsPerColumn != other.HtmConfig.CellsPerColumn)
                 return false;

@@ -71,7 +71,7 @@ namespace NeoCortexApi
 
             }
             //Only the TemporalMemory initializes cells so no need to test for redundancy
-            this.connections.setCells(cells);
+            this.connections.Cells = cells;
         }
 
         /// <summary>
@@ -156,7 +156,6 @@ namespace NeoCortexApi
             // Grouping by columns, which have active and matching segments.
             foreach (var tuple in grouper)
             {
-                Console.Write(":");
                 activeColumnData = activeColumnData.Set(tuple);
 
                 if (activeColumnData.IsExistAnyActiveCol(cIndexofACTIVE_COLUMNS))
@@ -472,6 +471,7 @@ namespace NeoCortexApi
             // If some matching segments exist, bursting will grab the segment with most potential synapses and adapt it.
             if (matchingSegments != null && matchingSegments.Count > 0)
             {
+                Debug.WriteLine($"({matchingSegments.Count})");
                 DistalDendrite maxPotentialSeg = getSegmentwithHighesPotential(conn, matchingSegments);
 
                 for (int i = 0; i < matchingSegments.Count; i++)
@@ -512,6 +512,7 @@ namespace NeoCortexApi
             return new BurstingResult(cells, leastUsedCell);
         }
 
+        private int indxOfLastHighestSegment = -1;
 
         /// <summary>
         /// Gets the segment with maximal potential. Segment's potential is measured by number of potential synapses.
@@ -521,14 +522,25 @@ namespace NeoCortexApi
         /// <returns></returns>
         private DistalDendrite getSegmentwithHighesPotential(Connections conn, List<DistalDendrite> matchingSegments)
         {
-            // int[] numActPotential = conn.getLastActivity().numActivePotential;
-
             DistalDendrite maxSeg = matchingSegments[0];
 
             for (int i = 0; i < matchingSegments.Count - 1; i++)
             {
-                if (conn.getLastActivity().PotentialSynapses[matchingSegments[i + 1].getIndex()] > conn.getLastActivity().PotentialSynapses[matchingSegments[i].getIndex()])
-                    maxSeg = matchingSegments[i + 1];
+                var potSynsPlus1 = conn.getLastActivity().PotentialSynapses[matchingSegments[i + 1].getIndex()];
+
+                if (potSynsPlus1 > conn.getLastActivity().PotentialSynapses[matchingSegments[i].getIndex()])
+                {
+                    //if (matchingSegments[i + 1].getIndex() != indxOfLastHighestSegment)
+                    {
+                        // DRAFT
+                        maxSeg = matchingSegments[i + 1];
+                        indxOfLastHighestSegment = matchingSegments[i + 1].getIndex();
+                    }
+                    //else
+                    //{ 
+                    
+                    //}
+                }
             }
             return maxSeg;
         }
