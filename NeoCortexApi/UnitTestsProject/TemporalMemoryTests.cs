@@ -1011,7 +1011,7 @@ namespace UnitTestsProject
             p.apply(cn);
             tm.init(cn);
 
-            Assert.AreEqual(64 * 64 * 32, cn.getCells().Length);
+            Assert.AreEqual(64 * 64 * 32, cn.Cells.Length);
         }
     }
 }
