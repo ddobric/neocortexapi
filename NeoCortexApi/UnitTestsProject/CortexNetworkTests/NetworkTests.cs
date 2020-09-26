@@ -444,7 +444,7 @@ namespace UnitTestsProject
             p.setPermanenceIncrement(0.15);
 
             // Used by punishing of segments.
-            p.Set(KEY.PREDICTED_SEGMENT_DECREMENT, 0.2);
+            p.Set(KEY.PREDICTED_SEGMENT_DECREMENT, 0.1);
 
             double max = 20;
 
@@ -498,7 +498,7 @@ namespace UnitTestsProject
 
             // C-0, D-1, E-2, F-3, G-4, H-5
             // https://www.bethsnotesplus.com/2013/08/twinkle-twinkle-little-star.html
-            var inputValues = new List<double>( new double[] { 0.0, 0.0, 4.0, 4.0, 5.0, 5.0, 4.0, 3.0, 3.0, 2.0, 2.0, 1.0, 1.0, 0.0 });
+            //var inputValues = new List<double>( new double[] { 0.0, 0.0, 4.0, 4.0, 5.0, 5.0, 4.0, 3.0, 3.0, 2.0, 2.0, 1.0, 1.0, 0.0 });
 
             //inputValues = new List<double>(new double[] { 1.0, 2.0, 3.0, 1.0, 5.0, 1.0, 6.0, });
 
