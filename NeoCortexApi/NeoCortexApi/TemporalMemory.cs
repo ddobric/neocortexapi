@@ -185,7 +185,8 @@ namespace NeoCortexApi
                             prevActiveCells, prevWinnerCells, permanenceIncrement, permanenceDecrement, conn.getRandom(),
                                learn);
 
-                        cycle.ActiveCells.Add(burstingResult.BestCell);
+                        // DRAFT. Removing this as unnecessary.
+                        //cycle.ActiveCells.Add(burstingResult.BestCell);
 
                         //
                         // Here we activate all cells by putting them to list of active cells.
@@ -360,7 +361,7 @@ namespace NeoCortexApi
             {
                 foreach (Synapse synapse in new List<Synapse>(conn.getSynapses(segment)))
                 {
-                    // WORKING DRAFT
+                    // WORKING DRAFT. TM algorithm change.
                     if (prevActiveCells.Contains(synapse.getPresynapticCell()))
                     {
                         // TODO
@@ -471,8 +472,9 @@ namespace NeoCortexApi
             // If some matching segments exist, bursting will grab the segment with most potential synapses and adapt it.
             if (matchingSegments != null && matchingSegments.Count > 0)
             {
-                Debug.WriteLine($"({matchingSegments.Count})");
-                DistalDendrite maxPotentialSeg = getSegmentwithHighesPotential(conn, matchingSegments);
+                Debug.Write($"({matchingSegments.Count})");
+
+                DistalDendrite maxPotentialSeg = getSegmentwithHighesPotential(conn, matchingSegments, prevActiveCells);
 
                 for (int i = 0; i < matchingSegments.Count; i++)
                 {
@@ -509,7 +511,7 @@ namespace NeoCortexApi
                 }
             }
 
-            return new BurstingResult(cells, leastUsedCell);
+           return new BurstingResult(cells, leastUsedCell);
         }
 
         private int indxOfLastHighestSegment = -1;
@@ -520,7 +522,7 @@ namespace NeoCortexApi
         /// <param name="conn"></param>
         /// <param name="matchingSegments"></param>
         /// <returns></returns>
-        private DistalDendrite getSegmentwithHighesPotential(Connections conn, List<DistalDendrite> matchingSegments)
+        private DistalDendrite getSegmentwithHighesPotential(Connections conn, List<DistalDendrite> matchingSegments, ICollection<Cell> prevActiveCells)
         {
             DistalDendrite maxSeg = matchingSegments[0];
 
@@ -530,6 +532,7 @@ namespace NeoCortexApi
 
                 if (potSynsPlus1 > conn.getLastActivity().PotentialSynapses[matchingSegments[i].getIndex()])
                 {
+                    //prevActiveCells.Contains(synapse.getPresynapticCell())
                     //if (matchingSegments[i + 1].getIndex() != indxOfLastHighestSegment)
                     {
                         // DRAFT
@@ -537,8 +540,8 @@ namespace NeoCortexApi
                         indxOfLastHighestSegment = matchingSegments[i + 1].getIndex();
                     }
                     //else
-                    //{ 
-                    
+                    //{
+
                     //}
                 }
             }
