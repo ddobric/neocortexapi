@@ -35,10 +35,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\..\me\neocortexapi\LICENSE">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
     <None Include="Anomaly.cs" />
     <None Include="Classification.cs" />
     <None Include="Encoders\EncoderBuilder.cs" />
