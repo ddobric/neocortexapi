@@ -33,8 +33,8 @@ namespace NeoCortexApi
             c.HtmConfig.InputMatrix = new SparseBinaryMatrix(c.HtmConfig.InputDimensions);
 
             // Initiate the topologies
-            c.setColumnTopology(new Topology(c.HtmConfig.ColumnDimensions));
-            c.setInputTopology(new Topology(c.HtmConfig.InputDimensions));
+            c.HtmConfig.ColumnTopology = new Topology(c.HtmConfig.ColumnDimensions);
+            c.HtmConfig.InputTopology = new Topology(c.HtmConfig.InputDimensions);
 
             //Calculate numInputs and numColumns
             int numInputs = c.HtmConfig.InputMatrix.getMaxIndex() + 1;

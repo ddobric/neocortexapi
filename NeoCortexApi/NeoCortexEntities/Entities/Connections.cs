@@ -72,11 +72,11 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Manages input neighborhood transformations
         /// </summary>
-        private Topology inputTopology;
+        //private Topology inputTopology;
         /// <summary>
         /// Manages column neighborhood transformations
         /// </summary>
-        private Topology columnTopology;
+        //private Topology columnTopology;
         /// <summary>
         /// A matrix representing the shape of the input.
         /// </summary>
@@ -123,7 +123,7 @@ namespace NeoCortexApi.Entities
         /// radius is updated every learning round. It grows and shrinks with the
         /// average number of connected synapses per column.
         /// </summary>
-        private int m_InhibitionRadius = 0;
+        //private int m_InhibitionRadius = 0;
 
         private double[] overlapDutyCycles;
         private double[] activeDutyCycles;
@@ -257,8 +257,8 @@ namespace NeoCortexApi.Entities
 
                 m_HtmConfig.SynPermBelowStimulusInc = m_HtmConfig.SynPermConnected / 10.0;
                 m_HtmConfig.SynPermTrimThreshold = m_HtmConfig.SynPermActiveInc / 2.0;
-                m_HtmConfig.ColumnTopology = m_HtmConfig.Memory?.ModuleTopology;
-                m_HtmConfig.InputTopology = m_HtmConfig.InputMatrix?.ModuleTopology;
+                m_HtmConfig.ColumnModuleTopology = m_HtmConfig.Memory?.ModuleTopology;
+                m_HtmConfig.InputModuleTopology = m_HtmConfig.InputMatrix?.ModuleTopology;
                 //m_HtmConfig.InputTopology = this.InputTopology;
                 //m_HtmConfig.IsWrapAround = this.isWrapAround();
                 //m_HtmConfig.NumInputs = this.NumInputs;
@@ -537,47 +537,47 @@ namespace NeoCortexApi.Entities
         //    return memory;
         //}
 
-        /**
-         * Returns the {@link Topology} overseeing input 
-         * neighborhoods.
-         * @return 
-         */
-        public Topology getInputTopology()
-        {
-            return inputTopology;
-        }
+        ///**
+        // * Returns the {@link Topology} overseeing input 
+        // * neighborhoods.
+        // * @return 
+        // */
+        //public Topology getInputTopology()
+        //{
+        //    return inputTopology;
+        //}
 
-        /**
-         * Sets the {@link Topology} overseeing input 
-         * neighborhoods.
-         * 
-         * @param topology  the input Topology
-         */
-        public void setInputTopology(Topology topology)
-        {
-            this.inputTopology = topology;
-        }
+        ///**
+        // * Sets the {@link Topology} overseeing input 
+        // * neighborhoods.
+        // * 
+        // * @param topology  the input Topology
+        // */
+        //public void setInputTopology(Topology topology)
+        //{
+        //    this.inputTopology = topology;
+        //}
 
-        /**
-         * Returns the {@link Topology} overseeing {@link Column} 
-         * neighborhoods.
-         * @return
-         */
-        public Topology getColumnTopology()
-        {
-            return columnTopology;
-        }
+        ///**
+        // * Returns the {@link Topology} overseeing {@link Column} 
+        // * neighborhoods.
+        // * @return
+        // */
+        //public Topology getColumnTopology()
+        //{
+        //    return columnTopology;
+        //}
 
-        /**
-         * Sets the {@link Topology} overseeing {@link Column} 
-         * neighborhoods.
-         * 
-         * @param topology  the column Topology
-         */
-        public void setColumnTopology(Topology topology)
-        {
-            this.columnTopology = topology;
-        }
+        ///**
+        // * Sets the {@link Topology} overseeing {@link Column} 
+        // * neighborhoods.
+        // * 
+        // * @param topology  the column Topology
+        // */
+        //public void setColumnTopology(Topology topology)
+        //{
+        //    this.columnTopology = topology;
+        //}
 
         ///**
         // * Returns the input column mapping
@@ -655,20 +655,20 @@ namespace NeoCortexApi.Entities
 
 
 
-        /// <summary>
-        /// Radius of inhibition area. Called when the density of inhibition area is calculated.
-        /// </summary>
-        public int InhibitionRadius
-        {
-            get
-            {
-                return m_InhibitionRadius;
-            }
-            set
-            {
-                this.m_InhibitionRadius = value;
-            }
-        }
+        ///// <summary>
+        ///// Radius of inhibition area. Called when the density of inhibition area is calculated.
+        ///// </summary>
+        //public int InhibitionRadius
+        //{
+        //    get
+        //    {
+        //        return m_InhibitionRadius;
+        //    }
+        //    set
+        //    {
+        //        this.m_InhibitionRadius = value;
+        //    }
+        //}
 
 
         ///// <summary>
@@ -2489,7 +2489,7 @@ namespace NeoCortexApi.Entities
             Console.WriteLine("potentialRadius            = " + this.HtmConfig.PotentialRadius);
             Console.WriteLine("globalInhibition           = " + this.HtmConfig.GlobalInhibition);
             Console.WriteLine("localAreaDensity           = " + this.HtmConfig.LocalAreaDensity);
-            Console.WriteLine("inhibitionRadius           = " + InhibitionRadius);
+            Console.WriteLine("inhibitionRadius           = " + this.HtmConfig.InhibitionRadius);
             Console.WriteLine("stimulusThreshold          = " + this.HtmConfig.StimulusThreshold);
             Console.WriteLine("synPermActiveInc           = " + this.HtmConfig.SynPermActiveInc);
             Console.WriteLine("synPermInactiveDec         = " + this.HtmConfig.SynPermInactiveDec);
@@ -2648,7 +2648,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + (int)(temp ^ (temp >> 32));//it was temp >>> 32
             result = prime * result + this.HtmConfig.DutyCyclePeriod;
             result = prime * result + (this.HtmConfig.GlobalInhibition ? 1231 : 1237);
-            result = prime * result + m_InhibitionRadius;
+            result = prime * result + this.HtmConfig.InhibitionRadius;
             temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.InitialSynapseConnsPct);
             result = prime * result + (int)(temp ^ (temp >> 32));
             temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.InitialPermanence);
@@ -2769,7 +2769,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (this.HtmConfig.GlobalInhibition != other.HtmConfig.GlobalInhibition)
                 return false;
-            if (m_InhibitionRadius != other.m_InhibitionRadius)
+            if (this.HtmConfig.InhibitionRadius != other.HtmConfig.InhibitionRadius)
                 return false;
             if (BitConverter.DoubleToInt64Bits(this.HtmConfig.InitialSynapseConnsPct) != BitConverter.DoubleToInt64Bits(other.HtmConfig.InitialSynapseConnsPct))
                 return false;

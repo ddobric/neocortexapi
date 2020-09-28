@@ -104,8 +104,8 @@ namespace NeoCortexApi
             c.HtmConfig.InputMatrix = new SparseBinaryMatrix(c.HtmConfig.InputDimensions);
 
             // Initiate the topologies
-            c.setColumnTopology(new Topology(c.HtmConfig.ColumnDimensions));
-            c.setInputTopology(new Topology(c.HtmConfig.InputDimensions));
+            c.HtmConfig.ColumnTopology = new Topology(c.HtmConfig.ColumnDimensions);
+            c.HtmConfig.InputTopology = new Topology(c.HtmConfig.InputDimensions);
 
             //Calculate numInputs and numColumns
             int numInputs = c.HtmConfig.InputMatrix.getMaxIndex() + 1;
@@ -562,7 +562,7 @@ namespace NeoCortexApi
          */
         public void updateMinDutyCycles(Connections c)
         {
-            if (c.HtmConfig.GlobalInhibition || c.InhibitionRadius > c.HtmConfig.NumInputs)
+            if (c.HtmConfig.GlobalInhibition || c.HtmConfig.InhibitionRadius > c.HtmConfig.NumInputs)
             {
                 updateMinDutyCyclesGlobal(c);
             }
@@ -605,7 +605,7 @@ namespace NeoCortexApi
      */
         public int[] getColumnNeighborhood(Connections c, int centerColumn, int inhibitionRadius)
         {
-            var topology = c.getColumnTopology().HtmTopology;
+            var topology = c.HtmConfig.ColumnTopology.HtmTopology;
             return c.HtmConfig.WrapAround ?
                 HtmCompute.GetWrappingNeighborhood(centerColumn, inhibitionRadius, topology) :
                     HtmCompute.GetNeighborhood(centerColumn, inhibitionRadius, topology);
@@ -623,7 +623,7 @@ namespace NeoCortexApi
         public void updateMinDutyCyclesLocal(Connections c)
         {
             int len = c.NumColumns;
-            int inhibitionRadius = c.InhibitionRadius;
+            int inhibitionRadius = c.HtmConfig.InhibitionRadius;
             double[] activeDutyCycles = c.getActiveDutyCycles();
             double minPctActiveDutyCycles = c.HtmConfig.MinPctActiveDutyCycles;
             double[] overlapDutyCycles = c.getOverlapDutyCycles();
@@ -749,7 +749,7 @@ namespace NeoCortexApi
         {
             if (c.HtmConfig.GlobalInhibition)
             {
-                c.InhibitionRadius = ArrayUtils.Max(c.HtmConfig.ColumnDimensions);
+                c.HtmConfig.InhibitionRadius = ArrayUtils.Max(c.HtmConfig.ColumnDimensions);
                 return;
             }
 
@@ -769,7 +769,7 @@ namespace NeoCortexApi
             double radius = (diameter - 1) / 2.0d;
             radius = Math.Max(1, radius);
 
-            c.InhibitionRadius = (int)(radius + 0.5);
+            c.HtmConfig.InhibitionRadius = (int)(radius + 0.5);
         }
 
 
@@ -1119,7 +1119,7 @@ namespace NeoCortexApi
                 // inhibition area can be higher than num of all columns, if 
                 // radius is near to number of columns of a dimension with highest number of columns.
                 // In that case we limit it to number of all columns.
-                inhibitionArea = Math.Pow(2 * c.InhibitionRadius + 1, c.HtmConfig.ColumnDimensions.Length);
+                inhibitionArea = Math.Pow(2 * c.HtmConfig.InhibitionRadius + 1, c.HtmConfig.ColumnDimensions.Length);
                 inhibitionArea = Math.Min(c.NumColumns, inhibitionArea);
 
                 density = c.HtmConfig.NumActiveColumnsPerInhArea / inhibitionArea;
@@ -1152,7 +1152,7 @@ namespace NeoCortexApi
             //Add our fixed little bit of random noise to the scores to help break ties.
             //ArrayUtils.d_add(overlaps, c.getTieBreaker());
 
-            if (c.HtmConfig.GlobalInhibition || c.InhibitionRadius > ArrayUtils.Max(c.HtmConfig.ColumnDimensions))
+            if (c.HtmConfig.GlobalInhibition || c.HtmConfig.InhibitionRadius > ArrayUtils.Max(c.HtmConfig.ColumnDimensions))
             {
                 return inhibitColumnsGlobal(c, overlaps, density);
             }
@@ -1236,7 +1236,7 @@ namespace NeoCortexApi
             double[] tieBrokenOverlaps = new List<double>(overlaps).ToArray();
 
             List<int> winners = new List<int>();
-            int inhibitionRadius = c.InhibitionRadius;
+            int inhibitionRadius = c.HtmConfig.InhibitionRadius;
             //int inhibitionRadius = 5;
             //Debug.WriteLine("Inhibition Radius: " + inhibitionRadius);
             for (int column = 0; column < overlaps.Length; column++)
@@ -1413,7 +1413,7 @@ namespace NeoCortexApi
             double[] tieBrokenOverlaps = new List<double>(overlaps).ToArray();
 
 
-            int inhibitionRadius = c.InhibitionRadius;
+            int inhibitionRadius = c.HtmConfig.InhibitionRadius;
 
             Parallel.ForEach(overlaps, (val, b, index) =>
             {

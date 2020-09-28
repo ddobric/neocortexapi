@@ -76,10 +76,10 @@ namespace NeoCortexApi
        */
         public static int[] MapPotential(HtmConfig htmConfig, int columnIndex, Random rnd)
         {
-            int centerInput = MapColumn(columnIndex, htmConfig.ColumnTopology, htmConfig.InputTopology);
+            int centerInput = MapColumn(columnIndex, htmConfig.ColumnModuleTopology, htmConfig.InputModuleTopology);
 
             // Here we have Receptive Field (RF)
-            int[] columnInputs = HtmCompute.GetInputNeighborhood(htmConfig.WrapAround, htmConfig.InputTopology, centerInput, htmConfig.PotentialRadius);
+            int[] columnInputs = HtmCompute.GetInputNeighborhood(htmConfig.WrapAround, htmConfig.InputModuleTopology, centerInput, htmConfig.PotentialRadius);
 
             // Select a subset of the receptive field to serve as the the potential pool.
             int numPotential = (int)(columnInputs.Length * htmConfig.PotentialPct + 0.5);
@@ -386,20 +386,20 @@ namespace NeoCortexApi
 
             if (connected == null || connected.Length == 0) return 0;
 
-            int[] maxCoord = new int[htmConfig.InputTopology.Dimensions.Length];
+            int[] maxCoord = new int[htmConfig.InputModuleTopology.Dimensions.Length];
             int[] minCoord = new int[maxCoord.Length];
             ArrayUtils.FillArray(maxCoord, -1);
-            ArrayUtils.FillArray(minCoord, ArrayUtils.Max(htmConfig.InputTopology.Dimensions));
+            ArrayUtils.FillArray(minCoord, ArrayUtils.Max(htmConfig.InputModuleTopology.Dimensions));
 
             //
             // It takes all connected synapses
             for (int i = 0; i < connected.Length; i++)
             {
-                maxCoord = ArrayUtils.MaxBetween(maxCoord, AbstractFlatMatrix.ComputeCoordinates(htmConfig.InputTopology.Dimensions.Length,
-                   htmConfig.InputTopology.DimensionMultiplies, htmConfig.InputTopology.IsMajorOrdering, connected[i]));
+                maxCoord = ArrayUtils.MaxBetween(maxCoord, AbstractFlatMatrix.ComputeCoordinates(htmConfig.InputModuleTopology.Dimensions.Length,
+                   htmConfig.InputModuleTopology.DimensionMultiplies, htmConfig.InputModuleTopology.IsMajorOrdering, connected[i]));
 
-                minCoord = ArrayUtils.MinBetween(minCoord, AbstractFlatMatrix.ComputeCoordinates(htmConfig.InputTopology.Dimensions.Length,
-                   htmConfig.InputTopology.DimensionMultiplies, htmConfig.InputTopology.IsMajorOrdering, connected[i]));
+                minCoord = ArrayUtils.MinBetween(minCoord, AbstractFlatMatrix.ComputeCoordinates(htmConfig.InputModuleTopology.Dimensions.Length,
+                   htmConfig.InputModuleTopology.DimensionMultiplies, htmConfig.InputModuleTopology.IsMajorOrdering, connected[i]));
             }
 
             return ArrayUtils.Average(ArrayUtils.add(ArrayUtils.Subtract(maxCoord, minCoord), 1));

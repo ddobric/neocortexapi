@@ -301,7 +301,7 @@ namespace UnitTestsProject
             // This exact number of active columns is determined by the inhibition
             // radius, which changes based on the random synapses (i.e. weird math).
             // Force it to a known number.
-            cn.InhibitionRadius = 2;
+            cn.HtmConfig.InhibitionRadius = 2;
 
             int[] activeArray = new int[nColumns];
             sp.compute(new int[inputSize], activeArray, true);
@@ -548,10 +548,10 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 12 });
             initSP();
 
-            Assert.IsTrue(1 == HtmCompute.MapColumn(0, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
-            Assert.IsTrue(4 == HtmCompute.MapColumn(1, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
-            Assert.IsTrue(7 == HtmCompute.MapColumn(2, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
-            Assert.IsTrue(10 == HtmCompute.MapColumn(3, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
+            Assert.IsTrue(1 == HtmCompute.MapColumn(0, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
+            Assert.IsTrue(4 == HtmCompute.MapColumn(1, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
+            Assert.IsTrue(7 == HtmCompute.MapColumn(2, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
+            Assert.IsTrue(10 == HtmCompute.MapColumn(3, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
 
             // Test 1D with same dimension of columns and inputs
             setupParameters();
@@ -559,10 +559,10 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 4 });
             initSP();
 
-            Assert.IsTrue(0 == HtmCompute.MapColumn(0, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
-            Assert.IsTrue(1 == HtmCompute.MapColumn(1, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
-            Assert.IsTrue(2 == HtmCompute.MapColumn(2, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
-            Assert.IsTrue(3 == HtmCompute.MapColumn(3, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
+            Assert.IsTrue(0 == HtmCompute.MapColumn(0, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
+            Assert.IsTrue(1 == HtmCompute.MapColumn(1, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
+            Assert.IsTrue(2 == HtmCompute.MapColumn(2, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
+            Assert.IsTrue(3 == HtmCompute.MapColumn(3, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
 
             // Test 1D with dimensions of length 1
             setupParameters();
@@ -570,7 +570,7 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 1 });
             initSP();
 
-            Assert.IsTrue(0 == HtmCompute.MapColumn(0, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
+            Assert.IsTrue(0 == HtmCompute.MapColumn(0, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
 
             // Test 2D
             setupParameters();
@@ -578,11 +578,11 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 36, 12 });
             initSP();
 
-            Assert.IsTrue(13 == HtmCompute.MapColumn(0, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
-            Assert.IsTrue(49 == HtmCompute.MapColumn(4, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
-            Assert.IsTrue(52 == HtmCompute.MapColumn(5, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
-            Assert.IsTrue(58 == HtmCompute.MapColumn(7, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
-            Assert.IsTrue(418 == HtmCompute.MapColumn(47, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
+            Assert.IsTrue(13 == HtmCompute.MapColumn(0, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
+            Assert.IsTrue(49 == HtmCompute.MapColumn(4, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
+            Assert.IsTrue(52 == HtmCompute.MapColumn(5, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
+            Assert.IsTrue(58 == HtmCompute.MapColumn(7, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
+            Assert.IsTrue(418 == HtmCompute.MapColumn(47, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
 
             // Test 2D with some input dimensions smaller than column dimensions.
             setupParameters();
@@ -590,9 +590,9 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 3, 5 });
             initSP();
 
-            Assert.IsTrue(0 == HtmCompute.MapColumn(0, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
-            Assert.IsTrue(4 == HtmCompute.MapColumn(3, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
-            Assert.IsTrue(14 == HtmCompute.MapColumn(15, mem.HtmConfig.ColumnTopology, mem.HtmConfig.InputTopology));
+            Assert.IsTrue(0 == HtmCompute.MapColumn(0, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
+            Assert.IsTrue(4 == HtmCompute.MapColumn(3, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
+            Assert.IsTrue(14 == HtmCompute.MapColumn(15, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
         }
 
         [TestMethod]
@@ -800,7 +800,7 @@ namespace UnitTestsProject
             mem.HtmConfig.NumActiveColumnsPerInhArea = 5;
             mem.HtmConfig.LocalAreaDensity = 0.1;
             mem.HtmConfig.GlobalInhibition = true;
-            mem.InhibitionRadius = 5;
+            mem.HtmConfig.InhibitionRadius = 5;
             double trueDensity = mem.HtmConfig.LocalAreaDensity;
             //inhibitColumnsGlobal.inhibitColumns(mem, overlaps);
             mock.inhibitColumns(mem, overlaps);
@@ -814,7 +814,7 @@ namespace UnitTestsProject
             mem.HtmConfig.ColumnDimensions = new int[] { 50, 10 };
             //Internally calculated during init, to overwrite we put after init
             mem.HtmConfig.GlobalInhibition = false;
-            mem.InhibitionRadius = 7;
+            mem.HtmConfig.InhibitionRadius = 7;
 
             double[] tieBreaker = new double[500];
             ArrayUtils.FillArray(tieBreaker, 0);
@@ -837,7 +837,7 @@ namespace UnitTestsProject
             initSP();
 
             //Internally calculated during init, to overwrite we put after init
-            mem.InhibitionRadius = 4;
+            mem.HtmConfig.InhibitionRadius = 4;
             tieBreaker = new double[1000];
             ArrayUtils.FillArray(tieBreaker, 0);
             mem.setTieBreaker(tieBreaker);
@@ -854,7 +854,7 @@ namespace UnitTestsProject
             mem.HtmConfig.NumActiveColumnsPerInhArea = 7;
 
             //Internally calculated during init, to overwrite we put after init
-            mem.InhibitionRadius = 1;
+            mem.HtmConfig.InhibitionRadius = 1;
             tieBreaker = new double[1000];
             ArrayUtils.FillArray(tieBreaker, 0);
             mem.setTieBreaker(tieBreaker);
@@ -949,7 +949,7 @@ namespace UnitTestsProject
             mem.HtmConfig.ColumnDimensions = new int[] { 57, 31, 2 };
             // If global inhibition is set, then all columns in the row are inhibited.
             sp.updateInhibitionRadius(mem);
-            Assert.IsTrue(57 == mem.InhibitionRadius);
+            Assert.IsTrue(57 == mem.HtmConfig.InhibitionRadius);
 
             ////////////
             SpatialPoolerMock3 mock = new SpatialPoolerMock3(3, 4);
@@ -970,7 +970,7 @@ namespace UnitTestsProject
             mem.HtmConfig.GlobalInhibition = false;
             sp = mock;
             sp.updateInhibitionRadius(mem);
-            Assert.IsTrue(6 == mem.InhibitionRadius);
+            Assert.IsTrue(6 == mem.HtmConfig.InhibitionRadius);
 
             //////////////
 
@@ -992,7 +992,7 @@ namespace UnitTestsProject
             mem.HtmConfig.GlobalInhibition = false;
             sp = mock;
             sp.updateInhibitionRadius(mem);
-            Assert.IsTrue(1 == mem.InhibitionRadius);
+            Assert.IsTrue(1 == mem.HtmConfig.InhibitionRadius);
 
             /////////////
             mock = new SpatialPoolerMock3(2.4, 2);
@@ -1014,7 +1014,7 @@ namespace UnitTestsProject
             sp = mock;
             //((2 * 2.4) - 1) / 2.0 => round up
             sp.updateInhibitionRadius(mem);
-            Assert.IsTrue(2 == mem.InhibitionRadius);
+            Assert.IsTrue(2 == mem.HtmConfig.InhibitionRadius);
 
             //...
             sp = new SpatialPoolerMT();
@@ -1024,7 +1024,7 @@ namespace UnitTestsProject
             sp.updateInhibitionRadius(mem);
 
             // max dim of columns
-            Assert.IsTrue(57 == mem.InhibitionRadius);
+            Assert.IsTrue(57 == mem.HtmConfig.InhibitionRadius);
 
             // TODO..
             sp = mock;
@@ -1302,7 +1302,7 @@ namespace UnitTestsProject
             parameters.setRandom(new ThreadSafeRandom(42));
             initSP();
 
-            mem.InhibitionRadius = 1;
+            mem.HtmConfig.InhibitionRadius = 1;
 
             for (int i = 0; i < mem.NumColumns; i++)
             {
@@ -1359,14 +1359,14 @@ namespace UnitTestsProject
             parameters.Set(KEY.WRAP_AROUND, false);
             initSP();
 
-            mem.InhibitionRadius = 1;
+            mem.HtmConfig.InhibitionRadius = 1;
             int inhibitionRadius = 1;
 
             for (int k = 0; k < 100; k++)
             {
                 Parallel.For(0, 8, (i) =>
                 {
-                    int[] neighborhood = HtmCompute.GetNeighborhood(i, inhibitionRadius, mem.getColumnTopology().HtmTopology);
+                    int[] neighborhood = HtmCompute.GetNeighborhood(i, inhibitionRadius, mem.HtmConfig.ColumnTopology.HtmTopology);
 
                     Assert.IsTrue(expectedList[i].SequenceEqual(neighborhood));
                 });
@@ -1411,7 +1411,7 @@ namespace UnitTestsProject
             parameters.setMaxBoost(10);
             initSP();
 
-            mem.InhibitionRadius = 1;
+            mem.HtmConfig.InhibitionRadius = 1;
             int inhibitionRadius = 1;
 
             for (int k = 0; k < 100; k++)
@@ -1419,7 +1419,7 @@ namespace UnitTestsProject
                 Parallel.For(0, 2048, (i) =>
                 //for (int i = 0; i < 2048; i++)
                 {
-                    int[] neighborhood = HtmCompute.GetWrappingNeighborhood(i, inhibitionRadius, mem.getColumnTopology().HtmTopology);
+                    int[] neighborhood = HtmCompute.GetWrappingNeighborhood(i, inhibitionRadius, mem.HtmConfig.ColumnTopology.HtmTopology);
 
                     if (i == 0)
                         Assert.IsTrue(expectedList[0].SequenceEqual(neighborhood));
@@ -1446,7 +1446,7 @@ namespace UnitTestsProject
             parameters.Set(KEY.WRAP_AROUND, false);
             initSP();
 
-            mem.InhibitionRadius = 1;
+            mem.HtmConfig.InhibitionRadius = 1;
             mem.setOverlapDutyCycles(new double[] { 0.7, 0.1, 0.5, 0.01, 0.78, 0.55, 0.1, 0.001 });
             mem.setActiveDutyCycles(new double[] { 0.9, 0.3, 0.5, 0.7, 0.1, 0.01, 0.08, 0.12 });
             //mem.setMinPctActiveDutyCycles(0.1);
@@ -1484,7 +1484,7 @@ namespace UnitTestsProject
             parameters.Set(KEY.WRAP_AROUND, true);
             initSP();
 
-            mem.InhibitionRadius = 1;
+            mem.HtmConfig.InhibitionRadius = 1;
             mem.setOverlapDutyCycles(new double[] { 0.7, 0.1, 0.5, 0.01, 0.78, 0.55, 0.1, 0.001 });
             mem.setActiveDutyCycles(new double[] { 0.9, 0.3, 0.5, 0.7, 0.1, 0.01, 0.08, 0.12 });
             //mem.setMinPctActiveDutyCycles(0.1);
@@ -2212,7 +2212,7 @@ namespace UnitTestsProject
             initSP();
 
             //Internally calculated during init, to overwrite we put after init
-            mem.InhibitionRadius = 2;
+            mem.HtmConfig.InhibitionRadius = 2;
             double density = 0.5;
             double[] overlaps = new double[] { 1, 2, 7, 0, 3, 4, 16, 1, 1.5, 1.7 };
             //  L  W  W  L  L  W  W   L   W    W (wrapAround=true)
@@ -2231,7 +2231,7 @@ namespace UnitTestsProject
             Assert.IsTrue(trueActive.SequenceEqual(active));
 
             density = 0.5;
-            mem.InhibitionRadius = 3;
+            mem.HtmConfig.InhibitionRadius = 3;
             overlaps = new double[] { 1, 2, 7, 0, 3, 4, 16, 1, 1.5, 1.7 };
             //  L  W  W  L  W  W  W   L   L    W (wrapAround=true)
             //  L  W  W  L  W  W  W   L   L    L (wrapAround=false)
@@ -2250,7 +2250,7 @@ namespace UnitTestsProject
 
             // Test add to winners
             density = 0.3333;
-            mem.InhibitionRadius = 3;
+            mem.HtmConfig.InhibitionRadius = 3;
             overlaps = new double[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
             //  W  W  L  L  W  W  L  L  L  L (wrapAround=true)
             //  W  W  L  L  W  W  L  L  W  L (wrapAround=false)

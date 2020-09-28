@@ -31,6 +31,10 @@ namespace NeoCortexApi.Entities
         public SpatialPoolerConfig SpatialPooler { get; set; } = new SpatialPoolerConfig();
 
         #region Spatial Pooler Variables
+        public int InhibitionRadius { get; set; } = 0;
+        public Topology InputTopology { get; set; }
+        public Topology ColumnTopology { get; set; }
+
         public int NumInputs { get; set; }
         public int PotentialRadius { get; set; }
         public double PotentialPct { get; set; }
@@ -70,9 +74,9 @@ namespace NeoCortexApi.Entities
         public double PermanenceIncrement { get; set; }
 
         public double PermanenceDecrement { get; set; }
-        public HtmModuleTopology ColumnTopology { get; set; }
+        public HtmModuleTopology ColumnModuleTopology { get; set; }
 
-        public HtmModuleTopology InputTopology { get; set; }
+        public HtmModuleTopology InputModuleTopology { get; set; }
         public AbstractSparseMatrix<Column> Memory { get; set; }
 
         public int ActivationThreshold { get; set; } = 13;
