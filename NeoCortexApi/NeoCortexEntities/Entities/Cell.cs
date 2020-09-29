@@ -112,7 +112,7 @@ namespace NeoCortexApi.Entities
         // */
         public List<DistalDendrite> getSegments(Connections c, bool doLazyCreate)
         {
-            return c.getSegments(this, doLazyCreate);
+            return c.GetSegments(this, doLazyCreate);
         }
 
 

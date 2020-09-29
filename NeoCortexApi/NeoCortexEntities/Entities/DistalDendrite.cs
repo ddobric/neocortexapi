@@ -64,7 +64,7 @@ namespace NeoCortexApi.Entities
         /// <returns>Synapses.</returns>
         public List<Synapse> getAllSynapses(Connections c)
         {
-            return c.getSynapses(this);
+            return c.GetSynapses(this);
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace NeoCortexApi.Entities
         {
             ISet<Synapse> activeSynapses = new LinkedHashSet<Synapse>();
 
-            foreach (var synapse in c.getSynapses(this))
+            foreach (var synapse in c.GetSynapses(this))
             {
                 if (activeCells.Contains(synapse.getPresynapticCell()))
                 {

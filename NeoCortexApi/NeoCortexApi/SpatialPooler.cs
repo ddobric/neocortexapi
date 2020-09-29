@@ -693,9 +693,9 @@ namespace NeoCortexApi
             }
 
             int period = c.HtmConfig.DutyCyclePeriod;
-            if (period > c.getIterationNum())
+            if (period > c.SpIterationNum)
             {
-                period = c.getIterationNum();
+                period = c.SpIterationNum;
             }
 
             c.HtmConfig.OverlapDutyCycles = updateDutyCyclesHelper(c, c.HtmConfig.OverlapDutyCycles, overlapArray, period);
@@ -1693,7 +1693,7 @@ namespace NeoCortexApi
          */
         public bool isUpdateRound(Connections c)
         {
-            return c.getIterationNum() % c.HtmConfig.UpdatePeriod == 0;
+            return c.SpIterationNum % c.HtmConfig.UpdatePeriod == 0;
         }
 
         /**
@@ -1708,9 +1708,9 @@ namespace NeoCortexApi
          */
         public void updateBookeepingVars(Connections c, bool learn)
         {
-            c.spIterationNum += 1;
+            c.SpIterationNum += 1;
             if (learn)
-                c.spIterationLearnNum += 1;
+                c.SpIterationLearnNum += 1;
         }
 
         public Double getRobustness(Double k, int[] oriOut, int[] realOut)

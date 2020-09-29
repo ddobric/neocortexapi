@@ -144,8 +144,8 @@ namespace NeoCortexApi
 
             var list = new Pair<List<object>, Func<object, Column>>[3];
             list[0] = new Pair<List<object>, Func<object, Column>>(Array.ConvertAll(activeColumns.ToArray(), item => (object)item).ToList(), times1Fnc);
-            list[1] = new Pair<List<object>, Func<object, Column>>(Array.ConvertAll(conn.getActiveSegments().ToArray(), item => (object)item).ToList(), segToCol);
-            list[2] = new Pair<List<object>, Func<object, Column>>(Array.ConvertAll(conn.getMatchingSegments().ToArray(), item => (object)item).ToList(), segToCol);
+            list[1] = new Pair<List<object>, Func<object, Column>>(Array.ConvertAll(conn.ActiveSegments.ToArray(), item => (object)item).ToList(), segToCol);
+            list[2] = new Pair<List<object>, Func<object, Column>>(Array.ConvertAll(conn.MatchingSegments.ToArray(), item => (object)item).ToList(), segToCol);
 
             GroupBy2<Column> grouper = GroupBy2<Column>.of(list);
 
@@ -265,18 +265,18 @@ namespace NeoCortexApi
             //
             // Step through all synapses on active cells with permanence over threshold (conencted synapses)
             // and find involved segments.         
-            activeSegments.Sort(GetComparer(conn.getNextSegmentOrdinal()));
+            activeSegments.Sort(GetComparer(conn.NextSegmentOrdinal));
 
-            matchingSegments.Sort(GetComparer(conn.getNextSegmentOrdinal()));
+            matchingSegments.Sort(GetComparer(conn.NextSegmentOrdinal));
 
             cycle.ActiveSegments = activeSegments;
             cycle.MatchingSegments = matchingSegments;
 
-            conn.lastActivity = activity;
+            conn.LastActivity = activity;
             conn.setActiveCells(new HashSet<Cell>(cycle.ActiveCells));
             conn.setWinnerCells(new HashSet<Cell>(cycle.WinnerCells));
-            conn.setActiveSegments(activeSegments);
-            conn.setMatchingSegments(matchingSegments);
+            conn.ActiveSegments = activeSegments;
+            conn.MatchingSegments = matchingSegments;
 
             // Forces generation of the predictive cells from the above active segments
             conn.clearPredictiveCells();
@@ -286,10 +286,10 @@ namespace NeoCortexApi
             {
                 foreach (var segment in activeSegments)
                 {
-                    conn.recordSegmentActivity(segment);
+                    conn.RecordSegmentActivity(segment);
                 }
 
-                conn.startNewIteration();
+                conn.StartNewIteration();
             }
 
             Debug.WriteLine($"\nActive segments: {activeSegments.Count}, Matching segments: {matchingSegments.Count}");
@@ -305,8 +305,8 @@ namespace NeoCortexApi
         {
             connections.getActiveCells().Clear();
             connections.getWinnerCells().Clear();
-            connections.getActiveSegments().Clear();
-            connections.getMatchingSegments().Clear();
+            connections.ActiveSegments.Clear();
+            connections.MatchingSegments.Clear();
         }
 
         /**
@@ -359,7 +359,7 @@ namespace NeoCortexApi
 
             foreach (DistalDendrite segment in columnActiveSegments)
             {
-                foreach (Synapse synapse in new List<Synapse>(conn.getSynapses(segment)))
+                foreach (Synapse synapse in new List<Synapse>(conn.GetSynapses(segment)))
                 {
                     // WORKING DRAFT. TM algorithm change.
                     if (prevActiveCells.Contains(synapse.getPresynapticCell()))
@@ -383,7 +383,7 @@ namespace NeoCortexApi
                         {
                             AdaptSegment(conn, segment, prevActiveCells, permanenceIncrement, permanenceDecrement);
 
-                            int numActive = conn.getLastActivity().PotentialSynapses[segment.getIndex()];
+                            int numActive = conn.LastActivity.PotentialSynapses[segment.getIndex()];
                             int nGrowDesired = conn.HtmConfig.MaxNewSynapseCount - numActive;
 
                             if (nGrowDesired > 0)
@@ -487,7 +487,7 @@ namespace NeoCortexApi
                 {
                     AdaptSegment(conn, maxPotentialSeg, prevActiveCells, permanenceIncrement, permanenceDecrement);
 
-                    int nGrowDesired = conn.HtmConfig.MaxNewSynapseCount - conn.getLastActivity().PotentialSynapses[maxPotentialSeg.getIndex()];
+                    int nGrowDesired = conn.HtmConfig.MaxNewSynapseCount - conn.LastActivity.PotentialSynapses[maxPotentialSeg.getIndex()];
 
                     if (nGrowDesired > 0)
                     {
@@ -511,7 +511,7 @@ namespace NeoCortexApi
                 }
             }
 
-           return new BurstingResult(cells, leastUsedCell);
+            return new BurstingResult(cells, leastUsedCell);
         }
 
         private int indxOfLastHighestSegment = -1;
@@ -528,9 +528,9 @@ namespace NeoCortexApi
 
             for (int i = 0; i < matchingSegments.Count - 1; i++)
             {
-                var potSynsPlus1 = conn.getLastActivity().PotentialSynapses[matchingSegments[i + 1].getIndex()];
+                var potSynsPlus1 = conn.LastActivity.PotentialSynapses[matchingSegments[i + 1].getIndex()];
 
-                if (potSynsPlus1 > conn.getLastActivity().PotentialSynapses[matchingSegments[i].getIndex()])
+                if (potSynsPlus1 > conn.LastActivity.PotentialSynapses[matchingSegments[i].getIndex()])
                 {
                     //prevActiveCells.Contains(synapse.getPresynapticCell())
                     //if (matchingSegments[i + 1].getIndex() != indxOfLastHighestSegment)
@@ -602,7 +602,7 @@ namespace NeoCortexApi
             int minNumSegments = Integer.MaxValue;
             foreach (Cell cell in cells)
             {
-                int numSegments = conn.numSegments(cell);
+                int numSegments = conn.NumSegments(cell);
 
                 if (numSegments < minNumSegments)
                 {
@@ -649,7 +649,7 @@ namespace NeoCortexApi
             // Enumarates all synapses in a segment and remove winner-cells from
             // list of removingCandidates if they are presynaptic winners cells.
             // So, we will recreate only synapses on cells, which are not winners in the previous step.
-            foreach (Synapse synapse in conn.getSynapses(segment))
+            foreach (Synapse synapse in conn.GetSynapses(segment))
             {
                 Cell presynapticCell = synapse.getPresynapticCell();
                 int index = removingCandidates.IndexOf(presynapticCell);
@@ -670,7 +670,7 @@ namespace NeoCortexApi
             for (int i = 0; i < nActual; i++)
             {
                 int rndIndex = random.Next(removingCandidates.Count());
-                conn.createSynapse(segment, removingCandidates[rndIndex], initialPermanence);
+                conn.CreateSynapse(segment, removingCandidates[rndIndex], initialPermanence);
                 removingCandidates.RemoveAt(rndIndex);
             }
         }
@@ -695,7 +695,7 @@ namespace NeoCortexApi
             // Destroying a synapse modifies the set that we're iterating through.
             List<Synapse> synapsesToDestroy = new List<Synapse>();
 
-            foreach (Synapse synapse in conn.getSynapses(segment))
+            foreach (Synapse synapse in conn.GetSynapses(segment))
             {
                 double permanence = synapse.getPermanence();
 
@@ -736,7 +736,7 @@ namespace NeoCortexApi
 
             if (conn.GetNumSynapses(segment) == 0)
             {
-                conn.destroySegment(segment);
+                conn.DestroySegment(segment);
             }
         }
 

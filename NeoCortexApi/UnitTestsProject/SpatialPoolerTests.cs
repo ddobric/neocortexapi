@@ -511,25 +511,25 @@ namespace UnitTestsProject
             initSP();
 
             // Column [2] has dutycycle=0. It means it has never learned anything.
-            mem.updateActiveDutyCycles(new double[] { 0.5, 0.1, 0, 0.2, 0.4, 0 });
+            mem.UpdateActiveDutyCycles(new double[] { 0.5, 0.1, 0, 0.2, 0.4, 0 });
             int[] activeColumns = new int[] { 0, 1, 2, 4 };
             int[] stripped = sp.stripUnlearnedColumns(mem, activeColumns);
             int[] trueStripped = new int[] { 0, 1, 4 };
             Assert.IsTrue(trueStripped.SequenceEqual(stripped));
 
-            mem.updateActiveDutyCycles(new double[] { 0.9, 0, 0, 0, 0.4, 0.3 });
+            mem.UpdateActiveDutyCycles(new double[] { 0.9, 0, 0, 0, 0.4, 0.3 });
             activeColumns = ArrayUtils.Range(0, 6);
             stripped = sp.stripUnlearnedColumns(mem, activeColumns);
             trueStripped = new int[] { 0, 4, 5 };
             Assert.IsTrue(trueStripped.SequenceEqual(stripped));
 
-            mem.updateActiveDutyCycles(new double[] { 0, 0, 0, 0, 0, 0 });
+            mem.UpdateActiveDutyCycles(new double[] { 0, 0, 0, 0, 0, 0 });
             activeColumns = ArrayUtils.Range(0, 6);
             stripped = sp.stripUnlearnedColumns(mem, activeColumns);
             trueStripped = new int[] { };
             Assert.IsTrue(trueStripped.SequenceEqual(stripped));
 
-            mem.updateActiveDutyCycles(new double[] { 1, 1, 1, 1, 1, 1 });
+            mem.UpdateActiveDutyCycles(new double[] { 1, 1, 1, 1, 1, 1 });
             activeColumns = ArrayUtils.Range(0, 6);
             stripped = sp.stripUnlearnedColumns(mem, activeColumns);
             trueStripped = ArrayUtils.Range(0, 6);
@@ -813,7 +813,7 @@ namespace UnitTestsProject
 
             double[] tieBreaker = new double[500];
             ArrayUtils.FillArray(tieBreaker, 0);
-            mem.setTieBreaker(tieBreaker);
+            mem.TieBreaker = tieBreaker;
             overlaps = ArrayUtils.Sample(mem.HtmConfig.NumColumns, mem.HtmConfig.Random);
             //inhibitColumnsLocal.inhibitColumns(mem, overlaps);
             mock.inhibitColumns(mem, overlaps);
@@ -835,7 +835,7 @@ namespace UnitTestsProject
             mem.HtmConfig.InhibitionRadius = 4;
             tieBreaker = new double[1000];
             ArrayUtils.FillArray(tieBreaker, 0);
-            mem.setTieBreaker(tieBreaker);
+            mem.TieBreaker = tieBreaker;
             overlaps = ArrayUtils.Sample(mem.HtmConfig.NumColumns, mem.HtmConfig.Random);
             //inhibitColumnsLocal.inhibitColumns(mem, overlaps);
             mock.inhibitColumns(mem, overlaps);
@@ -852,7 +852,7 @@ namespace UnitTestsProject
             mem.HtmConfig.InhibitionRadius = 1;
             tieBreaker = new double[1000];
             ArrayUtils.FillArray(tieBreaker, 0);
-            mem.setTieBreaker(tieBreaker);
+            mem.TieBreaker = tieBreaker;
             overlaps = ArrayUtils.Sample(mem.HtmConfig.NumColumns, mem.HtmConfig.Random);
             //inhibitColumnsLocal.inhibitColumns(mem, overlaps);
             mock.inhibitColumns(mem, overlaps);
@@ -1560,29 +1560,29 @@ namespace UnitTestsProject
             initSP();
 
             mem.HtmConfig.UpdatePeriod = 50;
-            mem.setIterationNum(1);
+            mem.SpIterationNum = 1;
             Assert.IsFalse(sp.isUpdateRound(mem));
-            mem.setIterationNum(39);
+            mem.SpIterationNum = 39;
             Assert.IsFalse(sp.isUpdateRound(mem));
-            mem.setIterationNum(50);
+            mem.SpIterationNum = 50;
             Assert.IsTrue(sp.isUpdateRound(mem));
-            mem.setIterationNum(1009);
+            mem.SpIterationNum = 1009;
             Assert.IsFalse(sp.isUpdateRound(mem));
-            mem.setIterationNum(1250);
+            mem.SpIterationNum = 1250;
             Assert.IsTrue(sp.isUpdateRound(mem));
 
             mem.HtmConfig.UpdatePeriod = 125;
-            mem.setIterationNum(0);
+            mem.SpIterationNum = 0;
             Assert.IsTrue(sp.isUpdateRound(mem));
-            mem.setIterationNum(200);
+            mem.SpIterationNum = 200;
             Assert.IsFalse(sp.isUpdateRound(mem));
-            mem.setIterationNum(249);
+            mem.SpIterationNum = 249;
             Assert.IsFalse(sp.isUpdateRound(mem));
-            mem.setIterationNum(1330);
+            mem.SpIterationNum = 1330;
             Assert.IsFalse(sp.isUpdateRound(mem));
-            mem.setIterationNum(1249);
+            mem.SpIterationNum = 1249;
             Assert.IsFalse(sp.isUpdateRound(mem));
-            mem.setIterationNum(1375);
+            mem.SpIterationNum = 1375;
             Assert.IsTrue(sp.isUpdateRound(mem));
 
         }
@@ -1729,7 +1729,7 @@ namespace UnitTestsProject
             objMatrix.set(2, new double[] { 0.51, 0.081, 0.025, 0.089, 0.31 });
             objMatrix.set(3, new double[] { 0.18, 0.0601, 0.11, 0.011, 0.03 });
             objMatrix.set(4, new double[] { 0.011, 0.011, 0.011, 0.011, 0.011 });
-            mem.setProximalPermanences(objMatrix);
+            mem.SetProximalPermanences(objMatrix);
 
             //      mem.setConnectedSynapses(new SparseObjectMatrix<int[]>(new int[] { 5, 5 }));
             //      SparseObjectMatrix<int[]> syns = mem.getConnectedSynapses();
@@ -1739,7 +1739,7 @@ namespace UnitTestsProject
             //      syns.set(3, new int[] { 1, 0, 1, 0, 0 });
             //      syns.set(4, new int[] { 0, 0, 0, 0, 0 });
 
-            mem.setConnectedCounts(new int[] { 1, 3, 2, 2, 0 });
+            mem.SetConnectedCounts(new int[] { 1, 3, 2, 2, 0 });
 
             double[][] truePermanences = new double[][] {
             new double[]{0.01, 0.12, 0.105, 0.102, 0.02},       // incremented once
@@ -1842,7 +1842,7 @@ namespace UnitTestsProject
                 }
             }
 
-            mem.setConnectedMatrix(sm);
+            mem.SetConnectedMatrix(sm);
 
             for (int i = 0; i < 5; i++)
             {
@@ -1881,7 +1881,7 @@ namespace UnitTestsProject
                 }
             }
 
-            mem.setConnectedMatrix(sm);
+            mem.SetConnectedMatrix(sm);
 
             for (int i = 0; i < 5; i++)
             {
@@ -1917,7 +1917,7 @@ namespace UnitTestsProject
                 }
             }
 
-            mem.setConnectedMatrix(sm);
+            mem.SetConnectedMatrix(sm);
 
             for (int i = 0; i < 5; i++)
             {
@@ -1955,7 +1955,7 @@ namespace UnitTestsProject
                 }
             }
 
-            mem.setConnectedMatrix(sm);
+            mem.SetConnectedMatrix(sm);
 
             for (int i = 0; i < 5; i++)
             {
