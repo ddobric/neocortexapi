@@ -61,6 +61,12 @@ namespace NeoCortexApi.Entities
         public double MaxBoost { get; set; } = 10.0;
         public bool IsBumpUpWeakColumnsDisabled { get; set; } = false;
         public int UpdatePeriod { get; set; } = 50;
+
+        public double[] OverlapDutyCycles { get; set; }
+        public double[] ActiveDutyCycles { get; set; }
+        public double[] MinOverlapDutyCycles { get; set; }
+        public double[] MinActiveDutyCycles { get; set; }
+
         #endregion
 
         #region Temporal Memory Variables

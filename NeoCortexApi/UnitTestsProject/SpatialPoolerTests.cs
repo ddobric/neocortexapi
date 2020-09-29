@@ -884,10 +884,10 @@ namespace UnitTestsProject
 
             double[] minActiveDutyCycles = new double[6];
             ArrayUtils.FillArray(minActiveDutyCycles, 0.000001D);
-            mem.setMinActiveDutyCycles(minActiveDutyCycles);
+            mem.HtmConfig.MinActiveDutyCycles = minActiveDutyCycles;
 
             double[] activeDutyCycles = new double[] { 0.1, 0.3, 0.02, 0.04, 0.7, 0.12 };
-            mem.setActiveDutyCycles(activeDutyCycles);
+            mem.HtmConfig.ActiveDutyCycles = activeDutyCycles;
 
             double[] trueBoostFactors = new double[] { 1, 1, 1, 1, 1, 1 };
             sp.UpdateBoostFactors(mem);
@@ -899,7 +899,7 @@ namespace UnitTestsProject
 
             ////////////////
             minActiveDutyCycles = new double[] { 0.1, 0.3, 0.02, 0.04, 0.7, 0.12 };
-            mem.setMinActiveDutyCycles(minActiveDutyCycles);
+            mem.HtmConfig.MinActiveDutyCycles = minActiveDutyCycles;
             ArrayUtils.FillArray(mem.BoostFactors, 0);
             sp.UpdateBoostFactors(mem);
             boostFactors = mem.BoostFactors;
@@ -910,9 +910,9 @@ namespace UnitTestsProject
 
             ////////////////
             minActiveDutyCycles = new double[] { 0.1, 0.2, 0.02, 0.03, 0.7, 0.12 };
-            mem.setMinActiveDutyCycles(minActiveDutyCycles);
+            mem.HtmConfig.MinActiveDutyCycles = minActiveDutyCycles;
             activeDutyCycles = new double[] { 0.01, 0.02, 0.002, 0.003, 0.07, 0.012 };
-            mem.setActiveDutyCycles(activeDutyCycles);
+            mem.HtmConfig.ActiveDutyCycles = activeDutyCycles;
             trueBoostFactors = new double[] { 9.1, 9.1, 9.1, 9.1, 9.1, 9.1 };
             sp.UpdateBoostFactors(mem);
             boostFactors = mem.BoostFactors;
@@ -923,9 +923,9 @@ namespace UnitTestsProject
 
             ////////////////
             minActiveDutyCycles = new double[] { 0.1, 0.2, 0.02, 0.03, 0.7, 0.12 };
-            mem.setMinActiveDutyCycles(minActiveDutyCycles);
+            mem.HtmConfig.MinActiveDutyCycles = minActiveDutyCycles;
             ArrayUtils.FillArray(activeDutyCycles, 0);
-            mem.setActiveDutyCycles(activeDutyCycles);
+            mem.HtmConfig.ActiveDutyCycles = activeDutyCycles;
             ArrayUtils.FillArray(trueBoostFactors, 10.0);
             sp.UpdateBoostFactors(mem);
             boostFactors = mem.BoostFactors;
@@ -1186,8 +1186,8 @@ namespace UnitTestsProject
             mem.HtmConfig.SynPermBelowStimulusInc = 0.01;
             //mem.setSynPermTrimThreshold(0.05);
             mem.HtmConfig.SynPermTrimThreshold = 0.05;
-            mem.setOverlapDutyCycles(new double[] { 0, 0.009, 0.1, 0.001, 0.002 });
-            mem.setMinOverlapDutyCycles(new double[] { .01, .01, .01, .01, .01 });
+            mem.HtmConfig.OverlapDutyCycles = new double[] { 0, 0.009, 0.1, 0.001, 0.002 };
+            mem.HtmConfig.MinOverlapDutyCycles = new double[] { .01, .01, .01, .01, .01 };
 
 
 
@@ -1447,15 +1447,15 @@ namespace UnitTestsProject
             initSP();
 
             mem.HtmConfig.InhibitionRadius = 1;
-            mem.setOverlapDutyCycles(new double[] { 0.7, 0.1, 0.5, 0.01, 0.78, 0.55, 0.1, 0.001 });
-            mem.setActiveDutyCycles(new double[] { 0.9, 0.3, 0.5, 0.7, 0.1, 0.01, 0.08, 0.12 });
+            mem.HtmConfig.OverlapDutyCycles = new double[] { 0.7, 0.1, 0.5, 0.01, 0.78, 0.55, 0.1, 0.001 };
+            mem.HtmConfig.ActiveDutyCycles = new double[] { 0.9, 0.3, 0.5, 0.7, 0.1, 0.01, 0.08, 0.12 };
             //mem.setMinPctActiveDutyCycles(0.1);
             mem.HtmConfig.MinPctActiveDutyCycles = 0.1;
             //mem.setMinPctOverlapDutyCycles(0.2);
             mem.HtmConfig.MinPctOverlapDutyCycles = 0.2;
             sp.updateMinDutyCyclesLocal(mem);
 
-            double[] resultMinActiveDutyCycles = mem.getMinActiveDutyCycles();
+            double[] resultMinActiveDutyCycles = mem.HtmConfig.MinActiveDutyCycles;
             double[] expected0 = { 0.09, 0.09, 0.07, 0.07, 0.07, 0.01, 0.012, 0.012 };
 
             for (var i = 0; i < expected0.Length; i++)
@@ -1466,7 +1466,7 @@ namespace UnitTestsProject
             //IntStream.range(0, expected0.length)
             //    .forEach(i->assertEquals(expected0[i], resultMinActiveDutyCycles[i], 0.01));
 
-            double[] resultMinOverlapDutyCycles = mem.getMinOverlapDutyCycles();
+            double[] resultMinOverlapDutyCycles = mem.HtmConfig.MinOverlapDutyCycles;
             double[] expected1 = new double[] { 0.14, 0.14, 0.1, 0.156, 0.156, 0.156, 0.11, 0.02 };
 
             for (var i = 0; i < expected1.Length; i++)
@@ -1485,15 +1485,15 @@ namespace UnitTestsProject
             initSP();
 
             mem.HtmConfig.InhibitionRadius = 1;
-            mem.setOverlapDutyCycles(new double[] { 0.7, 0.1, 0.5, 0.01, 0.78, 0.55, 0.1, 0.001 });
-            mem.setActiveDutyCycles(new double[] { 0.9, 0.3, 0.5, 0.7, 0.1, 0.01, 0.08, 0.12 });
+            mem.HtmConfig.OverlapDutyCycles = new double[] { 0.7, 0.1, 0.5, 0.01, 0.78, 0.55, 0.1, 0.001 };
+            mem.HtmConfig.ActiveDutyCycles = new double[] { 0.9, 0.3, 0.5, 0.7, 0.1, 0.01, 0.08, 0.12 };
             //mem.setMinPctActiveDutyCycles(0.1);
             mem.HtmConfig.MinPctActiveDutyCycles = 0.1;
             //mem.setMinPctOverlapDutyCycles(0.2);
             mem.HtmConfig.MinPctOverlapDutyCycles = 0.2;
             sp.updateMinDutyCyclesLocal(mem);
 
-            double[] resultMinActiveDutyCycles2 = mem.getMinActiveDutyCycles();
+            double[] resultMinActiveDutyCycles2 = mem.HtmConfig.MinActiveDutyCycles;
             double[] expected2 = { 0.09, 0.09, 0.07, 0.07, 0.07, 0.01, 0.012, 0.09 };
 
             for (var i = 0; i < expected2.Length; i++)
@@ -1505,7 +1505,7 @@ namespace UnitTestsProject
             //IntStream.range(0, expected2.length)
             //  .forEach(i->assertEquals(expected2[i], resultMinActiveDutyCycles2[i], 0.01));
 
-            double[] resultMinOverlapDutyCycles2 = mem.getMinOverlapDutyCycles();
+            double[] resultMinOverlapDutyCycles2 = mem.HtmConfig.MinOverlapDutyCycles;
             double[] expected3 = new double[] { 0.14, 0.14, 0.1, 0.156, 0.156, 0.156, 0.11, 0.14 };
 
             for (var i = 0; i < expected3.Length; i++)
@@ -1533,8 +1533,8 @@ namespace UnitTestsProject
             mem.HtmConfig.MinPctOverlapDutyCycles = 0.01;
             //mem.setMinPctActiveDutyCycles(0.02);
             mem.HtmConfig.MinPctActiveDutyCycles = 0.02;
-            mem.setOverlapDutyCycles(new double[] { 0.06, 1, 3, 6, 0.5 });
-            mem.setActiveDutyCycles(new double[] { 0.6, 0.07, 0.5, 0.4, 0.3 });
+            mem.HtmConfig.OverlapDutyCycles = new double[] { 0.06, 1, 3, 6, 0.5 };
+            mem.HtmConfig.ActiveDutyCycles = new double[] { 0.6, 0.07, 0.5, 0.4, 0.3 };
 
             sp.updateMinDutyCyclesGlobal(mem);
             double[] trueMinActiveDutyCycles = new double[mem.NumColumns];
@@ -1545,31 +1545,31 @@ namespace UnitTestsProject
             {
                 //          System.out.println(i + ") " + trueMinOverlapDutyCycles[i] + "  -  " +  mem.getMinOverlapDutyCycles()[i]);
                 //          System.out.println(i + ") " + trueMinActiveDutyCycles[i] + "  -  " +  mem.getMinActiveDutyCycles()[i]);
-                Assert.IsTrue(Math.Abs(trueMinOverlapDutyCycles[i] - mem.getMinOverlapDutyCycles()[i]) <= 0.01);
-                Assert.IsTrue(Math.Abs(trueMinActiveDutyCycles[i] - mem.getMinActiveDutyCycles()[i]) <= 0.01);
+                Assert.IsTrue(Math.Abs(trueMinOverlapDutyCycles[i] - mem.HtmConfig.MinOverlapDutyCycles[i]) <= 0.01);
+                Assert.IsTrue(Math.Abs(trueMinActiveDutyCycles[i] - mem.HtmConfig.MinActiveDutyCycles[i]) <= 0.01);
             }
 
             //mem.setMinPctOverlapDutyCycles(0.015);
             mem.HtmConfig.MinPctOverlapDutyCycles = 0.015;
             //mem.setMinPctActiveDutyCycles(0.03);
             mem.HtmConfig.MinPctActiveDutyCycles = 0.03;
-            mem.setOverlapDutyCycles(new double[] { 0.86, 2.4, 0.03, 1.6, 1.5 });
-            mem.setActiveDutyCycles(new double[] { 0.16, 0.007, 0.15, 0.54, 0.13 });
+            mem.HtmConfig.OverlapDutyCycles = new double[] { 0.86, 2.4, 0.03, 1.6, 1.5 };
+            mem.HtmConfig.ActiveDutyCycles = new double[] { 0.16, 0.007, 0.15, 0.54, 0.13 };
             sp.updateMinDutyCyclesGlobal(mem);
             ArrayUtils.FillArray(trueMinOverlapDutyCycles, 0.015 * 2.4);
             for (int i = 0; i < mem.NumColumns; i++)
             {
                 //          System.out.println(i + ") " + trueMinOverlapDutyCycles[i] + "  -  " +  mem.getMinOverlapDutyCycles()[i]);
                 //          System.out.println(i + ") " + trueMinActiveDutyCycles[i] + "  -  " +  mem.getMinActiveDutyCycles()[i]);
-                Assert.IsTrue(Math.Abs(trueMinOverlapDutyCycles[i] - mem.getMinOverlapDutyCycles()[i]) <= 0.01);
+                Assert.IsTrue(Math.Abs(trueMinOverlapDutyCycles[i] - mem.HtmConfig.MinOverlapDutyCycles[i]) <= 0.01);
             }
 
             //mem.setMinPctOverlapDutyCycles(0.015);
             mem.HtmConfig.MinPctOverlapDutyCycles = 0.015;
             //mem.setMinPctActiveDutyCycles(0.03);
             mem.HtmConfig.MinPctActiveDutyCycles = 0.03;
-            mem.setOverlapDutyCycles(new double[5]);
-            mem.setActiveDutyCycles(new double[5]);
+            mem.HtmConfig.OverlapDutyCycles = new double[5];
+            mem.HtmConfig.ActiveDutyCycles = new double[5];
             sp.updateMinDutyCyclesGlobal(mem);
             ArrayUtils.FillArray(trueMinOverlapDutyCycles, 0);
             ArrayUtils.FillArray(trueMinActiveDutyCycles, 0);
@@ -1577,8 +1577,8 @@ namespace UnitTestsProject
             {
                 //          System.out.println(i + ") " + trueMinOverlapDutyCycles[i] + "  -  " +  mem.getMinOverlapDutyCycles()[i]);
                 //          System.out.println(i + ") " + trueMinActiveDutyCycles[i] + "  -  " +  mem.getMinActiveDutyCycles()[i]);
-                Assert.IsTrue(Math.Abs(trueMinActiveDutyCycles[i] - mem.getMinActiveDutyCycles()[i]) <= 0.01);
-                Assert.IsTrue(Math.Abs(trueMinOverlapDutyCycles[i] - mem.getMinOverlapDutyCycles()[i]) <= 0.01);
+                Assert.IsTrue(Math.Abs(trueMinActiveDutyCycles[i] - mem.HtmConfig.MinActiveDutyCycles[i]) <= 0.01);
+                Assert.IsTrue(Math.Abs(trueMinOverlapDutyCycles[i] - mem.HtmConfig.MinOverlapDutyCycles[i]) <= 0.01);
             }
         }
 

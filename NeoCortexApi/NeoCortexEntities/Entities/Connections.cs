@@ -125,10 +125,10 @@ namespace NeoCortexApi.Entities
         /// </summary>
         //private int m_InhibitionRadius = 0;
 
-        private double[] overlapDutyCycles;
-        private double[] activeDutyCycles;
-        private volatile double[] minOverlapDutyCycles;
-        private volatile double[] minActiveDutyCycles;
+        //private double[] overlapDutyCycles;
+        //private double[] activeDutyCycles;
+        //private volatile double[] minOverlapDutyCycles;
+        //private volatile double[] minActiveDutyCycles;
         private double[] m_BoostFactors;
 
         /////////////////////////////////////// Temporal Memory Vars ///////////////////////////////////////////
@@ -1607,41 +1607,41 @@ namespace NeoCortexApi.Entities
             return version;
         }
 
-        /**
-         * Returns the overlap duty cycles.
-         * @return
-         */
-        public double[] getOverlapDutyCycles()
-        {
-            return overlapDutyCycles;
-        }
+        ///**
+        // * Returns the overlap duty cycles.
+        // * @return
+        // */
+        //public double[] getOverlapDutyCycles()
+        //{
+        //    return overlapDutyCycles;
+        //}
 
-        /**
-         * Sets the overlap duty cycles
-         * @param overlapDutyCycles
-         */
-        public void setOverlapDutyCycles(double[] overlapDutyCycles)
-        {
-            this.overlapDutyCycles = overlapDutyCycles;
-        }
+        ///**
+        // * Sets the overlap duty cycles
+        // * @param overlapDutyCycles
+        // */
+        //public void setOverlapDutyCycles(double[] overlapDutyCycles)
+        //{
+        //    this.overlapDutyCycles = overlapDutyCycles;
+        //}
 
-        /**
-         * Returns the dense (size=numColumns) array of duty cycle stats.
-         * @return	the dense array of active duty cycle values.
-         */
-        public double[] getActiveDutyCycles()
-        {
-            return activeDutyCycles;
-        }
+        ///**
+        // * Returns the dense (size=numColumns) array of duty cycle stats.
+        // * @return	the dense array of active duty cycle values.
+        // */
+        //public double[] getActiveDutyCycles()
+        //{
+        //    return activeDutyCycles;
+        //}
 
-        /**
-         * Sets the dense (size=numColumns) array of duty cycle stats.
-         * @param activeDutyCycles
-         */
-        public void setActiveDutyCycles(double[] activeDutyCycles)
-        {
-            this.activeDutyCycles = activeDutyCycles;
-        }
+        ///**
+        // * Sets the dense (size=numColumns) array of duty cycle stats.
+        // * @param activeDutyCycles
+        // */
+        //public void setActiveDutyCycles(double[] activeDutyCycles)
+        //{
+        //    this.activeDutyCycles = activeDutyCycles;
+        //}
 
         /**
          * Applies the dense array values which aren't -1 to the array containing
@@ -1657,46 +1657,46 @@ namespace NeoCortexApi.Entities
             {
                 if (denseActiveDutyCycles[i] != -1)
                 {
-                    activeDutyCycles[i] = denseActiveDutyCycles[i];
+                    this.HtmConfig.ActiveDutyCycles[i] = denseActiveDutyCycles[i];
                 }
             }
         }
 
-        /**
-         * Returns the minOverlapDutyCycles.
-         * @return	the minOverlapDutyCycles.
-         */
-        public double[] getMinOverlapDutyCycles()
-        {
-            return minOverlapDutyCycles;
-        }
+        ///**
+        // * Returns the minOverlapDutyCycles.
+        // * @return	the minOverlapDutyCycles.
+        // */
+        //public double[] getMinOverlapDutyCycles()
+        //{
+        //    return minOverlapDutyCycles;
+        //}
 
-        /**
-         * Sets the minOverlapDutyCycles
-         * @param minOverlapDutyCycles	the minOverlapDutyCycles
-         */
-        public void setMinOverlapDutyCycles(double[] minOverlapDutyCycles)
-        {
-            this.minOverlapDutyCycles = minOverlapDutyCycles;
-        }
+        ///**
+        // * Sets the minOverlapDutyCycles
+        // * @param minOverlapDutyCycles	the minOverlapDutyCycles
+        // */
+        //public void setMinOverlapDutyCycles(double[] minOverlapDutyCycles)
+        //{
+        //    this.minOverlapDutyCycles = minOverlapDutyCycles;
+        //}
 
-        /**
-         * Returns the minActiveDutyCycles
-         * @return	the minActiveDutyCycles
-         */
-        public double[] getMinActiveDutyCycles()
-        {
-            return minActiveDutyCycles;
-        }
+        ///**
+        // * Returns the minActiveDutyCycles
+        // * @return	the minActiveDutyCycles
+        // */
+        //public double[] getMinActiveDutyCycles()
+        //{
+        //    return minActiveDutyCycles;
+        //}
 
-        /**
-         * Sets the minActiveDutyCycles
-         * @param minActiveDutyCycles	the minActiveDutyCycles
-         */
-        public void setMinActiveDutyCycles(double[] minActiveDutyCycles)
-        {
-            this.minActiveDutyCycles = minActiveDutyCycles;
-        }
+        ///**
+        // * Sets the minActiveDutyCycles
+        // * @param minActiveDutyCycles	the minActiveDutyCycles
+        // */
+        //public void setMinActiveDutyCycles(double[] minActiveDutyCycles)
+        //{
+        //    this.minActiveDutyCycles = minActiveDutyCycles;
+        //}
 
         /**
          * Returns the array of boost factors
@@ -2637,7 +2637,7 @@ namespace NeoCortexApi.Entities
             int result = 1;
             result = prime * result + this.HtmConfig.ActivationThreshold;
             result = prime * result + ((activeCells == null) ? 0 : activeCells.GetHashCode());
-            result = prime * result + activeDutyCycles.GetHashCode();
+            result = prime * result + this.HtmConfig.ActiveDutyCycles.GetHashCode();
             result = prime * result + m_BoostFactors.GetHashCode();
             result = prime * result + Cells.GetHashCode();
             result = prime * result + this.HtmConfig.CellsPerColumn;
@@ -2666,8 +2666,8 @@ namespace NeoCortexApi.Entities
             result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + this.HtmConfig.MaxNewSynapseCount;
             result = prime * result + ((this.HtmConfig.Memory == null) ? 0 : this.HtmConfig.Memory.GetHashCode());
-            result = prime * result + minActiveDutyCycles.GetHashCode();
-            result = prime * result + minOverlapDutyCycles.GetHashCode();
+            result = prime * result + this.HtmConfig.MinActiveDutyCycles.GetHashCode();
+            result = prime * result + this.HtmConfig.MinOverlapDutyCycles.GetHashCode();
             temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.MinPctActiveDutyCycles);
             result = prime * result + (int)(temp ^ (temp >> 32));
             temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.MinPctOverlapDutyCycles);
@@ -2679,7 +2679,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + this.HtmConfig.NumInputs;
             temp = NumSynapses;
             result = prime * result + (int)(temp ^ (temp >> 32));
-            result = prime * result + overlapDutyCycles.GetHashCode();
+            result = prime * result + this.HtmConfig.OverlapDutyCycles.GetHashCode();
             temp = this.HtmConfig.PermanenceDecrement.GetHashCode();
             result = prime * result + (int)(temp ^ (temp >> 32));
             temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.PermanenceIncrement);
@@ -2746,7 +2746,7 @@ namespace NeoCortexApi.Entities
             }
             else if (!activeCells.Equals(other.activeCells))
                 return false;
-            if (!Array.Equals(activeDutyCycles, other.activeDutyCycles))
+            if (!Array.Equals(this.HtmConfig.ActiveDutyCycles, other.HtmConfig.ActiveDutyCycles))
                 return false;
             if (!Array.Equals(m_BoostFactors, other.m_BoostFactors))
                 return false;
@@ -2805,9 +2805,9 @@ namespace NeoCortexApi.Entities
             }
             else if (!this.HtmConfig.Memory.Equals(other.HtmConfig.Memory))
                 return false;
-            if (!Array.Equals(minActiveDutyCycles, other.minActiveDutyCycles))
+            if (!Array.Equals(this.HtmConfig.MinActiveDutyCycles, other.HtmConfig.MinActiveDutyCycles))
                 return false;
-            if (!Array.Equals(minOverlapDutyCycles, other.minOverlapDutyCycles))
+            if (!Array.Equals(this.HtmConfig.MinOverlapDutyCycles, other.HtmConfig.MinOverlapDutyCycles))
                 return false;
             if (BitConverter.DoubleToInt64Bits(this.HtmConfig.MinPctActiveDutyCycles) != BitConverter.DoubleToInt64Bits(other.HtmConfig.MinPctActiveDutyCycles))
                 return false;
@@ -2823,7 +2823,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (NumSynapses != other.NumSynapses)
                 return false;
-            if (!Array.Equals(overlapDutyCycles, other.overlapDutyCycles))
+            if (!Array.Equals(this.HtmConfig.OverlapDutyCycles, other.HtmConfig.OverlapDutyCycles))
                 return false;
             if (BitConverter.DoubleToInt64Bits(this.HtmConfig.PermanenceDecrement) != BitConverter.DoubleToInt64Bits(other.HtmConfig.PermanenceDecrement))
                 return false;
