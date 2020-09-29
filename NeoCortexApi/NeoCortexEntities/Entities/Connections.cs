@@ -51,7 +51,7 @@ namespace NeoCortexApi.Entities
         //private bool isBumpUpWeakColumnsDisabled = false;
 
         //private int numInputs = 1;  //product of input dimensions
-        private int numColumns = 1; //product of column dimensions
+        //private int numColumns = 1; //product of column dimensions
 
         //Extra parameter settings
         //private double synPermMin = 0.0;
@@ -262,7 +262,7 @@ namespace NeoCortexApi.Entities
                 //m_HtmConfig.InputTopology = this.InputTopology;
                 //m_HtmConfig.IsWrapAround = this.isWrapAround();
                 //m_HtmConfig.NumInputs = this.NumInputs;
-                m_HtmConfig.NumColumns = m_HtmConfig.Memory != null ? m_HtmConfig.Memory.getMaxIndex() + 1 : -1;
+                //m_HtmConfig.NumColumns = m_HtmConfig.Memory != null ? m_HtmConfig.Memory.getMaxIndex() + 1 : -1;
                 //m_HtmConfig.PotentialPct = getPotentialPct();
                 //m_HtmConfig.PotentialRadius = getPotentialRadius();
                 //m_HtmConfig.SynPermConnected = getSynPermConnected();
@@ -682,26 +682,26 @@ namespace NeoCortexApi.Entities
         //}
 
 
-        /// <summary>
-        /// Returns the total numbe rof columns across all dimensions.
-        /// </summary>
-        public int NumColumns
-        {
-            get
-            {
-                return this.numColumns;
-            }
-        }
+        ///// <summary>
+        ///// Returns the total numbe rof columns across all dimensions.
+        ///// </summary>
+        //public int NumColumns
+        //{
+        //    get
+        //    {
+        //        return this.numColumns;
+        //    }
+        //}
 
-        /**
-         * Sets the product of the column dimensions to be
-         * the column count.
-         * @param n
-         */
-        public void setNumColumns(int n)
-        {
-            this.numColumns = n;
-        }
+        ///**
+        // * Sets the product of the column dimensions to be
+        // * the column count.
+        // * @param n
+        // */
+        //public void setNumColumns(int n)
+        //{
+        //    this.numColumns = n;
+        //}
 
         ///**
         // * This parameter determines the extent of the input
@@ -834,8 +834,8 @@ namespace NeoCortexApi.Entities
 
         public int[] GetTrueCounts()
         {
-            int[] counts = new int[NumColumns];
-            for (int i = 0; i < NumColumns; i++)
+            int[] counts = new int[this.HtmConfig.NumColumns];
+            for (int i = 0; i < this.HtmConfig.NumColumns; i++)
             {
                 counts[i] = getColumn(i).ConnectedInputCounterMatrix.getTrueCounts()[0];
             }
@@ -874,7 +874,7 @@ namespace NeoCortexApi.Entities
          */
         public void setConnectedMatrix(AbstractSparseBinaryMatrix matrix)
         {
-            for (int col = 0; col < this.NumColumns; col++)
+            for (int col = 0; col < this.HtmConfig.NumColumns; col++)
             {
                 var colMatrix = this.getColumn(col).ConnectedInputCounterMatrix = new SparseBinaryMatrix(new int[] { 1, this.HtmConfig.NumInputs });
 
@@ -2481,7 +2481,7 @@ namespace NeoCortexApi.Entities
         {
             Console.WriteLine("------------ SpatialPooler Parameters ------------------");
             Console.WriteLine("numInputs                  = " + this.HtmConfig.NumInputs);
-            Console.WriteLine("numColumns                 = " + NumColumns);
+            Console.WriteLine("numColumns                 = " + this.HtmConfig.NumColumns);
             Console.WriteLine("cellsPerColumn             = " + this.HtmConfig.CellsPerColumn);
             Console.WriteLine("columnDimensions           = " + this.HtmConfig.ColumnDimensions.ToString());
             Console.WriteLine("numActiveColumnsPerInhArea = " + this.HtmConfig.NumActiveColumnsPerInhArea);
@@ -2504,7 +2504,7 @@ namespace NeoCortexApi.Entities
             Console.WriteLine("activationThreshold        = " + this.HtmConfig.ActivationThreshold);
             Console.WriteLine("learningRadius             = " + this.HtmConfig.LearningRadius);
             Console.WriteLine("minThreshold               = " + this.HtmConfig.MinThreshold);
-            Console.WriteLine("maxNewSynapseCount         = " + HtmConfig.MaxNewSynapseCount);
+            Console.WriteLine("maxNewSynapseCount         = " + this.HtmConfig.MaxNewSynapseCount);
             Console.WriteLine("maxSynapsesPerSegment      = " + this.HtmConfig.MaxSynapsesPerSegment);
             Console.WriteLine("maxSegmentsPerCell         = " + this.HtmConfig.MaxSegmentsPerCell);
             Console.WriteLine("initialPermanence          = " + this.HtmConfig.InitialPermanence);
@@ -2576,8 +2576,8 @@ namespace NeoCortexApi.Entities
          */
         public int[][] getConnecteds()
         {
-            int[][] retVal = new int[NumColumns][];
-            for (int i = 0; i < NumColumns; i++)
+            int[][] retVal = new int[this.HtmConfig.NumColumns][];
+            for (int i = 0; i < this.HtmConfig.NumColumns; i++)
             {
                 //Pool pool = getPotentialPools().get(i);
                 Pool pool = getColumn(i).ProximalDendrite.RFPool;
@@ -2595,8 +2595,8 @@ namespace NeoCortexApi.Entities
          */
         public int[][] getPotentials()
         {
-            int[][] retVal = new int[NumColumns][];
-            for (int i = 0; i < NumColumns; i++)
+            int[][] retVal = new int[this.HtmConfig.NumColumns][];
+            for (int i = 0; i < this.HtmConfig.NumColumns; i++)
             {
                 //Pool pool = getPotentialPools().get(i);
                 Pool pool = getColumn(i).ProximalDendrite.RFPool;
@@ -2614,8 +2614,8 @@ namespace NeoCortexApi.Entities
          */
         public double[][] getPermanences()
         {
-            double[][] retVal = new double[NumColumns][];
-            for (int i = 0; i < NumColumns; i++)
+            double[][] retVal = new double[this.HtmConfig.NumColumns][];
+            for (int i = 0; i < this.HtmConfig.NumColumns; i++)
             {
                 //Pool pool = getPotentialPools().get(i);
                 Pool pool = getColumn(i).ProximalDendrite.RFPool;
@@ -2675,7 +2675,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + this.HtmConfig.MinThreshold;
             temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.NumActiveColumnsPerInhArea);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            result = prime * result + numColumns;
+            result = prime * result + this.HtmConfig.NumColumns;
             result = prime * result + this.HtmConfig.NumInputs;
             temp = NumSynapses;
             result = prime * result + (int)(temp ^ (temp >> 32));
@@ -2817,7 +2817,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (BitConverter.DoubleToInt64Bits(this.HtmConfig.NumActiveColumnsPerInhArea) != BitConverter.DoubleToInt64Bits(other.HtmConfig.NumActiveColumnsPerInhArea))
                 return false;
-            if (numColumns != other.numColumns)
+            if (this.HtmConfig.NumColumns != other.HtmConfig.NumColumns)
                 return false;
             if (this.HtmConfig.NumInputs != other.HtmConfig.NumInputs)
                 return false;

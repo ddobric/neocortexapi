@@ -53,7 +53,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// product of input dimensions.
         /// </summary>
-        public int NumInputs { get; set; }
+        public int NumInputs { get; set; } = 1;
 
         public int NumColumns { get; set; }
 

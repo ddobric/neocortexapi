@@ -52,7 +52,7 @@ namespace NeoCortexApi
             this.connections.HtmConfig.Memory = matrix;
 
             int numColumns = matrix.getMaxIndex() + 1;
-            this.connections.setNumColumns(numColumns);
+            this.connections.HtmConfig.NumColumns = numColumns;
             int cellsPerColumn = this.connections.HtmConfig.CellsPerColumn;
             Cell[] cells = new Cell[numColumns * cellsPerColumn];
 

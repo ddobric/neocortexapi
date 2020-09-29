@@ -996,7 +996,7 @@ namespace UnitTestsProject
             p.apply(cn);
             tm.init(cn);
 
-            Assert.AreEqual(64 * 64, cn.NumColumns);
+            Assert.AreEqual(64 * 64, cn.HtmConfig.NumColumns);
         }
 
         [TestMethod]

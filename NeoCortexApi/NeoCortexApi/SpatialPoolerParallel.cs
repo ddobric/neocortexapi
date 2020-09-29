@@ -48,7 +48,7 @@ namespace NeoCortexApi
                 throw new ArgumentException("Invalid number of inputs: " + numInputs);
             }
             c.HtmConfig.NumInputs = numInputs;
-            c.setNumColumns(numColumns);
+            c.HtmConfig.NumColumns = numColumns;
 
             if (distMem != null)
             {
