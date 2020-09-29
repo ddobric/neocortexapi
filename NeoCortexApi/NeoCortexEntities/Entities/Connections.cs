@@ -343,7 +343,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// The random number generator
         /// </summary>
-        public Random random;
+        //public Random random;
 
         public int getNextSegmentOrdinal()
         {
@@ -456,23 +456,23 @@ namespace NeoCortexApi.Entities
         //    return seed;
         //}
 
-        /// <summary>
-        /// Returns the thread specific {@link Random} number generator.
-        /// </summary>
-        /// <returns></returns>
-        public Random getRandom()
-        {
-            return random;
-        }
+        ///// <summary>
+        ///// Returns the thread specific {@link Random} number generator.
+        ///// </summary>
+        ///// <returns></returns>
+        //public Random getRandom()
+        //{
+        //    return random;
+        //}
 
-        /// <summary>
-        /// Sets the random number generator.
-        /// </summary>
-        /// <param name="random"></param>
-        public void setRandom(Random random)
-        {
-            this.random = random;
-        }
+        ///// <summary>
+        ///// Sets the random number generator.
+        ///// </summary>
+        ///// <param name="random"></param>
+        //public void setRandom(Random random)
+        //{
+        //    this.random = random;
+        //}
 
         /**
          * Returns the {@link Cell} specified by the index passed in.
@@ -2691,7 +2691,7 @@ namespace NeoCortexApi.Entities
             temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.PredictedSegmentDecrement);
             result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + ((predictiveCells == null) ? 0 : predictiveCells.GetHashCode());
-            result = prime * result + ((random == null) ? 0 : random.GetHashCode());
+            result = prime * result + ((this.HtmConfig.Random == null) ? 0 : this.HtmConfig.Random.GetHashCode());
             result = prime * result + ((receptorSynapses == null) ? 0 : receptorSynapses.GetHashCode());
             result = prime * result + this.HtmConfig.RandomGenSeed;
             result = prime * result + ((distalSegments == null) ? 0 : distalSegments.GetHashCode());

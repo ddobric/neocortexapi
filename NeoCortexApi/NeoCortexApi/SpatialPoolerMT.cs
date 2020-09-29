@@ -67,7 +67,7 @@ namespace NeoCortexApi
 
                 //colList.Add(new KeyPair() { Key = i, Value = column });
 
-                data.Perm = HtmCompute.InitSynapsePermanences(c.HtmConfig, data.Potential, c.getRandom());
+                data.Perm = HtmCompute.InitSynapsePermanences(c.HtmConfig, data.Potential, c.HtmConfig.Random);
 
                 data.AvgConnected = GetAvgSpanOfConnectedSynapses(c, colIndex);
 

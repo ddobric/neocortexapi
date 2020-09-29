@@ -182,7 +182,7 @@ namespace NeoCortexApi
                         // If no active segments are detected (start of learning) then all cells are activated
                         // and a random single cell is chosen as a winner.
                         BurstingResult burstingResult = BurstColumn(conn, activeColumnData.Column(), activeColumnData.MatchingSegments,
-                            prevActiveCells, prevWinnerCells, permanenceIncrement, permanenceDecrement, conn.getRandom(),
+                            prevActiveCells, prevWinnerCells, permanenceIncrement, permanenceDecrement, conn.HtmConfig.Random,
                                learn);
 
                         // DRAFT. Removing this as unnecessary.
@@ -390,7 +390,7 @@ namespace NeoCortexApi
                             {
                                 // Create new synapses on the segment from winner (pre-synaptic cells) cells.
                                 growSynapses(conn, prevWinnerCells, segment, conn.HtmConfig.InitialPermanence,
-                                    nGrowDesired, conn.getRandom());
+                                    nGrowDesired, conn.HtmConfig.Random);
                             }
                         }
                     }

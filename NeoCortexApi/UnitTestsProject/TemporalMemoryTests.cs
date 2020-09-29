@@ -919,7 +919,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < 100; i++)
             {
-                Assert.AreEqual(1, tm.GetLeastUsedCell(cn, cn.getColumn(0).Cells, cn.getRandom()).Index);
+                Assert.AreEqual(1, tm.GetLeastUsedCell(cn, cn.getColumn(0).Cells, cn.HtmConfig.Random).Index);
             }
         }
 
