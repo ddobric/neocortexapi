@@ -1747,7 +1747,7 @@ namespace NeoCortexApi.Entities
                 // Receptor synapses are synapses whose source cell (pre-synaptic cell) is the given cell.
                 // Synapse processed here starts with the given 'cell' and points to some other cell that owns some segment in some other column.
                 // The segment owner cell in other column pointed by synapse sourced by this 'cell' is depolirized (in predicting state).
-                foreach (Synapse synapse in getReceptorSynapses(cell))
+                foreach (Synapse synapse in GetReceptorSynapses(cell))
                 {
                     // Now, we get the segment of the synapse of the pre-synaptic cell.
                     int segFlatIndx = synapse.SegmentIndex;
@@ -1859,7 +1859,7 @@ namespace NeoCortexApi.Entities
             //getSynapses(segment).stream().forEach(s->removeSynapseFromPresynapticMap(s));
             foreach (var s in GetSynapses(segment))
             {
-                removeSynapseFromPresynapticMap(s);
+                RemoveSynapseFromPresynapticMap(s);
             }
 
             m_NumSynapses -= len;
@@ -2024,7 +2024,7 @@ namespace NeoCortexApi.Entities
         {
             while (GetNumSynapses(segment) >= this.HtmConfig.MaxSynapsesPerSegment)
             {
-                destroySynapse(minPermanenceSynapse(segment), segment);
+                DestroySynapse(MinPermanenceSynapse(segment), segment);
             }
 
             Synapse synapse = null;
@@ -2032,7 +2032,7 @@ namespace NeoCortexApi.Entities
                 synapse = new Synapse(
                     presynapticCell, segment.getIndex(), m_NextSynapseOrdinal, permanence));
 
-            getReceptorSynapses(presynapticCell, true).Add(synapse);
+            GetReceptorSynapses(presynapticCell, true).Add(synapse);
 
             ++m_NextSynapseOrdinal;
 
@@ -2041,32 +2041,32 @@ namespace NeoCortexApi.Entities
             return synapse;
         }
 
-        /**
-         * Destroys the specified {@link Synapse}
-         * @param synapse   the Synapse to destroy
-         */
-        public void destroySynapse(Synapse synapse, DistalDendrite segment)
+        /// <summary>
+        /// Destroys the specified <see cref="Synapse"/> in specific <see cref="DistalDendrite"/> segment
+        /// </summary>
+        /// <param name="synapse">the Synapse to destroy</param>
+        /// <param name="segment"></param>
+        public void DestroySynapse(Synapse synapse, DistalDendrite segment)
         {
             --m_NumSynapses;
 
-            removeSynapseFromPresynapticMap(synapse);
+            RemoveSynapseFromPresynapticMap(synapse);
 
             //segment.Synapses.Remove(synapse);
             GetSynapses(segment).Remove(synapse);
         }
 
-        /**
-         * Removes the specified {@link Synapse} from its
-         * pre-synaptic {@link Cell}'s map of synapses it 
-         * activates.
-         * 
-         * @param synapse   the synapse to remove
-         */
-        public void removeSynapseFromPresynapticMap(Synapse synapse)
+        /// <summary>
+        /// Removes the specified <see cref="Synapse"/> from its
+        /// pre-synaptic <see cref="Cell"/>'s map of synapses it 
+        /// activates.
+        /// </summary>
+        /// <param name="synapse">the synapse to remove</param>
+        public void RemoveSynapseFromPresynapticMap(Synapse synapse)
         {
             LinkedHashSet<Synapse> presynapticSynapses;
             Cell cell = synapse.getPresynapticCell();
-            (presynapticSynapses = getReceptorSynapses(cell, false)).Remove(synapse);
+            (presynapticSynapses = GetReceptorSynapses(cell, false)).Remove(synapse);
 
             if (presynapticSynapses.Count == 0)
             {
@@ -2074,14 +2074,13 @@ namespace NeoCortexApi.Entities
             }
         }
 
-        /**
-         * Used internally to find the synapse with the smallest permanence
-         * on the given segment.
-         * 
-         * @param dd    Segment object to search for synapses on
-         * @return  Synapse object on the segment with the minimal permanence
-         */
-        private Synapse minPermanenceSynapse(DistalDendrite dd)
+        /// <summary>
+        /// Used internally to find the synapse with the smallest permanence
+        /// on the given segment.
+        /// </summary>
+        /// <param name="dd">Segment object to search for synapses on</param>
+        /// <returns>Synapse object on the segment with the minimal permanence</returns>
+        private Synapse MinPermanenceSynapse(DistalDendrite dd)
         {
             //List<Synapse> synapses = getSynapses(dd).stream().sorted().collect(Collectors.toList());
             List<Synapse> synapses = GetSynapses(dd);
@@ -2100,25 +2099,23 @@ namespace NeoCortexApi.Entities
             return min;
         }
 
-        /**
-         * Returns the total number of {@link Synapse}s
-         * 
-         * @return  either the total number of synapses
-         */
-        public long GetNumSynapses()
-        {
-            return GetNumSynapses(null);
-        }
+        ///**
+        // * Returns the total number of {@link Synapse}s
+        // * 
+        // * @return  either the total number of synapses
+        // */
+        //public long GetNumSynapses()
+        //{
+        //    return GetNumSynapses(null);
+        //}
 
-
-        /**
-         * Returns the number of {@link Synapse}s on a given {@link DistalDendrite}
-         * if specified, or the total number if the "optionalSegmentArg" is null.
-         * 
-         * @param optionalSegmentArg    an optional Segment to specify the context of the synapse count.
-         * @return  either the total number of synapses or the number on a specified segment.
-         */
-        public long GetNumSynapses(DistalDendrite optionalSegmentArg)
+        /// <summary>
+        /// Returns the number of <see cref="Synapse"/>s on a given <see cref="DistalDendrite"/>
+        /// if specified, or the total number if the "optionalSegmentArg" is null.
+        /// </summary>
+        /// <param name="optionalSegmentArg">an optional Segment to specify the context of the synapse count.</param>
+        /// <returns>either the total number of synapses or the number on a specified segment.</returns>
+        public long GetNumSynapses(DistalDendrite optionalSegmentArg = null)
         {
             if (optionalSegmentArg != null)
             {
@@ -2137,28 +2134,25 @@ namespace NeoCortexApi.Entities
          *                  {@link Synapse}s.
          */
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="cell"></param>
-        /// <returns></returns>
-        public LinkedHashSet<Synapse> getReceptorSynapses(Cell cell)
-        {
-            return getReceptorSynapses(cell, false);
-        }
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <param name="cell"></param>
+        ///// <returns></returns>
+        //public LinkedHashSet<Synapse> GetReceptorSynapses(Cell cell)
+        //{
+        //    return GetReceptorSynapses(cell, false);
+        //}
 
-        /**
-         * Returns synapses which hold the specified cell as their source cell.
-         * Returns the mapping of {@link Cell}s to their reverse mapped
-         * {@link Synapse}s.
-         *
-         * @param cell              the {@link Cell} used as a key.
-         * @param doLazyCreate      create a container for future use if true, if false
-         *                          return an orphaned empty set.
-         * @return          the mapping of {@link Cell}s to their reverse mapped
-         *                  {@link Synapse}s.
-         */
-        public LinkedHashSet<Synapse> getReceptorSynapses(Cell cell, bool doLazyCreate)
+        /// <summary>
+        /// Returns synapses which hold the specified cell as their source cell.
+        /// Returns the mapping of <see cref="Cell"/>s to their reverse mapped
+        /// <see cref="Synapse"/>s.
+        /// </summary>
+        /// <param name="cell">the <see cref="Cell"/> used as a key.</param>
+        /// <param name="doLazyCreate">create a container for future use if true, if false return an orphaned empty set.</param>
+        /// <returns>the mapping of <see cref="Cell"/>s to their reverse mapped</returns>
+        public LinkedHashSet<Synapse> GetReceptorSynapses(Cell cell, bool doLazyCreate = false)
         {
             if (cell == null)
             {
@@ -2179,8 +2173,6 @@ namespace NeoCortexApi.Entities
 
             return retVal;
         }
-
-
 
         /// <summary>
         /// Returns synapeses of specified dentrite segment.

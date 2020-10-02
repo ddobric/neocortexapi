@@ -86,7 +86,7 @@ namespace NeoCortexApi.Entities
          */
         public ISet<Synapse> getReceptorSynapses(Connections c, bool doLazyCreate)
         {
-            return c.getReceptorSynapses(this, doLazyCreate);
+            return c.GetReceptorSynapses(this, doLazyCreate);
         }
 
         /**
