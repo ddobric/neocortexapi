@@ -181,7 +181,7 @@ namespace UnitTestsProject
 
                     for (int center = 0; center < 64; center++)
                     {
-                        var nbs = HtmCompute.GetNeighborhood(center, rad, mem.getColumnTopology().HtmTopology);
+                        var nbs = HtmCompute.GetNeighborhood(center, rad, mem.HtmConfig.ColumnTopology.HtmTopology);
 
                         StringBuilder sb = new StringBuilder();
 

@@ -128,7 +128,7 @@ namespace NeoCortexApi.DistributedCompute
                 {
                     numColumns = 1;
 
-                    foreach (var dimCols in this.HtmConfig.ColumnTopology.Dimensions)
+                    foreach (var dimCols in this.HtmConfig.ColumnModuleTopology.Dimensions)
                     {
                         numColumns *= dimCols;
                     }

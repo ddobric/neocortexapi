@@ -66,8 +66,8 @@ namespace NeoCortexApi.Entities
             this.ActiveCells = new List<Cell>(c.getWinnerCells());//TODO potential bug. activeCells or winnerCells?!
             this.WinnerCells = new List<Cell>(c.getWinnerCells());
             this.m_PredictiveCells = new List<Cell>(c.getPredictiveCells());
-            this.ActiveSegments = new List<DistalDendrite>(c.getActiveSegments());
-            this.MatchingSegments = new List<DistalDendrite>(c.getMatchingSegments());
+            this.ActiveSegments = new List<DistalDendrite>(c.ActiveSegments);
+            this.MatchingSegments = new List<DistalDendrite>(c.MatchingSegments);
         }
 
 

@@ -40,7 +40,7 @@ namespace NeoCortexApi
 
             ConcurrentDictionary<int, KeyPair> colList2 = new ConcurrentDictionary<int, KeyPair>();
 
-            int numColumns = c.NumColumns;
+            int numColumns = c.HtmConfig.NumColumns;
 
             // Parallel implementation of initialization
             ParallelOptions opts = new ParallelOptions();
@@ -67,7 +67,7 @@ namespace NeoCortexApi
 
                 //colList.Add(new KeyPair() { Key = i, Value = column });
 
-                data.Perm = HtmCompute.InitSynapsePermanences(c.HtmConfig, data.Potential, c.getRandom());
+                data.Perm = HtmCompute.InitSynapsePermanences(c.HtmConfig, data.Potential, c.HtmConfig.Random);
 
                 data.AvgConnected = GetAvgSpanOfConnectedSynapses(c, colIndex);
 
@@ -148,7 +148,7 @@ namespace NeoCortexApi
             opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
             ConcurrentDictionary<int, int> overlaps = new ConcurrentDictionary<int, int>();
 
-            Parallel.For(0, c.NumColumns, (col) =>
+            Parallel.For(0, c.HtmConfig.NumColumns, (col) =>
             {
                 overlaps[col] = c.getColumn(col).GetColumnOverlapp(inputVector, c.HtmConfig.StimulusThreshold);
             });

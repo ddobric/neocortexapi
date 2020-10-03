@@ -33,8 +33,8 @@ namespace NeoCortexApi
             c.HtmConfig.InputMatrix = new SparseBinaryMatrix(c.HtmConfig.InputDimensions);
 
             // Initiate the topologies
-            c.setColumnTopology(new Topology(c.HtmConfig.ColumnDimensions));
-            c.setInputTopology(new Topology(c.HtmConfig.InputDimensions));
+            c.HtmConfig.ColumnTopology = new Topology(c.HtmConfig.ColumnDimensions);
+            c.HtmConfig.InputTopology = new Topology(c.HtmConfig.InputDimensions);
 
             //Calculate numInputs and numColumns
             int numInputs = c.HtmConfig.InputMatrix.getMaxIndex() + 1;
@@ -48,7 +48,7 @@ namespace NeoCortexApi
                 throw new ArgumentException("Invalid number of inputs: " + numInputs);
             }
             c.HtmConfig.NumInputs = numInputs;
-            c.setNumColumns(numColumns);
+            c.HtmConfig.NumColumns = numColumns;
 
             if (distMem != null)
             {
@@ -88,10 +88,10 @@ namespace NeoCortexApi
             //c.setConnectedMatrix(new SparseBinaryMatrix(new int[] { numColumns, numInputs }));
 
             //Initialize state meta-management statistics
-            c.setOverlapDutyCycles(new double[numColumns]);
-            c.setActiveDutyCycles(new double[numColumns]);
-            c.setMinOverlapDutyCycles(new double[numColumns]);
-            c.setMinActiveDutyCycles(new double[numColumns]);
+            c.HtmConfig.OverlapDutyCycles = new double[numColumns];
+            c.HtmConfig.ActiveDutyCycles = new double[numColumns];
+            c.HtmConfig.MinOverlapDutyCycles = new double[numColumns];
+            c.HtmConfig.MinActiveDutyCycles = new double[numColumns];
             c.BoostFactors = (new double[numColumns]);
             ArrayUtils.FillArray(c.BoostFactors, 1);
         }
@@ -268,7 +268,7 @@ namespace NeoCortexApi
             if (remoteHtm == null)
                 throw new ArgumentException("disMemConfig is not of type IRemotelyDistributed!");
 
-            var weakColumns = c.HtmConfig.Memory.get1DIndexes().Where(i => c.getOverlapDutyCycles()[i] < c.getMinOverlapDutyCycles()[i]).ToArray();
+            var weakColumns = c.HtmConfig.Memory.get1DIndexes().Where(i => c.HtmConfig.OverlapDutyCycles[i] < c.HtmConfig.MinOverlapDutyCycles[i]).ToArray();
             if (weakColumns.Length > 0)
                 remoteHtm.BumpUpWeakColumnsDist(weakColumns);
         }

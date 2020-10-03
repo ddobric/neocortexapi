@@ -104,8 +104,8 @@ namespace NeoCortexApi
             c.HtmConfig.InputMatrix = new SparseBinaryMatrix(c.HtmConfig.InputDimensions);
 
             // Initiate the topologies
-            c.setColumnTopology(new Topology(c.HtmConfig.ColumnDimensions));
-            c.setInputTopology(new Topology(c.HtmConfig.InputDimensions));
+            c.HtmConfig.ColumnTopology = new Topology(c.HtmConfig.ColumnDimensions);
+            c.HtmConfig.InputTopology = new Topology(c.HtmConfig.InputDimensions);
 
             //Calculate numInputs and numColumns
             int numInputs = c.HtmConfig.InputMatrix.getMaxIndex() + 1;
@@ -119,7 +119,7 @@ namespace NeoCortexApi
                 throw new ArgumentException("Invalid number of inputs: " + numInputs);
             }
             c.HtmConfig.NumInputs = numInputs;
-            c.setNumColumns(numColumns);
+            c.HtmConfig.NumColumns = numColumns;
 
             //
             // Fill the sparse matrix with column objects
@@ -145,10 +145,10 @@ namespace NeoCortexApi
             //  this IS removed. Every colun maintains its own matrix.
 
             //Initialize state meta-management statistics
-            c.setOverlapDutyCycles(new double[numColumns]);
-            c.setActiveDutyCycles(new double[numColumns]);
-            c.setMinOverlapDutyCycles(new double[numColumns]);
-            c.setMinActiveDutyCycles(new double[numColumns]);
+            c.HtmConfig.OverlapDutyCycles = new double[numColumns];
+            c.HtmConfig.ActiveDutyCycles = new double[numColumns];
+            c.HtmConfig.MinOverlapDutyCycles = new double[numColumns];
+            c.HtmConfig.MinActiveDutyCycles = new double[numColumns];
             c.BoostFactors = (new double[numColumns]);
             ArrayUtils.FillArray(c.BoostFactors, 1);
         }
@@ -168,7 +168,7 @@ namespace NeoCortexApi
 
             ConcurrentDictionary<int, KeyPair> colList2 = new ConcurrentDictionary<int, KeyPair>();
 
-            int numColumns = c.NumColumns;
+            int numColumns = c.HtmConfig.NumColumns;
 
             Random rnd = new Random(42);
 
@@ -549,7 +549,7 @@ namespace NeoCortexApi
             ////List<int> l = new List<int>(active);
             ////l.sort();
 
-            var res = activeColumns.Where(i => c.getActiveDutyCycles()[i] > 0).ToArray();
+            var res = activeColumns.Where(i => c.HtmConfig.ActiveDutyCycles[i] > 0).ToArray();
             return res;
             //return Arrays.stream(activeColumns).filter(i->c.getActiveDutyCycles()[i] > 0).toArray();
         }
@@ -562,7 +562,7 @@ namespace NeoCortexApi
          */
         public void updateMinDutyCycles(Connections c)
         {
-            if (c.HtmConfig.GlobalInhibition || c.InhibitionRadius > c.HtmConfig.NumInputs)
+            if (c.HtmConfig.GlobalInhibition || c.HtmConfig.InhibitionRadius > c.HtmConfig.NumInputs)
             {
                 updateMinDutyCyclesGlobal(c);
             }
@@ -584,11 +584,11 @@ namespace NeoCortexApi
          */
         public void updateMinDutyCyclesGlobal(Connections c)
         {
-            ArrayUtils.FillArray(c.getMinOverlapDutyCycles(),
-                   (double)(c.HtmConfig.MinPctOverlapDutyCycles * ArrayUtils.Max(c.getOverlapDutyCycles())));
+            ArrayUtils.FillArray(c.HtmConfig.MinOverlapDutyCycles,
+                   (double)(c.HtmConfig.MinPctOverlapDutyCycles * ArrayUtils.Max(c.HtmConfig.OverlapDutyCycles)));
 
-            ArrayUtils.FillArray(c.getMinActiveDutyCycles(),
-                    (double)(c.HtmConfig.MinPctActiveDutyCycles * ArrayUtils.Max(c.getActiveDutyCycles())));
+            ArrayUtils.FillArray(c.HtmConfig.MinActiveDutyCycles,
+                    (double)(c.HtmConfig.MinPctActiveDutyCycles * ArrayUtils.Max(c.HtmConfig.ActiveDutyCycles)));
         }
 
         /**
@@ -605,7 +605,7 @@ namespace NeoCortexApi
      */
         public int[] getColumnNeighborhood(Connections c, int centerColumn, int inhibitionRadius)
         {
-            var topology = c.getColumnTopology().HtmTopology;
+            var topology = c.HtmConfig.ColumnTopology.HtmTopology;
             return c.HtmConfig.WrapAround ?
                 HtmCompute.GetWrappingNeighborhood(centerColumn, inhibitionRadius, topology) :
                     HtmCompute.GetNeighborhood(centerColumn, inhibitionRadius, topology);
@@ -622,11 +622,11 @@ namespace NeoCortexApi
          */
         public void updateMinDutyCyclesLocal(Connections c)
         {
-            int len = c.NumColumns;
-            int inhibitionRadius = c.InhibitionRadius;
-            double[] activeDutyCycles = c.getActiveDutyCycles();
+            int len = c.HtmConfig.NumColumns;
+            int inhibitionRadius = c.HtmConfig.InhibitionRadius;
+            double[] activeDutyCycles = c.HtmConfig.ActiveDutyCycles;
             double minPctActiveDutyCycles = c.HtmConfig.MinPctActiveDutyCycles;
-            double[] overlapDutyCycles = c.getOverlapDutyCycles();
+            double[] overlapDutyCycles = c.HtmConfig.OverlapDutyCycles;
             double minPctOverlapDutyCycles = c.HtmConfig.MinPctOverlapDutyCycles;
 
             //Console.WriteLine($"{inhibitionRadius: inhibitionRadius}");
@@ -654,9 +654,9 @@ namespace NeoCortexApi
 
                 //Console.WriteLine($"{i} - maxOverl: {maxOverlapDuty}\t - {sb.ToString()}");
 
-                c.getMinActiveDutyCycles()[i] = maxActiveDuty * minPctActiveDutyCycles;
+                c.HtmConfig.MinActiveDutyCycles[i] = maxActiveDuty * minPctActiveDutyCycles;
 
-                c.getMinOverlapDutyCycles()[i] = maxOverlapDuty * minPctOverlapDutyCycles;
+                c.HtmConfig.MinOverlapDutyCycles[i] = maxOverlapDuty * minPctOverlapDutyCycles;
             });
         }
 
@@ -677,10 +677,10 @@ namespace NeoCortexApi
         public void updateDutyCycles(Connections c, int[] overlaps, int[] activeColumns)
         {
             // All columns with overlap are set to 1. Otherwise 0.
-            double[] overlapArray = new double[c.NumColumns];
+            double[] overlapArray = new double[c.HtmConfig.NumColumns];
 
             // All active columns are set on 1, otherwise 0.
-            double[] activeArray = new double[c.NumColumns];
+            double[] activeArray = new double[c.HtmConfig.NumColumns];
 
             //
             // if (sourceA[i] > 0) then targetB[i] = 1;
@@ -693,14 +693,14 @@ namespace NeoCortexApi
             }
 
             int period = c.HtmConfig.DutyCyclePeriod;
-            if (period > c.getIterationNum())
+            if (period > c.SpIterationNum)
             {
-                period = c.getIterationNum();
+                period = c.SpIterationNum;
             }
 
-            c.setOverlapDutyCycles(updateDutyCyclesHelper(c, c.getOverlapDutyCycles(), overlapArray, period));
+            c.HtmConfig.OverlapDutyCycles = updateDutyCyclesHelper(c, c.HtmConfig.OverlapDutyCycles, overlapArray, period);
 
-            c.setActiveDutyCycles(updateDutyCyclesHelper(c, c.getActiveDutyCycles(), activeArray, period));
+            c.HtmConfig.ActiveDutyCycles = updateDutyCyclesHelper(c, c.HtmConfig.ActiveDutyCycles, activeArray, period);
 
             //var strActiveArray = Helpers.StringifyVector(activeArray);
             //Debug.WriteLine("Active Array:" + strActiveArray);
@@ -749,14 +749,14 @@ namespace NeoCortexApi
         {
             if (c.HtmConfig.GlobalInhibition)
             {
-                c.InhibitionRadius = ArrayUtils.Max(c.HtmConfig.ColumnDimensions);
+                c.HtmConfig.InhibitionRadius = ArrayUtils.Max(c.HtmConfig.ColumnDimensions);
                 return;
             }
 
             if (avgCollected == null)
             {
                 avgCollected = new List<double>();
-                int len = c.NumColumns;
+                int len = c.HtmConfig.NumColumns;
                 for (int i = 0; i < len; i++)
                 {
                     avgCollected.Add(GetAvgSpanOfConnectedSynapses(c, i));
@@ -769,7 +769,7 @@ namespace NeoCortexApi
             double radius = (diameter - 1) / 2.0d;
             radius = Math.Max(1, radius);
 
-            c.InhibitionRadius = (int)(radius + 0.5);
+            c.HtmConfig.InhibitionRadius = (int)(radius + 0.5);
         }
 
 
@@ -911,7 +911,7 @@ namespace NeoCortexApi
                 return;
 
             // This condition is wrong. It brings teh SP in scillation state.
-            var weakColumns = c.HtmConfig.Memory.get1DIndexes().Where(i => c.getOverlapDutyCycles()[i] < c.getMinOverlapDutyCycles()[i]).ToArray();
+            var weakColumns = c.HtmConfig.Memory.get1DIndexes().Where(i => c.HtmConfig.OverlapDutyCycles[i] < c.HtmConfig.MinOverlapDutyCycles[i]).ToArray();
             //var weakColumnsStr = Helpers.StringifyVector(weakColumns);
             //Debug.WriteLine("weak Columns:" + weakColumnsStr);
             for (int i = 0; i < weakColumns.Length; i++)
@@ -1119,8 +1119,8 @@ namespace NeoCortexApi
                 // inhibition area can be higher than num of all columns, if 
                 // radius is near to number of columns of a dimension with highest number of columns.
                 // In that case we limit it to number of all columns.
-                inhibitionArea = Math.Pow(2 * c.InhibitionRadius + 1, c.HtmConfig.ColumnDimensions.Length);
-                inhibitionArea = Math.Min(c.NumColumns, inhibitionArea);
+                inhibitionArea = Math.Pow(2 * c.HtmConfig.InhibitionRadius + 1, c.HtmConfig.ColumnDimensions.Length);
+                inhibitionArea = Math.Min(c.HtmConfig.NumColumns, inhibitionArea);
 
                 density = c.HtmConfig.NumActiveColumnsPerInhArea / inhibitionArea;
 
@@ -1152,7 +1152,7 @@ namespace NeoCortexApi
             //Add our fixed little bit of random noise to the scores to help break ties.
             //ArrayUtils.d_add(overlaps, c.getTieBreaker());
 
-            if (c.HtmConfig.GlobalInhibition || c.InhibitionRadius > ArrayUtils.Max(c.HtmConfig.ColumnDimensions))
+            if (c.HtmConfig.GlobalInhibition || c.HtmConfig.InhibitionRadius > ArrayUtils.Max(c.HtmConfig.ColumnDimensions))
             {
                 return inhibitColumnsGlobal(c, overlaps, density);
             }
@@ -1172,7 +1172,7 @@ namespace NeoCortexApi
         /// <returns>We return all columns, whof synapses in a "connected state" (connected synapses)ich have overlap greather than stimulusThreshold.</returns>
         public virtual int[] inhibitColumnsGlobal(Connections c, double[] overlaps, double density)
         {
-            int numCols = c.NumColumns;
+            int numCols = c.HtmConfig.NumColumns;
             int numActive = (int)(density * numCols);
 
             Dictionary<int, double> indices = new Dictionary<int, double>();
@@ -1236,7 +1236,7 @@ namespace NeoCortexApi
             double[] tieBrokenOverlaps = new List<double>(overlaps).ToArray();
 
             List<int> winners = new List<int>();
-            int inhibitionRadius = c.InhibitionRadius;
+            int inhibitionRadius = c.HtmConfig.InhibitionRadius;
             //int inhibitionRadius = 5;
             //Debug.WriteLine("Inhibition Radius: " + inhibitionRadius);
             for (int column = 0; column < overlaps.Length; column++)
@@ -1413,7 +1413,7 @@ namespace NeoCortexApi
             double[] tieBrokenOverlaps = new List<double>(overlaps).ToArray();
 
 
-            int inhibitionRadius = c.InhibitionRadius;
+            int inhibitionRadius = c.HtmConfig.InhibitionRadius;
 
             Parallel.ForEach(overlaps, (val, b, index) =>
             {
@@ -1524,10 +1524,10 @@ namespace NeoCortexApi
          */
         public void UpdateBoostFactors(Connections c)
         {
-            double[] activeDutyCycles = c.getActiveDutyCycles();
+            double[] activeDutyCycles = c.HtmConfig.ActiveDutyCycles;
             //var strActiveDutyCycles = Helpers.StringifyVector(activeDutyCycles);
             //Debug.WriteLine("Active Dutycycles:" + strActiveDutyCycles);
-            double[] minActiveDutyCycles = c.getMinActiveDutyCycles();
+            double[] minActiveDutyCycles = c.HtmConfig.MinActiveDutyCycles;
             //var strMinActiveDutyCycles = Helpers.StringifyVector(activeDutyCycles);
             //Debug.WriteLine("Min active dudycycles:" + strMinActiveDutyCycles);
             List<int> mask = new List<int>();
@@ -1549,7 +1549,7 @@ namespace NeoCortexApi
             }
             else
             {
-                double[] oneMinusMaxBoostFact = new double[c.NumColumns];
+                double[] oneMinusMaxBoostFact = new double[c.HtmConfig.NumColumns];
                 ArrayUtils.FillArray(oneMinusMaxBoostFact, 1 - c.HtmConfig.MaxBoost);
                 boostInterim = ArrayUtils.Divide(oneMinusMaxBoostFact, minActiveDutyCycles, 0, 0);
                 boostInterim = ArrayUtils.Multiply(boostInterim, activeDutyCycles, 0, 0);
@@ -1590,8 +1590,8 @@ namespace NeoCortexApi
         /// <returns></returns>
         public virtual int[] CalculateOverlap(Connections c, int[] inputVector)
         {
-            int[] overlaps = new int[c.NumColumns];
-            for (int col = 0; col < c.NumColumns; col++)
+            int[] overlaps = new int[c.HtmConfig.NumColumns];
+            for (int col = 0; col < c.HtmConfig.NumColumns; col++)
             {
                 overlaps[col] = c.getColumn(col).GetColumnOverlapp(inputVector, c.HtmConfig.StimulusThreshold);
             }
@@ -1612,7 +1612,7 @@ namespace NeoCortexApi
         {
             int[] columnsCounts = new int[overlaps.Length];
 
-            for (int i = 0; i < c.NumColumns; i++)
+            for (int i = 0; i < c.HtmConfig.NumColumns; i++)
             {
                 columnsCounts[i] = c.getColumn(i).ConnectedInputCounterMatrix.getTrueCounts()[0];
             }
@@ -1693,7 +1693,7 @@ namespace NeoCortexApi
          */
         public bool isUpdateRound(Connections c)
         {
-            return c.getIterationNum() % c.HtmConfig.UpdatePeriod == 0;
+            return c.SpIterationNum % c.HtmConfig.UpdatePeriod == 0;
         }
 
         /**
@@ -1708,9 +1708,9 @@ namespace NeoCortexApi
          */
         public void updateBookeepingVars(Connections c, bool learn)
         {
-            c.spIterationNum += 1;
+            c.SpIterationNum += 1;
             if (learn)
-                c.spIterationLearnNum += 1;
+                c.SpIterationLearnNum += 1;
         }
 
         public Double getRobustness(Double k, int[] oriOut, int[] realOut)
