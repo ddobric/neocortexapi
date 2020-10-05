@@ -120,15 +120,15 @@ namespace NeoCortexApi
 
             ColumnData activeColumnData = new ColumnData();
 
-            ISet<Cell> prevActiveCells = conn.getActiveCells();
-            ISet<Cell> prevWinnerCells = conn.getWinnerCells();
+            ISet<Cell> prevActiveCells = conn.ActiveCells;
+            ISet<Cell> prevWinnerCells = conn.WinnerCells;
 
             // The list of active columns.
             List<Column> activeColumns = new List<Column>();
 
             foreach (var indx in activeColumnIndices.OrderBy(i => i))
             {
-                activeColumns.Add(conn.getColumn(indx));
+                activeColumns.Add(conn.GetColumn(indx));
             }
 
             //Func<Object, Column> segToCol = segment => ((DistalDendrite)segment).getParentCell().getParentColumnIndex();
@@ -273,13 +273,13 @@ namespace NeoCortexApi
             cycle.MatchingSegments = matchingSegments;
 
             conn.LastActivity = activity;
-            conn.setActiveCells(new HashSet<Cell>(cycle.ActiveCells));
-            conn.setWinnerCells(new HashSet<Cell>(cycle.WinnerCells));
+            conn.ActiveCells = new HashSet<Cell>(cycle.ActiveCells);
+            conn.WinnerCells = new HashSet<Cell>(cycle.WinnerCells);
             conn.ActiveSegments = activeSegments;
             conn.MatchingSegments = matchingSegments;
 
             // Forces generation of the predictive cells from the above active segments
-            conn.clearPredictiveCells();
+            conn.ClearPredictiveCells();
             //cycle.DepolirizeCells(conn);
 
             if (learn)
@@ -303,8 +303,8 @@ namespace NeoCortexApi
         /// <param name="connections"></param>
         public void reset(Connections connections)
         {
-            connections.getActiveCells().Clear();
-            connections.getWinnerCells().Clear();
+            connections.ActiveCells.Clear();
+            connections.WinnerCells.Clear();
             connections.ActiveSegments.Clear();
             connections.MatchingSegments.Clear();
         }

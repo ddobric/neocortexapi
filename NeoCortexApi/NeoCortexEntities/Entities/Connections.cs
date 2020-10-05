@@ -12,10 +12,8 @@ namespace NeoCortexApi.Entities
 {
     /// <summary>
     /// 
-    /// Contains the definition of the interconnected structural state of the {@link SpatialPooler}
-    /// and
-    /// { @link TemporalMemory} as well as the state of all support structures
-    /// (i.e. Cells, Columns, Segments, Synapses etc.).
+    /// Contains the definition of the interconnected structural state of the {@link SpatialPooler} and
+    /// { @link TemporalMemory} as well as the state of all support structures (i.e. Cells, Columns, Segments, Synapses etc.).
     /// 
     /// In the separation of data from logic, this class represents the data/state.
     ///
@@ -133,9 +131,9 @@ namespace NeoCortexApi.Entities
 
         /////////////////////////////////////// Temporal Memory Vars ///////////////////////////////////////////
 
-        protected ISet<Cell> activeCells = new LinkedHashSet<Cell>();
+        protected ISet<Cell> m_ActiveCells = new LinkedHashSet<Cell>();
         protected ISet<Cell> winnerCells = new LinkedHashSet<Cell>();
-        protected ISet<Cell> predictiveCells = new LinkedHashSet<Cell>();
+        protected ISet<Cell> m_PredictiveCells = new LinkedHashSet<Cell>();
         protected List<DistalDendrite> m_ActiveSegments = new List<DistalDendrite>();
         protected List<DistalDendrite> m_MatchingSegments = new List<DistalDendrite>();
 
@@ -422,7 +420,7 @@ namespace NeoCortexApi.Entities
         #region General Methods
 
         /// <summary>
-        /// Sets the derived values of the <see cref="SpatialPoller"/> {@link SpatialPooler}'s initialization.
+        /// Sets the derived values of the <see cref="SpatialPooler"/> {@link SpatialPooler}'s initialization.
         /// </summary>
         public void DoSpatialPoolerPostInit()
         {
@@ -483,8 +481,7 @@ namespace NeoCortexApi.Entities
         }
 
         /// <summary>
-        /// Returns an array containing the {@link Cell}s specified
-        /// by the passed in indexes.
+        /// Returns an array containing the <see cref="Cell"/>s specified by the passed in indexes.
         /// </summary>
         /// <param name="cellIndexes">indexes of the Cells to return</param>
         /// <returns></returns>
@@ -499,8 +496,7 @@ namespace NeoCortexApi.Entities
         }
 
         /// <summary>
-        /// Returns a <see cref="LinkedHashSet{T}"/> containing the <see cref="Cell"/>s specified
-        /// by the passed in indexes.
+        /// Returns a <see cref="LinkedHashSet{T}"/> containing the <see cref="Cell"/>s specified by the passed in indexes.
         /// </summary>
         /// <param name="cellIndexes">indexes of the Cells to return</param>
         /// <returns></returns>
@@ -764,8 +760,7 @@ namespace NeoCortexApi.Entities
         //}
         
         /// <summary>
-        /// Sets the <see cref="AbstractSparseMatrix{T}"/> which represents the
-        /// proximal dendrite permanence values.
+        /// Sets the <see cref="AbstractSparseMatrix{T}"/> which represents the proximal dendrite permanence values.
         /// </summary>
         /// <param name="s">the <see cref="AbstractSparseMatrix{T}"/></param>
         public void SetProximalPermanences(AbstractSparseMatrix<double[]> s)
@@ -831,7 +826,7 @@ namespace NeoCortexApi.Entities
             int[] counts = new int[this.HtmConfig.NumColumns];
             for (int i = 0; i < this.HtmConfig.NumColumns; i++)
             {
-                counts[i] = getColumn(i).ConnectedInputCounterMatrix.getTrueCounts()[0];
+                counts[i] = GetColumn(i).ConnectedInputCounterMatrix.getTrueCounts()[0];
             }
 
             return counts;
@@ -855,21 +850,20 @@ namespace NeoCortexApi.Entities
         {
             for (int i = 0; i < counts.Length; i++)
             {
-                getColumn(i).ConnectedInputCounterMatrix.setTrueCount(0, counts[i]);
+                GetColumn(i).ConnectedInputCounterMatrix.setTrueCount(0, counts[i]);
                 //connectedCounts.setTrueCount(i, counts[i]);
             }
         }
 
         /// <summary>
-        /// Sets the connected count <see cref="AbstractSparseBinaryMatrix"/>, 
-        /// which defines how synapses are connected to input.
+        /// Sets the connected count <see cref="AbstractSparseBinaryMatrix"/>, which defines how synapses are connected to input.
         /// </summary>
         /// <param name="matrix"></param>
         public void SetConnectedMatrix(AbstractSparseBinaryMatrix matrix)
         {
             for (int col = 0; col < this.HtmConfig.NumColumns; col++)
             {
-                var colMatrix = this.getColumn(col).ConnectedInputCounterMatrix = new SparseBinaryMatrix(new int[] { 1, this.HtmConfig.NumInputs });
+                var colMatrix = this.GetColumn(col).ConnectedInputCounterMatrix = new SparseBinaryMatrix(new int[] { 1, this.HtmConfig.NumInputs });
 
                 int[] row = (int[])matrix.getSlice(col);
 
@@ -1642,10 +1636,8 @@ namespace NeoCortexApi.Entities
         //}
 
         /// <summary>
-        /// Applies the dense array values which aren't -1 to the array containing
-        /// the active duty cycles of the column corresponding to the index specified.
-        /// The length of the specified array must be as long as the configured number
-        /// of columns of this <see cref="Connections"/>' column configuration.
+        /// Applies the dense array values which aren't -1 to the array containing the active duty cycles of the column corresponding to the index specified.
+        /// The length of the specified array must be as long as the configured number of columns of this <see cref="Connections"/>' column configuration.
         /// </summary>
         /// <param name="denseActiveDutyCycles">a dense array containing values to set.</param>
         public void UpdateActiveDutyCycles(double[] denseActiveDutyCycles)
@@ -1715,7 +1707,7 @@ namespace NeoCortexApi.Entities
         //       TemporalMemory Methods       //
         ////////////////////////////////////////
 
-
+        #region TemporalMemory Methods
 
         /// <summary>
         /// Computes the number of active and potential synapses of the each segment for a given input.
@@ -1783,8 +1775,7 @@ namespace NeoCortexApi.Entities
         //}
 
         /// <summary>
-        /// Record the fact that a segment had some activity. This information is
-        /// used during segment cleanup.
+        /// Record the fact that a segment had some activity. This information is used during segment cleanup.
         /// </summary>
         /// <param name="segment">the segment for which to record activity</param>
         public void RecordSegmentActivity(DistalDendrite segment)
@@ -1801,14 +1792,13 @@ namespace NeoCortexApi.Entities
             ++m_tmIteration;
         }
 
-
+        #endregion
         /////////////////////////////////////////////////////////////////
         //     Segment (Specifically, Distal Dendrite) Operations      //
         /////////////////////////////////////////////////////////////////
-        
+        #region Segment (Specifically, Distal Dendrite) Operations
         /// <summary>
-        /// Adds a new <see cref="DistalDendrite"/> segment on the specified <see cref="Cell"/>,
-        /// or reuses an existing one.
+        /// Adds a new <see cref="DistalDendrite"/> segment on the specified <see cref="Cell"/>, or reuses an existing one.
         /// </summary>
         /// <param name="cell">the Cell to which a segment is added.</param>
         /// <returns>the newly created segment or a reused segment.</returns>
@@ -1877,8 +1867,7 @@ namespace NeoCortexApi.Entities
         }
 
         /// <summary>
-        /// Used internally to return the least recently activated segment on 
-        /// the specified cell
+        /// Used internally to return the least recently activated segment on the specified cell
         /// </summary>
         /// <param name="cell">cell to search for segments on.</param>
         /// <returns>the least recently activated segment on the specified cell.</returns>
@@ -1915,8 +1904,7 @@ namespace NeoCortexApi.Entities
         //}
 
         /// <summary>
-        /// Returns the number of <see cref="DistalDendrite"/>s on a given <see cref="Cell"/>
-        /// if specified, or the total number if the <see cref="Cell"/> is null.
+        /// Returns the number of <see cref="DistalDendrite"/>s on a given <see cref="Cell"/> if specified, or the total number if the <see cref="Cell"/> is null.
         /// </summary>
         /// <param name="cell">an optional Cell to specify the context of the segment count.</param>
         /// <returns>either the total number of segments or the number on a specified cell.</returns>
@@ -2007,7 +1995,7 @@ namespace NeoCortexApi.Entities
         /// Set/retrieved by the <see cref="TemporalMemory"/> prior to a compute cycle.
         /// </summary>
         public List<DistalDendrite> MatchingSegments { get => m_MatchingSegments; set => m_MatchingSegments = value; }
-
+        #endregion
         #region Synapse Operations
         /////////////////////////////////////////////////////////////////
         //                    Synapse Operations                       //
@@ -2238,62 +2226,65 @@ namespace NeoCortexApi.Entities
             return new Dictionary<Cell, LinkedHashSet<Synapse>>(m_ReceptorSynapses);
         }
 
-        /**
-         * Clears all {@link TemporalMemory} state.
-         */
-        public void clear()
+        /// <summary>
+        /// Clears all {@link TemporalMemory} state.
+        /// </summary>
+        public void Clear()
         {
-            activeCells.Clear();
+            m_ActiveCells.Clear();
             winnerCells.Clear();
-            predictiveCells.Clear();
+            m_PredictiveCells.Clear();
         }
 
-        /**
-         * Returns the current {@link Set} of active {@link Cell}s
-         *
-         * @return  the current {@link Set} of active {@link Cell}s
-         */
-        public ISet<Cell> getActiveCells()
-        {
-            return activeCells;
-        }
+        ///**
+        // * Returns the current {@link Set} of active {@link Cell}s
+        // *
+        // * @return  the current {@link Set} of active {@link Cell}s
+        // */
+        //public ISet<Cell> getActiveCells()
+        //{
+        //    return m_ActiveCells;
+        //}
 
-        /**
-         * Sets the current {@link Set} of active {@link Cell}s
-         * @param cells
-         */
-        public void setActiveCells(ISet<Cell> cells)
-        {
-            this.activeCells = cells;
-        }
+        ///**
+        // * Sets the current {@link Set} of active {@link Cell}s
+        // * @param cells
+        // */
+        //public void setActiveCells(ISet<Cell> cells)
+        //{
+        //    this.m_ActiveCells = cells;
+        //}
 
-        /**
-         * Returns the current {@link Set} of winner cells
-         *
-         * @return  the current {@link Set} of winner cells
-         */
-        public ISet<Cell> getWinnerCells()
-        {
-            return winnerCells;
-        }
+        public ISet<Cell> ActiveCells { get => m_ActiveCells; set => m_ActiveCells = value; }
 
-        /**
-         * Sets the current {@link Set} of winner {@link Cell}s
-         * @param cells
-         */
-        public void setWinnerCells(ISet<Cell> cells)
-        {
-            this.winnerCells = cells;
-        }
+        ///**
+        // * Returns the current {@link Set} of winner cells
+        // *
+        // * @return  the current {@link Set} of winner cells
+        // */
+        //public ISet<Cell> getWinnerCells()
+        //{
+        //    return winnerCells;
+        //}
 
+        ///**
+        // * Sets the current {@link Set} of winner {@link Cell}s
+        // * @param cells
+        // */
+        //public void setWinnerCells(ISet<Cell> cells)
+        //{
+        //    this.winnerCells = cells;
+        //}
+
+        public ISet<Cell> WinnerCells { get => winnerCells; set => winnerCells = value; }
 
         /// <summary>
         /// Generates the list of predictive cells from parent cells of active segments.
         /// </summary>
         /// <returns></returns>
-        public ISet<Cell> getPredictiveCells()
+        public ISet<Cell> GetPredictiveCells()
         {
-            if (predictiveCells.Count == 0)
+            if (m_PredictiveCells.Count == 0)
             {
                 Cell previousCell = null;
                 Cell currCell = null;
@@ -2303,41 +2294,37 @@ namespace NeoCortexApi.Entities
                 {
                     if ((currCell = activeSegment.ParentCell) != previousCell)
                     {
-                        predictiveCells.Add(previousCell = currCell);
+                        m_PredictiveCells.Add(previousCell = currCell);
                     }
                 }
             }
-            return predictiveCells;
+            return m_PredictiveCells;
         }
 
-        /**
-         * Clears the previous predictive cells from the list.
-         */
-        public void clearPredictiveCells()
+        /// <summary>
+        /// Clears the previous predictive cells from the list.
+        /// </summary>
+        public void ClearPredictiveCells()
         {
-            this.predictiveCells.Clear();
+            this.m_PredictiveCells.Clear();
         }
 
-        /**
-         * Returns the column at the specified index.
-         * @param index
-         * @return
-         */
-        public Column getColumn(int index)
+        /// <summary>
+        /// Returns the column at the specified index.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public Column GetColumn(int index)
         {
             return this.HtmConfig.Memory.getObject(index);
         }
 
-       
-
-        /**
-         * Converts a {@link Collection} of {@link Cell}s to a list
-         * of cell indexes.
-         *
-         * @param cells
-         * @return
-         */
-        public static List<Integer> asCellIndexes(Collection<Cell> cells)
+        /// <summary>
+        /// Converts a {@link Collection} of {@link Cell}s to a list of cell indexes.
+        /// </summary>
+        /// <param name="cells"></param>
+        /// <returns></returns>
+        public static List<Integer> AsCellIndexes(Collection<Cell> cells)
         {
             List<Integer> ints = new List<Integer>();
             foreach (Cell cell in cells)
@@ -2348,14 +2335,12 @@ namespace NeoCortexApi.Entities
             return ints;
         }
 
-        /**
-         * Converts a {@link Collection} of {@link Column}s to a list
-         * of column indexes.
-         *
-         * @param columns
-         * @return
-         */
-        public static List<Integer> asColumnIndexes(Collection<Column> columns)
+        /// <summary>
+        /// Converts a {@link Collection} of {@link Column}s to a list of column indexes.
+        /// </summary>
+        /// <param name="columns"></param>
+        /// <returns></returns>
+        public static List<Integer> AsColumnIndexes(Collection<Column> columns)
         {
             List<Integer> ints = new List<Integer>();
             foreach (Column col in columns)
@@ -2396,14 +2381,12 @@ namespace NeoCortexApi.Entities
         //    return objs;
         //}
 
-        /**
-         * Returns a {@link Set} view of the {@link Column}s specified by
-         * the indexes passed in.
-         *
-         * @param indexes		the indexes of the Columns to return
-         * @return				a set view of the specified columns
-         */
-        public LinkedHashSet<Column> getColumnSet(int[] indexes)
+        /// <summary>
+        /// Returns a {@link Set} view of the {@link Column}s specified by the indexes passed in.
+        /// </summary>
+        /// <param name="indexes">the indexes of the Columns to return</param>
+        /// <returns>a set view of the specified columns</returns>
+        public LinkedHashSet<Column> GetColumnSet(int[] indexes)
         {
             LinkedHashSet<Column> retVal = new LinkedHashSet<Column>();
             for (int i = 0; i < indexes.Length; i++)
@@ -2413,14 +2396,12 @@ namespace NeoCortexApi.Entities
             return retVal;
         }
 
-        /**
-         * Returns a {@link List} view of the {@link Column}s specified by
-         * the indexes passed in.
-         *
-         * @param indexes		the indexes of the Columns to return
-         * @return				a List view of the specified columns
-         */
-        public List<Column> getColumnList(int[] indexes)
+        /// <summary>
+        /// Returns a {@link List} view of the {@link Column}s specified by the indexes passed in.
+        /// </summary>
+        /// <param name="indexes">the indexes of the Columns to return</param>
+        /// <returns>a List view of the specified columns</returns>
+        public List<Column> GetColumnList(int[] indexes)
         {
             List<Column> retVal = new List<Column>();
             for (int i = 0; i < indexes.Length; i++)
@@ -2525,19 +2506,18 @@ namespace NeoCortexApi.Entities
         //    return sw.toString();
         //}
 
-        /**
-         * Returns a 2 Dimensional array of 1's and 0's indicating
-         * which of the column's pool members are above the connected
-         * threshold, and therefore considered "connected"
-         * @return
-         */
-        public int[][] getConnecteds()
+        /// <summary>
+        /// Returns a 2 Dimensional array of 1's and 0's indicating which of the column's pool members are above the connected
+        /// threshold, and therefore considered "connected"
+        /// </summary>
+        /// <returns></returns>
+        public int[][] GetConnecteds()
         {
             int[][] retVal = new int[this.HtmConfig.NumColumns][];
             for (int i = 0; i < this.HtmConfig.NumColumns; i++)
             {
                 //Pool pool = getPotentialPools().get(i);
-                Pool pool = getColumn(i).ProximalDendrite.RFPool;
+                Pool pool = GetColumn(i).ProximalDendrite.RFPool;
                 int[] indexes = pool.getDenseConnected();
                 retVal[i] = indexes;
             }
@@ -2545,18 +2525,17 @@ namespace NeoCortexApi.Entities
             return retVal;
         }
 
-        /**
-         * Returns a 2 Dimensional array of 1's and 0's indicating
-         * which input bits belong to which column's pool.
-         * @return
-         */
-        public int[][] getPotentials()
+        /// <summary>
+        /// Returns a 2 Dimensional array of 1's and 0's indicating which input bits belong to which column's pool.
+        /// </summary>
+        /// <returns></returns>
+        public int[][] GetPotentials()
         {
             int[][] retVal = new int[this.HtmConfig.NumColumns][];
             for (int i = 0; i < this.HtmConfig.NumColumns; i++)
             {
                 //Pool pool = getPotentialPools().get(i);
-                Pool pool = getColumn(i).ProximalDendrite.RFPool;
+                Pool pool = GetColumn(i).ProximalDendrite.RFPool;
                 int[] indexes = pool.getDensePotential(this);
                 retVal[i] = indexes;
             }
@@ -2564,18 +2543,17 @@ namespace NeoCortexApi.Entities
             return retVal;
         }
 
-        /**
-         * Returns a 2 Dimensional array of the permanences for SP
-         * proximal dendrite column pooled connections.
-         * @return
-         */
-        public double[][] getPermanences()
+        /// <summary>
+        /// Returns a 2 Dimensional array of the permanences for SP proximal dendrite column pooled connections.
+        /// </summary>
+        /// <returns></returns>
+        public double[][] GetPermanences()
         {
             double[][] retVal = new double[this.HtmConfig.NumColumns][];
             for (int i = 0; i < this.HtmConfig.NumColumns; i++)
             {
                 //Pool pool = getPotentialPools().get(i);
-                Pool pool = getColumn(i).ProximalDendrite.RFPool;
+                Pool pool = GetColumn(i).ProximalDendrite.RFPool;
                 double[] perm = pool.getDensePermanences(this.HtmConfig.NumInputs);
                 retVal[i] = perm;
             }
@@ -2593,7 +2571,7 @@ namespace NeoCortexApi.Entities
             int prime = 31;
             int result = 1;
             result = prime * result + this.HtmConfig.ActivationThreshold;
-            result = prime * result + ((activeCells == null) ? 0 : activeCells.GetHashCode());
+            result = prime * result + ((m_ActiveCells == null) ? 0 : m_ActiveCells.GetHashCode());
             result = prime * result + this.HtmConfig.ActiveDutyCycles.GetHashCode();
             result = prime * result + m_BoostFactors.GetHashCode();
             result = prime * result + Cells.GetHashCode();
@@ -2647,7 +2625,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + this.HtmConfig.PotentialRadius;
             temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.PredictedSegmentDecrement);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            result = prime * result + ((predictiveCells == null) ? 0 : predictiveCells.GetHashCode());
+            result = prime * result + ((m_PredictiveCells == null) ? 0 : m_PredictiveCells.GetHashCode());
             result = prime * result + ((this.HtmConfig.Random == null) ? 0 : this.HtmConfig.Random.GetHashCode());
             result = prime * result + ((m_ReceptorSynapses == null) ? 0 : m_ReceptorSynapses.GetHashCode());
             result = prime * result + this.HtmConfig.RandomGenSeed;
@@ -2696,12 +2674,12 @@ namespace NeoCortexApi.Entities
             Connections other = (Connections)obj;
             if (this.HtmConfig.ActivationThreshold != other.HtmConfig.ActivationThreshold)
                 return false;
-            if (activeCells == null)
+            if (m_ActiveCells == null)
             {
-                if (other.activeCells != null)
+                if (other.m_ActiveCells != null)
                     return false;
             }
-            else if (!activeCells.Equals(other.activeCells))
+            else if (!m_ActiveCells.Equals(other.m_ActiveCells))
                 return false;
             if (!Array.Equals(this.HtmConfig.ActiveDutyCycles, other.HtmConfig.ActiveDutyCycles))
                 return false;
@@ -2799,12 +2777,12 @@ namespace NeoCortexApi.Entities
                 return false;
             if (BitConverter.DoubleToInt64Bits(this.HtmConfig.PredictedSegmentDecrement) != BitConverter.DoubleToInt64Bits(other.HtmConfig.PredictedSegmentDecrement))
                 return false;
-            if (predictiveCells == null)
+            if (m_PredictiveCells == null)
             {
-                if (other.predictiveCells != null)
+                if (other.m_PredictiveCells != null)
                     return false;
             }
-            else if (!getPredictiveCells().Equals(other.getPredictiveCells()))
+            else if (!GetPredictiveCells().Equals(other.GetPredictiveCells()))
                 return false;
             if (m_ReceptorSynapses == null)
             {

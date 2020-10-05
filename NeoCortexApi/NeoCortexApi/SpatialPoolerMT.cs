@@ -55,7 +55,7 @@ namespace NeoCortexApi
 
                 // Gets RF
                 data.Potential = HtmCompute.MapPotential(c.HtmConfig, colIndex, rnd /*(c.getRandom()*/);
-                data.Column = c.getColumn(colIndex);
+                data.Column = c.GetColumn(colIndex);
 
                 // This line initializes all synases in the potential pool of synapses.
                 // It creates the pool on proximal dendrite segment of the column.
@@ -150,7 +150,7 @@ namespace NeoCortexApi
 
             Parallel.For(0, c.HtmConfig.NumColumns, (col) =>
             {
-                overlaps[col] = c.getColumn(col).GetColumnOverlapp(inputVector, c.HtmConfig.StimulusThreshold);
+                overlaps[col] = c.GetColumn(col).GetColumnOverlapp(inputVector, c.HtmConfig.StimulusThreshold);
             });
 
           
@@ -176,11 +176,11 @@ namespace NeoCortexApi
             Parallel.For(0, activeColumns.Length, (i) =>
             {
                 //Pool pool = c.getPotentialPools().get(activeColumns[i]);
-                Pool pool = c.getColumn(activeColumns[i]).ProximalDendrite.RFPool;
+                Pool pool = c.GetColumn(activeColumns[i]).ProximalDendrite.RFPool;
                 double[] perm = pool.getDensePermanences(c.HtmConfig.NumInputs);
                 int[] indexes = pool.getSparsePotential();
                 ArrayUtils.RaiseValuesBy(permChanges, perm);
-                Column col = c.getColumn(activeColumns[i]);
+                Column col = c.GetColumn(activeColumns[i]);
                 HtmCompute.UpdatePermanencesForColumn(c.HtmConfig, perm, col, indexes, true);
             });
         }

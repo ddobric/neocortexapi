@@ -63,9 +63,9 @@ namespace NeoCortexApi.Entities
         /// <param name="c"></param>
         public ComputeCycle(Connections c)
         {
-            this.ActiveCells = new List<Cell>(c.getWinnerCells());//TODO potential bug. activeCells or winnerCells?!
-            this.WinnerCells = new List<Cell>(c.getWinnerCells());
-            this.m_PredictiveCells = new List<Cell>(c.getPredictiveCells());
+            this.ActiveCells = new List<Cell>(c.ActiveCells);//TODO potential bug. activeCells or winnerCells?!
+            this.WinnerCells = new List<Cell>(c.WinnerCells);
+            this.m_PredictiveCells = new List<Cell>(c.GetPredictiveCells());
             this.ActiveSegments = new List<DistalDendrite>(c.ActiveSegments);
             this.MatchingSegments = new List<DistalDendrite>(c.MatchingSegments);
         }

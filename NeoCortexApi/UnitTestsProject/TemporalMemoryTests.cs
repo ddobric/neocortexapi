@@ -842,7 +842,7 @@ namespace UnitTestsProject
                 List<Synapse> synapses = segments[0].getAllSynapses(cn);
                 Assert.AreEqual(4, synapses.Count);
 
-                ISet<Column> columnCheckList = cn.getColumnSet(prevActiveColumns);
+                ISet<Column> columnCheckList = cn.GetColumnSet(prevActiveColumns);
 
                 foreach (Synapse synapse in synapses)
                 {
@@ -919,7 +919,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < 100; i++)
             {
-                Assert.AreEqual(1, tm.GetLeastUsedCell(cn, cn.getColumn(0).Cells, cn.HtmConfig.Random).Index);
+                Assert.AreEqual(1, tm.GetLeastUsedCell(cn, cn.GetColumn(0).Cells, cn.HtmConfig.Random).Index);
             }
         }
 

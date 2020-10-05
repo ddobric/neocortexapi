@@ -177,7 +177,7 @@ namespace NeoCortexApi
                 // Gets RF
                 int[] potential = HtmCompute.MapPotential(c.HtmConfig, i, rnd /*c.getRandom()*/);
 
-                Column column = c.getColumn(i);
+                Column column = c.GetColumn(i);
 
                 // This line initializes all synases in the potential pool of synapses.
                 // It creates the pool on proximal dendrite segment of the column.
@@ -816,7 +816,7 @@ namespace NeoCortexApi
 
             //var dimensionMultiplies = AbstractFlatMatrix<Column>.InitDimensionMultiples(dims);
 
-            return HtmCompute.CalcAvgSpanOfConnectedSynapses(c.getColumn(columnIndex), c.HtmConfig);
+            return HtmCompute.CalcAvgSpanOfConnectedSynapses(c.GetColumn(columnIndex), c.HtmConfig);
         }
 
         ///// <summary>
@@ -886,11 +886,11 @@ namespace NeoCortexApi
             for (int i = 0; i < activeColumns.Length; i++)
             {
                 //Pool pool = c.getPotentialPools().get(activeColumns[i]);
-                Pool pool = c.getColumn(activeColumns[i]).ProximalDendrite.RFPool;
+                Pool pool = c.GetColumn(activeColumns[i]).ProximalDendrite.RFPool;
                 double[] perm = pool.getDensePermanences(c.HtmConfig.NumInputs);
                 int[] indexes = pool.getSparsePotential();
                 ArrayUtils.RaiseValuesBy(permChanges, perm);
-                Column col = c.getColumn(activeColumns[i]);
+                Column col = c.GetColumn(activeColumns[i]);
                 HtmCompute.UpdatePermanencesForColumn(c.HtmConfig, perm, col, indexes, true);
             }
 
@@ -916,7 +916,7 @@ namespace NeoCortexApi
             //Debug.WriteLine("weak Columns:" + weakColumnsStr);
             for (int i = 0; i < weakColumns.Length; i++)
             {
-                Column col = c.getColumn(weakColumns[i]);
+                Column col = c.GetColumn(weakColumns[i]);
                 //Pool pool = c.getPotentialPools().get(weakColumns[i]);
                 Pool pool = col.ProximalDendrite.RFPool;
                 double[] perm = pool.getSparsePermanences();
@@ -1593,7 +1593,7 @@ namespace NeoCortexApi
             int[] overlaps = new int[c.HtmConfig.NumColumns];
             for (int col = 0; col < c.HtmConfig.NumColumns; col++)
             {
-                overlaps[col] = c.getColumn(col).GetColumnOverlapp(inputVector, c.HtmConfig.StimulusThreshold);
+                overlaps[col] = c.GetColumn(col).GetColumnOverlapp(inputVector, c.HtmConfig.StimulusThreshold);
             }
             //c.getConnectedCounts().rightVecSumAtNZ(inputVector, overlaps, c.StimulusThreshold);
             //string st = string.Join(",", overlaps);
@@ -1614,7 +1614,7 @@ namespace NeoCortexApi
 
             for (int i = 0; i < c.HtmConfig.NumColumns; i++)
             {
-                columnsCounts[i] = c.getColumn(i).ConnectedInputCounterMatrix.getTrueCounts()[0];
+                columnsCounts[i] = c.GetColumn(i).ConnectedInputCounterMatrix.getTrueCounts()[0];
             }
 
             return ArrayUtils.Divide(overlaps, columnsCounts);
