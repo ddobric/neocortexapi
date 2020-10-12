@@ -887,8 +887,8 @@ namespace NeoCortexApi
             {
                 //Pool pool = c.getPotentialPools().get(activeColumns[i]);
                 Pool pool = c.GetColumn(activeColumns[i]).ProximalDendrite.RFPool;
-                double[] perm = pool.getDensePermanences(c.HtmConfig.NumInputs);
-                int[] indexes = pool.getSparsePotential();
+                double[] perm = pool.GetDensePermanences(c.HtmConfig.NumInputs);
+                int[] indexes = pool.GetSparsePotential();
                 ArrayUtils.RaiseValuesBy(permChanges, perm);
                 Column col = c.GetColumn(activeColumns[i]);
                 HtmCompute.UpdatePermanencesForColumn(c.HtmConfig, perm, col, indexes, true);
@@ -919,9 +919,9 @@ namespace NeoCortexApi
                 Column col = c.GetColumn(weakColumns[i]);
                 //Pool pool = c.getPotentialPools().get(weakColumns[i]);
                 Pool pool = col.ProximalDendrite.RFPool;
-                double[] perm = pool.getSparsePermanences();
+                double[] perm = pool.GetSparsePermanences();
                 ArrayUtils.RaiseValuesBy(c.HtmConfig.SynPermBelowStimulusInc, perm);
-                int[] indexes = pool.getSparsePotential();
+                int[] indexes = pool.GetSparsePotential();
 
                 updatePermanencesForColumnSparse(c, perm, col, indexes, true);
                 //var permStr = Helpers.StringifyVector(perm);

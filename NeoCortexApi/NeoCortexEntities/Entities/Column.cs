@@ -167,7 +167,7 @@ namespace NeoCortexApi.Entities
             {
                 //var cnt = c.getProximalSynapseCount();
                 //var synapse = createSynapse(c, c.getSynapses(this), null, this.RFPool, synCount, inputIndexes[i]);
-                var synapse = this.ProximalDendrite.createSynapse(null, startSynapseIndex + i, inputVectorIndexes[i]);
+                var synapse = this.ProximalDendrite.CreateSynapse(null, startSynapseIndex + i, inputVectorIndexes[i]);
                 this.SetPermanence(synapse, htmConfig.SynPermConnected, 0);
                 //c.setProximalSynapseCount(cnt + 1);
             }
@@ -188,7 +188,7 @@ namespace NeoCortexApi.Entities
             // On proximal dendrite which has no presynaptic cell
             if (synapse.SourceCell == null)
             {
-                this.ProximalDendrite.RFPool.updatePool(synPermConnected, synapse, perm);
+                this.ProximalDendrite.RFPool.UpdatePool(synPermConnected, synapse, perm);
             }
         }
 
@@ -202,7 +202,7 @@ namespace NeoCortexApi.Entities
         {
             //var connCounts = c.getConnectedCounts();
 
-            this.ProximalDendrite.RFPool.resetConnections();
+            this.ProximalDendrite.RFPool.ResetConnections();
 
             // Every column contians a single row at index 0.
             this.ConnectedInputCounterMatrix.ClearStatistics(0 /*this.Index*/);
@@ -244,7 +244,7 @@ namespace NeoCortexApi.Entities
         /// <param name="inputVectorIndexes"></param>
         public void setProximalPermanencesSparse(HtmConfig htmConfig, double[] permanences, int[] inputVectorIndexes)
         {
-            this.ProximalDendrite.setPermanences(this.ConnectedInputCounterMatrix, htmConfig, permanences, inputVectorIndexes);
+            this.ProximalDendrite.SetPermanences(this.ConnectedInputCounterMatrix, htmConfig, permanences, inputVectorIndexes);
         }
 
         // TODO better parameters documentation

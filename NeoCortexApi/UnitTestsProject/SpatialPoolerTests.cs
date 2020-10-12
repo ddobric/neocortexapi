@@ -156,7 +156,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < mem.HtmConfig.NumColumns; i++)
             {
-                int[] permanences = ArrayUtils.ToIntArray(mem.GetColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem.HtmConfig.NumInputs));
+                int[] permanences = ArrayUtils.ToIntArray(mem.GetColumn(i).ProximalDendrite.RFPool.GetDensePermanences(mem.HtmConfig.NumInputs));
 
                 Assert.IsTrue(inputVector.SequenceEqual(permanences));
             }
@@ -203,7 +203,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < mem.HtmConfig.NumColumns; i++)
             {
-                int[] permanences = ArrayUtils.ToIntArray(mem.GetColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem.HtmConfig.NumInputs));
+                int[] permanences = ArrayUtils.ToIntArray(mem.GetColumn(i).ProximalDendrite.RFPool.GetDensePermanences(mem.HtmConfig.NumInputs));
                 //int[] potential = (int[])mem.getConnectedCounts().getSlice(i);
                 int[] potential = (int[])mem.GetColumn(i).ConnectedInputBits;
                 Assert.IsTrue(permanences.SequenceEqual(potential));
@@ -1215,7 +1215,7 @@ namespace UnitTestsProject
             for (int i = 0; i < mem.HtmConfig.NumColumns; i++)
             {
                 //double[] perms = mem.getPotentialPools().get(i).getDensePermanences(mem);
-                double[] perms = mem.GetColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem.HtmConfig.NumInputs);
+                double[] perms = mem.GetColumn(i).ProximalDendrite.RFPool.GetDensePermanences(mem.HtmConfig.NumInputs);
                 for (int j = 0; j < truePermanences[i].Length; j++)
                 {
                     Assert.IsTrue(Math.Abs(truePermanences[i][j] - perms[j]) <= 0.01);
@@ -1651,7 +1651,7 @@ namespace UnitTestsProject
             for (int i = 0; i < mem.HtmConfig.NumColumns; i++)
             {
                 //double[] perms = mem.getPotentialPools().get(i).getDensePermanences(mem);
-                double[] perms = mem.GetColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem.HtmConfig.NumInputs);
+                double[] perms = mem.GetColumn(i).ProximalDendrite.RFPool.GetDensePermanences(mem.HtmConfig.NumInputs);
                 for (int j = 0; j < truePermanences[i].Length; j++)
                 {
                     Assert.IsTrue(Math.Abs(truePermanences[i][j] - perms[j]) <= 0.01);
@@ -1695,7 +1695,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < mem.HtmConfig.NumColumns; i++)
             {
-                double[] perms = mem.GetColumn(i).ProximalDendrite.RFPool.getDensePermanences(mem.HtmConfig.NumInputs);
+                double[] perms = mem.GetColumn(i).ProximalDendrite.RFPool.GetDensePermanences(mem.HtmConfig.NumInputs);
                 for (int j = 0; j < truePermanences[i].Length; j++)
                 {
                     Assert.IsTrue(Math.Abs(truePermanences[i][j] - perms[j]) <= 0.01);
@@ -1753,7 +1753,7 @@ namespace UnitTestsProject
             for (int i = 0; i < mem.HtmConfig.NumColumns; i++)
             {
                 // double[] perm = mem.getPotentialPools().get(i).getSparsePermanences();
-                double[] perm = mem.GetColumn(i).ProximalDendrite.RFPool.getSparsePermanences();
+                double[] perm = mem.GetColumn(i).ProximalDendrite.RFPool.GetSparsePermanences();
                 sp.RaisePermanenceToThreshold(mem.HtmConfig, perm, indices);
 
                 for (int j = 0; j < perm.Length; j++)
@@ -1807,7 +1807,7 @@ namespace UnitTestsProject
             {
                 mem.GetColumn(i).SetPermanences(mem.HtmConfig, permanences[i]);
                 HtmCompute.UpdatePermanencesForColumn(mem.HtmConfig, permanences[i], mem.GetColumn(i), connectedDense[i], true);
-                int[] dense = mem.GetColumn(i).ProximalDendrite.getConnectedSynapsesDense();
+                int[] dense = mem.GetColumn(i).ProximalDendrite.GetConnectedSynapsesDense();
                 trueConnectedSynapses[i].ArrToString().SequenceEqual(dense.ArrToString());
             }
 

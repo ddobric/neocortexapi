@@ -177,8 +177,8 @@ namespace NeoCortexApi
             {
                 //Pool pool = c.getPotentialPools().get(activeColumns[i]);
                 Pool pool = c.GetColumn(activeColumns[i]).ProximalDendrite.RFPool;
-                double[] perm = pool.getDensePermanences(c.HtmConfig.NumInputs);
-                int[] indexes = pool.getSparsePotential();
+                double[] perm = pool.GetDensePermanences(c.HtmConfig.NumInputs);
+                int[] indexes = pool.GetSparsePotential();
                 ArrayUtils.RaiseValuesBy(permChanges, perm);
                 Column col = c.GetColumn(activeColumns[i]);
                 HtmCompute.UpdatePermanencesForColumn(c.HtmConfig, perm, col, indexes, true);

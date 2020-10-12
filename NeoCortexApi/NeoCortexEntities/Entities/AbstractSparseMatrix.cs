@@ -14,8 +14,10 @@ namespace NeoCortexApi.Entities
     /// need only query indexes containing valid data. The dimensions of matrix defined
     /// at construction time and immutable - matrix fixed size data structure.
     /// </summary>
+    /// <typeparam name="T"></typeparam>    
+    /// <remarks>
     /// Authors of the JAVA implementation: David Ray, Jose Luis Martin
-    /// <typeparam name="T"></typeparam>
+    /// </remarks>
     //[Serializable]
     public abstract class AbstractSparseMatrix<T> : AbstractFlatMatrix<T>, ISparseMatrix<T>
     {

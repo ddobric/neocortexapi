@@ -383,7 +383,7 @@ namespace NeoCortexApi
                         {
                             AdaptSegment(conn, segment, prevActiveCells, permanenceIncrement, permanenceDecrement);
 
-                            int numActive = conn.LastActivity.PotentialSynapses[segment.getIndex()];
+                            int numActive = conn.LastActivity.PotentialSynapses[segment.SegmentIndex];
                             int nGrowDesired = conn.HtmConfig.MaxNewSynapseCount - numActive;
 
                             if (nGrowDesired > 0)
@@ -476,9 +476,10 @@ namespace NeoCortexApi
 
                 DistalDendrite maxPotentialSeg = getSegmentwithHighesPotential(conn, matchingSegments, prevActiveCells);
 
+                // TODO what is this loop doing?
                 for (int i = 0; i < matchingSegments.Count; i++)
                 {
-                    matchingSegments[i].getIndex();
+                    var temp = matchingSegments[i].SegmentIndex;
                 }
 
                 leastUsedCell = maxPotentialSeg.ParentCell;
@@ -487,7 +488,7 @@ namespace NeoCortexApi
                 {
                     AdaptSegment(conn, maxPotentialSeg, prevActiveCells, permanenceIncrement, permanenceDecrement);
 
-                    int nGrowDesired = conn.HtmConfig.MaxNewSynapseCount - conn.LastActivity.PotentialSynapses[maxPotentialSeg.getIndex()];
+                    int nGrowDesired = conn.HtmConfig.MaxNewSynapseCount - conn.LastActivity.PotentialSynapses[maxPotentialSeg.SegmentIndex];
 
                     if (nGrowDesired > 0)
                     {
@@ -528,16 +529,16 @@ namespace NeoCortexApi
 
             for (int i = 0; i < matchingSegments.Count - 1; i++)
             {
-                var potSynsPlus1 = conn.LastActivity.PotentialSynapses[matchingSegments[i + 1].getIndex()];
+                var potSynsPlus1 = conn.LastActivity.PotentialSynapses[matchingSegments[i + 1].SegmentIndex];
 
-                if (potSynsPlus1 > conn.LastActivity.PotentialSynapses[matchingSegments[i].getIndex()])
+                if (potSynsPlus1 > conn.LastActivity.PotentialSynapses[matchingSegments[i].SegmentIndex])
                 {
                     //prevActiveCells.Contains(synapse.getPresynapticCell())
                     //if (matchingSegments[i + 1].getIndex() != indxOfLastHighestSegment)
                     {
                         // DRAFT
                         maxSeg = matchingSegments[i + 1];
-                        indxOfLastHighestSegment = matchingSegments[i + 1].getIndex();
+                        indxOfLastHighestSegment = matchingSegments[i + 1].SegmentIndex;
                     }
                     //else
                     //{
@@ -697,7 +698,7 @@ namespace NeoCortexApi
 
             foreach (Synapse synapse in conn.GetSynapses(segment))
             {
-                double permanence = synapse.getPermanence();
+                double permanence = synapse.Permanence;
 
                 //
                 // If synapse's presynaptic cell was active in the previous cycle then streng it.
@@ -725,7 +726,7 @@ namespace NeoCortexApi
                 }
                 else
                 {
-                    synapse.setPermanence(conn.HtmConfig.SynPermConnected, permanence);
+                    synapse.Permanence = permanence;
                 }
             }
 

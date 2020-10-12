@@ -6,7 +6,7 @@ using System.Text;
 
 namespace NeoCortexApi.Entities
 {
-
+    // TODO naming convention for interface method
     public interface ISparseMatrix 
     {
 
@@ -14,17 +14,16 @@ namespace NeoCortexApi.Entities
     
     public interface ISparseMatrix<T> : ISparseMatrix, IFlatMatrix<T>
     {
-        /**
-            * Returns a sorted array of occupied indexes.
-            * @return  a sorted array of occupied indexes.
-            */
+        /// <summary>
+        /// Returns a sorted array of occupied indexes.
+        /// </summary>
+        /// <returns>a sorted array of occupied indexes.</returns>
         int[] getSparseIndices();
 
-        /**
-         * Returns an array of all the flat indexes that can be 
-         * computed from the current configuration.
-         * @return
-         */
+        /// <summary>
+        /// Returns an array of all the flat indexes that can be computed from the current configuration.
+        /// </summary>
+        /// <returns></returns>
         int[] get1DIndexes();
 
         /**

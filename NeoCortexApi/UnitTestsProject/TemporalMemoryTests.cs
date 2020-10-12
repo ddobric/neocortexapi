@@ -218,10 +218,10 @@ namespace UnitTestsProject
             tm.Compute(previousActiveColumns, true);
             tm.Compute(activeColumns, true);
 
-            Assert.AreEqual(0.6, as1.getPermanence(), 0.1);
-            Assert.AreEqual(0.6, as2.getPermanence(), 0.1);
-            Assert.AreEqual(0.6, as3.getPermanence(), 0.1);
-            Assert.AreEqual(0.42, is1.getPermanence(), 0.001);
+            Assert.AreEqual(0.6, as1.Permanence, 0.1);
+            Assert.AreEqual(0.6, as2.Permanence, 0.1);
+            Assert.AreEqual(0.6, as3.Permanence, 0.1);
+            Assert.AreEqual(0.42, is1.Permanence, 0.001);
         }
 
         [TestMethod]
@@ -253,10 +253,10 @@ namespace UnitTestsProject
             tm.Compute(previousActiveColumns, true);
             tm.Compute(activeColumns, true);
 
-            Assert.AreEqual(0.4, as1.getPermanence(), 0.01);
-            Assert.AreEqual(0.4, as2.getPermanence(), 0.01);
-            Assert.AreEqual(0.4, as3.getPermanence(), 0.01);
-            Assert.AreEqual(0.22, is1.getPermanence(), 0.001);
+            Assert.AreEqual(0.4, as1.Permanence, 0.01);
+            Assert.AreEqual(0.4, as2.Permanence, 0.01);
+            Assert.AreEqual(0.4, as3.Permanence, 0.01);
+            Assert.AreEqual(0.22, is1.Permanence, 0.001);
         }
 
         [TestMethod]
@@ -288,9 +288,9 @@ namespace UnitTestsProject
             tm.Compute(previousActiveColumns, true);
             tm.Compute(activeColumns, true);
 
-            Assert.AreEqual(0.3, as1.getPermanence(), 0.01);
-            Assert.AreEqual(0.3, as2.getPermanence(), 0.01);
-            Assert.AreEqual(0.3, is1.getPermanence(), 0.01);
+            Assert.AreEqual(0.3, as1.Permanence, 0.01);
+            Assert.AreEqual(0.3, as2.Permanence, 0.01);
+            Assert.AreEqual(0.3, is1.Permanence, 0.01);
         }
 
         [TestMethod]
@@ -328,10 +328,10 @@ namespace UnitTestsProject
             Assert.IsTrue(cc.PredictiveCells.SequenceEqual(expectedActiveCells));
             tm.Compute(activeColumns, true);
 
-            Assert.AreEqual(0.3, s1.getPermanence(), 0.01);
-            Assert.AreEqual(0.3, s2.getPermanence(), 0.01);
-            Assert.AreEqual(0.3, s3.getPermanence(), 0.01);
-            Assert.AreEqual(0.3, s4.getPermanence(), 0.01);
+            Assert.AreEqual(0.3, s1.Permanence, 0.01);
+            Assert.AreEqual(0.3, s2.Permanence, 0.01);
+            Assert.AreEqual(0.3, s3.Permanence, 0.01);
+            Assert.AreEqual(0.3, s4.Permanence, 0.01);
         }
 
 
@@ -386,7 +386,7 @@ namespace UnitTestsProject
 
             foreach (Synapse synapse in synapses)
             {
-                Assert.AreEqual(0.21, synapse.getPermanence(), 0.01);
+                Assert.AreEqual(0.21, synapse.Permanence, 0.01);
                 Assert.IsTrue(prevWinnerCells.Contains(synapse.getPresynapticCell()));
             }
         }
@@ -420,7 +420,7 @@ namespace UnitTestsProject
             List<Cell> presynapticCells = new List<Cell>();
             foreach (Synapse synapse in synapses)
             {
-                Assert.AreEqual(0.21, synapse.getPermanence(), 0.01);
+                Assert.AreEqual(0.21, synapse.Permanence, 0.01);
                 presynapticCells.Add(synapse.getPresynapticCell());
             }
 
@@ -458,7 +458,7 @@ namespace UnitTestsProject
             {
                 if (synapse.getPresynapticCell().Index == 0) continue;
 
-                Assert.AreEqual(0.21, synapse.getPermanence(), 0.01);
+                Assert.AreEqual(0.21, synapse.Permanence, 0.01);
                 Assert.IsTrue(synapse.getPresynapticCell().Index == 1 ||
                            synapse.getPresynapticCell().Index == 2 ||
                            synapse.getPresynapticCell().Index == 3);
@@ -498,7 +498,7 @@ namespace UnitTestsProject
             {
                 if (synapse.getPresynapticCell().Index == 0) continue;
 
-                Assert.AreEqual(0.21, synapse.getPermanence(), 0.01);
+                Assert.AreEqual(0.21, synapse.Permanence, 0.01);
                 Assert.AreEqual(1, synapse.getPresynapticCell().Index);
             }
         }
@@ -778,13 +778,13 @@ namespace UnitTestsProject
             tm.Compute(prevActiveColumns, true);
             tm.Compute(activeColumns, true);
 
-            Assert.AreEqual(0.48, as1.getPermanence(), 0.01);
-            Assert.AreEqual(0.48, as2.getPermanence(), 0.01);
-            Assert.AreEqual(0.48, as3.getPermanence(), 0.01);
-            Assert.AreEqual(0.48, as4.getPermanence(), 0.01);
-            Assert.AreEqual(0.48, as5.getPermanence(), 0.01);
-            Assert.AreEqual(0.50, is1.getPermanence(), 0.01);
-            Assert.AreEqual(0.50, is2.getPermanence(), 0.01);
+            Assert.AreEqual(0.48, as1.Permanence, 0.01);
+            Assert.AreEqual(0.48, as2.Permanence, 0.01);
+            Assert.AreEqual(0.48, as3.Permanence, 0.01);
+            Assert.AreEqual(0.48, as4.Permanence, 0.01);
+            Assert.AreEqual(0.48, as5.Permanence, 0.01);
+            Assert.AreEqual(0.50, is1.Permanence, 0.01);
+            Assert.AreEqual(0.50, is2.Permanence, 0.01);
         }
 
         [TestMethod]
@@ -846,7 +846,7 @@ namespace UnitTestsProject
 
                 foreach (Synapse synapse in synapses)
                 {
-                    Assert.AreEqual(0.2, synapse.getPermanence(), 0.01);
+                    Assert.AreEqual(0.2, synapse.Permanence, 0.01);
 
                     var parentColIndx = synapse.getPresynapticCell().ParentColumnIndex;
                     Column column = cn.HtmConfig.Memory.GetColumn(parentColIndx);
@@ -940,9 +940,9 @@ namespace UnitTestsProject
 
             tm.AdaptSegment(cn, dd, cn.GetCellSet(new int[] { 23, 37 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
 
-            Assert.AreEqual(0.7, s1.getPermanence(), 0.01);
-            Assert.AreEqual(0.5, s2.getPermanence(), 0.01);
-            Assert.AreEqual(0.8, s3.getPermanence(), 0.01);
+            Assert.AreEqual(0.7, s1.Permanence, 0.01);
+            Assert.AreEqual(0.5, s2.Permanence, 0.01);
+            Assert.AreEqual(0.8, s3.Permanence, 0.01);
         }
 
         [TestMethod]
@@ -959,11 +959,11 @@ namespace UnitTestsProject
             Synapse s1 = cn.CreateSynapse(dd, cn.GetCell(23), 0.9);
 
             tm.AdaptSegment(cn, dd, cn.GetCellSet(new int[] { 23 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
-            Assert.AreEqual(1.0, s1.getPermanence(), 0.1);
+            Assert.AreEqual(1.0, s1.Permanence, 0.1);
 
             // Now permanence should be at max
             tm.AdaptSegment(cn, dd, cn.GetCellSet(new int[] { 23 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
-            Assert.AreEqual(1.0, s1.getPermanence(), 0.1);
+            Assert.AreEqual(1.0, s1.Permanence, 0.1);
         }
 
         [TestMethod]

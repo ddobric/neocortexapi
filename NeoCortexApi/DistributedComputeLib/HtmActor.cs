@@ -247,8 +247,8 @@ namespace NeoCortexApi.DistributedComputeLib
                 Column activeColumn = GetColumn(colPair.Key);
                 //Pool pool = c.getPotentialPools().get(activeColumns[i]);
                 Pool pool = activeColumn.ProximalDendrite.RFPool;
-                double[] perm = pool.getDensePermanences(this.HtmConfig.NumInputs);
-                int[] indexes = pool.getSparsePotential();
+                double[] perm = pool.GetDensePermanences(this.HtmConfig.NumInputs);
+                int[] indexes = pool.GetSparsePotential();
                 ArrayUtils.RaiseValuesBy(msg.PermanenceChanges, perm);
 
                 HtmCompute.UpdatePermanencesForColumn(this.HtmConfig, perm, activeColumn, indexes, true);
@@ -268,9 +268,9 @@ namespace NeoCortexApi.DistributedComputeLib
                 Column weakColumn = GetColumn(colPair.Key);
 
                 Pool pool = weakColumn.ProximalDendrite.RFPool;
-                double[] perm = pool.getSparsePermanences();
+                double[] perm = pool.GetSparsePermanences();
                 ArrayUtils.RaiseValuesBy(this.HtmConfig.SynPermBelowStimulusInc, perm);
-                int[] indexes = pool.getSparsePotential();
+                int[] indexes = pool.GetSparsePotential();
 
                 weakColumn.UpdatePermanencesForColumnSparse(this.HtmConfig, perm, indexes, true);
             });

@@ -184,11 +184,11 @@ namespace NeoCortexApi
 
                 foreach (var lx in interim)
                 {
-                    gen.reset();
+                    gen.Reset();
 
-                    for (int y = 0; y < gen.size(); y++)
+                    for (int y = 0; y < gen.Size(); y++)
                     {
-                        int py = ArrayUtils.Modulo(gen.next(), topology.Dimensions[k]);
+                        int py = ArrayUtils.Modulo(gen.Next(), topology.Dimensions[k]);
                         //int py = gen.next() % dimensions[k];
 
                         List<int> tl = new List<int>();
@@ -230,11 +230,11 @@ namespace NeoCortexApi
 
                 foreach (var lx in interim)
                 {
-                    gen.reset();
+                    gen.Reset();
 
-                    for (int y = 0; y < gen.size(); y++)
+                    for (int y = 0; y < gen.Size(); y++)
                     {
-                        int py = gen.next();
+                        int py = gen.Next();
                         List<int> tl = new List<int>();
                         tl.AddRange(lx);
                         tl.Add(py);
@@ -382,7 +382,7 @@ namespace NeoCortexApi
         public static double CalcAvgSpanOfConnectedSynapses(Column column, HtmConfig htmConfig)
         {
             // Gets synapses connected to input bits.(from pool of the column)
-            int[] connected = column.ProximalDendrite.getConnectedSynapsesSparse();
+            int[] connected = column.ProximalDendrite.GetConnectedSynapsesSparse();
 
             if (connected == null || connected.Length == 0) return 0;
 

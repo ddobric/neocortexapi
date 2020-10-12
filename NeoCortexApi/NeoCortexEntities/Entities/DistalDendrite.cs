@@ -26,7 +26,9 @@ namespace NeoCortexApi.Entities
     /// to by a "source cell", which is the <see cref="Cell"/> which will activate a given
     /// <see cref="Synapse"/> owned by this <see cref="Segment"/>.
     /// </summary>
+    /// <remarks>
     /// Authors of the JAVA implementation: Chetan Surpur, David Ray
+    /// </remarks>
     public class DistalDendrite : Segment, IComparable<DistalDendrite>
     {
         public Cell ParentCell;
@@ -137,7 +139,7 @@ namespace NeoCortexApi.Entities
 
         public override String ToString()
         {
-            return $"DistalDendrite: Indx:{this.getIndex()}";
+            return $"DistalDendrite: Indx:{this.SegmentIndex}";
         }
 
         /* (non-Javadoc)
@@ -184,9 +186,9 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public int CompareTo(DistalDendrite other)
         {
-            if (this.getIndex() > other.getIndex())
+            if (this.SegmentIndex > other.SegmentIndex)
                 return 1;
-            else if (this.getIndex() < other.getIndex())
+            else if (this.SegmentIndex < other.SegmentIndex)
                 return -1;
             else
                 return 0;

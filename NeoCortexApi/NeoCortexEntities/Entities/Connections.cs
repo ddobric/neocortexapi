@@ -1750,7 +1750,7 @@ namespace NeoCortexApi.Entities
 
                     //++numActivePotentialSynapsesForSegment[segFlatIndx];
 
-                    if (synapse.getPermanence() > threshold)
+                    if (synapse.Permanence > threshold)
                     {
                         if (numOfActiveSynapses.ContainsKey(segFlatIndx) == false)
                             numOfActiveSynapses.Add(segFlatIndx, 0);
@@ -1862,8 +1862,8 @@ namespace NeoCortexApi.Entities
 
             // Free the flatIdx and remove the final reference so the Segment can be
             // garbage-collected.
-            m_FreeFlatIdxs.Add(segment.getIndex());
-            m_SegmentForFlatIdx[segment.getIndex()] = null;
+            m_FreeFlatIdxs.Add(segment.SegmentIndex);
+            m_SegmentForFlatIdx[segment.SegmentIndex] = null;
         }
 
         /// <summary>
@@ -2018,7 +2018,7 @@ namespace NeoCortexApi.Entities
             Synapse synapse = null;
             GetSynapses(segment).Add(
                 synapse = new Synapse(
-                    presynapticCell, segment.getIndex(), m_NextSynapseOrdinal, permanence));
+                    presynapticCell, segment.SegmentIndex, m_NextSynapseOrdinal, permanence));
 
             GetReceptorSynapses(presynapticCell, true).Add(synapse);
 
@@ -2077,10 +2077,10 @@ namespace NeoCortexApi.Entities
 
             foreach (Synapse synapse in synapses)
             {
-                if (!synapse.destroyed() && synapse.getPermanence() < minPermanence - EPSILON)
+                if (!synapse.IsDestroyed && synapse.Permanence < minPermanence - EPSILON)
                 {
                     min = synapse;
-                    minPermanence = synapse.getPermanence();
+                    minPermanence = synapse.Permanence;
                 }
             }
 
@@ -2518,7 +2518,7 @@ namespace NeoCortexApi.Entities
             {
                 //Pool pool = getPotentialPools().get(i);
                 Pool pool = GetColumn(i).ProximalDendrite.RFPool;
-                int[] indexes = pool.getDenseConnected();
+                int[] indexes = pool.GetDenseConnected();
                 retVal[i] = indexes;
             }
 
@@ -2536,7 +2536,7 @@ namespace NeoCortexApi.Entities
             {
                 //Pool pool = getPotentialPools().get(i);
                 Pool pool = GetColumn(i).ProximalDendrite.RFPool;
-                int[] indexes = pool.getDensePotential(this);
+                int[] indexes = pool.GetDensePotential(this);
                 retVal[i] = indexes;
             }
 
@@ -2554,7 +2554,7 @@ namespace NeoCortexApi.Entities
             {
                 //Pool pool = getPotentialPools().get(i);
                 Pool pool = GetColumn(i).ProximalDendrite.RFPool;
-                double[] perm = pool.getDensePermanences(this.HtmConfig.NumInputs);
+                double[] perm = pool.GetDensePermanences(this.HtmConfig.NumInputs);
                 retVal[i] = perm;
             }
 
