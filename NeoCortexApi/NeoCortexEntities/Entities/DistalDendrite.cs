@@ -21,14 +21,19 @@ namespace NeoCortexApi.Entities
 
     /// <summary>
     /// Implements a distal dendritic segment.
+    /// Segments are owned by
+    /// <see cref="Cell"/>s and in turn own <see cref="Synapse"/>s which are obversely connected
+    /// to by a "source cell", which is the <see cref="Cell"/> which will activate a given
+    /// <see cref="Synapse"/> owned by this <see cref="Segment"/>.
     /// </summary>
+    /// Authors of the JAVA implementation: Chetan Surpur, David Ray
     public class DistalDendrite : Segment, IComparable<DistalDendrite>
     {
         public Cell ParentCell;
 
         private long m_LastUsedIteration;
 
-        public int ordinal = -1;
+        public int m_Ordinal = -1;
 
         /// <summary>
         /// Creates the Distal Segment.
@@ -42,7 +47,7 @@ namespace NeoCortexApi.Entities
         public DistalDendrite(Cell parentCell, int flatIdx, long lastUsedIteration, int ordinal, double synapsePermConnected, int numInputs) : base(flatIdx, synapsePermConnected, numInputs)
         {
             this.ParentCell = parentCell;
-            this.ordinal = ordinal;
+            this.m_Ordinal = ordinal;
             this.m_LastUsedIteration = lastUsedIteration;
         }
 
@@ -62,7 +67,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="c"></param>
         /// <returns>Synapses.</returns>
-        public List<Synapse> getAllSynapses(Connections c)
+        public List<Synapse> GetAllSynapses(Connections c)
         {
             return c.GetSynapses(this);
         }
@@ -73,7 +78,7 @@ namespace NeoCortexApi.Entities
         /// <param name="c"></param>
         /// <param name="activeCells"></param>
         /// <returns></returns>
-        public ISet<Synapse> getActiveSynapses(Connections c, ISet<Cell> activeCells)
+        public ISet<Synapse> GetActiveSynapses(Connections c, ISet<Cell> activeCells)
         {
             ISet<Synapse> activeSynapses = new LinkedHashSet<Synapse>();
 
@@ -88,41 +93,46 @@ namespace NeoCortexApi.Entities
             return activeSynapses;
         }
 
-        /**
-         * Sets the last iteration in which this segment was active.
-         * @param iteration
-         */
-        public void setLastUsedIteration(long iteration)
-        {
-            this.m_LastUsedIteration = iteration;
-        }
+        /// <summary>
+        /// the last iteration in which this segment was active.
+        /// </summary>
+        public long LastUsedIteration { get => m_LastUsedIteration; set => m_LastUsedIteration = value; }
+        ///**
+        // * Sets the last iteration in which this segment was active.
+        // * @param iteration
+        // */
+        //public void setLastUsedIteration(long iteration)
+        //{
+        //    this.m_LastUsedIteration = iteration;
+        //}
 
-        /**
-         * Returns the iteration in which this segment was last active.
-         * @return  the iteration in which this segment was last active.
-         */
-        public long getLastUsedIteration()
-        {
-            return m_LastUsedIteration;
-        }
+        ///**
+        // * Returns the iteration in which this segment was last active.
+        // * @return  the iteration in which this segment was last active.
+        // */
+        //public long getLastUsedIteration()
+        //{
+        //    return m_LastUsedIteration;
+        //}
 
-        /**
-         * Returns this {@code DistalDendrite} segment's ordinal
-         * @return	this segment's ordinal
-         */
-        public int getOrdinal()
-        {
-            return ordinal;
-        }
+        public int Ordinal { get => m_Ordinal; set => m_Ordinal = value; }
+        ///**
+        // * Returns this {@code DistalDendrite} segment's ordinal
+        // * @return	this segment's ordinal
+        // */
+        //public int getOrdinal()
+        //{
+        //    return m_Ordinal;
+        //}
 
-        /**
-         * Sets the ordinal value (used for age determination) on this segment.
-         * @param ordinal	the age or order of this segment
-         */
-        public void setOrdinal(int ordinal)
-        {
-            this.ordinal = ordinal;
-        }
+        ///**
+        // * Sets the ordinal value (used for age determination) on this segment.
+        // * @param ordinal	the age or order of this segment
+        // */
+        //public void setOrdinal(int ordinal)
+        //{
+        //    this.m_Ordinal = ordinal;
+        //}
 
 
         public override String ToString()

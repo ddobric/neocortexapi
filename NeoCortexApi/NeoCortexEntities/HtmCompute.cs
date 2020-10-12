@@ -488,7 +488,7 @@ namespace NeoCortexApi
 
             ArrayUtils.Clip(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
 
-            column.setPermanences(htmConfig, perm);
+            column.SetPermanences(htmConfig, perm);
         }
     }
 }

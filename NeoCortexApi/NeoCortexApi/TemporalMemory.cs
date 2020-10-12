@@ -135,7 +135,7 @@ namespace NeoCortexApi
 
             Func<Object, Column> segToCol = (segment) =>
             {
-                var colIndx = ((DistalDendrite)segment).ParentCell.getParentColumnIndex();
+                var colIndx = ((DistalDendrite)segment).ParentCell.ParentColumnIndex;
                 var parentCol = this.connections.HtmConfig.Memory.GetColumn(colIndx);
                 return parentCol;
             };

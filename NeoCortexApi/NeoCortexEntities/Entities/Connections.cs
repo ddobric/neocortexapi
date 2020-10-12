@@ -767,7 +767,7 @@ namespace NeoCortexApi.Entities
         {
             foreach (int idx in s.getSparseIndices())
             {
-                this.HtmConfig.Memory.getObject(idx).setPermanences(this.HtmConfig, s.getObject(idx));
+                this.HtmConfig.Memory.getObject(idx).SetPermanences(this.HtmConfig, s.getObject(idx));
             }
         }
 
@@ -1780,7 +1780,7 @@ namespace NeoCortexApi.Entities
         /// <param name="segment">the segment for which to record activity</param>
         public void RecordSegmentActivity(DistalDendrite segment)
         {
-            segment.setLastUsedIteration(m_tmIteration);
+            segment.LastUsedIteration = m_tmIteration;
         }
 
         /// <summary>
@@ -1879,10 +1879,10 @@ namespace NeoCortexApi.Entities
 
             foreach (DistalDendrite dd in segments)
             {
-                if (dd.getLastUsedIteration() < minIteration)
+                if (dd.LastUsedIteration < minIteration)
                 {
                     minSegment = dd;
-                    minIteration = dd.getLastUsedIteration();
+                    minIteration = dd.LastUsedIteration;
                 }
             }
 
@@ -2320,7 +2320,7 @@ namespace NeoCortexApi.Entities
         }
 
         /// <summary>
-        /// Converts a {@link Collection} of {@link Cell}s to a list of cell indexes.
+        /// Converts a <see cref="Collection{T}"/> of <see cref="Cell"/>s to a list of cell indexes.
         /// </summary>
         /// <param name="cells"></param>
         /// <returns></returns>
@@ -2336,7 +2336,7 @@ namespace NeoCortexApi.Entities
         }
 
         /// <summary>
-        /// Converts a {@link Collection} of {@link Column}s to a list of column indexes.
+        /// Converts a <see cref="Collection{T}"/> of <see cref="Column"/>s to a list of column indexes.
         /// </summary>
         /// <param name="columns"></param>
         /// <returns></returns>
@@ -2345,7 +2345,7 @@ namespace NeoCortexApi.Entities
             List<Integer> ints = new List<Integer>();
             foreach (Column col in columns)
             {
-                ints.Add(col.getIndex());
+                ints.Add(col.Index);
             }
 
             return ints;
@@ -2382,7 +2382,7 @@ namespace NeoCortexApi.Entities
         //}
 
         /// <summary>
-        /// Returns a {@link Set} view of the {@link Column}s specified by the indexes passed in.
+        /// Returns a <see cref="LinkedHashSet{T}"/> view of the <see cref="Column"/>s specified by the indexes passed in.
         /// </summary>
         /// <param name="indexes">the indexes of the Columns to return</param>
         /// <returns>a set view of the specified columns</returns>
@@ -2397,7 +2397,7 @@ namespace NeoCortexApi.Entities
         }
 
         /// <summary>
-        /// Returns a {@link List} view of the {@link Column}s specified by the indexes passed in.
+        /// Returns a <see cref="List{T}"/> view of the <see cref="Column"/>s specified by the indexes passed in.
         /// </summary>
         /// <param name="indexes">the indexes of the Columns to return</param>
         /// <returns>a List view of the specified columns</returns>

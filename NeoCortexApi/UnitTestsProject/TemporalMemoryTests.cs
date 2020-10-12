@@ -377,7 +377,7 @@ namespace UnitTestsProject
             List<Cell> winnerCells = new List<Cell>(cc.WinnerCells);
             Assert.AreEqual(1, winnerCells.Count);
 
-            List<DistalDendrite> segments = winnerCells[0].getSegments(cn);
+            List<DistalDendrite> segments = winnerCells[0].GetSegments(cn);
             //List<DistalDendrite> segments = winnerCells[0].Segments;
             Assert.AreEqual(1, segments.Count);
 
@@ -412,10 +412,10 @@ namespace UnitTestsProject
 
             List<Cell> winnerCells = new List<Cell>(cc.WinnerCells);
             Assert.AreEqual(1, winnerCells.Count);
-            List<DistalDendrite> segments = winnerCells[0].getSegments(cn);
+            List<DistalDendrite> segments = winnerCells[0].GetSegments(cn);
             //List<DistalDendrite> segments = winnerCells[0].Segments;
             Assert.AreEqual(1, segments.Count);
-            List<Synapse> synapses = segments[0].getAllSynapses(cn);
+            List<Synapse> synapses = segments[0].GetAllSynapses(cn);
 
             List<Cell> presynapticCells = new List<Cell>();
             foreach (Synapse synapse in synapses)
@@ -537,7 +537,7 @@ namespace UnitTestsProject
             cc = tm.Compute(activeColumns, true) as ComputeCycle;
 
             List<Cell> presynapticCells = new List<Cell>();
-            foreach (var syn in activeSegment.getAllSynapses(cn))
+            foreach (var syn in activeSegment.GetAllSynapses(cn))
             {
                 presynapticCells.Add(syn.getPresynapticCell());
             }
@@ -839,7 +839,7 @@ namespace UnitTestsProject
                 }
 
                 Assert.AreEqual(1, segments.Count);
-                List<Synapse> synapses = segments[0].getAllSynapses(cn);
+                List<Synapse> synapses = segments[0].GetAllSynapses(cn);
                 Assert.AreEqual(4, synapses.Count);
 
                 ISet<Column> columnCheckList = cn.GetColumnSet(prevActiveColumns);
@@ -848,7 +848,7 @@ namespace UnitTestsProject
                 {
                     Assert.AreEqual(0.2, synapse.getPermanence(), 0.01);
 
-                    var parentColIndx = synapse.getPresynapticCell().getParentColumnIndex();
+                    var parentColIndx = synapse.getPresynapticCell().ParentColumnIndex;
                     Column column = cn.HtmConfig.Memory.GetColumn(parentColIndx);
                     Assert.IsTrue(columnCheckList.Contains(column));
                     columnCheckList.Remove(column);

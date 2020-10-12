@@ -18,7 +18,7 @@ namespace NeoCortexApi.Entities
     /// Implementation of the mini-column.
     /// </summary>
     /// <remarks>
-    /// Authors of the JAVA implementaiton:Chetan Surpur, David Ray
+    /// Authors of the JAVA implementation:Chetan Surpur, David Ray
     /// </remarks>
     public class Column : IEquatable<Column>, IComparable<Column>
     {
@@ -74,7 +74,7 @@ namespace NeoCortexApi.Entities
 
             for (int i = 0; i < numCells; i++)
             {
-                Cells[i] = new Cell(this.Index, i, this.getNumCellsPerColumn(), this.CellId, CellActivity.ActiveCell);
+                Cells[i] = new Cell(this.Index, i, this.GetNumCellsPerColumn(), this.CellId, CellActivity.ActiveCell);
             }
 
             // We keep tracking of this column only
@@ -90,36 +90,34 @@ namespace NeoCortexApi.Entities
          * Returns the index of this {@code Column}
          * @return  the index of this {@code Column}
          */
-        public int getIndex()
-        {
-            return Index;
-        }
+        //public int getIndex()
+        //{
+        //    return Index;
+        //}
 
-        /**
-         * Returns the configured number of cells per column for
-         * all {@code Column} objects within the current {@link TemporalMemory}
-         * @return
-         */
-        public int getNumCellsPerColumn()
+        /// <summary>
+        /// Returns the configured number of cells per column for all <see cref="Column"/> objects within the current {@link TemporalMemory}
+        /// </summary>
+        /// <returns></returns>
+        public int GetNumCellsPerColumn()
         {
             return Cells.Length;
         }
 
-        /**
-         * Returns the {@link Cell} with the least number of {@link DistalDendrite}s.
-         * 
-         * @param c         the connections state of the temporal memory
-         * @param random
-         * @return
-         */
-        public Cell getLeastUsedCell(Connections c, Random random)
+        /// <summary>
+        /// Returns the <see cref="Cell"/> with the least number of <see cref="DistalDendrite"/>s.
+        /// </summary>
+        /// <param name="c">the connections state of the temporal memory</param>
+        /// <param name="random"></param>
+        /// <returns></returns>
+        public Cell GetLeastUsedCell(Connections c, Random random)
         {
             List<Cell> leastUsedCells = new List<Cell>();
             int minNumSegments = Integer.MaxValue;
 
             foreach (var cell in Cells)
             {
-                int numSegments = cell.getSegments(c).Count;
+                int numSegments = cell.GetSegments(c).Count;
                 //int numSegments = cell.Segments.Count;
 
                 if (numSegments < minNumSegments)
@@ -143,10 +141,10 @@ namespace NeoCortexApi.Entities
          * Returns this {@code Column}'s single {@link ProximalDendrite}
          * @return
          */
-        public ProximalDendrite getProximalDendrite()
-        {
-            return ProximalDendrite;
-        }
+        //public ProximalDendrite getProximalDendrite()
+        //{
+        //    return ProximalDendrite;
+        //}
 
 
         /// <summary>
@@ -170,7 +168,7 @@ namespace NeoCortexApi.Entities
                 //var cnt = c.getProximalSynapseCount();
                 //var synapse = createSynapse(c, c.getSynapses(this), null, this.RFPool, synCount, inputIndexes[i]);
                 var synapse = this.ProximalDendrite.createSynapse(null, startSynapseIndex + i, inputVectorIndexes[i]);
-                this.setPermanence(synapse, htmConfig.SynPermConnected, 0);
+                this.SetPermanence(synapse, htmConfig.SynPermConnected, 0);
                 //c.setProximalSynapseCount(cnt + 1);
             }
 
@@ -183,7 +181,7 @@ namespace NeoCortexApi.Entities
             return pool;
         }
 
-        public void setPermanence(Synapse synapse, double synPermConnected, double perm)
+        public void SetPermanence(Synapse synapse, double synPermConnected, double perm)
         {
             synapse.Permanence = perm;
 
@@ -194,17 +192,13 @@ namespace NeoCortexApi.Entities
             }
         }
 
-
-        /**
-         * Sets the permanences for each {@link Synapse}. The number of synapses
-         * is set by the potentialPct variable which determines the number of input
-         * bits a given column will be "attached" to which is the same number as the
-         * number of {@link Synapse}s
-         * 
-         * @param c			the {@link Connections} memory
-         * @param perms		the floating point degree of connectedness
-         */
-        public void setPermanences(HtmConfig htmConfig, double[] perms)
+        /// <summary>
+        /// Sets the permanences for each <see cref="Synapse"/>. The number of synapses is set by the potentialPct variable which determines the number of input
+        /// bits a given column will be "attached" to which is the same number as the number of <see cref="Synapse"/>s
+        /// </summary>
+        /// <param name="htmConfig">the <see cref="Connections"/> memory</param>
+        /// <param name="perms">the floating point degree of connectedness</param>
+        public void SetPermanences(HtmConfig htmConfig, double[] perms)
         {
             //var connCounts = c.getConnectedCounts();
 
@@ -215,7 +209,7 @@ namespace NeoCortexApi.Entities
 
             foreach (Synapse s in this.ProximalDendrite.Synapses)
             {
-                this.setPermanence(s, htmConfig.SynPermConnected, perms[s.InputIndex]);
+                this.SetPermanence(s, htmConfig.SynPermConnected, perms[s.InputIndex]);
 
                 if (perms[s.InputIndex] >= htmConfig.SynPermConnected)
                 {
@@ -235,18 +229,25 @@ namespace NeoCortexApi.Entities
         //    ProximalDendrite.setPermanences(c, permanences);
         //}
 
+        // TODO better parameters documentation
         /**
-         * Sets the permanences on the {@link ProximalDendrite} {@link Synapse}s
+         * 
          * 
          * @param c				the {@link Connections} memory object
-         * @param permanences	floating point degree of connectedness
+         * @param permanences	
          */
+        /// <summary>
+        /// Sets the permanences on the <see cref="ProximalDendrite"/> <see cref="Synapse"/>s
+        /// </summary>
+        /// <param name="htmConfig"></param>
+        /// <param name="permanences">floating point degree of connectedness</param>
+        /// <param name="inputVectorIndexes"></param>
         public void setProximalPermanencesSparse(HtmConfig htmConfig, double[] permanences, int[] inputVectorIndexes)
         {
             this.ProximalDendrite.setPermanences(this.ConnectedInputCounterMatrix, htmConfig, permanences, inputVectorIndexes);
         }
 
-
+        // TODO better parameters documentation
         /**
         * This method updates the permanence matrix with a column's new permanence
         * values. The column is identified by its index, which reflects the row in
@@ -264,6 +265,16 @@ namespace NeoCortexApi.Entities
         * @param column            The column in the permanence, potential and connectivity matrices
         * @param raisePerm         a boolean value indicating whether the permanence values
         */
+        /// <summary>
+        /// This method updates the permanence matrix with a column's new permanence values. The column is identified by its index, which reflects the row in
+        /// the matrix, and the permanence is given in 'sparse' form, (i.e. an array whose members are associated with specific indexes). It is in charge of 
+        /// implementing 'clipping' - ensuring that the permanence values are always between 0 and 1 - and 'trimming' - enforcing sparseness by zeroing out all 
+        /// permanence values below 'synPermTrimThreshold'. Every method wishing to modify the permanence matrix should do so through this method.
+        /// </summary>
+        /// <param name="htmConfig"></param>
+        /// <param name="perm">An array of permanence values for a column. The array is "sparse", i.e. it contains an entry for each input bit, even if the permanence value is 0.</param>
+        /// <param name="maskPotential"></param>
+        /// <param name="raisePerm">a boolean value indicating whether the permanence values</param>
         public void UpdatePermanencesForColumnSparse(HtmConfig htmConfig, double[] perm, int[] maskPotential, bool raisePerm)
         {
             if (raisePerm)
@@ -326,13 +337,12 @@ namespace NeoCortexApi.Entities
             return sb.ToString();
         }
 
-        /**
-         * Delegates the call to set synapse connected indexes to this 
-         * {@code Column}'s {@link ProximalDendrite}
-         * @param c
-         * @param connections
-         */
-        public void setProximalConnectedSynapsesForTest(Connections c, int[] inputVectorIndexes)
+        /// <summary>
+        /// Delegates the call to set synapse connected indexes to this <see cref="ProximalDendrite"/>
+        /// </summary>
+        /// <param name="c"></param>
+        /// <param name="inputVectorIndexes"></param>
+        public void SetProximalConnectedSynapsesForTest(Connections c, int[] inputVectorIndexes)
         {
             //var synapseIndex = c.getProximalSynapseCount();
             //c.setProximalSynapseCount(synapseIndex + inputVectorIndexes.Length);
@@ -397,7 +407,7 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public override string ToString()
         {
-            return $"Column: Indx:{this.getIndex()}, Cells:{this.Cells.Length}";
+            return $"Column: Indx:{this.Index}, Cells:{this.Cells.Length}";
         }
     }
 }

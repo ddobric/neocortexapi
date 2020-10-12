@@ -1093,7 +1093,7 @@ namespace UnitTestsProject
             //mem.getConnectedSynapses().set(0, connected.toArray());
             // mem.getPotentialPools().set(0, new Pool(6, mem.NumInputs));
             mem.GetColumn(0).ProximalDendrite.RFPool = new Pool(6, mem.HtmConfig.NumInputs);
-            mem.GetColumn(0).setProximalConnectedSynapsesForTest(mem, connected.ToArray());
+            mem.GetColumn(0).SetProximalConnectedSynapsesForTest(mem, connected.ToArray());
 
             connected.Clear();
             connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 2, 0, 1, 0 }, false));
@@ -1107,7 +1107,7 @@ namespace UnitTestsProject
             //mem.getConnectedSynapses().set(1, connected.toArray());
             //mem.getPotentialPools().set(1, new Pool(4, mem.NumInputs));
             mem.GetColumn(1).ProximalDendrite.RFPool = new Pool(4, mem.HtmConfig.NumInputs);
-            mem.GetColumn(1).setProximalConnectedSynapsesForTest(mem, connected.ToArray());
+            mem.GetColumn(1).SetProximalConnectedSynapsesForTest(mem, connected.ToArray());
 
             connected.Clear();
             connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 0, 0, 1, 4 }, false));
@@ -1123,7 +1123,7 @@ namespace UnitTestsProject
             //mem.getConnectedSynapses().set(2, connected.toArray());
             //mem.getPotentialPools().set(2, new Pool(4, mem.NumInputs));
             mem.GetColumn(2).ProximalDendrite.RFPool = new Pool(4, mem.HtmConfig.NumInputs);
-            mem.GetColumn(2).setProximalConnectedSynapsesForTest(mem, connected.ToArray());
+            mem.GetColumn(2).SetProximalConnectedSynapsesForTest(mem, connected.ToArray());
 
             connected.Clear();
             connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 3, 3, 1, 4 }, false));
@@ -1135,13 +1135,13 @@ namespace UnitTestsProject
             //mem.getConnectedSynapses().set(3, connected.toArray());
             //mem.getPotentialPools().set(3, new Pool(4, mem.NumInputs));
             mem.GetColumn(3).ProximalDendrite.RFPool = new Pool(4, mem.HtmConfig.NumInputs);
-            mem.GetColumn(3).setProximalConnectedSynapsesForTest(mem, connected.ToArray());
+            mem.GetColumn(3).SetProximalConnectedSynapsesForTest(mem, connected.ToArray());
 
             //[]
             connected.Clear();
             //mem.getPotentialPools().set(4, new Pool(4, mem.NumInputs));
             mem.GetColumn(4).ProximalDendrite.RFPool = new Pool(4, mem.HtmConfig.NumInputs);
-            mem.GetColumn(4).setProximalConnectedSynapsesForTest(mem, connected.ToArray());
+            mem.GetColumn(4).SetProximalConnectedSynapsesForTest(mem, connected.ToArray());
 
             double[] trueAvgConnectedSpan = new double[] { 11.0 / 4d, 6.0 / 4d, 14.0 / 4d, 15.0 / 4d, 0d };
             for (int i = 0; i < mem.HtmConfig.NumColumns; i++)
@@ -1205,8 +1205,8 @@ namespace UnitTestsProject
                 int[] indexes = ArrayUtils.IndexWhere(potentialPools[i], n => n == 1);
 
                 // int[] indexes = ArrayUtils.where(potentialPools[i], cond);
-                mem.GetColumn(i).setProximalConnectedSynapsesForTest(mem, indexes);
-                mem.GetColumn(i).setPermanences(mem.HtmConfig, permanences[i]);
+                mem.GetColumn(i).SetProximalConnectedSynapsesForTest(mem, indexes);
+                mem.GetColumn(i).SetPermanences(mem.HtmConfig, permanences[i]);
             }
 
             //Execute method being tested
@@ -1639,8 +1639,8 @@ namespace UnitTestsProject
             {
                 int[] indexes = ArrayUtils.IndexWhere(potentialPools[i], (n) => (n == 1));
                 //    int[] indexes = ArrayUtils.where(potentialPools[i], cond);
-                mem.GetColumn(i).setProximalConnectedSynapsesForTest(mem, indexes);
-                mem.GetColumn(i).setPermanences(mem.HtmConfig, permanences[i]);
+                mem.GetColumn(i).SetProximalConnectedSynapsesForTest(mem, indexes);
+                mem.GetColumn(i).SetPermanences(mem.HtmConfig, permanences[i]);
             }
 
             int[] inputVector = new int[] { 1, 0, 0, 1, 1, 0, 1, 0 };
@@ -1687,8 +1687,8 @@ namespace UnitTestsProject
                 int[] indexes = ArrayUtils.IndexWhere(potentialPools[i], (n) => (n == 1));
 
                 //int[] indexes = ArrayUtils.where(potentialPools[i], cond);
-                mem.GetColumn(i).setProximalConnectedSynapsesForTest(mem, indexes);
-                mem.GetColumn(i).setPermanences(mem.HtmConfig, permanences[i]);
+                mem.GetColumn(i).SetProximalConnectedSynapsesForTest(mem, indexes);
+                mem.GetColumn(i).SetPermanences(mem.HtmConfig, permanences[i]);
             }
 
             sp.AdaptSynapses(mem, inputVector, activeColumns);
@@ -1805,9 +1805,9 @@ namespace UnitTestsProject
 
             for (int i = 0; i < mem.HtmConfig.NumColumns; i++)
             {
-                mem.GetColumn(i).setPermanences(mem.HtmConfig, permanences[i]);
+                mem.GetColumn(i).SetPermanences(mem.HtmConfig, permanences[i]);
                 HtmCompute.UpdatePermanencesForColumn(mem.HtmConfig, permanences[i], mem.GetColumn(i), connectedDense[i], true);
-                int[] dense = mem.GetColumn(i).getProximalDendrite().getConnectedSynapsesDense();
+                int[] dense = mem.GetColumn(i).ProximalDendrite.getConnectedSynapsesDense();
                 trueConnectedSynapses[i].ArrToString().SequenceEqual(dense.ArrToString());
             }
 
