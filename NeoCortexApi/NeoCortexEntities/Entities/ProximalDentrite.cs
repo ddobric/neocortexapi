@@ -128,7 +128,7 @@ namespace NeoCortexApi.Entities
 
             RFPool.resetConnections();
             // c.getConnectedCounts().clearStatistics(ParentColumnIndex);
-            connectedCounts.clearStatistics(0 /*this.ParentColumnIndex*/);
+            connectedCounts.ClearStatistics(0 /*this.ParentColumnIndex*/);
             for (int i = 0; i < inputIndexes.Length; i++)
             {
                 var synapse = RFPool.GetSynapseForInput(inputIndexes[i]);

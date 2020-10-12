@@ -826,7 +826,7 @@ namespace NeoCortexApi.Entities
             int[] counts = new int[this.HtmConfig.NumColumns];
             for (int i = 0; i < this.HtmConfig.NumColumns; i++)
             {
-                counts[i] = GetColumn(i).ConnectedInputCounterMatrix.getTrueCounts()[0];
+                counts[i] = GetColumn(i).ConnectedInputCounterMatrix.GetTrueCounts()[0];
             }
 
             return counts;
@@ -850,7 +850,7 @@ namespace NeoCortexApi.Entities
         {
             for (int i = 0; i < counts.Length; i++)
             {
-                GetColumn(i).ConnectedInputCounterMatrix.setTrueCount(0, counts[i]);
+                GetColumn(i).ConnectedInputCounterMatrix.SetTrueCount(0, counts[i]);
                 //connectedCounts.setTrueCount(i, counts[i]);
             }
         }
@@ -865,7 +865,7 @@ namespace NeoCortexApi.Entities
             {
                 var colMatrix = this.GetColumn(col).ConnectedInputCounterMatrix = new SparseBinaryMatrix(new int[] { 1, this.HtmConfig.NumInputs });
 
-                int[] row = (int[])matrix.getSlice(col);
+                int[] row = (int[])matrix.GetSlice(col);
 
                 for (int j = 0; j < row.Length; j++)
                 {

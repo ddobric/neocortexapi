@@ -1614,7 +1614,7 @@ namespace NeoCortexApi
 
             for (int i = 0; i < c.HtmConfig.NumColumns; i++)
             {
-                columnsCounts[i] = c.GetColumn(i).ConnectedInputCounterMatrix.getTrueCounts()[0];
+                columnsCounts[i] = c.GetColumn(i).ConnectedInputCounterMatrix.GetTrueCounts()[0];
             }
 
             return ArrayUtils.Divide(overlaps, columnsCounts);

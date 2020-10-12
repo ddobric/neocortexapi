@@ -91,7 +91,7 @@ namespace NeoCortexApi.Entities
          */
         // @Override
 
-        public override Object getSlice(params int[] coordinates)
+        public override Object GetSlice(params int[] coordinates)
         {
             //Object slice = DistributedArrayHelpers.getValue(this.backingArray, coordinates);
             Object slice;
@@ -107,7 +107,7 @@ namespace NeoCortexApi.Entities
             //Ensure return value is of type Array
             if (!slice.GetType().IsArray)
             {
-                sliceError(coordinates);
+                SliceError(coordinates);
             }
 
             return slice;
@@ -143,11 +143,11 @@ namespace NeoCortexApi.Entities
          * @param inputVector		the right side vector
          * @param results			the results array
          */
-        public override void rightVecSumAtNZ(int[] inputVector, int[] results)
+        public override void RightVecSumAtNZ(int[] inputVector, int[] results)
         {
             for (int i = 0; i < this.ModuleTopology.Dimensions[0]; i++)
             {
-                int[] slice = (int[])(this.ModuleTopology.Dimensions.Length > 1 ? getSlice(i) : backingArray);
+                int[] slice = (int[])(this.ModuleTopology.Dimensions.Length > 1 ? GetSlice(i) : backingArray);
                 for (int j = 0; j < slice.Length; j++)
                 {
                     results[i] += (inputVector[j] * slice[j]);
@@ -162,12 +162,12 @@ namespace NeoCortexApi.Entities
          * @param inputVector       the right side vector
          * @param results           the re\sults array
          */
-        public override void rightVecSumAtNZ(int[] inputVector, int[] results, double stimulusThreshold)
+        public override void RightVecSumAtNZ(int[] inputVector, int[] results, double stimulusThreshold)
         {
             for (int colIndx = 0; colIndx < this.ModuleTopology.Dimensions[0]; colIndx++)
             {
                 // Gets the synapse mapping between column-i with input vector.
-                int[] slice = (int[])(this.ModuleTopology.Dimensions.Length > 1 ? getSlice(colIndx) : backingArray);
+                int[] slice = (int[])(this.ModuleTopology.Dimensions.Length > 1 ? GetSlice(colIndx) : backingArray);
 
                 // Go through all connections (synapses) between column and input vector.
                 for (int inpBit = 0; inpBit < slice.Length; inpBit++)
@@ -217,7 +217,7 @@ namespace NeoCortexApi.Entities
 
             var aggVal = this.backingArray.AggregateArray(coordinates[0]);
 
-            setTrueCount(coordinates[0], aggVal);
+            SetTrueCount(coordinates[0], aggVal);
 
             return this;
         }
@@ -243,14 +243,14 @@ namespace NeoCortexApi.Entities
          * Clears the true counts prior to a cycle where they're
          * being set
          */
-        public override void clearStatistics(int row)
+        public override void ClearStatistics(int row)
         {
             if (backingArray.Rank != 2)
                 throw new InvalidOperationException("Currently supported 2D arrays only");
 
             backingArray.SetRowValuesTo(row, 0);
 
-            this.setTrueCount(row, 0);
+            this.SetTrueCount(row, 0);
         }
 
 

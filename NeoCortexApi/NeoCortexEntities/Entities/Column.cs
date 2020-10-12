@@ -26,7 +26,7 @@ namespace NeoCortexApi.Entities
 
         public AbstractSparseBinaryMatrix ConnectedInputCounterMatrix { get { return connectedInputCounter; } set { connectedInputCounter = value; } }
 
-        public int[] ConnectedInputBits { get => (int[])this.connectedInputCounter.getSlice(0); }
+        public int[] ConnectedInputBits { get => (int[])this.connectedInputCounter.GetSlice(0); }
 
         /// <summary>
         /// Column index
@@ -211,7 +211,7 @@ namespace NeoCortexApi.Entities
             this.ProximalDendrite.RFPool.resetConnections();
 
             // Every column contians a single row at index 0.
-            this.ConnectedInputCounterMatrix.clearStatistics(0 /*this.Index*/);
+            this.ConnectedInputCounterMatrix.ClearStatistics(0 /*this.Index*/);
 
             foreach (Synapse s in this.ProximalDendrite.Synapses)
             {
@@ -288,7 +288,7 @@ namespace NeoCortexApi.Entities
             int result = 0;
 
             // Gets the synapse mapping between column-i with input vector.
-            int[] slice = (int[])this.connectedInputCounter.getSlice(0);
+            int[] slice = (int[])this.connectedInputCounter.GetSlice(0);
 
             // Go through all connections (synapses) between column and input vector.
             for (int inpBit = 0; inpBit < slice.Length; inpBit++)
