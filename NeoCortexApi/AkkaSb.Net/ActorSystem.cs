@@ -66,11 +66,11 @@ namespace AkkaSb.Net
             this.sbConnStr = config.SbConnStr;
             this.subscriptionName = config.RequestSubscriptionName;
             this.sessionRcvClient = new SessionClient(config.SbConnStr, $"{config.RequestMsgTopic}/Subscriptions/{config.RequestSubscriptionName}",
-            retryPolicy: createRetryPolicy(),
+            retryPolicy: CreateRetryPolicy(),
             receiveMode: ReceiveMode.PeekLock);
 
             this.sendRequestClient = new TopicClient(config.SbConnStr, config.RequestMsgTopic,
-            retryPolicy: createRetryPolicy());
+            retryPolicy: CreateRetryPolicy());
 
             //
             // Receiving of reply messages is optional. If the actor system does not send messages
@@ -78,7 +78,7 @@ namespace AkkaSb.Net
             if (config.ReplyMsgQueue != null)
             {
                 ReplyMsgReceiverQueueClient = new QueueClient(config.SbConnStr, config.ReplyMsgQueue,
-                       retryPolicy: createRetryPolicy(),
+                       retryPolicy: CreateRetryPolicy(),
                         receiveMode: ReceiveMode.PeekLock);
 
                 // Configure the message handler options in terms of exception handling, number of concurrent messages to deliver, etc.
@@ -180,7 +180,7 @@ namespace AkkaSb.Net
 
         #region Private Methods
 
-        private RetryPolicy createRetryPolicy()
+        private RetryPolicy CreateRetryPolicy()
         {
             return new RetryExponential(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(10), 5);
         }
@@ -239,7 +239,7 @@ namespace AkkaSb.Net
 
                         logger?.LogInformation($"{this.Name} - Invoked : {tp.Name}/{id}, actorMap: {actorMap.Keys.Count}");
 
-                        await persistAndCleanupIfRequired(session);
+                        await PersistAndCleanupIfRequired(session);
 
                         logger?.LogInformation($"{this.Name} - Persisted : {tp.Name}/{id}, actorMap: {actorMap.Keys.Count}");
 
@@ -263,7 +263,7 @@ namespace AkkaSb.Net
                         logger.LogWarning(ex, "Messsage processing error");
 
                         if (isPersistedAfterCalculus == false)
-                            await persistAndCleanupIfRequired(session);
+                            await PersistAndCleanupIfRequired(session);
 
                         if (!(ex is SessionLockLostException))
                             await session.AbandonAsync(msg.SystemProperties.LockToken);
@@ -272,7 +272,7 @@ namespace AkkaSb.Net
                 else
                 {
                     logger?.LogTrace($"{this.Name} - No more messages received for sesson {session.SessionId}");
-                    await persistAndCleanupIfRequired(session);
+                    await PersistAndCleanupIfRequired(session);
                     //return;
                 }
 
@@ -285,7 +285,7 @@ namespace AkkaSb.Net
             }
         }
 
-        private Task persistAndCleanupIfRequired(IMessageSession session)
+        private Task PersistAndCleanupIfRequired(IMessageSession session)
         {
             return Task.CompletedTask;
             //if (this.persistenceProvider != null)
@@ -307,7 +307,7 @@ namespace AkkaSb.Net
         /// </summary>
         /// <param name="sessionId"></param>
         /// <returns></returns>
-        private ActorId getActorIdFromSession(string sessionId)
+        private ActorId GetActorIdFromSession(string sessionId)
         {
             var strId = sessionId.Split('/')[1];
 
@@ -348,7 +348,7 @@ namespace AkkaSb.Net
                     if (this.sendReplyQueueClients.ContainsKey(replyTo) == false)
                     {
                         this.sendReplyQueueClients.Add(replyTo, new QueueClient(this.sbConnStr, replyTo,
-                        retryPolicy: createRetryPolicy(),
+                        retryPolicy: CreateRetryPolicy(),
                         receiveMode: ReceiveMode.PeekLock));
                     }
 

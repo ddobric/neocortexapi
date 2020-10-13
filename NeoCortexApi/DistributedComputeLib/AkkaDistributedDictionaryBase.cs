@@ -321,7 +321,7 @@ namespace NeoCortexApi.DistributedComputeLib
             //    }
             //}
 
-            runBatched((batchOfElements)=> {
+            RunBatched((batchOfElements)=> {
                 // Run overlap calculation on all actors(in all partitions)
                 Parallel.ForEach(batchOfElements, opts, (placement) =>
                 {
@@ -373,7 +373,7 @@ namespace NeoCortexApi.DistributedComputeLib
             //}
         }
 
-        private void runBatched(Action<List<Placement<TKey>>> func, List<Placement<TKey>> list, int batchSize)
+        private void RunBatched(Action<List<Placement<TKey>>> func, List<Placement<TKey>> list, int batchSize)
         {
             int processedItems = 0;
             int batchCnt = 0;
@@ -417,7 +417,7 @@ namespace NeoCortexApi.DistributedComputeLib
             //var avgSpanOfPart = this.ActorMap.First().ActorRef.Ask<double>(new ConnectAndConfigureColumnsMsg(), this.Config.ConnectionTimeout).Result;
             //aggLst.TryAdd(this.ActorMap.First().PartitionIndx, avgSpanOfPart);
 
-            runBatched((batchOfElements) => {
+            RunBatched((batchOfElements) => {
                 Parallel.ForEach(batchOfElements, opts, (placement) =>
                 {
                     while (true)
@@ -740,6 +740,7 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <param name="keys">All keys must belong to same partition. Search object (caller of this method)
         /// should sot keys </param>
         /// <returns></returns>
+        /// TODO Unreachable code ??
         public ICollection<KeyPair> GetObjects(TKey[] keys)
         {
             if (keys == null || keys.Length == 0)

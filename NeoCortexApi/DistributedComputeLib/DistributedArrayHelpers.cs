@@ -9,14 +9,17 @@ using NeoCortexApi.Entities;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
-   
-    /**
-     * Utilities to match some of the functionality found in Python's Numpy.
-     * @author David Ray
-     */
+    /// <summary>
+    /// Utilities to match some of the functionality found in Python's Numpy.
+    /// </summary>
+    /// <remarks>
+    /// Author: David Ray
+    /// </remarks>
     public static class DistributedArrayHelpers
     {
-        /** Empty array constant */
+        /// <summary>
+        /// Empty array constant
+        /// </summary>
         private static int[] EMPTY_ARRAY = new int[0];
 
         //public static string ArrToString(this IDistributedArray arr)
@@ -660,14 +663,12 @@ namespace NeoCortexApi.DistributedComputeLib
         //    return tuples;
         //}
 
-        /**
-         * Returns an array with the same shape and the contents
-         * converted to integers.
-         *
-         * @param doubs an array of doubles.
-         * @return
-         */
-        public static int[] toIntArray(IDistributedArray doubs)
+        /// <summary>
+        /// Returns an array with the same shape and the contents converted to integers.
+        /// </summary>
+        /// <param name="doubs">an array of doubles.</param>
+        /// <returns></returns>
+        public static int[] ToIntArray(IDistributedArray doubs)
         {
             int[] retVal = new int[doubs.Count];
             for (int i = 0; i < doubs.Count; i++)
@@ -677,14 +678,12 @@ namespace NeoCortexApi.DistributedComputeLib
             return retVal;
         }
 
-        /**
-         * Returns an array with the same shape and the contents
-         * converted to doubles.
-         *
-         * @param ints an array of ints.
-         * @return
-         */
-        public static double[] toDoubleArray(IDistributedArray ints)
+        /// <summary>
+        /// Returns an array with the same shape and the contents converted to doubles.
+        /// </summary>
+        /// <param name="ints">an array of ints.</param>
+        /// <returns></returns>
+        public static double[] ToDoubleArray(IDistributedArray ints)
         {
             double[] retVal = new double[ints.Count];
             for (int i = 0; i < ints.Count; i++)
@@ -694,14 +693,13 @@ namespace NeoCortexApi.DistributedComputeLib
             return retVal;
         }
 
-        /**
-         * Performs a modulus operation in Python style.
-         *
-         * @param a
-         * @param b
-         * @return
-         */
-        public static int modulo(int a, int b)
+        /// <summary>
+        /// Performs a modulus operation in Python style.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static int Modulo(int a, int b)
         {
             if (b == 0) throw new DivideByZeroException();
             if (a > 0 && b > 0 && b > a) return a;
@@ -725,32 +723,29 @@ namespace NeoCortexApi.DistributedComputeLib
             return a;
         }
 
-        /**
-         * Performs a modulus on every index of the first argument using
-         * the second argument and places the result in the same index of
-         * the first argument.
-         *
-         * @param a
-         * @param b
-         * @return
-         */
-        public static int[] modulo(int[] a, int b)
+        /// <summary>
+        /// Performs a modulus on every index of the first argument using the second argument and places the result in the same index of
+        /// the first argument.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static int[] Modulo(int[] a, int b)
         {
             for (int i = 0; i < a.Length; i++)
             {
-                a[i] = modulo(a[i], b);
+                a[i] = Modulo(a[i], b);
             }
             return a;
         }
 
-        /**
-         * Returns a double array whose values are the maximum of the value
-         * in the array and the max value argument.
-         * @param doubs
-         * @param maxValue
-         * @return
-         */
-        public static double[] maximum(double[] doubs, double maxValue)
+        /// <summary>
+        /// Returns a double array whose values are the maximum of the value in the array and the max value argument.
+        /// </summary>
+        /// <param name="doubs"></param>
+        /// <param name="maxValue"></param>
+        /// <returns></returns>
+        public static double[] Maximum(double[] doubs, double maxValue)
         {
             double[] retVal = new double[doubs.Length];
             for (int i = 0; i < doubs.Length; i++)
@@ -760,16 +755,14 @@ namespace NeoCortexApi.DistributedComputeLib
             return retVal;
         }
 
-        /**
-         * Returns an array of identical shape containing the maximum
-         * of the values between each corresponding index. Input arrays
-         * must be the same length.
-         *
-         * @param arr1
-         * @param arr2
-         * @return
-         */
-        public static int[] maxBetween(int[] arr1, int[] arr2) // DIstribution not needed.
+        /// <summary>
+        /// Returns an array of identical shape containing the maximum of the values between each corresponding index. Input arrays
+        /// must be the same length.
+        /// </summary>
+        /// <param name="arr1"></param>
+        /// <param name="arr2"></param>
+        /// <returns></returns>
+        public static int[] MaxBetween(int[] arr1, int[] arr2) // DIstribution not needed.
         {
             int[] retVal = new int[arr1.Length];
             for (int i = 0; i < arr1.Length; i++)
@@ -779,16 +772,14 @@ namespace NeoCortexApi.DistributedComputeLib
             return retVal;
         }
 
-        /**
-         * Returns an array of identical shape containing the minimum
-         * of the values between each corresponding index. Input arrays
-         * must be the same length.
-         *
-         * @param arr1
-         * @param arr2
-         * @return
-         */
-        public static int[] minBetween(int[] arr1, int[] arr2)
+        /// <summary>
+        /// Returns an array of identical shape containing the minimum of the values between each corresponding index. Input arrays
+        /// must be the same length.
+        /// </summary>
+        /// <param name="arr1"></param>
+        /// <param name="arr2"></param>
+        /// <returns></returns>
+        public static int[] MinBetween(int[] arr1, int[] arr2)
         {
             int[] retVal = new int[arr1.Length];
             for (int i = 0; i < arr1.Length; i++)
@@ -844,19 +835,16 @@ namespace NeoCortexApi.DistributedComputeLib
         //    return l.toArray();
         //}
 
-        /**
-         * Returns an array whose members are the quotient of the dividend array
-         * values and the divisor array values.
-         *
-         * @param dividend
-         * @param divisor
-         * @param dividend adjustment
-         * @param divisor  adjustment
-         *
-         * @return
-         * @throws IllegalArgumentException if the two argument arrays are not the same length
-         */
-        public static double[] divide(double[] dividend, double[] divisor,
+        /// <summary>
+        /// Returns an array whose members are the quotient of the dividend array values and the divisor array values.
+        /// </summary>
+        /// <param name="dividend"></param>
+        /// <param name="divisor"></param>
+        /// <param name="dividendAdjustment"></param>
+        /// <param name="divisorAdjustment"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">Throws if the two argument arrays are not the same length</exception>
+        public static double[] Divide(double[] dividend, double[] divisor,
                                       double dividendAdjustment, double divisorAdjustment)
         {
 
@@ -875,19 +863,15 @@ namespace NeoCortexApi.DistributedComputeLib
             return quotient;
         }
 
-        /**
-         * Returns an array whose members are the quotient of the dividend array
-         * values and the divisor array values.
-         *
-         * @param dividend
-         * @param divisor
-         * @param dividend adjustment
-         * @param divisor  adjustment
-         *
-         * @return
-         * @throws IllegalArgumentException if the two argument arrays are not the same length
-         */
-        public static double[] divide(int[] dividend, int[] divisor)
+        /// <summary>
+        /// Returns an array whose members are the quotient of the dividend array values and the divisor array values.
+        /// </summary>
+        /// <param name="dividend"></param>
+        /// <param name="divisor"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">Throws if the two argument arrays are not the same length
+        /// .</exception>
+        public static double[] Divide(int[] dividend, int[] divisor)
         {
 
             if (dividend.Length != divisor.Length)
@@ -905,19 +889,13 @@ namespace NeoCortexApi.DistributedComputeLib
             return quotient;
         }
 
-        /**
-         * Returns an array whose members are the quotient of the dividend array
-         * values and the divisor value.
-         *
-         * @param dividend
-         * @param divisor
-         * @param dividend adjustment
-         * @param divisor  adjustment
-         *
-         * @return
-         * @throws IllegalArgumentException if the two argument arrays are not the same length
-         */
-        public static double[] divide(double[] dividend, double divisor)
+        /// <summary>
+        /// Returns an array whose members are the quotient of the dividend array values and the divisor value.
+        /// </summary>
+        /// <param name="dividend"></param>
+        /// <param name="divisor"></param>
+        /// <returns></returns>
+        public static double[] Divide(double[] dividend, double divisor)
         {
             double[] quotient = new double[dividend.Length];
             double denom = 1;
@@ -957,19 +935,17 @@ namespace NeoCortexApi.DistributedComputeLib
         //    return quotient;
         //}
 
-        /**
-         * Returns an array whose members are the product of the multiplicand array
-         * values and the factor array values.
-         *
-         * @param multiplicand
-         * @param factor
-         * @param multiplicandAdjustment
-         * @param factorAdjustment
-         *
-         * @return
-         * @throws IllegalArgumentException if the two argument arrays are not the same length
-         */
-        public static double[] multiply(
+        /// <summary>
+        /// Returns an array whose members are the product of the multiplicand array
+        /// values and the factor array values.
+        /// </summary>
+        /// <param name="multiplicand"></param>
+        /// <param name="factor"></param>
+        /// <param name="multiplicandAdjustment"></param>
+        /// <param name="factorAdjustment"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">Throws if the two argument arrays are not the same length.</exception>
+        public static double[] Multiply(
             double[] multiplicand, double[] factor, double multiplicandAdjustment, double factorAdjustment)
         {
 
@@ -1010,19 +986,14 @@ namespace NeoCortexApi.DistributedComputeLib
             return retVal.ToArray();
         }
 
-        /**
-         * Returns an array whose members are the product of the multiplicand array
-         * values and the factor array values.
-         *
-         * @param multiplicand
-         * @param factor
-         * @param multiplicand adjustment
-         * @param factor       adjustment
-         *
-         * @return
-         * @throws IllegalArgumentException if the two argument arrays are not the same length
-         */
-        public static double[] multiply(double[] multiplicand, int[] factor)
+        /// <summary>
+        /// Returns an array whose members are the product of the multiplicand array values and the factor array values.
+        /// </summary>
+        /// <param name="multiplicand"></param>
+        /// <param name="factor"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">Throws if the two argument arrays are not the same length.</exception>
+        public static double[] Multiply(double[] multiplicand, int[] factor)
         {
 
             if (multiplicand.Length != factor.Length)
@@ -1038,15 +1009,13 @@ namespace NeoCortexApi.DistributedComputeLib
             return product;
         }
 
-        /**
-         * Returns a new array containing the result of multiplying
-         * each index of the specified array by the 2nd parameter.
-         *
-         * @param array
-         * @param d
-         * @return
-         */
-        public static int[] multiply(int[] array, int d)
+        /// <summary>
+        /// Returns a new array containing the result of multiplying each index of the specified array by the 2nd parameter.
+        /// </summary>
+        /// <param name="array"></param>
+        /// <param name="d"></param>
+        /// <returns></returns>
+        public static int[] Multiply(int[] array, int d)
         {
             int[] product = new int[array.Length];
             for (int i = 0; i < array.Length; i++)
@@ -1056,15 +1025,13 @@ namespace NeoCortexApi.DistributedComputeLib
             return product;
         }
 
-        /**
-         * Returns a new array containing the result of multiplying
-         * each index of the specified array by the 2nd parameter.
-         *
-         * @param array
-         * @param d
-         * @return
-         */
-        public static double[] multiply(double[] array, double d)
+        /// <summary>
+        /// Returns a new array containing the result of multiplying each index of the specified array by the 2nd parameter.
+        /// </summary>
+        /// <param name="array"></param>
+        /// <param name="d"></param>
+        /// <returns></returns>
+        public static double[] Multiply(double[] array, double d)
         {
             double[] product = new double[array.Length];
             for (int i = 0; i < array.Length; i++)
@@ -1074,15 +1041,13 @@ namespace NeoCortexApi.DistributedComputeLib
             return product;
         }
 
-        /**
-         * Returns an integer array containing the result of subtraction
-         * operations between corresponding indexes of the specified arrays.
-         *
-         * @param minuend
-         * @param subtrahend
-         * @return
-         */
-        public static int[] subtract(int[] minuend, int[] subtrahend)
+        /// <summary>
+        /// Returns an integer array containing the result of subtraction operations between corresponding indexes of the specified arrays.
+        /// </summary>
+        /// <param name="minuend"></param>
+        /// <param name="subtrahend"></param>
+        /// <returns></returns>
+        public static int[] Subtract(int[] minuend, int[] subtrahend)
         {
             int[] retVal = new int[minuend.Length];
             for (int i = 0; i < minuend.Length; i++)
@@ -1109,12 +1074,12 @@ namespace NeoCortexApi.DistributedComputeLib
         //       .collect(Collectors.toList());
         //}
 
-        /**
-         * Returns the average of all the specified array contents.
-         * @param arr
-         * @return
-         */
-        public static double average(int[] arr)
+        /// <summary>
+        /// Returns the average of all the specified array contents.
+        /// </summary>
+        /// <param name="arr"></param>
+        /// <returns></returns>
+        public static double Average(int[] arr)
         {
             int sum = 0;
             for (int i = 0; i < arr.Length; i++)
@@ -1124,12 +1089,12 @@ namespace NeoCortexApi.DistributedComputeLib
             return sum / (double)arr.Length;
         }
 
-        /**
-         * Returns the average of all the specified array contents.
-         * @param arr
-         * @return
-         */
-        public static double average(double[] arr)
+        /// <summary>
+        /// Returns the average of all the specified array contents.
+        /// </summary>
+        /// <param name="arr"></param>
+        /// <returns></returns>
+        public static double Average(double[] arr)
         {
             double sum = 0;
             for (int i = 0; i < arr.Length; i++)
@@ -1139,13 +1104,13 @@ namespace NeoCortexApi.DistributedComputeLib
             return sum / (double)arr.Length;
         }
 
-        /**
-         * Computes and returns the variance.
-         * @param arr
-         * @param mean
-         * @return
-         */
-        public static double variance(double[] arr, double mean)
+        /// <summary>
+        /// Computes and returns the variance.
+        /// </summary>
+        /// <param name="arr"></param>
+        /// <param name="mean"></param>
+        /// <returns></returns>
+        public static double Variance(double[] arr, double mean)
         {
             double accum = 0.0;
             double dev = 0.0;
@@ -1162,25 +1127,23 @@ namespace NeoCortexApi.DistributedComputeLib
             return var;
         }
 
-        /**
-         * Computes and returns the variance.
-         * @param arr
-         * @return
-         */
-        public static double variance(double[] arr)
+        /// <summary>
+        /// Computes and returns the variance.
+        /// </summary>
+        /// <param name="arr"></param>
+        /// <returns></returns>
+        public static double Variance(double[] arr)
         {
-            return variance(arr, average(arr));
+            return Variance(arr, Average(arr));
         }
 
-        /**
-         * Returns the passed in array with every value being altered
-         * by the addition of the specified amount.
-         *
-         * @param arr
-         * @param amount
-         * @return
-         */
-        public static int[] add(int[] arr, int amount)
+        /// <summary>
+        /// Returns the passed in array with every value being altered by the addition of the specified amount.
+        /// </summary>
+        /// <param name="arr"></param>
+        /// <param name="amount"></param>
+        /// <returns></returns>
+        public static int[] Add(int[] arr, int amount)
         {
             for (int i = 0; i < arr.Length; i++)
             {
@@ -1189,16 +1152,13 @@ namespace NeoCortexApi.DistributedComputeLib
             return arr;
         }
 
-        /**
-         * Returns the passed in array with every value being altered
-         * by the addition of the specified double amount at the same
-         * index
-         *
-         * @param arr
-         * @param amount
-         * @return
-         */
-        public static int[] i_add(int[] arr, int[] amount)
+        /// <summary>
+        /// Returns the passed in array with every value being altered by the addition of the specified double amount at the same index.
+        /// </summary>
+        /// <param name="arr"></param>
+        /// <param name="amount"></param>
+        /// <returns></returns>
+        public static int[] IntAdd(int[] arr, int[] amount)
         {
             for (int i = 0; i < arr.Length; i++)
             {
@@ -1207,16 +1167,13 @@ namespace NeoCortexApi.DistributedComputeLib
             return arr;
         }
 
-        /**
-         * Returns the passed in array with every value being altered
-         * by the addition of the specified double amount at the same
-         * index
-         *
-         * @param arr
-         * @param amount
-         * @return
-         */
-        public static double[] d_add(double[] arr, double[] amount)
+        /// <summary>
+        /// Returns the passed in array with every value being altered by the addition of the specified double amount at the same index.
+        /// </summary>
+        /// <param name="arr"></param>
+        /// <param name="amount"></param>
+        /// <returns></returns>
+        public static double[] DoubleAdd(double[] arr, double[] amount)
         {
             for (int i = 0; i < arr.Length; i++)
             {
@@ -1225,15 +1182,13 @@ namespace NeoCortexApi.DistributedComputeLib
             return arr;
         }
 
-        /**
-         * Returns the passed in array with every value being altered
-         * by the addition of the specified double amount
-         *
-         * @param arr
-         * @param amount
-         * @return
-         */
-        public static double[] d_add(double[] arr, double amount)
+        /// <summary>
+        /// Returns the passed in array with every value being altered by the addition of the specified double amount
+        /// </summary>
+        /// <param name="arr"></param>
+        /// <param name="amount"></param>
+        /// <returns></returns>
+        public static double[] DoubleAdd(double[] arr, double amount)
         {
             for (int i = 0; i < arr.Length; i++)
             {
@@ -1242,12 +1197,12 @@ namespace NeoCortexApi.DistributedComputeLib
             return arr;
         }
 
-        /**
-         * Returns the sum of all contents in the specified array.
-         * @param array
-         * @return
-         */
-        public static int sum(int[] array)
+        /// <summary>
+        /// Returns the sum of all contents in the specified array.
+        /// </summary>
+        /// <param name="array"></param>
+        /// <returns></returns>
+        public static int Sum(int[] array)
         {
             int sum = 0;
             for (int i = 0; i < array.Length; i++)
@@ -1280,12 +1235,12 @@ namespace NeoCortexApi.DistributedComputeLib
         //    return retVal.toArray();
         //}
 
-        /**
-         * Returns the sum of all contents in the specified array.
-         * @param array
-         * @return
-         */
-        public static double sum(double[] array)
+        /// <summary>
+        /// Returns the sum of all contents in the specified array.
+        /// </summary>
+        /// <param name="array"></param>
+        /// <returns></returns>
+        public static double Sum(double[] array)
         {
             double sum = 0;
             for (int i = 0; i < array.Length; i++)
@@ -1337,15 +1292,14 @@ namespace NeoCortexApi.DistributedComputeLib
         //    return "[]";
         //}
 
-        /**
-         * Another utility to account for the difference between Python and Java.
-         * Here the modulo operator is defined differently.
-         *
-         * @param n
-         * @param divisor
-         * @return
-         */
-        public static double positiveRemainder(double n, double divisor)
+        /// <summary>
+        /// Another utility to account for the difference between Python and Java.
+        /// Here the modulo operator is defined differently.
+        /// </summary>
+        /// <param name="n"></param>
+        /// <param name="divisor"></param>
+        /// <returns></returns>
+        public static double PositiveRemainder(double n, double divisor)
         {
             if (n >= 0)
             {
@@ -1358,15 +1312,13 @@ namespace NeoCortexApi.DistributedComputeLib
             }
         }
 
-        /**
-         * Returns an array which starts from lowerBounds (inclusive) and
-         * ends at the upperBounds (exclusive).
-         *
-         * @param lowerBounds
-         * @param upperBounds
-         * @return
-         */
-        public static int[] range(int lowerBounds, int upperBounds)
+        /// <summary>
+        /// Returns an array which starts from lowerBounds (inclusive) and ends at the upperBounds (exclusive).
+        /// </summary>
+        /// <param name="lowerBounds"></param>
+        /// <param name="upperBounds"></param>
+        /// <returns></returns>
+        public static int[] Range(int lowerBounds, int upperBounds)
         {
             List<int> ints = new List<int>();
             for (int i = lowerBounds; i < upperBounds; i++)
@@ -1414,13 +1366,12 @@ namespace NeoCortexApi.DistributedComputeLib
         //    return ints.toArray();
         //}
 
-        /**
-         * Fisher-Yates implementation which shuffles the array contents.
-         * 
-         * @param array     the array of ints to shuffle.
-         * @return shuffled array
-         */
-        public static int[] shuffle(int[] array)
+        /// <summary>
+        /// Fisher-Yates implementation which shuffles the array contents.
+        /// </summary>
+        /// <param name="array">the array of ints to shuffle.</param>
+        /// <returns>shuffled array</returns>
+        public static int[] Shuffle(int[] array)
         {
             int index;
             Random random = new Random(42);
@@ -1437,17 +1388,16 @@ namespace NeoCortexApi.DistributedComputeLib
             return array;
         }
 
-        /**
-         * Replaces the range specified by "start" and "end" of "orig" with the 
-         * array of replacement ints found in "replacement".
-         * 
-         * @param start         start index of "orig" to be replaced
-         * @param end           end index of "orig" to be replaced
-         * @param orig          the array containing entries to be replaced by "replacement"
-         * @param replacement   the array of ints to put in "orig" in the indicated indexes
-         * @return
-         */
-        public static int[] replace(int start, int end, int[] orig, int[] replacement)
+        /// <summary>
+        /// Replaces the range specified by "start" and "end" of "orig" with the 
+        /// array of replacement ints found in "replacement".
+        /// </summary>
+        /// <param name="start">start index of "orig" to be replaced</param>
+        /// <param name="end">end index of "orig" to be replaced</param>
+        /// <param name="orig">the array containing entries to be replaced by "replacement"</param>
+        /// <param name="replacement">the array of ints to put in "orig" in the indicated indexes</param>
+        /// <returns></returns>
+        public static int[] Replace(int start, int end, int[] orig, int[] replacement)
         {
             for (int i = start, j = 0; i < end; i++, j++)
             {
@@ -1472,13 +1422,12 @@ namespace NeoCortexApi.DistributedComputeLib
         //        i->l.indexOf(i) == -1 ? source[i] : substitutes[i]).toArray();
         //}
 
-        /**
-         * Returns a sorted unique (dupicates removed) array of integers
-         *
-         * @param nums an unsorted array of integers with possible duplicates.
-         * @return
-         */
-        public static int[] unique(int[] nums)
+        /// <summary>
+        /// Returns a sorted unique (dupicates removed) array of integers
+        /// </summary>
+        /// <param name="nums">an unsorted array of integers with possible duplicates.</param>
+        /// <returns></returns>
+        public static int[] Unique(int[] nums)
         {
             HashSet<int> set = new HashSet<int>(nums);
             int[] result = new int[set.Count];
@@ -1488,19 +1437,19 @@ namespace NeoCortexApi.DistributedComputeLib
             return result;
         }
 
-        /**
-         * Helper Class for recursive coordinate assembling
-         */
+        /// <summary>
+        /// Helper Class for recursive coordinate assembling
+        /// </summary>
         private class CoordinateAssembler
         {
             readonly private int[] position;
             readonly private List<int[]> dimensions;
             readonly List<int[]> result = new List<int[]>();
 
-            public static List<int[]> assemble(List<int[]> dimensions)
+            public static List<int[]> Assemble(List<int[]> dimensions)
             {
                 CoordinateAssembler assembler = new CoordinateAssembler(dimensions);
-                assembler.process(dimensions.Count);
+                assembler.Process(dimensions.Count);
                 return assembler.result;
             }
 
@@ -1510,7 +1459,7 @@ namespace NeoCortexApi.DistributedComputeLib
                 position = new int[dimensions.Count];
             }
 
-            private void process(int level)
+            private void Process(int level)
             {
                 if (level == 0)
                 {// terminating condition
@@ -1525,35 +1474,29 @@ namespace NeoCortexApi.DistributedComputeLib
                     for (int i = 0; i < currentDimension.Length; i++)
                     {
                         position[index] = currentDimension[i];
-                        process(level - 1);
+                        Process(level - 1);
                     }
                 }
             }
         }
 
-
-        /**
-         * Called to merge a list of dimension arrays into a sequential row-major indexed
-         * list of coordinates.
-         *
-         * @param dimensions a list of dimension arrays, each array being a dimension
-         *                   of an n-dimensional array.
-         * @return a list of n-dimensional coordinates in row-major format.
-         */
-        public static List<int[]> dimensionsToCoordinateList(List<int[]> dimensions)
+        /// <summary>
+        /// Called to merge a list of dimension arrays into a sequential row-major indexed list of coordinates.
+        /// </summary>
+        /// <param name="dimensions">a list of dimension arrays, each array being a dimension of an n-dimensional array.</param>
+        /// <returns>a list of n-dimensional coordinates in row-major format.</returns>
+        public static List<int[]> DimensionsToCoordinateList(List<int[]> dimensions)
         {
-            return CoordinateAssembler.assemble(dimensions);
+            return CoordinateAssembler.Assemble(dimensions);
         }
 
-        /**
-         * Sets the values in the specified values array at the indexes specified,
-         * to the value "setTo".
-         *
-         * @param values  the values to alter if at the specified indexes.
-         * @param indexes the indexes of the values array to alter
-         * @param setTo   the value to set at the specified indexes.
-         */
-        public static void setIndexesTo(double[] values, int[] indexes, double setTo)
+        /// <summary>
+        /// Sets the values in the specified values array at the indexes specified, to the value "setTo".
+        /// </summary>
+        /// <param name="values">the values to alter if at the specified indexes.</param>
+        /// <param name="indexes">the indexes of the values array to alter</param>
+        /// <param name="setTo">the value to set at the specified indexes.</param>
+        public static void SetIndexesTo(double[] values, int[] indexes, double setTo)
         {
             for (int i = 0; i < indexes.Length; i++)
             {
@@ -1561,15 +1504,13 @@ namespace NeoCortexApi.DistributedComputeLib
             }
         }
 
-        /**
-         * Sets the values in the specified values array at the indexes specified,
-         * to the value "setTo".
-         *
-         * @param values  the values to alter if at the specified indexes.
-         * @param indexes the indexes of the values array to alter
-         * @param setTo   the value to set at the specified indexes.
-         */
-        public static void setIndexesTo(int[] values, int[] indexes, int setTo)
+        /// <summary>
+        /// Sets the values in the specified values array at the indexes specified, to the value "setTo".
+        /// </summary>
+        /// <param name="values">the values to alter if at the specified indexes.</param>
+        /// <param name="indexes">the indexes of the values array to alter</param>
+        /// <param name="setTo">the value to set at the specified indexes.</param>
+        public static void SetIndexesTo(int[] values, int[] indexes, int setTo)
         {
             for (int i = 0; i < indexes.Length; i++)
             {
@@ -1577,17 +1518,16 @@ namespace NeoCortexApi.DistributedComputeLib
             }
         }
 
-        /**
-         * Sets the values in range start to stop to the value specified. If
-         * stop &lt; 0, then stop indicates the number of places counting from the
-         * length of "values" back.
-         *
-         * @param values the array to alter
-         * @param start  the start index (inclusive)
-         * @param stop   the end index (exclusive)
-         * @param setTo  the value to set the indexes to
-         */
-        public static void setRangeTo(int[] values, int start, int stop, int setTo)
+        /// <summary>
+        /// Sets the values in range start to stop to the value specified. If
+        /// stop &lt; 0, then stop indicates the number of places counting from the
+        /// length of "values" back.
+        /// </summary>
+        /// <param name="values">the array to alter</param>
+        /// <param name="start">the start index (inclusive)</param>
+        /// <param name="stop">the end index (exclusive)</param>
+        /// <param name="setTo">the value to set the indexes to</param>
+        public static void SetRangeTo(int[] values, int start, int stop, int setTo)
         {
             stop = stop < 0 ? values.Length + stop : stop;
             for (int i = start; i < stop; i++)
@@ -1629,7 +1569,15 @@ namespace NeoCortexApi.DistributedComputeLib
          * @param random     a random number generator
          * @return a sample of numbers of the specified size
          */
-        public static int[] sample(int[] choices, int[] selectedIndices, Random random)
+        /// <summary>
+        /// 
+        /// 
+        /// </summary>
+        /// <param name="choices">the list of choices to select from</param>
+        /// <param name="selectedIndices"></param>
+        /// <param name="random">a random number generator</param>
+        /// <returns></returns>
+        public static int[] Sample(int[] choices, int[] selectedIndices, Random random)
         {
             // TIntArrayList choiceSupply = new TIntArrayList(choices);
             List<int> choiceSupply = new List<int>(choices);
@@ -1644,13 +1592,13 @@ namespace NeoCortexApi.DistributedComputeLib
             return selectedIndices.OrderBy(i => i).ToArray();
         }
 
-        /**
-         * Returns a double[] filled with random doubles of the specified size.
-         * @param sampleSize
-         * @param random
-         * @return
-         */
-        public static double[] sample(int sampleSize, Random random)
+        /// <summary>
+        /// Returns a double[] filled with random doubles of the specified size.
+        /// </summary>
+        /// <param name="sampleSize"></param>
+        /// <param name="random"></param>
+        /// <returns></returns>
+        public static double[] Sample(int sampleSize, Random random)
         {
             double[] sample = new double[sampleSize];
             for (int i = 0; i < sampleSize; i++)
@@ -1660,20 +1608,16 @@ namespace NeoCortexApi.DistributedComputeLib
             return sample;
         }
 
-        /**
-         * Ensures that each entry in the specified array has a min value
-         * equal to or greater than the specified min and a maximum value less
-         * than or equal to the specified max.
-         * For example, if min = 0, then negative permanence values will be rounded to 0.
-         * Similarly, high permanences will be rounded by maximal value.
-         *
-         * @param values the values to clip
-         * @param min    the minimum value
-         * @param max    the maximum value
-         */
-
-
-        public static double[] clip(double[] values, double min, double max)
+        /// <summary>
+        /// Ensures that each entry in the specified array has a min value equal to or greater than the specified min and a maximum value less
+        /// than or equal to the specified max. For example, if min = 0, then negative permanence values will be rounded to 0. Similarly, high 
+        /// permanences will be rounded by maximal value.
+        /// </summary>
+        /// <param name="values">the values to clip</param>
+        /// <param name="min">the minimum value</param>
+        /// <param name="max">the maximum value</param>
+        /// <returns></returns>
+        public static double[] Clip(double[] values, double min, double max)
         {
             for (int i = 0; i < values.Length; i++)
             {
@@ -1682,16 +1626,16 @@ namespace NeoCortexApi.DistributedComputeLib
             return values;
         }
 
-        /**
-         * Ensures that each entry in the specified array has a min value
-         * equal to or greater than the min at the specified index and a maximum value less
-         * than or equal to the max at the specified index.
-         *
-         * @param values the values to clip
-         * @param min    the minimum value
-         * @param max    the maximum value
-         */
-        public static int[] clip(int[] values, int[] min, int[] max)
+        /// <summary>
+        /// Ensures that each entry in the specified array has a min value
+        /// equal to or greater than the min at the specified index and a maximum value less
+        /// than or equal to the max at the specified index.
+        /// </summary>
+        /// <param name="values">the values to clip</param>
+        /// <param name="min">the minimum value</param>
+        /// <param name="max">the maximum value</param>
+        /// <returns></returns>
+        public static int[] Clip(int[] values, int[] min, int[] max)
         {
             for (int i = 0; i < values.Length; i++)
             {
@@ -1700,16 +1644,16 @@ namespace NeoCortexApi.DistributedComputeLib
             return values;
         }
 
-        /**
-         * Ensures that each entry in the specified array has a min value
-         * equal to or greater than the min at the specified index and a maximum value less
-         * than or equal to the max at the specified index.
-         *
-         * @param values the values to clip
-         * @param max    the minimum value
-         * @param adj    the adjustment amount
-         */
-        public static int[] clip(int[] values, int[] max, int adj)
+        /// <summary>
+        /// Ensures that each entry in the specified array has a min value
+        /// equal to or greater than the min at the specified index and a maximum value less
+        /// than or equal to the max at the specified index.
+        /// </summary>
+        /// <param name="values">the values to clip</param>
+        /// <param name="max">the minimum value</param>
+        /// <param name="adj">the adjustment amount</param>
+        /// <returns></returns>
+        public static int[] Clip(int[] values, int[] max, int adj)
         {
             for (int i = 0; i < values.Length; i++)
             {
@@ -1718,16 +1662,13 @@ namespace NeoCortexApi.DistributedComputeLib
             return values;
         }
 
-        /**
-         * Returns the count of values in the specified array that are
-         * greater than the specified compare value
-         *
-         * @param compare the value to compare to
-         * @param array   the values being compared
-         *
-         * @return the count of values greater
-         */
-        public static int valueGreaterCount(double compare, double[] array)
+        /// <summary>
+        /// Returns the count of values in the specified array that are greater than the specified compare value
+        /// </summary>
+        /// <param name="compare">the value to compare to</param>
+        /// <param name="array">the values being compared</param>
+        /// <returns>the count of values greater</returns>
+        public static int ValueGreaterCount(double compare, double[] array)
         {
             int count = 0;
             for (int i = 0; i < array.Length; i++)
@@ -1741,16 +1682,13 @@ namespace NeoCortexApi.DistributedComputeLib
             return count;
         }
 
-        /**
-         * Returns the count of values in the specified array that are
-         * greater than or equal to, the specified compare value.
-         *
-         * @param compare the value to compare to
-         * @param array   the values being compared
-         *
-         * @return the count of values greater
-         */
-        public static int valueGreaterOrEqualCount(double compare, double[] array)
+        /// <summary>
+        /// Returns the count of values in the specified array that are greater than or equal to, the specified compare value.
+        /// </summary>
+        /// <param name="compare">the value to compare to</param>
+        /// <param name="array">the values being compared</param>
+        /// <returns></returns>
+        public static int ValueGreaterOrEqualCount(double compare, double[] array)
         {
             int count = 0;
             for (int i = 0; i < array.Length; i++)
@@ -1764,15 +1702,14 @@ namespace NeoCortexApi.DistributedComputeLib
             return count;
         }
 
-        /**
-         * Returns the number of values in the specified array that are greater than the specified 'compare' value.
-         *
-         * @param compare the value to compare to
-         * @param array   the values being compared
-         *
-         * @return the count of values greater
-         */
-        public static int valueGreaterCountAtIndex(double compare, double[] array, int[] indexes)
+        /// <summary>
+        /// Returns the number of values at the the specified indexes in the specified array that are greater than the specified 'compare' value.
+        /// </summary>
+        /// <param name="compare">the value to compare to</param>
+        /// <param name="array">the values being compared</param>
+        /// <param name="indexes"></param>
+        /// <returns>the count of values greater</returns>
+        public static int ValueGreaterCountAtIndex(double compare, double[] array, int[] indexes)
         {
             int count = 0;
             for (int i = 0; i < indexes.Length; i++)
@@ -1786,13 +1723,13 @@ namespace NeoCortexApi.DistributedComputeLib
             return count;
         }
 
-        /**
-         * Returns an array containing the n greatest values.
-         * @param array
-         * @param n
-         * @return
-         */
-        public static int[] nGreatest(double[] array, int n)
+        /// <summary>
+        /// Returns an array containing the n greatest values.
+        /// </summary>
+        /// <param name="array"></param>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        public static int[] N_Greatest(double[] array, int n)
         {
             Dictionary<double, int> places = new Dictionary<double, int>();
             int i;
@@ -1816,12 +1753,12 @@ namespace NeoCortexApi.DistributedComputeLib
             return retVal;
         }
 
-        /**
-         * Raises the values in the specified array by the amount specified
-         * @param amount the amount to raise the values
-         * @param values the values to raise
-         */
-        public static void raiseValuesBy(double amount, double[] values)
+        /// <summary>
+        /// Raises the values in the specified array by the amount specified.
+        /// </summary>
+        /// <param name="amount">the amount to raise the values</param>
+        /// <param name="values">the values to raise</param>
+        public static void RaiseValuesBy(double amount, double[] values)
         {
             for (int i = 0; i < values.Length; i++)
             {
@@ -1829,12 +1766,13 @@ namespace NeoCortexApi.DistributedComputeLib
             }
         }
 
-        /**
-         * Raises the values at the indexes specified by the amount specified.
-         * @param amount the amount to raise the values
-         * @param values the values to raise
-         */
-        public static void raiseValuesBy(double amount, double[] values, int[] indexesToRaise)
+        /// <summary>
+        /// Raises the values at the indexes specified by the amount specified.
+        /// </summary>
+        /// <param name="amount">the amount to raise the values</param>
+        /// <param name="values">the values to raise</param>
+        /// <param name="indexesToRaise"></param>
+        public static void RaiseValuesBy(double amount, double[] values, int[] indexesToRaise)
         {
             for (int i = 0; i < indexesToRaise.Length; i++)
             {
@@ -1842,12 +1780,12 @@ namespace NeoCortexApi.DistributedComputeLib
             }
         }
 
-        /**
-         * Raises the values at the indexes specified by the amount specified.
-         * @param amounts the amounts to raise the values
-         * @param values the values to raise
-         */
-        public static void raiseValuesBy(double[] amounts, double[] values)
+        /// <summary>
+        /// Raises the values at the indexes specified by the amount specified.
+        /// </summary>
+        /// <param name="amounts">the amounts to raise the values</param>
+        /// <param name="values">the values to raise</param>
+        public static void RaiseValuesBy(double[] amounts, double[] values)
         {
             for (int i = 0; i < values.Length; i++)
             {
@@ -1855,14 +1793,13 @@ namespace NeoCortexApi.DistributedComputeLib
             }
         }
 
-        /**
-         * Raises the values at the indicated indexes, by the amount specified
-         *
-         * @param amount
-         * @param indexes
-         * @param values
-         */
-        public static void raiseValuesBy(int amount, int[] indexes, int[] values)
+        /// <summary>
+        /// Raises the values at the indicated indexes, by the amount specified
+        /// </summary>
+        /// <param name="amount"></param>
+        /// <param name="indexes"></param>
+        /// <param name="values"></param>
+        public static void RaiseValuesBy(int amount, int[] indexes, int[] values)
         {
             for (int i = 0; i < indexes.Length; i++)
             {
@@ -1916,14 +1853,13 @@ namespace NeoCortexApi.DistributedComputeLib
         //    return retVal.toArray();
         //}
 
-        /**
-         * Returns a flag indicating whether the specified array
-         * is a sparse array of 0's and 1's or not.
-         * 
-         * @param ia
-         * @return
-         */
-        public static bool isSparse(int[] ia)
+
+        /// <summary>
+        /// Returns a flag indicating whether the specified array is a sparse array of 0's and 1's or not.
+        /// </summary>
+        /// <param name="ia"></param>
+        /// <returns></returns>
+        public static bool IsSparse(int[] ia)
         {
             if (ia == null || ia.Length < 3)
                 return false;
@@ -2005,14 +1941,14 @@ namespace NeoCortexApi.DistributedComputeLib
         //    return retVal.toArray();
         //}
 
-        /**
-         * Makes all values in the specified array which are less than or equal to the specified
-         * "x" value, equal to the specified "y".
-         * @param array
-         * @param x     the comparison
-         * @param y     the value to set if the comparison fails
-         */
-        public static void lessThanOrEqualXThanSetToY(IDistributedArray array, double x, double y)
+        /// <summary>
+        /// Makes all values in the specified array which are less than or equal to the specified
+        /// "x" value, equal to the specified "y".
+        /// </summary>
+        /// <param name="array"></param>
+        /// <param name="x">the comparison</param>
+        /// <param name="y">the value to set if the comparison fails</param>
+        public static void LessThanOrEqualXThanSetToY(IDistributedArray array, double x, double y)
         {
             for (int i = 0; i < array.Count; i++)
             {
@@ -2020,14 +1956,13 @@ namespace NeoCortexApi.DistributedComputeLib
             }
         }
 
-        /**
-         * Makes all values in the specified array which are less than the specified
-         * "x" value, equal to the specified "y".
-         * @param array
-         * @param x     the comparison
-         * @param y     the value to set if the comparison fails
-         */
-        public static void lessThanXThanSetToY(IDistributedArray array, double x, double y)
+        /// <summary>
+        /// Makes all values in the specified array which are less than the specified "x" value, equal to the specified "y".
+        /// </summary>
+        /// <param name="array"></param>
+        /// <param name="x">the comparison</param>
+        /// <param name="y">the value to set if the comparison fails</param>
+        public static void LessThanXThanSetToY(IDistributedArray array, double x, double y)
         {
             for (int i = 0; i < array.Count; i++)
             {
@@ -2096,14 +2031,14 @@ namespace NeoCortexApi.DistributedComputeLib
         //    }
         //}
 
-        /**
-         * Sets value to "y" in "targetB" if the value in the same index in "sourceA" is bigger than "x".
-         * @param sourceA array to compare elements with X
-         * @param targetB array to set elements to Y
-         * @param x     the comparison
-         * @param y     the value to set if the comparison fails
-         */
-        public static void greaterThanXThanSetToYInB(IDistributedArray sourceA, IDistributedArray targetB, int x, double y)
+        /// <summary>
+        /// Sets value to "y" in "targetB" if the value in the same index in "sourceA" is bigger than "x".
+        /// </summary>
+        /// <param name="sourceA">array to compare elements with X</param>
+        /// <param name="targetB">array to set elements to Y</param>
+        /// <param name="x">the comparison</param>
+        /// <param name="y">the value to set if the comparison fails</param>
+        public static void GreaterThanXThanSetToYInB(IDistributedArray sourceA, IDistributedArray targetB, int x, double y)
         {
             for (int i = 0; i < sourceA.Count; i++)
             {
@@ -2229,12 +2164,12 @@ namespace NeoCortexApi.DistributedComputeLib
         //    return index;
         //}
 
-        /**
-         * Returns the maximum value in the specified array
-         * @param array
-         * @return
-         */
-        public static int max(int[] array)
+        /// <summary>
+        /// Returns the maximum value in the specified array
+        /// </summary>
+        /// <param name="array"></param>
+        /// <returns></returns>
+        public static int Max(int[] array)
         {
             int max = int.MinValue;
             for (int i = 0; i < array.Length; i++)
@@ -2247,12 +2182,12 @@ namespace NeoCortexApi.DistributedComputeLib
             return max;
         }
 
-        /**
-         * Returns the maximum value in the specified array
-         * @param array
-         * @return
-         */
-        public static double max(double[] array)
+        /// <summary>
+        /// Returns the maximum value in the specified array
+        /// </summary>
+        /// <param name="array"></param>
+        /// <returns></returns>
+        public static double Max(double[] array)
         {
             double max = Double.MinValue;
             for (int i = 0; i < array.Length; i++)
@@ -2265,14 +2200,12 @@ namespace NeoCortexApi.DistributedComputeLib
             return max;
         }
 
-        /**
-         * Returns a new array containing the items specified from
-         * the source array by the indexes specified.
-         *
-         * @param source
-         * @param indexes
-         * @return
-         */
+        /// <summary>
+        /// Returns a new array containing the items specified from the source array by the indexes specified.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="indexes"></param>
+        /// <returns></returns>
         public static double[] ListOfValuesByIndicies(double[] source, int[] indexes)
         {
             double[] retVal = new double[indexes.Length];
@@ -2283,15 +2216,13 @@ namespace NeoCortexApi.DistributedComputeLib
             return retVal;
         }
 
-        /**
-         * Returns a new array containing the items specified from
-         * the source array by the indexes specified.
-         *
-         * @param source
-         * @param indexes
-         * @return
-         */
-        public static int[] sub(int[] source, int[] indexes)
+        /// <summary>
+        /// Returns a new array containing the items specified from the source array by the indexes specified.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="indexes"></param>
+        /// <returns></returns>
+        public static int[] Sub(int[] source, int[] indexes)
         {
             int[] retVal = new int[indexes.Length];
             for (int i = 0; i < indexes.Length; i++)
@@ -2301,15 +2232,13 @@ namespace NeoCortexApi.DistributedComputeLib
             return retVal;
         }
 
-        /**
-         * Returns a new 2D array containing the items specified from
-         * the source array by the indexes specified.
-         *
-         * @param source
-         * @param indexes
-         * @return
-         */
-        public static int[][] sub(int[][] source, int[] indexes)
+        /// <summary>
+        /// Returns a new 2D array containing the items specified from the source array by the indexes specified.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="indexes"></param>
+        /// <returns></returns>
+        public static int[][] Sub(int[][] source, int[] indexes)
         {
             int[][] retVal = new int[indexes.Length][];
             for (int i = 0; i < indexes.Length; i++)
@@ -2319,12 +2248,12 @@ namespace NeoCortexApi.DistributedComputeLib
             return retVal;
         }
 
-        /**
-         * Returns the minimum value in the specified array
-         * @param array
-         * @return
-         */
-        public static int minInt(IDistributedArray array)
+        /// <summary>
+        /// Returns the minimum value in the specified array
+        /// </summary>
+        /// <param name="array"></param>
+        /// <returns></returns>
+        public static int MinInt(IDistributedArray array)
         {
             int min = int.MaxValue;
             for (int i = 0; i < array.Count; i++)
@@ -2337,12 +2266,12 @@ namespace NeoCortexApi.DistributedComputeLib
             return min;
         }
 
-        /**
-         * Returns the minimum value in the specified array
-         * @param array
-         * @return
-         */
-        public static double minDouble(IDistributedArray array)
+        /// <summary>
+        /// Returns the minimum value in the specified array
+        /// </summary>
+        /// <param name="array"></param>
+        /// <returns></returns>
+        public static double MinDouble(IDistributedArray array)
         {
             double min = Double.MaxValue;
             for (int i = 0; i < array.Count; i++)
@@ -2355,14 +2284,12 @@ namespace NeoCortexApi.DistributedComputeLib
             return min;
         }
 
-        /**
-         * Returns a copy of the specified integer array in
-         * reverse order
-         *
-         * @param d
-         * @return
-         */
-        public static int[] reverse(int[] d)
+        /// <summary>
+        /// Returns a copy of the specified integer array in reverse order
+        /// </summary>
+        /// <param name="d"></param>
+        /// <returns></returns>
+        public static int[] Reverse(int[] d)
         {
             int[] ret = new int[d.Length];
             for (int i = 0, j = d.Length - 1; j >= 0; i++, j--)
@@ -2372,14 +2299,12 @@ namespace NeoCortexApi.DistributedComputeLib
             return ret;
         }
 
-        /**
-         * Returns a copy of the specified double array in
-         * reverse order
-         *
-         * @param d
-         * @return
-         */
-        public static double[] reverse(double[] d)
+        /// <summary>
+        /// Returns a copy of the specified double array in reverse order
+        /// </summary>
+        /// <param name="d"></param>
+        /// <returns></returns>
+        public static double[] Reverse(double[] d)
         {
             double[] ret = new double[d.Length];
             for (int i = 0, j = d.Length - 1; j >= 0; i++, j--)
@@ -2389,15 +2314,13 @@ namespace NeoCortexApi.DistributedComputeLib
             return ret;
         }
 
-        /**
-         * Returns a new int array containing the or'd on bits of
-         * both arg1 and arg2.
-         *
-         * @param arg1
-         * @param arg2
-         * @return
-         */
-        public static int[] or(int[] arg1, int[] arg2)
+        /// <summary>
+        /// Returns a new int array containing the or'd on bits of both arg1 and arg2.
+        /// </summary>
+        /// <param name="arg1"></param>
+        /// <param name="arg2"></param>
+        /// <returns></returns>
+        public static int[] Or(int[] arg1, int[] arg2)
         {
             int[] retVal = new int[Math.Max(arg1.Length, arg2.Length)];
             for (int i = 0; i < arg1.Length; i++)
@@ -2407,15 +2330,13 @@ namespace NeoCortexApi.DistributedComputeLib
             return retVal;
         }
 
-        /**
-         * Returns a new int array containing the and'd bits of
-         * both arg1 and arg2.
-         *
-         * @param arg1
-         * @param arg2
-         * @return
-         */
-        public static int[] and(int[] arg1, int[] arg2)
+        /// <summary>
+        /// Returns a new int array containing the and'd bits of both arg1 and arg2.
+        /// </summary>
+        /// <param name="arg1"></param>
+        /// <param name="arg2"></param>
+        /// <returns></returns>
+        public static int[] And(int[] arg1, int[] arg2)
         {
             int[] retVal = new int[Math.Max(arg1.Length, arg2.Length)];
             for (int i = 0; i < arg1.Length; i++)
@@ -2425,27 +2346,25 @@ namespace NeoCortexApi.DistributedComputeLib
             return retVal;
         }
 
-        /**
-         * Copies the passed array <tt>original</tt>  into a new array except first element and returns it
-         *
-         * @param original the array from which a tail is taken
-         * @return a new array containing the tail from the original array
-         */
-        public static int[] tail(int[] original)
+        /// <summary>
+        /// Copies the passed array <c>original</c>  into a new array except first element and returns it
+        /// </summary>
+        /// <param name="original">the array from which a tail is taken</param>
+        /// <returns>a new array containing the tail from the original array</returns>
+        public static int[] Tail(int[] original)
         {
             int[] destination = new int[original.Length - 1];
             Array.Copy(original, 1, destination, 0, destination.Length);
             return destination;
         }
 
-        /**
-         * Set <tt></tt>value for <tt>array</tt> at specified position <tt>indexes</tt>
-         *
-         * @param array
-         * @param value
-         * @param indexes
-         */
-        public static void setValue(IDistributedArray array, int value, params int[] indexes)
+        /// <summary>
+        /// Set <c>value</c> for <c>array</c> at specified position <tt>indexes</tt>
+        /// </summary>
+        /// <param name="array"></param>
+        /// <param name="value"></param>
+        /// <param name="indexes"></param>
+        public static void SetValue(IDistributedArray array, int value, params int[] indexes)
         {
             array.SetValue(value, indexes);
             //if (indexes.Length == 1)
@@ -2458,13 +2377,13 @@ namespace NeoCortexApi.DistributedComputeLib
             //}
         }
 
-        /**
-         * Get <tt>value</tt> for <tt>array</tt> at specified position <tt>indexes</tt>
-         *
-         * @param array
-         * @param indexes
-         */
-        public static Object getValue(Array array, params int[] indexes)
+        /// <summary>
+        /// Get <c>value</c> for <c>array</c> at specified position <c>indexes</c>
+        /// </summary>
+        /// <param name="array"></param>
+        /// <param name="indexes"></param>
+        /// <returns></returns>
+        public static Object GetValue(Array array, params int[] indexes)
         {
             return array.GetValue(indexes);
             //Array slice = array;
@@ -2476,27 +2395,25 @@ namespace NeoCortexApi.DistributedComputeLib
             //return slice;
         }
 
-
-        /**
-         *Assigns the specified int value to each element of the specified any dimensional array
-         * of ints.
-         * @param array
-         * @param value
-         */
-        public static void fillArray(Object array, int value)
+        /// <summary>
+        /// Assigns the specified int value to each element of the specified any dimensional array of ints.
+        /// </summary>
+        /// <param name="array"></param>
+        /// <param name="value"></param>
+        public static void FillArray(Object array, int value)
         {
-            if (array is int[])
+            if (array is int[] intArray)
             {
-                for (int i = 0; i < ((int[])array).Length; i++)
+                for (int i = 0; i < intArray.Length; i++)
                 {
-                    ((int[])array)[i] = value;
+                    intArray[i] = value;
                 }
             }
-            else if (array is double[])
+            else if (array is double[] doubleArray)
             {
-                for (int i = 0; i < ((double[])array).Length; i++)
+                for (int i = 0; i < doubleArray.Length; i++)
                 {
-                    ((double[])array)[i] = value;
+                    doubleArray[i] = value;
                 }
             }
             else
@@ -2509,13 +2426,13 @@ namespace NeoCortexApi.DistributedComputeLib
             }
         }
 
-        public static void fillArray(Object array, double value)
+        public static void FillArray(Object array, double value)
         {
-            if (array is double[])
+            if (array is double[] doubleArray)
             {
-                for (int i = 0; i < ((double[])array).Length; i++)
+                for (int i = 0; i < doubleArray.Length; i++)
                 {
-                    ((double[])array)[i] = value;
+                    doubleArray[i] = value;
                 }
             }
             else if (array is int[])
@@ -2616,7 +2533,7 @@ namespace NeoCortexApi.DistributedComputeLib
             return result;
         }
 
-        
+
 
         /**
          * Convert multidimensional array to readable String
@@ -2704,8 +2621,8 @@ namespace NeoCortexApi.DistributedComputeLib
         //    return result;
         //}
 
-        public static bool AreEqual<TKey, TValue>(IDictionary<TKey, TValue> dict1, IDictionary<TKey, TValue> dict2) 
-        {          
+        public static bool AreEqual<TKey, TValue>(IDictionary<TKey, TValue> dict1, IDictionary<TKey, TValue> dict2)
+        {
             if (dict1.Count != dict2.Count)
                 return false;
 

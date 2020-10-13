@@ -1192,7 +1192,7 @@ namespace NeoCortexApi.Utility
         /// <param name="arr"></param>
         /// <param name="amount"></param>
         /// <returns></returns>
-        public static int[] add(int[] arr, int amount)
+        public static int[] Add(int[] arr, int amount)
         {
             for (int i = 0; i < arr.Length; i++)
             {
@@ -2501,18 +2501,18 @@ namespace NeoCortexApi.Utility
         /// <param name="value"></param>
         public static void FillArray(Object array, int value)
         {
-            if (array is int[])
+            if (array is int[] intArray)
             {
-                for (int i = 0; i < ((int[])array).Length; i++)
+                for (int i = 0; i < intArray.Length; i++)
                 {
-                    ((int[])array)[i] = value;
+                    intArray[i] = value;
                 }
             }
-            else if (array is double[])
+            else if (array is double[] doubleArray)
             {
-                for (int i = 0; i < ((double[])array).Length; i++)
+                for (int i = 0; i < doubleArray.Length; i++)
                 {
-                    ((double[])array)[i] = value;
+                    doubleArray[i] = value;
                 }
             }
             else
@@ -2532,11 +2532,11 @@ namespace NeoCortexApi.Utility
         /// <param name="value"></param>
         public static void FillArray(object array, double value)
         {
-            if (array is double[])
+            if (array is double[] doubleArray)
             {
-                for (int i = 0; i < ((double[])array).Length; i++)
+                for (int i = 0; i < doubleArray.Length; i++)
                 {
-                    ((double[])array)[i] = value;
+                    doubleArray[i] = value;
                 }
             }
             else if (array is int[])

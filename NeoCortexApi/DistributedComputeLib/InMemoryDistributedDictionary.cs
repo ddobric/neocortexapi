@@ -74,7 +74,7 @@ namespace NeoCortexApi.DistributedComputeLib
             }
         }
 
-        private int getPartitionIndex(int elementIndx)
+        private int GetPartitionIndex(int elementIndx)
         {
             return elementIndx % this.dictList.Length;
         }
@@ -146,13 +146,13 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public void Add(TKey key, TValue value)
         {
-            int partitionInd = getPartitionIndex(numElements++);
+            int partitionInd = GetPartitionIndex(numElements++);
             this.dictList[partitionInd].Add(key, value);
         }
 
         public void Add(KeyValuePair<TKey, TValue> item)
         {
-            int partitionInd = getPartitionIndex(++numElements);
+            int partitionInd = GetPartitionIndex(++numElements);
             this.dictList[partitionInd].Add(item.Key, item.Value);
         }
 

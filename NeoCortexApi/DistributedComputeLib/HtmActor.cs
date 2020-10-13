@@ -45,7 +45,7 @@ namespace NeoCortexApi.DistributedComputeLib
             {
                 this.Logger?.LogDebug($"Received message: '{msg.GetType().Name}', Id: {this.Id}");
 
-                var res = initializeColumns(msg);
+                var res = InitializeColumns(msg);
 
                 this.Logger?.LogInformation($"Completed message: '{msg.GetType().Name}'. min:{msg.MinKey}, max:{msg.MaxKey} ,Column range: {res}, Hashcode: {this.GetHashCode()}, Elements: {this.Dict.Count}, Id: {this.Id}");
 
@@ -56,7 +56,7 @@ namespace NeoCortexApi.DistributedComputeLib
             {
                 this.Logger?.LogDebug($"{Id} - Received message: '{msg.GetType().Name}',  dict: {Dict.Count}, Id: {this.Id}");
 
-                var res = createAndConnectColumns(msg);
+                var res = CreateAndConnectColumns(msg);
 
                 if (Dict.Count == 0)
                 {
@@ -72,7 +72,7 @@ namespace NeoCortexApi.DistributedComputeLib
             {
                 this.Logger?.LogDebug($"Received message: '{msg.GetType().Name}'");
 
-                var res = calculateOverlap(msg);
+                var res = CalculateOverlap(msg);
 
                 if (res.Count == 0)
                 {
@@ -88,7 +88,7 @@ namespace NeoCortexApi.DistributedComputeLib
             {
                 this.Logger?.LogDebug($"Started message: '{msg.GetType().Name}'");
 
-                var res = adaptSynapses(msg);
+                var res = AdaptSynapses(msg);
 
                 this.Logger?.LogInformation($"Completed message: '{msg.GetType().Name}'. Result: {res}");
 
@@ -101,7 +101,7 @@ namespace NeoCortexApi.DistributedComputeLib
             {
                 this.Logger?.LogDebug($"Started message: '{msg.GetType().Name}'");
 
-                var res = bumpUpWeakColumns(msg);
+                var res = BumpUpWeakColumns(msg);
 
                 Console.WriteLine($"Completed message: '{msg.GetType().Name}'");
 
@@ -125,7 +125,7 @@ namespace NeoCortexApi.DistributedComputeLib
         /// Creates columns on the node.
         /// </summary>
         /// <param name="msg"></param>
-        private int initializeColumns(InitColumnsMsg msg)
+        private int InitializeColumns(InitColumnsMsg msg)
         {
             Dict = new Dictionary<object, object>();
 
@@ -143,7 +143,7 @@ namespace NeoCortexApi.DistributedComputeLib
         /// It returns the average connected span of the partition.
         /// </summary>
         /// <param name="msg"></param>
-        private double createAndConnectColumns(ConnectAndConfigureColumnsMsg msg)
+        private double CreateAndConnectColumns(ConnectAndConfigureColumnsMsg msg)
         {
             Debug.Write(".");
             List<double> avgConnections = new List<double>();
@@ -202,7 +202,7 @@ namespace NeoCortexApi.DistributedComputeLib
             return avgConnectedSpan;
         }
 
-        private List<KeyPair> calculateOverlap(CalculateOverlapMsg msg)
+        private List<KeyPair> CalculateOverlap(CalculateOverlapMsg msg)
         {
             Console.WriteLine($"Received message: '{msg.GetType().Name}'");
 
@@ -237,7 +237,7 @@ namespace NeoCortexApi.DistributedComputeLib
             return sortedRes;
         }
 
-        private object adaptSynapses(AdaptSynapsesMsg msg)
+        private object AdaptSynapses(AdaptSynapsesMsg msg)
         {
             ParallelOptions opts = new ParallelOptions();
             opts.MaxDegreeOfParallelism = msg.ColumnKeys.Count;
@@ -258,7 +258,7 @@ namespace NeoCortexApi.DistributedComputeLib
             return 0;
         }
 
-        private object bumpUpWeakColumns(BumUpWeakColumnsMsg msg)
+        private object BumpUpWeakColumns(BumUpWeakColumnsMsg msg)
         {
             ParallelOptions opts = new ParallelOptions();
             opts.MaxDegreeOfParallelism = msg.ColumnKeys.Count;

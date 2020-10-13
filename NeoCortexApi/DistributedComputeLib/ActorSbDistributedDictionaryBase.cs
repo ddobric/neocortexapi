@@ -784,6 +784,7 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <param name="keys">All keys must belong to same partition. Search object (caller of this method)
         /// should sot keys </param>
         /// <returns></returns>
+        /// TODO Unreachable code ??
         public ICollection<KeyPair> GetObjects(int[] keys)
         {
             if (keys == null || keys.Length == 0)

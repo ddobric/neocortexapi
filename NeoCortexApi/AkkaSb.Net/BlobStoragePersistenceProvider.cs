@@ -89,14 +89,14 @@ namespace AkkaSb.Net
         public async Task Purge()
         {
             this.logger?.LogTrace("Purge started");
-            var cloudBlobContainer = getContainer();
+            var cloudBlobContainer = GetContainer();
             await cloudBlobContainer.DeleteIfExistsAsync();
 
             this.logger?.LogTrace("Purge completed");
         }
 
         #region Private Methods
-        private CloudBlobContainer getContainer()
+        private CloudBlobContainer GetContainer()
         {
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
             var cloudBlobContainer = blobClient.GetContainerReference(containerName);
@@ -105,9 +105,9 @@ namespace AkkaSb.Net
 
         private async Task<ActorBase> GetPersistedActorAsync(string actorId)
         {
-            string blobName = getBlobNameFromId(actorId);
+            string blobName = GetBlobNameFromId(actorId);
 
-            var cloudBlobContainer = getContainer();
+            var cloudBlobContainer = GetContainer();
 
             if (await cloudBlobContainer.GetBlockBlobReference(blobName).ExistsAsync())
             {
@@ -131,8 +131,8 @@ namespace AkkaSb.Net
             {
                 try
                 {
-                    var cloudBlobContainer = getContainer();
-                    CloudBlockBlob cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference(getBlobNameFromId(actorId));
+                    var cloudBlobContainer = GetContainer();
+                    CloudBlockBlob cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference(GetBlobNameFromId(actorId));
                     await cloudBlockBlob.UploadTextAsync(serializedActor);
                     break;
                 }
@@ -155,7 +155,7 @@ namespace AkkaSb.Net
             }
         }
 
-        private static string getBlobNameFromId(string actorId)
+        private static string GetBlobNameFromId(string actorId)
         {
             return $"{actorId}.txt";
         }

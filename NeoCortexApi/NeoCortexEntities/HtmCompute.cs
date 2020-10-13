@@ -400,7 +400,7 @@ namespace NeoCortexApi
       */
         /// <summary>
         /// Returns a randomly generated permanence value for a synapse that is initialized in a connected state. The basic idea here is to initialize
-        /// permanence values very close to synPermConnected so that a small number of learning steps could make it disconnected or connected.
+        /// permanence values very close to <c>synPermConnected</c> so that a small number of learning steps could make it disconnected or connected.
         /// </summary>
         /// <param name="synPermMax"></param>
         /// <param name="synPermConnected"></param>
@@ -424,8 +424,8 @@ namespace NeoCortexApi
 
 
         /// <summary>
-        /// Returns a randomly generated permanence value for a synapses that is to be
-        /// initialized in a non-connected state.</summary>
+        /// Returns a randomly generated permanence value for a synapses that is to be initialized in a non-connected state.
+        /// </summary>
         /// <param name="synPermConnected"></param>
         /// <param name="rnd">Random generator to be used to generate permanence.</param>
         /// <returns>Permanence value.</returns>
@@ -472,7 +472,7 @@ namespace NeoCortexApi
                    htmConfig.InputModuleTopology.DimensionMultiplies, htmConfig.InputModuleTopology.IsMajorOrdering, connected[i]));
             }
 
-            return ArrayUtils.Average(ArrayUtils.add(ArrayUtils.Subtract(maxCoord, minCoord), 1));
+            return ArrayUtils.Average(ArrayUtils.Add(ArrayUtils.Subtract(maxCoord, minCoord), 1));
         }
 
 
