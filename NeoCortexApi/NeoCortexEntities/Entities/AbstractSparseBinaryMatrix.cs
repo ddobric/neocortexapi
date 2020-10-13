@@ -67,6 +67,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="coordinates">the coordinates which specify the returned array</param>
         /// <returns>the array specified. Throw <see cref="ArgumentException"/> if the specified coordinates address an actual value instead of the array holding it.</returns>
+        /// <exception cref="ArgumentException"></exception>
         public abstract Object GetSlice(params int[] coordinates);
 
         /// <summary>
