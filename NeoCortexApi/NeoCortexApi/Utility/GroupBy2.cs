@@ -364,7 +364,7 @@ namespace NeoCortexApi.Utility
              * otherwise {@code false}
              */
             // @Override
-            public override bool Equals(Object obj)
+            public bool Equals(Object obj)
             {
                 if (this == obj)
                 {
