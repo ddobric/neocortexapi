@@ -31,10 +31,10 @@ namespace NeoCortexApi.Encoders
         /* Dense Array (i.e. 1, 1, 0, 1) */
         public const string DARR = "darr";
 
-        /**
-         * String representation to be used when a display
-         * String is required.
-         */
+        /// <summary>
+        /// String representation to be used when a display.
+        /// String is required.
+        /// </summary>
         private String m_FieldTypeString;
 
         /** Private constructor */
@@ -43,11 +43,11 @@ namespace NeoCortexApi.Encoders
             this.m_FieldTypeString = s;
         }
 
-        /**
-         * Returns the {@link Encoder} matching this field type.
-         * @return
-         */
-        public EncoderBase newEncoder()
+        /// <summary>
+        /// Returns the {@link Encoder} matching this field type.
+        /// </summary>
+        /// <returns></returns>
+        public EncoderBase NewEncoder()
         {
             throw new NotImplementedException();
             //switch (this.m_FieldTypeString)

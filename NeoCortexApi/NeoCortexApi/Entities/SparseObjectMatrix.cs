@@ -8,22 +8,20 @@ using NeoCortexApi.DistributedComputeLib;
 
 namespace NeoCortexApi.Entities
 {
-    /**
-   * Allows storage of array data in sparse form, meaning that the indexes
-   * of the data stored are maintained while empty indexes are not. This allows
-   * savings in memory and computational efficiency because iterative algorithms
-   * need only query indexes containing valid data.
-   * 
-   * @author David Ray, Damir Dobric
-   *
-   * @param <T>
-   */
+    /// <summary>
+    /// Allows storage of array data in sparse form, meaning that the indexes of the data stored are maintained while empty indexes are not. This allows
+    /// savings in memory and computational efficiency because iterative algorithms need only query indexes containing valid data.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <remarks>
+    /// @author David Ray, Damir Dobric
+    /// </remarks>
     public class SparseObjectMatrix<T> : AbstractSparseMatrix<T>, IEquatable<T> where T : class
     {
 
         //private IDictionary<int, T> sparseMap = new Dictionary<int, T>();
         private IDistributedDictionary<int, T> sparseMap;
-        
+
         /// <summary>
         /// Returns true if sparse memory is remotely distributed. It means objects has to be synced with remote partitions.
         /// </summary>
@@ -59,11 +57,12 @@ namespace NeoCortexApi.Entities
 
         //}
 
-        /**
-         * Constructs a new {@code SparseObjectMatrix}
-         * @param dimensions					the dimensions of this array
-         * @param useColumnMajorOrdering		where inner index increments most frequently
-         */
+        /// <summary>
+        /// Constructs a new <see cref="SparseObjectMatrix{T}"/>
+        /// </summary>
+        /// <param name="dimensions">the dimensions of this array</param>
+        /// <param name="useColumnMajorOrdering">where inner index increments most frequently</param>
+        /// <param name="dict"></param>
         public SparseObjectMatrix(int[] dimensions, bool useColumnMajorOrdering = false, IDistributedDictionary<int, T> dict = null) : base(dimensions, useColumnMajorOrdering)
         {
             if (dict == null)
@@ -104,13 +103,12 @@ namespace NeoCortexApi.Entities
             return this;
         }
 
-        /**
-         * Sets the specified object to be indexed at the index
-         * computed from the specified coordinates.
-         * @param object        the object to be indexed.
-         * @param coordinates   the row major coordinates [outer --> ,...,..., inner]
-         */
-     
+        /// <summary>
+        /// Sets the specified object to be indexed at the index computed from the specified coordinates.
+        /// </summary>
+        /// <param name="coordinates">the row major coordinates [outer --> ,...,..., inner]</param>
+        /// <param name="obj">the object to be indexed.</param>
+        /// <returns></returns>
         public override AbstractFlatMatrix<T> set(int[] coordinates, T obj)
         {
             set(computeIndex(coordinates), obj);
@@ -124,6 +122,11 @@ namespace NeoCortexApi.Entities
          * @return  the T at the specified index.
          */
         // @Override
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public override T getObject(int index)
         {
             return GetColumn(index);
@@ -137,7 +140,7 @@ namespace NeoCortexApi.Entities
          * @return  the indexed object
          */
         // @Override
-        public T get(int[] coordinates)
+        public override T get(int[] coordinates)
         {
             return GetColumn(computeIndex(coordinates));
         }
