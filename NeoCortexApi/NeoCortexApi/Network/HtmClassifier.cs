@@ -320,7 +320,7 @@ namespace NeoCortexApi.Network
             return arr;
         }
 
-        private int predictNextValue(int[] activeArr, int[] predictedArr)
+        private int PredictNextValue(int[] activeArr, int[] predictedArr)
         {
             var same = predictedArr.Intersect(activeArr);
 

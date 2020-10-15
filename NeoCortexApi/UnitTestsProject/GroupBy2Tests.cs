@@ -71,7 +71,7 @@ namespace UnitTestsProject
 
             List<Pair<List<Object>, Func<Object, Integer>>> list = new List<Pair<List<object>, Func<object, Integer>>>();
             list.Add(new Pair<List<Object>, Func<Object, Integer>>(sequence0, m_Times1Fnc));
-            GroupBy2<Integer> m = GroupBy2<Integer>.of(list.ToArray());
+            GroupBy2<Integer> m = GroupBy2<Integer>.Of(list.ToArray());
 
             List<Pair<Object, List<List<Object>>>> expectedValues = new List<Pair<Object, List<List<Object>>>>(
                 new Pair<Object, List<List<Object>>>[]
@@ -105,7 +105,7 @@ namespace UnitTestsProject
             List<Pair<List<Object>, Func<Object, Integer>>> list = new List<Pair<List<object>, Func<object, Integer>>>();
             list.Add(new Pair<List<Object>, Func<Object, Integer>>(sequence0, m_Times1Fnc));
             list.Add(new Pair<List<Object>, Func<Object, Integer>>(sequence1, m_Times3Fnc));
-            GroupBy2<Integer> group = GroupBy2<Integer>.of(list.ToArray());
+            GroupBy2<Integer> group = GroupBy2<Integer>.Of(list.ToArray());
 
             List<Pair<Object, List<List<Object>>>> expectedValues = new List<Pair<Object, List<List<Object>>>>(
             new Pair<Object, List<List<Object>>>[]
@@ -141,7 +141,7 @@ namespace UnitTestsProject
             List<Pair<List<Object>, Func<Object, Integer>>> list = new List<Pair<List<object>, Func<object, Integer>>>();
             list.Add(new Pair<List<Object>, Func<Object, Integer>>(sequence0, m_Times1Fnc));
             list.Add(new Pair<List<Object>, Func<Object, Integer>>(sequence1, m_Times3Fnc));
-            GroupBy2<Integer> group = GroupBy2<Integer>.of(list.ToArray());
+            GroupBy2<Integer> group = GroupBy2<Integer>.Of(list.ToArray());
 
             List<Pair<Object, List<List<Object>>>> expectedValues = new List<Pair<Object, List<List<Object>>>>(
             new Pair<Object, List<List<Object>>>[]
@@ -184,7 +184,7 @@ namespace UnitTestsProject
             list.Add(new Pair<List<Object>, Func<Object, Integer>>(sequence1, m_Times3Fnc));
             list.Add(new Pair<List<Object>, Func<Object, Integer>>(sequence2, m_Times4Fnc));
 
-            GroupBy2<Integer> group = GroupBy2<Integer>.of(list.ToArray());
+            GroupBy2<Integer> group = GroupBy2<Integer>.Of(list.ToArray());
 
             List<Pair<Object, List<List<Object>>>> expectedValues = new List<Pair<Object, List<List<Object>>>>(
            new Pair<Object, List<List<Object>>>[]
@@ -241,7 +241,7 @@ namespace UnitTestsProject
             list.Add(new Pair<List<Object>, Func<Object, Integer>>(sequence2, m_Times4Fnc));
             list.Add(new Pair<List<Object>, Func<Object, Integer>>(sequence3, m_Times5Fnc));
 
-            GroupBy2<Integer> m = GroupBy2<Integer>.of(list.ToArray());
+            GroupBy2<Integer> m = GroupBy2<Integer>.Of(list.ToArray());
 
             List<Pair<Object, List<List<Object>>>> expectedValues = new List<Pair<Object, List<List<Object>>>>(
            new Pair<Object, List<List<Object>>>[]

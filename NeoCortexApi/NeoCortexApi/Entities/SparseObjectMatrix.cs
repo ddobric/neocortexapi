@@ -125,8 +125,8 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
+        /// <param name="index"><inheritdoc/></param>
+        /// <returns><inheritdoc/></returns>
         public override T getObject(int index)
         {
             return GetColumn(index);
@@ -139,20 +139,21 @@ namespace NeoCortexApi.Entities
          * @param coordinates   the coordinates from which to retrieve the indexed object
          * @return  the indexed object
          */
-        // @Override
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <param name="coordinates"><inheritdoc/></param>
+        /// <returns><inheritdoc/></returns>
         public override T get(int[] coordinates)
         {
             return GetColumn(computeIndex(coordinates));
         }
 
-
-        /**
-         * Returns the T at the specified index.
-         * 
-         * @param index     the index of the T to return
-         * @return  the T at the specified index.
-         */
-        // @Override
+        /// <summary>
+        /// Returns the T at the specified index.
+        /// </summary>
+        /// <param name="index">the index of the T to return</param>
+        /// <returns>the T at the specified index.</returns>
         public override T GetColumn(int index)
         {
             T val = null;
@@ -163,29 +164,28 @@ namespace NeoCortexApi.Entities
             //return this.sparseMap[index];
         }
 
-        /**
-         * Returns a sorted array of occupied indexes.
-         * @return  a sorted array of occupied indexes.
-         */
-        // @Override
+        /// <summary>
+        /// Returns a sorted array of occupied indexes.
+        /// </summary>
+        /// <returns>a sorted array of occupied indexes.</returns>
         public override int[] getSparseIndices()
         {
             return Reverse(sparseMap.Keys.ToArray());
         }
 
-        /**
-         * {@inheritDoc}
-         */
-        // @Override
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <returns><inheritdoc/></returns>
         public override String ToString()
         {
             return getDimensions().ToString();
         }
 
-        /* (non-Javadoc)
-         * @see java.lang.Object#hashCode()
-         */
-        //    @Override
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <returns><inheritdoc/></returns>
         public override int GetHashCode()
         {
             int prime = 31;
@@ -194,11 +194,12 @@ namespace NeoCortexApi.Entities
             return result;
         }
 
-        /* (non-Javadoc)
-         * @see java.lang.Object#equals(java.lang.Object)
-         */
-        //SuppressWarnings("rawtypes")
-        // @Override
+        public int MyProperty { get; set; }
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <param name="obj"><inheritdoc/></param>
+        /// <returns></returns>
         public override bool Equals(Object obj)
         {
             if (this == obj)

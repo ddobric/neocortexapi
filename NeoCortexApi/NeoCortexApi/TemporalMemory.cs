@@ -147,7 +147,7 @@ namespace NeoCortexApi
             list[1] = new Pair<List<object>, Func<object, Column>>(Array.ConvertAll(conn.ActiveSegments.ToArray(), item => (object)item).ToList(), segToCol);
             list[2] = new Pair<List<object>, Func<object, Column>>(Array.ConvertAll(conn.MatchingSegments.ToArray(), item => (object)item).ToList(), segToCol);
 
-            GroupBy2<Column> grouper = GroupBy2<Column>.of(list);
+            GroupBy2<Column> grouper = GroupBy2<Column>.Of(list);
 
             double permanenceIncrement = conn.HtmConfig.PermanenceIncrement;
             double permanenceDecrement = conn.HtmConfig.PermanenceDecrement;
