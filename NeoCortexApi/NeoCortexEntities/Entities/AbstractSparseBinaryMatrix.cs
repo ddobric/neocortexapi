@@ -176,7 +176,7 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public abstract AbstractSparseBinaryMatrix set(int value, params int[] coordinates);
 
-        // TODO naming convention with override method
+        // TODO naming convention with override method: make method as virtual??
         /// <summary>
         /// Sets the specified values at the specified indexes.
         /// </summary>
