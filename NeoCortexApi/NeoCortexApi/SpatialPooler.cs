@@ -13,26 +13,23 @@ using System.Collections.Concurrent;
 using System.Threading;
 using NeoCortexApi.DistributedCompute;
 
-/**
- * Handles the relationships between the columns of a region 
- * and the inputs bits. The primary public interface to this function is the 
- * "compute" method, which takes in an input vector and returns a list of 
- * activeColumns columns.
- * Example Usage:
- * >
- * > SpatialPooler sp = SpatialPooler();
- * > Connections c = new Connections();
- * > sp.init(c);
- * > for line in file:
- * >   inputVector = prepared int[] (containing 1's and 0's)
- * >   sp.compute(inputVector)
- * 
- * @author David Ray, Damir Dobric
- *
- */
-
 namespace NeoCortexApi
 {
+    /// <summary>
+    /// Handles the relationships between the columns of a region and the inputs bits. The primary public interface to this function is the 
+    /// "compute" method, which takes in an input vector and returns a list of activeColumns columns.<br/>
+    /// Example Usage:<br/>
+    /// ><br/>
+    /// > SpatialPooler sp = SpatialPooler();<br/>
+    /// > Connections c = new Connections();<br/>
+    /// > sp.Init(c);<br/>
+    /// > for line in file:<br/>
+    /// >   inputVector = prepared int[] (containing 1's and 0's)<br/>
+    /// >   sp.compute(inputVector)<br/>
+    /// </summary>
+    /// <remarks>
+    /// Author David Ray, Damir Dobric
+    /// </remarks>
     /// <summary>
     /// Spatial Pooler algorithm. Single-threaded version.
     /// Original version by David Ray, migrated from HTM JAVA. Over time, more and more code has been changed.
@@ -42,7 +39,7 @@ namespace NeoCortexApi
         /// <summary>
         /// The instance of the <see cref="HomeostaticPlasticityActivator"/>.
         /// </summary>
-        private HomeostaticPlasticityActivator homeoPlastAct;
+        private HomeostaticPlasticityActivator m_HomeoPlastAct;
 
         public double MaxInibitionDensity { get; set; } = 0.5;
 
@@ -52,9 +49,9 @@ namespace NeoCortexApi
         /// Default constructor.
         /// </summary>
         /// <param name="homeostaticPlasticityActivator">Includes the newborn effect in the SP. This feture was not a part of SP in the original version.</param>
-        public SpatialPooler(HomeostaticPlasticityActivator homeostaticPlasticityActivator= null) 
+        public SpatialPooler(HomeostaticPlasticityActivator homeostaticPlasticityActivator = null)
         {
-            homeoPlastAct = homeostaticPlasticityActivator;
+            m_HomeoPlastAct = homeostaticPlasticityActivator;
         }
 
         private Connections connections;
@@ -64,7 +61,7 @@ namespace NeoCortexApi
         /// </summary>
         /// <param name="c">The HTM memory instance.</param>
         /// <param name="distMem"></param>
-        public void init(Connections c, DistributedMemory distMem = null)
+        public void Init(Connections c, DistributedMemory distMem = null)
         {
             this.connections = c;
 
@@ -83,18 +80,17 @@ namespace NeoCortexApi
 
             ConnectAndConfigureInputs(c);
 
-       
+
             //sw.Stop();
             //Console.WriteLine($"Init time: {(float)sw.ElapsedMilliseconds / (float)1000} s");
         }
 
-
-        /**
-         * Called to initialize the structural anatomy with configured values and prepare
-         * the anatomical entities for activation.
-         * 
-         * @param c
-         */
+        /// <summary>
+        /// Called to initialize the structural anatomy with configured values and prepare
+        /// the anatomical entities for activation.
+        /// </summary>
+        /// <param name="c"></param>
+        /// <param name="distMem"></param>
         public virtual void InitMatrices(Connections c, DistributedMemory distMem)
         {
             SparseObjectMatrix<Column> memory = (SparseObjectMatrix<Column>)c.HtmConfig.Memory;
@@ -201,7 +197,7 @@ namespace NeoCortexApi
             // columns in its neighborhood in order to become active. This radius is
             // updated every learning round. It grows and shrinks with the average
             // number of connected synapses per column.
-            updateInhibitionRadius(c, avgSynapsesConnected);
+            UpdateInhibitionRadius(c, avgSynapsesConnected);
         }
 
         /*
@@ -365,32 +361,26 @@ namespace NeoCortexApi
 
         double prevSimilarity = 0.0;
 #endif
-
-        /**
-         * This is the primary public method of the SpatialPooler class. This
-         * function takes a input vector and outputs the indices of the active columns.
-         * If 'learn' is set to True, this method also updates the permanences of the
-         * columns. 
-         * @param inputVector       An array of 0's and 1's that comprises the input to
-         *                          the spatial pooler. The array will be treated as a one
-         *                          dimensional array, therefore the dimensions of the array
-         *                          do not have to match the exact dimensions specified in the
-         *                          class constructor. In fact, even a list would suffice.
-         *                          The number of input bits in the vector must, however,
-         *                          match the number of bits specified by the call to the
-         *                          constructor. Therefore there must be a '0' or '1' in the
-         *                          array for every input bit.
-         * @param activeArray       An array whose size is equal to the number of columns.
-         *                          Before the function returns this array will be populated
-         *                          with 1's at the indices of the active columns, and 0's
-         *                          everywhere else.
-         * @param learn             A boolean value indicating whether learning should be
-         *                          performed. Learning entails updating the  permanence
-         *                          values of the synapses, and hence modifying the 'state'
-         *                          of the model. Setting learning to 'off' freezes the SP
-         *                          and has many uses. For example, you might want to feed in
-         *                          various inputs and examine the resulting SDR's.
-         */
+        // TODO naming convention cause problem with similar method
+        /// <summary>
+        /// This is the primary public method of the SpatialPooler class. This function takes a input vector and outputs the indices of the active columns.
+        /// If 'learn' is set to True, this method also updates the permanences of the columns. 
+        /// </summary>
+        /// <param name="inputVector">
+        /// An array of 0's and 1's that comprises the input to the spatial pooler. The array will be treated as a one dimensional array, therefore the dimensions 
+        /// of the array do not have to match the exact dimensions specified in the class constructor. In fact, even a list would suffice. The number of input bits 
+        /// in the vector must, however, match the number of bits specified by the call to the constructor. Therefore there must be a '0' or '1' in the array for 
+        /// every input bit.
+        /// </param>
+        /// <param name="activeArray">
+        /// An array whose size is equal to the number of columns. Before the function returns this array will be populated with 1's at the indices of the active 
+        /// columns, and 0's everywhere else.
+        /// </param>
+        /// <param name="learn">
+        /// A boolean value indicating whether learning should be performed. Learning entails updating the  permanence values of the synapses, and hence modifying 
+        /// the 'state' of the model. Setting learning to 'off' freezes the SP and has many uses. For example, you might want to feed in various inputs and examine 
+        /// the resulting SDR's.
+        /// </param>
         public void compute(int[] inputVector, int[] activeArray, bool learn)
         {
             if (inputVector.Length != this.connections.HtmConfig.NumInputs)
@@ -465,13 +455,13 @@ namespace NeoCortexApi
             if (learn)
             {
                 AdaptSynapses(this.connections, inputVector, activeColumns);
-                updateDutyCycles(this.connections, overlaps, activeColumns);
+                UpdateDutyCycles(this.connections, overlaps, activeColumns);
                 BumpUpWeakColumns(this.connections);
                 UpdateBoostFactors(this.connections);
                 if (isUpdateRound(this.connections))
                 {
-                    updateInhibitionRadius(this.connections);
-                    updateMinDutyCycles(this.connections);
+                    UpdateInhibitionRadius(this.connections);
+                    UpdateMinDutyCycles(this.connections);
                 }
             }
 
@@ -490,23 +480,21 @@ namespace NeoCortexApi
             }
 
             // Involve homeostatic plasticity newborn effect, which will disable boosting.
-            if (this.homeoPlastAct != null)
-                this.homeoPlastAct.Compute(inputVector, activeArray);
+            if (this.m_HomeoPlastAct != null)
+                this.m_HomeoPlastAct.Compute(inputVector, activeArray);
 
             //Debug.WriteLine($"SP-OUT: {Helpers.StringifyVector(activeColumns.OrderBy(c=>c).ToArray())}");
         }
 
-        /**
-             * Removes the set of columns who have never been active from the set of
-             * active columns selected in the inhibition round. Such columns cannot
-             * represent learned pattern and are therefore meaningless if only inference
-             * is required. This should not be done when using a random, unlearned SP
-             * since you would end up with no active columns.
-             *  
-             * @param activeColumns An array containing the indices of the active columns
-             * @return  a list of columns with a chance of activation
-             */
-        public int[] stripUnlearnedColumns(Connections c, int[] activeColumns)
+        /// <summary>
+        /// Removes the set of columns who have never been active from the set of active columns selected in the inhibition round. Such columns cannot
+        /// represent learned pattern and are therefore meaningless if only inference is required. This should not be done when using a random, unlearned SP
+        /// since you would end up with no active columns.
+        /// </summary>
+        /// <param name="c"></param>
+        /// <param name="activeColumns">An array containing the indices of the active columns</param>
+        /// <returns>a list of columns with a chance of activation</returns>
+        public int[] StripUnlearnedColumns(Connections c, int[] activeColumns)
         {
             //TIntHashSet active = new TIntHashSet(activeColumns);
             //TIntHashSet aboveZero = new TIntHashSet();
@@ -554,35 +542,30 @@ namespace NeoCortexApi
             //return Arrays.stream(activeColumns).filter(i->c.getActiveDutyCycles()[i] > 0).toArray();
         }
 
-        /**
-         * Updates the minimum duty cycles defining normal activity for a column. A
-         * column with activity duty cycle below this minimum threshold is boosted.
-         *  
-         * @param c
-         */
-        public void updateMinDutyCycles(Connections c)
+        /// <summary>
+        /// Updates the minimum duty cycles defining normal activity for a column. A column with activity duty cycle below this minimum threshold is boosted.
+        /// </summary>
+        /// <param name="c"></param>
+        public void UpdateMinDutyCycles(Connections c)
         {
             if (c.HtmConfig.GlobalInhibition || c.HtmConfig.InhibitionRadius > c.HtmConfig.NumInputs)
             {
-                updateMinDutyCyclesGlobal(c);
+                UpdateMinDutyCyclesGlobal(c);
             }
             else
             {
-                updateMinDutyCyclesLocal(c);
+                UpdateMinDutyCyclesLocal(c);
             }
         }
 
-        /**
-         * Updates the minimum duty cycles in a global fashion. Sets the minimum duty
-         * cycles for the overlap and activation of all columns to be a percent of the
-         * maximum in the region, specified by {@link Connections#getMinOverlapDutyCycles()} and
-         * minPctActiveDutyCycle respectively. Functionality it is equivalent to
-         * {@link #updateMinDutyCyclesLocal(Connections)}, but this function exploits the globalness of the
-         * computation to perform it in a straightforward, and more efficient manner.
-         * 
-         * @param c
-         */
-        public void updateMinDutyCyclesGlobal(Connections c)
+        /// <summary>
+        /// Updates the minimum duty cycles in a global fashion. Sets the minimum duty cycles for the overlap and activation of all columns to be a percent of 
+        /// the maximum in the region, specified by {@link Connections#getMinOverlapDutyCycles()} and minPctActiveDutyCycle respectively. Functionality it is 
+        /// equivalent to <see cref="UpdateMinDutyCyclesLocal(Connections)"/>, but this function exploits the globalness of the computation to perform it in a 
+        /// straightforward, and more efficient manner.
+        /// </summary>
+        /// <param name="c"></param>
+        public void UpdateMinDutyCyclesGlobal(Connections c)
         {
             ArrayUtils.FillArray(c.HtmConfig.MinOverlapDutyCycles,
                    (double)(c.HtmConfig.MinPctOverlapDutyCycles * ArrayUtils.Max(c.HtmConfig.OverlapDutyCycles)));
@@ -591,19 +574,16 @@ namespace NeoCortexApi
                     (double)(c.HtmConfig.MinPctActiveDutyCycles * ArrayUtils.Max(c.HtmConfig.ActiveDutyCycles)));
         }
 
-        /**
-     * Gets a neighborhood of columns.
-     * 
-     * Simply calls topology.neighborhood or topology.wrappingNeighborhood
-     * 
-     * A subclass can insert different topology behavior by overriding this method.
-     * 
-     * @param c                     the {@link Connections} memory encapsulation
-     * @param centerColumn          The center of the neighborhood.
-     * @param inhibitionRadius      Span of columns included in each neighborhood
-     * @return                      The columns in the neighborhood (1D)
-     */
-        public int[] getColumnNeighborhood(Connections c, int centerColumn, int inhibitionRadius)
+        /// <summary>
+        /// Gets a neighborhood of columns.
+        /// Simply calls topology.neighborhood or topology.wrappingNeighborhood
+        /// A subclass can insert different topology behavior by overriding this method.
+        /// </summary>
+        /// <param name="c">the <see cref="Connections"/> memory encapsulation</param>
+        /// <param name="centerColumn">The center of the neighborhood.</param>
+        /// <param name="inhibitionRadius">Span of columns included in each neighborhood</param>
+        /// <returns>The columns in the neighborhood (1D)</returns>
+        public int[] GetColumnNeighborhood(Connections c, int centerColumn, int inhibitionRadius)
         {
             var topology = c.HtmConfig.ColumnTopology.HtmTopology;
             return c.HtmConfig.WrapAround ?
@@ -611,16 +591,13 @@ namespace NeoCortexApi
                     HtmCompute.GetNeighborhood(centerColumn, inhibitionRadius, topology);
         }
 
-        /**
-         * Updates the minimum duty cycles. The minimum duty cycles are determined
-         * locally. Each column's minimum duty cycles are set to be a percent of the
-         * maximum duty cycles in the column's neighborhood. Unlike
-         * {@link #updateMinDutyCyclesGlobal(Connections)}, here the values can be 
-         * quite different for different columns.
-         * 
-         * @param c
-         */
-        public void updateMinDutyCyclesLocal(Connections c)
+        /// <summary>
+        /// Updates the minimum duty cycles. The minimum duty cycles are determined locally. Each column's minimum duty cycles are set to be a percent of the 
+        /// maximum duty cycles in the column's neighborhood. Unlike <see cref="UpdateMinDutyCyclesGlobal(Connections)"/>, here the values can be quite different 
+        /// for different columns.
+        /// </summary>
+        /// <param name="c"></param>
+        public void UpdateMinDutyCyclesLocal(Connections c)
         {
             int len = c.HtmConfig.NumColumns;
             int inhibitionRadius = c.HtmConfig.InhibitionRadius;
@@ -633,7 +610,7 @@ namespace NeoCortexApi
 
             Parallel.For(0, len, (i) =>
             {
-                int[] neighborhood = getColumnNeighborhood(c, i, inhibitionRadius);
+                int[] neighborhood = GetColumnNeighborhood(c, i, inhibitionRadius);
 
                 double maxActiveDuty = ArrayUtils.Max(ArrayUtils.ListOfValuesByIndicies(activeDutyCycles, neighborhood));
                 double maxOverlapDuty = ArrayUtils.Max(ArrayUtils.ListOfValuesByIndicies(overlapDutyCycles, neighborhood));
@@ -659,22 +636,20 @@ namespace NeoCortexApi
                 c.HtmConfig.MinOverlapDutyCycles[i] = maxOverlapDuty * minPctOverlapDutyCycles;
             });
         }
-
-        /**
-         * Updates the duty cycles for each column. The OVERLAP duty cycle is a moving
-         * average of the number of inputs which overlapped with each column. The
-         * ACTIVITY duty cycles is a moving average of the frequency of activation for
-         * each column.
-         * 
-         * @param c                 the {@link Connections} (spatial pooler memory)
-         * @param overlaps          an array containing the overlap score for each column.
-         *                          The overlap score for a column is defined as the number
-         *                          of synapses in a "connected state" (connected synapses)
-         *                          that are connected to input bits which are turned on.
-         * @param activeColumns     An array containing the indices of the active columns,
-         *                          the sparse set of columns which survived inhibition
-         */
-        public void updateDutyCycles(Connections c, int[] overlaps, int[] activeColumns)
+        
+        /// <summary>
+        /// Updates the duty cycles for each column. The OVERLAP duty cycle is a moving average of the number of inputs which overlapped with each column.
+        /// The ACTIVITY duty cycles is a moving average of the frequency of activation for each column.
+        /// </summary>
+        /// <param name="c">the <see cref="Connections"/> (spatial pooler memory)</param>
+        /// <param name="overlaps">
+        /// an array containing the overlap score for each column. The overlap score for a column is defined as the number of synapses in a "connected state"
+        /// (connected synapses) that are connected to input bits which are turned on.
+        /// </param>
+        /// <param name="activeColumns">
+        /// An array containing the indices of the active columns, the sparse set of columns which survived inhibition
+        /// </param>
+        public void UpdateDutyCycles(Connections c, int[] overlaps, int[] activeColumns)
         {
             // All columns with overlap are set to 1. Otherwise 0.
             double[] overlapArray = new double[c.HtmConfig.NumColumns];
@@ -698,9 +673,9 @@ namespace NeoCortexApi
                 period = c.SpIterationNum;
             }
 
-            c.HtmConfig.OverlapDutyCycles = updateDutyCyclesHelper(c, c.HtmConfig.OverlapDutyCycles, overlapArray, period);
+            c.HtmConfig.OverlapDutyCycles = UpdateDutyCyclesHelper(c, c.HtmConfig.OverlapDutyCycles, overlapArray, period);
 
-            c.HtmConfig.ActiveDutyCycles = updateDutyCyclesHelper(c, c.HtmConfig.ActiveDutyCycles, activeArray, period);
+            c.HtmConfig.ActiveDutyCycles = UpdateDutyCyclesHelper(c, c.HtmConfig.ActiveDutyCycles, activeArray, period);
 
             //var strActiveArray = Helpers.StringifyVector(activeArray);
             //Debug.WriteLine("Active Array:" + strActiveArray);
@@ -708,44 +683,36 @@ namespace NeoCortexApi
             //Debug.WriteLine("Overlap Array:" + strOverlapArray);
         }
 
-        /**
-         * Updates a duty cycle estimate with a new value. This is a helper
-         * function that is used to update several duty cycle variables in
-         * the Column class, such as: overlapDutyCucle, activeDutyCycle,
-         * minPctDutyCycleBeforeInh, minPctDutyCycleAfterInh, etc. returns
-         * the updated duty cycle. Duty cycles are updated according to the following
-         * formula:
-         * 
-         *  
-         *                (period - 1)*dutyCycle + newValue
-         *  dutyCycle := ----------------------------------
-         *                        period
-         *
-         * @param c             the {@link Connections} (spatial pooler memory)
-         * @param dutyCycles    An array containing one or more duty cycle values that need
-         *                      to be updated
-         * @param newInput      A new numerical value used to update the duty cycle. Typically 1 or 0
-         * @param period        The period of the duty cycle
-         * @return
-         */
-        public double[] updateDutyCyclesHelper(Connections c, double[] dutyCycles, double[] newInput, double period)
+        // TODO equation documentation
+        /// <summary>
+        /// Updates a duty cycle estimate with a new value. This is a helper function that is used to update several duty cycle variables in
+        /// the Column class, such as: overlapDutyCucle, activeDutyCycle, minPctDutyCycleBeforeInh, minPctDutyCycleAfterInh, etc. returns
+        /// the updated duty cycle. Duty cycles are updated according to the following formula: <br/>
+        /// 
+        ///  
+        ///                (period - 1)*dutyCycle + newValue<br/>
+        ///  dutyCycle := ----------------------------------<br/>
+        ///                        period<br/>
+        /// </summary>
+        /// <param name="c">the <see cref="Connections"/> (spatial pooler memory)</param>
+        /// <param name="dutyCycles">An array containing one or more duty cycle values that need to be updated</param>
+        /// <param name="newInput">A new numerical value used to update the duty cycle. Typically 1 or 0</param>
+        /// <param name="period">The period of the duty cycle</param>
+        /// <returns></returns>
+        public double[] UpdateDutyCyclesHelper(Connections c, double[] dutyCycles, double[] newInput, double period)
         {
             return ArrayUtils.Divide(ArrayUtils.AddOffset(ArrayUtils.Multiply(dutyCycles, period - 1), newInput), period);
         }
 
-        /**
-         * Update the inhibition radius. The inhibition radius is a measure of the
-         * square (or hypersquare) of columns that each a column is "connected to"
-         * on average. Since columns are not connected to each other directly, we
-         * determine this quantity by first figuring out how many *inputs* a column is
-         * connected to, and then multiplying it by the total number of columns that
-         * exist for each input. For multiple dimension the aforementioned
-         * calculations are averaged over all dimensions of inputs and columns. This
-         * value is meaningless if global inhibition is enabled.
-         * 
-         * @param c     the {@link Connections} (spatial pooler memory)
-         */
-        public void updateInhibitionRadius(Connections c, List<double> avgCollected = null)
+        /// <summary>
+        /// Update the inhibition radius. The inhibition radius is a measure of the square (or hypersquare) of columns that each a column is "connected to"
+        /// on average. Since columns are not connected to each other directly, we determine this quantity by first figuring out how many *inputs* a column is
+        /// connected to, and then multiplying it by the total number of columns that exist for each input. For multiple dimension the aforementioned
+        /// calculations are averaged over all dimensions of inputs and columns. This value is meaningless if global inhibition is enabled.
+        /// </summary>
+        /// <param name="c">the <see cref="Connections"/> (spatial pooler memory)</param>
+        /// <param name="avgCollected"></param>
+        public void UpdateInhibitionRadius(Connections c, List<double> avgCollected = null)
         {
             if (c.HtmConfig.GlobalInhibition)
             {
@@ -765,7 +732,7 @@ namespace NeoCortexApi
 
             double avgConnectedSpan = ArrayUtils.Average(avgCollected.ToArray());
 
-            double diameter = avgConnectedSpan * calcAvgColumnsPerInput(c);
+            double diameter = avgConnectedSpan * CalcAvgColumnsPerInput(c);
             double radius = (diameter - 1) / 2.0d;
             radius = Math.Max(1, radius);
 
@@ -778,7 +745,7 @@ namespace NeoCortexApi
         /// </summary>
         /// <param name="c"></param>
         /// <returns>Average ratio numOfCols/numOfInputs across all dimensions.</returns>
-        public virtual double calcAvgColumnsPerInput(Connections c)
+        public virtual double CalcAvgColumnsPerInput(Connections c)
         {
             //int[] colDim = Array.Copy(c.getColumnDimensions(), c.getColumnDimensions().Length);
             int[] colDim = new int[c.HtmConfig.ColumnDimensions.Length];
@@ -1243,7 +1210,7 @@ namespace NeoCortexApi
             {
                 if (overlaps[column] >= c.HtmConfig.StimulusThreshold)
                 {
-                    int[] neighborhood = getColumnNeighborhood(c, column, inhibitionRadius);
+                    int[] neighborhood = GetColumnNeighborhood(c, column, inhibitionRadius);
                     // Take overlapps of neighbors
                     double[] neighborhoodOverlaps = ArrayUtils.ListOfValuesByIndicies(tieBrokenOverlaps, neighborhood);
 
@@ -1292,7 +1259,7 @@ namespace NeoCortexApi
                     }
                 }
                 winners.Add(colNum);
-                int[] neighborhood = getColumnNeighborhood(c, colNum, maxInhibitionRadius);
+                int[] neighborhood = GetColumnNeighborhood(c, colNum, maxInhibitionRadius);
                 double[] neighborhoodOverlaps = ArrayUtils.ListOfValuesByIndicies(overlaps, neighborhood);
                 for (int col = 0; col < neighborhood.Length; col++)
                 {
@@ -1421,7 +1388,7 @@ namespace NeoCortexApi
                 if ((int)index >= c.HtmConfig.StimulusThreshold)
                 {
                     // GETS INDEXES IN THE ARRAY FOR THE NEIGHBOURS WITHIN THE INHIBITION RADIUS.
-                    List<int> neighborhood = getColumnNeighborhood(c, (int)index, inhibitionRadius).ToList();
+                    List<int> neighborhood = GetColumnNeighborhood(c, (int)index, inhibitionRadius).ToList();
 
                     // GETS THE NEIGHBOURS WITHIN THE INHI
                     // Take overlapps of neighbors
@@ -1468,7 +1435,7 @@ namespace NeoCortexApi
                 if (overlaps[column] >= c.HtmConfig.StimulusThreshold)
                 {
                     // GETS INDEXES IN THE ARRAY FOR THE NEIGHBOURS WITHIN THE INHIBITION RADIUS.
-                    int[] neighborhood = getColumnNeighborhood(c, column, inhibitionRadius);
+                    int[] neighborhood = GetColumnNeighborhood(c, column, inhibitionRadius);
 
                     // GETS THE NEIGHBOURS WITHIN THE INHI
                     // Take overlapps of neighbors

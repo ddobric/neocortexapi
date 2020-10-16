@@ -55,7 +55,7 @@ namespace UnitTestsProject
             TemporalMemory tm1 = new TemporalMemory();
             var mem = new Connections();
             p.apply(mem);
-            sp1.init(mem, UnitTestHelpers.GetMemory());
+            sp1.Init(mem, UnitTestHelpers.GetMemory());
             tm1.init(mem);
             Dictionary<string, object> settings = new Dictionary<string, object>();
             //settings.Add("W", 25);
@@ -164,7 +164,7 @@ namespace UnitTestsProject
             TemporalMemory tm1 = new TemporalMemory();
             var mem = new Connections();
             p.apply(mem);
-            sp1.init(mem, UnitTestHelpers.GetMemory());
+            sp1.Init(mem, UnitTestHelpers.GetMemory());
             tm1.init(mem);
 
             Dictionary<string, object> settings = new Dictionary<string, object>()
@@ -281,7 +281,7 @@ namespace UnitTestsProject
             TemporalMemory tm1 = new TemporalMemory();
             var mem = new Connections();
             p.apply(mem);
-            sp1.init(mem, UnitTestHelpers.GetMemory());
+            sp1.Init(mem, UnitTestHelpers.GetMemory());
             tm1.init(mem);
 
             Dictionary<string, object> settings = new Dictionary<string, object>()
@@ -566,7 +566,7 @@ namespace UnitTestsProject
             SpatialPoolerMT sp1 = new SpatialPoolerMT(hpa);
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
 
-            sp1.init(mem, UnitTestHelpers.GetMemory());
+            sp1.Init(mem, UnitTestHelpers.GetMemory());
             tm1.init(mem);
 
             //
@@ -775,7 +775,7 @@ namespace UnitTestsProject
             TemporalMemory tm1 = new TemporalMemory();
             var mem = new Connections();
             p.apply(mem);
-            sp1.init(mem, UnitTestHelpers.GetMemory());
+            sp1.Init(mem, UnitTestHelpers.GetMemory());
             tm1.init(mem);
 
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
@@ -1112,7 +1112,7 @@ namespace UnitTestsProject
             SpatialPooler sp1 = new SpatialPooler();
             var mem = new Connections();
             p.apply(mem);
-            sp1.init(mem, UnitTestHelpers.GetMemory());
+            sp1.Init(mem, UnitTestHelpers.GetMemory());
 
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
 

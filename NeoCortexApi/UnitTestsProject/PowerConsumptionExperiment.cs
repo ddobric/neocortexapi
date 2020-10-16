@@ -63,7 +63,7 @@ namespace UnitTestsProject
             TemporalMemory tm1 = new TemporalMemory();
             var mem = new Connections();
             p.apply(mem);
-            sp1.init(mem, UnitTestHelpers.GetMemory());
+            sp1.Init(mem, UnitTestHelpers.GetMemory());
             tm1.init(mem);
 
             Dictionary<string, object> settings = new Dictionary<string, object>();

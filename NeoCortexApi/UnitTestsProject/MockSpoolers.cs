@@ -78,7 +78,7 @@ namespace UnitTestsProject
             return this.m_avgConnectedSpanForColumnND;
         }
 
-        public override double calcAvgColumnsPerInput(Connections c)
+        public override double CalcAvgColumnsPerInput(Connections c)
         {
             return this.m_avgColumnsPerInput;
         }

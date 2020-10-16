@@ -138,7 +138,7 @@ namespace NeoCortexApi
             // columns in its neighborhood in order to become active. This radius is
             // updated every learning round. It grows and shrinks with the average
             // number of connected synapses per column.
-            updateInhibitionRadius(c, avgSynapsesConnected);
+            UpdateInhibitionRadius(c, avgSynapsesConnected);
         }
 
 

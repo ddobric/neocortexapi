@@ -227,9 +227,9 @@ namespace UnitTestsProject
                 parameters.apply(mem);
 
                 if (isMultinode)
-                    sp.init(mem, UnitTestHelpers.GetMemory(mem.HtmConfig));
+                    sp.Init(mem, UnitTestHelpers.GetMemory(mem.HtmConfig));
                 else
-                    sp.init(mem, UnitTestHelpers.GetMemory());
+                    sp.Init(mem, UnitTestHelpers.GetMemory());
 
                 sw.Stop();
                 Console.Write($"{(float)sw.ElapsedMilliseconds / (float)1000} | ");
@@ -309,7 +309,7 @@ namespace UnitTestsProject
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            sp.init(mem, UnitTestHelpers.GetMemory(new HtmConfig()));
+            sp.Init(mem, UnitTestHelpers.GetMemory(new HtmConfig()));
             sw.Stop();
             Debug.WriteLine($"Init time: {sw.ElapsedMilliseconds}");
             int actiColLen = numOfActCols;

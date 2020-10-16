@@ -226,7 +226,7 @@ namespace UnitTestNoiseTest
 
             parameters.apply(mem);
             Console.WriteLine("\nConfiguring the Inputs...\n");
-            sp.init(mem, GetInMemoryDictionary());
+            sp.Init(mem, GetInMemoryDictionary());
             int outFolderCount = 0;
 
             int compareIndex = Convert.ToInt32(inputs.getCompareNumber());

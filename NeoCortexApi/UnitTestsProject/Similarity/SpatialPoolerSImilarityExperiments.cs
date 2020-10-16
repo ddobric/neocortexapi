@@ -135,7 +135,7 @@ namespace UnitTestsProject
 
             SpatialPooler sp = new SpatialPoolerMT(hpa);
 
-            sp.init(mem, UnitTestHelpers.GetMemory());
+            sp.Init(mem, UnitTestHelpers.GetMemory());
 
             string outFolder = $"{TestOutputFolder}\\{inputPrefix}";
 
@@ -327,7 +327,7 @@ namespace UnitTestsProject
 
             SpatialPooler sp = new SpatialPoolerMT(hpa);
 
-            sp.init(mem, UnitTestHelpers.GetMemory());
+            sp.Init(mem, UnitTestHelpers.GetMemory());
 
             string outFolder = $"{TestOutputFolder}";
 

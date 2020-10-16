@@ -65,7 +65,7 @@ namespace UnitTestsProject
             }
 
             parameters.apply(mem);
-            sp.init(mem);
+            sp.Init(mem);
 
             //int[] activeArray = new int[64 * 64];
 
@@ -100,7 +100,7 @@ namespace UnitTestsProject
 
             var mem = new Connections();
             parameters.apply(mem);
-            sp.init(mem);
+            sp.Init(mem);
 
             int[] activeArray = new int[128];
 
@@ -135,7 +135,7 @@ namespace UnitTestsProject
 
             var mem = new Connections();
             parameters.apply(mem);
-            sp.init(mem);
+            sp.Init(mem);
 
             int[] activeArray = new int[2048];
 
@@ -171,7 +171,7 @@ namespace UnitTestsProject
 
             var mem = new Connections();
             parameters.apply(mem);
-            sp.init(mem);
+            sp.Init(mem);
 
             for (int rad = 1; rad < 10; rad++)
             {
@@ -221,7 +221,7 @@ namespace UnitTestsProject
 
             var mem = new Connections();
             parameters.apply(mem);
-            sp.init(mem);
+            sp.Init(mem);
             //int[] inputVector = NeoCortexUtils.ReadCsvFileTest("Testfiles\\digit8_binary_32bit.txt").ToArray();
             // var inputString = Helpers.StringifyVector(inputVector);
             //Debug.WriteLine("Input Array: " + inputString);
@@ -307,7 +307,7 @@ namespace UnitTestsProject
                                 parameters.apply(mem);
                                 sw.Start();
 
-                                sp.init(mem);
+                                sp.Init(mem);
 
                                 sw.Stop();
                                 swSpeed.WriteLine($"{topologies[topologyIndx]}|{(double)sw.ElapsedMilliseconds / (double)1000}");
@@ -504,7 +504,7 @@ namespace UnitTestsProject
                                 parameters.apply(mem);
                                 sw.Start();
 
-                                sp.init(mem);
+                                sp.Init(mem);
 
                                 sw.Stop();
                                 swSpeed.WriteLine($"{topologies[topologyIndx]}|{(double)sw.ElapsedMilliseconds / (double)1000}");
