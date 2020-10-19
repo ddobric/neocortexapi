@@ -118,7 +118,7 @@ namespace UnitTestsProject.CortexNetworkTests
             var mem = new Connections();
             p.apply(mem);
             sp1.Init(mem, UnitTestHelpers.GetMemory());
-            tm1.init(mem);
+            tm1.Init(mem);
 
             HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
 

@@ -83,7 +83,7 @@ namespace UnitTestsProject
             Connections cn = new Connections();
             Parameters p = getDefaultParameters();
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] previousActiveColumns = { 0 };
             int[] activeColumns = { 1 };
@@ -118,7 +118,7 @@ namespace UnitTestsProject
             Connections cn = new Connections();
             Parameters p = getDefaultParameters();
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] activeColumns = { 0 };
             ISet<Cell> burstingCells = cn.GetCellSet(new int[] { 0, 1, 2, 3 });
@@ -137,7 +137,7 @@ namespace UnitTestsProject
             Connections cn = new Connections();
             Parameters p = getDefaultParameters();
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] previousActiveColumns = { 0 };
             Cell cell4 = cn.GetCell(4);
@@ -168,7 +168,7 @@ namespace UnitTestsProject
             Connections cn = new Connections();
             Parameters p = getDefaultParameters();
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] previousActiveColumns = { 0 };
             int[] activeColumns = { 1 };
@@ -202,7 +202,7 @@ namespace UnitTestsProject
             p = getDefaultParameters(p, KEY.PERMANENCE_DECREMENT, 0.08);
             p = getDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] previousActiveColumns = { 0 };
             int[] activeColumns = { 1 };
@@ -232,7 +232,7 @@ namespace UnitTestsProject
             Connections cn = new Connections();
             Parameters p = getDefaultParameters(null, KEY.PERMANENCE_DECREMENT, 0.08);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] previousActiveColumns = { 0 };
             int[] activeColumns = { 1 };
@@ -267,7 +267,7 @@ namespace UnitTestsProject
             Connections cn = new Connections();
             Parameters p = getDefaultParameters(null, KEY.PERMANENCE_DECREMENT, 0.08);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] previousActiveColumns = { 0 };
             int[] activeColumns = { 1 };
@@ -301,7 +301,7 @@ namespace UnitTestsProject
             Connections cn = new Connections();
             Parameters p = getDefaultParameters();
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] previousActiveColumns = { 0 };
             int[] activeColumns = { 1 };
@@ -343,7 +343,7 @@ namespace UnitTestsProject
             Connections cn = new Connections();
             Parameters p = getDefaultParameters(null, KEY.MAX_NEW_SYNAPSE_COUNT, 3);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] zeroColumns = { };
             int[] activeColumns = { 0 };
@@ -362,7 +362,7 @@ namespace UnitTestsProject
             Connections cn = new Connections();
             Parameters p = getDefaultParameters(null, KEY.MAX_NEW_SYNAPSE_COUNT, 2);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] previousActiveColumns = { 0, 1, 2 };
             int[] activeColumns = { 4 };
@@ -399,7 +399,7 @@ namespace UnitTestsProject
             Connections cn = new Connections();
             Parameters p = getDefaultParameters(null, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] previousActiveColumns = { 0, 1, 2 };
             int[] activeColumns = { 4 };
@@ -437,7 +437,7 @@ namespace UnitTestsProject
             Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 1);
             p = getDefaultParameters(p, KEY.MIN_THRESHOLD, 1);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] previousActiveColumns = { 0, 1, 2, 3 };
             ISet<Cell> prevWinnerCells = cn.GetCellSet(new int[] { 0, 1, 2, 3 });
@@ -475,7 +475,7 @@ namespace UnitTestsProject
             Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 1);
             p = getDefaultParameters(p, KEY.MIN_THRESHOLD, 1);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] previousActiveColumns = { 0, 1 };
             ISet<Cell> prevWinnerCells = cn.GetCellSet(new int[] { 0, 1 });
@@ -519,7 +519,7 @@ namespace UnitTestsProject
             p = getDefaultParameters(p, KEY.ACTIVATION_THRESHOLD, 2);
             p = getDefaultParameters(p, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             // Use 1 cell per column so that we have easy control over the winner cells.
             int[] previousActiveColumns = { 0, 1, 2, 3, 4 };
@@ -562,7 +562,7 @@ namespace UnitTestsProject
             p = getDefaultParameters(p, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
             p = getDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] previousActiveColumns = { 0 };
             Cell[] previousActiveCells = { cn.GetCell(0), cn.GetCell(1), cn.GetCell(2), cn.GetCell(3) };
@@ -592,7 +592,7 @@ namespace UnitTestsProject
             p = getDefaultParameters(p, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
             p = getDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] previousActiveColumns = { 0 };
             Cell[] previousActiveCells = { cn.GetCell(0), cn.GetCell(1), cn.GetCell(2), cn.GetCell(3) };
@@ -627,7 +627,7 @@ namespace UnitTestsProject
             p = getDefaultParameters(p, KEY.PERMANENCE_DECREMENT, 0.02);
             p.Set(KEY.MAX_SYNAPSES_PER_SEGMENT, 3);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             Assert.AreEqual(3, cn.HtmConfig.MaxSynapsesPerSegment);
 
@@ -670,7 +670,7 @@ namespace UnitTestsProject
             p = getDefaultParameters(p, KEY.PERMANENCE_DECREMENT, 0.02);
             p.Set(KEY.MAX_SEGMENTS_PER_CELL, 2);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] prevActiveColumns1 = { 0, 1, 2 };
             int[] prevActiveColumns2 = { 3, 4, 5 };
@@ -683,7 +683,7 @@ namespace UnitTestsProject
 
             Assert.AreEqual(1, cn.GetSegments(cell9).Count);
             DistalDendrite oldestSegment = cn.GetSegments(cell9)[0];
-            tm.reset(cn);
+            tm.Reset(cn);
             tm.Compute(prevActiveColumns2, true);
             tm.Compute(activeColumns, true);
 
@@ -696,7 +696,7 @@ namespace UnitTestsProject
 
             var oldPresynaptic = cn.GetSynapses(oldestSegment).Select(s => s.getPresynapticCell()).ToList();
 
-            tm.reset(cn);
+            tm.Reset(cn);
             tm.Compute(prevActiveColumns3, true);
             tm.Compute(activeColumns, true);
             Assert.AreEqual(2, cn.GetSegments(cell9).Count);
@@ -728,7 +728,7 @@ namespace UnitTestsProject
             p = getDefaultParameters(p, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
             p = getDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] prevActiveColumns = { 0 };
             Cell[] prevActiveCells = { cn.GetCell(0), cn.GetCell(1), cn.GetCell(2), cn.GetCell(3) };
@@ -757,7 +757,7 @@ namespace UnitTestsProject
             p = getDefaultParameters(p, KEY.INITIAL_PERMANENCE, 0.2);
             p = getDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] prevActiveColumns = { 0 };
             Cell[] prevActiveCells = { cn.GetCell(0), cn.GetCell(1), cn.GetCell(2), cn.GetCell(3) };
@@ -801,7 +801,7 @@ namespace UnitTestsProject
                 p = getDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
                 p = getDefaultParameters(p, KEY.SEED, seed);
                 p.apply(cn);
-                tm.init(cn);
+                tm.Init(cn);
 
                 int[] prevActiveColumns = { 1, 2, 3, 4 };
                 Cell[] prevActiveCells = { cn.GetCell(4), cn.GetCell(5), cn.GetCell(6), cn.GetCell(7) };
@@ -873,7 +873,7 @@ namespace UnitTestsProject
             p = getDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
             p = getDefaultParameters(p, KEY.INITIAL_PERMANENCE, 0.2);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] prevActiveColumns = { 0 };
             Cell[] prevActiveCells = { cn.GetCell(0), cn.GetCell(1), cn.GetCell(2), cn.GetCell(3) };
@@ -912,7 +912,7 @@ namespace UnitTestsProject
             Parameters p = getDefaultParameters(null, KEY.COLUMN_DIMENSIONS, new int[] { 2 });
             p = getDefaultParameters(p, KEY.CELLS_PER_COLUMN, 2);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             DistalDendrite dd = cn.CreateDistalSegment(cn.GetCell(0));
             cn.CreateSynapse(dd, cn.GetCell(3), 0.3);
@@ -931,7 +931,7 @@ namespace UnitTestsProject
             Connections cn = new Connections();
             Parameters p = Parameters.getAllDefaultParameters();
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             DistalDendrite dd = cn.CreateDistalSegment(cn.GetCell(0));
             Synapse s1 = cn.CreateSynapse(dd, cn.GetCell(23), 0.6);
@@ -953,7 +953,7 @@ namespace UnitTestsProject
             Connections cn = new Connections();
             Parameters p = Parameters.getAllDefaultParameters();
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             DistalDendrite dd = cn.CreateDistalSegment(cn.GetCell(0));
             Synapse s1 = cn.CreateSynapse(dd, cn.GetCell(23), 0.9);
@@ -974,7 +974,7 @@ namespace UnitTestsProject
             Connections cn = new Connections();
             Parameters p = Parameters.getAllDefaultParameters();
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             DistalDendrite dd = cn.CreateDistalSegment(cn.GetCell(0));
             Synapse s1 = cn.CreateSynapse(dd, cn.GetCell(23), 0.1);
@@ -994,7 +994,7 @@ namespace UnitTestsProject
             p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 64, 64 });
             p.Set(KEY.CELLS_PER_COLUMN, 32);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             Assert.AreEqual(64 * 64, cn.HtmConfig.NumColumns);
         }
@@ -1009,7 +1009,7 @@ namespace UnitTestsProject
             p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 64, 64 });
             p.Set(KEY.CELLS_PER_COLUMN, 32);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             Assert.AreEqual(64 * 64 * 32, cn.Cells.Length);
         }

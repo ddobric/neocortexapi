@@ -56,7 +56,7 @@ namespace UnitTestsProject
             var mem = new Connections();
             p.apply(mem);
             sp1.Init(mem, UnitTestHelpers.GetMemory());
-            tm1.init(mem);
+            tm1.Init(mem);
             Dictionary<string, object> settings = new Dictionary<string, object>();
             //settings.Add("W", 25);
             settings.Add("N", 100);
@@ -165,7 +165,7 @@ namespace UnitTestsProject
             var mem = new Connections();
             p.apply(mem);
             sp1.Init(mem, UnitTestHelpers.GetMemory());
-            tm1.init(mem);
+            tm1.Init(mem);
 
             Dictionary<string, object> settings = new Dictionary<string, object>()
             {
@@ -241,7 +241,7 @@ namespace UnitTestsProject
                     learn = false;
                 }
 
-                tm1.reset(mem);
+                tm1.Reset(mem);
             }
 
             cls.TraceState();
@@ -282,7 +282,7 @@ namespace UnitTestsProject
             var mem = new Connections();
             p.apply(mem);
             sp1.Init(mem, UnitTestHelpers.GetMemory());
-            tm1.init(mem);
+            tm1.Init(mem);
 
             Dictionary<string, object> settings = new Dictionary<string, object>()
             {
@@ -560,14 +560,14 @@ namespace UnitTestsProject
                 isInStableState = true;
                 cls.ClearState();
 
-                tm1.reset(mem);
+                tm1.Reset(mem);
             }, numOfCyclesToWaitOnChange: 25);
 
             SpatialPoolerMT sp1 = new SpatialPoolerMT(hpa);
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
 
             sp1.Init(mem, UnitTestHelpers.GetMemory());
-            tm1.init(mem);
+            tm1.Init(mem);
 
             //
             // NewBorn learning stage.
@@ -776,7 +776,7 @@ namespace UnitTestsProject
             var mem = new Connections();
             p.apply(mem);
             sp1.Init(mem, UnitTestHelpers.GetMemory());
-            tm1.init(mem);
+            tm1.Init(mem);
 
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
 

@@ -64,7 +64,7 @@ namespace UnitTestsProject
             var mem = new Connections();
             p.apply(mem);
             sp1.Init(mem, UnitTestHelpers.GetMemory());
-            tm1.init(mem);
+            tm1.Init(mem);
 
             Dictionary<string, object> settings = new Dictionary<string, object>();
 
