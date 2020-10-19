@@ -235,7 +235,7 @@ namespace UnitTestsProject
                 var overlaps = sp.CalculateOverlap(mem, inputVector);
                 var strOverlaps = Helpers.StringifyVector(overlaps);
 
-                var inhibitions = sp.inhibitColumns(mem, ArrayUtils.ToDoubleArray(overlaps));
+                var inhibitions = sp.InhibitColumns(mem, ArrayUtils.ToDoubleArray(overlaps));
                 var strInhibitions = Helpers.StringifyVector(inhibitions);
 
                 activeArray = sp.Compute(inputVector, true) as int[];

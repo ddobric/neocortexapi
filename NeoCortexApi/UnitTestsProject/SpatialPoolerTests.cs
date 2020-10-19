@@ -799,7 +799,7 @@ namespace UnitTestsProject
             mem.HtmConfig.InhibitionRadius = 5;
             double trueDensity = mem.HtmConfig.LocalAreaDensity;
             //inhibitColumnsGlobal.inhibitColumns(mem, overlaps);
-            mock.inhibitColumns(mem, overlaps);
+            mock.InhibitColumns(mem, overlaps);
             Assert.IsTrue(globalCalled);
             Assert.IsTrue(!localCalled);
             Assert.IsTrue(Math.Abs(trueDensity - _density) <= .01d);
@@ -816,7 +816,7 @@ namespace UnitTestsProject
             mem.TieBreaker = tieBreaker;
             overlaps = ArrayUtils.Sample(mem.HtmConfig.NumColumns, mem.HtmConfig.Random);
             //inhibitColumnsLocal.inhibitColumns(mem, overlaps);
-            mock.inhibitColumns(mem, overlaps);
+            mock.InhibitColumns(mem, overlaps);
             trueDensity = mem.HtmConfig.LocalAreaDensity;
             Assert.IsTrue(!globalCalled);
             Assert.IsTrue(localCalled);
@@ -838,7 +838,7 @@ namespace UnitTestsProject
             mem.TieBreaker = tieBreaker;
             overlaps = ArrayUtils.Sample(mem.HtmConfig.NumColumns, mem.HtmConfig.Random);
             //inhibitColumnsLocal.inhibitColumns(mem, overlaps);
-            mock.inhibitColumns(mem, overlaps);
+            mock.InhibitColumns(mem, overlaps);
             trueDensity = 3.0 / 81.0;
             Assert.IsTrue(!globalCalled);
             Assert.IsTrue(localCalled);
@@ -855,7 +855,7 @@ namespace UnitTestsProject
             mem.TieBreaker = tieBreaker;
             overlaps = ArrayUtils.Sample(mem.HtmConfig.NumColumns, mem.HtmConfig.Random);
             //inhibitColumnsLocal.inhibitColumns(mem, overlaps);
-            mock.inhibitColumns(mem, overlaps);
+            mock.InhibitColumns(mem, overlaps);
             trueDensity = 0.5;
             Assert.IsTrue(!globalCalled);
             Assert.IsTrue(localCalled);
@@ -1561,29 +1561,29 @@ namespace UnitTestsProject
 
             mem.HtmConfig.UpdatePeriod = 50;
             mem.SpIterationNum = 1;
-            Assert.IsFalse(sp.isUpdateRound(mem));
+            Assert.IsFalse(sp.IsUpdateRound(mem));
             mem.SpIterationNum = 39;
-            Assert.IsFalse(sp.isUpdateRound(mem));
+            Assert.IsFalse(sp.IsUpdateRound(mem));
             mem.SpIterationNum = 50;
-            Assert.IsTrue(sp.isUpdateRound(mem));
+            Assert.IsTrue(sp.IsUpdateRound(mem));
             mem.SpIterationNum = 1009;
-            Assert.IsFalse(sp.isUpdateRound(mem));
+            Assert.IsFalse(sp.IsUpdateRound(mem));
             mem.SpIterationNum = 1250;
-            Assert.IsTrue(sp.isUpdateRound(mem));
+            Assert.IsTrue(sp.IsUpdateRound(mem));
 
             mem.HtmConfig.UpdatePeriod = 125;
             mem.SpIterationNum = 0;
-            Assert.IsTrue(sp.isUpdateRound(mem));
+            Assert.IsTrue(sp.IsUpdateRound(mem));
             mem.SpIterationNum = 200;
-            Assert.IsFalse(sp.isUpdateRound(mem));
+            Assert.IsFalse(sp.IsUpdateRound(mem));
             mem.SpIterationNum = 249;
-            Assert.IsFalse(sp.isUpdateRound(mem));
+            Assert.IsFalse(sp.IsUpdateRound(mem));
             mem.SpIterationNum = 1330;
-            Assert.IsFalse(sp.isUpdateRound(mem));
+            Assert.IsFalse(sp.IsUpdateRound(mem));
             mem.SpIterationNum = 1249;
-            Assert.IsFalse(sp.isUpdateRound(mem));
+            Assert.IsFalse(sp.IsUpdateRound(mem));
             mem.SpIterationNum = 1375;
-            Assert.IsTrue(sp.isUpdateRound(mem));
+            Assert.IsTrue(sp.IsUpdateRound(mem));
 
         }
 
@@ -2143,7 +2143,7 @@ namespace UnitTestsProject
             parameters.setInhibitionRadius(2);
             double density = 0.3;
             double[] overlaps = new double[] { 1, 2, 1, 4, 8/*i=4*/, 3, 12/*i=6*/, 5/*i=7*/, 4, 1 };
-            int[] active = sp.inhibitColumnsGlobal(mem, overlaps, density);
+            int[] active = sp.InhibitColumnsGlobal(mem, overlaps, density);
 
             // See overlaps comments (i=k) above.
             int[] trueActive = new int[] { 4, 6, 7 };
@@ -2158,7 +2158,7 @@ namespace UnitTestsProject
                 overlaps[i] = i * 1.0;
             }
 
-            active = sp.inhibitColumnsGlobal(mem, overlaps, density);
+            active = sp.InhibitColumnsGlobal(mem, overlaps, density);
 
             trueActive = new int[5];
             for (int i = 5; i < 10; i++)
