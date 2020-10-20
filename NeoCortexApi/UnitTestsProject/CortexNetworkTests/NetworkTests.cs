@@ -55,8 +55,8 @@ namespace UnitTestsProject
             TemporalMemory tm1 = new TemporalMemory();
             var mem = new Connections();
             p.apply(mem);
-            sp1.init(mem, UnitTestHelpers.GetMemory());
-            tm1.init(mem);
+            sp1.Init(mem, UnitTestHelpers.GetMemory());
+            tm1.Init(mem);
             Dictionary<string, object> settings = new Dictionary<string, object>();
             //settings.Add("W", 25);
             settings.Add("N", 100);
@@ -164,8 +164,8 @@ namespace UnitTestsProject
             TemporalMemory tm1 = new TemporalMemory();
             var mem = new Connections();
             p.apply(mem);
-            sp1.init(mem, UnitTestHelpers.GetMemory());
-            tm1.init(mem);
+            sp1.Init(mem, UnitTestHelpers.GetMemory());
+            tm1.Init(mem);
 
             Dictionary<string, object> settings = new Dictionary<string, object>()
             {
@@ -241,7 +241,7 @@ namespace UnitTestsProject
                     learn = false;
                 }
 
-                tm1.reset(mem);
+                tm1.Reset(mem);
             }
 
             cls.TraceState();
@@ -281,8 +281,8 @@ namespace UnitTestsProject
             TemporalMemory tm1 = new TemporalMemory();
             var mem = new Connections();
             p.apply(mem);
-            sp1.init(mem, UnitTestHelpers.GetMemory());
-            tm1.init(mem);
+            sp1.Init(mem, UnitTestHelpers.GetMemory());
+            tm1.Init(mem);
 
             Dictionary<string, object> settings = new Dictionary<string, object>()
             {
@@ -409,7 +409,7 @@ namespace UnitTestsProject
 
             p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
             p.Set(KEY.INPUT_DIMENSIONS, new int[] { inputBits });
-            p.Set(KEY.CELLS_PER_COLUMN, 50);
+            p.Set(KEY.CELLS_PER_COLUMN, 25);
             p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
 
             //p.Set(KEY.GLOBAL_INHIBITION, false);
@@ -428,7 +428,7 @@ namespace UnitTestsProject
             // Activates the high bumping/boosting of inactive columns.
             // This exeperiment uses HomeostaticPlasticityActivator, which will deactivate boosting and bumping.
             p.Set(KEY.MAX_BOOST, 10.0);
-            p.Set(KEY.DUTY_CYCLE_PERIOD, 50);
+            p.Set(KEY.DUTY_CYCLE_PERIOD, 25);
             p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.75);
 
             // Max number of synapses on the segment.
@@ -444,7 +444,7 @@ namespace UnitTestsProject
             p.setPermanenceIncrement(0.15);
 
             // Used by punishing of segments.
-            p.Set(KEY.PREDICTED_SEGMENT_DECREMENT, 0.2);
+            p.Set(KEY.PREDICTED_SEGMENT_DECREMENT, 0.1);
 
             double max = 20;
 
@@ -474,7 +474,7 @@ namespace UnitTestsProject
             // Active Experiment
             //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 3.0, 2.0, 1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 0.0, 1.0, 2.0, 3.0, 3.0, 2.0, 1.0, 0.0, 1.0});
 
-            // Stable with 2048 cols 25 cells per column and 0.02 * numColumns synapses on segment.8min, 154 min, maxPrevInputs=5. connected permanence 0.35 or 0.5.
+            // Stable with 2048 cols 25 cells per column and 0.02 * numColumns synapses on segment.8min, 154 min, maxPrevInputs=5. connected permanence 0.35 or 0.5. PREDICTED_SEGMENT_DECREMENT= 0.1, permIncr = 0.15, permDecr=0.15, activationThreshold = 15
             // Stable with 2048 cols 25 cells per column and 0.02 * numColumns synapses on segment.8min, 9min.
             // not stable with 2048 cols 15 cells per column and 0.02 * numColumns synapses on segment.
             //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0 });
@@ -499,6 +499,10 @@ namespace UnitTestsProject
             // C-0, D-1, E-2, F-3, G-4, H-5
             // https://www.bethsnotesplus.com/2013/08/twinkle-twinkle-little-star.html
             var inputValues = new List<double>( new double[] { 0.0, 0.0, 4.0, 4.0, 5.0, 5.0, 4.0, 3.0, 3.0, 2.0, 2.0, 1.0, 1.0, 0.0 });
+
+            // All elements same.
+            //var inputValues = new List<double>(new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 });
+
 
             //inputValues = new List<double>(new double[] { 1.0, 2.0, 3.0, 1.0, 5.0, 1.0, 6.0, });
 
@@ -556,14 +560,14 @@ namespace UnitTestsProject
                 isInStableState = true;
                 cls.ClearState();
 
-                tm1.reset(mem);
+                tm1.Reset(mem);
             }, numOfCyclesToWaitOnChange: 25);
 
             SpatialPoolerMT sp1 = new SpatialPoolerMT(hpa);
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
 
-            sp1.init(mem, UnitTestHelpers.GetMemory());
-            tm1.init(mem);
+            sp1.Init(mem, UnitTestHelpers.GetMemory());
+            tm1.Init(mem);
 
             //
             // NewBorn learning stage.
@@ -771,8 +775,8 @@ namespace UnitTestsProject
             TemporalMemory tm1 = new TemporalMemory();
             var mem = new Connections();
             p.apply(mem);
-            sp1.init(mem, UnitTestHelpers.GetMemory());
-            tm1.init(mem);
+            sp1.Init(mem, UnitTestHelpers.GetMemory());
+            tm1.Init(mem);
 
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
 
@@ -1108,7 +1112,7 @@ namespace UnitTestsProject
             SpatialPooler sp1 = new SpatialPooler();
             var mem = new Connections();
             p.apply(mem);
-            sp1.init(mem, UnitTestHelpers.GetMemory());
+            sp1.Init(mem, UnitTestHelpers.GetMemory());
 
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
 

@@ -18,7 +18,7 @@ namespace UnitTestsProject
         {
             m_InhibitColumns = inhibitColumns;
         }
-        public override int[] inhibitColumns(Connections c, double[] overlaps)
+        public override int[] InhibitColumns(Connections c, double[] overlaps)
         {
             return m_InhibitColumns;// new int[] { 0, 1, 2, 3, 4 };
         }
@@ -39,7 +39,7 @@ namespace UnitTestsProject
         }
         
 
-        public override int[] inhibitColumnsGlobal(Connections c, double[] overlap, double density)
+        public override int[] InhibitColumnsGlobal(Connections c, double[] overlap, double density)
         {
             m_CallBackGlobal?.Invoke(density);
             //setGlobalCalled(true);
@@ -78,7 +78,7 @@ namespace UnitTestsProject
             return this.m_avgConnectedSpanForColumnND;
         }
 
-        public override double calcAvgColumnsPerInput(Connections c)
+        public override double CalcAvgColumnsPerInput(Connections c)
         {
             return this.m_avgColumnsPerInput;
         }

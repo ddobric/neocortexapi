@@ -199,7 +199,12 @@ namespace NeoCortexApi.Encoders
             return result.ToArray();
         }
 
-        public override List<T> getBucketValues<T>()
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public override List<T> GetBucketValues<T>()
         {
             throw new NotImplementedException();
         }

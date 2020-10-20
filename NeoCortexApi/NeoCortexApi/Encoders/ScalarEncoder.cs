@@ -80,7 +80,7 @@ namespace NeoCortexApi.Encoders
             // bits to the right of the center bit of maxval
             Padding = Periodic ? 0 : HalfWidth;
 
-            if (Double.NaN != MinVal && Double.NaN != MaxVal)
+            if (double.NaN != MinVal && double.NaN != MaxVal)
             {
                 if (MinVal >= MaxVal)
                 {
@@ -126,7 +126,7 @@ namespace NeoCortexApi.Encoders
         {
             if (n != 0)
             {
-                if (Double.NaN != minVal && Double.NaN != maxVal)
+                if (double.NaN != minVal && double.NaN != maxVal)
                 {
                     if (!Periodic)
                     {
@@ -181,7 +181,7 @@ namespace NeoCortexApi.Encoders
 
         protected int? GetFirstOnBit(double input)
         {
-            if (input == Double.NaN)
+            if (input == double.NaN)
             {
                 return null;
             }
@@ -249,7 +249,7 @@ namespace NeoCortexApi.Encoders
             int[] output = null;
 
             double input = Convert.ToDouble(inputData, CultureInfo.InvariantCulture);
-            if (input == Double.NaN)
+            if (input == double.NaN)
             {
                 return output;
             }
@@ -311,11 +311,11 @@ namespace NeoCortexApi.Encoders
         }
 
         /// <summary>
-        /// The getBucketValues
+        /// <inheritdoc/>
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns>The <see cref="List{T}"/></returns>
-        public override List<T> getBucketValues<T>()
+        public override List<T> GetBucketValues<T>()
         {
             throw new NotImplementedException();
         }

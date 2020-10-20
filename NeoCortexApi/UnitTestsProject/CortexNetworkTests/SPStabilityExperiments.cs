@@ -125,7 +125,7 @@ namespace UnitTestsProject
             SpatialPooler sp1 = new SpatialPooler();
             var mem = new Connections();
             p.apply(mem);
-            sp1.init(mem, UnitTestHelpers.GetMemory());
+            sp1.Init(mem, UnitTestHelpers.GetMemory());
 
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
 
@@ -306,7 +306,7 @@ namespace UnitTestsProject
             SpatialPooler sp1 = new SpatialPooler();
             var mem = new Connections();
             p.apply(mem);
-            sp1.init(mem, UnitTestHelpers.GetMemory());
+            sp1.Init(mem, UnitTestHelpers.GetMemory());
 
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
 
@@ -334,8 +334,10 @@ namespace UnitTestsProject
                 // New Born effect
                 if (cycle >= 300)
                 {
-                    mem.setMaxBoost(0.0);
-                    mem.updateMinPctOverlapDutyCycles(0.0);
+                    //mem.setMaxBoost(0.0);
+                    mem.HtmConfig.MaxBoost = 0.0;
+                    //mem.updateMinPctOverlapDutyCycles(0.0);
+                    mem.HtmConfig.MinPctOverlapDutyCycles = 0.0;
                 }
 
                 Debug.WriteLine($"Cycle  ** {cycle} **");
@@ -533,7 +535,7 @@ namespace UnitTestsProject
             SpatialPooler sp1 = new SpatialPooler(hpa);
           
             p.apply(mem);
-            sp1.init(mem, UnitTestHelpers.GetMemory());
+            sp1.Init(mem, UnitTestHelpers.GetMemory());
 
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
 

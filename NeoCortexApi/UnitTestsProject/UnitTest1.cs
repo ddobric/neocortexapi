@@ -66,6 +66,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [DataRow(42)]
+        [TestCategory("Prod")]
         public void RandomSeed(int seed)
         {
             ThreadSafeRandom x = new ThreadSafeRandom(seed);
@@ -85,6 +86,7 @@ namespace UnitTestsProject
 
 
         [TestMethod]
+        [TestCategory("Prod")]
         public void TestMethod3()
         {
             Topology t = new Topology(new int[] { 2048, 40 });
@@ -97,6 +99,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("Prod")]
         public void ModuloTest()
         {
             int r = ArrayUtils.Modulo(2, 7);
@@ -121,6 +124,7 @@ namespace UnitTestsProject
 
 
         [TestMethod]
+        [TestCategory("Prod")]
         public void ColumnCompareTest()
         {
             Column c1 = new Column(10, 0, 0, 0);
@@ -134,6 +138,7 @@ namespace UnitTestsProject
 
 
         [TestMethod]
+        [TestCategory("Prod")]
         public void CastTest()
         {
             int[] a = new int[] { 1, 2, 3, 4, 5 };
@@ -142,31 +147,26 @@ namespace UnitTestsProject
 
 
         [TestMethod]
+        [TestCategory("Prod")]
         public void CompareDentrites()
         {
-            var empty1 = (NeoCortexApi.Utility.GroupBy2<object>.Slot < Pair<object, List<object>> > )NeoCortexApi.Utility.GroupBy2<object>.Slot<Pair<object, List<object>>>.empty();
-            var empty2 = (NeoCortexApi.Utility.GroupBy2<object>.Slot < Pair<object, List<object>> > )NeoCortexApi.Utility.GroupBy2<object>.Slot<Pair<object, List<object>>>.empty();
+            var empty1 = (NeoCortexApi.Utility.GroupBy2<object>.Slot < Pair<object, List<object>> > )NeoCortexApi.Utility.GroupBy2<object>.Slot<Pair<object, List<object>>>.Empty();
+            var empty2 = (NeoCortexApi.Utility.GroupBy2<object>.Slot < Pair<object, List<object>> > )NeoCortexApi.Utility.GroupBy2<object>.Slot<Pair<object, List<object>>>.Empty();
 
-            var slot2 = NeoCortexApi.Utility.GroupBy2<object>.Slot<object>.of(7);
+            var slot2 = NeoCortexApi.Utility.GroupBy2<object>.Slot<object>.Of(7);
             Assert.AreNotEqual(empty1, slot2);
 
             Assert.AreEqual(empty1, empty2);
         }
 
-        [TestMethod]
-        public void CreateDutyCycleGraphTest()
-        {
-            for (int i = 0; i < 1; i++)
-            {
-
-            }
-        }
+     
 
         [TestMethod]
         [DataRow(20)]
         [DataRow(30)]
         [DataRow(40)]
         [DataRow(50)]
+        [TestCategory("Prod")]
         public void TestHeatmapCreation(int threshold)
         {
             List<double[,]> bostArrays = new List<double[,]>();
@@ -186,7 +186,6 @@ namespace UnitTestsProject
             }
 
             NeoCortexUtils.DrawHeatmaps(bostArrays, $"tessheat_{threshold}.png", 1024, 1024, 60, threshold, 10);
-
         }
 
         /// <summary>
@@ -218,14 +217,5 @@ namespace UnitTestsProject
                 Debug.WriteLine(item);
             }
         }
-
-        //[TestMethod]
-        //public void CompareDentrites()
-        //{
-        //    DistalDendrite d1 = new DistalDendrite();
-        //    DistalDendrite bestSegment = matchingSegments.Max();
-        //}
-
-
     }
 }

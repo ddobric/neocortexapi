@@ -14,9 +14,9 @@ namespace NeoCortexApi.DataMappers
     /// </summary>
     internal class DataMapper
     {
-        private DataDescriptor descriptor;
+        private DataDescriptor m_Descriptor;
 
-        private CortexNetworkContext context;
+        private CortexNetworkContext m_Context;
         
         /// <summary>
         /// Width of input across of all encoders.
@@ -26,7 +26,7 @@ namespace NeoCortexApi.DataMappers
             get
             {
                 int width = 0;
-                foreach (var feature in descriptor.Features)
+                foreach (var feature in m_Descriptor.Features)
                 {
                     width += feature.Encoder.Width;
                 }
@@ -39,14 +39,14 @@ namespace NeoCortexApi.DataMappers
         /// </summary>
         public DataMapper(DataDescriptor descriptor, CortexNetworkContext context)
         {
-            this.context = context;
-            this.descriptor = descriptor;
+            this.m_Context = context;
+            this.m_Descriptor = descriptor;
 
             foreach (var feature in descriptor.Features)
             {
                 if (feature.EncoderSettings != null)
                 {
-                    feature.Encoder = this.context.CreateEncoder(feature.EncoderSettings);                    
+                    feature.Encoder = this.m_Context.CreateEncoder(feature.EncoderSettings);                    
                 }
                 else
                 {
@@ -65,7 +65,7 @@ namespace NeoCortexApi.DataMappers
         public int[] Run(object[] vector)
         {
             //sort features by id
-            Array.Sort(this.descriptor.Features, (x, y) => x.Id.CompareTo(y.Id));
+            Array.Sort(this.m_Descriptor.Features, (x, y) => x.Id.CompareTo(y.Id));
 
             //enumerate all dataset data
             List<int> output = new List<int>();
@@ -74,11 +74,11 @@ namespace NeoCortexApi.DataMappers
             // Transform rawData in to raw of Features with proper type, normalization value, and corect binary and catogery type 
             // during enumeration Features are sorted by Id property
             //for (int featureIndx = 0; featureIndx < data[0].Length; featureIndx++)
-            foreach (var featureIndx in this.descriptor.Features.OrderBy(x => x.Id).Select(x => x.Index))
+            foreach (var featureIndx in this.m_Descriptor.Features.OrderBy(x => x.Id).Select(x => x.Index))
             {
-                var col = this.descriptor.Features[featureIndx];
+                var col = this.m_Descriptor.Features[featureIndx];
                 if (col.Encoder == null)
-                    col.Encoder = context.CreateEncoder(col.EncoderSettings);
+                    col.Encoder = m_Context.CreateEncoder(col.EncoderSettings);
 
                 int[] encodedValue = col.Encoder.Encode(vector[featureIndx]);
 

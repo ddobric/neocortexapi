@@ -68,7 +68,7 @@ namespace UnitTestsProject
 
             var settings = new JsonSerializerSettings { ContractResolver = new ContractResolver(), Formatting = Formatting.Indented };
 
-            sp.init(mem1);
+            sp.Init(mem1);
 
             var jsonMem = JsonConvert.SerializeObject(mem1, settings);
 
@@ -102,7 +102,7 @@ namespace UnitTestsProject
               */
             #endregion
 
-            sp.init(mem1);
+            sp.Init(mem1);
         }
 
 
@@ -128,7 +128,7 @@ namespace UnitTestsProject
             parameters.apply(mem);
 
             var sp = new SpatialPooler();
-            sp.init(mem);
+            sp.Init(mem);
           
 
             int[] activeArray = new int[64 * 64];

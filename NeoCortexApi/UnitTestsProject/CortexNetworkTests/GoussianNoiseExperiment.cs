@@ -117,8 +117,8 @@ namespace UnitTestsProject.CortexNetworkTests
             TemporalMemory tm1 = new TemporalMemory();
             var mem = new Connections();
             p.apply(mem);
-            sp1.init(mem, UnitTestHelpers.GetMemory());
-            tm1.init(mem);
+            sp1.Init(mem, UnitTestHelpers.GetMemory());
+            tm1.Init(mem);
 
             HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
 
@@ -130,8 +130,10 @@ namespace UnitTestsProject.CortexNetworkTests
                 if (cycle >= 300)
                 {
                     // These activates ew-born effect which switch offs the boosting.
-                    mem.setMaxBoost(0.0);
-                    mem.updateMinPctOverlapDutyCycles(0.0);
+                    //mem.setMaxBoost(0.0);
+                    mem.HtmConfig.MaxBoost = 0.0;
+                    //mem.updateMinPctOverlapDutyCycles(0.0);
+                    mem.HtmConfig.MinPctOverlapDutyCycles = 0.0;
                 }
 
                 using (StreamReader sr = new StreamReader(SP_inFile))

@@ -8,22 +8,20 @@ using NeoCortexApi.DistributedComputeLib;
 
 namespace NeoCortexApi.Entities
 {
-    /**
-   * Allows storage of array data in sparse form, meaning that the indexes
-   * of the data stored are maintained while empty indexes are not. This allows
-   * savings in memory and computational efficiency because iterative algorithms
-   * need only query indexes containing valid data.
-   * 
-   * @author David Ray, Damir Dobric
-   *
-   * @param <T>
-   */
+    /// <summary>
+    /// Allows storage of array data in sparse form, meaning that the indexes of the data stored are maintained while empty indexes are not. This allows
+    /// savings in memory and computational efficiency because iterative algorithms need only query indexes containing valid data.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <remarks>
+    /// @author David Ray, Damir Dobric
+    /// </remarks>
     public class SparseObjectMatrix<T> : AbstractSparseMatrix<T>, IEquatable<T> where T : class
     {
 
         //private IDictionary<int, T> sparseMap = new Dictionary<int, T>();
         private IDistributedDictionary<int, T> sparseMap;
-        
+
         /// <summary>
         /// Returns true if sparse memory is remotely distributed. It means objects has to be synced with remote partitions.
         /// </summary>
@@ -59,11 +57,12 @@ namespace NeoCortexApi.Entities
 
         //}
 
-        /**
-         * Constructs a new {@code SparseObjectMatrix}
-         * @param dimensions					the dimensions of this array
-         * @param useColumnMajorOrdering		where inner index increments most frequently
-         */
+        /// <summary>
+        /// Constructs a new <see cref="SparseObjectMatrix{T}"/>
+        /// </summary>
+        /// <param name="dimensions">the dimensions of this array</param>
+        /// <param name="useColumnMajorOrdering">where inner index increments most frequently</param>
+        /// <param name="dict"></param>
         public SparseObjectMatrix(int[] dimensions, bool useColumnMajorOrdering = false, IDistributedDictionary<int, T> dict = null) : base(dimensions, useColumnMajorOrdering)
         {
             if (dict == null)
@@ -104,13 +103,12 @@ namespace NeoCortexApi.Entities
             return this;
         }
 
-        /**
-         * Sets the specified object to be indexed at the index
-         * computed from the specified coordinates.
-         * @param object        the object to be indexed.
-         * @param coordinates   the row major coordinates [outer --> ,...,..., inner]
-         */
-     
+        /// <summary>
+        /// Sets the specified object to be indexed at the index computed from the specified coordinates.
+        /// </summary>
+        /// <param name="coordinates">the row major coordinates [outer --> ,...,..., inner]</param>
+        /// <param name="obj">the object to be indexed.</param>
+        /// <returns></returns>
         public override AbstractFlatMatrix<T> set(int[] coordinates, T obj)
         {
             set(computeIndex(coordinates), obj);
@@ -124,6 +122,11 @@ namespace NeoCortexApi.Entities
          * @return  the T at the specified index.
          */
         // @Override
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <param name="index"><inheritdoc/></param>
+        /// <returns><inheritdoc/></returns>
         public override T getObject(int index)
         {
             return GetColumn(index);
@@ -136,20 +139,21 @@ namespace NeoCortexApi.Entities
          * @param coordinates   the coordinates from which to retrieve the indexed object
          * @return  the indexed object
          */
-        // @Override
-        public T get(int[] coordinates)
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <param name="coordinates"><inheritdoc/></param>
+        /// <returns><inheritdoc/></returns>
+        public override T get(int[] coordinates)
         {
             return GetColumn(computeIndex(coordinates));
         }
 
-
-        /**
-         * Returns the T at the specified index.
-         * 
-         * @param index     the index of the T to return
-         * @return  the T at the specified index.
-         */
-        // @Override
+        /// <summary>
+        /// Returns the T at the specified index.
+        /// </summary>
+        /// <param name="index">the index of the T to return</param>
+        /// <returns>the T at the specified index.</returns>
         public override T GetColumn(int index)
         {
             T val = null;
@@ -160,29 +164,28 @@ namespace NeoCortexApi.Entities
             //return this.sparseMap[index];
         }
 
-        /**
-         * Returns a sorted array of occupied indexes.
-         * @return  a sorted array of occupied indexes.
-         */
-        // @Override
+        /// <summary>
+        /// Returns a sorted array of occupied indexes.
+        /// </summary>
+        /// <returns>a sorted array of occupied indexes.</returns>
         public override int[] getSparseIndices()
         {
             return Reverse(sparseMap.Keys.ToArray());
         }
 
-        /**
-         * {@inheritDoc}
-         */
-        // @Override
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <returns><inheritdoc/></returns>
         public override String ToString()
         {
             return getDimensions().ToString();
         }
 
-        /* (non-Javadoc)
-         * @see java.lang.Object#hashCode()
-         */
-        //    @Override
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <returns><inheritdoc/></returns>
         public override int GetHashCode()
         {
             int prime = 31;
@@ -191,11 +194,12 @@ namespace NeoCortexApi.Entities
             return result;
         }
 
-        /* (non-Javadoc)
-         * @see java.lang.Object#equals(java.lang.Object)
-         */
-        //SuppressWarnings("rawtypes")
-        // @Override
+        public int MyProperty { get; set; }
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <param name="obj"><inheritdoc/></param>
+        /// <returns></returns>
         public override bool Equals(Object obj)
         {
             if (this == obj)

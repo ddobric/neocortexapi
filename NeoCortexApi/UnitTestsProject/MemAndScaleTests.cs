@@ -86,7 +86,7 @@ namespace UnitTestsProject
             }
 
             parameters.apply(mem);
-            sp.init(mem, null);
+            sp.Init(mem, null);
         }
 
         /// <summary>
@@ -338,7 +338,7 @@ namespace UnitTestsProject
             var mem = new Connections();
             parameters.apply(mem);
 
-            sp.init(mem, UnitTestHelpers.GetMemory(new HtmConfig()));
+            sp.Init(mem, UnitTestHelpers.GetMemory(new HtmConfig()));
             //sp.init(mem);
 
             //int[] inputVector = new int[] { 1, 0, 1, 0, 1, 0, 0, 1, 1 };
@@ -352,7 +352,7 @@ namespace UnitTestsProject
         [TestMethod]
         public void TTEST()
         {
-            Helpers.f1();
+            Helpers.F1();
         }
 
     }

@@ -8,10 +8,12 @@ namespace NeoCortexApi
 {
     public class Anomaly : IHtmAlgorithm
     {
-        /** Modes to use for factory creation method */
+        /// <summary>
+        /// Modes to use for factory creation method
+        /// </summary>
         public enum Mode { PURE, LIKELIHOOD, WEIGHTED };
 
-        // Instantiation keys
+        #region Instantiation keys
         public static readonly int VALUE_NONE = -1;
         public static readonly String KEY_MODE = "mode";
         public static readonly String KEY_LEARNING_PERIOD = "claLearningPeriod";
@@ -19,37 +21,40 @@ namespace NeoCortexApi
         public static readonly String KEY_USE_MOVING_AVG = "useMovingAverage";
         public static readonly String KEY_WINDOW_SIZE = "windowSize";
         public static readonly String KEY_IS_WEIGHTED = "isWeighted";
+        #endregion
 
-        // Configs
+        #region Configs
         public static readonly String KEY_DIST = "distribution";
         public static readonly String KEY_MVG_AVG = "movingAverage";
         public static readonly String KEY_HIST_LIKE = "historicalLikelihoods";
         public static readonly String KEY_HIST_VALUES = "historicalValues";
         public static readonly String KEY_TOTAL = "total";
+        #endregion
 
-        // Computational argument keys
+        #region Computational argument keys
         public readonly static String KEY_MEAN = "mean";
         public readonly static String KEY_STDEV = "stdev";
         public readonly static String KEY_VARIANCE = "variance";
+        #endregion
 
         protected MovingAverage movingAverage;
 
         protected bool useMovingAverage;
 
-        /**
-         * Constructs a new {@code Anomaly}
-         */
+        /// <summary>
+        /// Constructs a new <see cref="Anomaly"/>
+        /// </summary>
         public Anomaly() : this(false, -1)
         {
          
         }
 
-        /**
-         * Constructs a new {@code Anomaly}
-         * 
-         * @param useMovingAverage  indicates whether to apply and store a moving average
-         * @param windowSize        size of window to average over
-         */
+        /// <summary>
+        /// Construct a new <see cref="Anomaly"/>
+        /// </summary>
+        /// <param name="useMovingAverage">indicates whether to apply and store a moving average</param>
+        /// <param name="windowSize">size of window to average over</param>
+        /// <exception cref="ArgumentException">Throws if <paramref name="windowSize"/> is less than 1</exception>
         protected Anomaly(bool useMovingAverage, int windowSize)
         {
             this.useMovingAverage = useMovingAverage;

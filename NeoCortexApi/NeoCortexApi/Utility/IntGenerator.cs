@@ -2,17 +2,17 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace NeoCortexApi.Utility
 {
-
-
-    /**
-     * Generates a range of integers.
-     * 
-     * @author 
-     */
+    /// <summary>
+    /// Generates a range of integers.
+    /// </summary>
+    /// <remarks>
+    /// Author
+    /// </remarks>
     public class IntGenerator
     {
         protected int m_CurrentValue;
@@ -26,41 +26,39 @@ namespace NeoCortexApi.Utility
             this.upper = upper;
         }
 
-        /**
-         * Returns the value returned by the last call to {@link #next()}
-         * or the initial value if no previous call to {@code #next()} was made.
-         * @return
-         */
-        public int get()
+        /// <summary>
+        /// Returns the value returned by the last call to <see cref="Next"/> or the initial value if no previous call to <see cref="Next"/> was made. 
+        /// </summary>
+        /// <returns></returns>
+        public int Get()
         {
             return m_CurrentValue;
         }
 
-        /**
-         * Returns the configured size or distance between the initialized
-         * upper and lower bounds.
-         * @return
-         */
-        public int size()
+        /// <summary>
+        /// Returns the configured size or distance between the initialized upper and lower bounds.
+        /// </summary>
+        /// <returns></returns>
+        public int Size()
         {
             return upper - lower;
         }
 
-        /**
-         * Returns the state of this generator to its initial state so 
-         * that it can be reused.
-         */
-        public void reset()
+        /// <summary>
+        /// Returns the state of this generator to its initial state so 
+        /// that it can be reused.
+        /// </summary>
+        public void Reset()
         {
             this.m_CurrentValue = lower;
         }
 
-        
+
         /// <summary>
         /// Moves iterator to the next value and returns the current value.
         /// </summary>
         /// <returns></returns>
-        public int next()
+        public int Next()
         {
             int retVal = m_CurrentValue;
             m_CurrentValue = ++m_CurrentValue > upper ? upper : m_CurrentValue;
@@ -85,17 +83,16 @@ namespace NeoCortexApi.Utility
         /**
          * {@inheritDoc}
          */
+        public bool HasNext() { return m_CurrentValue < upper - 1; }
 
-        public bool hasNext() { return m_CurrentValue < upper - 1; }
-
-        /**
-         * Returns a {@link Generator} which returns integers between
-         * the values specified (lower inclusive, upper exclusive)
-         * @param lower     the lower bounds or start value
-         * @param upper     the upper bounds (exclusive)
-         * @return
-         */
-        public static IntGenerator of(int lower, int upper)
+        /// <summary>
+        /// Returns a <see cref="IntGenerator"/> which returns integers between
+        /// the values specified (lower inclusive, upper exclusive)
+        /// </summary>
+        /// <param name="lower">the lower bounds or start value</param>
+        /// <param name="upper">the upper bounds (exclusive)</param>
+        /// <returns></returns>
+        public static IntGenerator Of(int lower, int upper)
         {
             return new IntGenerator(lower, upper);
         }

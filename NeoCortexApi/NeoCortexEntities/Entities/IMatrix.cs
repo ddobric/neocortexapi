@@ -6,41 +6,41 @@ using System.Text;
 
 namespace NeoCortexApi.Entities
 {
-
-    /**
-     * Base interface for Matrices.
-     * 
-     * @author Jose Luis Martin.
-     * 
-     * @param <T> element type
-     */
+    // TODO naming convention with interface method
+    /// <summary>
+    /// Base interface for Matrices.
+    /// </summary>
+    /// <typeparam name="T">element type</typeparam>
+    /// <remarks>
+    /// Authors of the JAVA implementation: Jose Luis Martin
+    /// </remarks>
     public interface IMatrix<T>
     {
-
-        /**
-         * Returns the array describing the dimensionality of the configured array.
-         * @return  the array describing the dimensionality of the configured array.
-         */
+        /// <summary>
+        /// Returns the array describing the dimensionality of the configured array.
+        /// </summary>
+        /// <returns>the array describing the dimensionality of the configured array.</returns>
         int[] getDimensions();
 
-        /**
-         * Returns the configured number of dimensions.
-         * @return  the configured number of dimensions.
-         */
+        /// <summary>
+        /// Returns the configured number of dimensions.
+        /// </summary>
+        /// <returns>the configured number of dimensions.</returns>
         int getNumDimensions();
 
-        /**
-         * Gets element at supplied index.
-         * @param index index to retrieve.
-         * @return element at index.
-         */
+        /// <summary>
+        /// Gets element at supplied index.
+        /// </summary>
+        /// <param name="index">index index to retrieve.</param>
+        /// <returns>element at index.</returns>
         T get(params int[] index);
 
-        /**
-         * Puts an element to supplied index.
-         * @param index index to put on.
-         * @param value value element.
-         */
+        /// <summary>
+        /// Puts an element to supplied index.
+        /// </summary>
+        /// <param name="index">index to put on.</param>
+        /// <param name="value">value element.</param>
+        /// <returns></returns>
         IMatrix<T> set(int[] index, T value);
     }
 }

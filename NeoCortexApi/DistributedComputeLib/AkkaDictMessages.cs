@@ -3,6 +3,7 @@
 using NeoCortexApi.Entities;
 using System.Collections.Generic;
 
+//TODO File name and classes do not match
 namespace NeoCortexApi.DistributedComputeLib
 {
 

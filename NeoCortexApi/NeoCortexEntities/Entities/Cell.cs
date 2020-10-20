@@ -37,10 +37,18 @@ namespace NeoCortexApi.Entities
             //this.Segments = new List<DistalDendrite>(); 
         }
         /**
-         * Constructs a new {@code Cell} object
+         * 
          * @param column    the containing {@link Column}
-         * @param colSeq    this index of this {@code Cell} within its column
+         * @param colSeq    
          */
+        /// <summary>
+        /// Constructs a new <see cref="Cell"/> object
+        /// </summary>
+        /// <param name="parentColumnIndx"></param>
+        /// <param name="colSeq">the index of this <see cref="Cell"/> within its column</param>
+        /// <param name="numCellsPerColumn"></param>
+        /// <param name="cellId"></param>
+        /// <param name="cellActivity"></param>
         public Cell(int parentColumnIndx, int colSeq, int numCellsPerColumn, int cellId, CellActivity cellActivity)
         {
             this.ParentColumnIndex = parentColumnIndx;
@@ -55,10 +63,10 @@ namespace NeoCortexApi.Entities
          * Returns the column within which this cell resides
          * @return
          */
-        public int getParentColumnIndex()
-        {
-            return ParentColumnIndex;
-        }
+        //public int getParentColumnIndex()
+        //{
+        //    return ParentColumnIndex;
+        //}
 
         /**
          * Returns the Set of {@link Synapse}s which have this cell
@@ -69,24 +77,20 @@ namespace NeoCortexApi.Entities
          * @return  the Set of {@link Synapse}s which have this cell
          *          as their source cells.
          */
-        public ISet<Synapse> getReceptorSynapses(Connections c)
-        {
-            return getReceptorSynapses(c, false);
-        }
+        //public ISet<Synapse> getReceptorSynapses(Connections c)
+        //{
+        //    return getReceptorSynapses(c, false);
+        //}
 
-        /**
-         * Returns the Set of {@link Synapse}s which have this cell
-         * as their source cells.
-         *  
-         * @param   c               the connections state of the temporal memory
-         * @param doLazyCreate      create a container for future use if true, if false
-         *                          return an orphaned empty set.
-         * @return  the Set of {@link Synapse}s which have this cell
-         *          as their source cells.
-         */
-        public ISet<Synapse> getReceptorSynapses(Connections c, bool doLazyCreate)
+        /// <summary>
+        /// Returns the Set of <see cref="Synapse"/>s which have this cell as their source cells.
+        /// </summary>
+        /// <param name="c">the connections state of the temporal memory</param>
+        /// <param name="doLazyCreate">create a container for future use if true, if false return an orphaned empty set.</param>
+        /// <returns>the Set of <see cref="Synapse"/>s which have this cell as their source cells.</returns>
+        public ISet<Synapse> GetReceptorSynapses(Connections c, bool doLazyCreate = false)
         {
-            return c.getReceptorSynapses(this, doLazyCreate);
+            return c.GetReceptorSynapses(this, doLazyCreate);
         }
 
         /**
@@ -97,22 +101,20 @@ namespace NeoCortexApi.Entities
          *                          return an orphaned empty set.
          * @return  a {@link List} of this {@code Cell}'s {@link DistalDendrite}s
          */
-        public List<DistalDendrite> getSegments(Connections c)
-        {
-            return getSegments(c, false);
-        }
+        //public List<DistalDendrite> getSegments(Connections c)
+        //{
+        //    return getSegments(c, false);
+        //}
 
-        ///**
-        // * Returns a {@link List} of this {@code Cell}'s {@link DistalDendrite}s
-        // * 
-        // * @param   c               the connections state of the temporal memory
-        // * @param doLazyCreate      create a container for future use if true, if false
-        // *                          return an orphaned empty set.
-        // * @return  a {@link List} of this {@code Cell}'s {@link DistalDendrite}s
-        // */
-        public List<DistalDendrite> getSegments(Connections c, bool doLazyCreate)
+        /// <summary>
+        /// Returns a <see cref="List{T}"/> of this <see cref="Cell"/>'s <see cref="DistalDendrite"/>s
+        /// </summary>
+        /// <param name="c">the connections state of the temporal memory</param>
+        /// <param name="doLazyCreate">create a container for future use if true, if false return an orphaned empty set.</param>
+        /// <returns>a <see cref="List{T}"/> of this <see cref="Cell"/>'s <see cref="DistalDendrite"/>s</returns>
+        public List<DistalDendrite> GetSegments(Connections c, bool doLazyCreate = false)
         {
-            return c.getSegments(this, doLazyCreate);
+            return c.GetSegments(this, doLazyCreate);
         }
 
 

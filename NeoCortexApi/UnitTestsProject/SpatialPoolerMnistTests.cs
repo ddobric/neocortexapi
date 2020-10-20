@@ -224,7 +224,7 @@ namespace UnitTestsProject
 
                         parameters.apply(mem);
 
-                        sp.init(mem);
+                        sp.Init(mem);
 
                         int actiColLen = numOfCols;
 
@@ -809,7 +809,7 @@ namespace UnitTestsProject
                             parameters.apply(mem);
 
                             var sp = new SpatialPoolerMT();
-                            sp.init(mem);
+                            sp.Init(mem);
 
                             int[] activeArray = new int[topologies[topologyIndx] * topologies[topologyIndx]];
 

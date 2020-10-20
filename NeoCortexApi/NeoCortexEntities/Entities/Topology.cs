@@ -17,6 +17,10 @@ namespace NeoCortexApi.Entities
          * dimensions and major ordering.
          * @param shape  the dimensions of this matrix 
          */
+
+        /// <summary>
+        /// TODO to be added
+        /// </summary>
         public Topology(int[] shape) : base(shape, false)
         {
 

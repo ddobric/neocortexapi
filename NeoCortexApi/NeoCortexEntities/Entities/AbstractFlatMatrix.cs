@@ -67,13 +67,18 @@ namespace NeoCortexApi.Entities
             return @base;
         }
 
-
         /**
         * Checks the indexes specified to see whether they are within the
         * configured bounds and size parameters of this array configuration.
         * 
         * @param index the array dimensions to check
         */
+        /// <summary>
+        /// Checks the indexes specified to see whether they are within the configured bounds and size parameters of this array configuration.
+        /// </summary>
+        /// <param name="dimensions"></param>
+        /// <param name="numDimensions"></param>
+        /// <param name="coordinates"></param>
         public static void CheckDims(int[] dimensions, int numDimensions, int[] coordinates)
         {
             if (coordinates.Length != numDimensions)
@@ -91,12 +96,11 @@ namespace NeoCortexApi.Entities
             }
         }
 
-        /**
-        * Prints the specified array to a returned String.
-        * 
-        * @param aObject   the array object to print.
-        * @return  the array in string form suitable for display.
-        */
+        /// <summary>
+        /// Prints the specified array to a returned String.
+        /// </summary>
+        /// <param name="arr">the array to be converted to string</param>
+        /// <returns>the array in string form suitable for display.</returns>
         public static String ArrayToString(int[] arr)
         {
             string res = String.Join(",", arr);
@@ -117,12 +121,11 @@ namespace NeoCortexApi.Entities
             //return "[]";
         }
 
-        /**
-       * Initializes internal helper array which is used for multidimensional
-       * index computation.
-       * @param dimensions matrix dimensions
-       * @return array for use in coordinates to flat index computation.
-       */
+        /// <summary>
+        /// Initializes internal helper array which is used for multidimensional index computation.
+        /// </summary>
+        /// <param name="dimensions">matrix dimensions</param>
+        /// <returns>array for use in coordinates to flat index computation.</returns>
         public static int[] InitDimensionMultiples(int[] dimensions)
         {
             int holder = 1;
@@ -151,7 +154,7 @@ namespace NeoCortexApi.Entities
         }
 
 
-    public HtmModuleTopology ModuleTopology { get; set; }
+        public HtmModuleTopology ModuleTopology { get; set; }
 
         //protected int[] dimensions;
 
@@ -170,16 +173,13 @@ namespace NeoCortexApi.Entities
 
         //}
 
-        /**
-         * Constructs a new {@link AbstractFlatMatrix} object to be configured with specified
-         * dimensions and major ordering.
-         * 
-         * @param dimensions				the dimensions of this sparse array	
-         * @param useColumnMajorOrdering	flag indicating whether to use column ordering or
-         * 									row major ordering. if false (the default), then row
-         * 									major ordering will be used. If true, then column major
-         * 									ordering will be used.
-         */
+        /// <summary>
+        /// Constructs a new <see cref="AbstractFlatMatrix"/> object to be configured with specified dimensions and major ordering.
+        /// </summary>
+        /// <param name="dimensions">the dimensions of this sparse array</param>
+        /// <param name="useColumnMajorOrdering">flag indicating whether to use column ordering or row major ordering. 
+        ///                                      if false (the default), then row major ordering will be used.If true, 
+        ///                                      then column major ordering will be used.</param>
         public AbstractFlatMatrix(int[] dimensions, bool useColumnMajorOrdering)
         {
             this.ModuleTopology = new HtmModuleTopology(dimensions, useColumnMajorOrdering);
@@ -191,29 +191,27 @@ namespace NeoCortexApi.Entities
             //IsColumnMajorOrdering = useColumnMajorOrdering;
         }
 
-        /**
-         * Compute the flat index of a multidimensional array.
-         * @param indexes multidimensional indexes
-         * @return the flat array index;
-         */
+        /// <summary>
+        /// Compute the flat index of a multidimensional array.
+        /// </summary>
+        /// <param name="indexes">multidimensional indexes</param>
+        /// <returns>the flat array index.</returns>
         public int computeIndex(int[] indexes)
         {
             return computeIndex(indexes, true);
         }
 
-        /**
-         * Returns a flat index computed from the specified coordinates
-         * which represent a "dimensioned" index.
-         * 
-         * @param   coordinates     an array of coordinates
-         * @param   doCheck         enforce validated comparison to locally stored dimensions
-         * @return  a flat index
-         */
+        /// <summary>
+        /// Returns a flat index computed from the specified coordinates which represent a "dimensioned" index.
+        /// </summary>
+        /// <param name="coordinates">an array of coordinates</param>
+        /// <param name="doCheck">enforce validated comparison to locally stored dimensions</param>
+        /// <returns>a flat index</returns>
         public int computeIndex(int[] coordinates, bool doCheck)
         {
             if (doCheck) CheckDims(getDimensions(), getNumDimensions(), coordinates);
 
-            int[] localMults = this.ModuleTopology.IsMajorOrdering ? 
+            int[] localMults = this.ModuleTopology.IsMajorOrdering ?
                 Reverse(this.ModuleTopology.DimensionMultiplies) : this.ModuleTopology.DimensionMultiplies;
             int @base = 0;
             for (int i = 0; i < coordinates.Length; i++)
@@ -223,7 +221,7 @@ namespace NeoCortexApi.Entities
             return @base;
         }
 
-       
+
 
         /**
          * Returns an array of coordinates calculated from
@@ -238,12 +236,11 @@ namespace NeoCortexApi.Entities
         //    return ComputeCoordinates(getNumDimensions(), dimensionMultiples, IsColumnMajorOrdering, index);            
         //}
 
-
-        /**
-         * Utility method to shrink a single dimension array by one index.
-         * @param array the array to shrink
-         * @return
-         */
+        /// <summary>
+        /// Utility method to shrink a single dimension array by one index.
+        /// </summary>
+        /// <param name="array">the array to shrink</param>
+        /// <returns></returns>
         protected int[] copyInnerArray(int[] array)
         {
             if (array.Length == 1) return array;
@@ -254,7 +251,7 @@ namespace NeoCortexApi.Entities
         }
 
 
-       
+
 
         public abstract T GetColumn(int index);
 
@@ -285,13 +282,13 @@ namespace NeoCortexApi.Entities
         IFlatMatrix<T> IFlatMatrix<T>.set(int index, T value)
         {
             return set(index, value);
-          //  throw new NotImplementedException();
+            //  throw new NotImplementedException();
         }
 
         IMatrix<T> IMatrix<T>.set(int[] index, T value)
         {
             return set(index, value);
-           // throw new NotImplementedException();
+            // throw new NotImplementedException();
         }
 
         //@Override
@@ -390,7 +387,7 @@ namespace NeoCortexApi.Entities
 
         public abstract int[] get1DIndexes();
 
-       
+
 
         //public abstract T[] asDense(ITypeFactory<T> factory);
 

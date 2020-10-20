@@ -10,11 +10,11 @@ namespace NeoCortexApi.Network
 {
     public class HtmModuleNet
     {
-        List<SpatialPooler> poolers = new List<SpatialPooler>();
-        List<Connections> connections = new List<Connections>();
-        List<int[]> activeArrays = new List<int[]>();
+        List<SpatialPooler> m_Poolers = new List<SpatialPooler>();
+        List<Connections> m_Connections = new List<Connections>();
+        List<int[]> m_ActiveArrays = new List<int[]>();
 
-        public int Layers { get { return this.connections.Count; } }
+        public int Layers { get { return this.m_Connections.Count; } }
 
         public HtmModuleNet(Parameters parameters, int[] levels)
         {
@@ -27,7 +27,7 @@ namespace NeoCortexApi.Network
                     levelIn = levelOut = levels[levelIndx];
                 else
                 {
-                    levelIn = connections[levelIndx - 1].HtmConfig.ColumnDimensions[0];
+                    levelIn = m_Connections[levelIndx - 1].HtmConfig.ColumnDimensions[0];
                     levelOut = levels[levelIndx];
                 }
 
@@ -38,14 +38,14 @@ namespace NeoCortexApi.Network
                 var mem = new Connections();
                 parameters.apply(mem);
 
-                this.activeArrays.Add(new int[levelOut * levelOut]);
+                this.m_ActiveArrays.Add(new int[levelOut * levelOut]);
 
-                this.connections.Add(mem);
+                this.m_Connections.Add(mem);
 
                 SpatialPooler sp = new SpatialPooler();
-                sp.init(mem, null);
+                sp.Init(mem, null);
 
-                poolers.Add(sp);
+                m_Poolers.Add(sp);
             }
         }
 
@@ -63,15 +63,15 @@ namespace NeoCortexApi.Network
                     numCols = numCols * colDims[i];
                 }
 
-                this.activeArrays.Add(new int[numCols]);
+                this.m_ActiveArrays.Add(new int[numCols]);
 
-                this.connections.Add(mem);
+                this.m_Connections.Add(mem);
 
                 SpatialPooler sp = new SpatialPooler();
 
-                sp.init(mem, null);
+                sp.Init(mem, null);
 
-                poolers.Add(sp);
+                m_Poolers.Add(sp);
             }
         }
 
@@ -87,18 +87,18 @@ namespace NeoCortexApi.Network
 
         public int[] GetActiveColumns(int levelIndx)
         {
-            if (levelIndx >= this.poolers.Count)
+            if (levelIndx >= this.m_Poolers.Count)
                 throw new ArgumentException("Invalid level index.");
            
-            return this.activeArrays[levelIndx];
+            return this.m_ActiveArrays[levelIndx];
         }
 
         public Connections GetMemory(int levelIndx)
         {
-            if (levelIndx >= this.connections.Count)
+            if (levelIndx >= this.m_Connections.Count)
                 throw new ArgumentException("Invalid level index.");
 
-            return this.connections[levelIndx];
+            return this.m_Connections[levelIndx];
         }
 
     }

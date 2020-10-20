@@ -4,7 +4,7 @@ using NeoCortexApi.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
-
+//TODO file name and class name does not match
 namespace NeoCortexApi.DistributedComputeLib
 {
     /// <summary>

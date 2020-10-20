@@ -276,7 +276,7 @@ namespace UnitTestsProject.EncoderTests
             return result.ToArray();
         }
 
-        public override List<B> getBucketValues<B>()
+        public override List<B> GetBucketValues<B>()
         {
             throw new NotImplementedException();
         }
@@ -347,7 +347,7 @@ namespace UnitTestsProject.EncoderTests
                 throw new NotSupportedException();
         }
 
-        public override List<B> getBucketValues<B>()
+        public override List<B> GetBucketValues<B>()
         {
             throw new NotImplementedException();
         }

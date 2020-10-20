@@ -10,10 +10,10 @@ using System.IO;
 
 namespace NeoCortexApi.Utility
 {
-    /**
-     * Utilities to match some of the functionality found in Python's Numpy.
-     * @author David Ray
-     */
+    /// <summary>
+    /// Utilities to match some of the functionality found in Python's Numpy.
+    /// </summary>
+    /// <remarks>author David Ray</remarks>
     public static class ArrayUtils
     {
         /** Empty array constant */
@@ -680,8 +680,7 @@ namespace NeoCortexApi.Utility
         //}
 
         /// <summary>
-        /// Returns an array with the same shape and the contents
-        /// converted to integers.
+        /// Returns an array with the same shape and the contents converted to integers.
         /// </summary>
         /// <param name="doubs">an array of doubles.</param>
         /// <returns></returns>
@@ -696,8 +695,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns an array with the same shape and the contents
-        /// converted to doubles.
+        /// Returns an array with the same shape and the contents converted to doubles.
         /// </summary>
         /// <param name="ints">an array of ints.</param>
         /// <returns></returns>
@@ -743,8 +741,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <smmary>
-        /// Performs a modulus on every index of the first argument using
-        /// the second argument and places the result in the same index of
+        /// Performs a modulus on every index of the first argument using the second argument and places the result in the same index of
         /// the first argument.
         /// </summary>
         /// <param name="a"></param>
@@ -760,8 +757,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns a double array whose values are the maximum of the value
-        /// in the array and the max value argument.
+        /// Returns a double array whose values are the maximum of the value in the array and the max value argument.
         /// </summary>
         /// <param name="doubs"></param>
         /// <param name="maxValue"></param>
@@ -777,8 +773,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns an array of identical shape containing the maximum
-        /// of the values between each corresponding index.Input arrays
+        /// Returns an array of identical shape containing the maximum of the values between each corresponding index.Input arrays
         /// must be the same length.
         /// </summary>
         /// <param name="arr1"></param>
@@ -795,8 +790,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns an array of identical shape containing the minimum
-        /// of the values between each corresponding index. Input arrays
+        /// Returns an array of identical shape containing the minimum of the values between each corresponding index. Input arrays
         /// must be the same length.
         /// </summary>
         /// <param name="arr1"></param>
@@ -881,8 +875,7 @@ namespace NeoCortexApi.Utility
         //}
 
         /// <smmary>
-        /// Returns an array whose members are the quotient of the dividend array
-        /// values and the divisor array values.
+        /// Returns an array whose members are the quotient of the dividend array values and the divisor array values.
         /// </summary>
         /// <param name="dividend"></param>
         /// <param name="divisor"></param>
@@ -909,8 +902,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns an array whose members are the quotient of the dividend array
-        /// values and the divisor array values.
+        /// Returns an array whose members are the quotient of the dividend array values and the divisor array values.
         /// </summary>
         /// <param name="dividend"></param>
         /// <param name="divisor"></param>
@@ -934,8 +926,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns an array whose members are the quotient of the dividend array
-        /// values and the divisor value.
+        /// Returns an array whose members are the quotient of the dividend array values and the divisor value.
         /// </summary>
         /// <param name="dividend"></param>
         /// <param name="divisor"></param>
@@ -981,8 +972,7 @@ namespace NeoCortexApi.Utility
         //}
 
         /// <smmary>
-        /// Returns an array whose members are the product of the multiplicand array
-        /// values and the factor array values.
+        /// Returns an array whose members are the product of the multiplicand array values and the factor array values.
         /// </summary>
         /// <param name="multiplicand"></param>
         /// <param name="factor"></param>
@@ -1031,8 +1021,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns an array whose members are the product of the multiplicand array
-        /// values and the factor array values.
+        /// Returns an array whose members are the product of the multiplicand array values and the factor array values.
         /// </summary>
         /// <param name="multiplicand"></param>
         /// <param name="factor"></param>
@@ -1053,8 +1042,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns a new array containing the result of multiplying
-        /// each index of the specified array by the 2nd parameter.</summary>
+        /// Returns a new array containing the result of multiplying each index of the specified array by the 2nd parameter.</summary>
         /// <param name="array"></param>
         /// <param name="d"></param>
         /// <returns></returns>
@@ -1069,8 +1057,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns a new array containing the result of multiplying
-        /// each index of the specified array by the 2nd parameter.
+        /// Returns a new array containing the result of multiplying each index of the specified array by the 2nd parameter.
         /// </summary>
         /// <param name="array"></param>
         /// <param name="d"></param>
@@ -1086,8 +1073,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns an integer array containing the result of subtraction
-        /// operations between corresponding indexes of the specified arrays.
+        /// Returns an integer array containing the result of subtraction operations between corresponding indexes of the specified arrays.
         /// </summary>
         /// <param name="minuend"></param>
         /// <param name="subtrahend"></param>
@@ -1186,13 +1172,12 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns the passed in array with every value being altered
-        /// by the addition of the specified amount.
+        /// Returns the passed in array with every value being altered by the addition of the specified amount.
         /// </summary>
         /// <param name="arr"></param>
         /// <param name="amount"></param>
         /// <returns></returns>
-        public static int[] add(int[] arr, int amount)
+        public static int[] Add(int[] arr, int amount)
         {
             for (int i = 0; i < arr.Length; i++)
             {
@@ -1202,9 +1187,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns the passed in array with every value being altered
-        /// by the addition of the specified double amount at the same
-        /// index.
+        /// Returns the passed in array with every value being altered by the addition of the specified double amount at the same index.
         /// </summary>
         /// <param name="arr"></param>
         /// <param name="amount"></param>
@@ -1219,9 +1202,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns the passed in array with every value being altered
-        /// by the addition of the specified double amount at the same
-        /// index.
+        /// Returns the passed in array with every value being altered by the addition of the specified double amount at the same index.
         /// </summary>
         /// <param name="arr"></param>
         /// <param name="offset"></param>
@@ -1236,8 +1217,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns the passed in array with every value being altered
-        /// by the addition of the specified double amount.
+        /// Returns the passed in array with every value being altered by the addition of the specified double amount.
         /// </summary>
         /// <param name="arr"></param>
         /// <param name="amount"></param>
@@ -1347,8 +1327,7 @@ namespace NeoCortexApi.Utility
         //}
 
         /// <summary>
-        /// Another utility to account for the difference between Python and Java.
-        /// Here the modulo operator is defined differently.
+        /// Another utility to account for the difference between Python and Java. Here the modulo operator is defined differently.
         /// </summary>
         /// <param name="n"></param>
         /// <param name="divisor"></param>
@@ -1367,8 +1346,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns an array which starts from lowerBounds (inclusive) and
-        /// ends at the upperBounds (exclusive).
+        /// Returns an array which starts from lowerBounds (inclusive) and ends at the upperBounds (exclusive).
         /// </summary>
         /// <param name="lowerBounds"></param>
         /// <param name="upperBounds"></param>
@@ -1467,8 +1445,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Replaces the range specified by "start" and "end" of "orig" with the 
-        /// array of replacement ints found in "replacement".
+        /// Replaces the range specified by "start" and "end" of "orig" with the array of replacement ints found in "replacement".
         /// </summary>
         /// <param name="start">start index of "orig" to be replaced.</param>
         /// <param name="end">end index of "orig" to be replaced.</param>
@@ -1572,8 +1549,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Called to merge a list of dimension arrays into a sequential row-major indexed
-        /// list of coordinates.
+        /// Called to merge a list of dimension arrays into a sequential row-major indexed list of coordinates.
         /// </summary>
         /// <param name="dimensions">a list of dimension arrays, each array being a dimension of an n-dimensional array.</param>
         /// <returns>a list of n-dimensional coordinates in row-major format.</returns>
@@ -1598,8 +1574,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Sets the values in the specified values array at the indexes specified,
-        /// to the value "setTo".
+        /// Sets the values in the specified values array at the indexes specified, to the value <paramref name="setTo"/>.
         /// </summary>
         /// <param name="values">the values to alter if at the specified indexes.</param>
         /// <param name="indexes">the indexes of the values array to alter.</param>
@@ -1613,9 +1588,8 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Sets the values in range start to stop to the value specified. If
-        /// stop &lt; 0, then stop indicates the number of places counting from the
-        /// length of "values" back.
+        /// Sets the values in range start to stop to the value specified. If stop &lt; 0, then stop indicates the number of places
+        /// counting from the length of <paramref name="values"/> back.
         /// </summary>
         /// <param name="values">the array to alter.</param>
         /// <param name="start">the start index (inclusive).</param>
@@ -1655,8 +1629,7 @@ namespace NeoCortexApi.Utility
         //}
 
         /// <summary>
-        /// Returns a random, sorted, and  unique array of the specified sample size of
-        /// selections from the specified list of choices.
+        /// Returns a random, sorted, and  unique array of the specified sample size of selections from the specified list of choices.
         /// </summary>
         /// <param name="choices">the list of choices to select from.</param>
         /// <param name="selectedIndices">the number of selections in the returned sample.</param>
@@ -1694,10 +1667,8 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Ensures that each entry in the specified array has a min value
-        /// equal to or greater than the specified min and a maximum value less
-        /// than or equal to the specified max.
-        /// For example, if min = 0, then negative permanence values will be rounded to 0.
+        /// Ensures that each entry in the specified array has a min value equal to or greater than the specified min and a maximum value less
+        /// than or equal to the specified max. For example, if min = 0, then negative permanence values will be rounded to 0.
         /// Similarly, high permanences will be rounded by maximal value.
         /// </summary>
         /// <param name="values">the values to clip.</param>
@@ -1715,9 +1686,8 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Ensures that each entry in the specified array has a min value
-        /// equal to or greater than the min at the specified index and a maximum value less
-        /// than or equal to the max at the specified index.
+        /// Ensures that each entry in the specified array has a min value equal to or greater than the min at the specified index
+        /// and a maximum value less than or equal to the max at the specified index.
         /// </summary>
         /// <param name="values">the values to clip.</param>
         /// <param name="min">the minimum value.</param>
@@ -1733,9 +1703,8 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Ensures that each entry in the specified array has a min value
-        /// equal to or greater than the min at the specified index and a maximum value less
-        /// than or equal to the max at the specified index. 
+        /// Ensures that each entry in the specified array has a min value equal to or greater than the min at the specified index 
+        /// and a maximum value less than or equal to the max at the specified index. 
         /// </summary>
         /// <param name="values">the values to clip.</param>
         /// <param name="max">the minimum value.</param>
@@ -1751,8 +1720,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns the count of values in the specified array that are
-        /// greater than the specified compare value.
+        /// Returns the count of values in the specified array that are greater than the specified compare value.
         /// </summary>
         /// <param name="compare">the value to compare to.</param>
         /// <param name="array">the values being compared.</param>
@@ -1772,8 +1740,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns the count of values in the specified array that are
-        /// greater than or equal to, the specified compare value.
+        /// Returns the count of values in the specified array that are greater than or equal to, the specified compare value.
         /// </summary>
         /// <param name="compare">the value to compare to.</param>
         /// <param name="array">the values being compared.</param>
@@ -1944,8 +1911,7 @@ namespace NeoCortexApi.Utility
         //}
 
         /// <summary>
-        /// Returns a flag indicating whether the specified array
-        /// is a sparse array of 0's and 1's or not.
+        /// Returns a flag indicating whether the specified array is a sparse array of 0's and 1's or not.
         /// </summary>
         /// <param name="array"></param>
         /// <returns></returns>
@@ -2032,8 +1998,8 @@ namespace NeoCortexApi.Utility
         //}
 
         /// <summary>
-        /// Makes all values in the specified array which are less than or equal to the specified
-        /// "x" value, equal to the specified "y".
+        /// Makes all values in the specified array which are less than or equal to the specified <paramref name="x"/> value,
+        /// equal to the specified <paramref name="y"/>.
         /// </summary>
         /// <param name="array"></param>
         /// <param name="x">the comparison.</param>
@@ -2292,8 +2258,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns a new array containing the items specified from
-        /// the source array by the indexes specified.
+        /// Returns a new array containing the items specified from the source array by the indexes specified.
         /// </summary>
         /// <param name="source"></param>
         /// <param name="indexes"></param>
@@ -2309,8 +2274,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns a new array containing the items specified from
-        /// the source array by the indexes specified.
+        /// Returns a new array containing the items specified from the source array by the indexes specified.
         /// </summary>
         /// <param name="source"></param>
         /// <param name="indices"></param>
@@ -2326,8 +2290,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns a new 2D array containing the items specified from
-        /// the source array by the indexes specified.
+        /// Returns a new 2D array containing the items specified from the source array by the indexes specified.
         /// </summary>
         /// <param name="source"></param>
         /// <param name="indices"></param>
@@ -2379,8 +2342,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns a copy of the specified integer array in
-        /// reverse order.
+        /// Returns a copy of the specified integer array in reverse order.
         /// </summary>
         /// <param name="array"></param>
         /// <returns></returns>
@@ -2411,8 +2373,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns a new int array containing the or'd on bits of
-        /// both arg1 and arg2.
+        /// Returns a new int array containing the or'd on bits of both arg1 and arg2.
         /// </summary>
         /// <param name="arg1"></param>
         /// <param name="arg2"></param>
@@ -2428,8 +2389,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns a new int array containing the and'd bits of
-        /// both arg1 and arg2.
+        /// Returns a new int array containing the and'd bits of both arg1 and arg2.
         /// </summary>
         /// <param name="arg1"></param>
         /// <param name="arg2"></param>
@@ -2494,25 +2454,24 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Assigns the specified int value to each element of the specified any dimensional array
-        /// of ints.
+        /// Assigns the specified int value to each element of the specified any dimensional array of ints.
         /// </summary>
         /// <param name="array"></param>
         /// <param name="value"></param>
         public static void FillArray(Object array, int value)
         {
-            if (array is int[])
+            if (array is int[] intArray)
             {
-                for (int i = 0; i < ((int[])array).Length; i++)
+                for (int i = 0; i < intArray.Length; i++)
                 {
-                    ((int[])array)[i] = value;
+                    intArray[i] = value;
                 }
             }
-            else if (array is double[])
+            else if (array is double[] doubleArray)
             {
-                for (int i = 0; i < ((double[])array).Length; i++)
+                for (int i = 0; i < doubleArray.Length; i++)
                 {
-                    ((double[])array)[i] = value;
+                    doubleArray[i] = value;
                 }
             }
             else
@@ -2532,11 +2491,11 @@ namespace NeoCortexApi.Utility
         /// <param name="value"></param>
         public static void FillArray(object array, double value)
         {
-            if (array is double[])
+            if (array is double[] doubleArray)
             {
-                for (int i = 0; i < ((double[])array).Length; i++)
+                for (int i = 0; i < doubleArray.Length; i++)
                 {
-                    ((double[])array)[i] = value;
+                    doubleArray[i] = value;
                 }
             }
             else if (array is int[])
@@ -2935,8 +2894,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Adds the new element to the list, which must contain the specified number of elements.
-        /// Old elements are replaced.
+        /// Adds the new element to the list, which must contain the specified number of elements. Old elements are replaced.
         /// </summary>
         /// <param name="list">The list.</param>
         /// <param name="maxNumOfElements">Maximum allowed number of elements.</param>
@@ -2957,8 +2915,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Calculates the average delta over the list.
-        /// 1/N * (x2-x1 + X3-X2, + .. + XN-XN-1)
+        /// Calculates the average delta over the list. 1/N * (x2-x1 + X3-X2, + .. + XN-XN-1)
         /// </summary>
         /// <param name="list"></param>
         /// <returns></returns>
