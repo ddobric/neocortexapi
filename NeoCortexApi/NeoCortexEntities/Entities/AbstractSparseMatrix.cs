@@ -116,14 +116,14 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="index">the index of the T to return</param>
         /// <returns>the T at the specified index.</returns>
-        protected int getIntValue(int index) { return -1; }
+        protected int GetIntValue(int index) { return -1; }
 
         /// <summary>
         /// Returns the T at the specified index.
         /// </summary>
         /// <param name="index">the index of the T to return</param>
         /// <returns>the T at the specified index.</returns>
-        protected double getDoubleValue(int index) { return -1.0; }
+        protected double GetDoubleValue(int index) { return -1.0; }
 
         /// <summary>
         /// Returns the T at the index computed from the specified coordinates
@@ -137,26 +137,26 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="coordinates">the coordinates from which to retrieve the indexed object</param>
         /// <returns>the indexed object</returns>
-        protected int getIntValue(int[] coordinates) { return -1; }
+        protected int GetIntValue(int[] coordinates) { return -1; }
 
         /// <summary>
         /// Returns the double value at the index computed from the specified coordinates
         /// </summary>
         /// <param name="coordinates">the coordinates from which to retrieve the indexed object</param>
         /// <returns>the indexed object</returns>
-        protected double getDoubleValue(int[] coordinates) { return -1.0; }
+        protected double GetDoubleValue(int[] coordinates) { return -1.0; }
 
         // @Override
-        public override int[] getSparseIndices()
+        public override int[] GetSparseIndices()
         {
             return null;
         }
 
         //  @Override
-        public override int[] get1DIndexes()
+        public override int[] Get1DIndexes()
         {
-            List<int> results = new List<int>(getMaxIndex() + 1);
-            Visit(getDimensions(), 0, new int[getNumDimensions()], results);
+            List<int> results = new List<int>(GetMaxIndex() + 1);
+            Visit(GetDimensions(), 0, new int[GetNumDimensions()], results);
             return results.ToArray();
         }
 
@@ -174,7 +174,7 @@ namespace NeoCortexApi.Entities
                 p[currentDimension] = i;
                 if (currentDimension == p.Length - 1)
                 {
-                    results.Add(computeIndex(p));
+                    results.Add(ComputeIndex(p));
                 }
                 else Visit(bounds, currentDimension + 1, p, results);
             }
@@ -208,7 +208,7 @@ namespace NeoCortexApi.Entities
             {
                 for (int i = 0; i < count; i++)
                 {
-                    arr[i] = f.make(getDimensions());
+                    arr[i] = f.make(GetDimensions());
                     // arr[i] = new 
                 }
                 return arr;
@@ -217,10 +217,10 @@ namespace NeoCortexApi.Entities
             {
                 for (int i = 0; i < count; i++)
                 {
-                    int[] inner = copyInnerArray(dimensions);
+                    int[] inner = CopyInnerArray(dimensions);
                     //T[] r = (T[])Array.newInstance(f.typeClass(), inner);
                     T[] r = (T[])Array.CreateInstance(typeof(T), inner);
-                    arr[i] = fill(f, dimensionIndex + 1, inner, getDimensions()[dimensionIndex + 1], (object[])(object)r);
+                    arr[i] = fill(f, dimensionIndex + 1, inner, GetDimensions()[dimensionIndex + 1], (object[])(object)r);
                 }
                 return arr;
             }

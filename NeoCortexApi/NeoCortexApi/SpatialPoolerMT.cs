@@ -51,11 +51,12 @@ namespace NeoCortexApi
                 Random rnd = new Random(42);
 
                 int colIndex = (int)indx;
-                var data = new ProcessingData();
-
-                // Gets RF
-                data.Potential = HtmCompute.MapPotential(c.HtmConfig, colIndex, rnd /*(c.getRandom()*/);
-                data.Column = c.GetColumn(colIndex);
+                var data = new ProcessingData
+                {
+                    // Gets RF
+                    Potential = HtmCompute.MapPotential(c.HtmConfig, colIndex, rnd /*(c.getRandom()*/),
+                    Column = c.GetColumn(colIndex)
+                };
 
                 // This line initializes all synases in the potential pool of synapses.
                 // It creates the pool on proximal dendrite segment of the column.
@@ -144,8 +145,10 @@ namespace NeoCortexApi
 
         public override int[] CalculateOverlap(Connections c, int[] inputVector)
         {
-            ParallelOptions opts = new ParallelOptions();
-            opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
+            ParallelOptions opts = new ParallelOptions
+            {
+                MaxDegreeOfParallelism = Environment.ProcessorCount
+            };
             ConcurrentDictionary<int, int> overlaps = new ConcurrentDictionary<int, int>();
 
             Parallel.For(0, c.HtmConfig.NumColumns, (col) =>

@@ -765,7 +765,7 @@ namespace NeoCortexApi.Entities
         /// <param name="s">the <see cref="AbstractSparseMatrix{T}"/></param>
         public void SetProximalPermanences(AbstractSparseMatrix<double[]> s)
         {
-            foreach (int idx in s.getSparseIndices())
+            foreach (int idx in s.GetSparseIndices())
             {
                 this.HtmConfig.Memory.getObject(idx).SetPermanences(this.HtmConfig, s.getObject(idx));
             }

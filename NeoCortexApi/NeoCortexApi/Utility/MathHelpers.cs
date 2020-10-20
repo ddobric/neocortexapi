@@ -45,7 +45,7 @@ namespace NeoCortexApi.Utility
                     {
                         if (originArray[i][j] == comparingArray[i][j])
                         {
-                            numOfDifferentBits = numOfDifferentBits + 0;
+                            numOfDifferentBits = numOfDifferentBits + 0; //TODO meaning of this operation
                         }
                         else
                         {

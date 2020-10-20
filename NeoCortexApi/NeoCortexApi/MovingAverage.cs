@@ -154,7 +154,7 @@ namespace NeoCortexApi
             if (obj == null)
                 return false;
 
-            MovingAverage other = (MovingAverage)obj;
+            MovingAverage other = obj;
             if (m_Calc == null)
             {
                 if (other.m_Calc != null)

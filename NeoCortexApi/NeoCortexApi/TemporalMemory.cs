@@ -46,7 +46,7 @@ namespace NeoCortexApi
 
             this.connections.HtmConfig.Memory = matrix;
 
-            int numColumns = matrix.getMaxIndex() + 1;
+            int numColumns = matrix.GetMaxIndex() + 1;
             this.connections.HtmConfig.NumColumns = numColumns;
             int cellsPerColumn = this.connections.HtmConfig.CellsPerColumn;
             Cell[] cells = new Cell[numColumns * cellsPerColumn];
@@ -108,8 +108,10 @@ namespace NeoCortexApi
         /// <returns></returns>
         protected ComputeCycle ActivateCells(Connections conn, int[] activeColumnIndices, bool learn)
         {
-            ComputeCycle cycle = new ComputeCycle();
-            cycle.ActivColumnIndicies = activeColumnIndices;
+            ComputeCycle cycle = new ComputeCycle
+            {
+                ActivColumnIndicies = activeColumnIndices
+            };
 
             ColumnData activeColumnData = new ColumnData();
 
@@ -437,8 +439,8 @@ namespace NeoCortexApi
         /// <param name="learn">Whether or not learning is enabled</param>
         /// <returns>
         /// <see cref="BurstingResult"/> contains two properties:<br/>
-        /// Cells:      list of the processed column's cells<br/>
-        /// BestCell:    the best cell
+        /// <see cref="BurstingResult.Cells"/>:      list of the processed column's cells<br/>
+        /// <see cref="BurstingResult.BestCell"/>:    the best cell
         /// </returns>
         public BurstingResult BurstColumn(Connections conn, Column column, List<DistalDendrite> matchingSegments,
             ICollection<Cell> prevActiveCells, ICollection<Cell> prevWinnerCells, double permanenceIncrement, double permanenceDecrement,
@@ -717,6 +719,7 @@ namespace NeoCortexApi
         }
         #endregion
 
+        //TODO separate classes to files
         /**
          * Used in the {@link TemporalMemory#compute(Connections, int[], boolean)} method
          * to make pulling values out of the {@link GroupBy2} more readable and named.

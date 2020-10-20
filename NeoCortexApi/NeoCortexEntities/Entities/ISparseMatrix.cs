@@ -18,13 +18,13 @@ namespace NeoCortexApi.Entities
         /// Returns a sorted array of occupied indexes.
         /// </summary>
         /// <returns>a sorted array of occupied indexes.</returns>
-        int[] getSparseIndices();
+        int[] GetSparseIndices();
 
         /// <summary>
         /// Returns an array of all the flat indexes that can be computed from the current configuration.
         /// </summary>
         /// <returns></returns>
-        int[] get1DIndexes();
+        int[] Get1DIndexes();
 
         /**
          * Uses the specified {@link TypeFactory} to return an array

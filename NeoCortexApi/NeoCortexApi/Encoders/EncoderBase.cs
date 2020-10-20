@@ -242,7 +242,7 @@ namespace NeoCortexApi.Encoders
         /// <returns></returns>
         public int[] RightVecProd(SparseObjectMatrix<int[]> matrix, int[] encoded)
         {
-            int[] retVal = new int[matrix.getMaxIndex() + 1];
+            int[] retVal = new int[matrix.GetMaxIndex() + 1];
             for (int i = 0; i < retVal.Length; i++)
             {
                 int[] slice = matrix.getObject(i);

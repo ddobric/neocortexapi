@@ -7,24 +7,12 @@ using System.Text;
 
 namespace NeoCortexApi.Entities
 {
-
-    /**
-    *  Segments are owned by
-    * {@link Cell}s and in turn own {@link Synapse}s which are obversely connected
-    * to by a "source cell", which is the {@link Cell} which will activate a given
-    * {@link Synapse} owned by this {@code Segment}.
-    * 
-    * @author Chetan Surpur
-    * @author David Ray
-    */
     //[Serializable]
 
     /// <summary>
     /// Implements a distal dendritic segment.
-    /// Segments are owned by
-    /// <see cref="Cell"/>s and in turn own <see cref="Synapse"/>s which are obversely connected
-    /// to by a "source cell", which is the <see cref="Cell"/> which will activate a given
-    /// <see cref="Synapse"/> owned by this <see cref="Segment"/>.
+    /// Segments are owned by <see cref="Cell"/>s and in turn own <see cref="Synapse"/>s which are obversely connected to by a "source cell", 
+    /// which is the <see cref="Cell"/> which will activate a given <see cref="Synapse"/> owned by this <see cref="Segment"/>.
     /// </summary>
     /// <remarks>
     /// Authors of the JAVA implementation: Chetan Surpur, David Ray
@@ -137,7 +125,7 @@ namespace NeoCortexApi.Entities
         //}
 
 
-        public override String ToString()
+        public override string ToString()
         {
             return $"DistalDendrite: Indx:{this.SegmentIndex}";
         }

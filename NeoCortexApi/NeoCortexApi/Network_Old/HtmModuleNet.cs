@@ -60,7 +60,7 @@ namespace NeoCortexApi.Network
                 int numCols = 1;
                 for (int i = 0; i < colDims.Length; i++)
                 {
-                    numCols = numCols * colDims[i];
+                    numCols *= colDims[i];
                 }
 
                 this.m_ActiveArrays.Add(new int[numCols]);

@@ -30,15 +30,15 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         IFlatMatrix<T> set(int index, T value);
 
-        int computeIndex(int[] coordinates);
+        int ComputeIndex(int[] coordinates);
 
         /// <summary>
         /// Returns the maximum accessible flat index.
         /// </summary>
         /// <returns>the maximum accessible flat index.</returns>
-        int getMaxIndex();
+        int GetMaxIndex();
 
-        int computeIndex(int[] coordinates, bool doCheck);
+        int ComputeIndex(int[] coordinates, bool doCheck);
 
         /**
          * Returns an integer array representing the coordinates of the specified index
@@ -52,6 +52,6 @@ namespace NeoCortexApi.Entities
 
         HtmModuleTopology ModuleTopology {get;set;}
 
-        int[] getDimensionMultiples();
+        int[] GetDimensionMultiples();
     }
 }

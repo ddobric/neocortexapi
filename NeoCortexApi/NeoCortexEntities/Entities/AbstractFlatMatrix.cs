@@ -101,9 +101,9 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="arr">the array to be converted to string</param>
         /// <returns>the array in string form suitable for display.</returns>
-        public static String ArrayToString(int[] arr)
+        public static string ArrayToString(int[] arr)
         {
-            string res = String.Join(",", arr);
+            string res = string.Join(",", arr);
             return res;
             //if (aObject is Array)
             //{
@@ -196,9 +196,9 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="indexes">multidimensional indexes</param>
         /// <returns>the flat array index.</returns>
-        public int computeIndex(int[] indexes)
+        public int ComputeIndex(int[] indexes)
         {
-            return computeIndex(indexes, true);
+            return ComputeIndex(indexes, true);
         }
 
         /// <summary>
@@ -207,9 +207,9 @@ namespace NeoCortexApi.Entities
         /// <param name="coordinates">an array of coordinates</param>
         /// <param name="doCheck">enforce validated comparison to locally stored dimensions</param>
         /// <returns>a flat index</returns>
-        public int computeIndex(int[] coordinates, bool doCheck)
+        public int ComputeIndex(int[] coordinates, bool doCheck)
         {
-            if (doCheck) CheckDims(getDimensions(), getNumDimensions(), coordinates);
+            if (doCheck) CheckDims(GetDimensions(), GetNumDimensions(), coordinates);
 
             int[] localMults = this.ModuleTopology.IsMajorOrdering ?
                 Reverse(this.ModuleTopology.DimensionMultiplies) : this.ModuleTopology.DimensionMultiplies;
@@ -241,7 +241,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="array">the array to shrink</param>
         /// <returns></returns>
-        protected int[] copyInnerArray(int[] array)
+        protected int[] CopyInnerArray(int[] array)
         {
             if (array.Length == 1) return array;
 
@@ -274,7 +274,7 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public virtual AbstractFlatMatrix<T> set(int[] indexes, T value)
         {
-            set(computeIndex(indexes), value);
+            set(ComputeIndex(indexes), value);
             return this;
         }
 
@@ -298,13 +298,13 @@ namespace NeoCortexApi.Entities
         //}
 
 
-        public int getSize()
+        public int GetSize()
         {
             int partialResult = 0;
 
             foreach (var dim in this.ModuleTopology.Dimensions)
             {
-                partialResult = partialResult * dim;
+                partialResult *= dim;
             }
 
             return partialResult;
@@ -312,30 +312,30 @@ namespace NeoCortexApi.Entities
         }
 
         //@Override
-        public virtual int getMaxIndex()
+        public virtual int GetMaxIndex()
         {
-            return getDimensions()[0] * Math.Max(1, getDimensionMultiples()[0]) - 1;
+            return GetDimensions()[0] * Math.Max(1, GetDimensionMultiples()[0]) - 1;
         }
 
         //@Override
-        public virtual int[] getDimensions()
+        public virtual int[] GetDimensions()
         {
             return this.ModuleTopology.Dimensions;
         }
 
-        public void setDimensions(int[] dimensions)
+        public void SetDimensions(int[] dimensions)
         {
             this.ModuleTopology.Dimensions = dimensions;
         }
 
         //@Override
-        public virtual int getNumDimensions()
+        public virtual int GetNumDimensions()
         {
             return this.ModuleTopology.Dimensions.Length;
         }
 
         //@Override
-        public int[] getDimensionMultiples()
+        public int[] GetDimensionMultiples()
         {
             return this.ModuleTopology.DimensionMultiplies;
         }
@@ -360,7 +360,7 @@ namespace NeoCortexApi.Entities
          */
         //@SuppressWarnings("rawtypes")
         //@Override
-        public override bool Equals(Object obj)
+        public override bool Equals(object obj)
         {
             if (this == obj)
                 return true;
@@ -382,10 +382,10 @@ namespace NeoCortexApi.Entities
             return true;
         }
 
-        public abstract int[] getSparseIndices();
+        public abstract int[] GetSparseIndices();
 
 
-        public abstract int[] get1DIndexes();
+        public abstract int[] Get1DIndexes();
 
 
 

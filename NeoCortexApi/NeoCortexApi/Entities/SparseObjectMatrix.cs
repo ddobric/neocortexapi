@@ -20,7 +20,7 @@ namespace NeoCortexApi.Entities
     {
 
         //private IDictionary<int, T> sparseMap = new Dictionary<int, T>();
-        private IDistributedDictionary<int, T> sparseMap;
+        private IDistributedDictionary<int, T> m_SparseMap;
 
         /// <summary>
         /// Returns true if sparse memory is remotely distributed. It means objects has to be synced with remote partitions.
@@ -29,7 +29,7 @@ namespace NeoCortexApi.Entities
         {
             get
             {
-                return this.sparseMap is IHtmDistCalculus;
+                return this.m_SparseMap is IHtmDistCalculus;
             }
         }
 
@@ -66,9 +66,9 @@ namespace NeoCortexApi.Entities
         public SparseObjectMatrix(int[] dimensions, bool useColumnMajorOrdering = false, IDistributedDictionary<int, T> dict = null) : base(dimensions, useColumnMajorOrdering)
         {
             if (dict == null)
-                this.sparseMap = new InMemoryDistributedDictionary<int, T>(1);
+                this.m_SparseMap = new InMemoryDistributedDictionary<int, T>(1);
             else
-                this.sparseMap = dict;
+                this.m_SparseMap = dict;
         }
 
 
@@ -82,16 +82,16 @@ namespace NeoCortexApi.Entities
         {
             //
             // If not distributed in cluster, we add element by element.
-            if (!(this.sparseMap is IHtmDistCalculus))
+            if (!(this.m_SparseMap is IHtmDistCalculus))
             {
-                if (!sparseMap.ContainsKey(index))
-                    sparseMap.Add(index, (T)obj);
+                if (!m_SparseMap.ContainsKey(index))
+                    m_SparseMap.Add(index, obj);
                 else
-                    sparseMap[index] = obj;
+                    m_SparseMap[index] = obj;
             }
             else
             {
-                sparseMap[index] = obj;
+                m_SparseMap[index] = obj;
             }
 
             return this;
@@ -99,7 +99,7 @@ namespace NeoCortexApi.Entities
 
         public override AbstractFlatMatrix<T> set(List<KeyPair> updatingValues)
         {
-            sparseMap.AddOrUpdate(updatingValues);
+            m_SparseMap.AddOrUpdate(updatingValues);
             return this;
         }
 
@@ -111,7 +111,7 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public override AbstractFlatMatrix<T> set(int[] coordinates, T obj)
         {
-            set(computeIndex(coordinates), obj);
+            set(ComputeIndex(coordinates), obj);
             return this;
         }
 
@@ -146,7 +146,7 @@ namespace NeoCortexApi.Entities
         /// <returns><inheritdoc/></returns>
         public override T get(int[] coordinates)
         {
-            return GetColumn(computeIndex(coordinates));
+            return GetColumn(ComputeIndex(coordinates));
         }
 
         /// <summary>
@@ -158,7 +158,7 @@ namespace NeoCortexApi.Entities
         {
             T val = null;
 
-            this.sparseMap.TryGetValue(index, out val);
+            this.m_SparseMap.TryGetValue(index, out val);
 
             return val;
             //return this.sparseMap[index];
@@ -168,9 +168,9 @@ namespace NeoCortexApi.Entities
         /// Returns a sorted array of occupied indexes.
         /// </summary>
         /// <returns>a sorted array of occupied indexes.</returns>
-        public override int[] getSparseIndices()
+        public override int[] GetSparseIndices()
         {
-            return Reverse(sparseMap.Keys.ToArray());
+            return Reverse(m_SparseMap.Keys.ToArray());
         }
 
         /// <summary>
@@ -179,7 +179,7 @@ namespace NeoCortexApi.Entities
         /// <returns><inheritdoc/></returns>
         public override String ToString()
         {
-            return getDimensions().ToString();
+            return GetDimensions().ToString();
         }
 
         /// <summary>
@@ -190,16 +190,15 @@ namespace NeoCortexApi.Entities
         {
             int prime = 31;
             int result = base.GetHashCode();
-            result = prime * result + ((sparseMap == null) ? 0 : sparseMap.GetHashCode());
+            result = prime * result + ((m_SparseMap == null) ? 0 : m_SparseMap.GetHashCode());
             return result;
         }
 
-        public int MyProperty { get; set; }
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
         /// <param name="obj"><inheritdoc/></param>
-        /// <returns></returns>
+        /// <returns><inheritdoc/></returns>
         public override bool Equals(Object obj)
         {
             if (this == obj)
@@ -212,12 +211,12 @@ namespace NeoCortexApi.Entities
             if (other == null)
                 return false;
 
-            if (sparseMap == null)
+            if (m_SparseMap == null)
             {
-                if (other.sparseMap != null)
+                if (other.m_SparseMap != null)
                     return false;
             }
-            else if (!sparseMap.Equals(other.sparseMap))
+            else if (!m_SparseMap.Equals(other.m_SparseMap))
                 return false;
 
             return true;

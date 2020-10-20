@@ -246,7 +246,7 @@ namespace NeoCortexApi.Entities
         //  @Override
         public override AbstractSparseBinaryMatrix setForTest(int index, int value)
         {
-            this.backingArray.SetValue(value, ComputeCoordinates(getNumDimensions(), getDimensionMultiples(), ModuleTopology.IsMajorOrdering, index));
+            this.backingArray.SetValue(value, ComputeCoordinates(GetNumDimensions(), GetDimensionMultiples(), ModuleTopology.IsMajorOrdering, index));
 
             //DistributedArrayHelpers.setValue(this.backingArray, value,
             //    ComputeCoordinates(getNumDimensions(), getDimensionMultiples(), ModuleTopology.IsMajorOrdering, index));
@@ -263,7 +263,7 @@ namespace NeoCortexApi.Entities
         // @Override
         public override int GetColumn(int index)
         {
-            int[] coordinates = ComputeCoordinates(getNumDimensions(), getDimensionMultiples(), this.ModuleTopology.IsMajorOrdering, index);
+            int[] coordinates = ComputeCoordinates(GetNumDimensions(), GetDimensionMultiples(), this.ModuleTopology.IsMajorOrdering, index);
             if (coordinates.Length == 1)
             {
                 return (Int32)backingArray.GetValue(index);

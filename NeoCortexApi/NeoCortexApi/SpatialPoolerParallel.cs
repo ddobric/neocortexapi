@@ -37,8 +37,8 @@ namespace NeoCortexApi
             c.HtmConfig.InputTopology = new Topology(c.HtmConfig.InputDimensions);
 
             //Calculate numInputs and numColumns
-            int numInputs = c.HtmConfig.InputMatrix.getMaxIndex() + 1;
-            int numColumns = c.HtmConfig.Memory.getMaxIndex() + 1;
+            int numInputs = c.HtmConfig.InputMatrix.GetMaxIndex() + 1;
+            int numColumns = c.HtmConfig.Memory.GetMaxIndex() + 1;
             if (numColumns <= 0)
             {
                 throw new ArgumentException("Invalid number of columns: " + numColumns);
@@ -268,7 +268,7 @@ namespace NeoCortexApi
             if (remoteHtm == null)
                 throw new ArgumentException("disMemConfig is not of type IRemotelyDistributed!");
 
-            var weakColumns = c.HtmConfig.Memory.get1DIndexes().Where(i => c.HtmConfig.OverlapDutyCycles[i] < c.HtmConfig.MinOverlapDutyCycles[i]).ToArray();
+            var weakColumns = c.HtmConfig.Memory.Get1DIndexes().Where(i => c.HtmConfig.OverlapDutyCycles[i] < c.HtmConfig.MinOverlapDutyCycles[i]).ToArray();
             if (weakColumns.Length > 0)
                 remoteHtm.BumpUpWeakColumnsDist(weakColumns);
         }

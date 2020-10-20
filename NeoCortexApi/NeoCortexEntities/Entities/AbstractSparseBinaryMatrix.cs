@@ -31,15 +31,6 @@ namespace NeoCortexApi.Entities
 
         }
 
-        /**
-         *
-         *
-         *
-         * 
-         * @param dimensions                
-         * @param useColumnMajorOrdering    
-         *                                 
-         */
         /// <summary>
         /// Constructs a new <see cref="AbstractSparseBinaryMatrix"/> with the specified dimensions, allowing the specification of 
         /// column major ordering if desired. (defaults to row major ordering) 
@@ -51,24 +42,15 @@ namespace NeoCortexApi.Entities
 
             this.trueCounts = new int[dimensions[0]];
         }
-        /**
-        * 
-        * 
-        * 
-        * 
-        * @param coordinates	
-        * @return	
-        * @throws	IllegalArgumentException if the specified coordinates address
-        * 			an actual value instead of the array holding it.
-        */
+        
         /// <summary>
         /// Returns the slice specified by the passed in coordinates. The array is returned as an object, therefore it is the caller's
         /// responsibility to cast the array to the appropriate dimensions.
         /// </summary>
         /// <param name="coordinates">the coordinates which specify the returned array</param>
         /// <returns>the array specified. Throw <see cref="ArgumentException"/> if the specified coordinates address an actual value instead of the array holding it.</returns>
-        /// <exception cref="ArgumentException"></exception>
-        public abstract Object GetSlice(params int[] coordinates);
+        /// <exception cref="ArgumentException">Throws if the specified coordinates address an actual value instead of the array holding it.</exception>
+        public abstract object GetSlice(params int[] coordinates);
 
         /// <summary>
         /// Launch getSlice error, to share it with subclass <see cref="GetSlice(int[])"/> implementations.
@@ -88,7 +70,7 @@ namespace NeoCortexApi.Entities
         /// <returns>the flat indexes array</returns>
         protected int[] GetSliceIndexes(int[] coordinates)
         {
-            int[] dimensions = getDimensions();
+            int[] dimensions = GetDimensions();
             // check for valid coordinates
             if (coordinates.Length >= dimensions.Length)
             {
@@ -122,7 +104,7 @@ namespace NeoCortexApi.Entities
                 for (int i = 0; i < dimensions[coordinates.Length]; i++)
                 {
                     elementCoordinates[coordinates.Length] = i;
-                    slice[i] = computeIndex(elementCoordinates);
+                    slice[i] = ComputeIndex(elementCoordinates);
                     // Array.set(slice, i, computeIndex(elementCoordinates));
                 }
             }
@@ -163,7 +145,7 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public override AbstractFlatMatrix<int> set(int index, int value)
         {
-            int[] coordinates = ComputeCoordinates(getNumDimensions(), getDimensionMultiples(), this.ModuleTopology.IsMajorOrdering, index);
+            int[] coordinates = ComputeCoordinates(GetNumDimensions(), GetDimensionMultiples(), this.ModuleTopology.IsMajorOrdering, index);
             return set(value, coordinates);
         }
 
@@ -193,9 +175,10 @@ namespace NeoCortexApi.Entities
         }
 
         // TODO naming convention with override method
+        // TODO Integer class ??
         public Integer get(int[] coordinates)
         {
-            return GetColumn(computeIndex(coordinates));
+            return GetColumn(ComputeIndex(coordinates));
         }
 
 
@@ -280,9 +263,9 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="coordinates">the coordinates from which to retrieve the indexed object</param>
         /// <returns>the indexed object</returns>
-        public new int getIntValue(params int[] coordinates)
+        public new int GetIntValue(params int[] coordinates)
         {
-            return GetColumn(computeIndex(coordinates));
+            return GetColumn(ComputeIndex(coordinates));
         }
 
         // TODO naming convention with override method
@@ -291,8 +274,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="index">the index of the T to return</param>
         /// <returns>the T at the specified index.</returns>
-        //@Override
-        public new int getIntValue(int index)
+        public new int GetIntValue(int index)
         {
             return GetColumn(index);
         }
@@ -303,11 +285,11 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <returns>a sorted array of occupied indexes.</returns>
         //@Override
-        public override int[] getSparseIndices()
+        public override int[] GetSparseIndices()
         {
             List<int> indexes = new List<int>();
             //TIntList indexes = new TIntArrayList();
-            for (int i = 0; i <= getMaxIndex(); i++)
+            for (int i = 0; i <= GetMaxIndex(); i++)
             {
                 if (GetColumn(i) > 0)
                 {
@@ -325,7 +307,7 @@ namespace NeoCortexApi.Entities
         /// <returns>this matrix</returns>
         public AbstractSparseBinaryMatrix Or(AbstractSparseBinaryMatrix inputMatrix)
         {
-            int[] mask = inputMatrix.getSparseIndices();
+            int[] mask = inputMatrix.GetSparseIndices();
             int[] ones = new int[mask.Length];
             ArrayUtils.Fill(ones, 1);
             return set(mask, ones);
@@ -357,7 +339,7 @@ namespace NeoCortexApi.Entities
 
         protected HashSet<int> GetSparseSet()
         {
-            return new HashSet<int>(getSparseIndices());
+            return new HashSet<int>(GetSparseIndices());
         }
 
         /// <summary>
@@ -368,7 +350,7 @@ namespace NeoCortexApi.Entities
         public bool All(AbstractSparseBinaryMatrix matrix)
         {
             var sparseSet = GetSparseSet();
-            bool hasAll = matrix.getSparseIndices().All(itm2 => sparseSet.Contains(itm2));
+            bool hasAll = matrix.GetSparseIndices().All(itm2 => sparseSet.Contains(itm2));
             return hasAll;
             //return getSparseSet().Contains(
             //    containsAll(matrix.getSparseIndices());
@@ -409,7 +391,7 @@ namespace NeoCortexApi.Entities
         {
             var keySet = GetSparseSet();
 
-            foreach (int i in matrix.getSparseIndices())
+            foreach (int i in matrix.GetSparseIndices())
             {
                 if (keySet.Contains(i)) return true;
             }

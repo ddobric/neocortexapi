@@ -264,7 +264,6 @@ namespace NeoCortexApi.Utility
             /// </summary>
             public static readonly Slot<T> NONE = new Slot<T>();
 
-            public int MyProperty { get; set; }
             /// <summary>
             /// Returns an empty <see cref="Slot{T}"/> instance.  No value is present for this Slot.
             /// </summary>
@@ -366,14 +365,14 @@ namespace NeoCortexApi.Utility
             /// <summary>
             /// Indicates whether some other object is "equal to" this Slot. The other object is considered equal if:
             /// <list type="bullet">
-            /// <item>it is also an {@code Slot} and;</item>
+            /// <item>it is also an <see cref="Slot"/> and;</item>
             /// <item>both instances have no value present or;</item>
-            /// <item>the present values are "equal to" each other via {@code equals()}.</item>
+            /// <item>the present values are "equal to" each other via <se {@code equals()}.</item>
             /// </list>
             /// </summary>
             /// <param name="obj">an object to be tested for equality</param>
             /// <returns>true if the other object is "equal to" this object otherwise false</returns>
-            public bool Equals(Object obj)
+            public bool Equals(object obj)
             {
                 if (this == obj)
                 {
@@ -385,7 +384,7 @@ namespace NeoCortexApi.Utility
                     return false;
                 }
 
-                Slot<Object> other = (Slot<Object>)obj;
+                Slot<object> other = (Slot<object>)obj;
                 return value.Equals(other.value);
             }
 

@@ -1080,12 +1080,12 @@ namespace UnitTestsProject
             sp.InitMatrices(mem, null);
 
             List<int> connected = new List<int>();
-            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 1, 0, 1, 0 }, false));
-            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 1, 0, 1, 1 }, false));
-            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 3, 2, 1, 0 }, false));
-            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 3, 0, 1, 0 }, false));
-            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 1, 0, 1, 3 }, false));
-            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 2, 2, 1, 0 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.ComputeIndex(new int[] { 1, 0, 1, 0 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.ComputeIndex(new int[] { 1, 0, 1, 1 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.ComputeIndex(new int[] { 3, 2, 1, 0 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.ComputeIndex(new int[] { 3, 0, 1, 0 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.ComputeIndex(new int[] { 1, 0, 1, 3 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.ComputeIndex(new int[] { 2, 2, 1, 0 }, false));
             //connected.sort(0, connected.size());
             connected = connected.OrderBy(i => i).ToList();
 
@@ -1096,10 +1096,10 @@ namespace UnitTestsProject
             mem.GetColumn(0).SetProximalConnectedSynapsesForTest(mem, connected.ToArray());
 
             connected.Clear();
-            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 2, 0, 1, 0 }, false));
-            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 2, 0, 0, 0 }, false));
-            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 3, 0, 0, 0 }, false));
-            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 3, 0, 1, 0 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.ComputeIndex(new int[] { 2, 0, 1, 0 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.ComputeIndex(new int[] { 2, 0, 0, 0 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.ComputeIndex(new int[] { 3, 0, 0, 0 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.ComputeIndex(new int[] { 3, 0, 1, 0 }, false));
             //connected.sort(0, connected.size());
             connected = connected.OrderBy(i => i).ToList();
 
@@ -1110,12 +1110,12 @@ namespace UnitTestsProject
             mem.GetColumn(1).SetProximalConnectedSynapsesForTest(mem, connected.ToArray());
 
             connected.Clear();
-            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 0, 0, 1, 4 }, false));
-            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 0, 0, 0, 3 }, false));
-            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 0, 0, 0, 1 }, false));
-            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 1, 0, 0, 2 }, false));
-            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 0, 0, 1, 1 }, false));
-            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 3, 3, 1, 1 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.ComputeIndex(new int[] { 0, 0, 1, 4 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.ComputeIndex(new int[] { 0, 0, 0, 3 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.ComputeIndex(new int[] { 0, 0, 0, 1 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.ComputeIndex(new int[] { 1, 0, 0, 2 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.ComputeIndex(new int[] { 0, 0, 1, 1 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.ComputeIndex(new int[] { 3, 3, 1, 1 }, false));
             connected = connected.OrderBy(i => i).ToList();
             //connected.sort(0, connected.size());
 
@@ -1126,8 +1126,8 @@ namespace UnitTestsProject
             mem.GetColumn(2).SetProximalConnectedSynapsesForTest(mem, connected.ToArray());
 
             connected.Clear();
-            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 3, 3, 1, 4 }, false));
-            connected.Add(mem.HtmConfig.InputMatrix.computeIndex(new int[] { 0, 0, 0, 0 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.ComputeIndex(new int[] { 3, 3, 1, 4 }, false));
+            connected.Add(mem.HtmConfig.InputMatrix.ComputeIndex(new int[] { 0, 0, 0, 0 }, false));
             //connected.sort(0, connected.size());
             connected = connected.OrderBy(i => i).ToList();
 
@@ -1749,7 +1749,7 @@ namespace UnitTestsProject
             new double[]{0.101, 0.101, 0.101, 0.101, 0.101}};   // increment 9 times
 
             //FORGOT TO SET PERMANENCES ABOVE - DON'T USE mem.setPermanences() 
-            int[] indices = mem.HtmConfig.Memory.getSparseIndices();
+            int[] indices = mem.HtmConfig.Memory.GetSparseIndices();
             for (int i = 0; i < mem.HtmConfig.NumColumns; i++)
             {
                 // double[] perm = mem.getPotentialPools().get(i).getSparsePermanences();
@@ -1834,9 +1834,9 @@ namespace UnitTestsProject
             new int[] {0, 0, 0, 0, 0, 0, 0, 0, 1, 1}};
 
             AbstractSparseBinaryMatrix sm = new SparseBinaryMatrix(dimensions);
-            for (int i = 0; i < sm.getDimensions()[0]; i++)
+            for (int i = 0; i < sm.GetDimensions()[0]; i++)
             {
-                for (int j = 0; j < sm.getDimensions()[1]; j++)
+                for (int j = 0; j < sm.GetDimensions()[1]; j++)
                 {
                     sm.set(connectedSynapses[i][j], i, j);
                 }
@@ -1850,7 +1850,7 @@ namespace UnitTestsProject
 
                 for (int j = 0; j < 10; j++)
                 {
-                    Assert.IsTrue(connectedSynapses[i][j] == column.ConnectedInputCounterMatrix.getIntValue(0, j));
+                    Assert.IsTrue(connectedSynapses[i][j] == column.ConnectedInputCounterMatrix.GetIntValue(0, j));
                     //Assert.IsTrue(connectedSynapses[i][j] == sm.getIntValue(i, j));
                 }
             }
@@ -1873,9 +1873,9 @@ namespace UnitTestsProject
             new int[]{0, 0, 0, 0, 0, 0, 0, 0, 1, 1}};
 
             sm = new SparseBinaryMatrix(dimensions);
-            for (int i = 0; i < sm.getDimensions()[0]; i++)
+            for (int i = 0; i < sm.GetDimensions()[0]; i++)
             {
-                for (int j = 0; j < sm.getDimensions()[1]; j++)
+                for (int j = 0; j < sm.GetDimensions()[1]; j++)
                 {
                     sm.set(connectedSynapses[i][j], i, j);
                 }
@@ -1887,7 +1887,7 @@ namespace UnitTestsProject
             {
                 for (int j = 0; j < 10; j++)
                 {
-                    Assert.IsTrue(connectedSynapses[i][j] == sm.getIntValue(i, j));
+                    Assert.IsTrue(connectedSynapses[i][j] == sm.GetIntValue(i, j));
                 }
             }
 
@@ -1909,9 +1909,9 @@ namespace UnitTestsProject
             new int[]{0, 0, 0, 0, 0, 0, 0, 0, 1, 1}};
 
             sm = new SparseBinaryMatrix(dimensions);
-            for (int i = 0; i < sm.getDimensions()[0]; i++)
+            for (int i = 0; i < sm.GetDimensions()[0]; i++)
             {
-                for (int j = 0; j < sm.getDimensions()[1]; j++)
+                for (int j = 0; j < sm.GetDimensions()[1]; j++)
                 {
                     sm.set(connectedSynapses[i][j], i, j);
                 }
@@ -1923,7 +1923,7 @@ namespace UnitTestsProject
             {
                 for (int j = 0; j < 10; j++)
                 {
-                    Assert.IsTrue(connectedSynapses[i][j] == sm.getIntValue(i, j));
+                    Assert.IsTrue(connectedSynapses[i][j] == sm.GetIntValue(i, j));
                 }
             }
 
@@ -1947,9 +1947,9 @@ namespace UnitTestsProject
             new int[]{0, 0, 0, 0, 1, 0, 0, 0, 0, 1}};
 
             sm = new SparseBinaryMatrix(dimensions);
-            for (int i = 0; i < sm.getDimensions()[0]; i++)
+            for (int i = 0; i < sm.GetDimensions()[0]; i++)
             {
-                for (int j = 0; j < sm.getDimensions()[1]; j++)
+                for (int j = 0; j < sm.GetDimensions()[1]; j++)
                 {
                     sm.set(connectedSynapses[i][j], i, j);
                 }
@@ -1961,7 +1961,7 @@ namespace UnitTestsProject
             {
                 for (int j = 0; j < 10; j++)
                 {
-                    Assert.IsTrue(connectedSynapses[i][j] == sm.getIntValue(i, j));
+                    Assert.IsTrue(connectedSynapses[i][j] == sm.GetIntValue(i, j));
                 }
             }
 

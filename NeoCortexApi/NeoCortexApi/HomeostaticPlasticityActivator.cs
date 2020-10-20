@@ -19,55 +19,55 @@ namespace NeoCortexApi
     /// </summary>
     public class HomeostaticPlasticityActivator
     {
-        private int maxPreviousElements = 5;
+        private int m_MaxPreviousElements = 5;
 
-        private Connections htmMemory;
+        private Connections m_HtmMemory;
 
-        private int cycle = 0;
+        private int m_Cycle = 0;
 
-        private int minCycles;
+        private int m_MinCycles;
 
         /// <summary>
         /// Number of minimal required stable cycles for every input.
         /// When this value is reached, the new-born effect will take a place.
         /// It means, the boosting will be disabled.
         /// </summary>
-        private int requiredNumOfStableCycles;
+        private int m_RequiredNumOfStableCycles;
 
         /// <summary>
         /// Number stable cycles for every input.
         /// </summary>
-        private Dictionary<string, int> numOfStableCyclesForInput = new Dictionary<string, int>();
+        private Dictionary<string, int> m_NumOfStableCyclesForInput = new Dictionary<string, int>();
 
         /// <summary>
         /// Number of active columns in SDRs of last N steps.
         /// </summary>
-        private Dictionary<string, int[]> numOfActiveColsForInput = new Dictionary<string, int[]>();
+        private Dictionary<string, int[]> m_NumOfActiveColsForInput = new Dictionary<string, int[]>();
 
         /// <summary>
         /// Keeps the list of hash values of all seen input patterns.
         /// List of hashes. [key, val] = [hash(input), hash(output)]
         /// </summary>
-        private Dictionary<string, int[]> inOutMap = new Dictionary<string, int[]>();
+        private Dictionary<string, int[]> m_InOutMap = new Dictionary<string, int[]>();
 
         /// <summary>
         /// Action to be invoked when the SP become stable or instable.
         /// <is stable, num of seen patterns, derivation of active column function, cycle>
         /// </summary>
-        private Action<bool, int, double, int> onStabilityStatusChanged;
+        private Action<bool, int, double, int> m_OnStabilityStatusChanged;
 
         /// <summary>
         /// Set on true when SP deactivates boosting and enter the stable state.
         /// Once SP enters the stable state and it becomes instable agein, this value is ste on false.
         /// </summary>
-        private bool isStable = false;
+        private bool m_IsStable = false;
 
         public HomeostaticPlasticityActivator(Connections htmMemory, int minCycles, Action<bool, int, double, int> onStabilityStatusChanged, int numOfCyclesToWaitOnChange = 50)
         {
-            this.onStabilityStatusChanged = onStabilityStatusChanged;
-            this.htmMemory = htmMemory;
-            this.minCycles = minCycles;
-            this.requiredNumOfStableCycles = numOfCyclesToWaitOnChange;
+            this.m_OnStabilityStatusChanged = onStabilityStatusChanged;
+            this.m_HtmMemory = htmMemory;
+            this.m_MinCycles = minCycles;
+            this.m_RequiredNumOfStableCycles = numOfCyclesToWaitOnChange;
         }
 
         /// <summary>
@@ -88,34 +88,34 @@ namespace NeoCortexApi
             //
             // Here we track the number of active columns for every cycle for every input.
             // We want that this number for every input is approximately the same.
-            if (numOfActiveColsForInput.ContainsKey(inpHash))
-                ArrayUtils.AddToHistoryList(numOfActiveColsForInput[inpHash], maxPreviousElements, output.Count(c => c == 1));
+            if (m_NumOfActiveColsForInput.ContainsKey(inpHash))
+                ArrayUtils.AddToHistoryList(m_NumOfActiveColsForInput[inpHash], m_MaxPreviousElements, output.Count(c => c == 1));
 
             //
             // If the pattern appears for the first time, add it to dictionary of seen patterns.
-            if (!inOutMap.ContainsKey(inpHash))
+            if (!m_InOutMap.ContainsKey(inpHash))
             {
-                inOutMap.Add(inpHash, output);
-                numOfActiveColsForInput.Add(inpHash, new int[maxPreviousElements]);
-                numOfStableCyclesForInput.Add(inpHash, 0);
+                m_InOutMap.Add(inpHash, output);
+                m_NumOfActiveColsForInput.Add(inpHash, new int[m_MaxPreviousElements]);
+                m_NumOfStableCyclesForInput.Add(inpHash, 0);
             }
             else
             {
-                if (cycle >= this.minCycles)
+                if (m_Cycle >= this.m_MinCycles)
                 {
                     //this.htmMemory.setMaxBoost(0.0);
-                    this.htmMemory.HtmConfig.MaxBoost = 0.0;
+                    this.m_HtmMemory.HtmConfig.MaxBoost = 0.0;
 
                     //this.htmMemory.updateMinPctOverlapDutyCycles(0.0);
-                    this.htmMemory.HtmConfig.MinPctOverlapDutyCycles = 0.0;
+                    this.m_HtmMemory.HtmConfig.MinPctOverlapDutyCycles = 0.0;
                 }
 
                 // If the input has been already seen, we calculate the similarity between already seen input
                 // and the new input. The similarity is calculated as a correlation function.
-                var similarity = Correlate(ArrayUtils.IndexWhere(inOutMap[inpHash], k => k == 1), ArrayUtils.IndexWhere(output, k => k == 1));
+                var similarity = Correlate(ArrayUtils.IndexWhere(m_InOutMap[inpHash], k => k == 1), ArrayUtils.IndexWhere(output, k => k == 1));
 
                 // We replace the existing value with the new one.
-                inOutMap[inpHash] = output;
+                m_InOutMap[inpHash] = output;
 
                 //
                 // We cannot expect the 100% for the entire learning cycle. Sometimes some
@@ -124,45 +124,45 @@ namespace NeoCortexApi
                 if (similarity > 0.96)
                 {
                     // We calculate here the average change of the SDR for the given input.
-                    avgDerivation = ArrayUtils.AvgDelta(numOfActiveColsForInput[inpHash]);
+                    avgDerivation = ArrayUtils.AvgDelta(m_NumOfActiveColsForInput[inpHash]);
 
                     //
                     // If there is no change (SDR is stable) we count nuber of stable cycles.
                     // If the average value is not 0, then we reset the number of stable cycles.
                     if (avgDerivation == 0)
-                        numOfStableCyclesForInput[inpHash] = numOfStableCyclesForInput[inpHash] + 1;
+                        m_NumOfStableCyclesForInput[inpHash] = m_NumOfStableCyclesForInput[inpHash] + 1;
                     else
-                        numOfStableCyclesForInput[inpHash] = 0;
+                        m_NumOfStableCyclesForInput[inpHash] = 0;
 
-                    if (cycle >= this.minCycles)
+                    if (m_Cycle >= this.m_MinCycles)
                     {
-                        if (numOfStableCyclesForInput[inpHash] > requiredNumOfStableCycles && IsInStableState(numOfStableCyclesForInput, requiredNumOfStableCycles))
+                        if (m_NumOfStableCyclesForInput[inpHash] > m_RequiredNumOfStableCycles && IsInStableState(m_NumOfStableCyclesForInput, m_RequiredNumOfStableCycles))
                         {
                             // We fire event when changed from instable to stable.
-                            if (!isStable)
-                                this.onStabilityStatusChanged(true, inOutMap.Keys.Count, avgDerivation, cycle);
+                            if (!m_IsStable)
+                                this.m_OnStabilityStatusChanged(true, m_InOutMap.Keys.Count, avgDerivation, m_Cycle);
 
-                            isStable = true;
+                            m_IsStable = true;
                             res = true;
                         }
                     }
                 }
                 else
                 {
-                    numOfStableCyclesForInput[inpHash] = 0;
+                    m_NumOfStableCyclesForInput[inpHash] = 0;
 
                     // If the new SDR output for the already seen input
 
-                    if (isStable)
+                    if (m_IsStable)
                     {
                         // THIS SHOULD NEVER HAPPEN! MEANS FROM STABLE TO INSTABLE!
-                        isStable = false;
-                        this.onStabilityStatusChanged(false, inOutMap.Keys.Count, avgDerivation, cycle);
+                        m_IsStable = false;
+                        this.m_OnStabilityStatusChanged(false, m_InOutMap.Keys.Count, avgDerivation, m_Cycle);
                     }
                 }
             }
 
-            this.cycle++;
+            this.m_Cycle++;
 
             return res;
         }
