@@ -15,7 +15,7 @@ namespace NeoCortexApi
 {
     public class SpatialPoolerMT : SpatialPooler
     {
-        public SpatialPoolerMT(HomeostaticPlasticityActivator homeostaticPlasticityActivator = null) : base(homeostaticPlasticityActivator)
+        public SpatialPoolerMT(HomeostaticPlasticityController homeostaticPlasticityActivator = null) : base(homeostaticPlasticityActivator)
         { 
         
         }

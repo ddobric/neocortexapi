@@ -512,7 +512,7 @@ namespace UnitTestsProject
 
             bool isInStableState = false;
 
-            HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem, inputValues.Count * 15, (isStable, numPatterns, actColAvg, seenInputs)=>{
+            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, inputValues.Count * 15, (isStable, numPatterns, actColAvg, seenInputs)=>{
 
                 Assert.IsTrue(numPatterns == inputValues.Count);
 

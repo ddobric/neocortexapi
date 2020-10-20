@@ -14,10 +14,10 @@ namespace NeoCortexApi
 {
     /// <summary>
     /// Imlements the new-born effect in the SP. This effect tracks the learning process of the SP 
-    /// and shitches-off the boosting mechanism (new-born effect) aftwr the SP has entered a stable state 
+    /// and switches-off the boosting mechanism (new-born effect) aftwr the SP has entered a stable state 
     /// for all seen input patterns.
     /// </summary>
-    public class HomeostaticPlasticityActivator
+    public class HomeostaticPlasticityController
     {
         private int m_MaxPreviousElements = 5;
 
@@ -62,7 +62,7 @@ namespace NeoCortexApi
         /// </summary>
         private bool m_IsStable = false;
 
-        public HomeostaticPlasticityActivator(Connections htmMemory, int minCycles, Action<bool, int, double, int> onStabilityStatusChanged, int numOfCyclesToWaitOnChange = 50)
+        public HomeostaticPlasticityController(Connections htmMemory, int minCycles, Action<bool, int, double, int> onStabilityStatusChanged, int numOfCyclesToWaitOnChange = 50)
         {
             this.m_OnStabilityStatusChanged = onStabilityStatusChanged;
             this.m_HtmMemory = htmMemory;

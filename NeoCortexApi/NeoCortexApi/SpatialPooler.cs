@@ -37,9 +37,9 @@ namespace NeoCortexApi
     public class SpatialPooler : IHtmAlgorithm<int[], int[]>
     {
         /// <summary>
-        /// The instance of the <see cref="HomeostaticPlasticityActivator"/>.
+        /// The instance of the <see cref="HomeostaticPlasticityController"/>.
         /// </summary>
-        private HomeostaticPlasticityActivator m_HomeoPlastAct;
+        private HomeostaticPlasticityController m_HomeoPlastAct;
 
         public double MaxInibitionDensity { get; set; } = 0.5;
 
@@ -49,7 +49,7 @@ namespace NeoCortexApi
         /// Default constructor.
         /// </summary>
         /// <param name="homeostaticPlasticityActivator">Includes the newborn effect in the SP. This feture was not a part of SP in the original version.</param>
-        public SpatialPooler(HomeostaticPlasticityActivator homeostaticPlasticityActivator = null)
+        public SpatialPooler(HomeostaticPlasticityController homeostaticPlasticityActivator = null)
         {
             m_HomeoPlastAct = homeostaticPlasticityActivator;
         }

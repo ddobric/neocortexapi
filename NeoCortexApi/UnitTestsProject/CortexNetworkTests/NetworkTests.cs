@@ -547,7 +547,7 @@ namespace UnitTestsProject
 
             TemporalMemory tm1 = new TemporalMemory();
 
-            HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem, numInputs * 15, (isStable, numPatterns, actColAvg, seenInputs) =>
+            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, numInputs * 15, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                 if (isStable)
                     // Event should be fired when entering the stable state.
