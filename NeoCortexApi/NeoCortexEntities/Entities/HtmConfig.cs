@@ -205,7 +205,8 @@ namespace NeoCortexApi.Entities
         public bool IsBumpUpWeakColumnsDisabled { get; set; } = false;
 
         /// <summary>
-        /// Period count which is the number of cycles between meta information updates.
+        /// Period count which is the number of cycles between updates of inhibition radius and min. duty cycles.
+        /// <see cref="SpatialPooler.compute"/>
         /// </summary>
         public int UpdatePeriod { get; set; } = 50;
 
