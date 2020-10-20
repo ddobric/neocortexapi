@@ -35,16 +35,16 @@ namespace NeoCortexApi.Encoders
         /// String representation to be used when a display.
         /// String is required.
         /// </summary>
-        private String m_FieldTypeString;
+        private string m_FieldTypeString;
 
         /** Private constructor */
-        private FieldMetaType(String s)
+        private FieldMetaType(string s)
         {
             this.m_FieldTypeString = s;
         }
 
         /// <summary>
-        /// Returns the {@link Encoder} matching this field type.
+        /// Returns the <see cref="EncoderBase"/> matching this field type.
         /// </summary>
         /// <returns></returns>
         public EncoderBase NewEncoder()
@@ -99,25 +99,23 @@ namespace NeoCortexApi.Encoders
         //    }
         //}
 
-        /**
-         * Returns the display string
-         * @return the display string
-         */
-        public String display()
+        /// <summary>
+        /// Returns the display string
+        /// </summary>
+        /// <returns></returns>
+        public string Display()
         {
             return m_FieldTypeString;
         }
 
-        /**
-         * Parses the specified String and returns a {@link FieldMetaType}
-         * representing the passed in value.
-         * 
-         * @param s  the type in string form
-         * @return the FieldMetaType indicated or the default: {@link FieldMetaType#FLOAT}.
-         */
-        public static FieldMetaType fromString(string s)
+        /// <summary>
+        /// Parses the specified String and returns a <see cref="FieldMetaType"/> representing the passed in value. 
+        /// </summary>
+        /// <param name="s">the type in string form</param>
+        /// <returns>the FieldMetaType indicated or the default: <see cref="FLOAT"/>.</returns>
+        public static FieldMetaType FromString(string s)
         {
-            if (String.IsNullOrEmpty(s))
+            if (string.IsNullOrEmpty(s))
                 throw new ArgumentException();
 
             string val = s.ToLower();

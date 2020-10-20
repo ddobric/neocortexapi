@@ -185,7 +185,7 @@ namespace NeoCortexApi.DistributedCompute
     }
 
 
-
+    // TODO put class to another file?
     public class HtmSparseIntDictionaryConfig : AkkaDistributedDictConfig
     {
 

@@ -141,7 +141,7 @@ namespace NeoCortexApi.Encoders
 
             if (N != 0)
             {
-                if (!Double.IsNaN(MinVal) && !Double.IsNaN(MaxVal))
+                if (!double.IsNaN(MinVal) && !double.IsNaN(MaxVal))
                 {
                     if (!Periodic)
                     {
@@ -213,7 +213,7 @@ namespace NeoCortexApi.Encoders
                     EndingPoint = N;
 
                     if (input > RangeInternal)
-                    { StartPoint = StartPoint - N; }
+                    { StartPoint -= N; }
                 }
             }
 
@@ -231,7 +231,7 @@ namespace NeoCortexApi.Encoders
 
                     if (input > RangeInternal)
                     { 
-                        LeftOver = LeftOver - N;
+                        LeftOver -= N;
                     }
 
                     StartPoint = LeftOver - W;
@@ -255,7 +255,7 @@ namespace NeoCortexApi.Encoders
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns>The <see cref="List{T}"/></returns>
-        public override List<T> getBucketValues<T>()
+        public override List<T> GetBucketValues<T>()
         {
             throw new NotImplementedException();
         }

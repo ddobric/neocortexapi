@@ -15,8 +15,6 @@ using System.Diagnostics;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
-
-
     public class HtmActor : ActorBase
     {
         public Dictionary<object, object> Dict = new Dictionary<object, object>();
@@ -143,6 +141,7 @@ namespace NeoCortexApi.DistributedComputeLib
         /// It returns the average connected span of the partition.
         /// </summary>
         /// <param name="msg"></param>
+        //TODO remove unnecessary argument
         private double CreateAndConnectColumns(ConnectAndConfigureColumnsMsg msg)
         {
             Debug.Write(".");
@@ -159,7 +158,7 @@ namespace NeoCortexApi.DistributedComputeLib
             {
                 if (this.HtmConfig == null)
                     throw new ArgumentException($"HtmConfig must be set in the message.");
-                
+
                 int colIndx = -1;
 
                 Column column;
@@ -208,8 +207,10 @@ namespace NeoCortexApi.DistributedComputeLib
 
             ConcurrentDictionary<int, int> overlaps = new ConcurrentDictionary<int, int>();
 
-            ParallelOptions opts = new ParallelOptions();
-            opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
+            ParallelOptions opts = new ParallelOptions
+            {
+                MaxDegreeOfParallelism = Environment.ProcessorCount
+            };
 
             Parallel.ForEach(this.Dict, opts, (keyPair) =>
             {
@@ -239,8 +240,10 @@ namespace NeoCortexApi.DistributedComputeLib
 
         private object AdaptSynapses(AdaptSynapsesMsg msg)
         {
-            ParallelOptions opts = new ParallelOptions();
-            opts.MaxDegreeOfParallelism = msg.ColumnKeys.Count;
+            ParallelOptions opts = new ParallelOptions
+            {
+                MaxDegreeOfParallelism = msg.ColumnKeys.Count
+            };
 
             Parallel.ForEach(msg.ColumnKeys, opts, (colPair) =>
             {
@@ -260,8 +263,10 @@ namespace NeoCortexApi.DistributedComputeLib
 
         private object BumpUpWeakColumns(BumUpWeakColumnsMsg msg)
         {
-            ParallelOptions opts = new ParallelOptions();
-            opts.MaxDegreeOfParallelism = msg.ColumnKeys.Count;
+            ParallelOptions opts = new ParallelOptions
+            {
+                MaxDegreeOfParallelism = msg.ColumnKeys.Count
+            };
 
             Parallel.ForEach(msg.ColumnKeys, opts, (colPair) =>
             {
@@ -279,8 +284,8 @@ namespace NeoCortexApi.DistributedComputeLib
         }
 
         private Column GetColumn(object key)
-        {            
-            if(this.Dict.ContainsKey(key.ToString()))
+        {
+            if (this.Dict.ContainsKey(key.ToString()))
                 return (Column)Dict[key.ToString()];
             else if (this.Dict.ContainsKey((int)(long)key))
                 return (Column)Dict[(int)(long)key];

@@ -232,7 +232,7 @@ namespace NeoCortexApi.Encoders
         /// </summary>
         /// <typeparam name="T">class type parameter so that this method can return encoder specific value types</typeparam>
         /// <returns>list of items, each item representing the bucket value for that bucket.</returns>
-        public abstract List<T> getBucketValues<T>();
+        public abstract List<T> GetBucketValues<T>();
 
         /// <summary>
         /// Returns an array containing the sum of the right applied multiplications of each slice to the array passed in.

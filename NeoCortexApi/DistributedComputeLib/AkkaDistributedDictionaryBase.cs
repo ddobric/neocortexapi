@@ -21,7 +21,7 @@ namespace NeoCortexApi.DistributedComputeLib
     {
 
         // not used!
-        private Dictionary<TKey, TValue>[] dictList;
+        private Dictionary<TKey, TValue>[] m_DictList;
 
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace NeoCortexApi.DistributedComputeLib
         /// </summary>
         //private IActorRef[] dictActors;
 
-        private List<Placement<TKey>> actorMap;
+        private List<Placement<TKey>> m_ActorMap;
 
         /// <summary>
         /// Maps from Actor partition identifier to actor index in <see cref="dictActors" list./>
@@ -38,20 +38,20 @@ namespace NeoCortexApi.DistributedComputeLib
         {
             get
             {
-                if (actorMap == null)
+                if (m_ActorMap == null)
                     InitPartitionActorsDist();
 
-                return this.actorMap;
+                return this.m_ActorMap;
             }
             set
             {
-                this.actorMap = value;
+                this.m_ActorMap = value;
             }
         }
 
-        private int numElements = 0;
+        private int m_NumElements = 0;
 
-        private ActorSystem actSystem;
+        private ActorSystem m_ActSystem;
 
         #region Properties
         /// <summary>
@@ -77,7 +77,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
             this.Config = config;
 
-            actSystem = ActorSystem.Create("Deployer", ConfigurationFactory.ParseString(@"
+            m_ActSystem = ActorSystem.Create("Deployer", ConfigurationFactory.ParseString(@"
                 akka {  
                     loglevel=DEBUG
                     actor{
@@ -122,7 +122,7 @@ namespace NeoCortexApi.DistributedComputeLib
                 //if (this.ActorMap[i].ActorRef == null)
                 {
                     this.ActorMap[i].ActorRef =
-                     actSystem.ActorOf(Props.Create(() => new DictNodeActor())
+                     m_ActSystem.ActorOf(Props.Create(() => new DictNodeActor())
                      .WithDeploy(Deploy.None.WithScope(new RemoteScope(Address.Parse(this.ActorMap[i].NodePath)))),
                      actorName);
                 }
@@ -216,7 +216,7 @@ namespace NeoCortexApi.DistributedComputeLib
             get
             {
                 List<TKey> keys = new List<TKey>();
-                foreach (var item in this.dictList)
+                foreach (var item in this.m_DictList)
                 {
                     foreach (var k in item.Keys)
                     {
@@ -234,7 +234,7 @@ namespace NeoCortexApi.DistributedComputeLib
             get
             {
                 List<TValue> keys = new List<TValue>();
-                foreach (var item in this.dictList)
+                foreach (var item in this.m_DictList)
                 {
                     foreach (var k in item.Values)
                     {
@@ -256,8 +256,10 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <param name="keyValuePairs"></param>
         public void AddOrUpdate(ICollection<KeyPair> keyValuePairs)
         {
-            ParallelOptions opts = new ParallelOptions();
-            opts.MaxDegreeOfParallelism = this.ActorMap.Count;
+            ParallelOptions opts = new ParallelOptions
+            {
+                MaxDegreeOfParallelism = this.ActorMap.Count
+            };
 
             // We get here keys grouped to actors, which host partitions.
             var partitions = GetPartitionsForKeyset(keyValuePairs);
@@ -310,8 +312,10 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <param name="keyValuePairs"></param>
         public void InitializeColumnPartitionsDist(ICollection<KeyPair> keyValuePairs)
         {
-            ParallelOptions opts = new ParallelOptions();
-            opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
+            ParallelOptions opts = new ParallelOptions
+            {
+                MaxDegreeOfParallelism = Environment.ProcessorCount
+            };
 
             //foreach (var item in this.ActorMap)
             //{
@@ -411,8 +415,10 @@ namespace NeoCortexApi.DistributedComputeLib
             // List of results.
             ConcurrentDictionary<int, double> aggLst = new ConcurrentDictionary<int, double>();
 
-            ParallelOptions opts = new ParallelOptions();
-            opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
+            ParallelOptions opts = new ParallelOptions
+            {
+                MaxDegreeOfParallelism = Environment.ProcessorCount
+            };
 
             //var avgSpanOfPart = this.ActorMap.First().ActorRef.Ask<double>(new ConnectAndConfigureColumnsMsg(), this.Config.ConnectionTimeout).Result;
             //aggLst.TryAdd(this.ActorMap.First().PartitionIndx, avgSpanOfPart);
@@ -445,8 +451,10 @@ namespace NeoCortexApi.DistributedComputeLib
         {
             ConcurrentDictionary<int, List<KeyPair>> overlapList = new ConcurrentDictionary<int, List<KeyPair>>();
 
-            ParallelOptions opts = new ParallelOptions();
-            opts.MaxDegreeOfParallelism = this.ActorMap.Count;
+            ParallelOptions opts = new ParallelOptions
+            {
+                MaxDegreeOfParallelism = this.ActorMap.Count
+            };
 
             // Run overlap calculation on all actors(in all partitions)
             Parallel.ForEach(this.ActorMap, opts, (placement) =>
@@ -484,8 +492,10 @@ namespace NeoCortexApi.DistributedComputeLib
 
             var partitions = GetPartitionsForKeyset(list);
 
-            ParallelOptions opts = new ParallelOptions();
-            opts.MaxDegreeOfParallelism = this.ActorMap.Count;
+            ParallelOptions opts = new ParallelOptions
+            {
+                MaxDegreeOfParallelism = this.ActorMap.Count
+            };
 
             Parallel.ForEach(partitions, opts, (placement) =>
             {
@@ -501,8 +511,10 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public void BumpUpWeakColumnsDist(int[] weakColumns)
         {
-            ParallelOptions opts = new ParallelOptions();
-            opts.MaxDegreeOfParallelism = weakColumns.Length;
+            ParallelOptions opts = new ParallelOptions
+            {
+                MaxDegreeOfParallelism = weakColumns.Length
+            };
 
             List<KeyPair> list = new List<KeyPair>();
             foreach (var weakColIndx in weakColumns)
@@ -581,7 +593,7 @@ namespace NeoCortexApi.DistributedComputeLib
             }
             else
             {
-                value = default(TValue);
+                value = default;
                 return false;
             }
         }
@@ -590,7 +602,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public void Clear()
         {
-            foreach (var item in this.dictList)
+            foreach (var item in this.m_DictList)
             {
                 item.Clear();
             }
@@ -634,11 +646,11 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public bool Remove(TKey key)
         {
-            for (int i = 0; i < this.dictList.Length; i++)
+            for (int i = 0; i < this.m_DictList.Length; i++)
             {
-                if (this.dictList[i].ContainsKey(key))
+                if (this.m_DictList[i].ContainsKey(key))
                 {
-                    return this.dictList[i].Remove(key);
+                    return this.m_DictList[i].Remove(key);
                 }
             }
 
@@ -647,11 +659,11 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public bool Remove(KeyValuePair<TKey, TValue> item)
         {
-            for (int i = 0; i < this.dictList.Length; i++)
+            for (int i = 0; i < this.m_DictList.Length; i++)
             {
-                if (this.dictList[i].ContainsKey(item.Key))
+                if (this.m_DictList[i].ContainsKey(item.Key))
                 {
-                    return this.dictList[i].Remove(item.Key);
+                    return this.m_DictList[i].Remove(item.Key);
                 }
             }
 
@@ -677,9 +689,9 @@ namespace NeoCortexApi.DistributedComputeLib
         /// </summary>
         private int currentIndex = -1;
 
-        public object Current => this.dictList[this.currentDictIndex].ElementAt(currentIndex);
+        public object Current => this.m_DictList[this.currentDictIndex].ElementAt(currentIndex);
 
-        KeyValuePair<TKey, TValue> IEnumerator<KeyValuePair<TKey, TValue>>.Current => this.dictList[this.currentDictIndex].ElementAt(currentIndex);
+        KeyValuePair<TKey, TValue> IEnumerator<KeyValuePair<TKey, TValue>>.Current => this.m_DictList[this.currentDictIndex].ElementAt(currentIndex);
 
         /// <summary>
         /// Gets number of physical nodes in cluster.
@@ -698,11 +710,11 @@ namespace NeoCortexApi.DistributedComputeLib
             if (this.currentIndex == -1)
                 this.currentIndex = 0;
 
-            if (this.currentDictIndex + 1 < this.dictList.Length)
+            if (this.currentDictIndex + 1 < this.m_DictList.Length)
             {
                 this.currentDictIndex++;
 
-                if (this.dictList[this.currentDictIndex].Count > 0 && this.dictList[this.currentDictIndex].Count > this.currentIndex)
+                if (this.m_DictList[this.currentDictIndex].Count > 0 && this.m_DictList[this.currentDictIndex].Count > this.currentIndex)
                     return true;
                 else
                     return false;
@@ -711,7 +723,7 @@ namespace NeoCortexApi.DistributedComputeLib
             {
                 this.currentDictIndex = 0;
 
-                if (this.currentIndex + 1 < this.dictList[this.currentDictIndex].Count)
+                if (this.currentIndex + 1 < this.m_DictList[this.currentDictIndex].Count)
                 {
                     this.currentIndex++;
                     return true;
@@ -730,7 +742,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public void Dispose()
         {
-            this.dictList = null;
+            this.m_DictList = null;
         }
 
 

@@ -235,7 +235,7 @@ namespace NeoCortexApi.DistributedComputeLib
                 }
             }
 
-            value = default(TValue);
+            value = default;
             return false;
         }
 

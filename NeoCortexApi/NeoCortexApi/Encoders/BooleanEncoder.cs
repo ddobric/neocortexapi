@@ -17,7 +17,7 @@ namespace NeoCortexApi.Encoders
             throw new NotImplementedException();
         }
 
-        public override List<T> getBucketValues<T>()
+        public override List<T> GetBucketValues<T>()
         {
             throw new NotImplementedException();
         }

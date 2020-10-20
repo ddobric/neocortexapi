@@ -6,7 +6,7 @@ using System.Text;
 using System.Linq;
 using System.Runtime.InteropServices;
 using NeoCortexApi.Entities;
-
+//TODO cleanup unneeded parameters/local variables in methods
 namespace NeoCortexApi.DistributedComputeLib
 {
     /// <summary>
@@ -51,13 +51,12 @@ namespace NeoCortexApi.DistributedComputeLib
         //    return Enumerable.Range(0, dataLength - otherDataLength + 1);
         //}
 
-        /**
-         * Returns the product of each integer in the specified array.
-         * 
-         * @param dims
-         * @return
-         */
-        public static int product(int[] dims) // No distribution needed.
+        /// <summary>
+        /// Returns the product of each integer in the specified array.
+        /// </summary>
+        /// <param name="dims"></param>
+        /// <returns></returns>
+        public static int Product(int[] dims) // No distribution needed.
         {
             int retVal = 1;
             for (int i = 0; i < dims.Length; i++)
