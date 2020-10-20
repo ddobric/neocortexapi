@@ -18,6 +18,7 @@ namespace UnitTestsProject.EncoderTests
         /// Initializes encoder and invokes Encode method.
         /// </summary>
         [TestMethod]
+        [TestCategory("Prod")]
         [DataRow(2.81)]
         [DataRow(281)]
         [DataRow(42)]
@@ -42,6 +43,7 @@ namespace UnitTestsProject.EncoderTests
         /// Demonstratses how to create an encoder by explicite invoke of initialization.
         /// </summary>
         [TestMethod]
+        [TestCategory("Prod")]
         public void EncoderInitTest1()
         {
             Dictionary<string, object> encoderSettings = getDefaultSettings();
@@ -72,6 +74,7 @@ namespace UnitTestsProject.EncoderTests
         /// Initializes encoder and sets mandatory properties.
         /// </summary>
         [TestMethod]
+        [TestCategory("Prod")]
         public void EncoderInitTest2()
         {
             CortexNetworkContext ctx = new CortexNetworkContext();
@@ -90,6 +93,7 @@ namespace UnitTestsProject.EncoderTests
         /// Demonstratses how to create an encoder and how to set encoder properties by using of context.
         /// </summary>
         [TestMethod]
+        [TestCategory("Prod")]
         public void EncoderInitTest3()
         {
             CortexNetworkContext ctx = new CortexNetworkContext();
@@ -120,6 +124,7 @@ namespace UnitTestsProject.EncoderTests
         /// Demonstratses how to create an encoder by explicite invoke of initialization.
         /// </summary>
         [TestMethod]
+        [TestCategory("Prod")]
         public void EncoderInitTest4()
         {
             Dictionary<string, object> encoderSettings = getDefaultSettings();
@@ -149,6 +154,7 @@ namespace UnitTestsProject.EncoderTests
         /// Demonstratses how to create an encoder and how to set encoder properties by using of context.
         /// </summary>
         [TestMethod]
+        [TestCategory("Prod")]
         public void InitMultiencoder()
         {
             CortexNetworkContext ctx = new CortexNetworkContext();
@@ -179,7 +185,7 @@ namespace UnitTestsProject.EncoderTests
         /// Initializes all encoders.
         /// </summary>
         [TestMethod]
-  
+        [TestCategory("Prod")]
         public void InitializeAllEncodersTest()
         {
             CortexNetworkContext ctx = new CortexNetworkContext();
@@ -249,7 +255,7 @@ namespace UnitTestsProject.EncoderTests
         }
 
         /// <summary>
-        /// Encodes specified value to binary code sequence.
+        /// Sample encoder. It encodes specified value to the binary code sequence.
         /// </summary>
         /// <param name="inputData"></param>
         /// <returns></returns>
@@ -299,7 +305,7 @@ namespace UnitTestsProject.EncoderTests
 
 
     /// <summary>
-    /// Implementation of simple test encoder.
+    /// Implementation of simple test encoder. It demonstrates how to implement encoders.
     /// </summary>
     public class TestEncoder : EncoderBase
     {
