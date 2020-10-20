@@ -20,13 +20,13 @@ namespace NeoCortexApi.Entities
         /// Returns the array describing the dimensionality of the configured array.
         /// </summary>
         /// <returns>the array describing the dimensionality of the configured array.</returns>
-        int[] getDimensions();
+        int[] GetDimensions();
 
         /// <summary>
         /// Returns the configured number of dimensions.
         /// </summary>
         /// <returns>the configured number of dimensions.</returns>
-        int getNumDimensions();
+        int GetNumDimensions();
 
         /// <summary>
         /// Gets element at supplied index.

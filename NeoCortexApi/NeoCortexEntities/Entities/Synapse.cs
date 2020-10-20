@@ -194,9 +194,9 @@ namespace NeoCortexApi.Entities
         /// <inheritdoc/>
         /// </summary>
         /// <returns></returns>
-        public override String ToString()
+        public override string ToString()
         {
-            string srcCell = String.Empty;
+            string srcCell = string.Empty;
             if (SourceCell != null)
             {
                 srcCell = $"[SrcCell: {SourceCell.ToString()}]";
@@ -223,7 +223,7 @@ namespace NeoCortexApi.Entities
          * @see java.lang.Object#equals(java.lang.Object)
          */
         // @Override
-        public override bool Equals(Object obj)
+        public override bool Equals(object obj)
         {
             if (this == obj)
                 return true;

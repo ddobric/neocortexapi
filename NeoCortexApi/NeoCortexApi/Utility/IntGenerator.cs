@@ -83,6 +83,7 @@ namespace NeoCortexApi.Utility
         /**
          * {@inheritDoc}
          */
+        // TODO no abstract method to be inherited
         public bool HasNext() { return m_CurrentValue < upper - 1; }
 
         /// <summary>

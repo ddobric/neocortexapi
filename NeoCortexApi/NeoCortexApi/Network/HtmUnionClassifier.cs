@@ -10,7 +10,7 @@ namespace NeoCortexApi.Network
 {
     public class HtmUnionClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>
     {
-        private Dictionary<TIN, int[]> activeMap = new Dictionary<TIN, int[]>();
+        private Dictionary<TIN, int[]> m_ActiveMap = new Dictionary<TIN, int[]>();
 
         public TIN GetPredictedInputValue(Cell[] predictiveCells)
         {
@@ -21,12 +21,12 @@ namespace NeoCortexApi.Network
             {
                 arr[i] = predictiveCells[i].Index;
             }
-            foreach (var key in activeMap.Keys)
+            foreach (var key in m_ActiveMap.Keys)
             {
-                if (result < predictNextValue(arr, activeMap[key]))
+                if (result < PredictNextValue(arr, m_ActiveMap[key]))
                 {
-                    result = predictNextValue(arr, activeMap[key]);
-                    charOutput = key as String;
+                    result = PredictNextValue(arr, m_ActiveMap[key]);
+                    charOutput = key as string;
                 }
             }
             return (TIN)charOutput;
@@ -86,14 +86,14 @@ namespace NeoCortexApi.Network
                 {
                     cellAsInt[i] = activeCells[i].Index;
                 }
-                if (!activeMap.TryGetValue(input, out unionArray))
+                if (!m_ActiveMap.TryGetValue(input, out unionArray))
                 {
-                    this.activeMap.Add(input, cellAsInt);
+                    this.m_ActiveMap.Add(input, cellAsInt);
                     return; // or whatever you want to do
                 }
                 else
                 {
-                    this.activeMap[input] = GetUnionArr(cellAsInt, activeMap[input]);
+                    this.m_ActiveMap[input] = GetUnionArr(cellAsInt, m_ActiveMap[input]);
                 }
             }
         }
@@ -103,7 +103,7 @@ namespace NeoCortexApi.Network
             return prevCells.Union(currCells).ToArray<int>();
         }
 
-        private int predictNextValue(int[] activeArr, int[] predictedArr)
+        private int PredictNextValue(int[] activeArr, int[] predictedArr)
         {
             var same = predictedArr.Intersect(activeArr);
 
