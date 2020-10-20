@@ -2902,7 +2902,11 @@ namespace NeoCortexApi.Utility
             {
                 for (int j = 0; j < width; j++)
                 {
-                    output[i, j] = input[i * width + j];
+                    // This is required, because some input and output arrays are not alligned to each other.
+                    // For example arraut of 2048 (= 45.35*45.25) will be rounded to height 46 * width 46. In that case input will be 2048 and output 2116.
+                    // In that case  i * width + j will not exist.
+                    if (input.Length > i * width + j)
+                        output[i, j] = input[i * width + j];
                 }
             }
             return output;
@@ -2975,6 +2979,26 @@ namespace NeoCortexApi.Utility
             avgDerivation = sum / (double)list.Length;
 
             return avgDerivation;
+        }
+
+
+        /// <summary>
+        /// Fills up the array with the specified value at the specified index.
+        /// </summary>
+        /// <param name="arr">Array of indexes at which the specified value has to be set.</param>
+        /// <param name="arrSize">The size of resulting array.</param>
+        /// <param name="val">The value to be set at index positions.</param>
+        /// <returns></returns>
+        public static int[] FillAtIndexes(int[] arr, int arrSize, int val)
+        {
+            int[] arrRes = new int[arrSize];
+
+            foreach (var item in arr)
+            {
+                arrRes[item] = val;
+            }
+
+            return arrRes;
         }
     }
 }

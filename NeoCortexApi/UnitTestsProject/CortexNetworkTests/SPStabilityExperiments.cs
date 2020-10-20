@@ -17,6 +17,8 @@ using System.Text;
 using System.IO;
 using System.Threading;
 using System.Net.WebSockets;
+using NeoCortex;
+using System.Drawing;
 
 namespace UnitTestsProject
 {
@@ -446,7 +448,7 @@ namespace UnitTestsProject
             // N of 40 (40= 0.02*2048 columns) active cells required to activate the segment.
             p.Set(KEY.GLOBAL_INHIBITION, true);
             p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
-            //p.Set(KEY.POTENTIAL_RADIUS, inputBits);
+            p.Set(KEY.POTENTIAL_RADIUS, (int)(0.05 * inputBits));
             p.Set(KEY.LOCAL_AREA_DENSITY, -1); // In a case of global inhibition.
             //p.setInhibitionRadius( Automatically set on the columns pace in a case of global inhibition.);
 
@@ -509,12 +511,23 @@ namespace UnitTestsProject
             bool isInStableState = false;
 
             HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem, inputValues.Count * 15, (isStable, numPatterns, actColAvg, seenInputs)=>{
+
+                Assert.IsTrue(numPatterns == inputValues.Count);
+
                 // Event should only be fired when entering the stable state.
                 // Ideal SP should never enter unstable state after stable state.
-                Assert.IsTrue(isStable);
-                Assert.IsTrue(numPatterns == inputValues.Count);
-                isInStableState = true;
-                Debug.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs/numPatterns}");
+                if (isStable == false)
+                {
+                    isInStableState = false;
+                    Debug.WriteLine($"UNSTABLE!: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+                }
+                else
+                {
+                    //Assert.IsTrue(isStable);
+
+                    isInStableState = true;
+                    Debug.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+                }
             });
 
             SpatialPooler sp1 = new SpatialPooler(hpa);
@@ -578,6 +591,9 @@ namespace UnitTestsProject
 
                                 var actCols = activeColumns.OrderBy(c => c).ToArray();
 
+                                if(isInStableState)
+                                    DrawBitmaps(encoder, input, activeColumns, 2048);
+
                                 Debug.WriteLine($" {cycle.ToString("D4")} SP-OUT: [{actCols.Length}/{MathHelpers.CalcArraySimilarity(prevActiveCols[input], actCols)}] - {Helpers.StringifyVector(actCols)}");
                                 sdrWriter.WriteLine($"{cycle.ToString("D4")} [{actCols.Length}/{MathHelpers.CalcArraySimilarity(prevActiveCols[input], actCols)}] - {Helpers.StringifyVector(actCols)}");
                                 sdrPlotlyWriter.WriteLine($"{Helpers.StringifyVector(actCols)}");
@@ -628,6 +644,23 @@ namespace UnitTestsProject
             }
 
             Debug.WriteLine("------------------------------------------------------------------------\n----------------------------------------------------------------------------");
+        }
+
+        private void DrawBitmaps(EncoderBase encoder, double input, int[] activeArrayIndxes, int columnTopology)
+        {
+            var inputVector = encoder.Encode(input);
+            
+            int[] activeArray = ArrayUtils.FillAtIndexes(activeArrayIndxes, columnTopology, 1);
+
+            int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(activeArray, 1 + (int)Math.Sqrt(columnTopology), 1 + (int)Math.Sqrt(columnTopology));
+            
+            twoDimenArray = ArrayUtils.Transpose(twoDimenArray);
+            List<int[,]> arrays = new List<int[,]>();
+            arrays.Add(twoDimenArray);
+            arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray<int>(inputVector, (int)Math.Sqrt(inputVector.Length), (int)Math.Sqrt(inputVector.Length))));
+
+            const int OutImgSize = 1024;
+            NeoCortexUtils.DrawBitmaps(arrays, $"Input_{input}.png", Color.Yellow, Color.Gray, OutImgSize, OutImgSize);
         }
         #endregion
     }
