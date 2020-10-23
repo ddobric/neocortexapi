@@ -593,8 +593,8 @@ namespace UnitTestsProject
 
                                 var actCols = activeColumns.OrderBy(c => c).ToArray();
 
-                                if(isInStableState)
-                                    DrawBitmaps(encoder, input, activeColumns, 2048);
+                                //if(isInStableState)
+                                //    DrawBitmaps(encoder, input, activeColumns, 2048);
 
                                 Debug.WriteLine($" {cycle.ToString("D4")} SP-OUT: [{actCols.Length}/{MathHelpers.CalcArraySimilarity(prevActiveCols[input], actCols)}] - {Helpers.StringifyVector(actCols)}");
                                 sdrWriter.WriteLine($"{cycle.ToString("D4")} [{actCols.Length}/{MathHelpers.CalcArraySimilarity(prevActiveCols[input], actCols)}] - {Helpers.StringifyVector(actCols)}");
