@@ -89,7 +89,7 @@ namespace NeoCortexApi
             // Here we track the number of active columns for every cycle for every input.
             // We want that this number for every input is approximately the same.
             if (m_NumOfActiveColsForInput.ContainsKey(inpHash))
-                ArrayUtils.AddToHistoryList(m_NumOfActiveColsForInput[inpHash], m_MaxPreviousElements, output.Count(c => c == 1));
+                ArrayUtils.PushToInterval(m_NumOfActiveColsForInput[inpHash], m_MaxPreviousElements, output.Count(c => c == 1));
 
             //
             // If the pattern appears for the first time, add it to dictionary of seen patterns.

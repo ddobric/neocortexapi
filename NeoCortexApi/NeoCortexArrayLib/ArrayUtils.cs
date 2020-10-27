@@ -2899,7 +2899,7 @@ namespace NeoCortexApi.Utility
         /// <param name="list">The list.</param>
         /// <param name="maxNumOfElements">Maximum allowed number of elements.</param>
         /// <param name="newElement">The new value.</param>
-        public static int[] AddToHistoryList(int[] list, int maxNumOfElements, int newElement)
+        public static int[] PushToInterval(int[] list, int maxNumOfElements, int newElement)
         {
             //
             // Shift all elements.
