@@ -1486,7 +1486,7 @@ namespace NeoCortexApi
                 ArrayUtils.FillArray(oneMinusMaxBoostFact, 1 - c.HtmConfig.MaxBoost);
                 boostInterim = ArrayUtils.Divide(oneMinusMaxBoostFact, minActiveDutyCycles, 0, 0);
                 boostInterim = ArrayUtils.Multiply(boostInterim, activeDutyCycles, 0, 0);
-                boostInterim = ArrayUtils.D_add(boostInterim, c.HtmConfig.MaxBoost);
+                boostInterim = ArrayUtils.AddAmount(boostInterim, c.HtmConfig.MaxBoost);
             }
 
             List<int> filteredIndexes = new List<int>();

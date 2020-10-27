@@ -516,7 +516,7 @@ namespace NeoCortexApi.Utility
         /// <param name="arr"></param>
         /// <param name="amount"></param>
         /// <returns></returns>
-        public static double[] D_add(double[] arr, double amount)
+        public static double[] AddAmount(double[] arr, double amount)
         {
             for (int i = 0; i < arr.Length; i++)
             {
