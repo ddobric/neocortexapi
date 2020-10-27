@@ -1501,11 +1501,6 @@ namespace NeoCortexApi
 
             ArrayUtils.SetIndexesTo(boostInterim, filteredIndexes.ToArray(), 1.0d);
 
-            var bostIndexes = ArrayUtils.IndexWhere(boostInterim, x => x > 1.0);
-
-            //if (bostIndexes.Length > 0)
-            //    Debug.WriteLine("**New boost factors:" + Helpers.StringifyVector(bostIndexes.OrderBy(i => i).ToArray()));
-
             c.BoostFactors = boostInterim;
         }
 
