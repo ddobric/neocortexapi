@@ -676,11 +676,6 @@ namespace NeoCortexApi
             c.HtmConfig.OverlapDutyCycles = UpdateDutyCyclesHelper(c, c.HtmConfig.OverlapDutyCycles, overlapArray, period);
 
             c.HtmConfig.ActiveDutyCycles = UpdateDutyCyclesHelper(c, c.HtmConfig.ActiveDutyCycles, activeArray, period);
-
-            //var strActiveArray = Helpers.StringifyVector(activeArray);
-            //Debug.WriteLine("Active Array:" + strActiveArray);
-            //var strOverlapArray = Helpers.StringifyVector(overlapArray);
-            //Debug.WriteLine("Overlap Array:" + strOverlapArray);
         }
 
         // TODO equation documentation
