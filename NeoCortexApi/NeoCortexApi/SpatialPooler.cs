@@ -871,10 +871,8 @@ namespace NeoCortexApi
             if (c.HtmConfig.IsBumpUpWeakColumnsDisabled)
                 return;
 
-            // This condition is wrong. It brings teh SP in scillation state.
             var weakColumns = c.HtmConfig.Memory.Get1DIndexes().Where(i => c.HtmConfig.OverlapDutyCycles[i] < c.HtmConfig.MinOverlapDutyCycles[i]).ToArray();
-            //var weakColumnsStr = Helpers.StringifyVector(weakColumns);
-            //Debug.WriteLine("weak Columns:" + weakColumnsStr);
+            
             for (int i = 0; i < weakColumns.Length; i++)
             {
                 Column col = c.GetColumn(weakColumns[i]);
@@ -885,8 +883,6 @@ namespace NeoCortexApi
                 int[] indexes = pool.GetSparsePotential();
 
                 UpdatePermanencesForColumnSparse(c, perm, col, indexes, true);
-                //var permStr = Helpers.StringifyVector(perm);
-                //Debug.WriteLine("pearm after bump up weak column:" + permStr);
             }
         }
 
