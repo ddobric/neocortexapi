@@ -469,7 +469,7 @@ namespace UnitTestsProject
             // not stable with 2048 cols 25 cells per column and 0.02 * numColumns synapses on segment.
             // Stable with permanence decrement 0.25/ increment 0.15 and ActivationThreshold 25.
             // With increment=0.2 and decrement 0.3 has taken 15 min and didn't entered the stable state.
-            //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 });
+            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 });
 
             // Active Experiment
             //List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 3.0, 2.0, 1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 0.0, 1.0, 2.0, 3.0, 3.0, 2.0, 1.0, 0.0, 1.0});
@@ -498,7 +498,7 @@ namespace UnitTestsProject
 
             // C-0, D-1, E-2, F-3, G-4, H-5
             // https://www.bethsnotesplus.com/2013/08/twinkle-twinkle-little-star.html
-            var inputValues = new List<double>( new double[] { 0.0, 0.0, 4.0, 4.0, 5.0, 5.0, 4.0, 3.0, 3.0, 2.0, 2.0, 1.0, 1.0, 0.0 });
+            //var inputValues = new List<double>( new double[] { 0.0, 0.0, 4.0, 4.0, 5.0, 5.0, 4.0, 3.0, 3.0, 2.0, 2.0, 1.0, 1.0, 0.0 });
 
             // All elements same.
             //var inputValues = new List<double>(new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 });
@@ -547,7 +547,7 @@ namespace UnitTestsProject
 
             TemporalMemory tm1 = new TemporalMemory();
 
-            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, numInputs * 15, (isStable, numPatterns, actColAvg, seenInputs) =>
+            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, numInputs * 55, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                 if (isStable)
                     // Event should be fired when entering the stable state.
