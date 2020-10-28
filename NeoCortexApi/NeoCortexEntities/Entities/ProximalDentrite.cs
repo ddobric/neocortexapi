@@ -34,8 +34,7 @@ namespace NeoCortexApi.Entities
 
 
         /// <summary>
-        /// Array of indicies of connected inputs. Defines RF.
-        /// Sometimes also called 'Potential Pool'.
+        /// Array of indicies of connected inputs. Defines RF. Sometimes also called 'Potential Pool'.
         /// </summary>
         public int[] ConnectedInputs
         {
@@ -111,11 +110,9 @@ namespace NeoCortexApi.Entities
         //}
 
         /// <summary>
-        /// Sets the permanences for each {@link Synapse} specified by the indexes
-        /// passed in which identify the input vector indexes associated with the
-        /// {@code Synapse}. The permanences passed in are understood to be in "sparse"
-        /// format and therefore require the int array identify their corresponding
-        /// indexes.
+        /// Sets the permanences for each {@link Synapse} specified by the indexes passed in which identify the input vector indexes associated with the
+        /// <see cref="Synapse"/>. The permanences passed in are understood to be in "sparse" format and therefore require the int array identify their 
+        /// corresponding indexes.
         /// </summary>
         /// <param name="connectedCounts"></param>
         /// <param name="htmConfig"></param>
