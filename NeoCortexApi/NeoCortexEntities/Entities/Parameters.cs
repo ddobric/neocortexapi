@@ -61,7 +61,8 @@ namespace NeoCortexApi.Entities
             defaultParams.Add(KEY.SEED, 42);
             defaultParams.Add(KEY.RANDOM, GetDefaultRandomGen((int)defaultParams[KEY.SEED]));// new MersenneTwister((int) defaultParams.get(KEY.SEED)));
 
-            /////////// Temporal Memory Parameters ///////////
+            #region Temporal Memory Parameters
+
             MyDictionary<string, Object> defaultTemporalParams = new MyDictionary<string, object>();
             defaultTemporalParams.Add(KEY.COLUMN_DIMENSIONS, new int[] { 2048 });
             defaultTemporalParams.Add(KEY.CELLS_PER_COLUMN, 32);
@@ -83,7 +84,10 @@ namespace NeoCortexApi.Entities
             //DEFAULTS_TEMPORAL = Collections.unmodifiableMap(defaultTemporalParams);
             //defaultParams.putAll(DEFAULTS_TEMPORAL);
 
-            //////////// Spatial Pooler Parameters ///////////
+            #endregion
+
+            #region Spatial Pooler Parameters
+
             MyDictionary<string, Object> defaultSpatialParams = new MyDictionary<string, object>();
             defaultSpatialParams.Add(KEY.INPUT_DIMENSIONS, new int[] { 100 });
             defaultSpatialParams.Add(KEY.POTENTIAL_RADIUS, 15);
@@ -110,7 +114,10 @@ namespace NeoCortexApi.Entities
             //DEFAULTS_SPATIAL = Collections.unmodifiableMap(defaultSpatialParams);
             //defaultParams.putAll(DEFAULTS_SPATIAL);
 
-            ///////////  Encoder Parameters ///////////
+            #endregion
+
+            #region Encoder Parameters
+
             MyDictionary<string, Object> defaultEncoderParams = new MyDictionary<string, object>();
             defaultEncoderParams.Add(KEY.N, 500);
             defaultEncoderParams.Add(KEY.W, 21);
@@ -133,6 +140,8 @@ namespace NeoCortexApi.Entities
             add(DEFAULTS_ALL, defaultEncoderParams);
             //DEFAULTS_ALL = 
             //DEFAULTS_ALL = Collections.unmodifiableMap(defaultParams);
+
+            #endregion
         }
 
 
