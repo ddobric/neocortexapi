@@ -1,6 +1,9 @@
 # Getting started
 
-### Example for intialize Encoder
+### HTM Encoders
+An encoder is the component that converts some value to a sparse distributed representation (SDR). Depending on the encoder, the value can be anything (i.E.: scaler value, time, day in a week, geo-location etc.). The SDR is typically an array in '1' and '0'. Currentlly , the SDR is defined in C# as ``` int[]```csharp.
+
+Following example demonstrates how to encode scalar values from 0-367.
 
 ```csharp
 [DataRow(1, new int[] { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 })]
@@ -22,18 +25,23 @@ public void SeasonEncoderTest(int input, int[] expectedResult)
             { "Name", "season"},
             { "ClipInput", true},
         });
-    //for (int i = 1; i < 367; i++)
-    //{
-    var result = encoder.Encode(input);
-    Debug.WriteLine(input);
-    Debug.WriteLine(NeoCortexApi.Helpers.StringifyVector(result));
-    Debug.WriteLine(NeoCortexApi.Helpers.StringifyVector(expectedResult));
-    //}
+        
+    for (int i = 1; i < 367; i++)
+    {
+        var result = encoder.Encode(input);
+        Debug.WriteLine(input);
+        Debug.WriteLine(NeoCortexApi.Helpers.StringifyVector(result));
+        Debug.WriteLine(NeoCortexApi.Helpers.StringifyVector(expectedResult));
+    }
+    
     Assert.IsTrue(expectedResult.SequenceEqual(result));
 }
 ```
 
-### Example of initialize Spatial Pooler
+### Working with the Spatial Pooler
+The Spatial Pooler is an algorithm inside of HTM that is capable of learning of spatial patterns. The Spatial Pooler typically gets array of bits as an input and converts it into the SDR. Input of the Spatial Pooler is usually the array converted by some encoder or bits of an image.
+
+See also: https://numenta.com/neuroscience-research/research-publications/papers/htm-spatial-pooler-neocortical-algorithm-for-online-sparse-distributed-coding/
 
 ```csharp
 /// <summary>
