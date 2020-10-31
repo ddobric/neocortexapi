@@ -155,7 +155,9 @@ namespace NeoCortexApi
 
                     if (isStable)
                     {
-                        // THIS SHOULD NEVER HAPPEN! MEANS FROM STABLE TO INSTABLE!
+                        // THIS SHOULD NOT HAPPEN! MEANS FROM STABLE TO INSTABLE!
+                        // Experiments show, that if this happen, then it happens soon after entering
+                        // the stable state. After this happen, the SP will soon enter the next stable state, that keeps stable.
                         isStable = false;
                         this.onStabilityStatusChanged(false, inOutMap.Keys.Count, avgDerivation, cycle);
                     }
@@ -343,6 +345,11 @@ namespace NeoCortexApi
             foreach (var item in input)
             {
                 buff.AddRange(BitConverter.GetBytes(item));
+                //byte bt = 0x00;
+                //if (item == 1)
+                //    bt = 0x01;
+
+                //buff.Add(bt);
             }
 
             using (SHA256 hashAlgorithm = SHA256.Create())
