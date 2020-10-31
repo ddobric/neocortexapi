@@ -99,5 +99,22 @@ namespace NeoCortexApi.Entities
         {
             return EqualityComparer<TKey>.Default.Equals(this.Key, other.Key) && EqualityComparer<TValue>.Default.Equals(this.Value, other.Value);
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Pair<TKey, TValue> pair)
+            {
+                return this == pair;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 }

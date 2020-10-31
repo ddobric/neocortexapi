@@ -61,7 +61,8 @@ namespace NeoCortexApi.Entities
             defaultParams.Add(KEY.SEED, 42);
             defaultParams.Add(KEY.RANDOM, GetDefaultRandomGen((int)defaultParams[KEY.SEED]));// new MersenneTwister((int) defaultParams.get(KEY.SEED)));
 
-            /////////// Temporal Memory Parameters ///////////
+            #region Temporal Memory Parameters
+
             MyDictionary<string, Object> defaultTemporalParams = new MyDictionary<string, object>();
             defaultTemporalParams.Add(KEY.COLUMN_DIMENSIONS, new int[] { 2048 });
             defaultTemporalParams.Add(KEY.CELLS_PER_COLUMN, 32);
@@ -83,7 +84,10 @@ namespace NeoCortexApi.Entities
             //DEFAULTS_TEMPORAL = Collections.unmodifiableMap(defaultTemporalParams);
             //defaultParams.putAll(DEFAULTS_TEMPORAL);
 
-            //////////// Spatial Pooler Parameters ///////////
+            #endregion
+
+            #region Spatial Pooler Parameters
+
             MyDictionary<string, Object> defaultSpatialParams = new MyDictionary<string, object>();
             defaultSpatialParams.Add(KEY.INPUT_DIMENSIONS, new int[] { 100 });
             defaultSpatialParams.Add(KEY.POTENTIAL_RADIUS, 15);
@@ -110,7 +114,10 @@ namespace NeoCortexApi.Entities
             //DEFAULTS_SPATIAL = Collections.unmodifiableMap(defaultSpatialParams);
             //defaultParams.putAll(DEFAULTS_SPATIAL);
 
-            ///////////  Encoder Parameters ///////////
+            #endregion
+
+            #region Encoder Parameters
+
             MyDictionary<string, Object> defaultEncoderParams = new MyDictionary<string, object>();
             defaultEncoderParams.Add(KEY.N, 500);
             defaultEncoderParams.Add(KEY.W, 21);
@@ -133,6 +140,8 @@ namespace NeoCortexApi.Entities
             add(DEFAULTS_ALL, defaultEncoderParams);
             //DEFAULTS_ALL = 
             //DEFAULTS_ALL = Collections.unmodifiableMap(defaultParams);
+
+            #endregion
         }
 
 
@@ -182,60 +191,57 @@ namespace NeoCortexApi.Entities
             }
         }
 
-        /**
- * Returns the size of the internal parameter storage.
- * @return
- */
+        /// <summary>
+        /// Returns the size of the internal parameter storage.
+        /// </summary>
+        /// <returns></returns>
         public int size()
         {
             return paramMap.Count;
         }
 
-        /**
- * Factory method. Return global {@link Parameters} object with default values
- *
- * @return {@link Parameters} object
- */
+        public int MyProperty { get; set; }
+        /// <summary>
+        /// Factory method. Return global <see cref="Parameters"/> object with default values
+        /// </summary>
+        /// <returns><see cref="Parameters"/></returns>
         public static Parameters getAllDefaultParameters()
         {
             return getParameters(DEFAULTS_ALL);
         }
 
-        /**
-         * Factory method. Return temporal {@link Parameters} object with default values
-         *
-         * @return {@link Parameters} object
-         */
+        /// <summary>
+        /// Factory method. Return temporal <see cref="Parameters"/> object with default values
+        /// </summary>
+        /// <returns><see cref="Parameters"/> object</returns>
         public static Parameters getTemporalDefaultParameters()
         {
             return getParameters(DEFAULTS_TEMPORAL);
         }
 
-
-        /**
-         * Factory method. Return spatial {@link Parameters} object with default values
-         *
-         * @return {@link Parameters} object
-         */
+        /// <summary>
+        /// Factory method. Return spatial <see cref="Parameters"/> object with default values
+        /// </summary>
+        /// <returns><see cref="Parameters"/></returns>
         public static Parameters getSpatialDefaultParameters()
         {
             return getParameters(DEFAULTS_SPATIAL);
         }
 
-        /**
-         * Factory method. Return Encoder {@link Parameters} object with default values
-         * @return
-         */
+        /// <summary>
+        /// Factory method. Return Encoder <see cref="Parameters"/> object with default values
+        /// </summary>
+        /// <returns></returns>
         public static Parameters getEncoderDefaultParameters()
         {
             return getParameters(DEFAULTS_ENCODER);
         }
-        /**
-         * Called internally to populate a {@link Parameters} object with the keys
-         * and values specified in the passed in map.
-         *
-         * @return {@link Parameters} object
-         */
+
+        /// <summary>
+        /// Called internally to populate a <see cref="Parameters"/> object with the keys and values specified in the passed in map.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <returns><see cref="Parameters"/></returns>
         private static Parameters getParameters(Dictionary<string, Object> map)
         {
             Parameters result = new Parameters();
@@ -246,14 +252,10 @@ namespace NeoCortexApi.Entities
             return result;
         }
 
-
-
-        /**
-         * Sets the fields specified by this {@code Parameters} on the specified
-         * {@link Connections} object.
-         *
-         * @param cn
-         */
+        /// <summary>
+        /// Sets the fields specified by this <see cref="Parameters"/> on the specified <see cref="Connections"/> object.
+        /// </summary>
+        /// <param name="cn"></param>
         public void apply(Object cn)
         {
             var methods = cn.GetType().GetMethods(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
@@ -918,192 +920,158 @@ namespace NeoCortexApi.Entities
 
         //TODO I'm not sure we need maintain implicit setters below. Kinda contradict unified access with KEYs
 
-        /**
-         * Returns the seeded random number generator.
-         *
-         * @param r the generator to use.
-         */
+        /// <summary>
+        /// Returns the seeded random number generator.
+        /// </summary>
+        /// <param name="r"></param>
         public void setRandom(Random r)
         {
             paramMap.Add(KEY.RANDOM, r);
         }
 
-        /**
-         * Sets the number of {@link Column}.
-         *
-         * @param columnDimensions
-         */
+        /// <summary>
+        /// Sets the number of <see cref="Column"/>.
+        /// </summary>
+        /// <param name="columnDimensions"></param>
         public void setColumnDimensions(int[] columnDimensions)
         {
             paramMap.Add(KEY.COLUMN_DIMENSIONS, columnDimensions);
         }
 
-        ///**
-        // * Sets the number of {@link Cell}s per {@link Column}
-        // *
-        // * @param cellsPerColumn
-        // */
+        /// <summary>
+        /// Sets the number of <see cref="Cell"/>s per <see cref="Column"/>
+        /// </summary>
+        /// <param name="cellsPerColumn"></param>
         public void setCellsPerColumn(int cellsPerColumn)
         {
             paramMap.Add(KEY.CELLS_PER_COLUMN, cellsPerColumn);
         }
 
-        ///**
-        // * <p>
-        // * Sets the activation threshold.
-        // * </p>
-        // * If the number of active connected synapses on a segment
-        // * is at least this threshold, the segment is said to be active.
-        // *
-        // * @param activationThreshold
-        // */
+        /// <summary>
+        /// Sets the activation threshold.<br/>
+        /// If the number of active connected synapses on a segment is at least this threshold, the segment is said to be active.
+        /// </summary>
+        /// <param name="activationThreshold"></param>
         public void setActivationThreshold(int activationThreshold)
         {
             paramMap.Add(KEY.ACTIVATION_THRESHOLD, activationThreshold);
         }
 
-        ///**
-        // * Radius around cell from which it can
-        // * sample to form distal dendrite connections.
-        // *
-        // * @param learningRadius
-        // */
+        /// <summary>
+        /// Radius around cell from which it can sample to form distal dendrite connections.
+        /// </summary>
+        /// <param name="learningRadius"></param>
         public void setLearningRadius(int learningRadius)
         {
             paramMap.Add(KEY.LEARNING_RADIUS, learningRadius);
         }
 
-        ///**
-        // * If the number of synapses active on a segment is at least this
-        // * threshold, it is selected as the best matching
-        // * cell in a bursting column.
-        // *
-        // * @param minThreshold
-        // */
+        /// <summary>
+        /// If the number of synapses active on a segment is at least this threshold, it is selected as the best matching cell in a bursting column.
+        /// </summary>
+        /// <param name="minThreshold"></param>
         public void setMinThreshold(int minThreshold)
         {
             paramMap.Add(KEY.MIN_THRESHOLD, minThreshold);
         }
 
-        ///**
-        // * The maximum number of synapses added to a segment during learning.
-        // *
-        // * @param maxSynapsesPerSegment
-        // */
+        /// <summary>
+        /// The maximum number of synapses added to a segment during learning.
+        /// </summary>
+        /// <param name="maxSynapsesPerSegment"></param>
         public void setMaxSynapsesPerSegment(int maxSynapsesPerSegment)
         {
             paramMap.Add(KEY.MAX_SYNAPSES_PER_SEGMENT, maxSynapsesPerSegment);
         }
 
-        ///**
-        // * The maximum number of {@link Segment}s a {@link Cell} can have.
-        // *
-        // * @param maxSegmentsPerCell
-        // */
+        /// <summary>
+        /// The maximum number of <see cref="Segment"/>s a <see cref="Cell"/> can have.
+        /// </summary>
+        /// <param name="maxSegmentsPerCell"></param>
         public void setMaxSegmentsPerCell(int maxSegmentsPerCell)
         {
             paramMap.Add(KEY.MAX_SEGMENTS_PER_CELL, maxSegmentsPerCell);
         }
 
-        ///**
-        // * The maximum number of new synapses per segment.
-        // * @param count
-        // */
+        /// <summary>
+        /// The maximum number of new synapses per segment.
+        /// </summary>
+        /// <param name="count"></param>
         public void setMaxNewSynapsesPerSegmentCount(int count)
         {
             paramMap.Add(KEY.MAX_NEW_SYNAPSE_COUNT, count);
         }
 
-        ///**
-        // * Seed for random number generator
-        // *
-        // * @param seed
-        // */
+        /// <summary>
+        /// Seed for random number generator 
+        /// </summary>
+        /// <param name="seed"></param>
         public void setSeed(int seed)
         {
             paramMap.Add(KEY.SEED, seed);
         }
 
-        ///**
-        // * Initial permanence of a new synapse
-        // *
-        // * @param   initialPermanence
-        // */
+        /// <summary>
+        /// Initial permanence of a new synapse
+        /// </summary>
+        /// <param name="initialPermanence"></param>
         public void setInitialPermanence(double initialPermanence)
         {
             paramMap.Add(KEY.INITIAL_PERMANENCE, initialPermanence);
         }
 
-        ///**
-        // * If the permanence value for a synapse
-        // * is greater than this value, it is said
-        // * to be connected.
-        // *
-        // * @param connectedPermanence
-        // */
+        /// <summary>
+        /// If the permanence value for a synapse is greater than this value, it is said to be connected.
+        /// </summary>
+        /// <param name="connectedPermanence"></param>
         public void setConnectedPermanence(double connectedPermanence)
         {
             paramMap.Add(KEY.CONNECTED_PERMANENCE, connectedPermanence);
         }
 
-        ///**
-        // * Amount by which permanences of synapses
-        // * are incremented during learning.
-        // *
-        // * @param permanenceIncrement
-        // */
+        /// <summary>
+        /// Amount by which permanences of synapses are incremented during learning.
+        /// </summary>
+        /// <param name="permanenceIncrement"></param>
         public void setPermanenceIncrement(double permanenceIncrement)
         {
             paramMap.Add(KEY.PERMANENCE_INCREMENT, permanenceIncrement);
         }
 
-        ///**
-        // * Amount by which permanences of synapses
-        // * are decremented during learning.
-        // *
-        // * @param permanenceDecrement
-        // */
+        /// <summary>
+        /// Amount by which permanences of synapses are decremented during learning.
+        /// </summary>
+        /// <param name="permanenceDecrement"></param>
         public void setPermanenceDecrement(double permanenceDecrement)
         {
             paramMap.Add(KEY.PERMANENCE_DECREMENT, permanenceDecrement);
         }
 
-        ////////////////////////////// SPACIAL POOLER PARAMS //////////////////////////////////
+        #region SPATIAL POOLER PARAMS
 
-        /**
-         * A list representing the dimensions of the input
-         * vector. Format is [height, width, depth, ...], where
-         * each value represents the size of the dimension. For a
-         * topology of one dimension with 100 inputs use 100, or
-         * [100]. For a two dimensional topology of 10x5 use
-         * [10,5].
-         *
-         * @param inputDimensions
-         */
+        /// <summary>
+        /// A list representing the dimensions of the input vector. Format is [height, width, depth, ...], where each value represents the size of
+        /// the dimension. For a topology of one dimension with 100 inputs use 100, or [100]. For a two dimensional topology of 10x5 use [10,5].
+        /// </summary>
+        /// <param name="inputDimensions"></param>
         public void setInputDimensions(int[] inputDimensions)
         {
             paramMap.Add(KEY.INPUT_DIMENSIONS, inputDimensions);
         }
 
-        ///**
-        // * This parameter determines the extent of the input
-        // * that each column can potentially be connected to.
-        // * This can be thought of as the input bits that
-        // * are visible to each column, or a 'receptiveField' of
-        // * the field of vision. A large enough value will result
-        // * in 'global coverage', meaning that each column
-        // * can potentially be connected to every input bit. This
-        // * parameter defines a square (or hyper square) area: a
-        // * column will have a max square potential pool with
-        // * sides of length 2 * potentialRadius + 1.
-        // * 
-        // * <b>WARNING:</b> potentialRadius **must** be set to 
-        // * the inputWidth if using "globalInhibition" and if not 
-        // * using the Network API (which sets this automatically) 
-        // *
-        // *
-        // * @param potentialRadius
-        // */
+        /// <summary>
+        /// This parameter determines the extent of the input that each column can potentially be connected to. This can be thought of as 
+        /// the input bits that are visible to each column, or a 'receptiveField' of the field of vision. A large enough value will result in 
+        /// 'global coverage', meaning that each column can potentially be connected to every input bit. This parameter defines a square 
+        /// (or hyper square) area: a column will have a max square potential pool with sides of length 2 * potentialRadius + 1.
+        /// </summary>
+        /// <param name="potentialRadius"></param>
+        /// <remarks>
+        /// <b>WARNING:</b> potentialRadius <i>must</i> be set to 
+        /// the inputWidth if using "globalInhibition" and if not 
+        /// using the Network API (which sets this automatically) 
+        /// 
+        /// </remarks>
         public void setPotentialRadius(int potentialRadius)
         {
             if (!paramMap.ContainsKey(KEY.POTENTIAL_RADIUS))
@@ -1112,239 +1080,163 @@ namespace NeoCortexApi.Entities
                 paramMap[KEY.POTENTIAL_RADIUS] = potentialRadius;
         }
 
-        ///**
-        // * The inhibition radius determines the size of a column's local
-        // * neighborhood. of a column. A cortical column must overcome the overlap
-        // * score of columns in his neighborhood in order to become actives. This
-        // * radius is updated every learning round. It grows and shrinks with the
-        // * average number of connected synapses per column.
-        // *
-        // * @param inhibitionRadius the local group size
-        // */
+        /// <summary>
+        /// The inhibition radius determines the size of a column's local neighborhood. of a column. A cortical column must overcome the overlap
+        /// score of columns in his neighborhood in order to become actives. This radius is updated every learning round. It grows and shrinks with the
+        /// average number of connected synapses per column.
+        /// </summary>
+        /// <param name="inhibitionRadius">the local group size</param>
         public void setInhibitionRadius(int inhibitionRadius)
         {
             paramMap.Add(KEY.INHIBITION_RADIUS, inhibitionRadius);
         }
 
-        ///**
-        // * The percent of the inputs, within a column's
-        // * potential radius, that a column can be connected to.
-        // * If set to 1, the column will be connected to every
-        // * input within its potential radius. This parameter is
-        // * used to give each column a unique potential pool when
-        // * a large potentialRadius causes overlap between the
-        // * columns. At initialization time we choose
-        // * ((2*potentialRadius + 1)^(# inputDimensions) *
-        // * potentialPct) input bits to comprise the column's
-        // * potential pool.
-        // *
-        // * @param potentialPct
-        // */
+        /// <summary>
+        /// The percent of the inputs, within a column's potential radius, that a column can be connected to. If set to 1, the column will be connected
+        /// to every input within its potential radius. This parameter is used to give each column a unique potential pool when a large potentialRadius
+        /// causes overlap between the columns. At initialization time we choose ((2*potentialRadius + 1)^(# inputDimensions) * potentialPct) input bits 
+        /// to comprise the column's potential pool.
+        /// </summary>
+        /// <param name="potentialPct"></param>
         public void setPotentialPct(double potentialPct)
         {
             paramMap.Add(KEY.POTENTIAL_PCT, potentialPct);
         }
 
-        ///**
-        // * If true, then during inhibition phase the winning
-        // * columns are selected as the most active columns from
-        // * the region as a whole. Otherwise, the winning columns
-        // * are selected with respect to their local
-        // * neighborhoods. Using global inhibition boosts
-        // * performance x60.
-        // *
-        // * @param globalInhibition
-        // */
+        /// <summary>
+        /// If true, then during inhibition phase the winning columns are selected as the most active columns from the region as a whole. 
+        /// Otherwise, the winning columns are selected with respect to their local neighborhoods. Using global inhibition boosts performance x60.
+        /// </summary>
+        /// <param name="globalInhibition"></param>
         public void setGlobalInhibition(bool globalInhibition)
         {
             paramMap.Add(KEY.GLOBAL_INHIBITION, globalInhibition);
         }
 
-        ///**
-        // * The desired density of active columns within a local
-        // * inhibition area (the size of which is set by the
-        // * internally calculated inhibitionRadius, which is in
-        // * turn determined from the average size of the
-        // * connected potential pools of all columns). The
-        // * inhibition logic will insure that at most N columns
-        // * remain ON within a local inhibition area, where N =
-        // * localAreaDensity * (total number of columns in
-        // * inhibition area).
-        // *
-        // * @param localAreaDensity
-        // */
+        /// <summary>
+        /// The desired density of active columns within a local inhibition area (the size of which is set by the internally calculated inhibitionRadius,
+        /// which is in turn determined from the average size of the connected potential pools of all columns). The inhibition logic will insure that 
+        /// at most N columns remain ON within a local inhibition area, where N = localAreaDensity * (total number of columns in inhibition area).
+        /// </summary>
+        /// <param name="localAreaDensity"></param>
         public void setLocalAreaDensity(double localAreaDensity)
         {
             paramMap.Add(KEY.LOCAL_AREA_DENSITY, localAreaDensity);
         }
 
-        ///**
-        // * An alternate way to control the density of the active
-        // * columns. If numActivePerInhArea is specified then
-        // * localAreaDensity must be less than 0, and vice versa.
-        // * When using numActivePerInhArea, the inhibition logic
-        // * will insure that at most 'numActivePerInhArea'
-        // * columns remain ON within a local inhibition area (the
-        // * size of which is set by the internally calculated
-        // * inhibitionRadius, which is in turn determined from
-        // * the average size of the connected receptive fields of
-        // * all columns). When using this method, as columns
-        // * learn and grow their effective receptive fields, the
-        // * inhibitionRadius will grow, and hence the net density
-        // * of the active columns will *decrease*. This is in
-        // * contrast to the localAreaDensity method, which keeps
-        // * the density of active columns the same regardless of
-        // * the size of their receptive fields.
-        // *
-        // * @param numActiveColumnsPerInhArea
-        // */
+        /// <summary>
+        /// An alternate way to control the density of the active columns. If numActivePerInhArea is specified then localAreaDensity must be less than 0,
+        /// and vice versa. When using numActivePerInhArea, the inhibition logic will insure that at most 'numActivePerInhArea' columns remain ON within
+        /// a local inhibition area (the size of which is set by the internally calculated inhibitionRadius, which is in turn determined from 
+        /// the average size of the connected receptive fields of all columns). When using this method, as columns learn and grow their effective receptive
+        /// fields, the inhibitionRadius will grow, and hence the net density of the active columns will *decrease*. This is in contrast to 
+        /// the localAreaDensity method, which keeps the density of active columns the same regardless of the size of their receptive fields.
+        /// </summary>
+        /// <param name="numActiveColumnsPerInhArea"></param>
         public void setNumActiveColumnsPerInhArea(double numActiveColumnsPerInhArea)
         {
             paramMap.Add(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, numActiveColumnsPerInhArea);
         }
 
-        ///**
-        // * This is a number specifying the minimum number of
-        // * synapses that must be on in order for a columns to
-        // * turn ON. The purpose of this is to prevent noise
-        // * input from activating columns. Specified as a percent
-        // * of a fully grown synapse.
-        // *
-        // * @param stimulusThreshold
-        // */
+        /// <summary>
+        /// This is a number specifying the minimum number of synapses that must be on in order for a columns to turn ON. The purpose of this is 
+        /// to prevent noise input from activating columns. Specified as a percent of a fully grown synapse.
+        /// </summary>
+        /// <param name="stimulusThreshold"></param>
         public void setStimulusThreshold(double stimulusThreshold)
         {
             paramMap.Add(KEY.STIMULUS_THRESHOLD, stimulusThreshold);
         }
 
-        ///**
-        // * The amount by which an inactive synapse is
-        // * decremented in each round. Specified as a percent of
-        // * a fully grown synapse.
-        // *
-        // * @param synPermInactiveDec
-        // */
+        /// <summary>
+        /// The amount by which an inactive synapse is decremented in each round. Specified as a percent of a fully grown synapse.
+        /// </summary>
+        /// <param name="synPermInactiveDec"></param>
         public void setSynPermInactiveDec(double synPermInactiveDec)
         {
             paramMap.Add(KEY.SYN_PERM_INACTIVE_DEC, synPermInactiveDec);
         }
 
-        ///**
-        // * The amount by which an active synapse is incremented
-        // * in each round. Specified as a percent of a
-        // * fully grown synapse.
-        // *
-        // * @param synPermActiveInc
-        // */
+        /// <summary>
+        /// The amount by which an active synapse is incremented in each round. Specified as a percent of a fully grown synapse.
+        /// </summary>
+        /// <param name="synPermActiveInc"></param>
         public void setSynPermActiveInc(double synPermActiveInc)
         {
             paramMap.Add(KEY.SYN_PERM_ACTIVE_INC, synPermActiveInc);
         }
 
-        ///**
-        // * The default connected threshold. Any synapse whose
-        // * permanence value is above the connected threshold is
-        // * a "connected synapse", meaning it can contribute to
-        // * the cell's firing.
-        // *
-        // * @param synPermConnected
-        // */
+        /// <summary>
+        /// The default connected threshold. Any synapse whose permanence value is above the connected threshold is a "connected synapse", 
+        /// meaning it can contribute to the cell's firing.
+        /// </summary>
+        /// <param name="synPermConnected"></param>
         public void setSynPermConnected(double synPermConnected)
         {
             paramMap.Add(KEY.SYN_PERM_CONNECTED, synPermConnected);
         }
 
-        ///**
-        // * Sets the increment of synapse permanences below the stimulus
-        // * threshold
-        // *
-        // * @param synPermBelowStimulusInc
-        // */
+        /// <summary>
+        /// Sets the increment of synapse permanences below the stimulus threshold
+        /// </summary>
+        /// <param name="synPermBelowStimulusInc"></param>
         public void setSynPermBelowStimulusInc(double synPermBelowStimulusInc)
         {
             paramMap.Add(KEY.SYN_PERM_BELOW_STIMULUS_INC, synPermBelowStimulusInc);
         }
 
-        ///**
-        // * @param synPermTrimThreshold
-        // */
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="synPermTrimThreshold"></param>
         public void setSynPermTrimThreshold(double synPermTrimThreshold)
         {
             paramMap.Add(KEY.SYN_PERM_TRIM_THRESHOLD, synPermTrimThreshold);
         }
 
-        ///**
-        // * A number between 0 and 1.0, used to set a floor on
-        // * how often a column should have at least
-        // * stimulusThreshold active inputs. Periodically, each
-        // * column looks at the overlap duty cycle of
-        // * all other columns within its inhibition radius and
-        // * sets its own internal minimal acceptable duty cycle
-        // * to: minPctDutyCycleBeforeInh * max(other columns'
-        // * duty cycles).
-        // * On each iteration, any column whose overlap duty
-        // * cycle falls below this computed value will  get
-        // * all of its permanence values boosted up by
-        // * synPermActiveInc. Raising all permanences in response
-        // * to a sub-par duty cycle before  inhibition allows a
-        // * cell to search for new inputs when either its
-        // * previously learned inputs are no longer ever active,
-        // * or when the vast majority of them have been
-        // * "hijacked" by other columns.
-        // *
-        // * @param minPctOverlapDutyCycles
-        // */
+        /// <summary>
+        /// A number between 0 and 1.0, used to set a floor on how often a column should have at least stimulusThreshold active inputs. Periodically, each
+        /// column looks at the overlap duty cycle of all other columns within its inhibition radius and sets its own internal minimal acceptable duty cycle
+        /// to: minPctDutyCycleBeforeInh * max(other columns' duty cycles).<br/>
+        /// On each iteration, any column whose overlap duty cycle falls below this computed value will  get all of its permanence values boosted up by
+        /// synPermActiveInc. Raising all permanences in response to a sub-par duty cycle before  inhibition allows a cell to search for new inputs when 
+        /// either its previously learned inputs are no longer ever active, or when the vast majority of them have been "hijacked" by other columns.
+        /// </summary>
+        /// <param name="minPctOverlapDutyCycles"></param>
         public void setMinPctOverlapDutyCycles(double minPctOverlapDutyCycles)
         {
             paramMap.Add(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, minPctOverlapDutyCycles);
         }
 
-        ///**
-        // * A number between 0 and 1.0, used to set a floor on
-        // * how often a column should be activate.
-        // * Periodically, each column looks at the activity duty
-        // * cycle of all other columns within its inhibition
-        // * radius and sets its own internal minimal acceptable
-        // * duty cycle to:
-        // * minPctDutyCycleAfterInh *
-        // * max(other columns' duty cycles).
-        // * On each iteration, any column whose duty cycle after
-        // * inhibition falls below this computed value will get
-        // * its internal boost factor increased.
-        // *
-        // * @param minPctActiveDutyCycles
-        // */
+        /// <summary>
+        /// A number between 0 and 1.0, used to set a floor on how often a column should be activate. Periodically, each column looks at the activity duty
+        /// cycle of all other columns within its inhibition radius and sets its own internal minimal acceptable duty cycle to:<br/>
+        /// minPctDutyCycleAfterInh * max(other columns' duty cycles).<br/>
+        /// On each iteration, any column whose duty cycle after inhibition falls below this computed value will get its internal boost factor increased.
+        /// </summary>
+        /// <param name="minPctActiveDutyCycles"></param>
         public void setMinPctActiveDutyCycles(double minPctActiveDutyCycles)
         {
             paramMap.Add(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, minPctActiveDutyCycles);
         }
 
-        ///**
-        // * The period used to calculate duty cycles. Higher
-        // * values make it take longer to respond to changes in
-        // * boost or synPerConnectedCell. Shorter values make it
-        // * more unstable and likely to oscillate.
-        // *
-        // * @param dutyCyclePeriod
-        // */
+        /// <summary>
+        /// The period used to calculate duty cycles. Higher values make it take longer to respond to changes in boost or synPerConnectedCell. 
+        /// Shorter values make it more unstable and likely to oscillate.
+        /// </summary>
+        /// <param name="dutyCyclePeriod"></param>
         public void setDutyCyclePeriod(int dutyCyclePeriod)
         {
             paramMap.Add(KEY.DUTY_CYCLE_PERIOD, dutyCyclePeriod);
         }
 
-        ///**
-        // * The maximum overlap boost factor. Each column's
-        // * overlap gets multiplied by a boost factor
-        // * before it gets considered for inhibition.
-        // * The actual boost factor for a column is number
-        // * between 1.0 and maxBoost. A boost factor of 1.0 is
-        // * used if the duty cycle is &gt;= minOverlapDutyCycle,
-        // * maxBoost is used if the duty cycle is 0, and any duty
-        // * cycle in between is linearly extrapolated from these
-        // * 2 end points.
-        // *
-        // * @param maxBoost
-        // */
+        /// <summary>
+        /// The maximum overlap boost factor. Each column's overlap gets multiplied by a boost factor before it gets considered for inhibition.
+        /// The actual boost factor for a column is number between 1.0 and maxBoost. A boost factor of 1.0 is used if the duty cycle 
+        /// is &gt;= minOverlapDutyCycle, maxBoost is used if the duty cycle is 0, and any duty cycle in between is linearly extrapolated from 
+        /// these 2 end points.
+        /// </summary>
+        /// <param name="maxBoost"></param>
         public void setMaxBoost(double maxBoost)
         {
             paramMap.Add(KEY.MAX_BOOST, maxBoost);
@@ -1353,6 +1245,7 @@ namespace NeoCortexApi.Entities
         /**
          * {@inheritDoc}
          */
+        #endregion
 
         public override String ToString()
         {

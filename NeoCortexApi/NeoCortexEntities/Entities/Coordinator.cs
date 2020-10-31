@@ -37,31 +37,36 @@ namespace NeoCortexApi.Entities
             }
         }
 
-        /**
-         * Constructs a new {@link Coordinator} object to be configured with specified
-         * dimensions and major ordering.
-         * @param shape  the dimensions of this matrix 
-         */
+        /// <summary>
+        /// Constructs a new <see cref="Coordinator"/> object to be configured with specified dimensions and major ordering.
+        /// </summary>
+        /// <param name="shape">the dimensions of this matrix</param>
         public Coordinator(int[] shape) : this(shape, false)
         {
 
         }
-
         /**
-         * Constructs a new {@link Coordinator} object to be configured with specified
-         * dimensions and major ordering.
          * 
-         * @param shape                     the dimensions of this sparse array 
-         * @param useColumnMajorOrdering    flag indicating whether to use column ordering or
-         *                                  row major ordering. if false (the default), then row
-         *                                  major ordering will be used. If true, then column major
-         *                                  ordering will be used.
+         *
+         * 
+         * @param shape                     
+         * @param useColumnMajorOrdering    
+         *                                  
+         *                                  
+         *                                 
          */
+        /// <summary>
+        /// Constructs a new <see cref="Coordinator"/> object to be configured with specified dimensions and major ordering.
+        /// </summary>
+        /// <param name="shape">the dimensions of this sparse array</param>
+        /// <param name="useColumnMajorOrdering">flag indicating whether to use column ordering or row major ordering. if false 
+        ///                                      (the default), then row major ordering will be used. If true, then column major
+        ///                                      ordering will be used.</param>
         public Coordinator(int[] shape, bool useColumnMajorOrdering)
         {
             this.dimensions = shape;
             this.numDimensions = shape.Length;
-            this.dimensionMultiples = initDimensionMultiples(
+            this.dimensionMultiples = InitDimensionMultiples(
                 useColumnMajorOrdering ? HtmCompute.Reverse(shape) : shape);
             isColumnMajor = useColumnMajorOrdering;
         }
@@ -103,15 +108,12 @@ namespace NeoCortexApi.Entities
         //    return topology.IsMajorOrdering ? Reverse(returnVal) : returnVal;
         //}
 
-
-
-        /**
-         * Initializes internal helper array which is used for multidimensional
-         * index computation.
-         * @param dimensions matrix dimensions
-         * @return array for use in coordinates to flat index computation.
-         */
-        protected int[] initDimensionMultiples(int[] dimensions)
+        /// <summary>
+        /// Initializes internal helper array which is used for multidimensional index computation.
+        /// </summary>
+        /// <param name="dimensions">matrix dimensions</param>
+        /// <returns>array for use in coordinates to flat index computation.</returns>
+        protected int[] InitDimensionMultiples(int[] dimensions)
         {
             int holder = 1;
             int len = dimensions.Length;

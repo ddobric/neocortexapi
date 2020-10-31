@@ -58,7 +58,10 @@ namespace NeoCortexApi.Entities
 
         public double Permanence { get; set; }
 
-        public bool m_Isdestroyed { get; set; }
+        /// <summary>
+        /// the flag indicating whether this segment has been destroyed.
+        /// </summary>
+        public bool IsDestroyed { get; set; }
 
         /// <summary>
         /// 
@@ -99,49 +102,48 @@ namespace NeoCortexApi.Entities
             this.InputIndex = inputIndex;
         }
 
-        /**
-         * Returns this {@code Synapse}'s index.
-         * @return
-         */
-        public int getIndex()
-        {
-            return SynapseIndex;
-        }
+        ///**
+        // * Returns this {@code Synapse}'s index.
+        // * @return
+        // */
+        //public int getIndex()
+        //{
+        //    return SynapseIndex;
+        //}
 
-        /**
-         * Returns the index of this {@code Synapse}'s input item
-         * whether it is a "sourceCell" or inputVector bit.
-         * @return
-         */
-        public int getInputIndex()
-        {
-            return InputIndex;
-        }
+        ///**
+        // * Returns the index of this {@code Synapse}'s input item
+        // * whether it is a "sourceCell" or inputVector bit.
+        // * @return
+        // */
+        //public int getInputIndex()
+        //{
+        //    return InputIndex;
+        //}
 
-        /**
-         * Returns this {@code Synapse}'s degree of connectedness.
-         * @return
-         */
-        public double getPermanence()
-        {
-            return Permanence;
-        }
+        ///// <summary>
+        ///// Returns this {@code Synapse}'s degree of connectedness.
+        ///// </summary>
+        //public double getPermanence()
+        //{
+        //    return Permanence;
+        //}
 
-        /**
-         * Sets this {@code Synapse}'s degree of connectedness.
-         * @param perm
-         * TODO: Remove synPermConnected. Not used here
-         */
-        public void setPermanence(double synPermConnected, double perm)
-        {
-            this.Permanence = perm;
+        ///**
+        // * Sets this {@code Synapse}'s degree of connectedness.
+        // * @param perm
+        // * TODO: Remove synPermConnected. Not used here
+        // */
+        //public void setPermanence(double synPermConnected, double perm)
+        //{
+        //    this.Permanence = perm;
 
-            //// On proximal dendrite which has no presynaptic cell
-            //if (SourceCell == null)
-            //{
-            //    Pool.updatePool(synPermConnected, this, perm);
-            //}
-        }
+        //    //// On proximal dendrite which has no presynaptic cell
+        //    //if (SourceCell == null)
+        //    //{
+        //    //    Pool.updatePool(synPermConnected, this, perm);
+        //    //}
+        //}
 
         ///**
         // * Returns the owning dendritic segment
@@ -152,49 +154,49 @@ namespace NeoCortexApi.Entities
         //    return Segment;
         //}
 
-        /**
-         * Called by {@link Connections#destroySynapse(Synapse)} to assign
-         * a reused Synapse to another presynaptic Cell
-         * @param cell  the new presynaptic cell
-         */
-        public void setPresynapticCell(Cell cell)
+        /// <summary>
+        /// Called by <see cref="Connections.DestroySynapse(Synapse, DistalDendrite)"/> to assign a reused Synapse to another presynaptic Cell
+        /// </summary>
+        /// <param name="cell">the new presynaptic cell</param>
+        public void SetPresynapticCell(Cell cell)
         {
             this.SourceCell = cell;
         }
 
-        /**
-         * Returns the containing {@link Cell} 
-         * @return
-         */
+        /// <summary>
+        /// Returns the containing <see cref="Cell"/>
+        /// </summary>
+        /// <returns></returns>
         public Cell getPresynapticCell()
         {
             return SourceCell;
         }
 
-        /**
-         * Returns the flag indicating whether this segment has been destroyed.
-         * @return  the flag indicating whether this segment has been destroyed.
-         */
-        public bool destroyed()
-        {
-            return m_Isdestroyed;
-        }
+        ///**
+        // * Returns the flag indicating whether this segment has been destroyed.
+        // * @return  the flag indicating whether this segment has been destroyed.
+        // */
+        //public bool destroyed()
+        //{
+        //    return IsDestroyed;
+        //}
 
-        /**
-         * Sets the flag indicating whether this segment has been destroyed.
-         * @param b the flag indicating whether this segment has been destroyed.
-         */
-        public void setDestroyed(bool b)
-        {
-            this.m_Isdestroyed = b;
-        }
+        ///**
+        // * Sets the flag indicating whether this segment has been destroyed.
+        // * @param b the flag indicating whether this segment has been destroyed.
+        // */
+        //public void setDestroyed(bool b)
+        //{
+        //    this.IsDestroyed = b;
+        //}
 
-        /**
-         * {@inheritDoc}
-         */
-        public override String ToString()
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
         {
-            string srcCell = String.Empty;
+            string srcCell = string.Empty;
             if (SourceCell != null)
             {
                 srcCell = $"[SrcCell: {SourceCell.ToString()}]";
@@ -221,7 +223,7 @@ namespace NeoCortexApi.Entities
          * @see java.lang.Object#equals(java.lang.Object)
          */
         // @Override
-        public bool Equals(Object obj)
+        public override bool Equals(object obj)
         {
             if (this == obj)
                 return true;
@@ -282,9 +284,9 @@ namespace NeoCortexApi.Entities
 
         public int CompareTo(Synapse other)
         {
-            if (this.getIndex() < other.getIndex())
+            if (this.SegmentIndex < other.SegmentIndex)
                 return -1;
-            if (this.getIndex() > other.getIndex())
+            if (this.SegmentIndex > other.SegmentIndex)
                 return 1;
             else
                 return 0;

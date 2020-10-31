@@ -9,11 +9,14 @@ namespace NeoCortexApi
 {
     public class Classification<T> : IHtmAlgorithm, IEquatable<Classification<T>>  where T: class
     {
-     
-        /** Array of actual values */
-        private T[] actualValues;
+        /// <summary>
+        /// Array of actual values
+        /// </summary>
+        private T[] m_ActualValues;
 
-        /** Map of step count -to- probabilities */
+        /// <summary>
+        /// Map of step count -to- probabilities
+        /// </summary>
         Dictionary<int, double[]> probabilities = new Dictionary<int, double[]>();
 
         /**
@@ -25,7 +28,7 @@ namespace NeoCortexApi
         public Classification<T> copy()
         {
             Classification<T> retVal = new Classification<T>();
-            retVal.actualValues = (T[])actualValues.Clone();
+            retVal.m_ActualValues = (T[])m_ActualValues.Clone();
             //retVal.actualValues = Arrays.copyOf(actualValues.CopyTo(, actualValues.length);
             //retVal.probabilities = new TIntObjectHashMap<double[]>(probabilities);
             retVal.probabilities = new Dictionary<int, double[]>(probabilities);
@@ -41,11 +44,11 @@ namespace NeoCortexApi
          */
         public T getActualValue(int bucketIndex)
         {
-            if (actualValues == null || actualValues.Length < bucketIndex + 1)
+            if (m_ActualValues == null || m_ActualValues.Length < bucketIndex + 1)
             {
                 return null;
             }
-            return (T)actualValues[bucketIndex];
+            return (T)m_ActualValues[bucketIndex];
         }
 
         /**
@@ -55,7 +58,7 @@ namespace NeoCortexApi
          */
         public T[] getActualValues()
         {
-            return actualValues;
+            return m_ActualValues;
         }
 
         /**
@@ -66,7 +69,7 @@ namespace NeoCortexApi
          */
         public void setActualValues(T[] values)
         {
-            actualValues = values;
+            m_ActualValues = values;
         }
 
         /**
@@ -75,7 +78,7 @@ namespace NeoCortexApi
          */
         public int getActualValueCount()
         {
-            return actualValues.Length;
+            return m_ActualValues.Length;
         }
 
         /**
@@ -185,7 +188,7 @@ namespace NeoCortexApi
         {
             const int prime = 31;
             int result = 1;
-            result = prime * result + actualValues.GetHashCode();
+            result = prime * result + m_ActualValues.GetHashCode();
             result = prime * result + ((probabilities == null) ? 0 : probabilities.GetHashCode());
             return result;
         }
@@ -201,7 +204,7 @@ namespace NeoCortexApi
                 return false;
             
             Classification<T> other = (Classification<T>)obj;
-            if (!actualValues.SequenceEqual(other.actualValues))
+            if (!m_ActualValues.SequenceEqual(other.m_ActualValues))
                 return false;
             if (probabilities == null)
             {

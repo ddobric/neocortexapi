@@ -29,8 +29,6 @@
     <Compile Remove="Anomaly.cs" />
     <Compile Remove="Classification.cs" />
     <Compile Remove="Encoders\EncoderBuilder.cs" />
-    <Compile Remove="Entities\SparseBinaryMatrixDistDict.cs" />
-    <Compile Remove="Entities\SparseBinaryMatrixOriginal.cs" />
     <Compile Remove="Network\NearestClassifier.cs" />
   </ItemGroup>
 
@@ -38,8 +36,6 @@
     <None Include="Anomaly.cs" />
     <None Include="Classification.cs" />
     <None Include="Encoders\EncoderBuilder.cs" />
-    <None Include="Entities\SparseBinaryMatrixDistDict.cs" />
-    <None Include="Entities\SparseBinaryMatrixOriginal.cs" />
     <None Include="Network\NearestClassifier.cs" />
   </ItemGroup>
 

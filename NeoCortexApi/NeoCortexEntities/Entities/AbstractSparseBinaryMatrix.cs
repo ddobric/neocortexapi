@@ -9,7 +9,7 @@ using System.Text;
 namespace NeoCortexApi.Entities
 {
     //TODO see type object
-   // [Serializable]
+    // [Serializable]
     public abstract class AbstractSparseBinaryMatrix : AbstractSparseMatrix<int>, IEquatable<object>
     {
         /** keep it simple */
@@ -21,67 +21,60 @@ namespace NeoCortexApi.Entities
         {
 
         }
-        /**
-         * Constructs a new {@code AbstractSparseBinaryMatrix} with the specified
-         * dimensions (defaults to row major ordering)
-         * 
-         * @param dimensions    each indexed value is a dimension size
-         */
+
+        /// <summary>
+        /// Constructs a new <see cref="AbstractSparseBinaryMatrix"/> with the specified dimensions (defaults to row major ordering)
+        /// </summary>
+        /// <param name="dimensions">each indexed value is a dimension size</param>
         public AbstractSparseBinaryMatrix(int[] dimensions) : this(dimensions, false)
         {
 
         }
 
-        /**
-         * Constructs a new {@code AbstractSparseBinaryMatrix} with the specified dimensions,
-         * allowing the specification of column major ordering if desired. 
-         * (defaults to row major ordering)
-         * 
-         * @param dimensions                each indexed value is a dimension size
-         * @param useColumnMajorOrdering    if true, indicates column first iteration, otherwise
-         *                                  row first iteration is the default (if false).
-         */
+        /// <summary>
+        /// Constructs a new <see cref="AbstractSparseBinaryMatrix"/> with the specified dimensions, allowing the specification of 
+        /// column major ordering if desired. (defaults to row major ordering) 
+        /// </summary>
+        /// <param name="dimensions">each indexed value is a dimension size</param>
+        /// <param name="useColumnMajorOrdering">if true, indicates column first iteration, otherwise row first iteration is the default (if false).</param>
         public AbstractSparseBinaryMatrix(int[] dimensions, bool useColumnMajorOrdering) : base(dimensions, useColumnMajorOrdering)
         {
 
             this.trueCounts = new int[dimensions[0]];
         }
+        
+        /// <summary>
+        /// Returns the slice specified by the passed in coordinates. The array is returned as an object, therefore it is the caller's
+        /// responsibility to cast the array to the appropriate dimensions.
+        /// </summary>
+        /// <param name="coordinates">the coordinates which specify the returned array</param>
+        /// <returns>the array specified. Throw <see cref="ArgumentException"/> if the specified coordinates address an actual value instead of the array holding it.</returns>
+        /// <exception cref="ArgumentException">Throws if the specified coordinates address an actual value instead of the array holding it.</exception>
+        public abstract object GetSlice(params int[] coordinates);
 
-        /**
-         * Returns the slice specified by the passed in coordinates.
-         * The array is returned as an object, therefore it is the caller's
-         * responsibility to cast the array to the appropriate dimensions.
-         * 
-         * @param coordinates	the coordinates which specify the returned array
-         * @return	the array specified
-         * @throws	IllegalArgumentException if the specified coordinates address
-         * 			an actual value instead of the array holding it.
-         */
-        public abstract Object getSlice(params int[] coordinates);
-
-        /**
-         * Launch getSlice error, to share it with subclass {@link #getSlice(int...)}
-         * implementations.
-         * @param coordinates
-         */
-        protected void sliceError(int[] coordinates)
+        /// <summary>
+        /// Launch getSlice error, to share it with subclass <see cref="GetSlice(int[])"/> implementations.
+        /// </summary>
+        /// <param name="coordinates"></param>
+        protected void SliceError(int[] coordinates)
         {
             throw new ArgumentException(
                 "This method only returns the array holding the specified maximum index: " +
                         "dimensions.ToString()");
         }
 
-        /**
-         * Calculate the flat indexes of a slice
-         * @return the flat indexes array
-         */
-        protected int[] getSliceIndexes(int[] coordinates)
+        /// <summary>
+        /// Calculate the flat indexes of a slice
+        /// </summary>
+        /// <param name="coordinates"></param>
+        /// <returns>the flat indexes array</returns>
+        protected int[] GetSliceIndexes(int[] coordinates)
         {
-            int[] dimensions = getDimensions();
+            int[] dimensions = GetDimensions();
             // check for valid coordinates
             if (coordinates.Length >= dimensions.Length)
             {
-                sliceError(coordinates);
+                SliceError(coordinates);
             }
 
             int sliceDimensionsLength = dimensions.Length - coordinates.Length;
@@ -111,7 +104,7 @@ namespace NeoCortexApi.Entities
                 for (int i = 0; i < dimensions[coordinates.Length]; i++)
                 {
                     elementCoordinates[coordinates.Length] = i;
-                    slice[i] = computeIndex(elementCoordinates);
+                    slice[i] = ComputeIndex(elementCoordinates);
                     // Array.set(slice, i, computeIndex(elementCoordinates));
                 }
             }
@@ -120,7 +113,7 @@ namespace NeoCortexApi.Entities
                 for (int i = 0; i < dimensions[sliceDimensionsLength]; i++)
                 {
                     elementCoordinates[coordinates.Length] = i;
-                    int[] indexes = getSliceIndexes(elementCoordinates);
+                    int[] indexes = GetSliceIndexes(elementCoordinates);
                     Array.Copy(indexes, 0, slice, i * indexes.Length, indexes.Length);
                     //System.arraycopy(indexes, 0, slice, i* indexes.length, indexes.length);
                 }
@@ -129,55 +122,49 @@ namespace NeoCortexApi.Entities
             return slice;
         }
 
-        /**
-         * Fills the specified results array with the result of the 
-         * matrix vector multiplication.
-         * 
-         * @param inputVector		the right side vector
-         * @param results			the results array
-         */
-        public abstract void rightVecSumAtNZ(int[] inputVector, int[] results);
+        /// <summary>
+        /// Fills the specified results array with the result of the matrix vector multiplication.
+        /// </summary>
+        /// <param name="inputVector">the right side vector</param>
+        /// <param name="results">the results array</param>
+        public abstract void RightVecSumAtNZ(int[] inputVector, int[] results);
 
-        /**
-         * Fills the specified results array with the result of the 
-         * matrix vector multiplication.
-         * 
-         * @param inputVector       the right side vector
-         * @param results           the results array
-         */
-        public abstract void rightVecSumAtNZ(int[] inputVector, int[] results, double stimulusThreshold);
+        /// <summary>
+        /// Fills the specified results array with the result of the matrix vector multiplication.
+        /// </summary>
+        /// <param name="inputVector">the right side vector</param>
+        /// <param name="results">the results array</param>
+        /// <param name="stimulusThreshold"></param>
+        public abstract void RightVecSumAtNZ(int[] inputVector, int[] results, double stimulusThreshold);
 
-        /**
-         * Sets the value at the specified index.
-         * 
-         * @param index     the index the object will occupy
-         * @param object    the object to be indexed.
-         */
-
-
+        /// <summary>
+        /// Sets the value at the specified index.
+        /// </summary>
+        /// <param name="index">the index the object will occupy</param>
+        /// <param name="value">the value to be indexed.</param>
+        /// <returns></returns>
         public override AbstractFlatMatrix<int> set(int index, int value)
         {
-            int[] coordinates = ComputeCoordinates(getNumDimensions(), getDimensionMultiples(), this.ModuleTopology.IsMajorOrdering, index);
+            int[] coordinates = ComputeCoordinates(GetNumDimensions(), GetDimensionMultiples(), this.ModuleTopology.IsMajorOrdering, index);
             return set(value, coordinates);
         }
 
-        /**
-         * Sets the value to be indexed at the index
-         * computed from the specified coordinates.
-         * @param coordinates   the row major coordinates [outer --> ,...,..., inner]
-         * @param object        the object to be indexed.
-         */
-
+        // TODO naming convention with override method
+        /// <summary>
+        /// Sets the value to be indexed at the index computed from the specified coordinates.
+        /// </summary>
+        /// <param name="value">the value to be indexed</param>
+        /// <param name="coordinates">the row major coordinates [outer --> ,...,..., inner]</param>
+        /// <returns></returns>
         public abstract AbstractSparseBinaryMatrix set(int value, params int[] coordinates);
 
-        /**
-         * Sets the specified values at the specified indexes.
-         * 
-         * @param indexes   indexes of the values to be set
-         * @param values    the values to be indexed.
-         * 
-         * @return this {@code SparseMatrix} implementation
-         */
+        // TODO naming convention with override method: make method as virtual??
+        /// <summary>
+        /// Sets the specified values at the specified indexes.
+        /// </summary>
+        /// <param name="indexes">indexes of the values to be set</param>
+        /// <param name="values">the values to be indexed.</param>
+        /// <returns>this <see cref="AbstractSparseBinaryMatrix"/> implementation</returns>
         public AbstractSparseBinaryMatrix set(int[] indexes, int[] values)
         {
             for (int i = 0; i < indexes.Length; i++)
@@ -187,37 +174,36 @@ namespace NeoCortexApi.Entities
             return this;
         }
 
-
+        // TODO naming convention with override method
+        // TODO Integer class ??
         public Integer get(int[] coordinates)
         {
-            return GetColumn(computeIndex(coordinates));
+            return GetColumn(ComputeIndex(coordinates));
         }
 
 
 #pragma warning disable IDE1006 // Naming Styles
-       // public abstract Integer get(int index);
+        // public abstract Integer get(int index);
 #pragma warning restore IDE1006 // Naming Styles
 
-
-
-        /**
-         * Sets the value at the specified index skipping the automatic
-         * truth statistic tallying of the real method.
-         * 
-         * @param index     the index the object will occupy
-         * @param object    the object to be indexed.
-         */
+        // TODO naming convention with override method
+        /// <summary>
+        /// Sets the value at the specified index skipping the automatic truth statistic tallying of the real method.
+        /// </summary>
+        /// <param name="index">the index the object will occupy</param>
+        /// <param name="value">the value to be indexed.</param>
+        /// <returns></returns>
         public abstract AbstractSparseBinaryMatrix setForTest(int index, int value);
 
-        /**
-         * Call This for TEST METHODS ONLY
-         * Sets the specified values at the specified indexes.
-         * 
-         * @param indexes   indexes of the values to be set
-         * @param values    the values to be indexed.
-         * 
-         * @return this {@code SparseMatrix} implementation
-         */
+        // TODO naming convention with override method
+        /// <summary>
+        /// Call This for TEST METHODS ONLY.<br></br>
+        /// Sets the specified values at the specified indexes.
+        /// </summary>
+        /// <param name="indexes">indexes of the values to be set</param>
+        /// <param name="values">the values to be indexed.</param>
+        /// <param name="isTest"></param>
+        /// <returns>this <see cref="AbstractSparseBinaryMatrix"/> implementation</returns>
         public AbstractSparseBinaryMatrix set(int[] indexes, int[] values, bool isTest)
         {
             for (int i = 0; i < indexes.Length; i++)
@@ -228,82 +214,82 @@ namespace NeoCortexApi.Entities
             return this;
         }
 
-        /**
-         * Returns the count of 1's set on the specified row.
-         * @param index
-         * @return
-         */
-        public int getTrueCount(int index)
+        /// <summary>
+        /// Returns the count of 1's set on the specified row.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public int GetTrueCount(int index)
         {
             return trueCounts[index];
         }
 
-        /**
-         * Sets the count of 1's on the specified row.
-         * @param index
-         * @param count
-         */
-        public void setTrueCount(int index, int count)
+        /// <summary>
+        /// Sets the count of 1's on the specified row.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="count"></param>
+        public void SetTrueCount(int index, int count)
         {
             this.trueCounts[index] = count;
         }
 
-        /**
-         * Get the true counts for all outer indexes.
-         * @return
-         */
-        public int[] getTrueCounts()
+        /// <summary>
+        /// Get the true counts for all outer indexes.
+        /// </summary>
+        /// <returns></returns>
+        public int[] GetTrueCounts()
         {
             return trueCounts;
         }
 
-        /**
-         * Clears the true counts prior to a cycle where they're
-         * being set
-         */
-        public virtual void clearStatistics(int row)
+        /// <summary>
+        /// Clears the true counts prior to a cycle where they're being set
+        /// </summary>
+        /// <param name="row"></param>
+        public virtual void ClearStatistics(int row)
         {
             trueCounts[row] = 0;
 
-            foreach (int index in getSliceIndexes(new int[] { row }))
+            foreach (int index in GetSliceIndexes(new int[] { row }))
             {
                 set(index, 0);
             }
         }
 
-        /**
-         * Returns the int value at the index computed from the specified coordinates.
-         * For example value {7, 21} is TRU if the column 7 is connected to input bit 21.
-         * @param coordinates   the coordinates from which to retrieve the indexed object
-         * @return  the indexed object
-         */
-        public new int getIntValue(params int[] coordinates)
+        // TODO naming convention with override method
+        /// <summary>
+        /// Returns the int value at the index computed from the specified coordinates. For example value {7, 21} is TRU if the column 7 is connected to input bit 21.
+        /// </summary>
+        /// <param name="coordinates">the coordinates from which to retrieve the indexed object</param>
+        /// <returns>the indexed object</returns>
+        public new int GetIntValue(params int[] coordinates)
         {
-            return GetColumn(computeIndex(coordinates));
+            return GetColumn(ComputeIndex(coordinates));
         }
 
-        /**
-         * Returns the T at the specified index.
-         * 
-         * @param index     the index of the T to return
-         * @return  the T at the specified index.
-         */
-        //@Override
-        public new int getIntValue(int index)
+        // TODO naming convention with override method
+        /// <summary>
+        /// Returns the T at the specified index.
+        /// </summary>
+        /// <param name="index">the index of the T to return</param>
+        /// <returns>the T at the specified index.</returns>
+        public new int GetIntValue(int index)
         {
             return GetColumn(index);
         }
 
-        /**
-         * Returns a sorted array of occupied indexes.
-         * @return  a sorted array of occupied indexes.
-         */
+        // TODO naming convention with override method
+        /// <summary>
+        /// Returns a sorted array of occupied indexes.
+        /// </summary>
+        /// <returns>a sorted array of occupied indexes.</returns>
         //@Override
-        public override int[] getSparseIndices()
+        public override int[] GetSparseIndices()
         {
             List<int> indexes = new List<int>();
             //TIntList indexes = new TIntArrayList();
-            for (int i = 0; i <= getMaxIndex(); i++)
+            for (int i = 0; i <= GetMaxIndex(); i++)
             {
                 if (GetColumn(i) > 0)
                 {
@@ -314,119 +300,98 @@ namespace NeoCortexApi.Entities
             return indexes.ToArray();
         }
 
-        /**
-         * This {@code SparseBinaryMatrix} will contain the operation of or-ing
-         * the inputMatrix with the contents of this matrix; returning this matrix
-         * as the result.
-         * 
-         * @param inputMatrix   the matrix containing the "on" bits to or
-         * @return  this matrix
-         */
-        public AbstractSparseBinaryMatrix or(AbstractSparseBinaryMatrix inputMatrix)
+        /// <summary>
+        /// This <see cref="SparseBinaryMatrix"/> will contain the operation of or-ing the inputMatrix with the contents of this matrix; returning this matrix as the result. 
+        /// </summary>
+        /// <param name="inputMatrix">the matrix containing the "on" bits to or</param>
+        /// <returns>this matrix</returns>
+        public AbstractSparseBinaryMatrix Or(AbstractSparseBinaryMatrix inputMatrix)
         {
-            int[] mask = inputMatrix.getSparseIndices();
+            int[] mask = inputMatrix.GetSparseIndices();
             int[] ones = new int[mask.Length];
             ArrayUtils.Fill(ones, 1);
             return set(mask, ones);
         }
 
-        /**
-         * This {@code SparseBinaryMatrix} will contain the operation of or-ing
-         * the sparse list with the contents of this matrix; returning this matrix
-         * as the result.
-         * 
-         * @param onBitIndexes  the matrix containing the "on" bits to or
-         * @return  this matrix
-         */
-        public AbstractSparseBinaryMatrix or(List<int> onBitIndexes)
+        /// <summary>
+        /// This <see cref="SparseBinaryMatrix"/> will contain the operation of or-ing the sparse list with the contents of this matrix; returning this matrix as the result.
+        /// </summary>
+        /// <param name="onBitIndexes">the matrix containing the "on" bits to or</param>
+        /// <returns>this matrix</returns>
+        public AbstractSparseBinaryMatrix Or(List<int> onBitIndexes)
         {
             int[] ones = new int[onBitIndexes.Count];
             Utility.ArrayUtils.Fill(ones, 1);
             return set(onBitIndexes.ToArray(), ones);
         }
 
-        /**
-         * This {@code SparseBinaryMatrix} will contain the operation of or-ing
-         * the sparse array with the contents of this matrix; returning this matrix
-         * as the result.
-         * 
-         * @param onBitIndexes  the int array containing the "on" bits to or
-         * @return  this matrix
-         */
-        public AbstractSparseBinaryMatrix or(int[] onBitIndexes)
+        /// <summary>
+        /// This <see cref="SparseBinaryMatrix"/> will contain the operation of or-ing the sparse array with the contents of this matrix; returning this matrix as the result.
+        /// </summary>
+        /// <param name="onBitIndexes"></param>
+        /// <returns></returns>
+        public AbstractSparseBinaryMatrix Or(int[] onBitIndexes)
         {
             int[] ones = new int[onBitIndexes.Length];
             Utility.ArrayUtils.Fill(ones, 1);
             return set(onBitIndexes, ones);
         }
 
-        protected HashSet<int> getSparseSet()
+        protected HashSet<int> GetSparseSet()
         {
-            return new HashSet<int>(getSparseIndices());
+            return new HashSet<int>(GetSparseIndices());
         }
 
-        /**
-         * Returns true if the on bits of the specified matrix are
-         * matched by the on bits of this matrix. It is allowed that 
-         * this matrix have more on bits than the specified matrix.
-         * 
-         * @param matrix
-         * @return
-         */
+        /// <summary>
+        /// Returns true if the on bits of the specified matrix are matched by the on bits of this matrix. It is allowed that this matrix have more on bits than the specified matrix.
+        /// </summary>
+        /// <param name="matrix"></param>
+        /// <returns></returns>
         public bool All(AbstractSparseBinaryMatrix matrix)
         {
-            var sparseSet = getSparseSet();
-            bool hasAll = matrix.getSparseIndices().All(itm2 => sparseSet.Contains(itm2));
+            var sparseSet = GetSparseSet();
+            bool hasAll = matrix.GetSparseIndices().All(itm2 => sparseSet.Contains(itm2));
             return hasAll;
             //return getSparseSet().Contains(
             //    containsAll(matrix.getSparseIndices());
         }
 
-        /**
-         * Returns true if the on bits of the specified list are
-         * matched by the on bits of this matrix. It is allowed that 
-         * this matrix have more on bits than the specified matrix.
-         * 
-         * @param matrix
-         * @return
-         */
+        /// <summary>
+        /// Returns true if the on bits of the specified matrix are matched by the on bits of this matrix. It is allowed that this matrix have more on bits than the specified matrix.
+        /// </summary>
+        /// <param name="matrix"></param>
+        /// <returns></returns>
         public bool All(List<int> onBits)
         {
-            var sparseSet = getSparseSet();
+            var sparseSet = GetSparseSet();
             bool hasAll = onBits.All(itm2 => sparseSet.Contains(itm2));
             return hasAll;
             //return getSparseSet().containsAll(onBits);
         }
 
-        /**
-         * Returns true if the on bits of the specified array are
-         * matched by the on bits of this matrix. It is allowed that 
-         * this matrix have more on bits than the specified matrix.
-         * 
-         * @param matrix
-         * @return
-         */
+        /// <summary>
+        /// Returns true if the on bits of the specified matrix are matched by the on bits of this matrix. It is allowed that this matrix have more on bits than the specified matrix.
+        /// </summary>
+        /// <param name="matrix"></param>
+        /// <returns></returns>
         public bool All(int[] onBits)
         {
-            var sparseSet = getSparseSet();
+            var sparseSet = GetSparseSet();
             bool hasAll = onBits.All(itm2 => sparseSet.Contains(itm2));
             return hasAll;
             //return getSparseSet().containsAll(onBits);
         }
 
-        /**
-         * Returns true if any of the on bits of the specified matrix are
-         * matched by the on bits of this matrix. It is allowed that 
-         * this matrix have more on bits than the specified matrix.
-         * 
-         * @param matrix
-         * @return
-         */
-        public bool any(AbstractSparseBinaryMatrix matrix)
+        /// <summary>
+        /// Returns true if any of the on bits of the specified matrix are matched by the on bits of this matrix. It is allowed that this matrix have more on bits than the specified matrix.
+        /// </summary>
+        /// <param name="matrix"></param>
+        /// <returns></returns>
+        public bool Any(AbstractSparseBinaryMatrix matrix)
         {
-            var keySet = getSparseSet();
+            var keySet = GetSparseSet();
 
-            foreach (int i in matrix.getSparseIndices())
+            foreach (int i in matrix.GetSparseIndices())
             {
                 if (keySet.Contains(i)) return true;
             }
@@ -434,17 +399,14 @@ namespace NeoCortexApi.Entities
             return false;
         }
 
-        /**
-         * Returns true if any of the on bit indexes of the specified collection are
-         * matched by the on bits of this matrix. It is allowed that 
-         * this matrix have more on bits than the specified matrix.
-         * 
-         * @param matrix
-         * @return
-         */
-        public bool any(HashSet<int> onBits)
+        /// <summary>
+        /// Returns true if any of the on bits of the specified collection are matched by the on bits of this matrix. It is allowed that this matrix have more on bits than the specified matrix.
+        /// </summary>
+        /// <param name="matrix"></param>
+        /// <returns></returns>
+        public bool Any(HashSet<int> onBits)
         {
-            var keySet = getSparseSet();
+            var keySet = GetSparseSet();
 
             foreach (var i in onBits)
             {
@@ -457,17 +419,14 @@ namespace NeoCortexApi.Entities
             return false;
         }
 
-        /**
-         * Returns true if any of the on bit indexes of the specified matrix are
-         * matched by the on bits of this matrix. It is allowed that 
-         * this matrix have more on bits than the specified matrix.
-         * 
-         * @param matrix
-         * @return
-         */
-        public bool any(int[] onBits)
+        /// <summary>
+        /// Returns true if any of the on bits of the specified matrix are matched by the on bits of this matrix. It is allowed that this matrix have more on bits than the specified matrix.
+        /// </summary>
+        /// <param name="matrix"></param>
+        /// <returns></returns>
+        public bool Any(int[] onBits)
         {
-            var keySet = getSparseSet();
+            var keySet = GetSparseSet();
 
             foreach (int i in onBits)
             {
@@ -480,7 +439,7 @@ namespace NeoCortexApi.Entities
          * @see java.lang.Object#hashCode()
          */
 
-   
+
         public override int GetHashCode()
         {
             const int prime = 31;

@@ -83,7 +83,7 @@ namespace UnitTestsProject
             Connections cn = new Connections();
             Parameters p = getDefaultParameters();
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] previousActiveColumns = { 0 };
             int[] activeColumns = { 1 };
@@ -118,7 +118,7 @@ namespace UnitTestsProject
             Connections cn = new Connections();
             Parameters p = getDefaultParameters();
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] activeColumns = { 0 };
             ISet<Cell> burstingCells = cn.GetCellSet(new int[] { 0, 1, 2, 3 });
@@ -137,7 +137,7 @@ namespace UnitTestsProject
             Connections cn = new Connections();
             Parameters p = getDefaultParameters();
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] previousActiveColumns = { 0 };
             Cell cell4 = cn.GetCell(4);
@@ -168,7 +168,7 @@ namespace UnitTestsProject
             Connections cn = new Connections();
             Parameters p = getDefaultParameters();
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] previousActiveColumns = { 0 };
             int[] activeColumns = { 1 };
@@ -202,7 +202,7 @@ namespace UnitTestsProject
             p = getDefaultParameters(p, KEY.PERMANENCE_DECREMENT, 0.08);
             p = getDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] previousActiveColumns = { 0 };
             int[] activeColumns = { 1 };
@@ -218,10 +218,10 @@ namespace UnitTestsProject
             tm.Compute(previousActiveColumns, true);
             tm.Compute(activeColumns, true);
 
-            Assert.AreEqual(0.6, as1.getPermanence(), 0.1);
-            Assert.AreEqual(0.6, as2.getPermanence(), 0.1);
-            Assert.AreEqual(0.6, as3.getPermanence(), 0.1);
-            Assert.AreEqual(0.42, is1.getPermanence(), 0.001);
+            Assert.AreEqual(0.6, as1.Permanence, 0.1);
+            Assert.AreEqual(0.6, as2.Permanence, 0.1);
+            Assert.AreEqual(0.6, as3.Permanence, 0.1);
+            Assert.AreEqual(0.42, is1.Permanence, 0.001);
         }
 
         [TestMethod]
@@ -232,7 +232,7 @@ namespace UnitTestsProject
             Connections cn = new Connections();
             Parameters p = getDefaultParameters(null, KEY.PERMANENCE_DECREMENT, 0.08);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] previousActiveColumns = { 0 };
             int[] activeColumns = { 1 };
@@ -253,10 +253,10 @@ namespace UnitTestsProject
             tm.Compute(previousActiveColumns, true);
             tm.Compute(activeColumns, true);
 
-            Assert.AreEqual(0.4, as1.getPermanence(), 0.01);
-            Assert.AreEqual(0.4, as2.getPermanence(), 0.01);
-            Assert.AreEqual(0.4, as3.getPermanence(), 0.01);
-            Assert.AreEqual(0.22, is1.getPermanence(), 0.001);
+            Assert.AreEqual(0.4, as1.Permanence, 0.01);
+            Assert.AreEqual(0.4, as2.Permanence, 0.01);
+            Assert.AreEqual(0.4, as3.Permanence, 0.01);
+            Assert.AreEqual(0.22, is1.Permanence, 0.001);
         }
 
         [TestMethod]
@@ -267,7 +267,7 @@ namespace UnitTestsProject
             Connections cn = new Connections();
             Parameters p = getDefaultParameters(null, KEY.PERMANENCE_DECREMENT, 0.08);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] previousActiveColumns = { 0 };
             int[] activeColumns = { 1 };
@@ -288,9 +288,9 @@ namespace UnitTestsProject
             tm.Compute(previousActiveColumns, true);
             tm.Compute(activeColumns, true);
 
-            Assert.AreEqual(0.3, as1.getPermanence(), 0.01);
-            Assert.AreEqual(0.3, as2.getPermanence(), 0.01);
-            Assert.AreEqual(0.3, is1.getPermanence(), 0.01);
+            Assert.AreEqual(0.3, as1.Permanence, 0.01);
+            Assert.AreEqual(0.3, as2.Permanence, 0.01);
+            Assert.AreEqual(0.3, is1.Permanence, 0.01);
         }
 
         [TestMethod]
@@ -301,7 +301,7 @@ namespace UnitTestsProject
             Connections cn = new Connections();
             Parameters p = getDefaultParameters();
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] previousActiveColumns = { 0 };
             int[] activeColumns = { 1 };
@@ -328,10 +328,10 @@ namespace UnitTestsProject
             Assert.IsTrue(cc.PredictiveCells.SequenceEqual(expectedActiveCells));
             tm.Compute(activeColumns, true);
 
-            Assert.AreEqual(0.3, s1.getPermanence(), 0.01);
-            Assert.AreEqual(0.3, s2.getPermanence(), 0.01);
-            Assert.AreEqual(0.3, s3.getPermanence(), 0.01);
-            Assert.AreEqual(0.3, s4.getPermanence(), 0.01);
+            Assert.AreEqual(0.3, s1.Permanence, 0.01);
+            Assert.AreEqual(0.3, s2.Permanence, 0.01);
+            Assert.AreEqual(0.3, s3.Permanence, 0.01);
+            Assert.AreEqual(0.3, s4.Permanence, 0.01);
         }
 
 
@@ -343,7 +343,7 @@ namespace UnitTestsProject
             Connections cn = new Connections();
             Parameters p = getDefaultParameters(null, KEY.MAX_NEW_SYNAPSE_COUNT, 3);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] zeroColumns = { };
             int[] activeColumns = { 0 };
@@ -362,7 +362,7 @@ namespace UnitTestsProject
             Connections cn = new Connections();
             Parameters p = getDefaultParameters(null, KEY.MAX_NEW_SYNAPSE_COUNT, 2);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] previousActiveColumns = { 0, 1, 2 };
             int[] activeColumns = { 4 };
@@ -377,7 +377,7 @@ namespace UnitTestsProject
             List<Cell> winnerCells = new List<Cell>(cc.WinnerCells);
             Assert.AreEqual(1, winnerCells.Count);
 
-            List<DistalDendrite> segments = winnerCells[0].getSegments(cn);
+            List<DistalDendrite> segments = winnerCells[0].GetSegments(cn);
             //List<DistalDendrite> segments = winnerCells[0].Segments;
             Assert.AreEqual(1, segments.Count);
 
@@ -386,7 +386,7 @@ namespace UnitTestsProject
 
             foreach (Synapse synapse in synapses)
             {
-                Assert.AreEqual(0.21, synapse.getPermanence(), 0.01);
+                Assert.AreEqual(0.21, synapse.Permanence, 0.01);
                 Assert.IsTrue(prevWinnerCells.Contains(synapse.getPresynapticCell()));
             }
         }
@@ -399,7 +399,7 @@ namespace UnitTestsProject
             Connections cn = new Connections();
             Parameters p = getDefaultParameters(null, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] previousActiveColumns = { 0, 1, 2 };
             int[] activeColumns = { 4 };
@@ -412,15 +412,15 @@ namespace UnitTestsProject
 
             List<Cell> winnerCells = new List<Cell>(cc.WinnerCells);
             Assert.AreEqual(1, winnerCells.Count);
-            List<DistalDendrite> segments = winnerCells[0].getSegments(cn);
+            List<DistalDendrite> segments = winnerCells[0].GetSegments(cn);
             //List<DistalDendrite> segments = winnerCells[0].Segments;
             Assert.AreEqual(1, segments.Count);
-            List<Synapse> synapses = segments[0].getAllSynapses(cn);
+            List<Synapse> synapses = segments[0].GetAllSynapses(cn);
 
             List<Cell> presynapticCells = new List<Cell>();
             foreach (Synapse synapse in synapses)
             {
-                Assert.AreEqual(0.21, synapse.getPermanence(), 0.01);
+                Assert.AreEqual(0.21, synapse.Permanence, 0.01);
                 presynapticCells.Add(synapse.getPresynapticCell());
             }
 
@@ -437,7 +437,7 @@ namespace UnitTestsProject
             Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 1);
             p = getDefaultParameters(p, KEY.MIN_THRESHOLD, 1);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] previousActiveColumns = { 0, 1, 2, 3 };
             ISet<Cell> prevWinnerCells = cn.GetCellSet(new int[] { 0, 1, 2, 3 });
@@ -458,7 +458,7 @@ namespace UnitTestsProject
             {
                 if (synapse.getPresynapticCell().Index == 0) continue;
 
-                Assert.AreEqual(0.21, synapse.getPermanence(), 0.01);
+                Assert.AreEqual(0.21, synapse.Permanence, 0.01);
                 Assert.IsTrue(synapse.getPresynapticCell().Index == 1 ||
                            synapse.getPresynapticCell().Index == 2 ||
                            synapse.getPresynapticCell().Index == 3);
@@ -475,7 +475,7 @@ namespace UnitTestsProject
             Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 1);
             p = getDefaultParameters(p, KEY.MIN_THRESHOLD, 1);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] previousActiveColumns = { 0, 1 };
             ISet<Cell> prevWinnerCells = cn.GetCellSet(new int[] { 0, 1 });
@@ -498,7 +498,7 @@ namespace UnitTestsProject
             {
                 if (synapse.getPresynapticCell().Index == 0) continue;
 
-                Assert.AreEqual(0.21, synapse.getPermanence(), 0.01);
+                Assert.AreEqual(0.21, synapse.Permanence, 0.01);
                 Assert.AreEqual(1, synapse.getPresynapticCell().Index);
             }
         }
@@ -519,7 +519,7 @@ namespace UnitTestsProject
             p = getDefaultParameters(p, KEY.ACTIVATION_THRESHOLD, 2);
             p = getDefaultParameters(p, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             // Use 1 cell per column so that we have easy control over the winner cells.
             int[] previousActiveColumns = { 0, 1, 2, 3, 4 };
@@ -537,7 +537,7 @@ namespace UnitTestsProject
             cc = tm.Compute(activeColumns, true) as ComputeCycle;
 
             List<Cell> presynapticCells = new List<Cell>();
-            foreach (var syn in activeSegment.getAllSynapses(cn))
+            foreach (var syn in activeSegment.GetAllSynapses(cn))
             {
                 presynapticCells.Add(syn.getPresynapticCell());
             }
@@ -562,7 +562,7 @@ namespace UnitTestsProject
             p = getDefaultParameters(p, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
             p = getDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] previousActiveColumns = { 0 };
             Cell[] previousActiveCells = { cn.GetCell(0), cn.GetCell(1), cn.GetCell(2), cn.GetCell(3) };
@@ -592,7 +592,7 @@ namespace UnitTestsProject
             p = getDefaultParameters(p, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
             p = getDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] previousActiveColumns = { 0 };
             Cell[] previousActiveCells = { cn.GetCell(0), cn.GetCell(1), cn.GetCell(2), cn.GetCell(3) };
@@ -627,7 +627,7 @@ namespace UnitTestsProject
             p = getDefaultParameters(p, KEY.PERMANENCE_DECREMENT, 0.02);
             p.Set(KEY.MAX_SYNAPSES_PER_SEGMENT, 3);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             Assert.AreEqual(3, cn.HtmConfig.MaxSynapsesPerSegment);
 
@@ -670,7 +670,7 @@ namespace UnitTestsProject
             p = getDefaultParameters(p, KEY.PERMANENCE_DECREMENT, 0.02);
             p.Set(KEY.MAX_SEGMENTS_PER_CELL, 2);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] prevActiveColumns1 = { 0, 1, 2 };
             int[] prevActiveColumns2 = { 3, 4, 5 };
@@ -683,7 +683,7 @@ namespace UnitTestsProject
 
             Assert.AreEqual(1, cn.GetSegments(cell9).Count);
             DistalDendrite oldestSegment = cn.GetSegments(cell9)[0];
-            tm.reset(cn);
+            tm.Reset(cn);
             tm.Compute(prevActiveColumns2, true);
             tm.Compute(activeColumns, true);
 
@@ -696,7 +696,7 @@ namespace UnitTestsProject
 
             var oldPresynaptic = cn.GetSynapses(oldestSegment).Select(s => s.getPresynapticCell()).ToList();
 
-            tm.reset(cn);
+            tm.Reset(cn);
             tm.Compute(prevActiveColumns3, true);
             tm.Compute(activeColumns, true);
             Assert.AreEqual(2, cn.GetSegments(cell9).Count);
@@ -728,7 +728,7 @@ namespace UnitTestsProject
             p = getDefaultParameters(p, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
             p = getDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] prevActiveColumns = { 0 };
             Cell[] prevActiveCells = { cn.GetCell(0), cn.GetCell(1), cn.GetCell(2), cn.GetCell(3) };
@@ -757,7 +757,7 @@ namespace UnitTestsProject
             p = getDefaultParameters(p, KEY.INITIAL_PERMANENCE, 0.2);
             p = getDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] prevActiveColumns = { 0 };
             Cell[] prevActiveCells = { cn.GetCell(0), cn.GetCell(1), cn.GetCell(2), cn.GetCell(3) };
@@ -778,13 +778,13 @@ namespace UnitTestsProject
             tm.Compute(prevActiveColumns, true);
             tm.Compute(activeColumns, true);
 
-            Assert.AreEqual(0.48, as1.getPermanence(), 0.01);
-            Assert.AreEqual(0.48, as2.getPermanence(), 0.01);
-            Assert.AreEqual(0.48, as3.getPermanence(), 0.01);
-            Assert.AreEqual(0.48, as4.getPermanence(), 0.01);
-            Assert.AreEqual(0.48, as5.getPermanence(), 0.01);
-            Assert.AreEqual(0.50, is1.getPermanence(), 0.01);
-            Assert.AreEqual(0.50, is2.getPermanence(), 0.01);
+            Assert.AreEqual(0.48, as1.Permanence, 0.01);
+            Assert.AreEqual(0.48, as2.Permanence, 0.01);
+            Assert.AreEqual(0.48, as3.Permanence, 0.01);
+            Assert.AreEqual(0.48, as4.Permanence, 0.01);
+            Assert.AreEqual(0.48, as5.Permanence, 0.01);
+            Assert.AreEqual(0.50, is1.Permanence, 0.01);
+            Assert.AreEqual(0.50, is2.Permanence, 0.01);
         }
 
         [TestMethod]
@@ -801,7 +801,7 @@ namespace UnitTestsProject
                 p = getDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
                 p = getDefaultParameters(p, KEY.SEED, seed);
                 p.apply(cn);
-                tm.init(cn);
+                tm.Init(cn);
 
                 int[] prevActiveColumns = { 1, 2, 3, 4 };
                 Cell[] prevActiveCells = { cn.GetCell(4), cn.GetCell(5), cn.GetCell(6), cn.GetCell(7) };
@@ -839,16 +839,16 @@ namespace UnitTestsProject
                 }
 
                 Assert.AreEqual(1, segments.Count);
-                List<Synapse> synapses = segments[0].getAllSynapses(cn);
+                List<Synapse> synapses = segments[0].GetAllSynapses(cn);
                 Assert.AreEqual(4, synapses.Count);
 
-                ISet<Column> columnCheckList = cn.getColumnSet(prevActiveColumns);
+                ISet<Column> columnCheckList = cn.GetColumnSet(prevActiveColumns);
 
                 foreach (Synapse synapse in synapses)
                 {
-                    Assert.AreEqual(0.2, synapse.getPermanence(), 0.01);
+                    Assert.AreEqual(0.2, synapse.Permanence, 0.01);
 
-                    var parentColIndx = synapse.getPresynapticCell().getParentColumnIndex();
+                    var parentColIndx = synapse.getPresynapticCell().ParentColumnIndex;
                     Column column = cn.HtmConfig.Memory.GetColumn(parentColIndx);
                     Assert.IsTrue(columnCheckList.Contains(column));
                     columnCheckList.Remove(column);
@@ -873,7 +873,7 @@ namespace UnitTestsProject
             p = getDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
             p = getDefaultParameters(p, KEY.INITIAL_PERMANENCE, 0.2);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             int[] prevActiveColumns = { 0 };
             Cell[] prevActiveCells = { cn.GetCell(0), cn.GetCell(1), cn.GetCell(2), cn.GetCell(3) };
@@ -912,14 +912,14 @@ namespace UnitTestsProject
             Parameters p = getDefaultParameters(null, KEY.COLUMN_DIMENSIONS, new int[] { 2 });
             p = getDefaultParameters(p, KEY.CELLS_PER_COLUMN, 2);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             DistalDendrite dd = cn.CreateDistalSegment(cn.GetCell(0));
             cn.CreateSynapse(dd, cn.GetCell(3), 0.3);
 
             for (int i = 0; i < 100; i++)
             {
-                Assert.AreEqual(1, tm.GetLeastUsedCell(cn, cn.getColumn(0).Cells, cn.HtmConfig.Random).Index);
+                Assert.AreEqual(1, tm.GetLeastUsedCell(cn, cn.GetColumn(0).Cells, cn.HtmConfig.Random).Index);
             }
         }
 
@@ -931,7 +931,7 @@ namespace UnitTestsProject
             Connections cn = new Connections();
             Parameters p = Parameters.getAllDefaultParameters();
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             DistalDendrite dd = cn.CreateDistalSegment(cn.GetCell(0));
             Synapse s1 = cn.CreateSynapse(dd, cn.GetCell(23), 0.6);
@@ -940,9 +940,9 @@ namespace UnitTestsProject
 
             tm.AdaptSegment(cn, dd, cn.GetCellSet(new int[] { 23, 37 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
 
-            Assert.AreEqual(0.7, s1.getPermanence(), 0.01);
-            Assert.AreEqual(0.5, s2.getPermanence(), 0.01);
-            Assert.AreEqual(0.8, s3.getPermanence(), 0.01);
+            Assert.AreEqual(0.7, s1.Permanence, 0.01);
+            Assert.AreEqual(0.5, s2.Permanence, 0.01);
+            Assert.AreEqual(0.8, s3.Permanence, 0.01);
         }
 
         [TestMethod]
@@ -953,17 +953,17 @@ namespace UnitTestsProject
             Connections cn = new Connections();
             Parameters p = Parameters.getAllDefaultParameters();
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             DistalDendrite dd = cn.CreateDistalSegment(cn.GetCell(0));
             Synapse s1 = cn.CreateSynapse(dd, cn.GetCell(23), 0.9);
 
             tm.AdaptSegment(cn, dd, cn.GetCellSet(new int[] { 23 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
-            Assert.AreEqual(1.0, s1.getPermanence(), 0.1);
+            Assert.AreEqual(1.0, s1.Permanence, 0.1);
 
             // Now permanence should be at max
             tm.AdaptSegment(cn, dd, cn.GetCellSet(new int[] { 23 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
-            Assert.AreEqual(1.0, s1.getPermanence(), 0.1);
+            Assert.AreEqual(1.0, s1.Permanence, 0.1);
         }
 
         [TestMethod]
@@ -974,7 +974,7 @@ namespace UnitTestsProject
             Connections cn = new Connections();
             Parameters p = Parameters.getAllDefaultParameters();
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             DistalDendrite dd = cn.CreateDistalSegment(cn.GetCell(0));
             Synapse s1 = cn.CreateSynapse(dd, cn.GetCell(23), 0.1);
@@ -994,7 +994,7 @@ namespace UnitTestsProject
             p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 64, 64 });
             p.Set(KEY.CELLS_PER_COLUMN, 32);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             Assert.AreEqual(64 * 64, cn.HtmConfig.NumColumns);
         }
@@ -1009,7 +1009,7 @@ namespace UnitTestsProject
             p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 64, 64 });
             p.Set(KEY.CELLS_PER_COLUMN, 32);
             p.apply(cn);
-            tm.init(cn);
+            tm.Init(cn);
 
             Assert.AreEqual(64 * 64 * 32, cn.Cells.Length);
         }

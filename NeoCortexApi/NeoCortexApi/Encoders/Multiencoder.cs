@@ -14,11 +14,11 @@ namespace NeoCortexApi.Encoders
         /// <summary>
         /// List of encoders used by MultiEncoder.
         /// </summary>
-        private List<EncoderBase> encoders = new List<EncoderBase>();
+        private List<EncoderBase> m_Encoders = new List<EncoderBase>();
 
         public MultiEncoder(List<EncoderBase> encoders)
         {
-            this.encoders = encoders;
+            this.m_Encoders = encoders;
         }
 
 
@@ -33,7 +33,7 @@ namespace NeoCortexApi.Encoders
 
             List<int> output = new List<int>();
 
-            foreach (var encoder in this.encoders)
+            foreach (var encoder in this.m_Encoders)
             {              
                 output.AddRange(encoder.Encode(input[encoder.Name]));
 
@@ -43,7 +43,7 @@ namespace NeoCortexApi.Encoders
             return output.ToArray();
         }
 
-        public override List<T> getBucketValues<T>()
+        public override List<T> GetBucketValues<T>()
         {
             throw new NotImplementedException();
         }

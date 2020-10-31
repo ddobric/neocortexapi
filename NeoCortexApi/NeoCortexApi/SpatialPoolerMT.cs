@@ -15,7 +15,7 @@ namespace NeoCortexApi
 {
     public class SpatialPoolerMT : SpatialPooler
     {
-        public SpatialPoolerMT(HomeostaticPlasticityActivator homeostaticPlasticityActivator = null) : base(homeostaticPlasticityActivator)
+        public SpatialPoolerMT(HomeostaticPlasticityController homeostaticPlasticityActivator = null) : base(homeostaticPlasticityActivator)
         { 
         
         }
@@ -51,11 +51,12 @@ namespace NeoCortexApi
                 Random rnd = new Random(42);
 
                 int colIndex = (int)indx;
-                var data = new ProcessingData();
-
-                // Gets RF
-                data.Potential = HtmCompute.MapPotential(c.HtmConfig, colIndex, rnd /*(c.getRandom()*/);
-                data.Column = c.getColumn(colIndex);
+                var data = new ProcessingData
+                {
+                    // Gets RF
+                    Potential = HtmCompute.MapPotential(c.HtmConfig, colIndex, rnd /*(c.getRandom()*/),
+                    Column = c.GetColumn(colIndex)
+                };
 
                 // This line initializes all synases in the potential pool of synapses.
                 // It creates the pool on proximal dendrite segment of the column.
@@ -138,19 +139,21 @@ namespace NeoCortexApi
             // columns in its neighborhood in order to become active. This radius is
             // updated every learning round. It grows and shrinks with the average
             // number of connected synapses per column.
-            updateInhibitionRadius(c, avgSynapsesConnected);
+            UpdateInhibitionRadius(c, avgSynapsesConnected);
         }
 
 
         public override int[] CalculateOverlap(Connections c, int[] inputVector)
         {
-            ParallelOptions opts = new ParallelOptions();
-            opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
+            ParallelOptions opts = new ParallelOptions
+            {
+                MaxDegreeOfParallelism = Environment.ProcessorCount
+            };
             ConcurrentDictionary<int, int> overlaps = new ConcurrentDictionary<int, int>();
 
             Parallel.For(0, c.HtmConfig.NumColumns, (col) =>
             {
-                overlaps[col] = c.getColumn(col).GetColumnOverlapp(inputVector, c.HtmConfig.StimulusThreshold);
+                overlaps[col] = c.GetColumn(col).GetColumnOverlapp(inputVector, c.HtmConfig.StimulusThreshold);
             });
 
           
@@ -176,11 +179,11 @@ namespace NeoCortexApi
             Parallel.For(0, activeColumns.Length, (i) =>
             {
                 //Pool pool = c.getPotentialPools().get(activeColumns[i]);
-                Pool pool = c.getColumn(activeColumns[i]).ProximalDendrite.RFPool;
-                double[] perm = pool.getDensePermanences(c.HtmConfig.NumInputs);
-                int[] indexes = pool.getSparsePotential();
+                Pool pool = c.GetColumn(activeColumns[i]).ProximalDendrite.RFPool;
+                double[] perm = pool.GetDensePermanences(c.HtmConfig.NumInputs);
+                int[] indexes = pool.GetSparsePotential();
                 ArrayUtils.RaiseValuesBy(permChanges, perm);
-                Column col = c.getColumn(activeColumns[i]);
+                Column col = c.GetColumn(activeColumns[i]);
                 HtmCompute.UpdatePermanencesForColumn(c.HtmConfig, perm, col, indexes, true);
             });
         }

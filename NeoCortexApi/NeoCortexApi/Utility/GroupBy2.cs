@@ -9,23 +9,21 @@ using NeoCortexApi.Entities;
 
 namespace NeoCortexApi.Utility
 {
-
-
-
-    /**
-     * An Java extension to groupby in Python's itertools. Allows to walk across n sorted lists
-     * with respect to their key functions and yields a {@link Tuple} of n lists of the
-     * members of the next *smallest* group.
-     * 
-     * @author cogmission
-     * @param <R>   The return type of the user-provided {@link Function}s
-     */
+    /// <summary>
+    /// An Java extension to groupby in Python's itertools. Allows to walk across n sorted lists with respect to their key functions
+    /// and yields a <see cref="Tuple"/> of n lists of the members of the next *smallest* group.
+    /// </summary>
+    /// <typeparam name="R">The return type of the user-provided <see cref="Func{T, TResult}"/>s</typeparam>
+    /// <remarks>
+    /// Author: cogmission
+    /// </remarks>
     public class GroupBy2<R> : IEnumerable<Pair<R, List<List<Object>>>>, IEnumerator<Pair<R, List<List<Object>>>> where R : class//, Generator<Tuple> 
                                                                                                                                  //  where R : IComparable<R>
     {
-
-        /** stores the user inputted pairs */
-        private Pair<List<Object>, Func<Object, R>>[] entries;
+        /// <summary>
+        /// stores the user inputted pairs
+        /// </summary>
+        private Pair<List<Object>, Func<Object, R>>[] m_Entries;
 
         /** stores the {@link GroupBy} {@link Generator}s created from the supplied lists */
         //private List<GroupBy<Object, R>> generatorList;
@@ -33,11 +31,13 @@ namespace NeoCortexApi.Utility
         /** the current interation's minimum key value */
         //private R minKeyVal;
 
-
+        #region Control Lists
         ///////////////////////
         //    Control Lists  //
         ///////////////////////
         private bool[] advanceList;
+
+        #endregion
 
         // private Slot<Pair<object, R>>[] nextList;
 
@@ -53,67 +53,67 @@ namespace NeoCortexApi.Utility
 
         // private int numEntries;
 
-        /**
-         * Private internally used constructor. To instantiate objects of this
-         * class, please see the static factory method {@link #of(Pair...)}
-         * 
-         * @param entries   a {@link Pair} of lists and their key-producing functions
-         */
+        /// <summary>
+        /// Private internally used constructor. To instantiate objects of this class, please see the static factory method <see cref="Of(Pair{List{object}, Func{object, R}}[])"/> 
+        /// </summary>
+        /// <param name="entries">a <see cref="Pair{TKey, TValue}"/> of lists and their key-producing functions</param>
         private GroupBy2(Pair<List<Object>, Func<Object, R>>[] entries)
         {
-            this.entries = entries;
+            this.m_Entries = entries;
         }
 
-        /**
-         * <p>
-         * Returns a {@code GroupBy2} instance which is used to group lists of objects
-         * in ascending order using keys supplied by their associated {@link Function}s.
-         * </p><p>
-         * <b>Here is an example of the usage and output of this object: (Taken from {@link GroupBy2Test})</b>
-         * </p>
-         * <pre>
-         *  List<Integer> sequence0 = Arrays.asList(new Integer[] { 7, 12, 16 });
-         *  List<Integer> sequence1 = Arrays.asList(new Integer[] { 3, 4, 5 });
-         *  
-         *  Function<Integer, Integer> identity = Function.identity();
-         *  Function<Integer, Integer> times3 = x -> x * 3;
-         *  
-         *  @SuppressWarnings({ "unchecked", "rawtypes" })
-         *  GroupBy2<Integer> groupby2 = GroupBy2.of(
-         *      new Pair(sequence0, identity), 
-         *      new Pair(sequence1, times3));
-         *  
-         *  for(Tuple tuple : groupby2) {
-         *      System.out.println(tuple);
-         *  }
-         * </pre>
-         * <br>
-         * <b>Will output the following {@link Tuple}s:</b>
-         * <pre>
-         *  '7':'[7]':'[NONE]'
-         *  '9':'[NONE]':'[3]'
-         *  '12':'[12]':'[4]'
-         *  '15':'[NONE]':'[5]'
-         *  '16':'[16]':'[NONE]'
-         *  
-         *  From row 1 of the output:
-         *  Where '7' == Tuple.get(0), 'List[7]' == Tuple.get(1), 'List[NONE]' == Tuple.get(2) == empty list with no members
-         * </pre>
-         * 
-         * <b>Note: Read up on groupby here:</b><br>
-         *   https://docs.python.org/dev/library/itertools.html#itertools.groupby
-         * <p> 
-         * @param entries
-         * @return  a n + 1 dimensional tuple, where the first element is the
-         *          key of the group and the other n entries are lists of
-         *          objects that are a member of the current group that is being
-         *          iterated over in the nth list passed in. Note that this
-         *          is a generator and a n+1 dimensional tuple is yielded for
-         *          every group. If a list has no members in the current
-         *          group, {@link Slot#NONE} is returned in place of a generator.
-         */
-        //@SuppressWarnings("unchecked")
-        public static GroupBy2<R> of(Pair<List<Object>, Func<Object, R>>[] entries)
+
+        /* @return a n + 1 dimensional tuple, where the first element is the
+        * key of the group and the other n entries are lists of
+        * objects that are a member of the current group that is being
+        * iterated over in the nth list passed in. Note that this
+        *          is a generator and a n+1 dimensional tuple is yielded for
+        *          every group.If a list has no members in the current
+        *          group, {
+            @link Slot#NONE} is returned in place of a generator.
+        */
+        /// <summary>
+        /// TODO: change to C# code
+        /// Returns a {@code GroupBy2} instance which is used to group lists of objects in ascending order using keys supplied by their associated {@link Function}s. <para/>
+        /// <b>Here is an example of the usage and output of this object: (Taken from {@link GroupBy2Test})</b><br/>
+        /// 
+        ///  List&lt;Integer> sequence0 = Arrays.asList(new Integer[] { 7, 12, 16 });<br/>
+        ///  List&lt;Integer> sequence1 = Arrays.asList(new Integer[] { 3, 4, 5 });<br/>
+        ///  
+        ///  Func&lt;Integer, Integer> identity = Function.identity();<br/>
+        ///  Func&lt;Integer, Integer> times3 = x => x * 3;<br/>
+        ///  
+        ///  GroupBy2&lt;Integer> groupby2 = GroupBy2.Of(<br/>
+        ///      new Pair(sequence0, identity), <br/>
+        ///      new Pair(sequence1, times3));<br/>
+        ///  
+        ///  foreach (Tuple tuple in groupby2) {<br/>
+        ///      Console.WriteLine(tuple);<br/>
+        ///  }
+        /// <br/>
+        /// <b>Will output the following {@link Tuple}s:</b><br/>
+        ///  '7':'[7]':'[NONE]'<br/>
+        ///  '9':'[NONE]':'[3]'<br/>
+        ///  '12':'[12]':'[4]'<br/>
+        ///  '15':'[NONE]':'[5]'<br/>
+        ///  '16':'[16]':'[NONE]'<br/>
+        ///  
+        ///  From row 1 of the output:<br/>
+        ///  Where '7' == Tuple.get(0), 'List[7]' == Tuple.get(1), 'List[NONE]' == Tuple.get(2) == empty list with no members<br/>
+        /// 
+        /// 
+        /// </summary>
+        /// <param name="entries"></param>
+        /// <returns>
+        /// a n + 1 dimensional tuple, where the first element is the key of the group and the other n entries are lists of
+        /// objects that are a member of the current group that is being iterated over in the nth list passed in. Note that this
+        /// is a generator and a n+1 dimensional tuple is yielded for every group.If a list has no members in the current 
+        /// group, <see cref="Slot"/> is returned in place of a generator.
+        /// </returns>
+        /// <remarks>
+        /// Note: Read up on groupby <a href="https://docs.python.org/dev/library/itertools.html#itertools.groupby">here</a>
+        /// </remarks>
+        public static GroupBy2<R> Of(Pair<List<Object>, Func<Object, R>>[] entries)
         {
             return new GroupBy2<R>(entries);
         }
@@ -122,7 +122,7 @@ namespace NeoCortexApi.Utility
 
         private int m_CurrentKey = 0;
 
-
+        // TODO same method name
         /// <summary>
         /// Populates generator list with entries and fills the next(List with empty elements.
         /// </summary>
@@ -132,7 +132,7 @@ namespace NeoCortexApi.Utility
 
             int i = 0;
 
-            foreach (var item in entries)
+            foreach (var item in m_Entries)
             {
                 foreach (var item1 in item.Key)
                 {
@@ -143,8 +143,8 @@ namespace NeoCortexApi.Utility
                 i++;
             }
 
-            m_Keys = m_Keys.ConvertAll<R>(item=>(R)item).OrderBy(k => (R)k).ToList();
-     
+            m_Keys = m_Keys.ConvertAll<R>(item => (R)item).OrderBy(k => (R)k).ToList();
+
         }
 
         public bool MoveNext()
@@ -158,7 +158,7 @@ namespace NeoCortexApi.Utility
 
             R minKeyVal = m_Keys[m_CurrentKey++];
 
-            this.Current = (Pair<R, List<List<Object>>>)next(minKeyVal);
+            this.Current = (Pair<R, List<List<Object>>>)Next(minKeyVal);
 
             return true;
         }
@@ -172,11 +172,17 @@ namespace NeoCortexApi.Utility
          */
         //    @SuppressWarnings("unchecked")
         //@Override
-        private Pair<R, List<List<Object>>> next(R minKeyVal)
+        /// <summary>
+        /// Returns a <see cref="Pair{TKey, TValue}"/> containing the current key in the zero'th slot, and a list objects which are members of the
+        /// group specified by that key.
+        /// </summary>
+        /// <param name="minKeyVal"></param>
+        /// <returns></returns>
+        private Pair<R, List<List<Object>>> Next(R minKeyVal)
         {
             Pair<R, List<List<Object>>> retVal = new Pair<R, List<List<Object>>>(minKeyVal, new List<List<Object>>());
 
-            for (int i = 0; i < entries.Length; i++)
+            for (int i = 0; i < m_Entries.Length; i++)
             {
                 List<Object> list;
                 list = getEntries(i, minKeyVal);
@@ -189,11 +195,11 @@ namespace NeoCortexApi.Utility
         }
 
 
-        private R getKeyFromList(int listIdx, Object targetKey)
+        private R GetKeyFromList(int listIdx, Object targetKey)
         {
-            foreach (var elem in entries[listIdx].Key)
+            foreach (var elem in m_Entries[listIdx].Key)
             {
-                var key = entries[listIdx].Value(elem);
+                var key = m_Entries[listIdx].Value(elem);
                 if (EqualityComparer<R>.Default.Equals(key, (R)targetKey))
                     return (R)elem;
             }
@@ -206,9 +212,9 @@ namespace NeoCortexApi.Utility
         {
             List<Object> list = new List<Object>();
 
-            foreach (var elem in entries[listIdx].Key)
+            foreach (var elem in m_Entries[listIdx].Key)
             {
-                var key = entries[listIdx].Value(elem);
+                var key = m_Entries[listIdx].Value(elem);
                 if (EqualityComparer<R>.Default.Equals(key, (R)targetKey))
                     list.Add((Object)elem);
             }
@@ -244,45 +250,41 @@ namespace NeoCortexApi.Utility
 
         }
 
-        /**
-         * A minimal {@link Serializable} version of an {@link Slot}
-         * @param <T>   the value held within this {@code Slot}
-         */
+        /// <summary>
+        /// A minimal {@link Serializable} version of an <see cref="Slot"/>
+        /// </summary>
+        /// <typeparam name="T">the value held within this <see cref="Slot"/></typeparam>
         public class Slot<T> : Slot, IEquatable<object>, IComparer<T>, IComparable<T>
             where T : class
         {
 
 
-            /**
-         * Common instance for {@code empty()}.
-         */
+            /// <summary>
+            ///  Common instance for <see cref="Empty"/>.
+            /// </summary>
             public static readonly Slot<T> NONE = new Slot<T>();
 
-            /**
-            * Returns an empty {@code Slot} instance.  No value is present for this
-            * Slot.
-            *
-            * @param <T> Type of the non-existent value
-            * @return an empty {@code Slot}
-            */
-            public static Slot<T> empty()
+            /// <summary>
+            /// Returns an empty <see cref="Slot{T}"/> instance.  No value is present for this Slot.
+            /// </summary>
+            /// <returns>an empty <see cref="Slot{T}"/></returns>
+            public static Slot<T> Empty()
             {
                 return NONE;
             }
 
-            /**
-             * If non-null, the value; if null, indicates no value is present
-             */
+            /// <summary>
+            /// If non-null, the value; if null, indicates no value is present
+            /// </summary>
             private readonly T value;
 
             internal Slot() { this.value = null; }
 
-            /**
-             * Constructs an instance with the value present.
-             *
-             * @param value the non-null value to be present
-             * @throws NullPointerException if value is null
-             */
+            /// <summary>
+            /// Constructs an instance with the value present.
+            /// </summary>
+            /// <param name="value">the non-null value to be present</param>
+            /// <exception cref="NullReferenceException">Throws if value is null.</exception>
             private Slot(T value)
             {
                 //if (value == null)
@@ -290,32 +292,25 @@ namespace NeoCortexApi.Utility
                 this.value = value;
             }
 
-            /**
-             * Returns an {@code Slot} with the specified present non-null value.
-             *
-             * @param <T> the class of the value
-             * @param value the value to be present, which must be non-null
-             * @return an {@code Slot} with the value present
-             * @throws NullPointerException if value is null
-             */
-            public static Slot<T> of(T value)
+            /// <summary>
+            /// Retruns an <see cref="Slot{T}"/> with the specified present non-null value.
+            /// </summary>
+            /// <param name="value">the value to be present, which must be non-null</param>
+            /// <returns>a <see cref="Slot{T}"/> with the value present.</returns>
+            /// <exception cref="NullReferenceException">Throws if value is null.</exception>
+            public static Slot<T> Of(T value)
             {
                 return new Slot<T>(value);
             }
 
-            /**
-             * Returns an {@code Slot} describing the specified value, if non-null,
-             * otherwise returns an empty {@code Slot}.
-             *
-             * @param <T> the class of the value
-             * @param value the possibly-null value to describe
-             * @return an {@code Slot} with a present value if the specified value
-             * is non-null, otherwise an empty {@code Slot}
-             */
-            //@SuppressWarnings("unchecked")
-            public static Slot<T> ofNullable(T value)
+            /// <summary>
+            /// Returns an <see cref="Slot{T}"/> describing the specified value, if non-null, otherwise returns an empty <see cref="Slot{T}"/>.
+            /// </summary>
+            /// <param name="value">the possibly-null value to describe</param>
+            /// <returns>a <see cref="Slot{T}"/> with a present value if the specified value</returns>
+            public static Slot<T> OfNullable(T value)
             {
-                return value == null ? (Slot<T>)NONE : of(value);
+                return value == null ? (Slot<T>)NONE : Of(value);
             }
 
             /**
@@ -327,7 +322,12 @@ namespace NeoCortexApi.Utility
              *
              * @see Slot#isPresent()
              */
-            public T get()
+            /// <summary>
+            /// If a value is present in this <see cref="Slot{T}"/>, returns the value, otherwise throws <see cref="ArgumentException"/>.
+            /// </summary>
+            /// <returns>the non-null value held by this <see cref="Slot{T}"/></returns>
+            /// <exception cref="ArgumentException">Throws if there is no value present.</exception>
+            public T Get()
             {
                 if (value == null)
                 {
@@ -336,25 +336,20 @@ namespace NeoCortexApi.Utility
                 return value;
             }
 
-
-
-            /**
-             * Return {@code true} if there is a value present, otherwise {@code false}.
-             *
-             * @return {@code true} if there is a value present, otherwise {@code false}
-             */
-            public bool isPresent()
+            /// <summary>
+            /// Return <see cref="true"/> if there is a value present, otherwise <see cref="false"/>
+            /// </summary>
+            /// <returns></returns>
+            public bool IsPresent()
             {
                 return value != null;
             }
-
-
 
             /**
              * Indicates whether some other object is "equal to" this Slot. The
              * other object is considered equal if:
              * <ul>
-             * <li>it is also an {@code Slot} and;
+             * <li>
              * <li>both instances have no value present or;
              * <li>the present values are "equal to" each other via {@code equals()}.
              * </ul>
@@ -364,7 +359,20 @@ namespace NeoCortexApi.Utility
              * otherwise {@code false}
              */
             // @Override
-            public bool Equals(Object obj)
+
+            // TODO override meothod??
+            // add override tag cause unitTest CompareDentrites() failed
+            /// <summary>
+            /// Indicates whether some other object is "equal to" this Slot. The other object is considered equal if:
+            /// <list type="bullet">
+            /// <item>it is also an <see cref="Slot"/> and;</item>
+            /// <item>both instances have no value present or;</item>
+            /// <item>the present values are "equal to" each other via <se {@code equals()}.</item>
+            /// </list>
+            /// </summary>
+            /// <param name="obj">an object to be tested for equality</param>
+            /// <returns>true if the other object is "equal to" this object otherwise false</returns>
+            public bool Equals(object obj)
             {
                 if (this == obj)
                 {
@@ -376,34 +384,27 @@ namespace NeoCortexApi.Utility
                     return false;
                 }
 
-                Slot<Object> other = (Slot<Object>)obj;
+                Slot<object> other = (Slot<object>)obj;
                 return value.Equals(other.value);
             }
 
-            /**
-             * Returns the hash code value of the present value, if any, or 0 (zero) if
-             * no value is present.
-             *
-             * @return hash code value of the present value or 0 if no value is present
-             */
-            // @Override
+            /// <summary>
+            /// Returns the hash code value of the present value, if any, or 0 (zero) if
+            /// no value is present.
+            /// </summary>
+            /// <returns>hash code value of the present value or 0 if no value is present</returns>
             public override int GetHashCode()
             {
                 return value.GetHashCode();
             }
 
-            /**
-             * Returns a non-empty string representation of this Slot suitable for
-             * debugging. The exact presentation format is unspecified and may vary
-             * between implementations and versions.
-             *
-             * @implSpec If a value is present the result must include its string
-             * representation in the result. Empty and present Slots must be
-             * unambiguously differentiable.
-             *
-             * @return the string representation of this instance
-             */
-            // @Override
+            /// <summary>
+            /// Returns a non-empty string representation of this Slot suitable for debugging. The exact presentation format is unspecified and may vary
+            /// between implementations and versions.
+            /// 
+            /// @implSpec If a value is present the result must include its string representation in the result. Empty and present Slots must be unambiguously differentiable.
+            /// </summary>
+            /// <returns>the string representation of this instance</returns>
             public override String ToString()
             {
                 return value != null ? $"Slot[{value}s]" : "NONE";

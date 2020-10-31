@@ -150,10 +150,10 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void CompareDentrites()
         {
-            var empty1 = (NeoCortexApi.Utility.GroupBy2<object>.Slot < Pair<object, List<object>> > )NeoCortexApi.Utility.GroupBy2<object>.Slot<Pair<object, List<object>>>.empty();
-            var empty2 = (NeoCortexApi.Utility.GroupBy2<object>.Slot < Pair<object, List<object>> > )NeoCortexApi.Utility.GroupBy2<object>.Slot<Pair<object, List<object>>>.empty();
+            var empty1 = (NeoCortexApi.Utility.GroupBy2<object>.Slot < Pair<object, List<object>> > )NeoCortexApi.Utility.GroupBy2<object>.Slot<Pair<object, List<object>>>.Empty();
+            var empty2 = (NeoCortexApi.Utility.GroupBy2<object>.Slot < Pair<object, List<object>> > )NeoCortexApi.Utility.GroupBy2<object>.Slot<Pair<object, List<object>>>.Empty();
 
-            var slot2 = NeoCortexApi.Utility.GroupBy2<object>.Slot<object>.of(7);
+            var slot2 = NeoCortexApi.Utility.GroupBy2<object>.Slot<object>.Of(7);
             Assert.AreNotEqual(empty1, slot2);
 
             Assert.AreEqual(empty1, empty2);

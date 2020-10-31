@@ -15,8 +15,6 @@ using System.Diagnostics;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
-
-
     public class HtmActor : ActorBase
     {
         public Dictionary<object, object> Dict = new Dictionary<object, object>();
@@ -45,7 +43,7 @@ namespace NeoCortexApi.DistributedComputeLib
             {
                 this.Logger?.LogDebug($"Received message: '{msg.GetType().Name}', Id: {this.Id}");
 
-                var res = initializeColumns(msg);
+                var res = InitializeColumns(msg);
 
                 this.Logger?.LogInformation($"Completed message: '{msg.GetType().Name}'. min:{msg.MinKey}, max:{msg.MaxKey} ,Column range: {res}, Hashcode: {this.GetHashCode()}, Elements: {this.Dict.Count}, Id: {this.Id}");
 
@@ -56,7 +54,7 @@ namespace NeoCortexApi.DistributedComputeLib
             {
                 this.Logger?.LogDebug($"{Id} - Received message: '{msg.GetType().Name}',  dict: {Dict.Count}, Id: {this.Id}");
 
-                var res = createAndConnectColumns(msg);
+                var res = CreateAndConnectColumns(msg);
 
                 if (Dict.Count == 0)
                 {
@@ -72,7 +70,7 @@ namespace NeoCortexApi.DistributedComputeLib
             {
                 this.Logger?.LogDebug($"Received message: '{msg.GetType().Name}'");
 
-                var res = calculateOverlap(msg);
+                var res = CalculateOverlap(msg);
 
                 if (res.Count == 0)
                 {
@@ -88,7 +86,7 @@ namespace NeoCortexApi.DistributedComputeLib
             {
                 this.Logger?.LogDebug($"Started message: '{msg.GetType().Name}'");
 
-                var res = adaptSynapses(msg);
+                var res = AdaptSynapses(msg);
 
                 this.Logger?.LogInformation($"Completed message: '{msg.GetType().Name}'. Result: {res}");
 
@@ -101,7 +99,7 @@ namespace NeoCortexApi.DistributedComputeLib
             {
                 this.Logger?.LogDebug($"Started message: '{msg.GetType().Name}'");
 
-                var res = bumpUpWeakColumns(msg);
+                var res = BumpUpWeakColumns(msg);
 
                 Console.WriteLine($"Completed message: '{msg.GetType().Name}'");
 
@@ -125,7 +123,7 @@ namespace NeoCortexApi.DistributedComputeLib
         /// Creates columns on the node.
         /// </summary>
         /// <param name="msg"></param>
-        private int initializeColumns(InitColumnsMsg msg)
+        private int InitializeColumns(InitColumnsMsg msg)
         {
             Dict = new Dictionary<object, object>();
 
@@ -143,7 +141,8 @@ namespace NeoCortexApi.DistributedComputeLib
         /// It returns the average connected span of the partition.
         /// </summary>
         /// <param name="msg"></param>
-        private double createAndConnectColumns(ConnectAndConfigureColumnsMsg msg)
+        //TODO remove unnecessary argument
+        private double CreateAndConnectColumns(ConnectAndConfigureColumnsMsg msg)
         {
             Debug.Write(".");
             List<double> avgConnections = new List<double>();
@@ -159,7 +158,7 @@ namespace NeoCortexApi.DistributedComputeLib
             {
                 if (this.HtmConfig == null)
                     throw new ArgumentException($"HtmConfig must be set in the message.");
-                
+
                 int colIndx = -1;
 
                 Column column;
@@ -202,14 +201,16 @@ namespace NeoCortexApi.DistributedComputeLib
             return avgConnectedSpan;
         }
 
-        private List<KeyPair> calculateOverlap(CalculateOverlapMsg msg)
+        private List<KeyPair> CalculateOverlap(CalculateOverlapMsg msg)
         {
             Console.WriteLine($"Received message: '{msg.GetType().Name}'");
 
             ConcurrentDictionary<int, int> overlaps = new ConcurrentDictionary<int, int>();
 
-            ParallelOptions opts = new ParallelOptions();
-            opts.MaxDegreeOfParallelism = Environment.ProcessorCount;
+            ParallelOptions opts = new ParallelOptions
+            {
+                MaxDegreeOfParallelism = Environment.ProcessorCount
+            };
 
             Parallel.ForEach(this.Dict, opts, (keyPair) =>
             {
@@ -237,18 +238,20 @@ namespace NeoCortexApi.DistributedComputeLib
             return sortedRes;
         }
 
-        private object adaptSynapses(AdaptSynapsesMsg msg)
+        private object AdaptSynapses(AdaptSynapsesMsg msg)
         {
-            ParallelOptions opts = new ParallelOptions();
-            opts.MaxDegreeOfParallelism = msg.ColumnKeys.Count;
+            ParallelOptions opts = new ParallelOptions
+            {
+                MaxDegreeOfParallelism = msg.ColumnKeys.Count
+            };
 
             Parallel.ForEach(msg.ColumnKeys, opts, (colPair) =>
             {
                 Column activeColumn = GetColumn(colPair.Key);
                 //Pool pool = c.getPotentialPools().get(activeColumns[i]);
                 Pool pool = activeColumn.ProximalDendrite.RFPool;
-                double[] perm = pool.getDensePermanences(this.HtmConfig.NumInputs);
-                int[] indexes = pool.getSparsePotential();
+                double[] perm = pool.GetDensePermanences(this.HtmConfig.NumInputs);
+                int[] indexes = pool.GetSparsePotential();
                 ArrayUtils.RaiseValuesBy(msg.PermanenceChanges, perm);
 
                 HtmCompute.UpdatePermanencesForColumn(this.HtmConfig, perm, activeColumn, indexes, true);
@@ -258,19 +261,21 @@ namespace NeoCortexApi.DistributedComputeLib
             return 0;
         }
 
-        private object bumpUpWeakColumns(BumUpWeakColumnsMsg msg)
+        private object BumpUpWeakColumns(BumUpWeakColumnsMsg msg)
         {
-            ParallelOptions opts = new ParallelOptions();
-            opts.MaxDegreeOfParallelism = msg.ColumnKeys.Count;
+            ParallelOptions opts = new ParallelOptions
+            {
+                MaxDegreeOfParallelism = msg.ColumnKeys.Count
+            };
 
             Parallel.ForEach(msg.ColumnKeys, opts, (colPair) =>
             {
                 Column weakColumn = GetColumn(colPair.Key);
 
                 Pool pool = weakColumn.ProximalDendrite.RFPool;
-                double[] perm = pool.getSparsePermanences();
+                double[] perm = pool.GetSparsePermanences();
                 ArrayUtils.RaiseValuesBy(this.HtmConfig.SynPermBelowStimulusInc, perm);
-                int[] indexes = pool.getSparsePotential();
+                int[] indexes = pool.GetSparsePotential();
 
                 weakColumn.UpdatePermanencesForColumnSparse(this.HtmConfig, perm, indexes, true);
             });
@@ -279,8 +284,8 @@ namespace NeoCortexApi.DistributedComputeLib
         }
 
         private Column GetColumn(object key)
-        {            
-            if(this.Dict.ContainsKey(key.ToString()))
+        {
+            if (this.Dict.ContainsKey(key.ToString()))
                 return (Column)Dict[key.ToString()];
             else if (this.Dict.ContainsKey((int)(long)key))
                 return (Column)Dict[(int)(long)key];

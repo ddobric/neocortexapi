@@ -77,11 +77,11 @@ namespace UnitTestsProject
         internal static void InitPooler(PoolerMode poolerMode, SpatialPooler sp, Connections mem, Parameters parameters = null)
         {
             if (poolerMode == PoolerMode.Multinode)
-                sp.init(mem, UnitTestHelpers.GetMemory(mem.HtmConfig));
+                sp.Init(mem, UnitTestHelpers.GetMemory(mem.HtmConfig));
             else if (poolerMode == PoolerMode.Multicore)
-                sp.init(mem, UnitTestHelpers.GetMemory());
+                sp.Init(mem, UnitTestHelpers.GetMemory());
             else
-                sp.init(mem);
+                sp.Init(mem);
         }
 
         ///// <summary>

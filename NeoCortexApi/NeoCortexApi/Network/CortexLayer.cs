@@ -50,7 +50,7 @@ namespace NeoCortexApi.Network
         /// <summary>
         /// Outputs of evey module in the pipeline.
         /// </summary>
-        private Dictionary<string, object> results = new Dictionary<string, object>();
+        private Dictionary<string, object> m_Results = new Dictionary<string, object>();
 
         /// <summary>
         /// Gets the result of the specific module inside of the layer's pipeline.
@@ -59,15 +59,15 @@ namespace NeoCortexApi.Network
         /// <returns></returns>
         public object GetResult(string moduleName)
         {
-            return this.results[moduleName];
+            return this.m_Results[moduleName];
         }
 
         private void SetResult(string moduleName, object result)
         {
-            if (this.results.ContainsKey(moduleName))
-                this.results[moduleName] = result;
+            if (this.m_Results.ContainsKey(moduleName))
+                this.m_Results[moduleName] = result;
             else
-                this.results.Add(moduleName, result);
+                this.m_Results.Add(moduleName, result);
         }
 
         /// <summary>

@@ -57,7 +57,7 @@ namespace NeoCortexApi.Encoders
         public override int[] Encode(object inputData)
         {
             int index = scalarNames.IndexOf((String)inputData);
-            int[] outArray = encoding(index);
+            int[] outArray = Encoding(index);
             return outArray;
         }
 
@@ -72,7 +72,7 @@ namespace NeoCortexApi.Encoders
         /// </summary>
         /// <param name="element"></param>
         /// <returns></returns>
-        private int[] encoding(int element)
+        private int[] Encoding(int element)
         {
             int[] encoderArray = new int[N];
 
@@ -90,7 +90,7 @@ namespace NeoCortexApi.Encoders
             return encoderArray;
         }
 
-        public override List<T> getBucketValues<T>()
+        public override List<T> GetBucketValues<T>()
         {
             throw new NotImplementedException();
         }

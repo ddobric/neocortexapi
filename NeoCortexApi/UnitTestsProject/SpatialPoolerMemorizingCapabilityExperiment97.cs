@@ -109,7 +109,7 @@ namespace UnitTestsProject
             //var rnd = new Random();
 
             parameters.apply(mem);
-            sp.init(mem);
+            sp.Init(mem);
             /***************************************************************************************
              * |LOGICTEST| |CONTINOUS_PATTERN_LEARNING|
              * Using input from scalar encoder 
@@ -226,7 +226,7 @@ namespace UnitTestsProject
             var mem = new Connections();
 
             parameters.apply(mem);
-            sp.init(mem);
+            sp.Init(mem);
             /***************************************************************************************
              * |LOGICTEST| |SEQUENTIAL_PERIODIC_INPUT Learning| 
              * Using input from scalar encoder 

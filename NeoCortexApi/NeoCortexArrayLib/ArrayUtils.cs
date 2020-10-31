@@ -10,10 +10,10 @@ using System.IO;
 
 namespace NeoCortexApi.Utility
 {
-    /**
-     * Utilities to match some of the functionality found in Python's Numpy.
-     * @author David Ray
-     */
+    /// <summary>
+    /// Utilities to match some of the functionality found in Python's Numpy.
+    /// </summary>
+    /// <remarks>author David Ray</remarks>
     public static class ArrayUtils
     {
         /** Empty array constant */
@@ -40,33 +40,7 @@ namespace NeoCortexApi.Utility
             var value = string.Join(" [ ", arr.Select(x => x.ArrToString()).ToArray(), " ] ");
             return value;
         }
-        //public static Condition<Integer> WHERE_1 = new Condition.Adapter<Integer>()
-        //{
-        //    public bool eval(int i)
-        //    {
-        //        return i == 1;
-        //    }
-        //};
-
-        //    public static Condition<Double> GREATER_THAN_0 = new Condition.Adapter<Double>()
-        //    {            public boolean eval(double i)
-        //    {
-        //        return i > 0;
-        //    }
-        //};
-
-        //    public static Condition<Integer> INT_GREATER_THAN_0 = new Condition.Adapter<Integer>()
-        //    {
-        //        public bool eval(int i)
-        //    {
-        //        return i > 0;
-        //    }
-        //};
-
-
-        //public static Condition<Integer> GREATER_OR_EQUAL_0 = new Condition.Adapter<Integer>() {
-        //        @Override public boolean eval(int n) { return n >= 0; }
-        //    };
+       
 
         /// <summary>
         /// Returns the product of each integer in the specified array.
@@ -84,604 +58,9 @@ namespace NeoCortexApi.Utility
             return retVal;
         }
 
-        /**
-         * Returns an array containing the successive elements of each
-         * argument array as in [ first[0], second[0], first[1], second[1], ... ].
-         * 
-         * Arrays may be of zero length, and may be of different sizes, but may not be null.
-         * 
-         * @param first     the first array
-         * @param second    the second array
-         * @return
-         */
-        //public static Object[] interleave<F, S>(F first, S second) where F : IList<F> where S : IList<S>
-        //{
-        //    int flen, slen;
-
-        //    flen = first.Count;
-        //    slen = second.Count;
-
-        //    Object[] retVal = new Object[flen + slen];
-        //    for (int i = 0, j = 0, k = 0; i < flen || j < slen;)
-        //    {
-        //        if (i < flen)
-        //        {
-        //            retVal[k++] = first[i++];
-        //        }
-        //        if (j < slen)
-        //        {
-        //            retVal[k++] = second[j++];
-        //        }
-        //    }
-
-        //    return retVal;
-        //}
-
-        /**
-         * <p>
-         * Return a new double[] containing the difference of each element and its
-         * succeding element.
-         * </p><p>
-         * The first order difference is given by ``out[n] = a[n+1] - a[n]``
-         * along the given axis, higher order differences are calculated by using `diff`
-         * recursively.
-         *
-         * @param d
-         * @return
-         */
-        //public static double[] diff(double[] d)
-        //{
-        //    double[] retVal = new double[d.Length - 1];
-        //    for (int i = 0; i < retVal.Length; i++)
-        //    {
-        //        retVal[i] = d[i + 1] - d[i];
-        //    }
-
-        //    return retVal;
-        //}
-
-        /**
-         * Returns a flag indicating whether the container list contains an
-         * array which matches the specified match array.
-         *
-         * @param match     the array to match
-         * @param container the list of arrays to test
-         * @return true if so, false if not
-         */
-        //public static bool contains(int[] match, List<int[]> container)
-        //{
-        //    for (int i = 0; i < container.Count; i++)
-        //    {
-        //        bool isSubset = !container[i].Except(match).Any();
-        //        return isSubset;
-        //        //if (Arrays.equals(match, container.get(i)))
-        //        //{
-        //        //    return true;
-        //        //}
-        //    }
-        //    return false;
-        //}
-
-        /**
-         * Returns a new array of size first.length + second.length, with the
-         * contents of the first array loaded into the returned array starting
-         * at the zero'th index, and the contents of the second array appended
-         * to the returned array beginning with index first.length.
-         * 
-         * This method is fail fast, meaning that it depends on the two arrays
-         * being non-null, and if not, an exception is thrown.
-         *  
-         * @param first     the data to load starting at index 0
-         * @param second    the data to load starting at index first.length;
-         * @return  a concatenated array
-         * @throws NullPointerException if either first or second is null
-         */
-        //public static double[] concat(double[] first, double[] second)
-        //{
-        //    double[] retVal = Arrays.copyOf(first, first.length + second.length);
-        //    for (int i = first.length, j = 0; i < retVal.length; i++, j++)
-        //    {
-        //        retVal[i] = second[j];
-        //    }
-        //    return retVal;
-        //}
-
-        //public static int maxIndex(int[] shape)
-        //{
-        //    return shape[0] * Math.max(1, initDimensionMultiples(shape)[0]) - 1;
-        //}
-
-        /**
-         * Returns an array of coordinates calculated from
-         * a flat index.
-         * 
-         * @param   index   specified flat index
-         * @param   shape   the array specifying the size of each dimension
-         * @param   isColumnMajor   increments row first then column (default: false)
-         * 
-         * @return  a coordinate array
-         */
-        //public static int[] toCoordinates(int index, int[] shape, boolean isColumnMajor)
-        //{
-        //    int[] dimensionMultiples = initDimensionMultiples(shape);
-        //    int[] returnVal = new int[shape.length];
-        //    int base = index;
-        //    for (int i = 0; i < dimensionMultiples.length; i++)
-        //    {
-        //        int quotient = base / dimensionMultiples[i];
-        //        base %= dimensionMultiples[i];
-        //        returnVal[i] = quotient;
-        //    }
-        //    return isColumnMajor ? reverse(returnVal) : returnVal;
-        //}
-
-        /**
-         * Utility to compute a flat index from coordinates.
-         *
-         * @param coordinates an array of integer coordinates
-         * @return a flat index
-         */
-        //public static int fromCoordinate(int[] coordinates, int[] shape)
-        //{
-        //    int[] localMults = initDimensionMultiples(shape);
-        //    int base = 0;
-        //    for (int i = 0; i < coordinates.length; i++)
-        //    {
-        //        base += (localMults[i] * coordinates[i]);
-        //    }
-        //    return base;
-        //}
-
-        /**
-         * Utility to compute a flat index from coordinates.
-         *
-         * @param coordinates an array of integer coordinates
-         * @return a flat index
-         */
-        //public static int fromCoordinate(int[] coordinates)
-        //{
-        //    int[] localMults = initDimensionMultiples(coordinates);
-        //    int base = 0;
-        //    for (int i = 0; i < coordinates.length; i++)
-        //    {
-        //        base += (localMults[i] * coordinates[i]);
-        //    }
-        //    return base;
-        //}
-
-        /**
-         * Initializes internal helper array which is used for multidimensional
-         * index computation.
-         *
-         * @param shape     an array specifying sizes of each dimension
-         * @return
-         */
-        //public static int[] initDimensionMultiples(int[] shape)
-        //{
-        //    int holder = 1;
-        //    int len = shape.length;
-        //    int[] dimensionMultiples = new int[shape.length];
-        //    for (int i = 0; i < len; i++)
-        //    {
-        //        holder *= (i == 0 ? 1 : shape[len - i]);
-        //        dimensionMultiples[len - 1 - i] = holder;
-        //    }
-        //    return dimensionMultiples;
-        //}
-
-        /**
-         * Takes a two-dimensional input array and returns a new array which is "rotated"
-         * a quarter-turn clockwise.
-         * 
-         * @param array The array to rotate.
-         * @return The rotated array.
-         */
-        //public static int[][] rotateRight(int[][] array)
-        //{
-        //    int r = array.length;
-        //    if (r == 0)
-        //    {
-        //        return new int[0][0]; // Special case: zero-length array
-        //    }
-        //    int c = array[0].length;
-        //    int[][] result = new int[c][r];
-        //    for (int i = 0; i < r; i++)
-        //    {
-        //        for (int j = 0; j < c; j++)
-        //        {
-        //            result[j][r - 1 - i] = array[i][j];
-        //        }
-        //    }
-        //    return result;
-        //}
-
-
-        /**
-         * Takes a two-dimensional input array and returns a new array which is "rotated"
-         * a quarter-turn counterclockwise.
-         * 
-         * @param array The array to rotate.
-         * @return The rotated array.
-         */
-        //public static int[][] rotateLeft(int[][] array)
-        //{
-        //    int r = array.length;
-        //    if (r == 0)
-        //    {
-        //        return new int[0][0]; // Special case: zero-length array
-        //    }
-        //    int c = array[0].length;
-        //    int[][] result = new int[c][r];
-        //    for (int i = 0; i < r; i++)
-        //    {
-        //        for (int j = 0; j < c; j++)
-        //        {
-        //            result[c - 1 - j][i] = array[i][j];
-        //        }
-        //    }
-        //    return result;
-        //}
-
-        /**
-         * Takes a one-dimensional input array of m  n  numbers and returns a two-dimensional
-         * array of m rows and n columns. The first n numbers of the given array are copied
-         * into the first row of the new array, the second n numbers into the second row,
-         * and so on. This method throws an IllegalArgumentException if the length of the input
-         * array is not evenly divisible by n.
-         * 
-         * @param array The values to put into the new array.
-         * @param n The number of desired columns in the new array.
-         * @return The new m  n array.
-         * @throws IllegalArgumentException If the length of the given array is not
-         *  a multiple of n.
-         */
-        //        public static int[][] ravel(int[] array, int n) throws IllegalArgumentException
-        //        {
-        //        if (array.length % n != 0) {
-        //        throw new IllegalArgumentException(array.length + " is not evenly divisible by " + n);
-        //    }
-        //    int length = array.length;
-        //    int[]
-        //[]
-        //result = new int[length / n][n];
-        //        for (int i = 0; i<length; i++) {
-        //            result[i / n][i % n] = array[i];
-        //        }
-        //        return result;
-        //    }
-
-        /**
-         * Takes a m by n two dimensional array and returns a one-dimensional array of size m  n
-         * containing the same numbers. The first n numbers of the new array are copied from the
-         * first row of the given array, the second n numbers from the second row, and so on.
-         * 
-         * @param array The array to be unraveled.
-         * @return The values in the given array.
-         */
-        //    public static int[] unravel(int[][] array)
-        //{
-        //    int r = array.length;
-        //    if (r == 0)
-        //    {
-        //        return new int[0]; // Special case: zero-length array
-        //    }
-        //    int c = array[0].length;
-        //    int[] result = new int[r * c];
-        //    int index = 0;
-        //    for (int i = 0; i < r; i++)
-        //    {
-        //        for (int j = 0; j < c; j++)
-        //        {
-        //            result[index] = array[i][j];
-        //            index++;
-        //        }
-        //    }
-        //    return result;
-        //}
-
-        /**
-         * Takes a two-dimensional array of r rows and c columns and reshapes it to
-         * have (r*c)/n by n columns. The value in location [i][j] of the input array
-         * is copied into location [j][i] of the new array.
-         * 
-         * @param array The array of values to be reshaped.
-         * @param n The number of columns in the created array.
-         * @return The new (r*c)/n by n array.
-         * @throws IllegalArgumentException If r*c  is not evenly divisible by n.
-         */
-        //public static int[][] reshape(int[][] array, int n) throws IllegalArgumentException
-        //{
-        //        int r = array.length;
-        //        if (r == 0) {
-        //        return new int[0][0]; // Special case: zero-length array
-        //    }
-        //        if ((array.length * array [0].length) % n != 0) {
-        //        int size = array.length * array[0].length;
-        //        throw new IllegalArgumentException(size + " is not evenly divisible by " + n);
-        //    }
-        //        int c = array [0].length;
-        //        int[]
-        //    []
-        //    result = new int[(r * c) / n][n];
-        //        int ii = 0;
-        //int jj = 0;
-
-        //        for (int i = 0; i<r; i++) {
-        //            for (int j = 0; j<c; j++) {
-        //                result[ii][jj] = array[i][j];
-        //                jj++;
-        //                if (jj == n) {
-        //                    jj = 0;
-        //                    ii++;
-        //                }
-        //            }
-        //        }
-        //        return result;
-        //    }
-
-        /**
-         * Returns an int[] with the dimensions of the input.
-         * @param inputArray
-         * @return
-         */
-        //    public static int[] shape(Object inputArray)
-        //{
-        //    int nr = 1 + inputArray.getClass().getName().lastIndexOf('[');
-        //    Object oa = inputArray;
-        //    int[] l = new int[nr];
-        //    for (int i = 0; i < nr; i++)
-        //    {
-        //        int len = l[i] = Array.getLength(oa);
-        //        if (0 < len) { oa = Array.get(oa, 0); }
-        //    }
-
-        //    return l;
-        //}
-
-        /**
-         * Sorts the array, then returns an array containing the indexes of
-         * those sorted items in the original array.
-         * <p>
-         * int[] args = argsort(new int[] { 11, 2, 3, 7, 0 });
-         * contains:
-         * [4, 1, 2, 3, 0]
-         * 
-         * @param in
-         * @return
-         */
-        //public static int[] argsort(int[] inp)
-        //{
-        //    return argsort(inp, -1, -1);
-        //}
-
-        /**
-         * Sorts the array, then returns an array containing the indexes of
-         * those sorted items in the original array which are between the
-         * given bounds (start=inclusive, end=exclusive)
-         * <p>
-         * int[] args = argsort(new int[] { 11, 2, 3, 7, 0 }, 0, 3);
-         * sorted = {0,2,3,7,11}
-         * contains:
-         * [4, 1, 2], which are indexes of [0, 2 and 3]
-         * 
-         * @param in
-         * @return  the indexes of input elements filtered in the way specified
-         * 
-         * @see #argsort(int[])
-         */
-        //public static int[] argsort(int[] inp, int start, int end)
-        //{
-        //    var sorted = inp.OrderBy(e => e).ToArray();
-        //    var final = new int[end - start];
-        //    if (start == -1)
-        //        start = 0;
-
-        //    if (end == -1)
-        //        end = inp.Length;
-
-        //    for (int i = start; i < end; i++)
-        //    {
-        //        final[i] = Array.IndexOf(sorted, sorted[i]);
-        //    }
-
-        //    return final;
-        //    //if (start == -1 || end == -1)
-        //    //{
-        //    //    Array.IndexOf()
-        //    //    inp.OrderBy(e=>e).Select(e=> inp)
-        //    //    return IntStream.of(inp).sorted().map(i->
-        //    //        Arrays.stream(inp).boxed().collect(Collectors.toList()).indexOf(i)).toArray();
-        //    //}
-
-        //    //return IntStream.of(inp).sorted().map(i->
-        //    //    Arrays.stream(inp).boxed().collect(Collectors.toList()).indexOf(i))
-        //    //        .skip(start).limit(end).toArray();
-        //}
-
-        /**
-        * Transforms 2D matrix of doubles to 1D by concatenation
-        * @param A
-        * @return
-*/
-        //public static double[] to1D(double[][] A)
-        //{
-
-        //    double[] B = new double[A.length * A[0].length];
-        //    int index = 0;
-
-        //    for (int i = 0; i < A.length; i++)
-        //    {
-        //        for (int j = 0; j < A[0].length; j++)
-        //        {
-        //            B[index++] = A[i][j];
-        //        }
-        //    }
-        //    return B;
-        //}
-
-        /**
-         * Transforms 2D matrix of integers to 1D by concatenation
-         * @param A
-         * @return
-         */
-        //public static int[] to1D(int[][] A)
-        //{
-
-        //    int[] B = new int[A.length * A[0].length];
-        //    int index = 0;
-
-        //    for (int i = 0; i < A.length; i++)
-        //    {
-        //        for (int j = 0; j < A[0].length; j++)
-        //        {
-        //            B[index++] = A[i][j];
-        //        }
-        //    }
-        //    return B;
-        //}
-
-        /**
-          * Returns a string representing an array of 0's and 1's
-          *
-          * @param arr an binary array (0's and 1's only)
-          * @return
-          */
-        //public static String bitsToString(int[] arr)
-        //{
-        //    char[] s = new char[arr.Length + 1];
-
-        //    for (int i = 0; i < s.Length; i++)
-        //    {
-        //        s[i] = '.';
-        //    }
-
-        //    s[0] = 'c';
-        //    for (int i = 0; i < arr.Length; i++)
-        //    {
-        //        if (arr[i] == 1)
-        //        {
-        //            s[i + 1] = '*';
-        //        }
-        //    }
-
-        //    return new String(s);
-        //}
-
-        /**
-         * Return a list of tuples, where each tuple contains the i-th element
-         * from each of the argument sequences.  The returned list is
-         * truncated in length to the length of the shortest argument sequence.
-         *
-         * @param arg1 the first list to be the zero'th entry in the returned tuple
-         * @param arg2 the first list to be the one'th entry in the returned tuple
-         * @return a list of tuples
-         */
-        //public static List<Tuple<T1,T2>> Zip<T1,T2>(List<T1> arg1, List<T2> arg2)
-        //{
-        //    List<Tuple<T1, T2>> tuples = new List<Tuple<T1, T2>>();
-        //    int len = Math.Min(arg1.Count, arg2.Count);
-        //    for (int i = 0; i < len; i++)
-        //    {
-        //        tuples.Add(new Tuple<T1, T2>(arg1[i], arg2[i]));
-        //    }
-
-        //    return tuples;
-        //}
-
-        /**
-         * Return a list of tuples, where each tuple contains the i-th element
-         * from each of the argument sequences.  The returned list is
-         * truncated in length to the length of the shortest argument sequence.
-         *
-         * @param args  the array of Objects to be wrapped in {@link Tuple}s
-         * @return a list of tuples
-         */
-        //public static List<Tuple> zip(List<?>...args)
-        //{
-        //    List<Tuple> tuples = new ArrayList<Tuple>();
-
-        //    int min = Arrays.stream(args).mapToInt(i->i.size()).min().orElse(0);
-
-        //    int len = args.length;
-        //    for (int j = 0; j < min; j++)
-        //    {
-        //        MutableTuple mt = new MutableTuple(len);
-        //        for (int i = 0; i < len; i++)
-        //        {
-        //            mt.set(i, args[i].get(j));
-        //        }
-        //        tuples.add(mt);
-        //    }
-
-        //    return tuples;
-        //}
-
-        /**
-         * Return a list of tuples, where each tuple contains the i-th element
-         * from each of the argument sequences.  The returned list is
-         * truncated in length to the length of the shortest argument sequence.
-         *
-         * @param args  the array of Objects to be wrapped in {@link Tuple}s
-         * @return a list of tuples
-         */
-        //public static List<Tuple> zip(int[]... args)
-        //{
-        //    List<Tuple> tuples = new ArrayList<Tuple>();
-
-        //    int min = Arrays.stream(args).mapToInt(i->i.length).min().orElse(0);
-
-        //    int len = args.length;
-        //    for (int j = 0; j < min; j++)
-        //    {
-        //        MutableTuple mt = new MutableTuple(len);
-        //        for (int i = 0; i < len; i++)
-        //        {
-        //            mt.set(i, args[i][j]);
-        //        }
-        //        tuples.add(mt);
-        //    }
-
-        //    return tuples;
-        //}
-
-        /**
-         * Return a list of tuples, where each tuple contains the i-th element
-         * from each of the argument sequences.  The returned list is
-         * truncated in length to the length of the shortest argument sequence.
-         *
-         * @param args  the array of Objects to be wrapped in {@link Tuple}s
-         * @return a list of tuples
-         */
-        //public static List<Tuple> zip(Object[]... args)
-        //{
-        //    List<Tuple> tuples = new ArrayList<Tuple>();
-
-        //    int min = Integer.MAX_VALUE;
-        //    for (Object[] oa : args)
-        //    {
-        //        if (oa.length < min)
-        //        {
-        //            min = oa.length;
-        //        }
-        //    }
-
-        //    int len = args.length;
-        //    for (int j = 0; j < min; j++)
-        //    {
-        //        MutableTuple mt = new MutableTuple(2);
-        //        for (int i = 0; i < len; i++)
-        //        {
-        //            mt.set(i, args[i][j]);
-        //        }
-        //        tuples.add(mt);
-        //    }
-
-        //    return tuples;
-        //}
-
+      
         /// <summary>
-        /// Returns an array with the same shape and the contents
-        /// converted to integers.
+        /// Returns an array with the same shape and the contents converted to integers.
         /// </summary>
         /// <param name="doubs">an array of doubles.</param>
         /// <returns></returns>
@@ -696,8 +75,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns an array with the same shape and the contents
-        /// converted to doubles.
+        /// Returns an array with the same shape and the contents converted to doubles.
         /// </summary>
         /// <param name="ints">an array of ints.</param>
         /// <returns></returns>
@@ -743,8 +121,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <smmary>
-        /// Performs a modulus on every index of the first argument using
-        /// the second argument and places the result in the same index of
+        /// Performs a modulus on every index of the first argument using the second argument and places the result in the same index of
         /// the first argument.
         /// </summary>
         /// <param name="a"></param>
@@ -760,8 +137,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns a double array whose values are the maximum of the value
-        /// in the array and the max value argument.
+        /// Returns a double array whose values are the maximum of the value in the array and the max value argument.
         /// </summary>
         /// <param name="doubs"></param>
         /// <param name="maxValue"></param>
@@ -777,8 +153,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns an array of identical shape containing the maximum
-        /// of the values between each corresponding index.Input arrays
+        /// Returns an array of identical shape containing the maximum of the values between each corresponding index.Input arrays
         /// must be the same length.
         /// </summary>
         /// <param name="arr1"></param>
@@ -795,8 +170,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns an array of identical shape containing the minimum
-        /// of the values between each corresponding index. Input arrays
+        /// Returns an array of identical shape containing the minimum of the values between each corresponding index. Input arrays
         /// must be the same length.
         /// </summary>
         /// <param name="arr1"></param>
@@ -834,55 +208,9 @@ namespace NeoCortexApi.Utility
             return intList;
         }
 
-        /**
-         * Returns an array of values that test true for all of the
-         * specified {@link Condition}s.
-         *
-         * @param values
-         * @param conditions
-         * @return
-         */
-        //public static int[] retainLogicalAnd(int[] values, Condition<?>[] conditions)
-        //{
-        //    TIntArrayList l = new TIntArrayList();
-        //    for (int i = 0; i < values.length; i++)
-        //    {
-        //        boolean result = true;
-        //        for (int j = 0; j < conditions.length && result; j++)
-        //        {
-        //            result &= conditions[j].eval(values[i]);
-        //        }
-        //        if (result) l.add(values[i]);
-        //    }
-        //    return l.toArray();
-        //}
-
-        /**
-         * Returns an array of values that test true for all of the
-         * specified {@link Condition}s.
-         *
-         * @param values
-         * @param conditions
-         * @return
-         */
-        //public static double[] retainLogicalAnd(double[] values, Condition<?>[] conditions)
-        //{
-        //    TDoubleArrayList l = new TDoubleArrayList();
-        //    for (int i = 0; i < values.length; i++)
-        //    {
-        //        boolean result = true;
-        //        for (int j = 0; j < conditions.length && result; j++)
-        //        {
-        //            result &= conditions[j].eval(values[i]);
-        //        }
-        //        if (result) l.add(values[i]);
-        //    }
-        //    return l.toArray();
-        //}
-
+       
         /// <smmary>
-        /// Returns an array whose members are the quotient of the dividend array
-        /// values and the divisor array values.
+        /// Returns an array whose members are the quotient of the dividend array values and the divisor array values.
         /// </summary>
         /// <param name="dividend"></param>
         /// <param name="divisor"></param>
@@ -909,8 +237,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns an array whose members are the quotient of the dividend array
-        /// values and the divisor array values.
+        /// Returns an array whose members are the quotient of the dividend array values and the divisor array values.
         /// </summary>
         /// <param name="dividend"></param>
         /// <param name="divisor"></param>
@@ -934,8 +261,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns an array whose members are the quotient of the dividend array
-        /// values and the divisor value.
+        /// Returns an array whose members are the quotient of the dividend array values and the divisor value.
         /// </summary>
         /// <param name="dividend"></param>
         /// <param name="divisor"></param>
@@ -952,37 +278,10 @@ namespace NeoCortexApi.Utility
             return quotient;
         }
 
-        /**
-         * Returns an array whose members are the quotient of the dividend array
-         * values and the divisor array values.
-         *
-         * @param dividend
-         * @param divisor
-         * @param dividend adjustment
-         * @param divisor  adjustment
-         * @return
-         * @throws IllegalArgumentException if the two argument arrays are not the same length
-         */
-        //public static double[] roundDivide(double[] dividend, double[] divisor, int scale)
-        //{
-
-        //    if (dividend.Length != divisor.Length)
-        //    {
-        //        throw new ArgumentException(
-        //                "The dividend array and the divisor array must be the same length");
-        //    }
-        //    double[] quotient = new double[dividend.Length];
-        //    for (int i = 0; i < dividend.Length; i++)
-        //    {
-        //        quotient[i] = (dividend[i]) / (divisor[i] == 0 ? 1 : divisor[i]); //Protect against division by 0
-        //        quotient[i] = new BigDecimal(quotient[i]).round(new MathContext(scale, RoundingMode.HALF_UP)).doubleValue();
-        //    }
-        //    return quotient;
-        //}
+       
 
         /// <smmary>
-        /// Returns an array whose members are the product of the multiplicand array
-        /// values and the factor array values.
+        /// Returns an array whose members are the product of the multiplicand array values and the factor array values.
         /// </summary>
         /// <param name="multiplicand"></param>
         /// <param name="factor"></param>
@@ -1031,8 +330,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns an array whose members are the product of the multiplicand array
-        /// values and the factor array values.
+        /// Returns an array whose members are the product of the multiplicand array values and the factor array values.
         /// </summary>
         /// <param name="multiplicand"></param>
         /// <param name="factor"></param>
@@ -1053,8 +351,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns a new array containing the result of multiplying
-        /// each index of the specified array by the 2nd parameter.</summary>
+        /// Returns a new array containing the result of multiplying each index of the specified array by the 2nd parameter.</summary>
         /// <param name="array"></param>
         /// <param name="d"></param>
         /// <returns></returns>
@@ -1069,8 +366,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns a new array containing the result of multiplying
-        /// each index of the specified array by the 2nd parameter.
+        /// Returns a new array containing the result of multiplying each index of the specified array by the 2nd parameter.
         /// </summary>
         /// <param name="array"></param>
         /// <param name="d"></param>
@@ -1086,8 +382,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns an integer array containing the result of subtraction
-        /// operations between corresponding indexes of the specified arrays.
+        /// Returns an integer array containing the result of subtraction operations between corresponding indexes of the specified arrays.
         /// </summary>
         /// <param name="minuend"></param>
         /// <param name="subtrahend"></param>
@@ -1102,22 +397,7 @@ namespace NeoCortexApi.Utility
             return retVal;
         }
 
-        /**
-         * Subtracts the contents of the first argument from the last argument's list.
-         *
-         * <em>NOTE: Does not destroy/alter the argument lists. </em>
-         *
-         * @param minuend
-         * @param subtrahend
-         * @return
-         */
-        //public static List<Integer> subtract(List<Integer> subtrahend, List<Integer> minuend)
-        //{
-        //    return IntStream.range(0, minuend.size())
-        //       .boxed()
-        //       .map(i->minuend.get(i) - subtrahend.get(i))
-        //       .collect(Collectors.toList());
-        //}
+   
 
         /// <summary>
         /// Returns the average of all the specified array contents.
@@ -1186,13 +466,12 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns the passed in array with every value being altered
-        /// by the addition of the specified amount.
+        /// Returns the passed in array with every value being altered by the addition of the specified amount.
         /// </summary>
         /// <param name="arr"></param>
         /// <param name="amount"></param>
         /// <returns></returns>
-        public static int[] add(int[] arr, int amount)
+        public static int[] Add(int[] arr, int amount)
         {
             for (int i = 0; i < arr.Length; i++)
             {
@@ -1202,9 +481,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns the passed in array with every value being altered
-        /// by the addition of the specified double amount at the same
-        /// index.
+        /// Returns the passed in array with every value being altered by the addition of the specified double amount at the same index.
         /// </summary>
         /// <param name="arr"></param>
         /// <param name="amount"></param>
@@ -1219,9 +496,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns the passed in array with every value being altered
-        /// by the addition of the specified double amount at the same
-        /// index.
+        /// Returns the passed in array with every value being altered by the addition of the specified double amount at the same index.
         /// </summary>
         /// <param name="arr"></param>
         /// <param name="offset"></param>
@@ -1236,13 +511,12 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns the passed in array with every value being altered
-        /// by the addition of the specified double amount.
+        /// Returns the passed in array with every value being altered by the addition of the specified double amount.
         /// </summary>
         /// <param name="arr"></param>
         /// <param name="amount"></param>
         /// <returns></returns>
-        public static double[] D_add(double[] arr, double amount)
+        public static double[] AddAmount(double[] arr, double amount)
         {
             for (int i = 0; i < arr.Length; i++)
             {
@@ -1266,28 +540,6 @@ namespace NeoCortexApi.Utility
             return sum;
         }
 
-        /**
-         * Test whether each element of a 1-D array is also present in a second 
-         * array.
-         *
-         * Returns a int array whose length is the number of intersections.
-         * 
-         * @param ar1   the array of values to find in the second array 
-         * @param ar2   the array to test for the presence of elements in the first array.
-         * @return  an array containing the intersections or an empty array if none are found.
-         */
-        //public static int[] in1d(int[] ar1, int[] ar2)
-        //{
-        //    if (ar1 == null || ar2 == null)
-        //    {
-        //        return EMPTY_ARRAY;
-        //    }
-
-
-        //    TIntSet retVal = new TIntHashSet(ar2);
-        //    retVal.retainAll(ar1);
-        //    return retVal.toArray();
-        //}
 
         /// <summary>
         /// Returns the sum of all contents in the specified array.
@@ -1304,51 +556,8 @@ namespace NeoCortexApi.Utility
             return sum;
         }
 
-        /**
-         * Sparse or due to the arrays containing the indexes of "on bits",
-         * the <em>or</em> of which is equal to the mere combination of the two
-         * arguments - eliminating duplicates and sorting.
-         *
-         * @param arg1
-         * @param arg2
-         * @return
-         */
-        //public static int[] sparseBinaryOr(int[] arg1, int[] arg2)
-        //{
-        //    HashSet<int> set = new HashSet<int>(arg1);
-
-        //    TIntArrayList t = new TIntArrayList(arg1);
-        //    t.addAll(arg2);
-        //    return unique(t.toArray());
-        //}
-
-        /**
-         * Prints the specified array to a returned String.
-         *
-         * @param aObject the array object to print.
-         * @return the array in string form suitable for display.
-         */
-        //public static String print1DArray(Object aObject)
-        //{
-        //    if (aObject.getClass().isArray())
-        //    {
-        //        if (aObject instanceof Object[]) // can we cast to Object[]
-        //    {
-        //            return Arrays.toString((Object[])aObject);
-        //        } else {  // we can't cast to Object[] - case of primitive arrays
-        //            int length = Array.getLength(aObject);
-        //            Object[] objArr = new Object[length];
-        //            for (int i = 0; i < length; i++)
-        //                objArr[i] = Array.get(aObject, i);
-        //            return Arrays.toString(objArr);
-        //        }
-        //    }
-        //    return "[]";
-        //}
-
         /// <summary>
-        /// Another utility to account for the difference between Python and Java.
-        /// Here the modulo operator is defined differently.
+        /// Another utility to account for the difference between Python and Java. Here the modulo operator is defined differently.
         /// </summary>
         /// <param name="n"></param>
         /// <param name="divisor"></param>
@@ -1367,8 +576,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns an array which starts from lowerBounds (inclusive) and
-        /// ends at the upperBounds (exclusive).
+        /// Returns an array which starts from lowerBounds (inclusive) and ends at the upperBounds (exclusive).
         /// </summary>
         /// <param name="lowerBounds"></param>
         /// <param name="upperBounds"></param>
@@ -1382,44 +590,6 @@ namespace NeoCortexApi.Utility
             }
             return ints.ToArray();
         }
-
-        /**
-         * Returns an array which starts from lowerBounds (inclusive) and
-         * ends at the upperBounds (exclusive).
-         *
-         * @param lowerBounds the starting value
-         * @param upperBounds the maximum value (exclusive)
-         * @param interval    the amount by which to increment the values
-         * @return
-         */
-        //public static double[] arange(double lowerBounds, double upperBounds, double interval)
-        //{
-        //    TDoubleList doubs = new TDoubleArrayList();
-        //    for (double i = lowerBounds; i < upperBounds; i += interval)
-        //    {
-        //        doubs.add(i);
-        //    }
-        //    return doubs.toArray();
-        //}
-
-        /**
-         * Returns an array which starts from lowerBounds (inclusive) and
-         * ends at the upperBounds (exclusive).
-         *
-         * @param lowerBounds the starting value
-         * @param upperBounds the maximum value (exclusive)
-         * @param interval    the amount by which to increment the values
-         * @return
-         */
-        //public static int[] xrange(int lowerBounds, int upperBounds, int interval)
-        //{
-        //    TIntList ints = new TIntArrayList();
-        //    for (int i = lowerBounds; i < upperBounds; i += interval)
-        //    {
-        //        ints.add(i);
-        //    }
-        //    return ints.toArray();
-        //}
 
         /// <summary>
         /// Fisher-Yates implementation which shuffles the array contents.
@@ -1467,8 +637,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Replaces the range specified by "start" and "end" of "orig" with the 
-        /// array of replacement ints found in "replacement".
+        /// Replaces the range specified by "start" and "end" of "orig" with the array of replacement ints found in "replacement".
         /// </summary>
         /// <param name="start">start index of "orig" to be replaced.</param>
         /// <param name="end">end index of "orig" to be replaced.</param>
@@ -1484,22 +653,7 @@ namespace NeoCortexApi.Utility
             return orig;
         }
 
-        /**
-         * Returns a new array containing the source array contents with 
-         * substitutions from "substitutes" whose indexes reside in "substInds".
-         * 
-         * @param source        the original array
-         * @param substitutes   the replacements whose indexes must be in substInds to be used.
-         * @param substInds     the indexes of "substitutes" to replace in "source"
-         * @return  a new array with the specified indexes replaced with "substitutes"
-         */
-        //public static int[] subst(int[] source, int[] substitutes, int[] substInds)
-        //{
-        //    List<Integer> l = Arrays.stream(substInds).boxed().collect(Collectors.toList());
-        //    return IntStream.range(0, source.length).map(
-        //        i->l.indexOf(i) == -1 ? source[i] : substitutes[i]).toArray();
-        //}
-
+      
         /// <summary>
         /// Returns a sorted unique (dupicates removed) array of integers.
         /// </summary>
@@ -1572,8 +726,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Called to merge a list of dimension arrays into a sequential row-major indexed
-        /// list of coordinates.
+        /// Called to merge a list of dimension arrays into a sequential row-major indexed list of coordinates.
         /// </summary>
         /// <param name="dimensions">a list of dimension arrays, each array being a dimension of an n-dimensional array.</param>
         /// <returns>a list of n-dimensional coordinates in row-major format.</returns>
@@ -1598,8 +751,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Sets the values in the specified values array at the indexes specified,
-        /// to the value "setTo".
+        /// Sets the values in the specified values array at the indexes specified, to the value <paramref name="setTo"/>.
         /// </summary>
         /// <param name="values">the values to alter if at the specified indexes.</param>
         /// <param name="indexes">the indexes of the values array to alter.</param>
@@ -1613,9 +765,8 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Sets the values in range start to stop to the value specified. If
-        /// stop &lt; 0, then stop indicates the number of places counting from the
-        /// length of "values" back.
+        /// Sets the values in range start to stop to the value specified. If stop &lt; 0, then stop indicates the number of places
+        /// counting from the length of <paramref name="values"/> back.
         /// </summary>
         /// <param name="values">the array to alter.</param>
         /// <param name="start">the start index (inclusive).</param>
@@ -1630,33 +781,9 @@ namespace NeoCortexApi.Utility
             }
         }
 
-        /**
-         * Returns a random, sorted, and  unique array of the specified sample size of
-         * selections from the specified list of choices.
-         *
-         * @param sampleSize the number of selections in the returned sample
-         * @param choices    the list of choices to select from
-         * @param random     a random number generator
-         * @return a sample of numbers of the specified size
-         */
-        //public static int[] sample(TIntArrayList choices, int[] selectedIndices, Random random)
-        //{
-        //    TIntArrayList choiceSupply = new TIntArrayList(choices);
-        //    int upperBound = choices.size();
-        //    for (int i = 0; i < selectedIndices.length; i++)
-        //    {
-        //        int randomIdx = random.nextInt(upperBound);
-        //        selectedIndices[i] = (choiceSupply.removeAt(randomIdx));
-        //        upperBound--;
-        //    }
-        //    Arrays.sort(selectedIndices);
-        //    //System.out.println("sample: " + Arrays.toString(selectedIndices));
-        //    return selectedIndices;
-        //}
-
+      
         /// <summary>
-        /// Returns a random, sorted, and  unique array of the specified sample size of
-        /// selections from the specified list of choices.
+        /// Returns a random, sorted, and  unique array of the specified sample size of selections from the specified list of choices.
         /// </summary>
         /// <param name="choices">the list of choices to select from.</param>
         /// <param name="selectedIndices">the number of selections in the returned sample.</param>
@@ -1694,10 +821,8 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Ensures that each entry in the specified array has a min value
-        /// equal to or greater than the specified min and a maximum value less
-        /// than or equal to the specified max.
-        /// For example, if min = 0, then negative permanence values will be rounded to 0.
+        /// Ensures that each entry in the specified array has a min value equal to or greater than the specified min and a maximum value less
+        /// than or equal to the specified max. For example, if min = 0, then negative permanence values will be rounded to 0.
         /// Similarly, high permanences will be rounded by maximal value.
         /// </summary>
         /// <param name="values">the values to clip.</param>
@@ -1715,9 +840,8 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Ensures that each entry in the specified array has a min value
-        /// equal to or greater than the min at the specified index and a maximum value less
-        /// than or equal to the max at the specified index.
+        /// Ensures that each entry in the specified array has a min value equal to or greater than the min at the specified index
+        /// and a maximum value less than or equal to the max at the specified index.
         /// </summary>
         /// <param name="values">the values to clip.</param>
         /// <param name="min">the minimum value.</param>
@@ -1733,9 +857,8 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Ensures that each entry in the specified array has a min value
-        /// equal to or greater than the min at the specified index and a maximum value less
-        /// than or equal to the max at the specified index. 
+        /// Ensures that each entry in the specified array has a min value equal to or greater than the min at the specified index 
+        /// and a maximum value less than or equal to the max at the specified index. 
         /// </summary>
         /// <param name="values">the values to clip.</param>
         /// <param name="max">the minimum value.</param>
@@ -1751,8 +874,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns the count of values in the specified array that are
-        /// greater than the specified compare value.
+        /// Returns the count of values in the specified array that are greater than the specified compare value.
         /// </summary>
         /// <param name="compare">the value to compare to.</param>
         /// <param name="array">the values being compared.</param>
@@ -1772,8 +894,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns the count of values in the specified array that are
-        /// greater than or equal to, the specified compare value.
+        /// Returns the count of values in the specified array that are greater than or equal to, the specified compare value.
         /// </summary>
         /// <param name="compare">the value to compare to.</param>
         /// <param name="array">the values being compared.</param>
@@ -1897,55 +1018,9 @@ namespace NeoCortexApi.Utility
             }
         }
 
-        /**
-         * Scans the specified values and applies the {@link Condition} to each
-         * value, returning the indexes of the values where the condition evaluates
-         * to true.
-         *
-         * @param values the values to test
-         * @param c      the condition used to test each value
-         * @return
-         */
-        //public static <T> int[] where(double[] values, Condition<T> c)
-        //{
-        //    TIntArrayList retVal = new TIntArrayList();
-        //    int len = values.length;
-        //    for (int i = 0; i < len; i++)
-        //    {
-        //        if (c.eval(values[i]))
-        //        {
-        //            retVal.add(i);
-        //        }
-        //    }
-        //    return retVal.toArray();
-        //}
-
-        /**
-         * Scans the specified values and applies the {@link Condition} to each
-         * value, returning the indexes of the values where the condition evaluates
-         * to true.
-         *
-         * @param values the values to test
-         * @param c      the condition used to test each value
-         * @return
-         */
-        //public static <T> int[] where(int[] values, Condition<T> c)
-        //{
-        //    TIntArrayList retVal = new TIntArrayList();
-        //    int len = values.length;
-        //    for (int i = 0; i < len; i++)
-        //    {
-        //        if (c.eval(values[i]))
-        //        {
-        //            retVal.add(i);
-        //        }
-        //    }
-        //    return retVal.toArray();
-        //}
-
+       
         /// <summary>
-        /// Returns a flag indicating whether the specified array
-        /// is a sparse array of 0's and 1's or not.
+        /// Returns a flag indicating whether the specified array is a sparse array of 0's and 1's or not.
         /// </summary>
         /// <param name="array"></param>
         /// <returns></returns>
@@ -1967,73 +1042,10 @@ namespace NeoCortexApi.Utility
             return false;
         }
 
-        /**
-         * Returns a bit vector of the specified size whose "on" bit
-         * indexes are specified in "in"; basically converting a sparse
-         * array to a dense one.
-         * 
-         * @param inp       the sparse array specifying the on bits of the returned array
-         * @param size    the size of the dense array to be returned.
-         * @return
-         */
-        //public static int[] asDense(int[] inp, int size)
-        //{
-        //    int[] retVal = new int[size];
-        //    for (int i = 0; i < inp.Length; i++)
-        //    {
-        //        retVal[i] = 1;
-        //    }
-        //    return retVal;
-        //}
-
-        /**
-         * Scans the specified values and applies the {@link Condition} to each
-         * value, returning the indexes of the values where the condition evaluates
-         * to true.
-         *
-         * @param values the values to test
-         * @param c      the condition used to test each value
-         * @return
-         */
-        //public static <T> int[] where(List<T> values, Condition<T> c)
-        //{
-        //    TIntArrayList retVal = new TIntArrayList();
-        //    int len = values.size();
-        //    for (int i = 0; i < len; i++)
-        //    {
-        //        if (c.eval(values.get(i)))
-        //        {
-        //            retVal.add(i);
-        //        }
-        //    }
-        //    return retVal.toArray();
-        //}
-
-        /**
-         * Scans the specified values and applies the {@link Condition} to each
-         * value, returning the indexes of the values where the condition evaluates
-         * to true.
-         *
-         * @param values the values to test
-         * @param c      the condition used to test each value
-         * @return
-         */
-        //public static <T> int[] where(T[] values, Condition<T> c)
-        //{
-        //    TIntArrayList retVal = new TIntArrayList();
-        //    for (int i = 0; i < values.length; i++)
-        //    {
-        //        if (c.eval(values[i]))
-        //        {
-        //            retVal.add(i);
-        //        }
-        //    }
-        //    return retVal.toArray();
-        //}
-
+      
         /// <summary>
-        /// Makes all values in the specified array which are less than or equal to the specified
-        /// "x" value, equal to the specified "y".
+        /// Makes all values in the specified array which are less than or equal to the specified <paramref name="x"/> value,
+        /// equal to the specified <paramref name="y"/>.
         /// </summary>
         /// <param name="array"></param>
         /// <param name="x">the comparison.</param>
@@ -2046,81 +1058,6 @@ namespace NeoCortexApi.Utility
             }
         }
 
-        /**
-         * Makes all values in the specified array which are less than the specified
-         * "x" value, equal to the specified "y".
-         * @param array
-         * @param x     the comparison
-         * @param y     the value to set if the comparison fails
-         */
-        //public static void lessThanXThanSetToY(double[] array, double x, double y)
-        //{
-        //    for (int i = 0; i < array.Length; i++)
-        //    {
-        //        if (array[i] < x) array[i] = y;
-        //    }
-        //}
-
-        /**
-         * Makes all values in the specified array which are less than the specified
-         * "x" value, equal to the specified "y".
-         * @param array
-         * @param x     the comparison
-         * @param y     the value to set if the comparison fails
-         */
-        //public static void lessThanXThanSetToY(int[] array, int x, int y)
-        //{
-        //    for (int i = 0; i < array.Length; i++)
-        //    {
-        //        if (array[i] < x) array[i] = y;
-        //    }
-        //}
-
-        /**
-         * Makes all values in the specified array which are greater than or equal to the specified
-         * "x" value, equal to the specified "y".
-         * @param array
-         * @param x     the comparison
-         * @param y     the value to set if the comparison fails
-         */
-        //public static void greaterThanOrEqualXThanSetToY(double[] array, double x, double y)
-        //{
-        //    for (int i = 0; i < array.Length; i++)
-        //    {
-        //        if (array[i] >= x) array[i] = y;
-        //    }
-        //}
-
-        /**
-         * Makes all values in the specified array which are greater than the specified
-         * "x" value, equal to the specified "y".
-         *
-         * @param array
-         * @param x     the comparison
-         * @param y     the value to set if the comparison fails
-         */
-        //public static void greaterThanXThanSetToY(double[] array, double x, double y)
-        //{
-        //    for (int i = 0; i < array.Length; i++)
-        //    {
-        //        if (array[i] > x) array[i] = y;
-        //    }
-        //}
-
-        /**
-         * Makes all values in the specified array which are greater than the specified
-         * "x" value, equal to the specified "y".
-         * @param array
-         * @param x     the comparison
-         * @param y     the value to set if the comparison fails
-         */
-        //public static void greaterThanXThanSetToY(int[] array, int x, int y)
-        //{
-        //    for (int i = 0; i < array.Length; i++)
-        //    {
-        //        if (array[i] > x) array[i] = y;
-        //    }
-        //}
 
         /// <summary>
         /// Sets value to "y" in "targetB" if the value in the same index in "sourceA" is bigger than "x".
@@ -2292,8 +1229,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns a new array containing the items specified from
-        /// the source array by the indexes specified.
+        /// Returns a new array containing the items specified from the source array by the indexes specified.
         /// </summary>
         /// <param name="source"></param>
         /// <param name="indexes"></param>
@@ -2309,8 +1245,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns a new array containing the items specified from
-        /// the source array by the indexes specified.
+        /// Returns a new array containing the items specified from the source array by the indexes specified.
         /// </summary>
         /// <param name="source"></param>
         /// <param name="indices"></param>
@@ -2326,8 +1261,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns a new 2D array containing the items specified from
-        /// the source array by the indexes specified.
+        /// Returns a new 2D array containing the items specified from the source array by the indexes specified.
         /// </summary>
         /// <param name="source"></param>
         /// <param name="indices"></param>
@@ -2379,8 +1313,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns a copy of the specified integer array in
-        /// reverse order.
+        /// Returns a copy of the specified integer array in reverse order.
         /// </summary>
         /// <param name="array"></param>
         /// <returns></returns>
@@ -2411,8 +1344,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns a new int array containing the or'd on bits of
-        /// both arg1 and arg2.
+        /// Returns a new int array containing the or'd on bits of both arg1 and arg2.
         /// </summary>
         /// <param name="arg1"></param>
         /// <param name="arg2"></param>
@@ -2428,8 +1360,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Returns a new int array containing the and'd bits of
-        /// both arg1 and arg2.
+        /// Returns a new int array containing the and'd bits of both arg1 and arg2.
         /// </summary>
         /// <param name="arg1"></param>
         /// <param name="arg2"></param>
@@ -2494,25 +1425,24 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Assigns the specified int value to each element of the specified any dimensional array
-        /// of ints.
+        /// Assigns the specified int value to each element of the specified any dimensional array of ints.
         /// </summary>
         /// <param name="array"></param>
         /// <param name="value"></param>
         public static void FillArray(Object array, int value)
         {
-            if (array is int[])
+            if (array is int[] intArray)
             {
-                for (int i = 0; i < ((int[])array).Length; i++)
+                for (int i = 0; i < intArray.Length; i++)
                 {
-                    ((int[])array)[i] = value;
+                    intArray[i] = value;
                 }
             }
-            else if (array is double[])
+            else if (array is double[] doubleArray)
             {
-                for (int i = 0; i < ((double[])array).Length; i++)
+                for (int i = 0; i < doubleArray.Length; i++)
                 {
-                    ((double[])array)[i] = value;
+                    doubleArray[i] = value;
                 }
             }
             else
@@ -2532,11 +1462,11 @@ namespace NeoCortexApi.Utility
         /// <param name="value"></param>
         public static void FillArray(object array, double value)
         {
-            if (array is double[])
+            if (array is double[] doubleArray)
             {
-                for (int i = 0; i < ((double[])array).Length; i++)
+                for (int i = 0; i < doubleArray.Length; i++)
                 {
-                    ((double[])array)[i] = value;
+                    doubleArray[i] = value;
                 }
             }
             else if (array is int[])
@@ -2902,7 +1832,11 @@ namespace NeoCortexApi.Utility
             {
                 for (int j = 0; j < width; j++)
                 {
-                    output[i, j] = input[i * width + j];
+                    // This is required, because some input and output arrays are not alligned to each other.
+                    // For example arraut of 2048 (= 45.35*45.25) will be rounded to height 46 * width 46. In that case input will be 2048 and output 2116.
+                    // In that case  i * width + j will not exist.
+                    if (input.Length > i * width + j)
+                        output[i, j] = input[i * width + j];
                 }
             }
             return output;
@@ -2931,13 +1865,12 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Adds the new element to the list, which must contain the specified number of elements.
-        /// Old elements are replaced.
+        /// Adds the new element to the list, which must contain the specified number of elements. Old elements are replaced.
         /// </summary>
         /// <param name="list">The list.</param>
         /// <param name="maxNumOfElements">Maximum allowed number of elements.</param>
         /// <param name="newElement">The new value.</param>
-        public static int[] AddToHistoryList(int[] list, int maxNumOfElements, int newElement)
+        public static int[] PushToInterval(int[] list, int maxNumOfElements, int newElement)
         {
             //
             // Shift all elements.
@@ -2953,8 +1886,7 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
-        /// Calculates the average delta over the list.
-        /// 1/N * (x2-x1 + X3-X2, + .. + XN-XN-1)
+        /// Calculates the average delta over the list. 1/N * (x2-x1 + X3-X2, + .. + XN-XN-1)
         /// </summary>
         /// <param name="list"></param>
         /// <returns></returns>
@@ -2975,6 +1907,26 @@ namespace NeoCortexApi.Utility
             avgDerivation = sum / (double)list.Length;
 
             return avgDerivation;
+        }
+
+
+        /// <summary>
+        /// Fills up the array with the specified value at the specified index.
+        /// </summary>
+        /// <param name="arr">Array of indexes at which the specified value has to be set.</param>
+        /// <param name="arrSize">The size of resulting array.</param>
+        /// <param name="val">The value to be set at index positions.</param>
+        /// <returns></returns>
+        public static int[] FillAtIndexes(int[] arr, int arrSize, int val)
+        {
+            int[] arrRes = new int[arrSize];
+
+            foreach (var item in arr)
+            {
+                arrRes[item] = val;
+            }
+
+            return arrRes;
         }
     }
 }

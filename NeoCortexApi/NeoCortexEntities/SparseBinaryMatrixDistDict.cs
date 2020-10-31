@@ -12,13 +12,12 @@ using System.Diagnostics;
 
 namespace NeoCortexApi.Entities
 {
-    /**
- * Implementation of a sparse matrix which contains binary integer
- * values only.
- * 
- * @author cogmission
- *
- */
+    /// <summary>
+    /// Implementation of a sparse matrix which contains binary integer values only.
+    /// </summary>
+    /// <remarks>
+    /// Author cogmission
+    /// </remarks>
     public class SparseBinaryMatrix : AbstractSparseBinaryMatrix
     {
         /// <summary>
@@ -32,26 +31,22 @@ namespace NeoCortexApi.Entities
 
         }
 
-        /**
-         * Constructs a new {@code SparseBinaryMatrix} with the specified
-         * dimensions (defaults to row major ordering)
-         * 
-         * @param dimensions    each indexed value is a dimension size
-         */
+        /// <summary>
+        /// Constructs a new <see cref="SparseBinaryMatrix"/> with the specified dimensions (defaults to row major ordering)
+        /// </summary>
+        /// <param name="dimensions">each indexed value is a dimension size</param>
         public SparseBinaryMatrix(int[] dimensions) : this(dimensions, false)
         {
 
         }
 
-        /**
-         * Constructs a new {@code SparseBinaryMatrix} with the specified dimensions,
-         * allowing the specification of column major ordering if desired. 
-         * (defaults to row major ordering)
-         * 
-         * @param dimensions                each indexed value is a dimension size
-         * @param useColumnMajorOrdering    if true, indicates column first iteration, otherwise
-         *                                  row first iteration is the default (if false).
-         */
+        /// <summary>
+        /// Constructs a new <see cref="SparseBinaryMatrix"/> with the specified dimensions, allowing the specification of column major ordering if desired. 
+        /// (defaults to row major ordering)
+        /// </summary>
+        /// <param name="dimensions">each indexed value is a dimension size</param>
+        /// <param name="useColumnMajorOrdering">if true, indicates column first iteration, otherwise row first iteration is the default (if false).</param>
+        /// <param name="distArray"></param>
         public SparseBinaryMatrix(int[] dimensions, bool useColumnMajorOrdering, IDistributedArray distArray = null) : base(dimensions, useColumnMajorOrdering)
         {
             // We  create here a simple array on a single node.
@@ -79,24 +74,19 @@ namespace NeoCortexApi.Entities
         //    // setTrueCount(coordinates[0], DistributedArrayHelpers.aggregateArray(((Object[])this.backingArray)[coordinates[0]]));
         //}
 
-        /**
-         * Returns the slice specified by the passed in coordinates.
-         * The array is returned as an object, therefore it is the caller's
-         * responsibility to cast the array to the appropriate dimensions.
-         * 
-         * @param coordinates	the coordinates which specify the returned array
-         * @return	the array specified
-         * @throws	IllegalArgumentException if the specified coordinates address
-         * 			an actual value instead of the array holding it.
-         */
-        // @Override
-
-        public override Object getSlice(params int[] coordinates)
+        /// <summary>
+        /// Returns the slice specified by the passed in coordinates. The array is returned as an object, therefore it is the caller's
+        /// responsibility to cast the array to the appropriate dimensions.
+        /// </summary>
+        /// <param name="coordinates">the coordinates which specify the returned array</param>
+        /// <returns>the array specified. Throws <see cref="ArgumentException"/> if the specified coordinates address an actual value instead of the array holding it.</returns>
+        /// <exception cref="ArgumentException"/>
+        public override Object GetSlice(params int[] coordinates)
         {
             //Object slice = DistributedArrayHelpers.getValue(this.backingArray, coordinates);
             Object slice;
             if (coordinates.Length == 1)
-                slice = getRow<int>(this.backingArray, coordinates[0]);
+                slice = GetRow<int>(this.backingArray, coordinates[0]);
 
             // DistributedArrayHelpers.GetRow<int>((int[,])this.backingArray, coordinates[0]);
             //else if (coordinates.Length == 1)
@@ -107,7 +97,7 @@ namespace NeoCortexApi.Entities
             //Ensure return value is of type Array
             if (!slice.GetType().IsArray)
             {
-                sliceError(coordinates);
+                SliceError(coordinates);
             }
 
             return slice;
@@ -121,7 +111,7 @@ namespace NeoCortexApi.Entities
         /// <param name="row"></param>
         /// <returns></returns>
         //public static T[] GetRow<T>(this T[,] array, int row)
-        private static T[] getRow<T>(IDistributedArray array, int row)
+        private static T[] GetRow<T>(IDistributedArray array, int row)
         {
             if (array == null)
                 throw new ArgumentNullException("array");
@@ -136,18 +126,17 @@ namespace NeoCortexApi.Entities
 
             return result;
         }
-        /**
-         * Fills the specified results array with the result of the 
-         * matrix vector multiplication.
-         * 
-         * @param inputVector		the right side vector
-         * @param results			the results array
-         */
-        public override void rightVecSumAtNZ(int[] inputVector, int[] results)
+
+        /// <summary>
+        /// Fills the specified results array with the result of the matrix vector multiplication.
+        /// </summary>
+        /// <param name="inputVector">the right side vector</param>
+        /// <param name="results">the results array</param>
+        public override void RightVecSumAtNZ(int[] inputVector, int[] results)
         {
             for (int i = 0; i < this.ModuleTopology.Dimensions[0]; i++)
             {
-                int[] slice = (int[])(this.ModuleTopology.Dimensions.Length > 1 ? getSlice(i) : backingArray);
+                int[] slice = (int[])(this.ModuleTopology.Dimensions.Length > 1 ? GetSlice(i) : backingArray);
                 for (int j = 0; j < slice.Length; j++)
                 {
                     results[i] += (inputVector[j] * slice[j]);
@@ -155,19 +144,19 @@ namespace NeoCortexApi.Entities
             }
         }
 
-        /**
-         * Fills the specified results array with the result of the 
-         * matrix vector multiplication.
-         * 
-         * @param inputVector       the right side vector
-         * @param results           the re\sults array
-         */
-        public override void rightVecSumAtNZ(int[] inputVector, int[] results, double stimulusThreshold)
+        /// <summary>
+        /// Fills the specified results array with the result of the 
+        /// matrix vector multiplication.
+        /// </summary>
+        /// <param name="inputVector">the right side vector</param>
+        /// <param name="results">the result array</param>
+        /// <param name="stimulusThreshold"></param>
+        public override void RightVecSumAtNZ(int[] inputVector, int[] results, double stimulusThreshold)
         {
             for (int colIndx = 0; colIndx < this.ModuleTopology.Dimensions[0]; colIndx++)
             {
                 // Gets the synapse mapping between column-i with input vector.
-                int[] slice = (int[])(this.ModuleTopology.Dimensions.Length > 1 ? getSlice(colIndx) : backingArray);
+                int[] slice = (int[])(this.ModuleTopology.Dimensions.Length > 1 ? GetSlice(colIndx) : backingArray);
 
                 // Go through all connections (synapses) between column and input vector.
                 for (int inpBit = 0; inpBit < slice.Length; inpBit++)
@@ -200,14 +189,13 @@ namespace NeoCortexApi.Entities
             return (AbstractFlatMatrix<int>)this;
         }
 
-
-        /**
-         * Sets the value to be indexed at the index
-         * computed from the specified coordinates.
-         * @param coordinates   the row major coordinates [outer --> ,...,..., inner]
-         * @param object        the object to be indexed.
-         */
-        //@Override
+        /// <summary>
+        /// Sets the value to be indexed at the index
+        /// computed from the specified coordinates.
+        /// </summary>
+        /// <param name="value">the object to be indexed.</param>
+        /// <param name="coordinates">the row major coordinates [outer --> ,...,..., inner]</param>
+        /// <returns></returns>
         public override AbstractSparseBinaryMatrix set(int value, int[] coordinates)
         {
             //back(value, coordinates);
@@ -217,19 +205,18 @@ namespace NeoCortexApi.Entities
 
             var aggVal = this.backingArray.AggregateArray(coordinates[0]);
 
-            setTrueCount(coordinates[0], aggVal);
+            SetTrueCount(coordinates[0], aggVal);
 
             return this;
         }
 
-        /**
-         * Sets the specified values at the specified indexes.
-         * 
-         * @param indexes   indexes of the values to be set
-         * @param values    the values to be indexed.
-         * 
-         * @return this {@code SparseMatrix} implementation
-         */
+        // TODO Override?s
+        /// <summary>
+        /// Sets the specified values at the specified indexes.
+        /// </summary>
+        /// <param name="indexes">indexes of the values to be set</param>
+        /// <param name="values">the values to be indexed.</param>
+        /// <returns>this <see cref="AbstractSparseBinaryMatrix"/> implementation</returns>
         public AbstractSparseBinaryMatrix set(int[] indexes, int[] values)
         {
             for (int i = 0; i < indexes.Length; i++)
@@ -239,18 +226,18 @@ namespace NeoCortexApi.Entities
             return this;
         }
 
-        /**
-         * Clears the true counts prior to a cycle where they're
-         * being set
-         */
-        public override void clearStatistics(int row)
+        /// <summary>
+        /// Clears the true counts prior to a cycle where they're being set
+        /// </summary>
+        /// <param name="row"></param>
+        public override void ClearStatistics(int row)
         {
             if (backingArray.Rank != 2)
                 throw new InvalidOperationException("Currently supported 2D arrays only");
 
             backingArray.SetRowValuesTo(row, 0);
 
-            this.setTrueCount(row, 0);
+            this.SetTrueCount(row, 0);
         }
 
 
@@ -259,7 +246,7 @@ namespace NeoCortexApi.Entities
         //  @Override
         public override AbstractSparseBinaryMatrix setForTest(int index, int value)
         {
-            this.backingArray.SetValue(value, ComputeCoordinates(getNumDimensions(), getDimensionMultiples(), ModuleTopology.IsMajorOrdering, index));
+            this.backingArray.SetValue(value, ComputeCoordinates(GetNumDimensions(), GetDimensionMultiples(), ModuleTopology.IsMajorOrdering, index));
 
             //DistributedArrayHelpers.setValue(this.backingArray, value,
             //    ComputeCoordinates(getNumDimensions(), getDimensionMultiples(), ModuleTopology.IsMajorOrdering, index));
@@ -276,7 +263,7 @@ namespace NeoCortexApi.Entities
         // @Override
         public override int GetColumn(int index)
         {
-            int[] coordinates = ComputeCoordinates(getNumDimensions(), getDimensionMultiples(), this.ModuleTopology.IsMajorOrdering, index);
+            int[] coordinates = ComputeCoordinates(GetNumDimensions(), GetDimensionMultiples(), this.ModuleTopology.IsMajorOrdering, index);
             if (coordinates.Length == 1)
             {
                 return (Int32)backingArray.GetValue(index);

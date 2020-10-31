@@ -34,8 +34,7 @@ namespace NeoCortexApi.Entities
 
 
         /// <summary>
-        /// Array of indicies of connected inputs. Defines RF.
-        /// Sometimes also called 'Potential Pool'.
+        /// Array of indicies of connected inputs. Defines RF. Sometimes also called 'Potential Pool'.
         /// </summary>
         public int[] ConnectedInputs
         {
@@ -110,29 +109,29 @@ namespace NeoCortexApi.Entities
         //    }
         //}
 
-        /**
-         * Sets the permanences for each {@link Synapse} specified by the indexes
-         * passed in which identify the input vector indexes associated with the
-         * {@code Synapse}. The permanences passed in are understood to be in "sparse"
-         * format and therefore require the int array identify their corresponding
-         * indexes.
-         * 
-         * Note: This is the "sparse" version of this method.
-         * 
-         * @param c			the {@link Connections} memory
-         * @param perms		the floating point degree of connectedness
-         */
-        public void setPermanences(AbstractSparseBinaryMatrix connectedCounts, HtmConfig htmConfig, double[] perms, int[] inputIndexes)
+        /// <summary>
+        /// Sets the permanences for each {@link Synapse} specified by the indexes passed in which identify the input vector indexes associated with the
+        /// <see cref="Synapse"/>. The permanences passed in are understood to be in "sparse" format and therefore require the int array identify their 
+        /// corresponding indexes.
+        /// </summary>
+        /// <param name="connectedCounts"></param>
+        /// <param name="htmConfig"></param>
+        /// <param name="perms">the floating point degree of connectedness</param>
+        /// <param name="inputIndexes"></param>
+        /// <remarks>
+        /// Note: This is the "sparse" version of this method.
+        /// </remarks>
+        public void SetPermanences(AbstractSparseBinaryMatrix connectedCounts, HtmConfig htmConfig, double[] perms, int[] inputIndexes)
         {
             var permConnThreshold = htmConfig.SynPermConnected;
 
-            RFPool.resetConnections();
+            RFPool.ResetConnections();
             // c.getConnectedCounts().clearStatistics(ParentColumnIndex);
-            connectedCounts.clearStatistics(0 /*this.ParentColumnIndex*/);
+            connectedCounts.ClearStatistics(0 /*this.ParentColumnIndex*/);
             for (int i = 0; i < inputIndexes.Length; i++)
             {
                 var synapse = RFPool.GetSynapseForInput(inputIndexes[i]);
-                synapse.setPermanence(htmConfig.SynPermConnected, perms[i]);
+                synapse.Permanence = perms[i];
                 //RFPool.setPermanence(c, RFPool.getSynapseWithInput(inputIndexes[i]), perms[i]);
                 if (perms[i] >= permConnThreshold)
                 {
@@ -143,7 +142,7 @@ namespace NeoCortexApi.Entities
         }
 
         //public double SynPermConnected { get; set; }
-       
+
 
         /**
          * Sets the input vector synapse indexes which are connected (&gt;= synPermConnected)
@@ -158,25 +157,23 @@ namespace NeoCortexApi.Entities
         //    c.getPotentialPoolsOld().set(index, pool);
         //}
 
-        /**
-         * Returns an array of synapse indexes as a dense binary array.
-         * @param c
-         * @return
-         */
-        public int[] getConnectedSynapsesDense()
+        /// <summary>
+        /// Returns an array of synapse indexes as a dense binary array.
+        /// </summary>
+        /// <returns></returns>
+        public int[] GetConnectedSynapsesDense()
         {
-            return this.RFPool.getDenseConnected();
+            return this.RFPool.GetDenseConnected();
             //return c.getPotentialPools().get(index).getDenseConnected(c);
         }
 
-        /**
-         * Returns an sparse array of synapse indexes representing the connected bits.
-         * @param c
-         * @return
-         */
-        public int[] getConnectedSynapsesSparse()
+        /// <summary>
+        /// Returns an sparse array of synapse indexes representing the connected bits.
+        /// </summary>
+        /// <returns></returns>
+        public int[] GetConnectedSynapsesSparse()
         {
-            return this.RFPool.getSparsePotential();
+            return this.RFPool.GetSparsePotential();
             //return c.getPotentialPools().get(index).getSparsePotential();
         }
     }

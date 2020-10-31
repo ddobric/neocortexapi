@@ -56,7 +56,7 @@ namespace UnitTestsProject
 
             int learningCycles = 100;
 
-            HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem, inputs.Count * learningCycles,
+            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, inputs.Count * learningCycles,
                 (isStable, numPatterns, actColAvg, seenInputs) => { });
 
             for (int cycle = 0; cycle < 1000; cycle++)
@@ -79,7 +79,7 @@ namespace UnitTestsProject
             int[] arr1 = new int[] { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 };
             int[] arr2 = new int[] { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 };
 
-            var res = HomeostaticPlasticityActivator.Correlate(arr1, arr2);
+            var res = HomeostaticPlasticityController.Correlate(arr1, arr2);
 
             Assert.IsTrue(res == 1.0);
         }
@@ -90,7 +90,7 @@ namespace UnitTestsProject
             int[] arr1 = new int[] { 0, 1, 0, 1, 0, 1, 0, 0, 0, 1 };
             int[] arr2 = new int[] { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 };
 
-            var res = HomeostaticPlasticityActivator.Correlate(arr1, arr2);
+            var res = HomeostaticPlasticityController.Correlate(arr1, arr2);
 
             Assert.IsTrue(res == 0.9);
         }
@@ -101,7 +101,7 @@ namespace UnitTestsProject
             int[] arr1 = new int[] { 0, 1, 0, 1, 0, 1, 0, 0, 0 };
             int[] arr2 = new int[] { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 };
 
-            var res = HomeostaticPlasticityActivator.Correlate(arr1, arr2);
+            var res = HomeostaticPlasticityController.Correlate(arr1, arr2);
 
             Assert.IsTrue(res == 0.8);
         }
@@ -113,7 +113,7 @@ namespace UnitTestsProject
             int[] arr1 = new int[] { 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0 };
             int[] arr2 = new int[] { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 };
 
-            var res = HomeostaticPlasticityActivator.Correlate(arr1, arr2);
+            var res = HomeostaticPlasticityController.Correlate(arr1, arr2);
 
             Assert.IsTrue(res == 0.75);
         }

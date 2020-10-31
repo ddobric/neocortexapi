@@ -9,20 +9,14 @@ using System.Linq;
 
 namespace NeoCortexApi.Entities
 {
-
-
-    /**
-     * Convenience container for "bound" {@link Synapse} values
-     * which can be dereferenced from both a Synapse and the 
-     * {@link Connections} object. All Synapses will have a reference
-     * to a {@code Pool} to retrieve relevant values. In addition, that
-     * same pool can be referenced from the Connections object externally
-     * which will update the Synapse's internal reference.
-     * 
-     * @author David Ray
-     * @see Synapse
-     * @see Connections
-     */
+    /// <summary>
+    /// Convenience container for "bound" <see cref="Synapse"/> values which can be dereferenced from both a Synapse and the <see cref="Connections"/> object.
+    /// All Synapses will have a reference to a <see cref="Pool"/> to retrieve relevant values. In addition, same pool can be referenced from the Connections 
+    /// object externally which will update the Synapse's internal reference.
+    /// </summary>
+    /// <remarks>
+    /// Authors of the JAVA implementation: David Ray
+    /// </remarks>
 
     //[Serializable]
     public class Pool
@@ -39,13 +33,12 @@ namespace NeoCortexApi.Entities
         /// These are synapses with permanence value greather than permanence connected threshold.
         /// See synPermConnected.
         /// </summary>      
-        private List<int> synapseConnections { get; set; }  = new List<int>();
+        private List<int> m_SynapseConnections { get; set; }  = new List<int>();
 
-        /** 
-         * Indexed according to the source Input Vector Bit (for ProximalDendrites),
-         * and source cell (for DistalDendrites).
-         */
-        public Dictionary<int, Synapse> synapsesBySourceIndex { get; set; }  = new Dictionary<int, Synapse>();
+        /// <summary>
+        /// Indexed according to the source Input Vector Bit (for ProximalDendrites), and source cell (for DistalDendrites).
+        /// </summary>
+        public Dictionary<int, Synapse> m_SynapsesBySourceIndex { get; set; }  = new Dictionary<int, Synapse>();
 
         /// <summary>
         /// 
@@ -54,7 +47,7 @@ namespace NeoCortexApi.Entities
         /// <param name="numInputs">Total number of input neurons.</param>
         public Pool(int size, int numInputs)
         {
-            this.NumInputs = NumInputs;
+            this.NumInputs = numInputs;
             this.Size = size;
         }
 
@@ -85,64 +78,68 @@ namespace NeoCortexApi.Entities
          * @param synapse				the synapse who's permanence is recorded
          * @param permanence	the permanence value to record
          */
-        public void updatePool(double synPermConnected, Synapse synapse, double permanence)
+        /// <summary>
+        /// Updates this <see cref="Pool"/>'s store of permanences for the specified <see cref="Synapse"/>
+        /// </summary>
+        /// <param name="synPermConnected"></param>
+        /// <param name="synapse">the synapse who's permanence is recorded</param>
+        /// <param name="permanence">the permanence value to record</param>
+        public void UpdatePool(double synPermConnected, Synapse synapse, double permanence)
         {
-            int inputIndex = synapse.getInputIndex();
-            if (synapsesBySourceIndex.ContainsKey(inputIndex) == false)
+            int inputIndex = synapse.InputIndex;
+            if (m_SynapsesBySourceIndex.ContainsKey(inputIndex) == false)
             {
-                synapsesBySourceIndex.Add(inputIndex, synapse);
+                m_SynapsesBySourceIndex.Add(inputIndex, synapse);
             }
             if (permanence >= synPermConnected)
             {
-                synapseConnections.Add(inputIndex);
+                m_SynapseConnections.Add(inputIndex);
             }
             else
             {
-                synapseConnections.Remove(inputIndex);
+                m_SynapseConnections.Remove(inputIndex);
             }
         }
 
         /// <summary>
         ///  Resets the current connections in preparation for new permanence adjustments.
         ///  </summary>
-        public void resetConnections()
+        public void ResetConnections()
         {
-            synapseConnections.Clear();
+            m_SynapseConnections.Clear();
         }
 
-        /**
-         * Returns the {@link Synapse} connected to the specified input bit
-         * index.
-         * 
-         * @param inputIndex	the input vector connection's index.
-         * @return
-         */
+        /// <summary>
+        /// Returns the {@link Synapse} connected to the specified input bit index.
+        /// </summary>
+        /// <param name="inputIndex">the input vector connection's index.</param>
+        /// <returns></returns>
         public Synapse GetSynapseForInput(int inputIndex)
         {
-            return synapsesBySourceIndex[inputIndex];
+            return m_SynapsesBySourceIndex[inputIndex];
         }
 
-        /**
-         * Returns an array of permanence values
-         * @return
-         */
-        public double[] getSparsePermanences()
+        /// <summary>
+        /// Returns an array of permanence values
+        /// </summary>
+        /// <returns></returns>
+        public double[] GetSparsePermanences()
         {
             double[] retVal = new double[Size];
-            int[] keys = getSynapseKeys();// synapsesBySourceIndex.Keys;
+            int[] keys = GetSynapseKeys();// synapsesBySourceIndex.Keys;
             for (int x = 0, j = Size - 1; x < Size; x++, j--)
             {
-                retVal[j] = this.synapsesBySourceIndex[keys[Size-x-1]].getPermanence();
+                retVal[j] = this.m_SynapsesBySourceIndex[keys[Size-x-1]].Permanence;
             }
 
             return retVal;
         }
 
-        private int[] getSynapseKeys()
+        private int[] GetSynapseKeys()
         {
             List<int> keys = new List<int>();
 
-            foreach (var keyVal in synapsesBySourceIndex)
+            foreach (var keyVal in m_SynapsesBySourceIndex)
             {
                 keys.Add(keyVal.Key);
             }
@@ -150,50 +147,48 @@ namespace NeoCortexApi.Entities
             return keys.ToArray();
         }
 
-
-        /**
-         * Returns a dense array representing the potential pool permanences
-         * 
-         * Note: Only called from tests for now...
-         * @param c
-         * @return
-         */
-        public double[] getDensePermanences(int numInputs)
+        /// <summary>
+        /// Returns a dense array representing the potential pool permanences
+        /// </summary>
+        /// <param name="numInputs"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// Note: Only called from tests for now...
+        /// </remarks>
+        public double[] GetDensePermanences(int numInputs)
         {
             double[] retVal = new double[numInputs];
            
-            foreach (int inputIndex in synapsesBySourceIndex.Keys)
+            foreach (int inputIndex in m_SynapsesBySourceIndex.Keys)
             {
-                retVal[inputIndex] = synapsesBySourceIndex[inputIndex].getPermanence();
+                retVal[inputIndex] = m_SynapsesBySourceIndex[inputIndex].Permanence;
             }
             return retVal;
         }
 
-        /**
-         * Returns an array of input bit indexes indicating the index of the source. 
-         * (input vector bit or lateral cell)
-         * @return the sparse array
-         */
-        public int[] getSparsePotential()
+        /// <summary>
+        /// Returns an array of input bit indexes indicating the index of the source. (input vector bit or lateral cell)
+        /// </summary>
+        /// <returns>the sparse array</returns>
+        public int[] GetSparsePotential()
         {
             // Original requires reverse, because JAVA keys() methode returns keys reversed.
             //return ArrayUtils.reverse(synapsesBySourceIndex.Keys.Select(i => i).ToArray());
-            return synapsesBySourceIndex.Keys.Select(i => i).ToArray();
+            return m_SynapsesBySourceIndex.Keys.Select(i => i).ToArray();
         }
 
-        /**
-         * Returns a dense binary array containing 1's where the input bits are part
-         * of this pool.
-         * @param c     the {@link Connections}
-         * @return  dense binary array of member inputs
-         */
-        public int[] getDensePotential(Connections c)
+        /// <summary>
+        /// Returns a dense binary array containing 1's where the input bits are part of this pool.
+        /// </summary>
+        /// <param name="c">the <see cref="Connections"/></param>
+        /// <returns>dense binary array of member inputs</returns>
+        public int[] GetDensePotential(Connections c)
         {
             List<int> newArr = new List<int>();
 
             for (int i = 0; i < c.HtmConfig.NumInputs; i++)
             {
-                newArr.Add(synapsesBySourceIndex.ContainsKey(i) ? 1 : 0);
+                newArr.Add(m_SynapsesBySourceIndex.ContainsKey(i) ? 1 : 0);
                 //    }
                 //return IntStream.range(0, c.getNumInputs())
                 //    .map(i->synapsesBySourceIndex.containsKey(i) ? 1 : 0)
@@ -202,20 +197,17 @@ namespace NeoCortexApi.Entities
             return newArr.ToArray();
         }
 
-        /**
-         * Returns an binary array whose length is equal to the number of inputs;
-         * and where 1's are set in the indexes of this pool's assigned bits.
-         * 
-         * @param   c   {@link Connections}
-         * @return the sparse array
-         */
-        public int[] getDenseConnected()
+        /// <summary>
+        /// Returns an binary array whose length is equal to the number of inputs; and where 1's are set in the indexes of this pool's assigned bits.
+        /// </summary>
+        /// <returns>the sparse array</returns>
+        public int[] GetDenseConnected()
         {
             List<int> newArr = new List<int>();
 
             for (int i = 0; i < this.NumInputs; i++)
             {
-                newArr.Add(synapseConnections.Contains(i) ? 1 : 0);
+                newArr.Add(m_SynapseConnections.Contains(i) ? 1 : 0);
               
             }
             return newArr.ToArray();
@@ -241,15 +233,15 @@ namespace NeoCortexApi.Entities
         //    }
         //}
 
-        /**
-         * Clears the state of this {@code Pool}
-         */
-        public void destroy()
+        /// <summary>
+        /// Clears the state of this <see cref="Pool"/>.
+        /// </summary>
+        public void Destroy()
         {
-            synapseConnections.Clear();
-            synapsesBySourceIndex.Clear();
-            synapseConnections = null;
-            synapsesBySourceIndex = null;
+            m_SynapseConnections.Clear();
+            m_SynapsesBySourceIndex.Clear();
+            m_SynapseConnections = null;
+            m_SynapsesBySourceIndex = null;
         }
 
         /* (non-Javadoc)
@@ -261,16 +253,15 @@ namespace NeoCortexApi.Entities
             int prime = 31;
             int result = 1;
             result = prime * result + Size;
-            result = prime * result + ((synapseConnections == null) ? 0 : synapseConnections.ToString().GetHashCode());
-            result = prime * result + ((synapsesBySourceIndex == null) ? 0 : synapsesBySourceIndex.ToString().GetHashCode());
+            result = prime * result + ((m_SynapseConnections == null) ? 0 : m_SynapseConnections.ToString().GetHashCode());
+            result = prime * result + ((m_SynapsesBySourceIndex == null) ? 0 : m_SynapsesBySourceIndex.ToString().GetHashCode());
             return result;
         }
 
         /* (non-Javadoc)
          * @see java.lang.Object#equals(java.lang.Object)
          */
-        //@Override
-        public override bool Equals(Object obj)
+        public override bool Equals(object obj)
         {
             if (this == obj)
                 return true;
@@ -281,32 +272,32 @@ namespace NeoCortexApi.Entities
             Pool other = (Pool)obj;
             if (Size != other.Size)
                 return false;
-            if (synapseConnections == null)
+            if (m_SynapseConnections == null)
             {
-                if (other.synapseConnections != null)
+                if (other.m_SynapseConnections != null)
                     return false;
             }
 
             // bool hasAll = matrix.getSparseIndices().All(itm2 => sparseSet.Contains(itm2));
             // return hasAll;
-            else if(!other.synapseConnections.All(itm2 => synapseConnections.Contains(itm2)) ||
-                !synapseConnections.All(itm2 => other.synapseConnections.Contains(itm2)))
+            else if(!other.m_SynapseConnections.All(itm2 => m_SynapseConnections.Contains(itm2)) ||
+                !m_SynapseConnections.All(itm2 => other.m_SynapseConnections.Contains(itm2)))
             //else if ((!synapseConnections.containsAll(other.synapseConnections) ||
             //  !other.synapseConnections.containsAll(synapseConnections)))
                 return false;
-            if (synapsesBySourceIndex == null)
+            if (m_SynapsesBySourceIndex == null)
             {
-                if (other.synapsesBySourceIndex != null)
+                if (other.m_SynapsesBySourceIndex != null)
                     return false;
             }
-            else if (!synapsesBySourceIndex.ToString().Equals(other.synapsesBySourceIndex.ToString()))
+            else if (!m_SynapsesBySourceIndex.ToString().Equals(other.m_SynapsesBySourceIndex.ToString()))
                 return false;
             return true;
         }
 
         public override string ToString()
         {
-            return $"Conns={this.synapseConnections.Count} - ConnsBySrc= {this.synapsesBySourceIndex.Count}";
+            return $"Conns={this.m_SynapseConnections.Count} - ConnsBySrc= {this.m_SynapsesBySourceIndex.Count}";
         }
     }
 }

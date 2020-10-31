@@ -123,7 +123,7 @@ namespace UnitTestsProject
 
             p.apply(mem);
 
-            HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem, trainingImages.Length * 150, (isStable, numPatterns, actColAvg, seenInputs) =>
+            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, trainingImages.Length * 150, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                 // Event should only be fired when entering the stable state.
                 // Ideal SP should never enter unstable state after stable state.
@@ -135,7 +135,7 @@ namespace UnitTestsProject
 
             SpatialPooler sp = new SpatialPoolerMT(hpa);
 
-            sp.init(mem, UnitTestHelpers.GetMemory());
+            sp.Init(mem, UnitTestHelpers.GetMemory());
 
             string outFolder = $"{TestOutputFolder}\\{inputPrefix}";
 
@@ -315,7 +315,7 @@ namespace UnitTestsProject
 
             var inputs = new int[] { 0, 1, 2, 3, 4, 5 };
 
-            HomeostaticPlasticityActivator hpa = new HomeostaticPlasticityActivator(mem, inputs.Length * 150, (isStable, numPatterns, actColAvg, seenInputs) =>
+            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, inputs.Length * 150, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                 // Event should only be fired when entering the stable state.
                 // Ideal SP should never enter unstable state after stable state.
@@ -327,7 +327,7 @@ namespace UnitTestsProject
 
             SpatialPooler sp = new SpatialPoolerMT(hpa);
 
-            sp.init(mem, UnitTestHelpers.GetMemory());
+            sp.Init(mem, UnitTestHelpers.GetMemory());
 
             string outFolder = $"{TestOutputFolder}";
 

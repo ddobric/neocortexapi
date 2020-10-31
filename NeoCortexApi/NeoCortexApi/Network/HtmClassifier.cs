@@ -19,13 +19,15 @@ namespace NeoCortexApi.Network
     /// <typeparam name="TOUT"></typeparam>
     public class HtmClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>
     {
-        //private List<TIN> inputSequence = new List<TIN>();
+        private List<TIN> inputSequence = new List<TIN>();
 
-        //private Dictionary<int[], TIN> activeMap = new Dictionary<int[], TIN>();
+        private Dictionary<int[], int> inputSequenceMap = new Dictionary<int[], int>();
 
-        private Dictionary<TIN, List<int[]>> allInputs = new Dictionary<TIN, List<int[]>>();
+        private Dictionary<int[], TIN> activeMap = new Dictionary<int[], TIN>();
 
-        private Dictionary<TIN, int[]> activeMap2 = new Dictionary<TIN, int[]>();
+        private Dictionary<TIN, List<int[]>> m_AllInputs = new Dictionary<TIN, List<int[]>>();
+
+        private Dictionary<TIN, int[]> m_ActiveMap2 = new Dictionary<TIN, int[]>();
 
         public void Learn(TIN input, Cell[] activeCells, bool learn)
         {
@@ -35,7 +37,7 @@ namespace NeoCortexApi.Network
         public void ClearState()
         {
             //this.activeMap.Clear();
-            this.activeMap2.Clear();
+            this.m_ActiveMap2.Clear();
            // this.inputSequence.Clear();
         }
 
@@ -51,25 +53,37 @@ namespace NeoCortexApi.Network
 
             var cellIndicies = GetCellIndicies(output);
         
-            if (allInputs.ContainsKey(input) == false)
-                allInputs.Add(input, new List<int[]>());
+            if (m_AllInputs.ContainsKey(input) == false)
+                m_AllInputs.Add(input, new List<int[]>());
             else
-                allInputs[input].Add(cellIndicies);
+                m_AllInputs[input].Add(cellIndicies);
 
-            if (this.activeMap2.ContainsKey(input))
+            if (this.m_ActiveMap2.ContainsKey(input))
             {
-                if (!this.activeMap2[input].SequenceEqual(cellIndicies))
+                if (!this.m_ActiveMap2[input].SequenceEqual(cellIndicies))
                 {
                     // double numOfSameBitsPct = (double)(((double)(this.activeMap2[input].Intersect(cellIndicies).Count()) / Math.Max((double)cellIndicies.Length, this.activeMap2[input].Length)));
                     // double numOfSameBitsPct = (double)(((double)(this.activeMap2[input].Intersect(cellIndicies).Count()) / (double)this.activeMap2[input].Length));
-                    var numOfSameBitsPct = this.activeMap2[input].Intersect(cellIndicies).Count();
-                    Debug.WriteLine($"Prev/Now/Same={this.activeMap2[input].Length}/{cellIndicies.Length}/{numOfSameBitsPct}");
+                    var numOfSameBitsPct = this.m_ActiveMap2[input].Intersect(cellIndicies).Count();
+                    Debug.WriteLine($"Prev/Now/Same={this.m_ActiveMap2[input].Length}/{cellIndicies.Length}/{numOfSameBitsPct}");
                 }
 
-                this.activeMap2[input] = cellIndicies;
+                this.m_ActiveMap2[input] = cellIndicies;
             }
             else
-                this.activeMap2.Add(input, cellIndicies);
+                this.m_ActiveMap2.Add(input, cellIndicies);
+        }
+
+        public void Learn(TIN input, Cell[] output, Cell[] predictedOutput)
+        {
+            this.inputSequence.Add(input);
+
+            this.inputSequenceMap.Add(GetCellIndicies(output), this.inputSequence.Count - 1);
+
+            if (!activeMap.ContainsKey(GetCellIndicies(output)))
+            {
+                this.activeMap.Add(GetCellIndicies(output), input);
+            }
         }
 
         /// <summary>
@@ -81,7 +95,7 @@ namespace NeoCortexApi.Network
         {
             // bool x = false;
             double maxSameBits = 0;
-            TIN predictedValue = default(TIN);
+            TIN predictedValue = default;
             //int[] arr = new int[predictiveCells.Length];
             //for (int i = 0; i < predictiveCells.Length; i++)
             //{
@@ -91,7 +105,7 @@ namespace NeoCortexApi.Network
             if (predictiveCells.Length != 0)
             {
                 int indxOfMatchingInp = 0;
-                Debug.WriteLine($"Item length: {predictiveCells.Length}\t Items: {this.activeMap2.Keys.Count}");
+                Debug.WriteLine($"Item length: {predictiveCells.Length}\t Items: {this.m_ActiveMap2.Keys.Count}");
                 int n = 0;
 
                 List<int> sortedMatches = new List<int>();
@@ -100,7 +114,7 @@ namespace NeoCortexApi.Network
 
                 Debug.WriteLine($"Predictive cells: {celIndicies.Length} \t {Helpers.StringifyVector(celIndicies)}");
 
-                foreach (var pair in this.activeMap2)
+                foreach (var pair in this.m_ActiveMap2)
                 {
                     if (pair.Value.SequenceEqual(celIndicies))
                     {
@@ -199,7 +213,7 @@ namespace NeoCortexApi.Network
 
             List<TIN> processedValues = new List<TIN>();
 
-            foreach (var item in activeMap2)
+            foreach (var item in m_ActiveMap2)
             {
                 Debug.WriteLine("");
                 Debug.WriteLine($"{item.Key}");
@@ -220,7 +234,7 @@ namespace NeoCortexApi.Network
 
             using (var cellStateSw = new StreamWriter(fileName.Replace(".csv", "HtmClassifier.fullstate.csv")))
             {
-                foreach (var item in allInputs)
+                foreach (var item in m_AllInputs)
                 {
                     Debug.WriteLine("");
                     Debug.WriteLine($"{item.Key}");
@@ -320,7 +334,7 @@ namespace NeoCortexApi.Network
             return arr;
         }
 
-        private int predictNextValue(int[] activeArr, int[] predictedArr)
+        private int PredictNextValue(int[] activeArr, int[] predictedArr)
         {
             var same = predictedArr.Intersect(activeArr);
 

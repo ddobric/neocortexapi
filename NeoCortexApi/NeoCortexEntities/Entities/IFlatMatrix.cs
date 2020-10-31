@@ -7,20 +7,16 @@ using NeoCortexApi;
 
 namespace NeoCortexApi.Entities
 {
-    /**
- * Allows storage of array data in sparse form, meaning that the indexes
- * of the data stored are maintained while empty indexes are not. This allows
- * savings in memory and computational efficiency because iterative algorithms
- * need only query indexes containing valid data. The dimensions of matrix defined
- * at construction time and immutable - matrix fixed size data structure.
- * 
- * @author David Ray
- * @author Jose Luis Martin
- *
- * @param <T>
- */
-
-
+    // TODO naming convention with interface method
+    /// <summary>
+    /// Allows storage of array data in sparse form, meaning that the indexes of the data stored are maintained while empty indexes are not. This allows
+    /// savings in memory and computational efficiency because iterative algorithms need only query indexes containing valid data. The dimensions of matrix 
+    /// defined at construction time and immutable - matrix fixed size data structure.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <remarks>
+    /// Authors of the JAVA implementation: David Ray, Jose Luis Martin
+    /// </remarks>
     public interface IFlatMatrix<T> : IMatrix<T>
     {
 
@@ -34,15 +30,15 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         IFlatMatrix<T> set(int index, T value);
 
-        int computeIndex(int[] coordinates);
+        int ComputeIndex(int[] coordinates);
 
-        /**
-         * Returns the maximum accessible flat index.
-         * @return  the maximum accessible flat index.
-         */
-        int getMaxIndex();
+        /// <summary>
+        /// Returns the maximum accessible flat index.
+        /// </summary>
+        /// <returns>the maximum accessible flat index.</returns>
+        int GetMaxIndex();
 
-        int computeIndex(int[] coordinates, bool doCheck);
+        int ComputeIndex(int[] coordinates, bool doCheck);
 
         /**
          * Returns an integer array representing the coordinates of the specified index
@@ -56,6 +52,6 @@ namespace NeoCortexApi.Entities
 
         HtmModuleTopology ModuleTopology {get;set;}
 
-        int[] getDimensionMultiples();
+        int[] GetDimensionMultiples();
     }
 }

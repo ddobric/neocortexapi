@@ -172,16 +172,18 @@ namespace NeoCortexApi
             {
                 string sbConnStr = "Endpoint=sb://bastasample.servicebus.windows.net/;SharedAccessKeyName=demo;SharedAccessKey=MvwVbrrJdsMQyhO/0uwaB5mVbuXyvYa3WRNpalHi0LQ=";
 
-                ActorSbConfig cfg = new ActorSbConfig();
-                cfg.SbConnStr = sbConnStr;
-                cfg.ReplyMsgQueue = "actorsystem/rcvlocal";
-                cfg.RequestMsgTopic = "actorsystem/actortopic";
-                cfg.NumOfElementsPerPartition = -1; // This means, number of partitions equals number of nodes.
-                cfg.NumOfPartitions = 35;// Should be uniformly distributed across nodes.
-                cfg.BatchSize = 1000;
-                cfg.ConnectionTimeout = TimeSpan.FromMinutes(5);
-              
-                cfg.Nodes = new List<string>() { "node1", "node2", "node3" };
+                ActorSbConfig cfg = new ActorSbConfig
+                {
+                    SbConnStr = sbConnStr,
+                    ReplyMsgQueue = "actorsystem/rcvlocal",
+                    RequestMsgTopic = "actorsystem/actortopic",
+                    NumOfElementsPerPartition = -1, // This means, number of partitions equals number of nodes.
+                    NumOfPartitions = 35,// Should be uniformly distributed across nodes.
+                    BatchSize = 1000,
+                    ConnectionTimeout = TimeSpan.FromMinutes(5),
+
+                    Nodes = new List<string>() { "node1", "node2", "node3" }
+                };
 
                 return cfg;
             }
@@ -210,7 +212,7 @@ namespace NeoCortexApi
         }
 
 
-        public static void f1()
+        public static void F1()
         {
             double x = 1.233;
             for (int i = 0; i < 100000000; i++)
@@ -218,40 +220,40 @@ namespace NeoCortexApi
                 x += 1.2732;
             }
 
-            f2();
+            F2();
         }
 
-        public static void f2()
+        public static void F2()
         {
             double x = 1.233;
             for (int i = 0; i < 100000000; i++)
             {
                 x += 1.2732;
             }
-            f3();
+            F3();
         }
 
-        public static void f3()
+        public static void F3()
         {
             double x = 1.233;
             for (int i = 0; i < 100000000; i++)
             {
                 x += 1.2732;
             }
-            f4();
+            F4();
         }
 
-        public static void f4()
+        public static void F4()
         {
             double x = 1.233;
             for (int i = 0; i < 100000000; i++)
             {
                 x += 1.2732;
             }
-            f5();
+            F5();
         }
 
-        public static void f5()
+        public static void F5()
         {
             double x = 1.233;
             for (int i = 0; i < 100000000; i++)

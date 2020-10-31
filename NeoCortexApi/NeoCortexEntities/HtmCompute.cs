@@ -46,7 +46,6 @@ namespace NeoCortexApi
             return retVal;
         }
 
-
         /**
        * Maps a column to its input bits. This method encapsulates the topology of
        * the region. It takes the index of the column as an argument and determines
@@ -74,6 +73,29 @@ namespace NeoCortexApi
        *                      ignored.
        * @return
        */
+        /// <summary>
+        /// Maps a column to its input bits. This method encapsulates the topology of the region. It takes the index of the column as an argument and determines 
+        /// what are the indices of the input vector that are located within the column's potential pool. The return value is a list containing the indices of 
+        /// the input bits. The current implementation of the base class only supports a 1 dimensional topology of columns with a 1 dimensional topology of inputs. 
+        /// To extend this class to support 2-D topology you will need to override this method. Examples of the expected output of this method:
+        /// <list type="bullet">
+        ///     <item>
+        ///     If the potentialRadius is greater than or equal to the entire input space, (global visibility), then this method returns an array filled with 
+        ///     all the indices
+        ///     </item>
+        ///     <item>
+        ///     If the topology is one dimensional, and the potentialRadius is 5, this method will return an array containing 5 consecutive values centered on 
+        ///     the index of the column (wrapping around if necessary).
+        ///     </item>
+        ///     <item>If the topology is two dimensional (not implemented), and the potentialRadius is 5, the method should return an array containing 25 '1's, where 
+        ///     the exact indices are to be determined by the mapping from 1-D index to 2-D position.
+        ///     </item>
+        /// </list>
+        /// </summary>
+        /// <param name="htmConfig">The configuration used in <see cref="Connections"/>.</param>
+        /// <param name="columnIndex">The index identifying a column in the permanence, potential and connectivity matrices.</param>
+        /// <param name="rnd"></param>
+        /// <returns></returns>
         public static int[] MapPotential(HtmConfig htmConfig, int columnIndex, Random rnd)
         {
             int centerInput = MapColumn(columnIndex, htmConfig.ColumnModuleTopology, htmConfig.InputModuleTopology);
@@ -122,6 +144,25 @@ namespace NeoCortexApi
         *                      and connectivity matrices.
         * @return              Flat index of mapped column.
         */
+        /// <summary>
+        /// Uniform Column Mapping <br></br>
+        /// Maps a column to its respective input index, keeping to the topology of the region. It takes the index of the column as an argument and determines 
+        /// what is the index of the flattened input vector that is to be the center of the column's potential pool. It distributes the columns over the inputs 
+        /// uniformly. The return value is an integer representing the index of the input bit. Examples of the expected output of this method:
+        /// <list type="bullet">
+        ///     <item>
+        ///     If the topology is one dimensional, and the column index is 0, this method will return the input index 0. If the column index is 1, and there are 
+        ///     3 columns over 7 inputs, this method will return the input index 3.
+        ///     </item>
+        ///     <item>If the topology is two dimensional, with column dimensions [3, 5] and input dimensions [7, 11], and the column index is 3, the method returns
+        ///     input index 8.
+        ///     </item>
+        /// </list>
+        /// </summary>
+        /// <param name="columnIndex">The index identifying a column in the permanence, potential and connectivity matrices.</param>
+        /// <param name="colTop"></param>
+        /// <param name="inpTop"></param>
+        /// <returns>Flat index of mapped column.</returns>
         public static int MapColumn(int columnIndex, HtmModuleTopology colTop, HtmModuleTopology inpTop)
         {
             int[] columnCoords = AbstractFlatMatrix.ComputeCoordinates(colTop.NumDimensions,
@@ -184,11 +225,11 @@ namespace NeoCortexApi
 
                 foreach (var lx in interim)
                 {
-                    gen.reset();
+                    gen.Reset();
 
-                    for (int y = 0; y < gen.size(); y++)
+                    for (int y = 0; y < gen.Size(); y++)
                     {
-                        int py = ArrayUtils.Modulo(gen.next(), topology.Dimensions[k]);
+                        int py = ArrayUtils.Modulo(gen.Next(), topology.Dimensions[k]);
                         //int py = gen.next() % dimensions[k];
 
                         List<int> tl = new List<int>();
@@ -230,11 +271,11 @@ namespace NeoCortexApi
 
                 foreach (var lx in interim)
                 {
-                    gen.reset();
+                    gen.Reset();
 
-                    for (int y = 0; y < gen.size(); y++)
+                    for (int y = 0; y < gen.Size(); y++)
                     {
-                        int py = gen.next();
+                        int py = gen.Next();
                         List<int> tl = new List<int>();
                         tl.AddRange(lx);
                         tl.Add(py);
@@ -278,6 +319,14 @@ namespace NeoCortexApi
        * @param potentialRadius       Span of the input field included in each neighborhood
        * @return                      The input's in the neighborhood. (1D)
        */
+        /// <summary>
+        /// Gets a neighborhood of inputs. Simply calls topology.wrappingNeighborhood or topology.neighborhood. A subclass can insert different topology behavior by overriding this method.
+        /// </summary>
+        /// <param name="isWrapAround"></param>
+        /// <param name="inputTopology"></param>
+        /// <param name="centerInput">The center of the neighborhood.</param>
+        /// <param name="potentialRadius">Span of the input field included in each neighborhood</param>
+        /// <returns>The input's in the neighborhood. (1D)</returns>
         public static int[] GetInputNeighborhood(bool isWrapAround, HtmModuleTopology inputTopology, int centerInput, int potentialRadius)
         {
             return isWrapAround ?
@@ -294,16 +343,26 @@ namespace NeoCortexApi
      * the 'index' parameter.
      * 
      * @param c                 the {@link Connections} which is the memory model
-     * @param potentialPool     An array specifying the potential pool of the column.
-     *                          Permanence values will only be generated for input bits
-     *                          corresponding to indices for which the mask value is 1.
-     *                          WARNING: potentialPool is sparse, not an array of "1's"
+     * @param potentialPool     
+     *                          
+     *                          
+     *                          
      * @param index             the index of the column being initialized
      * @param connectedPct      A value between 0 or 1 specifying the percent of the input
      *                          bits that might maximally start off in a connected state.
      *                          0.7 means, maximally 70% of potential might be connected
      * @return
      */
+        /// <summary>
+        /// Initializes the permanences of a column. The method returns a 1-D array the size of the input, where each entry in the array represents the initial 
+        /// permanence value between the input bit at the particular index in the array, and the column represented by the 'index' parameter.
+        /// </summary>
+        /// <param name="htmConfig">An array specifying the potential pool of the column. Permanence values will only be generated for input bits corresponding to 
+        ///                         indices for which the mask value is 1. <b>WARNING</b>: potentialPool is sparse, not an array of "1's"
+        ///                         </param>
+        /// <param name="potentialPool"></param>
+        /// <param name="random"></param>
+        /// <returns></returns>
         public static double[] InitSynapsePermanences(HtmConfig htmConfig, int[] potentialPool, Random random)
         {
             //Random random = new Random();
@@ -339,6 +398,17 @@ namespace NeoCortexApi
       * 
       * @return  a randomly generated permanence value
       */
+        /// <summary>
+        /// Returns a randomly generated permanence value for a synapse that is initialized in a connected state. The basic idea here is to initialize
+        /// permanence values very close to <c>synPermConnected</c> so that a small number of learning steps could make it disconnected or connected.
+        /// </summary>
+        /// <param name="synPermMax"></param>
+        /// <param name="synPermConnected"></param>
+        /// <param name="rnd"></param>
+        /// <returns>a randomly generated permanence value</returns>
+        /// <remarks>
+        /// Note: experimentation was done a long time ago on the best way to initialize permanence values, but the history for this particular scheme has been lost.
+        /// </remarks>
         public static double InitPermConnected(double synPermMax, double synPermConnected, Random rnd)
         {
             //double p = c.getSynPermConnected() + (c.getSynPermMax() - c.getSynPermConnected()) * c.random.NextDouble();
@@ -354,8 +424,8 @@ namespace NeoCortexApi
 
 
         /// <summary>
-        /// Returns a randomly generated permanence value for a synapses that is to be
-        /// initialized in a non-connected state.</summary>
+        /// Returns a randomly generated permanence value for a synapses that is to be initialized in a non-connected state.
+        /// </summary>
         /// <param name="synPermConnected"></param>
         /// <param name="rnd">Random generator to be used to generate permanence.</param>
         /// <returns>Permanence value.</returns>
@@ -382,7 +452,7 @@ namespace NeoCortexApi
         public static double CalcAvgSpanOfConnectedSynapses(Column column, HtmConfig htmConfig)
         {
             // Gets synapses connected to input bits.(from pool of the column)
-            int[] connected = column.ProximalDendrite.getConnectedSynapsesSparse();
+            int[] connected = column.ProximalDendrite.GetConnectedSynapsesSparse();
 
             if (connected == null || connected.Length == 0) return 0;
 
@@ -402,7 +472,7 @@ namespace NeoCortexApi
                    htmConfig.InputModuleTopology.DimensionMultiplies, htmConfig.InputModuleTopology.IsMajorOrdering, connected[i]));
             }
 
-            return ArrayUtils.Average(ArrayUtils.add(ArrayUtils.Subtract(maxCoord, minCoord), 1));
+            return ArrayUtils.Average(ArrayUtils.Add(ArrayUtils.Subtract(maxCoord, minCoord), 1));
         }
 
 
@@ -451,7 +521,6 @@ namespace NeoCortexApi
                 ArrayUtils.RaiseValuesBy(htmConfig.SynPermBelowStimulusInc, perm);
             }
         }
-
         /**
         * This method updates the permanence matrix with a column's new permanence
         * values. The column is identified by its index, which reflects the row in
@@ -474,9 +543,22 @@ namespace NeoCortexApi
         * @param maskPotential     The indexes of inputs in the specified {@link Column}'s pool.
         * @param raisePerm         a boolean value indicating whether the permanence values
         */
+        /// <summary>
+        /// This method updates the permanence matrix with a column's new permanence values. The column is identified by its index, which reflects the row in
+        /// the matrix, and the permanence is given in 'sparse' form, i.e. an array whose members are associated with specific indexes. It is in charge of 
+        /// implementing 'clipping' - ensuring that the permanence values are always between 0 and 1 - and 'trimming' - enforcing sparseness by zeroing out
+        /// all permanence values below 'synPermTrimThreshold'. It also maintains the consistency between 'permanences' (the matrix storing the permanence values), 
+        /// 'connectedSynapses', (the matrix storing the bits each column is connected to), and 'connectedCounts' (an array storing the number of input bits each 
+        /// column is connected to). Every method wishing to modify the permanence matrix should do so through this method.
+        /// </summary>
+        /// <param name="htmConfig">the configuration used in <see cref="Connections"/>.</param>
+        /// <param name="perm">An array of permanence values for a column. The array is "dense", i.e. it contains an entry for each input bit, even if the permanence value is 0.</param>
+        /// <param name="column">The column in the permanence, potential and connectivity matrices.</param>
+        /// <param name="maskPotential">The indexes of inputs in the specified <see cref="Column"/>'s pool.</param>
+        /// <param name="raisePerm">a boolean value indicating whether the permanence values</param>
         public static void UpdatePermanencesForColumn(HtmConfig htmConfig, double[] perm, Column column, int[] maskPotential, bool raisePerm)
         {
-             if (raisePerm)
+            if (raisePerm)
             {
                 // During every learning cycle, this method ensures that every column 
                 // has enough connections ('SynPermConnected') to iput space.
@@ -488,7 +570,7 @@ namespace NeoCortexApi
 
             ArrayUtils.Clip(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
 
-            column.setPermanences(htmConfig, perm);
+            column.SetPermanences(htmConfig, perm);
         }
     }
 }

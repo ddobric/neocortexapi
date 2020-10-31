@@ -155,11 +155,11 @@ namespace NeoCortexApi.Encoders
         public override bool IsDelta => throw new NotImplementedException();
 
         /// <summary>
-        /// To get the bucket values in encoder. 
+        /// <inheritdoc/>
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public override List<T> getBucketValues<T>()
+        public override List<T> GetBucketValues<T>()
         {
             throw new NotImplementedException();
         }

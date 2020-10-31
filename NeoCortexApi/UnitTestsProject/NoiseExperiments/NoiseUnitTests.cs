@@ -48,7 +48,7 @@ namespace UnitTestsProject.NoiseExperiments
 
             parameters.apply(mem);
 
-            sp.init(mem, UnitTestHelpers.GetMemory());
+            sp.Init(mem, UnitTestHelpers.GetMemory());
 
             foreach (var inputVector in inputVectors)
             {
@@ -160,7 +160,7 @@ namespace UnitTestsProject.NoiseExperiments
             var mem = new Connections();
 
             parameters.apply(mem);
-            sp.init(mem);
+            sp.Init(mem);
 
             List<int[]> inputVectors = new List<int[]>();
 

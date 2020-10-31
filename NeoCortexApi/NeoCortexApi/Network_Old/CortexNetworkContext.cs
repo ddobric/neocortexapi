@@ -15,14 +15,14 @@ namespace NeoCortexApi.Network
     /// </summary>
     public class CortexNetworkContext
     {
-        private List<Type> allEncoders = new List<Type>();
+        private List<Type> m_AllEncoders = new List<Type>();
 
         public IHtmModule MyProperty { get; set; }
 
         /// <summary>
         /// Gets all available encoders.
         /// </summary>
-        public List<Type> Encoders { get => allEncoders; }
+        public List<Type> Encoders { get => m_AllEncoders; }
 
         /// <summary>
         /// Loads all implemented encoders in all load assemblies.
@@ -37,7 +37,7 @@ namespace NeoCortexApi.Network
                 foreach (var tp in asm.GetTypes())
                 {
                     if (typeof(EncoderBase).IsAssignableFrom(tp))
-                        this.allEncoders.Add(tp);
+                        this.m_AllEncoders.Add(tp);
                 }
             }
         }
@@ -48,10 +48,10 @@ namespace NeoCortexApi.Network
         /// </summary>
         /// <param name="encoderSettings"></param>
         /// <returns></returns>
-        public EncoderBase CreateEncoder(Dictionary<String, Object> encoderSettings)
+        public EncoderBase CreateEncoder(Dictionary<string, object> encoderSettings)
         {
             var encoderType = encoderSettings[EncoderProperties.EncoderQualifiedName] as string;
-            if (String.IsNullOrEmpty(encoderType))
+            if (string.IsNullOrEmpty(encoderType))
                 throw new ArgumentException("Property 'encoderType' must be specified.");
 
             return CreateEncoder(encoderType, encoderSettings);
@@ -64,9 +64,9 @@ namespace NeoCortexApi.Network
         /// <param name="encoderSettings">List of all required parameters for encoder. 
         /// If encoder has already been created, this argument SHOULD be null.</param>
         /// <returns></returns>
-        public EncoderBase CreateEncoder(string encoderType, Dictionary<String, Object> encoderSettings)
+        public EncoderBase CreateEncoder(string encoderType, Dictionary<string, object> encoderSettings)
         {
-            var encoderTp = this.allEncoders.FirstOrDefault(t => t.FullName == encoderType);
+            var encoderTp = this.m_AllEncoders.FirstOrDefault(t => t.FullName == encoderType);
             if (encoderTp != null)
             {
                 if (encoderTp.IsGenericType)

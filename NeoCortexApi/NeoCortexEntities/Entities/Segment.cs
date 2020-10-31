@@ -46,15 +46,15 @@ namespace NeoCortexApi.Entities
         }
     
 
-        /// <summary>
-        /// Returns the index of proximal dentrite.
-        /// </summary>
-        /// <seealso cref="ProximalDendrite"/>
-        /// <returns>Index</returns>
-        public int getIndex()
-        {
-            return SegmentIndex;
-        }
+        ///// <summary>
+        ///// Returns the index of proximal dentrite.
+        ///// </summary>
+        ///// <seealso cref="ProximalDendrite"/>
+        ///// <returns>Index</returns>
+        //public int getIndex()
+        //{
+        //    return SegmentIndex;
+        //}
 
         /**
         * <p>
@@ -79,8 +79,7 @@ namespace NeoCortexApi.Entities
 
 
         /// <summary>
-        /// Creates and returns a newly created synapse with the specified
-        /// source cell, permanence, and index.
+        /// Creates and returns a newly created synapse with the specified source cell, permanence, and index.
         /// </summary>
         /// <param name="synapses">List of synapses, where one has to be added.</param>
         /// <param name="sourceCell"></param>
@@ -88,14 +87,13 @@ namespace NeoCortexApi.Entities
         /// <param name="index">Sequence within gthe pool.</param>
         /// <param name="inputIndex"></param>
         /// <remarks>
-        /// This method is only called for Proximal Synapses. For ProximalDendrites, 
-        /// there are many synapses within a pool, and in that case, the index 
+        /// <b>This method is only called for Proximal Synapses.</b> For ProximalDendrites, there are many synapses within a pool, and in that case, the index
         /// specifies the synapse's sequence order within the pool object, and may be referenced by that index</remarks>
         /// <returns>Instance of the new synapse.</returns>
         /// <seealso cref="Synapse"/>
-        public Synapse createSynapse(Cell sourceCell, int index, int inputIndex)
+        public Synapse CreateSynapse(Cell sourceCell, int index, int inputIndex)
         {
-            Synapse synapse = new Synapse(sourceCell, this.getIndex(), index, inputIndex);
+            Synapse synapse = new Synapse(sourceCell, this.SegmentIndex, index, inputIndex);
             this.Synapses.Add(synapse);
             return synapse;
         }
