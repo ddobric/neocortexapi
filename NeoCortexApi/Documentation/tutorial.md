@@ -2,6 +2,8 @@
 
 ## Encoder
 
+Encoding real-world data into SDRs is a very important process to understand in HTM. Semantic meaning within the input data must be encoded into a binary representation. ([reference](https://numenta.org/htm-school/))
+
 ### List of encoders
 
 - Boolean Encoder
@@ -124,6 +126,8 @@ public void ScalarEncodingExperiment()
 
 ## Spatial Pooler
 
+The HTM spatial pooler represents a neurally inspired algorithm for learning sparse representations from noisy data streams in an online fashion. ([reference](https://www.frontiersin.org/articles/10.3389/fncom.2017.00111/full))
+
 ```csharp
 public void testCompute1()
 {
@@ -178,6 +182,8 @@ public void testCompute1()
 ```
 
 ## Temporal memory
+
+Temporal memory is an algorithm which learns sequences of Sparse Distributed Representations (SDRs) formed by the Spatial Pooling algorithm, and makes predictions of what the next input SDR will be. ([reference](https://numenta.com/resources/biological-and-machine-intelligence/temporal-memory-algorithm/))
 
 ```csharp
 public void TestBurstUnpredictedColumns()
