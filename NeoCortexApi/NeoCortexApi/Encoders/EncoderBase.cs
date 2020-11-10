@@ -208,10 +208,10 @@ namespace NeoCortexApi.Encoders
         #endregion
 
         /// <summary>
-        /// Encodes inputData and puts the encoded value into the output array, which is a 1-D array of length returned by {@link #getW()}.
+        /// Encodes inputData and puts the encoded value into the output array, which is a 1-D array of length returned by <see cref="W"/>.
         /// </summary>
         /// <param name="inputData">Data to encode. This should be validated by the encoder.</param>
-        /// <returns>1-D array of same length returned by {@link #getW()}</returns>
+        /// <returns>1-D array of same length returned by <see cref="W"/></returns>
         /// <remarks>
         /// Note: The output array is reused, so clear it before updating it.
         /// </remarks>

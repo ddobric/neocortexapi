@@ -4,6 +4,33 @@
 
 Encoding real-world data into SDRs is a very important process to understand in HTM. Semantic meaning within the input data must be encoded into a binary representation. ([reference](https://numenta.org/htm-school/))
 
+Encoders need to be first initialized with pre-defined settings using its constructor. Encoder settings are created as a `Dictionary` consists of properties and their values. Following code snippet illustrates how to create encoder settings:
+
+```csharp
+public Dictionary<string, object> GetDefaultEncoderSettings()
+{
+    Dictionary<string, object> encoderSettings = new Dictionary<string, object>();
+    encoderSettings.Add("N", 5);
+    encoderSettings.Add("W", 10);
+    encoderSettings.Add("MinVal", (double)5);
+    encoderSettings.Add("MaxVal", (double)10);
+    encoderSettings.Add("Radius", (double)5);
+    encoderSettings.Add("Resolution", (double)10);
+    encoderSettings.Add("Periodic", (bool)false);
+    encoderSettings.Add("ClipInput", (bool)true);
+    return encoderSettings;
+}
+```
+
+After loading encoder settings into the encoder, method `encoder.Encode()` is invoked to start the encoding process and return an array of '0's and '1's.
+
+```cs
+public override int[] Encode(object inputData)
+{
+    ...
+}
+```
+
 ### List of encoders
 
 - Boolean Encoder
