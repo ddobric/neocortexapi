@@ -155,6 +155,87 @@ public void ScalarEncodingExperiment()
 
 The HTM spatial pooler represents a neurally inspired algorithm for learning sparse representations from noisy data streams in an online fashion. ([reference](https://www.frontiersin.org/articles/10.3389/fncom.2017.00111/full))
 
+Spatial Pooler algorithm requires 2 steps.
+
+1. Parameters configuration
+
+   There are 2 ways to configure Spatial Pooler's parameters.
+
+   1.1. Using `Parameters`
+
+   ```csharp
+   public void setupParameters()
+   {
+       parameters = Parameters.getAllDefaultParameters();
+       parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { 5 });
+       parameters.Set(KEY.COLUMN_DIMENSIONS, new int[] { 5 });
+       parameters.Set(KEY.POTENTIAL_RADIUS, 5);
+       parameters.Set(KEY.POTENTIAL_PCT, 0.5);
+       parameters.Set(KEY.GLOBAL_INHIBITION, false);
+       parameters.Set(KEY.LOCAL_AREA_DENSITY, -1.0);
+       parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 3.0);
+       parameters.Set(KEY.STIMULUS_THRESHOLD, 0.0);
+       parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.01);
+       parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0.1);
+       parameters.Set(KEY.SYN_PERM_CONNECTED, 0.1);
+       parameters.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.1);
+       parameters.Set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.1);
+       parameters.Set(KEY.DUTY_CYCLE_PERIOD, 10);
+       parameters.Set(KEY.MAX_BOOST, 10.0);
+       parameters.Set(KEY.RANDOM, new ThreadSafeRandom(42));
+
+       var mem = new Connections();
+       parameters.apply(mem);
+       SpatialPooler sp.Init(mem);
+   }
+
+   ```
+
+   1.2. Using `HtmConfig`
+
+   ```csharp
+   public void SpatialPoolerInit()
+   {
+       Connections connections = new Connections();
+       var htmConfig = connections.HtmConfig;
+       htmConfig.InputDimensions = new int[] { 32, 32 };
+       htmConfig.ColumnDimensions = new int[] { 64, 64 };
+       htmConfig.PotentialRadius = 16;
+       htmConfig.PotentialPct = 0.5;
+       htmConfig.GlobalInhibition = false;
+       htmConfig.LocalAreaDensity = -1.0;
+       htmConfig.NumActiveColumnsPerInhArea = 10.0;
+       htmConfig.StimulusThreshold = 0.0;
+       htmConfig.SynPermInactiveDec = 0.008;
+       htmConfig.SynPermActiveInc = 0.05;
+       htmConfig.SynPermConnected = 0.10;
+       htmConfig.MinPctOverlapDutyCycles = 0.001;
+       htmConfig.MinPctActiveDutyCycles = 0.001;
+       htmConfig.DutyCyclePeriod = 1000;
+       htmConfig.MaxBoost = 10.0;
+       htmConfig.RandomGenSeed = 42;
+       htmConfig.Random = new ThreadSafeRandom(42);
+
+       SpatialPooler sp.Init(connections);
+   }
+
+   ```
+
+2. Invocation of `Compute()`
+
+   ```csharp
+   public void TestSpatialPoolerCompute()
+   {
+       // parameters configuration
+       ...
+
+       // Invoke Compute()
+       int[] outputArray = sp.Compute(inputArray, learn: true);
+   }
+   ```
+
+Example
+
 ```csharp
 public void testCompute1()
 {
