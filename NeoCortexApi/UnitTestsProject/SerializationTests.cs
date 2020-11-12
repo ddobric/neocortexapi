@@ -249,6 +249,28 @@ namespace UnitTestsProject
             Debug.WriteLine("------------------------------------------------------------------------\n----------------------------------------------------------------------------");
         }
 
+
+        [TestMethod]
+        [TestCategory("LongRunning")]
+        public void SerializationDistalSegmentTest()
+        {
+            Dictionary<Cell, List<DistalDendrite>> distalSegments = new Dictionary<Cell, List<DistalDendrite>>();
+            distalSegments.Add(new Cell(), new List<DistalDendrite>() { new DistalDendrite(new Cell(), 1, 1, 1, 1.1, 100) { } });
+
+            var x = new { DistalSegments = distalSegments };
+
+            HtmSerializer ser = new HtmSerializer();
+            ser.Serialize(x, "distalsegment.json");
+        }
+
+        [TestMethod]
+        [TestCategory("LongRunning")]
+        public void SerializationAbstractSparseBinaryMatrixTest()
+        {
+          
+        }
+
+
         private void DrawBitmaps(EncoderBase encoder, double input, int[] activeArrayIndxes, int columnTopology)
         {
             var inputVector = encoder.Encode(input);
