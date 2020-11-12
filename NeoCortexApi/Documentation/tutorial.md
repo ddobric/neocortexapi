@@ -51,7 +51,21 @@ public override int[] Encode(object inputData)
 #### Category Encoder
 
 ```csharp
-// Not Implemented
+public void TestCategoryEncoderWithInputArrayOfSizeFourDefaultSettings()
+{
+    // as the size of string array is 4 and width by default is 3 therefore the encoded bit array should be of
+    // 12 bits in size
+    int[] encodedBits = { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    Dictionary<string, object> encoderSettings = getDefaultSettings(); // creaing default constructor
+    var arrayOfStrings = new string[] { "Milk", "Sugar", "Bread", "Egg" }; // array of input strings
+    CategoryEncoder categoryEncoder = new CategoryEncoder(arrayOfStrings, encoderSettings); // passing the input array here
+    var result = categoryEncoder.Encode(arrayOfStrings[0]); // encoding string "Milk" 
+
+    // validates the result
+    Assert.AreEqual(encodedBits.Length, result.Length);
+    CollectionAssert.AreEqual(encodedBits, result);
+}
+
 ```
 
 #### Datetime Encoder
