@@ -2,39 +2,14 @@
 <html>
 
 <head>
-    <title>Test</title>
+    <title>NeoCortexAPI</title>
     <link href="./style.css" type="text/css" rel="stylesheet">
     <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
-    <script src="./script.js" defer></script>
 </head>
 
 <body id="start">
-    <header>
-        <div class="head">
-            <div class="left">
-                <a href="http://daenet.de" target="_blank">
-                    <div id="logoContainer">
-                        <img id="logo" src="./assets/daenetLogo.png"
-                            alt="daenet Gesellschaft für Informationstechnologie mbH" aria-hidden="true">
-                    </div>
-                </a>
-                <div class="vSeparator"></div>
-                <a class="header fontHeader nav btn"
-                    href="https://github.com/ddobric/neocortexapi/blob/master/README.md" target="_blank"
-                    draggable="false">Documentation</a>
-                <a class="header fontHeader nav btn" href="#start" draggable="false">Example</a>
-                <a class="header fontHeader nav btn" href="#tutorial" draggable="false">Tutorial</a>
-                <a class="header fontHeader nav btn" href="#start" draggable="false">About</a>
-            </div>
-            <div class="right fontHeader btn">
-                <a class="header" href="https://github.com/daenetCorporation" target="_blank" draggable="false">
-                    Daenet github repository
-                </a>
-            </div>
-        </div>
-    </header>
     <section class="banner">
-        <div class="content">
+        <div class="">
             <h1 id="title">NeoCortex API</h1>
             <p id="subtext">
                 C# Implementation of Hierarchical Temporal Memory Cortical Learning Algorithm in .NET Core and more.
@@ -45,128 +20,48 @@
         </div>
     </section>
 
-    <section class="info secOdd">
-        <div class="secContent">
-            <h2>Getting Started</h2>
-            <p>Build status:
-                <a href="https://github.com/ddobric/neocortexapi/actions?query=workflow%3A%22.NET+Core%22"
-                    target="_blank">
-                    <img src="https://github.com/ddobric/neocortexapi/workflows/.NET%20Core/badge.svg"
-                        alt="projects build status" title="Build status on GitHub">
-                </a>
-            </p>
-            <span>External links:</span>
-            <ul>
-                <li>Temporal Memory:&nbsp; <a href="https://en.wikipedia.org/wiki/Hierarchical_temporal_memory"
-                        target="_blank">Wikipedia</a></li>
-                <li>HTM school:&nbsp;<a href="https://numenta.org/htm-school/" target="_blank">Numenta.org</a></li>
-                <li>HTM Java:&nbsp;<a href="https://github.com/numenta/htm.java
-                    " target="_blank">htm.java</a></li>
-            </ul>
-        </div>
-    </section>
-
-    <section class="info secEven">
-        <div class="secContent example">
-            <div class="part1">
-                <h2>Samples</h2>
+    <div class="content">
+        <section class="navigation">
+            <a class="tile getstarted"
+               href="https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/gettingStarted.md"
+               target="_blank">
+                <h3>Getting started</h3>
+            </a>
+            <a class="tile tutorial"
+               href="https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/tutorial.md"
+               target="_blank">
+                <h3>Tutorial</h3>
+            </a>
+            <a class="tile experiments"
+               href="https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/experiments.md"
+               target="_blank">
+                <h3>Experiments</h3>
+            </a>
+        </section>
+    </div>
+    <div class="content secOdd">
+        <section class="furtherinfo">
+            <div class="externallink">
+                <h3>External links</h3>
+                <ul>
+                    <li>
+                        Temporal Memory:&nbsp; <a href="https://en.wikipedia.org/wiki/Hierarchical_temporal_memory"
+                                                  target="_blank">Wikipedia</a>
+                    </li>
+                    <li>HTM school:&nbsp;<a href="https://numenta.org/htm-school/" target="_blank">Numenta.org</a></li>
+                    <li>
+                        HTM Java:&nbsp;<a href="https://github.com/numenta/htm.java
+                            " target="_blank">htm.java</a>
+                    </li>
+                    <li>HTM Forum:&nbsp;<a href="https://discourse.numenta.org/" target="_blank">Forum</a></li>
+                </ul>
             </div>
-            <div class="part2">
-                <h4>Setup parameter for Spatial Pooler</h4>
-                <div class="tag">
-                    <a href="#codeArea" onclick="ClickedParam(this)">Init Param</a>
-                    <a href="#codeArea" onclick="ClickedConfig(this)">Init Config</a>
-                </div>
-                <div class="codeArea">
-                    <div id="SPInitParam" class="code active">
-                        <pre>
-    <span class="token keyword">public</span> <span class="token ClassName">Connections</span> SpatialPoolerInit()
-    {
-        <span class="token keyword">var</span> parameters = <span class="token ClassName">Parameters</span>.getAllDefaultParameters();
-        parameters.Set(<span class="token ClassName">KEY</span>.INPUT_DIMENSIONS, <span class="token keyword">new int</span>[] { 32, 32 });
-        parameters.Set(<span class="token ClassName">KEY</span>.COLUMN_DIMENSIONS, <span class="token keyword">new int</span>[] { 64, 64 });
-        parameters.Set(<span class="token ClassName">KEY</span>.POTENTIAL_RADIUS, 16);
-        parameters.Set(<span class="token ClassName">KEY</span>.POTENTIAL_PCT, 0.5);
-        parameters.Set(<span class="token ClassName">KEY</span>.GLOBAL_INHIBITION, false);
-        parameters.Set(<span class="token ClassName">KEY</span>.LOCAL_AREA_DENSITY, -1.0);
-        parameters.Set(<span class="token ClassName">KEY</span>.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 10.0);
-        parameters.Set(<span class="token ClassName">KEY</span>.STIMULUS_THRESHOLD, 0.0);
-        parameters.Set(<span class="token ClassName">KEY</span>.SYN_PERM_INACTIVE_DEC, 0.008);
-        parameters.Set(<span class="token ClassName">KEY</span>.SYN_PERM_ACTIVE_INC, 0.05);
-        parameters.Set(<span class="token ClassName">KEY</span>.SYN_PERM_CONNECTED, 0.10);
-        parameters.Set(<span class="token ClassName">KEY</span>.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.001);
-        parameters.Set(<span class="token ClassName">KEY</span>.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.001);
-        parameters.Set(<span class="token ClassName">KEY</span>.DUTY_CYCLE_PERIOD, 1000);
-        parameters.Set(<span class="token ClassName">KEY</span>.MAX_BOOST, 10.0);
-        parameters.Set(<span class="token ClassName">KEY</span>.SEED, 42);
-        parameters.Set(<span class="token ClassName">KEY</span>.RANDOM, new <span class="token ClassName">ThreadSafeRandom</span>(42));
-    
-        <span class="token keyword">var</span> sp = new <span class="token ClassName">SpatialPooler</span>();
-        <span class="token keyword">var</span> connections = new <span class="token ClassName">Connections</span>();
-        parameters.apply(connections);
-        sp.Init(connections, <span class="token keyword">null</span>);
-    
-        <span class="token keyword">return</span> connections;
-    }
-                        </pre>
-                    </div>
-                    <div id="SPInitConfig" class="code">
-                        <pre>
-    public <span class="token ClassName">Connections</span> SpatialPoolerInit()
-    {
-        <span class="token ClassName">Connections</span> connections = new <span class="token ClassName">Connections</span>();
-        <span class="token keyword">var</span> htmConfig = connections.HtmConfig;
-        htmConfig.InputDimensions = <span class="token keyword">new int</span>[] { 32, 32 };
-        htmConfig.ColumnDimensions = <span class="token keyword">new int</span>[] { 64, 64 };
-        htmConfig.PotentialRadius = 16;
-        htmConfig.PotentialPct = 0.5;
-        htmConfig.GlobalInhibition = false;
-        htmConfig.LocalAreaDensity = -1.0;
-        htmConfig.NumActiveColumnsPerInhArea = 10.0;
-        htmConfig.StimulusThreshold = 0.0;
-        htmConfig.SynPermInactiveDec = 0.008;
-        htmConfig.SynPermActiveInc = 0.05;
-        htmConfig.SynPermConnected = 0.10;
-        htmConfig.MinPctOverlapDutyCycles = 0.001;
-        htmConfig.MinPctActiveDutyCycles = 0.001;
-        htmConfig.DutyCyclePeriod = 1000;
-        htmConfig.MaxBoost = 10.0;
-        htmConfig.RandomGenSeed = 42;
-        htmConfig.Random = new <span class="token ClassName">ThreadSafeRandom</span>(42);
-    
-        <span class="token ClassName">SpatialPoolerMT</span> sp = new <span class="token ClassName">SpatialPoolerMT</span>();
-        sp.Init(connections, <span class="token keyword">null</span>);
-    
-        <span class="token keyword">return</span> connections;
-    }
-                        </pre>
-                    </div>
-                </div>
-                <a href="">More...</a>
+            <div class="gifexample">
+                <h3>Example</h3>
+                <div id="gif">GIF VIDEO</div>
             </div>
-        </div>
-    </section>
-
-    <section id="tutorial" class="info secOdd">
-        <div class="secContent">
-            <h2>Tutorial</h2>
-            <div>
-                <button>click me</button>
-            </div>
-        </div>
-    </section>
-
-    <section class="info secEven">
-        <div class="secContent">
-            <h2>How to setup NeoCortexAPI?</h2>
-        </div>
-    </section>
-
-    <footer>
-        <div class="foot">
-            <a id="btoTop" class="fontHeader header btn" draggable="false" href="#start">back to top</a>
-        </div>
-    </footer>
+        </section>
+    </div>
 </body>
 
 </html>
