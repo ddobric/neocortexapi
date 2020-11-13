@@ -5,7 +5,7 @@
 ### Authors
 
 Ghulam Mustafa
-ghulam.mustafa@stud.fra-usa.de  
+ghulam.mustafa@stud.fra-uas.de  
 Muhammad Mubashir Ali Khan
 muhammad.khan2@stud.fra-uas.de  
 Abdul Samad
@@ -40,7 +40,7 @@ Hierarchical Temporal Memory (HTM) is based on the supposition that the world ha
 
 REF to PDF [here](https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/Experiments/ML-19-20_20-5.4_ParameterChangeExperiment_Paper.pdf)
 
-## Performance Spatial Pooler Global vs. Local Inhibition
+## Performance Spatial Pooler between Global and Local Inhibition
 
 ### Authors
 
@@ -56,28 +56,11 @@ Issue 89
 
 ### Abstract
 
-Each region in the cortex receives input through
-millions of axons from sensory organs and from other cortical
-regions. It remains a mystery how cortical neurons learn to
-form specific connections from this large number of unlabeled
-inputs in order to support further computations. Hierarchical
-temporal memory (HTM) provides a theoretical framework for
-understanding the computational principles in the neo-cortex.
-HTM spatial pooler was created to model how neurons learn
-feed forward connections. The spatial pooler method is
-converting the arbitrary binary input patterns into sparse
-distributed representations (SDRs) using competitive Hebbian
-learning’s rules and homeostasis excitability control
-mechanisms. In this paper, one of the Spatial Pooler’s key
-parameters, which is the “inhibition”, will be described. The
-main part is to show the differences between the “local” and
-“global” inhibition and how and what kind of affects they
-contribute to the process to the Spatial Pooler learning
-algorithm.
+Each region in the cortex receives input through millions of axons from sensory organs and from other cortical regions. It remains a mystery how cortical neurons learn to form specific connections from this large number of unlabeled inputs in order to support further computations. Hierarchical temporal memory (HTM) provides a theoretical framework for understanding the computational principles in the neo-cortex. HTM spatial pooler was created to model how neurons learn feed forward connections. The spatial pooler method is converting the arbitrary binary input patterns into sparse distributed representations (SDRs) using competitive Hebbian learning’s rules and homeostasis excitability control mechanisms. In this paper, one of the Spatial Pooler’s key parameters, which is the “inhibition”, will be described. The main part is to show the differences between the “local” and “global” inhibition and how and what kind of affects they contribute to the process to the Spatial Pooler learning algorithm.
 
 REF to PDF [here](https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/Experiments/ML-19-20_20-5.7_PerformanceSpatialPooler-between-Global-and-Local-Inhibition.pdf)
 
-## Investigation of Hierarchical Temporal Memory Spatial Pooler's Noise Robustness agaist Gaussian noise
+## Investigation of Hierarchical Temporal Memory Spatial Pooler's Noise Robustness against Gaussian noise
 
 ### Author
 
