@@ -40,11 +40,10 @@ namespace UnitTestsProject.SequenceLearningExperiments
 
             p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
             p.Set(KEY.INPUT_DIMENSIONS, new int[] { inputBits });
-            p.Set(KEY.CELLS_PER_COLUMN, 25);
             p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
-
-            //p.Set(KEY.GLOBAL_INHIBITION, false);
-
+            
+            p.Set(KEY.CELLS_PER_COLUMN, 25);
+       
             p.Set(KEY.GLOBAL_INHIBITION, true);
             p.Set(KEY.LOCAL_AREA_DENSITY, -1); // In a case of global inhibition.
 
