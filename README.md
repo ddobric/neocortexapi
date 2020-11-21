@@ -199,10 +199,27 @@ TODO: Guide users through getting your code up and running on their own system. 
 # Build and Test
 TODO: Describe and show how to build your code and run the tests. 
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+# References
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://www.visualstudio.com/en-us/docs/git/create-a-readme). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+HTM School:
+https://www.youtube.com/playlist?list=PL3yXMgtrZmDqhsFQzwUC9V8MeeVOQ7eZ9&app=desktop
+
+HTM Overview:
+https://en.wikipedia.org/wiki/Hierarchical_temporal_memory
+
+A Machine Learning Guide to HTM:
+https://numenta.com/blog/2019/10/24/machine-learning-guide-to-htm
+
+Numenta on Github:
+https://github.com/numenta
+
+HTM Community:
+https://numenta.org/
+
+A deepe dive in HTM Temporal Memory algorithm.
+https://numenta.com/assets/pdf/temporal-memory-algorithm/Temporal-Memory-Algorithm-Details.pdf
+
+# Contribute
+If your want to contribute on this project please contact us. 
+
+
