@@ -339,6 +339,17 @@ p.apply(cn);
 tm.Init(cn);
 ```
 
+To apply the algorithm, method `Compute()` is invoked. The result will then be stored as `ComputeCycle` object.
+
+```cs
+public ComputeCycle Compute(int[] activeColumns, bool learn)
+{
+    ...
+}
+```
+
+Following is an example illustrates how to use `TemporalMemory` algorithm.
+
 ```csharp
 public void TestBurstUnpredictedColumns()
 {
