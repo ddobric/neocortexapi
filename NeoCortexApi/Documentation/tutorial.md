@@ -179,9 +179,9 @@ public void ScalarEncodingExperiment()
 ```
 
 The following table visualizes the result from several numbers of the above unit test using `NeoCortexUtils.DrawBitmap()`:
-|number|0.1|0.3|17.6|18.0|
+|`number`|`0.1`|`0.3`|`17.6`|`18.0`|
 |--|--|--|--|--|
-|result|![][img0.1]|![][img0.3]|![][img17.6]|![][img18.0]|
+|Results|![][img0.1]|![][img0.3]|![][img17.6]|![][img18.0]|
 
 Further unit tests can be found here: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/UnitTestsProject/EncoderTests/ScalarEncoderTests.cs
 
