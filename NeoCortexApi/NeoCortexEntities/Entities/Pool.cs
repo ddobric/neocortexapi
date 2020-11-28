@@ -72,12 +72,7 @@ namespace NeoCortexApi.Entities
         //    s.setPermanence(c, permanence);
         //}
 
-        /**
-         * Updates this {@code Pool}'s store of permanences for the specified {@link Synapse}
-         * @param c				the connections memory
-         * @param synapse				the synapse who's permanence is recorded
-         * @param permanence	the permanence value to record
-         */
+       
         /// <summary>
         /// Updates this <see cref="Pool"/>'s store of permanences for the specified <see cref="Synapse"/>
         /// </summary>
