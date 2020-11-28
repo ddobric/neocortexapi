@@ -220,7 +220,7 @@ A deepe dive in HTM Temporal Memory algorithm.
 https://numenta.com/assets/pdf/temporal-memory-algorithm/Temporal-Memory-Algorithm-Details.pdf
 
 # Papers and conference proceedings
-### International Journal of Artificial Intelligence and Applications
+#### International Journal of Artificial Intelligence and Applications
 Scaling the HTM Spatial Pooler
 https://aircconline.com/abstract/ijaia/v11n4/11420ijaia07.html
 
