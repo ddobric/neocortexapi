@@ -219,6 +219,19 @@ https://numenta.org/
 A deepe dive in HTM Temporal Memory algorithm.
 https://numenta.com/assets/pdf/temporal-memory-algorithm/Temporal-Memory-Algorithm-Details.pdf
 
+# Papers and conference proceedings
+#### International Journal of Artificial Intelligence and Applications
+Scaling the HTM Spatial Pooler
+https://aircconline.com/abstract/ijaia/v11n4/11420ijaia07.html
+
+#### AIS 2020 - 6th International Conference on Artificial Intelligence and Soft Computing (AIS 2020), Helsinki
+The Parallel HTM Spatial Pooler with Actor Model
+https://aircconline.com/csit/csit1006.pdf
+
+#### Symposium on Pattern Recognition and Applications - Rome, Italy
+On the Relationship Between Input Sparsity and Noise Robustness in Hierarchical Temporal Memory Spatial Pooler 
+https://doi.org/10.1145/3393822.3432317
+
 # Contribute
 If your want to contribute on this project please contact us. 
 
