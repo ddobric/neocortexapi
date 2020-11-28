@@ -10,6 +10,8 @@ import csv
 
 import os
 
+# pip install plotly
+# Without pip: py -m pip install plotly
 # py draw_figure.py -fn "C:\dev\devops-daenet\NeoCortexApi\NeoCortexApi\UnitTestsProject\bin\Debug\netcoreapp3.1\exp.csv" -gn Digit -mc 1000 -ht 15 -yt "column indicies" -xt cycle -st "Predicted/Expected/Predictive Cells" -fign CortialColumn
 # py draw_figure.py -fn "C:\dev\devops-daenet\NeoCortexApi\Results\Spatial Pooler Stability\HomeostaticPlasticityActivator2\ActiveColumns_MaxBoost_5_MinOverl_1_4_plotly-input.csv" -gn Digit_4 -mc 1000 -ht 15 -yt column -xt cycle -st singlecolumn -fign CortialColumn        
 # py draw_figure.py -fn "C:\dev\devops-daenet\NeoCortexApi\Results\Spatial Pooler Stability\SpStability Experiment 2 - with new born effect\ActiveColumns_MaxBoost_5_MinOverl_1_4_plotly-input.csv" -gn GRAPHNAME -mc 1000 -ht 2 -yt column -xt cycle -st singlecolumn -fign CortialColumn        
