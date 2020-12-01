@@ -253,7 +253,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// The maximum number of synapses added to a segment during learning.
         /// </summary>
-        public int MaxNewSynapseCount { get; internal set; }
+        public int MaxNewSynapseCount { get; set; }
 
         /// <summary>
         /// The maximum number of segments (distal dendrites) allowed on a cell.
@@ -316,6 +316,8 @@ namespace NeoCortexApi.Entities
         /// If the permanence value for a synapse is greater than this value, it is said to be connected.
         /// </summary>
         public double ConnectedPermanence { get; set; } = 0.5;
+
+        //public bool Learn { get; set; } = true;
         #endregion
 
         //public bool IsColumnMajor { get; set; } = false;

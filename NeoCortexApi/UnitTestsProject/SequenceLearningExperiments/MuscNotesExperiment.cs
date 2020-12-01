@@ -391,5 +391,57 @@ namespace UnitTestsProject.SequenceLearningExperiments
 
             return key;
         }
+
+        private void TestCortexLayer()
+        {
+            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 });
+            int numInputs = inputValues.Distinct().ToList().Count;
+
+            var inputs = inputValues.ToArray();
+
+            EncoderBase encoder = new ScalarEncoder();
+
+            HtmConfig htmConfig = new HtmConfig();
+            Connections mem = new Connections(htmConfig);
+
+            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, numInputs * 55, (isStable, numPatterns, actColAvg, seenInputs) =>
+            {
+                if (isStable)
+                    // Event should be fired when entering the stable state.
+                    Debug.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+                else
+                    // Ideal SP should never enter unstable state after stable state.
+                    Debug.WriteLine($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+            }, numOfCyclesToWaitOnChange: 25);
+
+            SpatialPoolerMT sp1 = new SpatialPoolerMT(hpa);
+            sp1.Init(mem, UnitTestHelpers.GetMemory());
+
+            TemporalMemory tm1 = new TemporalMemory();
+            tm1.Init(mem);
+
+            List<CortexRegion> regions = new List<CortexRegion>();
+            CortexRegion region0 = new CortexRegion("1st Region");
+
+            regions.Add(region0);
+
+            CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
+            region0.AddLayer(layer1);
+            layer1.HtmModules.Add("encoder", encoder);
+            layer1.HtmModules.Add("sp", sp1);
+            layer1.HtmModules.Add("tm", tm1);
+
+            bool learn = true;
+
+            int maxCycles = 3500;
+
+            for (int i = 0; i < maxCycles; i++)
+            {
+                foreach (var input in inputs)
+                {
+                    var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
+                } 
+            }
+        }
     }
 }

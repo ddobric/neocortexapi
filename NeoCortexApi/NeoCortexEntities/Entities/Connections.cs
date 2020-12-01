@@ -278,6 +278,10 @@ namespace NeoCortexApi.Entities
 
                 return m_HtmConfig;
             }
+            private set
+            {
+                m_HtmConfig = value;
+            }
         }
 
 
@@ -397,6 +401,7 @@ namespace NeoCortexApi.Entities
 
         public Connections(HtmConfig prms)
         {
+            this.HtmConfig = prms;
             //this.permanenceDecrement = (double)prms[KEY.PERMANENCE_DECREMENT];
             //this.permanenceDecrement = prms.TemporalMemory.PermanenceDecrement;
         }
@@ -418,6 +423,52 @@ namespace NeoCortexApi.Entities
         #endregion
 
         #region General Methods
+
+        /// <summary>
+        /// Set default value for parameters of <see cref="HtmConfig"/>
+        /// </summary>
+        public static HtmConfig GetHtmConfigDefaultParameters()
+        {
+            var htmConfig = new HtmConfig
+            {
+                // Temporal Memory parameters
+                ColumnDimensions = new int[] { 2048 },
+                CellsPerColumn = 32,
+                ActivationThreshold = 10,
+                LearningRadius = 10,
+                MinThreshold = 9,
+                MaxNewSynapseCount = 20,
+                MaxSynapsesPerSegment = 225,
+                MaxSegmentsPerCell = 225,
+                InitialPermanence = 0.21,
+                ConnectedPermanence = 0.5,
+                PermanenceIncrement = 0.10,
+                PermanenceDecrement = 0.10,
+                PredictedSegmentDecrement = 0.1,
+                // Learn = true
+
+                // Spatial Pooler parameters
+                InputDimensions = new int[] { 100 },
+                PotentialRadius = 15,
+                PotentialPct = 0.75,
+                GlobalInhibition = true,
+                InhibitionRadius = 15,
+                LocalAreaDensity = -1.0,
+                NumActiveColumnsPerInhArea = 0.02 * 2048,
+                StimulusThreshold = 5.0,
+                SynPermInactiveDec = 0.008,
+                SynPermActiveInc = 0.05,
+                SynPermConnected = 0.1,
+                SynPermBelowStimulusInc = 0.01,
+                SynPermTrimThreshold = 0.05,
+                MinPctOverlapDutyCycles = 0.001,
+                MinPctActiveDutyCycles = 0.001,
+                DutyCyclePeriod = 1000,
+                MaxBoost = 10.0,
+                WrapAround = true
+            };
+            return htmConfig;
+        }
 
         /// <summary>
         /// Sets the derived values of the <see cref="SpatialPooler"/> {@link SpatialPooler}'s initialization.
@@ -758,7 +809,7 @@ namespace NeoCortexApi.Entities
         //{
         //    return potentialPct;
         //}
-        
+
         /// <summary>
         /// Sets the <see cref="AbstractSparseMatrix{T}"/> which represents the proximal dendrite permanence values.
         /// </summary>
@@ -1965,7 +2016,7 @@ namespace NeoCortexApi.Entities
         {
             return m_SegmentForFlatIdx[index];
         }
- 
+
         /// <summary>
         /// Returns the index of the <see cref="Column"/> owning the cell which owns 
         /// the specified segment.

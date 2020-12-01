@@ -107,6 +107,11 @@ The following table visualizes the result from several `input` of the above unit
 --|--|--|--|--|
 Results|![][img05.07.2011] | ![][img06.07.2012] | ![][img07.07.2013] | ![][img08.07.2014] |
 
+[img05.07.2011]: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/images/DateTimeEncoder/DateTime_out_05-07-2011%2021-58-07_32x32-N-1024-W-21.png?raw=true
+[img06.07.2012]: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/images/DateTimeEncoder/DateTime_out_06-07-2012%2021-58-07_32x32-N-1024-W-21.png?raw=true
+[img07.07.2013]: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/images/DateTimeEncoder/DateTime_out_07-07-2013%2021-58-07_32x32-N-1024-W-21.png?raw=true
+[img08.07.2014]: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/images/DateTimeEncoder/DateTime_out_08-07-2014%2021-58-07_32x32-N-1024-W-21.png?raw=true
+
 #### Geo-Spatial Encoder
 
 ```csharp
@@ -183,11 +188,22 @@ The following table visualizes the result from several numbers of the above unit
 |--|--|--|--|--|
 |Results|![][img0.1]|![][img0.3]|![][img17.6]|![][img18.0]|
 
+[img0.1]: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/images/ScalarEncoder/0.1.png?raw=true
+[img0.3]: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/images/ScalarEncoder/0.3.png?raw=true
+[img17.6]: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/images/ScalarEncoder/17.6.png?raw=true
+[img18.0]: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/images/ScalarEncoder/18.0.png?raw=true
+
 Further unit tests can be found here: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/UnitTestsProject/EncoderTests/ScalarEncoderTests.cs
 
 ## Spatial Pooler
 
 The HTM spatial pooler represents a neurally inspired algorithm for learning sparse representations from noisy data streams in an online fashion. ([reference](https://www.frontiersin.org/articles/10.3389/fncom.2017.00111/full))
+
+Right now, three implementations of SP are implemented and considered:
+
+- Spatial Pooler single threaded original version without algorithm specific changes.
+- SP-MT multithreaded version, which supports multiple cores on a single machine and
+- SP-Parallel, which supports multicore and multimode calculus of spatial pooler.
 
 Spatial Pooler algorithm requires 2 steps.
 
@@ -195,7 +211,40 @@ Spatial Pooler algorithm requires 2 steps.
 
    There are 2 ways to configure Spatial Pooler's parameters.
 
-   1.1. Using `Parameters`
+   1.1. Using `HtmConfig` (Preferred way to intialize _SpatialPooler_ )
+
+   ```csharp
+   public void SpatialPoolerInit()
+   {
+       var htmConfig = new HtmConfig()
+       {
+           InputDimensions = new int[] { 32, 32 },
+           ColumnDimensions = new int[] { 64, 64 },
+           PotentialRadius = 16,
+           PotentialPct = 0.5,
+           GlobalInhibition = false,
+           LocalAreaDensity = -1.0,
+           NumActiveColumnsPerInhArea = 10.0,
+           StimulusThreshold = 0.0,
+           SynPermInactiveDec = 0.008,
+           SynPermActiveInc = 0.05,
+           SynPermConnected = 0.10,
+           MinPctOverlapDutyCycles = 0.001,
+           MinPctActiveDutyCycles = 0.001,
+           DutyCyclePeriod = 1000,
+           MaxBoost = 10.0,
+           RandomGenSeed = 42,
+           Random = new ThreadSafeRandom(42)
+       };
+
+       Connections connections = new Connections(htmConfig);
+
+       SpatialPooler spatialPooler = new SpatialPoolerMT();
+       spatialPooler.Init(connections);
+   }
+   ```
+
+   1.2. Using `Parameters` (Obsoleted - this is for supporting the compatibility with the Java implementation)
 
    ```csharp
    public void setupParameters()
@@ -225,36 +274,6 @@ Spatial Pooler algorithm requires 2 steps.
 
    ```
 
-   1.2. Using `HtmConfig`
-
-   ```csharp
-   public void SpatialPoolerInit()
-   {
-       Connections connections = new Connections();
-       var htmConfig = connections.HtmConfig;
-       htmConfig.InputDimensions = new int[] { 32, 32 };
-       htmConfig.ColumnDimensions = new int[] { 64, 64 };
-       htmConfig.PotentialRadius = 16;
-       htmConfig.PotentialPct = 0.5;
-       htmConfig.GlobalInhibition = false;
-       htmConfig.LocalAreaDensity = -1.0;
-       htmConfig.NumActiveColumnsPerInhArea = 10.0;
-       htmConfig.StimulusThreshold = 0.0;
-       htmConfig.SynPermInactiveDec = 0.008;
-       htmConfig.SynPermActiveInc = 0.05;
-       htmConfig.SynPermConnected = 0.10;
-       htmConfig.MinPctOverlapDutyCycles = 0.001;
-       htmConfig.MinPctActiveDutyCycles = 0.001;
-       htmConfig.DutyCyclePeriod = 1000;
-       htmConfig.MaxBoost = 10.0;
-       htmConfig.RandomGenSeed = 42;
-       htmConfig.Random = new ThreadSafeRandom(42);
-
-       SpatialPooler sp.Init(connections);
-   }
-
-   ```
-
 2. Invocation of `Compute()`
 
    ```csharp
@@ -271,43 +290,41 @@ Spatial Pooler algorithm requires 2 steps.
 Following is an example illustrates how to use `SpatialPooler` algorithm.
 
 ```csharp
-public void testCompute1()
+public void testCompute1_1()
 {
-    setupParameters();
-    parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { 9 });
-    parameters.Set(KEY.COLUMN_DIMENSIONS, new int[] { 5 });
-    parameters.setPotentialRadius(5);
+    var htmConfig = SetupHtmConfigParameters();
+    htmConfig.InputDimensions = new int[] { 9 };
+    htmConfig.ColumnDimensions = new int[] { 5 };
+    htmConfig.PotentialRadius = 5;
 
-    //This is 0.3 in Python version due to use of dense
+    // This is 0.3 in Python version due to use of dense
     // permanence instead of sparse (as it should be)
-    parameters.setPotentialPct(0.5);
+    htmConfig.PotentialPct = 0.5;
 
-    parameters.setGlobalInhibition(false);
-    parameters.setLocalAreaDensity(-1.0);
-    parameters.setNumActiveColumnsPerInhArea(3);
-    parameters.setStimulusThreshold(1);
-    parameters.setSynPermInactiveDec(0.01);
-    parameters.setSynPermActiveInc(0.1);
-    parameters.setMinPctOverlapDutyCycles(0.1);
-    parameters.setMinPctActiveDutyCycles(0.1);
-    parameters.setDutyCyclePeriod(10);
-    parameters.setMaxBoost(10);
-    parameters.setSynPermTrimThreshold(0);
+    htmConfig.GlobalInhibition = false;
+    htmConfig.LocalAreaDensity = -1.0;
+    htmConfig.NumActiveColumnsPerInhArea = 3;
+    htmConfig.StimulusThreshold = 1;
+    htmConfig.SynPermInactiveDec = 0.01;
+    htmConfig.SynPermActiveInc = 0.1;
+    htmConfig.MinPctOverlapDutyCycles = 0.1;
+    htmConfig.MinPctActiveDutyCycles = 0.1;
+    htmConfig.DutyCyclePeriod = 10;
+    htmConfig.MaxBoost = 10;
+    htmConfig.SynPermTrimThreshold = 0;
 
-    //This is 0.5 in Python version due to use of dense
+    // This is 0.5 in Python version due to use of dense
     // permanence instead of sparse (as it should be)
-    parameters.setPotentialPct(1);
+    htmConfig.PotentialPct = 1;
 
-    parameters.setSynPermConnected(0.1);
+    htmConfig.SynPermConnected = 0.1;
 
-    sp = new SpatialPooler();
-    mem = new Connections();
-    parameters.apply(mem);
+    mem = new Connections(htmConfig);
 
     SpatialPoolerMock mock = new SpatialPoolerMock(new int[] { 0, 1, 2, 3, 4 });
     mock.Init(mem);
 
-    int[] inputVector = new int[] { 1, 0, 1, 0, 1, 0, 0, 1, 1 };
+    int[] inputVector = new int[] { 1, 0, 1, 0, 1, 0, 0, 1, 1 }; // output of encoder
     int[] activeArray = new int[] { 0, 0, 0, 0, 0 };
     for (int i = 0; i < 20; i++)
     {
@@ -329,14 +346,18 @@ Further unit tests can be found here: https://github.com/ddobric/neocortexapi/bl
 
 Temporal memory is an algorithm which learns sequences of Sparse Distributed Representations (SDRs) formed by the Spatial Pooling algorithm, and makes predictions of what the next input SDR will be. ([reference](https://numenta.com/resources/biological-and-machine-intelligence/temporal-memory-algorithm/))
 
-Temporal memory algorithm is also initialized using `Connection` the same way Spatial Pooler algorithm is initialized.
+Temporal memory alogirithm's input is the active columns output of Spatial Pooler algorithm.
 
 ```cs
-TemporalMemory tm = new TemporalMemory();
-Connections cn = new Connections();
-Parameters p = getDefaultParameters();
-p.apply(cn);
-tm.Init(cn);
+public void TemporalMemoryInit()
+{
+    HtmConfig htmConfig = Connections.GetHtmConfigDefaultParameters();
+    Connections connections = new Connections(htmConfig);
+
+    TemporalMemory temporalMemory = new TemporalMemory();
+
+    temporalMemory.Init(connections);
+}
 ```
 
 To apply the algorithm, method `Compute()` is invoked. The result will then be stored as `ComputeCycle` object.
@@ -350,13 +371,14 @@ public ComputeCycle Compute(int[] activeColumns, bool learn)
 
 Following is an example illustrates how to use `TemporalMemory` algorithm.
 
-```csharp
-public void TestBurstUnpredictedColumns()
+```cs
+public void TestBurstUnpredictedColumns1()
 {
+    HtmConfig htmConfig = GetDefaultTMParameters();
+    Connections cn = new Connections(htmConfig);
+
     TemporalMemory tm = new TemporalMemory();
-    Connections cn = new Connections();
-    Parameters p = getDefaultParameters();
-    p.apply(cn);
+
     tm.Init(cn);
 
     int[] activeColumns = { 0 };
@@ -370,11 +392,6 @@ public void TestBurstUnpredictedColumns()
 
 Further unit tests can be found here: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/UnitTestsProject/TemporalMemoryTests.cs
 
-[img05.07.2011]: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/images/DateTimeEncoder/DateTime_out_05-07-2011%2021-58-07_32x32-N-1024-W-21.png?raw=true
-[img06.07.2012]: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/images/DateTimeEncoder/DateTime_out_06-07-2012%2021-58-07_32x32-N-1024-W-21.png?raw=true
-[img07.07.2013]: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/images/DateTimeEncoder/DateTime_out_07-07-2013%2021-58-07_32x32-N-1024-W-21.png?raw=true
-[img08.07.2014]: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/images/DateTimeEncoder/DateTime_out_08-07-2014%2021-58-07_32x32-N-1024-W-21.png?raw=true
-[img0.1]: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/images/ScalarEncoder/0.1.png?raw=true
-[img0.3]: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/images/ScalarEncoder/0.3.png?raw=true
-[img17.6]: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/images/ScalarEncoder/17.6.png?raw=true
-[img18.0]: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/images/ScalarEncoder/18.0.png?raw=true
+
+## Combination of three components: Encoder, Spatial Pooler algorithm and Temporal Memory algorithm
+

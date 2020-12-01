@@ -49,6 +49,25 @@ namespace UnitTestsProject
             return retVal;
         }
 
+        private HtmConfig GetDefaultTMParameters()
+        {
+            HtmConfig htmConfig = Connections.GetHtmConfigDefaultParameters();
+            htmConfig.ColumnDimensions = new int[] { 32 };
+            htmConfig.CellsPerColumn = 4;
+            htmConfig.ActivationThreshold = 3;
+            htmConfig.InitialPermanence = 0.21;
+            htmConfig.ConnectedPermanence = 0.5;
+            htmConfig.MinThreshold = 2;
+            htmConfig.MaxNewSynapseCount = 3;
+            htmConfig.PermanenceIncrement = 0.1;
+            htmConfig.PermanenceDecrement = 0.1;
+            htmConfig.PredictedSegmentDecrement = 0;
+            htmConfig.Random = new ThreadSafeRandom(42);
+            htmConfig.RandomGenSeed = 42;
+
+            return htmConfig;
+        }
+
 
         private Parameters getDefaultParameters(Parameters p, string key, Object value)
         {
@@ -118,6 +137,24 @@ namespace UnitTestsProject
             Connections cn = new Connections();
             Parameters p = getDefaultParameters();
             p.apply(cn);
+            tm.Init(cn);
+
+            int[] activeColumns = { 0 };
+            ISet<Cell> burstingCells = cn.GetCellSet(new int[] { 0, 1, 2, 3 });
+
+            ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle;
+
+            Assert.IsTrue(cc.ActiveCells.SequenceEqual(burstingCells));
+        }
+
+        [TestMethod]
+        public void TestBurstUnpredictedColumns1()
+        {
+            HtmConfig htmConfig = GetDefaultTMParameters();
+            Connections cn = new Connections(htmConfig);
+
+            TemporalMemory tm = new TemporalMemory();
+
             tm.Init(cn);
 
             int[] activeColumns = { 0 };
@@ -1012,6 +1049,16 @@ namespace UnitTestsProject
             tm.Init(cn);
 
             Assert.AreEqual(64 * 64 * 32, cn.Cells.Length);
+        }
+
+        public void TemporalMemoryInit()
+        {
+            HtmConfig htmConfig = Connections.GetHtmConfigDefaultParameters();
+            Connections connections = new Connections(htmConfig);
+
+            TemporalMemory temporalMemory = new TemporalMemory();
+
+            temporalMemory.Init(connections);
         }
     }
 }
