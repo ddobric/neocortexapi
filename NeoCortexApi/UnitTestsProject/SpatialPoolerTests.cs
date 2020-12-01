@@ -2690,6 +2690,47 @@ namespace UnitTestsProject
         }
 
 
+        [TestMethod]
+        public void SpatialPoolerInit()
+        {
+            //https://aircconline.com/ijaia/V11N4/11420ijaia07.pdf
+            //Spatial Pooler single threaded original version without algorithm specific changes.
+            // SP - MT multithreaded version, which supports multiple cores on a single machine and
+            // SP - Parallel, which supports multicore and multimode calculus of spatial pooler.
+
+            var htmConfig = new HtmConfig()
+            {
+
+            };
+
+            htmConfig.InputDimensions = new int[] { 32, 32 };
+            htmConfig.ColumnDimensions = new int[] { 64, 64 };
+            htmConfig.PotentialRadius = 16;
+            htmConfig.PotentialPct = 0.5;
+            htmConfig.GlobalInhibition = false;
+            htmConfig.LocalAreaDensity = -1.0;
+            htmConfig.NumActiveColumnsPerInhArea = 10.0;
+            htmConfig.StimulusThreshold = 0.0;
+            htmConfig.SynPermInactiveDec = 0.008;
+            htmConfig.SynPermActiveInc = 0.05;
+            htmConfig.SynPermConnected = 0.10;
+            htmConfig.MinPctOverlapDutyCycles = 0.001;
+            htmConfig.MinPctActiveDutyCycles = 0.001;
+            htmConfig.DutyCyclePeriod = 1000;
+            htmConfig.MaxBoost = 10.0;
+            htmConfig.RandomGenSeed = 42;
+            htmConfig.Random = new ThreadSafeRandom(42);
+
+            Connections connections = new Connections(htmConfig);
+            //C:\dev\git\neocortexapi\neocortexapi\NeoCortexApi\UnitTestsProject\Similarity\SpatialPoolerSImilarityExperiments.cs
+            SpatialPoolerMT sp = new SpatialPoolerMT();
+            sp.Init(connections);
+
+            //TemporalMemory
+            MusicNotesExperiment
+        }
+
+
     }
 
 

@@ -193,14 +193,12 @@ namespace UnitTestsProject.SequenceLearningExperiments
                 tm1.Reset(mem);
             }, numOfCyclesToWaitOnChange: 25);
 
-            SpatialPoolerMT sp1 = new SpatialPoolerMT(hpa);
-            CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
 
+            SpatialPoolerMT sp1 = new SpatialPoolerMT(hpa);
             sp1.Init(mem, UnitTestHelpers.GetMemory());
             tm1.Init(mem);
 
-            //
-            // NewBorn learning stage.
+            CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
             region0.AddLayer(layer1);
             layer1.HtmModules.Add("encoder", encoder);
             layer1.HtmModules.Add("sp", sp1);
