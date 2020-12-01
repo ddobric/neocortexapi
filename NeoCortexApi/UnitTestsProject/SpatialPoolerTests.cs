@@ -2727,7 +2727,7 @@ namespace UnitTestsProject
             sp.Init(connections);
 
             //TemporalMemory
-            MusicNotesExperiment
+            //MusicNotesExperiment
         }
 
 

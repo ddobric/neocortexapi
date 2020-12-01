@@ -268,7 +268,7 @@ Spatial Pooler algorithm requires 2 steps.
    }
    ```
 
-Example
+Following is an example illustrates how to use `SpatialPooler` algorithm.
 
 ```csharp
 public void testCompute1()
