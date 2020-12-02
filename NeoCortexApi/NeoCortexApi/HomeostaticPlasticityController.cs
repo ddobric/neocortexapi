@@ -13,8 +13,8 @@ using System.Text;
 namespace NeoCortexApi
 {
     /// <summary>
-    /// Imlements the new-born effect in the SP. This effect tracks the learning process of the SP 
-    /// and switches-off the boosting mechanism (new-born effect) aftwr the SP has entered a stable state 
+    /// Implements the new-born effect in the SP. This effect tracks the learning process of the SP 
+    /// and switches-off the boosting mechanism (new-born effect) after the SP has entered a stable state 
     /// for all seen input patterns.
     /// </summary>
     public class HomeostaticPlasticityController
@@ -58,7 +58,7 @@ namespace NeoCortexApi
 
         /// <summary>
         /// Set on true when SP deactivates boosting and enter the stable state.
-        /// Once SP enters the stable state and it becomes instable agein, this value is ste on false.
+        /// Once SP enters the stable state and it becomes instable again, this value is set on false.
         /// </summary>
         private bool m_IsStable = false;
 

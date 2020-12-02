@@ -392,19 +392,56 @@ namespace UnitTestsProject.SequenceLearningExperiments
             return key;
         }
 
-        private void TestCortexLayer()
+        [TestMethod]
+        public void TestCortexLayer()
         {
+            int inputBits = 100;
+            
+            double max = 20;
+            int numColumns = 2048;
+
             List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 });
             int numInputs = inputValues.Distinct().ToList().Count;
 
-            var inputs = inputValues.ToArray();
+            var inputs = inputValues.ToArray();            
 
-            EncoderBase encoder = new ScalarEncoder();
+            Dictionary<string, object> settings = new Dictionary<string, object>()
+            {
+                { "W", 15},
+                { "N", inputBits},
+                { "Radius", -1.0},
+                { "MinVal", 0.0},
+                { "Periodic", false},
+                { "Name", "scalar"},
+                { "ClipInput", false},
+                { "MaxVal", max}
+            };
 
-            HtmConfig htmConfig = new HtmConfig();
-            Connections mem = new Connections(htmConfig);
+            EncoderBase encoder = new ScalarEncoder(settings);
 
-            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, numInputs * 55, (isStable, numPatterns, actColAvg, seenInputs) =>
+            HtmConfig htmConfig = Connections.GetHtmConfigDefaultParameters();
+            htmConfig.Random = new ThreadSafeRandom(42);
+            htmConfig.InputDimensions = new int[] { inputBits };
+            htmConfig.ColumnDimensions = new int[] { numColumns };
+            htmConfig.CellsPerColumn = 25;
+            htmConfig.GlobalInhibition = true;
+            htmConfig.LocalAreaDensity = -1;
+            htmConfig.NumActiveColumnsPerInhArea = 0.02 * numColumns;
+            htmConfig.PotentialRadius = 50;
+            htmConfig.InhibitionRadius = 15;
+            htmConfig.MaxBoost = 10.0;
+            htmConfig.DutyCyclePeriod = 25;
+            htmConfig.MinPctOverlapDutyCycles = 0.75;
+            htmConfig.MaxNewSynapseCount = (int)(0.02 * numColumns);
+            htmConfig.ActivationThreshold = 15;
+            htmConfig.ConnectedPermanence = 0.5;
+            htmConfig.PermanenceDecrement = 0.25;
+            htmConfig.PermanenceIncrement = 0.15;
+            htmConfig.PredictedSegmentDecrement = 0.1;
+
+            Connections memory = new Connections(htmConfig);
+
+            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(memory, numInputs * 55, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                 if (isStable)
                     // Event should be fired when entering the stable state.
@@ -414,11 +451,11 @@ namespace UnitTestsProject.SequenceLearningExperiments
                     Debug.WriteLine($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
             }, numOfCyclesToWaitOnChange: 25);
 
-            SpatialPoolerMT sp1 = new SpatialPoolerMT(hpa);
-            sp1.Init(mem, UnitTestHelpers.GetMemory());
+            SpatialPoolerMT spatialPooler = new SpatialPoolerMT(hpa);
+            spatialPooler.Init(memory, UnitTestHelpers.GetMemory());
 
-            TemporalMemory tm1 = new TemporalMemory();
-            tm1.Init(mem);
+            TemporalMemory temporalMemory = new TemporalMemory();
+            temporalMemory.Init(memory);
 
             List<CortexRegion> regions = new List<CortexRegion>();
             CortexRegion region0 = new CortexRegion("1st Region");
@@ -428,8 +465,8 @@ namespace UnitTestsProject.SequenceLearningExperiments
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
             region0.AddLayer(layer1);
             layer1.HtmModules.Add("encoder", encoder);
-            layer1.HtmModules.Add("sp", sp1);
-            layer1.HtmModules.Add("tm", tm1);
+            layer1.HtmModules.Add("sp", spatialPooler);
+            layer1.HtmModules.Add("tm", temporalMemory);
 
             bool learn = true;
 

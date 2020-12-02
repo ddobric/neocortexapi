@@ -199,7 +199,7 @@ Further unit tests can be found here: https://github.com/ddobric/neocortexapi/bl
 
 The HTM spatial pooler represents a neurally inspired algorithm for learning sparse representations from noisy data streams in an online fashion. ([reference](https://www.frontiersin.org/articles/10.3389/fncom.2017.00111/full))
 
-Right now, three implementations of SP are implemented and considered:
+Right now, three versions of SP are implemented and considered:
 
 - Spatial Pooler single threaded original version without algorithm specific changes.
 - SP-MT multithreaded version, which supports multiple cores on a single machine and
@@ -391,7 +391,3 @@ public void TestBurstUnpredictedColumns1()
 ```
 
 Further unit tests can be found here: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/UnitTestsProject/TemporalMemoryTests.cs
-
-
-## Combination of three components: Encoder, Spatial Pooler algorithm and Temporal Memory algorithm
-
