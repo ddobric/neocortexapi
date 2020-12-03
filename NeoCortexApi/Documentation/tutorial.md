@@ -57,9 +57,9 @@ public void TestCategoryEncoderWithInputArrayOfSizeFourDefaultSettings()
     // 12 bits in size
     int[] encodedBits = { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     Dictionary<string, object> encoderSettings = getDefaultSettings(); // creaing default constructor
-    var arrayOfStrings = new string[] { "Milk", "Sugar", "Bread", "Egg" }; // array of input strings
+    string[] arrayOfStrings = new string[] { "Milk", "Sugar", "Bread", "Egg" }; // array of input strings
     CategoryEncoder categoryEncoder = new CategoryEncoder(arrayOfStrings, encoderSettings); // passing the input array here
-    var result = categoryEncoder.Encode(arrayOfStrings[0]); // encoding string "Milk"
+    int[] result = categoryEncoder.Encode(arrayOfStrings[0]); // encoding string "Milk"
 
     // validates the result
     Assert.AreEqual(encodedBits.Length, result.Length);
@@ -78,7 +78,7 @@ https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/UnitTestsProjec
 public void EncodeDateTimeTest(int w, double r, Object input, int[] expectedOutput)
 {
     CortexNetworkContext ctx = new CortexNetworkContext();
-    var now = DateTimeOffset.Now;
+    DateTimeOffset now = DateTimeOffset.Now;
     Dictionary<string, Dictionary<string, object>> encoderSettings = new Dictionary<string, Dictionary<string, object>>();
     encoderSettings.Add("DateTimeEncoder", new Dictionary<string, object>()
         {
@@ -91,12 +91,12 @@ public void EncodeDateTimeTest(int w, double r, Object input, int[] expectedOutp
             { "ClipInput", false},
             { "Padding", 5},
         });
-    var encoder = new DateTimeEncoder(encoderSettings, DateTimeEncoder.Precision.Days);
-    var result = encoder.Encode(DateTimeOffset.Parse(input.ToString()));
+    DateTimeEncoder encoder = new DateTimeEncoder(encoderSettings, DateTimeEncoder.Precision.Days);
+    int[] result = encoder.Encode(DateTimeOffset.Parse(input.ToString()));
     Debug.WriteLine(NeoCortexApi.Helpers.StringifyVector(result));
     //Debug.WriteLine(NeoCortexApi.Helpers.StringifyVector(expectedOutput));
     int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(result, 32, 32);
-    var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
+    int[,] twoDimArray = ArrayUtils.Transpose(twoDimenArray);
     NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"DateTime_out_{input.ToString().Replace("/", "-").Replace(":", "-")}_32x32-N-{encoderSettings["DateTimeEncoder"]["N"]}-W-{encoderSettings["DateTimeEncoder"]["W"]}.png");
    // Assert.IsTrue(result.SequenceEqual(expectedOutput));
 }
@@ -134,7 +134,7 @@ public int[] GermanyToItalyLongitude(double input)
     });
 
 
-    var result = encoder.Encode(input);// it use for encoding the input according to the given parameters.
+    int[] result = encoder.Encode(input);// it use for encoding the input according to the given parameters.
                                        // printImage(encoder, nameof(GermanyToItalyLongitude));// ít is use to generate the bit map image
                                        // Debug.WriteLine(input);
                                        //Debug.WriteLine(NeoCortexApi.Helpers.StringifyVector(result));
@@ -175,9 +175,9 @@ public void ScalarEncodingExperiment()
     });
     for (double i = 0.0; i < (long)encoder.MaxVal; i += 0.1)
     {
-       var result = encoder.Encode(i);
+        int[] result = encoder.Encode(i);
         int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(result, (int)Math.Sqrt(result.Length), (int)Math.Sqrt(result.Length));
-        var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
+        int[,] twoDimArray = ArrayUtils.Transpose(twoDimenArray);
         NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"{outFolder}\\{i}.png", Color.Yellow, Color.Black, text:i.ToString());
     }
 }
@@ -216,7 +216,7 @@ Spatial Pooler algorithm requires 2 steps.
    ```csharp
    public void SpatialPoolerInit()
    {
-       var htmConfig = new HtmConfig()
+       HtmConfig htmConfig = new HtmConfig()
        {
            InputDimensions = new int[] { 32, 32 },
            ColumnDimensions = new int[] { 64, 64 },
@@ -249,7 +249,7 @@ Spatial Pooler algorithm requires 2 steps.
    ```csharp
    public void setupParameters()
    {
-       parameters = Parameters.getAllDefaultParameters();
+       Parameters parameters = Parameters.getAllDefaultParameters();
        parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { 5 });
        parameters.Set(KEY.COLUMN_DIMENSIONS, new int[] { 5 });
        parameters.Set(KEY.POTENTIAL_RADIUS, 5);
@@ -267,9 +267,11 @@ Spatial Pooler algorithm requires 2 steps.
        parameters.Set(KEY.MAX_BOOST, 10.0);
        parameters.Set(KEY.RANDOM, new ThreadSafeRandom(42));
 
-       var mem = new Connections();
+       Connnections mem = new Connections();
        parameters.apply(mem);
-       SpatialPooler sp.Init(mem);
+
+       SpatialPooler sp = new SpatialPooler();
+       sp.Init(mem);
    }
 
    ```
@@ -292,7 +294,7 @@ Following is an example illustrates how to use `SpatialPooler` algorithm.
 ```csharp
 public void testCompute1_1()
 {
-    var htmConfig = SetupHtmConfigParameters();
+    HtmConfig htmConfig = SetupHtmConfigParameters();
     htmConfig.InputDimensions = new int[] { 9 };
     htmConfig.ColumnDimensions = new int[] { 5 };
     htmConfig.PotentialRadius = 5;
