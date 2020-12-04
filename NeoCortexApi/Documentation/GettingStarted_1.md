@@ -42,30 +42,41 @@ In this example, ScalarEncoder is preferred as inputs are all numbers. The encod
             EncoderBase encoder = new ScalarEncoder(settings);
 ```
 
-## Spatial Pooler
+<!-- link to encoder -->
 
-Type of Spatial Pooler (SP) that is used in this example is the multithreaded version that utilize multicore of the machine to run the spatial pooler algorithm. The `HomeostaticPlasticityController` is included in the spatial pooler algorithm to implement the "new born" effect. This effect tracks the learning process of the SP and switches-off the boosting mechanism (new-born effect) after the SP has entered a stable state for all seen input patterns.
+## Spatial Pooler why? encoder output is SP input
+
+Encoder produces output to be fed into Spatial Pooler algorithm. Type of Spatial Pooler (SP) that is used in this example is the multithreaded version that utilize multicore of the machine to run the spatial pooler algorithm.
 
 ```cs
-            HtmConfig htmConfig = Connections.GetHtmConfigDefaultParameters();
-            htmConfig.Random = new ThreadSafeRandom(42);
-            htmConfig.InputDimensions = new int[] { inputBits };
-            htmConfig.ColumnDimensions = new int[] { numColumns };
-            htmConfig.CellsPerColumn = 25;
-            htmConfig.GlobalInhibition = true;
-            htmConfig.LocalAreaDensity = -1;
-            htmConfig.NumActiveColumnsPerInhArea = 0.02 * numColumns;
-            htmConfig.PotentialRadius = 50;
-            htmConfig.InhibitionRadius = 15;
-            htmConfig.MaxBoost = 10.0;
-            htmConfig.DutyCyclePeriod = 25;
-            htmConfig.MinPctOverlapDutyCycles = 0.75;
-            htmConfig.MaxNewSynapseCount = (int)(0.02 * numColumns);
-            htmConfig.ActivationThreshold = 15;
-            htmConfig.ConnectedPermanence = 0.5;
-            htmConfig.PermanenceDecrement = 0.25;
-            htmConfig.PermanenceIncrement = 0.15;
-            htmConfig.PredictedSegmentDecrement = 0.1;
+            HtmConfig htmConfig = new HtmConfig
+            {
+                Random = new ThreadSafeRandom(42),
+                InputDimensions = new int[] { inputBits },
+                ColumnDimensions = new int[] { numColumns },
+                CellsPerColumn = 25,
+                GlobalInhibition = true,
+                LocalAreaDensity = -1,
+                NumActiveColumnsPerInhArea = 0.02 * numColumns,
+                PotentialRadius = 50,
+                InhibitionRadius = 15,
+                MaxBoost = 10.0,
+                DutyCyclePeriod = 25,
+                MinPctOverlapDutyCycles = 0.75,
+                MaxNewSynapseCount = (int)(0.02 * numColumns),
+                ActivationThreshold = 15,
+                ConnectedPermanence = 0.5,
+                PermanenceDecrement = 0.25,
+                PermanenceIncrement = 0.15,
+                PredictedSegmentDecrement = 0.1
+            };
+```
+
+// Reference to parameters explanation
+
+The `HomeostaticPlasticityController` is included in the spatial pooler algorithm to implement the "new born" effect. This effect tracks the learning process of the SP and switches-off the boosting mechanism (new-born effect) after the SP has entered a stable state for all seen input patterns.
+
+```cs
 
             Connections memory = new Connections(htmConfig);
 
@@ -85,6 +96,8 @@ Type of Spatial Pooler (SP) that is used in this example is the multithreaded ve
 ```
 
 ## Temporal Memory
+
+The output of Spatial Pooler(SDR) is used as the input of Temporal Memory.
 
 Initialization of Temporal Memory.
 

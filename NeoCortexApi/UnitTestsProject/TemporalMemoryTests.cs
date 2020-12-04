@@ -51,19 +51,21 @@ namespace UnitTestsProject
 
         private HtmConfig GetDefaultTMParameters()
         {
-            HtmConfig htmConfig = Connections.GetHtmConfigDefaultParameters();
-            htmConfig.ColumnDimensions = new int[] { 32 };
-            htmConfig.CellsPerColumn = 4;
-            htmConfig.ActivationThreshold = 3;
-            htmConfig.InitialPermanence = 0.21;
-            htmConfig.ConnectedPermanence = 0.5;
-            htmConfig.MinThreshold = 2;
-            htmConfig.MaxNewSynapseCount = 3;
-            htmConfig.PermanenceIncrement = 0.1;
-            htmConfig.PermanenceDecrement = 0.1;
-            htmConfig.PredictedSegmentDecrement = 0;
-            htmConfig.Random = new ThreadSafeRandom(42);
-            htmConfig.RandomGenSeed = 42;
+            HtmConfig htmConfig = new HtmConfig()
+            {
+                ColumnDimensions = new int[] { 32 },
+                CellsPerColumn = 4,
+                ActivationThreshold = 3,
+                InitialPermanence = 0.21,
+                ConnectedPermanence = 0.5,
+                MinThreshold = 2,
+                MaxNewSynapseCount = 3,
+                PermanenceIncrement = 0.1,
+                PermanenceDecrement = 0.1,
+                PredictedSegmentDecrement = 0,
+                Random = new ThreadSafeRandom(42),
+                RandomGenSeed = 42
+            };
 
             return htmConfig;
         }
@@ -1053,7 +1055,7 @@ namespace UnitTestsProject
 
         public void TemporalMemoryInit()
         {
-            HtmConfig htmConfig = Connections.GetHtmConfigDefaultParameters();
+            HtmConfig htmConfig = new HtmConfig();
             Connections connections = new Connections(htmConfig);
 
             TemporalMemory temporalMemory = new TemporalMemory();

@@ -42,25 +42,26 @@ namespace UnitTestsProject
         }
         private HtmConfig SetupHtmConfigParameters()
         {
-            var htmConfig = Connections.GetHtmConfigDefaultParameters();
-
-            htmConfig.InputDimensions = new int[] { 5 };
-            htmConfig.ColumnDimensions = new int[] { 5 };
-            htmConfig.PotentialRadius = 5;
-            htmConfig.PotentialPct = 0.5;
-            htmConfig.GlobalInhibition = false;
-            htmConfig.LocalAreaDensity = -1.0;
-            htmConfig.NumActiveColumnsPerInhArea = 3.0;
-            htmConfig.StimulusThreshold = 0.0;
-            htmConfig.SynPermInactiveDec = 0.01;
-            htmConfig.SynPermActiveInc = 0.1;
-            htmConfig.SynPermConnected = 0.1;
-            htmConfig.MinPctOverlapDutyCycles = 0.1;
-            htmConfig.MinPctActiveDutyCycles = 0.1;
-            htmConfig.DutyCyclePeriod = 10;
-            htmConfig.MaxBoost = 10;
-            htmConfig.RandomGenSeed = 42;
-            htmConfig.Random = new ThreadSafeRandom(42);
+            var htmConfig = new HtmConfig()
+            {
+                InputDimensions = new int[] { 5 },
+                ColumnDimensions = new int[] { 5 },
+                PotentialRadius = 5,
+                PotentialPct = 0.5,
+                GlobalInhibition = false,
+                LocalAreaDensity = -1.0,
+                NumActiveColumnsPerInhArea = 3.0,
+                StimulusThreshold = 0.0,
+                SynPermInactiveDec = 0.01,
+                SynPermActiveInc = 0.1,
+                SynPermConnected = 0.1,
+                MinPctOverlapDutyCycles = 0.1,
+                MinPctActiveDutyCycles = 0.1,
+                DutyCyclePeriod = 10,
+                MaxBoost = 10,
+                RandomGenSeed = 42,
+                Random = new ThreadSafeRandom(42),
+            };
 
             return htmConfig;
         }
@@ -89,24 +90,26 @@ namespace UnitTestsProject
 
         private HtmConfig SetupHtmConfigDefaultParameters()
         {
-            var htmConfig = Connections.GetHtmConfigDefaultParameters();
-            htmConfig.InputDimensions = new int[] { 32, 32 };
-            htmConfig.ColumnDimensions = new int[] { 64, 64 };
-            htmConfig.PotentialRadius = 16;
-            htmConfig.PotentialPct = 0.5;
-            htmConfig.GlobalInhibition = false;
-            htmConfig.LocalAreaDensity = -1.0;
-            htmConfig.NumActiveColumnsPerInhArea = 10.0;
-            htmConfig.StimulusThreshold = 0.0;
-            htmConfig.SynPermInactiveDec = 0.008;
-            htmConfig.SynPermActiveInc = 0.05;
-            htmConfig.SynPermConnected = 0.10;
-            htmConfig.MinPctOverlapDutyCycles = 0.001;
-            htmConfig.MinPctActiveDutyCycles = 0.001;
-            htmConfig.DutyCyclePeriod = 1000;
-            htmConfig.MaxBoost = 10.0;
-            htmConfig.RandomGenSeed = 42;
-            htmConfig.Random = new ThreadSafeRandom(42);
+            var htmConfig = new HtmConfig()
+            {
+                InputDimensions = new int[] { 32, 32 },
+                ColumnDimensions = new int[] { 64, 64 },
+                PotentialRadius = 16,
+                PotentialPct = 0.5,
+                GlobalInhibition = false,
+                LocalAreaDensity = -1.0,
+                NumActiveColumnsPerInhArea = 10.0,
+                StimulusThreshold = 0.0,
+                SynPermInactiveDec = 0.008,
+                SynPermActiveInc = 0.05,
+                SynPermConnected = 0.10,
+                MinPctOverlapDutyCycles = 0.001,
+                MinPctActiveDutyCycles = 0.001,
+                DutyCyclePeriod = 1000,
+                MaxBoost = 10.0,
+                RandomGenSeed = 42,
+                Random = new ThreadSafeRandom(42)
+            };
 
             return htmConfig;
         }
@@ -391,7 +394,7 @@ namespace UnitTestsProject
             int inputSize = 10;
             int nColumns = 20;
 
-            HtmConfig defaultConfig = Connections.GetHtmConfigDefaultParameters();
+            HtmConfig defaultConfig = new HtmConfig();
             Connections cn = new Connections(defaultConfig);
 
             var htmConfig = cn.HtmConfig;
@@ -561,7 +564,7 @@ namespace UnitTestsProject
         [TestCategory("InitHtmConfig")]
         public void testOverlapsOutput1()
         {
-            HtmConfig defaultConfig = Connections.GetHtmConfigDefaultParameters();
+            HtmConfig defaultConfig = new HtmConfig();
             var cn = new Connections(defaultConfig);
             var htmConfig = cn.HtmConfig;
             htmConfig.ColumnDimensions = new int[] { 3 };

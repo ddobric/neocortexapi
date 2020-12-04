@@ -211,7 +211,7 @@ Spatial Pooler algorithm requires 2 steps.
 
    There are 2 ways to configure Spatial Pooler's parameters.
 
-   1.1. Using `HtmConfig` (Preferred way to intialize _SpatialPooler_ )
+   1.1. Using `HtmConfig` (**Preferred** way to intialize `SpatialPooler` )
 
    ```csharp
    public void SpatialPoolerInit()
@@ -244,7 +244,7 @@ Spatial Pooler algorithm requires 2 steps.
    }
    ```
 
-   1.2. Using `Parameters` (Obsoleted - this is for supporting the compatibility with the Java implementation)
+   1.2. Using `Parameters` (**Obsoleted** - this is for supporting the compatibility with the Java implementation)
 
    ```csharp
    public void setupParameters()
@@ -289,7 +289,8 @@ Spatial Pooler algorithm requires 2 steps.
    }
    ```
 
-Following is an example illustrates how to use `SpatialPooler` algorithm.
+3. How SP learn
+ Following is an example illustrates how to use `SpatialPooler` algorithm.
 
 ```csharp
 public void testCompute1_1()
