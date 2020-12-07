@@ -188,7 +188,8 @@ The following table visualizes the result from several numbers of the above unit
 |--|--|--|--|--|
 |Results|![][img0.1]|![][img0.3]|![][img17.6]|![][img18.0]|
 
-[img0.1]: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/images/ScalarEncoder/0.1.png?raw=true
+[img0.1]: ./images/ScalarEncoder/0.1.png
+<!-- [img0.1]: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/images/ScalarEncoder/0.1.png?raw=true -->
 [img0.3]: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/images/ScalarEncoder/0.3.png?raw=true
 [img17.6]: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/images/ScalarEncoder/17.6.png?raw=true
 [img18.0]: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/images/ScalarEncoder/18.0.png?raw=true
