@@ -107,10 +107,10 @@ The following table visualizes the result from several `input` of the above unit
 --|--|--|--|--|
 Results|![][img05.07.2011] | ![][img06.07.2012] | ![][img07.07.2013] | ![][img08.07.2014] |
 
-[img05.07.2011]: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/images/DateTimeEncoder/DateTime_out_05-07-2011%2021-58-07_32x32-N-1024-W-21.png?raw=true
-[img06.07.2012]: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/images/DateTimeEncoder/DateTime_out_06-07-2012%2021-58-07_32x32-N-1024-W-21.png?raw=true
-[img07.07.2013]: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/images/DateTimeEncoder/DateTime_out_07-07-2013%2021-58-07_32x32-N-1024-W-21.png?raw=true
-[img08.07.2014]: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/images/DateTimeEncoder/DateTime_out_08-07-2014%2021-58-07_32x32-N-1024-W-21.png?raw=true
+[img05.07.2011]: ./images/DateTimeEncoder/DateTime_out_05-07-2011%2021-58-07_32x32-N-1024-W-21.png
+[img06.07.2012]: ./images/DateTimeEncoder/DateTime_out_06-07-2012%2021-58-07_32x32-N-1024-W-21.png
+[img07.07.2013]: ./images/DateTimeEncoder/DateTime_out_07-07-2013%2021-58-07_32x32-N-1024-W-21.png
+[img08.07.2014]: ./images/DateTimeEncoder/DateTime_out_08-07-2014%2021-58-07_32x32-N-1024-W-21.png
 
 #### Geo-Spatial Encoder
 
@@ -189,10 +189,9 @@ The following table visualizes the result from several numbers of the above unit
 |Results|![][img0.1]|![][img0.3]|![][img17.6]|![][img18.0]|
 
 [img0.1]: ./images/ScalarEncoder/0.1.png
-<!-- [img0.1]: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/images/ScalarEncoder/0.1.png?raw=true -->
-[img0.3]: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/images/ScalarEncoder/0.3.png?raw=true
-[img17.6]: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/images/ScalarEncoder/17.6.png?raw=true
-[img18.0]: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/images/ScalarEncoder/18.0.png?raw=true
+[img0.3]: ./images/ScalarEncoder/0.3.png
+[img17.6]: ./images/ScalarEncoder/17.6.png
+[img18.0]: ./images/ScalarEncoder/18.0.png
 
 Further unit tests can be found here: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/UnitTestsProject/EncoderTests/ScalarEncoderTests.cs
 
