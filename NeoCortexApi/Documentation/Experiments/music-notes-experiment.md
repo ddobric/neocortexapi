@@ -1,4 +1,5 @@
 # Sequence Learning - Music Notes Experiment
+Author: Damir Dobric
 Year: 2019/2020
 
 ## Introduction
