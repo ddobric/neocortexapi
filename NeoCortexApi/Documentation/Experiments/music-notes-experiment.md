@@ -1,4 +1,4 @@
-# Sequence Learning - Music Notes Experiment
+# Sequence Learning - "Music Notes Experiment"
 
 Author: Damir Dobric
 
