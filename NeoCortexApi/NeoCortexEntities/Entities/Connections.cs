@@ -11,24 +11,17 @@ using System.Linq;
 namespace NeoCortexApi.Entities
 {
     /// <summary>
-    /// 
-    /// Contains the definition of the interconnected structural state of the {@link SpatialPooler} and
-    /// { @link TemporalMemory} as well as the state of all support structures (i.e. Cells, Columns, Segments, Synapses etc.).
-    /// 
-    /// In the separation of data from logic, this class represents the data/state.
-    ///
+    /// Contains the definition of the interconnected structural state of the SpatialPooler and
+    /// TemporalMemory as well as the state of Cells, Columns, Segments, Synapses etc..
     /// </summary>
     [Serializable]
-    public class Connections //implements Persistable
+    public class Connections 
     {
 
         public static readonly double EPSILON = 0.00001;
 
         /////////////////////////////////////// Spatial Pooler Vars ///////////////////////////////////////////
-        /** <b>WARNING:</b> potentialRadius **must** be set to 
-         * the inputWidth if using "globalInhibition" and if not 
-         * using the Network API (which sets this automatically) 
-         */
+       
 
         //private int potentialRadius = 16;
         //private double potentialPct = 0.5;
@@ -386,7 +379,7 @@ namespace NeoCortexApi.Entities
         //};
 
         #region Connections Constructor
-        // TODO
+       
         /// <summary>
         /// Constructs a new <see cref="Connections"/> object. This object
         /// is usually configured via the <see cref="Parameters.apply(object)"/>
@@ -394,32 +387,18 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public Connections()
         {
-            //synPermTrimThreshold = synPermActiveInc / 2.0;
-            //synPermBelowStimulusInc = synPermConnected / 10.0;
-            //random = new Random(seed);
+         
         }
 
+        /// <summary>
+        /// Creates an initialized instance.
+        /// </summary>
+        /// <param name="prms"></param>
         public Connections(HtmConfig prms)
         {
             this.HtmConfig = prms;
-            //this.permanenceDecrement = (double)prms[KEY.PERMANENCE_DECREMENT];
-            //this.permanenceDecrement = prms.TemporalMemory.PermanenceDecrement;
         }
 
-        ///**
-        // * Returns a deep copy of this {@code Connections} object.
-        // * @return a deep copy of this {@code Connections}
-        // */
-        //public Connections copy() //todo this will fail. Many objects are not marked as serializable
-        //{
-        //    using (MemoryStream stream = new MemoryStream())
-        //    {
-        //        BinaryFormatter formatter = new BinaryFormatter();
-        //        formatter.Serialize(stream, this);
-        //        stream.Position = 0;
-        //        return (Connections)formatter.Deserialize(stream);
-        //    }
-        //}
         #endregion
 
         #region General Methods
@@ -437,44 +416,7 @@ namespace NeoCortexApi.Entities
             }
         }
 
-        ///// <summary>
-        ///// Sets the seed used for the internal random number generator.
-        ///// If the generator has been instantiated, this method will initialize
-        ///// a new random generator with the specified seed.
-        ///// </summary>
-        ///// <param name="seed"></param>
-        //public void setSeed(int seed)
-        //{
-        //    this.seed = seed;
-        //}
-
-        ///// <summary>
-        ///// Returns the configured random number seed
-        ///// </summary>
-        ///// <returns></returns>
-        //public int getSeed()
-        //{
-        //    return seed;
-        //}
-
-        ///// <summary>
-        ///// Returns the thread specific {@link Random} number generator.
-        ///// </summary>
-        ///// <returns></returns>
-        //public Random getRandom()
-        //{
-        //    return random;
-        //}
-
-        ///// <summary>
-        ///// Sets the random number generator.
-        ///// </summary>
-        ///// <param name="random"></param>
-        //public void setRandom(Random random)
-        //{
-        //    this.random = random;
-        //}
-
+      
         /// <summary>
         /// Returns the <see cref="Cell"/> specified by the index passed in.
         /// </summary>
@@ -505,9 +447,9 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="cellIndexes">indexes of the Cells to return</param>
         /// <returns></returns>
-        public LinkedHashSet<Cell> GetCellSet(int[] cellIndexes)
+        public List<Cell> GetCellSet(int[] cellIndexes)
         {
-            LinkedHashSet<Cell> retVal = new LinkedHashSet<Cell>();
+            List<Cell> retVal = new List<Cell>();
             for (int i = 0; i < cellIndexes.Length; i++)
             {
                 retVal.Add(Cells[cellIndexes[i]]);
