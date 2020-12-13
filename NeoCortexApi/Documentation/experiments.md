@@ -95,6 +95,8 @@ input by adding of a large portion of the noise in the input. By adding of a sig
 Preliminary tests suggest implementation of a boosting mechanism of the input to improve the robustness against noise.
 
 [Download Paper](https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/Experiments/S020%20SPRA%202020%20Noise%20Reduction.pdf).
+[Video](https://dobricfamily-my.sharepoint.com/:v:/g/personal/damir_dobric_de/EUSE6s3qPcRBjxtlOkKaPakBWowUNrAY8bvjfS9DNLHBKA?e=2WlzqZ).
+[Presentation](https://dobricfamily-my.sharepoint.com/:p:/g/personal/damir_dobric_de/Ed0Ja1BE3_5Hix5sz8ANN1IBX2IKAUN29VMw84kc2-xjpg?e=Ydpvsi).
 
 ## Scaling of the Spatial Pooler (Paper)
 ### Author
