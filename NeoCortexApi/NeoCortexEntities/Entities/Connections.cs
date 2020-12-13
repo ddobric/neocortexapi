@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 
 namespace NeoCortexApi.Entities
 {
@@ -2362,96 +2363,46 @@ namespace NeoCortexApi.Entities
          * High 
          * e output useful for debugging
          */
-        public void printParameters()
+        public override string ToString()
         {
-            Console.WriteLine("------------ SpatialPooler Parameters ------------------");
-            Console.WriteLine("numInputs                  = " + this.HtmConfig.NumInputs);
-            Console.WriteLine("numColumns                 = " + this.HtmConfig.NumColumns);
-            Console.WriteLine("cellsPerColumn             = " + this.HtmConfig.CellsPerColumn);
-            Console.WriteLine("columnDimensions           = " + this.HtmConfig.ColumnDimensions.ToString());
-            Console.WriteLine("numActiveColumnsPerInhArea = " + this.HtmConfig.NumActiveColumnsPerInhArea);
-            Console.WriteLine("potentialPct               = " + this.HtmConfig.PotentialPct);
-            Console.WriteLine("potentialRadius            = " + this.HtmConfig.PotentialRadius);
-            Console.WriteLine("globalInhibition           = " + this.HtmConfig.GlobalInhibition);
-            Console.WriteLine("localAreaDensity           = " + this.HtmConfig.LocalAreaDensity);
-            Console.WriteLine("inhibitionRadius           = " + this.HtmConfig.InhibitionRadius);
-            Console.WriteLine("stimulusThreshold          = " + this.HtmConfig.StimulusThreshold);
-            Console.WriteLine("synPermActiveInc           = " + this.HtmConfig.SynPermActiveInc);
-            Console.WriteLine("synPermInactiveDec         = " + this.HtmConfig.SynPermInactiveDec);
-            Console.WriteLine("synPermConnected           = " + this.HtmConfig.SynPermConnected);
-            Console.WriteLine("minPctOverlapDutyCycle     = " + this.HtmConfig.MinPctOverlapDutyCycles);
-            Console.WriteLine("minPctActiveDutyCycle      = " + this.HtmConfig.MinPctActiveDutyCycles);
-            Console.WriteLine("dutyCyclePeriod            = " + this.HtmConfig.DutyCyclePeriod);
-            Console.WriteLine("maxBoost                   = " + this.HtmConfig.MaxBoost);
-            Console.WriteLine("version                    = " + version);
+            StringBuilder sb = new StringBuilder();
 
-            Console.WriteLine("\n------------ TemporalMemory Parameters ------------------");
-            Console.WriteLine("activationThreshold        = " + this.HtmConfig.ActivationThreshold);
-            Console.WriteLine("learningRadius             = " + this.HtmConfig.LearningRadius);
-            Console.WriteLine("minThreshold               = " + this.HtmConfig.MinThreshold);
-            Console.WriteLine("maxNewSynapseCount         = " + this.HtmConfig.MaxNewSynapseCount);
-            Console.WriteLine("maxSynapsesPerSegment      = " + this.HtmConfig.MaxSynapsesPerSegment);
-            Console.WriteLine("maxSegmentsPerCell         = " + this.HtmConfig.MaxSegmentsPerCell);
-            Console.WriteLine("initialPermanence          = " + this.HtmConfig.InitialPermanence);
-            Console.WriteLine("connectedPermanence        = " + this.HtmConfig.ConnectedPermanence);
-            Console.WriteLine("permanenceIncrement        = " + this.HtmConfig.PermanenceIncrement);
-            Console.WriteLine("permanenceDecrement        = " + this.HtmConfig.PermanenceDecrement);
-            Console.WriteLine("predictedSegmentDecrement  = " + this.HtmConfig.PredictedSegmentDecrement);
+            sb.Append("------------ SpatialPooler Parameters ------------------");
+            sb.Append("numInputs                  = " + this.HtmConfig.NumInputs);
+            sb.Append("numColumns                 = " + this.HtmConfig.NumColumns);
+            sb.Append("cellsPerColumn             = " + this.HtmConfig.CellsPerColumn);
+            sb.Append("columnDimensions           = " + this.HtmConfig.ColumnDimensions.ToString());
+            sb.Append("numActiveColumnsPerInhArea = " + this.HtmConfig.NumActiveColumnsPerInhArea);
+            sb.Append("potentialPct               = " + this.HtmConfig.PotentialPct);
+            sb.Append("potentialRadius            = " + this.HtmConfig.PotentialRadius);
+            sb.Append("globalInhibition           = " + this.HtmConfig.GlobalInhibition);
+            sb.Append("localAreaDensity           = " + this.HtmConfig.LocalAreaDensity);
+            sb.Append("inhibitionRadius           = " + this.HtmConfig.InhibitionRadius);
+            sb.Append("stimulusThreshold          = " + this.HtmConfig.StimulusThreshold);
+            sb.Append("synPermActiveInc           = " + this.HtmConfig.SynPermActiveInc);
+            sb.Append("synPermInactiveDec         = " + this.HtmConfig.SynPermInactiveDec);
+            sb.Append("synPermConnected           = " + this.HtmConfig.SynPermConnected);
+            sb.Append("minPctOverlapDutyCycle     = " + this.HtmConfig.MinPctOverlapDutyCycles);
+            sb.Append("minPctActiveDutyCycle      = " + this.HtmConfig.MinPctActiveDutyCycles);
+            sb.Append("dutyCyclePeriod            = " + this.HtmConfig.DutyCyclePeriod);
+            sb.Append("maxBoost                   = " + this.HtmConfig.MaxBoost);
+            sb.Append("version                    = " + version);
+
+            sb.Append("\n------------ TemporalMemory Parameters ------------------");
+            sb.Append("activationThreshold        = " + this.HtmConfig.ActivationThreshold);
+            sb.Append("learningRadius             = " + this.HtmConfig.LearningRadius);
+            sb.Append("minThreshold               = " + this.HtmConfig.MinThreshold);
+            sb.Append("maxNewSynapseCount         = " + this.HtmConfig.MaxNewSynapseCount);
+            sb.Append("maxSynapsesPerSegment      = " + this.HtmConfig.MaxSynapsesPerSegment);
+            sb.Append("maxSegmentsPerCell         = " + this.HtmConfig.MaxSegmentsPerCell);
+            sb.Append("initialPermanence          = " + this.HtmConfig.InitialPermanence);
+            sb.Append("connectedPermanence        = " + this.HtmConfig.ConnectedPermanence);
+            sb.Append("permanenceIncrement        = " + this.HtmConfig.PermanenceIncrement);
+            sb.Append("permanenceDecrement        = " + this.HtmConfig.PermanenceDecrement);
+            sb.Append("predictedSegmentDecrement  = " + this.HtmConfig.PredictedSegmentDecrement);
+
+            return sb.ToString();
         }
-
-        ///**
-        // * High verbose output useful for debugging
-        // */
-        //public String getPrintString()
-        //{
-        //    StringWriter pw;
-        //    //PrintWriter pw = new PrintWriter(sw = new StringWriter());
-
-        //    pw.println("---------------------- General -------------------------");
-        //    pw.println("columnDimensions           = " + Arrays.toString(getColumnDimensions()));
-        //    pw.println("inputDimensions            = " + Arrays.toString(getInputDimensions()));
-        //    pw.println("cellsPerColumn             = " + getCellsPerColumn());
-
-        //    pw.println("random                     = " + getRandom());
-        //    pw.println("seed                       = " + getSeed());
-
-        //    pw.println("\n------------ SpatialPooler Parameters ------------------");
-        //    pw.println("numInputs                  = " + getNumInputs());
-        //    pw.println("numColumns                 = " + getNumColumns);
-        //    pw.println("numActiveColumnsPerInhArea = " + getNumActiveColumnsPerInhArea());
-        //    pw.println("potentialPct               = " + getPotentialPct());
-        //    pw.println("potentialRadius            = " + getPotentialRadius());
-        //    pw.println("globalInhibition           = " + getGlobalInhibition());
-        //    pw.println("localAreaDensity           = " + getLocalAreaDensity());
-        //    pw.println("inhibitionRadius           = " + getInhibitionRadius());
-        //    pw.println("stimulusThreshold          = " + getStimulusThreshold());
-        //    pw.println("synPermActiveInc           = " + getSynPermActiveInc());
-        //    pw.println("synPermInactiveDec         = " + getSynPermInactiveDec());
-        //    pw.println("synPermConnected           = " + getSynPermConnected());
-        //    pw.println("synPermBelowStimulusInc    = " + getSynPermBelowStimulusInc());
-        //    pw.println("synPermTrimThreshold       = " + getSynPermTrimThreshold());
-        //    pw.println("minPctOverlapDutyCycles    = " + getMinPctOverlapDutyCycles());
-        //    pw.println("minPctActiveDutyCycles     = " + getMinPctActiveDutyCycles());
-        //    pw.println("dutyCyclePeriod            = " + getDutyCyclePeriod());
-        //    pw.println("wrapAround                 = " + isWrapAround());
-        //    pw.println("maxBoost                   = " + getMaxBoost());
-        //    pw.println("version                    = " + getVersion());
-
-        //    pw.println("\n------------ TemporalMemory Parameters ------------------");
-        //    pw.println("activationThreshold        = " + getActivationThreshold());
-        //    pw.println("learningRadius             = " + getLearningRadius());
-        //    pw.println("minThreshold               = " + getMinThreshold());
-        //    pw.println("maxNewSynapseCount         = " + getMaxNewSynapseCount());
-        //    pw.println("maxSynapsesPerSegment      = " + getMaxSynapsesPerSegment());
-        //    pw.println("maxSegmentsPerCell         = " + getMaxSegmentsPerCell());
-        //    pw.println("initialPermanence          = " + getInitialPermanence());
-        //    pw.println("connectedPermanence        = " + getConnectedPermanence());
-        //    pw.println("permanenceIncrement        = " + getPermanenceIncrement());
-        //    pw.println("permanenceDecrement        = " + getPermanenceDecrement());
-        //    pw.println("predictedSegmentDecrement  = " + getPredictedSegmentDecrement());
-
-        //    return sw.toString();
-        //}
 
         /// <summary>
         /// Returns a 2 Dimensional array of 1's and 0's indicating which of the column's pool members are above the connected
