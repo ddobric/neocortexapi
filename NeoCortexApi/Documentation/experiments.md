@@ -5,15 +5,10 @@
 ### Authors
 
 Ghulam Mustafa
-ghulam.mustafa@stud.fra-uas.de  
 Muhammad Mubashir Ali Khan
-muhammad.khan2@stud.fra-uas.de  
 Abdul Samad
-abdul.samad@stud.fra-uas.de  
 Treesa Maria Thomas
-treesa.thomas@stud.fra-uas.de  
 Diab elmehdi
-el.diab@stud.fra-uas.de
 
 ### Project reference
 
@@ -45,9 +40,7 @@ REF to PDF [here](https://github.com/ddobric/neocortexapi/blob/master/NeoCortexA
 ### Authors
 
 Tran Quang Trung
-tranquangtrung.vgu@gmail.com  
 Nguyen Thanh Quang
-thanhquang0912@gmail.com
 
 ### Project reference
 
@@ -65,9 +58,7 @@ REF to PDF [here](https://github.com/ddobric/neocortexapi/blob/master/NeoCortexA
 ### Author
 
 Sang Nguyen
-phuocsangnguyen97@gmail.com  
 Duy Nguyen
-ngthanhduy7@gmail.com
 
 ### Project reference
 
