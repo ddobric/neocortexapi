@@ -102,6 +102,6 @@ process of the Spatial Pooler is to provide an input for learning of sequences i
 memorized pattern against noise. In this work many synthetic input patterns with different sparsity were used to set the hypothesis, which claims that SP robustness against the noise in the input depends on the sparsity of the input. To validate the hypothesis, many random input vectors with a large portion of noise were generated. Then the change of SDR output was compared with the change of input by the given portion of noise. It was shown that the SDR output change is very small in comparison to change of the
 input by adding of a large portion of the noise in the input. By adding of a significant portion of the noise to the input, the learned output remains almost unchanged. This indicates a great robustness to noise. Experiments show that the robustness against noise of the Spatial Pooler directly depends on the sparsity of the input pattern.
 Preliminary tests suggest implementation of a boosting mechanism of the input to improve the robustness against noise.
-[here] (https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/Experiments/S020%20SPRA%202020%20Noise%20Reduction.pdf).
+[here](https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/Experiments/S020%20SPRA%202020%20Noise%20Reduction.pdf).
 
 
