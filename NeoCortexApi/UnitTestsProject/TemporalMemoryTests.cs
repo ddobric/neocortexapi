@@ -49,6 +49,27 @@ namespace UnitTestsProject
             return retVal;
         }
 
+        private HtmConfig GetDefaultTMParameters()
+        {
+            HtmConfig htmConfig = new HtmConfig()
+            {
+                ColumnDimensions = new int[] { 32 },
+                CellsPerColumn = 4,
+                ActivationThreshold = 3,
+                InitialPermanence = 0.21,
+                ConnectedPermanence = 0.5,
+                MinThreshold = 2,
+                MaxNewSynapseCount = 3,
+                PermanenceIncrement = 0.1,
+                PermanenceDecrement = 0.1,
+                PredictedSegmentDecrement = 0,
+                Random = new ThreadSafeRandom(42),
+                RandomGenSeed = 42
+            };
+
+            return htmConfig;
+        }
+
 
         private Parameters getDefaultParameters(Parameters p, string key, Object value)
         {
@@ -118,6 +139,24 @@ namespace UnitTestsProject
             Connections cn = new Connections();
             Parameters p = getDefaultParameters();
             p.apply(cn);
+            tm.Init(cn);
+
+            int[] activeColumns = { 0 };
+            ISet<Cell> burstingCells = cn.GetCellSet(new int[] { 0, 1, 2, 3 });
+
+            ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle;
+
+            Assert.IsTrue(cc.ActiveCells.SequenceEqual(burstingCells));
+        }
+
+        [TestMethod]
+        public void TestBurstUnpredictedColumns1()
+        {
+            HtmConfig htmConfig = GetDefaultTMParameters();
+            Connections cn = new Connections(htmConfig);
+
+            TemporalMemory tm = new TemporalMemory();
+
             tm.Init(cn);
 
             int[] activeColumns = { 0 };
@@ -1012,6 +1051,16 @@ namespace UnitTestsProject
             tm.Init(cn);
 
             Assert.AreEqual(64 * 64 * 32, cn.Cells.Length);
+        }
+
+        public void TemporalMemoryInit()
+        {
+            HtmConfig htmConfig = new HtmConfig();
+            Connections connections = new Connections(htmConfig);
+
+            TemporalMemory temporalMemory = new TemporalMemory();
+
+            temporalMemory.Init(connections);
         }
     }
 }

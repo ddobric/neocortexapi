@@ -193,14 +193,12 @@ namespace UnitTestsProject.SequenceLearningExperiments
                 tm1.Reset(mem);
             }, numOfCyclesToWaitOnChange: 25);
 
-            SpatialPoolerMT sp1 = new SpatialPoolerMT(hpa);
-            CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
 
+            SpatialPoolerMT sp1 = new SpatialPoolerMT(hpa);
             sp1.Init(mem, UnitTestHelpers.GetMemory());
             tm1.Init(mem);
 
-            //
-            // NewBorn learning stage.
+            CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
             region0.AddLayer(layer1);
             layer1.HtmModules.Add("encoder", encoder);
             layer1.HtmModules.Add("sp", sp1);
@@ -392,6 +390,97 @@ namespace UnitTestsProject.SequenceLearningExperiments
             }
 
             return key;
+        }
+
+        [TestMethod]
+        public void TestCortexLayer()
+        {
+            int inputBits = 100;
+            
+            double max = 20;
+            int numColumns = 2048;
+
+            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 });
+            int numInputs = inputValues.Distinct().ToList().Count;
+
+            var inputs = inputValues.ToArray();            
+
+            Dictionary<string, object> settings = new Dictionary<string, object>()
+            {
+                { "W", 15},
+                { "N", inputBits},
+                { "Radius", -1.0},
+                { "MinVal", 0.0},
+                { "Periodic", false},
+                { "Name", "scalar"},
+                { "ClipInput", false},
+                { "MaxVal", max}
+            };
+
+            EncoderBase encoder = new ScalarEncoder(settings);
+
+            HtmConfig htmConfig = new HtmConfig
+            {
+                Random = new ThreadSafeRandom(42),
+                InputDimensions = new int[] { inputBits },
+                ColumnDimensions = new int[] { numColumns },
+                CellsPerColumn = 25,
+                GlobalInhibition = true,
+                LocalAreaDensity = -1,
+                NumActiveColumnsPerInhArea = 0.02 * numColumns,
+                PotentialRadius = 50,
+                InhibitionRadius = 15,
+                MaxBoost = 10.0,
+                DutyCyclePeriod = 25,
+                MinPctOverlapDutyCycles = 0.75,
+                MaxNewSynapseCount = (int)(0.02 * numColumns),
+                ActivationThreshold = 15,
+                ConnectedPermanence = 0.5,
+                PermanenceDecrement = 0.25,
+                PermanenceIncrement = 0.15,
+                PredictedSegmentDecrement = 0.1
+            };
+
+            Connections memory = new Connections(htmConfig);
+
+            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(memory, numInputs * 55, (isStable, numPatterns, actColAvg, seenInputs) =>
+            {
+                if (isStable)
+                    // Event should be fired when entering the stable state.
+                    Debug.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+                else
+                    // Ideal SP should never enter unstable state after stable state.
+                    Debug.WriteLine($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+            }, numOfCyclesToWaitOnChange: 25);
+
+            SpatialPoolerMT spatialPooler = new SpatialPoolerMT(hpa);
+            spatialPooler.Init(memory, UnitTestHelpers.GetMemory());
+
+            TemporalMemory temporalMemory = new TemporalMemory();
+            temporalMemory.Init(memory);
+
+            List<CortexRegion> regions = new List<CortexRegion>();
+            CortexRegion region0 = new CortexRegion("1st Region");
+
+            regions.Add(region0);
+
+            CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
+            region0.AddLayer(layer1);
+            layer1.HtmModules.Add("encoder", encoder);
+            layer1.HtmModules.Add("sp", spatialPooler);
+            layer1.HtmModules.Add("tm", temporalMemory);
+
+            bool learn = true;
+
+            int maxCycles = 3500;
+
+            for (int i = 0; i < maxCycles; i++)
+            {
+                foreach (var input in inputs)
+                {
+                    var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
+                } 
+            }
         }
     }
 }

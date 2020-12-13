@@ -14,7 +14,7 @@ namespace NeoCortexApi.Entities
     {
         public HtmConfig()
         {
-
+            SetHtmConfigDefaultParameters();
         }
         public class TemporalMemoryConfig
         {
@@ -253,7 +253,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// The maximum number of synapses added to a segment during learning.
         /// </summary>
-        public int MaxNewSynapseCount { get; internal set; }
+        public int MaxNewSynapseCount { get; set; }
 
         /// <summary>
         /// The maximum number of segments (distal dendrites) allowed on a cell.
@@ -316,6 +316,8 @@ namespace NeoCortexApi.Entities
         /// If the permanence value for a synapse is greater than this value, it is said to be connected.
         /// </summary>
         public double ConnectedPermanence { get; set; } = 0.5;
+
+        //public bool Learn { get; set; } = true;
         #endregion
 
         //public bool IsColumnMajor { get; set; } = false;
@@ -335,6 +337,47 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public Random Random { get; set; }
 
+        /// <summary>
+        /// Set default value for parameters of <see cref="HtmConfig"/>
+        /// </summary>
+        public void SetHtmConfigDefaultParameters()
+        {
+            // Temporal Memory parameters
+            this.ColumnDimensions = new int[] { 2048 };
+            this.CellsPerColumn = 32;
+            this.ActivationThreshold = 10;
+            this.LearningRadius = 10;
+            this.MinThreshold = 9;
+            this.MaxNewSynapseCount = 20;
+            this.MaxSynapsesPerSegment = 225;
+            this.MaxSegmentsPerCell = 225;
+            this.InitialPermanence = 0.21;
+            this.ConnectedPermanence = 0.5;
+            this.PermanenceIncrement = 0.10;
+            this.PermanenceDecrement = 0.10;
+            this.PredictedSegmentDecrement = 0.1;
+            // Learn = true
+
+            // Spatial Pooler parameters
+            this.InputDimensions = new int[] { 100 };
+            this.PotentialRadius = 15;
+            this.PotentialPct = 0.75;
+            this.GlobalInhibition = true;
+            this.InhibitionRadius = 15;
+            this.LocalAreaDensity = -1.0;
+            this.NumActiveColumnsPerInhArea = 0.02 * 2048;
+            this.StimulusThreshold = 5.0;
+            this.SynPermInactiveDec = 0.008;
+            this.SynPermActiveInc = 0.05;
+            this.SynPermConnected = 0.1;
+            this.SynPermBelowStimulusInc = 0.01;
+            this.SynPermTrimThreshold = 0.05;
+            this.MinPctOverlapDutyCycles = 0.001;
+            this.MinPctActiveDutyCycles = 0.001;
+            this.DutyCyclePeriod = 1000;
+            this.MaxBoost = 10.0;
+            this.WrapAround = true;
+        }
     }
 
     public class test

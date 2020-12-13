@@ -278,6 +278,10 @@ namespace NeoCortexApi.Entities
 
                 return m_HtmConfig;
             }
+            private set
+            {
+                m_HtmConfig = value;
+            }
         }
 
 
@@ -397,6 +401,7 @@ namespace NeoCortexApi.Entities
 
         public Connections(HtmConfig prms)
         {
+            this.HtmConfig = prms;
             //this.permanenceDecrement = (double)prms[KEY.PERMANENCE_DECREMENT];
             //this.permanenceDecrement = prms.TemporalMemory.PermanenceDecrement;
         }
@@ -758,7 +763,7 @@ namespace NeoCortexApi.Entities
         //{
         //    return potentialPct;
         //}
-        
+
         /// <summary>
         /// Sets the <see cref="AbstractSparseMatrix{T}"/> which represents the proximal dendrite permanence values.
         /// </summary>
@@ -1965,7 +1970,7 @@ namespace NeoCortexApi.Entities
         {
             return m_SegmentForFlatIdx[index];
         }
- 
+
         /// <summary>
         /// Returns the index of the <see cref="Column"/> owning the cell which owns 
         /// the specified segment.

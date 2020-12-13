@@ -79,3 +79,18 @@ Issue 126
 The Thousand Brains Theory of Intelligence is a new and rising approach to understand human intelligence. The theory attempts to explain the fundamental principles behind human intelligence through many discovered biological evidences and logical reasoning. This theory lays the foundation for Hierarchical Temporal Memory (HTM) - an AI framework, which has many applications in practice. In this paper’s HTM model, building block of a basic HTM structure comprises of an Encoder, a Spatial Pooler and a Temporal Memory. This fundamental component has two prominent features: noise robustness and prediction. The Spatial Pooler is mostly responsible for noise handling function of the completestructure. This paper provides some experimental data and comments about the reliability of the Spatial Pooler’s noise handling function. Specifically, the level of noise robustness is measured by the similarity between outputs of the Spatial Pooler when it takes the original data set and then the additiveGaussian noisy data sets as inputs, provided that it is only trained with the original data set.
 
 REF to PDF [here](https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/Experiments/ML-19-20_20-5.12_SpatialPooler_NoiseRobustness.pdf)
+
+## Sequence Learning - Music Notes Experiment
+
+### Author
+Damir Dobric
+2019/2020
+
+### Abstract
+To demonstrate learning of sequences, I have originally developed an experiment to learn the song. In this experiment the input is defined a set of music notes.
+Every music note is represented as a scalar value, which appear in the sequence of notes. For example, notes C, D, E, F, G and H can be associated with the scalar values: C-0, D-1, E-2, F-3, G-4, H-5. By following that rule notes of some has been taken. In the very first experiment the song *twinkle, twinkle little star* was used in the experiment: [here] (https://www.bethsnotesplus.com/2013/08/twinkle-twinkle-little-star.html).
+Over time, the experiment has grown, but we have kept the original name '*Music Notes Experiment*'. In this experiment various outputs are generated, which trace the state of active columns and active cells during the learning process. Today, we use this experiment to learn how HTM learns sequences.
+
+
+
+
