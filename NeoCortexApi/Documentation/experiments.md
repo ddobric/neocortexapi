@@ -4,10 +4,10 @@
 
 ### Authors
 
-Ghulam Mustafa
-Muhammad Mubashir Ali Khan
-Abdul Samad
-Treesa Maria Thomas
+Ghulam Mustafa,
+Muhammad Mubashir Ali Khan,
+Abdul Samad,
+Treesa Maria Thomas,
 Diab elmehdi
 
 ### Project reference
@@ -39,7 +39,7 @@ REF to PDF [here](https://github.com/ddobric/neocortexapi/blob/master/NeoCortexA
 
 ### Authors
 
-Tran Quang Trung
+Tran Quang Trung,
 Nguyen Thanh Quang
 
 ### Project reference
@@ -57,7 +57,7 @@ REF to PDF [here](https://github.com/ddobric/neocortexapi/blob/master/NeoCortexA
 
 ### Author
 
-Sang Nguyen
+Sang Nguyen,
 Duy Nguyen
 
 ### Project reference
