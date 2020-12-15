@@ -41,9 +41,9 @@ namespace UnitTestsProject.SequenceLearningExperiments
             p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
             p.Set(KEY.INPUT_DIMENSIONS, new int[] { inputBits });
             p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
-            
+
             p.Set(KEY.CELLS_PER_COLUMN, 25);
-       
+
             p.Set(KEY.GLOBAL_INHIBITION, true);
             p.Set(KEY.LOCAL_AREA_DENSITY, -1); // In a case of global inhibition.
 
@@ -77,6 +77,27 @@ namespace UnitTestsProject.SequenceLearningExperiments
             p.Set(KEY.PREDICTED_SEGMENT_DECREMENT, 0.1);
 
             double max = 20;
+
+            HtmConfig htmConfig = new HtmConfig();
+            htmConfig.Random = new ThreadSafeRandom(42);
+            htmConfig.InputDimensions = new int[] { inputBits };
+            htmConfig.ColumnDimensions = new int[] { numColumns };
+            htmConfig.CellsPerColumn = 25;
+            htmConfig.GlobalInhibition = true;
+            htmConfig.LocalAreaDensity = -1;
+            htmConfig.NumActiveColumnsPerInhArea = 0.02 * numColumns;
+            htmConfig.PotentialRadius = 50;
+            htmConfig.InhibitionRadius = 15;
+            htmConfig.MaxBoost = 10.0;
+            htmConfig.DutyCyclePeriod = 25;
+            htmConfig.MinPctOverlapDutyCycles = 0.75;
+            htmConfig.MaxSynapsesPerSegment = (int)(0.02 * numColumns);
+            htmConfig.ActivationThreshold = 15;
+            htmConfig.ConnectedPermanence = 0.5;
+            htmConfig.PermanenceDecrement = 0.25;
+            htmConfig.PermanenceIncrement = 0.15;
+            htmConfig.PredictedSegmentDecrement = 0.1;
+            
 
             Dictionary<string, object> settings = new Dictionary<string, object>()
             {
@@ -136,7 +157,7 @@ namespace UnitTestsProject.SequenceLearningExperiments
 
             //inputValues = new List<double>(new double[] { 1.0, 2.0, 3.0, 1.0, 5.0, 1.0, 6.0, });
 
-            RunExperiment(inputBits, p, encoder, inputValues);
+            RunExperiment(inputBits, htmConfig, encoder, inputValues);
         }
 
 
@@ -144,7 +165,7 @@ namespace UnitTestsProject.SequenceLearningExperiments
         /// <summary>
         ///
         /// </summary>
-        private void RunExperiment(int inputBits, Parameters p, EncoderBase encoder, List<double> inputValues)
+        private void RunExperiment(int inputBits, HtmConfig htmConfig, EncoderBase encoder, List<double> inputValues)
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -164,9 +185,9 @@ namespace UnitTestsProject.SequenceLearningExperiments
 
             regions.Add(region0);
 
-            var mem = new Connections();
+            var mem = new Connections(htmConfig);
 
-            p.apply(mem);
+            //p.apply(mem);
 
             bool isInStableState;
 
@@ -354,13 +375,15 @@ namespace UnitTestsProject.SequenceLearningExperiments
 
             Debug.WriteLine("---- cell state trace ----");
 
-            cls.TraceState($"cellState_MinPctOverlDuty-{p[KEY.MIN_PCT_OVERLAP_DUTY_CYCLES]}_MaxBoost-{p[KEY.MAX_BOOST]}.csv");
+            //cls.TraceState($"cellState_MinPctOverlDuty-{p[KEY.MIN_PCT_OVERLAP_DUTY_CYCLES]}_MaxBoost-{p[KEY.MAX_BOOST]}.csv");
+            cls.TraceState($"cellState_MinPctOverlDuty-{htmConfig.MinPctOverlapDutyCycles}_MaxBoost-{htmConfig.MaxBoost}.csv");
 
             Debug.WriteLine("---- Spatial Pooler column state  ----");
 
             foreach (var input in activeColumnsLst)
             {
-                using (StreamWriter colSw = new StreamWriter($"ColumState_MinPctOverlDuty-{p[KEY.MIN_PCT_OVERLAP_DUTY_CYCLES]}_MaxBoost-{p[KEY.MAX_BOOST]}_input-{input.Key}.csv"))
+                //using (StreamWriter colSw = new StreamWriter($"ColumState_MinPctOverlDuty-{p[KEY.MIN_PCT_OVERLAP_DUTY_CYCLES]}_MaxBoost-{p[KEY.MAX_BOOST]}_input-{input.Key}.csv"))
+                using (StreamWriter colSw = new StreamWriter($"ColumState_MinPctOverlDuty-{htmConfig.MinPctOverlapDutyCycles}_MaxBoost-{htmConfig.MaxBoost}_input-{input.Key}.csv"))
                 {
                     Debug.WriteLine($"------------ {input.Key} ------------");
 
@@ -396,14 +419,14 @@ namespace UnitTestsProject.SequenceLearningExperiments
         public void TestCortexLayer()
         {
             int inputBits = 100;
-            
+
             double max = 20;
             int numColumns = 2048;
 
             List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 });
             int numInputs = inputValues.Distinct().ToList().Count;
 
-            var inputs = inputValues.ToArray();            
+            var inputs = inputValues.ToArray();
 
             Dictionary<string, object> settings = new Dictionary<string, object>()
             {
@@ -479,7 +502,7 @@ namespace UnitTestsProject.SequenceLearningExperiments
                 foreach (var input in inputs)
                 {
                     var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
-                } 
+                }
             }
         }
     }

@@ -684,6 +684,7 @@ namespace UnitTestsProject
         {
             int inputBits = 100;
             int numColumns = 2048;
+            
             Parameters p = Parameters.getAllDefaultParameters();
             p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
             p.Set(KEY.INPUT_DIMENSIONS, new int[] { inputBits });
@@ -706,6 +707,19 @@ namespace UnitTestsProject
             p.setMaxNewSynapsesPerSegmentCount((int)(0.02 * numColumns));
             double max = 20;
 
+            HtmConfig htmConfig = new HtmConfig();
+            htmConfig.Random = new ThreadSafeRandom(42);
+            htmConfig.InputDimensions = new int[] { inputBits };
+            htmConfig.CellsPerColumn = 10;
+            htmConfig.ColumnDimensions = new int[] { numColumns };
+            htmConfig.MaxBoost = 1.0;
+            htmConfig.DutyCyclePeriod = 100000;
+            htmConfig.MinPctOverlapDutyCycles = 0;
+            htmConfig.NumActiveColumnsPerInhArea = 0.02 * numColumns;
+            htmConfig.ActivationThreshold = 10;
+            htmConfig.InhibitionRadius = 15;
+            htmConfig.MaxSynapsesPerSegment = (int)(0.02 * numColumns);
+
             Dictionary<string, object> settings = new Dictionary<string, object>()
             {
                 { "W", 15},
@@ -722,13 +736,13 @@ namespace UnitTestsProject
 
             List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0 });
 
-            RunSpStabilityExperiment(inputBits, p, encoder, inputValues);
+            RunSpStabilityExperiment(inputBits, htmConfig, encoder, inputValues);
         }
 
         /// <summary>
         ///
         /// </summary>
-        private void RunSpStabilityExperiment(int inputBits, Parameters p, EncoderBase encoder, List<double> inputValues)
+        private void RunSpStabilityExperiment(int inputBits, HtmConfig htmConfig, EncoderBase encoder, List<double> inputValues)
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -742,8 +756,8 @@ namespace UnitTestsProject
             regions.Add(region0);
 
             SpatialPooler sp1 = new SpatialPooler();
-            var mem = new Connections();
-            p.apply(mem);
+            var mem = new Connections(htmConfig);
+            //p.apply(mem);
             sp1.Init(mem, UnitTestHelpers.GetMemory());
 
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
@@ -772,7 +786,8 @@ namespace UnitTestsProject
                 using (StreamWriter writer = new StreamWriter($"Oscilations_Boost_10_{input}.csv"))
                 {
                     Debug.WriteLine($"Learning Cycles: {maxSPLearningCycles}");
-                    Debug.WriteLine($"MAX_BOOST={p[KEY.MAX_BOOST]}, DUTY ={p[KEY.DUTY_CYCLE_PERIOD]}");
+                    //Debug.WriteLine($"MAX_BOOST={p[KEY.MAX_BOOST]}, DUTY ={p[KEY.DUTY_CYCLE_PERIOD]}");
+                    Debug.WriteLine($"MAX_BOOST={htmConfig.MaxBoost}, DUTY ={htmConfig.DutyCyclePeriod}");
                     Debug.WriteLine("Cycle;Similarity");
 
                     double similarity = 0;
