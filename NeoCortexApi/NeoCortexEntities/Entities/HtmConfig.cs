@@ -26,6 +26,11 @@ namespace NeoCortexApi.Entities
 
         }
 
+        private double synPermActiveInc;
+        private double synPermConnected;
+        private AbstractSparseMatrix<Column> memory;
+        private ISparseMatrix<int> inputMatrix;
+
         public TemporalMemoryConfig TemporalMemory { get; set; } = new TemporalMemoryConfig();
 
         public SpatialPoolerConfig SpatialPooler { get; set; } = new SpatialPoolerConfig();
@@ -94,13 +99,13 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// The amount by which an active synapse is incremented in each round. Specified as a percent of a fully grown synapse.
         /// </summary>
-        public double SynPermActiveInc { get; set; }
+        public double SynPermActiveInc { get => synPermActiveInc; set { this.synPermActiveInc = value; SynPermTrimThreshold = value / 2.0; } }
 
         /// <summary>
         /// The default connected threshold. Any synapse whose permanence value is above the connected threshold is
         /// a "connected synapse", meaning it can contribute to the cell's firing.
         /// </summary>
-        public double SynPermConnected { get; set; }
+        public double SynPermConnected { get => synPermConnected; set { synPermConnected = value; SynPermBelowStimulusInc = value / 10.0; } }
 
         /// <summary>
         /// Specifies whether neighborhoods wider than the borders wrap around to the other side.
@@ -141,7 +146,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Input column mapping matrix.
         /// </summary>
-        public ISparseMatrix<int> InputMatrix { get; set; }
+        public ISparseMatrix<int> InputMatrix { get => inputMatrix; set { inputMatrix = value; InputModuleTopology = value.ModuleTopology; } }
 
         /// <summary>
         /// The configured number of active columns per inhibition area.<br/>
@@ -288,7 +293,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// The main data structure containing columns, cells, and synapses.
         /// </summary>
-        public AbstractSparseMatrix<Column> Memory { get; set; }
+        public AbstractSparseMatrix<Column> Memory { get => memory; set { memory = value; ColumnModuleTopology = value.ModuleTopology; } }
 
         /// <summary>
         /// Activation threshold. If the number of active connected synapses on a segment is at least this threshold, the segment is said to be active.
