@@ -45,6 +45,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "images", "images", "{4D9AD5E0-8F00-494E-8BEF-8041C003F4E6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{D6248921-D5F0-44DB-879A-29048EEA61CF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SequenceLearningExperiment", "SequenceLearningExperiment\SequenceLearningExperiment.csproj", "{28E2BB63-7E2D-4ABC-9CA0-0F0F89F8391A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +91,10 @@ Global
 		{414D1FFF-BA4B-49B0-B7B1-4AEDB2F7689D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{414D1FFF-BA4B-49B0-B7B1-4AEDB2F7689D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{414D1FFF-BA4B-49B0-B7B1-4AEDB2F7689D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28E2BB63-7E2D-4ABC-9CA0-0F0F89F8391A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28E2BB63-7E2D-4ABC-9CA0-0F0F89F8391A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28E2BB63-7E2D-4ABC-9CA0-0F0F89F8391A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28E2BB63-7E2D-4ABC-9CA0-0F0F89F8391A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -94,6 +102,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{A56DD089-679E-479B-BD00-955AA4CDF569} = {7E0EE186-7A75-4A97-9E16-A6B4E1853915}
 		{4D9AD5E0-8F00-494E-8BEF-8041C003F4E6} = {D9879A38-CCF8-4440-B939-D066196AC775}
+		{28E2BB63-7E2D-4ABC-9CA0-0F0F89F8391A} = {D6248921-D5F0-44DB-879A-29048EEA61CF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {71185BAD-1342-4836-BCDA-6EC97118F92D}
