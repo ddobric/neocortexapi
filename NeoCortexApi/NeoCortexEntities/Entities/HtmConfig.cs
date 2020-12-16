@@ -146,7 +146,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Input column mapping matrix.
         /// </summary>
-        public ISparseMatrix<int> InputMatrix { get => inputMatrix; set { inputMatrix = value; InputModuleTopology = value.ModuleTopology; } }
+        public ISparseMatrix<int> InputMatrix { get => inputMatrix; set { inputMatrix = value; InputModuleTopology = value?.ModuleTopology; } }
 
         /// <summary>
         /// The configured number of active columns per inhibition area.<br/>
@@ -293,7 +293,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// The main data structure containing columns, cells, and synapses.
         /// </summary>
-        public AbstractSparseMatrix<Column> Memory { get => memory; set { memory = value; ColumnModuleTopology = value.ModuleTopology; } }
+        public AbstractSparseMatrix<Column> Memory { get => memory; set { memory = value; ColumnModuleTopology = value?.ModuleTopology; } }
 
         /// <summary>
         /// Activation threshold. If the number of active connected synapses on a segment is at least this threshold, the segment is said to be active.
@@ -382,6 +382,12 @@ namespace NeoCortexApi.Entities
             this.DutyCyclePeriod = 1000;
             this.MaxBoost = 10.0;
             this.WrapAround = true;
+        }
+
+        public void ClearModuleTopology()
+        {
+            this.Memory = null;
+            this.InputMatrix = null;
         }
     }
 
