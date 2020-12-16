@@ -15,10 +15,10 @@ namespace SequenceLearningExperiment
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            MusicNotesExperiment();
         }
 
-        public void MusicNotesExperiment()
+        public static void MusicNotesExperiment()
         {
             int inputBits = 100;
             int numColumns = 2048;
@@ -130,7 +130,7 @@ namespace SequenceLearningExperiment
         /// <summary>
         ///
         /// </summary>
-        private void RunExperiment(int inputBits, Parameters p, EncoderBase encoder, List<double> inputValues)
+        private static void RunExperiment(int inputBits, Parameters p, EncoderBase encoder, List<double> inputValues)
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
