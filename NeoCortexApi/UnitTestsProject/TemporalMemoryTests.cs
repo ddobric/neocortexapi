@@ -30,24 +30,24 @@ namespace UnitTestsProject
 
             return true;
         }
-        private Parameters getDefaultParameters()
-        {
-            Parameters retVal = Parameters.getTemporalDefaultParameters();
-            retVal.Set(KEY.COLUMN_DIMENSIONS, new int[] { 32 });
-            retVal.Set(KEY.CELLS_PER_COLUMN, 4);
-            retVal.Set(KEY.ACTIVATION_THRESHOLD, 3);
-            retVal.Set(KEY.INITIAL_PERMANENCE, 0.21);
-            retVal.Set(KEY.CONNECTED_PERMANENCE, 0.5);
-            retVal.Set(KEY.MIN_THRESHOLD, 2);
-            retVal.Set(KEY.MAX_NEW_SYNAPSE_COUNT, 3);
-            retVal.Set(KEY.PERMANENCE_INCREMENT, 0.10);
-            retVal.Set(KEY.PERMANENCE_DECREMENT, 0.10);
-            retVal.Set(KEY.PREDICTED_SEGMENT_DECREMENT, 0.0);
-            retVal.Set(KEY.RANDOM, new ThreadSafeRandom(42));
-            retVal.Set(KEY.SEED, 42);
+        //private Parameters getDefaultParameters()
+        //{
+        //    Parameters retVal = Parameters.getTemporalDefaultParameters();
+        //    retVal.Set(KEY.COLUMN_DIMENSIONS, new int[] { 32 });
+        //    retVal.Set(KEY.CELLS_PER_COLUMN, 4);
+        //    retVal.Set(KEY.ACTIVATION_THRESHOLD, 3);
+        //    retVal.Set(KEY.INITIAL_PERMANENCE, 0.21);
+        //    retVal.Set(KEY.CONNECTED_PERMANENCE, 0.5);
+        //    retVal.Set(KEY.MIN_THRESHOLD, 2);
+        //    retVal.Set(KEY.MAX_NEW_SYNAPSE_COUNT, 3);
+        //    retVal.Set(KEY.PERMANENCE_INCREMENT, 0.10);
+        //    retVal.Set(KEY.PERMANENCE_DECREMENT, 0.10);
+        //    retVal.Set(KEY.PREDICTED_SEGMENT_DECREMENT, 0.0);
+        //    retVal.Set(KEY.RANDOM, new ThreadSafeRandom(42));
+        //    retVal.Set(KEY.SEED, 42);
 
-            return retVal;
-        }
+        //    return retVal;
+        //}
 
         private HtmConfig GetDefaultTMParameters()
         {
@@ -71,13 +71,13 @@ namespace UnitTestsProject
         }
 
 
-        private Parameters getDefaultParameters(Parameters p, string key, Object value)
-        {
-            Parameters retVal = p == null ? getDefaultParameters() : p;
-            retVal.Set(key, value);
+        //private Parameters getDefaultParameters(Parameters p, string key, Object value)
+        //{
+        //    Parameters retVal = p == null ? getDefaultParameters() : p;
+        //    retVal.Set(key, value);
 
-            return retVal;
-        }
+        //    return retVal;
+        //}
 
 
         private T deepCopyPlain<T>(T obj)
@@ -101,9 +101,8 @@ namespace UnitTestsProject
         public void TestActivateCorrectlyPredictiveCells()
         {
             TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters();
-            p.apply(cn);
+            HtmConfig htmConfig = GetDefaultTMParameters();
+            Connections cn = new Connections(htmConfig);
             tm.Init(cn);
 
             int[] previousActiveColumns = { 0 };
@@ -136,9 +135,8 @@ namespace UnitTestsProject
         public void TestBurstUnpredictedColumns()
         {
             TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters();
-            p.apply(cn);
+            HtmConfig htmConfig = GetDefaultTMParameters();
+            Connections cn = new Connections(htmConfig);
             tm.Init(cn);
 
             int[] activeColumns = { 0 };
@@ -173,9 +171,8 @@ namespace UnitTestsProject
         public void TestZeroActiveColumns()
         {
             TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters();
-            p.apply(cn);
+            HtmConfig htmConfig = GetDefaultTMParameters();
+            Connections cn = new Connections(htmConfig);
             tm.Init(cn);
 
             int[] previousActiveColumns = { 0 };
@@ -204,9 +201,8 @@ namespace UnitTestsProject
         public void TestPredictedActiveCellsAreAlwaysWinners()
         {
             TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters();
-            p.apply(cn);
+            HtmConfig htmConfig = GetDefaultTMParameters();
+            Connections cn = new Connections(htmConfig);
             tm.Init(cn);
 
             int[] previousActiveColumns = { 0 };
@@ -235,12 +231,11 @@ namespace UnitTestsProject
         public void TestReinforcedCorrectlyActiveSegments()
         {
             TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.INITIAL_PERMANENCE, 0.2);
-            p = getDefaultParameters(p, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
-            p = getDefaultParameters(p, KEY.PERMANENCE_DECREMENT, 0.08);
-            p = getDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
-            p.apply(cn);
+            HtmConfig htmConfig = GetDefaultTMParameters();
+            htmConfig.InitialPermanence = 0.2;
+            htmConfig.PermanenceDecrement = 0.08;
+            htmConfig.PredictedSegmentDecrement = 0.02;
+            Connections cn = new Connections(htmConfig);
             tm.Init(cn);
 
             int[] previousActiveColumns = { 0 };
@@ -268,9 +263,9 @@ namespace UnitTestsProject
         public void TestReinforcedSelectedMatchingSegmentInBurstingColumn()
         {
             TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.PERMANENCE_DECREMENT, 0.08);
-            p.apply(cn);
+            HtmConfig htmConfig = GetDefaultTMParameters();
+            htmConfig.PermanenceDecrement = 0.08;
+            Connections cn = new Connections(htmConfig);
             tm.Init(cn);
 
             int[] previousActiveColumns = { 0 };
@@ -303,9 +298,9 @@ namespace UnitTestsProject
         public void TestNoChangeToNonSelectedMatchingSegmentsInBurstingColumn()
         {
             TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.PERMANENCE_DECREMENT, 0.08);
-            p.apply(cn);
+            HtmConfig htmConfig = GetDefaultTMParameters();
+            htmConfig.PermanenceDecrement = 0.08;
+            Connections cn = new Connections(htmConfig);
             tm.Init(cn);
 
             int[] previousActiveColumns = { 0 };
@@ -337,9 +332,8 @@ namespace UnitTestsProject
         public void TestNoChangeToMatchingSegmentsInPredictedActiveColumn()
         {
             TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters();
-            p.apply(cn);
+            HtmConfig htmConfig = GetDefaultTMParameters();
+            Connections cn = new Connections(htmConfig);
             tm.Init(cn);
 
             int[] previousActiveColumns = { 0 };
@@ -379,9 +373,10 @@ namespace UnitTestsProject
         public void TestNoNewSegmentIfNotEnoughWinnerCells()
         {
             TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.MAX_NEW_SYNAPSE_COUNT, 3);
-            p.apply(cn);
+
+            HtmConfig htmConfig = GetDefaultTMParameters();
+            htmConfig.MaxNewSynapseCount = 3;
+            Connections cn = new Connections(htmConfig);
             tm.Init(cn);
 
             int[] zeroColumns = { };
@@ -398,9 +393,9 @@ namespace UnitTestsProject
         public void TestNewSegmentAddSynapsesToSubsetOfWinnerCells()
         {
             TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.MAX_NEW_SYNAPSE_COUNT, 2);
-            p.apply(cn);
+            HtmConfig htmConfig = GetDefaultTMParameters();
+            htmConfig.MaxNewSynapseCount = 2;
+            Connections cn = new Connections(htmConfig);
             tm.Init(cn);
 
             int[] previousActiveColumns = { 0, 1, 2 };
@@ -435,9 +430,9 @@ namespace UnitTestsProject
         public void TestNewSegmentAddSynapsesToAllWinnerCells()
         {
             TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
-            p.apply(cn);
+            HtmConfig htmConfig = GetDefaultTMParameters();
+            htmConfig.MaxNewSynapseCount = 4;
+            Connections cn = new Connections(htmConfig);
             tm.Init(cn);
 
             int[] previousActiveColumns = { 0, 1, 2 };
@@ -472,10 +467,10 @@ namespace UnitTestsProject
         public void TestMatchingSegmentAddSynapsesToSubsetOfWinnerCells()
         {
             TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 1);
-            p = getDefaultParameters(p, KEY.MIN_THRESHOLD, 1);
-            p.apply(cn);
+            HtmConfig htmConfig = GetDefaultTMParameters();
+            htmConfig.CellsPerColumn = 1;
+            htmConfig.MinThreshold = 1;
+            Connections cn = new Connections(htmConfig);
             tm.Init(cn);
 
             int[] previousActiveColumns = { 0, 1, 2, 3 };
@@ -510,10 +505,10 @@ namespace UnitTestsProject
         public void TestMatchingSegmentAddSynapsesToAllWinnerCells()
         {
             TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 1);
-            p = getDefaultParameters(p, KEY.MIN_THRESHOLD, 1);
-            p.apply(cn);
+            HtmConfig htmConfig = GetDefaultTMParameters();
+            htmConfig.CellsPerColumn = 1;
+            htmConfig.MinThreshold = 1;
+            Connections cn = new Connections(htmConfig);
             tm.Init(cn);
 
             int[] previousActiveColumns = { 0, 1 };
@@ -552,12 +547,12 @@ namespace UnitTestsProject
         public void TestActiveSegmentGrowSynapsesAccordingToPotentialOverlap()
         {
             TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 1);
-            p = getDefaultParameters(p, KEY.MIN_THRESHOLD, 1);
-            p = getDefaultParameters(p, KEY.ACTIVATION_THRESHOLD, 2);
-            p = getDefaultParameters(p, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
-            p.apply(cn);
+            HtmConfig htmConfig = GetDefaultTMParameters();
+            htmConfig.CellsPerColumn = 1;
+            htmConfig.MinThreshold = 1;
+            htmConfig.ActivationThreshold = 2;
+            htmConfig.MaxNewSynapseCount = 4;
+            Connections cn = new Connections(htmConfig);
             tm.Init(cn);
 
             // Use 1 cell per column so that we have easy control over the winner cells.
@@ -596,11 +591,11 @@ namespace UnitTestsProject
         public void TestDestroyWeakSynapseOnWrongPrediction()
         {
             TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.INITIAL_PERMANENCE, 0.2);
-            p = getDefaultParameters(p, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
-            p = getDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
-            p.apply(cn);
+            HtmConfig htmConfig = GetDefaultTMParameters();
+            htmConfig.InitialPermanence = 0.2;
+            htmConfig.MaxNewSynapseCount = 4;
+            htmConfig.PredictedSegmentDecrement = 0.02;
+            Connections cn = new Connections(htmConfig);
             tm.Init(cn);
 
             int[] previousActiveColumns = { 0 };
@@ -626,11 +621,11 @@ namespace UnitTestsProject
         public void TestDestroyWeakSynapseOnActiveReinforce()
         {
             TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.INITIAL_PERMANENCE, 0.2);
-            p = getDefaultParameters(p, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
-            p = getDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
-            p.apply(cn);
+            HtmConfig htmConfig = GetDefaultTMParameters();
+            htmConfig.InitialPermanence = 0.2;
+            htmConfig.MaxNewSynapseCount = 4;
+            htmConfig.PredictedSegmentDecrement = 0.02;
+            Connections cn = new Connections(htmConfig);
             tm.Init(cn);
 
             int[] previousActiveColumns = { 0 };
@@ -657,15 +652,16 @@ namespace UnitTestsProject
             throw new AssertInconclusiveException("Not fixed.");
 
             TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 30);
-            p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 100 });
-            //p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 5 });
-            p = getDefaultParameters(p, KEY.MIN_THRESHOLD, 1);
-            p = getDefaultParameters(p, KEY.PERMANENCE_INCREMENT, 0.02);
-            p = getDefaultParameters(p, KEY.PERMANENCE_DECREMENT, 0.02);
-            p.Set(KEY.MAX_SYNAPSES_PER_SEGMENT, 3);
-            p.apply(cn);
+            HtmConfig htmConfig = GetDefaultTMParameters();
+            htmConfig.CellsPerColumn = 30;
+            htmConfig.ColumnDimensions = new int[] { 100 };
+            //htmConfig.ColumnDimensions = new int[] { 5 };
+            htmConfig.MinThreshold = 1;
+            htmConfig.PermanenceIncrement = 0.02;
+            htmConfig.PermanenceDecrement = 0.02;
+            htmConfig.MaxSynapsesPerSegment = 3;
+
+            Connections cn = new Connections(htmConfig);
             tm.Init(cn);
 
             Assert.AreEqual(3, cn.HtmConfig.MaxSynapsesPerSegment);
@@ -702,13 +698,13 @@ namespace UnitTestsProject
         public void TestRecycleLeastRecentlyActiveSegmentToMakeRoomForNewSegment()
         {
             TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 1);
-            p = getDefaultParameters(p, KEY.INITIAL_PERMANENCE, 0.5);
-            p = getDefaultParameters(p, KEY.PERMANENCE_INCREMENT, 0.02);
-            p = getDefaultParameters(p, KEY.PERMANENCE_DECREMENT, 0.02);
-            p.Set(KEY.MAX_SEGMENTS_PER_CELL, 2);
-            p.apply(cn);
+            HtmConfig htmConfig = GetDefaultTMParameters();
+            htmConfig.CellsPerColumn = 1;
+            htmConfig.InitialPermanence = 0.5;
+            htmConfig.PermanenceIncrement = 0.02;
+            htmConfig.PermanenceDecrement = 0.02;
+            htmConfig.MaxSegmentsPerCell = 2;
+            Connections cn = new Connections(htmConfig);
             tm.Init(cn);
 
             int[] prevActiveColumns1 = { 0, 1, 2 };
@@ -762,11 +758,11 @@ namespace UnitTestsProject
         public void TestDestroySegmentsWithTooFewSynapsesToBeMatching()
         {
             TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.INITIAL_PERMANENCE, .2);
-            p = getDefaultParameters(p, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
-            p = getDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
-            p.apply(cn);
+            HtmConfig htmConfig = GetDefaultTMParameters();
+            htmConfig.InitialPermanence = 0.2;
+            htmConfig.MaxNewSynapseCount = 4;
+            htmConfig.PredictedSegmentDecrement = 0.02;
+            Connections cn = new Connections(htmConfig);
             tm.Init(cn);
 
             int[] prevActiveColumns = { 0 };
@@ -791,11 +787,11 @@ namespace UnitTestsProject
         public void TestPunishMatchingSegmentsInInactiveColumns()
         {
             TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
-            p = getDefaultParameters(p, KEY.INITIAL_PERMANENCE, 0.2);
-            p = getDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
-            p.apply(cn);
+            HtmConfig htmConfig = GetDefaultTMParameters();
+            htmConfig.MaxNewSynapseCount = 4;
+            htmConfig.InitialPermanence = 0.2;
+            htmConfig.PredictedSegmentDecrement = 0.02;
+            Connections cn = new Connections(htmConfig);
             tm.Init(cn);
 
             int[] prevActiveColumns = { 0 };
@@ -835,11 +831,11 @@ namespace UnitTestsProject
             for (int seed = 0; seed < 100; seed++)
             {
                 TemporalMemory tm = new TemporalMemory();
-                Connections cn = new Connections();
-                Parameters p = getDefaultParameters(null, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
-                p = getDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
-                p = getDefaultParameters(p, KEY.SEED, seed);
-                p.apply(cn);
+                HtmConfig htmConfig = GetDefaultTMParameters();
+                htmConfig.MaxNewSynapseCount = 4;
+                htmConfig.PredictedSegmentDecrement = 0.02;
+                htmConfig.RandomGenSeed = seed;
+                Connections cn = new Connections(htmConfig);
                 tm.Init(cn);
 
                 int[] prevActiveColumns = { 1, 2, 3, 4 };
@@ -907,11 +903,11 @@ namespace UnitTestsProject
             throw new AssertInconclusiveException("Not fixed.");
 
             TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
-            p = getDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
-            p = getDefaultParameters(p, KEY.INITIAL_PERMANENCE, 0.2);
-            p.apply(cn);
+            HtmConfig htmConfig = GetDefaultTMParameters();
+            htmConfig.MaxNewSynapseCount = 4;
+            htmConfig.PredictedSegmentDecrement = 0.02;
+            htmConfig.InitialPermanence = 0.2;
+            Connections cn = new Connections(htmConfig);
             tm.Init(cn);
 
             int[] prevActiveColumns = { 0 };
@@ -947,10 +943,10 @@ namespace UnitTestsProject
         public void TestLeastUsedCell()
         {
             TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.COLUMN_DIMENSIONS, new int[] { 2 });
-            p = getDefaultParameters(p, KEY.CELLS_PER_COLUMN, 2);
-            p.apply(cn);
+            HtmConfig htmConfig = GetDefaultTMParameters();
+            htmConfig.ColumnDimensions = new int[] { 2 };
+            htmConfig.CellsPerColumn = 2;
+            Connections cn = new Connections(htmConfig);
             tm.Init(cn);
 
             DistalDendrite dd = cn.CreateDistalSegment(cn.GetCell(0));
