@@ -36,68 +36,70 @@ namespace UnitTestsProject.SequenceLearningExperiments
         {
             int inputBits = 100;
             int numColumns = 2048;
-            Parameters p = Parameters.getAllDefaultParameters();
+            //Parameters p = Parameters.getAllDefaultParameters();
 
-            p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
-            p.Set(KEY.INPUT_DIMENSIONS, new int[] { inputBits });
-            p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
+            //p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
+            //p.Set(KEY.INPUT_DIMENSIONS, new int[] { inputBits });
+            //p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
 
-            p.Set(KEY.CELLS_PER_COLUMN, 25);
+            //p.Set(KEY.CELLS_PER_COLUMN, 25);
 
-            p.Set(KEY.GLOBAL_INHIBITION, true);
-            p.Set(KEY.LOCAL_AREA_DENSITY, -1); // In a case of global inhibition.
+            //p.Set(KEY.GLOBAL_INHIBITION, true);
+            //p.Set(KEY.LOCAL_AREA_DENSITY, -1); // In a case of global inhibition.
 
-            //p.setNumActiveColumnsPerInhArea(10);
-            // N of 40 (40= 0.02*2048 columns) active cells required to activate the segment.
-            p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
-            // Activation threshold is 10 active cells of 40 cells in inhibition area.
-            p.Set(KEY.POTENTIAL_RADIUS, 50);
-            p.setInhibitionRadius(15);
+            ////p.setNumActiveColumnsPerInhArea(10);
+            //// N of 40 (40= 0.02*2048 columns) active cells required to activate the segment.
+            //p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
+            //// Activation threshold is 10 active cells of 40 cells in inhibition area.
+            //p.Set(KEY.POTENTIAL_RADIUS, 50);
+            //p.setInhibitionRadius(15);
 
-            //
-            // Activates the high bumping/boosting of inactive columns.
-            // This exeperiment uses HomeostaticPlasticityActivator, which will deactivate boosting and bumping.
-            p.Set(KEY.MAX_BOOST, 10.0);
-            p.Set(KEY.DUTY_CYCLE_PERIOD, 25);
-            p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.75);
+            ////
+            //// Activates the high bumping/boosting of inactive columns.
+            //// This exeperiment uses HomeostaticPlasticityActivator, which will deactivate boosting and bumping.
+            //p.Set(KEY.MAX_BOOST, 10.0);
+            //p.Set(KEY.DUTY_CYCLE_PERIOD, 25);
+            //p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.75);
 
-            // Max number of synapses on the segment.
-            p.setMaxNewSynapsesPerSegmentCount((int)(0.02 * numColumns));
+            //// Max number of synapses on the segment.
+            //p.setMaxNewSynapsesPerSegmentCount((int)(0.02 * numColumns));
 
-            // If learning process does not generate active segments, this value should be decreased. You can notice this with continious burtsing. look in trace for 'B.B.B'
-            // If invalid patterns are predicted then this value should be increased.
-            p.setActivationThreshold(15);
-            p.setConnectedPermanence(0.5);
+            //// If learning process does not generate active segments, this value should be decreased. You can notice this with continious burtsing. look in trace for 'B.B.B'
+            //// If invalid patterns are predicted then this value should be increased.
+            //p.setActivationThreshold(15);
+            //p.setConnectedPermanence(0.5);
 
-            // Learning is slower than forgetting in this case.
-            p.setPermanenceDecrement(0.25);
-            p.setPermanenceIncrement(0.15);
+            //// Learning is slower than forgetting in this case.
+            //p.setPermanenceDecrement(0.25);
+            //p.setPermanenceIncrement(0.15);
 
-            // Used by punishing of segments.
-            p.Set(KEY.PREDICTED_SEGMENT_DECREMENT, 0.1);
+            //// Used by punishing of segments.
+            //p.Set(KEY.PREDICTED_SEGMENT_DECREMENT, 0.1);
 
             double max = 20;
 
-            HtmConfig htmConfig = new HtmConfig();
-            htmConfig.Random = new ThreadSafeRandom(42);
-            htmConfig.InputDimensions = new int[] { inputBits };
-            htmConfig.ColumnDimensions = new int[] { numColumns };
-            htmConfig.CellsPerColumn = 25;
-            htmConfig.GlobalInhibition = true;
-            htmConfig.LocalAreaDensity = -1;
-            htmConfig.NumActiveColumnsPerInhArea = 0.02 * numColumns;
-            htmConfig.PotentialRadius = 50;
-            htmConfig.InhibitionRadius = 15;
-            htmConfig.MaxBoost = 10.0;
-            htmConfig.DutyCyclePeriod = 25;
-            htmConfig.MinPctOverlapDutyCycles = 0.75;
-            htmConfig.MaxSynapsesPerSegment = (int)(0.02 * numColumns);
-            htmConfig.ActivationThreshold = 15;
-            htmConfig.ConnectedPermanence = 0.5;
-            htmConfig.PermanenceDecrement = 0.25;
-            htmConfig.PermanenceIncrement = 0.15;
-            htmConfig.PredictedSegmentDecrement = 0.1;
-            
+            HtmConfig htmConfig = new HtmConfig
+            {
+                Random = new ThreadSafeRandom(42),
+                InputDimensions = new int[] { inputBits },
+                ColumnDimensions = new int[] { numColumns },
+                CellsPerColumn = 25,
+                GlobalInhibition = true,
+                LocalAreaDensity = -1,
+                NumActiveColumnsPerInhArea = 0.02 * numColumns,
+                PotentialRadius = 50,
+                InhibitionRadius = 15,
+                MaxBoost = 10.0,
+                DutyCyclePeriod = 25,
+                MinPctOverlapDutyCycles = 0.75,
+                MaxSynapsesPerSegment = (int)(0.02 * numColumns),
+                ActivationThreshold = 15,
+                ConnectedPermanence = 0.5,
+                PermanenceDecrement = 0.25,
+                PermanenceIncrement = 0.15,
+                PredictedSegmentDecrement = 0.1
+            };
+
 
             Dictionary<string, object> settings = new Dictionary<string, object>()
             {
