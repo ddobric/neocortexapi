@@ -16,8 +16,8 @@
     <PackageTags>htm, temporal memory, spatial pooler, neocortex</PackageTags>
     <PackageLicenseExpression></PackageLicenseExpression>
     <PackageLicenseFile>license.txt</PackageLicenseFile>
+	<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
   </PropertyGroup>
-
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <LangVersion>7.3</LangVersion>
@@ -51,10 +51,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DistributedComputeLib\DistributedComputeLib.csproj" />
-    <ProjectReference Include="..\NeoCortexArrayLib\NeoCortexArrayLib.csproj" />
-    <ProjectReference Include="..\NeoCortexEntities\NeoCortexEntities.csproj" />
+	  <ProjectReference Include="..\DistributedComputeLib\DistributedComputeLib.csproj">
+		  <PrivateAssets>all</PrivateAssets>
+	  </ProjectReference>
+	  <ProjectReference Include="..\NeoCortexArrayLib\NeoCortexArrayLib.csproj">
+		  <PrivateAssets>all</PrivateAssets>
+	  </ProjectReference>
+	  <ProjectReference Include="..\NeoCortexEntities\NeoCortexEntities.csproj">
+		  <PrivateAssets>all</PrivateAssets>
+	  </ProjectReference>
   </ItemGroup>
 
-
+	<Target DependsOnTargets="BuildOnlySettings;ResolveReferences" Name="CopyProjectReferencesToPackage">
+		<ItemGroup>
+			<BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
+		</ItemGroup>
+	</Target>
 </Project>
