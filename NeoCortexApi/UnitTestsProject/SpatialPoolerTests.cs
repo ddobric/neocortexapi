@@ -16,30 +16,30 @@ namespace UnitTestsProject
     [TestClass]
     public class SpatialPoolerTest
     {
-        private Parameters parameters;
+        //private Parameters parameters;
         private SpatialPooler sp;
         private Connections mem;
 
-        public void setupParameters()
-        {
-            parameters = Parameters.getAllDefaultParameters();
-            parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { 5 });
-            parameters.Set(KEY.COLUMN_DIMENSIONS, new int[] { 5 });
-            parameters.Set(KEY.POTENTIAL_RADIUS, 5);
-            parameters.Set(KEY.POTENTIAL_PCT, 0.5);
-            parameters.Set(KEY.GLOBAL_INHIBITION, false);
-            parameters.Set(KEY.LOCAL_AREA_DENSITY, -1.0);
-            parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 3.0);
-            parameters.Set(KEY.STIMULUS_THRESHOLD, 0.0);
-            parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.01);
-            parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0.1);
-            parameters.Set(KEY.SYN_PERM_CONNECTED, 0.1);
-            parameters.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.1);
-            parameters.Set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.1);
-            parameters.Set(KEY.DUTY_CYCLE_PERIOD, 10);
-            parameters.Set(KEY.MAX_BOOST, 10.0);
-            parameters.Set(KEY.RANDOM, new ThreadSafeRandom(42));
-        }
+        //public void setupParameters()
+        //{
+        //    parameters = Parameters.getAllDefaultParameters();
+        //    parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { 5 });
+        //    parameters.Set(KEY.COLUMN_DIMENSIONS, new int[] { 5 });
+        //    parameters.Set(KEY.POTENTIAL_RADIUS, 5);
+        //    parameters.Set(KEY.POTENTIAL_PCT, 0.5);
+        //    parameters.Set(KEY.GLOBAL_INHIBITION, false);
+        //    parameters.Set(KEY.LOCAL_AREA_DENSITY, -1.0);
+        //    parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 3.0);
+        //    parameters.Set(KEY.STIMULUS_THRESHOLD, 0.0);
+        //    parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.01);
+        //    parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0.1);
+        //    parameters.Set(KEY.SYN_PERM_CONNECTED, 0.1);
+        //    parameters.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.1);
+        //    parameters.Set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.1);
+        //    parameters.Set(KEY.DUTY_CYCLE_PERIOD, 10);
+        //    parameters.Set(KEY.MAX_BOOST, 10.0);
+        //    parameters.Set(KEY.RANDOM, new ThreadSafeRandom(42));
+        //}
         private HtmConfig SetupHtmConfigParameters()
         {
             var htmConfig = new HtmConfig()
@@ -66,27 +66,27 @@ namespace UnitTestsProject
             return htmConfig;
         }
 
-        public void setupDefaultParameters()
-        {
-            parameters = Parameters.getAllDefaultParameters();
-            parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { 32, 32 });
-            parameters.Set(KEY.COLUMN_DIMENSIONS, new int[] { 64, 64 });
-            parameters.Set(KEY.POTENTIAL_RADIUS, 16);
-            parameters.Set(KEY.POTENTIAL_PCT, 0.5);
-            parameters.Set(KEY.GLOBAL_INHIBITION, false);
-            parameters.Set(KEY.LOCAL_AREA_DENSITY, -1.0);
-            parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 10.0);
-            parameters.Set(KEY.STIMULUS_THRESHOLD, 0.0);
-            parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.008);
-            parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0.05);
-            parameters.Set(KEY.SYN_PERM_CONNECTED, 0.10);
-            parameters.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.001);
-            parameters.Set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.001);
-            parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000);
-            parameters.Set(KEY.MAX_BOOST, 10.0);
-            parameters.Set(KEY.SEED, 42);
-            parameters.Set(KEY.RANDOM, new ThreadSafeRandom(42));
-        }
+        //public void setupDefaultParameters()
+        //{
+        //    parameters = Parameters.getAllDefaultParameters();
+        //    parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { 32, 32 });
+        //    parameters.Set(KEY.COLUMN_DIMENSIONS, new int[] { 64, 64 });
+        //    parameters.Set(KEY.POTENTIAL_RADIUS, 16);
+        //    parameters.Set(KEY.POTENTIAL_PCT, 0.5);
+        //    parameters.Set(KEY.GLOBAL_INHIBITION, false);
+        //    parameters.Set(KEY.LOCAL_AREA_DENSITY, -1.0);
+        //    parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 10.0);
+        //    parameters.Set(KEY.STIMULUS_THRESHOLD, 0.0);
+        //    parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.008);
+        //    parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0.05);
+        //    parameters.Set(KEY.SYN_PERM_CONNECTED, 0.10);
+        //    parameters.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.001);
+        //    parameters.Set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.001);
+        //    parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000);
+        //    parameters.Set(KEY.MAX_BOOST, 10.0);
+        //    parameters.Set(KEY.SEED, 42);
+        //    parameters.Set(KEY.RANDOM, new ThreadSafeRandom(42));
+        //}
 
         private HtmConfig SetupHtmConfigDefaultParameters()
         {
@@ -114,11 +114,18 @@ namespace UnitTestsProject
             return htmConfig;
         }
 
-        private void initSP()
+        private void initSP(HtmConfig htmConfig = null)
         {
             sp = new SpatialPoolerMT();
-            mem = new Connections();
-            parameters.apply(mem);
+            if (htmConfig == null)
+            {
+                mem = new Connections();
+                //parameters.apply(mem);
+            }
+            else
+            {
+                mem = new Connections(htmConfig);
+            }
             sp.Init(mem);
         }
 
@@ -128,42 +135,10 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void confirmSPConstruction()
         {
-            setupParameters();
-
-            initSP();
-
-            Assert.AreEqual(5, mem.HtmConfig.InputDimensions[0]);
-            Assert.AreEqual(5, mem.HtmConfig.ColumnDimensions[0]);
-            Assert.AreEqual(5, mem.HtmConfig.PotentialRadius);
-            Assert.AreEqual(0.5, mem.HtmConfig.PotentialPct);//, 0);
-            Assert.AreEqual(false, mem.HtmConfig.GlobalInhibition);
-            Assert.AreEqual(-1.0, mem.HtmConfig.LocalAreaDensity);//, 0);
-            Assert.AreEqual(3, mem.HtmConfig.NumActiveColumnsPerInhArea);//, 0);
-            Assert.IsTrue(Math.Abs(1 - mem.HtmConfig.StimulusThreshold) <= 1);
-            Assert.AreEqual(0.01, mem.HtmConfig.SynPermInactiveDec);//, 0);
-            Assert.AreEqual(0.1, mem.HtmConfig.SynPermActiveInc);//, 0);
-            Assert.AreEqual(0.1, mem.HtmConfig.SynPermConnected);//, 0);
-            Assert.AreEqual(0.1, mem.HtmConfig.MinPctOverlapDutyCycles);//, 0);
-            Assert.AreEqual(0.1, mem.HtmConfig.MinPctActiveDutyCycles);//, 0);
-            Assert.AreEqual(10, mem.HtmConfig.DutyCyclePeriod);//, 0);
-            Assert.AreEqual(10.0, mem.HtmConfig.MaxBoost);//, 0);
-            Assert.AreEqual(42, mem.HtmConfig.RandomGenSeed);
-
-            Assert.AreEqual(5, mem.HtmConfig.NumInputs);
-            Assert.AreEqual(5, mem.HtmConfig.NumColumns);
-        }
-
-        [TestMethod]
-        [TestCategory("UnitTest")]
-        [TestCategory("Prod")]
-        [TestCategory("InitHtmConfig")]
-        public void confirmSPConstruction1()
-        {
+            //setupParameters();
             HtmConfig htmConfig = SetupHtmConfigParameters();
-            mem = new Connections(htmConfig);
 
-            sp = new SpatialPoolerMT();
-            sp.Init(mem);
+            initSP(htmConfig);
 
             Assert.AreEqual(5, mem.HtmConfig.InputDimensions[0]);
             Assert.AreEqual(5, mem.HtmConfig.ColumnDimensions[0]);
@@ -185,8 +160,6 @@ namespace UnitTestsProject
             Assert.AreEqual(5, mem.HtmConfig.NumInputs);
             Assert.AreEqual(5, mem.HtmConfig.NumColumns);
         }
-
-
 
         /**
          * Checks that feeding in the same input vector leads to polarized
@@ -197,62 +170,7 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void testCompute1()
         {
-            setupParameters();
-            parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { 9 });
-            parameters.Set(KEY.COLUMN_DIMENSIONS, new int[] { 5 });
-            parameters.setPotentialRadius(5);
-
-            // This is 0.3 in Python version due to use of dense 
-            // permanence instead of sparse (as it should be)
-            parameters.setPotentialPct(0.5);
-
-            parameters.setGlobalInhibition(false);
-            parameters.setLocalAreaDensity(-1.0);
-            parameters.setNumActiveColumnsPerInhArea(3);
-            parameters.setStimulusThreshold(1);
-            parameters.setSynPermInactiveDec(0.01);
-            parameters.setSynPermActiveInc(0.1);
-            parameters.setMinPctOverlapDutyCycles(0.1);
-            parameters.setMinPctActiveDutyCycles(0.1);
-            parameters.setDutyCyclePeriod(10);
-            parameters.setMaxBoost(10);
-            parameters.setSynPermTrimThreshold(0);
-
-            // This is 0.5 in Python version due to use of dense 
-            // permanence instead of sparse (as it should be)
-            parameters.setPotentialPct(1);
-
-            parameters.setSynPermConnected(0.1);
-
-            sp = new SpatialPooler();
-            mem = new Connections();
-            parameters.apply(mem);
-
-            SpatialPoolerMock mock = new SpatialPoolerMock(new int[] { 0, 1, 2, 3, 4 });
-            mock.Init(mem);
-
-            int[] inputVector = new int[] { 1, 0, 1, 0, 1, 0, 0, 1, 1 };
-            int[] activeArray = new int[] { 0, 0, 0, 0, 0 };
-            for (int i = 0; i < 20; i++)
-            {
-                mock.compute(inputVector, activeArray, true);
-            }
-
-            for (int i = 0; i < mem.HtmConfig.NumColumns; i++)
-            {
-                int[] permanences = ArrayUtils.ToIntArray(mem.GetColumn(i).ProximalDendrite.RFPool.GetDensePermanences(mem.HtmConfig.NumInputs));
-
-                Assert.IsTrue(inputVector.SequenceEqual(permanences));
-            }
-        }
-
-        [TestMethod]
-        [TestCategory("UnitTest")]
-        [TestCategory("Prod")]
-        [TestCategory("InitHtmConfig")]
-        public void testCompute1_1()
-        {
-            var htmConfig = SetupHtmConfigParameters();
+            HtmConfig htmConfig = SetupHtmConfigParameters();
             htmConfig.InputDimensions = new int[] { 9 };
             htmConfig.ColumnDimensions = new int[] { 5 };
             htmConfig.PotentialRadius = 5;
@@ -278,7 +196,6 @@ namespace UnitTestsProject
             htmConfig.PotentialPct = 1;
 
             htmConfig.SynPermConnected = 0.1;
-
             mem = new Connections(htmConfig);
 
             SpatialPoolerMock mock = new SpatialPoolerMock(new int[] { 0, 1, 2, 3, 4 });
@@ -308,27 +225,24 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void testCompute2()
         {
-            setupParameters();
-            parameters.setInputDimensions(new int[] { 10 });
-            parameters.setColumnDimensions(new int[] { 5 });
-            parameters.setPotentialRadius(3);
-            parameters.setPotentialPct(0.3);
-            parameters.setGlobalInhibition(false);
-            parameters.setLocalAreaDensity(-1.0);
-            parameters.setNumActiveColumnsPerInhArea(3);
-            parameters.setStimulusThreshold(1);
-            parameters.setSynPermInactiveDec(0.01);
-            parameters.setSynPermActiveInc(0.1);
-            parameters.setMinPctOverlapDutyCycles(0.1);
-            parameters.setMinPctActiveDutyCycles(0.1);
-            parameters.setDutyCyclePeriod(10);
-            parameters.setMaxBoost(10);
-            parameters.setSynPermConnected(0.1);
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            htmConfig.InputDimensions = new int[] { 10 };
+            htmConfig.ColumnDimensions = new int[] { 5 };
+            htmConfig.PotentialRadius = 3;
+            htmConfig.PotentialPct = 0.3;
+            htmConfig.GlobalInhibition = false;
+            htmConfig.LocalAreaDensity = -1.0;
+            htmConfig.NumActiveColumnsPerInhArea = 3;
+            htmConfig.StimulusThreshold = 1;
+            htmConfig.SynPermInactiveDec = 0.01;
+            htmConfig.SynPermActiveInc = 0.1;
+            htmConfig.MinPctOverlapDutyCycles = 0.1;
+            htmConfig.MinPctActiveDutyCycles = 0.1;
+            htmConfig.DutyCyclePeriod = 10;
+            htmConfig.MaxBoost = 10;
+            htmConfig.SynPermConnected = 0.1;
 
-            mem = new Connections();
-            parameters.apply(mem);
-
-
+            mem = new Connections(htmConfig);
 
             SpatialPoolerMock mock = new SpatialPoolerMock(new int[] { 0, 1, 2, 3, 4 });
             mock.Init(mem);
@@ -360,54 +274,21 @@ namespace UnitTestsProject
         {
             int inputSize = 10;
             int nColumns = 20;
-            parameters = Parameters.getSpatialDefaultParameters();
-            parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { inputSize });
-            parameters.Set(KEY.COLUMN_DIMENSIONS, new int[] { nColumns });
-            parameters.Set(KEY.POTENTIAL_RADIUS, 10);
-            parameters.Set(KEY.GLOBAL_INHIBITION, true);
-            parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 3.0);
-            parameters.Set(KEY.STIMULUS_THRESHOLD, 0.0);// This makes column active even if no synapse is connected.
-            parameters.Set(KEY.RANDOM, new ThreadSafeRandom(42));
-            parameters.Set(KEY.SEED, 42);
+
+            HtmConfig htmConfig = new HtmConfig
+            {
+                InputDimensions = new int[] { inputSize },
+                ColumnDimensions = new int[] { nColumns },
+                PotentialRadius = 10,
+                GlobalInhibition = true,
+                NumActiveColumnsPerInhArea = 3.0,
+                StimulusThreshold = 0.0,
+                Random = new ThreadSafeRandom(42),
+                RandomGenSeed = 42
+            };
 
             SpatialPooler sp = new SpatialPooler();
-            Connections cn = new Connections();
-            parameters.apply(cn);
-            sp.Init(cn);
-
-            int[] activeArray = new int[nColumns];
-            sp.compute(new int[inputSize], activeArray, true);
-
-            Assert.IsTrue(3 == activeArray.Count(i => i > 0));//, ArrayUtils.INT_GREATER_THAN_0).length);
-        }
-
-        /**
-         * When stimulusThreshold is 0, allow columns without any overlap to become
-         * active. This test focuses on the global inhibition code path.
-         */
-        [TestMethod]
-        [TestCategory("UnitTest")]
-        [TestCategory("Prod")]
-        [TestCategory("InitHtmConfig")]
-        public void TestZeroOverlap_NoStimulusThreshold_GlobalInhibition1()
-        {
-            int inputSize = 10;
-            int nColumns = 20;
-
-            HtmConfig defaultConfig = new HtmConfig();
-            Connections cn = new Connections(defaultConfig);
-
-            var htmConfig = cn.HtmConfig;
-            htmConfig.InputDimensions = new int[] { inputSize };
-            htmConfig.ColumnDimensions = new int[] { nColumns };
-            htmConfig.PotentialRadius = 10;
-            htmConfig.GlobalInhibition = true;
-            htmConfig.NumActiveColumnsPerInhArea = 3.0;
-            htmConfig.StimulusThreshold = 0.0;
-            htmConfig.Random = new ThreadSafeRandom(42);
-            htmConfig.RandomGenSeed = 42;
-
-            SpatialPooler sp = new SpatialPooler();
+            Connections cn = new Connections(htmConfig);
             sp.Init(cn);
 
             int[] activeArray = new int[nColumns];
@@ -429,19 +310,21 @@ namespace UnitTestsProject
         {
             int inputSize = 10;
             int nColumns = 20;
-            parameters = Parameters.getSpatialDefaultParameters();
-            parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { inputSize });
-            parameters.Set(KEY.COLUMN_DIMENSIONS, new int[] { nColumns });
-            parameters.Set(KEY.POTENTIAL_RADIUS, 10);
-            parameters.Set(KEY.GLOBAL_INHIBITION, true);
-            parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 3.0);
-            parameters.Set(KEY.STIMULUS_THRESHOLD, 1.0);
-            parameters.Set(KEY.RANDOM, new ThreadSafeRandom(42));
-            parameters.Set(KEY.SEED, 42);
+
+            HtmConfig htmConfig = new HtmConfig()
+            {
+                InputDimensions = new int[] { inputSize },
+                ColumnDimensions = new int[] { nColumns },
+                PotentialRadius = 10,
+                GlobalInhibition = true,
+                NumActiveColumnsPerInhArea = 3.0,
+                StimulusThreshold = 1.0,
+                Random = new ThreadSafeRandom(42),
+                RandomGenSeed = 42,
+            };
 
             SpatialPooler sp = UnitTestHelpers.CreatePooler(poolerMode);
-            Connections cn = new Connections();
-            parameters.apply(cn);
+            Connections cn = new Connections(htmConfig);
             sp.Init(cn);
 
             int[] activeArray = new int[nColumns];
@@ -457,19 +340,21 @@ namespace UnitTestsProject
         {
             int inputSize = 10;
             int nColumns = 20;
-            parameters = Parameters.getSpatialDefaultParameters();
-            parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { inputSize });
-            parameters.Set(KEY.COLUMN_DIMENSIONS, new int[] { nColumns });
-            parameters.Set(KEY.POTENTIAL_RADIUS, 5);
-            parameters.Set(KEY.GLOBAL_INHIBITION, false);
-            parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 1.0);
-            parameters.Set(KEY.STIMULUS_THRESHOLD, 0.0);
-            parameters.Set(KEY.RANDOM, new ThreadSafeRandom(42));
-            parameters.Set(KEY.SEED, 42);
+
+            HtmConfig htmConfig = new HtmConfig
+            {
+                InputDimensions = new int[] { inputSize },
+                ColumnDimensions = new int[] { nColumns },
+                PotentialRadius = 5,
+                GlobalInhibition = false,
+                NumActiveColumnsPerInhArea = 1.0,
+                StimulusThreshold = 0.0,
+                Random = new ThreadSafeRandom(42),
+                RandomGenSeed = 42,
+            };
 
             SpatialPooler sp = new SpatialPooler();
-            Connections cn = new Connections();
-            parameters.apply(cn);
+            Connections cn = new Connections(htmConfig);
             sp.Init(cn);
 
             // This exact number of active columns is determined by the inhibition
@@ -494,19 +379,21 @@ namespace UnitTestsProject
         {
             int inputSize = 10;
             int nColumns = 20;
-            parameters = Parameters.getSpatialDefaultParameters();
-            parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { inputSize });
-            parameters.Set(KEY.COLUMN_DIMENSIONS, new int[] { nColumns });
-            parameters.Set(KEY.POTENTIAL_RADIUS, 10);
-            parameters.Set(KEY.GLOBAL_INHIBITION, false);
-            parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 3.0);
-            parameters.Set(KEY.STIMULUS_THRESHOLD, 1.0);
-            parameters.Set(KEY.RANDOM, new ThreadSafeRandom(42));
-            parameters.Set(KEY.SEED, 42);
+
+            HtmConfig htmConfig = new HtmConfig
+            {
+                InputDimensions = new int[] { inputSize },
+                ColumnDimensions = new int[] { nColumns },
+                PotentialRadius = 10,
+                GlobalInhibition = false,
+                NumActiveColumnsPerInhArea = 3.0,
+                StimulusThreshold = 1.0,
+                Random = new ThreadSafeRandom(42),
+                RandomGenSeed = 42,
+            };
 
             SpatialPooler sp = new SpatialPooler();
-            Connections cn = new Connections();
-            parameters.apply(cn);
+            Connections cn = new Connections(htmConfig);
             sp.Init(cn);
 
             int[] activeArray = new int[nColumns];
@@ -521,21 +408,23 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void testOverlapsOutput()
         {
-            parameters = Parameters.getSpatialDefaultParameters();
-            parameters.setColumnDimensions(new int[] { 3 });
-            parameters.setInputDimensions(new int[] { 5 });
-            parameters.setPotentialRadius(5);
-            parameters.setNumActiveColumnsPerInhArea(5);
-            parameters.setGlobalInhibition(true);
-            parameters.setSynPermActiveInc(0.1);
-            parameters.setSynPermInactiveDec(0.1);
-            parameters.setSeed(42);
-            parameters.setStimulusThreshold(4);
-            parameters.setRandom(new ThreadSafeRandom(42));
+            HtmConfig htmConfig = new HtmConfig
+            {
+                ColumnDimensions = new int[] { 3 },
+                InputDimensions = new int[] { 5 },
+                PotentialRadius = 5,
+                NumActiveColumnsPerInhArea = 5,
+                GlobalInhibition = true,
+                SynPermActiveInc = 0.1,
+                SynPermInactiveDec = 0.1,
+                RandomGenSeed = 42,
+                StimulusThreshold = 4,
+                Random = new ThreadSafeRandom(42)
+            };
+
 
             var sp = new SpatialPoolerMT();
-            Connections cn = new Connections();
-            parameters.apply(cn);
+            Connections cn = new Connections(htmConfig);
             sp.Init(cn);
 
             cn.BoostFactors = (new double[] { 2.0, 2.0, 2.0 });
@@ -556,73 +445,28 @@ namespace UnitTestsProject
                 Assert.IsTrue(Math.Abs(expOutput[i] * 2 - boostedOverlaps[i]) <= 0.01);
             }
         }
-
-        // DD
-        [TestMethod]
-        [TestCategory("UnitTest")]
-        [TestCategory("Prod")]
-        [TestCategory("InitHtmConfig")]
-        public void testOverlapsOutput1()
-        {
-            HtmConfig defaultConfig = new HtmConfig();
-            var cn = new Connections(defaultConfig);
-            var htmConfig = cn.HtmConfig;
-            htmConfig.ColumnDimensions = new int[] { 3 };
-            htmConfig.InputDimensions = new int[] { 5 };
-            htmConfig.PotentialRadius = 5;
-            htmConfig.NumActiveColumnsPerInhArea = 5;
-            htmConfig.GlobalInhibition = true;
-            htmConfig.SynPermActiveInc = 0.1;
-            htmConfig.SynPermInactiveDec = 0.1;
-            htmConfig.RandomGenSeed = 42;
-            htmConfig.StimulusThreshold = 4;
-            htmConfig.Random = new ThreadSafeRandom(42);
-
-            var sp = new SpatialPoolerMT();
-
-            sp.Init(cn);
-
-            cn.BoostFactors = (new double[] { 2.0, 2.0, 2.0 });
-            int[] inputVector = { 1, 1, 1, 1, 1 };
-            int[] activeArray = { 0, 0, 0 };
-            int[] expOutput = { 4, 4, 4 }; // Added during implementation of parallel.
-            /*{ 1, 1, 1 }*/
-            ;
-            // { 2, 1, 0 }; This was used originally on Linux with JAVA and Pyhton
-            sp.compute(inputVector, activeArray, true);
-
-            double[] boostedOverlaps = cn.BoostedOverlaps;
-            int[] overlaps = cn.Overlaps;
-
-            for (int i = 0; i < cn.HtmConfig.NumColumns; i++)
-            {
-                Assert.AreEqual(expOutput[i], overlaps[i]);
-                Assert.IsTrue(Math.Abs(expOutput[i] * 2 - boostedOverlaps[i]) <= 0.01);
-            }
-        }
-
 
         // This throws OUT OF MEMORY.
         // [TestMethod]
         // [TestCategory("LongRunning")]
         public void perfTest()
         {
-            setupParameters();
-            parameters.setInputDimensions(new int[] { 188, 1 });
-            parameters.setColumnDimensions(new int[] { 2048, 10 });
-            parameters.setPotentialRadius(94);
-            parameters.setPotentialPct(0.5);
-            parameters.setGlobalInhibition(false);
-            parameters.setLocalAreaDensity(10);
-            parameters.setNumActiveColumnsPerInhArea(40);
-            parameters.setStimulusThreshold(0);
-            parameters.setSynPermInactiveDec(0.01);
-            parameters.setSynPermActiveInc(0.1);
-            parameters.setMinPctOverlapDutyCycles(0.001);
-            parameters.setMinPctActiveDutyCycles(0.001);
-            parameters.setDutyCyclePeriod(1000);
-            parameters.setMaxBoost(10);
-            initSP();
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            htmConfig.InputDimensions = new int[] { 188, 1 };
+            htmConfig.ColumnDimensions = new int[] { 2048, 10 };
+            htmConfig.PotentialRadius = 94;
+            htmConfig.PotentialPct = 0.5;
+            htmConfig.GlobalInhibition = false;
+            htmConfig.LocalAreaDensity = 10;
+            htmConfig.NumActiveColumnsPerInhArea = 40;
+            htmConfig.StimulusThreshold = 0;
+            htmConfig.SynPermInactiveDec = 0.01;
+            htmConfig.SynPermActiveInc = 0.1;
+            htmConfig.MinPctOverlapDutyCycles = 0.001;
+            htmConfig.MinPctActiveDutyCycles = 0.001;
+            htmConfig.DutyCyclePeriod = 1000;
+            htmConfig.MaxBoost = 10;
+            initSP(htmConfig);
 
             int[] inputVector = {
                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -660,26 +504,24 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void testExactOutput()
         {
-            setupParameters();
-            parameters.setInputDimensions(new int[] { 1, 188 });
-            parameters.setColumnDimensions(new int[] { 2048, 1 });
-            parameters.setPotentialRadius(94);
-            parameters.setPotentialPct(0.5);
-            parameters.setGlobalInhibition(true);
-            parameters.setLocalAreaDensity(-1.0);
-            parameters.setNumActiveColumnsPerInhArea(40);
-            parameters.setStimulusThreshold(0);
-            parameters.setSynPermInactiveDec(0.01);
-            parameters.setSynPermActiveInc(0.1);
-            parameters.setMinPctOverlapDutyCycles(0.001);
-            parameters.setMinPctActiveDutyCycles(0.001);
-            parameters.setDutyCyclePeriod(1000);
-            parameters.setMaxBoost(10);
-            //initSP();
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            htmConfig.InputDimensions = new int[] { 1, 188 };
+            htmConfig.ColumnDimensions = new int[] { 2048, 1 };
+            htmConfig.PotentialRadius = 94;
+            htmConfig.PotentialPct = 0.5;
+            htmConfig.GlobalInhibition = false;
+            htmConfig.LocalAreaDensity = -1;
+            htmConfig.NumActiveColumnsPerInhArea = 40;
+            htmConfig.StimulusThreshold = 0;
+            htmConfig.SynPermInactiveDec = 0.01;
+            htmConfig.SynPermActiveInc = 0.1;
+            htmConfig.MinPctOverlapDutyCycles = 0.001;
+            htmConfig.MinPctActiveDutyCycles = 0.001;
+            htmConfig.DutyCyclePeriod = 1000;
+            htmConfig.MaxBoost = 10;
 
             var sp = new SpatialPooler();
-            mem = new Connections();
-            parameters.apply(mem);
+            mem = new Connections(htmConfig);
             sp.Init(mem);
 
             int[] inputVector = {
@@ -723,10 +565,10 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void testStripNeverLearned()
         {
-            setupParameters();
-            parameters.setColumnDimensions(new int[] { 6 });
-            parameters.setInputDimensions(new int[] { 9 });
-            initSP();
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            htmConfig.ColumnDimensions = new int[] { 6 };
+            htmConfig.InputDimensions = new int[] { 9 };
+            initSP(htmConfig);
 
             // Column [2] has dutycycle=0. It means it has never learned anything.
             mem.UpdateActiveDutyCycles(new double[] { 0.5, 0.1, 0, 0.2, 0.4, 0 });
@@ -761,10 +603,10 @@ namespace UnitTestsProject
         public void testMapColumn()
         {
             // Test 1D
-            setupParameters();
-            parameters.setColumnDimensions(new int[] { 4 });
-            parameters.setInputDimensions(new int[] { 12 });
-            initSP();
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            htmConfig.ColumnDimensions = new int[] { 4 };
+            htmConfig.InputDimensions = new int[] { 12 };
+            initSP(htmConfig);
 
             Assert.IsTrue(1 == HtmCompute.MapColumn(0, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
             Assert.IsTrue(4 == HtmCompute.MapColumn(1, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
@@ -772,10 +614,10 @@ namespace UnitTestsProject
             Assert.IsTrue(10 == HtmCompute.MapColumn(3, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
 
             // Test 1D with same dimension of columns and inputs
-            setupParameters();
-            parameters.setColumnDimensions(new int[] { 4 });
-            parameters.setInputDimensions(new int[] { 4 });
-            initSP();
+            htmConfig = SetupHtmConfigParameters();
+            htmConfig.ColumnDimensions = new int[] { 4 };
+            htmConfig.InputDimensions = new int[] { 4 };
+            initSP(htmConfig);
 
             Assert.IsTrue(0 == HtmCompute.MapColumn(0, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
             Assert.IsTrue(1 == HtmCompute.MapColumn(1, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
@@ -783,18 +625,18 @@ namespace UnitTestsProject
             Assert.IsTrue(3 == HtmCompute.MapColumn(3, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
 
             // Test 1D with dimensions of length 1
-            setupParameters();
-            parameters.setColumnDimensions(new int[] { 1 });
-            parameters.setInputDimensions(new int[] { 1 });
-            initSP();
+            htmConfig = SetupHtmConfigParameters();
+            htmConfig.ColumnDimensions = new int[] { 1 };
+            htmConfig.InputDimensions = new int[] { 1 };
+            initSP(htmConfig);
 
             Assert.IsTrue(0 == HtmCompute.MapColumn(0, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
 
             // Test 2D
-            setupParameters();
-            parameters.setColumnDimensions(new int[] { 12, 4 });
-            parameters.setInputDimensions(new int[] { 36, 12 });
-            initSP();
+            htmConfig = SetupHtmConfigParameters();
+            htmConfig.ColumnDimensions = new int[] { 12, 4 };
+            htmConfig.InputDimensions = new int[] { 36, 12 };
+            initSP(htmConfig);
 
             Assert.IsTrue(13 == HtmCompute.MapColumn(0, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
             Assert.IsTrue(49 == HtmCompute.MapColumn(4, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
@@ -803,10 +645,10 @@ namespace UnitTestsProject
             Assert.IsTrue(418 == HtmCompute.MapColumn(47, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
 
             // Test 2D with some input dimensions smaller than column dimensions.
-            setupParameters();
-            parameters.setColumnDimensions(new int[] { 4, 4 });
-            parameters.setInputDimensions(new int[] { 3, 5 });
-            initSP();
+            htmConfig = SetupHtmConfigParameters();
+            htmConfig.ColumnDimensions = new int[] { 4, 4 };
+            htmConfig.InputDimensions = new int[] { 3, 5 };
+            initSP(htmConfig);
 
             Assert.IsTrue(0 == HtmCompute.MapColumn(0, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
             Assert.IsTrue(4 == HtmCompute.MapColumn(3, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
@@ -818,13 +660,13 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void testMapPotential1D()
         {
-            setupParameters();
-            parameters.setInputDimensions(new int[] { 12 });
-            parameters.setColumnDimensions(new int[] { 4 });
-            parameters.setPotentialRadius(2);
-            parameters.setPotentialPct(1);
-            parameters.Set(KEY.WRAP_AROUND, false);
-            initSP();
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            htmConfig.InputDimensions = new int[] { 12 };
+            htmConfig.ColumnDimensions = new int[] { 4 };
+            htmConfig.PotentialRadius = 2;
+            htmConfig.PotentialPct = 1;
+            htmConfig.WrapAround = false;
+            initSP(htmConfig);
 
             Assert.AreEqual(12, mem.HtmConfig.InputDimensions[0]);
             Assert.AreEqual(4, mem.HtmConfig.ColumnDimensions[0]);
@@ -852,9 +694,10 @@ namespace UnitTestsProject
             Assert.IsTrue(expected.SequenceEqual(mask));
 
             // Test with wrapAround and potentialPct < 1
-            parameters.setPotentialPct(0.5);
-            parameters.Set(KEY.WRAP_AROUND, true);
-            initSP();
+            htmConfig = SetupHtmConfigParameters();
+            htmConfig.PotentialPct = 0.5;
+            htmConfig.WrapAround = true;
+            initSP(htmConfig);
 
             int[] supersetMask = new int[] { 0, 1, 2, 3, 11 };
             mask = HtmCompute.MapPotential(mem.HtmConfig, 0, mem.HtmConfig.Random);
@@ -874,12 +717,12 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void testMapPotential2D()
         {
-            setupParameters();
-            parameters.setInputDimensions(new int[] { 6, 12 });
-            parameters.setColumnDimensions(new int[] { 2, 4 });
-            parameters.setPotentialRadius(1);
-            parameters.setPotentialPct(1);
-            initSP();
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            htmConfig.InputDimensions = new int[] { 6, 12 };
+            htmConfig.ColumnDimensions = new int[] { 2, 4 };
+            htmConfig.PotentialRadius = 1;
+            htmConfig.PotentialPct = 1;
+            initSP(htmConfig);
 
             //Test without wrapAround
             mem.HtmConfig.WrapAround = false;
@@ -898,8 +741,9 @@ namespace UnitTestsProject
             //Test with wrapAround
             trueIndices.Clear();
             maskSet.Clear();
-            parameters.setPotentialRadius(2);
-            initSP();
+            htmConfig.ClearModuleTopology();
+            htmConfig.PotentialRadius = 2;
+            initSP(htmConfig);
             trueIndices.AddRange(
                     new int[] { 0, 1, 2, 3, 11,
                         12, 13, 14, 15, 23,
@@ -929,13 +773,13 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void testMapPotential1Column1Input()
         {
-            setupParameters();
-            parameters.setInputDimensions(new int[] { 1 });
-            parameters.setColumnDimensions(new int[] { 1 });
-            parameters.setPotentialRadius(2);
-            parameters.setPotentialPct(1);
-            parameters.Set(KEY.WRAP_AROUND, false);
-            initSP();
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            htmConfig.InputDimensions = new int[] { 1 };
+            htmConfig.ColumnDimensions = new int[] { 1 };
+            htmConfig.PotentialRadius = 2;
+            htmConfig.PotentialPct = 1;
+            htmConfig.WrapAround = false;
+            initSP(htmConfig);
 
             //Test without wrapAround and potentialPct = 1
             int[] expectedMask = new int[] { 0 };
@@ -978,10 +822,10 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void testInhibitColumns()
         {
-            setupParameters();
-            parameters.setColumnDimensions(new int[] { 5 });
-            parameters.setInhibitionRadius(10);
-            initSP();
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            htmConfig.ColumnDimensions = new int[] { 5 };
+            htmConfig.InhibitionRadius = 10;
+            initSP(htmConfig);
 
             SpatialPoolerMock2 mock = new SpatialPoolerMock2((density) =>
             {
@@ -1042,12 +886,14 @@ namespace UnitTestsProject
 
             //////
             reset();
-            parameters.setInputDimensions(new int[] { 100, 10 });
-            parameters.setColumnDimensions(new int[] { 100, 10 });
-            parameters.setGlobalInhibition(false);
-            parameters.setLocalAreaDensity(-1);
-            parameters.setNumActiveColumnsPerInhArea(3);
-            initSP();
+
+            htmConfig = SetupHtmConfigParameters();
+            htmConfig.InputDimensions = new int[] { 100, 10 };
+            htmConfig.ColumnDimensions = new int[] { 100, 10 };
+            htmConfig.GlobalInhibition = false;
+            htmConfig.LocalAreaDensity = -1;
+            htmConfig.NumActiveColumnsPerInhArea = 3;
+            initSP(htmConfig);
 
             //Internally calculated during init, to overwrite we put after init
             mem.HtmConfig.InhibitionRadius = 4;
@@ -1086,12 +932,12 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void testUpdateBoostFactors()
         {
-            setupParameters();
-            parameters.setInputDimensions(new int[] { 5/*Don't care*/ });
-            parameters.setColumnDimensions(new int[] { 5 });
-            parameters.setMaxBoost(10.0);
-            parameters.setRandom(new ThreadSafeRandom(42));
-            initSP();
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            htmConfig.InputDimensions = new int[] { 5/*Don't care*/ };
+            htmConfig.ColumnDimensions = new int[] { 5 };
+            htmConfig.MaxBoost = 10;
+            htmConfig.Random = new ThreadSafeRandom(42);
+            initSP(htmConfig);
 
             mem.HtmConfig.NumColumns = 6;
 
@@ -1153,8 +999,8 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void testUpdateInhibitionRadius()
         {
-            setupParameters();
-            initSP();
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            initSP(htmConfig);
 
             //Test global inhibition case
             mem.HtmConfig.GlobalInhibition = true;
@@ -1251,8 +1097,8 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void testAvgColumnsPerInput()
         {
-            setupParameters();
-            initSP();
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            initSP(htmConfig);
 
             mem.HtmConfig.ColumnDimensions = new int[] { 2, 2, 2, 2 };
             mem.HtmConfig.InputDimensions = new int[] { 4, 4, 4, 4 };
@@ -1290,11 +1136,17 @@ namespace UnitTestsProject
         public void testAvgConnectedSpanForColumnND()
         {
             sp = new SpatialPooler();
-            mem = new Connections();
 
-            int[] inputDimensions = new int[] { 4, 4, 2, 5 };
-            mem.HtmConfig.InputDimensions = inputDimensions;
-            mem.HtmConfig.ColumnDimensions = new int[] { 5 };
+            HtmConfig htmConfig = new HtmConfig
+            {
+                InputDimensions = new int[] { 4, 4, 2, 5 },
+                ColumnDimensions = new int[] { 5 },
+            };
+            mem = new Connections(htmConfig);
+
+            //int[] inputDimensions = new int[] { 4, 4, 2, 5 };
+            //mem.HtmConfig.InputDimensions = inputDimensions;
+            //mem.HtmConfig.ColumnDimensions = new int[] { 5 };
             sp.InitMatrices(mem, null);
 
             List<int> connected = new List<int>();
@@ -1374,10 +1226,10 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void testBumpUpWeakColumns()
         {
-            setupParameters();
-            parameters.setInputDimensions(new int[] { 8 });
-            parameters.setColumnDimensions(new int[] { 5 });
-            initSP();
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            htmConfig.InputDimensions = new int[] { 8 };
+            htmConfig.ColumnDimensions = new int[] { 5 };
+            initSP(htmConfig);
 
             mem.HtmConfig.SynPermBelowStimulusInc = 0.01;
             mem.HtmConfig.SynPermTrimThreshold = 0.05;
@@ -1479,23 +1331,24 @@ namespace UnitTestsProject
             expectedList[0] = new int[] { 2047, 0, 1 };
             expectedList[1] = new int[] { 2046, 2047, 0 };
 
-            setupParameters();
-            parameters.setInputDimensions(new int[] { 10 });
-            parameters.setColumnDimensions(new int[] { 5 });
-            parameters.setPotentialRadius(94);
-            parameters.setPotentialPct(0.5);
-            parameters.setGlobalInhibition(true);
-            parameters.setLocalAreaDensity(-1.0);
-            parameters.setNumActiveColumnsPerInhArea(40);
-            parameters.setStimulusThreshold(0);
-            parameters.setSynPermInactiveDec(0.01);
-            parameters.setSynPermActiveInc(0.1);
-            parameters.setMinPctOverlapDutyCycles(0.001);
-            parameters.setMinPctActiveDutyCycles(0.001);
-            parameters.setDutyCyclePeriod(1000);
-            parameters.setMaxBoost(10);
-            parameters.setRandom(new ThreadSafeRandom(42));
-            initSP();
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            htmConfig.InputDimensions = new int[] { 10 };
+            htmConfig.ColumnDimensions = new int[] { 5 };
+            htmConfig.PotentialRadius = 94;
+            htmConfig.PotentialPct = 0.5;
+            htmConfig.GlobalInhibition = true;
+            htmConfig.LocalAreaDensity = -1.0;
+            htmConfig.NumActiveColumnsPerInhArea = 40;
+            htmConfig.StimulusThreshold = 0;
+            htmConfig.SynPermInactiveDec = 0.01;
+            htmConfig.SynPermActiveInc = 0.1;
+            htmConfig.MinPctOverlapDutyCycles = 0.001;
+            htmConfig.MinPctActiveDutyCycles = 0.001;
+            htmConfig.DutyCyclePeriod = 1000;
+            htmConfig.MaxBoost = 10;
+            htmConfig.Random = new ThreadSafeRandom(42);
+
+            initSP(htmConfig);
 
             mem.HtmConfig.InhibitionRadius = 1;
 
@@ -1548,62 +1401,11 @@ namespace UnitTestsProject
             expectedList[6] = new int[] { 5, 6, 7 };
             expectedList[7] = new int[] { 6, 7 };
 
-            setupDefaultParameters();
-            parameters.setInputDimensions(new int[] { 5 });
-            parameters.setColumnDimensions(new int[] { 8 });
-            parameters.Set(KEY.WRAP_AROUND, false);
-            initSP();
-
-            mem.HtmConfig.InhibitionRadius = 1;
-            int inhibitionRadius = 1;
-
-            for (int k = 0; k < 100; k++)
-            {
-                Parallel.For(0, 8, (i) =>
-                {
-                    int[] neighborhood = HtmCompute.GetNeighborhood(i, inhibitionRadius, mem.HtmConfig.ColumnTopology.HtmTopology);
-
-                    Assert.IsTrue(expectedList[i].SequenceEqual(neighborhood));
-                });
-            }
-        }
-
-        /// <summary>
-        /// Ensures that neighborhod calculation is thread-safe.
-        ///{5 - [4,5,6]}
-        ///{2 - [1,2,3]}
-        ///{3 - [2,3,4]}
-        ///{6 - [5,6,7]}
-        ///{4 - [3,4,5]}
-        ///{1 - [0,1,2]}
-        ///{0 - [0,1]}
-        /// </summary>
-        [TestMethod]
-        [TestCategory("UnitTest")]
-        [TestCategory("Prod")]
-        [TestCategory("InitHtmConfig")]
-        public void TestParallelNeighborhood1()
-        {
-            int[][] expectedList = new int[8][];
-
-            expectedList[0] = new int[] { 0, 1 };
-            expectedList[1] = new int[] { 0, 1, 2 };
-            expectedList[2] = new int[] { 1, 2, 3 };
-            expectedList[3] = new int[] { 2, 3, 4 };
-            expectedList[4] = new int[] { 3, 4, 5 };
-            expectedList[5] = new int[] { 4, 5, 6 };
-            expectedList[6] = new int[] { 5, 6, 7 };
-            expectedList[7] = new int[] { 6, 7 };
-
-            var htmConfig = SetupHtmConfigDefaultParameters();
+            HtmConfig htmConfig = SetupHtmConfigDefaultParameters();
             htmConfig.InputDimensions = new int[] { 5 };
             htmConfig.ColumnDimensions = new int[] { 8 };
             htmConfig.WrapAround = false;
-
-            mem = new Connections(htmConfig);
-
-            sp = new SpatialPoolerMT();
-            sp.Init(mem);
+            initSP(htmConfig);
 
             mem.HtmConfig.InhibitionRadius = 1;
             int inhibitionRadius = 1;
@@ -1618,7 +1420,6 @@ namespace UnitTestsProject
                 });
             }
         }
-
 
         /// <summary>
         /// Ensures that neighborhod calculation is thread-safe.
@@ -1640,22 +1441,22 @@ namespace UnitTestsProject
             expectedList[0] = new int[] { 2047, 0, 1 };
             expectedList[1] = new int[] { 2046, 2047, 0 };
 
-            setupParameters();
-            parameters.setInputDimensions(new int[] { 1, 188 });
-            parameters.setColumnDimensions(new int[] { 2048, 1 });
-            parameters.setPotentialRadius(94);
-            parameters.setPotentialPct(0.5);
-            parameters.setGlobalInhibition(true);
-            parameters.setLocalAreaDensity(-1.0);
-            parameters.setNumActiveColumnsPerInhArea(40);
-            parameters.setStimulusThreshold(0);
-            parameters.setSynPermInactiveDec(0.01);
-            parameters.setSynPermActiveInc(0.1);
-            parameters.setMinPctOverlapDutyCycles(0.001);
-            parameters.setMinPctActiveDutyCycles(0.001);
-            parameters.setDutyCyclePeriod(1000);
-            parameters.setMaxBoost(10);
-            initSP();
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            htmConfig.InputDimensions = new int[] { 1, 188 };
+            htmConfig.ColumnDimensions = new int[] { 2048, 1 };
+            htmConfig.PotentialRadius = 94;
+            htmConfig.PotentialPct = 0.5;
+            htmConfig.GlobalInhibition = true;
+            htmConfig.LocalAreaDensity = -1.0;
+            htmConfig.NumActiveColumnsPerInhArea = 40;
+            htmConfig.StimulusThreshold = 0;
+            htmConfig.SynPermInactiveDec = 0.01;
+            htmConfig.SynPermActiveInc = 0.1;
+            htmConfig.MinPctOverlapDutyCycles = 0.001;
+            htmConfig.MinPctActiveDutyCycles = 0.001;
+            htmConfig.DutyCyclePeriod = 1000;
+            htmConfig.MaxBoost = 10;
+            initSP(htmConfig);
 
             mem.HtmConfig.InhibitionRadius = 1;
             int inhibitionRadius = 1;
@@ -1686,94 +1487,11 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void testUpdateMinDutyCycleLocal()
         {
-            setupDefaultParameters();
-            parameters.setInputDimensions(new int[] { 5 });
-            parameters.setColumnDimensions(new int[] { 8 });
-            parameters.Set(KEY.WRAP_AROUND, false);
-            initSP();
-
-            mem.HtmConfig.InhibitionRadius = 1;
-            mem.HtmConfig.OverlapDutyCycles = new double[] { 0.7, 0.1, 0.5, 0.01, 0.78, 0.55, 0.1, 0.001 };
-            mem.HtmConfig.ActiveDutyCycles = new double[] { 0.9, 0.3, 0.5, 0.7, 0.1, 0.01, 0.08, 0.12 };
-            mem.HtmConfig.MinPctActiveDutyCycles = 0.1;
-            mem.HtmConfig.MinPctOverlapDutyCycles = 0.2;
-            sp.UpdateMinDutyCyclesLocal(mem);
-
-            double[] resultMinActiveDutyCycles = mem.HtmConfig.MinActiveDutyCycles;
-            double[] expected0 = { 0.09, 0.09, 0.07, 0.07, 0.07, 0.01, 0.012, 0.012 };
-
-            for (var i = 0; i < expected0.Length; i++)
-            {
-                Console.WriteLine($"{i}: {expected0[i]}-{resultMinActiveDutyCycles[i]}\t = {expected0[i] - resultMinActiveDutyCycles[i]} | {expected0[i] - resultMinActiveDutyCycles[i] <= 0.01}");
-                Assert.IsTrue(Math.Abs(expected0[i] - resultMinActiveDutyCycles[i]) <= 0.01);
-            }
-            //IntStream.range(0, expected0.length)
-            //    .forEach(i->assertEquals(expected0[i], resultMinActiveDutyCycles[i], 0.01));
-
-            double[] resultMinOverlapDutyCycles = mem.HtmConfig.MinOverlapDutyCycles;
-            double[] expected1 = new double[] { 0.14, 0.14, 0.1, 0.156, 0.156, 0.156, 0.11, 0.02 };
-
-            for (var i = 0; i < expected1.Length; i++)
-            {
-                Assert.IsTrue(Math.Abs(expected1[i] - resultMinOverlapDutyCycles[i]) <= 0.01, $"At position: {i} - exp: {expected1[i]} - READ: {resultMinOverlapDutyCycles[i]}");
-            }
-
-            //IntStream.range(0, expected1.length)
-            //    .forEach(i->assertEquals(expected1[i], resultMinOverlapDutyCycles[i], 0.01));
-
-            // wrapAround = true
-            setupDefaultParameters();
-            parameters.setInputDimensions(new int[] { 5 });
-            parameters.setColumnDimensions(new int[] { 8 });
-            parameters.Set(KEY.WRAP_AROUND, true);
-            initSP();
-
-            mem.HtmConfig.InhibitionRadius = 1;
-            mem.HtmConfig.OverlapDutyCycles = new double[] { 0.7, 0.1, 0.5, 0.01, 0.78, 0.55, 0.1, 0.001 };
-            mem.HtmConfig.ActiveDutyCycles = new double[] { 0.9, 0.3, 0.5, 0.7, 0.1, 0.01, 0.08, 0.12 };
-            mem.HtmConfig.MinPctActiveDutyCycles = 0.1;
-            mem.HtmConfig.MinPctOverlapDutyCycles = 0.2;
-            sp.UpdateMinDutyCyclesLocal(mem);
-
-            double[] resultMinActiveDutyCycles2 = mem.HtmConfig.MinActiveDutyCycles;
-            double[] expected2 = { 0.09, 0.09, 0.07, 0.07, 0.07, 0.01, 0.012, 0.09 };
-
-            for (var i = 0; i < expected2.Length; i++)
-            {
-                Console.WriteLine($"{i} - exp: {expected2[i]} - read: {resultMinActiveDutyCycles2[i]}");
-                Assert.IsTrue(Math.Abs(expected2[i] - resultMinActiveDutyCycles2[i]) <= 0.01, $"At position: {i} - exp: {expected2[i]} - READ: {resultMinActiveDutyCycles2[i]}");
-            }
-
-            //IntStream.range(0, expected2.length)
-            //  .forEach(i->assertEquals(expected2[i], resultMinActiveDutyCycles2[i], 0.01));
-
-            double[] resultMinOverlapDutyCycles2 = mem.HtmConfig.MinOverlapDutyCycles;
-            double[] expected3 = new double[] { 0.14, 0.14, 0.1, 0.156, 0.156, 0.156, 0.11, 0.14 };
-
-            for (var i = 0; i < expected3.Length; i++)
-            {
-                Assert.IsTrue(Math.Abs(expected3[i] - resultMinOverlapDutyCycles2[i]) <= 0.01, $"At position: {i} - exp: {expected2[i]} - READ: {resultMinActiveDutyCycles2[i]}");
-            }
-
-            //IntStream.range(0, expected3.length)
-            //    .forEach(i->assertEquals(expected3[i], resultMinOverlapDutyCycles2[i], 0.01));
-
-        }
-
-        [TestMethod]
-        [TestCategory("UnitTest")]
-        [TestCategory("Prod")]
-        [TestCategory("InitHtmConfig")]
-        public void testUpdateMinDutyCycleLocal1()
-        {
             HtmConfig htmConfig = SetupHtmConfigDefaultParameters();
             htmConfig.InputDimensions = new int[] { 5 };
             htmConfig.ColumnDimensions = new int[] { 8 };
             htmConfig.WrapAround = false;
-
-            mem = new Connections(htmConfig);
-            sp = new SpatialPoolerMT();
-            sp.Init(mem);
+            initSP(htmConfig);
 
             mem.HtmConfig.InhibitionRadius = 1;
             mem.HtmConfig.OverlapDutyCycles = new double[] { 0.7, 0.1, 0.5, 0.01, 0.78, 0.55, 0.1, 0.001 };
@@ -1805,15 +1523,11 @@ namespace UnitTestsProject
             //    .forEach(i->assertEquals(expected1[i], resultMinOverlapDutyCycles[i], 0.01));
 
             // wrapAround = true
-
             htmConfig = SetupHtmConfigDefaultParameters();
             htmConfig.InputDimensions = new int[] { 5 };
             htmConfig.ColumnDimensions = new int[] { 8 };
             htmConfig.WrapAround = true;
-
-            mem = new Connections(htmConfig);
-            sp = new SpatialPoolerMT();
-            sp.Init(mem);
+            initSP(htmConfig);
 
             mem.HtmConfig.InhibitionRadius = 1;
             mem.HtmConfig.OverlapDutyCycles = new double[] { 0.7, 0.1, 0.5, 0.01, 0.78, 0.55, 0.1, 0.001 };
@@ -1852,11 +1566,10 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void testUpdateMinDutyCycleGlobal()
         {
-            setupParameters();
-            parameters.setInputDimensions(new int[] { 5 });
-
-            parameters.setColumnDimensions(new int[] { 5 });
-            initSP();
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            htmConfig.InputDimensions = new int[] { 5 };
+            htmConfig.ColumnDimensions = new int[] { 5 };
+            initSP(htmConfig);
 
             mem.HtmConfig.MinPctOverlapDutyCycles = 0.01;
             mem.HtmConfig.MinPctActiveDutyCycles = 0.02;
@@ -1910,10 +1623,10 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void testIsUpdateRound()
         {
-            setupParameters();
-            parameters.setInputDimensions(new int[] { 5 });
-            parameters.setColumnDimensions(new int[] { 5 });
-            initSP();
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            htmConfig.InputDimensions = new int[] { 5 };
+            htmConfig.ColumnDimensions = new int[] { 5 };
+            initSP(htmConfig);
 
             mem.HtmConfig.UpdatePeriod = 50;
             mem.SpIterationNum = 1;
@@ -1948,12 +1661,12 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void testAdaptSynapses()
         {
-            setupParameters();
-            parameters.setInputDimensions(new int[] { 8 });
-            parameters.setColumnDimensions(new int[] { 4 });
-            parameters.setSynPermInactiveDec(0.01);
-            parameters.setSynPermActiveInc(0.1);
-            initSP();
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            htmConfig.InputDimensions = new int[] { 8 };
+            htmConfig.ColumnDimensions = new int[] { 4 };
+            htmConfig.SynPermInactiveDec = 0.01;
+            htmConfig.SynPermActiveInc = 0.1;
+            initSP(htmConfig);
 
             mem.HtmConfig.SynPermTrimThreshold = 0.05;
 
@@ -2064,19 +1777,19 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void testRaisePermanenceThreshold()
         {
-            setupParameters();
-            parameters.setInputDimensions(new int[] { 5 });
-            parameters.setColumnDimensions(new int[] { 5 });
-            parameters.setSynPermConnected(0.1);
-            parameters.setStimulusThreshold(3);
-            parameters.setSynPermBelowStimulusInc(0.01);
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            htmConfig.InputDimensions = new int[] { 5 };
+            htmConfig.ColumnDimensions = new int[] { 5 };
+
+            htmConfig.SynPermConnected = 0.1;
+            htmConfig.StimulusThreshold = 3;
+            htmConfig.SynPermBelowStimulusInc = 0.01;
             //The following parameter is not set to "1" in the Python version
             //This is necessary to reproduce the test conditions of having as
             //many pool members as Input Bits, which would never happen under
             //normal circumstances because we want to enforce sparsity
-            parameters.setPotentialPct(1);
-
-            initSP();
+            htmConfig.PotentialPct = 1;
+            initSP(htmConfig);
 
             //We set the values on the Connections permanences here just for illustration
             SparseObjectMatrix<double[]> objMatrix = new SparseObjectMatrix<double[]>(new int[] { 5, 5 });
@@ -2124,16 +1837,17 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void testUpdatePermanencesForColumn()
         {
-            setupParameters();
-            parameters.setInputDimensions(new int[] { 5 });
-            parameters.setColumnDimensions(new int[] { 5 });
-            parameters.setSynPermTrimThreshold(0.05);
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            htmConfig.InputDimensions = new int[] { 5 };
+            htmConfig.ColumnDimensions = new int[] { 5 };
+
+            htmConfig.SynPermTrimThreshold = 0.05;
             //The following parameter is not set to "1" in the Python version
             //This is necessary to reproduce the test conditions of having as
             //many pool members as Input Bits, which would never happen under
             //normal circumstances because we want to enforce sparsity
-            parameters.setPotentialPct(1);
-            initSP();
+            htmConfig.PotentialPct = 1;
+            initSP(htmConfig);
 
             double[][] permanences = new double[][] {
             new double[]{-0.10, 0.500, 0.400, 0.010, 0.020},
@@ -2176,173 +1890,10 @@ namespace UnitTestsProject
         [TestMethod]
         public void testCalculateOverlap()
         {
-            setupDefaultParameters();
-            parameters.setInputDimensions(new int[] { 10 });
-            parameters.setColumnDimensions(new int[] { 5 });
-            initSP();
-
-            int[] dimensions = new int[] { 5, 10 };
-            int[][] connectedSynapses = new int[][] {
-            new int[] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-            new int[] {0, 0, 1, 1, 1, 1, 1, 1, 1, 1},
-            new int[] {0, 0, 0, 0, 1, 1, 1, 1, 1, 1},
-            new int[] {0, 0, 0, 0, 0, 0, 1, 1, 1, 1},
-            new int[] {0, 0, 0, 0, 0, 0, 0, 0, 1, 1}};
-
-            AbstractSparseBinaryMatrix sm = new SparseBinaryMatrix(dimensions);
-            for (int i = 0; i < sm.GetDimensions()[0]; i++)
-            {
-                for (int j = 0; j < sm.GetDimensions()[1]; j++)
-                {
-                    sm.set(connectedSynapses[i][j], i, j);
-                }
-            }
-
-            mem.SetConnectedMatrix(sm);
-
-            for (int i = 0; i < 5; i++)
-            {
-                var column = mem.GetColumn(i);
-
-                for (int j = 0; j < 10; j++)
-                {
-                    Assert.IsTrue(connectedSynapses[i][j] == column.ConnectedInputCounterMatrix.GetIntValue(0, j));
-                    //Assert.IsTrue(connectedSynapses[i][j] == sm.getIntValue(i, j));
-                }
-            }
-
-            int[] inputVector = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            int[] overlaps = sp.CalculateOverlap(mem, inputVector);
-            int[] trueOverlaps = new int[5];
-            double[] overlapsPct = sp.CalculateOverlapPct(mem, overlaps);
-            double[] trueOverlapsPct = new double[5];
-            Assert.IsTrue(trueOverlaps.SequenceEqual(overlaps));
-            Assert.IsTrue(trueOverlapsPct.SequenceEqual(overlapsPct));
-
-            /////////////
-
-            connectedSynapses = new int[][] {
-            new int[]{1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-            new int[]{0, 0, 1, 1, 1, 1, 1, 1, 1, 1},
-            new int[]{0, 0, 0, 0, 1, 1, 1, 1, 1, 1},
-            new int[]{0, 0, 0, 0, 0, 0, 1, 1, 1, 1},
-            new int[]{0, 0, 0, 0, 0, 0, 0, 0, 1, 1}};
-
-            sm = new SparseBinaryMatrix(dimensions);
-            for (int i = 0; i < sm.GetDimensions()[0]; i++)
-            {
-                for (int j = 0; j < sm.GetDimensions()[1]; j++)
-                {
-                    sm.set(connectedSynapses[i][j], i, j);
-                }
-            }
-
-            mem.SetConnectedMatrix(sm);
-
-            for (int i = 0; i < 5; i++)
-            {
-                for (int j = 0; j < 10; j++)
-                {
-                    Assert.IsTrue(connectedSynapses[i][j] == sm.GetIntValue(i, j));
-                }
-            }
-
-            inputVector = new int[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
-            overlaps = sp.CalculateOverlap(mem, inputVector);
-            trueOverlaps = new int[] { 10, 8, 6, 4, 2 };
-            overlapsPct = sp.CalculateOverlapPct(mem, overlaps);
-            trueOverlapsPct = new double[] { 1, 1, 1, 1, 1 };
-            Assert.IsTrue(trueOverlaps.SequenceEqual(overlaps));
-            Assert.IsTrue(trueOverlapsPct.SequenceEqual(overlapsPct));
-
-            //////////////////
-
-            connectedSynapses = new int[][] {
-            new int[]{1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-            new int[]{0, 0, 1, 1, 1, 1, 1, 1, 1, 1},
-            new int[]{0, 0, 0, 0, 1, 1, 1, 1, 1, 1},
-            new int[]{0, 0, 0, 0, 0, 0, 1, 1, 1, 1},
-            new int[]{0, 0, 0, 0, 0, 0, 0, 0, 1, 1}};
-
-            sm = new SparseBinaryMatrix(dimensions);
-            for (int i = 0; i < sm.GetDimensions()[0]; i++)
-            {
-                for (int j = 0; j < sm.GetDimensions()[1]; j++)
-                {
-                    sm.set(connectedSynapses[i][j], i, j);
-                }
-            }
-
-            mem.SetConnectedMatrix(sm);
-
-            for (int i = 0; i < 5; i++)
-            {
-                for (int j = 0; j < 10; j++)
-                {
-                    Assert.IsTrue(connectedSynapses[i][j] == sm.GetIntValue(i, j));
-                }
-            }
-
-            inputVector = new int[10];
-            inputVector[9] = 1;
-            overlaps = sp.CalculateOverlap(mem, inputVector);
-            trueOverlaps = new int[] { 1, 1, 1, 1, 1 };
-            Assert.IsTrue(trueOverlaps.SequenceEqual(overlaps));
-
-            overlapsPct = sp.CalculateOverlapPct(mem, overlaps);
-            trueOverlapsPct = new double[] { 0.1, 0.125, 1.0 / 6, 0.25, 0.5 };
-            Assert.IsTrue(trueOverlapsPct.SequenceEqual(overlapsPct));
-
-            ///////////////////
-
-            connectedSynapses = new int[][] {
-            new int[]{1, 0, 0, 0, 0, 1, 0, 0, 0, 0},
-            new int[]{0, 1, 0, 0, 0, 0, 1, 0, 0, 0},
-            new int[]{0, 0, 1, 0, 0, 0, 0, 1, 0, 0},
-            new int[]{0, 0, 0, 1, 0, 0, 0, 0, 1, 0},
-            new int[]{0, 0, 0, 0, 1, 0, 0, 0, 0, 1}};
-
-            sm = new SparseBinaryMatrix(dimensions);
-            for (int i = 0; i < sm.GetDimensions()[0]; i++)
-            {
-                for (int j = 0; j < sm.GetDimensions()[1]; j++)
-                {
-                    sm.set(connectedSynapses[i][j], i, j);
-                }
-            }
-
-            mem.SetConnectedMatrix(sm);
-
-            for (int i = 0; i < 5; i++)
-            {
-                for (int j = 0; j < 10; j++)
-                {
-                    Assert.IsTrue(connectedSynapses[i][j] == sm.GetIntValue(i, j));
-                }
-            }
-
-            inputVector = new int[] { 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 };
-            overlaps = sp.CalculateOverlap(mem, inputVector);
-            trueOverlaps = new int[] { 1, 1, 1, 1, 1 };
-            overlapsPct = sp.CalculateOverlapPct(mem, overlaps);
-            trueOverlapsPct = new double[] { 0.5, 0.5, 0.5, 0.5, 0.5 };
-            Assert.IsTrue(trueOverlaps.SequenceEqual(overlaps));
-            Assert.IsTrue(trueOverlapsPct.SequenceEqual(overlapsPct));
-        }
-
-        [TestMethod]
-        [TestCategory("UnitTest")]
-        [TestCategory("Prod")]
-        [TestCategory("InitHtmConfig")]
-        public void testCalculateOverlap1()
-        {
             HtmConfig htmConfig = SetupHtmConfigDefaultParameters();
             htmConfig.InputDimensions = new int[] { 10 };
             htmConfig.ColumnDimensions = new int[] { 5 };
-
-            mem = new Connections(htmConfig);
-            sp = new SpatialPoolerMT();
-            sp.Init(mem);
+            initSP(htmConfig);
 
             int[] dimensions = new int[] { 5, 10 };
             int[][] connectedSynapses = new int[][] {
@@ -2504,12 +2055,11 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void testInitPermanence1()
         {
-            setupParameters();
+            HtmConfig htmConfig = SetupHtmConfigParameters();
 
             sp = new SpatialPoolerMock4();
 
-            mem = new Connections();
-            parameters.apply(mem);
+            mem = new Connections(htmConfig);
             sp.Init(mem);
             mem.HtmConfig.NumInputs = mem.HtmConfig.NumInputs = 10;
 
@@ -2564,12 +2114,10 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void testInitPermanence2()
         {
-            setupParameters();
-
+            HtmConfig htmConfig = SetupHtmConfigParameters();
             sp = new SpatialPoolerMock4();
 
-            mem = new Connections();
-            parameters.apply(mem);
+            mem = new Connections(htmConfig);
             sp.Init(mem);
 
             mem.HtmConfig.NumInputs = 10;
@@ -2609,10 +2157,10 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void testUpdateDutyCycleHelper()
         {
-            setupParameters();
-            parameters.setInputDimensions(new int[] { 5 });
-            parameters.setColumnDimensions(new int[] { 5 });
-            initSP();
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            htmConfig.InputDimensions = new int[] { 5 };
+            htmConfig.ColumnDimensions = new int[] { 5 };
+            initSP(htmConfig);
 
             double[] dc = new double[5];
             ArrayUtils.FillArray(dc, 1000.0);
@@ -2655,11 +2203,11 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void testInhibitColumnsGlobal()
         {
-            setupParameters();
-            parameters.setColumnDimensions(new int[] { 10 });
-            initSP();
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            htmConfig.ColumnDimensions = new int[] { 10 };
+            initSP(htmConfig);
             //Internally calculated during init, to overwrite we put after init
-            parameters.setInhibitionRadius(2);
+            htmConfig.InhibitionRadius = 2;
             double density = 0.3;
             double[] overlaps = new double[] { 1, 2, 1, 4, 8/*i=4*/, 3, 12/*i=6*/, 5/*i=7*/, 4, 1 };
             int[] active = sp.InhibitColumnsGlobal(mem, overlaps, density);
@@ -2691,10 +2239,10 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void testInhibitColumnsLocal()
         {
-            setupParameters();
-            parameters.setInputDimensions(new int[] { 5 });
-            parameters.setColumnDimensions(new int[] { 10 });
-            initSP();
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            htmConfig.InputDimensions = new int[] { 5 };
+            htmConfig.ColumnDimensions = new int[] { 10 };
+            initSP(htmConfig);
 
             //Internally calculated during init, to overwrite we put after init
             mem.HtmConfig.InhibitionRadius = 2;
@@ -3056,12 +2604,10 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void testInit(PoolerMode poolerMode)
         {
-            setupParameters();
-            parameters.setNumActiveColumnsPerInhArea(0);
-            parameters.setLocalAreaDensity(0);
-
-            Connections c = new Connections();
-            parameters.apply(c);
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            htmConfig.NumActiveColumnsPerInhArea = 0;
+            htmConfig.LocalAreaDensity = 0;
+            Connections c = new Connections(htmConfig);
 
             SpatialPooler sp = UnitTestHelpers.CreatePooler(poolerMode);
 
@@ -3079,9 +2625,9 @@ namespace UnitTestsProject
             }
 
             // Local Area Density can't be above 0.5
-            parameters.setLocalAreaDensity(0.51);
-            c = new Connections();
-            parameters.apply(c);
+            htmConfig.ClearModuleTopology();
+            htmConfig.LocalAreaDensity = 0.51;
+            c = new Connections(htmConfig);
             try
             {
                 sp.Init(c);
@@ -3097,9 +2643,9 @@ namespace UnitTestsProject
             }
 
             // Local Area Density should be sane here
-            parameters.setLocalAreaDensity(0.5);
-            c = new Connections();
-            parameters.apply(c);
+            htmConfig.ClearModuleTopology();
+            htmConfig.LocalAreaDensity = 0.5;
+            c = new Connections(htmConfig);
             try
             {
                 sp.Init(c);
@@ -3111,9 +2657,9 @@ namespace UnitTestsProject
             }
 
             // Num columns cannot be 0
-            parameters.Set(KEY.COLUMN_DIMENSIONS, new int[] { 0 });
-            c = new Connections();
-            parameters.apply(c);
+            htmConfig.ClearModuleTopology();
+            htmConfig.ColumnDimensions = new int[] { 0 };
+            c = new Connections(htmConfig);
             try
             {
                 sp.Init(c);
@@ -3129,13 +2675,12 @@ namespace UnitTestsProject
 
             }
 
+            htmConfig.ClearModuleTopology();
             // Reset column dims
-            parameters.Set(KEY.COLUMN_DIMENSIONS, new int[] { 5 });
-
+            htmConfig.ColumnDimensions = new int[] { 5 };
             // Num columns cannot be 0
-            parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { 0 });
-            c = new Connections();
-            parameters.apply(c);
+            htmConfig.InputDimensions = new int[] { 0 };
+            c = new Connections(htmConfig);
             try
             {
                 sp.Init(c);
@@ -3160,12 +2705,11 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void testComputeInputMismatch()
         {
-            setupParameters();
-            parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { 2, 4 });
-            parameters.setColumnDimensions(new int[] { 5, 1 });
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            htmConfig.InputDimensions = new int[] { 2, 4 };
+            htmConfig.ColumnDimensions = new int[] { 5, 1 };
 
-            Connections c = new Connections();
-            parameters.apply(c);
+            Connections c = new Connections(htmConfig);
 
             int misMatchedDims = 6; // not 8
             SpatialPooler sp = new SpatialPooler();
@@ -3189,11 +2733,11 @@ namespace UnitTestsProject
 
 
             // Now Do the right thing
-            parameters.Set(KEY.INPUT_DIMENSIONS, new int[] { 2, 4 });
-            parameters.setColumnDimensions(new int[] { 5, 1 });
+            htmConfig = SetupHtmConfigParameters();
+            htmConfig.InputDimensions = new int[] { 2, 4 };
+            htmConfig.ColumnDimensions = new int[] { 5, 1 };
 
-            c = new Connections();
-            parameters.apply(c);
+            c = new Connections(htmConfig);
 
             int matchedDims = 8; // same as input dimension multiplied, above
             sp.Init(c);
