@@ -7,28 +7,22 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 
 namespace NeoCortexApi.Entities
 {
     /// <summary>
-    /// 
-    /// Contains the definition of the interconnected structural state of the {@link SpatialPooler} and
-    /// { @link TemporalMemory} as well as the state of all support structures (i.e. Cells, Columns, Segments, Synapses etc.).
-    /// 
-    /// In the separation of data from logic, this class represents the data/state.
-    ///
+    /// Contains the definition of the interconnected structural state of the SpatialPooler and
+    /// TemporalMemory as well as the state of Cells, Columns, Segments, Synapses etc..
     /// </summary>
     [Serializable]
-    public class Connections //implements Persistable
+    public class Connections 
     {
 
         public static readonly double EPSILON = 0.00001;
 
         /////////////////////////////////////// Spatial Pooler Vars ///////////////////////////////////////////
-        /** <b>WARNING:</b> potentialRadius **must** be set to 
-         * the inputWidth if using "globalInhibition" and if not 
-         * using the Network API (which sets this automatically) 
-         */
+       
 
         //private int potentialRadius = 16;
         //private double potentialPct = 0.5;
@@ -253,10 +247,12 @@ namespace NeoCortexApi.Entities
                 //    m_HtmConfig = cfg;
                 //}
 
-                m_HtmConfig.SynPermBelowStimulusInc = m_HtmConfig.SynPermConnected / 10.0;
-                m_HtmConfig.SynPermTrimThreshold = m_HtmConfig.SynPermActiveInc / 2.0;
-                m_HtmConfig.ColumnModuleTopology = m_HtmConfig.Memory?.ModuleTopology;
-                m_HtmConfig.InputModuleTopology = m_HtmConfig.InputMatrix?.ModuleTopology;
+                // TODO verify with unitTests
+                //m_HtmConfig.SynPermBelowStimulusInc = m_HtmConfig.SynPermConnected / 10.0;
+                //m_HtmConfig.SynPermTrimThreshold = m_HtmConfig.SynPermActiveInc / 2.0;
+                //m_HtmConfig.ColumnModuleTopology = m_HtmConfig.Memory?.ModuleTopology;
+                //m_HtmConfig.InputModuleTopology = m_HtmConfig.InputMatrix?.ModuleTopology;
+
                 //m_HtmConfig.InputTopology = this.InputTopology;
                 //m_HtmConfig.IsWrapAround = this.isWrapAround();
                 //m_HtmConfig.NumInputs = this.NumInputs;
@@ -386,7 +382,7 @@ namespace NeoCortexApi.Entities
         //};
 
         #region Connections Constructor
-        // TODO
+       
         /// <summary>
         /// Constructs a new <see cref="Connections"/> object. This object
         /// is usually configured via the <see cref="Parameters.apply(object)"/>
@@ -394,81 +390,21 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public Connections()
         {
-            //synPermTrimThreshold = synPermActiveInc / 2.0;
-            //synPermBelowStimulusInc = synPermConnected / 10.0;
-            //random = new Random(seed);
+         
         }
 
+        /// <summary>
+        /// Creates an initialized instance.
+        /// </summary>
+        /// <param name="prms"></param>
         public Connections(HtmConfig prms)
         {
             this.HtmConfig = prms;
-            //this.permanenceDecrement = (double)prms[KEY.PERMANENCE_DECREMENT];
-            //this.permanenceDecrement = prms.TemporalMemory.PermanenceDecrement;
         }
 
-        ///**
-        // * Returns a deep copy of this {@code Connections} object.
-        // * @return a deep copy of this {@code Connections}
-        // */
-        //public Connections copy() //todo this will fail. Many objects are not marked as serializable
-        //{
-        //    using (MemoryStream stream = new MemoryStream())
-        //    {
-        //        BinaryFormatter formatter = new BinaryFormatter();
-        //        formatter.Serialize(stream, this);
-        //        stream.Position = 0;
-        //        return (Connections)formatter.Deserialize(stream);
-        //    }
-        //}
         #endregion
 
         #region General Methods
-
-        /// <summary>
-        /// Set default value for parameters of <see cref="HtmConfig"/>
-        /// </summary>
-        public static HtmConfig GetHtmConfigDefaultParameters()
-        {
-            var htmConfig = new HtmConfig
-            {
-                // Temporal Memory parameters
-                ColumnDimensions = new int[] { 2048 },
-                CellsPerColumn = 32,
-                ActivationThreshold = 10,
-                LearningRadius = 10,
-                MinThreshold = 9,
-                MaxNewSynapseCount = 20,
-                MaxSynapsesPerSegment = 225,
-                MaxSegmentsPerCell = 225,
-                InitialPermanence = 0.21,
-                ConnectedPermanence = 0.5,
-                PermanenceIncrement = 0.10,
-                PermanenceDecrement = 0.10,
-                PredictedSegmentDecrement = 0.1,
-                // Learn = true
-
-                // Spatial Pooler parameters
-                InputDimensions = new int[] { 100 },
-                PotentialRadius = 15,
-                PotentialPct = 0.75,
-                GlobalInhibition = true,
-                InhibitionRadius = 15,
-                LocalAreaDensity = -1.0,
-                NumActiveColumnsPerInhArea = 0.02 * 2048,
-                StimulusThreshold = 5.0,
-                SynPermInactiveDec = 0.008,
-                SynPermActiveInc = 0.05,
-                SynPermConnected = 0.1,
-                SynPermBelowStimulusInc = 0.01,
-                SynPermTrimThreshold = 0.05,
-                MinPctOverlapDutyCycles = 0.001,
-                MinPctActiveDutyCycles = 0.001,
-                DutyCyclePeriod = 1000,
-                MaxBoost = 10.0,
-                WrapAround = true
-            };
-            return htmConfig;
-        }
 
         /// <summary>
         /// Sets the derived values of the <see cref="SpatialPooler"/> {@link SpatialPooler}'s initialization.
@@ -483,44 +419,7 @@ namespace NeoCortexApi.Entities
             }
         }
 
-        ///// <summary>
-        ///// Sets the seed used for the internal random number generator.
-        ///// If the generator has been instantiated, this method will initialize
-        ///// a new random generator with the specified seed.
-        ///// </summary>
-        ///// <param name="seed"></param>
-        //public void setSeed(int seed)
-        //{
-        //    this.seed = seed;
-        //}
-
-        ///// <summary>
-        ///// Returns the configured random number seed
-        ///// </summary>
-        ///// <returns></returns>
-        //public int getSeed()
-        //{
-        //    return seed;
-        //}
-
-        ///// <summary>
-        ///// Returns the thread specific {@link Random} number generator.
-        ///// </summary>
-        ///// <returns></returns>
-        //public Random getRandom()
-        //{
-        //    return random;
-        //}
-
-        ///// <summary>
-        ///// Sets the random number generator.
-        ///// </summary>
-        ///// <param name="random"></param>
-        //public void setRandom(Random random)
-        //{
-        //    this.random = random;
-        //}
-
+      
         /// <summary>
         /// Returns the <see cref="Cell"/> specified by the index passed in.
         /// </summary>
@@ -551,9 +450,9 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="cellIndexes">indexes of the Cells to return</param>
         /// <returns></returns>
-        public LinkedHashSet<Cell> GetCellSet(int[] cellIndexes)
+        public List<Cell> GetCellSet(int[] cellIndexes)
         {
-            LinkedHashSet<Cell> retVal = new LinkedHashSet<Cell>();
+            List<Cell> retVal = new List<Cell>();
             for (int i = 0; i < cellIndexes.Length; i++)
             {
                 retVal.Add(Cells[cellIndexes[i]]);
@@ -2466,96 +2365,46 @@ namespace NeoCortexApi.Entities
          * High 
          * e output useful for debugging
          */
-        public void printParameters()
+        public override string ToString()
         {
-            Console.WriteLine("------------ SpatialPooler Parameters ------------------");
-            Console.WriteLine("numInputs                  = " + this.HtmConfig.NumInputs);
-            Console.WriteLine("numColumns                 = " + this.HtmConfig.NumColumns);
-            Console.WriteLine("cellsPerColumn             = " + this.HtmConfig.CellsPerColumn);
-            Console.WriteLine("columnDimensions           = " + this.HtmConfig.ColumnDimensions.ToString());
-            Console.WriteLine("numActiveColumnsPerInhArea = " + this.HtmConfig.NumActiveColumnsPerInhArea);
-            Console.WriteLine("potentialPct               = " + this.HtmConfig.PotentialPct);
-            Console.WriteLine("potentialRadius            = " + this.HtmConfig.PotentialRadius);
-            Console.WriteLine("globalInhibition           = " + this.HtmConfig.GlobalInhibition);
-            Console.WriteLine("localAreaDensity           = " + this.HtmConfig.LocalAreaDensity);
-            Console.WriteLine("inhibitionRadius           = " + this.HtmConfig.InhibitionRadius);
-            Console.WriteLine("stimulusThreshold          = " + this.HtmConfig.StimulusThreshold);
-            Console.WriteLine("synPermActiveInc           = " + this.HtmConfig.SynPermActiveInc);
-            Console.WriteLine("synPermInactiveDec         = " + this.HtmConfig.SynPermInactiveDec);
-            Console.WriteLine("synPermConnected           = " + this.HtmConfig.SynPermConnected);
-            Console.WriteLine("minPctOverlapDutyCycle     = " + this.HtmConfig.MinPctOverlapDutyCycles);
-            Console.WriteLine("minPctActiveDutyCycle      = " + this.HtmConfig.MinPctActiveDutyCycles);
-            Console.WriteLine("dutyCyclePeriod            = " + this.HtmConfig.DutyCyclePeriod);
-            Console.WriteLine("maxBoost                   = " + this.HtmConfig.MaxBoost);
-            Console.WriteLine("version                    = " + version);
+            StringBuilder sb = new StringBuilder();
 
-            Console.WriteLine("\n------------ TemporalMemory Parameters ------------------");
-            Console.WriteLine("activationThreshold        = " + this.HtmConfig.ActivationThreshold);
-            Console.WriteLine("learningRadius             = " + this.HtmConfig.LearningRadius);
-            Console.WriteLine("minThreshold               = " + this.HtmConfig.MinThreshold);
-            Console.WriteLine("maxNewSynapseCount         = " + this.HtmConfig.MaxNewSynapseCount);
-            Console.WriteLine("maxSynapsesPerSegment      = " + this.HtmConfig.MaxSynapsesPerSegment);
-            Console.WriteLine("maxSegmentsPerCell         = " + this.HtmConfig.MaxSegmentsPerCell);
-            Console.WriteLine("initialPermanence          = " + this.HtmConfig.InitialPermanence);
-            Console.WriteLine("connectedPermanence        = " + this.HtmConfig.ConnectedPermanence);
-            Console.WriteLine("permanenceIncrement        = " + this.HtmConfig.PermanenceIncrement);
-            Console.WriteLine("permanenceDecrement        = " + this.HtmConfig.PermanenceDecrement);
-            Console.WriteLine("predictedSegmentDecrement  = " + this.HtmConfig.PredictedSegmentDecrement);
+            sb.Append("------------ SpatialPooler Parameters ------------------");
+            sb.Append("numInputs                  = " + this.HtmConfig.NumInputs);
+            sb.Append("numColumns                 = " + this.HtmConfig.NumColumns);
+            sb.Append("cellsPerColumn             = " + this.HtmConfig.CellsPerColumn);
+            sb.Append("columnDimensions           = " + this.HtmConfig.ColumnDimensions.ToString());
+            sb.Append("numActiveColumnsPerInhArea = " + this.HtmConfig.NumActiveColumnsPerInhArea);
+            sb.Append("potentialPct               = " + this.HtmConfig.PotentialPct);
+            sb.Append("potentialRadius            = " + this.HtmConfig.PotentialRadius);
+            sb.Append("globalInhibition           = " + this.HtmConfig.GlobalInhibition);
+            sb.Append("localAreaDensity           = " + this.HtmConfig.LocalAreaDensity);
+            sb.Append("inhibitionRadius           = " + this.HtmConfig.InhibitionRadius);
+            sb.Append("stimulusThreshold          = " + this.HtmConfig.StimulusThreshold);
+            sb.Append("synPermActiveInc           = " + this.HtmConfig.SynPermActiveInc);
+            sb.Append("synPermInactiveDec         = " + this.HtmConfig.SynPermInactiveDec);
+            sb.Append("synPermConnected           = " + this.HtmConfig.SynPermConnected);
+            sb.Append("minPctOverlapDutyCycle     = " + this.HtmConfig.MinPctOverlapDutyCycles);
+            sb.Append("minPctActiveDutyCycle      = " + this.HtmConfig.MinPctActiveDutyCycles);
+            sb.Append("dutyCyclePeriod            = " + this.HtmConfig.DutyCyclePeriod);
+            sb.Append("maxBoost                   = " + this.HtmConfig.MaxBoost);
+            sb.Append("version                    = " + version);
+
+            sb.Append("\n------------ TemporalMemory Parameters ------------------");
+            sb.Append("activationThreshold        = " + this.HtmConfig.ActivationThreshold);
+            sb.Append("learningRadius             = " + this.HtmConfig.LearningRadius);
+            sb.Append("minThreshold               = " + this.HtmConfig.MinThreshold);
+            sb.Append("maxNewSynapseCount         = " + this.HtmConfig.MaxNewSynapseCount);
+            sb.Append("maxSynapsesPerSegment      = " + this.HtmConfig.MaxSynapsesPerSegment);
+            sb.Append("maxSegmentsPerCell         = " + this.HtmConfig.MaxSegmentsPerCell);
+            sb.Append("initialPermanence          = " + this.HtmConfig.InitialPermanence);
+            sb.Append("connectedPermanence        = " + this.HtmConfig.ConnectedPermanence);
+            sb.Append("permanenceIncrement        = " + this.HtmConfig.PermanenceIncrement);
+            sb.Append("permanenceDecrement        = " + this.HtmConfig.PermanenceDecrement);
+            sb.Append("predictedSegmentDecrement  = " + this.HtmConfig.PredictedSegmentDecrement);
+
+            return sb.ToString();
         }
-
-        ///**
-        // * High verbose output useful for debugging
-        // */
-        //public String getPrintString()
-        //{
-        //    StringWriter pw;
-        //    //PrintWriter pw = new PrintWriter(sw = new StringWriter());
-
-        //    pw.println("---------------------- General -------------------------");
-        //    pw.println("columnDimensions           = " + Arrays.toString(getColumnDimensions()));
-        //    pw.println("inputDimensions            = " + Arrays.toString(getInputDimensions()));
-        //    pw.println("cellsPerColumn             = " + getCellsPerColumn());
-
-        //    pw.println("random                     = " + getRandom());
-        //    pw.println("seed                       = " + getSeed());
-
-        //    pw.println("\n------------ SpatialPooler Parameters ------------------");
-        //    pw.println("numInputs                  = " + getNumInputs());
-        //    pw.println("numColumns                 = " + getNumColumns);
-        //    pw.println("numActiveColumnsPerInhArea = " + getNumActiveColumnsPerInhArea());
-        //    pw.println("potentialPct               = " + getPotentialPct());
-        //    pw.println("potentialRadius            = " + getPotentialRadius());
-        //    pw.println("globalInhibition           = " + getGlobalInhibition());
-        //    pw.println("localAreaDensity           = " + getLocalAreaDensity());
-        //    pw.println("inhibitionRadius           = " + getInhibitionRadius());
-        //    pw.println("stimulusThreshold          = " + getStimulusThreshold());
-        //    pw.println("synPermActiveInc           = " + getSynPermActiveInc());
-        //    pw.println("synPermInactiveDec         = " + getSynPermInactiveDec());
-        //    pw.println("synPermConnected           = " + getSynPermConnected());
-        //    pw.println("synPermBelowStimulusInc    = " + getSynPermBelowStimulusInc());
-        //    pw.println("synPermTrimThreshold       = " + getSynPermTrimThreshold());
-        //    pw.println("minPctOverlapDutyCycles    = " + getMinPctOverlapDutyCycles());
-        //    pw.println("minPctActiveDutyCycles     = " + getMinPctActiveDutyCycles());
-        //    pw.println("dutyCyclePeriod            = " + getDutyCyclePeriod());
-        //    pw.println("wrapAround                 = " + isWrapAround());
-        //    pw.println("maxBoost                   = " + getMaxBoost());
-        //    pw.println("version                    = " + getVersion());
-
-        //    pw.println("\n------------ TemporalMemory Parameters ------------------");
-        //    pw.println("activationThreshold        = " + getActivationThreshold());
-        //    pw.println("learningRadius             = " + getLearningRadius());
-        //    pw.println("minThreshold               = " + getMinThreshold());
-        //    pw.println("maxNewSynapseCount         = " + getMaxNewSynapseCount());
-        //    pw.println("maxSynapsesPerSegment      = " + getMaxSynapsesPerSegment());
-        //    pw.println("maxSegmentsPerCell         = " + getMaxSegmentsPerCell());
-        //    pw.println("initialPermanence          = " + getInitialPermanence());
-        //    pw.println("connectedPermanence        = " + getConnectedPermanence());
-        //    pw.println("permanenceIncrement        = " + getPermanenceIncrement());
-        //    pw.println("permanenceDecrement        = " + getPermanenceDecrement());
-        //    pw.println("predictedSegmentDecrement  = " + getPredictedSegmentDecrement());
-
-        //    return sw.toString();
-        //}
 
         /// <summary>
         /// Returns a 2 Dimensional array of 1's and 0's indicating which of the column's pool members are above the connected

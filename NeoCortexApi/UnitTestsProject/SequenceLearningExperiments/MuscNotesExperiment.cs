@@ -413,25 +413,27 @@ namespace UnitTestsProject.SequenceLearningExperiments
 
             EncoderBase encoder = new ScalarEncoder(settings);
 
-            HtmConfig htmConfig = Connections.GetHtmConfigDefaultParameters();
-            htmConfig.Random = new ThreadSafeRandom(42);
-            htmConfig.InputDimensions = new int[] { inputBits };
-            htmConfig.ColumnDimensions = new int[] { numColumns };
-            htmConfig.CellsPerColumn = 25;
-            htmConfig.GlobalInhibition = true;
-            htmConfig.LocalAreaDensity = -1;
-            htmConfig.NumActiveColumnsPerInhArea = 0.02 * numColumns;
-            htmConfig.PotentialRadius = 50;
-            htmConfig.InhibitionRadius = 15;
-            htmConfig.MaxBoost = 10.0;
-            htmConfig.DutyCyclePeriod = 25;
-            htmConfig.MinPctOverlapDutyCycles = 0.75;
-            htmConfig.MaxNewSynapseCount = (int)(0.02 * numColumns);
-            htmConfig.ActivationThreshold = 15;
-            htmConfig.ConnectedPermanence = 0.5;
-            htmConfig.PermanenceDecrement = 0.25;
-            htmConfig.PermanenceIncrement = 0.15;
-            htmConfig.PredictedSegmentDecrement = 0.1;
+            HtmConfig htmConfig = new HtmConfig
+            {
+                Random = new ThreadSafeRandom(42),
+                InputDimensions = new int[] { inputBits },
+                ColumnDimensions = new int[] { numColumns },
+                CellsPerColumn = 25,
+                GlobalInhibition = true,
+                LocalAreaDensity = -1,
+                NumActiveColumnsPerInhArea = 0.02 * numColumns,
+                PotentialRadius = 50,
+                InhibitionRadius = 15,
+                MaxBoost = 10.0,
+                DutyCyclePeriod = 25,
+                MinPctOverlapDutyCycles = 0.75,
+                MaxNewSynapseCount = (int)(0.02 * numColumns),
+                ActivationThreshold = 15,
+                ConnectedPermanence = 0.5,
+                PermanenceDecrement = 0.25,
+                PermanenceIncrement = 0.15,
+                PredictedSegmentDecrement = 0.1
+            };
 
             Connections memory = new Connections(htmConfig);
 

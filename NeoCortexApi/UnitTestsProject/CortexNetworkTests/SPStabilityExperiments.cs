@@ -63,7 +63,7 @@ namespace UnitTestsProject
             // N of 40 (40= 0.02*2048 columns) active cells required to activate the segment.
             //p.Set(KEY.GLOBAL_INHIBITION, true);
             p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
-            
+
             //p.Set(KEY.POTENTIAL_RADIUS, inputBits);
             //p.Set(KEY.LOCAL_AREA_DENSITY, -1); // In a case of global inhibition.
             //p.setInhibitionRadius( Automatically set on the columns pace in a case of global inhibition.);
@@ -103,14 +103,14 @@ namespace UnitTestsProject
                 Directory.Delete(path, true);
 
             while (true)
-            {                
+            {
                 Directory.CreateDirectory(path);
                 if (Directory.Exists(path) == false)
                     Thread.Sleep(300);
                 else
                     break;
             }
-            
+
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
@@ -278,14 +278,14 @@ namespace UnitTestsProject
 
             EncoderBase encoder = new ScalarEncoder(settings);
 
-            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0 , 11.0, 12.0});
+            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0 });
 
             RunSpStabilityExperiment2(maxBoost, minOctOverlapCycles, inputBits, p, encoder, inputValues);
         }
 
         private void RunSpStabilityExperiment2(double maxBoost, double minOverlapCycles, int inputBits, Parameters p, EncoderBase encoder, List<double> inputValues)
         {
-            string path =  nameof(SpatialPooler_Stability_Experiment_2);
+            string path = nameof(SpatialPooler_Stability_Experiment_2);
 
             if (Directory.Exists(path))
                 Directory.Delete(path, true);
@@ -479,7 +479,7 @@ namespace UnitTestsProject
 
             // We create here 100 random input values.
             List<double> inputValues = new List<double>();
-          
+
             for (int i = 0; i < (int)max; i++)
             {
                 inputValues.Add((double)i);
@@ -490,7 +490,7 @@ namespace UnitTestsProject
 
         private void RunSpStabilityExperiment3(double maxBoost, double minOverlapCycles, int inputBits, Parameters p, EncoderBase encoder, List<double> inputValues)
         {
-            string path =  nameof(SpatialPooler_Stability_Experiment_3);
+            string path = nameof(SpatialPooler_Stability_Experiment_3);
 
             if (Directory.Exists(path))
                 Directory.Delete(path, true);
@@ -512,8 +512,8 @@ namespace UnitTestsProject
 
             bool isInStableState = false;
 
-            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, inputValues.Count * 15, (isStable, numPatterns, actColAvg, seenInputs)=>{
-
+            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, inputValues.Count * 15, (isStable, numPatterns, actColAvg, seenInputs) =>
+            {
                 Assert.IsTrue(numPatterns == inputValues.Count);
 
                 // Event should only be fired when entering the stable state.
@@ -523,7 +523,7 @@ namespace UnitTestsProject
                     isInStableState = false;
                     Debug.WriteLine($"UNSTABLE!: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
                 }
-                else    
+                else
                 {
                     //Assert.IsTrue(isStable);
 
@@ -533,7 +533,7 @@ namespace UnitTestsProject
             });
 
             SpatialPooler sp1 = new SpatialPooler(hpa);
-          
+
             p.apply(mem);
             sp1.Init(mem, UnitTestHelpers.GetMemory());
 
@@ -651,11 +651,11 @@ namespace UnitTestsProject
         private void DrawBitmaps(EncoderBase encoder, double input, int[] activeArrayIndxes, int columnTopology)
         {
             var inputVector = encoder.Encode(input);
-            
+
             int[] activeArray = ArrayUtils.FillAtIndexes(activeArrayIndxes, columnTopology, 1);
 
             int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(activeArray, 1 + (int)Math.Sqrt(columnTopology), 1 + (int)Math.Sqrt(columnTopology));
-            
+
             twoDimenArray = ArrayUtils.Transpose(twoDimenArray);
             List<int[,]> arrays = new List<int[,]>();
             arrays.Add(twoDimenArray);

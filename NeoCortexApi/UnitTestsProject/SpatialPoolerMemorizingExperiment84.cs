@@ -7,18 +7,12 @@ using NeoCortexApi.DistributedComputeLib;
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Drawing.Imaging;
 
-namespace UnitTestNoiseTest
+namespace UnitTestProject
 {
     /// <summary>
     /// Project work: https://github.com/UniversityOfAppliedSciencesFrankfurt/se-cloud-2019-2020/tree/PRD1/PRD1%20Group%20SE%20Project(WS-2019)/NoiseTestSpatialPooler

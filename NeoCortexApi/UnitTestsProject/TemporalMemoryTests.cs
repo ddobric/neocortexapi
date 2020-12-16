@@ -51,19 +51,21 @@ namespace UnitTestsProject
 
         private HtmConfig GetDefaultTMParameters()
         {
-            HtmConfig htmConfig = Connections.GetHtmConfigDefaultParameters();
-            htmConfig.ColumnDimensions = new int[] { 32 };
-            htmConfig.CellsPerColumn = 4;
-            htmConfig.ActivationThreshold = 3;
-            htmConfig.InitialPermanence = 0.21;
-            htmConfig.ConnectedPermanence = 0.5;
-            htmConfig.MinThreshold = 2;
-            htmConfig.MaxNewSynapseCount = 3;
-            htmConfig.PermanenceIncrement = 0.1;
-            htmConfig.PermanenceDecrement = 0.1;
-            htmConfig.PredictedSegmentDecrement = 0;
-            htmConfig.Random = new ThreadSafeRandom(42);
-            htmConfig.RandomGenSeed = 42;
+            HtmConfig htmConfig = new HtmConfig()
+            {
+                ColumnDimensions = new int[] { 32 },
+                CellsPerColumn = 4,
+                ActivationThreshold = 3,
+                InitialPermanence = 0.21,
+                ConnectedPermanence = 0.5,
+                MinThreshold = 2,
+                MaxNewSynapseCount = 3,
+                PermanenceIncrement = 0.1,
+                PermanenceDecrement = 0.1,
+                PredictedSegmentDecrement = 0,
+                Random = new ThreadSafeRandom(42),
+                RandomGenSeed = 42
+            };
 
             return htmConfig;
         }
@@ -140,7 +142,7 @@ namespace UnitTestsProject
             tm.Init(cn);
 
             int[] activeColumns = { 0 };
-            ISet<Cell> burstingCells = cn.GetCellSet(new int[] { 0, 1, 2, 3 });
+            IList<Cell> burstingCells = cn.GetCellSet(new int[] { 0, 1, 2, 3 });
 
             ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle;
 
@@ -158,7 +160,7 @@ namespace UnitTestsProject
             tm.Init(cn);
 
             int[] activeColumns = { 0 };
-            ISet<Cell> burstingCells = cn.GetCellSet(new int[] { 0, 1, 2, 3 });
+            IList<Cell> burstingCells = cn.GetCellSet(new int[] { 0, 1, 2, 3 });
 
             ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle;
 
@@ -477,7 +479,7 @@ namespace UnitTestsProject
             tm.Init(cn);
 
             int[] previousActiveColumns = { 0, 1, 2, 3 };
-            ISet<Cell> prevWinnerCells = cn.GetCellSet(new int[] { 0, 1, 2, 3 });
+            IList<Cell> prevWinnerCells = cn.GetCellSet(new int[] { 0, 1, 2, 3 });
             int[] activeColumns = { 4 };
 
             DistalDendrite matchingSegment = cn.CreateDistalSegment(cn.GetCell(4));
@@ -515,7 +517,7 @@ namespace UnitTestsProject
             tm.Init(cn);
 
             int[] previousActiveColumns = { 0, 1 };
-            ISet<Cell> prevWinnerCells = cn.GetCellSet(new int[] { 0, 1 });
+            IList<Cell> prevWinnerCells = cn.GetCellSet(new int[] { 0, 1 });
             int[] activeColumns = { 4 };
 
             DistalDendrite matchingSegment = cn.CreateDistalSegment(cn.GetCell(4));
@@ -669,7 +671,7 @@ namespace UnitTestsProject
             Assert.AreEqual(3, cn.HtmConfig.MaxSynapsesPerSegment);
 
             int[] prevActiveColumns = { 0, 1, 2 };
-            ISet<Cell> prevWinnerCells = cn.GetCellSet(new int[] { 0, 1, 2 });
+            IList<Cell> prevWinnerCells = cn.GetCellSet(new int[] { 0, 1, 2 });
             int[] activeColumns = { 4 };
 
             DistalDendrite matchingSegment = cn.CreateDistalSegment(cn.GetCell(4));
@@ -844,7 +846,7 @@ namespace UnitTestsProject
                 Cell[] prevActiveCells = { cn.GetCell(4), cn.GetCell(5), cn.GetCell(6), cn.GetCell(7) };
                 int[] activeColumns = { 0 };
                 Cell[] nonMatchingCells = { cn.GetCell(0), cn.GetCell(3) };
-                ISet<Cell> activeCells = cn.GetCellSet(new int[] { 0, 1, 2, 3 });
+                IList<Cell> activeCells = cn.GetCellSet(new int[] { 0, 1, 2, 3 });
 
                 DistalDendrite segment1 = cn.CreateDistalSegment(nonMatchingCells[0]);
                 cn.CreateSynapse(segment1, prevActiveCells[0], 0.5);
@@ -1053,7 +1055,7 @@ namespace UnitTestsProject
 
         public void TemporalMemoryInit()
         {
-            HtmConfig htmConfig = Connections.GetHtmConfigDefaultParameters();
+            HtmConfig htmConfig = new HtmConfig();
             Connections connections = new Connections(htmConfig);
 
             TemporalMemory temporalMemory = new TemporalMemory();
