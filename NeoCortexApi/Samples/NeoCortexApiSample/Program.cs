@@ -101,8 +101,6 @@ namespace NeoCortexApiSample
             
             cortexLayer.HtmModules.Add("sp", sp);
 
-            HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
-
             double[] inputs = inputValues.ToArray();
             Dictionary<double, int[]> prevActiveCols = new Dictionary<double, int[]>();
             Dictionary<double, double> prevSimilarity = new Dictionary<double, double>();
