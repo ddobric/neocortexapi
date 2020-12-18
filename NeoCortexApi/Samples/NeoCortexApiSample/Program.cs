@@ -15,15 +15,27 @@ namespace NeoCortexApiSample
 {
     class Program
     {
+        /// <summary>
+        /// This sample shows a typical experiment code that trains a spatial pooler to learn patterns.
+        /// </summary>
+        /// <param name="args"></param>
         static void Main(string[] args)
         {
             Console.WriteLine("Hello NeocortexApi!");
 
+            // Used as a boosting parameters
+            // that ensure homeostatic plasticity effect.
             double minOctOverlapCycles = 1.0;
             double maxBoost = 5.0;
+
+            // We will use 200 bits to represent an input vector (pattern).
             int inputBits = 200;
+
+            // We will build a slice of the cortex with 2048 mini-columns
             int numColumns = 2048;
 
+            //
+            // This is a set of configuration parameters used in the experiment.
             HtmConfig cfg = new HtmConfig()
             {
                 InputDimensions = new int[] { inputBits },
@@ -43,6 +55,8 @@ namespace NeoCortexApiSample
 
             double max = 100;
 
+            //
+            // This dictionary defines a set of typical encoder parameters.
             Dictionary<string, object> settings = new Dictionary<string, object>()
             {
                 { "W", 15},
@@ -57,6 +71,7 @@ namespace NeoCortexApiSample
 
             EncoderBase encoder = new ScalarEncoder(settings);
 
+            //
             // We create here 100 random input values.
             List<double> inputValues = new List<double>();
 
@@ -68,14 +83,26 @@ namespace NeoCortexApiSample
             RunExperiment(cfg, encoder, inputValues);
         }
 
+        /// <summary>
+        /// Implements the experiment.
+        /// </summary>
+        /// <param name="cfg"></param>
+        /// <param name="encoder"></param>
+        /// <param name="inputValues"></param>
         private static void RunExperiment(HtmConfig cfg, EncoderBase encoder, List<double> inputValues)
         {
-            bool learn = true;
-
+            // Creates the htm memory.
             var mem = new Connections(cfg);
 
             bool isInStableState = false;
 
+            //
+            // HPC extends the default Spatial Pooler algorithm.
+            // The purpose of HPC is to set the SP in the new-born stage at the begining of the learning process.
+            // In this stage the boosting is very active, but the SP behaves instable. After this stage is over
+            // (defined by the second argument) the HPC is controlling the learning process of the SP.
+            // Once the SDR generated for every input gets stable, the HPC will fire event that notifies your code
+            // that SP is stable now.
             HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, inputValues.Count * 15,
                 (isStable, numPatterns, actColAvg, seenInputs) =>
             {
@@ -83,58 +110,75 @@ namespace NeoCortexApiSample
                 // Ideal SP should never enter unstable state after stable state.
                 if (isStable == false)
                 {
+                    // This should usually not happen.
                     isInStableState = false;
                 }
                 else
                 {
+                    // Here you can perform any action if required.
                     isInStableState = true;
                 }
             });
 
-            SpatialPoolerMT sp = new SpatialPoolerMT(hpa);
+            // It creates the instance of Spatial Pooler Multithreaded version.
+            SpatialPooler sp = new SpatialPooler(hpa);
 
+            // Initializes the 
             sp.Init(mem, new DistributedMemory() { ColumnDictionary = new InMemoryDistributedDictionary<int, NeoCortexApi.Entities.Column>(1) });
 
+            // It creates the instance of the neo-cortex layer.
+            // Algorithm will be performed inside of that layer.
             CortexLayer<object, object> cortexLayer = new CortexLayer<object, object>("L1");
           
+            // Add encoder as the very first module. This model is connected to the sensory input cells
+            // that receive the input. Encoder will receive the input and forward the encoded signal
+            // to the next module.
             cortexLayer.HtmModules.Add("encoder", encoder);
             
+            // The next module in the layer is Spatial Pooler. This module will receive the output of the
+            // encoder.
             cortexLayer.HtmModules.Add("sp", sp);
 
             double[] inputs = inputValues.ToArray();
+
+            // Will hold the SDR of every inputs.
             Dictionary<double, int[]> prevActiveCols = new Dictionary<double, int[]>();
+
+            // Will hold the similarity of SDKk and SDRk-1 fro every input.
             Dictionary<double, double> prevSimilarity = new Dictionary<double, double>();
 
+            //
+            // Initiaize start similarity to zero.
             foreach (var input in inputs)
             {
                 prevSimilarity.Add(input, 0.0);
                 prevActiveCols.Add(input, new int[0]);
             }
 
+            // Learning process will take 1000 iterations (cycles)
             int maxSPLearningCycles = 1000;
 
-            List<(double Element, (int Cycle, double Similarity)[] Oscilations)> oscilationResult = new List<(double Element, (int Cycle, double Similarity)[] Oscilations)>();
-
-            for (int cycle = 0; cycle < maxSPLearningCycles; cycle++)
+          for (int cycle = 0; cycle < maxSPLearningCycles; cycle++)
             {
+                Debug.WriteLine($"Cycle  ** {cycle} **");
+
                 if (isInStableState)
                     Debug.WriteLine($"STABILITY entered at cycle {cycle}.");
 
-                Debug.WriteLine($"Cycle  ** {cycle} **");
-
                 //
                 // This trains SP on input pattern.
-                // It performs some kind of unsupervised new-born learning.
                 foreach (var input in inputs)
                 {
                     double similarity;
 
-                    Debug.WriteLine("Cycle;Similarity");
-
                     Debug.WriteLine($"Input: {input}");
 
-                    var lyrOut = cortexLayer.Compute((object)input, learn) as ComputeCycle;
+                    // Learn the input pattern.
+                    // Output lyrOut is the output of the last module in the layer.
+                    // 
+                    var lyrOut = cortexLayer.Compute((object)input, true) as int[];
 
+                    // This is a general way to get the SpatialPooler result from the layer.
                     var activeColumns = cortexLayer.GetResult("sp") as int[];
 
                     var actCols = activeColumns.OrderBy(c => c).ToArray();
