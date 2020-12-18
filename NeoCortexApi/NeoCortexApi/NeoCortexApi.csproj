@@ -8,7 +8,7 @@
     <Company>daenet GmbH</Company>
     <Product>Hierarchical Temporal Framework in C#</Product>
     <Copyright>Damir Dobric</Copyright>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 	  <Platforms>AnyCPU;x64;x86</Platforms>
     <Description>Hierarchical Temporal Memory implementation in C#/.NET Core. This repository contains set of libraries around NeoCortext API .NET Core library. NeoCortex API focuses implementation of Hierarchical Temporal Memory Cortical Learning Algorithm. Current version is first implementation of this algorithm on .NET platform. It includes the Spatial Pooler, Temporal Pooler, various encoders and CorticalNetwork algorithms. Implementation of this library aligns to existing Python and JAVA implementation of HTM. Due similarities between JAVA and C#, current API of SpatialPooler in C# is very similar to JAVA API. However the implementation of future versions will include some API changes to API style, which is additionally more aligned to C# community. This repository also cotains first experimental implementation of distributed highly scalable HTM CLA based on Actor Programming Model.</Description>
     <PackageProjectUrl>https://github.com/ddobric/neocortexapi</PackageProjectUrl>
