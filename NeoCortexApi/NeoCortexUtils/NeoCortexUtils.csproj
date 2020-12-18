@@ -4,6 +4,10 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>C:\dev\NeoCortexAPI\neocortexapi\NeoCortexApi\NeoCortexUtils\NeoCortexUtils.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="System.Drawing.Common" Version="4.6.0-preview3.19128.7" />
   </ItemGroup>
