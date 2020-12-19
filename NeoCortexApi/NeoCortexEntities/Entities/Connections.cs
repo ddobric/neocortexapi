@@ -16,13 +16,13 @@ namespace NeoCortexApi.Entities
     /// TemporalMemory as well as the state of Cells, Columns, Segments, Synapses etc..
     /// </summary>
     [Serializable]
-    public class Connections 
+    public class Connections
     {
 
         public static readonly double EPSILON = 0.00001;
 
         /////////////////////////////////////// Spatial Pooler Vars ///////////////////////////////////////////
-       
+
 
         //private int potentialRadius = 16;
         //private double potentialPct = 0.5;
@@ -382,7 +382,7 @@ namespace NeoCortexApi.Entities
         //};
 
         #region Connections Constructor
-       
+
         /// <summary>
         /// Constructs a new <see cref="Connections"/> object. This object
         /// is usually configured via the <see cref="Parameters.apply(object)"/>
@@ -390,7 +390,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public Connections()
         {
-         
+
         }
 
         /// <summary>
@@ -419,7 +419,7 @@ namespace NeoCortexApi.Entities
             }
         }
 
-      
+
         /// <summary>
         /// Returns the <see cref="Cell"/> specified by the index passed in.
         /// </summary>
@@ -2037,22 +2037,13 @@ namespace NeoCortexApi.Entities
             return min;
         }
 
-        ///**
-        // * Returns the total number of {@link Synapse}s
-        // * 
-        // * @return  either the total number of synapses
-        // */
-        //public long GetNumSynapses()
-        //{
-        //    return GetNumSynapses(null);
-        //}
 
         /// <summary>
         /// Returns the number of <see cref="Synapse"/>s on a given <see cref="DistalDendrite"/>
         /// if specified, or the total number if the "optionalSegmentArg" is null.
         /// </summary>
-        /// <param name="optionalSegmentArg">an optional Segment to specify the context of the synapse count.</param>
-        /// <returns>either the total number of synapses or the number on a specified segment.</returns>
+        /// <param name="optionalSegmentArg">An optional Segment to specify the context of the synapse count.</param>
+        /// <returns>Either the total number of synapses or the number on a specified segment.</returns>
         public long GetNumSynapses(DistalDendrite optionalSegmentArg = null)
         {
             if (optionalSegmentArg != null)
@@ -2063,24 +2054,6 @@ namespace NeoCortexApi.Entities
             return m_NumSynapses;
         }
 
-        /**
-         * Returns the mapping of {@link Cell}s to their reverse mapped
-         * {@link Synapse}s.
-         *
-         * @param cell      the {@link Cell} used as a key.
-         * @return          the mapping of {@link Cell}s to their reverse mapped
-         *                  {@link Synapse}s.
-         */
-
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <param name="cell"></param>
-        ///// <returns></returns>
-        //public LinkedHashSet<Synapse> GetReceptorSynapses(Cell cell)
-        //{
-        //    return GetReceptorSynapses(cell, false);
-        //}
 
         /// <summary>
         /// Returns synapses which hold the specified cell as their source cell.
@@ -2138,46 +2111,19 @@ namespace NeoCortexApi.Entities
             return retVal;
         }
 
-        /**
-         * Returns the mapping of {@link ProximalDendrite}s to their {@link Synapse}s.
-         *
-         * @param segment   the {@link ProximalDendrite} used as a key.
-         * @return          the mapping of {@link ProximalDendrite}s to their {@link Synapse}s.
-         */
-        //public List<Synapse> getSynapses(ProximalDendrite segment)
-        //{
-        //    if (segment == null)
-        //    {
-        //        throw new ArgumentException("Segment was null");
-        //    }
 
-        //    if (proximalSynapses == null)
-        //    {
-        //        proximalSynapses = new Dictionary<Segment, List<Synapse>>();
-        //    }
 
-        //    List<Synapse> retVal = null;
-        //    if (proximalSynapses.ContainsKey(segment) == false)
-        //    {
-        //        proximalSynapses.Add(segment, retVal = new List<Synapse>());
-        //    }
-
-        //    retVal = proximalSynapses[segment];
-
-        //    return retVal;
-        //}
-
-        /**
-         * <b>FOR TEST USE ONLY<b>
-         * @return
-         */
+        /// <summary>
+        /// For testing only.
+        /// </summary>
+        /// <returns></returns>
         public Dictionary<Cell, LinkedHashSet<Synapse>> getReceptorSynapseMapping()
         {
             return new Dictionary<Cell, LinkedHashSet<Synapse>>(m_ReceptorSynapses);
         }
 
         /// <summary>
-        /// Clears all {@link TemporalMemory} state.
+        /// Clears all <see cref="TemporalMemory"/> state.
         /// </summary>
         public void Clear()
         {
@@ -2186,45 +2132,9 @@ namespace NeoCortexApi.Entities
             m_PredictiveCells.Clear();
         }
 
-        ///**
-        // * Returns the current {@link Set} of active {@link Cell}s
-        // *
-        // * @return  the current {@link Set} of active {@link Cell}s
-        // */
-        //public ISet<Cell> getActiveCells()
-        //{
-        //    return m_ActiveCells;
-        //}
-
-        ///**
-        // * Sets the current {@link Set} of active {@link Cell}s
-        // * @param cells
-        // */
-        //public void setActiveCells(ISet<Cell> cells)
-        //{
-        //    this.m_ActiveCells = cells;
-        //}
 
         public ISet<Cell> ActiveCells { get => m_ActiveCells; set => m_ActiveCells = value; }
 
-        ///**
-        // * Returns the current {@link Set} of winner cells
-        // *
-        // * @return  the current {@link Set} of winner cells
-        // */
-        //public ISet<Cell> getWinnerCells()
-        //{
-        //    return winnerCells;
-        //}
-
-        ///**
-        // * Sets the current {@link Set} of winner {@link Cell}s
-        // * @param cells
-        // */
-        //public void setWinnerCells(ISet<Cell> cells)
-        //{
-        //    this.winnerCells = cells;
-        //}
 
         public ISet<Cell> WinnerCells { get => winnerCells; set => winnerCells = value; }
 

@@ -62,6 +62,14 @@ namespace NeoCortexApi
         /// </summary>
         private bool m_IsStable = false;
 
+        /// <summary>
+        /// Creates the instance of the HPC to stabilize the Spatial Pooler learning process.
+        /// </summary>
+        /// <param name="htmMemory">The initialized HTM memory.</param>
+        /// <param name="minCycles">The minimume required cycles to keep boosting. This parameter defiens the new-born stage of the SP.
+        /// During this period, the SP will boost columns and bee instable. After this period the HPC will switch off boosting.</param>
+        /// <param name="onStabilityStatusChanged">Invoked when the SP changes the state from instable to stable and vise versa.</param>
+        /// <param name="numOfCyclesToWaitOnChange">How many cycles SDRs of all input patterns must be unchanged to declare the SP as stable.</param>
         public HomeostaticPlasticityController(Connections htmMemory, int minCycles, Action<bool, int, double, int> onStabilityStatusChanged, int numOfCyclesToWaitOnChange = 50)
         {
             this.m_OnStabilityStatusChanged = onStabilityStatusChanged;

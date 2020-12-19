@@ -7,10 +7,8 @@ using System.Text;
 
 namespace NeoCortexApi.Entities
 {
-    //[Serializable]
-
     /// <summary>
-    /// Implements a distal dendritic segment.
+    /// Implements a distal dendritic segment that is used for learning sequences.
     /// Segments are owned by <see cref="Cell"/>s and in turn own <see cref="Synapse"/>s which are obversely connected to by a "source cell", 
     /// which is the <see cref="Cell"/> which will activate a given <see cref="Synapse"/> owned by this <see cref="Segment"/>.
     /// </summary>
