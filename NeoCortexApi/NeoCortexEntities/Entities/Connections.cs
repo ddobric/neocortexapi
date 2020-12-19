@@ -1743,23 +1743,25 @@ namespace NeoCortexApi.Entities
         }
 
         #endregion
+
         /////////////////////////////////////////////////////////////////
         //     Segment (Specifically, Distal Dendrite) Operations      //
         /////////////////////////////////////////////////////////////////
-        #region Segment (Specifically, Distal Dendrite) Operations
+        ///
+        #region Segment (Specifically, Distal Dendrite) methods
         /// <summary>
         /// Adds a new <see cref="DistalDendrite"/> segment on the specified <see cref="Cell"/>, or reuses an existing one.
         /// </summary>
-        /// <param name="cell">the Cell to which a segment is added.</param>
+        /// <param name="segmentParentCell">the Cell to which a segment is added.</param>
         /// <returns>the newly created segment or a reused segment.</returns>
-        public DistalDendrite CreateDistalSegment(Cell cell)
+        public DistalDendrite CreateDistalSegment(Cell segmentParentCell)
         {
             //
             // If there are more segments than maximal allowed number of segments per cell,
             // least used segments will be destroyed.
-            while (NumSegments(cell) >= this.HtmConfig.MaxSegmentsPerCell)
+            while (NumSegments(segmentParentCell) >= this.HtmConfig.MaxSegmentsPerCell)
             {
-                DestroySegment(LeastRecentlyUsedSegment(cell));
+                DestroySegment(LeastRecentlyUsedSegment(segmentParentCell));
             }
 
             int flatIdx;
@@ -1779,8 +1781,8 @@ namespace NeoCortexApi.Entities
             int ordinal = m_NextSegmentOrdinal;
             ++m_NextSegmentOrdinal;
 
-            DistalDendrite segment = new DistalDendrite(cell, flatIdx, m_tmIteration, ordinal, this.HtmConfig.SynPermConnected, this.HtmConfig.NumInputs);
-            GetSegments(cell, true).Add(segment);
+            DistalDendrite segment = new DistalDendrite(segmentParentCell, flatIdx, m_tmIteration, ordinal, this.HtmConfig.SynPermConnected, this.HtmConfig.NumInputs);
+            GetSegments(segmentParentCell, true).Add(segment);
             m_SegmentForFlatIdx[flatIdx] = segment;
 
             return segment;

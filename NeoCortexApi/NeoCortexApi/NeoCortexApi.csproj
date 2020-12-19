@@ -3,13 +3,13 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>NeoCortexApi</PackageId>
-    <Version>1.0.8</Version>
+    <Version>1.0.9</Version>
     <Authors>Damir Dobric</Authors>
     <Company>daenet GmbH</Company>
     <Product>Hierarchical Temporal Framework in C#</Product>
     <Copyright>Damir Dobric</Copyright>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Description>Hierarchical Temporal Memory implementation in C#/.NET Core. This repository contains set of libraries around NeoCortext API .NET Core library. NeoCortex API focuses implementation of Hierarchical Temporal Memory Cortical Learning Algorithm. Current version is first implementation of this algorithm on .NET platform. It includes the Spatial Pooler, Temporal Pooler, various encoders and CorticalNetwork algorithms. Implementation of this library aligns to existing Python and JAVA implementation of HTM. Due similarities between JAVA and C#, current API of SpatialPooler in C# is very similar to JAVA API. However the implementation of future versions will include some API changes to API style, which is additionally more aligned to C# community. This repository also cotains first experimental implementation of distributed highly scalable HTM CLA based on Actor Programming Model.</Description>
+    <Description>This package is an implementation of Hierarchical Temporal Memory Cortical Learning Algorithm (HTM CLA) in C#/.NET Core. It includes the Spatial Pooler, Temporal Memory, various encoders and Cortical Network algorithms. Implementation of this library aligns to existing Python and JAVA implementation of HTM. Due to similarities between JAVA and C#, current API of SpatialPooler in C# is very similar to JAVA API. Note, future versions will include some API changes, which more align to the c# coding convence.</Description>
     <PackageProjectUrl>https://github.com/ddobric/neocortexapi</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ddobric/neocortexapi</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -24,7 +24,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <LangVersion>7.3</LangVersion>
-    <DocumentationFile>C:\dev\git\neocortexapi\neocortexapi\NeoCortexApi\NeoCortexApi\NeoCortexApi.xml</DocumentationFile>
+    <DocumentationFile></DocumentationFile>
     <DefineConstants>TRACE;USE_AKKA</DefineConstants>
   </PropertyGroup>
 
