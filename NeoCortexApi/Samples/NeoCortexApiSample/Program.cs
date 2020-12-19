@@ -167,7 +167,7 @@ namespace NeoCortexApiSample
                     Debug.WriteLine($"STABILITY entered at cycle {cycle}.");
 
                 //
-                // This trains SP on input pattern.
+                // This trains the layer on input pattern.
                 foreach (var input in inputs)
                 {
                     double similarity;
