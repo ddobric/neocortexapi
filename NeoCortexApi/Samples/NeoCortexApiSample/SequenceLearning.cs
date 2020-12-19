@@ -25,45 +25,73 @@ namespace NeoCortexApiSample
 
             int inputBits = 100;
             int numColumns = 2048;
-            Parameters p = Parameters.getAllDefaultParameters();
 
-            p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
-            p.Set(KEY.INPUT_DIMENSIONS, new int[] { inputBits });
-            p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
+            HtmConfig cfg = new HtmConfig()
+            {
+                Random = new ThreadSafeRandom(42),
+                InputDimensions = new int[] { inputBits },
+                ColumnDimensions = new int[] { numColumns },
+                CellsPerColumn = 25,
+                GlobalInhibition = true,
+                LocalAreaDensity = -1,
+                NumActiveColumnsPerInhArea = 0.02 * numColumns,
+                PotentialRadius = 50,
+                InhibitionRadius = 15,
 
-            p.Set(KEY.CELLS_PER_COLUMN, 25);
+                MaxBoost = 10.0,
+                DutyCyclePeriod = 25,
+                MinPctOverlapDutyCycles = 0.75,
+                MaxSynapsesPerSegment = (int)(0.02 * numColumns),
 
-            p.Set(KEY.GLOBAL_INHIBITION, true);
-            p.Set(KEY.LOCAL_AREA_DENSITY, -1); // In a case of global inhibition.
+                ActivationThreshold = 15,
+                ConnectedPermanence = 0.5,
 
-            //p.setNumActiveColumnsPerInhArea(10);
-            // N of 40 (40= 0.02*2048 columns) active cells required to activate the segment.
-            p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
-            // Activation threshold is 10 active cells of 40 cells in inhibition area.
-            p.Set(KEY.POTENTIAL_RADIUS, 50);
-            p.setInhibitionRadius(15);
+                // Learning is slower than forgetting in this case.
+                PermanenceDecrement = 0.25,
+                PermanenceIncrement = 0.15,
+
+                // Used by punishing of segments.
+                PredictedSegmentDecrement = 0.1
+            };
+            //Parameters p = Parameters.getAllDefaultParameters();
+
+            //p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
+            //p.Set(KEY.INPUT_DIMENSIONS, new int[] { inputBits });
+            //p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
+
+            //p.Set(KEY.CELLS_PER_COLUMN, 25);
+
+            //p.Set(KEY.GLOBAL_INHIBITION, true);
+            //p.Set(KEY.LOCAL_AREA_DENSITY, -1); // In a case of global inhibition.
+
+            ////p.setNumActiveColumnsPerInhArea(10);
+            //// N of 40 (40= 0.02*2048 columns) active cells required to activate the segment.
+            //p.setNumActiveColumnsPerInhArea(0.02 * numColumns);
+            //// Activation threshold is 10 active cells of 40 cells in inhibition area.
+            //p.Set(KEY.POTENTIAL_RADIUS, 50);
+            //p.setInhibitionRadius(15);
 
             //
             // Activates the high bumping/boosting of inactive columns.
             // This exeperiment uses HomeostaticPlasticityActivator, which will deactivate boosting and bumping.
-            p.Set(KEY.MAX_BOOST, 10.0);
-            p.Set(KEY.DUTY_CYCLE_PERIOD, 25);
-            p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.75);
+            //p.Set(KEY.MAX_BOOST, 10.0);
+            //p.Set(KEY.DUTY_CYCLE_PERIOD, 25);
+            //p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.75);
 
-            // Max number of synapses on the segment.
-            p.setMaxNewSynapsesPerSegmentCount((int)(0.02 * numColumns));
+            //// Max number of synapses on the segment.
+            //p.setMaxNewSynapsesPerSegmentCount((int)(0.02 * numColumns));
 
             // If learning process does not generate active segments, this value should be decreased. You can notice this with continious burtsing. look in trace for 'B.B.B'
             // If invalid patterns are predicted then this value should be increased.
-            p.setActivationThreshold(15);
-            p.setConnectedPermanence(0.5);
+            //p.setActivationThreshold(15);
+            //p.setConnectedPermanence(0.5);
 
-            // Learning is slower than forgetting in this case.
-            p.setPermanenceDecrement(0.25);
-            p.setPermanenceIncrement(0.15);
+            //// Learning is slower than forgetting in this case.
+            //p.setPermanenceDecrement(0.25);
+            //p.setPermanenceIncrement(0.15);
 
-            // Used by punishing of segments.
-            p.Set(KEY.PREDICTED_SEGMENT_DECREMENT, 0.1);
+            //// Used by punishing of segments.
+            //p.Set(KEY.PREDICTED_SEGMENT_DECREMENT, 0.1);
 
             double max = 20;
 
@@ -86,13 +114,13 @@ namespace NeoCortexApiSample
             // With increment=0.2 and decrement 0.3 has taken 15 min and didn't entered the stable state.
             List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 });
 
-            RunExperiment(inputBits, p, encoder, inputValues);
+            RunExperiment(inputBits, cfg, encoder, inputValues);
         }
 
         /// <summary>
         ///
         /// </summary>
-        private void RunExperiment(int inputBits, Parameters p, EncoderBase encoder, List<double> inputValues)
+        private void RunExperiment(int inputBits, HtmConfig cfg, EncoderBase encoder, List<double> inputValues)
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -100,18 +128,15 @@ namespace NeoCortexApiSample
             int maxMatchCnt = 0;
             bool learn = true;
 
-            var mem = new Connections();
-
-            p.apply(mem);
+            var mem = new Connections(cfg);
 
             bool isInStableState;
 
-            //HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
             HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
 
             var numInputs = inputValues.Distinct<double>().ToList().Count;
 
-            TemporalMemory tm1 = new TemporalMemory();
+            TemporalMemory tm = new TemporalMemory();
 
             HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, numInputs * 55, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
@@ -123,21 +148,25 @@ namespace NeoCortexApiSample
                     Debug.WriteLine($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
 
                 isInStableState = true;
+
+                // Clear all learned patterns in the classifier.
                 cls.ClearState();
 
-                tm1.Reset(mem);
+                // Clear active and predictive cells.
+                tm.Reset(mem);
+
             }, numOfCyclesToWaitOnChange: 25);
 
 
-            SpatialPoolerMT sp1 = new SpatialPoolerMT(hpa);
-            sp1.Init(mem);
-            tm1.Init(mem);
+            SpatialPoolerMT sp = new SpatialPoolerMT(hpa);
+            sp.Init(mem);
+            tm.Init(mem);
 
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
-           
+
             layer1.HtmModules.Add("encoder", encoder);
-            layer1.HtmModules.Add("sp", sp1);
-            layer1.HtmModules.Add("tm", tm1);
+            layer1.HtmModules.Add("sp", sp);
+            layer1.HtmModules.Add("tm", tm);
 
             double[] inputs = inputValues.ToArray();
             int[] prevActiveCols = new int[0];
@@ -230,6 +259,8 @@ namespace NeoCortexApiSample
                 {
                     maxMatchCnt++;
                     Debug.WriteLine($"100% accuracy reched {maxMatchCnt} times.");
+                    //
+                    // Experiment is completed if we are 30 cycles long at the 100% accuracy.
                     if (maxMatchCnt >= 30)
                     {
                         sw.Stop();

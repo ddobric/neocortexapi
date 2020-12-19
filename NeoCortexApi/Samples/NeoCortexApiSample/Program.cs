@@ -16,7 +16,8 @@ namespace NeoCortexApiSample
     class Program
     {
         /// <summary>
-        /// This sample shows a typical experiment code for SP
+        /// This sample shows a typical experiment code for SP and TM.
+        /// You must start this code in debugger to follow the trace.
         /// and TM.
         /// </summary>
         /// <param name="args"></param>
@@ -24,8 +25,13 @@ namespace NeoCortexApiSample
         {
             //
             // Starts experiment that demonstrates how to learn spatial patterns.
-            SpatialPatternLearning spExperiment = new SpatialPatternLearning();
-            spExperiment.Run();
+            //SpatialPatternLearning experiment = new SpatialPatternLearning();
+            //spExperiment.Run();
+
+            //
+            // Starts experiment that demonstrates how to learn spatial patterns.
+            SequenceLearning experiment = new SequenceLearning();
+            experiment.Run();
         }
       
     }
