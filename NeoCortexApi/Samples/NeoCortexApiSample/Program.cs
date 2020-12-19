@@ -51,6 +51,7 @@ namespace NeoCortexApiSample
                 LocalAreaDensity = -1,
                 ActivationThreshold = 10,
                 MaxSynapsesPerSegment = (int)(0.02 * numColumns),
+                Random = new ThreadSafeRandom(42)
             };
 
             double max = 100;
@@ -121,7 +122,7 @@ namespace NeoCortexApiSample
             });
 
             // It creates the instance of Spatial Pooler Multithreaded version.
-            SpatialPooler sp = new SpatialPooler(hpa);
+            SpatialPooler sp = new SpatialPoolerMT(hpa);
 
             // Initializes the 
             sp.Init(mem, new DistributedMemory() { ColumnDictionary = new InMemoryDistributedDictionary<int, NeoCortexApi.Entities.Column>(1) });
@@ -129,12 +130,12 @@ namespace NeoCortexApiSample
             // It creates the instance of the neo-cortex layer.
             // Algorithm will be performed inside of that layer.
             CortexLayer<object, object> cortexLayer = new CortexLayer<object, object>("L1");
-          
+
             // Add encoder as the very first module. This model is connected to the sensory input cells
             // that receive the input. Encoder will receive the input and forward the encoded signal
             // to the next module.
             cortexLayer.HtmModules.Add("encoder", encoder);
-            
+
             // The next module in the layer is Spatial Pooler. This module will receive the output of the
             // encoder.
             cortexLayer.HtmModules.Add("sp", sp);
@@ -158,7 +159,7 @@ namespace NeoCortexApiSample
             // Learning process will take 1000 iterations (cycles)
             int maxSPLearningCycles = 1000;
 
-          for (int cycle = 0; cycle < maxSPLearningCycles; cycle++)
+            for (int cycle = 0; cycle < maxSPLearningCycles; cycle++)
             {
                 Debug.WriteLine($"Cycle  ** {cycle} **");
 
@@ -166,7 +167,7 @@ namespace NeoCortexApiSample
                     Debug.WriteLine($"STABILITY entered at cycle {cycle}.");
 
                 //
-                // This trains SP on input pattern.
+                // This trains the layer on input pattern.
                 foreach (var input in inputs)
                 {
                     double similarity;
