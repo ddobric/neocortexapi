@@ -37,9 +37,12 @@ namespace NeoCortexApi.Entities
         /// Creates the Distal Segment.
         /// </summary>
         /// <param name="parentCell">The cell, which owns the segment.</param>
-        /// <param name="flatIdx">The flat index of the cell.</param>
+        /// <param name="flatIdx">The flat index of the segment. If some segments are destroyed (synapses lost permanence)
+        /// then the new segment will reuse the flat index. In contrast, 
+        /// the ordinal number will increas when new segments are created.</param>
         /// <param name="lastUsedIteration"></param>
-        /// <param name="ordinal"></param>
+        /// <param name="ordinal">The ordindal number of the segment. This number is incremented on each new segment.
+        /// If some segments are destroyed, this number is still incrementd.</param>
         /// <param name="synapsePermConnected"></param>
         /// <param name="numInputs"></param>
         public DistalDendrite(Cell parentCell, int flatIdx, long lastUsedIteration, int ordinal, double synapsePermConnected, int numInputs) : base(flatIdx, synapsePermConnected, numInputs)

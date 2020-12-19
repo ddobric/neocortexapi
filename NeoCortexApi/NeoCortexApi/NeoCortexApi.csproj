@@ -17,14 +17,14 @@
     <PackageLicenseExpression></PackageLicenseExpression>
     <PackageLicenseFile>license.txt</PackageLicenseFile>
 	<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
-	<PackageIcon></PackageIcon>
+	<PackageIcon>NeoCortexAPI.png</PackageIcon>
 	  <IncludeSymbols>true</IncludeSymbols>
 	  <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <LangVersion>7.3</LangVersion>
-    <DocumentationFile></DocumentationFile>
+    <DocumentationFile>C:\dev\git\neocortexapi\NeoCortexApi\NeoCortexApi\NeoCortexApi.xml</DocumentationFile>
     <DefineConstants>TRACE;USE_AKKA</DefineConstants>
   </PropertyGroup>
 
@@ -43,11 +43,14 @@
     <None Include="Anomaly.cs" />
     <None Include="Classification.cs" />
     <None Include="Encoders\EncoderBuilder.cs" />
+    <None Include="NeoCortexApi\NeoCortexAPI.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
     <None Include="Network\NearestClassifier.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ImageBinarizer" Version="1.0.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
    

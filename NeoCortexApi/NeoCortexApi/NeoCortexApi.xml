@@ -760,6 +760,16 @@
             Once SP enters the stable state and it becomes instable again, this value is set on false.
             </summary>
         </member>
+        <member name="M:NeoCortexApi.HomeostaticPlasticityController.#ctor(NeoCortexApi.Entities.Connections,System.Int32,System.Action{System.Boolean,System.Int32,System.Double,System.Int32},System.Int32)">
+            <summary>
+            Creates the instance of the HPC to stabilize the Spatial Pooler learning process.
+            </summary>
+            <param name="htmMemory">The initialized HTM memory.</param>
+            <param name="minCycles">The minimume required cycles to keep boosting. This parameter defiens the new-born stage of the SP.
+            During this period, the SP will boost columns and bee instable. After this period the HPC will switch off boosting.</param>
+            <param name="onStabilityStatusChanged">Invoked when the SP changes the state from instable to stable and vise versa.</param>
+            <param name="numOfCyclesToWaitOnChange">How many cycles SDRs of all input patterns must be unchanged to declare the SP as stable.</param>
+        </member>
         <member name="M:NeoCortexApi.HomeostaticPlasticityController.Compute(System.Int32[],System.Int32[])">
             <summary>
             Invoked as the last step in learning of the SP.
