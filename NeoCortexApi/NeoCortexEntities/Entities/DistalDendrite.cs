@@ -31,6 +31,9 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public long LastUsedIteration { get => m_LastUsedIteration; set => m_LastUsedIteration = value; }
 
+        /// <summary>
+        /// The seqence number of the segment. Specifies the order of the segment of the <see cref="Connections"/> instance.
+        /// </summary>
         public int Ordinal { get => m_Ordinal; set => m_Ordinal = value; }
 
         /// <summary>
@@ -56,11 +59,11 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Gets all synapses owned by this distal dentrite segment.
         /// </summary>
-        /// <param name="c"></param>
+        /// <param name="mem"></param>
         /// <returns>Synapses.</returns>
-        public List<Synapse> GetAllSynapses(Connections c)
+        public List<Synapse> GetAllSynapses(Connections mem)
         {
-            return c.GetSynapses(this);
+            return mem.GetSynapses(this);
         }
 
         /// <summary>
