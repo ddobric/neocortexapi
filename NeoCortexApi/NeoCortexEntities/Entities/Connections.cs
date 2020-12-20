@@ -19,38 +19,9 @@ namespace NeoCortexApi.Entities
     public class Connections
     {
 
-        public static readonly double EPSILON = 0.00001;
-
+    
         /////////////////////////////////////// Spatial Pooler Vars ///////////////////////////////////////////
 
-
-        //private int potentialRadius = 16;
-        //private double potentialPct = 0.5;
-        //private bool m_GlobalInhibition = false;
-        //private double m_LocalAreaDensity = -1.0;
-        //private double m_NumActiveColumnsPerInhArea;
-        //private double m_StimulusThreshold = 0;
-        //private double synPermInactiveDec = 0.008;
-        //private double synPermActiveInc = 0.05;
-        //private double synPermConnected = 0.10;
-        //private double synPermBelowStimulusInc;// = synPermConnected / 10.0;
-        //private double minPctOverlapDutyCycles = 0.001;
-        //private double minPctActiveDutyCycles = 0.001;
-        //private double predictedSegmentDecrement = 0.0;
-        //private int dutyCyclePeriod = 1000;
-        //private double maxBoost = 10.0;
-        //private bool wrapAround = true;
-        //private bool isBumpUpWeakColumnsDisabled = false;
-
-        //private int numInputs = 1;  //product of input dimensions
-        //private int numColumns = 1; //product of column dimensions
-
-        //Extra parameter settings
-        //private double synPermMin = 0.0;
-        //private double synPermMax = 1.0;
-        //private double synPermTrimThreshold;// = synPermActiveInc / 2.0;
-        //private int updatePeriod = 50;
-        //private double initConnectedPct = 0.5;
 
         //Internal state
         private double version = 1.0;
@@ -61,34 +32,7 @@ namespace NeoCortexApi.Entities
         private double[] m_BoostedmOverlaps;
         private int[] m_Overlaps;
 
-        /// <summary>
-        /// Manages input neighborhood transformations
-        /// </summary>
-        //private Topology inputTopology;
-        /// <summary>
-        /// Manages column neighborhood transformations
-        /// </summary>
-        //private Topology columnTopology;
-        /// <summary>
-        /// A matrix representing the shape of the input.
-        /// </summary>
-        //protected ISparseMatrix<int> inputMatrix;
-        /**
-         * Store the set of all inputs that are within each column's potential pool.
-         * 'potentialPools' is a matrix, whose rows represent cortical columns, and
-         * whose columns represent the input bits. if potentialPools[i][j] == 1,
-         * then input bit 'j' is in column 'i's potential pool. A column can only be
-         * connected to inputs in its potential pool. The indices refer to a
-         * flattened version of both the inputs and columns. Namely, irrespective
-         * of the topology of the inputs and columns, they are treated as being a
-         * one dimensional array. Since a column is typically connected to only a
-         * subset of the inputs, many of the entries in the matrix are 0. Therefore
-         * the potentialPool matrix is stored using the SparseObjectMatrix
-         * class, to reduce memory footprint and computation time of algorithms that
-         * require iterating over the data structure.
-         */
-        //private IFlatMatrix<Pool> potentialPools;
-
+      
         /// <summary>
         /// Initialize a tiny random tie breaker. This is used to determine winning
         /// columns where the overlaps are identical.
@@ -104,23 +48,23 @@ namespace NeoCortexApi.Entities
         private AbstractSparseBinaryMatrix connectedCounts2;
 
         /// <summary>
+        /// The cells currently active as a result of the TM compute.
+        /// </summary>
+        public ISet<Cell> ActiveCells { get => m_ActiveCells; set => m_ActiveCells = value; }
+
+        /// <summary>
+        /// The winner cells in the current TM compute cycle. Cctive cells are winner cells in the trained TM.
+        /// If the TM is not trained, segment has no active cells and all cells will be activated (bursting).
+        /// One of all active column cells will be selected as the winner cell.
+        /// </summary>
+        public ISet<Cell> WinnerCells { get => winnerCells; set => winnerCells = value; }
+
+        
+        /// <summary>
         /// All cells. Initialized during initialization of the TemporalMemory.
         /// </summary>
         public Cell[] Cells { get; set; }
 
-        /// <summary>
-        /// The inhibition radius determines the size of a column's local
-        /// neighborhood. of a column. A cortical column must overcome the overlap
-        /// score of columns in its neighborhood in order to become actives. This
-        /// radius is updated every learning round. It grows and shrinks with the
-        /// average number of connected synapses per column.
-        /// </summary>
-        //private int m_InhibitionRadius = 0;
-
-        //private double[] overlapDutyCycles;
-        //private double[] activeDutyCycles;
-        //private volatile double[] minOverlapDutyCycles;
-        //private volatile double[] minActiveDutyCycles;
         private double[] m_BoostFactors;
 
         /////////////////////////////////////// Temporal Memory Vars ///////////////////////////////////////////
@@ -131,88 +75,7 @@ namespace NeoCortexApi.Entities
         protected List<DistalDendrite> m_ActiveSegments = new List<DistalDendrite>();
         protected List<DistalDendrite> m_MatchingSegments = new List<DistalDendrite>();
 
-        /// <summary>
-        /// Total number of columns
-        /// </summary>
-        //protected int[] columnDimensions = new int[] { 2048 };
-        /// <summary>
-        /// Total number of cells per column
-        /// </summary>
-        //protected int cellsPerColumn = 32;
-        /// <summary>
-        /// What will comprise the Layer input. Input (i.e. from encoder)
-        /// </summary>
-        //protected int[] inputDimensions = new int[] { 100 };
-        /// <summary>
-        /// If the number of active connected synapses on a segment
-        /// is at least this threshold, the segment is said to be active.
-        /// </summary>
-        //private int activationThreshold = 13;
-        /// <summary>
-        /// Radius around cell from which it can
-        /// sample to form distal {@link DistalDendrite} connections.
-        /// </summary>
-        //private int learningRadius = 2048;
-        /// <summary>
-        /// If the number of synapses active on a segment is at least this 
-        /// threshold, it is selected as the best matching 
-        /// cell in a bursting column. 
-        /// </summary>
-        //private int minThreshold = 10;
-        /// <summary>
-        /// The maximum number of synapses added to a segment during learning.
-        /// </summary>
-        //private int maxNewSynapseCount = 20;
-        /// <summary>
-        /// The maximum number of segments (distal dendrites) allowed on a cell
-        /// </summary>
-        //private int maxSegmentsPerCell = 255;
-        /// <summary>
-        /// The maximum number of synapses allowed on a given segment (distal dendrite)
-        /// </summary>
-        //private int maxSynapsesPerSegment = 255;
-        /// <summary>
-        /// Initial permanence of a new synapse
-        /// </summary>
-        //private double initialPermanence = 0.21;
-        /// <summary>
-        /// If the permanence value for a synapse
-        /// is greater than this value, it is said
-        /// to be connected.
-        /// </summary>
-        //private double connectedPermanence = 0.50;
-        /// <summary>
-        /// Amount by which permanences of synapses
-        /// are incremented during learning.
-        /// </summary>
-        //private double permanenceIncrement = 0.10;
-        /// <summary>
-        /// Amount by which permanences of synapses
-        /// are decremented during learning.
-        /// </summary>
-        //private double permanenceDecrement = 0.10;
-
-        /// <summary>
-        /// The main data structure containing columns, cells, and synapses
-        /// </summary>
-        //private AbstractSparseMatrix<Column> memory;
-
-        //public HtmModuleTopology ColumnTopology
-        //{
-        //    get
-        //    {
-        //        return this.HtmConfig.Memory?.ModuleTopology;
-        //    }
-        //}
-
-        //public HtmModuleTopology InputTopology
-        //{
-        //    get
-        //    {
-        //        return this.HtmConfig.InputMatrix?.ModuleTopology;
-        //    }
-        //}
-
+      
         private HtmConfig m_HtmConfig = new HtmConfig();
 
         public HtmConfig HtmConfig
@@ -282,13 +145,16 @@ namespace NeoCortexApi.Entities
 
 
 
-        ///////////////////////   Structural Elements /////////////////////////
+        ///////////////////////   Synapses and segments /////////////////////////
 
         /// <summary>
         /// Reverse mapping from source cell to <see cref="Synapse"/>
         /// </summary>
         private Dictionary<Cell, LinkedHashSet<Synapse>> m_ReceptorSynapses;
 
+        /// <summary>
+        /// Distal segments of cells.
+        /// </summary>
         protected Dictionary<Cell, List<DistalDendrite>> m_DistalSegments;
 
         /// <summary>
@@ -296,6 +162,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         private Dictionary<Segment, List<Synapse>> m_DistalSynapses;
 
+        // Proximal synapses are a part of the column.
         //protected Dictionary<Segment, List<Synapse>> proximalSynapses;
 
         /** Helps index each new proximal Synapse */
@@ -324,7 +191,8 @@ namespace NeoCortexApi.Entities
         protected List<int> m_FreeFlatIdxs = new List<int>();
 
         /// <summary>
-        /// Indexed segments by their global index (can contain nulls)
+        /// Indexed segments by their global index (can contain nulls).
+        /// Indexed list of distal segments.
         /// </summary>
         protected List<DistalDendrite> m_SegmentForFlatIdx = new List<DistalDendrite>();
 
@@ -2134,11 +2002,6 @@ namespace NeoCortexApi.Entities
             m_PredictiveCells.Clear();
         }
 
-
-        public ISet<Cell> ActiveCells { get => m_ActiveCells; set => m_ActiveCells = value; }
-
-
-        public ISet<Cell> WinnerCells { get => winnerCells; set => winnerCells = value; }
 
         /// <summary>
         /// Generates the list of predictive cells from parent cells of active segments.

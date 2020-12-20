@@ -1149,10 +1149,11 @@ namespace NeoCortexApi
         }
 
         /// <summary>
-        /// Performs inhibition. This method calculates the necessary values needed to actually perform inhibition and then delegates
+        /// Implements the local inhibition algorithm. 
+        /// This method calculates the necessary values needed to actually perform inhibition and then delegates
         /// the task of picking the active columns to helper functions.
         /// </summary>
-        /// <param name="c">the <see cref="Connections"/> matrix</param>
+        /// <param name="mem">the <see cref="Connections"/> matrix</param>
         /// <param name="overlaps">
         /// an array containing the overlap score for each  column. The overlap score for a column is defined as the number of synapses
         /// in a "connected state" (connected synapses) that are connected to input bits which are turned on.
@@ -1162,7 +1163,7 @@ namespace NeoCortexApi
         /// in a local fashion, the exact fraction of surviving columns is likely to vary.
         /// </param>
         /// <returns>indices of the winning columns</returns>
-        public virtual int[] InhibitColumnsLocalOriginal(Connections c, double[] overlaps, double density)
+        public virtual int[] InhibitColumnsLocalOriginal(Connections mem, double[] overlaps, double density)
         {
             double winnerDelta = ArrayUtils.Max(overlaps) / 1000.0d;
             if (winnerDelta == 0)
@@ -1173,29 +1174,34 @@ namespace NeoCortexApi
             double[] tieBrokenOverlaps = new List<double>(overlaps).ToArray();
 
             List<int> winners = new List<int>();
-            int inhibitionRadius = c.HtmConfig.InhibitionRadius;
-            //int inhibitionRadius = 5;
-            //Debug.WriteLine("Inhibition Radius: " + inhibitionRadius);
+
+            int inhibitionRadius = mem.HtmConfig.InhibitionRadius;
+            
             for (int column = 0; column < overlaps.Length; column++)
             {
-                if (overlaps[column] >= c.HtmConfig.StimulusThreshold)
+                if (overlaps[column] >= mem.HtmConfig.StimulusThreshold)
                 {
-                    int[] neighborhood = GetColumnNeighborhood(c, column, inhibitionRadius);
+                    int[] neighborhood = GetColumnNeighborhood(mem, column, inhibitionRadius);
                     // Take overlapps of neighbors
                     double[] neighborhoodOverlaps = ArrayUtils.ListOfValuesByIndicies(tieBrokenOverlaps, neighborhood);
 
-                    // Filter neighbors with overlaps bigger than column overlap
-                    long numBigger = neighborhoodOverlaps.Count(d => d > overlaps[column]);
+                    // Filter neighbors with overlaps larger than column overlap
+                    long numHigherOverlap = neighborhoodOverlaps.Count(d => d > overlaps[column]);
+                   
                     // density will reduce radius
+                    // numActive is the number of columns that participate in the inhibition.
                     int numActive = (int)(0.5 + density * neighborhood.Length);
-                    if (numBigger < numActive)
+
+                    //
+                    // Column is added as a winner one if the number of higher overlapped columns than the actual column
+                    // is less than number of active columns defined by density and radius.
+                    if (numHigherOverlap < numActive)
                     {
                         winners.Add(column);
                         tieBrokenOverlaps[column] += winnerDelta;
                     }
                 }
             }
-
 
             return winners.ToArray();
         }

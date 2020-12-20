@@ -8,18 +8,15 @@ namespace NeoCortexApi.Entities
 {
 
     /// <summary>
-    /// Defines th eproximal dentritte segment.
+    /// Defines th eproximal dentritte segment. Note the segment is used during SP compute operation.
+    /// TM does not use this segment.
     /// </summary>
-    //[Serializable]
     public class ProximalDendrite : Segment
     {
+        /// <summary>
+        /// The pool of synapses.
+        /// </summary>
         public Pool RFPool {get;set; }
-
-        ///// <summary>
-        ///// Permanence threshold value to declare synapse as connected.
-        ///// </summary>
-        //public double SynapsePermConnected { get; set; }
-
 
         /// <summary>
         /// 
@@ -52,62 +49,15 @@ namespace NeoCortexApi.Entities
 
 
         /// <summary>
-        /// Creates object, which represents the pool of input neurons, which are connected.
+        /// Clears all synapses on the segment.
         /// </summary>
         /// <param name="c"></param>
-        /// <param name="inputIndexes">Indexes of connected input bits.</param>
-        /// <returns></returns>
-        //public Pool createPool(int numInputs, int currentProximalSynapseCount, int[] inputIndexes)
-        //{
-        //    this.RFPool = new Pool(inputIndexes.Length, numInputs);
-        //    for (int i = 0; i < inputIndexes.Length; i++)
-        //    {
-        //        //var synapse = createSynapse(c, c.getSynapses(this), null, this.RFPool, synCount, inputIndexes[i]);
-        //        var synapse = createSynapse(null, this.RFPool, currentProximalSynapseCount, inputIndexes[i]);
-        //        synapse.setPermanence(this.SynapsePermConnected, 0);
-        //        c.setProximalSynapseCount(currentProximalSynapseCount + 1);
-        //    }
-        //    return RFPool;
-        //}
-
         public void ClearSynapses(Connections c)
         {
             this.Synapses.Clear();
-            //c.getSynapses(this).Clear();
         }
 
 
-        ///**
-        // * Sets the permanences for each {@link Synapse}. The number of synapses
-        // * is set by the potentialPct variable which determines the number of input
-        // * bits a given column will be "attached" to which is the same number as the
-        // * number of {@link Synapse}s
-        // * 
-        // * @param c			the {@link Connections} memory
-        // * @param perms		the floating point degree of connectedness
-        // */
-        //public void setPermanencesOLD(Connections c, double[] perms)
-        //{
-        //    var connCounts = c.getConnectedCounts();
-
-        //    this.RFPool.resetConnections();
-
-        //    connCounts.clearStatistics(index);
-
-        //    //List<Synapse> synapses = c.getSynapses(this);
-
-        //    foreach (Synapse s in this.Synapses)
-        //    {
-        //        int indx = s.getInputIndex();
-
-        //        s.setPermanence(c.getSynPermConnected(), perms[indx]);
-
-        //        if (perms[indx] >= c.getSynPermConnected())
-        //        {
-        //            connCounts.set(1, index, s.getInputIndex());
-        //        }
-        //    }
-        //}
 
         /// <summary>
         /// Sets the permanences for each {@link Synapse} specified by the indexes passed in which identify the input vector indexes associated with the
