@@ -170,7 +170,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Synapses, which belong to some distal dentrite segment.
         /// </summary>
-        private Dictionary<Segment, List<Synapse>> m_DistalSynapses;
+        //private Dictionary<Segment, List<Synapse>> m_DistalSynapses;
 
         // Proximal synapses are a part of the column.
         //protected Dictionary<Segment, List<Synapse>> proximalSynapses;
@@ -1664,11 +1664,13 @@ namespace NeoCortexApi.Entities
         public void DestroySegment(DistalDendrite segment)
         {
             // Remove the synapses from all data structures outside this Segment.
-            List<Synapse> synapses = GetSynapses(segment);
+            //DD List<Synapse> synapses = GetSynapses(segment);
+            List<Synapse> synapses = segment.Synapses;
             int len = synapses.Count;
 
             //getSynapses(segment).stream().forEach(s->removeSynapseFromPresynapticMap(s));
-            foreach (var s in GetSynapses(segment))
+            //DD foreach (var s in GetSynapses(segment))
+            foreach (var s in segment.Synapses)
             {
                 RemoveSynapseFromPresynapticMap(s);
             }
@@ -1679,7 +1681,7 @@ namespace NeoCortexApi.Entities
             GetSegments(segment.ParentCell).Remove(segment);
 
             // Remove the segment from the map
-            m_DistalSynapses.Remove(segment);
+            //DD m_DistalSynapses.Remove(segment);
 
             // Free the flatIdx and remove the final reference so the Segment can be
             // garbage-collected.
@@ -1837,7 +1839,8 @@ namespace NeoCortexApi.Entities
             }
 
             Synapse synapse = null;
-            GetSynapses(segment).Add(
+            //DD GetSynapses(segment).Add(
+                segment.Synapses.Add(
                 synapse = new Synapse(
                     presynapticCell, segment.SegmentIndex, m_NextSynapseOrdinal, permanence));
 
@@ -1862,7 +1865,8 @@ namespace NeoCortexApi.Entities
             RemoveSynapseFromPresynapticMap(synapse);
 
             //segment.Synapses.Remove(synapse);
-            GetSynapses(segment).Remove(synapse);
+            //DD GetSynapses(segment).Remove(synapse);
+            segment.Synapses.Remove(synapse);
         }
 
         /// <summary>
@@ -1892,7 +1896,8 @@ namespace NeoCortexApi.Entities
         private Synapse MinPermanenceSynapse(DistalDendrite dd)
         {
             //List<Synapse> synapses = getSynapses(dd).stream().sorted().collect(Collectors.toList());
-            List<Synapse> synapses = GetSynapses(dd);
+            //DD List<Synapse> synapses = GetSynapses(dd);
+            List<Synapse> synapses = dd.Synapses;
             Synapse min = null;
             double minPermanence = Double.MaxValue;
 
@@ -1919,7 +1924,8 @@ namespace NeoCortexApi.Entities
         {
             if (optionalSegmentArg != null)
             {
-                return GetSynapses(optionalSegmentArg).Count;
+                // DD return GetSynapses(optionalSegmentArg).Count;
+                return optionalSegmentArg.Synapses.Count;
             }
 
             return m_NumSynapses;
@@ -1961,40 +1967,40 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="segment">Distal Dentrite segment.</param>
         /// <returns>List of segment synapeses.</returns>
-        public List<Synapse> GetSynapses(DistalDendrite segment)
-        {
-            if (segment == null)
-            {
-                throw new ArgumentException("Segment cannot be null");
-            }
+        //public List<Synapse> GetSynapses(DistalDendrite segment)
+        //{
+        //    if (segment == null)
+        //    {
+        //        throw new ArgumentException("Segment cannot be null");
+        //    }
 
-            if (m_DistalSynapses == null)
-            {
-                m_DistalSynapses = new Dictionary<Segment, List<Synapse>>();
-            }
+        //    if (m_DistalSynapses == null)
+        //    {
+        //        m_DistalSynapses = new Dictionary<Segment, List<Synapse>>();
+        //    }
 
-            List<Synapse> retVal = null;
-            if (m_DistalSynapses.TryGetValue(segment, out retVal) == false)
-            {
-                m_DistalSynapses.Add(segment, retVal = new List<Synapse>());
-            }
+        //    List<Synapse> retVal = null;
+        //    if (m_DistalSynapses.TryGetValue(segment, out retVal) == false)
+        //    {
+        //        m_DistalSynapses.Add(segment, retVal = new List<Synapse>());
+        //    }
 
-            return retVal;
-        }
+        //    return retVal;
+        //}
 
 
 
         /// <summary>
         /// For testing only.
         /// </summary>
-        /// <returns></returns>
-        public Dictionary<Cell, LinkedHashSet<Synapse>> getReceptorSynapseMapping()
+        /// <returns>Copy of dictionary.</returns>
+        public Dictionary<Cell, LinkedHashSet<Synapse>> GetReceptorSynapses()
         {
             return new Dictionary<Cell, LinkedHashSet<Synapse>>(m_ReceptorSynapses);
         }
 
         /// <summary>
-        /// Clears all <see cref="TemporalMemory"/> state.
+        /// Clears the sequence learning state.
         /// </summary>
         public void Clear()
         {
@@ -2324,7 +2330,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + (int)(temp ^ (temp >> 32));
             //result = prime * result + proximalSynapseCounter;
             //result = prime * result + ((proximalSynapses == null) ? 0 : proximalSynapses.GetHashCode());
-            result = prime * result + ((m_DistalSynapses == null) ? 0 : m_DistalSynapses.GetHashCode());
+            //DD result = prime * result + ((m_DistalSynapses == null) ? 0 : m_DistalSynapses.GetHashCode());
             result = prime * result + m_TieBreaker.GetHashCode();
             result = prime * result + this.HtmConfig.UpdatePeriod;
             temp = BitConverter.DoubleToInt64Bits(version);
@@ -2333,6 +2339,7 @@ namespace NeoCortexApi.Entities
             return result;
         }
 
+        /*
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
@@ -2523,6 +2530,7 @@ namespace NeoCortexApi.Entities
                 return false;
             return true;
         }
+        */
         #endregion
     }
 }

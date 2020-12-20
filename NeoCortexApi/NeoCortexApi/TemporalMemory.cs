@@ -352,7 +352,8 @@ namespace NeoCortexApi
 
             foreach (DistalDendrite segment in columnActiveSegments)
             {
-                foreach (Synapse synapse in new List<Synapse>(conn.GetSynapses(segment)))
+                //DD foreach (Synapse synapse in new List<Synapse>(conn.GetSynapses(segment)))
+                foreach (Synapse synapse in new List<Synapse>(segment.Synapses))
                 {
                     // WORKING DRAFT. TM algorithm change.
                     // The original algorithm adopt all synapses at the segment.
@@ -630,7 +631,8 @@ namespace NeoCortexApi
             // Enumarates all synapses in a segment and remove winner-cells from
             // list of removingCandidates if they are presynaptic winners cells.
             // So, we will recreate only synapses on cells, which are not winners in the previous step.
-            foreach (Synapse synapse in conn.GetSynapses(segment))
+            //DD 
+            foreach (Synapse synapse in segment.Synapses)
             {
                 Cell presynapticCell = synapse.getPresynapticCell();
                 int index = removingCandidates.IndexOf(presynapticCell);
@@ -676,7 +678,8 @@ namespace NeoCortexApi
             // Destroying a synapse modifies the set that we're iterating through.
             List<Synapse> synapsesToDestroy = new List<Synapse>();
 
-            foreach (Synapse synapse in conn.GetSynapses(segment))
+            //DD oreach (Synapse synapse in conn.GetSynapses(segment))
+                foreach (Synapse synapse in segment.Synapses)
             {
                 double permanence = synapse.Permanence;
 

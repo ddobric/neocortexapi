@@ -420,7 +420,8 @@ namespace UnitTestsProject
             //List<DistalDendrite> segments = winnerCells[0].Segments;
             Assert.AreEqual(1, segments.Count);
 
-            List<Synapse> synapses = cn.GetSynapses(segments[0]);
+            //DD List<Synapse> synapses = cn.GetSynapses(segments[0]);
+            List<Synapse> synapses = segments[0].Synapses;
             Assert.AreEqual(2, synapses.Count);
 
             foreach (Synapse synapse in synapses)
@@ -489,7 +490,9 @@ namespace UnitTestsProject
             Assert.IsTrue(cc.WinnerCells.SequenceEqual(prevWinnerCells));
             cc = tm.Compute(activeColumns, true) as ComputeCycle;
 
-            List<Synapse> synapses = cn.GetSynapses(matchingSegment);
+            //DD List<Synapse> synapses = cn.GetSynapses(matchingSegment);
+            List<Synapse> synapses = matchingSegment.Synapses;
+
             Assert.AreEqual(3, synapses.Count);
 
             synapses.Sort();
@@ -528,7 +531,8 @@ namespace UnitTestsProject
 
             cc = tm.Compute(activeColumns, true) as ComputeCycle;
 
-            List<Synapse> synapses = cn.GetSynapses(matchingSegment);
+            //DD List<Synapse> synapses = cn.GetSynapses(matchingSegment);
+            List<Synapse> synapses = matchingSegment.Synapses;
             Assert.AreEqual(2, synapses.Count);
 
             synapses.Sort();
@@ -683,11 +687,13 @@ namespace UnitTestsProject
             Assert.IsTrue(prevWinnerCells.SequenceEqual(cc.WinnerCells));
             tm.Compute(activeColumns, true);
 
-            List<Synapse> synapses = cn.GetSynapses(matchingSegment);
+            //DD List<Synapse> synapses = cn.GetSynapses(matchingSegment);
+            List<Synapse> synapses = matchingSegment.Synapses;
             Assert.AreEqual(3, synapses.Count);
             //Set<Cell> presynapticCells = synapses.stream().map(s->s.getPresynapticCell()).collect(Collectors.toSet());
             List<Cell> presynapticCells = new List<Cell>();
-            foreach (var syn in cn.GetSynapses(matchingSegment))
+            //DD foreach (var syn in cn.GetSynapses(matchingSegment))
+            foreach (var syn in matchingSegment.Synapses)
             {
                 presynapticCells.Add(syn.getPresynapticCell());
             }
@@ -733,7 +739,8 @@ namespace UnitTestsProject
             //    .map(s->s.getPresynapticCell())
             //    .collect(Collectors.toSet());
 
-            var oldPresynaptic = cn.GetSynapses(oldestSegment).Select(s => s.getPresynapticCell()).ToList();
+            //var oldPresynaptic = cn.GetSynapses(oldestSegment).Select(s => s.getPresynapticCell()).ToList();
+            var oldPresynaptic = oldestSegment.Synapses.Select(s => s.getPresynapticCell()).ToList();
 
             tm.Reset(cn);
             tm.Compute(prevActiveColumns3, true);
@@ -749,8 +756,8 @@ namespace UnitTestsProject
                 //    .stream()
                 //    .map(s->s.getPresynapticCell())
                 //    .collect(Collectors.toSet());
-                var newPresynaptic = cn.GetSynapses(segment).Select(s => s.getPresynapticCell()).ToList();
-
+                //DD var newPresynaptic = cn.GetSynapses(segment).Select(s => s.getPresynapticCell()).ToList();
+                var newPresynaptic = segment.Synapses.Select(s => s.getPresynapticCell()).ToList();
 
                 Assert.IsTrue(areDisjoined<Cell>(oldPresynaptic, newPresynaptic));
             }
@@ -930,15 +937,15 @@ namespace UnitTestsProject
             cn.CreateSynapse(wrongMatchingSegment, prevActiveCells[1], 0.5);
             cn.CreateSynapse(wrongMatchingSegment, prevInactiveCell, 0.5);
 
-            var r = deepCopyPlain<Synapse>(cn.getReceptorSynapseMapping().Values.First().First());
-            var synMapBefore = deepCopyPlain<Dictionary<Cell, LinkedHashSet<Synapse>>>(cn.getReceptorSynapseMapping());
+            var r = deepCopyPlain<Synapse>(cn.GetReceptorSynapses().Values.First().First());
+            var synMapBefore = deepCopyPlain<Dictionary<Cell, LinkedHashSet<Synapse>>>(cn.GetReceptorSynapses());
             var segMapBefore = deepCopyPlain<Dictionary<Cell, List<DistalDendrite>>>(cn.GetSegmentMapping());
 
             tm.Compute(prevActiveColumns, false);
             tm.Compute(activeColumns, false);
 
-            Assert.IsTrue(synMapBefore != cn.getReceptorSynapseMapping());
-            Assert.IsTrue(synMapBefore.Keys.SequenceEqual(cn.getReceptorSynapseMapping().Keys));
+            Assert.IsTrue(synMapBefore != cn.GetReceptorSynapses());
+            Assert.IsTrue(synMapBefore.Keys.SequenceEqual(cn.GetReceptorSynapses().Keys));
 
             Assert.IsTrue(segMapBefore != cn.GetSegmentMapping());
             Assert.IsTrue(segMapBefore.Keys.SequenceEqual(cn.GetSegmentMapping().Keys));
@@ -1020,7 +1027,8 @@ namespace UnitTestsProject
             cn.CreateSynapse(dd, cn.GetCell(1), 0.3);
 
             tm.AdaptSegment(cn, dd, cn.GetCellSet(new int[] { }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
-            Assert.IsFalse(cn.GetSynapses(dd).Contains(s1));
+            //DD Assert.IsFalse(cn.GetSynapses(dd).Contains(s1));
+            Assert.IsFalse(dd.Synapses.Contains(s1));
         }
 
         [TestMethod]
