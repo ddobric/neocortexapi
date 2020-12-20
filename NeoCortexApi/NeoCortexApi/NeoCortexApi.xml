@@ -1748,10 +1748,11 @@
         </member>
         <member name="M:NeoCortexApi.SpatialPooler.InhibitColumnsLocalOriginal(NeoCortexApi.Entities.Connections,System.Double[],System.Double)">
             <summary>
-            Performs inhibition. This method calculates the necessary values needed to actually perform inhibition and then delegates
+            Implements the local inhibition algorithm. 
+            This method calculates the necessary values needed to actually perform inhibition and then delegates
             the task of picking the active columns to helper functions.
             </summary>
-            <param name="c">the <see cref="T:NeoCortexApi.Entities.Connections"/> matrix</param>
+            <param name="mem">the <see cref="T:NeoCortexApi.Entities.Connections"/> matrix</param>
             <param name="overlaps">
             an array containing the overlap score for each  column. The overlap score for a column is defined as the number of synapses
             in a "connected state" (connected synapses) that are connected to input bits which are turned on.
@@ -1826,6 +1827,18 @@
             Implements muticore initialization of pooler.
             </summary>
             <param name="c"></param>
+        </member>
+        <member name="T:NeoCortexApi.SpatialPoolerParallel">
+            <summary>
+            The parallel version of the SP on to of the actor model.
+            </summary>
+        </member>
+        <member name="M:NeoCortexApi.SpatialPoolerParallel.InitMatrices(NeoCortexApi.Entities.Connections,NeoCortexApi.Entities.DistributedMemory)">
+            <summary>
+            Performs the remote initialization ot the SP on actor nodes.
+            </summary>
+            <param name="c"></param>
+            <param name="distMem"></param>
         </member>
         <member name="M:NeoCortexApi.SpatialPoolerParallel.ConnectAndConfigureInputs(NeoCortexApi.Entities.Connections)">
             <summary>

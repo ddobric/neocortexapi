@@ -19,15 +19,25 @@ namespace NeoCortexApi.Entities
     public class Connections
     {
 
-    
+        public static readonly double EPSILON = 0.00001;
+
         /////////////////////////////////////// Spatial Pooler Vars ///////////////////////////////////////////
 
 
         //Internal state
         private double version = 1.0;
+
+        /// <summary>
+        /// The number of compute calls on the SP instance.
+        /// </summary>
         public int SpIterationNum { get; set; } = 0;
+
+        /// <summary>
+        /// The number of compute calls of the SP instance with enabled learning.
+        /// </summary>
         public int SpIterationLearnNum { get; set; } = 0;
-        private long m_tmIteration = 0;
+
+        private long m_TMIteration = 0;
 
         private double[] m_BoostedmOverlaps;
         private int[] m_Overlaps;
@@ -1583,22 +1593,13 @@ namespace NeoCortexApi.Entities
         }
 
 
-        ///// <summary>
-        ///// Returns the last activity computed during the most recent cycle.
-        ///// </summary>
-        ///// <returns></returns>
-        //public SegmentActivity getLastActivity()
-        //{
-        //    return lastActivity;
-        //}
-
         /// <summary>
         /// Record the fact that a segment had some activity. This information is used during segment cleanup.
         /// </summary>
         /// <param name="segment">the segment for which to record activity</param>
         public void RecordSegmentActivity(DistalDendrite segment)
         {
-            segment.LastUsedIteration = m_tmIteration;
+            segment.LastUsedIteration = m_TMIteration;
         }
 
         /// <summary>
@@ -1607,7 +1608,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public void StartNewIteration()
         {
-            ++m_tmIteration;
+            ++m_TMIteration;
         }
 
         #endregion
@@ -1615,7 +1616,7 @@ namespace NeoCortexApi.Entities
         /////////////////////////////////////////////////////////////////
         //     Segment (Specifically, Distal Dendrite) Operations      //
         /////////////////////////////////////////////////////////////////
-        ///
+     
         #region Segment (Specifically, Distal Dendrite) methods
         /// <summary>
         /// Adds a new <see cref="DistalDendrite"/> segment on the specified <see cref="Cell"/>, or reuses an existing one.
@@ -1649,7 +1650,7 @@ namespace NeoCortexApi.Entities
             int ordinal = m_NextSegmentOrdinal;
             ++m_NextSegmentOrdinal;
 
-            DistalDendrite segment = new DistalDendrite(segmentParentCell, flatIdx, m_tmIteration, ordinal, this.HtmConfig.SynPermConnected, this.HtmConfig.NumInputs);
+            DistalDendrite segment = new DistalDendrite(segmentParentCell, flatIdx, m_TMIteration, ordinal, this.HtmConfig.SynPermConnected, this.HtmConfig.NumInputs);
             GetSegments(segmentParentCell, true).Add(segment);
             m_SegmentForFlatIdx[flatIdx] = segment;
 
@@ -2268,7 +2269,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + SpIterationLearnNum;
             result = prime * result + SpIterationNum;
             //result = prime * result + (new Long(tmIteration)).intValue();
-            result = prime * result + (int)m_tmIteration;
+            result = prime * result + (int)m_TMIteration;
             result = prime * result + this.HtmConfig.LearningRadius;
             temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.LocalAreaDensity);
             result = prime * result + (int)(temp ^ (temp >> 32));
@@ -2398,7 +2399,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (SpIterationNum != other.SpIterationNum)
                 return false;
-            if (m_tmIteration != other.m_tmIteration)
+            if (m_TMIteration != other.m_TMIteration)
                 return false;
             if (this.HtmConfig.LearningRadius != other.HtmConfig.LearningRadius)
                 return false;
