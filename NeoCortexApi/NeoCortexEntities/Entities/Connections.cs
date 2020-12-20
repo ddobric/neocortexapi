@@ -19,7 +19,8 @@ namespace NeoCortexApi.Entities
     public class Connections
     {
 
-    
+        public static readonly double EPSILON = 0.00001;
+
         /////////////////////////////////////// Spatial Pooler Vars ///////////////////////////////////////////
 
 
