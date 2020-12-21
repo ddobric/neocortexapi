@@ -712,6 +712,16 @@
             TemporalMemory as well as the state of Cells, Columns, Segments, Synapses etc..
             </summary>
         </member>
+        <member name="P:NeoCortexApi.Entities.Connections.SpIterationNum">
+            <summary>
+            The number of compute calls on the SP instance.
+            </summary>
+        </member>
+        <member name="P:NeoCortexApi.Entities.Connections.SpIterationLearnNum">
+            <summary>
+            The number of compute calls of the SP instance with enabled learning.
+            </summary>
+        </member>
         <member name="F:NeoCortexApi.Entities.Connections.m_TieBreaker">
             <summary>
             Initialize a tiny random tie breaker. This is used to determine winning
@@ -726,28 +736,31 @@
             stored separately for efficiency purposes.
             </summary>
         </member>
+        <member name="P:NeoCortexApi.Entities.Connections.ActiveCells">
+            <summary>
+            The cells currently active as a result of the TM compute.
+            </summary>
+        </member>
+        <member name="P:NeoCortexApi.Entities.Connections.WinnerCells">
+            <summary>
+            The winner cells in the current TM compute cycle. Cctive cells are winner cells in the trained TM.
+            If the TM is not trained, segment has no active cells and all cells will be activated (bursting).
+            One of all active column cells will be selected as the winner cell.
+            </summary>
+        </member>
         <member name="P:NeoCortexApi.Entities.Connections.Cells">
             <summary>
             All cells. Initialized during initialization of the TemporalMemory.
             </summary>
         </member>
-        <member name="F:NeoCortexApi.Entities.Connections.m_BoostFactors">
-            <summary>
-            The inhibition radius determines the size of a column's local
-            neighborhood. of a column. A cortical column must overcome the overlap
-            score of columns in its neighborhood in order to become actives. This
-            radius is updated every learning round. It grows and shrinks with the
-            average number of connected synapses per column.
-            </summary>
-        </member>
-        <member name="F:NeoCortexApi.Entities.Connections.m_HtmConfig">
-            <summary>
-            The main data structure containing columns, cells, and synapses
-            </summary>
-        </member>
         <member name="F:NeoCortexApi.Entities.Connections.m_ReceptorSynapses">
             <summary>
             Reverse mapping from source cell to <see cref="T:NeoCortexApi.Entities.Synapse"/>
+            </summary>
+        </member>
+        <member name="F:NeoCortexApi.Entities.Connections.m_DistalSegments">
+            <summary>
+            Distal segments of cells.
             </summary>
         </member>
         <member name="F:NeoCortexApi.Entities.Connections.m_DistalSynapses">
@@ -782,7 +795,8 @@
         </member>
         <member name="F:NeoCortexApi.Entities.Connections.m_SegmentForFlatIdx">
             <summary>
-            Indexed segments by their global index (can contain nulls)
+            Indexed segments by their global index (can contain nulls).
+            Indexed list of distal segments.
             </summary>
         </member>
         <member name="P:NeoCortexApi.Entities.Connections.LastActivity">
@@ -906,7 +920,7 @@
             <summary>
             Adds a new <see cref="T:NeoCortexApi.Entities.DistalDendrite"/> segment on the specified <see cref="T:NeoCortexApi.Entities.Cell"/>, or reuses an existing one.
             </summary>
-            <param name="cell">the Cell to which a segment is added.</param>
+            <param name="segmentParentCell">the Cell to which a segment is added.</param>
             <returns>the newly created segment or a reused segment.</returns>
         </member>
         <member name="M:NeoCortexApi.Entities.Connections.DestroySegment(NeoCortexApi.Entities.DistalDendrite)">
@@ -1005,8 +1019,8 @@
             Returns the number of <see cref="T:NeoCortexApi.Entities.Synapse"/>s on a given <see cref="T:NeoCortexApi.Entities.DistalDendrite"/>
             if specified, or the total number if the "optionalSegmentArg" is null.
             </summary>
-            <param name="optionalSegmentArg">an optional Segment to specify the context of the synapse count.</param>
-            <returns>either the total number of synapses or the number on a specified segment.</returns>
+            <param name="optionalSegmentArg">An optional Segment to specify the context of the synapse count.</param>
+            <returns>Either the total number of synapses or the number on a specified segment.</returns>
         </member>
         <member name="M:NeoCortexApi.Entities.Connections.GetReceptorSynapses(NeoCortexApi.Entities.Cell,System.Boolean)">
             <summary>
@@ -1025,17 +1039,16 @@
             <param name="segment">Distal Dentrite segment.</param>
             <returns>List of segment synapeses.</returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:NeoCortexApi.Entities.Connections.getReceptorSynapseMapping" -->
+        <member name="M:NeoCortexApi.Entities.Connections.getReceptorSynapseMapping">
+            <summary>
+            For testing only.
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:NeoCortexApi.Entities.Connections.Clear">
             <summary>
-            Clears all {@link TemporalMemory} state.
+            Clears all <see cref="!:TemporalMemory"/> state.
             </summary>
-        </member>
-        <member name="P:NeoCortexApi.Entities.Connections.ActiveCells">
-            **
-        </member>
-        <member name="P:NeoCortexApi.Entities.Connections.WinnerCells">
-            **
         </member>
         <member name="M:NeoCortexApi.Entities.Connections.GetPredictiveCells">
             <summary>
@@ -1165,7 +1178,7 @@
         </member>
         <member name="T:NeoCortexApi.Entities.DistalDendrite">
             <summary>
-            Implements a distal dendritic segment.
+            Implements a distal dendritic segment that is used for learning sequences.
             Segments are owned by <see cref="T:NeoCortexApi.Entities.Cell"/>s and in turn own <see cref="T:NeoCortexApi.Entities.Synapse"/>s which are obversely connected to by a "source cell", 
             which is the <see cref="T:NeoCortexApi.Entities.Cell"/> which will activate a given <see cref="T:NeoCortexApi.Entities.Synapse"/> owned by this <see cref="T:NeoCortexApi.Entities.Segment"/>.
             </summary>
@@ -1173,14 +1186,32 @@
             Authors of the JAVA implementation: Chetan Surpur, David Ray
             </remarks>
         </member>
+        <member name="F:NeoCortexApi.Entities.DistalDendrite.ParentCell">
+            <summary>
+            The cell that owns (parent) the segment.
+            </summary>
+        </member>
+        <member name="P:NeoCortexApi.Entities.DistalDendrite.LastUsedIteration">
+            <summary>
+            the last iteration in which this segment was active.
+            </summary>
+        </member>
+        <member name="P:NeoCortexApi.Entities.DistalDendrite.Ordinal">
+            <summary>
+            The seqence number of the segment. Specifies the order of the segment of the <see cref="T:NeoCortexApi.Entities.Connections"/> instance.
+            </summary>
+        </member>
         <member name="M:NeoCortexApi.Entities.DistalDendrite.#ctor(NeoCortexApi.Entities.Cell,System.Int32,System.Int64,System.Int32,System.Double,System.Int32)">
             <summary>
             Creates the Distal Segment.
             </summary>
             <param name="parentCell">The cell, which owns the segment.</param>
-            <param name="flatIdx">The flat index of the cell.</param>
+            <param name="flatIdx">The flat index of the segment. If some segments are destroyed (synapses lost permanence)
+            then the new segment will reuse the flat index. In contrast, 
+            the ordinal number will increas when new segments are created.</param>
             <param name="lastUsedIteration"></param>
-            <param name="ordinal"></param>
+            <param name="ordinal">The ordindal number of the segment. This number is incremented on each new segment.
+            If some segments are destroyed, this number is still incrementd.</param>
             <param name="synapsePermConnected"></param>
             <param name="numInputs"></param>
         </member>
@@ -1188,7 +1219,7 @@
             <summary>
             Gets all synapses owned by this distal dentrite segment.
             </summary>
-            <param name="c"></param>
+            <param name="mem"></param>
             <returns>Synapses.</returns>
         </member>
         <member name="M:NeoCortexApi.Entities.DistalDendrite.GetActiveSynapses(NeoCortexApi.Entities.Connections,System.Collections.Generic.ISet{NeoCortexApi.Entities.Cell})">
@@ -1199,16 +1230,23 @@
             <param name="activeCells"></param>
             <returns></returns>
         </member>
-        <member name="P:NeoCortexApi.Entities.DistalDendrite.LastUsedIteration">
-            <summary>
-            the last iteration in which this segment was active.
-            </summary>
-        </member>
-        <member name="P:NeoCortexApi.Entities.DistalDendrite.Ordinal">
-            **
-        </member>
         <member name="M:NeoCortexApi.Entities.DistalDendrite.ToString">
-            **
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NeoCortexApi.Entities.DistalDendrite.GetHashCode">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NeoCortexApi.Entities.DistalDendrite.Equals(NeoCortexApi.Entities.Segment)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:NeoCortexApi.Entities.DistalDendrite.CompareTo(NeoCortexApi.Entities.DistalDendrite)">
             <summary>
@@ -2317,7 +2355,13 @@
         </member>
         <member name="T:NeoCortexApi.Entities.ProximalDendrite">
             <summary>
-            Defines th eproximal dentritte segment.
+            Defines th eproximal dentritte segment. Note the segment is used during SP compute operation.
+            TM does not use this segment.
+            </summary>
+        </member>
+        <member name="P:NeoCortexApi.Entities.ProximalDendrite.RFPool">
+            <summary>
+            The pool of synapses.
             </summary>
         </member>
         <member name="M:NeoCortexApi.Entities.ProximalDendrite.#ctor(System.Int32,System.Double,System.Int32)">
@@ -2335,11 +2379,9 @@
         </member>
         <member name="M:NeoCortexApi.Entities.ProximalDendrite.ClearSynapses(NeoCortexApi.Entities.Connections)">
             <summary>
-            Creates object, which represents the pool of input neurons, which are connected.
+            Clears all synapses on the segment.
             </summary>
             <param name="c"></param>
-            <param name="inputIndexes">Indexes of connected input bits.</param>
-            <returns></returns>
         </member>
         <member name="M:NeoCortexApi.Entities.ProximalDendrite.SetPermanences(NeoCortexApi.Entities.AbstractSparseBinaryMatrix,NeoCortexApi.Entities.HtmConfig,System.Double[],System.Int32[])">
             <summary>
@@ -2773,6 +2815,15 @@
             <param name="radius"></param>
             <param name="topology"></param>
             <returns>The points in the neighborhood, including centerIndex.</returns>
+        </member>
+        <member name="M:NeoCortexApi.HtmCompute.GetNeighborhood(System.Int32,System.Int32,NeoCortexApi.Entities.HtmModuleTopology)">
+            <summary>
+            Gets the list of neighborhood columns around the centar with the given radius in the specified topology.
+            </summary>
+            <param name="centerIndex"></param>
+            <param name="radius"></param>
+            <param name="topology"></param>
+            <returns></returns>
         </member>
         <member name="M:NeoCortexApi.HtmCompute.GetFlatIndexFromCoordinates(System.Int32[],NeoCortexApi.Entities.HtmModuleTopology)">
             <summary>

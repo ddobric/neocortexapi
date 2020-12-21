@@ -23,11 +23,15 @@ The ability to recognize and predict temporal sequences of sensory inputs is vit
 
 [Download student paper here](./Experiments/ML-19-20_20-5.4_CellsPerColumnExperiment_Paper.pdf)
 
+[Check out implementation here](../../NeoCortexApi/UnitTestsProject/CortexNetworkTests/CellsPerColumnExperimentTest.cs)
+
 #### **HTM Sparsity**
 
 It is necessary for survival in natural environment to be able to identify and predict temporal sequence of sensory input. Based on numerous common properties of the cortical neurons, the theoretical framework for sequence learning in the neo cortex recently proposed hierarchical temporal memory (HTM). In this paper, we analyze the sequence learning behavior of spatial pooler and temporal memory layer in dependence on HTM Sparsity. We found the ideal value of HTM Sparsity that will have optimal learning for the given input sequence. We also showed the effect of changing Width and Input Bits on learning such that the value of HTM Sparsity remains constant. We devised a relation between HTM Sparsity and max for optimal learning of the given sequence.
 
 [Download student paper here](./Experiments/ML-19-20_20-5.4_HtmSparsityExperiments_Paper.pdf)
+
+[Check out implementation here](../../NeoCortexApi/UnitTestsProject/CortexNetworkTests/HtmSparsityTest.cs)
 
 #### **Parameter Change Experiment**
 
@@ -103,6 +107,30 @@ Issue 156
 
 Scalar Encoder is one of the encoding techniques and is a part of Hierarchical Temporal Memory (HTM). HTM is a machine intelligence technology which is trying to imitate the process and architecture of neocortex. The main purpose for scalar encoder is to encode numeric or floating-point value into an array of bits, where the output has 0’s with an adjacent block of 1’s. The location of the block of 1’s varies continuously depending on the input value.
 
+## Schema Image Classification
+
+### Authors
+
+Md Abu Syeem Dipu  
+Md Mahbub Ul Alam  
+Tanvir Hasan  
+Mir Mehedi Hasan Rayhan  
+Md Mijanur Rahaman  
+Md Zahidul Islam
+
+### Project reference
+
+ML19/20 - 5.11
+Issue 86
+
+### Abstract
+
+The image classification is a classical problem of image processing; machine learning fields and it is a complex process that may be affected by many factors. In this paper we study the image classification using deep learning and emphasis is placed on the summarization of major advanced classification approaches and the techniques used for improving classification accuracy. In this paper we are trying to categorize the images by the similarity of them Based on Hierarchical Temporal Memory.
+
+[Download student paper here](./Experiments/ML-19-20_20-5.11_SchemaImageClassification.pdf)
+
+[Check out implementation here](../../NeoCortexApi/UnitTestsProject/SchemaImageClassificationExperiment.cs)
+
 ## Sequence Learning - Music Notes Experiment
 
 ### Author
@@ -115,6 +143,8 @@ Damir Dobric
 To demonstrate learning of sequences, I have originally developed an experiment to learn the song. In this experiment the input is defined a set of music notes.
 Every music note is represented as a scalar value, which appear in the sequence of notes. For example, notes C, D, E, F, G and H can be associated with the scalar values: C-0, D-1, E-2, F-3, G-4, H-5. By following that rule notes of some has been taken. In the very first experiment the song _twinkle, twinkle little star_ was used in the experiment: [here] (https://www.bethsnotesplus.com/2013/08/twinkle-twinkle-little-star.html).
 Over time, the experiment has grown, but we have kept the original name '_Music Notes Experiment_'. In this experiment various outputs are generated, which trace the state of active columns and active cells during the learning process. Today, we use this experiment to learn how HTM learns sequences.
+
+[Check out implementation here](../../NeoCortexApi/UnitTestsProject/SequenceLearningExperiments/MuscNotesExperiment.cs)
 
 ## On the Relationship Between Input Sparsity and Noise Robustness in SP (Paper)
 
