@@ -111,11 +111,13 @@ namespace NeoCortexApiSample
                     // Ideal SP should never enter unstable state after stable state.
                     if (isStable == false)
                     {
+                        Debug.WriteLine($"INSTABLE");
                         // This should usually not happen.
                         isInStableState = false;
                     }
                     else
                     {
+                        Debug.WriteLine($"STABILITY");
                         // Here you can perform any action if required.
                         isInStableState = true;
                     }
@@ -161,10 +163,7 @@ namespace NeoCortexApiSample
 
             for (int cycle = 0; cycle < maxSPLearningCycles; cycle++)
             {
-                Debug.WriteLine($"Cycle  ** {cycle} **");
-
-                if (isInStableState)
-                    Debug.WriteLine($"STABILITY entered at cycle {cycle}.");
+                Debug.WriteLine($"Cycle  ** {cycle} ** Stability: {isInStableState}");
 
                 //
                 // This trains the layer on input pattern.
