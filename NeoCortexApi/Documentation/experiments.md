@@ -39,6 +39,8 @@ Hierarchical Temporal Memory (HTM) is based on the supposition that the world ha
 
 [Download student paper here](./Experiments/ML-19-20_20-5.4_ParameterChangeExperiment_Paper.pdf)
 
+[Check out implementation here](../../NeoCortexApi/UnitTestsProject/CortexNetworkTests/InputBitsExperimentTest.cs)
+
 ## Performance Spatial Pooler between Global and Local Inhibition
 
 ### Authors
@@ -57,6 +59,8 @@ Each region in the cortex receives input through millions of axons from sensory 
 
 [Download student paper here](./Experiments/ML-19-20_20-5.7_PerformanceSpatialPooler-between-Global-and-Local-Inhibition.pdf)
 
+[Check out implementation here](../../NeoCortexApi/UnitTestsProject/SpatialPoolerInhibitionExperimentalTests.cs)
+
 ## Investigation of Hierarchical Temporal Memory Spatial Pooler's Noise Robustness against Gaussian noise
 
 ### Author
@@ -67,13 +71,15 @@ Duy Nguyen
 ### Project reference
 
 ML19/20 - 5.12  
-Issue 126
+Issue 94
 
 ### Abstract
 
 The Thousand Brains Theory of Intelligence is a new and rising approach to understand human intelligence. The theory attempts to explain the fundamental principles behind human intelligence through many discovered biological evidences and logical reasoning. This theory lays the foundation for Hierarchical Temporal Memory (HTM) - an AI framework, which has many applications in practice. In this paper’s HTM model, building block of a basic HTM structure comprises of an Encoder, a Spatial Pooler and a Temporal Memory. This fundamental component has two prominent features: noise robustness and prediction. The Spatial Pooler is mostly responsible for noise handling function of the completestructure. This paper provides some experimental data and comments about the reliability of the Spatial Pooler’s noise handling function. Specifically, the level of noise robustness is measured by the similarity between outputs of the Spatial Pooler when it takes the original data set and then the additiveGaussian noisy data sets as inputs, provided that it is only trained with the original data set.
 
 [Download student paper here](./Experiments/ML-19-20_20-5.12_SpatialPooler_NoiseRobustness.pdf)
+
+[Check out implementation here](../../NeoCortexApi/UnitTestsProject/CortexNetworkTests\GoussianNoiseExperiment.cs)
 
 ## Validate Memorizing capabilities of SpatialPooler
 
@@ -86,13 +92,15 @@ Rina Yadav rina.yadav@stud.fra-uas.de
 ### Project reference
 
 ML19/20 - 5.10  
-Issue 145
+Issue 84
 
 ### Abstract
 
 The main objective of the project is to describe memorizing capabilites as the ability to recall last impression of input sequence. It utilizes Hierarchical temporal memory (HTM) to generate SDR’s. We have described how input vectors are generated for different learning sequences and shown output for the learning sequences using encoder. We have discussed different test cases to verify the memorizing capabilities of the Spatial Pooler using different learning sequences. To check the similarities of this sequences we have used hamming distance and overlap plotting.
 
 [Download student paper here](./Experiments/ML-19-20_20-5.10_ValdatingMemorizingCapabilitesOfSpatialPooler.pdf)
+
+[Check out implementation here](../../NeoCortexApi/UnitTestsProject/SpatialPoolerMemorizingExperiment84.cs)
 
 ## ML19/20-5.2. Improving of implementation of the Scalar encoder in HTM
 
