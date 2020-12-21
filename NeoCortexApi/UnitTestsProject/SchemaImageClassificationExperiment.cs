@@ -17,7 +17,7 @@ namespace UnitTestProject
     /// 
     /// </summary>
     [TestClass]
-    class SchemaImageClassificationExperiment
+    public class SchemaImageClassificationExperiment
     {
         /// <summary>
         /// Input: image resource folder path "..\\..\\..\\images"
@@ -32,7 +32,7 @@ namespace UnitTestProject
             string[] files = Directory.GetFiles(imagesFolder, "*", SearchOption.AllDirectories);
 
             string path, name; 
-            (path, name) = getPathAndName(files[0]);
+            (path, name) = GetPathAndName(files[0]);
 
             int activeColumn = 60;
             int inputDimension = 32;
@@ -41,7 +41,7 @@ namespace UnitTestProject
 
             SpatialPooler sp = new SpatialPooler();
             Connections mem = new Connections();
-            Parameters config = getParam(inputDimension, activeColumn);
+            Parameters config = GetParam(inputDimension, activeColumn);
             config.apply(mem);
             sp.Init(mem);
 
@@ -53,10 +53,10 @@ namespace UnitTestProject
 
                 // TODO: activeArray: is a buffer to store active column sequence from spatial pooler
                 activeArray.Add(new int[activeColumn * activeColumn]);
-                (path, name) = getPathAndName(files[i]);
+                (path, name) = GetPathAndName(files[i]);
                 imageNames[i] = name;
 
-                string binaryImagePath = binarizeImage(path, inputDimension, inputDimension, csvPath, name);
+                string binaryImagePath = BinarizeImage(path, inputDimension, inputDimension, csvPath, name);
 
                 int[] inputVector = ReadCsvFileTest(binaryImagePath).ToArray(); // 1D binary of a image
 
@@ -66,7 +66,7 @@ namespace UnitTestProject
                 int iter = -1;
                 int id = 0;
 
-                while (true) // Train spatial pooler with a single image untill stable active column sequence is achievet
+                while (true) // Train spatial pooler with a single image until stable active column sequence is achieve
                 {
                     id = (++iter & 1) == 0 ? 0 : 1;
                     for (int i_x = 0; i_x < tempArr[id].Length; i_x++) tempArr[id][i_x] = 0;
@@ -122,9 +122,11 @@ namespace UnitTestProject
             Groupping(distance, imageNames, path);
             Report(distance, imageNames);
         }
-        /*
-         <summary> Read csv file from the given file path.    
-        */
+
+
+        /// <summary>
+        /// Read csv file from the given file path.    
+        /// </summary> 
         private List<int> ReadCsvFileTest(String path)
         {
             string fileContent = File.ReadAllText(path);
@@ -209,9 +211,13 @@ namespace UnitTestProject
 
             return hammingDistance;
         }
-        /*
-            save active column sequence from spatial pooler to a given file path
-        */
+
+        /// <summary>
+        /// save active column sequence from spatial pooler to a given file path
+        /// </summary>
+        /// <param name="activeArray"></param>
+        /// <param name="path"></param>
+        /// <param name="imageNames"></param>
         private void SaveOutput(List<int[]> activeArray, String path, string[] imageNames)
         {
             var doc = "outputval.txt";
@@ -236,7 +242,7 @@ namespace UnitTestProject
             }
         }
 
-        private string binarizeImage(string sourcepath, int imageWidth, int imageHeight, string destinationPath, string name)
+        private string BinarizeImage(string sourcepath, int imageWidth, int imageHeight, string destinationPath, string name)
         {
             string binaryImage;
 
@@ -256,7 +262,7 @@ namespace UnitTestProject
         }
 
         /* copy origial image to the grouped output folder*/
-        private void writeFile(string sourcePath, string destinationPath, string fileName, string foldername)
+        private void WriteFile(string sourcePath, string destinationPath, string fileName, string foldername)
         {
             string outFilePath = Path.Combine(destinationPath, foldername);//, $"{fileName}.jpg");
             string inFilePath = Path.Combine(sourcePath, $"{fileName}.jpg");
@@ -302,7 +308,7 @@ namespace UnitTestProject
         }
 
         /* Spatial pooler parameter config.*/
-        private Parameters getParam(int inputDimension, int activeColumn)
+        private Parameters GetParam(int inputDimension, int activeColumn)
         {
             Parameters config = GetDefaultParams();
             config.setInputDimensions(new int[] { inputDimension, inputDimension });
@@ -314,7 +320,7 @@ namespace UnitTestProject
         }
 
         /*Split path and file name*/
-        private (string, string) getPathAndName(string fullPath)
+        private (string, string) GetPathAndName(string fullPath)
         {
             int index1 = fullPath.LastIndexOf("\\") + 1;
             int index2 = fullPath.LastIndexOf(".");
@@ -410,10 +416,10 @@ namespace UnitTestProject
             for (int i = 0; i < groups.Length; i++)
             {
                 // send path + group[i] // create if does not exits
-                writeFile(path, dPath, imageNames[i], groups[i].ToString());
+                WriteFile(path, dPath, imageNames[i], groups[i].ToString());
             }
         }
-        private int difference(int[] a, int[] b)
+        private int Difference(int[] a, int[] b)
         {
             int count = 0;
             for (int i = 0; i < a.Length; i++)
