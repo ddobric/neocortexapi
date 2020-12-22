@@ -760,7 +760,7 @@
             Once SP enters the stable state and it becomes instable again, this value is set on false.
             </summary>
         </member>
-        <member name="M:NeoCortexApi.HomeostaticPlasticityController.#ctor(NeoCortexApi.Entities.Connections,System.Int32,System.Action{System.Boolean,System.Int32,System.Double,System.Int32},System.Int32)">
+        <member name="M:NeoCortexApi.HomeostaticPlasticityController.#ctor">
             <summary>
             Creates the instance of the HPC to stabilize the Spatial Pooler learning process.
             </summary>
@@ -769,6 +769,9 @@
             During this period, the SP will boost columns and bee instable. After this period the HPC will switch off boosting.</param>
             <param name="onStabilityStatusChanged">Invoked when the SP changes the state from instable to stable and vise versa.</param>
             <param name="numOfCyclesToWaitOnChange">How many cycles SDRs of all input patterns must be unchanged to declare the SP as stable.</param>
+            <summary>
+            Used during the deserialization proicess.
+            </summary>
         </member>
         <member name="M:NeoCortexApi.HomeostaticPlasticityController.Compute(System.Int32[],System.Int32[])">
             <summary>
@@ -852,67 +855,6 @@
             Fetches the type of the member and sets the property value of the specified object
         </member>
         <member name="M:NeoCortexApi.HtmSerializer.GetMemberType(System.String,System.Type,System.Reflection.MemberInfo@)">
-            Uses Reflection to filter Fields and Properties and returns type of that particular attribute
-        </member>
-        <member name="T:NeoCortexApi.HtmSerializer2">
-            Contains methods for Serialization and Deserialization and is applicable to Spatial Pooler and Temoral Memory Class
-        </member>
-        <member name="M:NeoCortexApi.HtmSerializer2.Serialize(System.Object,System.String)">
-            Method for Serialization of an object. Can serialize properties and fields o the particular Object to 
-            Can serialize properties and fields ofthe particular Object to a variable like String or a storage place like file.
-        </member>
-        <member name="M:NeoCortexApi.HtmSerializer2.Serialize(System.Object)">
-            Stores and returns the serialized string value through this Stringbuilder.
-            Uses Reflection API and lower level method SerializeMember() to fetch properties and fields of the object and stores the result in the Stringbuilder
-        </member>
-        <member name="M:NeoCortexApi.HtmSerializer2.SerializeMember(System.Boolean,System.Text.StringBuilder,System.Type,System.String,System.Object)">
-            Obtains property and fields of the object by applying some of the lower level generic methods which are implemented in the subsequent section of this code.. 
-            Different methods are applied based on specific attributes like types, type names etc.
-            These conditions are applied to solve some of the complexities involved in Serializing complex classes within HTM
-        </member>
-        <member name="M:NeoCortexApi.HtmSerializer2.SerializeCustomType(System.Text.StringBuilder,System.String,System.Object)">
-            Serialization Method for some of the specific classes. 
-            Similar Serialization method is impplemented in thos concerned classes and the Serialize method can be invoked through this method in this class.
-        </member>
-        <member name="M:NeoCortexApi.HtmSerializer2.SerializeArray(System.Text.StringBuilder,System.String,System.Object)">
-                     * Applied if the type of the concerned property/field is an Array 
-                     
-        </member>
-        <member name="M:NeoCortexApi.HtmSerializer2.SerializeDictionary(System.Text.StringBuilder,System.String,System.Object)">
-            Applied if the type of the concerned  property/field is a Dictionary
-        </member>
-        <member name="M:NeoCortexApi.HtmSerializer2.SerializeStringValue(System.Text.StringBuilder,System.String,System.String)">
-            Returns the name of the particular Property and String value. Used for simple properties.
-        </member>
-        <member name="M:NeoCortexApi.HtmSerializer2.SerializeNumericValue(System.Text.StringBuilder,System.String,System.String)">
-            Returns the name of the particular Property and Numeric value. 
-        </member>
-        <member name="M:NeoCortexApi.HtmSerializer2.AppendPropertyName(System.Text.StringBuilder,System.String)">
-            Returns the name of the particular Property
-        </member>
-        <member name="M:NeoCortexApi.HtmSerializer2.SerializeComplexValue(System.Text.StringBuilder,System.String,System.Object)">
-            Applied if the concerned  property/field involves Complex Types like class etc
-        </member>
-        <member name="T:NeoCortexApi.HtmSerializer2.HtmJsonTextReder">
-            Custom class that uses JsonTextReader to read Json files.
-            Based on the position of the index Json Text Reader allocates Token Type and Values for the particular position in the Json file.
-            This Custom reader reads the token type and states of the parameter and indicates current position from the standpoint of the Object. 
-        </member>
-        <member name="M:NeoCortexApi.HtmSerializer2.Deserialize``1(System.String)">
-            This method Deserializes the Json string based on the output of the Json Text Reader.
-            The type of the property is fetched through Reflection and Creates an instance of the specified type.
-            Lower level methods are called to set the values for the particular property
-        </member>
-        <member name="M:NeoCortexApi.HtmSerializer2.ReadArray(System.Object,NeoCortexApi.HtmSerializer2.HtmJsonTextReder,System.Type)">
-            Reads the value form Json Reader for Array Types and cretaes instances
-        </member>
-        <member name="M:NeoCortexApi.HtmSerializer2.GetPropertyName(NeoCortexApi.HtmSerializer2.HtmJsonTextReder)">
-            Identifies the name of the property from the Json string and returns the same
-        </member>
-        <member name="M:NeoCortexApi.HtmSerializer2.SetMemberValue(System.Object,System.String,System.Object)">
-            Fetches the type of the member and sets the property value of the specified object
-        </member>
-        <member name="M:NeoCortexApi.HtmSerializer2.GetMemberType(System.String,System.Type,System.Reflection.MemberInfo@)">
             Uses Reflection to filter Fields and Properties and returns type of that particular attribute
         </member>
         <member name="T:NeoCortexApi.IComputeDecorator">
