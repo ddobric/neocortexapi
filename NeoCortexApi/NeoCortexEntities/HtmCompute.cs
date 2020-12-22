@@ -201,7 +201,13 @@ namespace NeoCortexApi
             return result.Select((tl) => GetFlatIndexFromCoordinates(tl.ToArray(), topology)).ToArray();
         }
 
-
+        /// <summary>
+        /// Gets the list of neighborhood columns around the centar with the given radius in the specified topology.
+        /// </summary>
+        /// <param name="centerIndex"></param>
+        /// <param name="radius"></param>
+        /// <param name="topology"></param>
+        /// <returns></returns>
         public static int[] GetNeighborhood(int centerIndex, int radius, HtmModuleTopology topology)
         {
             var centerPosition = HtmCompute.GetCoordinatesFromIndex(centerIndex, topology);

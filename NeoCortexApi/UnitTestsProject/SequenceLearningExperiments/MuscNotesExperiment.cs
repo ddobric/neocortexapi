@@ -32,6 +32,7 @@ namespace UnitTestsProject.SequenceLearningExperiments
         /// </summary>
         [TestMethod]
         [TestCategory("Experiment")]
+        [Timeout(TestTimeout.Infinite)]
         public void MusicNotesExperiment()
         {
             int inputBits = 100;

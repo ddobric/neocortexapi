@@ -86,15 +86,6 @@ namespace NeoCortexApi.Entities
         }
 
 
-        /**
-         * Returns the index of this {@code Column}
-         * @return  the index of this {@code Column}
-         */
-        //public int getIndex()
-        //{
-        //    return Index;
-        //}
-
         /// <summary>
         /// Returns the configured number of cells per column for all <see cref="Column"/> objects within the current {@link TemporalMemory}
         /// </summary>
@@ -136,16 +127,6 @@ namespace NeoCortexApi.Entities
             leastUsedCells.Sort();
             return leastUsedCells[index];
         }
-
-        /**
-         * Returns this {@code Column}'s single {@link ProximalDendrite}
-         * @return
-         */
-        //public ProximalDendrite getProximalDendrite()
-        //{
-        //    return ProximalDendrite;
-        //}
-
 
         /// <summary>
         /// Creates connections between columns and inputs.

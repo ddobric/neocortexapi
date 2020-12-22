@@ -109,7 +109,8 @@ namespace UnitTestsProject
 
             bool isInStableState = false;
 
-            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, inputValues.Count * 15, (isStable, numPatterns, actColAvg, seenInputs) => {
+            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, inputValues.Count * 15, (isStable, numPatterns, actColAvg, seenInputs) =>
+            {
 
                 Assert.IsTrue(numPatterns == inputValues.Count);
 
@@ -267,7 +268,7 @@ namespace UnitTestsProject
         [TestCategory("LongRunning")]
         public void SerializationAbstractSparseBinaryMatrixTest()
         {
-          
+
         }
 
         [TestMethod]

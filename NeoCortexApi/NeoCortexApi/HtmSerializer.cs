@@ -10,6 +10,7 @@ using System.Text;
 
 namespace NeoCortexApi
 {
+  
     /**
    * Contains methods for Serialization and Deserialization and is applicable to Spatial Pooler and Temoral Memory Class
    */

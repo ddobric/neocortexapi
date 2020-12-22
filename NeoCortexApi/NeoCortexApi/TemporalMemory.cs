@@ -355,6 +355,9 @@ namespace NeoCortexApi
                 foreach (Synapse synapse in new List<Synapse>(conn.GetSynapses(segment)))
                 {
                     // WORKING DRAFT. TM algorithm change.
+                    // The original algorithm adopt all synapses at the segment.
+                    // The new (DRAFT) version adopts only synapses whose presynaptic cells
+                    // are active cells in th eprevious cycle.
                     if (prevActiveCells.Contains(synapse.getPresynapticCell()))
                     {
                         // TODO

@@ -382,6 +382,7 @@ namespace NeoCortexApi.Entities
             this.DutyCyclePeriod = 1000;
             this.MaxBoost = 10.0;
             this.WrapAround = true;
+            this.Random = new ThreadSafeRandom(42);
         }
 
         public void ClearModuleTopology()

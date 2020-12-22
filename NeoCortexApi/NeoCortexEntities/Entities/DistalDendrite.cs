@@ -7,10 +7,8 @@ using System.Text;
 
 namespace NeoCortexApi.Entities
 {
-    //[Serializable]
-
     /// <summary>
-    /// Implements a distal dendritic segment.
+    /// Implements a distal dendritic segment that is used for learning sequences.
     /// Segments are owned by <see cref="Cell"/>s and in turn own <see cref="Synapse"/>s which are obversely connected to by a "source cell", 
     /// which is the <see cref="Cell"/> which will activate a given <see cref="Synapse"/> owned by this <see cref="Segment"/>.
     /// </summary>
@@ -19,19 +17,35 @@ namespace NeoCortexApi.Entities
     /// </remarks>
     public class DistalDendrite : Segment, IComparable<DistalDendrite>
     {
+        /// <summary>
+        /// The cell that owns (parent) the segment.
+        /// </summary>
         public Cell ParentCell;
 
         private long m_LastUsedIteration;
 
-        public int m_Ordinal = -1;
+        private int m_Ordinal = -1;
+
+        /// <summary>
+        /// the last iteration in which this segment was active.
+        /// </summary>
+        public long LastUsedIteration { get => m_LastUsedIteration; set => m_LastUsedIteration = value; }
+
+        /// <summary>
+        /// The seqence number of the segment. Specifies the order of the segment of the <see cref="Connections"/> instance.
+        /// </summary>
+        public int Ordinal { get => m_Ordinal; set => m_Ordinal = value; }
 
         /// <summary>
         /// Creates the Distal Segment.
         /// </summary>
         /// <param name="parentCell">The cell, which owns the segment.</param>
-        /// <param name="flatIdx">The flat index of the cell.</param>
+        /// <param name="flatIdx">The flat index of the segment. If some segments are destroyed (synapses lost permanence)
+        /// then the new segment will reuse the flat index. In contrast, 
+        /// the ordinal number will increas when new segments are created.</param>
         /// <param name="lastUsedIteration"></param>
-        /// <param name="ordinal"></param>
+        /// <param name="ordinal">The ordindal number of the segment. This number is incremented on each new segment.
+        /// If some segments are destroyed, this number is still incrementd.</param>
         /// <param name="synapsePermConnected"></param>
         /// <param name="numInputs"></param>
         public DistalDendrite(Cell parentCell, int flatIdx, long lastUsedIteration, int ordinal, double synapsePermConnected, int numInputs) : base(flatIdx, synapsePermConnected, numInputs)
@@ -41,25 +55,15 @@ namespace NeoCortexApi.Entities
             this.m_LastUsedIteration = lastUsedIteration;
         }
 
-        /**
-         * Returns the owner {@link Cell}
-         * 
-         * @return
-         */
-        //public Cell GetParentCell()
-        //{
-        //    return ParentCell;
-        //}
-
-
+      
         /// <summary>
         /// Gets all synapses owned by this distal dentrite segment.
         /// </summary>
-        /// <param name="c"></param>
+        /// <param name="mem"></param>
         /// <returns>Synapses.</returns>
-        public List<Synapse> GetAllSynapses(Connections c)
+        public List<Synapse> GetAllSynapses(Connections mem)
         {
-            return c.GetSynapses(this);
+            return mem.GetSynapses(this);
         }
 
         /// <summary>
@@ -83,57 +87,21 @@ namespace NeoCortexApi.Entities
             return activeSynapses;
         }
 
+           
         /// <summary>
-        /// the last iteration in which this segment was active.
+        /// <inheritdoc/>
         /// </summary>
-        public long LastUsedIteration { get => m_LastUsedIteration; set => m_LastUsedIteration = value; }
-        ///**
-        // * Sets the last iteration in which this segment was active.
-        // * @param iteration
-        // */
-        //public void setLastUsedIteration(long iteration)
-        //{
-        //    this.m_LastUsedIteration = iteration;
-        //}
-
-        ///**
-        // * Returns the iteration in which this segment was last active.
-        // * @return  the iteration in which this segment was last active.
-        // */
-        //public long getLastUsedIteration()
-        //{
-        //    return m_LastUsedIteration;
-        //}
-
-        public int Ordinal { get => m_Ordinal; set => m_Ordinal = value; }
-        ///**
-        // * Returns this {@code DistalDendrite} segment's ordinal
-        // * @return	this segment's ordinal
-        // */
-        //public int getOrdinal()
-        //{
-        //    return m_Ordinal;
-        //}
-
-        ///**
-        // * Sets the ordinal value (used for age determination) on this segment.
-        // * @param ordinal	the age or order of this segment
-        // */
-        //public void setOrdinal(int ordinal)
-        //{
-        //    this.m_Ordinal = ordinal;
-        //}
-
-
+        /// <returns></returns>
         public override string ToString()
         {
             return $"DistalDendrite: Indx:{this.SegmentIndex}";
         }
 
-        /* (non-Javadoc)
-         * @see java.lang.Object#hashCode()
-         */
 
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
             int prime = 31;
@@ -143,10 +111,10 @@ namespace NeoCortexApi.Entities
         }
 
 
-        /* (non-Javadoc)
-         * @see java.lang.Object#equals(java.lang.Object)
-         */
-
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <returns></returns>
         public override bool Equals(Segment obj)
         {
             if (this == obj)
@@ -181,14 +149,6 @@ namespace NeoCortexApi.Entities
             else
                 return 0;
         }
-
-        ///** Sorting Lambda used for sorting active and matching segments */
-        //public IComparer<DistalDendrite> segmentPositionSortKey = (s1, s2) =>
-        //        {
-        //            double c1 = s1.getParentCell().getIndex() + ((double)(s1.getOrdinal() / (double)nextSegmentOrdinal));
-        //            double c2 = s2.getParentCell().getIndex() + ((double)(s2.getOrdinal() / (double)nextSegmentOrdinal));
-        //            return c1 == c2 ? 0 : c1 > c2 ? 1 : -1;
-        //        };
     }
 }
 

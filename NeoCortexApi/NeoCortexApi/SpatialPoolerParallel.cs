@@ -14,10 +14,18 @@ using NeoCortexApi.DistributedComputeLib;
 
 namespace NeoCortexApi
 {
+    /// <summary>
+    /// The parallel version of the SP on to of the actor model.
+    /// </summary>
     public class SpatialPoolerParallel : SpatialPooler
     {
         private DistributedMemory distMemConfig;
 
+        /// <summary>
+        /// Performs the remote initialization ot the SP on actor nodes.
+        /// </summary>
+        /// <param name="c"></param>
+        /// <param name="distMem"></param>
         public override void InitMatrices(Connections c, DistributedMemory distMem)
         {
             IHtmDistCalculus remoteHtm = distMem?.ColumnDictionary as IHtmDistCalculus;
