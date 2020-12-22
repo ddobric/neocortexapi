@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -2748,5 +2749,25 @@ namespace NeoCortexApi.Entities
             return true;
         }
         #endregion
+
+        #region Serializetion
+        public void Serialize(StreamWriter writer)
+        {
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            ser.SerializeBegin(nameof(Connections), writer);
+            ser.SerializeValue(this.version, writer);
+            ser.SerializeValue(this.SpIterationNum, writer);
+            ser.SerializeEnd(nameof(Connections), writer);
+        }
+
+        public static Connections Deserialize(StreamReader reader)
+        {
+            Connections mem = new Connections();
+            // |T|ODO
+            return mem;
+        }
+        #endregion
+
     }
 }

@@ -12,6 +12,7 @@ using NeoCortexApi.DistributedComputeLib;
 using System.Collections.Concurrent;
 using System.Threading;
 using NeoCortexApi.DistributedCompute;
+using System.IO;
 
 namespace NeoCortexApi
 {
@@ -1675,6 +1676,29 @@ namespace NeoCortexApi
         }
 
 
+        public void Serialize(StreamWriter writer)
+        {
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            ser.SerializeBegin(nameof(SpatialPooler), writer);
+
+            ser.SerializeValue(this.MaxInibitionDensity, writer);
+
+            ser.SerializeValue(this.Name, writer);
+
+            this.connections.Serialize(writer);
+
+            this.m_HomeoPlastAct.Serialize(writer);
+
+            ser.SerializeEnd(nameof(SpatialPooler), writer);
+        }
+
+        public static SpatialPooler Deserialize(StreamReader reader)
+        {
+            SpatialPooler sp = new SpatialPooler();
+            // |T|ODO
+            return sp;
+        }
     }
 }
 

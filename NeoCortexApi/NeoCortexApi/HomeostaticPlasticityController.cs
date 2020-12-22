@@ -6,6 +6,7 @@ using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -61,6 +62,14 @@ namespace NeoCortexApi
         /// Once SP enters the stable state and it becomes instable again, this value is set on false.
         /// </summary>
         private bool m_IsStable = false;
+
+        /// <summary>
+        /// Used during the deserialization proicess.
+        /// </summary>
+        protected HomeostaticPlasticityController()
+        { 
+        
+        }
 
         public HomeostaticPlasticityController(Connections htmMemory, int minCycles, Action<bool, int, double, int> onStabilityStatusChanged, int numOfCyclesToWaitOnChange = 50)
         {
@@ -377,5 +386,36 @@ namespace NeoCortexApi
 
         //    return val;
         //}
+
+        #region Serialization
+        public void Serialize(StreamWriter writer)
+        {
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            ser.SerializeValue(m_MaxPreviousElements, writer);
+            // HtmMemory is not serialized here. It is assumed to be serialized in the SP.
+            ser.SerializeValue(this.m_Cycle, writer);
+            ser.SerializeValue(this.m_MinCycles, writer);
+            ser.SerializeValue(this.m_RequiredNumOfStableCycles, writer);
+            
+            //...
+
+
+        }
+
+        public static HomeostaticPlasticityController Deserialize(StreamReader reader)
+        {
+            HomeostaticPlasticityController ctrl = new HomeostaticPlasticityController();
+
+            HtmSerializer2 ser = new HtmSerializer2();
+            ctrl.m_MaxPreviousElements = ser.ReadIntValue(reader);
+            ctrl.m_MinCycles = ser.ReadIntValue(reader);
+            ctrl.m_RequiredNumOfStableCycles = ser.ReadIntValue(reader);
+            //...
+
+            return ctrl;
+
+        }
+        #endregion
     }
 }
