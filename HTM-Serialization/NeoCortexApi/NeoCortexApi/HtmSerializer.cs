@@ -3,6 +3,7 @@ using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -10,12 +11,43 @@ using System.Text;
 
 namespace NeoCortexApi
 {
-  
     /**
    * Contains methods for Serialization and Deserialization and is applicable to Spatial Pooler and Temoral Memory Class
    */
     public class HtmSerializer
     {
+        //SP
+        public class CustomSerialize
+        {
+            const string delimiter = " ";
+
+            public void SerializeValue(double val, StreamWriter sw)
+            {
+                sw.Write(string.Format(CultureInfo.InvariantCulture, "{0:0.00}", val));
+                sw.Write(delimiter);
+            }
+            //public Double ReadValue(StreamReader sr)
+            //{
+            //    Double val = 0.0;
+            //    string value = sr.ReadToEnd();
+            //    val = Convert.ToDouble(value);
+            //    return val;
+
+            //}
+            public void SerializeValue(String val, StreamWriter sw)
+            {
+                sw.Write(val);
+                sw.Write(delimiter);
+            }
+            public String ReadValue(StreamReader sr)
+            {
+                string val = sr.ReadToEnd();
+                return val;
+
+            }
+
+
+        }
         /**
        *  Method for Serialization of an object. Can serialize properties and fields o the particular Object to 
        *  Can serialize properties and fields ofthe particular Object to a variable like String or a storage place like file.

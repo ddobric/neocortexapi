@@ -109,8 +109,7 @@ namespace UnitTestsProject
 
             bool isInStableState = false;
 
-            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, inputValues.Count * 15, (isStable, numPatterns, actColAvg, seenInputs) =>
-            {
+            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, inputValues.Count * 15, (isStable, numPatterns, actColAvg, seenInputs) => {
 
                 Assert.IsTrue(numPatterns == inputValues.Count);
 
@@ -268,29 +267,32 @@ namespace UnitTestsProject
         [TestCategory("LongRunning")]
         public void SerializationAbstractSparseBinaryMatrixTest()
         {
-
+          
         }
 
         [TestMethod]
         [TestCategory("Experiment")]
         public void SerializeValueTest()
         {
+
+            HtmSerializer.CustomSerialize ser = new HtmSerializer.CustomSerialize();
+
             MemoryStream ms = new MemoryStream();
+            StreamWriter sw = new StreamWriter(ms);
 
-            using (StreamWriter sw = new StreamWriter(ms))
-            {
-
-                HtmSerializer2 ser = new HtmSerializer2();
-
-                ser.SerializeValue(0.0, sw);
-                ser.SerializeValue(1.0, sw);
-                ser.SerializeValue(2.0, sw);
-            }
-
+            ser.SerializeValue("Hello", sw);
+            sw.Flush();
             var data = ms.GetBuffer();
-
             string serializedData = Encoding.UTF8.GetString(data);
+
+            ms.Position = 0;
+            StreamReader sr = new StreamReader(ms);
+            String val = ser.ReadValue(sr);
+
+
         }
+
+
 
         private void DrawBitmaps(EncoderBase encoder, double input, int[] activeArrayIndxes, int columnTopology)
         {
