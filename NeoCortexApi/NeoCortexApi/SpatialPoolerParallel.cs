@@ -30,7 +30,7 @@ namespace NeoCortexApi
         {
             IHtmDistCalculus remoteHtm = distMem?.ColumnDictionary as IHtmDistCalculus;
             if (remoteHtm == null)
-                throw new ArgumentException("");
+                throw new ArgumentException("Must implement IHtmDistCalculus!");
 
             this.distMemConfig = distMem;
 

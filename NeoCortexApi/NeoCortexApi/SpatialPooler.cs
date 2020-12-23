@@ -1108,7 +1108,7 @@ namespace NeoCortexApi
         /// <param name="c">Connections (memory)</param>
         /// <param name="overlaps">An array containing the overlap score for each  column.</param>
         /// <param name="density"> The fraction of the overlap score for a column is defined as the numbern of columns to survive inhibition.</param>
-        /// <returns>We return all columns, whof synapses in a "connected state" (connected synapses)ich have overlap greather than stimulusThreshold.</returns>
+        /// <returns>We return all columns, of synapses in a "connected state" (connected synapses) that have overlap greather than stimulusThreshold.</returns>
         public virtual int[] InhibitColumnsGlobal(Connections c, double[] overlaps, double density)
         {
             int numCols = c.HtmConfig.NumColumns;
@@ -1478,7 +1478,6 @@ namespace NeoCortexApi
             }
 
             double[] boostInterim;
-
 
             //
             // Boost factors are NOT recalculated if minimum active duty cycles are all set on 0.
