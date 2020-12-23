@@ -20,10 +20,7 @@ namespace NeoCortexApi.Entities
 
         public static readonly double EPSILON = 0.00001;
 
-        /////////////////////////////////////// Spatial Pooler Vars ///////////////////////////////////////////
-
-
-        //Internal state
+          //Internal state
         private double version = 1.0;
 
         /// <summary>
@@ -76,13 +73,12 @@ namespace NeoCortexApi.Entities
 
         private double[] m_BoostFactors;
 
-        /////////////////////////////////////// Temporal Memory Vars ///////////////////////////////////////////
-
-        protected ISet<Cell> m_ActiveCells = new LinkedHashSet<Cell>();
-        protected ISet<Cell> winnerCells = new LinkedHashSet<Cell>();
-        protected ISet<Cell> m_PredictiveCells = new LinkedHashSet<Cell>();
-        protected List<DistalDendrite> m_ActiveSegments = new List<DistalDendrite>();
-        protected List<DistalDendrite> m_MatchingSegments = new List<DistalDendrite>();
+      
+        private ISet<Cell> m_ActiveCells = new LinkedHashSet<Cell>();
+        private ISet<Cell> winnerCells = new LinkedHashSet<Cell>();
+        private ISet<Cell> m_PredictiveCells = new LinkedHashSet<Cell>();
+        private List<DistalDendrite> m_ActiveSegments = new List<DistalDendrite>();
+        private List<DistalDendrite> m_MatchingSegments = new List<DistalDendrite>();
 
       
         private HtmConfig m_HtmConfig = new HtmConfig();
@@ -166,6 +162,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         protected Dictionary<Cell, List<DistalDendrite>> m_DistalSegments;
 
+        /// We moved this as a poart of the segment.
         /// <summary>
         /// Synapses, which belong to some distal dentrite segment.
         /// </summary>
@@ -181,14 +178,17 @@ namespace NeoCortexApi.Entities
         /// Global tracker of the next available segment index
         /// </summary>
         protected int m_NextFlatIdx;
+
         /// <summary>
         /// Global counter incremented for each DD segment creation
         /// </summary>
         protected int m_NextSegmentOrdinal;
+
         /// <summary>
         /// Global counter incremented for each DD synapse creation
         /// </summary>
         protected int m_NextSynapseOrdinal;
+
         /// <summary>
         /// Total number of synapses
         /// </summary>
