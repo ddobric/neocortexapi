@@ -2526,7 +2526,7 @@ namespace NeoCortexApi.Entities
         }
         #endregion
 
-        #region Serializetion
+        #region Serialization
         public void Serialize(StreamWriter writer)
         {
             HtmSerializer2 ser = new HtmSerializer2();
