@@ -74,7 +74,10 @@ namespace NeoCortexApi
                 throw new ArgumentException("Inhibition parameters are invalid");
             }
 
-            c.DoSpatialPoolerPostInit();
+            if (c.HtmConfig.PotentialRadius == -1)
+            {
+                c.HtmConfig.PotentialRadius = ArrayUtils.Product(c.HtmConfig.InputDimensions);
+            }
 
             InitMatrices(c, distMem);
 

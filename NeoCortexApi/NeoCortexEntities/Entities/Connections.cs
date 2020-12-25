@@ -64,8 +64,7 @@ namespace NeoCortexApi.Entities
         /// One of all active column cells will be selected as the winner cell.
         /// </summary>
         public ISet<Cell> WinnerCells { get => winnerCells; set => winnerCells = value; }
-
-        
+                
         /// <summary>
         /// All cells. Initialized during initialization of the TemporalMemory.
         /// </summary>
@@ -211,54 +210,12 @@ namespace NeoCortexApi.Entities
         public SegmentActivity LastActivity { get; set; }
 
         /// <summary>
-        /// The default random number seed
+        /// The segment creation number.
         /// </summary>
-        //protected int seed = 42;
-
-        /// <summary>
-        /// The random number generator
-        /// </summary>
-        //public Random random;
-
         public int NextSegmentOrdinal { get => m_NextSegmentOrdinal; }
 
-        ///** Sorting Lambda used for sorting active and matching segments */
-        //public IComparer<DistalDendrite> segmentPositionSortKey = (s1, s2) =>
-        //        {
-        //            double c1 = s1.getParentCell().getIndex() + ((double)(s1.getOrdinal() / (double)nextSegmentOrdinal));
-        //            double c2 = s2.getParentCell().getIndex() + ((double)(s2.getOrdinal() / (double)nextSegmentOrdinal));
-        //            return c1 == c2 ? 0 : c1 > c2 ? 1 : -1;
-        //        };
 
-
-
-        /** Sorting Lambda used for SpatialPooler inhibition */
-
-        //public Comparator<Pair<Integer, Double>> inhibitionComparator = (Comparator<Pair<Integer, Double>> & Serializable)
-
-        //    (p1, p2)-> { 
-
-        //    int p1key = p1.getFirst();
-
-        //int p2key = p2.getFirst();
-
-        //double p1val = p1.getSecond();
-
-        //double p2val = p2.getSecond();
-
-        //    if(Math.abs(p2val - p1val) < 0.000000001) {
-
-        //        return Math.abs(p2key - p1key) < 0.000000001 ? 0 : p2key > p1key? -1 : 1;
-
-        //    } else {
-
-        //        return p2val > p1val? -1 : 1;
-
-        //    }
-
-        //};
-
-        #region Connections Constructor
+        #region Constructors and Initialization
 
         /// <summary>
         /// Constructs a new <see cref="Connections"/> object. This object
@@ -282,21 +239,7 @@ namespace NeoCortexApi.Entities
         #endregion
 
         #region General Methods
-
-        /// <summary>
-        /// Sets the derived values of the <see cref="SpatialPooler"/> {@link SpatialPooler}'s initialization.
-        /// </summary>
-        public void DoSpatialPoolerPostInit()
-        {
-            //synPermBelowStimulusInc = synPermConnected / 10.0;
-            //synPermTrimThreshold = synPermActiveInc / 2.0;
-            if (HtmConfig.PotentialRadius == -1)
-            {
-                this.HtmConfig.PotentialRadius = ArrayUtils.Product(this.HtmConfig.InputDimensions);
-            }
-        }
-
-
+               
         /// <summary>
         /// Returns the <see cref="Cell"/> specified by the index passed in.
         /// </summary>
