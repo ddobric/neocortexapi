@@ -70,7 +70,7 @@ namespace NeoCortexApi
             this.connections.Cells = cells;
         }
 
-        StreamWriter tmperf1 = new StreamWriter("tm-perf-2048-10cells.csv");
+        //StreamWriter tmperf1 = new StreamWriter("tm-perf-100000-10cells.csv");
     
 
         /// <summary>
@@ -87,17 +87,17 @@ namespace NeoCortexApi
         /// <remarks>Note: PredictiveCells are not calculated here. They are calculated on demand from active segments.</remarks>
         public ComputeCycle Compute(int[] activeColumns, bool learn)
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
+            //Stopwatch sw = new Stopwatch();
+            //sw.Start();
             ComputeCycle cycle = ActivateCells(this.connections, activeColumns, learn);
         
             ActivateDendrites(this.connections, cycle, learn);
           
-            sw.Stop();
+            //sw.Stop();
 
-            tmperf1.WriteLine($"{sw.ElapsedMilliseconds}");
+            //tmperf1.WriteLine($"{sw.ElapsedMilliseconds}");
 
-            tmperf1.Flush();
+            //tmperf1.Flush();
 
             return cycle;
         }
@@ -139,8 +139,6 @@ namespace NeoCortexApi
             {
                 activeColumns.Add(conn.GetColumn(indx));
             }
-
-            //Func<Object, Column> segToCol = segment => ((DistalDendrite)segment).getParentCell().getParentColumnIndex();
 
             Func<Object, Column> segToCol = (segment) =>
             {
@@ -186,7 +184,6 @@ namespace NeoCortexApi
                     }
                     else
                     {
-                        Debug.Write("B.");
                         //
                         // If no active segments are detected (start of learning) then all cells are activated
                         // and a random single cell is chosen as a winner.
@@ -466,7 +463,7 @@ namespace NeoCortexApi
         {
 
             IList<Cell> cells = column.Cells;
-            Cell leastUsedCell = null;
+            Cell leastUsedOrMaxPotentialCell = null;
 
             //
             // Matching segments result from number of potential synapses. These are segments with number of potential
@@ -478,17 +475,11 @@ namespace NeoCortexApi
             // If some matching segments exist, bursting will grab the segment with most potential synapses and adapt it.
             if (matchingSegments != null && matchingSegments.Count > 0)
             {
-                Debug.Write($"({matchingSegments.Count})");
+                Debug.Write($"B.({matchingSegments.Count})");
 
                 DistalDendrite maxPotentialSeg = GetSegmentwithHighesPotential(conn, matchingSegments, prevActiveCells);
 
-                // TODO what is this loop doing?
-                for (int i = 0; i < matchingSegments.Count; i++)
-                {
-                    var temp = matchingSegments[i].SegmentIndex;
-                }
-
-                leastUsedCell = maxPotentialSeg.ParentCell;
+                leastUsedOrMaxPotentialCell = maxPotentialSeg.ParentCell;
 
                 if (learn)
                 {
@@ -505,20 +496,22 @@ namespace NeoCortexApi
             }
             else
             {
-                leastUsedCell = this.GetLeastUsedCell(conn, cells, random);
+                Debug.Write("B.0");
+
+                leastUsedOrMaxPotentialCell = this.GetLeastUsedCell(conn, cells, random);
                 if (learn)
                 {
                     int nGrowExact = Math.Min(conn.HtmConfig.MaxNewSynapseCount, prevWinnerCells.Count);
                     if (nGrowExact > 0)
                     {
-                        DistalDendrite bestSegment = conn.CreateDistalSegment(leastUsedCell);
+                        DistalDendrite bestSegment = conn.CreateDistalSegment(leastUsedOrMaxPotentialCell);
                         GrowSynapses(conn, prevWinnerCells, bestSegment, conn.HtmConfig.InitialPermanence,
                             nGrowExact, random);
                     }
                 }
             }
 
-            return new BurstingResult(cells, leastUsedCell);
+            return new BurstingResult(cells, leastUsedOrMaxPotentialCell);
         }
 
         private int indxOfLastHighestSegment = -1;

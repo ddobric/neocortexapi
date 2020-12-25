@@ -24,7 +24,7 @@ namespace NeoCortexApiSample
             Console.WriteLine($"Hello NeocortexApi! Experiment {nameof(SequenceLearning)}");
 
             int inputBits = 100;
-            int numColumns = 4096;
+            int numColumns = 100000;
 
             HtmConfig cfg = new HtmConfig()
             {
