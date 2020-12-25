@@ -7,7 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NeoCortexApi" Version="1.0.9" />
+    <ProjectReference Include="..\..\DistributedComputeLib\DistributedComputeLib.csproj" />
+    <ProjectReference Include="..\..\NeoCortexApi\NeoCortexApi.csproj" />
+    <ProjectReference Include="..\..\NeoCortexEntities\NeoCortexEntities.csproj" />
+    <ProjectReference Include="..\..\NeoCortexUtils\NeoCortexUtils.csproj" />
   </ItemGroup>
 
 </Project>

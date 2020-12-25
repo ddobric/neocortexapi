@@ -8,6 +8,7 @@ using System.Linq;
 using NeoCortexApi.Utility;
 using static NeoCortexApi.Entities.Connections;
 using System.Diagnostics;
+using System.IO;
 
 namespace NeoCortexApi
 {
@@ -69,6 +70,9 @@ namespace NeoCortexApi
             this.connections.Cells = cells;
         }
 
+        StreamWriter tmperf1 = new StreamWriter("tm-perf-2048-10cells.csv");
+    
+
         /// <summary>
         /// Performs the whole calculation of Temporal memory algorithm.
         /// Calculation takes two parts:
@@ -83,8 +87,18 @@ namespace NeoCortexApi
         /// <remarks>Note: PredictiveCells are not calculated here. They are calculated on demand from active segments.</remarks>
         public ComputeCycle Compute(int[] activeColumns, bool learn)
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             ComputeCycle cycle = ActivateCells(this.connections, activeColumns, learn);
+        
             ActivateDendrites(this.connections, cycle, learn);
+          
+            sw.Stop();
+
+            tmperf1.WriteLine($"{sw.ElapsedMilliseconds}");
+
+            tmperf1.Flush();
+
             return cycle;
         }
 
