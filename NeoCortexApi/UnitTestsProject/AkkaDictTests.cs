@@ -309,7 +309,7 @@ namespace UnitTestsProject
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            sp.Init(mem, UnitTestHelpers.GetMemory(new HtmConfig()));
+            sp.Init(mem, UnitTestHelpers.GetMemory());
             sw.Stop();
             Debug.WriteLine($"Init time: {sw.ElapsedMilliseconds}");
             int actiColLen = numOfActCols;

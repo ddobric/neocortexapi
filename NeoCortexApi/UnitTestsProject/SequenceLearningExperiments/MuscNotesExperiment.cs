@@ -414,11 +414,9 @@ namespace UnitTestsProject.SequenceLearningExperiments
 
             EncoderBase encoder = new ScalarEncoder(settings);
 
-            HtmConfig htmConfig = new HtmConfig
+            HtmConfig htmConfig = new HtmConfig(new int[] { inputBits }, new int[] { numColumns })
             {
                 Random = new ThreadSafeRandom(42),
-                InputDimensions = new int[] { inputBits },
-                ColumnDimensions = new int[] { numColumns },
                 CellsPerColumn = 25,
                 GlobalInhibition = true,
                 LocalAreaDensity = -1,

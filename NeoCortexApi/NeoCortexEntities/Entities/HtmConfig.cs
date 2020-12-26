@@ -16,9 +16,11 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Default constructor with the default set of parameters.
         /// </summary>
-        public HtmConfig()
+        /// <param name="inputDims"></param>
+        /// <param name="columnDims"></param>
+        public HtmConfig(int[] inputDims,  int[] columnDims)
         {
-            SetHtmConfigDefaultParameters();
+            SetHtmConfigDefaultParameters(inputDims, columnDims);
         }
 
         /// <summary>
@@ -356,10 +358,12 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Set default value for parameters of <see cref="HtmConfig"/>
         /// </summary>
-        public void SetHtmConfigDefaultParameters()
+        public void SetHtmConfigDefaultParameters(int[] inputDims, int[] columnDims)
         {
             // Temporal Memory parameters
-            this.ColumnDimensions = new int[] { 2048 };
+            this.ColumnDimensions = columnDims;
+            this.InputDimensions = inputDims;
+
             this.CellsPerColumn = 32;
             this.ActivationThreshold = 10;
             this.LearningRadius = 10;
@@ -372,10 +376,9 @@ namespace NeoCortexApi.Entities
             this.PermanenceIncrement = 0.10;
             this.PermanenceDecrement = 0.10;
             this.PredictedSegmentDecrement = 0.1;
-            // Learn = true
-
+            
             // Spatial Pooler parameters
-            this.InputDimensions = new int[] { 100 };
+          
             this.PotentialRadius = 15;
             this.PotentialPct = 0.75;
             this.GlobalInhibition = true;
@@ -407,7 +410,7 @@ namespace NeoCortexApi.Entities
     {
         public test()
         {
-            HtmConfig htm = new HtmConfig();
+            HtmConfig htm = new HtmConfig(new int[] { 100}, new int[] { 1024 });
 
             Connections c = new Connections(htm);
 

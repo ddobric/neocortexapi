@@ -42,10 +42,8 @@ namespace UnitTestsProject
         }
         private HtmConfig SetupHtmConfigParameters()
         {
-            var htmConfig = new HtmConfig()
+            var htmConfig = new HtmConfig(new int[] { 5 }, new int[] { 5 })
             {
-                InputDimensions = new int[] { 5 },
-                ColumnDimensions = new int[] { 5 },
                 PotentialRadius = 5,
                 PotentialPct = 0.5,
                 GlobalInhibition = false,
@@ -90,10 +88,8 @@ namespace UnitTestsProject
 
         private HtmConfig SetupHtmConfigDefaultParameters()
         {
-            var htmConfig = new HtmConfig()
-            {
-                InputDimensions = new int[] { 32, 32 },
-                ColumnDimensions = new int[] { 64, 64 },
+            var htmConfig = new HtmConfig(new int[] { 32, 32 }, new int[] { 64, 64 })
+            {   
                 PotentialRadius = 16,
                 PotentialPct = 0.5,
                 GlobalInhibition = false,
@@ -394,12 +390,10 @@ namespace UnitTestsProject
             int inputSize = 10;
             int nColumns = 20;
 
-            HtmConfig defaultConfig = new HtmConfig();
+            HtmConfig defaultConfig = new HtmConfig(new int[] { inputSize }, new int[] { nColumns });
             Connections cn = new Connections(defaultConfig);
 
             var htmConfig = cn.HtmConfig;
-            htmConfig.InputDimensions = new int[] { inputSize };
-            htmConfig.ColumnDimensions = new int[] { nColumns };
             htmConfig.PotentialRadius = 10;
             htmConfig.GlobalInhibition = true;
             htmConfig.NumActiveColumnsPerInhArea = 3.0;
@@ -562,27 +556,27 @@ namespace UnitTestsProject
         [TestCategory("UnitTest")]
         [TestCategory("Prod")]
         [TestCategory("InitHtmConfig")]
-        public void testOverlapsOutput1()
+        public void TestOverlapsOutput1()
         {
-            HtmConfig defaultConfig = new HtmConfig();
-            var cn = new Connections(defaultConfig);
-            var htmConfig = cn.HtmConfig;
-            htmConfig.ColumnDimensions = new int[] { 3 };
-            htmConfig.InputDimensions = new int[] { 5 };
-            htmConfig.PotentialRadius = 5;
-            htmConfig.NumActiveColumnsPerInhArea = 5;
-            htmConfig.GlobalInhibition = true;
-            htmConfig.SynPermActiveInc = 0.1;
-            htmConfig.SynPermInactiveDec = 0.1;
-            htmConfig.RandomGenSeed = 42;
-            htmConfig.StimulusThreshold = 4;
-            htmConfig.Random = new ThreadSafeRandom(42);
+            HtmConfig defaultConfig = new HtmConfig(new int[] { 5 }, new int[] { 3 })
+            {
+                PotentialRadius = 5,
+                NumActiveColumnsPerInhArea = 5,
+                GlobalInhibition = true,
+                SynPermActiveInc = 0.1,
+                SynPermInactiveDec = 0.1,
+                RandomGenSeed = 42,
+                StimulusThreshold = 4,
+                Random = new ThreadSafeRandom(42),
+            };
+
+            var mem = new Connections(defaultConfig);
 
             var sp = new SpatialPoolerMT();
 
-            sp.Init(cn);
+            sp.Init(mem);
 
-            cn.BoostFactors = (new double[] { 2.0, 2.0, 2.0 });
+            mem.BoostFactors = (new double[] { 2.0, 2.0, 2.0 });
             int[] inputVector = { 1, 1, 1, 1, 1 };
             int[] activeArray = { 0, 0, 0 };
             int[] expOutput = { 4, 4, 4 }; // Added during implementation of parallel.
@@ -591,10 +585,10 @@ namespace UnitTestsProject
             // { 2, 1, 0 }; This was used originally on Linux with JAVA and Pyhton
             sp.compute(inputVector, activeArray, true);
 
-            double[] boostedOverlaps = cn.BoostedOverlaps;
-            int[] overlaps = cn.Overlaps;
+            double[] boostedOverlaps = mem.BoostedOverlaps;
+            int[] overlaps = mem.Overlaps;
 
-            for (int i = 0; i < cn.HtmConfig.NumColumns; i++)
+            for (int i = 0; i < mem.HtmConfig.NumColumns; i++)
             {
                 Assert.AreEqual(expOutput[i], overlaps[i]);
                 Assert.IsTrue(Math.Abs(expOutput[i] * 2 - boostedOverlaps[i]) <= 0.01);
@@ -3217,10 +3211,8 @@ namespace UnitTestsProject
             // SP - MT multithreaded version, which supports multiple cores on a single machine and
             // SP - Parallel, which supports multicore and multimode calculus of spatial pooler.
 
-            var htmConfig = new HtmConfig()
+            var htmConfig = new HtmConfig(new int[] { 32, 32 }, new int[] { 64, 64 })
             {
-                InputDimensions = new int[] { 32, 32 },
-                ColumnDimensions = new int[] { 64, 64 },
                 PotentialRadius = 16,
                 PotentialPct = 0.5,
                 GlobalInhibition = false,
@@ -3249,10 +3241,8 @@ namespace UnitTestsProject
 
         public void SpatialPoolerInit()
         {
-            var htmConfig = new HtmConfig()
+            var htmConfig = new HtmConfig(new int[] { 32, 32 }, new int[] { 64, 64 })
             {
-                InputDimensions = new int[] { 32, 32 },
-                ColumnDimensions = new int[] { 64, 64 },
                 PotentialRadius = 16,
                 PotentialPct = 0.5,
                 GlobalInhibition = false,

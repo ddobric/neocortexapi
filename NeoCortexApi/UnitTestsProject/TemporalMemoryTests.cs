@@ -51,9 +51,8 @@ namespace UnitTestsProject
 
         private HtmConfig GetDefaultTMParameters()
         {
-            HtmConfig htmConfig = new HtmConfig()
+            HtmConfig htmConfig = new HtmConfig(new int[] { 32 }, new int[] { 32 })
             {
-                ColumnDimensions = new int[] { 32 },
                 CellsPerColumn = 4,
                 ActivationThreshold = 3,
                 InitialPermanence = 0.21,
@@ -1063,7 +1062,8 @@ namespace UnitTestsProject
 
         public void TemporalMemoryInit()
         {
-            HtmConfig htmConfig = new HtmConfig();
+            HtmConfig htmConfig = new HtmConfig(new int[] { 32 }, new int[] { 32 });
+
             Connections connections = new Connections(htmConfig);
 
             TemporalMemory temporalMemory = new TemporalMemory();

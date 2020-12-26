@@ -79,8 +79,8 @@ namespace NeoCortexApi.Entities
         private List<DistalDendrite> m_ActiveSegments = new List<DistalDendrite>();
         private List<DistalDendrite> m_MatchingSegments = new List<DistalDendrite>();
 
-      
-        private HtmConfig m_HtmConfig = new HtmConfig();
+
+        private HtmConfig m_HtmConfig;
 
         public HtmConfig HtmConfig
         {
@@ -224,7 +224,8 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public Connections()
         {
-
+            // TODO: Remove this when old way of parameter initialization is completely removed.
+            this.m_HtmConfig = new HtmConfig(new int[100], new int[] { 2048 });
         }
 
         /// <summary>

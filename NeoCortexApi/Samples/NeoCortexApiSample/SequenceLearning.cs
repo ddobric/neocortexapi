@@ -26,11 +26,10 @@ namespace NeoCortexApiSample
             int inputBits = 100;
             int numColumns = 100000;
 
-            HtmConfig cfg = new HtmConfig()
+            HtmConfig cfg = new HtmConfig(new int[] { inputBits }, new int[] { numColumns })
             {
                 Random = new ThreadSafeRandom(42),
-                InputDimensions = new int[] { inputBits },
-                ColumnDimensions = new int[] { numColumns },
+
                 CellsPerColumn = 25,
                 GlobalInhibition = true,
                 LocalAreaDensity = -1,

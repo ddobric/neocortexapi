@@ -338,7 +338,7 @@ namespace UnitTestsProject
             var mem = new Connections();
             parameters.apply(mem);
 
-            sp.Init(mem, UnitTestHelpers.GetMemory(new HtmConfig()));
+            sp.Init(mem, UnitTestHelpers.GetMemory());
             //sp.init(mem);
 
             //int[] inputVector = new int[] { 1, 0, 1, 0, 1, 0, 0, 1, 1 };

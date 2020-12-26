@@ -36,10 +36,8 @@ namespace NeoCortexApiSample
 
             //
             // This is a set of configuration parameters used in the experiment.
-            HtmConfig cfg = new HtmConfig()
+            HtmConfig cfg = new HtmConfig(new int[] { inputBits }, new int[] { numColumns })
             {
-                InputDimensions = new int[] { inputBits },
-                ColumnDimensions = new int[] { numColumns },
                 CellsPerColumn = 10,
                 MaxBoost = maxBoost,
                 DutyCyclePeriod = 100,
