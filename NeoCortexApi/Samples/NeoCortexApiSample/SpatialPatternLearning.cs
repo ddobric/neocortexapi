@@ -31,7 +31,7 @@ namespace NeoCortexApiSample
             // We will use 200 bits to represent an input vector (pattern).
             int inputBits = 200;
 
-            // We will build a slice of the cortex with 2048 mini-columns
+            // We will build a slice of the cortex with the given number of mini-columns
             int numColumns = 2048;
 
             //

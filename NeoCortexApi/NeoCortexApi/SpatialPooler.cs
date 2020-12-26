@@ -74,7 +74,10 @@ namespace NeoCortexApi
                 throw new ArgumentException("Inhibition parameters are invalid");
             }
 
-            c.DoSpatialPoolerPostInit();
+            if (c.HtmConfig.PotentialRadius == -1)
+            {
+                c.HtmConfig.PotentialRadius = ArrayUtils.Product(c.HtmConfig.InputDimensions);
+            }
 
             InitMatrices(c, distMem);
 
@@ -93,9 +96,11 @@ namespace NeoCortexApi
         /// <param name="distMem"></param>
         public virtual void InitMatrices(Connections c, DistributedMemory distMem)
         {
-            SparseObjectMatrix<Column> memory = (SparseObjectMatrix<Column>)c.HtmConfig.Memory;
+            //SparseObjectMatrix<Column> memory = (SparseObjectMatrix<Column>)c.HtmConfig.Memory;
+            //c.HtmConfig.Memory = memory == null ? memory = new SparseObjectMatrix<Column>(c.HtmConfig.ColumnDimensions, dict: null) : memory;
 
-            c.HtmConfig.Memory = memory == null ? memory = new SparseObjectMatrix<Column>(c.HtmConfig.ColumnDimensions, dict: null) : memory;
+            if (c.HtmConfig.Memory == null)
+                c.HtmConfig.Memory = new SparseObjectMatrix<Column>(c.HtmConfig.ColumnDimensions, dict: null);
 
             c.HtmConfig.InputMatrix = new SparseBinaryMatrix(c.HtmConfig.InputDimensions);
 
@@ -130,7 +135,8 @@ namespace NeoCortexApi
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            memory.set(colList);
+            c.HtmConfig.Memory.set(colList);
+            // memory.set(colList);
 
             sw.Stop();
             //c.setPotentialPools(new SparseObjectMatrix<Pool>(c.getMemory().getDimensions(), dict: distMem == null ? null : distMem.PoolDictionary));
@@ -1108,7 +1114,7 @@ namespace NeoCortexApi
         /// <param name="c">Connections (memory)</param>
         /// <param name="overlaps">An array containing the overlap score for each  column.</param>
         /// <param name="density"> The fraction of the overlap score for a column is defined as the numbern of columns to survive inhibition.</param>
-        /// <returns>We return all columns, whof synapses in a "connected state" (connected synapses)ich have overlap greather than stimulusThreshold.</returns>
+        /// <returns>We return all columns, of synapses in a "connected state" (connected synapses) that have overlap greather than stimulusThreshold.</returns>
         public virtual int[] InhibitColumnsGlobal(Connections c, double[] overlaps, double density)
         {
             int numCols = c.HtmConfig.NumColumns;
@@ -1478,7 +1484,6 @@ namespace NeoCortexApi
             }
 
             double[] boostInterim;
-
 
             //
             // Boost factors are NOT recalculated if minimum active duty cycles are all set on 0.

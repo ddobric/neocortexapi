@@ -8,19 +8,30 @@ using System.Text;
 namespace NeoCortexApi.Entities
 {
     /// <summary>
-    /// HTM required configuration sent from Akka-client to Akka Actor.
+    /// HTM configuration.
+    /// Also sent from Akka-client to Akka Actor.
     /// </summary>
     public class HtmConfig
     {
+        /// <summary>
+        /// Default constructor with the default set of parameters.
+        /// </summary>
         public HtmConfig()
         {
             SetHtmConfigDefaultParameters();
         }
+
+        /// <summary>
+        /// Not used!
+        /// </summary>
         public class TemporalMemoryConfig
         {
 
         }
 
+        /// <summary>
+        /// Not used
+        /// </summary>
         public class SpatialPoolerConfig
         {
 

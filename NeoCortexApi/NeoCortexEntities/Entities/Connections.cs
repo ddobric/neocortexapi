@@ -15,16 +15,12 @@ namespace NeoCortexApi.Entities
     /// Contains the definition of the interconnected structural state of the SpatialPooler and
     /// TemporalMemory as well as the state of Cells, Columns, Segments, Synapses etc..
     /// </summary>
-    [Serializable]
     public class Connections
     {
 
         public static readonly double EPSILON = 0.00001;
 
-        /////////////////////////////////////// Spatial Pooler Vars ///////////////////////////////////////////
-
-
-        //Internal state
+          //Internal state
         private double version = 1.0;
 
         /// <summary>
@@ -40,8 +36,8 @@ namespace NeoCortexApi.Entities
         private long m_TMIteration = 0;
 
         private double[] m_BoostedmOverlaps;
-        private int[] m_Overlaps;
 
+        private int[] m_Overlaps;
       
         /// <summary>
         /// Initialize a tiny random tie breaker. This is used to determine winning
@@ -68,8 +64,7 @@ namespace NeoCortexApi.Entities
         /// One of all active column cells will be selected as the winner cell.
         /// </summary>
         public ISet<Cell> WinnerCells { get => winnerCells; set => winnerCells = value; }
-
-        
+                
         /// <summary>
         /// All cells. Initialized during initialization of the TemporalMemory.
         /// </summary>
@@ -77,13 +72,12 @@ namespace NeoCortexApi.Entities
 
         private double[] m_BoostFactors;
 
-        /////////////////////////////////////// Temporal Memory Vars ///////////////////////////////////////////
-
-        protected ISet<Cell> m_ActiveCells = new LinkedHashSet<Cell>();
-        protected ISet<Cell> winnerCells = new LinkedHashSet<Cell>();
-        protected ISet<Cell> m_PredictiveCells = new LinkedHashSet<Cell>();
-        protected List<DistalDendrite> m_ActiveSegments = new List<DistalDendrite>();
-        protected List<DistalDendrite> m_MatchingSegments = new List<DistalDendrite>();
+      
+        private ISet<Cell> m_ActiveCells = new LinkedHashSet<Cell>();
+        private ISet<Cell> winnerCells = new LinkedHashSet<Cell>();
+        private ISet<Cell> m_PredictiveCells = new LinkedHashSet<Cell>();
+        private List<DistalDendrite> m_ActiveSegments = new List<DistalDendrite>();
+        private List<DistalDendrite> m_MatchingSegments = new List<DistalDendrite>();
 
       
         private HtmConfig m_HtmConfig = new HtmConfig();
@@ -167,10 +161,11 @@ namespace NeoCortexApi.Entities
         /// </summary>
         protected Dictionary<Cell, List<DistalDendrite>> m_DistalSegments;
 
+        /// We moved this as a poart of the segment.
         /// <summary>
         /// Synapses, which belong to some distal dentrite segment.
         /// </summary>
-        private Dictionary<Segment, List<Synapse>> m_DistalSynapses;
+        //private Dictionary<Segment, List<Synapse>> m_DistalSynapses;
 
         // Proximal synapses are a part of the column.
         //protected Dictionary<Segment, List<Synapse>> proximalSynapses;
@@ -182,14 +177,17 @@ namespace NeoCortexApi.Entities
         /// Global tracker of the next available segment index
         /// </summary>
         protected int m_NextFlatIdx;
+
         /// <summary>
         /// Global counter incremented for each DD segment creation
         /// </summary>
         protected int m_NextSegmentOrdinal;
+
         /// <summary>
         /// Global counter incremented for each DD synapse creation
         /// </summary>
         protected int m_NextSynapseOrdinal;
+
         /// <summary>
         /// Total number of synapses
         /// </summary>
@@ -212,54 +210,12 @@ namespace NeoCortexApi.Entities
         public SegmentActivity LastActivity { get; set; }
 
         /// <summary>
-        /// The default random number seed
+        /// The segment creation number.
         /// </summary>
-        //protected int seed = 42;
-
-        /// <summary>
-        /// The random number generator
-        /// </summary>
-        //public Random random;
-
         public int NextSegmentOrdinal { get => m_NextSegmentOrdinal; }
 
-        ///** Sorting Lambda used for sorting active and matching segments */
-        //public IComparer<DistalDendrite> segmentPositionSortKey = (s1, s2) =>
-        //        {
-        //            double c1 = s1.getParentCell().getIndex() + ((double)(s1.getOrdinal() / (double)nextSegmentOrdinal));
-        //            double c2 = s2.getParentCell().getIndex() + ((double)(s2.getOrdinal() / (double)nextSegmentOrdinal));
-        //            return c1 == c2 ? 0 : c1 > c2 ? 1 : -1;
-        //        };
 
-
-
-        /** Sorting Lambda used for SpatialPooler inhibition */
-
-        //public Comparator<Pair<Integer, Double>> inhibitionComparator = (Comparator<Pair<Integer, Double>> & Serializable)
-
-        //    (p1, p2)-> { 
-
-        //    int p1key = p1.getFirst();
-
-        //int p2key = p2.getFirst();
-
-        //double p1val = p1.getSecond();
-
-        //double p2val = p2.getSecond();
-
-        //    if(Math.abs(p2val - p1val) < 0.000000001) {
-
-        //        return Math.abs(p2key - p1key) < 0.000000001 ? 0 : p2key > p1key? -1 : 1;
-
-        //    } else {
-
-        //        return p2val > p1val? -1 : 1;
-
-        //    }
-
-        //};
-
-        #region Connections Constructor
+        #region Constructors and Initialization
 
         /// <summary>
         /// Constructs a new <see cref="Connections"/> object. This object
@@ -283,21 +239,7 @@ namespace NeoCortexApi.Entities
         #endregion
 
         #region General Methods
-
-        /// <summary>
-        /// Sets the derived values of the <see cref="SpatialPooler"/> {@link SpatialPooler}'s initialization.
-        /// </summary>
-        public void DoSpatialPoolerPostInit()
-        {
-            //synPermBelowStimulusInc = synPermConnected / 10.0;
-            //synPermTrimThreshold = synPermActiveInc / 2.0;
-            if (HtmConfig.PotentialRadius == -1)
-            {
-                this.HtmConfig.PotentialRadius = ArrayUtils.Product(this.HtmConfig.InputDimensions);
-            }
-        }
-
-
+               
         /// <summary>
         /// Returns the <see cref="Cell"/> specified by the index passed in.
         /// </summary>
@@ -732,683 +674,6 @@ namespace NeoCortexApi.Entities
         public double[] TieBreaker { get => m_TieBreaker; set => m_TieBreaker = value; }
 
 
-        /// <summary>
-        /// Enforses using of global inhibition process.
-        /// </summary>
-        //public bool GlobalInhibition { get => m_GlobalInhibition; set => this.m_GlobalInhibition = value; }
-
-
-        /**
-         * The desired density of active columns within a local
-         * inhibition area (the size of which is set by the
-         * internally calculated inhibitionRadius, which is in
-         * turn determined from the average size of the
-         * connected potential pools of all columns). The
-         * inhibition logic will insure that at most N columns
-         * remain ON within a local inhibition area, where N =
-         * localAreaDensity * (total number of columns in
-         * inhibition area).
-         *
-         * @param localAreaDensity
-         */
-        //public void setLocalAreaDensity(double localAreaDensity)
-        //{
-        //    this.m_LocalAreaDensity = localAreaDensity;
-        //}
-
-        /**
-         * Returns the configured local area density
-         * @return  the configured local area density
-         * @see setLocalAreaDensity
-         */
-
-        ///// <summary>
-        /////     The desired density of active columns within a local
-        /////     inhibition area(the size of which is set by the
-        /////     internally calculated inhibitionRadius, which is in
-        /////     turn determined from the average size of the
-        /////
-        /////     connected potential pools of all columns). The
-        /////     inhibition logic will insure that at most N columns
-        /////         remain ON within a local inhibition area, where N =
-        /////         localAreaDensity * (total number of columns in
-        /////         inhibition area).
-
-        ///// </summary>
-        //public double LocalAreaDensity
-        //{
-        //    get
-        //    {
-        //        return m_LocalAreaDensity;
-        //    }
-        //    set
-        //    {
-        //        m_LocalAreaDensity = value;
-        //    }
-        //}
-
-        /**
-         * Returns the configured number of active columns per
-         * inhibition area.
-         * @return  the configured number of active columns per
-         * inhibition area.
-         * @see setNumActiveColumnsPerInhArea
-         */
-        /**
- * An alternate way to control the density of the active
- * columns. If numActivePerInhArea is specified then
- * localAreaDensity must be less than 0, and vice versa.
- * When using numActivePerInhArea, the inhibition logic
- * will insure that at most 'numActivePerInhArea'
- * columns remain ON within a local inhibition area (the
- * size of which is set by the internally calculated
- * inhibitionRadius, which is in turn determined from
- * the average size of the connected receptive fields of
- * all columns). When using this method, as columns
- * learn and grow their effective receptive fields, the
- * inhibitionRadius will grow, and hence the net density
- * of the active columns will *decrease*. This is in
- * contrast to the localAreaDensity method, which keeps
- * the density of active columns the same regardless of
- * the size of their receptive fields.
- *
- * @param numActiveColumnsPerInhArea
- */
-        //public double NumActiveColumnsPerInhArea { get => m_NumActiveColumnsPerInhArea; set => this.m_NumActiveColumnsPerInhArea = value; }
-
-
-        /// <summary>
-        /// Minimum number of connected synapses to make column active. Specified as a percent of a fully grown synapse.
-        /// </summary>
-        //public double StimulusThreshold { get => m_StimulusThreshold; set => this.m_StimulusThreshold = value; }
-
-        ///**
-        // * The amount by which an inactive synapse is
-        // * decremented in each round. Specified as a percent of
-        // * a fully grown synapse.
-        // *
-        // * @param synPermInactiveDec
-        // */
-        //public void setSynPermInactiveDec(double synPermInactiveDec)
-        //{
-        //    this.synPermInactiveDec = synPermInactiveDec;
-        //}
-
-        ///**
-        // * Returns the synaptic permanence inactive decrement.
-        // * @return  the synaptic permanence inactive decrement.
-        // * @see setSynPermInactiveDec
-        // */
-        //public double getSynPermInactiveDec()
-        //{
-        //    return synPermInactiveDec;
-        //}
-
-        ///**
-        // * The amount by which an active synapse is incremented
-        // * in each round. Specified as a percent of a
-        // * fully grown synapse.
-        // *
-        // * @param synPermActiveInc
-        // */
-        //public void setSynPermActiveInc(double synPermActiveIncValue)
-        //{
-        //    synPermActiveInc = synPermActiveIncValue;
-        //}
-
-        ///**
-        // * Returns the configured active permanence increment
-        // * @return the configured active permanence increment
-        // * @see setSynPermActiveInc
-        // */
-        //public double getSynPermActiveInc()
-        //{
-        //    return synPermActiveInc;
-        //}
-
-        ///**
-        // * The default connected threshold. Any synapse whose
-        // * permanence value is above the connected threshold is
-        // * a "connected synapse", meaning it can contribute to
-        // * the cell's firing.
-        // *
-        // * @param synPermConnected
-        // */
-        //public void setSynPermConnected(double synPermConnectedValue)
-        //{
-        //    this.synPermConnected = synPermConnectedValue;
-        //}
-
-        ///**
-        // * Returns the synapse permanence connected threshold
-        // * @return the synapse permanence connected threshold
-        // * @see setSynPermConnected
-        // */
-        //public double getSynPermConnected()
-        //{
-        //    return synPermConnected;
-        //}
-
-        ///**
-        // * Sets the stimulus increment for synapse permanences below
-        // * the measured threshold.
-        // * @param stim
-        // */
-        //public void setSynPermBelowStimulusInc(double stim)
-        //{
-        //    this.synPermBelowStimulusInc = stim;
-        //}
-
-        ///**
-        // * Returns the stimulus increment for synapse permanences below
-        // * the measured threshold.
-        // *
-        // * @return
-        // */
-        //public double getSynPermBelowStimulusInc()
-        //{
-        //    return synPermBelowStimulusInc;
-        //}
-
-        /**
-         * A number between 0 and 1.0, used to set a floor on
-         * how often a column should have at least
-         * stimulusThreshold active inputs. Periodically, each
-         * column looks at the overlap duty cycle of
-         * all other columns within its inhibition radius and
-         * sets its own internal minimal acceptable duty cycle
-         * to: minPctDutyCycleBeforeInh * max(other columns'
-         * duty cycles).
-         * On each iteration, any column whose overlap duty
-         * cycle falls below this computed value will  get
-         * all of its permanence values boosted up by
-         * synPermActiveInc. Raising all permanences in response
-         * to a sub-par duty cycle before  inhibition allows a
-         * cell to search for new inputs when either its
-         * previously learned inputs are no longer ever active,
-         * or when the vast majority of them have been
-         * "hijacked" by other columns.
-         *
-         * @param minPctOverlapDutyCycle
-         */
-        //public void setMinPctOverlapDutyCycles(double minPctOverlapDutyCycle)
-        //{
-        //    this.minPctOverlapDutyCycles = minPctOverlapDutyCycle;
-        //}
-
-        ///**
-        // * see {@link #setMinPctOverlapDutyCycles(double)}
-        // * @return
-        // */
-        //public double getMinPctOverlapDutyCycles()
-        //{
-        //    return minPctOverlapDutyCycles;
-        //}
-
-        ///// <summary>
-        ///// NEW
-        ///// </summary>
-        ///// <param name="val"></param>
-        //public void updateMinPctOverlapDutyCycles(double val)
-        //{
-        //    minPctOverlapDutyCycles = val;
-        //}
-        /**
-         * A number between 0 and 1.0, used to set a floor on
-         * how often a column should be activate.
-         * Periodically, each column looks at the activity duty
-         * cycle of all other columns within its inhibition
-         * radius and sets its own internal minimal acceptable
-         * duty cycle to:
-         *   minPctDutyCycleAfterInh *
-         *   max(other columns' duty cycles).
-         * On each iteration, any column whose duty cycle after
-         * inhibition falls below this computed value will get
-         * its internal boost factor increased.
-         *
-         * @param minPctActiveDutyCycle
-         */
-        //public void setMinPctActiveDutyCycles(double minPctActiveDutyCycle)
-        //{
-        //    this.minPctActiveDutyCycles = minPctActiveDutyCycle;
-        //}
-
-        ///**
-        // * Returns the minPctActiveDutyCycle
-        // * see {@link #setMinPctActiveDutyCycles(double)}
-        // * @return  the minPctActiveDutyCycle
-        // */
-        //public double getMinPctActiveDutyCycles()
-        //{
-        //    return minPctActiveDutyCycles;
-        //}
-
-        ///**
-        // * The period used to calculate duty cycles. Higher
-        // * values make it take longer to respond to changes in
-        // * boost or synPerConnectedCell. Shorter values make it
-        // * more unstable and likely to oscillate.
-        // *
-        // * @param dutyCyclePeriod
-        // */
-        //public void setDutyCyclePeriod(int dutyCyclePeriod)
-        //{
-        //    this.dutyCyclePeriod = dutyCyclePeriod;
-        //}
-
-        ///**
-        // * Returns the configured duty cycle period
-        // * see {@link #setDutyCyclePeriod(double)}
-        // * @return  the configured duty cycle period
-        // */
-        //public int getDutyCyclePeriod()
-        //{
-        //    return dutyCyclePeriod;
-        //}
-
-        ///**
-        // * The maximum overlap boost factor. Each column's
-        // * overlap gets multiplied by a boost factor
-        // * before it gets considered for inhibition.
-        // * The actual boost factor for a column is number
-        // * between 1.0 and maxBoost. A boost factor of 1.0 is
-        // * used if the duty cycle is &gt;= minOverlapDutyCycle,
-        // * maxBoost is used if the duty cycle is 0, and any duty
-        // * cycle in between is linearly extrapolated from these
-        // * 2 end points.
-        // *
-        // * @param maxBoost
-        // */
-        //public void setMaxBoost(double maxBoost)
-        //{
-        //    this.maxBoost = maxBoost;
-        //}
-
-        ///**
-        // * Returns the max boost
-        // * see {@link #setMaxBoost(double)}
-        // * @return  the max boost
-        // */
-        //public double getMaxBoost()
-        //{
-        //    return maxBoost;
-        //}
-
-        ///**
-        // * Specifies whether neighborhoods wider than the 
-        // * borders wrap around to the other side.
-        // * @param b
-        // */
-        //public void setWrapAround(bool b)
-        //{
-        //    this.wrapAround = b;
-        //}
-
-        ///**
-        // * Returns a flag indicating whether neighborhoods
-        // * wider than the borders, wrap around to the other
-        // * side.
-        // * @return
-        // */
-        //public bool isWrapAround()
-        //{
-        //    return wrapAround;
-        //}
-
-        /**
-         * Returns the boosted overlap score for each column
-         * @return the boosted overlaps
-         */
-        /**
- * Sets and Returns the boosted overlap score for each column
- * @param boostedOverlaps
- * @return
- * 
- * 
-        ///**
-        // * Sets the synPermTrimThreshold
-        // * @param threshold
-        // */
-        //public void setSynPermTrimThreshold(double threshold)
-        //{
-        //    this.synPermTrimThreshold = threshold;
-        //}
-
-        ///**
-        // * Returns the synPermTrimThreshold
-        // * @return
-        // */
-        //public double getSynPermTrimThreshold()
-        //{
-        //    return synPermTrimThreshold;
-        //}
-
-        /**
-         * Sets the {@link FlatMatrix} which holds the mapping
-         * of column indexes to their lists of potential inputs.
-         *
-         * @param pools		{@link FlatMatrix} which holds the pools.
-         */
-        //public void setPotentialPools(IFlatMatrix<Pool> pools)
-        //{
-        //    this.potentialPools = pools;
-        //}
-
-        /**
-         * Returns the {@link FlatMatrix} which holds the mapping
-         * of column indexes to their lists of potential inputs.
-         * @return	the potential pools
-         */
-        //public IFlatMatrix<Pool> getPotentialPoolsOld()
-        //{
-        //    return this.potentialPools;
-        //}
-
-        ///**
-        // * Returns the minimum {@link Synapse} permanence.
-        // * @return
-        // */
-        //public double getSynPermMin()
-        //{
-        //    return synPermMin;
-        //}
-
-        ///**
-        // * Returns the maximum {@link Synapse} permanence.
-        // * @return
-        // */
-        //public double getSynPermMax()
-        //{
-        //    return synPermMax;
-        //}
-
-        ///**
-        // * Sets the number of {@link Column}.
-        // *
-        // * @param columnDimensions
-        // */
-        //public void setColumnDimensions(int[] columnDimensions)
-        //{
-        //    this.columnDimensions = columnDimensions;
-        //}
-
-        ///**
-        // * Gets the number of {@link Column}.
-        // *
-        // * @return columnDimensions
-        // */
-        //public int[] getColumnDimensions()
-        //{
-        //    return this.columnDimensions;
-        //}
-
-        ///**
-        // * A list representing the dimensions of the input
-        // * vector. Format is [height, width, depth, ...], where
-        // * each value represents the size of the dimension. For a
-        // * topology of one dimension with 100 inputs use 100, or
-        // * [100]. For a two dimensional topology of 10x5 use
-        // * [10,5].
-        // *
-        // * @param inputDimensions
-        // */
-        //public void setInputDimensions(int[] inputDimensions)
-        //{
-        //    this.inputDimensions = inputDimensions;
-        //}
-
-        ///**
-        // * Returns the configured input dimensions
-        // * see {@link #setInputDimensions(int[])}
-        // * @return the configured input dimensions
-        // */
-        //public int[] getInputDimensions()
-        //{
-        //    return inputDimensions;
-        //}
-
-        ///**
-        // * Sets the number of {@link Cell}s per {@link Column}
-        // * @param cellsPerColumn
-        // */
-        //public void setCellsPerColumn(int cellsPerColumn)
-        //{
-        //    this.cellsPerColumn = cellsPerColumn;
-        //}
-
-        ///**
-        // * Gets the number of {@link Cell}s per {@link Column}.
-        // *
-        // * @return cellsPerColumn
-        // */
-        //public int getCellsPerColumn()
-        //{
-        //    return this.cellsPerColumn;
-        //}
-
-        ///**
-        // * Sets the activation threshold.
-        // *
-        // * If the number of active connected synapses on a segment
-        // * is at least this threshold, the segment is said to be active.
-        // *
-        // * @param activationThreshold
-        // */
-        //public void setActivationThreshold(int activationThreshold)
-        //{
-        //    this.activationThreshold = activationThreshold;
-        //}
-
-        ///**
-        // * Returns the activation threshold.
-        // * @return
-        // */
-        //public int getActivationThreshold()
-        //{
-        //    return activationThreshold;
-        //}
-
-        ///**
-        // * Radius around cell from which it can
-        // * sample to form distal dendrite connections.
-        // *
-        // * @param   learningRadius
-        // */
-        //public void setLearningRadius(int learningRadius)
-        //{
-        //    this.learningRadius = learningRadius;
-        //}
-
-        ///**
-        // * Returns the learning radius.
-        // * @return
-        // */
-        //public int getLearningRadius()
-        //{
-        //    return learningRadius;
-        //}
-
-        ///**
-        // * If the number of synapses active on a segment is at least this
-        // * threshold, it is selected as the best matching
-        // * cell in a bursting column.
-        // *
-        // * @param   minThreshold
-        // */
-        //public void setMinThreshold(int minThreshold)
-        //{
-        //    this.minThreshold = minThreshold;
-        //}
-
-        ///**
-        // * Returns the minimum threshold of the number of active synapses to be picked as best.
-        // * @return
-        // */
-        //public int getMinThreshold()
-        //{
-        //    return minThreshold;
-        //}
-
-        /**
-         * The maximum number of synapses added to a segment during learning.
-         *
-         * @param   maxNewSynapseCount
-         */
-        //public void setMaxNewSynapseCount(int maxNewSynapseCount)
-        //{
-        //    this.maxNewSynapseCount = maxNewSynapseCount;
-        //}
-
-        ///**
-        // * Returns the maximum number of synapses added to a segment during
-        // * learning.
-        // *
-        // * @return
-        // */
-        //public int getMaxNewSynapseCount()
-        //{
-        //    return maxNewSynapseCount;
-        //}
-
-        /**
-         * The maximum number of segments allowed on a given cell
-         * @param maxSegmentsPerCell
-         */
-        //public void setMaxSegmentsPerCell(int maxSegmentsPerCell)
-        //{
-        //    this.maxSegmentsPerCell = maxSegmentsPerCell;
-        //}
-
-        ///**
-        // * Returns the maximum number of segments allowed on a given cell
-        // * @return
-        // */
-        //public int getMaxSegmentsPerCell()
-        //{
-        //    return maxSegmentsPerCell;
-        //}
-
-        ///**
-        // * The maximum number of synapses allowed on a given segment
-        // * @param maxSynapsesPerSegment
-        // */
-        //public void setMaxSynapsesPerSegment(int maxSynapsesPerSegment)
-        //{
-        //    this.maxSynapsesPerSegment = maxSynapsesPerSegment;
-        //}
-
-        ///**
-        // * Returns the maximum number of synapses allowed per segment
-        // * @return
-        // */
-        //public int getMaxSynapsesPerSegment()
-        //{
-        //    return maxSynapsesPerSegment;
-        //}
-
-        ///**
-        // * Initial permanence of a new synapse
-        // *
-        // * @param   initialPermanence
-        // */
-        //public void setInitialPermanence(double initialPermanence)
-        //{
-        //    this.initialPermanence = initialPermanence;
-        //}
-
-        ///**
-        // * Returns the initial permanence setting.
-        // * @return
-        // */
-        //public double getInitialPermanence()
-        //{
-        //    return initialPermanence;
-        //}
-
-        ///**
-        // * If the permanence value for a synapse
-        // * is greater than this value, it is said
-        // * to be connected.
-        // *
-        // * @param connectedPermanence
-        // */
-        //public void setConnectedPermanence(double connectedPermanence)
-        //{
-        //    this.connectedPermanence = connectedPermanence;
-        //}
-
-        ///**
-        // * If the permanence value for a synapse
-        // * is greater than this value, it is said
-        // * to be connected.
-        // *
-        // * @return
-        // */
-        //public double getConnectedPermanence()
-        //{
-        //    return connectedPermanence;
-        //}
-
-        ///**
-        // * Amount by which permanences of synapses
-        // * are incremented during learning.
-        // *
-        // * @param   permanenceIncrement
-        // */
-        //public void setPermanenceIncrement(double permanenceIncrement)
-        //{
-        //    this.permanenceIncrement = permanenceIncrement;
-        //}
-
-        ///**
-        // * Amount by which permanences of synapses
-        // * are incremented during learning.
-        // */
-        //public double getPermanenceIncrement()
-        //{
-        //    return this.permanenceIncrement;
-        //}
-
-        ///**
-        // * Amount by which permanences of synapses
-        // * are decremented during learning.
-        // *
-        // * @param   permanenceDecrement
-        // */
-        //public void setPermanenceDecrement(double permanenceDecrement)
-        //{
-        //    this.permanenceDecrement = permanenceDecrement;
-        //}
-
-        ///**
-        // * Amount by which permanences of synapses
-        // * are decremented during learning.
-        // */
-        //public double getPermanenceDecrement()
-        //{
-        //    return this.permanenceDecrement;
-        //}
-
-        ///**
-        // * Amount by which active permanences of synapses of previously predicted but inactive segments are decremented.
-        // * @param predictedSegmentDecrement
-        // */
-        //public void setPredictedSegmentDecrement(double predictedSegmentDecrement)
-        //{
-        //    this.predictedSegmentDecrement = predictedSegmentDecrement;
-        //}
-
-        ///**
-        // * Returns the predictedSegmentDecrement amount.
-        // * @return
-        // */
-        //public double getPredictedSegmentDecrement()
-        //{
-        //    return this.predictedSegmentDecrement;
-        //}
-
-
-
         public double[] BoostedOverlaps { get => m_BoostedmOverlaps; set => this.m_BoostedmOverlaps = value; }
 
 
@@ -1664,11 +929,13 @@ namespace NeoCortexApi.Entities
         public void DestroySegment(DistalDendrite segment)
         {
             // Remove the synapses from all data structures outside this Segment.
-            List<Synapse> synapses = GetSynapses(segment);
+            //DD List<Synapse> synapses = GetSynapses(segment);
+            List<Synapse> synapses = segment.Synapses;
             int len = synapses.Count;
 
             //getSynapses(segment).stream().forEach(s->removeSynapseFromPresynapticMap(s));
-            foreach (var s in GetSynapses(segment))
+            //DD foreach (var s in GetSynapses(segment))
+            foreach (var s in segment.Synapses)
             {
                 RemoveSynapseFromPresynapticMap(s);
             }
@@ -1679,7 +946,7 @@ namespace NeoCortexApi.Entities
             GetSegments(segment.ParentCell).Remove(segment);
 
             // Remove the segment from the map
-            m_DistalSynapses.Remove(segment);
+            //DD m_DistalSynapses.Remove(segment);
 
             // Free the flatIdx and remove the final reference so the Segment can be
             // garbage-collected.
@@ -1837,7 +1104,8 @@ namespace NeoCortexApi.Entities
             }
 
             Synapse synapse = null;
-            GetSynapses(segment).Add(
+            //DD GetSynapses(segment).Add(
+                segment.Synapses.Add(
                 synapse = new Synapse(
                     presynapticCell, segment.SegmentIndex, m_NextSynapseOrdinal, permanence));
 
@@ -1862,7 +1130,8 @@ namespace NeoCortexApi.Entities
             RemoveSynapseFromPresynapticMap(synapse);
 
             //segment.Synapses.Remove(synapse);
-            GetSynapses(segment).Remove(synapse);
+            //DD GetSynapses(segment).Remove(synapse);
+            segment.Synapses.Remove(synapse);
         }
 
         /// <summary>
@@ -1892,7 +1161,8 @@ namespace NeoCortexApi.Entities
         private Synapse MinPermanenceSynapse(DistalDendrite dd)
         {
             //List<Synapse> synapses = getSynapses(dd).stream().sorted().collect(Collectors.toList());
-            List<Synapse> synapses = GetSynapses(dd);
+            //DD List<Synapse> synapses = GetSynapses(dd);
+            List<Synapse> synapses = dd.Synapses;
             Synapse min = null;
             double minPermanence = Double.MaxValue;
 
@@ -1919,7 +1189,8 @@ namespace NeoCortexApi.Entities
         {
             if (optionalSegmentArg != null)
             {
-                return GetSynapses(optionalSegmentArg).Count;
+                // DD return GetSynapses(optionalSegmentArg).Count;
+                return optionalSegmentArg.Synapses.Count;
             }
 
             return m_NumSynapses;
@@ -1961,40 +1232,40 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="segment">Distal Dentrite segment.</param>
         /// <returns>List of segment synapeses.</returns>
-        public List<Synapse> GetSynapses(DistalDendrite segment)
-        {
-            if (segment == null)
-            {
-                throw new ArgumentException("Segment cannot be null");
-            }
+        //public List<Synapse> GetSynapses(DistalDendrite segment)
+        //{
+        //    if (segment == null)
+        //    {
+        //        throw new ArgumentException("Segment cannot be null");
+        //    }
 
-            if (m_DistalSynapses == null)
-            {
-                m_DistalSynapses = new Dictionary<Segment, List<Synapse>>();
-            }
+        //    if (m_DistalSynapses == null)
+        //    {
+        //        m_DistalSynapses = new Dictionary<Segment, List<Synapse>>();
+        //    }
 
-            List<Synapse> retVal = null;
-            if (m_DistalSynapses.TryGetValue(segment, out retVal) == false)
-            {
-                m_DistalSynapses.Add(segment, retVal = new List<Synapse>());
-            }
+        //    List<Synapse> retVal = null;
+        //    if (m_DistalSynapses.TryGetValue(segment, out retVal) == false)
+        //    {
+        //        m_DistalSynapses.Add(segment, retVal = new List<Synapse>());
+        //    }
 
-            return retVal;
-        }
+        //    return retVal;
+        //}
 
 
 
         /// <summary>
         /// For testing only.
         /// </summary>
-        /// <returns></returns>
-        public Dictionary<Cell, LinkedHashSet<Synapse>> getReceptorSynapseMapping()
+        /// <returns>Copy of dictionary.</returns>
+        public Dictionary<Cell, LinkedHashSet<Synapse>> GetReceptorSynapses()
         {
             return new Dictionary<Cell, LinkedHashSet<Synapse>>(m_ReceptorSynapses);
         }
 
         /// <summary>
-        /// Clears all <see cref="TemporalMemory"/> state.
+        /// Clears the sequence learning state.
         /// </summary>
         public void Clear()
         {
@@ -2324,7 +1595,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + (int)(temp ^ (temp >> 32));
             //result = prime * result + proximalSynapseCounter;
             //result = prime * result + ((proximalSynapses == null) ? 0 : proximalSynapses.GetHashCode());
-            result = prime * result + ((m_DistalSynapses == null) ? 0 : m_DistalSynapses.GetHashCode());
+            //DD result = prime * result + ((m_DistalSynapses == null) ? 0 : m_DistalSynapses.GetHashCode());
             result = prime * result + m_TieBreaker.GetHashCode();
             result = prime * result + this.HtmConfig.UpdatePeriod;
             temp = BitConverter.DoubleToInt64Bits(version);
@@ -2333,6 +1604,7 @@ namespace NeoCortexApi.Entities
             return result;
         }
 
+        /*
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
@@ -2523,6 +1795,7 @@ namespace NeoCortexApi.Entities
                 return false;
             return true;
         }
+        */
         #endregion
     }
 }

@@ -8,6 +8,7 @@ using System.Linq;
 using NeoCortexApi.Utility;
 using static NeoCortexApi.Entities.Connections;
 using System.Diagnostics;
+using System.IO;
 
 namespace NeoCortexApi
 {
@@ -69,6 +70,9 @@ namespace NeoCortexApi
             this.connections.Cells = cells;
         }
 
+        //StreamWriter tmperf1 = new StreamWriter("tm-perf-100000-10cells.csv");
+    
+
         /// <summary>
         /// Performs the whole calculation of Temporal memory algorithm.
         /// Calculation takes two parts:
@@ -83,8 +87,18 @@ namespace NeoCortexApi
         /// <remarks>Note: PredictiveCells are not calculated here. They are calculated on demand from active segments.</remarks>
         public ComputeCycle Compute(int[] activeColumns, bool learn)
         {
+            //Stopwatch sw = new Stopwatch();
+            //sw.Start();
             ComputeCycle cycle = ActivateCells(this.connections, activeColumns, learn);
+        
             ActivateDendrites(this.connections, cycle, learn);
+          
+            //sw.Stop();
+
+            //tmperf1.WriteLine($"{sw.ElapsedMilliseconds}");
+
+            //tmperf1.Flush();
+
             return cycle;
         }
 
@@ -125,8 +139,6 @@ namespace NeoCortexApi
             {
                 activeColumns.Add(conn.GetColumn(indx));
             }
-
-            //Func<Object, Column> segToCol = segment => ((DistalDendrite)segment).getParentCell().getParentColumnIndex();
 
             Func<Object, Column> segToCol = (segment) =>
             {
@@ -172,7 +184,6 @@ namespace NeoCortexApi
                     }
                     else
                     {
-                        Debug.Write("B.");
                         //
                         // If no active segments are detected (start of learning) then all cells are activated
                         // and a random single cell is chosen as a winner.
@@ -352,7 +363,8 @@ namespace NeoCortexApi
 
             foreach (DistalDendrite segment in columnActiveSegments)
             {
-                foreach (Synapse synapse in new List<Synapse>(conn.GetSynapses(segment)))
+                //DD foreach (Synapse synapse in new List<Synapse>(conn.GetSynapses(segment)))
+                foreach (Synapse synapse in new List<Synapse>(segment.Synapses))
                 {
                     // WORKING DRAFT. TM algorithm change.
                     // The original algorithm adopt all synapses at the segment.
@@ -451,7 +463,7 @@ namespace NeoCortexApi
         {
 
             IList<Cell> cells = column.Cells;
-            Cell leastUsedCell = null;
+            Cell leastUsedOrMaxPotentialCell = null;
 
             //
             // Matching segments result from number of potential synapses. These are segments with number of potential
@@ -463,17 +475,11 @@ namespace NeoCortexApi
             // If some matching segments exist, bursting will grab the segment with most potential synapses and adapt it.
             if (matchingSegments != null && matchingSegments.Count > 0)
             {
-                Debug.Write($"({matchingSegments.Count})");
+                Debug.Write($"B.({matchingSegments.Count})");
 
                 DistalDendrite maxPotentialSeg = GetSegmentwithHighesPotential(conn, matchingSegments, prevActiveCells);
 
-                // TODO what is this loop doing?
-                for (int i = 0; i < matchingSegments.Count; i++)
-                {
-                    var temp = matchingSegments[i].SegmentIndex;
-                }
-
-                leastUsedCell = maxPotentialSeg.ParentCell;
+                leastUsedOrMaxPotentialCell = maxPotentialSeg.ParentCell;
 
                 if (learn)
                 {
@@ -490,20 +496,22 @@ namespace NeoCortexApi
             }
             else
             {
-                leastUsedCell = this.GetLeastUsedCell(conn, cells, random);
+                Debug.Write("B.0");
+
+                leastUsedOrMaxPotentialCell = this.GetLeastUsedCell(conn, cells, random);
                 if (learn)
                 {
                     int nGrowExact = Math.Min(conn.HtmConfig.MaxNewSynapseCount, prevWinnerCells.Count);
                     if (nGrowExact > 0)
                     {
-                        DistalDendrite bestSegment = conn.CreateDistalSegment(leastUsedCell);
+                        DistalDendrite bestSegment = conn.CreateDistalSegment(leastUsedOrMaxPotentialCell);
                         GrowSynapses(conn, prevWinnerCells, bestSegment, conn.HtmConfig.InitialPermanence,
                             nGrowExact, random);
                     }
                 }
             }
 
-            return new BurstingResult(cells, leastUsedCell);
+            return new BurstingResult(cells, leastUsedOrMaxPotentialCell);
         }
 
         private int indxOfLastHighestSegment = -1;
@@ -630,7 +638,8 @@ namespace NeoCortexApi
             // Enumarates all synapses in a segment and remove winner-cells from
             // list of removingCandidates if they are presynaptic winners cells.
             // So, we will recreate only synapses on cells, which are not winners in the previous step.
-            foreach (Synapse synapse in conn.GetSynapses(segment))
+            //DD 
+            foreach (Synapse synapse in segment.Synapses)
             {
                 Cell presynapticCell = synapse.getPresynapticCell();
                 int index = removingCandidates.IndexOf(presynapticCell);
@@ -676,7 +685,8 @@ namespace NeoCortexApi
             // Destroying a synapse modifies the set that we're iterating through.
             List<Synapse> synapsesToDestroy = new List<Synapse>();
 
-            foreach (Synapse synapse in conn.GetSynapses(segment))
+            //DD oreach (Synapse synapse in conn.GetSynapses(segment))
+                foreach (Synapse synapse in segment.Synapses)
             {
                 double permanence = synapse.Permanence;
 

@@ -17,30 +17,28 @@ namespace NeoCortexApi.Entities
         /// Index of the cell.
         /// </summary>
         public int Index { get; set; }
+        
         public int CellId { get; }
-
-        //public List<DistalDendrite> Segments
-        //{
-        //    get;
-        //}
+               
 
         /// <summary>
         /// The column, which owns this cell.
         /// </summary>
         public int ParentColumnIndex { get; set; }
 
-        /** Cash this because Cells are immutable */
+        /// <summary>
+        /// Stores the calculated cell's hashcode.
+        /// </summary>
         private readonly int m_Hashcode;
 
+        /// <summary>
+        /// Used for testing.
+        /// </summary>
         public Cell()
         {
             //this.Segments = new List<DistalDendrite>(); 
         }
-        /**
-         * 
-         * @param column    the containing {@link Column}
-         * @param colSeq    
-         */
+       
         /// <summary>
         /// Constructs a new <see cref="Cell"/> object
         /// </summary>
@@ -58,32 +56,9 @@ namespace NeoCortexApi.Entities
             this.CellId = cellId;
         }
 
-
-        /**
-         * Returns the column within which this cell resides
-         * @return
-         */
-        //public int getParentColumnIndex()
-        //{
-        //    return ParentColumnIndex;
-        //}
-
-        /**
-         * Returns the Set of {@link Synapse}s which have this cell
-         * as their source cells.
-         *  
-         * @param   c               the connections state of the temporal memory
-         *                          return an orphaned empty set.
-         * @return  the Set of {@link Synapse}s which have this cell
-         *          as their source cells.
-         */
-        //public ISet<Synapse> getReceptorSynapses(Connections c)
-        //{
-        //    return getReceptorSynapses(c, false);
-        //}
-
+    
         /// <summary>
-        /// Returns the Set of <see cref="Synapse"/>s which have this cell as their source cells.
+        /// Returns the Set of <see cref="Synapse"/>s which have this cell as their source cell.
         /// </summary>
         /// <param name="c">the connections state of the temporal memory</param>
         /// <param name="doLazyCreate">create a container for future use if true, if false return an orphaned empty set.</param>
@@ -93,19 +68,7 @@ namespace NeoCortexApi.Entities
             return c.GetReceptorSynapses(this, doLazyCreate);
         }
 
-        /**
-         * Returns a {@link List} of this {@code Cell}'s {@link DistalDendrite}s
-         * 
-         * @param   c               the connections state of the temporal memory
-         * @param doLazyCreate      create a container for future use if true, if false
-         *                          return an orphaned empty set.
-         * @return  a {@link List} of this {@code Cell}'s {@link DistalDendrite}s
-         */
-        //public List<DistalDendrite> getSegments(Connections c)
-        //{
-        //    return getSegments(c, false);
-        //}
-
+     
         /// <summary>
         /// Returns a <see cref="List{T}"/> of this <see cref="Cell"/>'s <see cref="DistalDendrite"/>s
         /// </summary>
@@ -117,19 +80,10 @@ namespace NeoCortexApi.Entities
             return c.GetSegments(this, doLazyCreate);
         }
 
-
-
-        ///**
-        // * {@inheritDoc}
-        // * 
-        // * <em> Note: All comparisons use the cell's index only </em>
-        // */
-        //@Override
-        //public int compareTo(Cell arg0)
-        //{
-        //    return boxedIndex.compareTo(arg0.boxedIndex);
-        //}
-
+        /// <summary>
+        /// Gets the hashcode of the cell.
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
             if (m_Hashcode == 0)
@@ -143,7 +97,10 @@ namespace NeoCortexApi.Entities
         }
 
 
-
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <returns></returns>
         public bool Equals(Cell obj)
         {
             if (this == obj)
@@ -157,6 +114,10 @@ namespace NeoCortexApi.Entities
                 return true;
         }
 
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return $"Cell: Indx={this.Index}, [{this.ParentColumnIndex}]";
