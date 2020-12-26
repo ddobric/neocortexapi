@@ -96,9 +96,11 @@ namespace NeoCortexApi
         /// <param name="distMem"></param>
         public virtual void InitMatrices(Connections c, DistributedMemory distMem)
         {
-            SparseObjectMatrix<Column> memory = (SparseObjectMatrix<Column>)c.HtmConfig.Memory;
+            //SparseObjectMatrix<Column> memory = (SparseObjectMatrix<Column>)c.HtmConfig.Memory;
+            //c.HtmConfig.Memory = memory == null ? memory = new SparseObjectMatrix<Column>(c.HtmConfig.ColumnDimensions, dict: null) : memory;
 
-            c.HtmConfig.Memory = memory == null ? memory = new SparseObjectMatrix<Column>(c.HtmConfig.ColumnDimensions, dict: null) : memory;
+            if (c.HtmConfig.Memory == null)
+                c.HtmConfig.Memory = new SparseObjectMatrix<Column>(c.HtmConfig.ColumnDimensions, dict: null);
 
             c.HtmConfig.InputMatrix = new SparseBinaryMatrix(c.HtmConfig.InputDimensions);
 
@@ -133,7 +135,8 @@ namespace NeoCortexApi
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            memory.set(colList);
+            c.HtmConfig.Memory.set(colList);
+            // memory.set(colList);
 
             sw.Stop();
             //c.setPotentialPools(new SparseObjectMatrix<Pool>(c.getMemory().getDimensions(), dict: distMem == null ? null : distMem.PoolDictionary));
