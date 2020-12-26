@@ -20,20 +20,36 @@ namespace UnitTestsProject
     [TestClass]
     public class SbAkkaTest
     {
-        //private const string sbConnStr = "Endpoint=sb://bastasample.servicebus.windows.net/;SharedAccessKeyName=demo;SharedAccessKey=MvwVbrrJdsMQyhO/0uwaB5mVbuXyvYa3WRNpalHi0LQ=";
+        /// <summary>
+        /// Please make sure that environment variable 'SbConnStr' is set.
+        /// </summary>
+        public static string SbConnStr
+        {
+            get
+            {
+                return Environment.GetEnvironmentVariable("SbConnStr");
+            }
+        }
 
-        private const string sbConnStr = "Endpoint=sb://students.servicebus.windows.net/;SharedAccessKeyName=stud-2018;SharedAccessKey=AQiFJiPtD0G/7y8hXStqt8CXZR+M1LSzOfGPiEoL0cc=";
+        /// <summary>
+        /// Please make sure that environment variable 'TblAccountConnStr' is set.
+        /// </summary>
+        public static string TblAccountConnStr
+        {
+            get
+            {
+                return Environment.GetEnvironmentVariable("TblAccountConnStr");
+            }
+        }
 
-
-            private const string tblAccountConnStr = "DefaultEndpointsProtocol=https;AccountName=azfunctionsamples;AccountKey=NEjFcvFNL/G7Ugq9RSW59+PonNgql/yLq8qfaVZPhanV9aJUnQi2b6Oy3csvPZPGVJreD+RgVUJJFFTZdUBhAA==;EndpointSuffix=core.windows.net";
-
+       
         internal static ActorSbConfig GetLocaSysConfig()
         {
             ActorSbConfig cfg = new ActorSbConfig();
-            cfg.SbConnStr = sbConnStr;
+            cfg.SbConnStr = SbConnStr;
             cfg.ReplyMsgQueue = "actorsystem/rcvlocal";
             cfg.RequestMsgTopic = "actorsystem/actortopic";
-            cfg.TblStoragePersistenConnStr = tblAccountConnStr;
+            cfg.TblStoragePersistenConnStr = TblAccountConnStr;
             cfg.ActorSystemName = "inst701";
             return cfg;
         }
@@ -43,7 +59,7 @@ namespace UnitTestsProject
             var localCfg = GetLocaSysConfig();
 
             ActorSbConfig cfg = new ActorSbConfig();
-            cfg.SbConnStr = sbConnStr;
+            cfg.SbConnStr = SbConnStr;
             cfg.RequestMsgTopic = "actorsystem/actortopic";
             cfg.RequestSubscriptionName = node;
             cfg.ReplyMsgQueue = null;
