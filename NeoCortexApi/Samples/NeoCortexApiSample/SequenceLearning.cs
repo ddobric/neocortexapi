@@ -144,7 +144,7 @@ namespace NeoCortexApiSample
                     activeColumnsLst.Add(input, new List<List<int>>());
             }
 
-            int maxCycles = 100;// 3500;
+            int maxCycles = 3500;
             int maxPrevInputs = inputValues.Count - 1;
             List<string> previousInputs = new List<string>();
             previousInputs.Add("-1.0");

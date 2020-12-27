@@ -30,6 +30,11 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="Anomaly.cs" />
     <Compile Remove="Classification.cs" />
