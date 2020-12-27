@@ -31,6 +31,9 @@ namespace NeoCortexApi.Entities
         /// </summary>
         private readonly int m_Hashcode;
 
+        /// <summary>
+        /// List of dendrites of the cell.
+        /// </summary>
         public List<DistalDendrite> DistalDendrites { get; set; } = new List<DistalDendrite>();
 
         /// <summary>
