@@ -71,7 +71,7 @@ namespace NeoCortexApi
         }
 
         //StreamWriter tmperf1 = new StreamWriter("tm-perf-100000-10cells.csv");
-    
+
 
         /// <summary>
         /// Performs the whole calculation of Temporal memory algorithm.
@@ -90,9 +90,9 @@ namespace NeoCortexApi
             //Stopwatch sw = new Stopwatch();
             //sw.Start();
             ComputeCycle cycle = ActivateCells(this.connections, activeColumns, learn);
-        
+
             ActivateDendrites(this.connections, cycle, learn);
-          
+
             //sw.Stop();
 
             //tmperf1.WriteLine($"{sw.ElapsedMilliseconds}");
@@ -686,7 +686,7 @@ namespace NeoCortexApi
             List<Synapse> synapsesToDestroy = new List<Synapse>();
 
             //DD oreach (Synapse synapse in conn.GetSynapses(segment))
-                foreach (Synapse synapse in segment.Synapses)
+            foreach (Synapse synapse in segment.Synapses)
             {
                 double permanence = synapse.Permanence;
 

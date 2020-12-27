@@ -6,6 +6,11 @@
     <Description></Description>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\DistributedComputeLib\DistributedComputeLib.csproj" />
     <ProjectReference Include="..\..\NeoCortexApi\NeoCortexApi.csproj" />
