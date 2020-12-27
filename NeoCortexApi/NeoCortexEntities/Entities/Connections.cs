@@ -1186,7 +1186,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="optionalSegmentArg">An optional Segment to specify the context of the synapse count.</param>
         /// <returns>Either the total number of synapses or the number on a specified segment.</returns>
-        public long GetNumSynapses(DistalDendrite optionalSegmentArg = null)
+        public long GetNumSynapses(DistalDendrite optionalSegmentArg )
         {
             if (optionalSegmentArg != null)
             {
