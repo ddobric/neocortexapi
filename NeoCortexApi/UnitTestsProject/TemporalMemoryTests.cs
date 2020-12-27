@@ -415,7 +415,9 @@ namespace UnitTestsProject
             List<Cell> winnerCells = new List<Cell>(cc.WinnerCells);
             Assert.AreEqual(1, winnerCells.Count);
 
-            List<DistalDendrite> segments = winnerCells[0].GetSegments(cn);
+            //DD
+            //List<DistalDendrite> segments = winnerCells[0].GetSegments(cn);
+            List<DistalDendrite> segments = winnerCells[0].DistalDendrites;
             //List<DistalDendrite> segments = winnerCells[0].Segments;
             Assert.AreEqual(1, segments.Count);
 
@@ -451,7 +453,11 @@ namespace UnitTestsProject
 
             List<Cell> winnerCells = new List<Cell>(cc.WinnerCells);
             Assert.AreEqual(1, winnerCells.Count);
-            List<DistalDendrite> segments = winnerCells[0].GetSegments(cn);
+
+            //DD
+            //List<DistalDendrite> segments = winnerCells[0].GetSegments(cn);
+            List<DistalDendrite> segments = winnerCells[0].DistalDendrites;
+
             //List<DistalDendrite> segments = winnerCells[0].Segments;
             Assert.AreEqual(1, segments.Count);
             List<Synapse> synapses = segments[0].GetAllSynapses(cn);
@@ -725,13 +731,19 @@ namespace UnitTestsProject
             tm.Compute(prevActiveColumns1, true);
             tm.Compute(activeColumns, true);
 
-            Assert.AreEqual(1, cn.GetSegments(cell9).Count);
-            DistalDendrite oldestSegment = cn.GetSegments(cell9)[0];
+            //DD
+            //Assert.AreEqual(1, cn.GetSegments(cell9).Count);
+            Assert.AreEqual(1, cell9.DistalDendrites.Count);
+            //DD
+            //DistalDendrite oldestSegment = cn.GetSegments(cell9)[0];
+            DistalDendrite oldestSegment = cell9.DistalDendrites[0];
             tm.Reset(cn);
             tm.Compute(prevActiveColumns2, true);
             tm.Compute(activeColumns, true);
 
-            Assert.AreEqual(2, cn.GetSegments(cell9).Count);
+            //DD
+            //Assert.AreEqual(2, cn.GetSegments(cell9).Count);
+            Assert.AreEqual(2, cell9.DistalDendrites.Count);
 
             //Set<Cell> oldPresynaptic = cn.getSynapses(oldestSegment)
             //    .stream()
@@ -744,12 +756,17 @@ namespace UnitTestsProject
             tm.Reset(cn);
             tm.Compute(prevActiveColumns3, true);
             tm.Compute(activeColumns, true);
-            Assert.AreEqual(2, cn.GetSegments(cell9).Count);
+
+            //DD
+            //Assert.AreEqual(2, cn.GetSegments(cell9).Count);
+            Assert.AreEqual(2, cell9.DistalDendrites.Count);
 
             // Verify none of the segments are connected to the cells the old
             // segment was connected to.
 
-            foreach (DistalDendrite segment in cn.GetSegments(cell9))
+            //DD
+            //foreach (DistalDendrite segment in cn.GetSegments(cell9))
+            foreach (DistalDendrite segment in cell9.DistalDendrites)
             {
                 //Set<Cell> newPresynaptic = cn.getSynapses(segment)
                 //    .stream()
@@ -870,10 +887,14 @@ namespace UnitTestsProject
                 Assert.AreEqual(1, cn.GetNumSynapses(segment1));
                 Assert.AreEqual(1, cn.GetNumSynapses(segment2));
 
-                List<DistalDendrite> segments = new List<DistalDendrite>(cn.GetSegments(cn.GetCell(1)));
+                //DD
+                //List<DistalDendrite> segments = new List<DistalDendrite>(cn.GetSegments(cn.GetCell(1)));
+                List<DistalDendrite> segments = new List<DistalDendrite>(cn.GetCell(1).DistalDendrites);
                 if (segments.Count == 0)
                 {
-                    List<DistalDendrite> segments2 = cn.GetSegments(cn.GetCell(2));
+                    //DD
+                    //List<DistalDendrite> segments2 = cn.GetSegments(cn.GetCell(2));
+                    List<DistalDendrite> segments2 = cn.GetCell(2).DistalDendrites;
                     Assert.IsFalse(segments2.Count == 0);
                     grewOnCell2 = true;
                     segments.AddRange(segments2);
@@ -938,7 +959,9 @@ namespace UnitTestsProject
 
             var r = deepCopyPlain<Synapse>(cn.GetReceptorSynapses().Values.First().First());
             var synMapBefore = deepCopyPlain<Dictionary<Cell, LinkedHashSet<Synapse>>>(cn.GetReceptorSynapses());
-            var segMapBefore = deepCopyPlain<Dictionary<Cell, List<DistalDendrite>>>(cn.GetSegmentMapping());
+            //var segMapBefore = deepCopyPlain<Dictionary<Cell, List<DistalDendrite>>>(cn.GetSegmentMapping());
+            var actCellsBefore = cn.ActiveCells;
+            var winCellsBefore = cn.WinnerCells;
 
             tm.Compute(prevActiveColumns, false);
             tm.Compute(activeColumns, false);
@@ -946,8 +969,11 @@ namespace UnitTestsProject
             Assert.IsTrue(synMapBefore != cn.GetReceptorSynapses());
             Assert.IsTrue(synMapBefore.Keys.SequenceEqual(cn.GetReceptorSynapses().Keys));
 
-            Assert.IsTrue(segMapBefore != cn.GetSegmentMapping());
-            Assert.IsTrue(segMapBefore.Keys.SequenceEqual(cn.GetSegmentMapping().Keys));
+            cn.ActiveCells.SequenceEqual(actCellsBefore);
+            cn.WinnerCells.SequenceEqual(winCellsBefore);
+            //DD
+            //Assert.IsTrue(segMapBefore != cn.GetSegmentMapping());
+            //Assert.IsTrue(segMapBefore.Keys.SequenceEqual(cn.GetSegmentMapping().Keys));
         }
 
         public void TestLeastUsedCell()

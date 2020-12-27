@@ -122,7 +122,7 @@ namespace NeoCortexApi
         /// <param name="activeColumnIndices"></param>
         /// <param name="learn"></param>
         /// <returns></returns>
-        protected ComputeCycle ActivateCells(Connections conn, int[] activeColumnIndices, bool learn)
+        protected ComputeCycle ActivateCellsParallel(Connections conn, int[] activeColumnIndices, bool learn)
         {
             ComputeCycle cycle = new ComputeCycle
             {
@@ -244,7 +244,7 @@ namespace NeoCortexApi
             return cycle;
         }
 
-        protected ComputeCycle ActivateCellsOriginal(Connections conn, int[] activeColumnIndices, bool learn)
+        protected ComputeCycle ActivateCells(Connections conn, int[] activeColumnIndices, bool learn)
         {
             ComputeCycle cycle = new ComputeCycle
             {

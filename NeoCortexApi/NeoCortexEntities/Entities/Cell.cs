@@ -31,6 +31,8 @@ namespace NeoCortexApi.Entities
         /// </summary>
         private readonly int m_Hashcode;
 
+        public List<DistalDendrite> DistalDendrites { get; set; } = new List<DistalDendrite>();
+
         /// <summary>
         /// Used for testing.
         /// </summary>
@@ -75,10 +77,12 @@ namespace NeoCortexApi.Entities
         /// <param name="c">the connections state of the temporal memory</param>
         /// <param name="doLazyCreate">create a container for future use if true, if false return an orphaned empty set.</param>
         /// <returns>a <see cref="List{T}"/> of this <see cref="Cell"/>'s <see cref="DistalDendrite"/>s</returns>
-        public List<DistalDendrite> GetSegments(Connections c, bool doLazyCreate = false)
-        {
-            return c.GetSegments(this, doLazyCreate);
-        }
+        //public List<DistalDendrite> GetSegments(Connections c, bool doLazyCreate = false)
+        //{
+        //    //DD
+        //    //return c.GetSegments(this, doLazyCreate);
+        //    return this.DistalDendrites;
+        //}
 
         /// <summary>
         /// Gets the hashcode of the cell.

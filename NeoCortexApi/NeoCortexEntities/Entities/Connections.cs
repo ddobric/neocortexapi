@@ -20,7 +20,7 @@ namespace NeoCortexApi.Entities
 
         public static readonly double EPSILON = 0.00001;
 
-          //Internal state
+        //Internal state
         private double version = 1.0;
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace NeoCortexApi.Entities
         private double[] m_BoostedmOverlaps;
 
         private int[] m_Overlaps;
-      
+
         /// <summary>
         /// Initialize a tiny random tie breaker. This is used to determine winning
         /// columns where the overlaps are identical.
@@ -64,7 +64,7 @@ namespace NeoCortexApi.Entities
         /// One of all active column cells will be selected as the winner cell.
         /// </summary>
         public ISet<Cell> WinnerCells { get => winnerCells; set => winnerCells = value; }
-                
+
         /// <summary>
         /// All cells. Initialized during initialization of the TemporalMemory.
         /// </summary>
@@ -72,7 +72,7 @@ namespace NeoCortexApi.Entities
 
         private double[] m_BoostFactors;
 
-      
+
         private ISet<Cell> m_ActiveCells = new LinkedHashSet<Cell>();
         private ISet<Cell> winnerCells = new LinkedHashSet<Cell>();
         private ISet<Cell> m_PredictiveCells = new LinkedHashSet<Cell>();
@@ -154,12 +154,12 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Reverse mapping from source cell to <see cref="Synapse"/>
         /// </summary>
-        private Dictionary<Cell, LinkedHashSet<Synapse>> m_ReceptorSynapses;
+        private Dictionary<Cell, LinkedHashSet<Synapse>> m_ReceptorSynapses = new Dictionary<Cell, LinkedHashSet<Synapse>>();
 
         /// <summary>
         /// Distal segments of cells.
         /// </summary>
-        protected Dictionary<Cell, List<DistalDendrite>> m_DistalSegments;
+        //protected Dictionary<Cell, List<DistalDendrite>> m_DistalSegments = new Dictionary<Cell, List<DistalDendrite>>();
 
         /// We moved this as a poart of the segment.
         /// <summary>
@@ -240,7 +240,7 @@ namespace NeoCortexApi.Entities
         #endregion
 
         #region General Methods
-               
+
         /// <summary>
         /// Returns the <see cref="Cell"/> specified by the index passed in.
         /// </summary>
@@ -882,7 +882,7 @@ namespace NeoCortexApi.Entities
         /////////////////////////////////////////////////////////////////
         //     Segment (Specifically, Distal Dendrite) Operations      //
         /////////////////////////////////////////////////////////////////
-     
+
         #region Segment (Specifically, Distal Dendrite) methods
         /// <summary>
         /// Adds a new <see cref="DistalDendrite"/> segment on the specified <see cref="Cell"/>, or reuses an existing one.
@@ -917,7 +917,8 @@ namespace NeoCortexApi.Entities
             ++m_NextSegmentOrdinal;
 
             DistalDendrite segment = new DistalDendrite(segmentParentCell, flatIdx, m_TMIteration, ordinal, this.HtmConfig.SynPermConnected, this.HtmConfig.NumInputs);
-            GetSegments(segmentParentCell, true).Add(segment);
+            segmentParentCell.DistalDendrites.Add(segment);
+            //GetSegments(segmentParentCell, true).Add(segment);
             m_SegmentForFlatIdx[flatIdx] = segment;
 
             return segment;
@@ -944,7 +945,9 @@ namespace NeoCortexApi.Entities
             m_NumSynapses -= len;
 
             // Remove the segment from the cell's list.
-            GetSegments(segment.ParentCell).Remove(segment);
+            //DD
+            //GetSegments(segment.ParentCell).Remove(segment);
+            segment.ParentCell.DistalDendrites.Remove(segment);
 
             // Remove the segment from the map
             //DD m_DistalSynapses.Remove(segment);
@@ -962,7 +965,10 @@ namespace NeoCortexApi.Entities
         /// <returns>the least recently activated segment on the specified cell.</returns>
         private DistalDendrite LeastRecentlyUsedSegment(Cell cell)
         {
-            List<DistalDendrite> segments = GetSegments(cell, false);
+            //DD
+            //List<DistalDendrite> segments = GetSegments(cell, false);
+            List<DistalDendrite> segments = cell.DistalDendrites;
+
             DistalDendrite minSegment = null;
             long minIteration = long.MaxValue;
 
@@ -1001,7 +1007,9 @@ namespace NeoCortexApi.Entities
         {
             if (cell != null)
             {
-                return GetSegments(cell).Count;
+                //DD
+                //return GetSegments(cell).Count;
+                return cell.DistalDendrites.Count;
             }
 
             return m_NextFlatIdx - m_FreeFlatIdxs.Count;
@@ -1017,33 +1025,34 @@ namespace NeoCortexApi.Entities
         //    return GetSegments(cell, false);
         //}
 
+        //DD
         /// <summary>
         /// Returns the mapping of <see cref="Cell"/>s to their <see cref="DistalDendrite"/>s.
         /// </summary>
         /// <param name="cell">the <see cref="Cell"/> used as a key.</param>
         /// <param name="doLazyCreate">create a container for future use if true, if false return an orphaned empty set.</param>
         /// <returns>the mapping of <see cref="Cell"/>s to their <see cref="DistalDendrite"/>s.</returns>
-        public List<DistalDendrite> GetSegments(Cell cell, bool doLazyCreate = false)
-        {
-            if (cell == null)
-            {
-                throw new ArgumentException("Cell was null");
-            }
+        //public List<DistalDendrite> GetSegments(Cell cell, bool doLazyCreate = false)
+        //{
+        //    if (cell == null)
+        //    {
+        //        throw new ArgumentException("Cell was null");
+        //    }
 
-            if (m_DistalSegments == null)
-            {
-                m_DistalSegments = new Dictionary<Cell, List<DistalDendrite>>();
-            }
+        //    //if (m_DistalSegments == null)
+        //    //{
+        //    //    m_DistalSegments = new Dictionary<Cell, List<DistalDendrite>>();
+        //    //}
 
-            List<DistalDendrite> retVal;
-            if ((m_DistalSegments.TryGetValue(cell, out retVal)) == false)
-            {
-                if (!doLazyCreate) return new List<DistalDendrite>();
-                m_DistalSegments.Add(cell, retVal = new List<DistalDendrite>());
-            }
+        //    List<DistalDendrite> retVal;
+        //    if ((m_DistalSegments.TryGetValue(cell, out retVal)) == false)
+        //    {
+        //        if (!doLazyCreate) return new List<DistalDendrite>();
+        //        m_DistalSegments.Add(cell, retVal = new List<DistalDendrite>());
+        //    }
 
-            return retVal;
-        }
+        //    return retVal;
+        //}
 
         /// <summary>
         /// Get the segment with the specified flatIdx.
@@ -1070,10 +1079,10 @@ namespace NeoCortexApi.Entities
         /// <b>FOR TEST USE ONLY</b>
         /// </summary>
         /// <returns></returns>
-        public Dictionary<Cell, List<DistalDendrite>> GetSegmentMapping()
-        {
-            return new Dictionary<Cell, List<DistalDendrite>>(m_DistalSegments);
-        }
+        //public Dictionary<Cell, List<DistalDendrite>> GetSegmentMapping()
+        //{
+        //    return new Dictionary<Cell, List<DistalDendrite>>(m_DistalSegments);
+        //}
 
         /// <summary>
         /// Set/retrieved by the <see cref="TemporalMemory"/> following a compute cycle.
@@ -1106,9 +1115,9 @@ namespace NeoCortexApi.Entities
 
             Synapse synapse = null;
             //DD GetSynapses(segment).Add(
-                segment.Synapses.Add(
-                synapse = new Synapse(
-                    presynapticCell, segment.SegmentIndex, m_NextSynapseOrdinal, permanence));
+            segment.Synapses.Add(
+            synapse = new Synapse(
+                presynapticCell, segment.SegmentIndex, m_NextSynapseOrdinal, permanence));
 
             GetReceptorSynapses(presynapticCell, true).Add(synapse);
 
@@ -1186,7 +1195,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="optionalSegmentArg">An optional Segment to specify the context of the synapse count.</param>
         /// <returns>Either the total number of synapses or the number on a specified segment.</returns>
-        public long GetNumSynapses(DistalDendrite optionalSegmentArg )
+        public long GetNumSynapses(DistalDendrite optionalSegmentArg)
         {
             if (optionalSegmentArg != null)
             {
@@ -1213,10 +1222,10 @@ namespace NeoCortexApi.Entities
                 throw new ArgumentException("Cell was null");
             }
 
-            if (m_ReceptorSynapses == null)
-            {
-                m_ReceptorSynapses = new Dictionary<Cell, LinkedHashSet<Synapse>>();
-            }
+            //if (m_ReceptorSynapses == null)
+            //{
+            //    m_ReceptorSynapses = new Dictionary<Cell, LinkedHashSet<Synapse>>();
+            //}
 
             LinkedHashSet<Synapse> retVal = null;
             if (m_ReceptorSynapses.TryGetValue(cell, out retVal) == false)
@@ -1577,7 +1586,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + ((this.HtmConfig.Random == null) ? 0 : this.HtmConfig.Random.GetHashCode());
             result = prime * result + ((m_ReceptorSynapses == null) ? 0 : m_ReceptorSynapses.GetHashCode());
             result = prime * result + this.HtmConfig.RandomGenSeed;
-            result = prime * result + ((m_DistalSegments == null) ? 0 : m_DistalSegments.GetHashCode());
+            //result = prime * result + ((m_DistalSegments == null) ? 0 : m_DistalSegments.GetHashCode());
             temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.StimulusThreshold);
             result = prime * result + (int)(temp ^ (temp >> 32));
             temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.SynPermActiveInc);
