@@ -301,7 +301,7 @@ namespace UnitTestsProject
                 HtmSerializer2 ser = new HtmSerializer2();
                 ser.SerializeBegin("UnitTest", sw);
                 Dictionary<string, int[]> myDictionary = new Dictionary<string, int[]>();
-                myDictionary.Add("Sunday",new int[] { 1, 2, 3});
+                myDictionary.Add("Sunday",new int[] { 1, 2, 3, 6});
                 myDictionary.Add("Monday", new int[] { 2, 4, 5 });
                 ser.SerializeValue(myDictionary,sw);
                 ser.SerializeEnd("UnitTest", sw);

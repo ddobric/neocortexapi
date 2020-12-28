@@ -3,6 +3,7 @@
 using NeoCortexApi.Types;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace NeoCortexApi.Entities
@@ -53,9 +54,11 @@ namespace NeoCortexApi.Entities
             this.ParentCell = parentCell;
             this.m_Ordinal = ordinal;
             this.m_LastUsedIteration = lastUsedIteration;
+
+            
         }
 
-      
+
         /// <summary>
         /// Gets all synapses owned by this distal dentrite segment.
         /// </summary>
@@ -149,6 +152,18 @@ namespace NeoCortexApi.Entities
             else
                 return 0;
         }
+        #region Serialization
+        public void serialize(StreamWriter writer)
+        {
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            ser.SerializeBegin(nameof(HtmConfig), writer);
+
+            ser.SerializeValue(this.SegmentIndex, writer);
+
+            ser.SerializeEnd(nameof(HtmConfig), writer);
+        }
+        #endregion
     }
 }
 

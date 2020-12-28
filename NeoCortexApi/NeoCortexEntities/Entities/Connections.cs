@@ -2532,8 +2532,44 @@ namespace NeoCortexApi.Entities
             HtmSerializer2 ser = new HtmSerializer2();
 
             ser.SerializeBegin(nameof(Connections), writer);
+
+            ser.SerializeValue(Connections.EPSILON, writer);
             ser.SerializeValue(this.version, writer);
             ser.SerializeValue(this.SpIterationNum, writer);
+            ser.SerializeValue(this.SpIterationLearnNum, writer);
+            ser.SerializeValue(this.m_TMIteration, writer);
+            ser.SerializeValue(this.m_BoostedmOverlaps, writer);
+            ser.SerializeValue(this.m_Overlaps, writer);
+            ser.SerializeValue(this.m_TieBreaker, writer);
+
+            this.connectedCounts2.serialize(writer);
+
+            ser.SerializeValue(this.Cells, writer);
+            ser.SerializeValue(this.m_BoostFactors, writer);
+            ser.SerializeValue(this.m_ActiveSegments, writer);
+            ser.SerializeValue(this.m_MatchingSegments, writer);
+
+            this.m_HtmConfig.serialize(writer);
+
+            ser.SerializeValue(this.m_DistalSegments, writer);
+            ser.SerializeValue(this.m_DistalSynapses, writer);
+            ser.SerializeValue(this.m_NextFlatIdx, writer);
+            ser.SerializeValue(this.m_NextSegmentOrdinal, writer);
+            ser.SerializeValue(this.m_NextSynapseOrdinal, writer);
+            ser.SerializeValue(this.m_NumSynapses, writer);
+            ser.SerializeValue(this.m_FreeFlatIdxs, writer);
+            ser.SerializeValue(this.m_SegmentForFlatIdx, writer);
+
+            this.LastActivity.serialize(writer);
+
+            ser.SerializeValue(this.NextSegmentOrdinal, writer);
+            ser.SerializeValue(this.TieBreaker, writer);
+            ser.SerializeValue(this.BoostedOverlaps, writer);
+            ser.SerializeValue(this.Overlaps, writer);
+            ser.SerializeValue(this.BoostFactors, writer);
+            ser.SerializeValue(this.ActiveSegments, writer);
+            ser.SerializeValue(this.MatchingSegments, writer);
+
             ser.SerializeEnd(nameof(Connections), writer);
         }
 

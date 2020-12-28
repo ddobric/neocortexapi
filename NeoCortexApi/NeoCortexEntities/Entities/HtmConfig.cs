@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http.Headers;
 using System.Text;
 
@@ -390,6 +391,18 @@ namespace NeoCortexApi.Entities
             this.Memory = null;
             this.InputMatrix = null;
         }
+
+        #region Serialization
+        public void serialize(StreamWriter writer)
+        {
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            ser.SerializeBegin(nameof(HtmConfig), writer);
+
+
+            ser.SerializeEnd(nameof(HtmConfig), writer);
+        }
+        #endregion
     }
 
     public class test

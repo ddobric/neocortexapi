@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 namespace NeoCortexApi.Entities
 {
@@ -463,5 +464,17 @@ namespace NeoCortexApi.Entities
                 return false;
             return true;
         }
+
+        #region Serialization
+        public void serialize(StreamWriter writer)
+        {
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            ser.SerializeBegin(nameof(AbstractSparseBinaryMatrix), writer);
+
+
+            ser.SerializeEnd(nameof(AbstractSparseBinaryMatrix), writer);
+        }
+        #endregion
     }
 }

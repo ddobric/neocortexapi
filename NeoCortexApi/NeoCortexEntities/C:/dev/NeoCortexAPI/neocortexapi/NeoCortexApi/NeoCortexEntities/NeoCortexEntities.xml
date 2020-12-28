@@ -2956,7 +2956,7 @@
         </member>
         <member name="M:NeoCortexApi.HtmSerializer2.SerializeValue(System.Double[],System.IO.StreamWriter)">
             <summary>
-            Serialize the array of type long.
+            Serialize the array of type Double.
             </summary>
         </member>
         <member name="M:NeoCortexApi.HtmSerializer2.SerializeValue(System.Int32[],System.IO.StreamWriter)">
@@ -2972,6 +2972,11 @@
         <member name="M:NeoCortexApi.HtmSerializer2.SerializeValue(System.Collections.Generic.Dictionary{System.String,System.Int32[]},System.IO.StreamWriter)">
             <summary>
             Serialize the dictionary with key:string and value:int[].
+            </summary>
+        </member>
+        <member name="M:NeoCortexApi.HtmSerializer2.SerializeValue(System.Boolean,System.IO.StreamWriter)">
+            <summary>
+            Serialize the Bool.
             </summary>
         </member>
         <member name="M:NeoCortexApi.HtmSerializer2.ReadIntValue(System.IO.StreamReader)">

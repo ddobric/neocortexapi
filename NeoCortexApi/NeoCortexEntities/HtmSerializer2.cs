@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using NeoCortexApi.Entities;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
@@ -95,7 +96,7 @@ namespace NeoCortexApi
             sw.Write(parameterDelimiter);
         }
         /// <summary>
-        /// Serialize the array of type long.
+        /// Serialize the array of type Double.
         /// </summary>
         public void SerializeValue(Double[] val, StreamWriter sw)
         {
@@ -147,6 +148,109 @@ namespace NeoCortexApi
                 foreach (int val in i.Value)
                 {
                     sw.Write(val.ToString());
+                    sw.Write(valueDelimiter);
+                }
+
+                sw.Write(valueDelimiter);
+            }
+            sw.Write(parameterDelimiter);
+        }
+        /// <summary>
+        /// Serialize the Bool.
+        /// </summary>
+        public void SerializeValue(bool val, StreamWriter sw)
+        {
+            sw.Write(valueDelimiter);
+            String value = val ? "True" : "False";
+            sw.Write(value);
+            sw.Write(valueDelimiter);
+            sw.Write(parameterDelimiter);
+        }
+
+        /// <summary>
+        /// Serialize the array of cells.
+        /// </summary>
+        public void SerializeValue(Cell[] val, StreamWriter sw)
+        {
+            sw.Write(valueDelimiter);
+            if (val != null)
+            {
+                foreach (Cell cell in val)
+                {
+                    cell.serialize(sw);
+                    sw.Write(valueDelimiter);
+                }
+            }
+            sw.Write(parameterDelimiter);
+        }
+
+        /// <summary>
+        /// Serialize the List of DistalDendrite.
+        /// </summary>
+        public void SerializeValue(List<DistalDendrite> value, StreamWriter sw)
+        {
+            sw.Write(valueDelimiter);
+            if (value != null)
+            {
+                foreach (DistalDendrite val in value)
+                {
+                    val.serialize(sw);
+                    sw.Write(valueDelimiter);
+                }
+            }
+            sw.Write(parameterDelimiter);
+        }
+        /// <summary>
+        /// Serialize the List of Integers.
+        /// </summary>
+        public void SerializeValue(List<int> value, StreamWriter sw)
+        {
+            sw.Write(valueDelimiter);
+            if (value != null)
+            {
+                foreach (int val in value)
+                {
+                    sw.Write(val.ToString());
+                    sw.Write(valueDelimiter);
+                }
+            }
+            sw.Write(parameterDelimiter);
+        }
+        /// <summary>
+        /// Serialize the Dictionary<Segment, List<Synapse>>.
+        /// </summary>
+        public void SerializeValue(Dictionary<Segment, List<Synapse>> keyValues, StreamWriter sw)
+        {
+            sw.Write(valueDelimiter);
+            foreach (KeyValuePair<Segment, List<Synapse>> i in keyValues)
+            {
+                i.Key.serialize(sw);
+                sw.Write(": ");
+                foreach (Synapse val in i.Value)
+                {
+                    val.serialize(sw);
+                    sw.Write(valueDelimiter);
+                }
+
+                sw.Write(valueDelimiter);
+            }
+            sw.Write(parameterDelimiter);
+        }
+        //private Dictionary<Cell, LinkedHashSet<Synapse>> m_ReceptorSynapses;
+
+        /// <summary>
+        /// Serialize the Dictionary<Segment, List<Synapse>>.
+        /// </summary>
+        public void SerializeValue(Dictionary<Cell, List<DistalDendrite>> keyValues, StreamWriter sw)
+        {
+            sw.Write(valueDelimiter);
+            foreach (KeyValuePair<Cell, List<DistalDendrite>> i in keyValues)
+            {
+                i.Key.serialize(sw);
+                sw.Write(": ");
+                foreach (DistalDendrite val in i.Value)
+                {
+                    val.serialize(sw);
                     sw.Write(valueDelimiter);
                 }
 

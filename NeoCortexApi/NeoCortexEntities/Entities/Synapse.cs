@@ -3,6 +3,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 
@@ -291,5 +292,17 @@ namespace NeoCortexApi.Entities
             else
                 return 0;
         }
+        #region Serialization
+        public void serialize(StreamWriter writer)
+        {
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            ser.SerializeBegin(nameof(HtmConfig), writer);
+
+            ser.SerializeValue(this.SegmentIndex, writer);
+
+            ser.SerializeEnd(nameof(HtmConfig), writer);
+        }
+        #endregion
     }
 }
