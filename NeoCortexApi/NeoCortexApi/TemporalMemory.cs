@@ -122,7 +122,7 @@ namespace NeoCortexApi
         /// <param name="activeColumnIndices"></param>
         /// <param name="learn"></param>
         /// <returns></returns>
-        protected ComputeCycle ActivateCellsParallel(Connections conn, int[] activeColumnIndices, bool learn)
+        protected ComputeCycle ActivateCellsPArallel(Connections conn, int[] activeColumnIndices, bool learn)
         {
             ComputeCycle cycle = new ComputeCycle
             {
@@ -851,7 +851,7 @@ namespace NeoCortexApi
 
             if (conn.GetNumSynapses(segment) == 0)
             {
-                conn.DestroySegment(segment);
+                conn.DestroyDistalDendrite(segment);
             }
         }
         #endregion

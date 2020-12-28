@@ -154,14 +154,14 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Reverse mapping from source cell to <see cref="Synapse"/>
         /// </summary>
-        private Dictionary<Cell, LinkedHashSet<Synapse>> m_ReceptorSynapses = new Dictionary<Cell, LinkedHashSet<Synapse>>();
+        //private Dictionary<Cell, LinkedHashSet<Synapse>> m_ReceptorSynapses = new Dictionary<Cell, LinkedHashSet<Synapse>>();
 
         /// <summary>
         /// Distal segments of cells.
         /// </summary>
         //protected Dictionary<Cell, List<DistalDendrite>> m_DistalSegments = new Dictionary<Cell, List<DistalDendrite>>();
 
-        /// We moved this as a poart of the segment.
+        /// DD We moved this as a part of the segment.
         /// <summary>
         /// Synapses, which belong to some distal dentrite segment.
         /// </summary>
@@ -833,7 +833,8 @@ namespace NeoCortexApi.Entities
                 // Receptor synapses are synapses whose source cell (pre-synaptic cell) is the given cell.
                 // Synapse processed here starts with the given 'cell' and points to some other cell that owns some segment in some other column.
                 // The segment owner cell in other column pointed by synapse sourced by this 'cell' is depolirized (in predicting state).
-                foreach (Synapse synapse in GetReceptorSynapses(cell))
+                //DD foreach (Synapse synapse in GetReceptorSynapses(cell))
+                foreach (Synapse synapse in cell.ReceptorSynapses)
                 {
                     // Now, we get the segment of the synapse of the pre-synaptic cell.
                     int segFlatIndx = synapse.SegmentIndex;
@@ -896,7 +897,7 @@ namespace NeoCortexApi.Entities
             // least used segments will be destroyed.
             while (NumSegments(segmentParentCell) >= this.HtmConfig.MaxSegmentsPerCell)
             {
-                DestroySegment(LeastRecentlyUsedSegment(segmentParentCell));
+                DestroyDistalDendrite(LeastRecentlyUsedSegment(segmentParentCell));
             }
 
             int flatIdx;
@@ -928,7 +929,7 @@ namespace NeoCortexApi.Entities
         /// Destroys a segment <see cref="DistalDendrite"/>
         /// </summary>
         /// <param name="segment">the segment to destroy</param>
-        public void DestroySegment(DistalDendrite segment)
+        public void DestroyDistalDendrite(DistalDendrite segment)
         {
             // Remove the synapses from all data structures outside this Segment.
             //DD List<Synapse> synapses = GetSynapses(segment);
@@ -1119,7 +1120,8 @@ namespace NeoCortexApi.Entities
             synapse = new Synapse(
                 presynapticCell, segment.SegmentIndex, m_NextSynapseOrdinal, permanence));
 
-            GetReceptorSynapses(presynapticCell, true).Add(synapse);
+            presynapticCell.ReceptorSynapses.Add(synapse);
+            //DD GetReceptorSynapses(presynapticCell, true).Add(synapse);
 
             ++m_NextSynapseOrdinal;
 
@@ -1152,14 +1154,17 @@ namespace NeoCortexApi.Entities
         /// <param name="synapse">the synapse to remove</param>
         public void RemoveSynapseFromPresynapticMap(Synapse synapse)
         {
-            LinkedHashSet<Synapse> presynapticSynapses;
             Cell cell = synapse.getPresynapticCell();
-            (presynapticSynapses = GetReceptorSynapses(cell, false)).Remove(synapse);
+            cell.ReceptorSynapses.Remove(synapse);
+            //DD
+            //LinkedHashSet<Synapse> presynapticSynapses;
+            //Cell cell = synapse.getPresynapticCell();
+            //(presynapticSynapses = GetReceptorSynapses(cell, false)).Remove(synapse);
 
-            if (presynapticSynapses.Count == 0)
-            {
-                m_ReceptorSynapses.Remove(cell);
-            }
+            //if (presynapticSynapses.Count == 0)
+            //{
+            //    m_ReceptorSynapses.Remove(cell);
+            //}
         }
 
         /// <summary>
@@ -1215,27 +1220,27 @@ namespace NeoCortexApi.Entities
         /// <param name="cell">the <see cref="Cell"/> used as a key.</param>
         /// <param name="doLazyCreate">create a container for future use if true, if false return an orphaned empty set.</param>
         /// <returns>the mapping of <see cref="Cell"/>s to their reverse mapped</returns>
-        public LinkedHashSet<Synapse> GetReceptorSynapses(Cell cell, bool doLazyCreate = false)
-        {
-            if (cell == null)
-            {
-                throw new ArgumentException("Cell was null");
-            }
+        //public LinkedHashSet<Synapse> GetReceptorSynapses(Cell cell, bool doLazyCreate = false)
+        //{
+        //    if (cell == null)
+        //    {
+        //        throw new ArgumentException("Cell was null");
+        //    }
 
-            //if (m_ReceptorSynapses == null)
-            //{
-            //    m_ReceptorSynapses = new Dictionary<Cell, LinkedHashSet<Synapse>>();
-            //}
+        //    //if (m_ReceptorSynapses == null)
+        //    //{
+        //    //    m_ReceptorSynapses = new Dictionary<Cell, LinkedHashSet<Synapse>>();
+        //    //}
 
-            LinkedHashSet<Synapse> retVal = null;
-            if (m_ReceptorSynapses.TryGetValue(cell, out retVal) == false)
-            {
-                if (!doLazyCreate) return new LinkedHashSet<Synapse>();
-                m_ReceptorSynapses.Add(cell, retVal = new LinkedHashSet<Synapse>());
-            }
+        //    LinkedHashSet<Synapse> retVal = null;
+        //    if (m_ReceptorSynapses.TryGetValue(cell, out retVal) == false)
+        //    {
+        //        if (!doLazyCreate) return new LinkedHashSet<Synapse>();
+        //        m_ReceptorSynapses.Add(cell, retVal = new LinkedHashSet<Synapse>());
+        //    }
 
-            return retVal;
-        }
+        //    return retVal;
+        //}
 
         /// <summary>
         /// Returns synapeses of specified dentrite segment.
@@ -1264,15 +1269,15 @@ namespace NeoCortexApi.Entities
         //}
 
 
-
+        //DD 
         /// <summary>
         /// For testing only.
         /// </summary>
         /// <returns>Copy of dictionary.</returns>
-        public Dictionary<Cell, LinkedHashSet<Synapse>> GetReceptorSynapses()
-        {
-            return new Dictionary<Cell, LinkedHashSet<Synapse>>(m_ReceptorSynapses);
-        }
+        //public Dictionary<Cell, LinkedHashSet<Synapse>> GetReceptorSynapses()
+        //{
+        //    return new Dictionary<Cell, LinkedHashSet<Synapse>>(m_ReceptorSynapses);
+        //}
 
         /// <summary>
         /// Clears the sequence learning state.
@@ -1584,7 +1589,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + ((m_PredictiveCells == null) ? 0 : m_PredictiveCells.GetHashCode());
             result = prime * result + ((this.HtmConfig.Random == null) ? 0 : this.HtmConfig.Random.GetHashCode());
-            result = prime * result + ((m_ReceptorSynapses == null) ? 0 : m_ReceptorSynapses.GetHashCode());
+            //result = prime * result + ((m_ReceptorSynapses == null) ? 0 : m_ReceptorSynapses.GetHashCode());
             result = prime * result + this.HtmConfig.RandomGenSeed;
             //result = prime * result + ((m_DistalSegments == null) ? 0 : m_DistalSegments.GetHashCode());
             temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.StimulusThreshold);

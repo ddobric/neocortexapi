@@ -32,9 +32,14 @@ namespace NeoCortexApi.Entities
         private readonly int m_Hashcode;
 
         /// <summary>
-        /// List of dendrites of the cell.
+        /// List of dendrites of the cell. Every dendrite segment is owned bt the cell.
         /// </summary>
         public List<DistalDendrite> DistalDendrites { get; set; } = new List<DistalDendrite>();
+
+        /// <summary>
+        /// List of receptor synapses that connect this cells as a source cell to the distal dendrit segment owned by some other cell.
+        /// </summary>
+        public List<Synapse> ReceptorSynapses { get; set; } = new List<Synapse>();
 
         /// <summary>
         /// Used for testing.
@@ -63,15 +68,15 @@ namespace NeoCortexApi.Entities
 
     
         /// <summary>
-        /// Returns the Set of <see cref="Synapse"/>s which have this cell as their source cell.
+        /// DD Returns the Set of <see cref="Synapse"/>s which have this cell as their source cell.
         /// </summary>
         /// <param name="c">the connections state of the temporal memory</param>
         /// <param name="doLazyCreate">create a container for future use if true, if false return an orphaned empty set.</param>
         /// <returns>the Set of <see cref="Synapse"/>s which have this cell as their source cells.</returns>
-        public ISet<Synapse> GetReceptorSynapses(Connections c, bool doLazyCreate = false)
-        {
-            return c.GetReceptorSynapses(this, doLazyCreate);
-        }
+        //public ISet<Synapse> GetReceptorSynapses(Connections c, bool doLazyCreate = false)
+        //{
+        //    return c.GetReceptorSynapses(this, doLazyCreate);
+        //}
 
      
         /// <summary>

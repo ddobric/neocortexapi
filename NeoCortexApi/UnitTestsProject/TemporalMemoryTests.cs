@@ -957,23 +957,56 @@ namespace UnitTestsProject
             cn.CreateSynapse(wrongMatchingSegment, prevActiveCells[1], 0.5);
             cn.CreateSynapse(wrongMatchingSegment, prevInactiveCell, 0.5);
 
-            var r = deepCopyPlain<Synapse>(cn.GetReceptorSynapses().Values.First().First());
-            var synMapBefore = deepCopyPlain<Dictionary<Cell, LinkedHashSet<Synapse>>>(cn.GetReceptorSynapses());
+            //var r = deepCopyPlain<Synapse>(cn.GetReceptorSynapses().Values.First().First());
+            //var synMapBefore = deepCopyPlain<Dictionary<Cell, LinkedHashSet<Synapse>>>(cn.GetReceptorSynapses());
             //var segMapBefore = deepCopyPlain<Dictionary<Cell, List<DistalDendrite>>>(cn.GetSegmentMapping());
             var actCellsBefore = cn.ActiveCells;
             var winCellsBefore = cn.WinnerCells;
 
+            int prevPresynSum = 0;
+            int segSynSum = 0;
+
+            GetSynSums(cn, out prevPresynSum, out segSynSum);
+
             tm.Compute(prevActiveColumns, false);
             tm.Compute(activeColumns, false);
 
-            Assert.IsTrue(synMapBefore != cn.GetReceptorSynapses());
-            Assert.IsTrue(synMapBefore.Keys.SequenceEqual(cn.GetReceptorSynapses().Keys));
+            int afterPresynSum = 0;
+            int afterSegSynSum = 0;
+
+            GetSynSums(cn, out afterPresynSum, out afterSegSynSum);
+
+            //DD
+            //Assert.IsTrue(synMapBefore != cn.GetReceptorSynapses());
+            //Assert.IsTrue(synMapBefore.Keys.SequenceEqual(cn.GetReceptorSynapses().Keys));
+            Assert.IsTrue(prevPresynSum == afterPresynSum);
+            Assert.IsTrue(segSynSum == afterSegSynSum);
 
             cn.ActiveCells.SequenceEqual(actCellsBefore);
             cn.WinnerCells.SequenceEqual(winCellsBefore);
             //DD
             //Assert.IsTrue(segMapBefore != cn.GetSegmentMapping());
             //Assert.IsTrue(segMapBefore.Keys.SequenceEqual(cn.GetSegmentMapping().Keys));
+        }
+
+        private void GetSynSums(Connections cn, out int prevPresynSum, out int segSynSum)
+        {
+            prevPresynSum = 0;
+            segSynSum = 0;
+
+            for (int i = 0; i < cn.HtmConfig.NumColumns; i++)
+            {
+                var col = cn.GetColumn(i);
+                foreach (var cell in col.Cells)
+                {
+                    prevPresynSum += cell.ReceptorSynapses.Count;
+
+                    foreach (var seg in cell.DistalDendrites)
+                    {
+                        segSynSum += seg.Synapses.Count;
+                    }
+                }
+            }
         }
 
         public void TestLeastUsedCell()
