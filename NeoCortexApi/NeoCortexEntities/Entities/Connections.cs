@@ -3,6 +3,7 @@
 using NeoCortexApi.Types;
 using NeoCortexApi.Utility;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -202,7 +203,9 @@ namespace NeoCortexApi.Entities
         /// Indexed segments by their global index (can contain nulls).
         /// Indexed list of distal segments.
         /// </summary>
-        protected List<DistalDendrite> m_SegmentForFlatIdx = new List<DistalDendrite>();
+        //protected List<DistalDendrite> m_SegmentForFlatIdx = new List<DistalDendrite>();
+
+        protected ConcurrentDictionary<int, DistalDendrite> m_SegmentForFlatIdx = new ConcurrentDictionary<int, DistalDendrite>();
 
         /// <summary>
         /// Stores each cycle's most recent activity
@@ -224,6 +227,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public Connections()
         {
+          
             // TODO: Remove this when old way of parameter initialization is completely removed.
             this.m_HtmConfig = new HtmConfig(new int[100], new int[] { 2048 });
         }
@@ -814,12 +818,6 @@ namespace NeoCortexApi.Entities
             Dictionary<int, int> numOfActiveSynapses = new Dictionary<int, int>();
             Dictionary<int, int> numOfPotentialSynapses = new Dictionary<int, int>();
 
-            // Every receptor synapse on active cell, which has permanence over threshold is by default connected.
-            //int[] numActiveConnectedSynapsesForSegment = new int[nextFlatIdx]; // not needed
-
-            // Every receptor synapse on active cell is active-potential one.
-            //int[] numActivePotentialSynapsesForSegment = new int[nextFlatIdx]; // not needed
-
             double threshold = connectedPermanence - EPSILON;
 
             //
@@ -843,15 +841,12 @@ namespace NeoCortexApi.Entities
 
                     numOfPotentialSynapses[segFlatIndx] = numOfPotentialSynapses[segFlatIndx] + 1;
 
-                    //++numActivePotentialSynapsesForSegment[segFlatIndx];
-
                     if (synapse.Permanence > threshold)
                     {
                         if (numOfActiveSynapses.ContainsKey(segFlatIndx) == false)
                             numOfActiveSynapses.Add(segFlatIndx, 0);
 
                         numOfActiveSynapses[segFlatIndx] = numOfActiveSynapses[segFlatIndx] + 1;
-                        //++numActiveConnectedSynapsesForSegment[segFlatIndx];
                     }
                 }
             }
@@ -910,7 +905,9 @@ namespace NeoCortexApi.Entities
             else
             {
                 flatIdx = m_NextFlatIdx;
-                m_SegmentForFlatIdx.Add(null);
+                //m_SegmentForFlatIdx.TryAdd(flatIdx, null);
+                m_SegmentForFlatIdx[flatIdx] = null;
+                //m_SegmentForFlatIdx.Add(null);
                 ++m_NextFlatIdx;
             }
 
