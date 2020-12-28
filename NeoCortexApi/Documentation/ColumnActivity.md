@@ -6,6 +6,8 @@ The activity of columns and cells is represented as SDR. To compare the column o
 py draw_figure.py -fn "CDS FILE WITH SDRs" -gn "OUTPUT FILENAME" -mc NUM-OF-ROWS-TO-PROCESS -ht THRESHOLDLINE-OPTIONAL -yt "Y AXIS TITLE" -xt "X AXIS TITLE" -st "Predicted/Expected/Predictive Cells" -fign NOTUSED
 ~~~
 
+The script can be found <a href="https://github.com/ddobric/neocortexapi/tree/master/Python/ColumnActivityDiagram">here</a>: 
+
 ### Example
 
 Assume, following is the file with 5 SDRs saved to file 'C:\temp\exp.csv'.
