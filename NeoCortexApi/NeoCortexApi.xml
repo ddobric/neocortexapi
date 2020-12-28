@@ -1887,7 +1887,7 @@
             <returns></returns>
             <remarks>Note: PredictiveCells are not calculated here. They are calculated on demand from active segments.</remarks>
         </member>
-        <member name="M:NeoCortexApi.TemporalMemory.ActivateCellsParallel(NeoCortexApi.Entities.Connections,System.Int32[],System.Boolean)">
+        <member name="M:NeoCortexApi.TemporalMemory.ActivateCellsPArallel(NeoCortexApi.Entities.Connections,System.Int32[],System.Boolean)">
             <summary>
             Calculate the active cells, using the current active columns and dendrite segments. Grow and reinforce synapses.
             
