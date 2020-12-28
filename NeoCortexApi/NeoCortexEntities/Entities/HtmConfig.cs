@@ -399,6 +399,13 @@ namespace NeoCortexApi.Entities
 
             ser.SerializeBegin(nameof(HtmConfig), writer);
 
+            ser.SerializeValue(this.synPermActiveInc, writer);
+            ser.SerializeValue(this.SynPermConnected, writer);
+
+            //Spatial Pooler Variables
+            ser.SerializeValue(this.InhibitionRadius, writer);
+            ser.SerializeValue(this.NumInputs, writer);
+            ser.SerializeValue(this.NumColumns, writer);
 
             ser.SerializeEnd(nameof(HtmConfig), writer);
         }

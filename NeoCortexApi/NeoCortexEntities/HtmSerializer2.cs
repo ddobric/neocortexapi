@@ -137,6 +137,19 @@ namespace NeoCortexApi
                 sw.Write(parameterDelimiter);
         }
         /// <summary>
+        /// Serialize the dictionary with key:string and value:int.
+        /// </summary>
+        public void SerializeValue(Dictionary<int, int> keyValues, StreamWriter sw)
+        {
+            sw.Write(valueDelimiter);
+            foreach (KeyValuePair<int, int> i in keyValues)
+            {
+                sw.Write(i.Key.ToString() + ": " + i.Value.ToString());
+                sw.Write(valueDelimiter);
+            }
+            sw.Write(parameterDelimiter);
+        }
+        /// <summary>
         /// Serialize the dictionary with key:string and value:int[].
         /// </summary>
         public void SerializeValue(Dictionary<String, int[]> keyValues, StreamWriter sw)
@@ -193,6 +206,22 @@ namespace NeoCortexApi
             if (value != null)
             {
                 foreach (DistalDendrite val in value)
+                {
+                    val.serialize(sw);
+                    sw.Write(valueDelimiter);
+                }
+            }
+            sw.Write(parameterDelimiter);
+        }
+        /// <summary>
+        /// Serialize the List of Synapse.
+        /// </summary>
+        public void SerializeValue(List<Synapse> value, StreamWriter sw)
+        {
+            sw.Write(valueDelimiter);
+            if (value != null)
+            {
+                foreach (Synapse val in value)
                 {
                     val.serialize(sw);
                     sw.Write(valueDelimiter);

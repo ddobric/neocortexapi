@@ -184,7 +184,11 @@ namespace NeoCortexApi.Entities
             HtmSerializer2 ser = new HtmSerializer2();
 
             ser.SerializeBegin(nameof(Cell), writer);
+
+            ser.SerializeValue(this.Index, writer);
             ser.SerializeValue(this.CellId, writer);
+            ser.SerializeValue(this.ParentColumnIndex, writer);
+            ser.SerializeValue(this.m_Hashcode, writer);
 
             ser.SerializeEnd(nameof(Cell), writer);
         }

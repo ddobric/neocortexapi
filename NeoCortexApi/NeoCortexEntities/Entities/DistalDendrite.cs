@@ -152,6 +152,7 @@ namespace NeoCortexApi.Entities
             else
                 return 0;
         }
+
         #region Serialization
         public void serialize(StreamWriter writer)
         {
@@ -159,7 +160,11 @@ namespace NeoCortexApi.Entities
 
             ser.SerializeBegin(nameof(HtmConfig), writer);
 
-            ser.SerializeValue(this.SegmentIndex, writer);
+            this.ParentCell.serialize(writer);
+            ser.SerializeValue(this.m_LastUsedIteration, writer);
+            ser.SerializeValue(this.m_Ordinal, writer);
+            ser.SerializeValue(this.LastUsedIteration, writer);
+            ser.SerializeValue(this.Ordinal, writer);
 
             ser.SerializeEnd(nameof(HtmConfig), writer);
         }

@@ -299,7 +299,13 @@ namespace NeoCortexApi.Entities
 
             ser.SerializeBegin(nameof(HtmConfig), writer);
 
+            this.SourceCell.serialize(writer);
             ser.SerializeValue(this.SegmentIndex, writer);
+            ser.SerializeValue(this.SynapseIndex, writer);
+            ser.SerializeValue(this.BoxedIndex, writer);
+            ser.SerializeValue(this.InputIndex, writer);
+            ser.SerializeValue(this.Permanence, writer);
+            ser.SerializeValue(this.IsDestroyed, writer);
 
             ser.SerializeEnd(nameof(HtmConfig), writer);
         }
