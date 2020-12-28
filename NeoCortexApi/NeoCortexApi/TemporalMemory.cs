@@ -72,7 +72,7 @@ namespace NeoCortexApi
             this.connections.Cells = cells;
         }
 
-        //StreamWriter tmperf1 = new StreamWriter("tm-perf-100000-10cells.csv");
+        StreamWriter tmperf1 = new StreamWriter("tm-perf-1024-25cells.p.csv");
 
 
         /// <summary>
@@ -89,17 +89,17 @@ namespace NeoCortexApi
         /// <remarks>Note: PredictiveCells are not calculated here. They are calculated on demand from active segments.</remarks>
         public ComputeCycle Compute(int[] activeColumns, bool learn)
         {
-            //Stopwatch sw = new Stopwatch();
-            //sw.Start();
-            ComputeCycle cycle = ActivateCells(this.connections, activeColumns, learn);
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            ComputeCycle cycle = ActivateCellsParallel(this.connections, activeColumns, learn);
 
             ActivateDendrites(this.connections, cycle, learn);
 
-            //sw.Stop();
+            sw.Stop();
 
-            //tmperf1.WriteLine($"{sw.ElapsedMilliseconds}");
+            tmperf1.WriteLine($"{sw.ElapsedMilliseconds}");
 
-            //tmperf1.Flush();
+            tmperf1.Flush();
 
             return cycle;
         }
@@ -122,7 +122,7 @@ namespace NeoCortexApi
         /// <param name="activeColumnIndices"></param>
         /// <param name="learn"></param>
         /// <returns></returns>
-        protected ComputeCycle ActivateCells(Connections conn, int[] activeColumnIndices, bool learn)
+        protected ComputeCycle ActivateCellsParallel(Connections conn, int[] activeColumnIndices, bool learn)
         {
             ComputeCycle cycle = new ComputeCycle
             {
@@ -130,8 +130,6 @@ namespace NeoCortexApi
             };
 
             ConcurrentDictionary<int, ComputeCycle> cycles = new ConcurrentDictionary<int, ComputeCycle>();
-
-            ColumnData activeColumnData = new ColumnData();
 
             ISet<Cell> prevActiveCells = conn.ActiveCells;
             ISet<Cell> prevWinnerCells = conn.WinnerCells;
@@ -172,7 +170,9 @@ namespace NeoCortexApi
             // Grouping by columns, which have active and matching segments.
             Parallel.ForEach(grouper, opts, (tuple) =>
             {
-                activeColumnData = activeColumnData.Set(tuple);
+                ColumnData activeColumnData = new ColumnData();
+
+                activeColumnData.Set(tuple);
 
                 if (activeColumnData.IsExistAnyActiveCol(cIndexofACTIVE_COLUMNS))
                 {
@@ -244,7 +244,7 @@ namespace NeoCortexApi
             return cycle;
         }
 
-        protected ComputeCycle ActivateCellsOriginal(Connections conn, int[] activeColumnIndices, bool learn)
+        protected ComputeCycle ActivateCells(Connections conn, int[] activeColumnIndices, bool learn)
         {
             ComputeCycle cycle = new ComputeCycle
             {
@@ -287,7 +287,7 @@ namespace NeoCortexApi
             // Grouping by columns, which have active and matching segments.
             foreach (var tuple in grouper)
             {
-                activeColumnData = activeColumnData.Set(tuple);
+                activeColumnData.Set(tuple);
 
                 if (activeColumnData.IsExistAnyActiveCol(cIndexofACTIVE_COLUMNS))
                 {
@@ -849,20 +849,16 @@ namespace NeoCortexApi
                 conn.DestroySynapse(s, segment);
             }
 
-            if (conn.GetNumSynapses(segment) == 0)
+            if (segment.Synapses.Count == 0)
             {
                 conn.DestroyDistalDendrite(segment);
             }
         }
         #endregion
 
-        //TODO separate classes to files
-        /**
-         * Used in the {@link TemporalMemory#compute(Connections, int[], boolean)} method
-         * to make pulling values out of the {@link GroupBy2} more readable and named.
-         */
+       
         /// <summary>
-        /// Used in the <see cref="Compute(int[], bool)"/> method to make pulling values out of the <see cref="GroupBy2{R}"/> more readable and named.
+        /// Used by Temporal memory algorithm.
         /// </summary>
         public class ColumnData
         {
@@ -871,11 +867,9 @@ namespace NeoCortexApi
             public ColumnData() { }
 
 
-            public ColumnData Set(Pair<Column, List<List<Object>>> t)
+            public void Set(Pair<Column, List<List<Object>>> t)
             {
                 m_Pair = t;
-
-                return this;
             }
 
             public Column Column() { return (Column)m_Pair.Key; }

@@ -1887,7 +1887,7 @@
             <returns></returns>
             <remarks>Note: PredictiveCells are not calculated here. They are calculated on demand from active segments.</remarks>
         </member>
-        <member name="M:NeoCortexApi.TemporalMemory.ActivateCells(NeoCortexApi.Entities.Connections,System.Int32[],System.Boolean)">
+        <member name="M:NeoCortexApi.TemporalMemory.ActivateCellsParallel(NeoCortexApi.Entities.Connections,System.Int32[],System.Boolean)">
             <summary>
             Calculate the active cells, using the current active columns and dendrite segments. Grow and reinforce synapses.
             
@@ -2067,10 +2067,8 @@
             <param name="permanenceDecrement"></param>
         </member>
         <member name="T:NeoCortexApi.TemporalMemory.ColumnData">
-            Used in the {@link TemporalMemory#compute(Connections, int[], boolean)} method
-            to make pulling values out of the {@link GroupBy2} more readable and named.
             <summary>
-            Used in the <see cref="M:NeoCortexApi.TemporalMemory.Compute(System.Int32[],System.Boolean)"/> method to make pulling values out of the <see cref="T:NeoCortexApi.Utility.GroupBy2`1"/> more readable and named.
+            Used by Temporal memory algorithm.
             </summary>
         </member>
         <member name="M:NeoCortexApi.TemporalMemory.ColumnData.IsExistAnyActiveCol(System.Int32)">

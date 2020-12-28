@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace NeoCortexApi.Entities
 {
@@ -215,8 +216,16 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// The segment creation number.
         /// </summary>
-        public int NextSegmentOrdinal { get => m_NextSegmentOrdinal; }
-
+        public int NextSegmentOrdinal
+        {
+            get
+            {
+                lock ("segmentindex")
+                {
+                    return m_NextSegmentOrdinal;
+                }
+            }
+        }
 
         #region Constructors and Initialization
 
@@ -227,7 +236,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public Connections()
         {
-          
+
             // TODO: Remove this when old way of parameter initialization is completely removed.
             this.m_HtmConfig = new HtmConfig(new int[100], new int[] { 2048 });
         }
@@ -896,30 +905,38 @@ namespace NeoCortexApi.Entities
             }
 
             int flatIdx;
-            int len;
-            if ((len = m_FreeFlatIdxs.Count()) > 0)
+
+            lock ("segmentindex")
             {
-                flatIdx = m_FreeFlatIdxs[len - 1];
-                m_FreeFlatIdxs.RemoveRange(len - 1, 1);
+                int len;
+                if ((len = m_FreeFlatIdxs.Count()) > 0)
+                {
+                    flatIdx = m_FreeFlatIdxs[len - 1];
+                    m_FreeFlatIdxs.RemoveRange(len - 1, 1);
+                    //if (!m_FreeFlatIdxs.TryRemove(len - 1, out flatIdx))
+                    //    throw new Exception("Object cannot be removed!");
+                }
+                else
+                {
+                    flatIdx = m_NextFlatIdx;
+                    //m_SegmentForFlatIdx.TryAdd(flatIdx, null);
+                    m_SegmentForFlatIdx[flatIdx] = null;
+                    //m_SegmentForFlatIdx.Add(null);
+                    ++m_NextFlatIdx;
+                }
+
+                int ordinal = m_NextSegmentOrdinal;
+                ++m_NextSegmentOrdinal;
+
+
+                DistalDendrite segment = new DistalDendrite(segmentParentCell, flatIdx, m_TMIteration, ordinal, this.HtmConfig.SynPermConnected, this.HtmConfig.NumInputs);
+                segmentParentCell.DistalDendrites.Add(segment);
+                //GetSegments(segmentParentCell, true).Add(segment);
+                m_SegmentForFlatIdx[flatIdx] = segment;
+
+                return segment;
+            
             }
-            else
-            {
-                flatIdx = m_NextFlatIdx;
-                //m_SegmentForFlatIdx.TryAdd(flatIdx, null);
-                m_SegmentForFlatIdx[flatIdx] = null;
-                //m_SegmentForFlatIdx.Add(null);
-                ++m_NextFlatIdx;
-            }
-
-            int ordinal = m_NextSegmentOrdinal;
-            ++m_NextSegmentOrdinal;
-
-            DistalDendrite segment = new DistalDendrite(segmentParentCell, flatIdx, m_TMIteration, ordinal, this.HtmConfig.SynPermConnected, this.HtmConfig.NumInputs);
-            segmentParentCell.DistalDendrites.Add(segment);
-            //GetSegments(segmentParentCell, true).Add(segment);
-            m_SegmentForFlatIdx[flatIdx] = segment;
-
-            return segment;
         }
 
         /// <summary>
@@ -928,32 +945,39 @@ namespace NeoCortexApi.Entities
         /// <param name="segment">the segment to destroy</param>
         public void DestroyDistalDendrite(DistalDendrite segment)
         {
-            // Remove the synapses from all data structures outside this Segment.
-            //DD List<Synapse> synapses = GetSynapses(segment);
-            List<Synapse> synapses = segment.Synapses;
-            int len = synapses.Count;
-
-            //getSynapses(segment).stream().forEach(s->removeSynapseFromPresynapticMap(s));
-            //DD foreach (var s in GetSynapses(segment))
-            foreach (var s in segment.Synapses)
+            lock ("segmentindex")
             {
-                RemoveSynapseFromPresynapticMap(s);
+                // Remove the synapses from all data structures outside this Segment.
+                //DD List<Synapse> synapses = GetSynapses(segment);
+                List<Synapse> synapses = segment.Synapses;
+                int len = synapses.Count;
+
+                //getSynapses(segment).stream().forEach(s->removeSynapseFromPresynapticMap(s));
+                //DD foreach (var s in GetSynapses(segment))
+                foreach (var s in segment.Synapses)
+                {
+                    RemoveSynapseFromPresynapticMap(s);
+                }
+
+                lock ("synapses")
+                {
+                    m_NumSynapses -= len;
+                }
+
+                // Remove the segment from the cell's list.
+                //DD
+                //GetSegments(segment.ParentCell).Remove(segment);
+                segment.ParentCell.DistalDendrites.Remove(segment);
+
+                // Remove the segment from the map
+                //DD m_DistalSynapses.Remove(segment);
+
+                // Free the flatIdx and remove the final reference so the Segment can be
+                // garbage-collected.
+                m_FreeFlatIdxs.Add(segment.SegmentIndex);
+                //m_FreeFlatIdxs[segment.SegmentIndex] = segment.SegmentIndex;
+                m_SegmentForFlatIdx[segment.SegmentIndex] = null;
             }
-
-            m_NumSynapses -= len;
-
-            // Remove the segment from the cell's list.
-            //DD
-            //GetSegments(segment.ParentCell).Remove(segment);
-            segment.ParentCell.DistalDendrites.Remove(segment);
-
-            // Remove the segment from the map
-            //DD m_DistalSynapses.Remove(segment);
-
-            // Free the flatIdx and remove the final reference so the Segment can be
-            // garbage-collected.
-            m_FreeFlatIdxs.Add(segment.SegmentIndex);
-            m_SegmentForFlatIdx[segment.SegmentIndex] = null;
         }
 
         /// <summary>
@@ -1010,7 +1034,10 @@ namespace NeoCortexApi.Entities
                 return cell.DistalDendrites.Count;
             }
 
-            return m_NextFlatIdx - m_FreeFlatIdxs.Count;
+            lock ("segmentindex")
+            {
+                return m_NextFlatIdx - m_FreeFlatIdxs.Count;
+            }
         }
 
         ///// <summary>
@@ -1106,25 +1133,28 @@ namespace NeoCortexApi.Entities
         /// <returns>the created <see cref="Synapse"/>.</returns>
         public Synapse CreateSynapse(DistalDendrite segment, Cell presynapticCell, double permanence)
         {
-            while (GetNumSynapses(segment) >= this.HtmConfig.MaxSynapsesPerSegment)
+            while (segment.Synapses.Count >= this.HtmConfig.MaxSynapsesPerSegment)
             {
                 DestroySynapse(MinPermanenceSynapse(segment), segment);
             }
 
-            Synapse synapse = null;
-            //DD GetSynapses(segment).Add(
-            segment.Synapses.Add(
-            synapse = new Synapse(
-                presynapticCell, segment.SegmentIndex, m_NextSynapseOrdinal, permanence));
+            lock ("synapses")
+            {
+                Synapse synapse = null;
+                //DD GetSynapses(segment).Add(
+                segment.Synapses.Add(
+                synapse = new Synapse(
+                    presynapticCell, segment.SegmentIndex, m_NextSynapseOrdinal, permanence));
 
-            presynapticCell.ReceptorSynapses.Add(synapse);
-            //DD GetReceptorSynapses(presynapticCell, true).Add(synapse);
+                presynapticCell.ReceptorSynapses.Add(synapse);
+                //DD GetReceptorSynapses(presynapticCell, true).Add(synapse);
 
-            ++m_NextSynapseOrdinal;
+                ++m_NextSynapseOrdinal;
 
-            ++m_NumSynapses;
+                ++m_NumSynapses;
 
-            return synapse;
+                return synapse;
+            }
         }
 
         /// <summary>
@@ -1134,13 +1164,16 @@ namespace NeoCortexApi.Entities
         /// <param name="segment"></param>
         public void DestroySynapse(Synapse synapse, DistalDendrite segment)
         {
-            --m_NumSynapses;
+            lock ("synapses")
+            {
+                --m_NumSynapses;
 
-            RemoveSynapseFromPresynapticMap(synapse);
+                RemoveSynapseFromPresynapticMap(synapse);
 
-            //segment.Synapses.Remove(synapse);
-            //DD GetSynapses(segment).Remove(synapse);
-            segment.Synapses.Remove(synapse);
+                //segment.Synapses.Remove(synapse);
+                //DD GetSynapses(segment).Remove(synapse);
+                segment.Synapses.Remove(synapse);
+            }
         }
 
         /// <summary>
@@ -1191,22 +1224,17 @@ namespace NeoCortexApi.Entities
         }
 
 
-        /// <summary>
-        /// Returns the number of <see cref="Synapse"/>s on a given <see cref="DistalDendrite"/>
-        /// if specified, or the total number if the "optionalSegmentArg" is null.
-        /// </summary>
-        /// <param name="optionalSegmentArg">An optional Segment to specify the context of the synapse count.</param>
-        /// <returns>Either the total number of synapses or the number on a specified segment.</returns>
-        public long GetNumSynapses(DistalDendrite optionalSegmentArg)
-        {
-            if (optionalSegmentArg != null)
-            {
-                // DD return GetSynapses(optionalSegmentArg).Count;
-                return optionalSegmentArg.Synapses.Count;
-            }
-
-            return m_NumSynapses;
-        }
+        ///// <summary>
+        ///// Returns the number of <see cref="Synapse"/>s on a given <see cref="DistalDendrite"/>
+        ///// if specified, or the total number if the "optionalSegmentArg" is null.
+        ///// </summary>
+        ///// <param name="optionalSegmentArg">An optional Segment to specify the context of the synapse count.</param>
+        ///// <returns>Either the total number of synapses or the number on a specified segment.</returns>
+        //public long GetNumSynapses(DistalDendrite optionalSegmentArg)
+        //{
+        //    // DD return GetSynapses(optionalSegmentArg).Count;
+        //    return optionalSegmentArg.Synapses.Count;
+        //}
 
 
         /// <summary>

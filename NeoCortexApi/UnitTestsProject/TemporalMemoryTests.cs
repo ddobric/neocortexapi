@@ -627,7 +627,7 @@ namespace UnitTestsProject
             tm.Compute(previousActiveColumns, true);
             tm.Compute(activeColumns, true);
 
-            Assert.AreEqual(3, cn.GetNumSynapses(activeSegment));
+            Assert.AreEqual(3, activeSegment.Synapses.Count);
         }
 
         [TestMethod]
@@ -657,7 +657,7 @@ namespace UnitTestsProject
             tm.Compute(previousActiveColumns, true);
             tm.Compute(activeColumns, true);
 
-            Assert.AreEqual(3, cn.GetNumSynapses(activeSegment));
+            Assert.AreEqual(3, activeSegment.Synapses.Count);
         }
 
         [TestMethod]
@@ -884,8 +884,8 @@ namespace UnitTestsProject
                 Assert.AreEqual(3, cn.NumSegments());
                 Assert.AreEqual(1, cn.NumSegments(cn.GetCell(0)));
                 Assert.AreEqual(1, cn.NumSegments(cn.GetCell(3)));
-                Assert.AreEqual(1, cn.GetNumSynapses(segment1));
-                Assert.AreEqual(1, cn.GetNumSynapses(segment2));
+                Assert.AreEqual(1, segment1.Synapses.Count);
+                Assert.AreEqual(1, segment2.Synapses.Count);
 
                 //DD
                 //List<DistalDendrite> segments = new List<DistalDendrite>(cn.GetSegments(cn.GetCell(1)));
