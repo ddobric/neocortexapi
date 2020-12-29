@@ -339,6 +339,7 @@ namespace UnitTestsProject
         {
             var parameters = GetDefaultParams();
 
+
             parameters.setInputDimensions(new int[] { 32 });
             parameters.setColumnDimensions(new int[] { 128 });
             parameters.setNumActiveColumnsPerInhArea(0.02 * 2048);
