@@ -414,8 +414,8 @@ namespace NeoCortexApi
             ser.SerializeValue(this.m_NumOfStableCyclesForInput,writer);
             ser.SerializeValue(this.m_NumOfActiveColsForInput, writer);
             ser.SerializeValue(this.m_InOutMap, writer);
-            //Serialization of Action<bool, int, double, int> need to be performed
             ser.SerializeValue(this.m_IsStable, writer);
+
             ser.SerializeEnd(nameof(HomeostaticPlasticityController), writer);
 
         }

@@ -154,13 +154,13 @@ namespace NeoCortexApi.Entities
         }
 
         #region Serialization
-        public void serialize(StreamWriter writer)
+        public void Serialize(StreamWriter writer)
         {
             HtmSerializer2 ser = new HtmSerializer2();
 
             ser.SerializeBegin(nameof(HtmConfig), writer);
 
-            this.ParentCell.serialize(writer);
+            this.ParentCell.Serialize(writer);
             ser.SerializeValue(this.m_LastUsedIteration, writer);
             ser.SerializeValue(this.m_Ordinal, writer);
             ser.SerializeValue(this.LastUsedIteration, writer);

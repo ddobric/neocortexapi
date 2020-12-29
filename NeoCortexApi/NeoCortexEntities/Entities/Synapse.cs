@@ -293,13 +293,13 @@ namespace NeoCortexApi.Entities
                 return 0;
         }
         #region Serialization
-        public void serialize(StreamWriter writer)
+        public void Serialize(StreamWriter writer)
         {
             HtmSerializer2 ser = new HtmSerializer2();
 
             ser.SerializeBegin(nameof(HtmConfig), writer);
 
-            this.SourceCell.serialize(writer);
+            this.SourceCell.Serialize(writer);
             ser.SerializeValue(this.SegmentIndex, writer);
             ser.SerializeValue(this.SynapseIndex, writer);
             ser.SerializeValue(this.BoxedIndex, writer);

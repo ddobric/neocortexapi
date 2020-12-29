@@ -190,7 +190,7 @@ namespace NeoCortexApi
             {
                 foreach (Cell cell in val)
                 {
-                    cell.serialize(sw);
+                    cell.Serialize(sw);
                     sw.Write(valueDelimiter);
                 }
             }
@@ -207,7 +207,7 @@ namespace NeoCortexApi
             {
                 foreach (DistalDendrite val in value)
                 {
-                    val.serialize(sw);
+                    val.Serialize(sw);
                     sw.Write(valueDelimiter);
                 }
             }
@@ -223,7 +223,7 @@ namespace NeoCortexApi
             {
                 foreach (Synapse val in value)
                 {
-                    val.serialize(sw);
+                    val.Serialize(sw);
                     sw.Write(valueDelimiter);
                 }
             }
@@ -253,11 +253,11 @@ namespace NeoCortexApi
             sw.Write(valueDelimiter);
             foreach (KeyValuePair<Segment, List<Synapse>> i in keyValues)
             {
-                i.Key.serialize(sw);
+                i.Key.Serialize(sw);
                 sw.Write(": ");
                 foreach (Synapse val in i.Value)
                 {
-                    val.serialize(sw);
+                    val.Serialize(sw);
                     sw.Write(valueDelimiter);
                 }
 
@@ -275,11 +275,11 @@ namespace NeoCortexApi
             sw.Write(valueDelimiter);
             foreach (KeyValuePair<Cell, List<DistalDendrite>> i in keyValues)
             {
-                i.Key.serialize(sw);
+                i.Key.Serialize(sw);
                 sw.Write(": ");
                 foreach (DistalDendrite val in i.Value)
                 {
-                    val.serialize(sw);
+                    val.Serialize(sw);
                     sw.Write(valueDelimiter);
                 }
 

@@ -2542,14 +2542,14 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.m_Overlaps, writer);
             ser.SerializeValue(this.m_TieBreaker, writer);
 
-            this.connectedCounts2.serialize(writer);
+            this.connectedCounts2.Serialize(writer);
 
             ser.SerializeValue(this.Cells, writer);
             ser.SerializeValue(this.m_BoostFactors, writer);
             ser.SerializeValue(this.m_ActiveSegments, writer);
             ser.SerializeValue(this.m_MatchingSegments, writer);
 
-            this.m_HtmConfig.serialize(writer);
+            this.m_HtmConfig.Serialize(writer);
 
             ser.SerializeValue(this.m_DistalSegments, writer);
             ser.SerializeValue(this.m_DistalSynapses, writer);
@@ -2560,7 +2560,7 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.m_FreeFlatIdxs, writer);
             ser.SerializeValue(this.m_SegmentForFlatIdx, writer);
 
-            this.LastActivity.serialize(writer);
+            this.LastActivity.Serialize(writer);
 
             ser.SerializeValue(this.NextSegmentOrdinal, writer);
             ser.SerializeValue(this.TieBreaker, writer);
