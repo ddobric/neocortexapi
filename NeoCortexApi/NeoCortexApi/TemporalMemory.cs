@@ -21,9 +21,9 @@ namespace NeoCortexApi
     {
         private static readonly double EPSILON = 0.00001;
 
-        private static readonly int cIndexofACTIVE_COLUMNS = 0;
+        protected static readonly int cIndexofACTIVE_COLUMNS = 0;
 
-        private Connections connections;
+        protected Connections connections;
 
         public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
@@ -91,7 +91,7 @@ namespace NeoCortexApi
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            ComputeCycle cycle = ActivateCellsParallel(this.connections, activeColumns, learn);
+            ComputeCycle cycle = ActivateCells(this.connections, activeColumns, learn);
 
             ActivateDendrites(this.connections, cycle, learn);
 
@@ -122,129 +122,8 @@ namespace NeoCortexApi
         /// <param name="activeColumnIndices"></param>
         /// <param name="learn"></param>
         /// <returns></returns>
-        protected ComputeCycle ActivateCellsParallel(Connections conn, int[] activeColumnIndices, bool learn)
-        {
-            ComputeCycle cycle = new ComputeCycle
-            {
-                ActivColumnIndicies = activeColumnIndices
-            };
-
-            ConcurrentDictionary<int, ComputeCycle> cycles = new ConcurrentDictionary<int, ComputeCycle>();
-
-            ISet<Cell> prevActiveCells = conn.ActiveCells;
-            ISet<Cell> prevWinnerCells = conn.WinnerCells;
-
-            // The list of active columns.
-            List<Column> activeColumns = new List<Column>();
-
-            foreach (var indx in activeColumnIndices.OrderBy(i => i))
-            {
-                activeColumns.Add(conn.GetColumn(indx));
-            }
-
-            Func<Object, Column> segToCol = (segment) =>
-            {
-                var colIndx = ((DistalDendrite)segment).ParentCell.ParentColumnIndex;
-                var parentCol = this.connections.HtmConfig.Memory.GetColumn(colIndx);
-                return parentCol;
-            };
-
-            Func<object, Column> times1Fnc = x => (Column)x;
-
-            var list = new Pair<List<object>, Func<object, Column>>[3];
-            list[0] = new Pair<List<object>, Func<object, Column>>(Array.ConvertAll(activeColumns.ToArray(), item => (object)item).ToList(), times1Fnc);
-            list[1] = new Pair<List<object>, Func<object, Column>>(Array.ConvertAll(conn.ActiveSegments.ToArray(), item => (object)item).ToList(), segToCol);
-            list[2] = new Pair<List<object>, Func<object, Column>>(Array.ConvertAll(conn.MatchingSegments.ToArray(), item => (object)item).ToList(), segToCol);
-
-            GroupBy2<Column> grouper = GroupBy2<Column>.Of(list);
-
-            double permanenceIncrement = conn.HtmConfig.PermanenceIncrement;
-            double permanenceDecrement = conn.HtmConfig.PermanenceDecrement;
-
-            ParallelOptions opts = new ParallelOptions
-            {
-                MaxDegreeOfParallelism = Environment.ProcessorCount
-            };
-
-            //
-            // Grouping by columns, which have active and matching segments.
-            Parallel.ForEach(grouper, opts, (tuple) =>
-            {
-                ColumnData activeColumnData = new ColumnData();
-
-                activeColumnData.Set(tuple);
-
-                if (activeColumnData.IsExistAnyActiveCol(cIndexofACTIVE_COLUMNS))
-                {
-                    // If there are some active segments on the column already...
-                    if (activeColumnData.ActiveSegments != null && activeColumnData.ActiveSegments.Count > 0)
-                    {
-                        //Debug.Write(".");
-
-                        List<Cell> cellsOwnersOfActSegs = ActivatePredictedColumn(conn, activeColumnData.ActiveSegments,
-                            activeColumnData.MatchingSegments, prevActiveCells, prevWinnerCells,
-                                permanenceIncrement, permanenceDecrement, learn, cycle.ActiveSynapses);
-
-                        ComputeCycle colCycle = new ComputeCycle();
-                        cycles[tuple.Key.Index] = colCycle;
-
-                        foreach (var item in cellsOwnersOfActSegs)
-                        {
-                            colCycle.ActiveCells.Add(item);
-                            colCycle.WinnerCells.Add(item);
-                        }
-                    }
-                    else
-                    {
-                        //
-                        // If no active segments are detected (start of learning) then all cells are activated
-                        // and a random single cell is chosen as a winner.
-                        BurstingResult burstingResult = BurstColumn(conn, activeColumnData.Column(), activeColumnData.MatchingSegments,
-                            prevActiveCells, prevWinnerCells, permanenceIncrement, permanenceDecrement, conn.HtmConfig.Random,
-                               learn);
-
-                        // DRAFT. Removing this as unnecessary.
-                        //cycle.ActiveCells.Add(burstingResult.BestCell);
-
-                        ComputeCycle colCycle = new ComputeCycle();
-                        cycles[tuple.Key.Index] = colCycle;
-
-                        //
-                        // Here we activate all cells by putting them to list of active cells.
-                        foreach (var item in burstingResult.Cells)
-                        {
-                            colCycle.ActiveCells.Add(item);
-                        }
-
-                        //var actSyns = conn.getReceptorSynapses(burstingResult.BestCell).Where(s=>prevActiveCells.Contains(s.SourceCell));
-                        //foreach (var syn in actSyns)
-                        //{
-                        //    cycle.ActiveSynapses.Add(syn);
-                        //}
-
-                        colCycle.WinnerCells.Add((Cell)burstingResult.BestCell);
-                    }
-                }
-                else
-                {
-                    if (learn)
-                    {
-                        PunishPredictedColumn(conn, activeColumnData.ActiveSegments, activeColumnData.MatchingSegments,
-                            prevActiveCells, prevWinnerCells, conn.HtmConfig.PredictedSegmentDecrement);
-                    }
-                }
-            });
-
-            foreach (var colCycle in cycles.Values)
-            {
-                cycle.ActiveCells.AddRange(colCycle.ActiveCells);
-                cycle.WinnerCells.AddRange(colCycle.WinnerCells);
-            }
-
-            return cycle;
-        }
-
-        protected ComputeCycle ActivateCells(Connections conn, int[] activeColumnIndices, bool learn)
+      
+        protected virtual ComputeCycle ActivateCells(Connections conn, int[] activeColumnIndices, bool learn)
         {
             ComputeCycle cycle = new ComputeCycle
             {
@@ -477,7 +356,7 @@ namespace NeoCortexApi
         /// <param name="permanenceDecrement"></param>
         /// <param name="learn"></param>
         /// <returns>Cells which own active column segments as calculated in the previous step.</returns>
-        private List<Cell> ActivatePredictedColumn(Connections conn, List<DistalDendrite> columnActiveSegments,
+        protected List<Cell> ActivatePredictedColumn(Connections conn, List<DistalDendrite> columnActiveSegments,
             List<DistalDendrite> matchingSegments, ICollection<Cell> prevActiveCells, ICollection<Cell> prevWinnerCells,
                 double permanenceIncrement, double permanenceDecrement, bool learn, IList<Synapse> activeSynapses)
         {

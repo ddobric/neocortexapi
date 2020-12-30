@@ -1854,6 +1854,20 @@
             <param name="inputVector">Overlap of every column.</param>
             <returns></returns>
         </member>
+        <member name="T:NeoCortexApi.TemporalMemortMT">
+            <summary>
+            Multicore implementation of the Temporal Memory algorithm
+            </summary>
+        </member>
+        <member name="M:NeoCortexApi.TemporalMemortMT.ActivateCells(NeoCortexApi.Entities.Connections,System.Int32[],System.Boolean)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="conn"></param>
+            <param name="activeColumnIndices"></param>
+            <param name="learn"></param>
+            <returns></returns>
+        </member>
         <member name="T:NeoCortexApi.TemporalMemory">
             <summary>
             Implementation of Temporal Memory algorithm.
@@ -1887,7 +1901,7 @@
             <returns></returns>
             <remarks>Note: PredictiveCells are not calculated here. They are calculated on demand from active segments.</remarks>
         </member>
-        <member name="M:NeoCortexApi.TemporalMemory.ActivateCellsParallel(NeoCortexApi.Entities.Connections,System.Int32[],System.Boolean)">
+        <member name="M:NeoCortexApi.TemporalMemory.ActivateCells(NeoCortexApi.Entities.Connections,System.Int32[],System.Boolean)">
             <summary>
             Calculate the active cells, using the current active columns and dendrite segments. Grow and reinforce synapses.
             
