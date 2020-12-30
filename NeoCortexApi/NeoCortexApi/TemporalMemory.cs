@@ -809,7 +809,7 @@ namespace NeoCortexApi
             // Destroying a synapse modifies the set that we're iterating through.
             List<Synapse> synapsesToDestroy = new List<Synapse>();
 
-            //DD foreach (Synapse synapse in conn.GetSynapses(segment))
+            //DD oreach (Synapse synapse in conn.GetSynapses(segment))
             foreach (Synapse synapse in segment.Synapses)
             {
                 double permanence = synapse.Permanence;
