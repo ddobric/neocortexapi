@@ -6,6 +6,7 @@ using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -70,6 +71,14 @@ namespace NeoCortexApi
         /// During this period, the SP will boost columns and bee instable. After this period the HPC will switch off boosting.</param>
         /// <param name="onStabilityStatusChanged">Invoked when the SP changes the state from instable to stable and vise versa.</param>
         /// <param name="numOfCyclesToWaitOnChange">How many cycles SDRs of all input patterns must be unchanged to declare the SP as stable.</param>
+        /// <summary>
+        /// Used during the deserialization proicess.
+        /// </summary>
+        protected HomeostaticPlasticityController()
+        { 
+        
+        }
+
         public HomeostaticPlasticityController(Connections htmMemory, int minCycles, Action<bool, int, double, int> onStabilityStatusChanged, int numOfCyclesToWaitOnChange = 50)
         {
             this.m_OnStabilityStatusChanged = onStabilityStatusChanged;
@@ -342,7 +351,11 @@ namespace NeoCortexApi
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        internal static string GetHash(int[] input)
+        internal static string
+
+
+
+        GetHash(int[] input)
         {
             List<byte> buff = new List<byte>();
 
@@ -385,5 +398,41 @@ namespace NeoCortexApi
 
         //    return val;
         //}
+
+        #region Serialization
+        public void Serialize(StreamWriter writer)
+        {
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            ser.SerializeBegin(nameof(HomeostaticPlasticityController), writer);
+
+            ser.SerializeValue(this.m_MaxPreviousElements, writer);
+            // HtmMemory is not serialized here. It is assumed to be serialized in the SP;
+            ser.SerializeValue(this.m_Cycle, writer);
+            ser.SerializeValue(this.m_MinCycles, writer);
+            ser.SerializeValue(this.m_RequiredNumOfStableCycles, writer);
+            ser.SerializeValue(this.m_NumOfStableCyclesForInput,writer);
+            ser.SerializeValue(this.m_NumOfActiveColsForInput, writer);
+            ser.SerializeValue(this.m_InOutMap, writer);
+            ser.SerializeValue(this.m_IsStable, writer);
+
+            ser.SerializeEnd(nameof(HomeostaticPlasticityController), writer);
+
+        }
+
+        public static HomeostaticPlasticityController Deserialize(StreamReader reader)
+        {
+            HomeostaticPlasticityController ctrl = new HomeostaticPlasticityController();
+
+            HtmSerializer2 ser = new HtmSerializer2();
+            ctrl.m_MaxPreviousElements = ser.ReadIntValue(reader);
+            ctrl.m_MinCycles = ser.ReadIntValue(reader);
+            ctrl.m_RequiredNumOfStableCycles = ser.ReadIntValue(reader);
+            //...
+
+            return ctrl;
+
+        }
+        #endregion
     }
 }

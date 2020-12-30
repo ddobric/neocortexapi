@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace NeoCortexApi.Entities
@@ -34,5 +35,20 @@ namespace NeoCortexApi.Entities
         {
 
         }
+
+        #region Serialization
+        public void Serialize(StreamWriter writer)
+        {
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            ser.SerializeBegin(nameof(SegmentActivity), writer);
+
+            ser.SerializeValue(this.ActiveSynapses, writer);
+            ser.SerializeValue(this.PotentialSynapses, writer);
+
+            ser.SerializeEnd(nameof(SegmentActivity), writer);
+        }
+        #endregion
+
     }
 }

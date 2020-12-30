@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\dev\NeoCortexAPI\neocortexapi\NeoCortexApi\DistributedComputeLib\DistributedComputeLib.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

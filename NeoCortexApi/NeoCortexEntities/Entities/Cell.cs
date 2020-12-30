@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using System;
 using System.Collections.Generic;
+using System.IO;
 using NeoCortexApi.Entities;
 using NeoCortexEntities.NeuroVisualizer;
 
@@ -138,5 +139,20 @@ namespace NeoCortexApi.Entities
             else
                 return 0;
         }
+        #region Serialization
+        public void Serialize(StreamWriter writer)
+        {
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            ser.SerializeBegin(nameof(Cell), writer);
+
+            ser.SerializeValue(this.Index, writer);
+            ser.SerializeValue(this.CellId, writer);
+            ser.SerializeValue(this.ParentColumnIndex, writer);
+            ser.SerializeValue(this.m_Hashcode, writer);
+
+            ser.SerializeEnd(nameof(Cell), writer);
+        }
+        #endregion
     }
 }
