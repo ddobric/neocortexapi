@@ -166,7 +166,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Synapses, which belong to some distal dentrite segment.
         /// </summary>
-        //private Dictionary<Segment, List<Synapse>> m_DistalSynapses;
+        private Dictionary<Segment, List<Synapse>> m_DistalSynapses;
 
         // Proximal synapses are a part of the column.
         //protected Dictionary<Segment, List<Synapse>> proximalSynapses;
