@@ -1854,20 +1854,6 @@
             <param name="inputVector">Overlap of every column.</param>
             <returns></returns>
         </member>
-        <member name="T:NeoCortexApi.TemporalMemortMT">
-            <summary>
-            Multicore implementation of the Temporal Memory algorithm
-            </summary>
-        </member>
-        <member name="M:NeoCortexApi.TemporalMemortMT.ActivateCells(NeoCortexApi.Entities.Connections,System.Int32[],System.Boolean)">
-            <summary>
-            <inheritdoc/>
-            </summary>
-            <param name="conn"></param>
-            <param name="activeColumnIndices"></param>
-            <param name="learn"></param>
-            <returns></returns>
-        </member>
         <member name="T:NeoCortexApi.TemporalMemory">
             <summary>
             Implementation of Temporal Memory algorithm.
@@ -2089,6 +2075,20 @@
             <summary>
             Result indicates whether the slot at the specified index is empty</summary>
             indicator.<param name="memberIndex">Index of slot.</param>
+            <returns></returns>
+        </member>
+        <member name="T:NeoCortexApi.TemporalMemoryMT">
+            <summary>
+            Multicore implementation of the Temporal Memory algorithm
+            </summary>
+        </member>
+        <member name="M:NeoCortexApi.TemporalMemoryMT.ActivateCells(NeoCortexApi.Entities.Connections,System.Int32[],System.Boolean)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="conn"></param>
+            <param name="activeColumnIndices"></param>
+            <param name="learn"></param>
             <returns></returns>
         </member>
         <member name="M:NeoCortexApi.Utility.BitHistory.AddOrUpdate(System.Collections.Generic.Dictionary{System.Int32,System.Double},System.Int32,System.Double)">
