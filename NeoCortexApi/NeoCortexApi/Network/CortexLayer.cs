@@ -84,15 +84,17 @@ namespace NeoCortexApi.Network
 
             int i = 0;
 
-            foreach (var moduleKeyPair in this.HtmModules)
+            var keys = this.HtmModules.Keys;
+
+            foreach (var key in new List<string>(keys))
             {
-                dynamic module = moduleKeyPair.Value;
+                dynamic module = this.HtmModules[key];
 
                 dynamic moduleInput = (i == 0) ? input : moduleOutput;
 
                 moduleOutput = module.Compute(moduleInput, learn);
 
-                SetResult(moduleKeyPair.Key, moduleOutput);
+                SetResult(key, moduleOutput);
 
                 i++;
             }
