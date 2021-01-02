@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 namespace NeoCortexApi.Entities
 {
@@ -181,6 +182,7 @@ namespace NeoCortexApi.Entities
             return GetColumn(ComputeIndex(coordinates));
         }
 
+        
 
 #pragma warning disable IDE1006 // Naming Styles
         // public abstract Integer get(int index);
@@ -463,5 +465,19 @@ namespace NeoCortexApi.Entities
                 return false;
             return true;
         }
+
+        #region Serialization
+        public void Serialize(StreamWriter writer)
+        {
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            ser.SerializeBegin(nameof(AbstractSparseBinaryMatrix), writer);
+
+            ser.SerializeValue(AbstractSparseBinaryMatrix.serialVersionUID, writer);
+            ser.SerializeValue(this.trueCounts, writer);
+
+            ser.SerializeEnd(nameof(AbstractSparseBinaryMatrix), writer);
+        }
+        #endregion
     }
 }

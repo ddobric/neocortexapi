@@ -24,7 +24,6 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <LangVersion>7.3</LangVersion>
-    <DocumentationFile>C:\dev\git\neocortexapi\NeoCortexApi\NeoCortexApi\NeoCortexApi.xml</DocumentationFile>
     <DefineConstants>TRACE;USE_AKKA</DefineConstants>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
@@ -35,10 +34,14 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Anomaly.cs" />
     <Compile Remove="Classification.cs" />
     <Compile Remove="Encoders\EncoderBuilder.cs" />
+    <Compile Remove="HtmSerializer2.cs" />
     <Compile Remove="Network\NearestClassifier.cs" />
   </ItemGroup>
 
@@ -50,6 +53,7 @@
     <None Include="Anomaly.cs" />
     <None Include="Classification.cs" />
     <None Include="Encoders\EncoderBuilder.cs" />
+    <None Include="HtmSerializer2.cs" />
     <None Include="NeoCortexApi\NeoCortexAPI.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
