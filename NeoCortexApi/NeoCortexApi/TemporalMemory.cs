@@ -72,7 +72,7 @@ namespace NeoCortexApi
             this.connections.Cells = cells;
         }
 
-        StreamWriter tmperf1 = new StreamWriter("tm-perf-1024-25cells.p.csv");
+        //StreamWriter tmperf1 = new StreamWriter("tm-perf-1024-25cells.p.csv");
 
 
         /// <summary>
@@ -89,17 +89,17 @@ namespace NeoCortexApi
         /// <remarks>Note: PredictiveCells are not calculated here. They are calculated on demand from active segments.</remarks>
         public ComputeCycle Compute(int[] activeColumns, bool learn)
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
+            //Stopwatch sw = new Stopwatch();
+            //sw.Start();
             ComputeCycle cycle = ActivateCells(this.connections, activeColumns, learn);
 
             ActivateDendrites(this.connections, cycle, learn);
 
-            sw.Stop();
+            //sw.Stop();
 
-            tmperf1.WriteLine($"{sw.ElapsedMilliseconds}");
+            // tmperf1.WriteLine($"{sw.ElapsedMilliseconds}");
 
-            tmperf1.Flush();
+            //tmperf1.Flush();
 
             return cycle;
         }
@@ -122,7 +122,7 @@ namespace NeoCortexApi
         /// <param name="activeColumnIndices"></param>
         /// <param name="learn"></param>
         /// <returns></returns>
-      
+
         protected virtual ComputeCycle ActivateCells(Connections conn, int[] activeColumnIndices, bool learn)
         {
             ComputeCycle cycle = new ComputeCycle
@@ -366,61 +366,56 @@ namespace NeoCortexApi
 
             foreach (DistalDendrite segment in columnActiveSegments)
             {
-                //DD foreach (Synapse synapse in new List<Synapse>(conn.GetSynapses(segment)))
-                foreach (Synapse synapse in new List<Synapse>(segment.Synapses))
+                if (!cellsOwnersOfActiveSegments.Contains(segment.ParentCell))
                 {
-                    // WORKING DRAFT. TM algorithm change.
-                    // The original algorithm adopt all synapses at the segment.
-                    // The new (DRAFT) version adopts only synapses whose presynaptic cells
-                    // are active cells in th eprevious cycle.
-                    if (prevActiveCells.Contains(synapse.getPresynapticCell()))
-                    {
-                        // TODO
-                        // Review this. not only previous cell should be consiered.
-                        // We should rather consider all current list and look if the cell is already in.
-                        segmOwnerCell = segment.ParentCell;
-                        if (segmOwnerCell != previousCell)
-                        {
-                            //activeSynapses.Add(synapse);
-                            cellsOwnersOfActiveSegments.Add(segmOwnerCell);
-                            previousCell = segmOwnerCell;
-                        }
-                        else
-                        {
-                            // for debugging.
-                        }
-
-                        if (learn)
-                        {
-                            AdaptSegment(conn, segment, prevActiveCells, permanenceIncrement, permanenceDecrement);
-
-                            int numActive = conn.LastActivity.PotentialSynapses[segment.SegmentIndex];
-                            int nGrowDesired = conn.HtmConfig.MaxNewSynapseCount - numActive;
-
-                            if (nGrowDesired > 0)
-                            {
-                                // Create new synapses on the segment from winner (pre-synaptic cells) cells.
-                                GrowSynapses(conn, prevWinnerCells, segment, conn.HtmConfig.InitialPermanence,
-                                    nGrowDesired, conn.HtmConfig.Random);
-                            }
-                        }
-                    }
+                    cellsOwnersOfActiveSegments.Add(segment.ParentCell);
+                    ////DD foreach (Synapse synapse in new List<Synapse>(conn.GetSynapses(segment)))
+                    //foreach (Synapse synapse in new List<Synapse>(segment.Synapses))
+                    //{
+                    //    // WORKING DRAFT. TM algorithm change.
+                    //    // The original algorithm adopt all synapses at the segment.
+                    //    // The new (DRAFT) version adopts only synapses whose presynaptic cells
+                    //    // are active cells in th eprevious cycle.
+                    //    if (prevWinnerCells.Contains(synapse.getPresynapticCell()))
+                    //    {
+                    //        cellsOwnersOfActiveSegments.Add(segment.ParentCell);
+                    //        break;
+                    //        //// TODO
+                    //        //// Review this. not only previous cell should be consiered.
+                    //        //// We should rather consider all current list and look if the cell is already in.
+                    //        //segmOwnerCell = segment.ParentCell;
+                    //        //if (segmOwnerCell != previousCell)
+                    //        //{
+                    //        //    //activeSynapses.Add(synapse);
+                    //        //    cellsOwnersOfActiveSegments.Add(segmOwnerCell);
+                    //        //    previousCell = segmOwnerCell;
+                    //        //}
+                    //        //else
+                    //        //{
+                    //        //    // for debugging.
+                    //        //}
+                    //    }
+                //}
                 }
 
-                //if (learn)
-                //{
-                //    AdaptSegment(conn, segment, prevActiveCells, permanenceIncrement, permanenceDecrement);
+                if (learn)
+                {
+                    AdaptSegment(conn, segment, prevActiveCells, permanenceIncrement, permanenceDecrement);
 
-                //    int numActive = conn.getLastActivity().PotentialSynapses[segment.getIndex()];
-                //    int nGrowDesired = conn.HtmConfig.MaxNewSynapseCount - numActive;
+                    int numActive = conn.LastActivity.PotentialSynapses[segment.SegmentIndex];
+                    int nGrowDesired = conn.HtmConfig.MaxNewSynapseCount - numActive;
 
-                //    if (nGrowDesired > 0)
-                //    {
-                //        // Create new synapses on the segment from winner (pre-synaptic cells) cells.
-                //        growSynapses(conn, prevWinnerCells, segment, conn.getInitialPermanence(),
-                //            nGrowDesired, conn.getRandom());
-                //    }
-                //}
+                    if (nGrowDesired > 0)
+                    {
+                        // Create new synapses on the segment from winner (pre-synaptic cells) cells.
+                        GrowSynapses(conn, prevWinnerCells, segment, conn.HtmConfig.InitialPermanence,
+                            nGrowDesired, conn.HtmConfig.Random);
+                    }
+                    else
+                    {
+                        // for debugging.
+                    }
+                }
             }
 
             return cellsOwnersOfActiveSegments;
@@ -569,7 +564,7 @@ namespace NeoCortexApi
             List<DistalDendrite> matchingSegments, ICollection<Cell> prevActiveCells, ICollection<Cell> prevWinnerCells,
                double predictedSegmentDecrement)
         {
-
+            Debug.Write("P");
             if (predictedSegmentDecrement > 0)
             {
                 foreach (DistalDendrite segment in matchingSegments)
@@ -735,7 +730,7 @@ namespace NeoCortexApi
         }
         #endregion
 
-       
+
         /// <summary>
         /// Used by Temporal memory algorithm.
         /// </summary>

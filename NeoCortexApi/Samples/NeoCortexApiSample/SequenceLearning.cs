@@ -52,7 +52,7 @@ namespace NeoCortexApiSample
                 // Used by punishing of segments.
                 PredictedSegmentDecrement = 0.1
             };
-          
+
             double max = 20;
 
             Dictionary<string, object> settings = new Dictionary<string, object>()
@@ -90,15 +90,17 @@ namespace NeoCortexApiSample
 
             var mem = new Connections(cfg);
 
-            bool isInStableState;
+            bool isInStableState = false;
 
             HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
 
             var numInputs = inputValues.Distinct<double>().ToList().Count;
 
-            TemporalMemoryMT tm = new TemporalMemoryMT();
+            CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
 
-            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, numInputs * 55, (isStable, numPatterns, actColAvg, seenInputs) =>
+            TemporalMemory tm = new TemporalMemory();
+
+            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, numInputs * 150, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                 if (isStable)
                     // Event should be fired when entering the stable state.
@@ -107,14 +109,16 @@ namespace NeoCortexApiSample
                     // Ideal SP should never enter unstable state after stable state.
                     Debug.WriteLine($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
 
-                isInStableState = true;
+                isInStableState = isStable;
+
+                //if (isStable && layer1.HtmModules.ContainsKey("tm") == false)
+                //    layer1.HtmModules.Add("tm", tm);
 
                 // Clear all learned patterns in the classifier.
                 cls.ClearState();
 
                 // Clear active and predictive cells.
-                tm.Reset(mem);
-
+                //tm.Reset(mem);
             }, numOfCyclesToWaitOnChange: 25);
 
 
@@ -122,11 +126,8 @@ namespace NeoCortexApiSample
             sp.Init(mem);
             tm.Init(mem);
 
-            CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
-
             layer1.HtmModules.Add("encoder", encoder);
             layer1.HtmModules.Add("sp", sp);
-            layer1.HtmModules.Add("tm", tm);
 
             double[] inputs = inputValues.ToArray();
             int[] prevActiveCols = new int[0];
@@ -150,7 +151,35 @@ namespace NeoCortexApiSample
             previousInputs.Add("-1.0");
 
             //
-            // Now training with SP+TM. SP is pretrained on the given input pattern.
+            // Training SP to get stable. New-born stage.
+            //
+
+            for (int i = 0; i < maxCycles; i++)
+            {
+                matches = 0;
+
+                cycle++;
+
+                Debug.WriteLine($"-------------- Newborn Cycle {cycle} ---------------");
+
+                foreach (var input in inputs)
+                {
+                    Debug.WriteLine($" -- {input} --");
+
+                    var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
+
+                    if (isInStableState)
+                        break;
+                }
+
+                if (isInStableState)
+                    break;
+            }
+
+            layer1.HtmModules.Add("tm", tm);
+
+            //
+            // Now training with SP+TM. SP is pretrained on the given input pattern set.
             for (int i = 0; i < maxCycles; i++)
             {
                 matches = 0;
@@ -165,57 +194,60 @@ namespace NeoCortexApiSample
 
                     var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
 
-                    var activeColumns = layer1.GetResult("sp") as int[];
-
-                    activeColumnsLst[input].Add(activeColumns.ToList());
-
-                    previousInputs.Add(input.ToString());
-                    if (previousInputs.Count > (maxPrevInputs + 1))
-                        previousInputs.RemoveAt(0);
-
-                    string key = GetKey(previousInputs, input);
-
-                    List<Cell> actCells;
-
-                    if (lyrOut.ActiveCells.Count == lyrOut.WinnerCells.Count)
+                    // lyrOut is null when the TM is added to the layer inside of HPC callback by entering of the stable state.
+                    if (isInStableState && lyrOut != null)
                     {
-                        actCells = lyrOut.ActiveCells;
+                        var activeColumns = layer1.GetResult("sp") as int[];
+
+                        activeColumnsLst[input].Add(activeColumns.ToList());
+
+                        previousInputs.Add(input.ToString());
+                        if (previousInputs.Count > (maxPrevInputs + 1))
+                            previousInputs.RemoveAt(0);
+
+                        string key = GetKey(previousInputs, input);
+
+                        List<Cell> actCells;
+
+                        if (lyrOut.ActiveCells.Count == lyrOut.WinnerCells.Count)
+                        {
+                            actCells = lyrOut.ActiveCells;
+                        }
+                        else
+                        {
+                            actCells = lyrOut.WinnerCells;
+                        }
+
+                        cls.Learn(key, actCells.ToArray());
+
+                        if (learn == false)
+                            Debug.WriteLine($"Inference mode");
+
+                        Debug.WriteLine($"Col  SDR: {Helpers.StringifyVector(lyrOut.ActivColumnIndicies)}");
+                        Debug.WriteLine($"Cell SDR: {Helpers.StringifyVector(actCells.Select(c => c.Index).ToArray())}");
+
+                        if (key == lastPredictedValue)
+                        {
+                            matches++;
+                            Debug.WriteLine($"Match. Actual value: {key} - Predicted value: {lastPredictedValue}");
+                        }
+                        else
+                            Debug.WriteLine($"Missmatch! Actual value: {key} - Predicted value: {lastPredictedValue}");
+
+                        if (lyrOut.PredictiveCells.Count > 0)
+                        {
+                            var predictedInputValue = cls.GetPredictedInputValue(lyrOut.PredictiveCells.ToArray());
+
+                            Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {predictedInputValue}");
+
+                            lastPredictedValue = predictedInputValue;
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"NO CELLS PREDICTED for next cycle.");
+                            lastPredictedValue = String.Empty;
+                        }
                     }
-                    else
-                    {
-                        actCells = lyrOut.WinnerCells;
-                    }
-
-                    cls.Learn(key, actCells.ToArray());
-
-                    if (learn == false)
-                        Debug.WriteLine($"Inference mode");
-
-                    Debug.WriteLine($"Col  SDR: {Helpers.StringifyVector(lyrOut.ActivColumnIndicies)}");
-                    Debug.WriteLine($"Cell SDR: {Helpers.StringifyVector(actCells.Select(c => c.Index).ToArray())}");
-
-                    if (key == lastPredictedValue)
-                    {
-                        matches++;
-                        Debug.WriteLine($"Match. Actual value: {key} - Predicted value: {lastPredictedValue}");
-                    }
-                    else
-                        Debug.WriteLine($"Missmatch! Actual value: {key} - Predicted value: {lastPredictedValue}");
-
-                    if (lyrOut.PredictiveCells.Count > 0)
-                    {
-                        var predictedInputValue = cls.GetPredictedInputValue(lyrOut.PredictiveCells.ToArray());
-
-                        Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {predictedInputValue}");
-
-                        lastPredictedValue = predictedInputValue;
-                    }
-                    else
-                    {
-                        Debug.WriteLine($"NO CELLS PREDICTED for next cycle.");
-                        lastPredictedValue = String.Empty;
-                    }
-
                 }
 
                 // The brain does not do that this way, so we don't use it.

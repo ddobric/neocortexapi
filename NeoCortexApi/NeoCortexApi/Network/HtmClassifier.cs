@@ -96,12 +96,7 @@ namespace NeoCortexApi.Network
             // bool x = false;
             double maxSameBits = 0;
             TIN predictedValue = default;
-            //int[] arr = new int[predictiveCells.Length];
-            //for (int i = 0; i < predictiveCells.Length; i++)
-            //{
-            //    arr[i] = predictiveCells[i].Index;
-            //}
-
+          
             if (predictiveCells.Length != 0)
             {
                 int indxOfMatchingInp = 0;
@@ -109,7 +104,7 @@ namespace NeoCortexApi.Network
                 int n = 0;
 
                 List<int> sortedMatches = new List<int>();
-                int indx = 0;
+               
                 var celIndicies = GetCellIndicies(predictiveCells);
 
                 Debug.WriteLine($"Predictive cells: {celIndicies.Length} \t {Helpers.StringifyVector(celIndicies)}");
@@ -136,7 +131,7 @@ namespace NeoCortexApi.Network
                     else
                         Debug.WriteLine($"<indx:{n}\tinp/len: {pair.Key}/{pair.Value.Length} = similarity {numOfSameBitsPct}\t {Helpers.StringifyVector(pair.Value)}");
 
-                    indx++;
+                    n++;
                 }
             }
 
