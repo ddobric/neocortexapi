@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using ImageBinarizer;
 using System.Drawing;
 using NeoCortex;
 using NeoCortexApi.Network;
