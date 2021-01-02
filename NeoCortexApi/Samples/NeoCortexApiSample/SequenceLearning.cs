@@ -109,7 +109,8 @@ namespace NeoCortexApiSample
                     // Ideal SP should never enter unstable state after stable state.
                     Debug.WriteLine($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
 
-                isInStableState = isStable;
+                // We are not learning in instable state.
+                learn = isInStableState = isStable;
 
                 //if (isStable && layer1.HtmModules.ContainsKey("tm") == false)
                 //    layer1.HtmModules.Add("tm", tm);
