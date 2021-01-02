@@ -68,6 +68,9 @@
   </ItemGroup>
 
   <ItemGroup>
+	  <ProjectReference Include="..\AkkaSb.Net\AkkaSb.Net.csproj" >
+      <PrivateAssets>all</PrivateAssets>
+    </ProjectReference>
 	  <ProjectReference Include="..\DistributedComputeLib\DistributedComputeLib.csproj">
 		  <PrivateAssets>all</PrivateAssets>
 	  </ProjectReference>

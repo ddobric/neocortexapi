@@ -1864,14 +1864,17 @@ namespace NeoCortexApi.Entities
 
             this.m_HtmConfig.Serialize(writer);
 
-            ser.SerializeValue(this.m_DistalSegments, writer);
+            // Moved to Cell
+            //ser.SerializeValue(this.m_DistalSegments, writer);
             ser.SerializeValue(this.m_DistalSynapses, writer);
             ser.SerializeValue(this.m_NextFlatIdx, writer);
             ser.SerializeValue(this.m_NextSegmentOrdinal, writer);
             ser.SerializeValue(this.m_NextSynapseOrdinal, writer);
             ser.SerializeValue(this.m_NumSynapses, writer);
             ser.SerializeValue(this.m_FreeFlatIdxs, writer);
-            ser.SerializeValue(this.m_SegmentForFlatIdx, writer);
+            
+            // TODO!!!
+            //ser.SerializeValue(this.m_SegmentForFlatIdx, writer);
 
             this.LastActivity.Serialize(writer);
 
