@@ -98,7 +98,7 @@ namespace NeoCortexApiSample
 
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
 
-            TemporalMemory tm = new TemporalMemory();
+            TemporalMemoryMT tm = new TemporalMemoryMT();
 
             HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, numInputs * 150, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
@@ -120,7 +120,7 @@ namespace NeoCortexApiSample
 
                 // Clear active and predictive cells.
                 //tm.Reset(mem);
-            }, numOfCyclesToWaitOnChange: 25);
+            }, numOfCyclesToWaitOnChange: 50);
 
 
             SpatialPoolerMT sp = new SpatialPoolerMT(hpa);
@@ -167,14 +167,14 @@ namespace NeoCortexApiSample
                 {
                     Debug.WriteLine($" -- {input} --");
 
-                    var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
+                    var lyrOut = layer1.Compute(input, learn) ;
 
-                    if (isInStableState)
-                        break;
+                   // if (isInStableState)
+                   //     break;
                 }
 
-                if (isInStableState)
-                    break;
+               // if (isInStableState)
+                //    break;
             }
 
             layer1.HtmModules.Add("tm", tm);
@@ -206,8 +206,11 @@ namespace NeoCortexApiSample
                         if (previousInputs.Count > (maxPrevInputs + 1))
                             previousInputs.RemoveAt(0);
 
-                        string key = GetKey(previousInputs, input);
+                        //if (previousInputs.Count < maxPrevInputs)
+                        //    continue;
 
+                        string key = GetKey(previousInputs, input);
+                       
                         List<Cell> actCells;
 
                         if (lyrOut.ActiveCells.Count == lyrOut.WinnerCells.Count)
