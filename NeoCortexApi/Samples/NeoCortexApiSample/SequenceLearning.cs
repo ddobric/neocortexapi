@@ -200,6 +200,7 @@ namespace NeoCortexApiSample
                     {
                         var activeColumns = layer1.GetResult("sp") as int[];
 
+                        //layer2.Compute(lyrOut.WinnerCells, true);
                         activeColumnsLst[input].Add(activeColumns.ToList());
 
                         previousInputs.Add(input.ToString());
