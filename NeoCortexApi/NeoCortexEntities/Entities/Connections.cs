@@ -929,7 +929,6 @@ namespace NeoCortexApi.Entities
                 int ordinal = m_NextSegmentOrdinal;
                 ++m_NextSegmentOrdinal;
 
-
                 DistalDendrite segment = new DistalDendrite(segmentParentCell, flatIdx, m_TMIteration, ordinal, this.HtmConfig.SynPermConnected, this.HtmConfig.NumInputs);
                 segmentParentCell.DistalDendrites.Add(segment);
                 //GetSegments(segmentParentCell, true).Add(segment);

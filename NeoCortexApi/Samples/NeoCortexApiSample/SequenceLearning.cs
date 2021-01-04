@@ -98,7 +98,7 @@ namespace NeoCortexApiSample
 
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
 
-            TemporalMemoryMT tm = new TemporalMemoryMT();
+            TemporalMemory tm = new TemporalMemory();
 
             HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, numInputs * 150, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
@@ -167,14 +167,14 @@ namespace NeoCortexApiSample
                 {
                     Debug.WriteLine($" -- {input} --");
 
-                    var lyrOut = layer1.Compute(input, learn) ;
+                    var lyrOut = layer1.Compute(input, learn);
 
-                   // if (isInStableState)
-                   //     break;
+                    if (isInStableState)
+                        break;
                 }
 
-               // if (isInStableState)
-                //    break;
+                if (isInStableState)
+                    break;
             }
 
             layer1.HtmModules.Add("tm", tm);
@@ -206,11 +206,16 @@ namespace NeoCortexApiSample
                         if (previousInputs.Count > (maxPrevInputs + 1))
                             previousInputs.RemoveAt(0);
 
-                        //if (previousInputs.Count < maxPrevInputs)
-                        //    continue;
+                        // In the pretrained SP with HPC, the TM will quickly learn cells for patterns
+                        // In that case the starting sequence 4-5-6 might have the sam SDR as 1-2-3-4-5-6,
+                        // Which will result in returning of 4-5-6 instead of 1-2-3-4-5-6.
+                        // HtmClassifier allways return the first matching sequence. Because 4-5-6 will be as first
+                        // memorized, it will match as the first one.
+                        if (previousInputs.Count < maxPrevInputs)
+                            continue;
 
                         string key = GetKey(previousInputs, input);
-                       
+
                         List<Cell> actCells;
 
                         if (lyrOut.ActiveCells.Count == lyrOut.WinnerCells.Count)

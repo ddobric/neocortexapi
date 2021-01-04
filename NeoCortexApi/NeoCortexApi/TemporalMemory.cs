@@ -256,8 +256,9 @@ namespace NeoCortexApi
             var activeSegments = new List<DistalDendrite>();
             foreach (var item in activity.ActiveSynapses)
             {
-                if (item.Value >= conn.HtmConfig.ActivationThreshold)
-                    activeSegments.Add(conn.GetSegmentForFlatIdx(item.Key));
+                var seg = conn.GetSegmentForFlatIdx(item.Key);
+                if(seg != null && item.Value >= conn.HtmConfig.ActivationThreshold)
+                    activeSegments.Add(seg);
             }
 
             //
@@ -265,8 +266,9 @@ namespace NeoCortexApi
             var matchingSegments = new List<DistalDendrite>();
             foreach (var item in activity.PotentialSynapses)
             {
-                if (item.Value >= conn.HtmConfig.MinThreshold)
-                    matchingSegments.Add(conn.GetSegmentForFlatIdx(item.Key));
+                var seg = conn.GetSegmentForFlatIdx(item.Key);
+                if (seg != null && item.Value >= conn.HtmConfig.MinThreshold)
+                    matchingSegments.Add(seg);
             }
 
             //
