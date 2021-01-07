@@ -166,7 +166,7 @@ namespace UnitTestsProject
         [DataRow(30)]
         [DataRow(40)]
         [DataRow(50)]
-        [TestCategory("Prod")]
+       // [TestCategory("Prod")]
         public void TestHeatmapCreation(int threshold)
         {
             List<double[,]> bostArrays = new List<double[,]>();

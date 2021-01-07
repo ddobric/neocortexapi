@@ -18,11 +18,11 @@ namespace NeoCortexApi
     public class HtmSerializer2
     {
         //SP
-        const string valueDelimiter = " ";
+        const char valueDelimiter = ' ';
 
-        const string typeDelimiter = " ";
+        const char typeDelimiter = ' ';
 
-        const string parameterDelimiter = "|";
+        const char parameterDelimiter = '|';
 
         /// <summary>
         /// Serializes the begin marker of the type.
@@ -40,7 +40,14 @@ namespace NeoCortexApi
             sw.WriteLine();
             
         }
+        public String ReadBegin(StreamReader sr)
+        {
+            string val = sr.ReadLine();
+            val += sr.ReadLine();
+            val += sr.ReadLine();
+            return val;
 
+        }
         /// <summary>
         /// Serialize the end marker of the type.
         /// </summary>
@@ -53,6 +60,14 @@ namespace NeoCortexApi
             sw.WriteLine();
         }
 
+        public String ReadEnd(StreamReader sr)
+        {
+            string val = sr.ReadLine();
+            val += sr.ReadLine();
+            val += sr.ReadLine();
+            return val;
+
+        }
         /// <summary>
         /// Serialize the property of type Double.
         /// </summary>
@@ -62,6 +77,17 @@ namespace NeoCortexApi
             sw.Write(string.Format(CultureInfo.InvariantCulture, "{0:0.00}", val));
             sw.Write(valueDelimiter);
             sw.Write(parameterDelimiter);
+        }
+
+        
+        /// <summary>
+        /// Deserialize the property of type Double.
+        /// </summary>
+        public Double ReadDoubleValue(StreamReader sr)
+        {
+            string value = sr.ReadLine();
+            Double val = Convert.ToDouble(value);
+            return val;
         }
         
         /// <summary>
@@ -74,7 +100,8 @@ namespace NeoCortexApi
             sw.Write(valueDelimiter);
             sw.Write(parameterDelimiter);
         }
-        
+
+
         /// <summary>
         /// Serialize the property of type Int.
         /// </summary>
@@ -84,6 +111,19 @@ namespace NeoCortexApi
             sw.Write(val.ToString());
             sw.Write(valueDelimiter);
             sw.Write(parameterDelimiter);
+        }
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <returns></returns>
+        public int ReadIntValue(String reader)
+        {
+            reader = reader.Trim();
+            int val = Convert.ToInt16(reader);
+            return val;
+            
         }
         /// <summary>
         /// Serialize the property of type long.
@@ -287,25 +327,8 @@ namespace NeoCortexApi
             }
             sw.Write(parameterDelimiter);
         }
-        /// <summary>
-        /// TODO
-        /// </summary>
-        /// <param name="reader"></param>
-        /// <returns></returns>
-        public int ReadIntValue(StreamReader reader)
-        {
-            throw new NotImplementedException();
-        }
-        /// <summary>
-        /// Deserialize the property of type Double.
-        /// </summary>
-        public Double ReadDoubleValue(StreamReader sr)
-        {
-            Double val = 0.0;
-            string value = sr.ReadToEnd();
-            val = Convert.ToDouble(value);
-            return val;
-        }
+        
+        
         /// <summary>
         /// Deserialize the property of type String.
         /// </summary>

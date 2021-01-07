@@ -298,16 +298,39 @@ namespace UnitTestsProject
 
             using (StreamWriter sw = new StreamWriter("ser.txt"))
             {
+                var sp1 = new SpatialPooler();
                 HtmSerializer2 ser = new HtmSerializer2();
                 ser.SerializeBegin("UnitTest", sw);
                 Dictionary<string, int[]> myDictionary = new Dictionary<string, int[]>();
-                myDictionary.Add("Sunday",new int[] { 1, 2, 3, 6});
+                myDictionary.Add("Sunday", new int[] { 1, 2, 3, 6 });
                 myDictionary.Add("Monday", new int[] { 2, 4, 5 });
-                ser.SerializeValue(myDictionary,sw);
+                ser.SerializeValue(myDictionary, sw);
                 ser.SerializeEnd("UnitTest", sw);
             }
 
         }
+        [TestMethod]
+        [TestCategory("Serialization")]
+        public void SerializeCell()
+        {
+          
+            HtmSerializer2 ser = new HtmSerializer2();
+            Cell cell = new Cell();
+            Cell cell1;
+            using (StreamWriter sw = new StreamWriter("ser.txt"))
+            {
+                cell.Serialize(sw);
+            }
+            using (StreamReader sr = new StreamReader("ser.txt"))
+
+            {
+                cell1 =  Cell.Deserialize(sr);
+            }
+
+            Assert.IsTrue(cell1.Equals(cell));
+
+        }
+
         private static Parameters GetDefaultParams()
         {
             ThreadSafeRandom rnd = new ThreadSafeRandom(42);
@@ -333,6 +356,7 @@ namespace UnitTestsProject
 
             return parameters;
         }
+        
         [TestMethod]
         [TestCategory("LongRunning")]
         public void SerializationTest1()
