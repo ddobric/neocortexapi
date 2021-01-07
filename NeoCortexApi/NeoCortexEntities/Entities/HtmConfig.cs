@@ -402,6 +402,10 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.synPermActiveInc, writer);
             ser.SerializeValue(this.SynPermConnected, writer);
 
+
+
+
+
             //Spatial Pooler Variables
             ser.SerializeValue(this.InhibitionRadius, writer);
             ser.SerializeValue(this.NumInputs, writer);

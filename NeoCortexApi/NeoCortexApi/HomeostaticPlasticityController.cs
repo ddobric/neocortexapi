@@ -407,7 +407,7 @@ namespace NeoCortexApi
             ser.SerializeBegin(nameof(HomeostaticPlasticityController), writer);
 
             ser.SerializeValue(this.m_MaxPreviousElements, writer);
-            // HtmMemory is not serialized here. It is assumed to be serialized in the SP;
+            // m_HtmMemory is not serialized here. It is assumed to be serialized in the SP;
             ser.SerializeValue(this.m_Cycle, writer);
             ser.SerializeValue(this.m_MinCycles, writer);
             ser.SerializeValue(this.m_RequiredNumOfStableCycles, writer);
@@ -425,10 +425,10 @@ namespace NeoCortexApi
             HomeostaticPlasticityController ctrl = new HomeostaticPlasticityController();
 
             HtmSerializer2 ser = new HtmSerializer2();
-            ctrl.m_MaxPreviousElements = ser.ReadIntValue(reader);
-            ctrl.m_MinCycles = ser.ReadIntValue(reader);
-            ctrl.m_RequiredNumOfStableCycles = ser.ReadIntValue(reader);
-            //...
+            //ctrl.m_MaxPreviousElements = ser.ReadIntValue(reader);
+            //ctrl.m_MinCycles = ser.ReadIntValue(reader);
+            //ctrl.m_RequiredNumOfStableCycles = ser.ReadIntValue(reader);
+            ////...
 
             return ctrl;
 

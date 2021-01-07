@@ -142,7 +142,7 @@ namespace NeoCortexApi.Entities
             ser.SerializeBegin(nameof(HtmConfig), writer);
 
             ser.SerializeValue(this.SegmentIndex, writer);
-            ser.SerializeValue(this.boxedIndex, writer);
+            this.boxedIndex.Serialize(writer);
             ser.SerializeValue(this.Synapses, writer);
             ser.SerializeValue(this.SynapsePermConnected, writer);
             ser.SerializeValue(this.NumInputs, writer);
