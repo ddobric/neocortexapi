@@ -17,7 +17,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Index of the cell.
         /// </summary>
-        public int Index { get; set; } = 2;
+        public int Index { get; set; }
         public int CellId { get; }
 
         //public List<DistalDendrite> Segments
