@@ -31,22 +31,22 @@ namespace NeoCortexApi.Entities
         /// if the number of active synapses (permanence higher than connectedPermanence) on that segment is higher than activationThreshold value.
         /// A Cell is by default in predictive state (depolarized state) if it owns the active dendrite segment.
         /// </summary>
-        private IList<Cell> m_PredictiveCells = new List<Cell>();
+        private List<Cell> m_PredictiveCells = new List<Cell>();
 
         /// <summary>
         /// Gets the list of active cells.
         /// </summary>
-        public IList<Cell> ActiveCells { get; set; } = new List<Cell>();
+        public List<Cell> ActiveCells { get; set; } = new List<Cell>();
 
         /// <summary>
         /// Gets the list of winner cells.
         /// </summary>
-        public IList<Cell> WinnerCells { get; set; } = new List<Cell>();
+        public List<Cell> WinnerCells { get; set; } = new List<Cell>();
 
         /// <summary>
         /// Synapses that create connections to currentlly active cells owners of active segments.
         /// </summary>
-        public IList<Synapse> ActiveSynapses { get; set; } = new List<Synapse>();
+        public List<Synapse> ActiveSynapses { get; set; } = new List<Synapse>();
 
 
         public int[] ActivColumnIndicies{ get; set; }

@@ -163,7 +163,7 @@ namespace UnitTestsProject.SequenceLearningExperiments
 
             p.apply(mem);
 
-            bool isInStableState;
+            bool isInStableState = false;
 
             //HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
             HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
@@ -246,14 +246,25 @@ namespace UnitTestsProject.SequenceLearningExperiments
 
                     string key = GetKey(previousInputs, input);
 
-                    //cls.Learn(GetKey(prevInput, input), lyrOut.ActiveCells.ToArray());
-                    cls.Learn(key, lyrOut.ActiveCells.ToArray());
+
+                    List<Cell> actCells;
+
+                    if (lyrOut.ActiveCells.Count == lyrOut.WinnerCells.Count)
+                    {
+                        actCells = lyrOut.ActiveCells;
+                    }
+                    else
+                    {
+                        actCells = lyrOut.WinnerCells;
+                    }
+
+                    cls.Learn(key, actCells.ToArray());
 
                     if (learn == false)
                         Debug.WriteLine($"Inference mode");
 
                     Debug.WriteLine($"Col  SDR: {Helpers.StringifyVector(lyrOut.ActivColumnIndicies)}");
-                    Debug.WriteLine($"Cell SDR: {Helpers.StringifyVector(lyrOut.ActiveCells.Select(c => c.Index).ToArray())}");
+                    Debug.WriteLine($"Cell SDR: {Helpers.StringifyVector(actCells.Select(c => c.Index).ToArray())}");
 
                     if (key == lastPredictedValue)
                     {

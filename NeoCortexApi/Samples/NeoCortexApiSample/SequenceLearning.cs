@@ -52,7 +52,7 @@ namespace NeoCortexApiSample
                 // Used by punishing of segments.
                 PredictedSegmentDecrement = 0.1
             };
-          
+
             double max = 20;
 
             Dictionary<string, object> settings = new Dictionary<string, object>()
@@ -90,15 +90,17 @@ namespace NeoCortexApiSample
 
             var mem = new Connections(cfg);
 
-            bool isInStableState;
+            bool isInStableState = false;
 
             HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
 
             var numInputs = inputValues.Distinct<double>().ToList().Count;
 
+            CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
+
             TemporalMemory tm = new TemporalMemory();
 
-            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, numInputs * 55, (isStable, numPatterns, actColAvg, seenInputs) =>
+            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, numInputs * 150, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                 if (isStable)
                     // Event should be fired when entering the stable state.
@@ -107,26 +109,26 @@ namespace NeoCortexApiSample
                     // Ideal SP should never enter unstable state after stable state.
                     Debug.WriteLine($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
 
-                isInStableState = true;
+                // We are not learning in instable state.
+                learn = isInStableState = isStable;
+
+                //if (isStable && layer1.HtmModules.ContainsKey("tm") == false)
+                //    layer1.HtmModules.Add("tm", tm);
 
                 // Clear all learned patterns in the classifier.
                 cls.ClearState();
 
                 // Clear active and predictive cells.
-                tm.Reset(mem);
-
-            }, numOfCyclesToWaitOnChange: 25);
+                //tm.Reset(mem);
+            }, numOfCyclesToWaitOnChange: 50);
 
 
             SpatialPoolerMT sp = new SpatialPoolerMT(hpa);
             sp.Init(mem);
             tm.Init(mem);
 
-            CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
-
             layer1.HtmModules.Add("encoder", encoder);
             layer1.HtmModules.Add("sp", sp);
-            layer1.HtmModules.Add("tm", tm);
 
             double[] inputs = inputValues.ToArray();
             int[] prevActiveCols = new int[0];
@@ -144,13 +146,41 @@ namespace NeoCortexApiSample
                     activeColumnsLst.Add(input, new List<List<int>>());
             }
 
-            int maxCycles = 100;// 3500;
+            int maxCycles = 3500;
             int maxPrevInputs = inputValues.Count - 1;
             List<string> previousInputs = new List<string>();
             previousInputs.Add("-1.0");
 
             //
-            // Now training with SP+TM. SP is pretrained on the given input pattern.
+            // Training SP to get stable. New-born stage.
+            //
+
+            for (int i = 0; i < maxCycles; i++)
+            {
+                matches = 0;
+
+                cycle++;
+
+                Debug.WriteLine($"-------------- Newborn Cycle {cycle} ---------------");
+
+                foreach (var input in inputs)
+                {
+                    Debug.WriteLine($" -- {input} --");
+
+                    var lyrOut = layer1.Compute(input, learn);
+
+                    if (isInStableState)
+                        break;
+                }
+
+                if (isInStableState)
+                    break;
+            }
+
+            layer1.HtmModules.Add("tm", tm);
+
+            //
+            // Now training with SP+TM. SP is pretrained on the given input pattern set.
             for (int i = 0; i < maxCycles; i++)
             {
                 matches = 0;
@@ -165,47 +195,69 @@ namespace NeoCortexApiSample
 
                     var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
 
-                    var activeColumns = layer1.GetResult("sp") as int[];
-
-                    activeColumnsLst[input].Add(activeColumns.ToList());
-
-                    previousInputs.Add(input.ToString());
-                    if (previousInputs.Count > (maxPrevInputs + 1))
-                        previousInputs.RemoveAt(0);
-
-                    string key = GetKey(previousInputs, input);
-
-                    //cls.Learn(GetKey(prevInput, input), lyrOut.ActiveCells.ToArray());
-                    cls.Learn(key, lyrOut.ActiveCells.ToArray());
-
-                    if (learn == false)
-                        Debug.WriteLine($"Inference mode");
-
-                    Debug.WriteLine($"Col  SDR: {Helpers.StringifyVector(lyrOut.ActivColumnIndicies)}");
-                    Debug.WriteLine($"Cell SDR: {Helpers.StringifyVector(lyrOut.ActiveCells.Select(c => c.Index).ToArray())}");
-
-                    if (key == lastPredictedValue)
+                    // lyrOut is null when the TM is added to the layer inside of HPC callback by entering of the stable state.
+                    if (isInStableState && lyrOut != null)
                     {
-                        matches++;
-                        Debug.WriteLine($"Match. Actual value: {key} - Predicted value: {lastPredictedValue}");
+                        var activeColumns = layer1.GetResult("sp") as int[];
+
+                        //layer2.Compute(lyrOut.WinnerCells, true);
+                        activeColumnsLst[input].Add(activeColumns.ToList());
+
+                        previousInputs.Add(input.ToString());
+                        if (previousInputs.Count > (maxPrevInputs + 1))
+                            previousInputs.RemoveAt(0);
+
+                        // In the pretrained SP with HPC, the TM will quickly learn cells for patterns
+                        // In that case the starting sequence 4-5-6 might have the sam SDR as 1-2-3-4-5-6,
+                        // Which will result in returning of 4-5-6 instead of 1-2-3-4-5-6.
+                        // HtmClassifier allways return the first matching sequence. Because 4-5-6 will be as first
+                        // memorized, it will match as the first one.
+                        if (previousInputs.Count < maxPrevInputs)
+                            continue;
+
+                        string key = GetKey(previousInputs, input);
+
+                        List<Cell> actCells;
+
+                        if (lyrOut.ActiveCells.Count == lyrOut.WinnerCells.Count)
+                        {
+                            actCells = lyrOut.ActiveCells;
+                        }
+                        else
+                        {
+                            actCells = lyrOut.WinnerCells;
+                        }
+
+                        cls.Learn(key, actCells.ToArray());
+
+                        if (learn == false)
+                            Debug.WriteLine($"Inference mode");
+
+                        Debug.WriteLine($"Col  SDR: {Helpers.StringifyVector(lyrOut.ActivColumnIndicies)}");
+                        Debug.WriteLine($"Cell SDR: {Helpers.StringifyVector(actCells.Select(c => c.Index).ToArray())}");
+
+                        if (key == lastPredictedValue)
+                        {
+                            matches++;
+                            Debug.WriteLine($"Match. Actual value: {key} - Predicted value: {lastPredictedValue}");
+                        }
+                        else
+                            Debug.WriteLine($"Missmatch! Actual value: {key} - Predicted value: {lastPredictedValue}");
+
+                        if (lyrOut.PredictiveCells.Count > 0)
+                        {
+                            var predictedInputValue = cls.GetPredictedInputValue(lyrOut.PredictiveCells.ToArray());
+
+                            Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {predictedInputValue}");
+
+                            lastPredictedValue = predictedInputValue;
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"NO CELLS PREDICTED for next cycle.");
+                            lastPredictedValue = String.Empty;
+                        }
                     }
-                    else
-                        Debug.WriteLine($"Missmatch! Actual value: {key} - Predicted value: {lastPredictedValue}");
-
-                    if (lyrOut.PredictiveCells.Count > 0)
-                    {
-                        var predictedInputValue = cls.GetPredictedInputValue(lyrOut.PredictiveCells.ToArray());
-
-                        Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {predictedInputValue}");
-
-                        lastPredictedValue = predictedInputValue;
-                    }
-                    else
-                    {
-                        Debug.WriteLine($"NO CELLS PREDICTED for next cycle.");
-                        lastPredictedValue = String.Empty;
-                    }
-
                 }
 
                 // The brain does not do that this way, so we don't use it.
