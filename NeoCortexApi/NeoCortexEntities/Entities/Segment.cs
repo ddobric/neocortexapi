@@ -12,9 +12,9 @@ namespace NeoCortexApi.Entities
     /// <summary>
     /// Base class for different types of segments. It which handles the creation of synapses (<seealso cref="Synapse"/>) on behalf of inheriting class types.
     /// </summary>
-   
+
     public abstract class Segment : IEquatable<Segment>
-    {       
+    {
         public int SegmentIndex { get; set; }
 
         public Integer boxedIndex { get; set; }
@@ -32,6 +32,13 @@ namespace NeoCortexApi.Entities
         public int NumInputs { get; set; }
 
         /// <summary>
+        /// Default constructor used by deserializer.
+        /// </summary>
+        protected Segment()
+        {
+        }
+
+        /// <summary>
         /// Creates the proximal dentrite segment with specified index.
         /// </summary>
         /// <param name="synapsePermConnected">Permanence threshold value to declare synapse as connected.</param>
@@ -45,7 +52,7 @@ namespace NeoCortexApi.Entities
             this.SegmentIndex = index;
             this.boxedIndex = new Integer(index);
         }
-    
+
 
         ///// <summary>
         ///// Returns the index of proximal dentrite.
@@ -99,7 +106,7 @@ namespace NeoCortexApi.Entities
             return synapse;
         }
 
-       
+
         /// <summary>
         /// Hashcode calculation.
         /// </summary>

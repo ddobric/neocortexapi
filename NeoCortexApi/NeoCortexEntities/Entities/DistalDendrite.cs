@@ -38,6 +38,15 @@ namespace NeoCortexApi.Entities
         public int Ordinal { get => m_Ordinal; set => m_Ordinal = value; }
 
         /// <summary>
+        /// Default constructor used by deserializer.
+        /// </summary>
+        protected DistalDendrite() 
+        { 
+        
+        }
+
+
+        /// <summary>
         /// Creates the Distal Segment.
         /// </summary>
         /// <param name="parentCell">The cell, which owns the segment.</param>
@@ -53,9 +62,7 @@ namespace NeoCortexApi.Entities
         {
             this.ParentCell = parentCell;
             this.m_Ordinal = ordinal;
-            this.m_LastUsedIteration = lastUsedIteration;
-
-            
+            this.m_LastUsedIteration = lastUsedIteration;            
         }
 
        
@@ -172,16 +179,17 @@ namespace NeoCortexApi.Entities
 
             ser.SerializeEnd(nameof(HtmConfig), writer);
         }
+
+
+        public static DistalDendrite Deserialize(StreamReader sr)
+        {
+            DistalDendrite distal = new DistalDendrite();
+
+            return distal;
+        }
+
         #endregion
 
-        //#region  Deserialization
-        //public static DistalDendrite Deserialize(StreamReader sr)
-        //{
-        //    //DistalDendrite distal = new DistalDendrite();
-
-        //    //return distal;
-        //}
-        //#endregion
     }
 }
 
