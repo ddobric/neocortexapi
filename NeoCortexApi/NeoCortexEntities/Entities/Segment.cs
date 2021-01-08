@@ -134,8 +134,9 @@ namespace NeoCortexApi.Entities
         {
             return $"Seg: {this.SegmentIndex}";
         }
+
         #region Serialization
-        public void Serialize(StreamWriter writer)
+        public virtual void Serialize(StreamWriter writer)
         {
             HtmSerializer2 ser = new HtmSerializer2();
 

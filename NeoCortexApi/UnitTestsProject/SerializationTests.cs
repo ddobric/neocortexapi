@@ -331,6 +331,28 @@ namespace UnitTestsProject
 
         }
 
+        [TestMethod]
+        [TestCategory("Serialization")]
+        public void SerializeInteger()
+        {
+
+            HtmSerializer2 ser = new HtmSerializer2();
+            Integer inte = new Integer();
+            Integer inte1;
+            using (StreamWriter sw = new StreamWriter("ser.txt"))
+            {
+                inte.Serialize(sw);
+            }
+            using (StreamReader sr = new StreamReader("ser.txt"))
+
+            {
+                inte1 = Integer.Deserialize(sr);
+            }
+
+            Assert.IsTrue(inte1.Equals(inte));
+
+        }
+
         private static Parameters GetDefaultParams()
         {
             ThreadSafeRandom rnd = new ThreadSafeRandom(42);
