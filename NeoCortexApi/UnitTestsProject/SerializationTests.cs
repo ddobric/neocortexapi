@@ -309,11 +309,13 @@ namespace UnitTestsProject
             }
 
         }
+
+
         [TestMethod]
         [TestCategory("Serialization")]
         public void SerializeCell()
         {
-          
+
             HtmSerializer2 ser = new HtmSerializer2();
             Cell cell = new Cell();
             Cell cell1;
@@ -324,33 +326,65 @@ namespace UnitTestsProject
             using (StreamReader sr = new StreamReader("ser.txt"))
 
             {
-                cell1 =  Cell.Deserialize(sr);
+                cell1 = Cell.Deserialize(sr);
             }
 
             Assert.IsTrue(cell1.Equals(cell));
 
         }
 
+
+        /// <summary>
+        /// Test empty integer value.
+        /// </summary>
         [TestMethod]
         [TestCategory("Serialization")]
-        public void SerializeInteger()
-        {
+        [ExpectedException(typeof(FormatException))]
 
-            HtmSerializer2 ser = new HtmSerializer2();
+        public void SerializeEmptyInteger()
+        {
             Integer inte = new Integer();
-            Integer inte1;
-            using (StreamWriter sw = new StreamWriter("ser.txt"))
+
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeEmptyInteger)}.txt"))
             {
                 inte.Serialize(sw);
             }
-            using (StreamReader sr = new StreamReader("ser.txt"))
 
+            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeEmptyInteger)}.txt"))
             {
-                inte1 = Integer.Deserialize(sr);
+                Integer inte1 = Integer.Deserialize(sr);
+
+                Assert.IsTrue(inte1.Equals(inte));
+            }
+        }
+
+        /// <summary>
+        /// Test empty integer value.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Serialization")]
+        [DataRow(0)]
+        [DataRow(1)]
+        [DataRow(1000)]
+        [DataRow(-1200010)]
+        [DataRow(int.MaxValue)]
+        [DataRow(-int.MaxValue)]
+
+        public void SerializeInteger(int val)
+        {
+            Integer inte = new Integer(val);
+
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeInteger)}.txt"))
+            {
+                inte.Serialize(sw);
             }
 
-            Assert.IsTrue(inte1.Equals(inte));
+            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeInteger)}.txt"))
+            {
+                Integer inte1 = Integer.Deserialize(sr);
 
+                Assert.IsTrue(inte1.Equals(inte));
+            }
         }
 
         private static Parameters GetDefaultParams()
@@ -378,7 +412,7 @@ namespace UnitTestsProject
 
             return parameters;
         }
-        
+
         [TestMethod]
         [TestCategory("LongRunning")]
         public void SerializationTest1()
@@ -403,7 +437,7 @@ namespace UnitTestsProject
                 sp1.Serialize(sw);
             }
         }
-            private void DrawBitmaps(EncoderBase encoder, double input, int[] activeArrayIndxes, int columnTopology)
+        private void DrawBitmaps(EncoderBase encoder, double input, int[] activeArrayIndxes, int columnTopology)
         {
             var inputVector = encoder.Encode(input);
 
