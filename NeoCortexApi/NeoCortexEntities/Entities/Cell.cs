@@ -159,29 +159,29 @@ namespace NeoCortexApi.Entities
             Cell cell = new Cell();
 
             HtmSerializer2 ser = new HtmSerializer2();
-            string str = sr.ReadToEnd();
-            string[] vs = str.Split('\n');
+            string data = sr.ReadToEnd();
+            string[] str = data.Split('\n');
 
-            foreach (string i in vs)
+            foreach (string i in str)
             {
                 if( i == "" || i == "  BEGIN 'Cell'  " || i == "  END 'Cell'  ")
                 { continue; }
                 else
                 {
                     string[] istr = i.Split('|');
-                    int ij;
-                    for (ij = 0; ij < istr.Length; ij++)
+                    int j;
+                    for (j = 0; j < istr.Length; j++)
                     {
-                        switch (ij)
+                        switch (j)
                         {
                             case 0:
                                 {
-                                    cell.Index = ser.ReadIntValue(istr[ij]);
+                                    cell.Index = ser.ReadIntValue(istr[j]);
                                     break;
                                 }
                             case 1:
                                 {
-                                    cell.ParentColumnIndex = ser.ReadIntValue(istr[ij]);
+                                    cell.ParentColumnIndex = ser.ReadIntValue(istr[j]);
                                     break;
                                 }
                             default:
