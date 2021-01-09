@@ -61,9 +61,7 @@ namespace NeoCortexApi.Entities
             ser.SerializeBegin(nameof(Integer), writer);
 
             ser.SerializeValue(this.Value,writer);
-            //ser.SerializeValue(Integer.MaxValue, writer);
-            //ser.SerializeValue(Integer.MinValue, writer);
-
+            
             ser.SerializeEnd(nameof(Integer), writer);
         }
         #endregion
@@ -74,24 +72,22 @@ namespace NeoCortexApi.Entities
             Integer inte = new Integer();
 
             HtmSerializer2 ser = new HtmSerializer2();
-            string data = sr.ReadToEnd();
-            string[] str = data.Split('\n');
 
-            foreach (string i in str)
+            while (sr.Peek() >= 0)
             {
-                if (i == "" || i == "  BEGIN 'Integer'  " || i == "  END 'Integer'  ")
-                { continue; }
+                string data = sr.ReadLine();
+                if (data == HtmSerializer2.LineDelimiter || data == ser.ReadBegin(nameof(Integer), sr) || data == ser.ReadEnd(nameof(Integer), sr))
+                { }
                 else
                 {
-                    string[] istr = i.Split('|');
-                    int j;
-                    for (j = 0; j < istr.Length; j++)
+                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                    for (int i = 0; i < str.Length; i++)
                     {
-                        switch (j)
+                        switch (i)
                         {
                             case 0:
                                 {
-                                    inte.Value = ser.ReadIntValue(istr[j]);
+                                    inte.Value = ser.ReadIntValue(str[i]);
                                     break;
                                 }
                             default:
@@ -101,6 +97,36 @@ namespace NeoCortexApi.Entities
                     }
                 }
             }
+          
+
+            
+            //string data = sr.ReadToEnd();
+            //string[] str = data.Split('\n');
+
+            //foreach (string i in str)
+            //{
+            //    if (i == "" || i == "  BEGIN 'Integer'  " || i == "  END 'Integer'  ")
+            //    { continue; }
+            //    else
+            //    {
+            //        string[] istr = i.Split('|');
+            //        int j;
+            //        for (j = 0; j < istr.Length; j++)
+            //        {
+            //            switch (j)
+            //            {
+            //                case 0:
+            //                    {
+            //                        inte.Value = ser.ReadIntValue(istr[j]);
+            //                        break;
+            //                    }
+            //                default:
+            //                    { break; }
+
+            //            }
+            //        }
+            //    }
+            //}
 
             return inte;
             

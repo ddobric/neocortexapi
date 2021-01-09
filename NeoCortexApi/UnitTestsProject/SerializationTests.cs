@@ -369,6 +369,7 @@ namespace UnitTestsProject
         [DataRow(-1200010)]
         [DataRow(int.MaxValue)]
         [DataRow(-int.MaxValue)]
+        
 
         public void SerializeInteger(int val)
         {

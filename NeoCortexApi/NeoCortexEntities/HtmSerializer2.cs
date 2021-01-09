@@ -18,13 +18,13 @@ namespace NeoCortexApi.Entities
     public class HtmSerializer2
     {
         //SP
-        const char ValueDelimiter = ' ';
+        public const char ValueDelimiter = ' ';
 
-        const char TypeDelimiter = ' ';
+        public const char TypeDelimiter = ' ';
 
-        const char ParameterDelimiter = '|';
+        public const char ParameterDelimiter = '|';
 
-        const string LineDelimiter = "\r\n";
+        public const string LineDelimiter = "";
 
         /// <summary>
         /// Serializes the begin marker of the type.
@@ -42,11 +42,9 @@ namespace NeoCortexApi.Entities
             sw.WriteLine();
             
         }
-        public String ReadBegin(StreamReader sr)
+        public String ReadBegin(String typeName, StreamReader sr)
         {
-            string val = sr.ReadLine();
-            val += sr.ReadLine();
-            val += sr.ReadLine();
+            string val = ($"{TypeDelimiter} BEGIN '{typeName}' {TypeDelimiter}");
             return val;
 
         }
@@ -62,11 +60,9 @@ namespace NeoCortexApi.Entities
             sw.WriteLine();
         }
 
-        public String ReadEnd(StreamReader sr)
+        public String ReadEnd(String typeName, StreamReader sr)
         {
-            string val = sr.ReadLine();
-            val += sr.ReadLine();
-            val += sr.ReadLine();
+            string val = ($"{TypeDelimiter} END '{typeName}' {TypeDelimiter}");
             return val;
 
         }
@@ -123,7 +119,7 @@ namespace NeoCortexApi.Entities
         public int ReadIntValue(String reader)
         {
             reader = reader.Trim();
-            int val = Convert.ToInt16(reader);
+            int val = Convert.ToInt32(reader);
             return val;
             
         }

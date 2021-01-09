@@ -159,9 +159,8 @@ namespace NeoCortexApi.Entities
             ser.SerializeBegin(nameof(Cell), writer);
 
             ser.SerializeValue(this.Index, writer);
-            //ser.SerializeValue(this.CellId, writer);
+            ser.SerializeValue(this.CellId, writer);
             ser.SerializeValue(this.ParentColumnIndex, writer);
-            //ser.SerializeValue(this.m_Hashcode, writer);
 
             ser.SerializeEnd(nameof(Cell), writer);
         }
@@ -171,6 +170,7 @@ namespace NeoCortexApi.Entities
             Cell cell = new Cell();
 
             HtmSerializer2 ser = new HtmSerializer2();
+            
             string data = sr.ReadToEnd();
             string[] str = data.Split('\n');
 
