@@ -109,7 +109,8 @@ namespace NeoCortexApiSample
                     // Ideal SP should never enter unstable state after stable state.
                     Debug.WriteLine($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
 
-                isInStableState = isStable;
+                // We are not learning in instable state.
+                learn = isInStableState = isStable;
 
                 //if (isStable && layer1.HtmModules.ContainsKey("tm") == false)
                 //    layer1.HtmModules.Add("tm", tm);
@@ -119,7 +120,7 @@ namespace NeoCortexApiSample
 
                 // Clear active and predictive cells.
                 //tm.Reset(mem);
-            }, numOfCyclesToWaitOnChange: 25);
+            }, numOfCyclesToWaitOnChange: 50);
 
 
             SpatialPoolerMT sp = new SpatialPoolerMT(hpa);
@@ -166,7 +167,7 @@ namespace NeoCortexApiSample
                 {
                     Debug.WriteLine($" -- {input} --");
 
-                    var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
+                    var lyrOut = layer1.Compute(input, learn);
 
                     if (isInStableState)
                         break;
@@ -199,11 +200,20 @@ namespace NeoCortexApiSample
                     {
                         var activeColumns = layer1.GetResult("sp") as int[];
 
+                        //layer2.Compute(lyrOut.WinnerCells, true);
                         activeColumnsLst[input].Add(activeColumns.ToList());
 
                         previousInputs.Add(input.ToString());
                         if (previousInputs.Count > (maxPrevInputs + 1))
                             previousInputs.RemoveAt(0);
+
+                        // In the pretrained SP with HPC, the TM will quickly learn cells for patterns
+                        // In that case the starting sequence 4-5-6 might have the sam SDR as 1-2-3-4-5-6,
+                        // Which will result in returning of 4-5-6 instead of 1-2-3-4-5-6.
+                        // HtmClassifier allways return the first matching sequence. Because 4-5-6 will be as first
+                        // memorized, it will match as the first one.
+                        if (previousInputs.Count < maxPrevInputs)
+                            continue;
 
                         string key = GetKey(previousInputs, input);
 

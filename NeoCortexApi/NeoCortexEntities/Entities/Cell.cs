@@ -159,11 +159,52 @@ namespace NeoCortexApi.Entities
             ser.SerializeBegin(nameof(Cell), writer);
 
             ser.SerializeValue(this.Index, writer);
-            ser.SerializeValue(this.CellId, writer);
+            //ser.SerializeValue(this.CellId, writer);
             ser.SerializeValue(this.ParentColumnIndex, writer);
-            ser.SerializeValue(this.m_Hashcode, writer);
+            //ser.SerializeValue(this.m_Hashcode, writer);
 
             ser.SerializeEnd(nameof(Cell), writer);
+        }
+
+        public static Cell Deserialize(StreamReader sr)
+        {
+            Cell cell = new Cell();
+
+            HtmSerializer2 ser = new HtmSerializer2();
+            string data = sr.ReadToEnd();
+            string[] str = data.Split('\n');
+
+            foreach (string i in str)
+            {
+                if( i == "" || i == "  BEGIN 'Cell'  " || i == "  END 'Cell'  ")
+                { continue; }
+                else
+                {
+                    string[] istr = i.Split('|');
+                    int j;
+                    for (j = 0; j < istr.Length; j++)
+                    {
+                        switch (j)
+                        {
+                            case 0:
+                                {
+                                    cell.Index = ser.ReadIntValue(istr[j]);
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    cell.ParentColumnIndex = ser.ReadIntValue(istr[j]);
+                                    break;
+                                }
+                            default:
+                                { break; }
+                        }
+                    }
+                }
+            }
+
+            return cell;
+
         }
         #endregion
     }

@@ -929,7 +929,6 @@ namespace NeoCortexApi.Entities
                 int ordinal = m_NextSegmentOrdinal;
                 ++m_NextSegmentOrdinal;
 
-
                 DistalDendrite segment = new DistalDendrite(segmentParentCell, flatIdx, m_TMIteration, ordinal, this.HtmConfig.SynPermConnected, this.HtmConfig.NumInputs);
                 segmentParentCell.DistalDendrites.Add(segment);
                 //GetSegments(segmentParentCell, true).Add(segment);
@@ -1857,14 +1856,19 @@ namespace NeoCortexApi.Entities
 
             this.connectedCounts2.Serialize(writer);
 
+
+
             ser.SerializeValue(this.Cells, writer);
             ser.SerializeValue(this.m_BoostFactors, writer);
+
+
+
             ser.SerializeValue(this.m_ActiveSegments, writer);
             ser.SerializeValue(this.m_MatchingSegments, writer);
 
             this.m_HtmConfig.Serialize(writer);
 
-            // Moved to Cell
+
             //ser.SerializeValue(this.m_DistalSegments, writer);
             ser.SerializeValue(this.m_DistalSynapses, writer);
             ser.SerializeValue(this.m_NextFlatIdx, writer);

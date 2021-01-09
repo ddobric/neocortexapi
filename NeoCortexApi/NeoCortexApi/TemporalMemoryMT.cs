@@ -73,6 +73,7 @@ namespace NeoCortexApi
 
                 activeColumnData.Set(tuple);
 
+
                 if (activeColumnData.IsExistAnyActiveCol(cIndexofACTIVE_COLUMNS))
                 {
                     // If there are some active segments on the column already...
