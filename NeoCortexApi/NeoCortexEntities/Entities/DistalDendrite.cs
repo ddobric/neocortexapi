@@ -53,12 +53,8 @@ namespace NeoCortexApi.Entities
         {
             this.ParentCell = parentCell;
             this.m_Ordinal = ordinal;
-            this.m_LastUsedIteration = lastUsedIteration;
-
-            
+            this.m_LastUsedIteration = lastUsedIteration;                       
         }
-
-       
 
 
         /// <summary>
@@ -78,21 +74,21 @@ namespace NeoCortexApi.Entities
         /// <param name="c"></param>
         /// <param name="activeCells"></param>
         /// <returns></returns>
-        public ISet<Synapse> GetActiveSynapses(Connections c, ISet<Cell> activeCells)
-        {
-            ISet<Synapse> activeSynapses = new LinkedHashSet<Synapse>();
+        //public ISet<Synapse> GetActiveSynapses(Connections c, ISet<Cell> activeCells)
+        //{
+        //    ISet<Synapse> activeSynapses = new LinkedHashSet<Synapse>();
 
-            //DD foreach (var synapse in c.GetSynapses(this))
-            foreach (var synapse in this.Synapses)
-            {
-                if (activeCells.Contains(synapse.getPresynapticCell()))
-                {
-                    activeSynapses.Add(synapse);
-                }
-            }
+        //    //DD foreach (var synapse in c.GetSynapses(this))
+        //    foreach (var synapse in this.Synapses)
+        //    {
+        //        if (activeCells.Contains(synapse.getPresynapticCell()))
+        //        {
+        //            activeSynapses.Add(synapse);
+        //        }
+        //    }
 
-            return activeSynapses;
-        }
+        //    return activeSynapses;
+        //}
 
            
         /// <summary>
