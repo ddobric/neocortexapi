@@ -310,26 +310,51 @@ namespace UnitTestsProject
 
         }
 
+        /// <summary>
+        /// Test empty Cell.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Serialization")]
+        public void SerializeEmptyCell()
+        {
 
+            Cell cell = new Cell();
+           
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeEmptyCell)}.txt"))
+            {
+                cell.Serialize(sw);
+            }
+            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeEmptyCell)}.txt"))
+
+            {
+                Cell cell1 = Cell.Deserialize(sr);
+
+                Assert.IsTrue(cell1.Equals(cell));
+            }
+
+        }
+
+        /// <summary>
+        /// Test Cell.
+        /// </summary>
         [TestMethod]
         [TestCategory("Serialization")]
         public void SerializeCell()
         {
 
-            HtmSerializer2 ser = new HtmSerializer2();
             Cell cell = new Cell();
-            Cell cell1;
-            using (StreamWriter sw = new StreamWriter("ser.txt"))
+            
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeEmptyCell)}.txt"))
             {
                 cell.Serialize(sw);
             }
-            using (StreamReader sr = new StreamReader("ser.txt"))
+            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeEmptyCell)}.txt"))
 
             {
-                cell1 = Cell.Deserialize(sr);
-            }
+                Cell cell1 = Cell.Deserialize(sr);
 
-            Assert.IsTrue(cell1.Equals(cell));
+                Assert.IsTrue(cell1.Equals(cell));
+            }
 
         }
 
@@ -339,7 +364,7 @@ namespace UnitTestsProject
         /// </summary>
         [TestMethod]
         [TestCategory("Serialization")]
-        [ExpectedException(typeof(FormatException))]
+        //[ExpectedException(typeof(FormatException))]
 
         public void SerializeEmptyInteger()
         {

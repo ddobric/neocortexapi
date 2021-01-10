@@ -170,34 +170,37 @@ namespace NeoCortexApi.Entities
             Cell cell = new Cell();
 
             HtmSerializer2 ser = new HtmSerializer2();
-            
-            string data = sr.ReadToEnd();
-            string[] str = data.Split('\n');
 
-            foreach (string i in str)
+            while (sr.Peek() >= 0)
             {
-                if( i == "" || i == "  BEGIN 'Cell'  " || i == "  END 'Cell'  ")
-                { continue; }
+                string data = sr.ReadLine();
+                if (data == ser.LineDelimiter || data == ser.ReadBegin(nameof(Cell), sr) || data == ser.ReadEnd(nameof(Cell), sr))
+                { }
                 else
                 {
-                    string[] istr = i.Split('|');
-                    int j;
-                    for (j = 0; j < istr.Length; j++)
+                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                    for (int i = 0; i < str.Length; i++)
                     {
-                        switch (j)
+                        switch (i)
                         {
                             case 0:
                                 {
-                                    cell.Index = ser.ReadIntValue(istr[j]);
+                                    cell.Index = ser.ReadIntValue(str[i]);
                                     break;
                                 }
                             case 1:
                                 {
-                                    cell.ParentColumnIndex = ser.ReadIntValue(istr[j]);
+                                    cell.CellId = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    cell.ParentColumnIndex = ser.ReadIntValue(str[i]);
                                     break;
                                 }
                             default:
                                 { break; }
+
                         }
                     }
                 }

@@ -76,7 +76,7 @@ namespace NeoCortexApi.Entities
             while (sr.Peek() >= 0)
             {
                 string data = sr.ReadLine();
-                if (data == HtmSerializer2.LineDelimiter || data == ser.ReadBegin(nameof(Integer), sr) || data == ser.ReadEnd(nameof(Integer), sr))
+                if (data == ser.LineDelimiter || data == ser.ReadBegin(nameof(Integer), sr) || data == ser.ReadEnd(nameof(Integer), sr))
                 { }
                 else
                 {
@@ -97,36 +97,6 @@ namespace NeoCortexApi.Entities
                     }
                 }
             }
-          
-
-            
-            //string data = sr.ReadToEnd();
-            //string[] str = data.Split('\n');
-
-            //foreach (string i in str)
-            //{
-            //    if (i == "" || i == "  BEGIN 'Integer'  " || i == "  END 'Integer'  ")
-            //    { continue; }
-            //    else
-            //    {
-            //        string[] istr = i.Split('|');
-            //        int j;
-            //        for (j = 0; j < istr.Length; j++)
-            //        {
-            //            switch (j)
-            //            {
-            //                case 0:
-            //                    {
-            //                        inte.Value = ser.ReadIntValue(istr[j]);
-            //                        break;
-            //                    }
-            //                default:
-            //                    { break; }
-
-            //            }
-            //        }
-            //    }
-            //}
 
             return inte;
             

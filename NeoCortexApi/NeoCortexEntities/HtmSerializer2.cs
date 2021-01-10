@@ -24,7 +24,7 @@ namespace NeoCortexApi.Entities
 
         public const char ParameterDelimiter = '|';
 
-        public const string LineDelimiter = "";
+        public string LineDelimiter = "";
 
         /// <summary>
         /// Serializes the begin marker of the type.
