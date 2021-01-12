@@ -72,7 +72,7 @@ namespace NeoCortexApi
             this.connections.Cells = cells;
         }
 
-        StreamWriter tmperf1 = new StreamWriter("tm-perf-1024-25cells.p.csv");
+        //StreamWriter tmperf1 = new StreamWriter("tm-perf-1024-25cells.p.csv");
 
         /// <summary>
         /// Performs the whole calculation of Temporal memory algorithm.
@@ -102,9 +102,9 @@ namespace NeoCortexApi
 
             sw.Stop();
 
-            tmperf1.WriteLine($"{sec1}, {sw.ElapsedMilliseconds}, {sec1 + sw.ElapsedMilliseconds}");
+            //tmperf1.WriteLine($"{sec1}, {sw.ElapsedMilliseconds}, {sec1 + sw.ElapsedMilliseconds}");
 
-            tmperf1.Flush();
+            //tmperf1.Flush();
 
             return cycle;
         }
