@@ -95,8 +95,8 @@ namespace NeoCortexApi.Utility
         /// Calculates how many elements of the array are same in percents. This method is useful to compare 
         /// two arays that contains indicies of active columns.
         /// </summary>
-        /// <param name="originArray">Indexes</param>
-        /// <param name="comparingArray">Indexes</param>
+        /// <param name="originArray">Indexes of non-zero bits in the SDR.</param>
+        /// <param name="comparingArray">Indexes of non-zero bits in the SDR.</param>
         /// <returns>Similarity between arrays 0.0-1.0</returns>
         public static double CalcArraySimilarity(int[] originArray, int[] comparingArray)
         {

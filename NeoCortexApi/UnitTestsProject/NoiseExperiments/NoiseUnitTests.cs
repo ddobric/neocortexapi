@@ -196,6 +196,7 @@ namespace UnitTestsProject.NoiseExperiments
                     else
                         noisedInput = inputVector;
 
+                    // TODO: Try CalcArraySimilarity
                     var d = MathHelpers.GetHammingDistance(inputVector, noisedInput, true);
                     Debug.WriteLine($"Input with noise {j} - HamDist: {d}");
                     Debug.WriteLine($"Original: {Helpers.StringifyVector(inputVector)}");
