@@ -441,8 +441,7 @@ namespace UnitTestsProject
             foreach (var keyPairs in sdrs)
             {
                 Debug.WriteLine(keyPairs.Key);
-                var indexes = ArrayUtils.IndexWhere(keyPairs.Value, (el) => el == 1);
-                Debug.WriteLine($"{Helpers.StringifyVector(indexes)}\n");
+                Debug.WriteLine($"{Helpers.StringifyVector(keyPairs.Value)}\n");
             }
 
             var keyArray = sdrs.Keys.ToArray();
