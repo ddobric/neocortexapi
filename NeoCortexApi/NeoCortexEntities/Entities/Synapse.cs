@@ -297,17 +297,23 @@ namespace NeoCortexApi.Entities
         {
             HtmSerializer2 ser = new HtmSerializer2();
 
-            ser.SerializeBegin(nameof(HtmConfig), writer);
+            ser.SerializeBegin(nameof(Synapse), writer);
 
-            this.SourceCell.Serialize(writer);
+            if (this.SourceCell != null)
+            {
+                this.SourceCell.Serialize(writer);
+            }
             ser.SerializeValue(this.SegmentIndex, writer);
             ser.SerializeValue(this.SynapseIndex, writer);
-            this.BoxedIndex.Serialize(writer);
+            if (this.BoxedIndex != null)
+            {
+                this.BoxedIndex.Serialize(writer);
+            }
             ser.SerializeValue(this.InputIndex, writer);
             ser.SerializeValue(this.Permanence, writer);
             ser.SerializeValue(this.IsDestroyed, writer);
 
-            ser.SerializeEnd(nameof(HtmConfig), writer);
+            ser.SerializeEnd(nameof(Synapse), writer);
         }
         #endregion
     }

@@ -36,6 +36,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         protected Segment()
         {
+
         }
 
         /// <summary>
@@ -147,7 +148,7 @@ namespace NeoCortexApi.Entities
         {
             HtmSerializer2 ser = new HtmSerializer2();
 
-            ser.SerializeBegin(nameof(HtmConfig), writer);
+            ser.SerializeBegin(nameof(Segment), writer);
 
             ser.SerializeValue(this.SegmentIndex, writer);
             this.boxedIndex.Serialize(writer);
@@ -155,8 +156,10 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.SynapsePermConnected, writer);
             ser.SerializeValue(this.NumInputs, writer);
 
-            ser.SerializeEnd(nameof(HtmConfig), writer);
+            ser.SerializeEnd(nameof(Segment), writer);
         }
+
+       
         #endregion
     }
 }

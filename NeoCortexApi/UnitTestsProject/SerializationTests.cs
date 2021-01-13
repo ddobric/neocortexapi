@@ -5,6 +5,7 @@ using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Network;
 using NeoCortexApi.Utility;
+using NeoCortexEntities.NeuroVisualizer;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -295,20 +296,91 @@ namespace UnitTestsProject
         [TestCategory("Serialization")]
         public void SerializeValueToFileTest()
         {
-
+            Dictionary<int, int> myDictionary = new Dictionary<int, int>();
+            Dictionary<int, int> myDictionar = new Dictionary<int, int>();
+            
             using (StreamWriter sw = new StreamWriter("ser.txt"))
             {
-                var sp1 = new SpatialPooler();
+
                 HtmSerializer2 ser = new HtmSerializer2();
                 ser.SerializeBegin("UnitTest", sw);
-                Dictionary<string, int[]> myDictionary = new Dictionary<string, int[]>();
-                myDictionary.Add("Sunday", new int[] { 1, 2, 3, 6 });
-                myDictionary.Add("Monday", new int[] { 2, 4, 5 });
+               
+                myDictionary.Add(5, 5);
+                myDictionary.Add(2, 3);
+                myDictionary.Add(7, 3);
+                myDictionary.Add(3, 3);
                 ser.SerializeValue(myDictionary, sw);
                 ser.SerializeEnd("UnitTest", sw);
             }
+            using (StreamReader sr = new StreamReader("ser.txt"))
+            {
+                
+
+                HtmSerializer2 htm = new HtmSerializer2();
+
+                while (sr.Peek() >= 0)
+                {
+                    string data = sr.ReadLine();
+                    if (data == htm.LineDelimiter || data == htm.ReadBegin("UnitTest", sr) || data == htm.ReadEnd("UnitTest", sr))
+                    { }
+                    else
+                    {
+                        string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                        for (int i = 0; i < str.Length; i++)
+                        {
+                            switch (i)
+                            {
+                                case 0:
+                                    {
+                                        myDictionar = htm.ReadDictionaryValue(str[i]);
+
+                                        break;
+                                    }
+                                default:
+                                    { break; }
+
+                            }
+                        }
+                    }
+                }
+            
+
+
+
+                
+
+            }
+            Assert.IsTrue(myDictionar.SequenceEqual(myDictionary));
+           
 
         }
+        
+        /// <summary>
+        /// Test empty SegmentActivity.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Serialization")]
+        public void SerializeEmptySegmentActivity()
+        {
+
+            SegmentActivity segment = new SegmentActivity();
+
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeEmptySegmentActivity)}.txt"))
+            {
+                segment.Serialize(sw);
+            }
+            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeEmptySegmentActivity)}.txt"))
+
+            {
+                SegmentActivity segment1 = SegmentActivity.Deserialize(sr);
+
+                Assert.IsTrue(segment1.Equals(segment));
+            }
+
+        }
+
+       
+
 
         /// <summary>
         /// Test empty Cell.
@@ -319,7 +391,7 @@ namespace UnitTestsProject
         {
 
             Cell cell = new Cell();
-           
+
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeEmptyCell)}.txt"))
             {
                 cell.Serialize(sw);
@@ -334,31 +406,7 @@ namespace UnitTestsProject
 
         }
 
-        /// <summary>
-        /// Test Cell.
-        /// </summary>
-        [TestMethod]
-        [TestCategory("Serialization")]
-        public void SerializeCell()
-        {
-
-            Cell cell = new Cell();
-            
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeEmptyCell)}.txt"))
-            {
-                cell.Serialize(sw);
-            }
-            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeEmptyCell)}.txt"))
-
-            {
-                Cell cell1 = Cell.Deserialize(sr);
-
-                Assert.IsTrue(cell1.Equals(cell));
-            }
-
-        }
-
-
+        
         /// <summary>
         /// Test empty integer value.
         /// </summary>
@@ -384,7 +432,7 @@ namespace UnitTestsProject
         }
 
         /// <summary>
-        /// Test empty integer value.
+        /// Test integer value.
         /// </summary>
         [TestMethod]
         [TestCategory("Serialization")]
@@ -412,6 +460,8 @@ namespace UnitTestsProject
                 Assert.IsTrue(inte1.Equals(inte));
             }
         }
+
+        
 
         private static Parameters GetDefaultParams()
         {

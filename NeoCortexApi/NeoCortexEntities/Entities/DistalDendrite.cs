@@ -40,7 +40,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Default constructor used by deserializer.
         /// </summary>
-        protected DistalDendrite() 
+        public DistalDendrite() 
         { 
         
         }
@@ -171,21 +171,16 @@ namespace NeoCortexApi.Entities
 
             ser.SerializeBegin(nameof(HtmConfig), writer);
 
-            this.ParentCell.Serialize(writer);
+            if (this.ParentCell != null)
+            {
+                this.ParentCell.Serialize(writer);
+            }
             ser.SerializeValue(this.m_LastUsedIteration, writer);
             ser.SerializeValue(this.m_Ordinal, writer);
             ser.SerializeValue(this.LastUsedIteration, writer);
             ser.SerializeValue(this.Ordinal, writer);
 
             ser.SerializeEnd(nameof(HtmConfig), writer);
-        }
-
-
-        public static DistalDendrite Deserialize(StreamReader sr)
-        {
-            DistalDendrite distal = new DistalDendrite();
-
-            return distal;
         }
 
         #endregion

@@ -18,13 +18,17 @@ namespace NeoCortexApi.Entities
     public class HtmSerializer2
     {
         //SP
-        public const char ValueDelimiter = ' ';
+        public string ValueDelimiter = " ";
 
         public const char TypeDelimiter = ' ';
 
         public const char ParameterDelimiter = '|';
 
         public string LineDelimiter = "";
+
+        public string KeyValueDelimiter = ": ";
+
+        public string ElementsDelimiter = ", ";
 
         /// <summary>
         /// Serializes the begin marker of the type.
@@ -169,8 +173,8 @@ namespace NeoCortexApi.Entities
             sw.Write(ValueDelimiter);
             foreach (KeyValuePair<string, int> i in keyValues)
             {
-                sw.Write(i.Key + ": " + i.Value.ToString());
-                sw.Write(ValueDelimiter);
+                sw.Write(i.Key + KeyValueDelimiter + i.Value.ToString());
+                sw.Write(ElementsDelimiter);
             }
                 sw.Write(ParameterDelimiter);
         }
@@ -182,10 +186,32 @@ namespace NeoCortexApi.Entities
             sw.Write(ValueDelimiter);
             foreach (KeyValuePair<int, int> i in keyValues)
             {
-                sw.Write(i.Key.ToString() + ": " + i.Value.ToString());
-                sw.Write(ValueDelimiter);
+                sw.Write(i.Key.ToString() + KeyValueDelimiter + i.Value.ToString());
+                sw.Write(ElementsDelimiter);
             }
             sw.Write(ParameterDelimiter);
+        }
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <returns></returns>
+        public Dictionary<int,int> ReadDictionaryValue(string reader)
+        {
+            Dictionary<int, int> keyValues = new Dictionary<int, int>();
+            string[] str = reader.Split(", ");
+            foreach (string i in str)
+            {
+                if (i == LineDelimiter || i == ValueDelimiter)
+                { }
+                else
+                {
+                    string[] tokens = i.Split(": ");
+                    keyValues.Add(Convert.ToInt32(tokens[0].Trim()), Convert.ToInt32(tokens[1]));
+                }
+            }
+
+            return keyValues;
         }
         /// <summary>
         /// Serialize the dictionary with key:string and value:int[].
@@ -195,14 +221,14 @@ namespace NeoCortexApi.Entities
             sw.Write(ValueDelimiter);
             foreach (KeyValuePair<string, int[]> i in keyValues)
             {
-                sw.Write(i.Key + ": ");
+                sw.Write(i.Key + KeyValueDelimiter);
                 foreach (int val in i.Value)
                 {
                     sw.Write(val.ToString());
                     sw.Write(ValueDelimiter);
                 }
 
-                sw.Write(ValueDelimiter);
+                sw.Write(ElementsDelimiter);
             }
             sw.Write(ParameterDelimiter);
         }
@@ -292,14 +318,14 @@ namespace NeoCortexApi.Entities
             foreach (KeyValuePair<Segment, List<Synapse>> i in keyValues)
             {
                 i.Key.Serialize(sw);
-                sw.Write(": ");
+                sw.Write(KeyValueDelimiter);
                 foreach (Synapse val in i.Value)
                 {
                     val.Serialize(sw);
                     sw.Write(ValueDelimiter);
                 }
 
-                sw.Write(ValueDelimiter);
+                sw.Write(ElementsDelimiter);
             }
             sw.Write(ParameterDelimiter);
         }
@@ -314,14 +340,14 @@ namespace NeoCortexApi.Entities
             foreach (KeyValuePair<Cell, List<DistalDendrite>> i in keyValues)
             {
                 i.Key.Serialize(sw);
-                sw.Write(": ");
+                sw.Write(KeyValueDelimiter);
                 foreach (DistalDendrite val in i.Value)
                 {
                     val.Serialize(sw);
                     sw.Write(ValueDelimiter);
                 }
 
-                sw.Write(ValueDelimiter);
+                sw.Write(ElementsDelimiter);
             }
             sw.Write(ParameterDelimiter);
         }

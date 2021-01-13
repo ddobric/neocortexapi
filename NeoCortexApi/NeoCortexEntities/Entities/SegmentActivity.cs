@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace NeoCortexApi.Entities
@@ -36,6 +37,23 @@ namespace NeoCortexApi.Entities
 
         }
 
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <returns></returns>
+        public bool Equals(SegmentActivity obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+
+            if (ActiveSynapses.SequenceEqual(obj.ActiveSynapses) && PotentialSynapses.SequenceEqual(obj.PotentialSynapses))
+                return true;
+            else
+                return false;
+        }
+
         #region Serialization
         public void Serialize(StreamWriter writer)
         {
@@ -48,7 +66,47 @@ namespace NeoCortexApi.Entities
 
             ser.SerializeEnd(nameof(SegmentActivity), writer);
         }
-        #endregion
 
-    }
+        public static SegmentActivity Deserialize(StreamReader sr)
+        {
+            SegmentActivity segment = new SegmentActivity();
+
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            while (sr.Peek() >= 0)
+            {
+                string data = sr.ReadLine();
+                if (data == ser.LineDelimiter || data == ser.ReadBegin(nameof(SegmentActivity), sr) || data == ser.ReadEnd(nameof(SegmentActivity), sr))
+                { }
+                else
+                {
+                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                    for (int i = 0; i < str.Length; i++)
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                {
+                                   
+                                    segment.ActiveSynapses = ser.ReadDictionaryValue(str[i]);
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    segment.PotentialSynapses = ser.ReadDictionaryValue(str[i]);
+                                    break;
+                                }
+                            default:
+                                { break; }
+
+                        }
+                    }
+                }
+            }
+
+            return segment;
+        }
+            #endregion
+
+        }
 }

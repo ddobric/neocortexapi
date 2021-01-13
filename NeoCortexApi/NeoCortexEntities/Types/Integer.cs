@@ -64,9 +64,8 @@ namespace NeoCortexApi.Entities
             
             ser.SerializeEnd(nameof(Integer), writer);
         }
-        #endregion
 
-        #region Deserialization
+
         public static Integer Deserialize(StreamReader sr)
         {
             Integer inte = new Integer();
@@ -102,6 +101,6 @@ namespace NeoCortexApi.Entities
             
         }
 
-            #endregion
+        #endregion
         }
     }
