@@ -321,7 +321,7 @@ namespace UnitTestsProject
                 while (sr.Peek() >= 0)
                 {
                     string data = sr.ReadLine();
-                    if (data == htm.LineDelimiter || data == htm.ReadBegin("UnitTest", sr) || data == htm.ReadEnd("UnitTest", sr))
+                    if (data == htm.LineDelimiter || data == htm.ReadBegin("UnitTest") || data == htm.ReadEnd("UnitTest"))
                     { }
                     else
                     {
@@ -354,7 +354,30 @@ namespace UnitTestsProject
            
 
         }
-        
+        /// <summary>
+        /// Test empty SegmentActivity.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Serialization")]
+        public void SerializeEmptyDistalDendrite()
+        {
+
+            DistalDendrite distal = new DistalDendrite();
+
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeEmptyDistalDendrite)}.txt"))
+            {
+                distal.Serialize(sw);
+            }
+            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeEmptyDistalDendrite)}.txt"))
+
+            {
+                DistalDendrite distal1 = DistalDendrite.Deserialize(sr);
+
+                Assert.IsTrue(distal1.Equals(distal));
+            }
+
+
+        }
         /// <summary>
         /// Test empty SegmentActivity.
         /// </summary>
@@ -378,9 +401,6 @@ namespace UnitTestsProject
             }
 
         }
-
-       
-
 
         /// <summary>
         /// Test empty Cell.

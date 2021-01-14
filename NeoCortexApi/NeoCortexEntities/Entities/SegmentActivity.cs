@@ -76,7 +76,7 @@ namespace NeoCortexApi.Entities
             while (sr.Peek() >= 0)
             {
                 string data = sr.ReadLine();
-                if (data == ser.LineDelimiter || data == ser.ReadBegin(nameof(SegmentActivity), sr) || data == ser.ReadEnd(nameof(SegmentActivity), sr))
+                if (data == ser.LineDelimiter || data == ser.ReadBegin(nameof(SegmentActivity)) || data == ser.ReadEnd(nameof(SegmentActivity)))
                 { }
                 else
                 {

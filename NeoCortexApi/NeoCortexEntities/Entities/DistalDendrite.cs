@@ -21,8 +21,9 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// The cell that owns (parent) the segment.
         /// </summary>
-        public Cell ParentCell;
+        
 
+        public Cell ParentCell ; 
         private long m_LastUsedIteration;
 
         private int m_Ordinal = -1;
@@ -169,7 +170,7 @@ namespace NeoCortexApi.Entities
         {
             HtmSerializer2 ser = new HtmSerializer2();
 
-            ser.SerializeBegin(nameof(HtmConfig), writer);
+            ser.SerializeBegin(nameof(DistalDendrite), writer);
 
             if (this.ParentCell != null)
             {
@@ -180,10 +181,66 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.LastUsedIteration, writer);
             ser.SerializeValue(this.Ordinal, writer);
 
-            ser.SerializeEnd(nameof(HtmConfig), writer);
+            ser.SerializeEnd(nameof(DistalDendrite), writer);
         }
 
-        #endregion
+
+        public static DistalDendrite Deserialize(StreamReader sr)
+        {
+            DistalDendrite distal = new DistalDendrite();
+
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            while (sr.Peek() >= 0)
+            {
+                string data = sr.ReadLine();
+                if (data == ser.LineDelimiter || data == ser.ReadBegin(nameof(DistalDendrite)) || data == ser.ReadEnd(nameof(DistalDendrite)))
+                { }
+                else if (data == ser.ReadBegin(nameof(Cell)))
+                {
+                    distal.ParentCell = Cell.Deserialize(sr);
+                }
+
+                else
+                { 
+                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                    for (int i = 0; i < str.Length; i++)
+                    {
+                        switch (i)
+                        {
+                         
+                            case 0:
+                                {
+                                    distal.m_LastUsedIteration = ser.ReadLongValue(str[i]);
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    distal.m_Ordinal = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    distal.LastUsedIteration = ser.ReadLongValue(str[i]);
+                                    break;
+                                }
+                            case 3:
+                                {
+                                    distal.Ordinal = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            default:
+                                { break; }
+
+                        }
+                    }
+                }
+            }
+
+            return distal;
+
+        }
+            #endregion
 
     }
 }

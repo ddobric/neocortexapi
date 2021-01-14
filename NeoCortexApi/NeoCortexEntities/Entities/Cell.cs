@@ -174,10 +174,14 @@ namespace NeoCortexApi.Entities
             while (sr.Peek() >= 0)
             {
                 string data = sr.ReadLine();
-                if (data == ser.LineDelimiter || data == ser.ReadBegin(nameof(Cell), sr) || data == ser.ReadEnd(nameof(Cell), sr))
+                if (data == ser.LineDelimiter || data == ser.ReadBegin(nameof(Cell)))
                 { }
-                else
+                else if (data == ser.ReadEnd(nameof(Cell)))
                 {
+                    break;
+                }
+                else
+                { 
                     string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
                     for (int i = 0; i < str.Length; i++)
                     {
@@ -204,6 +208,7 @@ namespace NeoCortexApi.Entities
                         }
                     }
                 }
+
             }
 
             return cell;

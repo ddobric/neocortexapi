@@ -46,7 +46,7 @@ namespace NeoCortexApi.Entities
             sw.WriteLine();
             
         }
-        public String ReadBegin(String typeName, StreamReader sr)
+        public String ReadBegin(String typeName)
         {
             string val = ($"{TypeDelimiter} BEGIN '{typeName}' {TypeDelimiter}");
             return val;
@@ -64,7 +64,7 @@ namespace NeoCortexApi.Entities
             sw.WriteLine();
         }
 
-        public String ReadEnd(String typeName, StreamReader sr)
+        public String ReadEnd(String typeName)
         {
             string val = ($"{TypeDelimiter} END '{typeName}' {TypeDelimiter}");
             return val;
@@ -136,6 +136,18 @@ namespace NeoCortexApi.Entities
             sw.Write(val.ToString());
             sw.Write(ValueDelimiter);
             sw.Write(ParameterDelimiter);
+        }
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <returns></returns>
+        public long ReadLongValue(String reader)
+        {
+            reader = reader.Trim();
+            long val = Convert.ToInt64(reader);
+            return val;
+
         }
         /// <summary>
         /// Serialize the array of type Double.
