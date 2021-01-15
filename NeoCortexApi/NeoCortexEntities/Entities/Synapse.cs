@@ -292,6 +292,7 @@ namespace NeoCortexApi.Entities
             else
                 return 0;
         }
+
         #region Serialization
         public void Serialize(StreamWriter writer)
         {

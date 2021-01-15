@@ -429,28 +429,65 @@ namespace UnitTestsProject
 
 
         }
+
+        [TestMethod]
+        [TestCategory("Serialization")]
+        public void SerializeDictionaryTest()
+        {
+            //Proximal + Distal
+            //Dictionary<Segment, List<Synapse>> keyValues, StreamWriter sw
+        }
+
+        [TestMethod]
+        [TestCategory("Serialization")]
+        public void SerializeSegmentDictionaryTest()
+        {
+            //Proximal + Distal
+            //Dictionary<Segment, List<Synapse>> keyValues, StreamWriter sw
+        }
+
+
+        [TestMethod]
+        [TestCategory("Serialization")]
+        public void SerializeSegmentTest()
+        {
+            //TODO
+            Cell cell = new Cell(12, 14, 16, 18, new CellActivity());
+
+            Segment seg = new DistalDendrite(cell, 1, 2, 2, 1.0, 100);
+
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeSegmentTest)}.txt"))
+            {
+                seg.Serialize(sw);
+            }
+            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeSegmentTest)}.txt"))
+            {
+                //Segment segment1 = Segment.Deserialize(sr);
+
+               // Assert.IsTrue(segment1.Equals(seg));
+            }
+        }
+
         /// <summary>
         /// Test empty SegmentActivity.
         /// </summary>
         [TestMethod]
         [TestCategory("Serialization")]
-        public void SerializeEmptySegmentActivity()
+        public void SerializeSegmentActivityTest()
         {
-
             SegmentActivity segment = new SegmentActivity();
 
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeEmptySegmentActivity)}.txt"))
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeSegmentActivityTest)}.txt"))
             {
                 segment.Serialize(sw);
             }
-            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeEmptySegmentActivity)}.txt"))
+            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeSegmentActivityTest)}.txt"))
 
             {
                 SegmentActivity segment1 = SegmentActivity.Deserialize(sr);
 
                 Assert.IsTrue(segment1.Equals(segment));
             }
-
         }
 
         /// <summary>
@@ -461,16 +498,21 @@ namespace UnitTestsProject
         [DataRow(1,1,1,1)]
         [DataRow(1111, 22221, 11111, 2221)]
         [DataRow(1211212121, 2121212121, 212121211, 3232132131)]
-        public void SerializeEmptyCell(int parentIndx, int colSeq, int cellsPerCol, int cellId)
+        public void SerializeCellTest(int parentIndx, int colSeq, int cellsPerCol, int cellId)
         {
-            Cell cell = new Cell(parentIndx, colSeq, cellsPerCol, cellId, new CellActivity());     
+            Cell cell = new Cell(parentIndx, colSeq, cellsPerCol, cellId, new CellActivity());
 
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeEmptyCell)}.txt"))
+            cell.DistalDendrites = new List<DistalDendrite>();
+           
+            cell.DistalDendrites.Add(new DistalDendrite(cell, 1, 2, 2, 1.0, 100));
+            cell.DistalDendrites.Add(new DistalDendrite(cell, 44, 24, 34, 1.0, 100));
+
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeCellTest)}.txt"))
             {
                 cell.Serialize(sw);
             }
-
-            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeEmptyCell)}.txt"))
+            
+                using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeCellTest)}.txt"))
             {
                 Cell cell1 = Cell.Deserialize(sr);
 
@@ -519,7 +561,7 @@ namespace UnitTestsProject
         public void SerializeInteger(int val)
         {
             Integer inte = new Integer(val);
-
+            
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeInteger)}.txt"))
             {
                 inte.Serialize(sw);

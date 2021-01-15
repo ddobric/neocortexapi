@@ -146,18 +146,21 @@ namespace NeoCortexApi.Entities
         #region Serialization
         public virtual void Serialize(StreamWriter writer)
         {
-            HtmSerializer2 ser = new HtmSerializer2();
+            throw new NotImplementedException();
+            //HtmSerializer2 ser = new HtmSerializer2();
 
-            ser.SerializeBegin(nameof(Segment), writer);
+            //ser.SerializeBegin(nameof(Segment), writer);
 
-            ser.SerializeValue(this.SegmentIndex, writer);
-            this.boxedIndex.Serialize(writer);
-            ser.SerializeValue(this.Synapses, writer);
-            ser.SerializeValue(this.SynapsePermConnected, writer);
-            ser.SerializeValue(this.NumInputs, writer);
+            //ser.SerializeValue(this.SegmentIndex, writer);
+            //this.boxedIndex.Serialize(writer);
+            //ser.SerializeValue(this.Synapses, writer);
+            //ser.SerializeValue(this.SynapsePermConnected, writer);
+            //ser.SerializeValue(this.NumInputs, writer);
 
-            ser.SerializeEnd(nameof(Segment), writer);
+            //ser.SerializeEnd(nameof(Segment), writer);
         }
+
+     
 
        
         #endregion

@@ -20,10 +20,9 @@ namespace NeoCortexApi.Entities
     {
         /// <summary>
         /// The cell that owns (parent) the segment.
-        /// </summary>
-        
-
+        /// </summary>        
         public Cell ParentCell ; 
+
         private long m_LastUsedIteration;
 
         private int m_Ordinal = -1;
