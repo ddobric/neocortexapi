@@ -354,8 +354,59 @@ namespace UnitTestsProject
            
 
         }
+
         /// <summary>
-        /// Test empty SegmentActivity.
+        /// Test empty SpatialPooler.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Serialization")]
+        public void SerializeEmptySpatialPooler()
+        {
+
+            SpatialPooler spatial = new SpatialPooler();
+
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeEmptySpatialPooler)}.txt"))
+            {
+                spatial.Serialize(sw);
+            }
+            //using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeEmptySpatialPooler)}.txt"))
+
+            //{
+            //    SpatialPooler spatial1 = SpatialPooler.Deserialize(sr);
+
+            //    Assert.IsTrue(spatial1.Equals(spatial));
+            //}
+
+
+        }
+
+        /// <summary>
+        /// Test empty SpatialPooler.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Serialization")]
+        public void SerializeEmptyHomeostaticPlasticityController()
+        {
+
+            HomeostaticPlasticityController homeostatic = new HomeostaticPlasticityController();
+
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeEmptyHomeostaticPlasticityController)}.txt"))
+            {
+                homeostatic.Serialize(sw);
+            }
+            //using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeEmptyHomeostaticPlasticityController)}.txt"))
+
+            //{
+            //    SpatialPooler homeostatic1 = SpatialPooler.Deserialize(sr);
+
+            //    Assert.IsTrue(homeostatic1.Equals(homeostatic));
+            //}
+
+
+        }
+
+        /// <summary>
+        /// Test empty DistalDendrite.
         /// </summary>
         [TestMethod]
         [TestCategory("Serialization")]

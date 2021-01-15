@@ -305,6 +305,7 @@ namespace NeoCortexApi.Entities
             }
             ser.SerializeValue(this.SegmentIndex, writer);
             ser.SerializeValue(this.SynapseIndex, writer);
+
             if (this.BoxedIndex != null)
             {
                 this.BoxedIndex.Serialize(writer);
