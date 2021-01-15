@@ -460,21 +460,19 @@ namespace UnitTestsProject
         [TestCategory("Serialization")]
         public void SerializeEmptyCell()
         {
-
             Cell cell = new Cell();
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeEmptyCell)}.txt"))
             {
                 cell.Serialize(sw);
             }
-            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeEmptyCell)}.txt"))
 
+            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeEmptyCell)}.txt"))
             {
                 Cell cell1 = Cell.Deserialize(sr);
 
                 Assert.IsTrue(cell1.Equals(cell));
             }
-
         }
 
         

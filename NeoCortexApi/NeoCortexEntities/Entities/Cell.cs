@@ -174,8 +174,14 @@ namespace NeoCortexApi.Entities
             while (sr.Peek() >= 0)
             {
                 string data = sr.ReadLine();
+
+                if (data == String.Empty)
+                    continue;
+
                 if (data == ser.LineDelimiter || data == ser.ReadBegin(nameof(Cell)))
-                { }
+                { 
+                
+                }
                 else if (data == ser.ReadEnd(nameof(Cell)))
                 {
                     break;
@@ -208,7 +214,6 @@ namespace NeoCortexApi.Entities
                         }
                     }
                 }
-
             }
 
             return cell;
