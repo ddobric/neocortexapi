@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using NeoCortexApi.Entities;
@@ -118,13 +119,34 @@ namespace NeoCortexApi.Entities
         {
             if (this == obj)
                 return true;
+
             if (obj == null)
                 return false;
 
             if (Index != obj.Index)
                 return false;
             else
+            {
+                if (obj.ParentColumnIndex != this.ParentColumnIndex)
+                    return false;
+
+                if (obj.CellId != this.CellId)
+                    return false;
+
+                if (obj.DistalDendrites != null && this.DistalDendrites != null)
+                {
+                    if (!obj.DistalDendrites.SequenceEqual(this.DistalDendrites))
+                        return false;
+                }
+
+                if (obj.ReceptorSynapses != null && this.ReceptorSynapses != null)
+                {
+                    if (!obj.ReceptorSynapses.SequenceEqual(this.ReceptorSynapses))
+                        return false;
+                }
+
                 return true;
+            }
         }
 
         /// <summary>
@@ -151,7 +173,13 @@ namespace NeoCortexApi.Entities
             else
                 return 0;
         }
+
         #region Serialization
+
+        /// <summary>
+        /// Serializes the cell to the stream.
+        /// </summary>
+        /// <param name="writer"></param>
         public void Serialize(StreamWriter writer)
         {
             HtmSerializer2 ser = new HtmSerializer2();
@@ -165,6 +193,11 @@ namespace NeoCortexApi.Entities
             ser.SerializeEnd(nameof(Cell), writer);
         }
 
+        /// <summary>
+        /// DEserializes the cell from the stream.
+        /// </summary>
+        /// <param name="sr"></param>
+        /// <returns></returns>
         public static Cell Deserialize(StreamReader sr)
         {
             Cell cell = new Cell();
