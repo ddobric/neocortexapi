@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using AkkaSb.Net;
 using LearningFoundation.ImageBinarizer;
-using NeoCortexApi.DistributedCompute;
 using NeoCortexApi.Entities;
 using System;
 using System.Collections.Generic;
@@ -147,21 +146,21 @@ namespace NeoCortexApi
             }
         }
 
-        /// <summary>
-        /// Gets default sparse dictionary configuration.
-        /// </summary>
-        public static HtmSparseIntDictionaryConfig DefaultHtmSparseIntDictionaryConfig
-        {
-            get
-            {
-                return new HtmSparseIntDictionaryConfig()
-                {
-                    Nodes = DefaultNodeList,
-                    PartitionsPerNode = 200,
-                    ProcessingBatch = 10
-                };
-            }
-        }
+        ///// <summary>
+        ///// Gets default sparse dictionary configuration.
+        ///// </summary>
+        //public static HtmSparseIntDictionaryConfig DefaultHtmSparseIntDictionaryConfig
+        //{
+        //    get
+        //    {
+        //        return new HtmSparseIntDictionaryConfig()
+        //        {
+        //            Nodes = DefaultNodeList,
+        //            PartitionsPerNode = 200,
+        //            ProcessingBatch = 10
+        //        };
+        //    }
+        //}
 
         /// <summary>
         /// Gets default sparse dictionary configuration.

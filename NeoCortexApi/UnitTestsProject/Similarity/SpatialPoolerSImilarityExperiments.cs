@@ -19,7 +19,6 @@ using System.Linq;
 using NeuralNet.MLPerceptron;
 using Microsoft.ML;
 using Microsoft.ML.Data;
-using NeoCortexApi.DistributedCompute;
 using NeoCortexApi.Encoders;
 
 namespace UnitTestsProject

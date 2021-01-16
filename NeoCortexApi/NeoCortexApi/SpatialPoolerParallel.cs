@@ -9,7 +9,6 @@ using NeoCortexApi.Entities;
 using System.Linq;
 using System.Diagnostics;
 using NeoCortexApi.Utility;
-using NeoCortexApi.DistributedCompute;
 using NeoCortexApi.DistributedComputeLib;
 
 namespace NeoCortexApi

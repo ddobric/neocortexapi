@@ -78,7 +78,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
             for (int i = 0; i < this.ActorMap.Count; i++)
             {
-                string actorName = $"{nameof(DictNodeActor)}-{Guid.NewGuid()}-{this.ActorMap[i].NodeIndx}-{this.ActorMap[i].PartitionIndx}";
+                //string actorName = $"{nameof(DictNodeActor)}-{Guid.NewGuid()}-{this.ActorMap[i].NodeIndx}-{this.ActorMap[i].PartitionIndx}";
 
                 ActorReference actorRef1 = m_ActorSystem.CreateActor<HtmActor>(1);
 

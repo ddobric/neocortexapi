@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using Akka.Actor;
-using Akka.Configuration;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.DistributedComputeLib;
@@ -221,7 +220,7 @@ namespace UnitTestsProject
             return lastKnownGood;
         }
 
-        [TestMethod]
+     /*   [TestMethod]
         [TestCategory("AkkaHostRequired")]
         public void AkkClusterTest()
         {
@@ -279,7 +278,7 @@ namespace UnitTestsProject
                 Msg = "Echo"
             }, TimeSpan.FromSeconds(5)).Result;
         }
-
+     */
         [TestMethod]
         //[DataRow(PoolerMode.SingleThreaded)]
         [DataRow(PoolerMode.Multicore)]

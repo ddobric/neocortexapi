@@ -27,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="AkkaDictTests.cs" />
     <Compile Remove="EncoderTests\SensorTests.cs" />
   </ItemGroup>
 
@@ -3795,6 +3796,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="AkkaDictTests.cs" />
     <None Include="EncoderTests\SensorTests.cs" />
   </ItemGroup>
 
