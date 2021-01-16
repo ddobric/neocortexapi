@@ -88,5 +88,6 @@ and the second one
 5-7-6-9-3-4-3-4-3-4-0-1-0-2-3-4-5-6-5-4-3-7-1-9-12-11-12-13-14-11-12-14
 ~~~
 
-The current implementation of the classifier peeks the first best matching one, which is in more complex sequences not a sufficient solution.
+The current implementation of the classifier peeks the first best matching one, which is in more complex sequences not a sufficient solution. As you see, the '14' was correcttly predicted. But '14' after '13' is a different context than '14' after '12'.
+
 We are considering to improve the classifier to be able to detect more complex sequence.
