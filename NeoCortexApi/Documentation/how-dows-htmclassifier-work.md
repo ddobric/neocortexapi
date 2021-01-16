@@ -79,5 +79,14 @@ In the current cycle following SDR was observed:
 Cell SDR: 94, 11287, 12895, 13312, 13370, 24302, 24402, 24479, 24542, 24609, 24666, 24925, 25132, 25342, 25354, 25375, 25477, 25513, 25526, 25560,
 
 The classifier is traversing through all memorized SDRs and tries to match the best one. In this case, there are two SDRs with the 14 matching cells at index 21 and 24.
-The first one represents the sequence 11-12-14-5-7-6-9-3-4-3-4-3-4-0-1-0-2-3-4-5-6-5-4-3-7-1-9-12-11-12-13-14 and the second one 5-7-6-9-3-4-3-4-3-4-0-1-0-2-3-4-5-6-5-4-3-7-1-9-12-11-12-13-14-11-12-14. The current implementation of the classifier peeks the first best matching one, which is in more complex sequences not a sufficient solution.
+The first one represents the sequence 
+~~~
+11-12-14-5-7-6-9-3-4-3-4-3-4-0-1-0-2-3-4-5-6-5-4-3-7-1-9-12-11-12-13-14
+~~~ 
+and the second one 
+~~~
+5-7-6-9-3-4-3-4-3-4-0-1-0-2-3-4-5-6-5-4-3-7-1-9-12-11-12-13-14-11-12-14
+~~~
+
+The current implementation of the classifier peeks the first best matching one, which is in more complex sequences not a sufficient solution.
 We are considering to improve the classifier to be able to detect more complex sequence.
