@@ -58,6 +58,8 @@ namespace NeoCortexApi.Entities
             
         }
 
+       
+
 
         /// <summary>
         /// Gets all synapses owned by this distal dentrite segment.
@@ -156,7 +158,7 @@ namespace NeoCortexApi.Entities
         }
 
         #region Serialization
-        public void Serialize(StreamWriter writer)
+        public override void Serialize(StreamWriter writer)
         {
             HtmSerializer2 ser = new HtmSerializer2();
 
@@ -171,6 +173,15 @@ namespace NeoCortexApi.Entities
             ser.SerializeEnd(nameof(HtmConfig), writer);
         }
         #endregion
+
+        //#region  Deserialization
+        //public static DistalDendrite Deserialize(StreamReader sr)
+        //{
+        //    //DistalDendrite distal = new DistalDendrite();
+
+        //    //return distal;
+        //}
+        //#endregion
     }
 }
 

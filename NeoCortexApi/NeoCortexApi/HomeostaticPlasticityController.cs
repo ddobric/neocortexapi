@@ -79,6 +79,14 @@ namespace NeoCortexApi
         
         }
 
+        /// <summary>
+        /// Creates the instance of HomeostaticPlasticityController.
+        /// </summary>
+        /// <param name="htmMemory">The HTM memory.</param>
+        /// <param name="minCycles">The minimum calls to the Learn method until HPC algorithm is activated. When this number is reached the HPC will disable boosting in SP. </param>
+        /// <param name="onStabilityStatusChanged">Action invoked when the SP status is changed from stable t unstable and vise versa.</param>
+        /// <param name="numOfCyclesToWaitOnChange">How many cycles all seen patterns must not change to declare SP as stable. Using smaller numbers might cause frequent status change.
+        /// Higher numbers ensure more stable SP, but it takes longer time to enter the stable stabe.</param>
         public HomeostaticPlasticityController(Connections htmMemory, int minCycles, Action<bool, int, double, int> onStabilityStatusChanged, int numOfCyclesToWaitOnChange = 50)
         {
             this.m_OnStabilityStatusChanged = onStabilityStatusChanged;
@@ -407,7 +415,7 @@ namespace NeoCortexApi
             ser.SerializeBegin(nameof(HomeostaticPlasticityController), writer);
 
             ser.SerializeValue(this.m_MaxPreviousElements, writer);
-            // HtmMemory is not serialized here. It is assumed to be serialized in the SP;
+            // m_HtmMemory is not serialized here. It is assumed to be serialized in the SP;
             ser.SerializeValue(this.m_Cycle, writer);
             ser.SerializeValue(this.m_MinCycles, writer);
             ser.SerializeValue(this.m_RequiredNumOfStableCycles, writer);
@@ -425,10 +433,10 @@ namespace NeoCortexApi
             HomeostaticPlasticityController ctrl = new HomeostaticPlasticityController();
 
             HtmSerializer2 ser = new HtmSerializer2();
-            ctrl.m_MaxPreviousElements = ser.ReadIntValue(reader);
-            ctrl.m_MinCycles = ser.ReadIntValue(reader);
-            ctrl.m_RequiredNumOfStableCycles = ser.ReadIntValue(reader);
-            //...
+            //ctrl.m_MaxPreviousElements = ser.ReadIntValue(reader);
+            //ctrl.m_MinCycles = ser.ReadIntValue(reader);
+            //ctrl.m_RequiredNumOfStableCycles = ser.ReadIntValue(reader);
+            ////...
 
             return ctrl;
 

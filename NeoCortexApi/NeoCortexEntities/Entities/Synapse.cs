@@ -302,7 +302,7 @@ namespace NeoCortexApi.Entities
             this.SourceCell.Serialize(writer);
             ser.SerializeValue(this.SegmentIndex, writer);
             ser.SerializeValue(this.SynapseIndex, writer);
-            ser.SerializeValue(this.BoxedIndex, writer);
+            this.BoxedIndex.Serialize(writer);
             ser.SerializeValue(this.InputIndex, writer);
             ser.SerializeValue(this.Permanence, writer);
             ser.SerializeValue(this.IsDestroyed, writer);
