@@ -70,9 +70,7 @@
   </ItemGroup>
 
   <ItemGroup>
-	  <ProjectReference Include="..\DistributedComputeLib\DistributedComputeLib.csproj">
-		  <PrivateAssets>all</PrivateAssets>
-	  </ProjectReference>
+	  <ProjectReference Include="..\DistributedComputeLib\DistributedComputeLib.csproj" />
 	  <ProjectReference Include="..\NeoCortexArrayLib\NeoCortexArrayLib.csproj">
 		  <PrivateAssets>all</PrivateAssets>
 	  </ProjectReference>

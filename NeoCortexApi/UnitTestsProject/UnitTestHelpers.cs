@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using LearningFoundation.ImageBinarizer;
 using Microsoft.Extensions.Logging;
 using NeoCortexApi;
 using NeoCortexApi.DistributedComputeLib;
@@ -7,6 +8,7 @@ using NeoCortexApi.Entities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 
 namespace UnitTestsProject
@@ -59,6 +61,27 @@ namespace UnitTestsProject
             };
         }
 
+
+        /// <summary>
+        /// Binarize image to binarizedImage.
+        /// </summary>
+        /// <param name="mnistImage"></param>
+        /// <param name="imageSize"></param>
+        /// <param name="testName"></param>
+        /// <returns></returns>
+        public static string BinarizeImage(string mnistImage, int imageSize, string testName)
+        {
+            string binaryImage;
+
+            Binarizer imageBinarizer = new Binarizer(200, 200, 200, imageSize, imageSize);
+            binaryImage = $"{testName}.txt";
+            if (File.Exists(binaryImage))
+                File.Delete(binaryImage);
+
+            imageBinarizer.CreateBinary(mnistImage, binaryImage);
+
+            return binaryImage;
+        }
 
         /// <summary>
         /// Creates appropriate instance of SpatialPooler.
