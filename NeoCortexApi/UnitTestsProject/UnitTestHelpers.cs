@@ -21,15 +21,20 @@ namespace UnitTestsProject
                 return GetDistributedDictionary(htmConfig);
         }
 
+        /// <summary>
+        /// Gest the logger instance.
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <returns></returns>
         public static ILogger GetLogger(string logger="UnitTest")
-        {
-            LoggerFactory factory = new LoggerFactory();
-
-            factory.AddConsole(LogLevel.Information);
-            factory.AddDebug(LogLevel.Information);
+        {         
+            ILoggerFactory factory = LoggerFactory.Create(logBuilder =>
+            {
+                logBuilder.AddDebug();
+                logBuilder.AddConsole();
+            });
 
             return factory.CreateLogger(logger);
-
         }
 
         public static DistributedMemory GetDistributedDictionary(HtmConfig htmConfig)
