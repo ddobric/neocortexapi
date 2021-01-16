@@ -205,7 +205,7 @@ https://github.com/numenta
 HTM Community:
 https://numenta.org/
 
-A deepe dive in HTM Temporal Memory algorithm:
+A deep dive in HTM Temporal Memory algorithm:
 https://numenta.com/assets/pdf/temporal-memory-algorithm/Temporal-Memory-Algorithm-Details.pdf
 
 Continious Online Sequence Learning with HTM:
