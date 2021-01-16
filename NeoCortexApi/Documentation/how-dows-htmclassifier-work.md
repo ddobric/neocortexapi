@@ -1,5 +1,28 @@
 ## HtmClassifier
-The HtmClassifier is a helper module that is used to hep precistion of the next elemnt in the process of learning sequences.
+The HtmClassifier is a helper module that is used to help the process of the next element in the process of learning sequences.
+The classifier provides two methods:
+
+Learn(string key, int[] sdr)
+
+String Predict(int[] predictiveCells)
+
+The method learn receives the key string, that represents the sequence and memorizes the SDR for the given key.
+Assume, we learn following sequence: 
+~~~
+1-2-3-4-5-3-5
+~~~
+
+In every cycle, the experiment creates the key that represents the sequence in that cycle. For example, the key might look like:
+
+Cycle 1: '1-2-3-4-5-3-5' , 
+Cycle 2: '2-3-4-5-3-5-1', 
+Cycle 3: '3-4-5-3-5-1-2', 
+etc..
+
+During the learning process, the input in every cycle is SDR of cells produced by Temporal Memory algorithm. Because the same SP output (column SDR) for some element (i.e.: ‘3’) will be represented in TM by a different set of cells inside of the same column set. SP generates always (if stable) the same set of active columns for the same element. However, TM does not generate the same set of active cells for the same element. The TM is trying to build the context of the element.
+That means ‘3’ followed by ‘2’ produces a different set of active cells than ‘3’ followed by ‘5’. This is why the classifier gets the key in the form shown above. However, developers are free to build a key some other way.
+
+The following shows the trace output of the learning process.
 
 ~~~
 Col  SDR: 3, 451, 515, 532, 534, 972, 976, 979, 981, 984, 986, 997, 1005, 1013, 1014, 1015, 1019, 1020, 1021, 1022, 
@@ -51,3 +74,10 @@ Cell SDR: 530, 855, 1063, 1153, 1213, 1228, 1339, 1988, 2318, 2925, 13843, 14037
 Missmatch! Actual value: 5-7-6-9-3-4-3-4-3-4-0-1-0-2-3-4-5-6-5-4-3-7-1-9-12-11-12-13-14-11-12-14 - Predicted value: 11-12-14-5-7-6-9-3-4-3-4-3-4-0-1-0-2-3-4-5-6-5-4-3-7-1-9-12-11-12-13-14
 ~~~
 
+How to read the trace? It is very simple. The trace shows the memorized SDRs with the matching score 'similarity'.
+In the current cycle following SDR was observed:
+Cell SDR: 94, 11287, 12895, 13312, 13370, 24302, 24402, 24479, 24542, 24609, 24666, 24925, 25132, 25342, 25354, 25375, 25477, 25513, 25526, 25560,
+
+The classifier is traversing through all memorized SDRs and tries to match the best one. In this case, there are two SDRs with the 14 matching cells at index 21 and 24.
+The first one represents the sequence 11-12-14-5-7-6-9-3-4-3-4-3-4-0-1-0-2-3-4-5-6-5-4-3-7-1-9-12-11-12-13-14 and the second one 5-7-6-9-3-4-3-4-3-4-0-1-0-2-3-4-5-6-5-4-3-7-1-9-12-11-12-13-14-11-12-14. The current implementation of the classifier peeks the first best matching one, which is in more complex sequences not a sufficient solution.
+We are considering to improve the classifier to be able to detect more complex sequence.
