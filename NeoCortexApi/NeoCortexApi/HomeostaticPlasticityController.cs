@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using Akka.Event;
-using Akka.Pattern;
+
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -44,7 +44,7 @@ namespace NeoCortexApi
         /// Number of active columns in SDRs of last N steps.
         /// </summary>
         private Dictionary<string, int[]> m_NumOfActiveColsForInput = new Dictionary<string, int[]>();
-
+     
         /// <summary>
         /// Keeps the list of hash values of all seen input patterns.
         /// List of hashes. [key, val] = [hash(input), hash(output)]
@@ -75,8 +75,8 @@ namespace NeoCortexApi
         /// Used during the deserialization proicess.
         /// </summary>
         protected HomeostaticPlasticityController()
-        { 
-        
+        {
+
         }
 
         /// <summary>
@@ -208,130 +208,6 @@ namespace NeoCortexApi
             return res;
         }
 
-        //public bool ComputeOld(int[] input, int[] output)
-        //{
-        //    bool res = false;
-
-        //    var avgDerivation = -1;
-
-        //    //
-        //    // This value is set when the newborn effect starts. Means, when the boosting is disabled.
-        //    // In this case we want to make sure that all learned inputs have the same number of active columns.
-        //    // SP sometimes generates SDRs with different number of active columns. When that happen,
-        //    // we will continue learning until all SDRs have same number of active columns.
-        //    if (numOfActiveColsForInput != null)
-        //    {
-        //        var indx = cycle % numOfActiveColsForInput.Length;
-
-        //        //
-        //        // Here we track the number of active columns for every cycle.
-        //        // We want that this number for every input is approximately the same.
-        //        numOfActiveColsForInput[indx] = output.Count(c => c == 1);
-
-        //        //
-        //        // We calculate here the derivation of the the active column function across 
-        //        // all inputs.
-        //        int sum = 0;
-        //        for (int i = 0; i < numOfActiveColsForInput.Length - 1; i++)
-        //        {
-        //            // Sum of derivations
-        //            sum += Math.Abs(numOfActiveColsForInput[i] - numOfActiveColsForInput[i + 1]);
-        //        }
-
-        //        avgDerivation = sum / numOfActiveColsForInput.Length;
-        //    }
-
-        //    // We take the hash value of the input.
-        //    var h1 = GetHash(input);
-
-        //    //
-        //    // If the pattern appears for the first time, add it to dictionary of seen patterns.
-        //    if (!inputs.ContainsKey(h1))
-        //    {
-        //        inputs.Add(h1, output);
-        //    }
-        //    else
-        //    {
-        //        // If the input has been already seen, we calculate the similarity between already seen input
-        //        // and the new input. The similarity is calculated as a correlation function.
-        //        var similarity = Correlate(inputs[h1], output);
-
-        //        //
-        //        // We cannot expect the 100% for the entire learning cycle. Sometimes some
-        //        // SDR appear with few more or less bits than in the previous cycle.
-        //        // If this happen we take the new SDR (output) as the winner and put it in the map.
-        //        if (similarity > 0.96)
-        //        {
-        //            // We replace the existing value with the new one.
-        //            inputs[h1] = output;
-
-        //            numStableInputs++;
-
-        //            //
-        //            // Once the SP has learned all elements we start counting the derivation
-        //            // over the number of active columns.
-        //            if (numStableInputs == inputs.Keys.Count)
-        //            {
-        //                // Allocate the array that will be used for average derivation.
-        //                numOfActiveColsForInput = new int[numStableInputs];
-        //            }
-
-        //            if (numStableInputs >= inputs.Keys.Count && cycle >= this.minCycles)
-        //            {
-        //                this.htmMemory.setMaxBoost(0.0);
-        //                this.htmMemory.updateMinPctOverlapDutyCycles(0.0);
-
-        //                // If no new element learned, we will wait for next few cycles
-        //                if ((inputs.Keys.Count * 10) == lastNumOfLernedElems)
-        //                {
-        //                    numOfUnchangedNumOfLearnedElems++;
-        //                    if (avgDerivation == 0 &&
-        //                        (numOfUnchangedNumOfLearnedElems >= requiredNumOfStableCycles * inputs.Keys.Count))
-        //                    {
-        //                        // We fire event when changed from instable to stable.
-        //                        if (!isStable)
-        //                            this.onStabilityStatusChanged(true, inputs.Keys.Count, avgDerivation, cycle);
-
-        //                        isStable = true;
-        //                        res = true;
-        //                    }
-        //                    else
-        //                    {
-        //                        //
-        //                        // If SP has entered the stable state and average derivation is not a zero,
-        //                        // the SP started changed SDRs again. This means SP becomes unstable.
-        //                        if (isStable)
-        //                        {
-        //                            isStable = false;
-        //                            this.onStabilityStatusChanged(false, inputs.Keys.Count, avgDerivation, cycle);
-        //                        }
-        //                    }
-        //                }
-        //                else
-        //                    lastNumOfLernedElems++;
-        //            }
-        //        }
-        //        else
-        //        {
-        //            // If the new SDR output for the already seen input
-
-        //            if (isStable)
-        //            {
-
-        //            }
-
-        //            // We replace the previous SDR with the new one.
-        //            // This is the common way of iterative learning of SP.
-        //            inputs[h1] = output;
-        //        }
-        //    }
-
-        //    this.cycle++;
-
-        //    return res;
-        //}
-
-
         /// <summary>
         /// Calculates the correlation of bits in ywo arrays.
         /// </summary>
@@ -359,11 +235,7 @@ namespace NeoCortexApi
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        internal static string
-
-
-
-        GetHash(int[] input)
+        internal static string GetHash(int[] input)
         {
             List<byte> buff = new List<byte>();
 
@@ -381,31 +253,32 @@ namespace NeoCortexApi
             }
         }
 
-        //internal static string ArrayToString(int[] input)
-        //{
-        //    StringBuilder sb = new StringBuilder();
-        //    foreach (var item in input)
-        //    {
-        //        sb.Append(item == 1 ? "1" : "0");
-        //    }
+        /// <summary>
+        /// Traces out all cell indicies grouped by input value.
+        /// </summary>
+        public void TraceState(string fileName = null)
+        {
+            if (fileName == null)
+                fileName = $"{nameof(HomeostaticPlasticityController)}.state.csv";                    
 
-        //    return sb.ToString();
-        //}
+            Debug.WriteLine("........... Column State .............");
 
-        //internal static int[] ToIntArray(string data)
-        //{
-        //    int[] val = new int[data.Length];
+            using (var cellStateSw = new StreamWriter(fileName))
+            {
+                foreach (var item in m_InOutMap)
+                {
+                    string keyStr = System.Convert.ToBase64String(Encoding.UTF8.GetBytes(item.Key));
+                    string res = $"num of active columns: {this.m_NumOfActiveColsForInput[item.Key].Length} - stable cycles: {this.m_NumOfStableCyclesForInput.Count}";
 
-        //    for (int i = 0; i < val.Length; i++)
-        //    {
-        //        if (data[i] == '1')
-        //            val[i] = 1;
-        //        else
-        //            val[i] = 0;
-        //    }
+                    Debug.WriteLine(keyStr);
+                    Debug.WriteLine($"{res}");
+                    
+                    cellStateSw.WriteLine($"{keyStr}");
+                    cellStateSw.WriteLine($"{res}");
+                }
+            }
+        }
 
-        //    return val;
-        //}
 
         #region Serialization
         public void Serialize(StreamWriter writer)
@@ -419,7 +292,7 @@ namespace NeoCortexApi
             ser.SerializeValue(this.m_Cycle, writer);
             ser.SerializeValue(this.m_MinCycles, writer);
             ser.SerializeValue(this.m_RequiredNumOfStableCycles, writer);
-            ser.SerializeValue(this.m_NumOfStableCyclesForInput,writer);
+            ser.SerializeValue(this.m_NumOfStableCyclesForInput, writer);
             ser.SerializeValue(this.m_NumOfActiveColsForInput, writer);
             ser.SerializeValue(this.m_InOutMap, writer);
             ser.SerializeValue(this.m_IsStable, writer);
