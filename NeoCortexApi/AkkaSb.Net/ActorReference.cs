@@ -22,12 +22,12 @@ namespace AkkaSb.Net
         public const string cReply = "ExpectResponse";
         public const string cNodeName = "node";
 
-        public TimeSpan MaxProcessingTime { get; set; } 
+        public TimeSpan MaxProcessingTime { get; set; }
 
 
-        internal TopicClient RequestMsgSenderClient  { get; set; }
+        internal TopicClient RequestMsgSenderClient { get; set; }
 
-        private ConcurrentDictionary<string, Message> receivedMsgQueue ;
+        private ConcurrentDictionary<string, Message> receivedMsgQueue;
 
         private ManualResetEvent rcvEvent;
 
@@ -43,9 +43,9 @@ namespace AkkaSb.Net
 
         private ILogger logger;
 
-       
 
-        internal ActorReference(Type actorType, ActorId id, TopicClient requestMsgSenderClient,  string replyQueueName, ConcurrentDictionary<string, Message> receivedMsgQueue, ManualResetEvent rcvEvent, TimeSpan maxProcessingTime, string name, ILogger logger)
+
+        internal ActorReference(Type actorType, ActorId id, TopicClient requestMsgSenderClient, string replyQueueName, ConcurrentDictionary<string, Message> receivedMsgQueue, ManualResetEvent rcvEvent, TimeSpan maxProcessingTime, string name, ILogger logger)
         {
             this.logger = logger;
             this.name = name;
@@ -56,7 +56,7 @@ namespace AkkaSb.Net
             this.receivedMsgQueue = receivedMsgQueue;
             this.rcvEvent = rcvEvent;
             this.replyQueueName = replyQueueName;
-          
+
             logger?.LogInformation($"ActorReference ctor: Actor System: {this.name}, receivedMsgQueue instance: {receivedMsgQueue.GetHashCode()}");
         }
 
@@ -95,7 +95,7 @@ namespace AkkaSb.Net
             }
 
             TResponse res = WaitOnResponse<TResponse>(sbMsg, timeout);
-            
+
             return res;
         }
 
@@ -108,12 +108,12 @@ namespace AkkaSb.Net
         /// <returns></returns>
         public async Task Tell(object msg, TimeSpan? timeout = null, string routeToNode = null)
         {
-            var sbMsg = CreateMessage(msg, false, actorType, actorId, routeToNode );
+            var sbMsg = CreateMessage(msg, false, actorType, actorId, routeToNode);
 
             await this.RequestMsgSenderClient.SendAsync(sbMsg);
         }
 
-   
+
 
         #region Private Methods
 
@@ -123,7 +123,7 @@ namespace AkkaSb.Net
             DateTime entered = DateTime.Now;
 
             TResponse msg = default(TResponse);
-            
+
             while (DateTime.Now < entered.AddMinutes(timeout.HasValue ? timeout.Value.TotalMinutes : this.MaxProcessingTime.TotalMinutes))
             {
                 if (rcvEvent.WaitOne())
@@ -132,7 +132,14 @@ namespace AkkaSb.Net
 
                     if (receivedMsgQueue.TryRemove(sbMsg.MessageId, out sbRcvMsg))
                     {
-                        msg = DeserializeMsg<TResponse>(sbRcvMsg.Body);
+                        if (sbRcvMsg.UserProperties[ActorReference.cActorType].ToString().Contains(typeof(ActorException).Name))
+                        {
+                            var errMsg = DeserializeMsg<ActorException>(sbRcvMsg.Body);
+                            throw new InvalidOperationException(errMsg.Error, new Exception(errMsg.Exception));
+                        }
+                        else
+                            msg = DeserializeMsg<TResponse>(sbRcvMsg.Body);
+
                         break;
                     }
 
@@ -141,13 +148,13 @@ namespace AkkaSb.Net
                 else
                     throw new TimeoutException($"Actor system didn't sent any response after specified timeout interval. This can be a communication issue or actor is still running!");
             }
-            
-            if(msg == null)
+
+            if (msg == null)
                 throw new TimeoutException($"Actor system didn't response after specified timeout interval. This can be a communication issue or actor is still running!");
 
             return msg;
         }
-              
+
         /// <summary>
         /// 
         /// </summary>
@@ -161,7 +168,7 @@ namespace AkkaSb.Net
         internal static Message CreateMessage(object msg, bool expectResponse, Type actorType, ActorId actorId, string node)
         {
             Message sbMsg = new Message(SerializeMsg(msg));
-         
+
             sbMsg.UserProperties.Add(cActorType, actorType.AssemblyQualifiedName);
             sbMsg.UserProperties.Add(cMsgType, msg.GetType().AssemblyQualifiedName);
             sbMsg.UserProperties.Add(cActorId, (string)actorId);
@@ -180,7 +187,7 @@ namespace AkkaSb.Net
         {
             Message sbMsg = CreateMessage(msg, false, actorType, actorId, null);
             sbMsg.CorrelationId = replyToMsgId;
-          
+
             // Response messages do not use sessions.
             //sbMsg.SessionId = $"{actorType}/{actorId}";
 
@@ -191,7 +198,7 @@ namespace AkkaSb.Net
         {
             JsonSerializerSettings sett = new JsonSerializerSettings();
             sett.TypeNameHandling = TypeNameHandling.All;
-            
+
             var strObj = JsonConvert.SerializeObject(msg, sett);
 
             return UTF8Encoding.UTF8.GetBytes(strObj);
@@ -206,7 +213,7 @@ namespace AkkaSb.Net
             return strObj;
         }
 
-       
+
 
         #endregion
     }
