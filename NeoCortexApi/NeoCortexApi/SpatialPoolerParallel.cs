@@ -9,7 +9,7 @@ using NeoCortexApi.Entities;
 using System.Linq;
 using System.Diagnostics;
 using NeoCortexApi.Utility;
-using NeoCortexApi.DistributedComputeLib;
+
 
 namespace NeoCortexApi
 {
@@ -60,7 +60,7 @@ namespace NeoCortexApi
             if (distMem != null)
             {
                 //var distHtmCla = distMem.ColumnDictionary as HtmSparseIntDictionary<Column>;
-                var distHtmCla = distMem.ColumnDictionary as ActorSbDistributedDictionaryBase<Column>;
+                var distHtmCla = distMem.ColumnDictionary;// as ActorSbDistributedDictionaryBase<Column>;
 
                 distHtmCla.HtmConfig = c.HtmConfig;
             }

@@ -29,7 +29,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AkkaSb.Net\AkkaSb.Net.csproj" />
-    <ProjectReference Include="..\DistributedComputeLib\DistributedComputeLib.csproj" />
+    <ProjectReference Include="..\DistributedComputeLib\NeoCortexApi.Parallel.csproj" />
     <ProjectReference Include="..\NeoCortexApi\NeoCortexApi.csproj" />
     <ProjectReference Include="..\NeoCortexUtils\NeoCortexUtils.csproj" />
   </ItemGroup>

@@ -50,7 +50,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AkkaSb.Net\AkkaSb.Net.csproj" />
-    <ProjectReference Include="..\DistributedComputeLib\DistributedComputeLib.csproj" />
+    <ProjectReference Include="..\DistributedComputeLib\NeoCortexApi.Parallel.csproj" />
     <ProjectReference Include="..\NeoCortexApi\NeoCortexApi.csproj" />
     <ProjectReference Include="..\NeoCortexArrayLib\NeoCortexArrayLib.csproj" />
     <ProjectReference Include="..\NeoCortexEntities\NeoCortexEntities.csproj" />

@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using AkkaSb.Net;
 using LearningFoundation.ImageBinarizer;
 using Microsoft.Extensions.Logging;
 using NeoCortexApi;
@@ -39,9 +40,34 @@ namespace UnitTestsProject
             return factory.CreateLogger(logger);
         }
 
+        /// <summary>
+        /// Gets default sparse dictionary configuration.
+        /// </summary>
+        public static ActorSbConfig DefaultSbConfig
+        {
+            get
+            {
+                ActorSbConfig cfg = new ActorSbConfig
+                {
+                    SbConnStr = Environment.GetEnvironmentVariable("SbConnStr"),
+                    ReplyMsgQueue = "actorsystem/rcvlocal",
+                    RequestMsgTopic = "actorsystem/actortopic",
+                    NumOfElementsPerPartition = -1, // This means, number of partitions equals number of nodes.
+                    NumOfPartitions = 35,// Should be uniformly distributed across nodes.
+                    BatchSize = 1000,
+                    ConnectionTimeout = TimeSpan.FromMinutes(5),
+
+                    //Nodes = new List<string>() { "node1", "node2", "node3" }
+                    Nodes = new List<string>() { "node1" }
+                };
+
+                return cfg;
+            }
+        }
+
         public static DistributedMemory GetDistributedDictionary(HtmConfig htmConfig)
         {
-            var cfg = Helpers.DefaultSbConfig;
+            var cfg = UnitTestHelpers.DefaultSbConfig;
            
             return new DistributedMemory()
             {

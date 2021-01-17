@@ -1,6 +1,6 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using AkkaSb.Net;
+
 using NeoCortexApi.Entities;
 using System;
 using System.Collections.Generic;
@@ -160,32 +160,6 @@ namespace NeoCortexApi
         //        };
         //    }
         //}
-
-        /// <summary>
-        /// Gets default sparse dictionary configuration.
-        /// </summary>
-        public static ActorSbConfig DefaultSbConfig
-        {
-            get
-            {
-                ActorSbConfig cfg = new ActorSbConfig
-                {
-                    SbConnStr = Environment.GetEnvironmentVariable("SbConnStr"),
-                    ReplyMsgQueue = "actorsystem/rcvlocal",
-                    RequestMsgTopic = "actorsystem/actortopic",
-                    NumOfElementsPerPartition = -1, // This means, number of partitions equals number of nodes.
-                    NumOfPartitions = 35,// Should be uniformly distributed across nodes.
-                    BatchSize = 1000,
-                    ConnectionTimeout = TimeSpan.FromMinutes(5),
-
-                    //Nodes = new List<string>() { "node1", "node2", "node3" }
-                    Nodes = new List<string>() { "node1"}
-                };
-
-                return cfg;
-            }
-        }
-
 
 
         public static void F1()
