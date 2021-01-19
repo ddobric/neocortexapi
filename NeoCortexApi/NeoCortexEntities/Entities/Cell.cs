@@ -189,6 +189,9 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.Index, writer);
             ser.SerializeValue(this.CellId, writer);
             ser.SerializeValue(this.ParentColumnIndex, writer);
+            ser.SerializeValue(this.DistalDendrites, writer);
+            ser.SerializeValue(this.ReceptorSynapses, writer);
+
 
             ser.SerializeEnd(nameof(Cell), writer);
         }
@@ -208,12 +211,9 @@ namespace NeoCortexApi.Entities
             {
                 string data = sr.ReadLine();
 
-                if (data == String.Empty)
+                if (data == String.Empty || data == ser.ReadBegin(nameof(Cell)))
+                {
                     continue;
-
-                if (data == ser.LineDelimiter || data == ser.ReadBegin(nameof(Cell)))
-                { 
-                
                 }
                 else if (data == ser.ReadEnd(nameof(Cell)))
                 {

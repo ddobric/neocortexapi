@@ -75,8 +75,14 @@ namespace NeoCortexApi.Entities
             while (sr.Peek() >= 0)
             {
                 string data = sr.ReadLine();
-                if (data == ser.LineDelimiter || data == ser.ReadBegin(nameof(Integer)) || data == ser.ReadEnd(nameof(Integer)))
-                { }
+                if (data == String.Empty || data == ser.ReadBegin(nameof(Integer)))
+                {
+                    continue;
+                }
+                else if (data == ser.ReadEnd(nameof(Integer)))
+                {
+                    break;
+                }
                 else
                 {
                     string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
