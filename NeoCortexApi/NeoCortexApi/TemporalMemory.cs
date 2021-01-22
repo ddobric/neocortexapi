@@ -72,7 +72,7 @@ namespace NeoCortexApi
             this.connections.Cells = cells;
         }
 
-        //StreamWriter tmperf1 = new StreamWriter("tm-perf-1024-25cells.p.csv");
+        //StreamWriter tmperf1 = new StreamWriter("tm-perf-300000-25cells.p.csv");
 
         /// <summary>
         /// Performs the whole calculation of Temporal memory algorithm.

@@ -138,13 +138,13 @@ namespace NeoCortexApiSample
 
             string lastPredictedValue = "0";
 
-            Dictionary<double, List<List<int>>> activeColumnsLst = new Dictionary<double, List<List<int>>>();
+            //Dictionary<double, List<List<int>>> activeColumnsLst = new Dictionary<double, List<List<int>>>();
 
-            foreach (var input in inputs)
-            {
-                if (activeColumnsLst.ContainsKey(input) == false)
-                    activeColumnsLst.Add(input, new List<List<int>>());
-            }
+            //foreach (var input in inputs)
+            //{
+            //    if (activeColumnsLst.ContainsKey(input) == false)
+            //        activeColumnsLst.Add(input, new List<List<int>>());
+            //}
 
             int maxCycles = 3500;
             int maxPrevInputs = inputValues.Count - 1;
@@ -196,12 +196,12 @@ namespace NeoCortexApiSample
                     var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
 
                     // lyrOut is null when the TM is added to the layer inside of HPC callback by entering of the stable state.
-                    if (isInStableState && lyrOut != null)
+                    //if (isInStableState && lyrOut != null)
                     {
                         var activeColumns = layer1.GetResult("sp") as int[];
 
                         //layer2.Compute(lyrOut.WinnerCells, true);
-                        activeColumnsLst[input].Add(activeColumns.ToList());
+                        //activeColumnsLst[input].Add(activeColumns.ToList());
 
                         previousInputs.Add(input.ToString());
                         if (previousInputs.Count > (maxPrevInputs + 1))

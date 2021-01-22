@@ -170,11 +170,9 @@ namespace NeoCortexApi
         {
             get
             {
-                string sbConnStr = "Endpoint=sb://actorsb.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=VKHsVqYHFqjAScWUrX/zg/6JidYvgN29LmKOnqgQ1vs=";
-
                 ActorSbConfig cfg = new ActorSbConfig
                 {
-                    SbConnStr = sbConnStr,
+                    SbConnStr = Environment.GetEnvironmentVariable("SbConnStr"),
                     ReplyMsgQueue = "actorsystem/rcvlocal",
                     RequestMsgTopic = "actorsystem/actortopic",
                     NumOfElementsPerPartition = -1, // This means, number of partitions equals number of nodes.
@@ -182,7 +180,8 @@ namespace NeoCortexApi
                     BatchSize = 1000,
                     ConnectionTimeout = TimeSpan.FromMinutes(5),
 
-                    Nodes = new List<string>() { "node1", "node2", "node3" }
+                    //Nodes = new List<string>() { "node1", "node2", "node3" }
+                    Nodes = new List<string>() { "node1"}
                 };
 
                 return cfg;

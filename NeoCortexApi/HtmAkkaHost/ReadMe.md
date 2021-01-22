@@ -1,4 +1,5 @@
 ﻿
+## AKKA
 ### Start Node 1 locally
 dotnet ./htmakkahost.dll --port  8081  --sysname HtmCluster --seedhosts="localhost:8081,localhost:8082" --hostname=localhost --publichostname=localhost
 
@@ -34,6 +35,12 @@ az container create -g  RG-HTM --name htm-node1 --image damir.azurecr.io/htmakka
 
 az container create -g  RG-HTM --name htm-node2 --image damir.azurecr.io/htmakkahost:v3 --ports 8081 --ip-address Public --cpu 4 --memory 16 --dns-name-label htm-node2 --environment-variables port=8081 sysname=HtmCluster hostname=htm-node2.westeurope.azurecontainer.io publichostname=htm-node2.westeurope.azurecontainer.io --registry-username damir --registry-password kkjOvM=J/sEyYTBW6TFltwuV5qXkVH70
 
+## SbActors (dotnet actors with SB)
+
+Start host
+~~~
+--SystemName=node1 --RequestMsgQueue=actorsystem/actorqueue --ReplyMsgQueue=actorsystem/rcvnode1 --SbConnStr="Endpoint=sb://***.servicebus.windows.net/**Q1vs=" --ActorSystemName=inst701 --SubscriptionName=node1
+~~~
 
 ## Create VM
 
