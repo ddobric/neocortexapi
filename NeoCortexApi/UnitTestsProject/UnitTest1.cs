@@ -187,7 +187,7 @@ namespace UnitTestsProject
 
             NeoCortexUtils.DrawHeatmaps(bostArrays, $"tessheat_{threshold}.png", 1024, 1024, 60, threshold, 10);
         }
-
+        
         /// <summary>
         /// Extracts performance data from debug output of test SparseSingleMnistImageTest.
         /// </summary>
