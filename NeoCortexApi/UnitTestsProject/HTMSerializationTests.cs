@@ -450,6 +450,25 @@ namespace UnitTestsProject
             }
             Assert.IsTrue(distalDendrite.SequenceEqual(distalDendrites));
         }
+
+        [TestMethod]
+        [TestCategory("Serialization")]
+        public void SerializeSynapseList()
+        {
+            HtmSerializer2 htm = new HtmSerializer2();
+            Cell cells = new Cell(1, 1, 1, 1, new CellActivity());
+            List<Synapse> synapses = new List<Synapse>();
+            synapses.Add(new Synapse(cells, 1, 23, 1.0));
+            synapses.Add(new Synapse(cells, 3, 27, 1.0));
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeSynapseList)}.txt"))
+            {
+                htm.SerializeBegin("UnitTest", sw);
+
+                htm.SerializeValue(synapses, sw);
+
+                htm.SerializeEnd("UnitTest", sw);
+            }
+        }
         [TestMethod]
         [TestCategory("Serialization")]
         public void SerializeDictionaryTest()
