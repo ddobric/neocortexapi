@@ -35,10 +35,10 @@ namespace NeoCortexApi.Entities
 
         public static bool operator ==(Integer x, Integer y)
         {
-            if (x != null && y == null)
+            if (0 == Comparer<object>.Default.Compare(x, null) && 0 != Comparer<object>.Default.Compare(y, null))
                 return false;
 
-            if (x == null && y != null)
+            if (0 != Comparer<object>.Default.Compare(x, null) && 0 == Comparer<object>.Default.Compare(y, null))
                 return false;
 
             return x.Value == y.Value;
@@ -46,10 +46,10 @@ namespace NeoCortexApi.Entities
 
         public static bool operator !=(Integer x, Integer y)
         {
-            if (x != null && y == null)
+            if (0 == Comparer<object>.Default.Compare(x, null) && 0 != Comparer<object>.Default.Compare(y, null))
                 return true;
 
-            if (x == null && y != null)
+            if (0 != Comparer<object>.Default.Compare(x, null) && 0 == Comparer<object>.Default.Compare(y, null))
                 return true;
 
             return x.Value != y.Value;

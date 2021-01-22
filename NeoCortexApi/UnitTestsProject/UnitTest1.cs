@@ -17,6 +17,22 @@ namespace UnitTestsProject
     public class UnitTest1
     {
 
+
+        [TestMethod]
+        public void IntegerTests()
+        {
+            Integer i1 = new Integer(1);
+            Integer i2 = null;
+
+            Assert.IsFalse(i1 == i2);
+
+            Assert.IsFalse(i2 == i1);
+
+            i2 = new Integer(1);
+
+            Assert.IsTrue(i2 == i1);
+        }
+
         [TestMethod]
         [DataRow(new int[] { 2048, 6 })]
         [DataRow(new int[] { 100, 20 })]
