@@ -4,6 +4,7 @@ using NeoCortexApi.Types;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace NeoCortexApi.Entities
@@ -173,12 +174,18 @@ namespace NeoCortexApi.Entities
 
             if (this.ParentCell != null)
             {
-                this.ParentCell.Serialize(writer);
+                // We are serializeing the index of the cell only to avoid circular references during serialization.
+                ser.SerializeValue(this.ParentCell.Index, writer);
+                //this.ParentCell.Serialize(writer);
             }
             ser.SerializeValue(this.m_LastUsedIteration, writer);
             ser.SerializeValue(this.m_Ordinal, writer);
             ser.SerializeValue(this.LastUsedIteration, writer);
             ser.SerializeValue(this.Ordinal, writer);
+
+            // We serialize synapse indixes only to avoid circular references.
+            if(this.Synapses != null && this.Synapses.Count > 0)
+                ser.SerializeValue(this.Synapses.Select(s=>s.SynapseIndex).ToArray(), writer);
 
             ser.SerializeEnd(nameof(DistalDendrite), writer);
         }

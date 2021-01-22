@@ -35,11 +35,23 @@ namespace NeoCortexApi.Entities
 
         public static bool operator ==(Integer x, Integer y)
         {
+            if (x != null && y == null)
+                return false;
+
+            if (x == null && y != null)
+                return false;
+
             return x.Value == y.Value;
         }
 
         public static bool operator !=(Integer x, Integer y)
         {
+            if (x != null && y == null)
+                return true;
+
+            if (x == null && y != null)
+                return true;
+
             return x.Value != y.Value;
         }
 

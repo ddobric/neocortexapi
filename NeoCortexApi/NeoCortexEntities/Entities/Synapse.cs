@@ -302,7 +302,9 @@ namespace NeoCortexApi.Entities
 
             if (this.SourceCell != null)
             {
-                this.SourceCell.Serialize(writer);
+                // We are serializeing the index only to avoid circular references.
+                ser.SerializeValue(this.SourceCell.Index, writer);
+                //this.SourceCell.Serialize(writer);
             }
             ser.SerializeValue(this.SegmentIndex, writer);
             ser.SerializeValue(this.SynapseIndex, writer);

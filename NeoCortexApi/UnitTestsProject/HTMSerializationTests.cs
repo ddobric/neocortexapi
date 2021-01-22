@@ -202,6 +202,8 @@ namespace UnitTestsProject
             Assert.IsTrue(vs1.SequenceEqual(vs));
         }
 
+     
+
         [TestMethod]
         [TestCategory("Serialization")]
         public void SerializeArrayCell()
@@ -609,9 +611,9 @@ namespace UnitTestsProject
         /// </summary>
         [TestMethod]
         [TestCategory("Serialization")]
-        [DataRow(1, 1, 1, 1)]
+        //[DataRow(1, 1, 1, 1)]
         [DataRow(1111, 22221, 11111, 2221)]
-        [DataRow(1211212121, 2121212121, 212121211, 3232132131)]
+        //[DataRow(1211212121, 2121212121, 212121211, 3232132131)]
         public void SerializeCellTest(int parentIndx, int colSeq, int cellsPerCol, int cellId)
         {
             Cell cell = new Cell(parentIndx, colSeq, cellsPerCol, cellId, new CellActivity());
