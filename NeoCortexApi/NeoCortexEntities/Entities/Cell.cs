@@ -215,6 +215,14 @@ namespace NeoCortexApi.Entities
                 {
                     continue;
                 }
+                else if (data == ser.ReadBegin(nameof(DistalDendrite)))
+                {
+                    cell.DistalDendrites = ser.ReadDistalDendriteListValue(data);
+                }
+                else if (data == ser.ReadBegin(nameof(Synapse)))
+                {
+                    cell.ReceptorSynapses = ser.ReadSynapseListValue(data);
+                }
                 else if (data == ser.ReadEnd(nameof(Cell)))
                 {
                     break;

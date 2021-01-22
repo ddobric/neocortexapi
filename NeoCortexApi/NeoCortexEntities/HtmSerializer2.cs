@@ -227,21 +227,46 @@ namespace NeoCortexApi.Entities
             }
             return vs;
         }
+
+        /// <summary>
+        /// Serialize the array of type Int.
+        /// </summary>
+        /// <param name="val"></param>
+        /// <param name="sw"></param>
         public void SerializeValue(int[] val, StreamWriter sw)
         {
             sw.Write(ValueDelimiter);
             foreach (int i in val)
             {
                 sw.Write(i.ToString());
-                sw.Write(ValueDelimiter);
+                sw.Write(ElementsDelimiter);
             }
             sw.Write(ParameterDelimiter);
 
+        }
+        /// <summary>
+        /// Read the array of type Int.
+        /// <summary>
+        /// <param name="reader"></param>
+        /// <returns>Int[]</returns>
+        public int[] ReadArrayInt(string reader)
+        {
+            string[] str = reader.Split(ElementsDelimiter);
+            int[] vs = new int[str.Length - 1];
+            for (int i = 0; i < str.Length - 1; i++)
+            {
+
+                vs[i] = Convert.ToInt32(str[i].Trim());
+
+            }
+            return vs;
         }
 
         /// <summary>
         /// Serialize the array of cells.
         /// </summary>
+        /// <param name="val"></param>
+        /// <param name="sw"></param>
         public void SerializeValue(Cell[] val, StreamWriter sw)
         {
             sw.Write(ValueDelimiter);
@@ -255,9 +280,12 @@ namespace NeoCortexApi.Entities
             }
             sw.Write(ParameterDelimiter);
         }
+
         /// <summary>
         /// Serialize the dictionary with key:string and value:int.
         /// </summary>
+        /// <param name="keyValues"></param>
+        /// <param name="sw"></param>
         public void SerializeValue(Dictionary<String, int> keyValues, StreamWriter sw)
         {
             sw.Write(ValueDelimiter);
@@ -269,8 +297,27 @@ namespace NeoCortexApi.Entities
                 sw.Write(ParameterDelimiter);
         }
         /// <summary>
-        /// Serialize the dictionary with key:string and value:int.
+        /// Read the dictionary with key:string and value:int.
+        /// <summary>
+        /// <param name="reader"></param>
+        /// <returns>Dictionary<String, int></returns>
+        public Dictionary<String, int> ReadDictSIValue(string reader)
+        {
+            string[] str = reader.Split(ElementsDelimiter);
+            Dictionary<String, int> keyValues = new Dictionary<String, int>();
+            for (int i = 0; i < str.Length - 1; i++)
+            {
+                string[] tokens = str[i].Split(KeyValueDelimiter);
+                keyValues.Add(tokens[0].Trim(), Convert.ToInt32(tokens[1])) ;
+            }
+
+            return keyValues;
+        }
+        /// <summary>
+        /// Serialize the dictionary with key:int and value:int.
         /// </summary>
+        /// <param name="keyValues"></param>
+        /// <param name="sw"></param>
         public void SerializeValue(Dictionary<int, int> keyValues, StreamWriter sw)
         {
             sw.Write(ValueDelimiter);
@@ -282,30 +329,27 @@ namespace NeoCortexApi.Entities
             sw.Write(ParameterDelimiter);
         }
         /// <summary>
-        /// TODO
+        /// Read the dictionary with key:int and value:int.
         /// </summary>
         /// <param name="reader"></param>
-        /// <returns></returns>
-        public Dictionary<int,int> ReadDictionaryValue(string reader)
+        /// <returns>Dictionary<int, int></returns>
+        public Dictionary<int,int> ReadDictionaryIIValue(string reader)
         {
+            string[] str = reader.Split(ElementsDelimiter);
             Dictionary<int, int> keyValues = new Dictionary<int, int>();
-            string[] str = reader.Split(", ");
-            foreach (string i in str)
+            for (int i = 0; i < str.Length-1; i++)
             {
-                if (i == LineDelimiter || i == ValueDelimiter)
-                { }
-                else
-                {
-                    string[] tokens = i.Split(": ");
-                    keyValues.Add(Convert.ToInt32(tokens[0].Trim()), Convert.ToInt32(tokens[1]));
-                }
+                string[] tokens = str[i].Split(KeyValueDelimiter);
+                keyValues.Add(Convert.ToInt32(tokens[0].Trim()), Convert.ToInt32(tokens[1]));
             }
-
             return keyValues;
         }
+
         /// <summary>
         /// Serialize the dictionary with key:string and value:int[].
         /// </summary>
+        /// <param name="keyValues"></param>
+        /// <param name="sw"></param>
         public void SerializeValue(Dictionary<String, int[]> keyValues, StreamWriter sw)
         {
             sw.Write(ValueDelimiter);
@@ -322,8 +366,30 @@ namespace NeoCortexApi.Entities
             }
             sw.Write(ParameterDelimiter);
         }
-        
-        
+        ///<summary>
+        ///Read the dictionary with key:String and value:int[].
+        ///</summary>
+        ///<param name="reader"></param>
+        /// <returns>Dictionary<string, int[]></returns>
+        public Dictionary<String, int[]> ReadDictSIarray(String reader)
+        {
+            string[] str = reader.Split(ElementsDelimiter);
+            Dictionary<String, int[]> keyValues = new Dictionary<String, int[]>();
+            for (int i = 0; i < str.Length-1; i++)
+            {
+                string[] tokens = str[i].Split(KeyValueDelimiter);
+                string[] values = tokens[1].Split(ValueDelimiter);
+                int[] arrayValues = new int[values.Length - 1];
+                for (int j = 0; j < values.Length - 1; j++)
+                {
+
+                    arrayValues[j] = Convert.ToInt32(values[j].Trim());
+
+                }
+                keyValues.Add(tokens[0].Trim(), arrayValues);
+            }
+            return keyValues;
+        }
 
         /// <summary>
         /// Serialize the List of DistalDendrite.
@@ -341,6 +407,12 @@ namespace NeoCortexApi.Entities
             }
             sw.Write(ParameterDelimiter);
         }
+
+        public List<DistalDendrite> ReadDistalDendriteListValue(string value)
+        {
+            List<DistalDendrite> dd = new List<DistalDendrite>();
+            return dd;
+        }
         /// <summary>
         /// Serialize the List of Synapse.
         /// </summary>
@@ -356,6 +428,11 @@ namespace NeoCortexApi.Entities
                 }
             }
             sw.Write(ParameterDelimiter);
+        }
+        public List<Synapse> ReadSynapseListValue(string value)
+        {
+            List<Synapse> dd = new List<Synapse>();
+            return dd;
         }
         /// <summary>
         /// Serialize the List of Integers.

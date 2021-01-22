@@ -193,13 +193,18 @@ namespace NeoCortexApi.Entities
             while (sr.Peek() >= 0)
             {
                 string data = sr.ReadLine();
-                if (data == ser.LineDelimiter || data == ser.ReadBegin(nameof(DistalDendrite)) || data == ser.ReadEnd(nameof(DistalDendrite)))
-                { }
+                if (data == ser.LineDelimiter || data == ser.ReadBegin(nameof(DistalDendrite)))
+                {
+                    continue;
+                }
                 else if (data == ser.ReadBegin(nameof(Cell)))
                 {
                     distal.ParentCell = Cell.Deserialize(sr);
                 }
-
+                else if (data == ser.ReadEnd(nameof(DistalDendrite)))
+                {
+                    break;
+                }
                 else
                 { 
                     string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
@@ -234,6 +239,7 @@ namespace NeoCortexApi.Entities
                         }
                     }
                 }
+                
             }
 
             return distal;

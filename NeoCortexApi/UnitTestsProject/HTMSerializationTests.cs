@@ -18,7 +18,7 @@ namespace UnitTestsProject
         public void SerializeValueTest()
         {
             HtmSerializer2 htm = new HtmSerializer2();
-            
+
             using (StreamWriter sw = new StreamWriter("ser.txt"))
             {
                 htm.SerializeBegin("UnitTest", sw);
@@ -144,6 +144,269 @@ namespace UnitTestsProject
 
             }
             Assert.IsTrue(vs1.SequenceEqual(vs));
+        }
+
+
+        [TestMethod]
+        [TestCategory("Serialization")]
+        public void SerializeArrayInt()
+        {
+            HtmSerializer2 htm = new HtmSerializer2();
+            int[] vs = new int[10];
+            int[] vs1 = new int[10];
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeArrayInt)}.txt"))
+            {
+                htm.SerializeBegin("UnitTest", sw);
+
+                for (int i = 0; i < 10; i++)
+                {
+                    vs[i] = i;
+                }
+
+                htm.SerializeValue(vs, sw);
+
+                htm.SerializeEnd("UnitTest", sw);
+            }
+            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeArrayInt)}.txt"))
+            {
+                while (sr.Peek() >= 0)
+                {
+                    string data = sr.ReadLine();
+
+                    if (data == String.Empty || data == htm.ReadBegin("UnitTest"))
+                    {
+                        continue;
+                    }
+                    else if (data == htm.ReadEnd("UnitTest"))
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                        for (int i = 0; i < str.Length; i++)
+                        {
+                            switch (i)
+                            {
+                                case 0:
+                                    vs1 = htm.ReadArrayInt(str[i]);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+                }
+
+            }
+            Assert.IsTrue(vs1.SequenceEqual(vs));
+        }
+
+        [TestMethod]
+        [TestCategory("Serialization")]
+        public void SerializeArrayCell()
+        {
+            HtmSerializer2 htm = new HtmSerializer2();
+            Cell[] cells = new Cell[2];
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeArrayCell)}.txt"))
+            {
+                htm.SerializeBegin("UnitTest", sw);
+
+                cells[0] = new Cell(1, 1, 1, 1, new CellActivity());
+
+                cells[0].DistalDendrites = new List<DistalDendrite>();
+
+                cells[0].DistalDendrites.Add(new DistalDendrite(cells[0], 1, 2, 2, 1.0, 100));
+                cells[0].DistalDendrites.Add(new DistalDendrite(cells[0], 44, 24, 34, 1.0, 100));
+
+                cells[0].ReceptorSynapses = new List<Synapse>();
+
+                cells[0].ReceptorSynapses.Add(new Synapse(cells[0], 1, 23, 1.0));
+                cells[0].ReceptorSynapses.Add(new Synapse(cells[0], 3, 27, 1.0));
+
+                cells[1] = new Cell(1, 1, 1, 3, new CellActivity());
+
+                cells[1].DistalDendrites = new List<DistalDendrite>();
+
+                cells[1].DistalDendrites.Add(new DistalDendrite(cells[1], 1, 3, 5, 1.0, 100));
+                cells[1].DistalDendrites.Add(new DistalDendrite(cells[1], 4, 24, 3, 1.0, 100));
+
+                cells[1].ReceptorSynapses = new List<Synapse>();
+
+                cells[1].ReceptorSynapses.Add(new Synapse(cells[1], 21, 23, 1.0));
+                cells[1].ReceptorSynapses.Add(new Synapse(cells[1], 3, 7, 1.0));
+
+                htm.SerializeValue(cells, sw);
+
+                htm.SerializeEnd("UnitTest", sw);
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("Serialization")]
+        public void SerializeDictionaryStringint()
+        {
+            HtmSerializer2 htm = new HtmSerializer2();
+            Dictionary<String, int> keyValues = new Dictionary<string, int>();
+            keyValues.Add("Hello", 1);
+            keyValues.Add("Welcome", 2);
+            keyValues.Add("Bye", 3);
+            Dictionary<String, int> keyValuePairs = new Dictionary<string, int>();
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeDictionaryStringint)}.txt"))
+            {
+                htm.SerializeBegin("UnitTest", sw);
+
+                htm.SerializeValue(keyValues, sw);
+
+                htm.SerializeEnd("UnitTest", sw);
+            }
+
+            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeDictionaryStringint)}.txt"))
+            {
+                while (sr.Peek() >= 0)
+                {
+                    string data = sr.ReadLine();
+
+                    if (data == String.Empty || data == htm.ReadBegin("UnitTest"))
+                    {
+                        
+                    }
+                    else if (data == htm.ReadEnd("UnitTest"))
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                        for (int i = 0; i < str.Length; i++)
+                        {
+                            switch (i)
+                            {
+                                case 0:
+                                    keyValuePairs = htm.ReadDictSIValue(str[i]);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+                }
+
+            }
+
+            Assert.IsTrue(keyValuePairs.SequenceEqual(keyValues));
+        }
+
+        [TestMethod]
+        [TestCategory("Serialization")]
+        public void SerializeDictionaryIntint()
+        {
+            HtmSerializer2 htm = new HtmSerializer2();
+            Dictionary<int, int> keyValues = new Dictionary<int, int>();
+            keyValues.Add(23, 1);
+            keyValues.Add(24, 2);
+            keyValues.Add(35, 3);
+            Dictionary<int, int> keyValuePairs = new Dictionary<int, int>();
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeDictionaryIntint)}.txt"))
+            {
+                htm.SerializeBegin("UnitTest", sw);
+
+                htm.SerializeValue(keyValues, sw);
+
+                htm.SerializeEnd("UnitTest", sw);
+            }
+
+            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeDictionaryIntint)}.txt"))
+            {
+                while (sr.Peek() >= 0)
+                {
+                    string data = sr.ReadLine();
+
+                    if (data == String.Empty || data == htm.ReadBegin("UnitTest"))
+                    {
+
+                    }
+                    else if (data == htm.ReadEnd("UnitTest"))
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                        for (int i = 0; i < str.Length; i++)
+                        {
+                            switch (i)
+                            {
+                                case 0:
+                                    keyValuePairs = htm.ReadDictionaryIIValue(str[i]);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+                }
+
+            }
+
+            Assert.IsTrue(keyValuePairs.SequenceEqual(keyValues));
+        }
+
+        [TestMethod]
+        [TestCategory("Serialization")]
+        public void SerializeDictionarystringintA()
+        {
+            HtmSerializer2 htm = new HtmSerializer2();
+            Dictionary<String, int[]> keyValues = new Dictionary<String, int[]>
+            {
+                { "Hello", new int[] { 1, 2, 3 } },
+                { "GoodMorning", new int[] { 4, 5, 6 } },
+                { "Goodevening", new int[] { 7, 8, 9 } }
+            };
+            Dictionary<String, int[]> keyValuePairs = new Dictionary<String, int[]>();
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeDictionarystringintA)}.txt"))
+            {
+                htm.SerializeBegin("UnitTest", sw);
+
+                htm.SerializeValue(keyValues, sw);
+
+                htm.SerializeEnd("UnitTest", sw);
+            }
+
+            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeDictionarystringintA)}.txt"))
+            {
+                while (sr.Peek() >= 0)
+                {
+                    string data = sr.ReadLine();
+
+                    if (data == String.Empty || data == htm.ReadBegin("UnitTest"))
+                    {
+
+                    }
+                    else if (data == htm.ReadEnd("UnitTest"))
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                        for (int i = 0; i < str.Length; i++)
+                        {
+                            switch (i)
+                            {
+                                case 0:
+                                    keyValuePairs = htm.ReadDictSIarray(str[i]);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+                }
+
+            }
+
+            Assert.IsTrue(keyValuePairs.SequenceEqual(keyValues));
         }
 
         [TestMethod]

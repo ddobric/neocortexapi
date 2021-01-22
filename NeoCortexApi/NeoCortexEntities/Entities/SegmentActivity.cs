@@ -88,12 +88,12 @@ namespace NeoCortexApi.Entities
                             case 0:
                                 {
                                    
-                                    segment.ActiveSynapses = ser.ReadDictionaryValue(str[i]);
+                                    segment.ActiveSynapses = ser.ReadDictionaryIIValue(str[i]);
                                     break;
                                 }
                             case 1:
                                 {
-                                    segment.PotentialSynapses = ser.ReadDictionaryValue(str[i]);
+                                    segment.PotentialSynapses = ser.ReadDictionaryIIValue(str[i]);
                                     break;
                                 }
                             default:
