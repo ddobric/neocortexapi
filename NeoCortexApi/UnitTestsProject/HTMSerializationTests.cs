@@ -411,6 +411,47 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("Serialization")]
+        public void SerializeDistalDendriteList()
+        {
+            HtmSerializer2 htm = new HtmSerializer2();
+            Cell cells = new Cell(1, 1, 1, 1, new CellActivity());
+            List<DistalDendrite> distalDendrites = new List<DistalDendrite>();
+            distalDendrites.Add(new DistalDendrite(cells, 1, 2, 2, 1.0, 100));
+            distalDendrites.Add(new DistalDendrite(cells, 4, 24, 3, 1.0, 100));
+            List<DistalDendrite> distalDendrite = new List<DistalDendrite>();
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeDistalDendriteList)}.txt"))
+            {
+                htm.SerializeBegin("UnitTest", sw);
+
+                htm.SerializeValue(distalDendrites, sw);
+
+                htm.SerializeEnd("UnitTest", sw);
+            }
+
+            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeDistalDendriteList)}.txt"))
+            {
+                while (sr.Peek() >= 0)
+                {
+                    string data = sr.ReadLine();
+
+                    if (data == String.Empty || data == htm.ReadBegin("UnitTest"))
+                    {
+                        continue;
+                    }
+                    else if (data == htm.ReadEnd("UnitTest"))
+                    {
+                        break;
+                    }
+                    else if (data == htm.ReadBegin("DistalDendrite"))
+                    {
+                        distalDendrite.Add(DistalDendrite.Deserialize(sr));
+                    }
+                }
+            }
+            Assert.IsTrue(distalDendrite.SequenceEqual(distalDendrites));
+        }
+        [TestMethod]
+        [TestCategory("Serialization")]
         public void SerializeDictionaryTest()
         {
             //Proximal + Distal

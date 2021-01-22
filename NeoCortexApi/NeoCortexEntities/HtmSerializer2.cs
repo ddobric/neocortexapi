@@ -402,7 +402,7 @@ namespace NeoCortexApi.Entities
                 foreach (DistalDendrite val in value)
                 {
                     val.Serialize(sw);
-                    sw.Write(ValueDelimiter);
+                    sw.Write(ElementsDelimiter);
                 }
             }
             sw.Write(ParameterDelimiter);
