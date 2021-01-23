@@ -164,7 +164,7 @@ namespace UnitTestsProject
 
                             string testName = $"{outFolder}\\{inputPrefix}_{fI.Name}";
 
-                            string inputBinaryImageFile = UnitTestHelpers.BinarizeImage($"{trainingImage}", imgSize, testName);
+                            string inputBinaryImageFile = NeoCortexUtils.BinarizeImage($"{trainingImage}", imgSize, testName);
 
                             // Read input csv file into array
                             int[] inputVector = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageFile).ToArray();

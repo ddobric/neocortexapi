@@ -7,13 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexApi", "NeoCortexAp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTestsProject", "UnitTestsProject\UnitTestsProject.csproj", "{A2B0776F-3650-4CE5-98BC-E2B7A2205A23}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexApi.Parallel", "DistributedComputeLib\NeoCortexApi.Parallel.csproj", "{7F75D4D0-408B-4FFE-A450-1D7F647542B5}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexUtils", "NeoCortexUtils\NeoCortexUtils.csproj", "{28395BF8-B719-4D93-806B-723A7AF0C56A}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HtmHosts", "HtmHosts", "{7E0EE186-7A75-4A97-9E16-A6B4E1853915}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtmAkkaHost", "HtmAkkaHost\HtmAkkaHost.csproj", "{A56DD089-679E-479B-BD00-955AA4CDF569}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{23838D99-F23D-47B6-BC70-92FA0A34FF1C}"
 	ProjectSection(SolutionItems) = preProject
@@ -23,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{7D17894D-95EC-4D16-B6C5-4A6CBBE07E2F}"
 	ProjectSection(SolutionItems) = preProject
-		nuget\AkkaHostLib.1.0.1.nupkg = nuget\AkkaHostLib.1.0.1.nupkg
+		nuget\DotNetActors.1.0.1.nupkg = nuget\DotNetActors.1.0.1.nupkg
 		nuget\imagebinarizer.1.0.0.nupkg = nuget\imagebinarizer.1.0.0.nupkg
 		nuget\LearningApi.1.3.1.nupkg = nuget\LearningApi.1.3.1.nupkg
 		nuget\NeoCortexApi.1.0.8.nupkg = nuget\NeoCortexApi.1.0.8.nupkg
@@ -37,8 +31,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexArrayLib", "NeoCor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexEntities", "NeoCortexEntities\NeoCortexEntities.csproj", "{F2693439-77AF-420C-B42F-9FD5BBEC5482}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AkkaSb.Net", "AkkaSb.Net\AkkaSb.Net.csproj", "{A3B8131A-DA87-44BB-A0A4-BD683383E984}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebSocketNeuroVisualizer", "WebSocketNeuroVisualizer\WebSocketNeuroVisualizer.csproj", "{414D1FFF-BA4B-49B0-B7B1-4AEDB2F7689D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{D9879A38-CCF8-4440-B939-D066196AC775}"
@@ -51,6 +43,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{99AE2313-7D07-4905-A0BB-52D304FCC2F7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexApiSample", "Samples\NeoCortexApiSample\NeoCortexApiSample.csproj", "{15375C28-1424-4A29-B2AF-11ED92F6134C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexApi.Parallel", "NeoCortexApi.Parallel\NeoCortexApi.Parallel.csproj", "{A7502EC3-BFD1-46AD-8AFE-E6E7AD7603B3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtmActorHost", "HtmActorHost\HtmActorHost.csproj", "{841CE2B3-A364-48C1-A2E2-3C92EA7C3592}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -66,18 +62,10 @@ Global
 		{A2B0776F-3650-4CE5-98BC-E2B7A2205A23}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2B0776F-3650-4CE5-98BC-E2B7A2205A23}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2B0776F-3650-4CE5-98BC-E2B7A2205A23}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7F75D4D0-408B-4FFE-A450-1D7F647542B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7F75D4D0-408B-4FFE-A450-1D7F647542B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7F75D4D0-408B-4FFE-A450-1D7F647542B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7F75D4D0-408B-4FFE-A450-1D7F647542B5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{28395BF8-B719-4D93-806B-723A7AF0C56A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{28395BF8-B719-4D93-806B-723A7AF0C56A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28395BF8-B719-4D93-806B-723A7AF0C56A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28395BF8-B719-4D93-806B-723A7AF0C56A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A56DD089-679E-479B-BD00-955AA4CDF569}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A56DD089-679E-479B-BD00-955AA4CDF569}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A56DD089-679E-479B-BD00-955AA4CDF569}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A56DD089-679E-479B-BD00-955AA4CDF569}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A7F4E797-E60F-470E-96F6-B9ECD3A67451}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A7F4E797-E60F-470E-96F6-B9ECD3A67451}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7F4E797-E60F-470E-96F6-B9ECD3A67451}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -86,10 +74,6 @@ Global
 		{F2693439-77AF-420C-B42F-9FD5BBEC5482}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2693439-77AF-420C-B42F-9FD5BBEC5482}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F2693439-77AF-420C-B42F-9FD5BBEC5482}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A3B8131A-DA87-44BB-A0A4-BD683383E984}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A3B8131A-DA87-44BB-A0A4-BD683383E984}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A3B8131A-DA87-44BB-A0A4-BD683383E984}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A3B8131A-DA87-44BB-A0A4-BD683383E984}.Release|Any CPU.Build.0 = Release|Any CPU
 		{414D1FFF-BA4B-49B0-B7B1-4AEDB2F7689D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{414D1FFF-BA4B-49B0-B7B1-4AEDB2F7689D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{414D1FFF-BA4B-49B0-B7B1-4AEDB2F7689D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -98,12 +82,19 @@ Global
 		{15375C28-1424-4A29-B2AF-11ED92F6134C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{15375C28-1424-4A29-B2AF-11ED92F6134C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{15375C28-1424-4A29-B2AF-11ED92F6134C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7502EC3-BFD1-46AD-8AFE-E6E7AD7603B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7502EC3-BFD1-46AD-8AFE-E6E7AD7603B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7502EC3-BFD1-46AD-8AFE-E6E7AD7603B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7502EC3-BFD1-46AD-8AFE-E6E7AD7603B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{841CE2B3-A364-48C1-A2E2-3C92EA7C3592}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{841CE2B3-A364-48C1-A2E2-3C92EA7C3592}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{841CE2B3-A364-48C1-A2E2-3C92EA7C3592}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{841CE2B3-A364-48C1-A2E2-3C92EA7C3592}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{A56DD089-679E-479B-BD00-955AA4CDF569} = {7E0EE186-7A75-4A97-9E16-A6B4E1853915}
 		{4D9AD5E0-8F00-494E-8BEF-8041C003F4E6} = {D9879A38-CCF8-4440-B939-D066196AC775}
 		{15375C28-1424-4A29-B2AF-11ED92F6134C} = {99AE2313-7D07-4905-A0BB-52D304FCC2F7}
 	EndGlobalSection

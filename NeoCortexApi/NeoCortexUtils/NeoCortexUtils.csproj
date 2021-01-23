@@ -16,6 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ImageBinarizer" Version="1.0.0" />
     <PackageReference Include="System.Drawing.Common" Version="4.6.0-preview3.19128.7" />
   </ItemGroup>
 
