@@ -19,7 +19,7 @@ using System.Linq;
 using NeuralNet.MLPerceptron;
 using Microsoft.ML;
 using Microsoft.ML.Data;
-using NeoCortexApi.DistributedCompute;
+
 
 namespace UnitTestsProject
 {
@@ -121,7 +121,7 @@ namespace UnitTestsProject
 
                                 string testName = $"{outFolder}\\digit_{digit}_{fI.Name}_{imageSizes[imSizeIndx]}";
 
-                                string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
+                                string inputBinaryImageFile = UnitTestHelpers.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
 
                                 //Read input csv file into array
                                 int[] inputVector = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageFile).ToArray();
@@ -249,7 +249,7 @@ namespace UnitTestsProject
 
                                     string testName = $"{outFolder}\\digit_{digit}_{fI.Name}_{imageSizes[imSizeIndx]}";
 
-                                    string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
+                                    string inputBinaryImageFile = UnitTestHelpers.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
 
                                     //Read input csv file into array
                                     int[] inputVector = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageFile).ToArray();
@@ -417,7 +417,7 @@ namespace UnitTestsProject
 
                                     string testName = $"{outFolder}\\digit_{digit}_{fI.Name}_{imageSizes[imSizeIndx]}";
 
-                                    string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
+                                    string inputBinaryImageFile = UnitTestHelpers.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
 
                                     //Read input csv file into array
                                     int[] inputVector = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageFile).ToArray();
@@ -565,7 +565,7 @@ namespace UnitTestsProject
 
                             string testName = $"{outputFolder}\\digit_{digit}_{fI.Name}_{imgSize}";
 
-                            string inputBinaryImageFile = Helpers.BinarizeImage($"{testImage}", imgSize, testName);
+                            string inputBinaryImageFile = UnitTestHelpers.BinarizeImage($"{testImage}", imgSize, testName);
 
                             // Read input csv file into array
                             int[] inputVector = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageFile).ToArray();
@@ -820,7 +820,7 @@ namespace UnitTestsProject
 
                             string testName = $"{outFolder}\\digit_{digit}_{fI.Name}_{imageSizes[imSizeIndx]}";
 
-                            string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
+                            string inputBinaryImageFile = UnitTestHelpers.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
 
                             //Read input csv file into array
                             int[] inputVector = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageFile).ToArray();
@@ -989,7 +989,7 @@ namespace UnitTestsProject
                 {
                     string testName = $"PREDICT_digit_{digit}_{new FileInfo(mnistImage).Name}_{imgSize}";
 
-                    string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imgSize, testName);
+                    string inputBinaryImageFile = UnitTestHelpers.BinarizeImage($"{mnistImage}", imgSize, testName);
 
                     //Read input csv file into array
                     int[] inputVector = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageFile).ToArray();

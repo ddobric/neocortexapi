@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexApi", "NeoCortexAp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTestsProject", "UnitTestsProject\UnitTestsProject.csproj", "{A2B0776F-3650-4CE5-98BC-E2B7A2205A23}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DistributedComputeLib", "DistributedComputeLib\DistributedComputeLib.csproj", "{7F75D4D0-408B-4FFE-A450-1D7F647542B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexApi.Parallel", "DistributedComputeLib\NeoCortexApi.Parallel.csproj", "{7F75D4D0-408B-4FFE-A450-1D7F647542B5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexUtils", "NeoCortexUtils\NeoCortexUtils.csproj", "{28395BF8-B719-4D93-806B-723A7AF0C56A}"
 EndProject

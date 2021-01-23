@@ -13,7 +13,7 @@ namespace HtmAkkaHost
         static void Main(string[] args)
         {
             Console.WriteLine("Hello HTM Actor Model Cluster!");
-
+            Console.WriteLine("Hello HTM Actor Model Cluster!");
             //AkkaHostService svc = new AkkaHostService();
             //svc.Start(args);
             //--port  8081  --sysname HtmCluster  --hosstname=localhost --publichostname=localhost

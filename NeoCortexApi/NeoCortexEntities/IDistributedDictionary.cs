@@ -8,6 +8,8 @@ namespace NeoCortexApi.Entities
 {
     public interface IDistributedDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IEnumerator<KeyValuePair<TKey, TValue>>
     {
+        HtmConfig HtmConfig { get; set; }
+
         void AddOrUpdate(ICollection<KeyPair> keyValuePairs);
 
         /// <summary>

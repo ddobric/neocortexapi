@@ -8,10 +8,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Diagnostics;
-using NeoCortexApi.DistributedComputeLib;
 using System.Collections.Concurrent;
 using System.Threading;
-using NeoCortexApi.DistributedCompute;
 using System.IO;
 
 namespace NeoCortexApi

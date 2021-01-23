@@ -19,7 +19,6 @@ using System.Linq;
 using NeuralNet.MLPerceptron;
 using Microsoft.ML;
 using Microsoft.ML.Data;
-using NeoCortexApi.DistributedCompute;
 using NeoCortexApi.Encoders;
 
 namespace UnitTestsProject
@@ -165,7 +164,7 @@ namespace UnitTestsProject
 
                             string testName = $"{outFolder}\\{inputPrefix}_{fI.Name}";
 
-                            string inputBinaryImageFile = Helpers.BinarizeImage($"{trainingImage}", imgSize, testName);
+                            string inputBinaryImageFile = UnitTestHelpers.BinarizeImage($"{trainingImage}", imgSize, testName);
 
                             // Read input csv file into array
                             int[] inputVector = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageFile).ToArray();

@@ -5,8 +5,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
-using Akka.Actor;
-using Akka.Configuration;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using NeoCortexApi.Entities;
@@ -51,8 +49,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
         private int m_NumElements = 0;
 
-        private ActorSystem m_ActSystem;
-
+       
         #region Properties
         /// <summary>
         /// Akka cluster configuration.
