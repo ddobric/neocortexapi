@@ -19,27 +19,37 @@ namespace NeoCortexApi.Network
     /// <typeparam name="TOUT"></typeparam>
     public class HtmClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>
     {
+        private int maxRecordedElements = 5;
+
         private List<TIN> inputSequence = new List<TIN>();
 
         private Dictionary<int[], int> inputSequenceMap = new Dictionary<int[], int>();
 
         private Dictionary<int[], TIN> activeMap = new Dictionary<int[], TIN>();
 
+        /// <summary>
+        /// Recording of all SDRs. See maxRecordedElements.
+        /// </summary>
         private Dictionary<TIN, List<int[]>> m_AllInputs = new Dictionary<TIN, List<int[]>>();
 
+        /// <summary>
+        /// Mapping between the input key and the SDR assootiated to the input.
+        /// </summary>
         private Dictionary<TIN, int[]> m_ActiveMap2 = new Dictionary<TIN, int[]>();
+
+
+        public void ClearState()
+        {
+            //this.activeMap.Clear();
+            this.m_ActiveMap2.Clear();
+            // this.inputSequence.Clear();
+        }
 
         public void Learn(TIN input, Cell[] activeCells, bool learn)
         {
             throw new NotImplementedException();
         }
 
-        public void ClearState()
-        {
-            //this.activeMap.Clear();
-            this.m_ActiveMap2.Clear();
-           // this.inputSequence.Clear();
-        }
 
         /// <summary>
         /// Assotiate specified input to the given set of predictive cells.
@@ -49,14 +59,19 @@ namespace NeoCortexApi.Network
         /// <param name="predictedOutput"></param>
         public void Learn(TIN input, Cell[] output)
         {
-           // this.inputSequence.Add(input);
+            // this.inputSequence.Add(input);
 
             var cellIndicies = GetCellIndicies(output);
-        
+
             if (m_AllInputs.ContainsKey(input) == false)
                 m_AllInputs.Add(input, new List<int[]>());
-            else
-                m_AllInputs[input].Add(cellIndicies);
+
+            // Record SDR
+            m_AllInputs[input].Add(cellIndicies);
+
+            // Make sure that only few last SDRs are recorded.
+            if (m_AllInputs[input].Count > maxRecordedElements)
+                m_AllInputs[input].RemoveAt(0);
 
             if (this.m_ActiveMap2.ContainsKey(input))
             {
@@ -96,7 +111,7 @@ namespace NeoCortexApi.Network
             // bool x = false;
             double maxSameBits = 0;
             TIN predictedValue = default;
-          
+
             if (predictiveCells.Length != 0)
             {
                 int indxOfMatchingInp = 0;
@@ -104,7 +119,7 @@ namespace NeoCortexApi.Network
                 int n = 0;
 
                 List<int> sortedMatches = new List<int>();
-               
+
                 var celIndicies = GetCellIndicies(predictiveCells);
 
                 Debug.WriteLine($"Predictive cells: {celIndicies.Length} \t {Helpers.StringifyVector(celIndicies)}");
@@ -235,7 +250,7 @@ namespace NeoCortexApi.Network
                     Debug.WriteLine($"{item.Key}");
 
                     cellStateSw.WriteLine("");
-                    cellStateSw.WriteLine($"{item.Key}"); 
+                    cellStateSw.WriteLine($"{item.Key}");
                     foreach (var cellState in item.Value)
                     {
                         var str = Helpers.StringifyVector(cellState);
