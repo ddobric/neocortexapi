@@ -1,13 +1,31 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
-VisualStudioVersion = 16.0.30804.86
+VisualStudioVersion = 16.0.29009.5
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexApi", "NeoCortexApi\NeoCortexApi.csproj", "{F5BEDB25-C6A3-4826-A8C6-679098F5CB9C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexApi.Parallel", "NeoCortexApi.Parallel\NeoCortexApi.Parallel.csproj", "{185580A7-A696-4D53-B4E8-29B8334BE9AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexUtils", "NeoCortexUtils\NeoCortexUtils.csproj", "{28395BF8-B719-4D93-806B-723A7AF0C56A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtmActorHost", "HtmActorHost\HtmActorHost.csproj", "{AF7FFD81-0FE5-4996-9230-17A95899ABA8}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{7D17894D-95EC-4D16-B6C5-4A6CBBE07E2F}"
+	ProjectSection(SolutionItems) = preProject
+		nuget\DotNetActors.1.0.3.nupkg = nuget\DotNetActors.1.0.3.nupkg
+		nuget\imagebinarizer.1.0.0.nupkg = nuget\imagebinarizer.1.0.0.nupkg
+		nuget\LearningApi.1.3.1.nupkg = nuget\LearningApi.1.3.1.nupkg
+		nuget\NeoCortexApi.1.0.8.nupkg = nuget\NeoCortexApi.1.0.8.nupkg
+		nuget\NeoCortexApi.1.0.9.nupkg = nuget\NeoCortexApi.1.0.9.nupkg
+		nuget\NeoCortexApi.1.0.9.snupkg = nuget\NeoCortexApi.1.0.9.snupkg
+		nuget\NeuralNet.MLPerceptron.1.2.2.nupkg = nuget\NeuralNet.MLPerceptron.1.2.2.nupkg
+		nuget\NeuralNetworks.Core.1.2.1.nupkg = nuget\NeuralNetworks.Core.1.2.1.nupkg
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexArrayLib", "NeoCortexArrayLib\NeoCortexArrayLib.csproj", "{A7F4E797-E60F-470E-96F6-B9ECD3A67451}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexEntities", "NeoCortexEntities\NeoCortexEntities.csproj", "{F2693439-77AF-420C-B42F-9FD5BBEC5482}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexApi.Parallel", "NeoCortexApi.Parallel\NeoCortexApi.Parallel.csproj", "{A7502EC3-BFD1-46AD-8AFE-E6E7AD7603B3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtmActorHost", "HtmActorHost\HtmActorHost.csproj", "{841CE2B3-A364-48C1-A2E2-3C92EA7C3592}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,14 +37,26 @@ Global
 		{F5BEDB25-C6A3-4826-A8C6-679098F5CB9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F5BEDB25-C6A3-4826-A8C6-679098F5CB9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F5BEDB25-C6A3-4826-A8C6-679098F5CB9C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{185580A7-A696-4D53-B4E8-29B8334BE9AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{185580A7-A696-4D53-B4E8-29B8334BE9AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{185580A7-A696-4D53-B4E8-29B8334BE9AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{185580A7-A696-4D53-B4E8-29B8334BE9AE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AF7FFD81-0FE5-4996-9230-17A95899ABA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AF7FFD81-0FE5-4996-9230-17A95899ABA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AF7FFD81-0FE5-4996-9230-17A95899ABA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AF7FFD81-0FE5-4996-9230-17A95899ABA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28395BF8-B719-4D93-806B-723A7AF0C56A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28395BF8-B719-4D93-806B-723A7AF0C56A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28395BF8-B719-4D93-806B-723A7AF0C56A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28395BF8-B719-4D93-806B-723A7AF0C56A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7F4E797-E60F-470E-96F6-B9ECD3A67451}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7F4E797-E60F-470E-96F6-B9ECD3A67451}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7F4E797-E60F-470E-96F6-B9ECD3A67451}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7F4E797-E60F-470E-96F6-B9ECD3A67451}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2693439-77AF-420C-B42F-9FD5BBEC5482}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2693439-77AF-420C-B42F-9FD5BBEC5482}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2693439-77AF-420C-B42F-9FD5BBEC5482}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2693439-77AF-420C-B42F-9FD5BBEC5482}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7502EC3-BFD1-46AD-8AFE-E6E7AD7603B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7502EC3-BFD1-46AD-8AFE-E6E7AD7603B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7502EC3-BFD1-46AD-8AFE-E6E7AD7603B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7502EC3-BFD1-46AD-8AFE-E6E7AD7603B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{841CE2B3-A364-48C1-A2E2-3C92EA7C3592}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{841CE2B3-A364-48C1-A2E2-3C92EA7C3592}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{841CE2B3-A364-48C1-A2E2-3C92EA7C3592}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{841CE2B3-A364-48C1-A2E2-3C92EA7C3592}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

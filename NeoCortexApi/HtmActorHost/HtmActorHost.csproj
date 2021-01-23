@@ -18,16 +18,14 @@
 
   <ItemGroup>
     <Compile Remove="ActorSbHostService.cs" />
-    <Compile Remove="AkkaHostService.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="ActorSbHostService.cs" />
-    <None Include="AkkaHostService.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotNetActors" Version="1.0.0" />
+    <PackageReference Include="DotNetActors" Version="1.0.3" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="5.0.0" />

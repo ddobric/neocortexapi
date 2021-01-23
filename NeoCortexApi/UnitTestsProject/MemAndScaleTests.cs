@@ -283,6 +283,7 @@ namespace UnitTestsProject
         //[DataRow(PoolerMode.SingleThreaded)]
         [DataRow(PoolerMode.Multicore)]
         [TestCategory("LongRunning")]
+        [TestCategory("Parallel")]
         public void SPInitTest(PoolerMode poolerMode)
         {
             //Thread.Sleep(2000);
