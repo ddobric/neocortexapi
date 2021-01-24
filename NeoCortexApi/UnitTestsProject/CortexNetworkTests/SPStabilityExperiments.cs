@@ -583,8 +583,6 @@ namespace UnitTestsProject
                         {
                             using (StreamWriter sdrPlotlyWriter = new StreamWriter(Path.Combine(path, $"ActiveColumns_MaxBoost_{maxBoost}_MinOverl_{minOverlapCycles}_{input}_plotly-input.csv"), true))
                             {
-                                Debug.WriteLine("Cycle;Similarity");
-
                                 Debug.WriteLine($"Input: {input}");
 
                                 var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;

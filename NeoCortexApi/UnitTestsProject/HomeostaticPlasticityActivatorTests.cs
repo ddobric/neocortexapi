@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using NeoCortexApi;
-using Akka.Dispatch.SysMsg;
 using NeoCortex;
 
 namespace UnitTestsProject

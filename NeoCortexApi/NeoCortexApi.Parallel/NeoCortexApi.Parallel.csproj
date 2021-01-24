@@ -10,22 +10,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="AkkaDistributedDictionaryBase.cs" />
+    <Compile Remove="DictNodeActor.cs" />
     <Compile Remove="InMemoryArrayMOVETTORNTITIES.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="AkkaDistributedDictionaryBase.cs" />
+    <None Include="DictNodeActor.cs" />
     <None Include="InMemoryArrayMOVETTORNTITIES.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Akka.Remote" Version="1.3.12" />
+    <PackageReference Include="DotNetActors" Version="1.0.3" />
     <PackageReference Include="ImageBinarizer" Version="1.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AkkaSb.Net\AkkaSb.Net.csproj" />
     <ProjectReference Include="..\NeoCortexArrayLib\NeoCortexArrayLib.csproj" />
     <ProjectReference Include="..\NeoCortexEntities\NeoCortexEntities.csproj" />
   </ItemGroup>

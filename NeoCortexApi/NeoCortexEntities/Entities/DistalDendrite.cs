@@ -66,8 +66,6 @@ namespace NeoCortexApi.Entities
             this.m_LastUsedIteration = lastUsedIteration;            
         }
 
-       
-
 
         /// <summary>
         /// Gets all synapses owned by this distal dentrite segment.
@@ -86,21 +84,21 @@ namespace NeoCortexApi.Entities
         /// <param name="c"></param>
         /// <param name="activeCells"></param>
         /// <returns></returns>
-        public ISet<Synapse> GetActiveSynapses(Connections c, ISet<Cell> activeCells)
-        {
-            ISet<Synapse> activeSynapses = new LinkedHashSet<Synapse>();
+        //public ISet<Synapse> GetActiveSynapses(Connections c, ISet<Cell> activeCells)
+        //{
+        //    ISet<Synapse> activeSynapses = new LinkedHashSet<Synapse>();
 
-            //DD foreach (var synapse in c.GetSynapses(this))
-            foreach (var synapse in this.Synapses)
-            {
-                if (activeCells.Contains(synapse.getPresynapticCell()))
-                {
-                    activeSynapses.Add(synapse);
-                }
-            }
+        //    //DD foreach (var synapse in c.GetSynapses(this))
+        //    foreach (var synapse in this.Synapses)
+        //    {
+        //        if (activeCells.Contains(synapse.getPresynapticCell()))
+        //        {
+        //            activeSynapses.Add(synapse);
+        //        }
+        //    }
 
-            return activeSynapses;
-        }
+        //    return activeSynapses;
+        //}
 
            
         /// <summary>

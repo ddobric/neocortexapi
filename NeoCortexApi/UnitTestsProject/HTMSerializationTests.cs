@@ -622,7 +622,9 @@ namespace UnitTestsProject
             }
         }
 
-
+        /// <summary>
+        /// Test List of Synapse.
+        /// </summary>
         [TestMethod]
         [TestCategory("Serialization")]
         public void SerializeSynapseList()
@@ -667,6 +669,7 @@ namespace UnitTestsProject
         [DataRow(34, 24, 24.65)]
         [DataRow(13, 87, 22.45)]
         [DataRow(1000, 3400, 4573.623)]
+
         public void SerializeSynapseTest(int segmentindex,int synapseindex,double permanence)
         {
             Cell cell = new Cell(12, 14, 16, 18, new CellActivity());

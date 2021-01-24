@@ -12,8 +12,7 @@ namespace UnitTestsProject
     {
         private int[] m_InhibitColumns;
 
-        private static long serialVersionUID = 1L;
-
+      
         public SpatialPoolerMock(int[] inhibitColumns)
         {
             m_InhibitColumns = inhibitColumns;
@@ -60,8 +59,7 @@ namespace UnitTestsProject
 
     public class SpatialPoolerMock3 : SpatialPooler
     {
-        private static long serialVersionUID = 1L;
-
+     
         private double m_avgConnectedSpanForColumnND;
 
         private double m_avgColumnsPerInput;
@@ -87,9 +85,7 @@ namespace UnitTestsProject
 
     public class SpatialPoolerMock4 : SpatialPooler
     {
-        private static long serialVersionUID = 1L;
-
-
+     
         public SpatialPoolerMock4()
         {
            

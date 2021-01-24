@@ -4,7 +4,6 @@ using AkkaSb.Net;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
-using NeoCortexApi.DistributedCompute;
 using NeoCortexApi.DistributedComputeLib;
 using NeoCortexApi.Entities;
 using System;
