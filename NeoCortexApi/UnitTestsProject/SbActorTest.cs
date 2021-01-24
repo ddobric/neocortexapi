@@ -42,13 +42,13 @@ namespace UnitTestsProject
             }
         }
 
-       
+
         internal static ActorSbConfig GetLocaSysConfig()
         {
             ActorSbConfig cfg = new ActorSbConfig();
             cfg.SbConnStr = SbConnStr;
-            cfg.ReplyMsgQueue = "actorsystem/rcvlocal";
-            cfg.RequestMsgTopic = "actorsystem/actortopic";
+            cfg.ReplyMsgQueue = "actorsystem2/rcvlocal";
+            cfg.RequestMsgTopic = "actorsystem2/actortopic";
             cfg.TblStoragePersistenConnStr = TblAccountConnStr;
             cfg.ActorSystemName = "inst701";
             return cfg;
@@ -155,6 +155,33 @@ namespace UnitTestsProject
             task.Wait();
 
             Debug.WriteLine($"End of {nameof(TellTest)}");
+        }
+
+        /// <summary>
+        /// Integration tests for Ask. It requires the actor host. 
+        /// </summary>
+        [TestMethod]
+        [TestCategory("SbActorTests")]
+        [TestCategory("RequiresActorHost")]
+        public async Task AskClientTest()
+        {
+            Debug.WriteLine($"Start of {nameof(AskClientTest)}");
+
+            CancellationTokenSource src = new CancellationTokenSource();
+
+            var cfg = GetLocaSysConfig();
+
+            ActorSystem sysLocal = new ActorSystem($"{nameof(AskClientTest)}/local", cfg);
+
+            ActorReference actorRef1 = sysLocal.CreateActor<HtmActor>(new ActorId(1));
+
+            var response = await actorRef1.Ask<string>(new PingNodeMsg() { Msg = "hello" });
+
+            Assert.IsTrue(response.Contains("hello"));
+
+            Assert.IsTrue((await actorRef1.Ask<string>(new PingNodeMsg() { Msg = "hello again" })).Contains("hello again"));
+
+            Debug.WriteLine($"End of {nameof(AskClientTest)}");
         }
 
         /// <summary>

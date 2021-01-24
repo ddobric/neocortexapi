@@ -78,16 +78,23 @@ namespace NeoCortexApi.DistributedComputeLib
 
             for (int i = 0; i < this.ActorMap.Count; i++)
             {
-                string actorName = $"{nameof(DictNodeActor)}-{Guid.NewGuid()}-{this.ActorMap[i].NodeIndx}-{this.ActorMap[i].PartitionIndx}";
+                //string actorName = $"{nameof(DictNodeActor)}-{Guid.NewGuid()}-{this.ActorMap[i].NodeIndx}-{this.ActorMap[i].PartitionIndx}";
 
                 ActorReference actorRef1 = m_ActorSystem.CreateActor<HtmActor>(1);
 
-                this.ActorMap[i].ActorRef = m_ActorSystem.CreateActor<HtmActor>(new ActorId(this.ActorMap[i].PartitionIndx));
-
-                var result = ((ActorReference)this.ActorMap[i].ActorRef).Ask<int>(new CreateDictNodeMsg()
+                try
                 {
-                    HtmAkkaConfig = this.HtmConfig,
-                }, this.Config.ConnectionTimeout, this.m_ActorMap[i].NodePath).Result;
+                    this.ActorMap[i].ActorRef = m_ActorSystem.CreateActor<HtmActor>(new ActorId(this.ActorMap[i].PartitionIndx));
+
+                    var result = ((ActorReference)this.ActorMap[i].ActorRef).Ask<int>(new CreateDictNodeMsg()
+                    {
+                        HtmAkkaConfig = this.HtmConfig,
+                    }, this.Config.ConnectionTimeout, this.m_ActorMap[i].NodePath).Result;
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
             }
         }
 
@@ -308,12 +315,19 @@ namespace NeoCortexApi.DistributedComputeLib
                 // Run overlap calculation on all actors(in all partitions)
                 Parallel.ForEach(batchOfElements, opts, (placement) =>
                 {
-                    var res = ((ActorReference)placement.ActorRef).Ask<int>(new InitColumnsMsg()
+                    try
                     {
-                        PartitionKey = placement.PartitionIndx,
-                        MinKey = (int)(object)placement.MinKey,
-                        MaxKey = (int)(object)placement.MaxKey
-                    }, this.Config.ConnectionTimeout, placement.NodePath).Result;
+                        var res = ((ActorReference)placement.ActorRef).Ask<int>(new InitColumnsMsg()
+                        {
+                            PartitionKey = placement.PartitionIndx,
+                            MinKey = (int)(object)placement.MinKey,
+                            MaxKey = (int)(object)placement.MaxKey
+                        }, this.Config.ConnectionTimeout, placement.NodePath).Result;
+                    }
+                    catch (Exception ex)
+                    { 
+                    
+                    }
                 });
             }, this.ActorMap, this.Config.BatchSize);
 
