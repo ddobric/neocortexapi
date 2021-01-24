@@ -133,7 +133,7 @@ namespace UnitTestsProject
             SpatialPooler sp1 = new SpatialPooler(hpa);
 
             p.apply(mem);
-            sp1.Init(mem, UnitTestHelpers.GetMemory());
+            sp1.Init(mem);
 
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
 

@@ -11,7 +11,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Linq;
 
-namespace UnitTestsProject
+namespace UnitTests.Parallel
 {
     [TestClass]
     public class InMemoryDistributedDictionaryTests
@@ -49,7 +49,7 @@ namespace UnitTestsProject
         [ExpectedException(typeof(OutOfMemoryException))]
         public void TestMaxDims()
         {
-            var parameters = SpatialPoolerResearchTests.GetDefaultParams();
+            var parameters = UnitTestHelpers.GetDefaultParams();
             parameters.Set(KEY.POTENTIAL_RADIUS, 64 * 64);
             parameters.Set(KEY.POTENTIAL_PCT, 1.0);
             parameters.Set(KEY.GLOBAL_INHIBITION, false);
@@ -87,24 +87,6 @@ namespace UnitTestsProject
             parameters.apply(mem);
             sp.Init(mem, null);
         }
-
-        /// <summary>
-        /// This test will faile with System.AccessViolationException: 
-        /// 'Attempted to read or write protected memory. 
-        /// This is often an indication that other memory is corrupt.'
-        /// </summary>
-        //[TestMethod]
-        //[ExpectedException(typeof(AccessViolationException))]
-
-        //public void HugeIntArrayTest()
-        //{
-        //    var x = new int[4096, 250000];
-        //    for (int i = 0; i < 4096; i++)
-        //    {
-        //        int[] y = x.GetRow2(i);
-        //    }
-        //}
-
 
 
         [TestMethod]

@@ -11,7 +11,6 @@ using NeoCortexApi;
 using NeoCortexApi.Entities;
 using System.Diagnostics;
 using NeoCortexEntities.NeuroVisualizer;
-using WebSocketNeuroVisualizer;
 using System.IO;
 namespace UnitTestsProject
 {
@@ -74,7 +73,7 @@ namespace UnitTestsProject
                     TemporalMemory tm1 = new TemporalMemory();
                     var mem = new Connections();
                     p.apply(mem);
-                    sp1.Init(mem, UnitTestHelpers.GetMemory());
+                    sp1.Init(mem, UnitTestHelpers.GetInMemoryDictionary());
                     tm1.Init(mem);
 
                     Dictionary<string, object> settings = new Dictionary<string, object>()

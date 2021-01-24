@@ -11,7 +11,6 @@ using NeoCortexApi;
 using NeoCortexApi.Entities;
 using System.Diagnostics;
 using NeoCortexEntities.NeuroVisualizer;
-using WebSocketNeuroVisualizer;
 using NeoCortexApi.Utility;
 using System.Text;
 using System.IO;
@@ -125,7 +124,7 @@ namespace UnitTestsProject
             SpatialPooler sp1 = new SpatialPooler();
             var mem = new Connections();
             p.apply(mem);
-            sp1.Init(mem, UnitTestHelpers.GetMemory());
+            sp1.Init(mem, UnitTestHelpers.GetInMemoryDictionary());
 
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
 
@@ -306,7 +305,7 @@ namespace UnitTestsProject
             SpatialPooler sp1 = new SpatialPooler();
             var mem = new Connections();
             p.apply(mem);
-            sp1.Init(mem, UnitTestHelpers.GetMemory());
+            sp1.Init(mem, UnitTestHelpers.GetInMemoryDictionary());
 
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
 
@@ -535,7 +534,7 @@ namespace UnitTestsProject
             SpatialPooler sp1 = new SpatialPooler(hpa);
 
             p.apply(mem);
-            sp1.Init(mem, UnitTestHelpers.GetMemory());
+            sp1.Init(mem, UnitTestHelpers.GetInMemoryDictionary());
 
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
 

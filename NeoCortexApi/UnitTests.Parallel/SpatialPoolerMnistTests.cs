@@ -14,14 +14,9 @@ using NeoCortex;
 using NeoCortexApi.Network;
 using LearningFoundation;
 using System.Globalization;
-using MLPerceptron;
 using System.Linq;
-using NeuralNet.MLPerceptron;
-using Microsoft.ML;
-using Microsoft.ML.Data;
 
-
-namespace UnitTestsProject
+namespace UnitTests.Parallel
 {
     [TestClass]
     public class SpatialPoolerMnistTests
@@ -37,8 +32,9 @@ namespace UnitTestsProject
         /// <param name="topologies">list of sparse space size. Sparse space has same width and length</param>
         [TestMethod]
         [TestCategory("LongRunning")]
-        [DataRow("MnistPng28x28\\training", "3", new int[] { 28 }, new int[] { 32, 64, 128 })]
-        public void TrainSingleMnistImageTest(string trainingFolder, string digit, int[] imageSizes, int[] topologies)
+        [TestCategory("Parallel")]
+        [DataRow("MnistPng28x28\\training", "3", new int[] { 28 }, new int[] { 32, 64, 128 }, PoolerMode.Multicore)]
+        public void TrainSingleMnistImageTest(string trainingFolder, string digit, int[] imageSizes, int[] topologies, PoolerMode poolerMode)
         {
             string TestOutputFolder = $"Output-{nameof(TrainSingleMnistImageTest)}";
 
@@ -89,13 +85,13 @@ namespace UnitTestsProject
                     parameters.setInputDimensions(new int[] { imageSizes[imSizeIndx], imageSizes[imSizeIndx] });
                     parameters.setColumnDimensions(new int[] { topologies[topologyIndx], topologies[topologyIndx] });
 
-                    SpatialPooler sp = new SpatialPoolerMT();
+                    SpatialPooler sp = UnitTestHelpers.CreatePooler(poolerMode);
 
                     var mem = new Connections();
 
                     parameters.apply(mem);
 
-                    sp.Init(mem, UnitTestHelpers.GetInMemoryDictionary());
+                    UnitTestHelpers.InitPooler(poolerMode, sp, mem, parameters);
 
                     int actiColLen = numOfActCols;
 
@@ -905,199 +901,6 @@ namespace UnitTestsProject
             return sparseFileName;
         }
 
-        private void DoSupervisedLearningWithMLNet(int numSparseBits, string trainDataPath)
-        {
-            trainDataPath = "sparse-results.csv";
-
-            MLContext mLContext = new MLContext();
-
-            var trainData = mLContext.Data.LoadFromTextFile(path: trainDataPath,
-                     columns: new[]
-                     {
-                            new TextLoader.Column(nameof(InputData.PixelValues), DataKind.Double, 1, numSparseBits),
-                            new TextLoader.Column("Number", DataKind.Int16, 0)
-                     },
-                     hasHeader: false,
-                     separatorChar: ','
-                     );
-
-
-            var testData = mLContext.Data.LoadFromTextFile(path: trainDataPath,
-                    columns: new[]
-                    {
-                            new TextLoader.Column(nameof(InputData.PixelValues), DataKind.Double, 1, numSparseBits),
-                            new TextLoader.Column("Number", DataKind.Int16, 0)
-                    },
-                    hasHeader: false,
-                    separatorChar: ','
-                    );
-
-            // STEP 2: Common data process configuration with pipeline data transformations
-            var dataProcessPipeline = mLContext.Transforms.Concatenate(DefaultColumnNames.Features, nameof(InputData.PixelValues)).AppendCacheCheckpoint(mLContext);
-
-            // STEP 3: Set the training algorithm, then create and config the modelBuilder
-            var trainer = mLContext.MulticlassClassification.Trainers.StochasticDualCoordinateAscent(labelColumnName: "Number", featureColumnName: DefaultColumnNames.Features);
-            var trainingPipeline = dataProcessPipeline.Append(trainer);
-
-            // STEP 4: Train the model fitting to the DataSet
-            var watch = System.Diagnostics.Stopwatch.StartNew();
-            Console.WriteLine("=============== Training the model ===============");
-
-            ITransformer trainedModel = trainingPipeline.Fit(trainData);
-            long elapsedMs = watch.ElapsedMilliseconds;
-            Debug.WriteLine($"***** Training time: {elapsedMs / 1000} seconds *****");
-
-            Console.WriteLine("===== Evaluating Model's accuracy with Test data =====");
-            var predictions = trainedModel.Transform(testData);
-            var metrics = mLContext.MulticlassClassification.Evaluate(data: predictions, label: "Number", score: DefaultColumnNames.Score);
-
-            PrintMultiClassClassificationMetrics(trainer.ToString(), metrics);
-
-            using (var fs = new FileStream("ml-model", FileMode.Create, FileAccess.Write, FileShare.Write))
-                mLContext.Model.Save(trainedModel, fs);
-
-        }
-
-        private static void PrintMultiClassClassificationMetrics(string name, MultiClassClassifierMetrics metrics)
-        {
-            Console.WriteLine($"************************************************************");
-            Console.WriteLine($"*    Metrics for {name} multi-class classification model   ");
-            Console.WriteLine($"*-----------------------------------------------------------");
-            Console.WriteLine($"    AccuracyMacro = {metrics.AccuracyMacro:0.####}, a value between 0 and 1, the closer to 1, the better");
-            Console.WriteLine($"    AccuracyMicro = {metrics.AccuracyMicro:0.####}, a value between 0 and 1, the closer to 1, the better");
-            Console.WriteLine($"    LogLoss = {metrics.LogLoss:0.####}, the closer to 0, the better");
-            Console.WriteLine($"    LogLoss for class 1 = {metrics.PerClassLogLoss[0]:0.####}, the closer to 0, the better");
-            Console.WriteLine($"    LogLoss for class 2 = {metrics.PerClassLogLoss[1]:0.####}, the closer to 0, the better");
-            Console.WriteLine($"    LogLoss for class 3 = {metrics.PerClassLogLoss[2]:0.####}, the closer to 0, the better");
-            Console.WriteLine($"************************************************************");
-        }
-
-        private void PredictSupervizedLearning(string[] digits, string testingFolder, HtmModuleNet sp, int imgSize, Connections mem, int targetLyrIndx, LearningApi learningPpi)
-        {
-            foreach (var digit in digits)
-            {
-                List<string> trainingFiles = new List<string>();
-
-                string digitFolder = Path.Combine(testingFolder, digit);
-
-                if (!Directory.Exists(digitFolder))
-                    continue;
-
-                var testingImages = Directory.GetFiles(digitFolder);
-
-                foreach (var mnistImage in testingImages)
-                {
-                    string testName = $"PREDICT_digit_{digit}_{new FileInfo(mnistImage).Name}_{imgSize}";
-
-                    string inputBinaryImageFile = NeoCortexUtils.BinarizeImage($"{mnistImage}", imgSize, testName);
-
-                    //Read input csv file into array
-                    int[] inputVector = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageFile).ToArray();
-
-                    sp.Compute(inputVector, false);
-
-                    var activeColumns = sp.GetActiveColumns(targetLyrIndx);
-
-                    double[] sdrOut = new double[activeColumns.Length + 10];
-
-                    activeColumns.CopyTo(sdrOut, 0);
-
-                    MLPerceptronResult res = learningPpi.Algorithm.Predict(new double[][] { sdrOut }, learningPpi.Context) as MLPerceptronResult;
-
-                    var predictedDigitResult = res.results[int.Parse(digit)];
-
-                    string marker = predictedDigitResult > 0.90 ? "OK" : "ERR";
-                    Debug.WriteLine($"{digit} - res={predictedDigitResult} - {marker}");
-                }
-            }
-        }
-
-
-        private LearningApi DoSupervisedLearning(int iterations, double learningrate, int batchSize,
-            int[] hiddenLayerNeurons, int iterationnumber, List<string> trainingFiles)
-        {
-            LearningApi api = new LearningApi();
-
-            api.UseActionModule<object, double[][]>((notUsed, ctx) =>
-            {
-                List<double[]> rows = new List<double[]>();
-
-                ctx.DataDescriptor = new LearningFoundation.DataDescriptor();
-
-                //var trainingFiles = Directory.GetFiles($"{Directory.GetCurrentDirectory()}\\MLPerceptron\\TestFiles\\Sdr");
-                int rowCnt = 0;
-                foreach (var file in trainingFiles)
-                {
-                    using (var reader = new StreamReader(file))
-                    {
-                        string line;
-
-                        while ((line = reader.ReadLine()) != null)
-                        {
-                            var tokens = line.Split(",");
-                            List<string> newTokens = new List<string>();
-                            foreach (var token in tokens)
-                            {
-                                if (token != " ")
-                                    newTokens.Add(token);
-                            }
-
-                            tokens = newTokens.ToArray();
-
-                            if (rowCnt == 0)
-                            {
-                                ctx.DataDescriptor.Features = new LearningFoundation.DataMappers.Column[tokens.Length - 1];
-                                for (int i = 1; i < tokens.Length; i++)
-                                {
-                                    ctx.DataDescriptor.Features[i - 1] = new LearningFoundation.DataMappers.Column
-                                    {
-                                        Id = i,
-                                        Index = i,
-                                        Type = LearningFoundation.DataMappers.ColumnType.BINARY
-                                    };
-                                }
-                                ctx.DataDescriptor.LabelIndex = -1;
-                            }
-
-                            // We have 65 features and digit number in file. to encode digits 0-9. 
-                            // Digits can be represented as 9 bits.
-                            double[] row = new double[tokens.Length - 1 + 10];
-                            for (int i = 0; i < tokens.Length; i++)
-                            {
-                                row[i] = double.Parse(tokens[i], CultureInfo.InvariantCulture);
-                            }
-
-                            //
-                            // This code encodes 9 digit classes as last 9 bits of training vector.
-                            for (int k = 0; k < 10; k++)
-                            {
-                                if (double.Parse(tokens[0], CultureInfo.InvariantCulture) == k)
-                                    row[tokens.Length - 1 + k] = 1;
-                                else
-                                    row[tokens.Length - 1 + k] = 0;
-                            }
-
-                            rows.Add(row);
-                        }
-                    }
-
-                    rowCnt++;
-                }
-
-                return rows.ToArray();
-            });
-
-            //int[] hiddenLayerNeurons = { 6 };
-            // Invoke the MLPerecptronAlgorithm with a specific learning rate, number of iterations
-            api.UseMLPerceptron(learningrate, iterations, batchSize, iterationnumber, hiddenLayerNeurons);
-
-            MLPerceptronAlgorithmScore score = api.Run() as MLPerceptronAlgorithmScore;
-
-            api.Save("SdrMnistModel");
-
-            return api;
-        }
-
 
         #region Private Helpers
 
@@ -1151,10 +954,4 @@ namespace UnitTestsProject
 
     }
 
-    class InputData
-    {
-        [ColumnName("PixelValues")]
-        [VectorType(64)]
-        public Boolean[] PixelValues;
-    }
 }

@@ -419,7 +419,7 @@ namespace UnitTestsProject
         [DataRow(PoolerMode.Multicore)]
         [TestCategory("UnitTest")]
         [TestCategory("Prod")]
-        public void testZeroOverlap_StimulusThreshold_GlobalInhibition(PoolerMode poolerMode)
+        public void ZeroOverlap_StimulusThreshold_GlobalInhibition_Test(PoolerMode poolerMode)
         {
             int inputSize = 10;
             int nColumns = 20;
@@ -447,7 +447,7 @@ namespace UnitTestsProject
         [TestMethod]
         [TestCategory("UnitTest")]
         [TestCategory("Prod")]
-        public void testZeroOverlap_NoStimulusThreshold_LocalInhibition()
+        public void ZeroOverlap_NoStimulusThreshold_LocalInhibition_Test()
         {
             int inputSize = 10;
             int nColumns = 20;

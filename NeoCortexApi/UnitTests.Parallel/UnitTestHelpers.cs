@@ -4,6 +4,7 @@ using AkkaSb.Net;
 using LearningFoundation.ImageBinarizer;
 using Microsoft.Extensions.Logging;
 using NeoCortexApi;
+using NeoCortexApi.DistributedComputeLib;
 using NeoCortexApi.Entities;
 using System;
 using System.Collections.Generic;
@@ -11,17 +12,17 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 
-namespace UnitTestsProject
+namespace UnitTests.Parallel
 {
     public class UnitTestHelpers
     {
-        //public static DistributedMemory GetMemory(HtmConfig htmConfig = null)
-        //{
-        //    if (htmConfig == null)
-        //        return GetInMemoryDictionary();
-        //    else
-        //        return GetDistributedDictionary(htmConfig);
-        //}
+        public static DistributedMemory GetMemory(HtmConfig htmConfig = null)
+        {
+            if (htmConfig == null)
+                return GetInMemoryDictionary();
+            else
+                return GetDistributedDictionary(htmConfig);
+        }
 
         /// <summary>
         /// Gest the logger instance.
@@ -64,18 +65,42 @@ namespace UnitTestsProject
             }
         }
 
-        //public static DistributedMemory GetDistributedDictionary(HtmConfig htmConfig)
-        //{
-        //    var cfg = UnitTestHelpers.DefaultSbConfig;
-           
-        //    return new DistributedMemory()
-        //    {
-        //        ColumnDictionary = new ActorSbDistributedDictionaryBase<Column>(cfg, UnitTestHelpers.GetLogger()),
+        internal static Parameters GetDefaultParams()
+        {
+            ThreadSafeRandom rnd = new ThreadSafeRandom(42);
 
-        //        //ColumnDictionary = new HtmSparseIntDictionary<Column>(cfg),
-        //        //PoolDictionary = new HtmSparseIntDictionary<Pool>(cfg),
-        //    };
-        //}
+            var parameters = Parameters.getAllDefaultParameters();
+            parameters.Set(KEY.POTENTIAL_RADIUS, 10);
+            parameters.Set(KEY.POTENTIAL_PCT, 0.75);
+            parameters.Set(KEY.GLOBAL_INHIBITION, false);
+            parameters.Set(KEY.LOCAL_AREA_DENSITY, -1);
+            parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 50.0);
+            parameters.Set(KEY.STIMULUS_THRESHOLD, 0);
+            parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.01);
+            parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0.1);
+            parameters.Set(KEY.SYN_PERM_CONNECTED, 0.1);
+            parameters.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.001);
+            parameters.Set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.001);
+            //parameters.Set(KEY.WRAP_AROUND, false);
+            parameters.Set(KEY.DUTY_CYCLE_PERIOD, 100);
+            parameters.Set(KEY.MAX_BOOST, 10.0);
+            parameters.Set(KEY.RANDOM, rnd);
+           
+            return parameters;
+        }
+
+        public static DistributedMemory GetDistributedDictionary(HtmConfig htmConfig)
+        {
+            var cfg = UnitTestHelpers.DefaultSbConfig;
+           
+            return new DistributedMemory()
+            {
+                ColumnDictionary = new ActorSbDistributedDictionaryBase<Column>(cfg, UnitTestHelpers.GetLogger()),
+
+                //ColumnDictionary = new HtmSparseIntDictionary<Column>(cfg),
+                //PoolDictionary = new HtmSparseIntDictionary<Pool>(cfg),
+            };
+        }
 
         public static DistributedMemory GetInMemoryDictionary()
         {
@@ -106,6 +131,35 @@ namespace UnitTestsProject
 
             return sp;
         }
+
+        internal static void InitPooler(PoolerMode poolerMode, SpatialPooler sp, Connections mem, Parameters parameters = null)
+        {
+            if (poolerMode == PoolerMode.Multinode)
+                sp.Init(mem, UnitTestHelpers.GetMemory(mem.HtmConfig));
+            else if (poolerMode == PoolerMode.Multicore)
+                sp.Init(mem, UnitTestHelpers.GetMemory());
+            else
+                sp.Init(mem);
+        }
+
+        ///// <summary>
+        ///// Creates pooler instance.
+        ///// </summary>
+        ///// <param name="poolerMode"></param>
+        ///// <returns></returns>
+        //public static SpatialPooler CreatePooler(PoolerMode poolerMode)
+        //{
+        //    SpatialPooler sp;
+
+        //    if (poolerMode == PoolerMode.Multinode)
+        //        sp = new SpatialPoolerParallel();
+        //    else if (poolerMode == PoolerMode.Multicore)
+        //        sp = new SpatialPoolerMT();
+        //    else
+        //        sp = new SpatialPooler();
+
+        //    return sp;
+        //}
     }
 
 

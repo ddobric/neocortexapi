@@ -48,7 +48,7 @@ namespace UnitTestsProject.NoiseExperiments
 
             parameters.apply(mem);
 
-            sp.Init(mem, UnitTestHelpers.GetMemory());
+            sp.Init(mem);
 
             foreach (var inputVector in inputVectors)
             {

@@ -11,7 +11,6 @@ using NeoCortexApi;
 using NeoCortexApi.Entities;
 using System.Diagnostics;
 using NeoCortexEntities.NeuroVisualizer;
-using WebSocketNeuroVisualizer;
 using NeoCortexApi.Utility;
 using System.Text;
 using System.IO;
@@ -190,7 +189,7 @@ namespace UnitTestsProject.SequenceLearningExperiments
 
 
             SpatialPoolerMT sp1 = new SpatialPoolerMT(hpa);
-            sp1.Init(mem, UnitTestHelpers.GetMemory());
+            sp1.Init(mem, UnitTestHelpers.GetInMemoryDictionary());
             tm1.Init(mem);
 
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
@@ -458,7 +457,7 @@ namespace UnitTestsProject.SequenceLearningExperiments
             }, numOfCyclesToWaitOnChange: 25);
 
             SpatialPoolerMT spatialPooler = new SpatialPoolerMT(hpa);
-            spatialPooler.Init(memory, UnitTestHelpers.GetMemory());
+            spatialPooler.Init(memory, UnitTestHelpers.GetInMemoryDictionary());
 
             TemporalMemory temporalMemory = new TemporalMemory();
             temporalMemory.Init(memory);

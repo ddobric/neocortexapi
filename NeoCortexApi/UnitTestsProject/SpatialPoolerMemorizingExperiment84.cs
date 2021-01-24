@@ -3,7 +3,7 @@ using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
-using NeoCortexApi.DistributedComputeLib;
+
 
 using System;
 using System.Collections.Generic;

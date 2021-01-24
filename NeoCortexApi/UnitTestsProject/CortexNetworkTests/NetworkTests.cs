@@ -11,7 +11,6 @@ using NeoCortexApi;
 using NeoCortexApi.Entities;
 using System.Diagnostics;
 using NeoCortexEntities.NeuroVisualizer;
-using WebSocketNeuroVisualizer;
 using NeoCortexApi.Utility;
 using System.Text;
 using System.IO;
@@ -55,7 +54,7 @@ namespace UnitTestsProject
             TemporalMemory tm1 = new TemporalMemory();
             var mem = new Connections();
             p.apply(mem);
-            sp1.Init(mem, UnitTestHelpers.GetMemory());
+            sp1.Init(mem, UnitTestHelpers.GetInMemoryDictionary());
             tm1.Init(mem);
             Dictionary<string, object> settings = new Dictionary<string, object>();
             //settings.Add("W", 25);
@@ -164,7 +163,7 @@ namespace UnitTestsProject
             TemporalMemory tm1 = new TemporalMemory();
             var mem = new Connections();
             p.apply(mem);
-            sp1.Init(mem, UnitTestHelpers.GetMemory());
+            sp1.Init(mem, UnitTestHelpers.GetInMemoryDictionary());
             tm1.Init(mem);
 
             Dictionary<string, object> settings = new Dictionary<string, object>()
@@ -281,7 +280,7 @@ namespace UnitTestsProject
             TemporalMemory tm1 = new TemporalMemory();
             var mem = new Connections();
             p.apply(mem);
-            sp1.Init(mem, UnitTestHelpers.GetMemory());
+            sp1.Init(mem, UnitTestHelpers.GetInMemoryDictionary());
             tm1.Init(mem);
 
             Dictionary<string, object> settings = new Dictionary<string, object>()
@@ -393,7 +392,7 @@ namespace UnitTestsProject
             Debug.WriteLine("------------------------------------------------------------------------\n----------------------------------------------------------------------------");
         }
 
-
+        /*
 
         /// <summary>
         ///
@@ -834,12 +833,7 @@ namespace UnitTestsProject
             Debug.WriteLine("------------------------------------------------------------------------\n----------------------------------------------------------------------------");
         }
 
-
-        private void PlaySong(double[] notes)
-        {
-            // C-0, D-1, E-2, F-3, G-4, H-5
-        }
-
+        /*
         [TestMethod]
         public async Task Abc()
         {
@@ -910,7 +904,7 @@ namespace UnitTestsProject
             await vis.ConnectToWSServerAsync();
             //await  vis.TestMethod("Testing phase", ws2);
 
-        }
+        }*/
     }
 }
 

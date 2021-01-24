@@ -27,7 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="AkkaDictTests.cs" />
     <Compile Remove="EncoderTests\SensorTests.cs" />
   </ItemGroup>
 
@@ -50,12 +49,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NeoCortexApi.Parallel\NeoCortexApi.Parallel.csproj" />
     <ProjectReference Include="..\NeoCortexApi\NeoCortexApi.csproj" />
     <ProjectReference Include="..\NeoCortexArrayLib\NeoCortexArrayLib.csproj" />
     <ProjectReference Include="..\NeoCortexEntities\NeoCortexEntities.csproj" />
     <ProjectReference Include="..\NeoCortexUtils\NeoCortexUtils.csproj" />
-    <ProjectReference Include="..\WebSocketNeuroVisualizer\WebSocketNeuroVisualizer.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -3798,7 +3795,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="AkkaDictTests.cs" />
     <None Include="EncoderTests\SensorTests.cs" />
   </ItemGroup>
 

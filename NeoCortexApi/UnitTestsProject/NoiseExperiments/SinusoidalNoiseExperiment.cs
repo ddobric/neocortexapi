@@ -135,7 +135,7 @@ namespace MyUnitTest
             TemporalMemory tm1 = new TemporalMemory();
             var mem = new Connections();
             p.apply(mem);
-            sp1.Init(mem, UnitTestHelpers.GetMemory());
+            sp1.Init(mem);
             tm1.Init(mem);
             HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
 

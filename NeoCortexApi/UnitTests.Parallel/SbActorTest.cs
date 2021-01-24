@@ -15,7 +15,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace UnitTestsProject
+
+namespace UnitTests.Parallel
 {
     [TestClass]
     public class SbAkkaTest
@@ -318,7 +319,7 @@ namespace UnitTestsProject
 
             //Thread.Sleep(int.MaxValue);
 
-            Parallel.For(0, 20, (i) =>
+            System.Threading.Tasks.Parallel.For(0, 20, (i) =>
             {
                 ActorReference actorRef = sysLocal.CreateActor<MyActor>(i);
 
