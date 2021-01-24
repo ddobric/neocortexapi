@@ -170,7 +170,7 @@ namespace NeoCortexApi.Entities
         {
             HtmSerializer2 ser = new HtmSerializer2();
 
-            ser.SerializeBegin(nameof(DistalDendrite), writer);
+           ser.SerializeBegin(nameof(DistalDendrite), writer);
 
             if (this.ParentCell != null)
             {
@@ -184,8 +184,8 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.Ordinal, writer);
 
             // We serialize synapse indixes only to avoid circular references.
-            if(this.Synapses != null && this.Synapses.Count > 0)
-                ser.SerializeValue(this.Synapses.Select(s=>s.SynapseIndex).ToArray(), writer);
+            //if(this.Synapses != null && this.Synapses.Count > 0)
+            //    ser.SerializeValue(this.Synapses.Select(s=>s.SynapseIndex).ToArray(), writer);
 
             ser.SerializeEnd(nameof(DistalDendrite), writer);
         }

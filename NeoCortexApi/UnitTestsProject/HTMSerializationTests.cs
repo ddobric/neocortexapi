@@ -455,24 +455,6 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("Serialization")]
-        public void SerializeSynapseList()
-        {
-            HtmSerializer2 htm = new HtmSerializer2();
-            Cell cells = new Cell(1, 1, 1, 1, new CellActivity());
-            List<Synapse> synapses = new List<Synapse>();
-            synapses.Add(new Synapse(cells, 1, 23, 1.0));
-            synapses.Add(new Synapse(cells, 3, 27, 1.0));
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeSynapseList)}.txt"))
-            {
-                htm.SerializeBegin("UnitTest", sw);
-
-                htm.SerializeValue(synapses, sw);
-
-                htm.SerializeEnd("UnitTest", sw);
-            }
-        }
-        [TestMethod]
-        [TestCategory("Serialization")]
         public void SerializeDictionaryTest()
         {
             //Proximal + Distal
@@ -605,7 +587,6 @@ namespace UnitTestsProject
                 Assert.IsTrue(segment1.Equals(segment));
             }
         }
-
         /// <summary>
         /// Test Cell.
         /// </summary>
@@ -641,6 +622,69 @@ namespace UnitTestsProject
             }
         }
 
+
+        [TestMethod]
+        [TestCategory("Serialization")]
+        public void SerializeSynapseList()
+        {
+            HtmSerializer2 htm = new HtmSerializer2();
+            Cell cells = new Cell(1, 1, 1, 1, new CellActivity());
+            List<Synapse> synapses = new List<Synapse>();
+            synapses.Add(new Synapse(cells, 1, 23, 1.0));
+            synapses.Add(new Synapse(cells, 3, 27, 1.0));
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeSynapseList)}.txt"))
+            {
+                htm.SerializeBegin("UnitTest", sw);
+
+                htm.SerializeValue(synapses, sw);
+
+                htm.SerializeEnd("UnitTest", sw);
+            }
+            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeSynapseList)}.txt"))
+            {
+                List<Synapse> synapses1 = new List<Synapse>();
+                while(sr.Peek() > 0)
+                {
+                    string data = sr.ReadLine();
+                    if (data == String.Empty || data == htm.ReadBegin("UnitTest") || data == htm.ElementsDelimiter)
+                    {
+                        continue;
+                    }
+                    else if (data == htm.ReadBegin(nameof(Synapse)))
+                    {
+                        synapses1.Add(Synapse.Deserialize(sr));
+                    }
+                }
+                Assert.IsTrue(synapses.SequenceEqual(synapses1));
+            }
+        }
+
+        /// <summary>
+        /// Test Synapse.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Serialization")]
+        [DataRow(34, 24, 24.65)]
+        [DataRow(13, 87, 22.45)]
+        [DataRow(1000, 3400, 4573.623)]
+        public void SerializeSynapseTest(int segmentindex,int synapseindex,double permanence)
+        {
+            Cell cell = new Cell(12, 14, 16, 18, new CellActivity());
+            Synapse synapse = new Synapse(cell, segmentindex, synapseindex, permanence);
+
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeSynapseTest)}.txt"))
+            {
+                synapse.Serialize(sw);
+            }
+
+            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeSynapseTest)}.txt"))
+            {
+                Synapse synapse1 = Synapse.Deserialize(sr);
+
+                Assert.IsTrue(synapse1.Equals(synapse));
+            }
+        }
+        
         /// <summary>
         /// Test integer value.
         /// </summary>

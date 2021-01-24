@@ -29,6 +29,7 @@ namespace NeoCortexApi.Entities
         public string KeyValueDelimiter = ": ";
 
         public string ElementsDelimiter = ", ";
+        
 
         /// <summary>
         /// Serializes the begin marker of the type.
@@ -104,7 +105,7 @@ namespace NeoCortexApi.Entities
         public void SerializeValue(double val, StreamWriter sw)
         {
             sw.Write(ValueDelimiter);
-            sw.Write(string.Format(CultureInfo.InvariantCulture, "{0:0.00}", val));
+            sw.Write(string.Format(CultureInfo.InvariantCulture, "{0:0.000}", val));
             sw.Write(ValueDelimiter);
             sw.Write(ParameterDelimiter);
         }
@@ -408,11 +409,6 @@ namespace NeoCortexApi.Entities
             sw.Write(ParameterDelimiter);
         }
 
-        public List<DistalDendrite> ReadDistalDendriteListValue(string value)
-        {
-            List<DistalDendrite> dd = new List<DistalDendrite>();
-            return dd;
-        }
         /// <summary>
         /// Serialize the List of Synapse.
         /// </summary>
@@ -424,16 +420,12 @@ namespace NeoCortexApi.Entities
                 foreach (Synapse val in value)
                 {
                     val.Serialize(sw);
-                    sw.Write(ValueDelimiter);
+                    sw.Write(ElementsDelimiter);
                 }
             }
             sw.Write(ParameterDelimiter);
         }
-        public List<Synapse> ReadSynapseListValue(string value)
-        {
-            List<Synapse> dd = new List<Synapse>();
-            return dd;
-        }
+        
         /// <summary>
         /// Serialize the List of Integers.
         /// </summary>

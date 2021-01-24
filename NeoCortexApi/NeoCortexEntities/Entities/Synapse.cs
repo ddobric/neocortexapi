@@ -280,6 +280,13 @@ namespace NeoCortexApi.Entities
                 return false;
             if (Permanence != obj.Permanence)
                 return false;
+            if (IsDestroyed != obj.IsDestroyed)
+                return false;
+            if (BoxedIndex == null)
+            {
+                if (obj.BoxedIndex != null)
+                    return false;
+            }
             return true;
         }
 
@@ -303,22 +310,93 @@ namespace NeoCortexApi.Entities
             if (this.SourceCell != null)
             {
                 // We are serializeing the index only to avoid circular references.
-                ser.SerializeValue(this.SourceCell.Index, writer);
-                //this.SourceCell.Serialize(writer);
+                //ser.SerializeValue(this.SourceCell.Index, writer);
+                this.SourceCell.Serialize(writer);
             }
-            ser.SerializeValue(this.SegmentIndex, writer);
-            ser.SerializeValue(this.SynapseIndex, writer);
-
             if (this.BoxedIndex != null)
             {
                 this.BoxedIndex.Serialize(writer);
             }
+
+            ser.SerializeValue(this.SegmentIndex, writer);
+            ser.SerializeValue(this.SynapseIndex, writer);
             ser.SerializeValue(this.InputIndex, writer);
             ser.SerializeValue(this.Permanence, writer);
             ser.SerializeValue(this.IsDestroyed, writer);
 
             ser.SerializeEnd(nameof(Synapse), writer);
         }
+
+        public static Synapse Deserialize(StreamReader sr)
+        {
+            Synapse synapse = new Synapse();
+
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            while (sr.Peek() >= 0)
+            {
+                string data = sr.ReadLine();
+                if (data == ser.LineDelimiter || data == ser.ReadBegin(nameof(Synapse)))
+                {
+                    continue;
+                }
+                else if (data == ser.ReadBegin(nameof(Cell)))
+                {
+                    synapse.SourceCell = Cell.Deserialize(sr);
+                }
+                else if (data == ser.ReadBegin(nameof(Integer)))
+                {
+                    synapse.BoxedIndex = Integer.Deserialize(sr);
+                }
+                else if (data == ser.ReadEnd(nameof(Synapse)))
+                {
+                    break;
+                }
+                else
+                {
+                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                    for (int i = 0; i < str.Length; i++)
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                {
+                                    synapse.SegmentIndex = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    synapse.SynapseIndex = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    synapse.InputIndex = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 3:
+                                {
+                                    synapse.Permanence = ser.ReadDoubleValue(str[i]);
+                                    break;
+                                }
+                            case 4:
+                                {
+                                    synapse.IsDestroyed = ser.ReadBoolValue(str[i]);
+                                    break;
+                                }
+                            default:
+                                { break; }
+
+                        }
+                    }
+                }
+
+            }
+
+            return synapse;
+
+        }
+
         #endregion
     }
 }
