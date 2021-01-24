@@ -19,7 +19,6 @@ using System.Linq;
 using NeuralNet.MLPerceptron;
 using Microsoft.ML;
 using Microsoft.ML.Data;
-using NeoCortexApi.DistributedCompute;
 using NeoCortexApi.Encoders;
 
 namespace UnitTestsProject
@@ -151,6 +150,7 @@ namespace UnitTestsProject
                     int cycle = 0;
 
                     Dictionary<string, int[]> sdrs = new Dictionary<string, int[]>();
+                    Dictionary<string, int[]> inputVectors = new Dictionary<string, int[]>();
 
                     while (true)
                     {
@@ -164,7 +164,7 @@ namespace UnitTestsProject
 
                             string testName = $"{outFolder}\\{inputPrefix}_{fI.Name}";
 
-                            string inputBinaryImageFile = Helpers.BinarizeImage($"{trainingImage}", imgSize, testName);
+                            string inputBinaryImageFile = NeoCortexUtils.BinarizeImage($"{trainingImage}", imgSize, testName);
 
                             // Read input csv file into array
                             int[] inputVector = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageFile).ToArray();
@@ -184,13 +184,15 @@ namespace UnitTestsProject
                             {
                                 if (sdrs.Count == trainingImages.Length)
                                 {
-                                    CalculateResult(sdrs);
+                                    CalculateResult(sdrs, inputVectors);
                                     return;
                                 }
 
                                 var distance = MathHelpers.GetHammingDistance(oldArray, activeArray, true);
                                 //var similarity = MathHelpers.CalcArraySimilarity(oldArray, activeArray, true);
                                 sdrs.Add(trainingImage, activeCols);
+                                inputVectors.Add(trainingImage, inputVector);
+
                                 swHam.WriteLine($"{counter++}|{distance} ");
 
                                 oldArray = new int[numOfCols];
@@ -420,7 +422,7 @@ namespace UnitTestsProject
                         cycle++;
                     }
 
-                    CalculateResult(sdrs);
+                    CalculateResult(sdrs, null);//todo
                 }
             }
         }
@@ -433,8 +435,35 @@ namespace UnitTestsProject
         /// 2. Writes out bitmaps by by cross compare that marks in the extra color non-overlapping bits between two comparing SDRs.
         /// </summary>
         /// <param name="sdrs"></param>
-        private void CalculateResult(Dictionary<string, int[]> sdrs)
+        private void CalculateResult(Dictionary<string, int[]> sdrs, Dictionary<string, int[]> inputVectors)
         {
+            foreach (var keyPairs in sdrs)
+            {
+                Debug.WriteLine(keyPairs.Key);
+                Debug.WriteLine($"{Helpers.StringifyVector(keyPairs.Value)}\n");
+            }
+
+            var keyArray = sdrs.Keys.ToArray();
+
+            for (int i = 0; i < keyArray.Length - 1; i++)
+            {
+                for (int j = 0; j < keyArray.Length; j++)
+                {
+                    var key1 = keyArray[i];
+                    var key2 = keyArray[2];
+
+                    //alcCorr(sdrs[key1], sdrs[key2]);
+                }
+            }
+
+            // ic10 = corr(input[1], input[0])
+            // ic21 = corr(input[w], input[q])
+            //...
+
+            // sdrc10 = corr(sdrs[1], sdrs[0])
+            // sdrc21 = corr(sdrs[w], sdrs[q])
+            //...
+
             return;
         }
 

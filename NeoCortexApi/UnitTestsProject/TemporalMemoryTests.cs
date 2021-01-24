@@ -97,9 +97,11 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("Prod")]
-        public void TestActivateCorrectlyPredictiveCells()
+        [DataRow(0)]
+        [DataRow(1)]
+        public void TestActivateCorrectlyPredictiveCells(int tmImplementation)
         {
-            TemporalMemory tm = new TemporalMemory();
+            TemporalMemory tm = tmImplementation == 0? new TemporalMemory() : new TemporalMemoryMT();
             Connections cn = new Connections();
             Parameters p = getDefaultParameters();
             p.apply(cn);

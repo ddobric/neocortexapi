@@ -7,7 +7,7 @@ using System.Text;
 using System.Linq;
 using NeoCortexApi.Entities;
 
-namespace NeoCortexApi.DistributedComputeLib
+namespace NeoCortexApi.Entities
 {
     /// <summary>
     /// Distributes huge dictionary across mutliple dictionaries. Used mainly for testing purposes.
@@ -261,6 +261,10 @@ namespace NeoCortexApi.DistributedComputeLib
 
         KeyValuePair<TKey, TValue> IEnumerator<KeyValuePair<TKey, TValue>>.Current => this.dictList[this.currentDictIndex].ElementAt(currentIndex);
 
+        /// <summary>
+        /// Not used.
+        /// </summary>
+        public HtmConfig HtmConfig { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {

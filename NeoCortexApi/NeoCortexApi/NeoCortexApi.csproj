@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>NeoCortexApi</PackageId>
-    <Version>1.0.9</Version>
+    <Version>1.0.12</Version>
     <Authors>Damir Dobric</Authors>
     <Company>daenet GmbH</Company>
     <Product>Hierarchical Temporal Framework in C#</Product>
@@ -25,7 +25,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <LangVersion>7.3</LangVersion>
     <DefineConstants>TRACE;USE_AKKA</DefineConstants>
-    <DebugType>full</DebugType>
+    <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
@@ -40,6 +40,7 @@
   <ItemGroup>
     <Compile Remove="Anomaly.cs" />
     <Compile Remove="Classification.cs" />
+    <Compile Remove="DistributedCompute\HtmSparseIntDictionary.cs" />
     <Compile Remove="Encoders\EncoderBuilder.cs" />
     <Compile Remove="HtmSerializer2.cs" />
     <Compile Remove="Network\NearestClassifier.cs" />
@@ -52,6 +53,7 @@
     </None>
     <None Include="Anomaly.cs" />
     <None Include="Classification.cs" />
+    <None Include="DistributedCompute\HtmSparseIntDictionary.cs" />
     <None Include="Encoders\EncoderBuilder.cs" />
     <None Include="HtmSerializer2.cs" />
     <None Include="NeoCortexApi\NeoCortexAPI.png">
@@ -68,12 +70,6 @@
   </ItemGroup>
 
   <ItemGroup>
-	  <ProjectReference Include="..\AkkaSb.Net\AkkaSb.Net.csproj" >
-      <PrivateAssets>all</PrivateAssets>
-    </ProjectReference>
-	  <ProjectReference Include="..\DistributedComputeLib\DistributedComputeLib.csproj">
-		  <PrivateAssets>all</PrivateAssets>
-	  </ProjectReference>
 	  <ProjectReference Include="..\NeoCortexArrayLib\NeoCortexArrayLib.csproj">
 		  <PrivateAssets>all</PrivateAssets>
 	  </ProjectReference>
