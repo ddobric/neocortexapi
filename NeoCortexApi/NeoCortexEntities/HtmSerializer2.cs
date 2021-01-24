@@ -28,23 +28,6 @@ namespace NeoCortexApi.Entities
 
         public string KeyValueDelimiter = ": ";
 
-<<<<<<< HEAD
-        public string ElementsDelimiter = ", ";
-        
-
-        /// <summary>
-        /// Serializes the begin marker of the type.
-        /// </summary>
-        /// <param name="typeName"></param>
-        /// <param name="sw"></param>
-        public void SerializeBegin(String typeName, StreamWriter sw)
-        {
-            //
-            // -- BEGIN ---
-            // typeName
-
-            sw.WriteLine();
-=======
         public string ElementsDelimiter = ", ";
 
         /// <summary>
@@ -57,18 +40,15 @@ namespace NeoCortexApi.Entities
             //
             // -- BEGIN ---
             // typeName
-
             sw.WriteLine();
->>>>>>> fffe1705dfa29bd9638ec1abc1d2309ce6fa5118
             sw.Write($"{TypeDelimiter} BEGIN '{typeName}' {TypeDelimiter}");
             sw.WriteLine();
-            
+
         }
         public String ReadBegin(String typeName)
         {
             string val = ($"{TypeDelimiter} BEGIN '{typeName}' {TypeDelimiter}");
             return val;
-
         }
 
         /// <summary>
@@ -86,7 +66,6 @@ namespace NeoCortexApi.Entities
         {
             string val = ($"{TypeDelimiter} END '{typeName}' {TypeDelimiter}");
             return val;
-
         }
 
         /// <summary>
@@ -122,11 +101,7 @@ namespace NeoCortexApi.Entities
         public void SerializeValue(double val, StreamWriter sw)
         {
             sw.Write(ValueDelimiter);
-<<<<<<< HEAD
             sw.Write(string.Format(CultureInfo.InvariantCulture, "{0:0.000}", val));
-=======
-            sw.Write(string.Format(CultureInfo.InvariantCulture, "{0:0.00}", val));
->>>>>>> fffe1705dfa29bd9638ec1abc1d2309ce6fa5118
             sw.Write(ValueDelimiter);
             sw.Write(ParameterDelimiter);
         }
@@ -226,7 +201,7 @@ namespace NeoCortexApi.Entities
             sw.Write(ValueDelimiter);
             foreach (Double i in val)
             {
-                sw.Write(string.Format(CultureInfo.InvariantCulture, "{0:0.00}", i));
+                sw.Write(string.Format(CultureInfo.InvariantCulture, "{0:0.000}", i));
                 sw.Write(ElementsDelimiter);
             }
             sw.Write(ParameterDelimiter);
@@ -430,7 +405,6 @@ namespace NeoCortexApi.Entities
             sw.Write(ParameterDelimiter);
         }
 
-<<<<<<< HEAD
         /// <summary>
         /// Serialize the List of Synapse.
         /// </summary>
@@ -443,48 +417,16 @@ namespace NeoCortexApi.Entities
                 {
                     val.Serialize(sw);
                     sw.Write(ElementsDelimiter);
-=======
-        public List<DistalDendrite> ReadDistalDendriteListValue(string value)
-        {
-            List<DistalDendrite> dd = new List<DistalDendrite>();
-            return dd;
-        }
-        /// <summary>
-        /// Serialize the List of Synapse.
-        /// </summary>
-        public void SerializeValue(List<Synapse> value, StreamWriter sw)
-        {
-            sw.Write(ValueDelimiter);
-            if (value != null)
-            {
-                foreach (Synapse val in value)
-                {
-                    val.Serialize(sw);
-                    sw.Write(ValueDelimiter);
->>>>>>> fffe1705dfa29bd9638ec1abc1d2309ce6fa5118
                 }
             }
             sw.Write(ParameterDelimiter);
         }
-<<<<<<< HEAD
-        
+
         /// <summary>
         /// Serialize the List of Integers.
         /// </summary>
         public void SerializeValue(List<int> value, StreamWriter sw)
         {
-=======
-        public List<Synapse> ReadSynapseListValue(string value)
-        {
-            List<Synapse> dd = new List<Synapse>();
-            return dd;
-        }
-        /// <summary>
-        /// Serialize the List of Integers.
-        /// </summary>
-        public void SerializeValue(List<int> value, StreamWriter sw)
-        {
->>>>>>> fffe1705dfa29bd9638ec1abc1d2309ce6fa5118
             sw.Write(ValueDelimiter);
             if (value != null)
             {
