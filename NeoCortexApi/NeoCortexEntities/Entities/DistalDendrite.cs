@@ -143,7 +143,27 @@ namespace NeoCortexApi.Entities
             }
             else if (!ParentCell.Equals(other.ParentCell))
                 return false;
-
+            if (m_LastUsedIteration != other.m_LastUsedIteration)
+                return false;
+            if (m_Ordinal != other.m_Ordinal)
+                return false;
+            if (LastUsedIteration != other.LastUsedIteration)
+                return false;
+            if (Ordinal != other.Ordinal)
+                return false;
+            if (SegmentIndex != obj.SegmentIndex)
+                return false;
+            if (Synapses == null)
+            {
+                if (obj.Synapses != null)
+                    return false;
+            }
+            else if (!Synapses.SequenceEqual(obj.Synapses))
+                return false;
+            if (SynapsePermConnected != obj.SynapsePermConnected)
+                return false;
+            if (NumInputs != obj.NumInputs)
+                return false;
             return true;
         }
 
@@ -173,17 +193,26 @@ namespace NeoCortexApi.Entities
             if (this.ParentCell != null)
             {
                 // We are serializeing the index of the cell only to avoid circular references during serialization.
-                ser.SerializeValue(this.ParentCell.Index, writer);
-                //this.ParentCell.Serialize(writer);
+                //ser.SerializeValue(this.ParentCell.Index, writer);
+                this.ParentCell.Serialize(writer);
             }
+            if (this.boxedIndex != null)
+            {
+                this.boxedIndex.Serialize(writer);
+            }
+
             ser.SerializeValue(this.m_LastUsedIteration, writer);
             ser.SerializeValue(this.m_Ordinal, writer);
             ser.SerializeValue(this.LastUsedIteration, writer);
             ser.SerializeValue(this.Ordinal, writer);
-
+            ser.SerializeValue(this.SegmentIndex, writer);
+            
             // We serialize synapse indixes only to avoid circular references.
-            //if(this.Synapses != null && this.Synapses.Count > 0)
-            //    ser.SerializeValue(this.Synapses.Select(s=>s.SynapseIndex).ToArray(), writer);
+            if(this.Synapses != null && this.Synapses.Count > 0)
+                ser.SerializeValue(this.Synapses.Select(s=>s.SynapseIndex).ToArray(), writer);
+
+            ser.SerializeValue(this.SynapsePermConnected, writer);
+            ser.SerializeValue(this.NumInputs, writer);
 
             ser.SerializeEnd(nameof(DistalDendrite), writer);
         }
@@ -198,13 +227,17 @@ namespace NeoCortexApi.Entities
             while (sr.Peek() >= 0)
             {
                 string data = sr.ReadLine();
-                if (data == ser.LineDelimiter || data == ser.ReadBegin(nameof(DistalDendrite)))
+                if (data == ser.LineDelimiter || data == ser.ReadBegin(nameof(DistalDendrite)) || data == ", |")
                 {
                     continue;
                 }
                 else if (data == ser.ReadBegin(nameof(Cell)))
                 {
                     distal.ParentCell = Cell.Deserialize(sr);
+                }
+                else if (data == ser.ReadBegin(nameof(Integer)))
+                {
+                    distal.boxedIndex = Integer.Deserialize(sr);
                 }
                 else if (data == ser.ReadEnd(nameof(DistalDendrite)))
                 {
@@ -236,6 +269,21 @@ namespace NeoCortexApi.Entities
                             case 3:
                                 {
                                     distal.Ordinal = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 4:
+                                {
+                                    distal.SegmentIndex = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 5:
+                                {
+                                    distal.SynapsePermConnected = ser.ReadDoubleValue(str[i]);
+                                    break;
+                                }
+                            case 6:
+                                {
+                                    distal.NumInputs = ser.ReadIntValue(str[i]);
                                     break;
                                 }
                             default:

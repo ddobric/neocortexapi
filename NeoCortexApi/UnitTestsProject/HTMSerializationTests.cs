@@ -411,47 +411,7 @@ namespace UnitTestsProject
             Assert.IsTrue(keyValuePairs.SequenceEqual(keyValues));
         }
 
-        [TestMethod]
-        [TestCategory("Serialization")]
-        public void SerializeDistalDendriteList()
-        {
-            HtmSerializer2 htm = new HtmSerializer2();
-            Cell cells = new Cell(1, 1, 1, 1, new CellActivity());
-            List<DistalDendrite> distalDendrites = new List<DistalDendrite>();
-            distalDendrites.Add(new DistalDendrite(cells, 1, 2, 2, 1.0, 100));
-            distalDendrites.Add(new DistalDendrite(cells, 4, 24, 3, 1.0, 100));
-            List<DistalDendrite> distalDendrite = new List<DistalDendrite>();
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeDistalDendriteList)}.txt"))
-            {
-                htm.SerializeBegin("UnitTest", sw);
-
-                htm.SerializeValue(distalDendrites, sw);
-
-                htm.SerializeEnd("UnitTest", sw);
-            }
-
-            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeDistalDendriteList)}.txt"))
-            {
-                while (sr.Peek() >= 0)
-                {
-                    string data = sr.ReadLine();
-
-                    if (data == String.Empty || data == htm.ReadBegin("UnitTest"))
-                    {
-                        continue;
-                    }
-                    else if (data == htm.ReadEnd("UnitTest"))
-                    {
-                        break;
-                    }
-                    else if (data == htm.ReadBegin("DistalDendrite"))
-                    {
-                        distalDendrite.Add(DistalDendrite.Deserialize(sr));
-                    }
-                }
-            }
-            Assert.IsTrue(distalDendrite.SequenceEqual(distalDendrites));
-        }
+        
 
         [TestMethod]
         [TestCategory("Serialization")]
@@ -519,30 +479,7 @@ namespace UnitTestsProject
 
         }
 
-        /// <summary>
-        /// Test empty DistalDendrite.
-        /// </summary>
-        [TestMethod]
-        [TestCategory("Serialization")]
-        public void SerializeEmptyDistalDendrite()
-        {
-
-            DistalDendrite distal = new DistalDendrite();
-
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeEmptyDistalDendrite)}.txt"))
-            {
-                distal.Serialize(sw);
-            }
-            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeEmptyDistalDendrite)}.txt"))
-
-            {
-                DistalDendrite distal1 = DistalDendrite.Deserialize(sr);
-
-                Assert.IsTrue(distal1.Equals(distal));
-            }
-
-
-        }
+        
 
         
         [TestMethod]
@@ -619,6 +556,74 @@ namespace UnitTestsProject
                 Cell cell1 = Cell.Deserialize(sr);
 
                 Assert.IsTrue(cell1.Equals(cell));
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("Serialization")]
+        public void SerializeDistalDendriteList()
+        {
+            HtmSerializer2 htm = new HtmSerializer2();
+            Cell cells = new Cell(1, 1, 1, 1, new CellActivity());
+            List<DistalDendrite> distalDendrites = new List<DistalDendrite>();
+            distalDendrites.Add(new DistalDendrite(cells, 1, 2, 2, 1.0, 100));
+            distalDendrites.Add(new DistalDendrite(cells, 4, 24, 3, 1.0, 100));
+            
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeDistalDendriteList)}.txt"))
+            {
+                htm.SerializeBegin("UnitTest", sw);
+
+                htm.SerializeValue(distalDendrites, sw);
+
+                htm.SerializeEnd("UnitTest", sw);
+            }
+
+            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeDistalDendriteList)}.txt"))
+            {
+                List<DistalDendrite> distalDendrite = new List<DistalDendrite>();
+                while (sr.Peek() >= 0)
+                {
+                    string data = sr.ReadLine();
+
+                    if (data == String.Empty || data == htm.ReadBegin("UnitTest"))
+                    {
+                        continue;
+                    }
+                    else if (data == htm.ReadEnd("UnitTest"))
+                    {
+                        break;
+                    }
+                    else if (data == htm.ReadBegin("DistalDendrite"))
+                    {
+                        distalDendrite.Add(DistalDendrite.Deserialize(sr));
+                    }
+                }
+                Assert.IsTrue(distalDendrites.SequenceEqual(distalDendrite));
+            }
+            
+        }
+
+        /// <summary>
+        /// Test DistalDendrite.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Serialization")]
+        public void SerializeDistalDendrite()
+        {
+            Cell cell = new Cell(1, 1, 1, 1, new CellActivity());
+            DistalDendrite distal = new DistalDendrite(cell, 1, 2, 2, 1.0, 100);
+            //distal.Synapses.Add(new Synapse(cell, 1, 23, 1.0));
+            //distal.Synapses.Add(new Synapse(cell, 3, 27, 1.0));
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeDistalDendrite)}.txt"))
+            {
+                distal.Serialize(sw);
+            }
+            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeDistalDendrite)}.txt"))
+
+            {
+                DistalDendrite distal1 = DistalDendrite.Deserialize(sr);
+
+                Assert.IsTrue(distal1.Equals(distal));
             }
         }
 

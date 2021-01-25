@@ -20,7 +20,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public int SegmentIndex { get; set; }
 
-        private Integer boxedIndex { get; set; }
+        protected Integer boxedIndex { get; set; }
 
         /// <summary>
         /// Synapses connected to the segment.
@@ -42,6 +42,8 @@ namespace NeoCortexApi.Entities
         /// </summary>
         protected Segment()
         {
+            this.Synapses = new List<Synapse>();
+            this.boxedIndex = new Integer();
 
         }
 
@@ -53,7 +55,7 @@ namespace NeoCortexApi.Entities
         /// <param name="numInputs">Number of input neorn cells.</param>
         public Segment(int index, double synapsePermConnected, int numInputs)
         {
-            this.NumInputs = NumInputs;
+            this.NumInputs = numInputs;
             this.SynapsePermConnected = synapsePermConnected;
             this.Synapses = new List<Synapse>();
             this.SegmentIndex = index;
