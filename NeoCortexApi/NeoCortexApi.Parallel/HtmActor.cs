@@ -15,6 +15,9 @@ using System.Diagnostics;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
+    /// <summary>
+    /// Implements the remotely distributed HTM logic as an actor.
+    /// </summary>
     public class HtmActor : ActorBase
     {
         public Dictionary<object, object> Dict = new Dictionary<object, object>();

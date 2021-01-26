@@ -98,8 +98,8 @@ namespace NeoCortexApi
             //SparseObjectMatrix<Column> memory = (SparseObjectMatrix<Column>)c.HtmConfig.Memory;
             //c.HtmConfig.Memory = memory == null ? memory = new SparseObjectMatrix<Column>(c.HtmConfig.ColumnDimensions, dict: null) : memory;
 
-            if (c.HtmConfig.Memory == null)
-                c.HtmConfig.Memory = new SparseObjectMatrix<Column>(c.HtmConfig.ColumnDimensions, dict: null);
+            if (c.Memory == null)
+                c.Memory = new SparseObjectMatrix<Column>(c.HtmConfig.ColumnDimensions, dict: null);
 
             c.HtmConfig.InputMatrix = new SparseBinaryMatrix(c.HtmConfig.InputDimensions);
 
@@ -109,7 +109,7 @@ namespace NeoCortexApi
 
             //Calculate numInputs and numColumns
             int numInputs = c.HtmConfig.InputMatrix.GetMaxIndex() + 1;
-            int numColumns = c.HtmConfig.Memory.GetMaxIndex() + 1;
+            int numColumns = c.Memory.GetMaxIndex() + 1;
             if (numColumns <= 0)
             {
                 throw new ArgumentException("Invalid number of columns: " + numColumns);
@@ -134,7 +134,7 @@ namespace NeoCortexApi
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            c.HtmConfig.Memory.set(colList);
+            c.Memory.set(colList);
             // memory.set(colList);
 
             sw.Stop();
@@ -768,7 +768,7 @@ namespace NeoCortexApi
             if (c.HtmConfig.IsBumpUpWeakColumnsDisabled)
                 return;
 
-            var weakColumns = c.HtmConfig.Memory.Get1DIndexes().Where(i => c.HtmConfig.OverlapDutyCycles[i] < c.HtmConfig.MinOverlapDutyCycles[i]).ToArray();
+            var weakColumns = c.Memory.Get1DIndexes().Where(i => c.HtmConfig.OverlapDutyCycles[i] < c.HtmConfig.MinOverlapDutyCycles[i]).ToArray();
             
             for (int i = 0; i < weakColumns.Length; i++)
             {

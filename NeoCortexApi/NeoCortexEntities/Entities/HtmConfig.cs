@@ -19,7 +19,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="inputDims"></param>
         /// <param name="columnDims"></param>
-        public HtmConfig(int[] inputDims,  int[] columnDims)
+        public HtmConfig(int[] inputDims, int[] columnDims)
         {
             SetHtmConfigDefaultParameters(inputDims, columnDims);
         }
@@ -42,7 +42,7 @@ namespace NeoCortexApi.Entities
 
         private double synPermActiveInc;
         private double synPermConnected;
-        private AbstractSparseMatrix<Column> memory;
+      
         private ISparseMatrix<int> inputMatrix;
 
         public TemporalMemoryConfig TemporalMemory { get; set; } = new TemporalMemoryConfig();
@@ -304,10 +304,20 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public HtmModuleTopology InputModuleTopology { get; set; }
 
-        /// <summary>
-        /// The main data structure containing columns, cells, and synapses.
-        /// </summary>
-        public AbstractSparseMatrix<Column> Memory { get => memory; set { memory = value; ColumnModuleTopology = value?.ModuleTopology; } }
+        //private AbstractSparseMatrix<Column> memory;
+
+        ///// <summary>
+        ///// The main data structure containing columns, cells, and synapses.
+        ///// </summary>
+        //public AbstractSparseMatrix<Column> Memory
+        //{
+        //    get => memory;
+        //    set
+        //    {
+        //        memory = value;
+        //        ColumnModuleTopology = value?.ModuleTopology;
+        //    }
+        //}
 
         /// <summary>
         /// Activation threshold. If the number of active connected synapses on a segment is at least this threshold, the segment is said to be active.
@@ -377,9 +387,9 @@ namespace NeoCortexApi.Entities
             this.PermanenceIncrement = 0.10;
             this.PermanenceDecrement = 0.10;
             this.PredictedSegmentDecrement = 0.1;
-            
+
             // Spatial Pooler parameters
-          
+
             this.PotentialRadius = 15;
             this.PotentialPct = 0.75;
             this.GlobalInhibition = true;
@@ -400,11 +410,11 @@ namespace NeoCortexApi.Entities
             this.Random = new ThreadSafeRandom(42);
         }
 
-        public void ClearModuleTopology()
-        {
-            this.Memory = null;
-            this.InputMatrix = null;
-        }
+        //public void ClearModuleTopology()
+        //{
+        //    this.Memory = null;
+        //    this.InputMatrix = null;
+        //}
 
         #region Serialization
         public void Serialize(StreamWriter writer)
@@ -427,7 +437,7 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.PotentialRadius, writer);
             ser.SerializeValue(this.PotentialPct, writer);
             ser.SerializeValue(this.StimulusThreshold, writer);
-            ser.SerializeValue(this.SynPermBelowStimulusInc,writer);
+            ser.SerializeValue(this.SynPermBelowStimulusInc, writer);
             ser.SerializeValue(this.SynPermInactiveDec, writer);
             ser.SerializeValue(this.SynPermActiveInc, writer);
             ser.SerializeValue(this.SynPermConnected, writer);
@@ -460,7 +470,7 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.MaxSynapsesPerSegment, writer);
             ser.SerializeValue(this.PermanenceIncrement, writer);
             ser.SerializeValue(this.PermanenceDecrement, writer);
-            ser.SerializeValue(this.ActivationThreshold,writer);
+            ser.SerializeValue(this.ActivationThreshold, writer);
             ser.SerializeValue(this.LearningRadius, writer);
             ser.SerializeValue(this.MinThreshold, writer);
             ser.SerializeValue(this.InitialPermanence, writer);
@@ -477,7 +487,7 @@ namespace NeoCortexApi.Entities
     {
         public test()
         {
-            HtmConfig htm = new HtmConfig(new int[] { 100}, new int[] { 1024 });
+            HtmConfig htm = new HtmConfig(new int[] { 100 }, new int[] { 1024 });
 
             Connections c = new Connections(htm);
 

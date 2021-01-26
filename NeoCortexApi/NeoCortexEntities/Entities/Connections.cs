@@ -85,63 +85,13 @@ namespace NeoCortexApi.Entities
 
         private HtmConfig m_HtmConfig;
 
+        /// <summary>
+        /// The HTM configuration.
+        /// </summary>
         public HtmConfig HtmConfig
         {
             get
             {
-                //if (m_HtmConfig == null)
-                //{
-                //    HtmConfig cfg = new HtmConfig();
-                //    cfg.ColumnTopology = this.ColumnTopology;
-                //    cfg.InputTopology = this.InputTopology;
-                //    cfg.IsWrapAround = this.isWrapAround();
-                //    cfg.NumInputs = this.NumInputs;
-                //    cfg.NumColumns = this.getMemory() != null? this.getMemory().getMaxIndex() + 1 : -1;
-                //    cfg.PotentialPct = getPotentialPct();
-                //    cfg.PotentialRadius = getPotentialRadius();
-                //    cfg.SynPermConnected = getSynPermConnected();
-                //    cfg.InitialSynapseConnsPct = this.InitialSynapseConnsPct;
-                //    cfg.SynPermTrimThreshold = this.getSynPermTrimThreshold();
-                //    cfg.SynPermBelowStimulusInc = this.synPermBelowStimulusInc;
-                //    cfg.SynPermMax = this.getSynPermMax();
-                //    cfg.SynPermMin = this.getSynPermMin();
-                //    cfg.StimulusThreshold = this.StimulusThreshold;
-                //    cfg.CellsPerColumn = this.getCellsPerColumn();
-                //    cfg.SynPermInactiveDec = this.getSynPermInactiveDec();
-                //    cfg.PermanenceIncrement = this.getPermanenceIncrement();
-                //    cfg.PermanenceDecrement = this.getPermanenceDecrement();
-                //    //cfg.MaxNewSynapseCount = this.getMaxNewSynapseCount();
-
-                //    cfg.RandomGenSeed = this.seed;
-
-                //    m_HtmConfig = cfg;
-                //}
-
-                // TODO verify with unitTests
-                //m_HtmConfig.SynPermBelowStimulusInc = m_HtmConfig.SynPermConnected / 10.0;
-                //m_HtmConfig.SynPermTrimThreshold = m_HtmConfig.SynPermActiveInc / 2.0;
-                //m_HtmConfig.ColumnModuleTopology = m_HtmConfig.Memory?.ModuleTopology;
-                //m_HtmConfig.InputModuleTopology = m_HtmConfig.InputMatrix?.ModuleTopology;
-
-                //m_HtmConfig.InputTopology = this.InputTopology;
-                //m_HtmConfig.IsWrapAround = this.isWrapAround();
-                //m_HtmConfig.NumInputs = this.NumInputs;
-                //m_HtmConfig.NumColumns = m_HtmConfig.Memory != null ? m_HtmConfig.Memory.getMaxIndex() + 1 : -1;
-                //m_HtmConfig.PotentialPct = getPotentialPct();
-                //m_HtmConfig.PotentialRadius = getPotentialRadius();
-                //m_HtmConfig.SynPermConnected = getSynPermConnected();
-                //m_HtmConfig.InitialSynapseConnsPct = this.InitialSynapseConnsPct;
-                //m_HtmConfig.SynPermTrimThreshold = this.getSynPermTrimThreshold();
-                //m_HtmConfig.SynPermBelowStimulusInc = this.synPermBelowStimulusInc;
-                //m_HtmConfig.SynPermMax = this.getSynPermMax();
-                //m_HtmConfig.SynPermMin = this.getSynPermMin();
-                //m_HtmConfig.StimulusThreshold = this.StimulusThreshold;
-                //m_HtmConfig.CellsPerColumn = this.getCellsPerColumn();
-                //m_HtmConfig.SynPermInactiveDec = this.getSynPermInactiveDec();
-                //m_HtmConfig.PermanenceIncrement = this.getPermanenceIncrement();
-                //m_HtmConfig.PermanenceDecrement = this.getPermanenceDecrement();
-                //m_HtmConfig.RandomGenSeed = this.seed;       
-
                 return m_HtmConfig;
             }
             private set
@@ -150,6 +100,21 @@ namespace NeoCortexApi.Entities
             }
         }
 
+      
+        private AbstractSparseMatrix<Column> memory;
+
+        /// <summary>
+        /// The main data structure containing columns, cells, and synapses.
+        /// </summary>
+        public AbstractSparseMatrix<Column> Memory
+        {
+            get => memory;
+            set
+            {
+                memory = value;
+                this.HtmConfig.ColumnModuleTopology = value?.ModuleTopology;
+            }
+        }
 
 
         ///////////////////////   Synapses and segments /////////////////////////
@@ -552,7 +517,7 @@ namespace NeoCortexApi.Entities
         {
             foreach (int idx in s.GetSparseIndices())
             {
-                this.HtmConfig.Memory.getObject(idx).SetPermanences(this.HtmConfig, s.getObject(idx));
+                this.Memory.getObject(idx).SetPermanences(this.HtmConfig, s.getObject(idx));
             }
         }
 
@@ -1354,7 +1319,7 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public Column GetColumn(int index)
         {
-            return this.HtmConfig.Memory.getObject(index);
+            return this.Memory.getObject(index);
         }
 
         /// <summary>
@@ -1429,7 +1394,7 @@ namespace NeoCortexApi.Entities
             LinkedHashSet<Column> retVal = new LinkedHashSet<Column>();
             for (int i = 0; i < indexes.Length; i++)
             {
-                retVal.Add(this.HtmConfig.Memory.getObject(indexes[i]));
+                retVal.Add(this.Memory.getObject(indexes[i]));
             }
             return retVal;
         }
@@ -1444,7 +1409,7 @@ namespace NeoCortexApi.Entities
             List<Column> retVal = new List<Column>();
             for (int i = 0; i < indexes.Length; i++)
             {
-                retVal.Add(this.HtmConfig.Memory.getObject(indexes[i]));
+                retVal.Add(this.Memory.getObject(indexes[i]));
             }
             return retVal;
         }
@@ -1588,7 +1553,7 @@ namespace NeoCortexApi.Entities
             temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.MaxBoost);
             result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + this.HtmConfig.MaxNewSynapseCount;
-            result = prime * result + ((this.HtmConfig.Memory == null) ? 0 : this.HtmConfig.Memory.GetHashCode());
+            result = prime * result + ((this.Memory == null) ? 0 : this.Memory.GetHashCode());
             result = prime * result + this.HtmConfig.MinActiveDutyCycles.GetHashCode();
             result = prime * result + this.HtmConfig.MinOverlapDutyCycles.GetHashCode();
             temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.MinPctActiveDutyCycles);

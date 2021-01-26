@@ -50,8 +50,8 @@ namespace UnitTests.Parallel
                 ActorSbConfig cfg = new ActorSbConfig
                 {
                     SbConnStr = Environment.GetEnvironmentVariable("SbConnStr"),
-                    ReplyMsgQueue = "actorsystem/rcvlocal",
-                    RequestMsgTopic = "actorsystem/actortopic",
+                    ReplyMsgQueue = "actorsystem2/rcvlocal",
+                    RequestMsgTopic = "actorsystem2/actortopic",
                     NumOfElementsPerPartition = -1, // This means, number of partitions equals number of nodes.
                     NumOfPartitions = 35,// Should be uniformly distributed across nodes.
                     BatchSize = 1000,

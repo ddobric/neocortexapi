@@ -2099,7 +2099,7 @@ namespace UnitTestsProject
             new double[]{0.101, 0.101, 0.101, 0.101, 0.101}};   // increment 9 times
 
             //FORGOT TO SET PERMANENCES ABOVE - DON'T USE mem.setPermanences() 
-            int[] indices = mem.HtmConfig.Memory.GetSparseIndices();
+            int[] indices = mem.Memory.GetSparseIndices();
             for (int i = 0; i < mem.HtmConfig.NumColumns; i++)
             {
                 // double[] perm = mem.getPotentialPools().get(i).getSparsePermanences();
