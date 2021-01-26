@@ -8,22 +8,76 @@ using NeoCortexApi.Utility;
 
 namespace NeoCortexApi.Entities
 {
- 
-    public class Topology : Coordinator 
+    /// <summary>
+    /// Work in progress.
+    /// </summary>
+
+    public class Topology //: Coordinator 
     {
-   
+        /// <summary>
+        /// Dimension shape.
+        /// </summary>
+        protected int[] dimensions;
+
+        /// <summary>
+        /// Used to calculate the flat intex of multidimensional array.
+        /// </summary>
+        protected int[] dimensionMultiples;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected bool isColumnMajor;
+
+
+        protected int numDimensions;
+
+        public HtmModuleTopology HtmTopology
+        {
+            get
+            {
+                return new HtmModuleTopology(this.dimensions, this.isColumnMajor);
+            }
+        }
+
         /**
          * Constructs a new {@link AbstractFlatMatrix} object to be configured with specified
          * dimensions and major ordering.
          * @param shape  the dimensions of this matrix 
          */
 
+
         /// <summary>
         /// TODO to be added
         /// </summary>
-        public Topology(int[] shape) : base(shape, false)
+        public Topology(int[] shape, bool useColumnMajorOrdering = false) //: base(shape, false)
         {
+            if (shape == null)
+                return;
 
+            this.dimensions = shape;
+            this.numDimensions = shape.Length;
+            this.dimensionMultiples = InitDimensionMultiples(
+                useColumnMajorOrdering ? HtmCompute.Reverse(shape) : shape);
+            isColumnMajor = useColumnMajorOrdering;
+        }
+
+        /// <summary>
+        /// Initializes internal helper array which is used for multidimensional index computation.
+        /// </summary>
+        /// <param name="dimensions">matrix dimensions</param>
+        /// <returns>array for use in coordinates to flat index computation.</returns>
+        protected int[] InitDimensionMultiples(int[] dimensions)
+        {
+            int holder = 1;
+            int len = dimensions.Length;
+            int[] dimensionMultiples = new int[numDimensions];
+            for (int i = 0; i < len; i++)
+            {
+                holder *= (i == 0 ? 1 : dimensions[len - i]);
+                dimensionMultiples[len - 1 - i] = holder;
+            }
+            return dimensionMultiples;
         }
 
         /**
@@ -108,6 +162,6 @@ namespace NeoCortexApi.Entities
         //    return result.Select((tl) => GetIndexFromCoordinates(tl.ToArray())).ToArray();
         //}
 
-     
+
     }
 }
