@@ -146,13 +146,19 @@ namespace NeoCortexApi.Entities
         /// <returns>the indexed object</returns>
         protected double GetDoubleValue(int[] coordinates) { return -1.0; }
 
-        // @Override
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <returns></returns>
         public override int[] GetSparseIndices()
         {
             return null;
         }
 
-        //  @Override
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <returns></returns>
         public override int[] Get1DIndexes()
         {
             List<int> results = new List<int>(GetMaxIndex() + 1);
