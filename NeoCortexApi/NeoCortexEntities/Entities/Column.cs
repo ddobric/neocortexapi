@@ -230,24 +230,7 @@ namespace NeoCortexApi.Entities
             this.ProximalDendrite.SetPermanences(this.ConnectedInputCounterMatrix, htmConfig, permanences, inputVectorIndexes);
         }
 
-        // TODO better parameters documentation
-        /**
-        * This method updates the permanence matrix with a column's new permanence
-        * values. The column is identified by its index, which reflects the row in
-        * the matrix, and the permanence is given in 'sparse' form, (i.e. an array
-        * whose members are associated with specific indexes). It is in
-        * charge of implementing 'clipping' - ensuring that the permanence values are
-        * always between 0 and 1 - and 'trimming' - enforcing sparseness by zeroing out
-        * all permanence values below 'synPermTrimThreshold'. Every method wishing
-        * to modify the permanence matrix should do so through this method.
-        * 
-        * @param c                 the {@link Connections} which is the memory model.
-        * @param perm              An array of permanence values for a column. The array is
-        *                          "sparse", i.e. it contains an entry for each input bit, even
-        *                          if the permanence value is 0.
-        * @param column            The column in the permanence, potential and connectivity matrices
-        * @param raisePerm         a boolean value indicating whether the permanence values
-        */
+       
         /// <summary>
         /// This method updates the permanence matrix with a column's new permanence values. The column is identified by its index, which reflects the row in
         /// the matrix, and the permanence is given in 'sparse' form, (i.e. an array whose members are associated with specific indexes). It is in charge of 

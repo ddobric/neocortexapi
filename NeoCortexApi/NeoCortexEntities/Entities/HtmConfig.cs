@@ -240,7 +240,7 @@ namespace NeoCortexApi.Entities
         public double[] ActiveDutyCycles { get; set; }
 
         /// <summary>
-        /// TODO property documentation
+        /// Column will be declared as a weak-column (needs to be boosted) if its OverlapDutyCycles is less than MinOverlapDutyCycles.
         /// </summary>
         public double[] MinOverlapDutyCycles { get; set; }
 
