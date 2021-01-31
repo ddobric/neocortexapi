@@ -217,5 +217,28 @@ namespace UnitTestsProject
                 Debug.WriteLine(item);
             }
         }
+
+        [TestMethod]
+        [TestCategory("Prod")]
+        public void PushToInterval()
+        {
+            int[] lst = new int[] { 1,2,3,4,5 };
+
+            lst = ArrayUtils.PushToInterval(lst, 5, 4);
+
+            lst = ArrayUtils.PushToInterval(lst, 5, 5);
+
+            lst = ArrayUtils.PushToInterval(lst, 5, 2);
+
+            Assert.IsTrue(lst[4] == 2);
+
+            Assert.IsTrue(lst[3] == 1);
+
+            Assert.IsTrue(lst[2] == 4);
+
+            Assert.IsTrue(lst[1] == 5);
+
+            Assert.IsTrue(lst[0] == 2);
+        }
     }
 }

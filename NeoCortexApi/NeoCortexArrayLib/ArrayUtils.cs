@@ -40,7 +40,7 @@ namespace NeoCortexApi.Utility
             var value = string.Join(" [ ", arr.Select(x => x.ArrToString()).ToArray(), " ] ");
             return value;
         }
-       
+
 
         /// <summary>
         /// Returns the product of each integer in the specified array.
@@ -58,7 +58,7 @@ namespace NeoCortexApi.Utility
             return retVal;
         }
 
-      
+
         /// <summary>
         /// Returns an array with the same shape and the contents converted to integers.
         /// </summary>
@@ -208,7 +208,7 @@ namespace NeoCortexApi.Utility
             return intList;
         }
 
-       
+
         /// <smmary>
         /// Returns an array whose members are the quotient of the dividend array values and the divisor array values.
         /// </summary>
@@ -278,7 +278,7 @@ namespace NeoCortexApi.Utility
             return quotient;
         }
 
-       
+
 
         /// <smmary>
         /// Returns an array whose members are the product of the multiplicand array values and the factor array values.
@@ -397,7 +397,7 @@ namespace NeoCortexApi.Utility
             return retVal;
         }
 
-   
+
 
         /// <summary>
         /// Returns the average of all the specified array contents.
@@ -653,7 +653,7 @@ namespace NeoCortexApi.Utility
             return orig;
         }
 
-      
+
         /// <summary>
         /// Returns a sorted unique (dupicates removed) array of integers.
         /// </summary>
@@ -781,7 +781,7 @@ namespace NeoCortexApi.Utility
             }
         }
 
-      
+
         /// <summary>
         /// Returns a random, sorted, and  unique array of the specified sample size of selections from the specified list of choices.
         /// </summary>
@@ -1018,7 +1018,7 @@ namespace NeoCortexApi.Utility
             }
         }
 
-       
+
         /// <summary>
         /// Returns a flag indicating whether the specified array is a sparse array of 0's and 1's or not.
         /// </summary>
@@ -1042,7 +1042,7 @@ namespace NeoCortexApi.Utility
             return false;
         }
 
-      
+
         /// <summary>
         /// Makes all values in the specified array which are less than or equal to the specified <paramref name="x"/> value,
         /// equal to the specified <paramref name="y"/>.
@@ -1874,10 +1874,10 @@ namespace NeoCortexApi.Utility
         {
             //
             // Shift all elements.
-            for (int i = 0; i < maxNumOfElements - 1; i++)
+            for (int i = maxNumOfElements - 1; i > 0; i--)
             {
                 //Shift the element to the next position.
-                list[i + 1] = list[i];
+                list[i] = list[i-1];
             }
 
             list[0] = newElement;
