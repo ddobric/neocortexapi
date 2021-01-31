@@ -220,7 +220,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("Prod")]
-        public void PushToInterval()
+        public void PushToIntervalTest()
         {
             int[] lst = new int[] { 1,2,3,4,5 };
 
