@@ -68,10 +68,13 @@ namespace NeoCortexApi
                     matrix.set(i, column);
 
             }
-            //Only the TemporalMemory initializes cells so no need to test for redundancy
+
+            //
+            // This is the only initialization place for cells.
             this.connections.Cells = cells;
         }
 
+        // Used fro performance testing.
         //StreamWriter tmperf1 = new StreamWriter("tm-perf-300000-25cells.p.csv");
 
         /// <summary>
@@ -287,6 +290,7 @@ namespace NeoCortexApi
             cycle.MatchingSegments = matchingSegments;
 
             conn.LastActivity = activity;
+
             conn.ActiveCells = new HashSet<Cell>(cycle.ActiveCells);
             conn.WinnerCells = new HashSet<Cell>(cycle.WinnerCells);
             conn.ActiveSegments = activeSegments;

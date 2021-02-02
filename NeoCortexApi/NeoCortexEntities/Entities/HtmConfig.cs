@@ -72,6 +72,9 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public int NumInputs { get; set; } = 1;
 
+        /// <summary>
+        /// Initialized after SP.Init.
+        /// </summary>
         public int NumColumns { get; set; }
 
         /// <summary>
