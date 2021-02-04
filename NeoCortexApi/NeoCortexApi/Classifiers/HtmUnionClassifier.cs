@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace NeoCortexApi.Network
+namespace NeoCortexApi.Classifiers
 {
     public class HtmUnionClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>
     {
@@ -88,19 +88,19 @@ namespace NeoCortexApi.Network
                 }
                 if (!m_ActiveMap.TryGetValue(input, out unionArray))
                 {
-                    this.m_ActiveMap.Add(input, cellAsInt);
+                    m_ActiveMap.Add(input, cellAsInt);
                     return; // or whatever you want to do
                 }
                 else
                 {
-                    this.m_ActiveMap[input] = GetUnionArr(cellAsInt, m_ActiveMap[input]);
+                    m_ActiveMap[input] = GetUnionArr(cellAsInt, m_ActiveMap[input]);
                 }
             }
         }
 
         private int[] GetUnionArr(int[] prevCells, int[] currCells)
         {
-            return prevCells.Union(currCells).ToArray<int>();
+            return prevCells.Union(currCells).ToArray();
         }
 
         private int PredictNextValue(int[] activeArr, int[] predictedArr)

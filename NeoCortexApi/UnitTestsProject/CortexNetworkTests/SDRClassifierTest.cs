@@ -3,8 +3,8 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeoCortexApi.Classifiers;
 using NeoCortexApi.Exception;
-using NeoCortexApi.Network;
 
 namespace UnitTestsProject
 {

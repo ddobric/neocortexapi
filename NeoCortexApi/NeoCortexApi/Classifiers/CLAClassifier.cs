@@ -3,15 +3,14 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using NeoCortexApi;
 using System.Linq;
 using NeoCortexApi.Utility;
 using System.Diagnostics;
 using System.Globalization;
 
-namespace NeoCortexApi.Network
+namespace NeoCortexApi.Classifiers
 {
-    public class CLAClassifier<T> where T: struct
+    public class CLAClassifier<T> where T : struct
     {
         /// <summary>
         ///The alpha used to compute running averages of the bucket duty
@@ -79,7 +78,7 @@ namespace NeoCortexApi.Network
             this.alpha = alpha;
             this.actValueAlpha = actValueAlpha;
             //for null value add -1 instead of 0
-            actualValues.Add(IsNumericType(default(T)) ? ConversionExtensions.Convert<T>(-1) : default(T));
+            actualValues.Add(IsNumericType(default(T)) ? (-1).Convert<T>() : default);
         }
 
         /// <summary>
@@ -192,7 +191,7 @@ namespace NeoCortexApi.Network
                     {
                         if (IsNumericType(default(T)))
                         {
-                            defaultValue = ConversionExtensions.Convert<T>(-1);
+                            defaultValue = (-1).Convert<T>();
                         }
                     }
                 }
@@ -203,7 +202,7 @@ namespace NeoCortexApi.Network
                 {
                     if (IsNumericType(default(T)))
                     {
-                        actValues[i] = (T)(actualValues[i].Equals(ConversionExtensions.Convert<T>(-1)) ? ConversionExtensions.Convert<T>(defaultValue) : actualValues[i]);
+                        actValues[i] = actualValues[i].Equals((-1).Convert<T>()) ? defaultValue.Convert<T>() : actualValues[i];
                     }
                     else
                     {
@@ -271,25 +270,25 @@ namespace NeoCortexApi.Network
                 {
                     if (IsNumericType(default(T)))
                     {
-                        actValue = ConversionExtensions.Convert<T>(-1);
+                        actValue = (-1).Convert<T>();
                     }
                 }
                 else
                 {
-                    actValue = ConversionExtensions.Convert<T>(classification["actValue"]);
+                    actValue = classification["actValue"].Convert<T>();
                 }
 
                 // Update maxBucketIndex
-                maxBucketIdx = (int)Math.Max(maxBucketIdx, bucketIdx);
+                maxBucketIdx = Math.Max(maxBucketIdx, bucketIdx);
 
                 // Update rolling average of actual values if it's a scalar. If it's
                 // not, it must be a category, in which case each bucket only ever
                 // sees one category so we don't need a running average.
                 while (maxBucketIdx > actualValues.Count - 1)
                 {
-                    actualValues.Add(IsNumericType(default(T)) ? ConversionExtensions.Convert<T>(-1) : default(T));
+                    actualValues.Add(IsNumericType(default(T)) ? (-1).Convert<T>() : default);
                 }
-                if (actualValues[bucketIdx].Equals(IsNumericType(default(T)) ? ConversionExtensions.Convert<T>(-1) : default(T)))
+                if (actualValues[bucketIdx].Equals(IsNumericType(default(T)) ? (-1).Convert<T>() : default))
                 {
                     actualValues[bucketIdx] = (T)actValue;
                 }
@@ -297,9 +296,9 @@ namespace NeoCortexApi.Network
                 {
                     if (IsNumericType(actValue))
                     {
-                        double val = ((1.0 - actValueAlpha) * Convert.ToDouble(actualValues[bucketIdx], enusFormatProvider)) +
-                                        (actValueAlpha * (Convert.ToDouble(actValue, enusFormatProvider)));
-                        actualValues[bucketIdx] = ConversionExtensions.Convert<T>(val);
+                        double val = (1.0 - actValueAlpha) * Convert.ToDouble(actualValues[bucketIdx], enusFormatProvider) +
+                                        actValueAlpha * Convert.ToDouble(actValue, enusFormatProvider);
+                        actualValues[bucketIdx] = val.Convert<T>();
                     }
                     else
                     {

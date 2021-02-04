@@ -1,11 +1,11 @@
-    using System;
-    using System.Collections.Generic;
-    using NeoCortexApi.Entities;
-    using NeoCortexApi.Exception;
-    using NeoCortexApi.Utility;
+using System;
+using System.Collections.Generic;
+using NeoCortexApi.Entities;
+using NeoCortexApi.Exception;
+using NeoCortexApi.Utility;
 
-    namespace NeoCortexApi.Network
-    {
+namespace NeoCortexApi.Classifiers
+{
     public class SdrClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>
     {
         private double alpha = 0.001;
@@ -177,7 +177,7 @@
         {
             double[] error = new double[maxBucketIdx + 1];
             int[] targetDist = new int[maxBucketIdx + 1];
-            
+
             // target bucket entry should approach to 1
             targetDist[Convert.ToInt32(classification[0])] = 1;
 
@@ -259,7 +259,7 @@
             }
         }
 
-        
+
 
         /// <summary>
         /// Increases the number of rows of the weight matrix in order to match with the maximum bucket index used by the encoder
@@ -295,7 +295,7 @@
             }
             else
             {
-                inputEntries = new List<object> {actValue};
+                inputEntries = new List<object> { actValue };
             }
             bucketEntries[bucketIdx] = inputEntries;
         }
@@ -340,7 +340,7 @@
                 Console.WriteLine("\n");
             }
         }
-        
+
         public void Learn(TIN input, Cell[] activeCells, bool learn)
         {
             throw new NotImplementedException();
@@ -351,5 +351,5 @@
             throw new NotImplementedException();
         }
 
-    } 
     }
+}

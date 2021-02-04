@@ -18,6 +18,7 @@ using System.IO;
 using System.Threading;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
+using NeoCortexApi.Classifiers;
 
 namespace UnitTestsProject
 {
