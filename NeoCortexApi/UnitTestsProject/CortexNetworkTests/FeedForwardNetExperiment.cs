@@ -235,8 +235,9 @@ namespace UnitTestsProject.CortexNetworkTests
                         InitArray(cellArray, 0);
 
                         // Set the output active cell array
-                        ArrayUtils.SetIndexesTo(cellArray, memL2.ActiveCells.Select(c => c.Index).ToArray(), 1);
-
+                        // ArrayUtils.SetIndexesTo(cellArray, memL2.ActiveCells.Select(c => c.Index).ToArray(), 1);
+                        //Since our main target to pass active cells sdr from Layer 4 to Layer 2
+                        ArrayUtils.SetIndexesTo(cellArray, memL4.ActiveCells.Select(c => c.Index).ToArray(), 1);
                         // 4102,25072, 25363, 25539, 25738, 25961, 26009, 26269, 26491, 26585, 26668, 26920, 26934, 27040, 27107, 27262, 27392, 27826, 27948, 28174, 28243, 28270, 28294, 28308, 28429, 28577, 28671, 29139, 29618, 29637, 29809, 29857, 29897, 29900, 29969, 30057, 30727, 31111, 49805, 49972, 
                         layerL2.Compute(cellArray, true);
 
