@@ -189,3 +189,31 @@ The Hierarchical Temporal Memory Cortical Learning Algorithm (HTM CLA) is a theo
 
 [Download from IJAIA](https://aircconline.com/abstract/ijaia/v11n4/11420ijaia07.html)  
 [Download from AIS 2020 publishing site](https://aircconline.com/csit/abstract/v10n6/csit100606.html)
+
+## Improved Spatial Pooler with Homeostatic Plasticity Controller
+
+### Author
+
+Damir Dobric, Andreas Pech, Bogdan Ghita, Thomas Wennekers
+Published 2012 at [ICPRAM Vienna, Austria](https://www.insticc.org/node/technicalprogram/icpram/2021/)
+
+### Abstract
+
+Hierarchical Temporal Memory (HTM) - Spatial Pooler (SP) is a Learning Algorithm for learning of spatial
+patterns inspired by the neo-cortex. It is designed to learn the pattern in a few iteration steps and to generate
+the Sparse Distributed Representation (SDR) of the input. It encodes spatially similar inputs into the same or
+similar SDRs memorized as a population of active neurons organized in groups called micro-columns.
+Findings in this research show that produced SDRs can be forgotten during the training progress, which causes
+the SP to learn the same pattern again and converts into the new SDR. This work shows that instable learning
+behaviour of the SP is caused by the internal boosting algorithm inspired by the homeostatic plasticity
+mechanism. Previous findings in neurosciences show that this mechanism is only active during the
+development of new-born mammals and later deactivated or shifted from cortical layer L4, where the SP is
+supposed to be active. The same mechanism was used in this work. The SP algorithm was extended with the
+new homeostatic plasticity component that controls the boosting and deactivates it after entering the stable
+state. Results show that learned SDRs remain stable during the lifetime of the Spatial Pooler. 
+
+[Download Paper](https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/Experiments/ICPRAM_2021_76_CR.pdf)
+
+[Presentation](https://dobricfamily-my.sharepoint.com/:p:/g/personal/damir_dobric_de/ETLj1GSdvRFElIV2a-dKS5IBXsKP4-oNSVc60Jh31K6nQw?e=mo7qpe)
+
+[See paper on the conference site](https://www.insticc.org/node/TechnicalProgram/icpram/2021/presentationDetails/103142)

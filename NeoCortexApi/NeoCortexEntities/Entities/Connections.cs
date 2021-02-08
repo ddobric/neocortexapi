@@ -75,7 +75,6 @@ namespace NeoCortexApi.Entities
 
         private double[] m_BoostFactors;
 
-
         private ISet<Cell> m_ActiveCells = new LinkedHashSet<Cell>();
         private ISet<Cell> winnerCells = new LinkedHashSet<Cell>();
         private ISet<Cell> m_PredictiveCells = new LinkedHashSet<Cell>();

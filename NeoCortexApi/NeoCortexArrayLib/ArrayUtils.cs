@@ -740,27 +740,27 @@ namespace NeoCortexApi.Utility
         /// to the value "setTo".
         /// </summary>
         /// <param name="values">the values to alter if at the specified indexes.</param>
-        /// <param name="indices">the indexes of the values array to alter.</param>
-        /// <param name="setTo">the value to set at the specified indexes.</param>
-        public static void SetIndexesTo(double[] values, int[] indices, double setTo)
+        /// <param name="indexes">the indexes of the values array to alter.</param>
+        /// <param name="val">the value to set at the specified indexes.</param>
+        public static void SetIndexesTo(double[] values, int[] indexes, double val)
         {
-            for (int i = 0; i < indices.Length; i++)
+            for (int i = 0; i < indexes.Length; i++)
             {
-                values[indices[i]] = setTo;
+                values[indexes[i]] = val;
             }
         }
 
         /// <summary>
-        /// Sets the values in the specified values array at the indexes specified, to the value <paramref name="setTo"/>.
+        /// Sets the values in the specified values array at the indexes specified, to the value <paramref name="val"/>.
         /// </summary>
         /// <param name="values">the values to alter if at the specified indexes.</param>
         /// <param name="indexes">the indexes of the values array to alter.</param>
-        /// <param name="setTo">the value to set at the specified indexes.</param>
-        public static void SetIndexesTo(int[] values, int[] indexes, int setTo)
+        /// <param name="val">the value to set at the specified indexes.</param>
+        public static void SetIndexesTo(int[] values, int[] indexes, int val)
         {
             for (int i = 0; i < indexes.Length; i++)
             {
-                values[indexes[i]] = setTo;
+                values[indexes[i]] = val;
             }
         }
 

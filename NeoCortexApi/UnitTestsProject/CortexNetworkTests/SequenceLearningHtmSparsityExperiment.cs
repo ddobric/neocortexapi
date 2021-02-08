@@ -11,6 +11,7 @@ using System.Linq;
 using System.IO;
 using NeoCortexApi.Network;
 using NeoCortexApi.Encoders;
+using NeoCortexApi.Classifiers;
 
 namespace UnitTestsProject.CortexNetworkTests
 {

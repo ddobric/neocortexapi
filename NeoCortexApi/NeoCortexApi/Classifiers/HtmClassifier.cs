@@ -10,7 +10,7 @@ using System.Text;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 
-namespace NeoCortexApi.Network
+namespace NeoCortexApi.Classifiers
 {
     /// <summary>
     /// Classifier implementation which memorize all seen values.
@@ -41,7 +41,7 @@ namespace NeoCortexApi.Network
         public void ClearState()
         {
             //this.activeMap.Clear();
-            this.m_ActiveMap2.Clear();
+            m_ActiveMap2.Clear();
             // this.inputSequence.Clear();
         }
 
@@ -73,31 +73,31 @@ namespace NeoCortexApi.Network
             if (m_AllInputs[input].Count > maxRecordedElements)
                 m_AllInputs[input].RemoveAt(0);
 
-            if (this.m_ActiveMap2.ContainsKey(input))
+            if (m_ActiveMap2.ContainsKey(input))
             {
-                if (!this.m_ActiveMap2[input].SequenceEqual(cellIndicies))
+                if (!m_ActiveMap2[input].SequenceEqual(cellIndicies))
                 {
                     // double numOfSameBitsPct = (double)(((double)(this.activeMap2[input].Intersect(cellIndicies).Count()) / Math.Max((double)cellIndicies.Length, this.activeMap2[input].Length)));
                     // double numOfSameBitsPct = (double)(((double)(this.activeMap2[input].Intersect(cellIndicies).Count()) / (double)this.activeMap2[input].Length));
-                    var numOfSameBitsPct = this.m_ActiveMap2[input].Intersect(cellIndicies).Count();
-                    Debug.WriteLine($"Prev/Now/Same={this.m_ActiveMap2[input].Length}/{cellIndicies.Length}/{numOfSameBitsPct}");
+                    var numOfSameBitsPct = m_ActiveMap2[input].Intersect(cellIndicies).Count();
+                    Debug.WriteLine($"Prev/Now/Same={m_ActiveMap2[input].Length}/{cellIndicies.Length}/{numOfSameBitsPct}");
                 }
 
-                this.m_ActiveMap2[input] = cellIndicies;
+                m_ActiveMap2[input] = cellIndicies;
             }
             else
-                this.m_ActiveMap2.Add(input, cellIndicies);
+                m_ActiveMap2.Add(input, cellIndicies);
         }
 
         public void Learn(TIN input, Cell[] output, Cell[] predictedOutput)
         {
-            this.inputSequence.Add(input);
+            inputSequence.Add(input);
 
-            this.inputSequenceMap.Add(GetCellIndicies(output), this.inputSequence.Count - 1);
+            inputSequenceMap.Add(GetCellIndicies(output), inputSequence.Count - 1);
 
             if (!activeMap.ContainsKey(GetCellIndicies(output)))
             {
-                this.activeMap.Add(GetCellIndicies(output), input);
+                activeMap.Add(GetCellIndicies(output), input);
             }
         }
 
@@ -115,7 +115,7 @@ namespace NeoCortexApi.Network
             if (predictiveCells.Length != 0)
             {
                 int indxOfMatchingInp = 0;
-                Debug.WriteLine($"Item length: {predictiveCells.Length}\t Items: {this.m_ActiveMap2.Keys.Count}");
+                Debug.WriteLine($"Item length: {predictiveCells.Length}\t Items: {m_ActiveMap2.Keys.Count}");
                 int n = 0;
 
                 List<int> sortedMatches = new List<int>();
@@ -124,7 +124,7 @@ namespace NeoCortexApi.Network
 
                 Debug.WriteLine($"Predictive cells: {celIndicies.Length} \t {Helpers.StringifyVector(celIndicies)}");
 
-                foreach (var pair in this.m_ActiveMap2)
+                foreach (var pair in m_ActiveMap2)
                 {
                     if (pair.Value.SequenceEqual(celIndicies))
                     {

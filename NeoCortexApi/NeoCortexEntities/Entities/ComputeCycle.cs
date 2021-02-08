@@ -161,6 +161,9 @@ namespace NeoCortexApi.Entities
         //    }
         //}
 
+        /// <summary>
+        /// Gets the lost of depolirized cells.
+        /// </summary>
         public IList<Cell> PredictiveCells
         {
             get

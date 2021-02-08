@@ -5,9 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace NeoCortexApi.Network
+namespace NeoCortexApi.Classifiers
 {
-    public interface IClassifier<TIN,TOUT>
+    public interface IClassifier<TIN, TOUT>
     {
         void Learn(TIN input, Cell[] activeCells, bool learn);
         TIN GetPredictedInputValue(Cell[] predictiveCells);

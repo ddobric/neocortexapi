@@ -10,7 +10,7 @@ using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 
-namespace NeoCortexApi.Network
+namespace NeoCortexApi.Classifiers
 {
     public class NearestClassifier<TIN, TOUT> : IHtmModule<ComputeCycle, object>
     {
@@ -21,10 +21,10 @@ namespace NeoCortexApi.Network
         public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public void Learn(TIN input, Cell[] output, bool learn)
-        {            
+        {
             if (!activeMap.ContainsKey(input))
             {
-                this.activeMap.Add(input, GetCellIndicies(output));
+                activeMap.Add(input, GetCellIndicies(output));
             }
             else
             {
@@ -71,9 +71,9 @@ namespace NeoCortexApi.Network
         //    return null;
         //}
 
-      
 
-        
+
+
         private static byte[] FlatArray(Cell[] output)
         {
             byte[] arr = new byte[output.Length];
