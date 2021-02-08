@@ -3,6 +3,7 @@ using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Network;
+using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -100,7 +101,8 @@ namespace UnitTestsProject.CortexNetworkTests
         {
             //int maxMatchCnt = 0;
             bool learn = true;
-            bool isInStableState = false;
+            bool isSP1Stable = false;
+            bool isSP2STable = false;
 
             var memL4 = new Connections(cfgL4);
             var memL2 = new Connections(cfgL2);
@@ -122,7 +124,7 @@ namespace UnitTestsProject.CortexNetworkTests
                     Debug.WriteLine($"SP L4 STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
                 else
                     Debug.WriteLine($"SP L4 INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
-                learn = isInStableState = isStable;
+                learn = isSP1Stable = isStable;
                 //cls.ClearState();
             }, numOfCyclesToWaitOnChange: 50);
 
@@ -136,7 +138,7 @@ namespace UnitTestsProject.CortexNetworkTests
                 else
                     Debug.WriteLine($"SP L2 INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
 
-                learn = isInStableState = isStable;
+                learn = isSP2STable = isStable;
                 //cls.ClearState();
             }, numOfCyclesToWaitOnChange: 50);
 
@@ -155,6 +157,8 @@ namespace UnitTestsProject.CortexNetworkTests
             layerL4.HtmModules.Add("sp", sp4);
 
             layerL2.HtmModules.Add("sp", sp2);
+
+            int[] cellArray = new int[cfgL2.CellsPerColumn * cfgL2.NumColumns];
 
             double[] inputs = inputValues.ToArray();
             int[] prevActiveCols = new int[0];
@@ -182,16 +186,24 @@ namespace UnitTestsProject.CortexNetworkTests
 
                     var lyrOut = layerL4.Compute(input, learn);
 
-                    if (isInStableState)
+                    InitArray(cellArray, 0);
+
+                    // Set the output active cell array
+                    ArrayUtils.SetIndexesTo(cellArray, memL4.ActiveCells.Select(c => c.Index).ToArray(), 1);
+
+                    // 4102,25072, 25363, 25539, 25738, 25961, 26009, 26269, 26491, 26585, 26668, 26920, 26934, 27040, 27107, 27262, 27392, 27826, 27948, 28174, 28243, 28270, 28294, 28308, 28429, 28577, 28671, 29139, 29618, 29637, 29809, 29857, 29897, 29900, 29969, 30057, 30727, 31111, 49805, 49972, 
+                    layerL2.Compute(cellArray, true);
+
+                    if (isSP1Stable && isSP2STable)
                         break;
                 }
 
-                if (isInStableState)
+                if (isSP1Stable)
                     break;
             }
 
 
-            Debug.WriteLine($"-------------- L4 SP region is  {isInStableState} ---------------");
+            Debug.WriteLine($"-------------- L4 SP region is  {isSP1Stable} ---------------");
 
             layerL4.HtmModules.Add("tm", tm4);
 
@@ -227,8 +239,14 @@ namespace UnitTestsProject.CortexNetworkTests
                             L2.Compute(item, true);
                         }*/
 
+                        // Reset tha array
+                        InitArray(cellArray, 0);
+
+                        // Set the output active cell array
+                        ArrayUtils.SetIndexesTo(cellArray, memL4.ActiveCells.Select(c => c.Index).ToArray(), 1);
+
                         // 4102,25072, 25363, 25539, 25738, 25961, 26009, 26269, 26491, 26585, 26668, 26920, 26934, 27040, 27107, 27262, 27392, 27826, 27948, 28174, 28243, 28270, 28294, 28308, 28429, 28577, 28671, 29139, 29618, 29637, 29809, 29857, 29897, 29900, 29969, 30057, 30727, 31111, 49805, 49972, 
-                        layerL2.Compute(lyrOut.ActiveCells.Select(cell => cell.Index), true);
+                        layerL2.Compute(cellArray, true);
 
                         /*foreach (var item in lyrOut.ActiveCells)
                         {
@@ -246,6 +264,14 @@ namespace UnitTestsProject.CortexNetworkTests
             }
 
             layerL2.HtmModules.Add("tm2", tm2);
+        }
+
+        private static void InitArray(int[] array, int val)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                array[i] = val;
+            }
         }
     }
 }
