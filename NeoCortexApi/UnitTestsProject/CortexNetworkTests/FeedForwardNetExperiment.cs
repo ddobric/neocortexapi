@@ -176,7 +176,7 @@ namespace UnitTestsProject.CortexNetworkTests
 
             for (int i = 0; i < maxCycles; i++)
             {
-
+                 
                 matches = 0;
                 cycle++;
                 Debug.WriteLine($"-------------- Newborn Cycle {cycle} at L4 SP region  ---------------");
