@@ -2,10 +2,14 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeoCortexApi;
+using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
+using NeoCortexApi.Network;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace UnitTests.Parallel
 {
@@ -16,7 +20,7 @@ namespace UnitTests.Parallel
         [TestMethod]
         public void Run()
         {
-            Console.WriteLine($"Hello NeocortexApi! Experiment {nameof(SequenceLearning)}");
+            Console.WriteLine($"Hello NeocortexApi! Experiment {nameof(TMParallelTests)}");
 
             int inputBits = 100;
             int numColumns = 1024;
