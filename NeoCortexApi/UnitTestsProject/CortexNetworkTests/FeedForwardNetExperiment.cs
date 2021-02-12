@@ -29,26 +29,30 @@ namespace UnitTestsProject.CortexNetworkTests
         [TestMethod]
         public void FeedForwardNetTest()
         {
-            int cellsPerColumn = 25;
-            int numColumns = 2048;
+            int cellsPerColumnL4 = 25;
+            int numColumnsL4 = 2048;
+            
+            int cellsPerColumnL2 = 10;
+            int numColumnsL2 = 512;
+
             int inputBits = 100;
             double minOctOverlapCycles = 1.0;
             double maxBoost = 10.0;
             double max = 70000;
 
-            HtmConfig htmConfig_L4 = new HtmConfig(new int[] { inputBits }, new int[] { numColumns })
+            HtmConfig htmConfig_L4 = new HtmConfig(new int[] { inputBits }, new int[] { numColumnsL4 })
             {
                 Random = new ThreadSafeRandom(42),
-                CellsPerColumn = cellsPerColumn,
+                CellsPerColumn = cellsPerColumnL4,
                 GlobalInhibition = true,
                 LocalAreaDensity = -1,
-                NumActiveColumnsPerInhArea = 0.02 * numColumns,
+                NumActiveColumnsPerInhArea = 0.02 * numColumnsL4,
                 PotentialRadius = 50,
                 InhibitionRadius = 15,
                 MaxBoost = maxBoost,
                 DutyCyclePeriod = 25,
                 MinPctOverlapDutyCycles = minOctOverlapCycles,
-                MaxSynapsesPerSegment = (int)(0.02 * numColumns),
+                MaxSynapsesPerSegment = (int)(0.02 * numColumnsL4),
                 ActivationThreshold = 15,
                 ConnectedPermanence = 0.5,
                 PermanenceDecrement = 0.25,
@@ -57,23 +61,23 @@ namespace UnitTestsProject.CortexNetworkTests
             };
 
             // The HTM of the L2 is connected to cells of the HTM of L4.
-            int inputsL2 = numColumns * cellsPerColumn;
+            int inputsL2 = numColumnsL4 * cellsPerColumnL4;
 
-            HtmConfig htmConfig_L2 = new HtmConfig(new int[] { inputsL2 }, new int[] { numColumns })
+            HtmConfig htmConfig_L2 = new HtmConfig(new int[] { inputsL2 }, new int[] { numColumnsL2 })
             {
                 Random = new ThreadSafeRandom(42),
 
-                CellsPerColumn = cellsPerColumn,
+                CellsPerColumn = cellsPerColumnL2,
                 GlobalInhibition = true,
                 LocalAreaDensity = -1,
-                NumActiveColumnsPerInhArea = 0.02 * numColumns,
+                NumActiveColumnsPerInhArea = 0.02 * numColumnsL2,
                 PotentialRadius = 50,
                 InhibitionRadius = 15,
                 MaxBoost = maxBoost,
                 DutyCyclePeriod = 25,
                 MinPctOverlapDutyCycles = minOctOverlapCycles,
-                MaxSynapsesPerSegment = (int)(0.02 * numColumns),
-                ActivationThreshold = 15,
+                MaxSynapsesPerSegment = (int)(0.02 * numColumnsL2),
+                ActivationThreshold = 10,
                 ConnectedPermanence = 0.5,
                 PermanenceDecrement = 0.25,
                 PermanenceIncrement = 0.15,
@@ -91,7 +95,6 @@ namespace UnitTestsProject.CortexNetworkTests
                 { "ClipInput", false},
                 { "MaxVal", max}
             };
-
 
             EncoderBase encoder = new ScalarEncoder(settings);
             List<double> inputValues = new List<double>(new double[] { 12345, 12345, 6783, 6783, 12345, 6783 });
@@ -154,12 +157,13 @@ namespace UnitTestsProject.CortexNetworkTests
             tm2.Init(memL2);
 
             layerL4.HtmModules.Add("encoder", encoder);
-
-            layerL4.HtmModules.Add("sp", sp4);
-
+            layerL4.HtmModules.Add("sp", sp4);            
+            layerL4.HtmModules.Add("tm", tm4);
+            
             layerL2.HtmModules.Add("sp", sp2);
+            layerL2.HtmModules.Add("tm", tm2);
 
-            int[] cellArray = new int[cfgL2.CellsPerColumn * cfgL2.NumColumns];
+            int[] inpCellsL4ToL2 = new int[cfgL4.CellsPerColumn * cfgL4.NumColumns];
 
             double[] inputs = inputValues.ToArray();
             int[] prevActiveCols = new int[0];
@@ -176,37 +180,35 @@ namespace UnitTestsProject.CortexNetworkTests
 
             for (int i = 0; i < maxCycles; i++)
             {
-                 
+
                 matches = 0;
                 cycle++;
                 Debug.WriteLine($"-------------- Newborn Cycle {cycle} at L4 SP region  ---------------");
 
                 foreach (var input in inputs)
                 {
-                    Debug.WriteLine($" -- {input} --");
-
+                    Debug.WriteLine($" INPUT: '{input}'\tCycle:{cycle}");
+                    Debug.Write("L4: ");
                     var lyrOut = layerL4.Compute(input, learn);
 
-                    InitArray(cellArray, 0);
+                    InitArray(inpCellsL4ToL2, 0);
 
                     // Set the output active cell array
-                    ArrayUtils.SetIndexesTo(cellArray, memL4.ActiveCells.Select(c => c.Index).ToArray(), 1);
+                    ArrayUtils.SetIndexesTo(inpCellsL4ToL2, memL4.ActiveCells.Select(c => c.Index).ToArray(), 1);
 
+                    Debug.Write("L2: ");
                     // 4102,25072, 25363, 25539, 25738, 25961, 26009, 26269, 26491, 26585, 26668, 26920, 26934, 27040, 27107, 27262, 27392, 27826, 27948, 28174, 28243, 28270, 28294, 28308, 28429, 28577, 28671, 29139, 29618, 29637, 29809, 29857, 29897, 29900, 29969, 30057, 30727, 31111, 49805, 49972, 
-                    layerL2.Compute(cellArray, true);
+                    layerL2.Compute(inpCellsL4ToL2, true);
 
                     if (isSP1Stable && isSP2STable)
                         break;
                 }
-
-                if (isSP1Stable)
-                    break;
             }
 
 
             Debug.WriteLine($"-------------- L4 SP region is  {isSP1Stable} ---------------");
 
-            layerL4.HtmModules.Add("tm", tm4);
+            //layerL4.HtmModules.Add("tm", tm4);
 
 
             // SP+TM at L4
@@ -241,13 +243,13 @@ namespace UnitTestsProject.CortexNetworkTests
                         }*/
 
                         // Reset tha array
-                        InitArray(cellArray, 0);
+                        InitArray(inpCellsL4ToL2, 0);
 
                         // Set the output active cell array
-                        ArrayUtils.SetIndexesTo(cellArray, memL4.ActiveCells.Select(c => c.Index).ToArray(), 1);
+                        ArrayUtils.SetIndexesTo(inpCellsL4ToL2, memL4.ActiveCells.Select(c => c.Index).ToArray(), 1);
 
                         // 4102,25072, 25363, 25539, 25738, 25961, 26009, 26269, 26491, 26585, 26668, 26920, 26934, 27040, 27107, 27262, 27392, 27826, 27948, 28174, 28243, 28270, 28294, 28308, 28429, 28577, 28671, 29139, 29618, 29637, 29809, 29857, 29897, 29900, 29969, 30057, 30727, 31111, 49805, 49972, 
-                        layerL2.Compute(cellArray, true);
+                        layerL2.Compute(inpCellsL4ToL2, true);
 
                         /*foreach (var item in lyrOut.ActiveCells)
                         {
