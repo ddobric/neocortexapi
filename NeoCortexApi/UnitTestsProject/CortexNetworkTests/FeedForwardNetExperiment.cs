@@ -71,7 +71,7 @@ namespace UnitTestsProject.CortexNetworkTests
                 GlobalInhibition = true,
                 LocalAreaDensity = -1,
                 NumActiveColumnsPerInhArea = 0.02 * numColumnsL2,
-                PotentialRadius = (int)  (1.2 * (float)(inputsL2 / numColumnsL2)),// 
+                PotentialRadius = 5000,
                 InhibitionRadius = 15,
                 MaxBoost = maxBoost,
                 DutyCyclePeriod = 25,
@@ -153,6 +153,8 @@ namespace UnitTestsProject.CortexNetworkTests
             sp4.Init(memL4);
             sp2.Init(memL2);
 
+            memL2.TraceInputPotential();
+
             tm4.Init(memL4);
             tm2.Init(memL2);
 
@@ -193,16 +195,20 @@ namespace UnitTestsProject.CortexNetworkTests
 
                     InitArray(inpCellsL4ToL2, 0);
 
+                    var cellSdrL4 = memL4.ActiveCells.Select(c => c.Index).ToArray();
+
                     // Set the output active cell array
-                    ArrayUtils.SetIndexesTo(inpCellsL4ToL2, memL4.ActiveCells.Select(c => c.Index).ToArray(), 1);
+                    ArrayUtils.SetIndexesTo(inpCellsL4ToL2, cellSdrL4, 1);
 
                     Debug.Write("L2: ");
-                    // 4102,25072, 25363, 25539, 25738, 25961, 26009, 26269, 26491, 26585, 26668, 26920, 26934, 27040, 27107, 27262, 27392, 27826, 27948, 28174, 28243, 28270, 28294, 28308, 28429, 28577, 28671, 29139, 29618, 29637, 29809, 29857, 29897, 29900, 29969, 30057, 30727, 31111, 49805, 49972, 
+                    
                     layerL2.Compute(inpCellsL4ToL2, true);
 
+                    Debug.WriteLine($"L4 out sdr: {Helpers.StringifyVector(cellSdrL4)}");
+
                     var overlaps = ArrayUtils.IndexWhere(memL2.Overlaps, o => o > 0);
-                    var str = Helpers.StringifyVector(overlaps);
-                    Debug.WriteLine($"Potential columns: {overlaps.Length}, overlaps: {str}");
+                    var strOverlaps = Helpers.StringifyVector(overlaps);
+                    Debug.WriteLine($"Potential columns: {overlaps.Length}, overlaps: {strOverlaps}");
 
                     if (isSP1Stable && isSP2STable)
                         break;

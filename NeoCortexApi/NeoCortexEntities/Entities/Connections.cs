@@ -1838,6 +1838,34 @@ namespace NeoCortexApi.Entities
         */
         #endregion
 
+        /// <summary>
+        /// Traces out the potential of input bits.
+        /// </summary>
+        public void TraceInputPotential(bool traceAllValues = false)
+        {
+            int[] inputPotential = new int[this.HtmConfig.NumInputs];
+            
+            for (int i = 0; i < this.HtmConfig.NumColumns; i++)
+            {
+                Column col = GetColumn(i);
+                for (int k = 0; k < col.ProximalDendrite.ConnectedInputs.Length; k++)
+                {
+                    int inpIndx = col.ProximalDendrite.ConnectedInputs[k];
+                    inputPotential[inpIndx] = inputPotential[inpIndx] + 1;
+                }
+            }
+
+            if (traceAllValues)
+            {
+                for (int i = 0; i < inputPotential.Length; i++)
+                {
+                    Debug.WriteLine($"{i} - {inputPotential[i]}");
+                }
+            }
+
+            Debug.WriteLine($"Max: {inputPotential.Max()} - Min: {inputPotential.Min()}, AVG: {inputPotential.Average()}");
+        }
+
         #region Serialization
         public void Serialize(StreamWriter writer)
         {
