@@ -71,7 +71,7 @@ namespace UnitTestsProject.CortexNetworkTests
                 GlobalInhibition = true,
                 LocalAreaDensity = -1,
                 NumActiveColumnsPerInhArea = 0.02 * numColumnsL2,
-                PotentialRadius = 50,
+                PotentialRadius = (int)  (1.2 * (float)(inputsL2 / numColumnsL2)),// 
                 InhibitionRadius = 15,
                 MaxBoost = maxBoost,
                 DutyCyclePeriod = 25,
@@ -146,9 +146,9 @@ namespace UnitTestsProject.CortexNetworkTests
                 //cls.ClearState();
             }, numOfCyclesToWaitOnChange: 50);
 
-            SpatialPoolerMT sp4 = new SpatialPoolerMT(hpa_sp_L4);
+            SpatialPooler sp4 = new SpatialPoolerMT(hpa_sp_L4);
 
-            SpatialPoolerMT sp2 = new SpatialPoolerMT(hpa_sp_L2);
+            SpatialPooler sp2 = new SpatialPoolerMT(hpa_sp_L2);
 
             sp4.Init(memL4);
             sp2.Init(memL2);
@@ -199,6 +199,10 @@ namespace UnitTestsProject.CortexNetworkTests
                     Debug.Write("L2: ");
                     // 4102,25072, 25363, 25539, 25738, 25961, 26009, 26269, 26491, 26585, 26668, 26920, 26934, 27040, 27107, 27262, 27392, 27826, 27948, 28174, 28243, 28270, 28294, 28308, 28429, 28577, 28671, 29139, 29618, 29637, 29809, 29857, 29897, 29900, 29969, 30057, 30727, 31111, 49805, 49972, 
                     layerL2.Compute(inpCellsL4ToL2, true);
+
+                    var overlaps = ArrayUtils.IndexWhere(memL2.Overlaps, o => o > 0);
+                    var str = Helpers.StringifyVector(overlaps);
+                    Debug.WriteLine($"Potential columns: {overlaps.Length}, overlaps: {str}");
 
                     if (isSP1Stable && isSP2STable)
                         break;

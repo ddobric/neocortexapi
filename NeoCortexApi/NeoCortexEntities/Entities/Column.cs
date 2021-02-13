@@ -13,7 +13,7 @@ using NeoCortexEntities.NeuroVisualizer;
 namespace NeoCortexApi.Entities
 {
 
-   
+
     /// <summary>
     /// Implementation of the mini-column.
     /// </summary>
@@ -32,7 +32,7 @@ namespace NeoCortexApi.Entities
         /// Column index
         /// </summary>
         public int Index { get; set; }
-            
+
         /// <summary>
         /// Dendrites connected to <see cref="SpatialPooler"/> input neural cells.
         /// </summary>
@@ -198,7 +198,7 @@ namespace NeoCortexApi.Entities
                 {
                     this.ConnectedInputCounterMatrix.set(1, 0 /*this.Index*/, s.InputIndex);
                 }
-            }           
+            }
         }
 
         /**
@@ -270,7 +270,6 @@ namespace NeoCortexApi.Entities
             setProximalPermanencesSparse(htmConfig, perm, maskPotential);
         }
 
-        bool _trace = false;
 
         /// <summary>
         /// Calculates the overlapp of the column.
@@ -300,15 +299,13 @@ namespace NeoCortexApi.Entities
                 }
             }
 
-            if (_trace)
-            {
-                string strInp = StringifyVector(ArrayUtils.IndexWhere(inputVector, i => i == 1));
+            //string strInp = StringifyVector(ArrayUtils.IndexWhere(inputVector, i => i == 1));
 
-                int numConnectedSynapses = slice.Count(sl => sl == 1);
+            //int numConnectedSynapses = slice.Count(sl => sl == 1);
 
-                Debug.WriteLine($"Overlap: {result} - numConnectedSynapseso: {numConnectedSynapses} - strInp: {strInp}");
-            }
-    
+            //Debug.WriteLine($"Overlap: {result} - numConnectedSynapseso: {numConnectedSynapses} - strInp: {strInp}");
+
+
             return result;
         }
 
