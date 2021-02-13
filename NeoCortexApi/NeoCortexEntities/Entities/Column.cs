@@ -270,6 +270,7 @@ namespace NeoCortexApi.Entities
             setProximalPermanencesSparse(htmConfig, perm, maskPotential);
         }
 
+        bool _trace = false;
 
         /// <summary>
         /// Calculates the overlapp of the column.
@@ -285,12 +286,12 @@ namespace NeoCortexApi.Entities
             int[] slice = (int[])this.connectedInputCounter.GetSlice(0);
 
             // Go through all connections (synapses) between column and input vector.
-            for (int inpBit = 0; inpBit < slice.Length; inpBit++)
+            for (int inpBitIndx = 0; inpBitIndx < slice.Length; inpBitIndx++)
             {
                 // Result (overlapp) is 1 if 
-                result += (inputVector[inpBit] * slice[inpBit]);
+                result += (inputVector[inpBitIndx] * slice[inpBitIndx]);
                 //TODO: check if this is needed!
-                if (inpBit == slice.Length - 1)
+                if (inpBitIndx == slice.Length - 1)
                 {
                     // If the overlap (num of connected synapses to TRUE input) is less than stimulusThreshold then we set result on 0.
                     // If the overlap (num of connected synapses to TRUE input) is greather than stimulusThreshold then result remains as calculated.
@@ -299,14 +300,23 @@ namespace NeoCortexApi.Entities
                 }
             }
 
-            //Debug.WriteLine($"Col {this.Index} - o = {result} - onces: {slice.Count(i=>i == 1)}");
-           // Debug.WriteLine(StringifyVector(slice));
-           // Debug.WriteLine("");
+            if (_trace)
+            {
+                string strInp = StringifyVector(ArrayUtils.IndexWhere(inputVector, i => i == 1));
 
+                int numConnectedSynapses = slice.Count(sl => sl == 1);
+
+                Debug.WriteLine($"Overlap: {result} - numConnectedSynapseso: {numConnectedSynapses} - strInp: {strInp}");
+            }
+    
             return result;
         }
 
-
+        /// <summary>
+        /// Creates the string representation of the given vector.
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <returns></returns>
         public static string StringifyVector(int[] vector)
         {
             StringBuilder sb = new StringBuilder();

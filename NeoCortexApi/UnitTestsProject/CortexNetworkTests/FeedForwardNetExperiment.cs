@@ -222,7 +222,7 @@ namespace UnitTestsProject.CortexNetworkTests
                 Debug.WriteLine($"-------------- L4 TM Train region Cycle {cycle} ---------------");
 
                 foreach (var input in inputs)
-                {
+                { 
                     Debug.WriteLine($"-------------- {input} ---------------");
 
                     var lyrOut = layerL4.Compute(input, learn) as ComputeCycle;
