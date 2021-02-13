@@ -71,7 +71,7 @@ parameters.Set(KEY.MAX_BOOST, 5);
 
 |Parameter Name  |  Meaning|
 |--|--|
-|POTENTIAL_RADIUS  | Defines the radius in number of input cells visible to column cells. |
+|POTENTIAL_RADIUS  | Defines the radius in number of input cells visible to column cells. It is important to choose this value, so every input neuron is connected to at least a single column. For example, if the input has 50000 bits and the column topology is 500, then you must choose some value larger than 50000/500 > 100.  |
 |POTENTIAL_PCT  | Defines the percent of of inputs withing potential radius, which can/should be connected to the column. |
 |GLOBAL_INHIBITION  | If TRUE global inhibition algorithm will be used. If FALSE local inhibition algorithm will be used. |
 |GLOBAL_INHIBITION  | If TRUE global inhibition algorithm will be used. If FALSE local inhibition algorithm will be used. |
