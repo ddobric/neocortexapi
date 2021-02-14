@@ -93,7 +93,7 @@ namespace NeoCortexApi
                 // If there are some active segments on the column already...
                 if (activeColumnData.ActiveSegments != null && activeColumnData.ActiveSegments.Count > 0)
                 {
-                    //Debug.Write("A");
+                    Debug.Write("A");
 
                     List<Cell> cellsOwnersOfActSegs = ActivatePredictedColumn(conn, activeColumnData.ActiveSegments,
                         activeColumnData.MatchingSegments, prevActiveCells, prevWinnerCells,
@@ -110,7 +110,7 @@ namespace NeoCortexApi
                 }
                 else
                 {
-                    Debug.Write("M");
+                    Debug.Write("B");
 
                     //
                     // If no active segments are detected (start of learning) then all cells are activated

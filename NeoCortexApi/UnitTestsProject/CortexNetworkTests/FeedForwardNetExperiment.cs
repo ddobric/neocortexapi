@@ -8,6 +8,7 @@ using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,7 +32,7 @@ namespace UnitTestsProject.CortexNetworkTests
         {
             int cellsPerColumnL4 = 25;
             int numColumnsL4 = 2048;
-            
+
             int cellsPerColumnL2 = 10;
             int numColumnsL2 = 512;
 
@@ -71,7 +72,7 @@ namespace UnitTestsProject.CortexNetworkTests
                 GlobalInhibition = true,
                 LocalAreaDensity = -1,
                 NumActiveColumnsPerInhArea = 0.02 * numColumnsL2,
-                PotentialRadius = 5000,
+                PotentialRadius = 200,
                 InhibitionRadius = 15,
                 MaxBoost = maxBoost,
                 DutyCyclePeriod = 25,
@@ -103,6 +104,8 @@ namespace UnitTestsProject.CortexNetworkTests
 
         private void RunExperiment(int inputBits, HtmConfig cfgL4, EncoderBase encoder, List<double> inputValues, HtmConfig cfgL2)
         {
+            Stopwatch swL2 = new Stopwatch();
+
             //int maxMatchCnt = 0;
             bool learn = true;
             bool isSP1Stable = false;
@@ -117,8 +120,8 @@ namespace UnitTestsProject.CortexNetworkTests
             layerL4 = new CortexLayer<object, object>("L4");
             layerL2 = new CortexLayer<object, object>("L2");
 
-            tm4 = new TemporalMemory();
-            tm2 = new TemporalMemory();
+            tm4 = new TemporalMemoryMT();
+            tm2 = new TemporalMemoryMT();
 
             // HPC for Layer 4 SP
 
@@ -153,19 +156,20 @@ namespace UnitTestsProject.CortexNetworkTests
             sp4.Init(memL4);
             sp2.Init(memL2);
 
-            memL2.TraceInputPotential();
+            // memL2.TraceInputPotential();
 
             tm4.Init(memL4);
             tm2.Init(memL2);
 
             layerL4.HtmModules.Add("encoder", encoder);
-            layerL4.HtmModules.Add("sp", sp4);            
+            layerL4.HtmModules.Add("sp", sp4);
             layerL4.HtmModules.Add("tm", tm4);
-            
+
             layerL2.HtmModules.Add("sp", sp2);
             layerL2.HtmModules.Add("tm", tm2);
 
             int[] inpCellsL4ToL2 = new int[cfgL4.CellsPerColumn * cfgL4.NumColumns];
+
 
             double[] inputs = inputValues.ToArray();
             int[] prevActiveCols = new int[0];
@@ -180,41 +184,48 @@ namespace UnitTestsProject.CortexNetworkTests
             // Training SP at Layer 4 to get stable. New-born stage.
             //
 
-            for (int i = 0; i < maxCycles; i++)
+            using (StreamWriter sw = new StreamWriter($"in_{cfgL2.NumInputs}-col_{cfgL2.NumColumns}-r_{cfgL2.PotentialRadius}.txt"))
             {
-
-                matches = 0;
-                cycle++;
-                Debug.WriteLine($"-------------- Newborn Cycle {cycle} at L4 SP region  ---------------");
-
-                foreach (var input in inputs)
+                for (int i = 0; i < maxCycles; i++)
                 {
-                    Debug.WriteLine($" INPUT: '{input}'\tCycle:{cycle}");
-                    Debug.Write("L4: ");
-                    var lyrOut = layerL4.Compute(input, learn);
 
-                    InitArray(inpCellsL4ToL2, 0);
+                    matches = 0;
+                    cycle++;
+                    Debug.WriteLine($"-------------- Newborn Cycle {cycle} at L4 SP region  ---------------");
 
-                    var cellSdrL4 = memL4.ActiveCells.Select(c => c.Index).ToArray();
+                    foreach (var input in inputs)
+                    {
+                        Debug.WriteLine($" INPUT: '{input}'\tCycle:{cycle}");
+                        Debug.Write("L4: ");
+                        var lyrOut = layerL4.Compute(input, learn);
 
-                    // Set the output active cell array
-                    ArrayUtils.SetIndexesTo(inpCellsL4ToL2, cellSdrL4, 1);
+                        InitArray(inpCellsL4ToL2, 0);
 
-                    Debug.Write("L2: ");
-                    
-                    layerL2.Compute(inpCellsL4ToL2, true);
+                        var cellSdrL4 = memL4.ActiveCells.Select(c => c.Index).ToArray();
 
-                    Debug.WriteLine($"L4 out sdr: {Helpers.StringifyVector(cellSdrL4)}");
+                        // Set the output active cell array
+                        ArrayUtils.SetIndexesTo(inpCellsL4ToL2, cellSdrL4, 1);
 
-                    var overlaps = ArrayUtils.IndexWhere(memL2.Overlaps, o => o > 0);
-                    var strOverlaps = Helpers.StringifyVector(overlaps);
-                    Debug.WriteLine($"Potential columns: {overlaps.Length}, overlaps: {strOverlaps}");
+                        Debug.Write("L2: ");
 
-                    if (isSP1Stable && isSP2STable)
-                        break;
+                        swL2.Restart();
+                        layerL2.Compute(inpCellsL4ToL2, true);
+                        swL2.Stop();
+
+                        Debug.WriteLine($"{swL2.ElapsedMilliseconds / 1000}");
+                        sw.WriteLine($"{swL2.ElapsedMilliseconds/1000}");
+                        sw.Flush();
+                        Debug.WriteLine($"L4 out sdr: {Helpers.StringifyVector(cellSdrL4)}");
+
+                        var overlaps = ArrayUtils.IndexWhere(memL2.Overlaps, o => o > 0);
+                        var strOverlaps = Helpers.StringifyVector(overlaps);
+                        Debug.WriteLine($"Potential columns: {overlaps.Length}, overlaps: {strOverlaps}");
+
+                        if (isSP1Stable && isSP2STable)
+                            break;
+                    }
                 }
             }
-
 
             Debug.WriteLine($"-------------- L4 SP region is  {isSP1Stable} ---------------");
 
@@ -232,7 +243,7 @@ namespace UnitTestsProject.CortexNetworkTests
                 Debug.WriteLine($"-------------- L4 TM Train region Cycle {cycle} ---------------");
 
                 foreach (var input in inputs)
-                { 
+                {
                     Debug.WriteLine($"-------------- {input} ---------------");
 
                     var lyrOut = layerL4.Compute(input, learn) as ComputeCycle;
