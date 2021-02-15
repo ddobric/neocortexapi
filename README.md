@@ -71,7 +71,7 @@ parameters.Set(KEY.MAX_BOOST, 5);
 
 |Parameter Name  |  Meaning|
 |--|--|
-|POTENTIAL_RADIUS  | Defines the radius in number of input cells visible to column cells. |
+|POTENTIAL_RADIUS  | Defines the radius in number of input cells visible to column cells. It is important to choose this value, so every input neuron is connected to at least a single column. For example, if the input has 50000 bits and the column topology is 500, then you must choose some value larger than 50000/500 > 100.  |
 |POTENTIAL_PCT  | Defines the percent of of inputs withing potential radius, which can/should be connected to the column. |
 |GLOBAL_INHIBITION  | If TRUE global inhibition algorithm will be used. If FALSE local inhibition algorithm will be used. |
 |GLOBAL_INHIBITION  | If TRUE global inhibition algorithm will be used. If FALSE local inhibition algorithm will be used. |
@@ -224,6 +224,11 @@ https://aircconline.com/csit/csit1006.pdf
 #### Symposium on Pattern Recognition and Applications - Rome, Italy
 On the Relationship Between Input Sparsity and Noise Robustness in Hierarchical Temporal Memory Spatial Pooler 
 https://doi.org/10.1145/3393822.3432317
+
+#### International Conference on Pattern Recognition Applications and Methods - ICPRAM 2021
+
+Improved HTM Spatial Pooler with Homeostatic Plasticity Control (Awarded with: *Best Industrial Paper*)
+https://www.insticc.org/node/TechnicalProgram/icpram/2021/presentationDetails/103142
 
 # Contribute
 If your want to contribute on this project please contact us. 

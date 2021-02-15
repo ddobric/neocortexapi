@@ -44,7 +44,7 @@ namespace NeoCortexApi
         /// Number of active columns in SDRs of last N steps.
         /// </summary>
         private Dictionary<string, int[]> m_NumOfActiveColsForInput = new Dictionary<string, int[]>();
-     
+
         /// <summary>
         /// Keeps the list of hash values of all seen input patterns.
         /// List of hashes. [key, val] = [hash(input), hash(output)]
@@ -99,7 +99,7 @@ namespace NeoCortexApi
         /// Invoked as the last step in learning of the SP.
         /// </summary>
         /// <param name="input">The input of the SP in the current cycle.</param>
-        /// <param name="output">The SDR of active columns as calculated output of SP.</param>
+        /// <param name="output">The output SDR of the Spatial Pooler compute cycle.</param>
         /// <returns></returns>
         public bool Compute(int[] input, int[] output)
         {
@@ -259,22 +259,28 @@ namespace NeoCortexApi
         public void TraceState(string fileName = null)
         {
             if (fileName == null)
-                fileName = $"{nameof(HomeostaticPlasticityController)}.state.csv";                    
+                fileName = $"{nameof(HomeostaticPlasticityController)}.state.csv";
 
             Debug.WriteLine("........... Column State .............");
+
+            int cnt = 0;
 
             using (var cellStateSw = new StreamWriter(fileName))
             {
                 foreach (var item in m_InOutMap)
                 {
                     string keyStr = System.Convert.ToBase64String(Encoding.UTF8.GetBytes(item.Key));
-                    string res = $"num of active columns: {this.m_NumOfActiveColsForInput[item.Key].Length} - stable cycles: {this.m_NumOfStableCyclesForInput.Count}";
-
+                    string res = $"{cnt++}- stable cycles: {this.m_NumOfStableCyclesForInput.Count}";
+                                        
                     Debug.WriteLine(keyStr);
                     Debug.WriteLine($"{res}");
+
+                    var sdr = Helpers.StringifyVector(m_InOutMap[item.Key]);
                     
-                    cellStateSw.WriteLine($"{keyStr}");
-                    cellStateSw.WriteLine($"{res}");
+                    Debug.WriteLine(sdr);
+                    
+                    cellStateSw.WriteLine($"{res} \t {keyStr}");
+                    cellStateSw.WriteLine($"{sdr}");
                 }
             }
         }

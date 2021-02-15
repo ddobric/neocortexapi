@@ -48,9 +48,9 @@ namespace NeoCortexApi
 
       
         /// <summary>
-        /// Maps a column to its input bits. This method encapsulates the topology of the region. It takes the index of the column as an argument and determines 
-        /// what are the indices of the input vector that are located within the column's potential pool. The return value is a list containing the indices of 
-        /// the input bits. The current implementation of the base class only supports a 1 dimensional topology of columns with a 1 dimensional topology of inputs. 
+        /// Maps a column to its input bits. This method encapsulates the topology of the region. It takes the index of the column as an argument and calculates 
+        /// indexes of the input vector that represent column's potential pool. The return value is a list containing the indices of 
+        /// connected input bits. The current implementation of the base class only supports a 1 dimensional topology of columns with a 1 dimensional topology of inputs. 
         /// To extend this class to support 2-D topology you will need to override this method. Examples of the expected output of this method:
         /// <list type="bullet">
         ///     <item>
