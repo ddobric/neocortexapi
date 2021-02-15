@@ -30,16 +30,16 @@ namespace UnitTestsProject.CortexNetworkTests
         [TestMethod]
         public void FeedForwardNetTest()
         {
-            int cellsPerColumnL4 = 25;
-            int numColumnsL4 = 2048;
+            int cellsPerColumnL4 = 20;
+            int numColumnsL4 = 1024;
 
-            int cellsPerColumnL2 = 10;
-            int numColumnsL2 = 512;
+            int cellsPerColumnL2 = 5;
+            int numColumnsL2 = 100;
 
             int inputBits = 100;
             double minOctOverlapCycles = 1.0;
             double maxBoost = 10.0;
-            double max = 70000;
+            double max = 20;
 
             HtmConfig htmConfig_L4 = new HtmConfig(new int[] { inputBits }, new int[] { numColumnsL4 })
             {
@@ -48,7 +48,7 @@ namespace UnitTestsProject.CortexNetworkTests
                 GlobalInhibition = true,
                 LocalAreaDensity = -1,
                 NumActiveColumnsPerInhArea = 0.02 * numColumnsL4,
-                PotentialRadius = 50,
+                PotentialRadius = 50, // Ever column is connected to 50 of 100 input cells.
                 InhibitionRadius = 15,
                 MaxBoost = maxBoost,
                 DutyCyclePeriod = 25,
@@ -71,8 +71,8 @@ namespace UnitTestsProject.CortexNetworkTests
                 CellsPerColumn = cellsPerColumnL2,
                 GlobalInhibition = true,
                 LocalAreaDensity = -1,
-                NumActiveColumnsPerInhArea = 0.02 * numColumnsL2,
-                PotentialRadius = 200,
+                NumActiveColumnsPerInhArea = 0.5 * numColumnsL2,
+                PotentialRadius = 5000, // Every columns 
                 InhibitionRadius = 15,
                 MaxBoost = maxBoost,
                 DutyCyclePeriod = 25,
@@ -98,7 +98,7 @@ namespace UnitTestsProject.CortexNetworkTests
             };
 
             EncoderBase encoder = new ScalarEncoder(settings);
-            List<double> inputValues = new List<double>(new double[] { 12345, 12345, 6783, 6783, 12345, 6783 });
+            List<double> inputValues = new List<double>(new double[] { 1, 2, 3, 4, 5, 2, 3, 6 });
             RunExperiment(inputBits, htmConfig_L4, encoder, inputValues, htmConfig_L2);
         }
 
@@ -125,7 +125,7 @@ namespace UnitTestsProject.CortexNetworkTests
 
             // HPC for Layer 4 SP
 
-            HomeostaticPlasticityController hpa_sp_L4 = new HomeostaticPlasticityController(memL4, numInputs * 150, (isStable, numPatterns, actColAvg, seenInputs) =>
+            HomeostaticPlasticityController hpa_sp_L4 = new HomeostaticPlasticityController(memL4, numInputs * 50, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                 if (isStable)
                     Debug.WriteLine($"SP L4 STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
@@ -138,7 +138,7 @@ namespace UnitTestsProject.CortexNetworkTests
 
             // HPC for Layer 2 SP
 
-            HomeostaticPlasticityController hpa_sp_L2 = new HomeostaticPlasticityController(memL2, numInputs * 150, (isStable, numPatterns, actColAvg, seenInputs) =>
+            HomeostaticPlasticityController hpa_sp_L2 = new HomeostaticPlasticityController(memL2, numInputs * 50, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                 if (isStable)
                     Debug.WriteLine($"SP L2 STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
@@ -170,7 +170,6 @@ namespace UnitTestsProject.CortexNetworkTests
 
             int[] inpCellsL4ToL2 = new int[cfgL4.CellsPerColumn * cfgL4.NumColumns];
 
-
             double[] inputs = inputValues.ToArray();
             int[] prevActiveCols = new int[0];
             int cycle = 0;
@@ -188,7 +187,6 @@ namespace UnitTestsProject.CortexNetworkTests
             {
                 for (int i = 0; i < maxCycles; i++)
                 {
-
                     matches = 0;
                     cycle++;
                     Debug.WriteLine($"-------------- Newborn Cycle {cycle} at L4 SP region  ---------------");
@@ -201,25 +199,28 @@ namespace UnitTestsProject.CortexNetworkTests
 
                         InitArray(inpCellsL4ToL2, 0);
 
-                        var cellSdrL4 = memL4.ActiveCells.Select(c => c.Index).ToArray();
+                        if (isSP1Stable)
+                        {
+                            var cellSdrL4 = memL4.ActiveCells.Select(c => c.Index).ToArray();
 
-                        // Set the output active cell array
-                        ArrayUtils.SetIndexesTo(inpCellsL4ToL2, cellSdrL4, 1);
+                            // Set the output active cell array
+                            ArrayUtils.SetIndexesTo(inpCellsL4ToL2, cellSdrL4, 1);
 
-                        Debug.Write("L2: ");
+                            Debug.Write("L2: ");
 
-                        swL2.Restart();
-                        layerL2.Compute(inpCellsL4ToL2, true);
-                        swL2.Stop();
+                            swL2.Restart();
+                            layerL2.Compute(inpCellsL4ToL2, true);
+                            swL2.Stop();
 
-                        Debug.WriteLine($"{swL2.ElapsedMilliseconds / 1000}");
-                        sw.WriteLine($"{swL2.ElapsedMilliseconds/1000}");
-                        sw.Flush();
-                        Debug.WriteLine($"L4 out sdr: {Helpers.StringifyVector(cellSdrL4)}");
+                            Debug.WriteLine($"{swL2.ElapsedMilliseconds / 1000}");
+                            sw.WriteLine($"{swL2.ElapsedMilliseconds / 1000}");
+                            sw.Flush();
+                            Debug.WriteLine($"L4 out sdr: {Helpers.StringifyVector(cellSdrL4)}");
 
-                        var overlaps = ArrayUtils.IndexWhere(memL2.Overlaps, o => o > 0);
-                        var strOverlaps = Helpers.StringifyVector(overlaps);
-                        Debug.WriteLine($"Potential columns: {overlaps.Length}, overlaps: {strOverlaps}");
+                            var overlaps = ArrayUtils.IndexWhere(memL2.Overlaps, o => o > 0);
+                            var strOverlaps = Helpers.StringifyVector(overlaps);
+                            Debug.WriteLine($"Potential columns: {overlaps.Length}, overlaps: {strOverlaps}");
+                        }
 
                         if (isSP1Stable && isSP2STable)
                             break;
@@ -286,8 +287,6 @@ namespace UnitTestsProject.CortexNetworkTests
 
                 }
             }
-
-            layerL2.HtmModules.Add("tm2", tm2);
         }
 
         private static void InitArray(int[] array, int val)
