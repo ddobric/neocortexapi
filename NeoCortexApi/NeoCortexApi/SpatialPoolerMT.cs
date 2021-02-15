@@ -153,7 +153,8 @@ namespace NeoCortexApi
 
             Parallel.For(0, c.HtmConfig.NumColumns, (col) =>
             {
-                overlaps[col] = c.GetColumn(col).GetColumnOverlapp(inputVector, c.HtmConfig.StimulusThreshold);
+                var res = c.GetColumn(col).GetColumnOverlapp(inputVector, c.HtmConfig.StimulusThreshold);
+                overlaps.TryAdd(col, res);
             });
 
           
