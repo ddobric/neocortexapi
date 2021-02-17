@@ -935,7 +935,7 @@ namespace NeoCortexApi.Entities
                 m_SegmentForFlatIdx[flatIdx] = segment;
 
                 return segment;
-            
+
             }
         }
 
@@ -952,15 +952,15 @@ namespace NeoCortexApi.Entities
                 List<Synapse> synapses = segment.Synapses;
                 int len = synapses.Count;
 
-                //getSynapses(segment).stream().forEach(s->removeSynapseFromPresynapticMap(s));
-                //DD foreach (var s in GetSynapses(segment))
-                foreach (var s in segment.Synapses)
-                {
-                    RemoveSynapseFromPresynapticMap(s);
-                }
-
                 lock ("synapses")
                 {
+                    //getSynapses(segment).stream().forEach(s->removeSynapseFromPresynapticMap(s));
+                    //DD foreach (var s in GetSynapses(segment))
+                    foreach (var s in segment.Synapses)
+                    {
+                        RemoveSynapseFromPresynapticMap(s);
+                    }
+
                     m_NumSynapses -= len;
                 }
 
@@ -1844,7 +1844,7 @@ namespace NeoCortexApi.Entities
         public void TraceInputPotential(bool traceAllValues = false)
         {
             int[] inputPotential = new int[this.HtmConfig.NumInputs];
-            
+
             for (int i = 0; i < this.HtmConfig.NumColumns; i++)
             {
                 Column col = GetColumn(i);
@@ -1904,7 +1904,7 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.m_NextSynapseOrdinal, writer);
             ser.SerializeValue(this.m_NumSynapses, writer);
             ser.SerializeValue(this.m_FreeFlatIdxs, writer);
-            
+
             // TODO!!!
             //ser.SerializeValue(this.m_SegmentForFlatIdx, writer);
 

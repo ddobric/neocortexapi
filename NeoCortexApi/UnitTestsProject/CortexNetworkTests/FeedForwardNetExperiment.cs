@@ -77,7 +77,7 @@ namespace UnitTestsProject.CortexNetworkTests
                 MaxBoost = maxBoost,
                 DutyCyclePeriod = 25,
                 MinPctOverlapDutyCycles = minOctOverlapCycles,
-                MaxSynapsesPerSegment = (int)(0.02 * numColumnsL2),
+                MaxSynapsesPerSegment = (int)(0.2 * numColumnsL2),
                 ActivationThreshold = 10,
                 ConnectedPermanence = 0.5,
                 PermanenceDecrement = 0.25,
