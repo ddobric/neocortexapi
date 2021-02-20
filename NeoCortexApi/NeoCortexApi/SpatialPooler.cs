@@ -469,11 +469,11 @@ namespace NeoCortexApi
         /// <param name="c"></param>
         public void UpdateMinDutyCyclesGlobal(Connections c)
         {
-            ArrayUtils.FillArray(c.HtmConfig.MinOverlapDutyCycles,
-                   (double)(c.HtmConfig.MinPctOverlapDutyCycles * ArrayUtils.Max(c.HtmConfig.OverlapDutyCycles)));
+            // Sets the minoverlaps to the MinPctOverlapDutyCycles * Maximal Overlap in the cortical column.
+            ArrayUtils.FillArray(c.HtmConfig.MinOverlapDutyCycles, (double)(c.HtmConfig.MinPctOverlapDutyCycles * ArrayUtils.Max(c.HtmConfig.OverlapDutyCycles)));
 
-            ArrayUtils.FillArray(c.HtmConfig.MinActiveDutyCycles,
-                    (double)(c.HtmConfig.MinPctActiveDutyCycles * ArrayUtils.Max(c.HtmConfig.ActiveDutyCycles)));
+            // Sets the mindutycycles to the MinPctActiveDutyCycles * Maximal Active Duty Cycles in the cortical column.
+            ArrayUtils.FillArray(c.HtmConfig.MinActiveDutyCycles, (double)(c.HtmConfig.MinPctActiveDutyCycles * ArrayUtils.Max(c.HtmConfig.ActiveDutyCycles)));
         }
 
         /// <summary>
@@ -1339,8 +1339,7 @@ namespace NeoCortexApi
 
             return winners.ToArray();
         }
-        ///////////////////////////////////////////////
-
+        
         /// <summary>
         /// Update the boost factors for all columns. The boost factors are used to increase the overlap of inactive columns to improve
         /// their chances of becoming active. and hence encourage participation of more columns in the learning process. This is a line defined as: 
@@ -1366,13 +1365,10 @@ namespace NeoCortexApi
         public void UpdateBoostFactors(Connections c)
         {
             double[] activeDutyCycles = c.HtmConfig.ActiveDutyCycles;
-            //var strActiveDutyCycles = Helpers.StringifyVector(activeDutyCycles);
-            //Debug.WriteLine("Active Dutycycles:" + strActiveDutyCycles);
             double[] minActiveDutyCycles = c.HtmConfig.MinActiveDutyCycles;
-            //var strMinActiveDutyCycles = Helpers.StringifyVector(activeDutyCycles);
-            //Debug.WriteLine("Min active dudycycles:" + strMinActiveDutyCycles);
+            
             List<int> mask = new List<int>();
-            //Indexes of values > 0
+            
             for (int i = 0; i < minActiveDutyCycles.Length; i++)
             {
                 if (minActiveDutyCycles[i] > 0)
