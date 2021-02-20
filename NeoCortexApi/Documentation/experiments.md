@@ -190,7 +190,7 @@ The Hierarchical Temporal Memory Cortical Learning Algorithm (HTM CLA) is a theo
 [Download from IJAIA](https://aircconline.com/abstract/ijaia/v11n4/11420ijaia07.html)  
 [Download from AIS 2020 publishing site](https://aircconline.com/csit/abstract/v10n6/csit100606.html)
 
-## Improved Spatial Pooler with Homeostatic Plasticity Controller
+## Improved Spatial Pooler with Homeostatic Plasticity Controller (Best Industrial Paper Award)
 
 ### Author
 
