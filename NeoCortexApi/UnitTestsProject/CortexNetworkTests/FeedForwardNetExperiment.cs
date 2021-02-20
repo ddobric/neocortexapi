@@ -183,47 +183,53 @@ namespace UnitTestsProject.CortexNetworkTests
             // Training SP at Layer 4 to get stable. New-born stage.
             //
 
-            using (StreamWriter sw = new StreamWriter($"in_{cfgL2.NumInputs}-col_{cfgL2.NumColumns}-r_{cfgL2.PotentialRadius}.txt"))
+            using (StreamWriter swL4Sdrs = new StreamWriter($"L4-SDRs-in_{cfgL2.NumInputs}-col_{cfgL2.NumColumns}-r_{cfgL2.PotentialRadius}.txt"))
             {
-                for (int i = 0; i < maxCycles; i++)
+                using (StreamWriter sw = new StreamWriter($"in_{cfgL2.NumInputs}-col_{cfgL2.NumColumns}-r_{cfgL2.PotentialRadius}.txt"))
                 {
-                    matches = 0;
-                    cycle++;
-                    Debug.WriteLine($"-------------- Newborn Cycle {cycle} at L4 SP region  ---------------");
-
-                    foreach (var input in inputs)
+                    for (int i = 0; i < maxCycles; i++)
                     {
-                        Debug.WriteLine($" INPUT: '{input}'\tCycle:{cycle}");
-                        Debug.Write("L4: ");
-                        var lyrOut = layerL4.Compute(input, learn);
+                        matches = 0;
+                        cycle++;
+                        Debug.WriteLine($"-------------- Newborn Cycle {cycle} at L4 SP region  ---------------");
 
-                        InitArray(inpCellsL4ToL2, 0);
-
-                        if (isSP1Stable)
+                        foreach (var input in inputs)
                         {
-                            var cellSdrL4 = memL4.ActiveCells.Select(c => c.Index).ToArray();
+                            Debug.WriteLine($" INPUT: '{input}'\tCycle:{cycle}");
+                            Debug.Write("L4: ");
+                            var lyrOut = layerL4.Compute(input, learn);
 
-                            // Set the output active cell array
-                            ArrayUtils.SetIndexesTo(inpCellsL4ToL2, cellSdrL4, 1);
+                            InitArray(inpCellsL4ToL2, 0);
 
-                            Debug.Write("L2: ");
+                            if (isSP1Stable)
+                            {
+                                var cellSdrL4Indexes = memL4.ActiveCells.Select(c => c.Index).ToArray();
 
-                            swL2.Restart();
-                            layerL2.Compute(inpCellsL4ToL2, true);
-                            swL2.Stop();
+                                // Write SDR as output of L4 and input of L2
+                                swL4Sdrs.WriteLine($"{input} - {Helpers.StringifyVector(cellSdrL4Indexes)}");
 
-                            Debug.WriteLine($"{swL2.ElapsedMilliseconds / 1000}");
-                            sw.WriteLine($"{swL2.ElapsedMilliseconds / 1000}");
-                            sw.Flush();
-                            Debug.WriteLine($"L4 out sdr: {Helpers.StringifyVector(cellSdrL4)}");
+                                // Set the output active cell array
+                                ArrayUtils.SetIndexesTo(inpCellsL4ToL2, cellSdrL4Indexes, 1);
 
-                            var overlaps = ArrayUtils.IndexWhere(memL2.Overlaps, o => o > 0);
-                            var strOverlaps = Helpers.StringifyVector(overlaps);
-                            Debug.WriteLine($"Potential columns: {overlaps.Length}, overlaps: {strOverlaps}");
+                                Debug.Write("L2: ");
+
+                                swL2.Restart();
+                                layerL2.Compute(inpCellsL4ToL2, true);
+                                swL2.Stop();
+
+                                Debug.WriteLine($"{swL2.ElapsedMilliseconds / 1000}");
+                                sw.WriteLine($"{swL2.ElapsedMilliseconds / 1000}");
+                                sw.Flush();
+                                Debug.WriteLine($"L4 out sdr: {Helpers.StringifyVector(cellSdrL4Indexes)}");
+
+                                var overlaps = ArrayUtils.IndexWhere(memL2.Overlaps, o => o > 0);
+                                var strOverlaps = Helpers.StringifyVector(overlaps);
+                                Debug.WriteLine($"Potential columns: {overlaps.Length}, overlaps: {strOverlaps}");
+                            }
+
+                            if (isSP1Stable && isSP2STable)
+                                break;
                         }
-
-                        if (isSP1Stable && isSP2STable)
-                            break;
                     }
                 }
             }
