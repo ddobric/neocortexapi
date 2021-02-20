@@ -1388,6 +1388,19 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
+        /// Initializes the array with the specific value.
+        /// </summary>
+        /// <param name="array"></param>
+        /// <param name="val"></param>
+        public static void InitArray<T>(T[] array, T val)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                array[i] = val;
+            }
+        }
+
+        /// <summary>
         /// Set <tt>value</tt> for <tt>array</tt> at specified position <tt>indexes</tt>.
         /// </summary>
         /// <param name="array"></param>
