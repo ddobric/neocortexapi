@@ -1104,7 +1104,7 @@ namespace UnitTestsProject
                 Assert.IsTrue(Math.Abs(trueBoostFactors[i] - boostFactors[i]) <= 0.1D);
             }
 
-            ////////////////
+            
             minActiveDutyCycles = new double[] { 0.1, 0.3, 0.02, 0.04, 0.7, 0.12 };
             mem.HtmConfig.MinActiveDutyCycles = minActiveDutyCycles;
             ArrayUtils.FillArray(mem.BoostFactors, 0);
@@ -1114,8 +1114,7 @@ namespace UnitTestsProject
             {
                 Assert.IsTrue(Math.Abs(trueBoostFactors[i] - boostFactors[i]) <= 0.1D);
             }
-
-            ////////////////
+                        
             minActiveDutyCycles = new double[] { 0.1, 0.2, 0.02, 0.03, 0.7, 0.12 };
             mem.HtmConfig.MinActiveDutyCycles = minActiveDutyCycles;
             activeDutyCycles = new double[] { 0.01, 0.02, 0.002, 0.003, 0.07, 0.012 };
@@ -1128,7 +1127,7 @@ namespace UnitTestsProject
                 Assert.IsTrue(Math.Abs(trueBoostFactors[i] - boostFactors[i]) <= 0.1D);
             }
 
-            ////////////////
+            
             minActiveDutyCycles = new double[] { 0.1, 0.2, 0.02, 0.03, 0.7, 0.12 };
             mem.HtmConfig.MinActiveDutyCycles = minActiveDutyCycles;
             ArrayUtils.FillArray(activeDutyCycles, 0);
@@ -1140,6 +1139,26 @@ namespace UnitTestsProject
             {
                 Assert.IsTrue(Math.Abs(trueBoostFactors[i] - boostFactors[i]) <= 0.1D);
             }
+
+
+            //
+            // Here we make sure that boost factors are not changed if all minActiveDutyCycles are zero.
+            //
+            minActiveDutyCycles = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+            mem.HtmConfig.MinActiveDutyCycles = minActiveDutyCycles;
+
+            ArrayUtils.InitArray(mem.BoostFactors, 2.0);
+
+            var originalBoostFactors = new double[mem.BoostFactors.Length] ;
+            Array.Copy(mem.BoostFactors, originalBoostFactors, mem.BoostFactors.Length);
+
+            ArrayUtils.FillArray(activeDutyCycles, 0);
+
+            mem.HtmConfig.ActiveDutyCycles = activeDutyCycles;
+            ArrayUtils.FillArray(trueBoostFactors, 10.0);
+            sp.UpdateBoostFactors(mem);
+            
+            Assert.IsTrue(mem.BoostFactors.SequenceEqual(originalBoostFactors));
         }
 
         [TestMethod]

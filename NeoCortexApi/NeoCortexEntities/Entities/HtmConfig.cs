@@ -104,7 +104,7 @@ namespace NeoCortexApi.Entities
         public double StimulusThreshold { get; set; }
 
         /// <summary>
-        /// Stimulus increment for synapse permanences below the measured threshold.
+        /// Synapses of weak mini-columns will be stimulated by the boosting mechanism. The stimulation is done by adding of this increment value to the current permanence value of the synapse.
         /// </summary>
         public double SynPermBelowStimulusInc { get; set; }
 
