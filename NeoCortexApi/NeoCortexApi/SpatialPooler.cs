@@ -462,10 +462,10 @@ namespace NeoCortexApi
         public void UpdateMinDutyCyclesGlobal(Connections c)
         {
             // Sets the minoverlaps to the MinPctOverlapDutyCycles * Maximal Overlap in the cortical column.
-            ArrayUtils.FillArray(c.HtmConfig.MinOverlapDutyCycles, (double)(c.HtmConfig.MinPctOverlapDutyCycles * ArrayUtils.Max(c.HtmConfig.OverlapDutyCycles)));
+            ArrayUtils.InitArray(c.HtmConfig.MinOverlapDutyCycles, (double)(c.HtmConfig.MinPctOverlapDutyCycles * ArrayUtils.Max(c.HtmConfig.OverlapDutyCycles)));
 
             // Sets the mindutycycles to the MinPctActiveDutyCycles * Maximal Active Duty Cycles in the cortical column.
-            ArrayUtils.FillArray(c.HtmConfig.MinActiveDutyCycles, (double)(c.HtmConfig.MinPctActiveDutyCycles * ArrayUtils.Max(c.HtmConfig.ActiveDutyCycles)));
+            ArrayUtils.InitArray(c.HtmConfig.MinActiveDutyCycles, (double)(c.HtmConfig.MinPctActiveDutyCycles * ArrayUtils.Max(c.HtmConfig.ActiveDutyCycles)));
         }
 
         /// <summary>
@@ -726,7 +726,7 @@ namespace NeoCortexApi
 
             // First we initialize all permChanges to minimum decrement values,
             // which are used in a case of none-connections to input.
-            ArrayUtils.FillArray(permChanges, -1 * c.HtmConfig.SynPermInactiveDec);
+            ArrayUtils.InitArray(permChanges, -1 * c.HtmConfig.SynPermInactiveDec);
 
             // Then we update all connected permChanges to increment values for connected values.
             // Permanences are set in conencted input bits to default incremental value.
@@ -1360,13 +1360,13 @@ namespace NeoCortexApi
             double[] activeDutyCycles = c.HtmConfig.ActiveDutyCycles;
             double[] minActiveDutyCycles = c.HtmConfig.MinActiveDutyCycles;
 
-            List<int> mask = new List<int>();
+            //List<int> mask = new List<int>();
 
-            for (int i = 0; i < minActiveDutyCycles.Length; i++)
-            {
-                if (minActiveDutyCycles[i] > 0)
-                    mask.Add(i);
-            }
+            //for (int i = 0; i < minActiveDutyCycles.Length; i++)
+            //{
+            //    if (minActiveDutyCycles[i] > 0)
+            //        mask.Add(i);
+            //}
 
             double[] boostInterim;
 
@@ -1379,7 +1379,7 @@ namespace NeoCortexApi
             else
             {
                 double[] oneMinusMaxBoostFact = new double[c.HtmConfig.NumColumns];
-                ArrayUtils.FillArray(oneMinusMaxBoostFact, 1 - c.HtmConfig.MaxBoost);
+                ArrayUtils.InitArray(oneMinusMaxBoostFact, 1 - c.HtmConfig.MaxBoost);
                 boostInterim = ArrayUtils.Divide(oneMinusMaxBoostFact, minActiveDutyCycles, 0, 0);
                 boostInterim = ArrayUtils.Multiply(boostInterim, activeDutyCycles, 0, 0);
                 boostInterim = ArrayUtils.AddAmount(boostInterim, c.HtmConfig.MaxBoost);
@@ -1390,7 +1390,7 @@ namespace NeoCortexApi
 
             for (int i = 0; i < activeDutyCycles.Length; i++)
             {
-                if (activeDutyCycles[i] > minActiveDutyCycles[i])
+                if (activeDutyCycles[i] >= minActiveDutyCycles[i])
                 {
                     idxOfActiveColumns.Add(i);
                 }

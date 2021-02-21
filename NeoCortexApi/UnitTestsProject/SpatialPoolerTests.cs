@@ -10,6 +10,7 @@ using System.Text;
 using System.Linq;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using NeoCortex;
 
 namespace UnitTestsProject
 {
@@ -89,7 +90,7 @@ namespace UnitTestsProject
         private HtmConfig SetupHtmConfigDefaultParameters()
         {
             var htmConfig = new HtmConfig(new int[] { 32, 32 }, new int[] { 64, 64 })
-            {   
+            {
                 PotentialRadius = 16,
                 PotentialPct = 0.5,
                 GlobalInhibition = false,
@@ -1075,6 +1076,85 @@ namespace UnitTestsProject
 
         }
 
+        /// <summary>
+        /// Creates the default config.
+        /// </summary>
+        /// <returns></returns>
+        private HtmConfig GetTestConfig(int[] inpDims, int[] colDims)
+        {
+            HtmConfig cfg = new HtmConfig(inpDims, colDims)
+            {
+                PotentialRadius = 5,
+                PotentialPct = 0.5,
+                GlobalInhibition = true,
+                LocalAreaDensity = -1,
+                NumActiveColumnsPerInhArea = 3,
+                SynPermActiveInc = 0.1,
+                SynPermInactiveDec = 0.01,
+                MinPctActiveDutyCycles = 1.0,
+                MinPctOverlapDutyCycles = 1.0,
+                DutyCyclePeriod = 1,
+                MaxBoost = 10,
+                Random = new ThreadSafeRandom(42),
+                RandomGenSeed = 42,
+
+            };
+
+            return cfg;
+        }
+
+        /// <summary>
+        /// It makes sure that all boost factors are set to 1 when MinPctActiveDutyCycles is set to 0.
+        /// This test ensures that ActiveDutyCycles are all set to values higher or equal zero, which is the MinPctActiveDutyCycles value 
+        /// for all columns.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("UnitTest")]
+        [TestCategory("Prod")]
+        public void HpcInactivBoostTest()
+        {
+            int inpBits = 10;
+            int numCols = 5;
+
+            var cfg = GetTestConfig(new int[] { inpBits }, new int[] { numCols });
+            cfg.StimulusThreshold = 2;
+            cfg.UpdatePeriod = 1;
+
+            Connections mem = new Connections(cfg);
+
+            SpatialPoolerMT sp = new SpatialPoolerMT();
+            sp.Init(mem);
+
+            var actCols = new int[numCols];
+
+            for (int i = 0; i < 100; i++)
+            {
+                var inpVector = NeoCortexUtils.CreateRandomVector(inpBits, 90);
+
+                sp.compute(inpVector, actCols, true);
+            }
+
+            cfg.MinPctActiveDutyCycles = 0.0;
+           
+            for (int i = 0; i < 10000; i++)
+            {
+                var inpVector = NeoCortexUtils.CreateRandomVector(inpBits, 90);
+               
+                sp.compute(inpVector, actCols, true);
+
+                // We set all MinPctActiveDutyCycles to zero and make sure that no any is changed.
+                Assert.IsTrue(mem.HtmConfig.MinActiveDutyCycles.Sum() == 0);
+
+                // This condition can be found in UpdateBoostFactors. If satisfied all columns boosts will be set to 1.0
+                // In that case no boost will happen. This condition is used by HomeostaticPlasticityController, to turn off boosting.
+                Assert.IsTrue(mem.HtmConfig.ActiveDutyCycles.Count(c=>c >= 0) == mem.HtmConfig.ActiveDutyCycles.Length);
+
+                // This is the same asser as the previous one All boost factors must be 1.0 when MinPctActiveDutyCycles is 0.0
+                Assert.IsTrue(mem.BoostFactors.Sum() == mem.BoostFactors.Length);
+            }
+        }
+
+
         [TestMethod]
         [TestCategory("UnitTest")]
         [TestCategory("Prod")]
@@ -1090,7 +1170,7 @@ namespace UnitTestsProject
             mem.HtmConfig.NumColumns = 6;
 
             double[] minActiveDutyCycles = new double[6];
-            ArrayUtils.FillArray(minActiveDutyCycles, 0.000001D);
+            ArrayUtils.InitArray(minActiveDutyCycles, 0.000001D);
             mem.HtmConfig.MinActiveDutyCycles = minActiveDutyCycles;
 
             double[] activeDutyCycles = new double[] { 0.1, 0.3, 0.02, 0.04, 0.7, 0.12 };
@@ -1104,7 +1184,7 @@ namespace UnitTestsProject
                 Assert.IsTrue(Math.Abs(trueBoostFactors[i] - boostFactors[i]) <= 0.1D);
             }
 
-            
+
             minActiveDutyCycles = new double[] { 0.1, 0.3, 0.02, 0.04, 0.7, 0.12 };
             mem.HtmConfig.MinActiveDutyCycles = minActiveDutyCycles;
             ArrayUtils.FillArray(mem.BoostFactors, 0);
@@ -1114,7 +1194,7 @@ namespace UnitTestsProject
             {
                 Assert.IsTrue(Math.Abs(trueBoostFactors[i] - boostFactors[i]) <= 0.1D);
             }
-                        
+
             minActiveDutyCycles = new double[] { 0.1, 0.2, 0.02, 0.03, 0.7, 0.12 };
             mem.HtmConfig.MinActiveDutyCycles = minActiveDutyCycles;
             activeDutyCycles = new double[] { 0.01, 0.02, 0.002, 0.003, 0.07, 0.012 };
@@ -1127,12 +1207,12 @@ namespace UnitTestsProject
                 Assert.IsTrue(Math.Abs(trueBoostFactors[i] - boostFactors[i]) <= 0.1D);
             }
 
-            
+
             minActiveDutyCycles = new double[] { 0.1, 0.2, 0.02, 0.03, 0.7, 0.12 };
             mem.HtmConfig.MinActiveDutyCycles = minActiveDutyCycles;
             ArrayUtils.FillArray(activeDutyCycles, 0);
             mem.HtmConfig.ActiveDutyCycles = activeDutyCycles;
-            ArrayUtils.FillArray(trueBoostFactors, 10.0);
+            ArrayUtils.InitArray(trueBoostFactors, 10.0);
             sp.UpdateBoostFactors(mem);
             boostFactors = mem.BoostFactors;
             for (int i = 0; i < boostFactors.Length; i++)
@@ -1147,17 +1227,18 @@ namespace UnitTestsProject
             minActiveDutyCycles = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
             mem.HtmConfig.MinActiveDutyCycles = minActiveDutyCycles;
 
-            ArrayUtils.InitArray(mem.BoostFactors, 2.0);
+            ArrayUtils.InitArray(mem.BoostFactors, 1.0);
 
-            var originalBoostFactors = new double[mem.BoostFactors.Length] ;
+            var originalBoostFactors = new double[mem.BoostFactors.Length];
+
             Array.Copy(mem.BoostFactors, originalBoostFactors, mem.BoostFactors.Length);
 
-            ArrayUtils.FillArray(activeDutyCycles, 0);
+            ArrayUtils.FillArray(activeDutyCycles, 1);
 
             mem.HtmConfig.ActiveDutyCycles = activeDutyCycles;
-            ArrayUtils.FillArray(trueBoostFactors, 10.0);
+        
             sp.UpdateBoostFactors(mem);
-            
+
             Assert.IsTrue(mem.BoostFactors.SequenceEqual(originalBoostFactors));
         }
 
@@ -1878,9 +1959,9 @@ namespace UnitTestsProject
 
             sp.UpdateMinDutyCyclesGlobal(mem);
             double[] trueMinActiveDutyCycles = new double[mem.HtmConfig.NumColumns];
-            ArrayUtils.FillArray(trueMinActiveDutyCycles, 0.02 * 0.6);
+            ArrayUtils.InitArray(trueMinActiveDutyCycles, 0.02 * 0.6);
             double[] trueMinOverlapDutyCycles = new double[mem.HtmConfig.NumColumns];
-            ArrayUtils.FillArray(trueMinOverlapDutyCycles, 0.01 * 6);
+            ArrayUtils.InitArray(trueMinOverlapDutyCycles, 0.01 * 6);
             for (int i = 0; i < mem.HtmConfig.NumColumns; i++)
             {
                 //          System.out.println(i + ") " + trueMinOverlapDutyCycles[i] + "  -  " +  mem.getMinOverlapDutyCycles()[i]);
@@ -1894,7 +1975,7 @@ namespace UnitTestsProject
             mem.HtmConfig.OverlapDutyCycles = new double[] { 0.86, 2.4, 0.03, 1.6, 1.5 };
             mem.HtmConfig.ActiveDutyCycles = new double[] { 0.16, 0.007, 0.15, 0.54, 0.13 };
             sp.UpdateMinDutyCyclesGlobal(mem);
-            ArrayUtils.FillArray(trueMinOverlapDutyCycles, 0.015 * 2.4);
+            ArrayUtils.InitArray(trueMinOverlapDutyCycles, 0.015 * 2.4);
             for (int i = 0; i < mem.HtmConfig.NumColumns; i++)
             {
                 //          System.out.println(i + ") " + trueMinOverlapDutyCycles[i] + "  -  " +  mem.getMinOverlapDutyCycles()[i]);
@@ -2628,7 +2709,7 @@ namespace UnitTestsProject
             initSP();
 
             double[] dc = new double[5];
-            ArrayUtils.FillArray(dc, 1000.0);
+            ArrayUtils.InitArray(dc, 1000.0);
             double[] newvals = new double[5];
             int period = 1000;
             double[] newDc = sp.UpdateDutyCyclesHelper(mem, dc, newvals, period);
@@ -2636,9 +2717,9 @@ namespace UnitTestsProject
             Assert.IsTrue(expectedDutyCycles.SequenceEqual(newDc));
 
             dc = new double[5];
-            ArrayUtils.FillArray(dc, 1000.0);
+            ArrayUtils.InitArray(dc, 1000.0);
             newvals = new double[5];
-            ArrayUtils.FillArray(newvals, 1000);
+            ArrayUtils.InitArray(newvals, 1000);
             period = 1000;
             newDc = sp.UpdateDutyCyclesHelper(mem, dc, newvals, period);
 
@@ -2648,7 +2729,7 @@ namespace UnitTestsProject
             Assert.IsTrue(expectedDutyCycles.SequenceEqual(newDc));
 
             dc = new double[5];
-            ArrayUtils.FillArray(dc, 1000.0);
+            ArrayUtils.InitArray(dc, 1000.0);
             newvals = new double[] { 2000, 4000, 5000, 6000, 7000 };
             period = 1000;
             newDc = sp.UpdateDutyCyclesHelper(mem, dc, newvals, period);
