@@ -1135,7 +1135,10 @@ namespace UnitTestsProject
             }
 
             cfg.MinPctActiveDutyCycles = 0.0;
-           
+
+            // One more compute cycle is required to setup boost factors for the next cycle.
+            sp.compute(NeoCortexUtils.CreateRandomVector(inpBits, 90), actCols, true);
+
             for (int i = 0; i < 10000; i++)
             {
                 var inpVector = NeoCortexUtils.CreateRandomVector(inpBits, 90);
