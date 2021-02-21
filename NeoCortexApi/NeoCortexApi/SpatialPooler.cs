@@ -469,11 +469,11 @@ namespace NeoCortexApi
         /// <param name="c"></param>
         public void UpdateMinDutyCyclesGlobal(Connections c)
         {
-            ArrayUtils.FillArray(c.HtmConfig.MinOverlapDutyCycles,
-                   (double)(c.HtmConfig.MinPctOverlapDutyCycles * ArrayUtils.Max(c.HtmConfig.OverlapDutyCycles)));
+            // Sets the minoverlaps to the MinPctOverlapDutyCycles * Maximal Overlap in the cortical column.
+            ArrayUtils.FillArray(c.HtmConfig.MinOverlapDutyCycles, (double)(c.HtmConfig.MinPctOverlapDutyCycles * ArrayUtils.Max(c.HtmConfig.OverlapDutyCycles)));
 
-            ArrayUtils.FillArray(c.HtmConfig.MinActiveDutyCycles,
-                    (double)(c.HtmConfig.MinPctActiveDutyCycles * ArrayUtils.Max(c.HtmConfig.ActiveDutyCycles)));
+            // Sets the mindutycycles to the MinPctActiveDutyCycles * Maximal Active Duty Cycles in the cortical column.
+            ArrayUtils.FillArray(c.HtmConfig.MinActiveDutyCycles, (double)(c.HtmConfig.MinPctActiveDutyCycles * ArrayUtils.Max(c.HtmConfig.ActiveDutyCycles)));
         }
 
         /// <summary>
@@ -538,7 +538,7 @@ namespace NeoCortexApi
                 c.HtmConfig.MinOverlapDutyCycles[i] = maxOverlapDuty * minPctOverlapDutyCycles;
             });
         }
-        
+
         /// <summary>
         /// Updates the duty cycles for each column. The OVERLAP duty cycle is a moving average of the number of inputs which overlapped with each column.
         /// The ACTIVITY duty cycles is a moving average of the frequency of activation for each column.
@@ -769,7 +769,7 @@ namespace NeoCortexApi
                 return;
 
             var weakColumns = c.HtmConfig.Memory.Get1DIndexes().Where(i => c.HtmConfig.OverlapDutyCycles[i] < c.HtmConfig.MinOverlapDutyCycles[i]).ToArray();
-            
+
             for (int i = 0; i < weakColumns.Length; i++)
             {
                 Column col = c.GetColumn(weakColumns[i]);
@@ -1078,7 +1078,7 @@ namespace NeoCortexApi
             List<int> winners = new List<int>();
 
             int inhibitionRadius = mem.HtmConfig.InhibitionRadius;
-            
+
             for (int column = 0; column < overlaps.Length; column++)
             {
                 if (overlaps[column] >= mem.HtmConfig.StimulusThreshold)
@@ -1089,7 +1089,7 @@ namespace NeoCortexApi
 
                     // Filter neighbors with overlaps larger than column overlap
                     long numHigherOverlap = neighborhoodOverlaps.Count(d => d > overlaps[column]);
-                   
+
                     // density will reduce radius
                     // numActive is the number of columns that participate in the inhibition.
                     int numActive = (int)(0.5 + density * neighborhood.Length);
@@ -1339,7 +1339,6 @@ namespace NeoCortexApi
 
             return winners.ToArray();
         }
-        ///////////////////////////////////////////////
 
         /// <summary>
         /// Update the boost factors for all columns. The boost factors are used to increase the overlap of inactive columns to improve
@@ -1366,13 +1365,10 @@ namespace NeoCortexApi
         public void UpdateBoostFactors(Connections c)
         {
             double[] activeDutyCycles = c.HtmConfig.ActiveDutyCycles;
-            //var strActiveDutyCycles = Helpers.StringifyVector(activeDutyCycles);
-            //Debug.WriteLine("Active Dutycycles:" + strActiveDutyCycles);
             double[] minActiveDutyCycles = c.HtmConfig.MinActiveDutyCycles;
-            //var strMinActiveDutyCycles = Helpers.StringifyVector(activeDutyCycles);
-            //Debug.WriteLine("Min active dudycycles:" + strMinActiveDutyCycles);
+
             List<int> mask = new List<int>();
-            //Indexes of values > 0
+
             for (int i = 0; i < minActiveDutyCycles.Length; i++)
             {
                 if (minActiveDutyCycles[i] > 0)
@@ -1383,7 +1379,7 @@ namespace NeoCortexApi
 
             //
             // Boost factors are NOT recalculated if minimum active duty cycles are all set on 0.
-            if (mask.Count < 1)
+            if (minActiveDutyCycles.Count(ma => ma > 0) == 0)
             {
                 boostInterim = c.BoostFactors;
             }
@@ -1396,6 +1392,7 @@ namespace NeoCortexApi
                 boostInterim = ArrayUtils.AddAmount(boostInterim, c.HtmConfig.MaxBoost);
             }
 
+            // Filtered indexes are indexes of columns whose activeDutyCycles is larger than calculated minActiveDutyCycles of thet column.
             List<int> filteredIndexes = new List<int>();
 
             for (int i = 0; i < activeDutyCycles.Length; i++)
@@ -1406,6 +1403,8 @@ namespace NeoCortexApi
                 }
             }
 
+            // Already very active columns will have boost factor 1.0. That mean their synapces on the proximal segment 
+            // will not be stimulated.
             ArrayUtils.SetIndexesTo(boostInterim, filteredIndexes.ToArray(), 1.0d);
 
             c.BoostFactors = boostInterim;
@@ -1592,7 +1591,7 @@ namespace NeoCortexApi
             {
                 this.m_HomeoPlastAct.Serialize(writer);
             }
-            
+
             ser.SerializeValue(this.MaxInibitionDensity, writer);
 
             ser.SerializeValue(this.Name, writer);
