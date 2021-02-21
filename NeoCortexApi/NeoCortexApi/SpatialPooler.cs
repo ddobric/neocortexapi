@@ -461,10 +461,11 @@ namespace NeoCortexApi
         }
 
         /// <summary>
-        /// Updates the minimum duty cycles in a global fashion. Sets the minimum duty cycles for the overlap and activation of all columns to be a percent of 
-        /// the maximum in the region, specified by {@link Connections#getMinOverlapDutyCycles()} and minPctActiveDutyCycle respectively. Functionality it is 
-        /// equivalent to <see cref="UpdateMinDutyCyclesLocal(Connections)"/>, but this function exploits the globalness of the computation to perform it in a 
-        /// straightforward, and more efficient manner.
+        /// Updates the minimum duty cycles for SP that uses global inhibition. 
+        /// Sets the minimum duty cycles for the overlap and activation of all columns to be a percent of 
+        /// the maximum in the region, specified by MinOverlapDutyCycles and minPctActiveDutyCycle respectively. 
+        /// Functionality it is equivalent to <see cref="UpdateMinDutyCyclesLocal(Connections)"/>, 
+        /// but this function exploits the globalness of the computation to perform it in a straightforward, and more efficient manner.
         /// </summary>
         /// <param name="c"></param>
         public void UpdateMinDutyCyclesGlobal(Connections c)
@@ -580,7 +581,7 @@ namespace NeoCortexApi
             c.HtmConfig.ActiveDutyCycles = UpdateDutyCyclesHelper(c, c.HtmConfig.ActiveDutyCycles, activeArray, period);
         }
 
-        // TODO equation documentation
+      
         /// <summary>
         /// Updates a duty cycle estimate with a new value. This is a helper function that is used to update several duty cycle variables in
         /// the Column class, such as: overlapDutyCucle, activeDutyCycle, minPctDutyCycleBeforeInh, minPctDutyCycleAfterInh, etc. returns
@@ -595,6 +596,9 @@ namespace NeoCortexApi
         /// <param name="dutyCycles">An array containing one or more duty cycle values that need to be updated</param>
         /// <param name="newInput">A new numerical value used to update the duty cycle. Typically 1 or 0</param>
         /// <param name="period">The period of the duty cycle</param>
+        /// <remarks>
+        /// This looks a bit complicate. But, simplified, dutycycle is simple counter that counts how many times the column was connected to the non-zero 
+        /// input bit.</remarks>
         /// <returns></returns>
         public double[] UpdateDutyCyclesHelper(Connections c, double[] dutyCycles, double[] newInput, double period)
         {
