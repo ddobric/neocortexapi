@@ -297,20 +297,15 @@ namespace NeoCortexApi
             // Gets overlap over every single column.
             var overlaps = CalculateOverlap(this.connections, inputVector);
 
-            //var overlapsStr = Helpers.StringifyVector(overlaps);
-            //Debug.WriteLine("overlap: " + overlapsStr);
-
-            //totalOverlap = overlapActive * weightActive + overlapPredictedActive * weightPredictedActive
-
             this.connections.Overlaps = overlaps;
 
             double[] boostedOverlaps;
 
             //
-            // We perform boosting here and right after that, we will recalculate bossted factors for next cycle.
+            // Here we boost calculated overlaps. This is related to Homeostatic Plasticity Mechanism.
+            // Boosting factors are calculated in the previous cycle.
             if (learn)
             {
-                //Debug.WriteLine("Boosted Factor: " + c.BoostFactors);
                 boostedOverlaps = ArrayUtils.Multiply(this.connections.BoostFactors, overlaps);
             }
             else
@@ -318,15 +313,11 @@ namespace NeoCortexApi
                 boostedOverlaps = ArrayUtils.ToDoubleArray(overlaps);
             }
 
-            //Debug.WriteLine("BO: " + Helpers.StringifyVector(boostedOverlaps));
-
             this.connections.BoostedOverlaps = boostedOverlaps;
 
             int[] activeColumns = InhibitColumns(this.connections, boostedOverlaps);
 
-            //var indexes = ArrayUtils.IndexWhere(this.connections.BoostFactors.OrderBy(i => i).ToArray(), x => x > 1.0);
-            //Debug.WriteLine($"Boost factors: {indexes.Length} -" + Helpers.StringifyVector(indexes));
-
+      
 #if REPAIR_STABILITY
             // REPAIR STABILITY FEATURE
             var similarity = MathHelpers.CalcArraySimilarity(prevActCols, activeColumns);
@@ -1346,7 +1337,9 @@ namespace NeoCortexApi
 
         /// <summary>
         /// Update the boost factors for all columns. The boost factors are used to increase the overlap of inactive columns to improve
-        /// their chances of becoming active. and hence encourage participation of more columns in the learning process. This is a line defined as: 
+        /// their chances of becoming active. and hence encourage participation of more columns in the learning process. 
+        /// This is known as Homeostatc Plasticity Mechanism.
+        /// This is a line defined as: 
         /// y = mx + b 
         /// boost = (1-maxBoost)/minDuty * activeDutyCycle + maxBoost. 
         /// Intuitively this means that columns that have been active enough have a boost factor of 1, meaning their overlap is not boosted.
@@ -1397,19 +1390,19 @@ namespace NeoCortexApi
             }
 
             // Filtered indexes are indexes of columns whose activeDutyCycles is larger than calculated minActiveDutyCycles of thet column.
-            List<int> filteredIndexes = new List<int>();
+            List<int> idxOfActiveColumns = new List<int>();
 
             for (int i = 0; i < activeDutyCycles.Length; i++)
             {
                 if (activeDutyCycles[i] > minActiveDutyCycles[i])
                 {
-                    filteredIndexes.Add(i);
+                    idxOfActiveColumns.Add(i);
                 }
             }
 
-            // Already very active columns will have boost factor 1.0. That mean their synapces on the proximal segment 
+            // Already very active columns will have boost factor 1.0. That mean their synapses on the proximal segment 
             // will not be stimulated.
-            ArrayUtils.SetIndexesTo(boostInterim, filteredIndexes.ToArray(), 1.0d);
+            ArrayUtils.SetIndexesTo(boostInterim, idxOfActiveColumns.ToArray(), 1.0d);
 
             c.BoostFactors = boostInterim;
         }
