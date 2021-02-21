@@ -500,8 +500,6 @@ namespace NeoCortexApi
             double[] overlapDutyCycles = c.HtmConfig.OverlapDutyCycles;
             double minPctOverlapDutyCycles = c.HtmConfig.MinPctOverlapDutyCycles;
 
-            //Console.WriteLine($"{inhibitionRadius: inhibitionRadius}");
-
             Parallel.For(0, len, (i) =>
             {
                 int[] neighborhood = GetColumnNeighborhood(c, i, inhibitionRadius);
@@ -522,8 +520,6 @@ namespace NeoCortexApi
                 //    sb.Append(" | ");
                 //}
                 //sb.Append("]");
-
-                //Console.WriteLine($"{i} - maxOverl: {maxOverlapDuty}\t - {sb.ToString()}");
 
                 c.HtmConfig.MinActiveDutyCycles[i] = maxActiveDuty * minPctActiveDutyCycles;
 
