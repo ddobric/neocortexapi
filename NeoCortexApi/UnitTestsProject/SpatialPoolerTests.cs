@@ -2632,8 +2632,8 @@ namespace UnitTestsProject
             double[] newvals = new double[5];
             int period = 1000;
             double[] newDc = sp.UpdateDutyCyclesHelper(mem, dc, newvals, period);
-            double[] trueNewDc = new double[] { 999, 999, 999, 999, 999 };
-            Assert.IsTrue(trueNewDc.SequenceEqual(newDc));
+            double[] expectedDutyCycles = new double[] { 999, 999, 999, 999, 999 };
+            Assert.IsTrue(expectedDutyCycles.SequenceEqual(newDc));
 
             dc = new double[5];
             ArrayUtils.FillArray(dc, 1000.0);
@@ -2642,25 +2642,25 @@ namespace UnitTestsProject
             period = 1000;
             newDc = sp.UpdateDutyCyclesHelper(mem, dc, newvals, period);
 
-            trueNewDc = new double[5];
-            Array.Copy(dc, trueNewDc, trueNewDc.Length);
+            expectedDutyCycles = new double[5];
+            Array.Copy(dc, expectedDutyCycles, expectedDutyCycles.Length);
 
-            Assert.IsTrue(trueNewDc.SequenceEqual(newDc));
+            Assert.IsTrue(expectedDutyCycles.SequenceEqual(newDc));
 
             dc = new double[5];
             ArrayUtils.FillArray(dc, 1000.0);
             newvals = new double[] { 2000, 4000, 5000, 6000, 7000 };
             period = 1000;
             newDc = sp.UpdateDutyCyclesHelper(mem, dc, newvals, period);
-            trueNewDc = new double[] { 1001, 1003, 1004, 1005, 1006 };
-            Assert.IsTrue(trueNewDc.SequenceEqual(newDc));
+            expectedDutyCycles = new double[] { 1001, 1003, 1004, 1005, 1006 };
+            Assert.IsTrue(expectedDutyCycles.SequenceEqual(newDc));
 
             dc = new double[] { 1000, 800, 600, 400, 2000 };
             newvals = new double[5];
             period = 2;
             newDc = sp.UpdateDutyCyclesHelper(mem, dc, newvals, period);
-            trueNewDc = new double[] { 500, 400, 300, 200, 1000 };
-            Assert.IsTrue(trueNewDc.SequenceEqual(newDc));
+            expectedDutyCycles = new double[] { 500, 400, 300, 200, 1000 };
+            Assert.IsTrue(expectedDutyCycles.SequenceEqual(newDc));
         }
 
         [TestMethod]

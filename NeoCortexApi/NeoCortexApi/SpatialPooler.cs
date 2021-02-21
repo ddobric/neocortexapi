@@ -597,8 +597,8 @@ namespace NeoCortexApi
         /// <param name="newInput">A new numerical value used to update the duty cycle. Typically 1 or 0</param>
         /// <param name="period">The period of the duty cycle</param>
         /// <remarks>
-        /// This looks a bit complicate. But, simplified, dutycycle is simple counter that counts how many times the column was connected to the non-zero 
-        /// input bit.</remarks>
+        /// This looks a bit complicate. But, simplified, dutycycle is simple counter that counts how many times the column was 
+        /// connected to the non-zero input bit (in a case of the overlapp) or how often the column was active.</remarks>
         /// <returns></returns>
         public double[] UpdateDutyCyclesHelper(Connections c, double[] dutyCycles, double[] newInput, double period)
         {
