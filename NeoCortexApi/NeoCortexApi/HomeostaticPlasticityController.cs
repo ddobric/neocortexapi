@@ -269,12 +269,12 @@ namespace NeoCortexApi
             {
                 foreach (var item in m_InOutMap)
                 {
-                    string keyStr = System.Convert.ToBase64String(Encoding.UTF8.GetBytes(item.Key));
-                    string res = $"{cnt++}- stable cycles: {this.m_NumOfStableCyclesForInput.Count}";
+                    //string keyStr = System.Convert.ToBase64String(Encoding.UTF8.GetBytes(item.Key));
+                    //string res = $"{cnt++}- stable cycles: {this.m_NumOfStableCyclesForInput.Count}";
 
                     var sdr = Helpers.StringifyVector(ArrayUtils.IndexWhere(m_InOutMap[item.Key], k => k == 1));
 
-                    string str = $"[{cnt++} - stable cycles: {this.m_NumOfStableCyclesForInput.Count},len = {m_InOutMap[item.Key].Count(l=>l==1)}] \t {sdr}";
+                    string str = $"[{cnt++} - stable cycles: {this.m_NumOfStableCyclesForInput[item.Key]},len = {m_InOutMap[item.Key].Count(l=>l==1)}] \t {sdr}";
 
                     //Debug.WriteLine(keyStr);
                     //Debug.WriteLine($"{res}");
