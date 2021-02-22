@@ -366,6 +366,12 @@ namespace NeoCortex
 
         private static Random  rnd = new Random(42);
 
+        /// <summary>
+        /// Creates the random vector.
+        /// </summary>
+        /// <param name="bits"></param>
+        /// <param name="nonZeroPct"></param>
+        /// <returns></returns>
         public static int[] CreateRandomVector(int bits, int nonZeroPct)
         {
             int[] inputVector = new int[bits];

@@ -133,6 +133,8 @@ namespace NeoCortexApi
 
                     //this.htmMemory.updateMinPctOverlapDutyCycles(0.0);
                     this.m_HtmMemory.HtmConfig.MinPctOverlapDutyCycles = 0.0;
+
+                    this.m_HtmMemory.HtmConfig.MinPctActiveDutyCycles = 0.0;
                 }
 
                 // If the input has been already seen, we calculate the similarity between already seen input
