@@ -251,5 +251,28 @@ namespace UnitTestsProject
 
             Assert.IsFalse(d1.Equals(d3));
         }
+
+
+        [TestMethod]
+        [TestCategory("Prod")]
+        public void CompareDentriteList()
+        {
+            Cell c1 = new Cell(1, 1, 10, 1, NeoCortexEntities.NeuroVisualizer.CellActivity.ActiveCell);
+            Cell c2 = new Cell(1, 1, 10, 1, NeoCortexEntities.NeuroVisualizer.CellActivity.ActiveCell);
+            Cell c3 = new Cell(2, 1, 10, 1, NeoCortexEntities.NeuroVisualizer.CellActivity.ActiveCell);
+
+            DistalDendrite d1 = new DistalDendrite(c1, 1, 1, 1, 0.5, 10);
+            DistalDendrite d2 = new DistalDendrite(c1, 1, 1, 1, 0.5, 10);
+            DistalDendrite d3 = new DistalDendrite(c1, 2, 1, 1, 0.5, 10);
+
+            List<DistalDendrite> list1 = new List<DistalDendrite>() { d1, d2, d2 };
+            List<DistalDendrite> list2 = new List<DistalDendrite>() { d1, d2, d3 };
+
+            list1.SequenceEqual(list2);
+
+            Assert.IsTrue(d1.Equals(d2));
+
+            Assert.IsFalse(d1.Equals(d3));
+        }
     }
 }
