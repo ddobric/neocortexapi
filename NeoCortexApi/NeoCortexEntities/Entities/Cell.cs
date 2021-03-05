@@ -135,10 +135,10 @@ namespace NeoCortexApi.Entities
 
                 if (obj.DistalDendrites != null && this.DistalDendrites != null)
                 {
-                    if (!Enumerable.SequenceEqual(obj.DistalDendrites, this.DistalDendrites))
-                        return false;
-                    //if (!obj.DistalDendrites.SequenceEqual(this.DistalDendrites))
+                    //if (!Enumerable.SequenceEqual(obj.DistalDendrites, this.DistalDendrites))
                     //    return false;
+                    if (!obj.DistalDendrites.SequenceEqual(this.DistalDendrites))
+                        return false;
                 }
 
                 if (obj.ReceptorSynapses != null && this.ReceptorSynapses != null)
