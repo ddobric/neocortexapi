@@ -14,7 +14,7 @@ jobs:
         working-directory: ${{env.WrkDir}}
     env: 
       WrkDir: ./NeoCortexApi
-      MainSln: NeoCortexApi.Akka.sln
+      MainSln: NeoCortexApi.All.sln
     steps:
       - uses: actions/checkout@v2
       - name: Setup .NET Core

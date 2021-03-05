@@ -13,6 +13,8 @@ using System.Diagnostics;
 using NeoCortexEntities.NeuroVisualizer;
 using WebSocketNeuroVisualizer;
 using System.IO;
+using NeoCortexApi.Classifiers;
+
 namespace UnitTestsProject
 {
     [TestClass]

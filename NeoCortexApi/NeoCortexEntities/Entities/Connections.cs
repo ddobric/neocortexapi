@@ -75,7 +75,6 @@ namespace NeoCortexApi.Entities
 
         private double[] m_BoostFactors;
 
-
         private ISet<Cell> m_ActiveCells = new LinkedHashSet<Cell>();
         private ISet<Cell> winnerCells = new LinkedHashSet<Cell>();
         private ISet<Cell> m_PredictiveCells = new LinkedHashSet<Cell>();
@@ -936,7 +935,7 @@ namespace NeoCortexApi.Entities
                 m_SegmentForFlatIdx[flatIdx] = segment;
 
                 return segment;
-            
+
             }
         }
 
@@ -953,15 +952,15 @@ namespace NeoCortexApi.Entities
                 List<Synapse> synapses = segment.Synapses;
                 int len = synapses.Count;
 
-                //getSynapses(segment).stream().forEach(s->removeSynapseFromPresynapticMap(s));
-                //DD foreach (var s in GetSynapses(segment))
-                foreach (var s in segment.Synapses)
-                {
-                    RemoveSynapseFromPresynapticMap(s);
-                }
-
                 lock ("synapses")
                 {
+                    //getSynapses(segment).stream().forEach(s->removeSynapseFromPresynapticMap(s));
+                    //DD foreach (var s in GetSynapses(segment))
+                    foreach (var s in segment.Synapses)
+                    {
+                        RemoveSynapseFromPresynapticMap(s);
+                    }
+
                     m_NumSynapses -= len;
                 }
 
@@ -1839,6 +1838,34 @@ namespace NeoCortexApi.Entities
         */
         #endregion
 
+        /// <summary>
+        /// Traces out the potential of input bits.
+        /// </summary>
+        public void TraceInputPotential(bool traceAllValues = false)
+        {
+            int[] inputPotential = new int[this.HtmConfig.NumInputs];
+
+            for (int i = 0; i < this.HtmConfig.NumColumns; i++)
+            {
+                Column col = GetColumn(i);
+                for (int k = 0; k < col.ProximalDendrite.ConnectedInputs.Length; k++)
+                {
+                    int inpIndx = col.ProximalDendrite.ConnectedInputs[k];
+                    inputPotential[inpIndx] = inputPotential[inpIndx] + 1;
+                }
+            }
+
+            if (traceAllValues)
+            {
+                for (int i = 0; i < inputPotential.Length; i++)
+                {
+                    Debug.WriteLine($"{i} - {inputPotential[i]}");
+                }
+            }
+
+            Debug.WriteLine($"Max: {inputPotential.Max()} - Min: {inputPotential.Min()}, AVG: {inputPotential.Average()}");
+        }
+
         #region Serialization
         public void Serialize(StreamWriter writer)
         {
@@ -1877,7 +1904,7 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.m_NextSynapseOrdinal, writer);
             ser.SerializeValue(this.m_NumSynapses, writer);
             ser.SerializeValue(this.m_FreeFlatIdxs, writer);
-            
+
             // TODO!!!
             //ser.SerializeValue(this.m_SegmentForFlatIdx, writer);
 

@@ -740,27 +740,27 @@ namespace NeoCortexApi.Utility
         /// to the value "setTo".
         /// </summary>
         /// <param name="values">the values to alter if at the specified indexes.</param>
-        /// <param name="indices">the indexes of the values array to alter.</param>
-        /// <param name="setTo">the value to set at the specified indexes.</param>
-        public static void SetIndexesTo(double[] values, int[] indices, double setTo)
+        /// <param name="indexes">the indexes of the values array to alter.</param>
+        /// <param name="val">the value to set at the specified indexes.</param>
+        public static void SetIndexesTo(double[] values, int[] indexes, double val)
         {
-            for (int i = 0; i < indices.Length; i++)
+            for (int i = 0; i < indexes.Length; i++)
             {
-                values[indices[i]] = setTo;
+                values[indexes[i]] = val;
             }
         }
 
         /// <summary>
-        /// Sets the values in the specified values array at the indexes specified, to the value <paramref name="setTo"/>.
+        /// Sets the values in the specified values array at the indexes specified, to the value <paramref name="val"/>.
         /// </summary>
         /// <param name="values">the values to alter if at the specified indexes.</param>
         /// <param name="indexes">the indexes of the values array to alter.</param>
-        /// <param name="setTo">the value to set at the specified indexes.</param>
-        public static void SetIndexesTo(int[] values, int[] indexes, int setTo)
+        /// <param name="val">the value to set at the specified indexes.</param>
+        public static void SetIndexesTo(int[] values, int[] indexes, int val)
         {
             for (int i = 0; i < indexes.Length; i++)
             {
-                values[indexes[i]] = setTo;
+                values[indexes[i]] = val;
             }
         }
 
@@ -1387,6 +1387,7 @@ namespace NeoCortexApi.Utility
             return destination;
         }
 
+
         /// <summary>
         /// Set <tt>value</tt> for <tt>array</tt> at specified position <tt>indexes</tt>.
         /// </summary>
@@ -1455,33 +1456,43 @@ namespace NeoCortexApi.Utility
             }
         }
 
+
         /// <summary>
-        /// TODO to be added
+        /// Initializes the array with the specific value.
         /// </summary>
         /// <param name="array"></param>
-        /// <param name="value"></param>
-        public static void FillArray(object array, double value)
+        /// <param name="val"></param>
+        public static void InitArray<T>(T[] array, T val)
         {
-            if (array is double[] doubleArray)
+            for (int i = 0; i < array.Length; i++)
             {
-                for (int i = 0; i < doubleArray.Length; i++)
-                {
-                    doubleArray[i] = value;
-                }
-            }
-            else if (array is int[])
-            {
-                throw new NotSupportedException();
-            }
-            else
-            {
-                //forea (Object agr in (Object[])array)
-                //{
-                //    fillArray(agr, value);
-                //}
-                throw new NotSupportedException();
+                array[i] = val;
             }
         }
+
+        ///// <summary>
+        ///// Fills all elements of the array with the given value.
+        ///// </summary>
+        ///// <param name="array"></param>
+        ///// <param name="value"></param>
+        //public static void FillArray(object array, double value)
+        //{
+        //    if (array is double[] doubleArray)
+        //    {
+        //        for (int i = 0; i < doubleArray.Length; i++)
+        //        {
+        //            doubleArray[i] = value;
+        //        }
+        //    }
+        //    else if (array is int[])
+        //    {
+        //        throw new NotSupportedException();
+        //    }
+        //    else
+        //    {
+        //        throw new NotSupportedException();
+        //    }
+        //}
 
 
         /// <summary>
