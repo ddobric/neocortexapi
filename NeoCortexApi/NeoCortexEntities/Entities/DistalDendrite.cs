@@ -17,7 +17,7 @@ namespace NeoCortexApi.Entities
     /// <remarks>
     /// Authors of the JAVA implementation: Chetan Surpur, David Ray
     /// </remarks>
-    public class DistalDendrite : Segment, IComparable<DistalDendrite>
+    public class DistalDendrite : Segment, IComparable<DistalDendrite>, IEquatable<Segment>
     {
         /// <summary>
         /// The cell that owns (parent) the segment.
@@ -167,6 +167,10 @@ namespace NeoCortexApi.Entities
             return true;
         }
 
+        //public bool Equals(DistalDendrite other)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         /// <summary>
         /// Compares by index.
@@ -304,7 +308,9 @@ namespace NeoCortexApi.Entities
             return distal;
 
         }
-            #endregion
+
+       
+        #endregion
 
     }
 }

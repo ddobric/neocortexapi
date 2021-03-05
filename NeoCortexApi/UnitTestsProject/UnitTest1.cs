@@ -236,16 +236,20 @@ namespace UnitTestsProject
 
 
         [TestMethod]
-        //[TestCategory("Prod")]
+        [TestCategory("Prod")]
         public void CompareDentrites()
         {
             Cell c1 = new Cell(1, 1, 10, 1, NeoCortexEntities.NeuroVisualizer.CellActivity.ActiveCell);
             Cell c2 = new Cell(1, 1, 10, 1, NeoCortexEntities.NeuroVisualizer.CellActivity.ActiveCell);
+            Cell c3 = new Cell(2, 1, 10, 1, NeoCortexEntities.NeuroVisualizer.CellActivity.ActiveCell);
 
             DistalDendrite d1 = new DistalDendrite(c1, 1, 1, 1, 0.5, 10);
             DistalDendrite d2 = new DistalDendrite(c1, 1, 1, 1, 0.5, 10);
-                        
-            Assert.AreNotEqual(d1, d2);
+            DistalDendrite d3 = new DistalDendrite(c1, 2, 1, 1, 0.5, 10);
+
+            Assert.IsTrue(d1.Equals(d2));
+
+            Assert.IsFalse(d1.Equals(d3));
         }
     }
 }
