@@ -28,7 +28,7 @@ namespace NeoCortexApi.Entities
 
         public string KeyValueDelimiter = ": ";
 
-        public string ElementsDelimiter = ", ";
+        public const char  ElementsDelimiter = ',';
 
         /// <summary>
         /// Serializes the begin marker of the type.
@@ -46,7 +46,7 @@ namespace NeoCortexApi.Entities
 
         }
         public String ReadBegin(String typeName)
-        {
+       {
             string val = ($"{TypeDelimiter} BEGIN '{typeName}' {TypeDelimiter}");
             return val;
         }
@@ -88,8 +88,13 @@ namespace NeoCortexApi.Entities
         public int ReadIntValue(String reader)
         {
             reader = reader.Trim();
-            int val = Convert.ToInt32(reader);
-            return val;
+            if (string.IsNullOrEmpty(reader))
+            {
+                Debug.WriteLine(reader);
+                return 0;
+            }
+            else
+                return Convert.ToInt32(reader);
 
         }
 
@@ -405,22 +410,26 @@ namespace NeoCortexApi.Entities
             sw.Write(ParameterDelimiter);
         }
 
-        /// <summary>
-        /// Serialize the List of Synapse.
-        /// </summary>
-        public void SerializeValue(List<Synapse> value, StreamWriter sw)
-        {
-            sw.Write(ValueDelimiter);
-            if (value != null)
-            {
-                foreach (Synapse val in value)
-                {
-                    val.Serialize(sw);
-                    sw.Write(ElementsDelimiter);
-                }
-            }
-            sw.Write(ParameterDelimiter);
-        }
+        ///// <summary>
+        ///// Serialize the List of Synapse.
+        ///// </summary>
+        //public void SerializeValue(List<Synapse> value, StreamWriter sw)
+        //{
+        //    sw.Write(ValueDelimiter);
+        //    if (value != null)
+        //    {
+        //        foreach (Synapse val in value)
+        //        {
+        //            if (!File.Exists($"Users / mouni.kolisetty / neocortexapi / NeoCortexApi / UnitTestsProject / bin / Debug / net5.0 / ser_SerializeSynapseTest_{val.SynapseIndex}"))
+        //            {
+        //                using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeSynapseTest)}_"))
+        //                    val.Serialize(sw);
+        //            }
+        //            sw.Write(ElementsDelimiter);
+        //        }
+        //    }
+        //    sw.Write(ParameterDelimiter);
+        //}
 
         /// <summary>
         /// Serialize the List of Integers.

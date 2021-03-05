@@ -135,8 +135,10 @@ namespace NeoCortexApi.Entities
 
                 if (obj.DistalDendrites != null && this.DistalDendrites != null)
                 {
-                    if (!obj.DistalDendrites.SequenceEqual(this.DistalDendrites))
+                    if (!Enumerable.SequenceEqual(obj.DistalDendrites, this.DistalDendrites))
                         return false;
+                    //if (!obj.DistalDendrites.SequenceEqual(this.DistalDendrites))
+                    //    return false;
                 }
 
                 if (obj.ReceptorSynapses != null && this.ReceptorSynapses != null)
@@ -189,14 +191,17 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.Index, writer);
             ser.SerializeValue(this.CellId, writer);
             ser.SerializeValue(this.ParentColumnIndex, writer);
-            ser.SerializeValue(this.DistalDendrites, writer);
-            ser.SerializeValue(this.ReceptorSynapses, writer);
+            if (this.DistalDendrites != null && this.DistalDendrites.Count > 0)
+                ser.SerializeValue(this.DistalDendrites.Select(s => s.Ordinal).ToArray(), writer);
+
+            if (this.ReceptorSynapses != null && this.ReceptorSynapses.Count > 0)
+                ser.SerializeValue(this.ReceptorSynapses.Select(s => s.SynapseIndex).ToArray(), writer);
 
             ser.SerializeEnd(nameof(Cell), writer);
         }
 
         /// <summary>
-        /// DEserializes the cell from the stream.
+        /// Deserializes the cell from the stream.
         /// </summary>
         /// <param name="sr"></param>
         /// <returns></returns>
@@ -210,24 +215,16 @@ namespace NeoCortexApi.Entities
             {
                 string data = sr.ReadLine();
 
-                if (data == String.Empty || data == ser.ReadBegin(nameof(Cell)) || data == ser.ElementsDelimiter)
+                if (data == String.Empty || data == ser.ReadBegin(nameof(Cell)))
                 {
                     continue;
-                }
-                else if (data == ser.ReadBegin(nameof(DistalDendrite)) )
-                {
-                    cell.DistalDendrites.Add(DistalDendrite.Deserialize(sr));
-                }
-                else if (data == ser.ReadBegin(nameof(Synapse)))
-                {
-                    cell.ReceptorSynapses.Add(Synapse.Deserialize(sr));
                 }
                 else if (data == ser.ReadEnd(nameof(Cell)))
                 {
                     break;
                 }
                 else
-                { 
+                {
                     string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
                     for (int i = 0; i < str.Length; i++)
                     {
@@ -246,6 +243,38 @@ namespace NeoCortexApi.Entities
                             case 2:
                                 {
                                     cell.ParentColumnIndex = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 3:
+                                {
+                                    int[] vs = ser.ReadArrayInt(str[i]);
+                                    cell.DistalDendrites = new List<DistalDendrite>();
+                                    for (int j = 0; j < vs.Count(); j++)
+                                    {
+                                        cell.DistalDendrites.Add(new DistalDendrite());
+                                        cell.DistalDendrites[j].Ordinal = vs[j];
+                                        using (StreamReader swLD = new StreamReader($"ser_SerializeDistalDendrite_{cell.DistalDendrites[j].Ordinal}.txt"))
+                                        {
+                                            cell.DistalDendrites[j] = DistalDendrite.Deserialize(swLD);
+                                        }
+                                    }
+                                    break;
+                                }
+                            case 4:
+                                {
+                                    int[] vs = ser.ReadArrayInt(str[i]);
+                                    cell.ReceptorSynapses = new List<Synapse>();
+                                    for (int j = 0; j < vs.Count(); j++)
+                                    {
+                                        cell.ReceptorSynapses.Add(new Synapse());
+                                        cell.ReceptorSynapses[j].SynapseIndex = vs[j];
+
+                                        using (StreamReader swLS = new StreamReader($"ser_SerializeSynapseTest_{cell.ReceptorSynapses[j].SynapseIndex}.txt"))
+                                        {
+                                            cell.ReceptorSynapses[j] = Synapse.Deserialize(swLS);
+                                        }
+                                    }
+                                    
                                     break;
                                 }
                             default:

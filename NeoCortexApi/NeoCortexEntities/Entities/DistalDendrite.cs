@@ -190,30 +190,29 @@ namespace NeoCortexApi.Entities
 
            ser.SerializeBegin(nameof(DistalDendrite), writer);
 
-            if (this.ParentCell != null)
-            {
-                // We are serializeing the index of the cell only to avoid circular references during serialization.
-                //ser.SerializeValue(this.ParentCell.Index, writer);
-                this.ParentCell.Serialize(writer);
-            }
             if (this.boxedIndex != null)
             {
                 this.boxedIndex.Serialize(writer);
             }
 
+            if (this.ParentCell != null)
+            {
+                // We are serializeing the index of the cell only to avoid circular references during serialization.
+                ser.SerializeValue(this.ParentCell.Index, writer);
+                //this.ParentCell.Serialize(writer);
+            }
             ser.SerializeValue(this.m_LastUsedIteration, writer);
             ser.SerializeValue(this.m_Ordinal, writer);
             ser.SerializeValue(this.LastUsedIteration, writer);
             ser.SerializeValue(this.Ordinal, writer);
             ser.SerializeValue(this.SegmentIndex, writer);
-            
-            // We serialize synapse indixes only to avoid circular references.
-            if(this.Synapses != null && this.Synapses.Count > 0)
-                ser.SerializeValue(this.Synapses.Select(s=>s.SynapseIndex).ToArray(), writer);
-
             ser.SerializeValue(this.SynapsePermConnected, writer);
             ser.SerializeValue(this.NumInputs, writer);
 
+            // We serialize synapse indixes only to avoid circular references.
+            if (this.Synapses != null && this.Synapses.Count > 0)
+                ser.SerializeValue(this.Synapses.Select(s => s.SynapseIndex).ToArray(), writer);
+               
             ser.SerializeEnd(nameof(DistalDendrite), writer);
         }
 
@@ -227,13 +226,13 @@ namespace NeoCortexApi.Entities
             while (sr.Peek() >= 0)
             {
                 string data = sr.ReadLine();
-                if (data == ser.LineDelimiter || data == ser.ReadBegin(nameof(DistalDendrite)) || data == ", |")
+                if (data == ser.LineDelimiter || data == ser.ReadBegin(nameof(DistalDendrite)))
                 {
                     continue;
                 }
                 else if (data == ser.ReadBegin(nameof(Cell)))
                 {
-                    distal.ParentCell = Cell.Deserialize(sr);
+                    //distal.ParentCell = Cell.Deserialize(sr);
                 }
                 else if (data == ser.ReadBegin(nameof(Integer)))
                 {
@@ -250,42 +249,49 @@ namespace NeoCortexApi.Entities
                     {
                         switch (i)
                         {
-                         
                             case 0:
                                 {
-                                    distal.m_LastUsedIteration = ser.ReadLongValue(str[i]);
+                                    distal.ParentCell = new Cell();
+                                    distal.ParentCell.Index = ser.ReadIntValue(str[i]);
+                                    
                                     break;
                                 }
                             case 1:
                                 {
-                                    distal.m_Ordinal = ser.ReadIntValue(str[i]);
+                                    distal.m_LastUsedIteration = ser.ReadLongValue(str[i]);
                                     break;
                                 }
                             case 2:
                                 {
-                                    distal.LastUsedIteration = ser.ReadLongValue(str[i]);
+                                    distal.m_Ordinal = ser.ReadIntValue(str[i]);
                                     break;
                                 }
                             case 3:
                                 {
-                                    distal.Ordinal = ser.ReadIntValue(str[i]);
+                                    distal.LastUsedIteration = ser.ReadLongValue(str[i]);
                                     break;
                                 }
                             case 4:
                                 {
-                                    distal.SegmentIndex = ser.ReadIntValue(str[i]);
+                                    distal.Ordinal = ser.ReadIntValue(str[i]);
                                     break;
                                 }
                             case 5:
                                 {
-                                    distal.SynapsePermConnected = ser.ReadDoubleValue(str[i]);
+                                    distal.SegmentIndex = ser.ReadIntValue(str[i]);
                                     break;
                                 }
                             case 6:
                                 {
+                                    distal.SynapsePermConnected = ser.ReadDoubleValue(str[i]);
+                                    break;
+                                }
+                            case 7:
+                                {
                                     distal.NumInputs = ser.ReadIntValue(str[i]);
                                     break;
                                 }
+                            
                             default:
                                 { break; }
 
