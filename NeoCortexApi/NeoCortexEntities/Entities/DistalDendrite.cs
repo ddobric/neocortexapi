@@ -17,7 +17,7 @@ namespace NeoCortexApi.Entities
     /// <remarks>
     /// Authors of the JAVA implementation: Chetan Surpur, David Ray
     /// </remarks>
-    public class DistalDendrite : Segment, IComparable<DistalDendrite>, IEquatable<Segment>
+    public class DistalDendrite : Segment, IComparable<DistalDendrite>, IEquatable<DistalDendrite>
     {
         /// <summary>
         /// The cell that owns (parent) the segment.
@@ -120,15 +120,17 @@ namespace NeoCortexApi.Entities
             int prime = 31;
             int result = base.GetHashCode();
             result = prime * result + ((ParentCell == null) ? 0 : ParentCell.GetHashCode());
+            result *= this.SegmentIndex;
             return result;
         }
 
-
         /// <summary>
-        /// <inheritdoc/>
+        /// Compares this segment with the given one.
         /// </summary>
+        /// <param name="obj"></param>
         /// <returns></returns>
-        public override bool Equals(Segment obj)
+
+        public bool Equals(DistalDendrite obj)
         {
             if (this == obj)
                 return true;
@@ -164,13 +166,10 @@ namespace NeoCortexApi.Entities
                 return false;
             if (NumInputs != obj.NumInputs)
                 return false;
+
             return true;
         }
 
-        //public bool Equals(DistalDendrite other)
-        //{
-        //    throw new NotImplementedException();
-        //}
 
         /// <summary>
         /// Compares by index.
@@ -309,7 +308,8 @@ namespace NeoCortexApi.Entities
 
         }
 
-       
+   
+
         #endregion
 
     }

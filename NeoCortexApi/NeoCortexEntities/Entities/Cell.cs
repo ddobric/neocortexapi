@@ -20,6 +20,9 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public int Index { get; set; }
         
+        /// <summary>
+        /// The identifier of the cell.
+        /// </summary>
         public int CellId { get; private set; }
                
 
@@ -48,7 +51,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public Cell()
         {
-            //this.Segments = new List<DistalDendrite>(); 
+     
         }
        
         /// <summary>
@@ -67,32 +70,6 @@ namespace NeoCortexApi.Entities
             
             this.CellId = cellId;
         }
-
-    
-        /// <summary>
-        /// DD Returns the Set of <see cref="Synapse"/>s which have this cell as their source cell.
-        /// </summary>
-        /// <param name="c">the connections state of the temporal memory</param>
-        /// <param name="doLazyCreate">create a container for future use if true, if false return an orphaned empty set.</param>
-        /// <returns>the Set of <see cref="Synapse"/>s which have this cell as their source cells.</returns>
-        //public ISet<Synapse> GetReceptorSynapses(Connections c, bool doLazyCreate = false)
-        //{
-        //    return c.GetReceptorSynapses(this, doLazyCreate);
-        //}
-
-     
-        /// <summary>
-        /// Returns a <see cref="List{T}"/> of this <see cref="Cell"/>'s <see cref="DistalDendrite"/>s
-        /// </summary>
-        /// <param name="c">the connections state of the temporal memory</param>
-        /// <param name="doLazyCreate">create a container for future use if true, if false return an orphaned empty set.</param>
-        /// <returns>a <see cref="List{T}"/> of this <see cref="Cell"/>'s <see cref="DistalDendrite"/>s</returns>
-        //public List<DistalDendrite> GetSegments(Connections c, bool doLazyCreate = false)
-        //{
-        //    //DD
-        //    //return c.GetSegments(this, doLazyCreate);
-        //    return this.DistalDendrites;
-        //}
 
         /// <summary>
         /// Gets the hashcode of the cell.
