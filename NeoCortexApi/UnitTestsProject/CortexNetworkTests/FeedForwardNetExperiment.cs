@@ -13,13 +13,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UnitTestsProject.CortexNetworkTests
+namespace  UnitTestsProject.CortexNetworkTests
 {
 
     /// <summary>
     /// In the brain the Layer 4 has feed forforward connection with Layer 2 in CortexLayer.
     /// So, instead of using layer name L1 we give it as L4
     /// </summary>
+
     [TestClass]
     public class FeedForwardNetExperiment
     {
@@ -27,13 +28,14 @@ namespace UnitTestsProject.CortexNetworkTests
 
         TemporalMemory tm4, tm2;
 
+
         [TestMethod]
         public void FeedForwardNetTest()
         {
             int cellsPerColumnL4 = 20;
             int numColumnsL4 = 1024;
 
-            int cellsPerColumnL2 = 5;
+            int cellsPerColumnL2 = 10;
             int numColumnsL2 = 150;
 
             int inputBits = 100;
@@ -48,7 +50,7 @@ namespace UnitTestsProject.CortexNetworkTests
                 GlobalInhibition = true,
                 LocalAreaDensity = -1,
                 NumActiveColumnsPerInhArea = 0.02 * numColumnsL4,
-                PotentialRadius = 50, // Every column is connected to 50 of 100 input cells.
+                PotentialRadius = 50, // Ever column is connected to 50 of 100 input cells.
                 InhibitionRadius = 15,
                 MaxBoost = maxBoost,
                 DutyCyclePeriod = 25,
@@ -71,8 +73,8 @@ namespace UnitTestsProject.CortexNetworkTests
                 CellsPerColumn = cellsPerColumnL2,
                 GlobalInhibition = true,
                 LocalAreaDensity = -1,
-                NumActiveColumnsPerInhArea = 0.21 * numColumnsL2,
-                PotentialRadius = inputsL2, // All columns
+                NumActiveColumnsPerInhArea = 0.5 * numColumnsL2,
+                PotentialRadius = 5000, // Every columns 
                 InhibitionRadius = 15,
                 MaxBoost = maxBoost,
                 DutyCyclePeriod = 25,
@@ -106,9 +108,9 @@ namespace UnitTestsProject.CortexNetworkTests
         {
             Stopwatch swL2 = new Stopwatch();
 
-            //int maxMatchCnt = 0;
+            int maxMatchCnt = 0;
             bool learn = true;
-            bool isSP1Stable = false;
+            bool isSP4Stable = false;
             bool isSP2STable = false;
 
             var memL4 = new Connections(cfgL4);
@@ -123,21 +125,21 @@ namespace UnitTestsProject.CortexNetworkTests
             tm4 = new TemporalMemoryMT();
             tm2 = new TemporalMemoryMT();
 
-            //
             // HPC for Layer 4 SP
+
             HomeostaticPlasticityController hpa_sp_L4 = new HomeostaticPlasticityController(memL4, numInputs * 50, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                 if (isStable)
                     Debug.WriteLine($"SP L4 STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
                 else
                     Debug.WriteLine($"SP L4 INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
-                learn = isSP1Stable = isStable;
-                //cls.ClearState();
+                learn = isSP4Stable = isStable;
+                
             }, numOfCyclesToWaitOnChange: 50);
 
 
-            //
             // HPC for Layer 2 SP
+
             HomeostaticPlasticityController hpa_sp_L2 = new HomeostaticPlasticityController(memL2, numInputs * 50, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                 if (isStable)
@@ -146,7 +148,7 @@ namespace UnitTestsProject.CortexNetworkTests
                     Debug.WriteLine($"SP L2 INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
 
                 learn = isSP2STable = isStable;
-                //cls.ClearState();
+                cls.ClearState();
             }, numOfCyclesToWaitOnChange: 50);
 
             SpatialPooler sp4 = new SpatialPoolerMT(hpa_sp_L4);
@@ -174,7 +176,7 @@ namespace UnitTestsProject.CortexNetworkTests
             int[] prevActiveCols = new int[0];
             int cycle = 0;
             int matches = 0;
-            // string lastPredictedValue = "0";
+             string lastPredictedValue = "0";
             int maxCycles = 3500;
             int maxPrevInputs = inputValues.Count - 1;
             List<string> previousInputs = new List<string>();
@@ -199,42 +201,53 @@ namespace UnitTestsProject.CortexNetworkTests
                             Debug.Write("L4: ");
                             var lyrOut = layerL4.Compute(input, learn);
 
-                            InitArray(inpCellsL4ToL2, 0);
+                            /// <summary>
+                            /// This part is for to make SP of Layer2 stable thourgh help of HPC.  
+                            /// We skip this part right now  but if you want experiment this just
+                            /// uncomment the code part area from Line 204 to 235 and 240 to 241
+                            /// comment out Line 244 to 245
+                            /// </summary>
 
-                            if (isSP1Stable)
-                            {
-                                var cellSdrL4Indexes = memL4.ActiveCells.Select(c => c.Index).ToArray();
+                            //InitArray(inpCellsL4ToL2, 0);
+                            // if (isSP1Stable)
+                            //{
+                            // var cellSdrL4Indexes = memL4.ActiveCells.Select(c => c.Index).ToArray();
 
-                                // Write SDR as output of L4 and input of L2
-                                swL4Sdrs.WriteLine($"{input} - {Helpers.StringifyVector(cellSdrL4Indexes)}");
+                            // Write SDR as output of L4 and input of L2
+                            //swL4Sdrs.WriteLine($"{input} - {Helpers.StringifyVector(cellSdrL4Indexes)}");
+                            // Set the output active cell array
+                            // ArrayUtils.SetIndexesTo(inpCellsL4ToL2, cellSdrL4Indexes, 1);
+                            // Debug.WriteLine($"L4 out sdr: {Helpers.StringifyVector(cellSdrL4Indexes)}
+                            // Debug.WriteLine("L2: ");
+                            // swL2.Restart();
+                            // layerL2.Compute(inpCellsL4ToL2, true);
+                            // var ac = layerL2.GetResult("sp") as int[];
+                            // foreach (var j in ac) {
+                            //    Debug.WriteLine("####"+j.ToString());
+                            //  }
+                            // swL2.Stop();
+                            //Debug.WriteLine($"{swL2.ElapsedMilliseconds / 1000}");
+                            // sw.WriteLine($"{swL2.ElapsedMilliseconds / 1000}");
+                            // sw.Flush();
 
-                                // Set the output active cell array
-                                ArrayUtils.SetIndexesTo(inpCellsL4ToL2, cellSdrL4Indexes, 1);
+                            //var overlaps = ArrayUtils.IndexWhere(memL2.Overlaps, o => o > 0);
+                            //var strOverlaps = Helpers.StringifyVector(overlaps);
+                            // Debug.WriteLine($"Potential columns: {overlaps.Length}, overlaps: {strOverlaps}");
+                            //}
 
-                                Debug.Write("L2: ");
-
-                                swL2.Restart();
-                                layerL2.Compute(inpCellsL4ToL2, true);
-                                swL2.Stop();
-
-                                Debug.WriteLine($"{swL2.ElapsedMilliseconds / 1000}");
-                                sw.WriteLine($"{swL2.ElapsedMilliseconds / 1000}");
-                                sw.Flush();
-                                Debug.WriteLine($"L4 out sdr: {Helpers.StringifyVector(cellSdrL4Indexes)}");
-
-                                var overlaps = ArrayUtils.IndexWhere(memL2.Overlaps, o => o > 0);
-                                var strOverlaps = Helpers.StringifyVector(overlaps);
-                                Debug.WriteLine($"Potential columns: {overlaps.Length}, overlaps: {strOverlaps}");
-                            }
-
-                            if (isSP1Stable && isSP2STable)
-                                break;
+                            
                         }
+
+                        //if (isSP1Stable && isSP2STable)
+                        // break;
+
+                        if (isSP4Stable)
+                            break;
                     }
                 }
             }
 
-            Debug.WriteLine($"-------------- L4 SP region is  {isSP1Stable} ---------------");
+            Debug.WriteLine($"-------------- L4 SP region is  {isSP4Stable} ---------------");
 
             //layerL4.HtmModules.Add("tm", tm4);
 
@@ -243,7 +256,7 @@ namespace UnitTestsProject.CortexNetworkTests
 
             for (int i = 0; i < maxCycles; i++)
             {
-                matches -= 0;
+                matches = 0;
 
                 cycle++;
 
@@ -253,7 +266,7 @@ namespace UnitTestsProject.CortexNetworkTests
                 {
                     Debug.WriteLine($"-------------- {input} ---------------");
 
-                    var lyrOut = layerL4.Compute(input, learn) as ComputeCycle;
+                    var layerL4Out = layerL4.Compute(input, learn) as ComputeCycle;
 
                     previousInputs.Add(input.ToString());
                     if (previousInputs.Count > (maxPrevInputs + 1))
@@ -261,38 +274,91 @@ namespace UnitTestsProject.CortexNetworkTests
 
                     if (previousInputs.Count < maxPrevInputs)
                         continue;
+                    string key = GetKey(previousInputs, input);
+                    List<Cell> actCells;
 
-                    if (lyrOut.ActiveCells.Count == lyrOut.WinnerCells.Count)
+                    if (layerL4Out.ActiveCells.Count == layerL4Out.WinnerCells.Count)
                     {
-                        /*var activeColumns = L4.GetResult("sp") as int[];
-                        foreach (var item in activeColumns)
-                        {
-                            L2.Compute(item, true);
-                        }*/
+                        // SP+TM at L2
 
+                        Debug.WriteLine($"-------------- L2 TM Train region Cycle {cycle} ---------------");
                         // Reset tha array
                         InitArray(inpCellsL4ToL2, 0);
+                        var cellSdrL4Indexes = memL4.ActiveCells.Select(c => c.Index).ToArray();
 
                         // Set the output active cell array
-                        ArrayUtils.SetIndexesTo(inpCellsL4ToL2, memL4.ActiveCells.Select(c => c.Index).ToArray(), 1);
+                        ArrayUtils.SetIndexesTo(inpCellsL4ToL2, cellSdrL4Indexes, 1);
+                        var layerL2Out = layerL2.Compute(inpCellsL4ToL2, true) as ComputeCycle;
+                        var overlaps = ArrayUtils.IndexWhere(memL2.Overlaps, o => o > 0);
+                        var strOverlaps = Helpers.StringifyVector(overlaps);
+                        Debug.WriteLine($"Potential columns: {overlaps.Length}, overlaps: {strOverlaps}");
 
-                        // 4102,25072, 25363, 25539, 25738, 25961, 26009, 26269, 26491, 26585, 26668, 26920, 26934, 27040, 27107, 27262, 27392, 27826, 27948, 28174, 28243, 28270, 28294, 28308, 28429, 28577, 28671, 29139, 29618, 29637, 29809, 29857, 29897, 29900, 29969, 30057, 30727, 31111, 49805, 49972, 
-                        layerL2.Compute(inpCellsL4ToL2, true);
-
-                        /*foreach (var item in lyrOut.ActiveCells)
+                        if (layerL2Out.ActiveCells.Count == layerL2Out.WinnerCells.Count)
                         {
-                            L2.Compute(item, true);
-                        }*/
+                            actCells = layerL2Out.ActiveCells;
+                        }
+                        else
+                        {
+                            actCells = layerL2Out.WinnerCells;
+                        }
 
-                        //var activeCell = Helpers.StringifyVector(lyrOut.ActiveCells.Select(c => c.Index).ToArray());
-                        //L2.Compute(activeCell, true);
+                        cls.Learn(key, actCells.ToArray());
+
+
+                        if (key == lastPredictedValue)
+                        {
+                            matches++;
+                            Debug.WriteLine($"Match. Actual value: {key} - Predicted value: {lastPredictedValue}");
+                        }
+                        else
+                            Debug.WriteLine($"Missmatch! Actual value: {key} - Predicted value: {lastPredictedValue}");
+
+                        if (layerL2Out.PredictiveCells.Count > 0)
+                        {
+                            var predictedInputValue = cls.GetPredictedInputValue(layerL2Out.PredictiveCells.ToArray());
+
+                            Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {predictedInputValue}");
+
+                            lastPredictedValue = predictedInputValue;
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"NO CELLS PREDICTED for next cycle.");
+                            lastPredictedValue = String.Empty;
+                        }
+
 
 
                     }
 
 
                 }
+
+                double accuracy = (double)matches / (double)inputs.Length * 100.0;
+
+                Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {inputs.Length}\t {accuracy}%");
+
+                if (accuracy >= 100.0)
+                {
+                    maxMatchCnt++;
+                    Debug.WriteLine($"100% accuracy reched {maxMatchCnt} times.");
+                    //
+                    // Experiment is completed if we are 20 cycles long at the 100% accuracy.
+                    if (maxMatchCnt >= 20)
+                    {
+
+                        Debug.WriteLine($"Exit experiment in the stable state after 20 repeats with 100% of accuracy.");
+                        learn = false;
+                        break;
+                    }
+                }
+                else if (maxMatchCnt > 0)
+                {
+                    Debug.WriteLine($"At 100% accuracy after {maxMatchCnt} repeats we get a drop of accuracy with {accuracy}. This indicates instable state. Learning will be continued.");
+                    maxMatchCnt = 0;
+                }
             }
+
         }
 
         private static void InitArray(int[] array, int val)
@@ -301,6 +367,21 @@ namespace UnitTestsProject.CortexNetworkTests
             {
                 array[i] = val;
             }
+        }
+
+        private static string GetKey(List<string> prevInputs, double input)
+        {
+            string key = String.Empty;
+
+            for (int i = 0; i < prevInputs.Count; i++)
+            {
+                if (i > 0)
+                    key += "-";
+
+                key += (prevInputs[i]);
+            }
+
+            return key;
         }
     }
 }
