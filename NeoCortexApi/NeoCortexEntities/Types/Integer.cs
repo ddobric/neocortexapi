@@ -35,11 +35,23 @@ namespace NeoCortexApi.Entities
 
         public static bool operator ==(Integer x, Integer y)
         {
+            if (0 == Comparer<object>.Default.Compare(x, null) && 0 != Comparer<object>.Default.Compare(y, null))
+                return false;
+
+            if (0 != Comparer<object>.Default.Compare(x, null) && 0 == Comparer<object>.Default.Compare(y, null))
+                return false;
+
             return x.Value == y.Value;
         }
 
         public static bool operator !=(Integer x, Integer y)
         {
+            if (0 == Comparer<object>.Default.Compare(x, null) && 0 != Comparer<object>.Default.Compare(y, null))
+                return true;
+
+            if (0 != Comparer<object>.Default.Compare(x, null) && 0 == Comparer<object>.Default.Compare(y, null))
+                return true;
+
             return x.Value != y.Value;
         }
 
@@ -61,37 +73,38 @@ namespace NeoCortexApi.Entities
             ser.SerializeBegin(nameof(Integer), writer);
 
             ser.SerializeValue(this.Value,writer);
-            //ser.SerializeValue(Integer.MaxValue, writer);
-            //ser.SerializeValue(Integer.MinValue, writer);
-
+            
             ser.SerializeEnd(nameof(Integer), writer);
         }
-        #endregion
 
-        #region Deserialization
+
         public static Integer Deserialize(StreamReader sr)
         {
             Integer inte = new Integer();
 
             HtmSerializer2 ser = new HtmSerializer2();
-            string data = sr.ReadToEnd();
-            string[] str = data.Split('\n');
 
-            foreach (string i in str)
+            while (sr.Peek() >= 0)
             {
-                if (i == "" || i == "  BEGIN 'Integer'  " || i == "  END 'Integer'  ")
-                { continue; }
+                string data = sr.ReadLine();
+                if (data == String.Empty || data == ser.ReadBegin(nameof(Integer)))
+                {
+                    continue;
+                }
+                else if (data == ser.ReadEnd(nameof(Integer)))
+                {
+                    break;
+                }
                 else
                 {
-                    string[] istr = i.Split('|');
-                    int j;
-                    for (j = 0; j < istr.Length; j++)
+                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                    for (int i = 0; i < str.Length; i++)
                     {
-                        switch (j)
+                        switch (i)
                         {
                             case 0:
                                 {
-                                    inte.Value = ser.ReadIntValue(istr[j]);
+                                    inte.Value = ser.ReadIntValue(str[i]);
                                     break;
                                 }
                             default:
@@ -106,6 +119,6 @@ namespace NeoCortexApi.Entities
             
         }
 
-            #endregion
+        #endregion
         }
     }

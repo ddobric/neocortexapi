@@ -17,6 +17,22 @@ namespace UnitTestsProject
     public class UnitTest1
     {
 
+
+        [TestMethod]
+        public void IntegerTests()
+        {
+            Integer i1 = new Integer(1);
+            Integer i2 = null;
+
+            Assert.IsFalse(i1 == i2);
+
+            Assert.IsFalse(i2 == i1);
+
+            i2 = new Integer(1);
+
+            Assert.IsTrue(i2 == i1);
+        }
+
         [TestMethod]
         [DataRow(new int[] { 2048, 6 })]
         [DataRow(new int[] { 100, 20 })]
@@ -30,12 +46,12 @@ namespace UnitTestsProject
         }
 
 
-        [TestMethod]       
+        [TestMethod]
         public void KeyTest()
         {
             Dictionary<int[], string> dict = new Dictionary<int[], string>();
             List<int[]> list = new List<int[]>();
-            list.Add(new int[] { 0, 1, 0, 1});
+            list.Add(new int[] { 0, 1, 0, 1 });
             list.Add(new int[] { 0, 0, 0, 1 });
             list.Add(new int[] { 0, 1, 0, 1 });
 
@@ -130,9 +146,9 @@ namespace UnitTestsProject
             Column c1 = new Column(10, 0, 0, 0);
             Column c2 = new Column(10, 1, 0, 0);
 
-            List<Column> l = new List<Column>(new Column[] { c1, c2});
+            List<Column> l = new List<Column>(new Column[] { c1, c2 });
 
-            Assert.IsTrue(l.Min(i=>i) == c1);
+            Assert.IsTrue(l.Min(i => i) == c1);
 
         }
 
@@ -148,10 +164,10 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("Prod")]
-        public void CompareDentrites()
+        public void CompareGroupedObjects()
         {
-            var empty1 = (NeoCortexApi.Utility.GroupBy2<object>.Slot < Pair<object, List<object>> > )NeoCortexApi.Utility.GroupBy2<object>.Slot<Pair<object, List<object>>>.Empty();
-            var empty2 = (NeoCortexApi.Utility.GroupBy2<object>.Slot < Pair<object, List<object>> > )NeoCortexApi.Utility.GroupBy2<object>.Slot<Pair<object, List<object>>>.Empty();
+            var empty1 = (NeoCortexApi.Utility.GroupBy2<object>.Slot<Pair<object, List<object>>>)NeoCortexApi.Utility.GroupBy2<object>.Slot<Pair<object, List<object>>>.Empty();
+            var empty2 = (NeoCortexApi.Utility.GroupBy2<object>.Slot<Pair<object, List<object>>>)NeoCortexApi.Utility.GroupBy2<object>.Slot<Pair<object, List<object>>>.Empty();
 
             var slot2 = NeoCortexApi.Utility.GroupBy2<object>.Slot<object>.Of(7);
             Assert.AreNotEqual(empty1, slot2);
@@ -159,14 +175,14 @@ namespace UnitTestsProject
             Assert.AreEqual(empty1, empty2);
         }
 
-     
+
 
         [TestMethod]
         [DataRow(20)]
         [DataRow(30)]
         [DataRow(40)]
         [DataRow(50)]
-       // [TestCategory("Prod")]
+        // [TestCategory("Prod")]
         public void TestHeatmapCreation(int threshold)
         {
             List<double[,]> bostArrays = new List<double[,]>();
@@ -187,7 +203,7 @@ namespace UnitTestsProject
 
             NeoCortexUtils.DrawHeatmaps(bostArrays, $"tessheat_{threshold}.png", 1024, 1024, 60, threshold, 10);
         }
-        
+
         /// <summary>
         /// Extracts performance data from debug output of test SparseSingleMnistImageTest.
         /// </summary>
@@ -196,14 +212,14 @@ namespace UnitTestsProject
         [TestMethod]
         [DataRow(@"c:\temp\results 3 nodes.txt", "Compute time: ")]
         public void CutoutTest(string fileName, string token)
-        {        
+        {
             List<string> data = new List<string>();
 
             using (StreamReader sr = new StreamReader(fileName))
             {
                 string line;
                 while ((line = sr.ReadLine()) != null)
-                {                    
+                {
                     if (line.ToLower().Contains(token.ToLower()))
                     {
                         var tokens = line.Split(token);

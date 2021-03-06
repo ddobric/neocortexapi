@@ -6,6 +6,7 @@ using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Network;
 using NeoCortexApi.Utility;
+using NeoCortexEntities.NeuroVisualizer;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -272,139 +273,8 @@ namespace UnitTestsProject
 
         }
 
-        [TestMethod]
-        [TestCategory("Serialization")]
-        public void SerializeValueTest()
-        {
-            MemoryStream ms = new MemoryStream();
-
-            using (StreamWriter sw = new StreamWriter(ms))
-            {
-                HtmSerializer2 ser = new HtmSerializer2();
-
-                ser.SerializeValue(0.0, sw);
-                ser.SerializeValue(1.0, sw);
-                ser.SerializeValue(2.0, sw);
-            }
-
-            var data = ms.GetBuffer();
-
-            string serializedData = Encoding.UTF8.GetString(data);
-        }
-
-        [TestMethod]
-        [TestCategory("Serialization")]
-        public void SerializeValueToFileTest()
-        {
-
-            using (StreamWriter sw = new StreamWriter("ser.txt"))
-            {
-                var sp1 = new SpatialPooler();
-                HtmSerializer2 ser = new HtmSerializer2();
-                ser.SerializeBegin("UnitTest", sw);
-                Dictionary<string, int[]> myDictionary = new Dictionary<string, int[]>();
-                myDictionary.Add("Sunday", new int[] { 1, 2, 3, 6 });
-                myDictionary.Add("Monday", new int[] { 2, 4, 5 });
-                ser.SerializeValue(myDictionary, sw);
-                ser.SerializeEnd("UnitTest", sw);
-            }
-
-        }
-        [TestMethod]
-        [TestCategory("Serialization")]
-        public void SerializeCell()
-        {
-          
-            HtmSerializer2 ser = new HtmSerializer2();
-            Cell cell = new Cell();
-            Cell cell1;
-            using (StreamWriter sw = new StreamWriter("ser.txt"))
-            {
-                cell.Serialize(sw);
-            }
-            using (StreamReader sr = new StreamReader("ser.txt"))
-
-            {
-                cell1 =  Cell.Deserialize(sr);
-            }
-
-            Assert.IsTrue(cell1.Equals(cell));
-
-        }
-
-        [TestMethod]
-        [TestCategory("Serialization")]
-        public void SerializeInteger()
-        {
-
-            HtmSerializer2 ser = new HtmSerializer2();
-            Integer inte = new Integer();
-            Integer inte1;
-            using (StreamWriter sw = new StreamWriter("ser.txt"))
-            {
-                inte.Serialize(sw);
-            }
-            using (StreamReader sr = new StreamReader("ser.txt"))
-
-            {
-                inte1 = Integer.Deserialize(sr);
-            }
-
-            Assert.IsTrue(inte1.Equals(inte));
-
-        }
-
-        private static Parameters GetDefaultParams()
-        {
-            ThreadSafeRandom rnd = new ThreadSafeRandom(42);
-
-            var parameters = Parameters.getAllDefaultParameters();
-            parameters.Set(KEY.POTENTIAL_RADIUS, 10);
-            parameters.Set(KEY.POTENTIAL_PCT, 0.75);
-            parameters.Set(KEY.GLOBAL_INHIBITION, false);
-            parameters.Set(KEY.LOCAL_AREA_DENSITY, -1.0);
-            parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 80.0);
-            parameters.Set(KEY.STIMULUS_THRESHOLD, 0);
-            parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.01);
-            parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0.1);
-            parameters.Set(KEY.SYN_PERM_CONNECTED, 0.1);
-            parameters.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.001);
-            parameters.Set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.001);
-            parameters.Set(KEY.WRAP_AROUND, true);
-            parameters.Set(KEY.DUTY_CYCLE_PERIOD, 10);
-            parameters.Set(KEY.MAX_BOOST, 1.0);
-            parameters.Set(KEY.RANDOM, rnd);
-            parameters.Set(KEY.IS_BUMPUP_WEAKCOLUMNS_DISABLED, true);
-
-
-            return parameters;
-        }
         
-        [TestMethod]
-        [TestCategory("LongRunning")]
-        public void SerializationTest1()
-        {
-            var parameters = GetDefaultParams();
-
-
-            parameters.setInputDimensions(new int[] { 32 });
-            parameters.setColumnDimensions(new int[] { 128 });
-            parameters.setNumActiveColumnsPerInhArea(0.02 * 2048);
-            parameters.setGlobalInhibition(true);
-
-            var sp1 = new SpatialPooler();
-
-            var mem1 = new Connections();
-            parameters.apply(mem1);
-
-            sp1.Init(mem1);
-
-            using (StreamWriter sw = new StreamWriter("ser.txt"))
-            {
-                sp1.Serialize(sw);
-            }
-        }
-            private void DrawBitmaps(EncoderBase encoder, double input, int[] activeArrayIndxes, int columnTopology)
+        private void DrawBitmaps(EncoderBase encoder, double input, int[] activeArrayIndxes, int columnTopology)
         {
             var inputVector = encoder.Encode(input);
 

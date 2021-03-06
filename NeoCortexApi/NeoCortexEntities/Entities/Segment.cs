@@ -12,7 +12,7 @@ namespace NeoCortexApi.Entities
     /// <summary>
     /// Base class for different types of segments. It which handles the creation of synapses (<seealso cref="Synapse"/>) on behalf of inheriting class types.
     /// </summary>
-   
+
     public abstract class Segment : IEquatable<Segment>
     {       
         /// <summary>
@@ -20,7 +20,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public int SegmentIndex { get; set; }
 
-        private Integer boxedIndex { get; set; }
+        protected Integer boxedIndex { get; set; }
 
         /// <summary>
         /// Synapses connected to the segment.
@@ -38,6 +38,16 @@ namespace NeoCortexApi.Entities
         public int NumInputs { get; set; }
 
         /// <summary>
+        /// Default constructor used by deserializer.
+        /// </summary>
+        protected Segment()
+        {
+            this.Synapses = new List<Synapse>();
+            this.boxedIndex = new Integer();
+
+        }
+
+        /// <summary>
         /// Creates the proximal dentrite segment with specified index.
         /// </summary>
         /// <param name="synapsePermConnected">Permanence threshold value to declare synapse as connected.</param>
@@ -45,13 +55,13 @@ namespace NeoCortexApi.Entities
         /// <param name="numInputs">Number of input neorn cells.</param>
         public Segment(int index, double synapsePermConnected, int numInputs)
         {
-            this.NumInputs = NumInputs;
+            this.NumInputs = numInputs;
             this.SynapsePermConnected = synapsePermConnected;
             this.Synapses = new List<Synapse>();
             this.SegmentIndex = index;
             this.boxedIndex = new Integer(index);
         }
-    
+
 
         /// <summary>
         /// Creates and returns a newly created synapse with the specified source cell, permanence, and index.
@@ -72,7 +82,7 @@ namespace NeoCortexApi.Entities
             return synapse;
         }
 
-       
+
         /// <summary>
         /// Hashcode calculation.
         /// </summary>
@@ -115,18 +125,23 @@ namespace NeoCortexApi.Entities
         #region Serialization
         public virtual void Serialize(StreamWriter writer)
         {
-            HtmSerializer2 ser = new HtmSerializer2();
+            throw new NotImplementedException();
+            //HtmSerializer2 ser = new HtmSerializer2();
 
-            ser.SerializeBegin(nameof(HtmConfig), writer);
+            //ser.SerializeBegin(nameof(Segment), writer);
 
-            ser.SerializeValue(this.SegmentIndex, writer);
-            this.boxedIndex.Serialize(writer);
-            ser.SerializeValue(this.Synapses, writer);
-            ser.SerializeValue(this.SynapsePermConnected, writer);
-            ser.SerializeValue(this.NumInputs, writer);
+            //ser.SerializeValue(this.SegmentIndex, writer);
+            //this.boxedIndex.Serialize(writer);
+            //ser.SerializeValue(this.Synapses, writer);
+            //ser.SerializeValue(this.SynapsePermConnected, writer);
+            //ser.SerializeValue(this.NumInputs, writer);
 
-            ser.SerializeEnd(nameof(HtmConfig), writer);
+            //ser.SerializeEnd(nameof(Segment), writer);
         }
+
+     
+
+       
         #endregion
     }
 }

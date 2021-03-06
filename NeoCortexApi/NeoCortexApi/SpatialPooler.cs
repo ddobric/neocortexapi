@@ -1586,10 +1586,12 @@ namespace NeoCortexApi
             }
 
             ser.SerializeValue(this.MaxInibitionDensity, writer);
-
             ser.SerializeValue(this.Name, writer);
 
-            this.connections.Serialize(writer);
+            if (this.connections != null)
+            {
+                this.connections.Serialize(writer);
+            }
 
             ser.SerializeEnd(nameof(SpatialPooler), writer);
         }
