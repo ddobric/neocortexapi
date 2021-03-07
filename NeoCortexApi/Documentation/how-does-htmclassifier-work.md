@@ -90,4 +90,31 @@ and the second one
 
 The current implementation of the classifier peeks the first best matching one, which is in more complex sequences not a sufficient solution. As you see, the '14' was correcttly predicted. But '14' after '13' is a different context than '14' after '12'.
 
+### Next version of the classifier
 We are considering to improve the classifier to be able to detect more complex sequence.
+The classifier tracks the list of inputs during the learning process.
+
+Consider the following situation noted in the sample above. The classifier enters with the following cell SDR:
+
+“94, 11287, 12895, 13312, 13370, 24302, 24402, 24479, 24542, 24609, 24666, 24925, 25132, 25342, 25354, 25375, 25477, 25513, 25526, 25560“ and set of predictive cells:
+“530, 855, 1213, 1228, 1339, 1988, 2318, 2925, 13843, 14641, 14961, 15043, 15322, 24538, 24932, 25268”
+
+This corresponds to the input with index 23.
+
+indx 20 14-11-12-14-5-7-6-9-3-4-3-4-3-4-0-1-0-2-3-4-5-6-5-4-3-7-1-9-12-11-12-13/20 = similarity 0	 
+indx 21 11-12-14-5-7-6-9-3-4-3-4-3-4-0-1-0-2-3-4-5-6-5-4-3-7-1-9-12-11-12-13-14/20 = similarity 14	 
+indx:22	12-14-5-7-6-9-3-4-3-4-3-4-0-1-0-2-3-4-5-6-5-4-3-7-1-9-12-11-12-13-14-11/20 = similarity 0	 
+indx:*23*	14-5-7-6-9-3-4-3-4-3-4-0-1-0-2-3-4-5-6-5-4-3-7-1-9-12-11-12-13-14-11-12/20 = similarity 0	
+indx:24	5-7-6-9-3-4-3-4-3-4-0-1-0-2-3-4-5-6-5-4-3-7-1-9-12-11-12-13-14-11-12-14/20 = similarity 14
+
+
+The current implementation of the classifier traverses all SDRs and looks up for the most similar one. In this case, these are inputs with indexes 21 and 24 with the similarity of 14. That means the classifier is predicting two inputs at index 21 and 24. 
+
+Following changes are required:
+
+1.	The new version of the classifier should return the array of possible inputs.
+2.	The classifier should also look for the input and looks up the position of the classifier in the entire learning process.
+In this case, the position of the classifier is at index 23. With this information, the classifier knows that the next predicted input one must be at position 24.
+
+Note that the implementation of the classifier should not consider dealing with input values. We track internally input keys, but in real-world scenarios, we might not be able to track so many input values with any possible length of the key. We are considering removing keys in the given form in the future version of the classifier.
+
