@@ -101,6 +101,17 @@ namespace NeoCortexApi.Classifiers
             }
         }
 
+        public class ClassifierResult
+        {
+            public TIN PredictedInput { get; set; }
+            public float Similarity { get; set; }
+        }
+
+        public ICollection<ClassifierResult> GetPredictedInputValues(Cell[] predictiveCells)
+        {
+            return new List<ClassifierResult>() { new ClassifierResult { PredictedInput = default(TIN), Similarity = 0.0F } };
+        }
+
         /// <summary>
         /// Gets predicted value for next cycle
         /// </summary>
