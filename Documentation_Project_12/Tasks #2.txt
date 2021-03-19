@@ -1,0 +1,10 @@
+ ddobric commented on Sep 6, 2020
+
+TASKS
+
+1. Complete your existing experiments with plasticity activator and document results
+2. Play with Music Experiment. (Make a new one)
+3. Try to put Video in SP/TP (??) You can create an animation of 10 images (like smiley) and train HTM (SP+TM)
+Use SpatialPoolerTM()	
+4. Find a way how to group (association) elements of the sequence together on a temporal base.
+5. Create experiment for Power Consumption Learning. See PowerConsumptionExperiment.cs. It should run in the code of the MusicExperiment. Basically, create a new experiment from the MusicExperiment and change the way how to read the input.
