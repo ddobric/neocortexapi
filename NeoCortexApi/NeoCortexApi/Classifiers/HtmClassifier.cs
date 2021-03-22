@@ -101,6 +101,63 @@ namespace NeoCortexApi.Classifiers
             }
         }
 
+
+        /// <summary>
+        /// Gets predicted value for next cycle.
+        /// </summary>
+        /// <param name="predictiveCells">The list of predictive cells.</param>
+        /// <param name="howMany">How many predictive values should be returned.</param>
+        /// <returns>The sorted list of predicted inputs. The list is sorted by similarity.
+        /// The more similar is the predicted input, the hogher rank in the list.</returns>
+        public ICollection<TIN> GetPredictedInputValue(Cell[] predictiveCells, int howMany = 3)
+        {
+            var predictedInputs = new List<TIN>();
+
+            // bool x = false;
+            double maxSameBits = 0;
+            TIN predictedValue = default;
+
+            if (predictiveCells.Length != 0)
+            {
+                int indxOfMatchingInp = 0;
+                Debug.WriteLine($"Item length: {predictiveCells.Length}\t Items: {m_ActiveMap2.Keys.Count}");
+                int n = 0;
+
+                List<int> sortedMatches = new List<int>();
+
+                var celIndicies = GetCellIndicies(predictiveCells);
+
+                Debug.WriteLine($"Predictive cells: {celIndicies.Length} \t {Helpers.StringifyVector(celIndicies)}");
+
+                foreach (var pair in m_ActiveMap2)
+                {
+                    //if (pair.Value.SequenceEqual(celIndicies))
+                    //{
+                    //    Debug.WriteLine($">indx:{n}\tinp/len: {pair.Key}/{pair.Value.Length}\tsimilarity 100pct\t {Helpers.StringifyVector(pair.Value)}");
+                    //    return pair.Key;
+                    //}
+
+                    // Tried following:
+                    //double numOfSameBitsPct = (double)(((double)(pair.Value.Intersect(arr).Count()) / Math.Max(arr.Length, pair.Value.Count())));
+                    //double numOfSameBitsPct = (double)(((double)(pair.Value.Intersect(celIndicies).Count()) / (double)pair.Value.Length));// ;
+                    var numOfSameBitsPct = pair.Value.Intersect(celIndicies).Count();
+                    if (numOfSameBitsPct > maxSameBits)
+                    {
+                        Debug.WriteLine($">indx:{n}\tinp/len: {pair.Key}/{pair.Value.Length} = similarity {numOfSameBitsPct}\t {Helpers.StringifyVector(pair.Value)}");
+                        maxSameBits = numOfSameBitsPct;
+                        predictedValue = pair.Key;
+                        indxOfMatchingInp = n;
+                    }
+                    else
+                        Debug.WriteLine($"<indx:{n}\tinp/len: {pair.Key}/{pair.Value.Length} = similarity {numOfSameBitsPct}\t {Helpers.StringifyVector(pair.Value)}");
+
+                    n++;
+                }
+            }
+
+            return predictedInputs.Take(howMany).ToList();
+        }
+
         /// <summary>
         /// Gets predicted value for next cycle
         /// </summary>
