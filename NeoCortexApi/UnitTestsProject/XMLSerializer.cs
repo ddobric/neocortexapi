@@ -74,7 +74,7 @@ namespace UnitTestsProject
             wfile.Close();
 
             System.Xml.Serialization.XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(sp.GetType());
-            System.IO.StreamReader file = new System.IO.StreamReader(@"C:\Users\LONG\Desktop\SerializationOverview.xml");
+            System.IO.StreamReader file = new System.IO.StreamReader(path);
             SpatialPooler sp2 = (mySP)reader.Deserialize(file);
             file.Close();
         }
