@@ -142,7 +142,12 @@ namespace NeoCortexApi
             UpdateInhibitionRadius(c, avgSynapsesConnected);
         }
 
-
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <param name="c"></param>
+        /// <param name="inputVector"></param>
+        /// <returns></returns>
         public override int[] CalculateOverlap(Connections c, int[] inputVector)
         {
             ParallelOptions opts = new ParallelOptions
