@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>NeoCortexApi</PackageId>
-    <Version>1.0.16</Version>
+    <Version>1.1.0</Version>
     <Authors>Damir Dobric</Authors>
     <Company>daenet GmbH</Company>
     <Product>Hierarchical Temporal Framework in C#</Product>
@@ -20,7 +20,8 @@
 	<PackageIcon>NeoCortexAPI.png</PackageIcon>
 	  <IncludeSymbols>true</IncludeSymbols>
 	  <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-	  <PackageReleaseNotes>Bugfix in SpatialPooerMT.CalculateOverlap(). The sorting works now.</PackageReleaseNotes>
+	  <PackageReleaseNotes>Bugfix in SpatialPooerMT.CalculateOverlap().
+Bugix in PushToInterval</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
