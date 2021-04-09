@@ -112,9 +112,20 @@ The current implementation of the classifier traverses all SDRs and looks up for
 
 Following changes are required:
 
-1.	The new version of the classifier should return the array of possible inputs.
+1.	The new version of the classifier should return the array of possible inputs sorted by similarity.
 2.	The classifier should also look for the input and looks up the position of the classifier in the entire learning process.
 In this case, the position of the classifier is at index 23. With this information, the classifier knows that the next predicted input one must be at position 24.
 
 Note that the implementation of the classifier should not consider dealing with input values. We track internally input keys, but in real-world scenarios, we might not be able to track so many input values with any possible length of the key. We are considering removing keys in the given form in the future version of the classifier.
 
+#### Method signature
+
+~~~csharp
+        /// <summary>
+        /// Gets the list predicted inputs sorted by similarity.
+        /// </summary>
+        /// <param name="predictiveCells"></param>
+        /// <param name="howMany">Specifies how many predicted SDRs should be reurned.</param>
+        /// <returns></returns>
+        public ICollection<ClassifierResult> GetPredictedInputValues(Cell[] predictiveCells, short howMany);
+~~~
