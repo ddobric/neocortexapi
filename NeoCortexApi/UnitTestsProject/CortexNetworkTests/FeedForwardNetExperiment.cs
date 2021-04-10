@@ -17,7 +17,7 @@ namespace UnitTestsProject.CortexNetworkTests
 {
 
     /// <summary>
-    /// In Brain Layer 4 has feed forforward connection with Layer 2 in CortexLayer.
+    /// In the brain the Layer 4 has feed forforward connection with Layer 2 in CortexLayer.
     /// So, instead of using layer name L1 we give it as L4
     /// </summary>
     [TestClass]
@@ -34,7 +34,7 @@ namespace UnitTestsProject.CortexNetworkTests
             int numColumnsL4 = 1024;
 
             int cellsPerColumnL2 = 5;
-            int numColumnsL2 = 100;
+            int numColumnsL2 = 150;
 
             int inputBits = 100;
             double minOctOverlapCycles = 1.0;
@@ -48,7 +48,7 @@ namespace UnitTestsProject.CortexNetworkTests
                 GlobalInhibition = true,
                 LocalAreaDensity = -1,
                 NumActiveColumnsPerInhArea = 0.02 * numColumnsL4,
-                PotentialRadius = 50, // Ever column is connected to 50 of 100 input cells.
+                PotentialRadius = 50, // Every column is connected to 50 of 100 input cells.
                 InhibitionRadius = 15,
                 MaxBoost = maxBoost,
                 DutyCyclePeriod = 25,
@@ -71,8 +71,8 @@ namespace UnitTestsProject.CortexNetworkTests
                 CellsPerColumn = cellsPerColumnL2,
                 GlobalInhibition = true,
                 LocalAreaDensity = -1,
-                NumActiveColumnsPerInhArea = 0.5 * numColumnsL2,
-                PotentialRadius = 5000, // Every columns 
+                NumActiveColumnsPerInhArea = 0.21 * numColumnsL2,
+                PotentialRadius = inputsL2, // All columns
                 InhibitionRadius = 15,
                 MaxBoost = maxBoost,
                 DutyCyclePeriod = 25,
@@ -123,8 +123,8 @@ namespace UnitTestsProject.CortexNetworkTests
             tm4 = new TemporalMemoryMT();
             tm2 = new TemporalMemoryMT();
 
+            //
             // HPC for Layer 4 SP
-
             HomeostaticPlasticityController hpa_sp_L4 = new HomeostaticPlasticityController(memL4, numInputs * 50, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                 if (isStable)
@@ -136,8 +136,8 @@ namespace UnitTestsProject.CortexNetworkTests
             }, numOfCyclesToWaitOnChange: 50);
 
 
+            //
             // HPC for Layer 2 SP
-
             HomeostaticPlasticityController hpa_sp_L2 = new HomeostaticPlasticityController(memL2, numInputs * 50, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                 if (isStable)

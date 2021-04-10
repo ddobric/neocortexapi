@@ -28,7 +28,7 @@ namespace UnitTestsProject.CortexNetworkTests
     [TestClass]
 
     [TestCategory("Not Working")]
-    public class GoussianNoiseExperiment
+    public class GaussianNoiseExperiment
     {
         [TestMethod]
         public void RunGaussianNoiseExperiment()
@@ -46,7 +46,7 @@ namespace UnitTestsProject.CortexNetworkTests
             int number_training_set = 41; // Integer numbers range from -20 to 20 with step of 1.
             int number_testing_set = 401; // Decimal numbers range from -20 to 20 with step of 0.1.
 
-            string experimentFolder = nameof(GoussianNoiseExperiment);
+            string experimentFolder = nameof(GaussianNoiseExperiment);
            // string SP_noisyinFolder = nameof(GoussianNoiseExperiment);
             Directory.CreateDirectory(experimentFolder);
            // Directory.CreateDirectory(SP_noisyinFolder);
