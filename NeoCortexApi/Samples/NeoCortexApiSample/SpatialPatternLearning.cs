@@ -101,7 +101,7 @@ namespace NeoCortexApiSample
             // (defined by the second argument) the HPC is controlling the learning process of the SP.
             // Once the SDR generated for every input gets stable, the HPC will fire event that notifies your code
             // that SP is stable now.
-            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, inputValues.Count * 25,
+            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, inputValues.Count * 40,
                 (isStable, numPatterns, actColAvg, seenInputs) =>
                 {
                     // Event should only be fired when entering the stable state.

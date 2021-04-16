@@ -229,7 +229,7 @@ namespace UnitTestsProject
         [TestCategory("Experiment")]
         public void SpatialPooler_Stability_Experiment_2()
         {
-            double minOctOverlapCycles = 1.0;
+            double minOctOverlapCycles = 0.5;
             double maxBoost = 5.0;
             int inputBits = 100;
             int numColumns = 2048;
@@ -242,6 +242,7 @@ namespace UnitTestsProject
             p.Set(KEY.MAX_BOOST, maxBoost);
             p.Set(KEY.DUTY_CYCLE_PERIOD, 100);
             p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, minOctOverlapCycles);
+            p.Set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, minOctOverlapCycles);
 
             // Local inhibition
             // Stops the bumping of inactive columns.
@@ -428,7 +429,8 @@ namespace UnitTestsProject
         /// It learns SP and shows the convergence of SDR for the given input.
         /// In contrast to Experiment_1, the new feature called 'New Born' effect is activated.That means, SP is learning as usual, with activated column boosting.
         /// In contrast to Experiment2, this experiment uses newborn effect as built-in feature of SP. It uses the homeostatic plasticity activator.
-        /// /// </summary>
+        /// This experiment was used to produce results pubished in following paper: https://www.scitepress.org/Papers/2021/103142/
+        /// </summary>
         [TestMethod]
         [TestCategory("Experiment")]
         public void SpatialPooler_Stability_Experiment_3()
@@ -515,7 +517,7 @@ namespace UnitTestsProject
 
             bool isInStableState = false;
 
-            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, inputValues.Count * 15, (isStable, numPatterns, actColAvg, seenInputs) =>
+            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, inputValues.Count * 50, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                 Assert.IsTrue(numPatterns == inputValues.Count);
 
@@ -524,7 +526,7 @@ namespace UnitTestsProject
                 if (isStable == false)
                 {
                     isInStableState = false;
-                    Debug.WriteLine($"UNSTABLE!: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+                    Debug.WriteLine($"INSTABLE!: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
                 }
                 else
                 {
