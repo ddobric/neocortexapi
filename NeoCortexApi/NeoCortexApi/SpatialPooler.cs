@@ -42,7 +42,7 @@ namespace NeoCortexApi
 
         public double MaxInibitionDensity { get; set; } = 0.5;
 
-        public string Name { get; set; }
+        public string Name { get; set; } 
 
         /// <summary>
         /// Default constructor.

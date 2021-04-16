@@ -725,7 +725,7 @@ namespace UnitTestsProject
 
             }
             
-            Assert.IsTrue(synapse1.SourceCell.ReceptorSynapses.SequenceEqual(synapse.SourceCell.ReceptorSynapses));
+            Assert.IsTrue(synapse1.Equals(synapse));//Showing run time error---- maybe memory issue.
             //using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeSynapseTest)}.txt"))
             //{
             //    Synapse synapse1 = Synapse.Deserialize(sr);
