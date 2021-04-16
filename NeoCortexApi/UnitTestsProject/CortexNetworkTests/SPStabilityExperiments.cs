@@ -433,7 +433,8 @@ namespace UnitTestsProject
         [TestCategory("Experiment")]
         public void SpatialPooler_Stability_Experiment_3()
         {
-            double minOctOverlapCycles = 1.0;
+            double minPctOverlapCycles = 0.1;
+            double minPctActiveCycles = 0.1;
             double maxBoost = 5.0;
             int inputBits = 200;
             int numColumns = 2048;
@@ -445,7 +446,8 @@ namespace UnitTestsProject
 
             p.Set(KEY.MAX_BOOST, maxBoost);
             p.Set(KEY.DUTY_CYCLE_PERIOD, 100);
-            p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, minOctOverlapCycles);
+            p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, minPctOverlapCycles);
+            p.Set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, minPctActiveCycles);
 
             // Global inhibition
             // N of 40 (40= 0.02*2048 columns) active cells required to activate the segment.
@@ -486,7 +488,7 @@ namespace UnitTestsProject
                 inputValues.Add((double)i);
             }
 
-            RunSpStabilityExperiment3(maxBoost, minOctOverlapCycles, inputBits, p, encoder, inputValues);
+            RunSpStabilityExperiment3(maxBoost, minPctOverlapCycles, inputBits, p, encoder, inputValues);
         }
 
         private void RunSpStabilityExperiment3(double maxBoost, double minOverlapCycles, int inputBits, Parameters p, EncoderBase encoder, List<double> inputValues)
@@ -593,7 +595,7 @@ namespace UnitTestsProject
                                 var actCols = activeColumns.OrderBy(c => c).ToArray();
 
                                 //if(isInStableState)
-                                //    DrawBitmaps(encoder, input, activeColumns, 2048);
+                                //DrawBitmaps(encoder, input, activeColumns, 2048);
 
                                 Debug.WriteLine($" {cycle.ToString("D4")} SP-OUT: [{actCols.Length}/{MathHelpers.CalcArraySimilarity(prevActiveCols[input], actCols)}] - {Helpers.StringifyVector(actCols)}");
                                 sdrWriter.WriteLine($"{cycle.ToString("D4")} [{actCols.Length}/{MathHelpers.CalcArraySimilarity(prevActiveCols[input], actCols)}] - {Helpers.StringifyVector(actCols)}");
@@ -661,7 +663,7 @@ namespace UnitTestsProject
             arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray<int>(inputVector, (int)Math.Sqrt(inputVector.Length), (int)Math.Sqrt(inputVector.Length))));
 
             const int OutImgSize = 1024;
-            NeoCortexUtils.DrawBitmaps(arrays, $"Input_{input}.png", Color.Yellow, Color.Gray, OutImgSize, OutImgSize);
+            NeoCortexUtils.DrawBitmaps(arrays, $"Input_{input}.png", Color.LightGray, Color.Black, OutImgSize, OutImgSize);
         }
         #endregion
     }

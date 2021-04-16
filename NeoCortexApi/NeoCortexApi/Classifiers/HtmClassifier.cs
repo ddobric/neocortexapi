@@ -101,13 +101,31 @@ namespace NeoCortexApi.Classifiers
             }
         }
 
+
+        /// <summary>
+        /// Defines the predicting input.
+        /// </summary>
         public class ClassifierResult
         {
+            /// <summary>
+            /// The predicted input value.
+            /// </summary>
             public TIN PredictedInput { get; set; }
+
+            /// <summary>
+            /// The similarity between the SDR of  predicted cell set with the SDR of the input.
+            /// </summary>
             public float Similarity { get; set; }
         }
 
-        public ICollection<ClassifierResult> GetPredictedInputValues(Cell[] predictiveCells)
+
+        /// <summary>
+        /// Gets the list predicted inputs sorted by similarity.
+        /// </summary>
+        /// <param name="predictiveCells"></param>
+        /// <param name="howMany">Specifies how many predicted SDRs should be reurned.</param>
+        /// <returns></returns>
+        public ICollection<ClassifierResult> GetPredictedInputValues(Cell[] predictiveCells, short howMany)
         {
             return new List<ClassifierResult>() { new ClassifierResult { PredictedInput = default(TIN), Similarity = 0.0F } };
         }
