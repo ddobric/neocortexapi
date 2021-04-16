@@ -192,9 +192,9 @@ namespace NeoCortexApi.Entities
         public double MinPctOverlapDutyCycles { get; set; } = 0.001;
 
         /// <summary>
-        /// A number between 0 and 1.0, used to set a floor on  how often a column should be activate.
-        /// Periodically, each column looks at the activity duty  cycle of all other columns within its inhibition
-        /// radius and sets its own internal minimal acceptable  duty cycle to:<br/>
+        /// A number between 0 and 1.0, used to set a floor on how often a column should be activated.
+        /// Periodically, each column looks at the activity duty cycle of all other columns within its inhibition
+        /// radius and sets its own internal minimal acceptable duty cycle to:<br/>
         /// minPctDutyCycleAfterInh * max(other columns' duty cycles).<br/>
         /// On each iteration, any column whose duty cycle after inhibition falls below this computed value will get
         /// its internal boost factor increased.
@@ -207,7 +207,7 @@ namespace NeoCortexApi.Entities
         public double PredictedSegmentDecrement { get; set; } = 0.0;
 
         /// <summary>
-        /// he period used to calculate duty cycles. Higher values make it take longer to respond to changes in
+        /// The period used to calculate duty cycles. Higher values make it take longer to respond to changes in
         /// boost or synPerConnectedCell. Shorter values make it more unstable and likely to oscillate.
         /// </summary>
         public int DutyCyclePeriod { get; set; } = 1000;
