@@ -78,7 +78,8 @@ namespace UnitTestsProject
             int[] arr1 = new int[] { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 };
             int[] arr2 = new int[] { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 };
 
-            var res = HomeostaticPlasticityController.Correlate(arr1, arr2);
+            var res = HomeostaticPlasticityController.CalcArraySimilarity(ArrayUtils.IndexWhere(arr1, i => i == 1), ArrayUtils.IndexWhere(arr2, i => i == 1));
+
 
             Assert.IsTrue(res == 1.0);
         }
@@ -89,9 +90,9 @@ namespace UnitTestsProject
             int[] arr1 = new int[] { 0, 1, 0, 1, 0, 1, 0, 0, 0, 1 };
             int[] arr2 = new int[] { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 };
 
-            var res = HomeostaticPlasticityController.Correlate(arr1, arr2);
+            var res = HomeostaticPlasticityController.CalcArraySimilarity(ArrayUtils.IndexWhere(arr1, i=>i == 1), ArrayUtils.IndexWhere(arr2, i => i == 1));
 
-            Assert.IsTrue(res == 0.9);
+            Assert.IsTrue(res == 0.8);
         }
 
         [TestMethod]
@@ -100,21 +101,20 @@ namespace UnitTestsProject
             int[] arr1 = new int[] { 0, 1, 0, 1, 0, 1, 0, 0, 0 };
             int[] arr2 = new int[] { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 };
 
-            var res = HomeostaticPlasticityController.Correlate(arr1, arr2);
+            var res = HomeostaticPlasticityController.CalcArraySimilarity(ArrayUtils.IndexWhere(arr1, i => i == 1), ArrayUtils.IndexWhere(arr2, i => i == 1));
 
-            Assert.IsTrue(res == 0.8);
+            Assert.IsTrue(res == 0.6);
         }
 
         [TestMethod]
         public void TestCorrelation4()
-        {
-           
+        {           
             int[] arr1 = new int[] { 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0 };
             int[] arr2 = new int[] { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 };
 
-            var res = HomeostaticPlasticityController.Correlate(arr1, arr2);
+            var res = HomeostaticPlasticityController.CalcArraySimilarity(ArrayUtils.IndexWhere(arr1, i => i == 1), ArrayUtils.IndexWhere(arr2, i => i == 1));
 
-            Assert.IsTrue(res == 0.75);
+            Assert.IsTrue(res == 0.8);
         }
     }
 }

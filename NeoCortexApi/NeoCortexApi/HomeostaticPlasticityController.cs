@@ -20,6 +20,8 @@ namespace NeoCortexApi
     /// </summary>
     public class HomeostaticPlasticityController
     {
+        private double m_RequiredSimilarityThreshold ;
+
         private int m_MaxPreviousElements = 5;
 
         private Connections m_HtmMemory;
@@ -87,12 +89,15 @@ namespace NeoCortexApi
         /// <param name="onStabilityStatusChanged">Action invoked when the SP status is changed from stable t unstable and vise versa.</param>
         /// <param name="numOfCyclesToWaitOnChange">How many cycles all seen patterns must not change to declare SP as stable. Using smaller numbers might cause frequent status change.
         /// Higher numbers ensure more stable SP, but it takes longer time to enter the stable stabe.</param>
-        public HomeostaticPlasticityController(Connections htmMemory, int minCycles, Action<bool, int, double, int> onStabilityStatusChanged, int numOfCyclesToWaitOnChange = 50)
+        /// <param name="requiredSimilarityThreshold">The similarity between last and current SDR of the single pattern that must be reached to declare the SRR
+        /// these two SDRs same.</param>
+        public HomeostaticPlasticityController(Connections htmMemory, int minCycles, Action<bool, int, double, int> onStabilityStatusChanged, int numOfCyclesToWaitOnChange = 50, double requiredSimilarityThreshold = 0.97)
         {
             this.m_OnStabilityStatusChanged = onStabilityStatusChanged;
             this.m_HtmMemory = htmMemory;
             this.m_MinCycles = minCycles;
             this.m_RequiredNumOfStableCycles = numOfCyclesToWaitOnChange;
+            this.m_RequiredSimilarityThreshold = requiredSimilarityThreshold;
         }
 
         /// <summary>
@@ -128,10 +133,8 @@ namespace NeoCortexApi
             {
                 if (m_Cycle >= this.m_MinCycles)
                 {
-                    //this.htmMemory.setMaxBoost(0.0);
                     this.m_HtmMemory.HtmConfig.MaxBoost = 0.0;
 
-                    //this.htmMemory.updateMinPctOverlapDutyCycles(0.0);
                     this.m_HtmMemory.HtmConfig.MinPctOverlapDutyCycles = 0.0;
 
                     this.m_HtmMemory.HtmConfig.MinPctActiveDutyCycles = 0.0;
@@ -139,7 +142,7 @@ namespace NeoCortexApi
 
                 // If the input has been already seen, we calculate the similarity between already seen input
                 // and the new input. The similarity is calculated as a correlation function.
-                var similarity = Correlate(ArrayUtils.IndexWhere(m_InOutMap[inpHash], k => k == 1), ArrayUtils.IndexWhere(output, k => k == 1));
+                var similarity = CalcArraySimilarity(ArrayUtils.IndexWhere(m_InOutMap[inpHash], k => k == 1), ArrayUtils.IndexWhere(output, k => k == 1));
 
                 // We replace the existing value with the new one.
                 m_InOutMap[inpHash] = output;
@@ -148,7 +151,7 @@ namespace NeoCortexApi
                 // We cannot expect the 100% for the entire learning cycle. Sometimes some
                 // SDR appear with few more or less bits than in the previous cycle.
                 // If this happen we take the new SDR (output) as the winner and put it in the map.
-                if (similarity > 0.96)
+                if (similarity > m_RequiredSimilarityThreshold)
                 {
                     // We calculate here the average change of the SDR for the given input.
                     avgDerivation = ArrayUtils.AvgDelta(m_NumOfActiveColsForInput[inpHash]);
@@ -216,7 +219,7 @@ namespace NeoCortexApi
         /// <param name="data1"></param>
         /// <param name="data2"></param>
         /// <returns>Similarity of two arrays.</returns>
-        public static double Correlate(int[] data1, int[] data2)
+        public static double CalcArraySimilarityOld2(int[] data1, int[] data2)
         {
             double min = Math.Min(data1.Length, data2.Length);
             double max = Math.Max(data1.Length, data2.Length);
@@ -230,6 +233,34 @@ namespace NeoCortexApi
             }
 
             return sum / max;
+        }
+
+
+        /// <summary>
+        /// Calculates how many elements of the array are same in percents. This method is useful to compare 
+        /// two arays that contains indicies of active columns.
+        /// </summary>
+        /// <param name="originArray">Indexes of non-zero bits in the SDR.</param>
+        /// <param name="comparingArray">Indexes of non-zero bits in the SDR.</param>
+        /// <returns>Similarity between arrays 0.0-1.0</returns>
+        public static double CalcArraySimilarity(int[] originArray, int[] comparingArray)
+        {
+            if (originArray.Length > 0 && comparingArray.Length > 0)
+            {
+                int cnt = 0;
+
+                foreach (var item in comparingArray)
+                {
+                    if (originArray.Contains(item))
+                        cnt++;
+                }
+
+                return ((double)cnt / (double)Math.Max(originArray.Length, comparingArray.Length)) ;
+            }
+            else
+            {
+                return -1.0;
+            }
         }
 
         /// <summary>
@@ -285,6 +316,21 @@ namespace NeoCortexApi
                     //cellStateSw.WriteLine($"{res} \t {keyStr}");
                     cellStateSw.WriteLine(str);
                 }
+
+                var min = int.MaxValue;
+                var minKey = String.Empty;
+
+                foreach (var item in this.m_NumOfStableCyclesForInput)
+                {
+                    if (item.Value < min)
+                    {
+                        min = item.Value;
+                        minKey = item.Key;
+                    }
+                }
+
+                Debug.WriteLine($"MinKey={minKey}, min stable states={min}");
+                cellStateSw.WriteLine($"MinKey={minKey}, min stable states={min}");
             }
         }
 
