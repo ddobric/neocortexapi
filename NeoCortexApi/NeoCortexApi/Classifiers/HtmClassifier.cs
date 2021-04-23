@@ -113,6 +113,11 @@ namespace NeoCortexApi.Classifiers
             public TIN PredictedInput { get; set; }
 
             /// <summary>
+            /// Number of identical non-zero bits in the SDR.
+            /// </summary>
+            public int NumOfSameBits { get; set; }
+
+            /// <summary>
             /// The similarity between the SDR of  predicted cell set with the SDR of the input.
             /// </summary>
             public float Similarity { get; set; }

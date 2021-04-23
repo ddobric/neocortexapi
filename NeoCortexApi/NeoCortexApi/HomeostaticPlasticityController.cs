@@ -20,6 +20,8 @@ namespace NeoCortexApi
     /// </summary>
     public class HomeostaticPlasticityController
     {
+        private double m_RequiredSimilarityThreshold ;
+
         private int m_MaxPreviousElements = 5;
 
         private Connections m_HtmMemory;
@@ -87,12 +89,15 @@ namespace NeoCortexApi
         /// <param name="onStabilityStatusChanged">Action invoked when the SP status is changed from stable t unstable and vise versa.</param>
         /// <param name="numOfCyclesToWaitOnChange">How many cycles all seen patterns must not change to declare SP as stable. Using smaller numbers might cause frequent status change.
         /// Higher numbers ensure more stable SP, but it takes longer time to enter the stable stabe.</param>
-        public HomeostaticPlasticityController(Connections htmMemory, int minCycles, Action<bool, int, double, int> onStabilityStatusChanged, int numOfCyclesToWaitOnChange = 50)
+        /// <param name="requiredSimilarityThreshold">The similarity between last and current SDR of the single pattern that must be reached to declare the SRR
+        /// these two SDRs same.</param>
+        public HomeostaticPlasticityController(Connections htmMemory, int minCycles, Action<bool, int, double, int> onStabilityStatusChanged, int numOfCyclesToWaitOnChange = 50, double requiredSimilarityThreshold = 0.97)
         {
             this.m_OnStabilityStatusChanged = onStabilityStatusChanged;
             this.m_HtmMemory = htmMemory;
             this.m_MinCycles = minCycles;
             this.m_RequiredNumOfStableCycles = numOfCyclesToWaitOnChange;
+            this.m_RequiredSimilarityThreshold = requiredSimilarityThreshold;
         }
 
         /// <summary>
@@ -146,7 +151,7 @@ namespace NeoCortexApi
                 // We cannot expect the 100% for the entire learning cycle. Sometimes some
                 // SDR appear with few more or less bits than in the previous cycle.
                 // If this happen we take the new SDR (output) as the winner and put it in the map.
-                if (similarity > 0.99)
+                if (similarity > m_RequiredSimilarityThreshold)
                 {
                     // We calculate here the average change of the SDR for the given input.
                     avgDerivation = ArrayUtils.AvgDelta(m_NumOfActiveColsForInput[inpHash]);
