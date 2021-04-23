@@ -202,7 +202,6 @@ namespace NeoCortexApi.Entities
             {
                 // We are serializeing the index of the cell only to avoid circular references during serialization.
                 ser.SerializeValue(this.ParentCell.Index, writer);
-                //this.ParentCell.Serialize(writer);
             }
             ser.SerializeValue(this.m_LastUsedIteration, writer);
             ser.SerializeValue(this.m_Ordinal, writer);
@@ -307,8 +306,35 @@ namespace NeoCortexApi.Entities
             return distal;
 
         }
+        public void SerializeT(StreamWriter writer)
+        {
+            HtmSerializer2 ser = new HtmSerializer2();
 
-   
+            ser.SerializeBegin(nameof(DistalDendrite), writer);
+
+            if (this.boxedIndex != null)
+            {
+                this.boxedIndex.Serialize(writer);
+            }
+
+            if (this.ParentCell != null)
+            {
+                this.ParentCell.SerializeT(writer);
+            }
+            ser.SerializeValue(this.m_LastUsedIteration, writer);
+            ser.SerializeValue(this.m_Ordinal, writer);
+            ser.SerializeValue(this.LastUsedIteration, writer);
+            ser.SerializeValue(this.Ordinal, writer);
+            ser.SerializeValue(this.SegmentIndex, writer);
+            ser.SerializeValue(this.SynapsePermConnected, writer);
+            ser.SerializeValue(this.NumInputs, writer);
+
+            if (this.Synapses != null && this.Synapses.Count > 0)
+                ser.SerializeValue(this.Synapses, writer);
+
+            ser.SerializeEnd(nameof(DistalDendrite), writer);
+        }
+
 
         #endregion
 

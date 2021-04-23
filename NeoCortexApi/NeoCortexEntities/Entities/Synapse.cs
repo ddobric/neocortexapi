@@ -399,55 +399,30 @@ namespace NeoCortexApi.Entities
             return synapse;
 
         }
-        //public void Serialize(StreamWriter writer)
-        //{
-        //    HtmSerializer2 ser = new HtmSerializer2();
 
-        //    ser.SerializeBegin(nameof(Synapse), writer);
+        //Serialize method for circular reference
+        public void SerializeT(StreamWriter writer)
+        {
+            HtmSerializer2 ser = new HtmSerializer2();
 
-        //    if (this.BoxedIndex != null)
-        //    {
-        //        this.BoxedIndex.Serialize(writer);
-        //    }
-        //    if (this.SourceCell != null)
-        //    {
-        //        // We are serializeing the index only to avoid circular references.
-        //        //ser.SerializeValue(this.SourceCell.Index, writer);
-        //        this.SourceCell.Serialize(writer);
-        //    }
-        //    ser.SerializeValue(this.SegmentIndex, writer);
-        //    ser.SerializeValue(this.SynapseIndex, writer);
-        //    ser.SerializeValue(this.InputIndex, writer);
-        //    ser.SerializeValue(this.Permanence, writer);
-        //    ser.SerializeValue(this.IsDestroyed, writer);
+            ser.SerializeBegin(nameof(Synapse), writer);
 
-        //    ser.SerializeEnd(nameof(Synapse), writer);
-        //}
+            if (this.BoxedIndex != null)
+            {
+                this.BoxedIndex.Serialize(writer);
+            }
+            if (this.SourceCell != null)
+            {
+                this.SourceCell.SerializeT(writer);
+            }
+            ser.SerializeValue(this.SegmentIndex, writer);
+            ser.SerializeValue(this.SynapseIndex, writer);
+            ser.SerializeValue(this.InputIndex, writer);
+            ser.SerializeValue(this.Permanence, writer);
+            ser.SerializeValue(this.IsDestroyed, writer);
 
-        //public void SerializeList(StreamWriter writer)
-        //{
-        //    HtmSerializer2 ser = new HtmSerializer2();
-
-        //    ser.SerializeBegin(nameof(Synapse), writer);
-
-        //    if (this.BoxedIndex != null)
-        //    {
-        //        this.BoxedIndex.Serialize(writer);
-        //    }
-        //    if (this.SourceCell != null)
-        //    {
-        //        // We are serializeing the index only to avoid circular references.
-        //        ser.SerializeValue(this.SourceCell.Index, writer);
-        //        //this.SourceCell.Serialize(writer);
-        //    }
-        //    ser.SerializeValue(this.SegmentIndex, writer);
-        //    ser.SerializeValue(this.SynapseIndex, writer);
-        //    ser.SerializeValue(this.InputIndex, writer);
-        //    ser.SerializeValue(this.Permanence, writer);
-        //    ser.SerializeValue(this.IsDestroyed, writer);
-
-        //    ser.SerializeEnd(nameof(Synapse), writer);
-        //}
+            ser.SerializeEnd(nameof(Synapse), writer);
+        }
 
         //public static Synapse Deserialize(StreamReader sr)
         //{

@@ -238,10 +238,13 @@ namespace NeoCortexApi.Entities
         public void SerializeValue(int[] val, StreamWriter sw)
         {
             sw.Write(ValueDelimiter);
-            foreach (int i in val)
+            if (val != null)
             {
-                sw.Write(i.ToString());
-                sw.Write(ElementsDelimiter);
+                foreach (int i in val)
+                {
+                    sw.Write(i.ToString());
+                    sw.Write(ElementsDelimiter);
+                }
             }
             sw.Write(ParameterDelimiter);
 
@@ -403,7 +406,7 @@ namespace NeoCortexApi.Entities
             {
                 foreach (DistalDendrite val in value)
                 {
-                    val.Serialize(sw);
+                    val.SerializeT(sw);
                     sw.Write(ElementsDelimiter);
                 }
             }
@@ -413,23 +416,19 @@ namespace NeoCortexApi.Entities
         ///// <summary>
         ///// Serialize the List of Synapse.
         ///// </summary>
-        //public void SerializeValue(List<Synapse> value, StreamWriter sw)
-        //{
-        //    sw.Write(ValueDelimiter);
-        //    if (value != null)
-        //    {
-        //        foreach (Synapse val in value)
-        //        {
-        //            if (!File.Exists($"Users / mouni.kolisetty / neocortexapi / NeoCortexApi / UnitTestsProject / bin / Debug / net5.0 / ser_SerializeSynapseTest_{val.SynapseIndex}"))
-        //            {
-        //                using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeSynapseTest)}_"))
-        //                    val.Serialize(sw);
-        //            }
-        //            sw.Write(ElementsDelimiter);
-        //        }
-        //    }
-        //    sw.Write(ParameterDelimiter);
-        //}
+        public void SerializeValue(List<Synapse> value, StreamWriter sw)
+        {
+            sw.Write(ValueDelimiter);
+            if (value != null)
+            {
+                foreach (Synapse val in value)
+                {
+                    val.SerializeT(sw);
+                    sw.Write(ElementsDelimiter);
+                }
+            }
+            sw.Write(ParameterDelimiter);
+        }
 
         /// <summary>
         /// Serialize the List of Integers.
@@ -442,11 +441,27 @@ namespace NeoCortexApi.Entities
                 foreach (int val in value)
                 {
                     sw.Write(val.ToString());
-                    sw.Write(ValueDelimiter);
+                    sw.Write(ElementsDelimiter);
                 }
             }
             sw.Write(ParameterDelimiter);
         }
+        /// <summary>
+        /// Read the List of Integers.
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <returns>List<int></returns>
+        public List<int> ReadListInt(String reader)
+        {
+            string[] str = reader.Split(ElementsDelimiter);
+            List<int> keyValues = new List<int>();
+            for (int i = 0; i < str.Length - 1; i++)
+            {
+                keyValues.Add(Convert.ToInt32(str[i].Trim()));
+            }
+            return keyValues;
+        }
+
         /// <summary>
         /// Serialize the Dictionary<Segment, List<Synapse>>.
         /// </summary>
@@ -489,9 +504,43 @@ namespace NeoCortexApi.Entities
             }
             sw.Write(ParameterDelimiter);
         }
-        
-        
-        
+
+        /// <summary>
+        /// Serialize the dictionary with key:int and value:Synapse.
+        /// </summary>
+        /// <param name="keyValues"></param>
+        /// <param name="sw"></param>
+        public void SerializeValue(Dictionary<int, Synapse> keyValues, StreamWriter sw)
+        {
+            sw.WriteLine();
+            sw.Write(ValueDelimiter);
+            foreach (KeyValuePair<int, Synapse> i in keyValues)
+            {
+                sw.Write(i.Key.ToString() + KeyValueDelimiter);
+                i.Value.Serialize(sw);
+                sw.Write(ElementsDelimiter);
+            }
+            sw.Write(ParameterDelimiter);
+        }
+        ///// <summary>
+        ///// Read the dictionary with key:int and value:Synapse.
+        ///// </summary>
+        ///// <param name="reader"></param>
+        ///// <returns>Dictionary<int, Synapse></returns>
+        //public Dictionary<int, Synapse> ReadDictionaryISValue(string reader)
+        //{
+        //    string[] str = reader.Split(ElementsDelimiter);
+        //    Dictionary<int, Synapse> keyValues = new Dictionary<int, Synapse>();
+        //    for (int i = 0; i < str.Length - 1; i++)
+        //    {
+        //        string[] tokens = str[i].Split(KeyValueDelimiter);
+        //        keyValues.Add(Convert.ToInt32(tokens[0].Trim()), tokens[1].);
+        //    }
+        //    return keyValues;
+        //}
+
+
+
     }
 
 }

@@ -475,7 +475,7 @@ namespace NeoCortexApi.Entities
 
             ser.SerializeValue(AbstractSparseBinaryMatrix.serialVersionUID, writer);
             ser.SerializeValue(this.trueCounts, writer);
-
+            
             ser.SerializeEnd(nameof(AbstractSparseBinaryMatrix), writer);
         }
         #endregion

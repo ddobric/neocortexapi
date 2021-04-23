@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace NeoCortexApi.Entities
@@ -126,5 +127,21 @@ namespace NeoCortexApi.Entities
             return this.RFPool.GetSparsePotential();
             //return c.getPotentialPools().get(index).getSparsePotential();
         }
+        #region Serialization
+        public override void Serialize(StreamWriter writer)
+        {
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            ser.SerializeBegin(nameof(SegmentActivity), writer);
+
+            if (this.RFPool != null)
+            {
+                this.RFPool.Serialize(writer);
+            }
+
+            ser.SerializeEnd(nameof(SegmentActivity), writer);
+        }
+
+        #endregion
     }
 }

@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
-
+using System.IO;
 
 namespace NeoCortexApi.Entities
 {
@@ -39,6 +39,14 @@ namespace NeoCortexApi.Entities
         /// Indexed according to the source Input Vector Bit (for ProximalDendrites), and source cell (for DistalDendrites).
         /// </summary>
         public Dictionary<int, Synapse> m_SynapsesBySourceIndex { get; set; }  = new Dictionary<int, Synapse>();
+
+        /// <summary>
+        /// Default constructor used by deserializer.
+        /// </summary>
+        public Pool()
+        {
+
+        }
 
         /// <summary>
         /// 
@@ -294,5 +302,71 @@ namespace NeoCortexApi.Entities
         {
             return $"Conns={this.m_SynapseConnections.Count} - ConnsBySrc= {this.m_SynapsesBySourceIndex.Count}";
         }
+
+        #region Serialization
+        public void Serialize(StreamWriter writer)
+        {
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            ser.SerializeBegin(nameof(Pool), writer);
+
+            ser.SerializeValue(this.Size, writer);
+            ser.SerializeValue(this.NumInputs, writer);
+            ser.SerializeValue(this.m_SynapseConnections, writer);
+            ser.SerializeValue(this.m_SynapsesBySourceIndex, writer);
+
+            ser.SerializeEnd(nameof(Pool), writer);
+
+        }
+
+        public static Pool Deserialize(StreamReader sr)
+        {
+            Pool pool = new Pool();
+
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            while (sr.Peek() >= 0)
+            {
+                string data = sr.ReadLine();
+                if (data == String.Empty || data == ser.ReadBegin(nameof(Pool)))
+                {
+                    continue;
+                }
+                else if (data == ser.ReadEnd(nameof(Pool)))
+                {
+                    break;
+                }
+                else
+                {
+                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                    for (int i = 0; i < str.Length; i++)
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                {
+                                    pool.Size = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    pool.NumInputs = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    pool.m_SynapseConnections = ser.ReadListInt(str[i]);
+                                    break;
+                                }
+                            default:
+                                { break; }
+
+                        }
+                    }
+                }
+            }
+            return pool;
+        }
+        #endregion
     }
 }
