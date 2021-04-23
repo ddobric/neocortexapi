@@ -74,13 +74,13 @@ namespace NeoCortexApi.Entities
         /// Creates the synapse on the distal segment, which connect cells during temporal learning process.
         /// </summary>
         /// <param name="presynapticCell">The cell which connects to the segment.</param>
-        /// <param name="segmentIndex">The index of the segment.</param>
+        /// <param name="distalSegmentIndex">The index of the segment.</param>
         /// <param name="synapseIndex">The index of the synapse.</param>
         /// <param name="permanence">The permanmence value.</param>
-        public Synapse(Cell presynapticCell, int segmentIndex, int synapseIndex, double permanence)
+        public Synapse(Cell presynapticCell, int distalSegmentIndex, int synapseIndex, double permanence)
         {
             this.SourceCell = presynapticCell;
-            this.SegmentIndex = segmentIndex;
+            this.SegmentIndex = distalSegmentIndex;
             this.SynapseIndex = synapseIndex;
             this.BoxedIndex = new Integer(synapseIndex);
             this.InputIndex = presynapticCell.Index;

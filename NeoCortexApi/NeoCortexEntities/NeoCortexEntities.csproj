@@ -6,6 +6,12 @@
     <RootNamespace>NeoCortexApi</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>UnitTestsProject</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+  
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;USE_AKKA</DefineConstants>
     <DocumentationFile>C:\dev\NeoCortexAPI\neocortexapi\NeoCortexApi\NeoCortexEntities\NeoCortexEntities.xml</DocumentationFile>

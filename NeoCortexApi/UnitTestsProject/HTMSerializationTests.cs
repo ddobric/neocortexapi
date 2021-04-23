@@ -569,21 +569,29 @@ namespace UnitTestsProject
         [TestMethod]
         [TestCategory("Serialization")]
         [DataRow(13, 87, 22.45)]
-        public void SerializeSynapse(int segmentindex, int synapseindex, double permanence)
+        public void SerializeSynapseTest(int segmentindex, int synapseindex, double permanence)
         {
+            
             Cell cell = new Cell(12, 14, 16, 18, new CellActivity());
-            cell.DistalDendrites = new List<DistalDendrite>();
-            cell.DistalDendrites.Add(new DistalDendrite(cell, 1, 2, 2, 1.0, 100));
-            cell.DistalDendrites.Add(new DistalDendrite(cell, 44, 24, 34, 1.0, 100));
-            cell.ReceptorSynapses = new List<Synapse>();
-            cell.ReceptorSynapses.Add(new Synapse(cell, 1, 23, 1.0));
-            cell.ReceptorSynapses.Add(new Synapse(cell, 3, 27, 1.0));
-            Synapse synapse = new Synapse(cell, segmentindex, synapseindex, permanence);
-            //Synapse synapse1 = null;
+            
+            var distSeg1 = new DistalDendrite(cell, 1, 2, 2, 1.0, 100);
+            cell.DistalDendrites.Add(distSeg1);
 
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeSynapse)}.txt"))
+            var distSeg2 = new DistalDendrite(cell, 44, 24, 34, 1.0, 100);
+            cell.DistalDendrites.Add(distSeg2);
+
+            Cell preSynapticcell = new Cell(11, 14, 16, 18, new CellActivity());
+            var synapse1 = new Synapse(cell, distSeg1.SegmentIndex, 23, 1.0);
+            preSynapticcell.ReceptorSynapses.Add(synapse1);
+
+            var synapse2 = new Synapse(cell, distSeg2.SegmentIndex, 27, 1.0);
+            preSynapticcell.ReceptorSynapses.Add(synapse2);
+          
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeSynapseTest)}.txt"))
             {
-                synapse.SerializeT(sw);
+                synapse1.SerializeT(sw);
+
+                synapse2.SerializeT(sw);
             }
 
             //Unable to deserialize as serialization has circular reference.
@@ -598,7 +606,7 @@ namespace UnitTestsProject
         //[DataRow(13, 87, 22.45)]
         //[DataRow(1000, 3400, 4573.623)]
 
-        public void SerializeSynapseTest(int segmentindex, int synapseindex, double permanence)
+        public void SerializeSynapseTestObsolete(int segmentindex, int synapseindex, double permanence)
         {
             Cell cell = new Cell(12, 14, 16, 18, new CellActivity());
             //Cell cell = new Cell();

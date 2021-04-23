@@ -306,7 +306,12 @@ namespace NeoCortexApi.Entities
             return distal;
 
         }
-        public void SerializeT(StreamWriter writer)
+
+        /// <summary>
+        /// Only cell Serialize method should invoke this method!
+        /// </summary>
+        /// <param name="writer"></param>
+        internal void SerializeT(StreamWriter writer)
         {
             HtmSerializer2 ser = new HtmSerializer2();
 
@@ -317,10 +322,11 @@ namespace NeoCortexApi.Entities
                 this.boxedIndex.Serialize(writer);
             }
 
-            if (this.ParentCell != null)
-            {
-                this.ParentCell.SerializeT(writer);
-            }
+            // If we use this, we will get a cirular serialization.
+            //if (this.ParentCell != null)
+            //{
+            //    this.ParentCell.SerializeT(writer);
+            //}
             ser.SerializeValue(this.m_LastUsedIteration, writer);
             ser.SerializeValue(this.m_Ordinal, writer);
             ser.SerializeValue(this.LastUsedIteration, writer);

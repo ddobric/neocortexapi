@@ -399,12 +399,12 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Serialize the List of DistalDendrite.
         /// </summary>
-        public void SerializeValue(List<DistalDendrite> value, StreamWriter sw)
+        public void SerializeValue(List<DistalDendrite> distSegments, StreamWriter sw)
         {
             sw.Write(ValueDelimiter);
-            if (value != null)
+            if (distSegments != null)
             {
-                foreach (DistalDendrite val in value)
+                foreach (DistalDendrite val in distSegments)
                 {
                     val.SerializeT(sw);
                     sw.Write(ElementsDelimiter);
