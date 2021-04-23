@@ -142,7 +142,12 @@ namespace NeoCortexApi
             UpdateInhibitionRadius(c, avgSynapsesConnected);
         }
 
-
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <param name="c"></param>
+        /// <param name="inputVector"></param>
+        /// <returns></returns>
         public override int[] CalculateOverlap(Connections c, int[] inputVector)
         {
             ParallelOptions opts = new ParallelOptions
@@ -157,8 +162,11 @@ namespace NeoCortexApi
                 overlaps.TryAdd(col, res);
             });
 
-          
-            return overlaps.Values.ToArray();
+            // We assign the overlaps to SortedDictionary which will order the overlap dictionary based on the keys.
+            // then, finally convert sortedOverlap to array
+            SortedDictionary<int, int> sortedOverlap = new SortedDictionary<int, int>(overlaps);
+
+            return sortedOverlap.Values.ToArray();
         }
 
         public override void AdaptSynapses(Connections c, int[] inputVector, int[] activeColumns)

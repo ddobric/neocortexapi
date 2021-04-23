@@ -79,7 +79,7 @@ The Thousand Brains Theory of Intelligence is a new and rising approach to under
 
 [Download student paper here](./Experiments/ML-19-20_20-5.12_SpatialPooler_NoiseRobustness.pdf)
 
-[Check out implementation here](../../NeoCortexApi/UnitTestsProject/CortexNetworkTests\GoussianNoiseExperiment.cs)
+[Check out implementation here](../../NeoCortexApi/UnitTestsProject/CortexNetworkTests\GaussianNoiseExperiment.cs)
 
 ## Validate Memorizing capabilities of SpatialPooler
 
@@ -210,7 +210,7 @@ mechanism. Previous findings in neurosciences show that this mechanism is only a
 development of new-born mammals and later deactivated or shifted from cortical layer L4, where the SP is
 supposed to be active. The same mechanism was used in this work. The SP algorithm was extended with the
 new homeostatic plasticity component that controls the boosting and deactivates it after entering the stable
-state. Results show that learned SDRs remain stable during the lifetime of the Spatial Pooler. 
+state. Results show that learned SDRs remain stable during the lifetime of the Spatial Pooler.
 
 [Download Paper](https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/Experiments/ICPRAM_2021_76_CR.pdf)
 

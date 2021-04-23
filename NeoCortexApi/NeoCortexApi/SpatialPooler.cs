@@ -749,7 +749,7 @@ namespace NeoCortexApi
 
         /// <summary>
         /// This method increases the permanence values of synapses of columns whose 
-        /// activity level has been too low. Such columns are identified by having an 
+        /// overlap level has been too low. Such columns are identified by having an 
         /// overlap duty cycle that drops too much below those of their peers. The 
         /// permanence values for such columns are increased. 
         /// </summary>
@@ -1385,7 +1385,7 @@ namespace NeoCortexApi
                 boostInterim = ArrayUtils.AddAmount(boostInterim, c.HtmConfig.MaxBoost);
             }
 
-            // Filtered indexes are indexes of columns whose activeDutyCycles is larger than calculated minActiveDutyCycles of thet column.
+            // Filtered indexes are indexes of columns whose activeDutyCycles is larger than calculated minActiveDutyCycles of the column.
             List<int> idxOfActiveColumns = new List<int>();
 
             for (int i = 0; i < activeDutyCycles.Length; i++)

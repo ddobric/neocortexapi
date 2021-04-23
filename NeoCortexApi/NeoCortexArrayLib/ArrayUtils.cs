@@ -1885,16 +1885,18 @@ namespace NeoCortexApi.Utility
         {
             //
             // Shift all elements.
-            for (int i = 0; i < maxNumOfElements - 1; i++)
+            for (int i = maxNumOfElements - 1; i > 0; i--)
             {
                 //Shift the element to the next position.
-                list[i + 1] = list[i];
+                list[i] = list[i - 1];
             }
 
             list[0] = newElement;
 
             return list;
         }
+
+
 
         /// <summary>
         /// Calculates the average delta over the list. 1/N * (x2-x1 + X3-X2, + .. + XN-XN-1)
