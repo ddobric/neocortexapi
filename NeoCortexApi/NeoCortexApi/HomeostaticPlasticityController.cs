@@ -151,7 +151,7 @@ namespace NeoCortexApi
                 // We cannot expect the 100% for the entire learning cycle. Sometimes some
                 // SDR appear with few more or less bits than in the previous cycle.
                 // If this happen we take the new SDR (output) as the winner and put it in the map.
-                if (similarity > m_RequiredSimilarityThreshold)
+                if (similarity >= m_RequiredSimilarityThreshold)
                 {
                     // We calculate here the average change of the SDR for the given input.
                     avgDerivation = ArrayUtils.AvgDelta(m_NumOfActiveColsForInput[inpHash]);

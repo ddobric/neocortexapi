@@ -517,7 +517,7 @@ namespace UnitTestsProject
 
             bool isInStableState = false;
 
-            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, inputValues.Count * 50,  (isStable, numPatterns, actColAvg, seenInputs) =>
+            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, inputValues.Count * 30,  (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                 Assert.IsTrue(numPatterns == inputValues.Count);
 
@@ -535,7 +535,7 @@ namespace UnitTestsProject
                     isInStableState = true;
                     Debug.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
                 }
-            }, numOfCyclesToWaitOnChange: 50, requiredSimilarityThreshold: 0.94);
+            }, numOfCyclesToWaitOnChange: 50, requiredSimilarityThreshold: 1.0);
 
             SpatialPooler sp1 = new SpatialPooler(hpa);
 
@@ -559,7 +559,7 @@ namespace UnitTestsProject
                 prevActiveCols.Add(input, new int[0]);
             }
 
-            int maxSPLearningCycles = 5000;
+            int maxSPLearningCycles = 2000;
 
             List<(double Element, (int Cycle, double Similarity)[] Oscilations)> oscilationResult = new List<(double Element, (int Cycle, double Similarity)[] Oscilations)>();
 
