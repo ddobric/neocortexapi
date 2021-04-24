@@ -1903,7 +1903,7 @@ namespace NeoCortexApi.Utility
         /// <param name="listOfArrays">The list of arrays.</param>
         /// <param name="maxNumOfArrays">Maximum allowed number of elements.</param>
         /// <param name="newArray">The new value.</param>
-        public static List<int[]> RememberArray(List<int[]> listOfArrays, int maxNumOfArrays, int[] newArray)
+        public static List<T[]> RememberArray<T>(List<T[]> listOfArrays, int maxNumOfArrays, T[] newArray)
         {
             listOfArrays.Insert(0, newArray);
             

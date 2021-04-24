@@ -273,7 +273,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < 100; i++)
             {
-                rememberedSdrs = ArrayUtils.RememberArray(rememberedSdrs, numOfElems, allSdrs[i]);
+                rememberedSdrs = ArrayUtils.RememberArray<int>(rememberedSdrs, numOfElems, allSdrs[i]);
 
                 if (i == numOfElems)
                 {
