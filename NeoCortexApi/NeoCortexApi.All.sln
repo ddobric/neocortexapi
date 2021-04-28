@@ -46,6 +46,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexApi.Parallel", "Ne
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtmActorHost", "HtmActorHost\HtmActorHost.csproj", "{47B60F4A-2561-4C94-9E47-3D616B1D142E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexApi.Experiments", "NeoCortexApi.Experiments\NeoCortexApi.Experiments.csproj", "{30218E1D-0F8B-4D22-8587-FF259BCA532A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -88,6 +90,10 @@ Global
 		{47B60F4A-2561-4C94-9E47-3D616B1D142E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47B60F4A-2561-4C94-9E47-3D616B1D142E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47B60F4A-2561-4C94-9E47-3D616B1D142E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30218E1D-0F8B-4D22-8587-FF259BCA532A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30218E1D-0F8B-4D22-8587-FF259BCA532A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30218E1D-0F8B-4D22-8587-FF259BCA532A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30218E1D-0F8B-4D22-8587-FF259BCA532A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
