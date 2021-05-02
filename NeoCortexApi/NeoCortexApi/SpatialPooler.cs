@@ -1,5 +1,4 @@
-﻿//#define REPAIR_STABILITY
-// Copyright (c) Damir Dobric. All rights reserved.
+﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
@@ -252,17 +251,6 @@ namespace NeoCortexApi
                 return activeColumnsArr;
         }
 
-#if REPAIR_STABILITY
-        bool inRepair = false;
-
-        private int[] prevActCols = new int[0];
-
-        private int[] stableActCols = new int[0];
-
-        private double[] prevOverlaps = new double[0];
-
-        double prevSimilarity = 0.0;
-#endif
         // TODO naming convention cause problem with similar method
         /// <summary>
         /// This is the primary public method of the SpatialPooler class. This function takes a input vector and outputs the indices of the active columns.
@@ -317,34 +305,6 @@ namespace NeoCortexApi
 
             int[] activeColumns = InhibitColumns(this.connections, boostedOverlaps);
 
-      
-#if REPAIR_STABILITY
-            // REPAIR STABILITY FEATURE
-            var similarity = MathHelpers.CalcArraySimilarity(prevActCols, activeColumns);
-            if (prevSimilarity == 100.0 && similarity < 70.0)
-            {
-                Debug.WriteLine(" O: " + Helpers.StringifyVector<double>(prevOverlaps.OrderBy(x => x).ToArray(), (indx, val) => $"{indx}-{val}"));
-                Debug.WriteLine(" O: " + Helpers.StringifyVector<double>(boostedOverlaps.OrderBy(x => x).ToArray(), (indx, val) => $"{indx}-{val}"));
-                Debug.WriteLine("prevActCols: " + Helpers.StringifyVector(prevActCols.OrderBy(x => x).ToArray()));
-                Debug.WriteLine("    ActCols: " + Helpers.StringifyVector(activeColumns.OrderBy(x => x).ToArray()));
-
-                stableActCols = prevActCols;
-
-                inRepair = true;
-            }
-
-            // REPAIR STABILITY FEATURE
-            if (similarity >= 95.0 && inRepair)
-            {
-                inRepair = false;
-                Debug.WriteLine("Entered stable state again!");
-            }
-
-            prevOverlaps = boostedOverlaps;
-            prevActCols = activeColumns;
-            prevSimilarity = similarity;
-#endif
-
             if (learn)
             {
                 AdaptSynapses(this.connections, inputVector, activeColumns);
@@ -358,14 +318,6 @@ namespace NeoCortexApi
                 }
             }
 
-            // REPAIR STABILITY FEATURE
-#if REPAIR_STABILITY
-            if (inRepair)
-            {
-                Debug.WriteLine("Stable columns output..");
-                activeColumns = stableActCols;
-            }
-#endif
             ArrayUtils.FillArray(activeArray, 0);
             if (activeColumns.Length > 0)
             {

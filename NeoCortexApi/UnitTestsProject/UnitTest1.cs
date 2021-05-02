@@ -257,5 +257,34 @@ namespace UnitTestsProject
 
             Assert.IsTrue(lst[0] == 2);
         }
+
+        [TestMethod]
+        [TestCategory("Prod")]
+        public void RememberArrayTest()
+        {
+            int numOfElems = 3;
+            List<int[]> rememberedSdrs = new List<int[]>();
+
+            List<int[]> allSdrs = new List<int[]>();
+            for (int i = 0; i < 100; i++)
+            {
+                allSdrs.Add(new int[] { i, i, i, i, i });
+            }
+
+            for (int i = 0; i < 100; i++)
+            {
+                rememberedSdrs = ArrayUtils.RememberArray<int>(rememberedSdrs, numOfElems, allSdrs[i]);
+
+                if (i == numOfElems)
+                {
+                    Assert.IsTrue(rememberedSdrs.Count == numOfElems);
+
+                    for (int k = 0; k < numOfElems - 1; k++)
+                    {
+                        Assert.IsTrue(rememberedSdrs[k][0] == rememberedSdrs[k+1][0]+1);
+                    }
+                }
+            }
+        }
     }
 }

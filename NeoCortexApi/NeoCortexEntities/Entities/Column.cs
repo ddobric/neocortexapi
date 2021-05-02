@@ -275,8 +275,8 @@ namespace NeoCortexApi.Entities
         /// Calculates the overlapp of the column.
         /// </summary>
         /// <param name="inputVector"></param>
-        /// <param name="stimulusThreshold"></param>
-        /// <returns></returns>
+        /// <param name="stimulusThreshold">Overlap will be 0 if it is less than this value.</param>
+        /// <returns>The overlap of the column. 0 if it is less than stimulus threshold.</returns>
         public int GetColumnOverlapp(int[] inputVector, double stimulusThreshold)
         {
             int result = 0;
@@ -284,12 +284,14 @@ namespace NeoCortexApi.Entities
             // Gets the synapse mapping between column-i with input vector.
             int[] slice = (int[])this.connectedInputCounter.GetSlice(0);
 
-            // Go through all connections (synapses) between column and input vector.
+            // Step through all connections (synapses) between column and input vector.
             for (int inpBitIndx = 0; inpBitIndx < slice.Length; inpBitIndx++)
             {
                 // Result (overlapp) is 1 if 
                 result += (inputVector[inpBitIndx] * slice[inpBitIndx]);
-                //TODO: check if this is needed!
+                
+                //
+                // After the overlap is calculated, we set it on 0 if it is under stimulus threshold.
                 if (inpBitIndx == slice.Length - 1)
                 {
                     // If the overlap (num of connected synapses to TRUE input) is less than stimulusThreshold then we set result on 0.
@@ -298,13 +300,6 @@ namespace NeoCortexApi.Entities
                     result -= result < stimulusThreshold ? result : 0;
                 }
             }
-
-            //string strInp = StringifyVector(ArrayUtils.IndexWhere(inputVector, i => i == 1));
-
-            //int numConnectedSynapses = slice.Count(sl => sl == 1);
-
-            //Debug.WriteLine($"Overlap: {result} - numConnectedSynapseso: {numConnectedSynapses} - strInp: {strInp}");
-
 
             return result;
         }

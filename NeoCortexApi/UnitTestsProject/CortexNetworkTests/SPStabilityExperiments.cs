@@ -229,7 +229,7 @@ namespace UnitTestsProject
         [TestCategory("Experiment")]
         public void SpatialPooler_Stability_Experiment_2()
         {
-            double minOctOverlapCycles = 1.0;
+            double minOctOverlapCycles = 0.5;
             double maxBoost = 5.0;
             int inputBits = 100;
             int numColumns = 2048;
@@ -242,6 +242,7 @@ namespace UnitTestsProject
             p.Set(KEY.MAX_BOOST, maxBoost);
             p.Set(KEY.DUTY_CYCLE_PERIOD, 100);
             p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, minOctOverlapCycles);
+            p.Set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, minOctOverlapCycles);
 
             // Local inhibition
             // Stops the bumping of inactive columns.
@@ -428,12 +429,14 @@ namespace UnitTestsProject
         /// It learns SP and shows the convergence of SDR for the given input.
         /// In contrast to Experiment_1, the new feature called 'New Born' effect is activated.That means, SP is learning as usual, with activated column boosting.
         /// In contrast to Experiment2, this experiment uses newborn effect as built-in feature of SP. It uses the homeostatic plasticity activator.
-        /// /// </summary>
+        /// This experiment was used to produce results pubished in following paper: https://www.scitepress.org/Papers/2021/103142/
+        /// </summary>
         [TestMethod]
         [TestCategory("Experiment")]
         public void SpatialPooler_Stability_Experiment_3()
         {
-            double minOctOverlapCycles = 1.0;
+            double minPctOverlapCycles = 0.1;
+            double minPctActiveCycles = 0.1;
             double maxBoost = 5.0;
             int inputBits = 200;
             int numColumns = 2048;
@@ -445,7 +448,8 @@ namespace UnitTestsProject
 
             p.Set(KEY.MAX_BOOST, maxBoost);
             p.Set(KEY.DUTY_CYCLE_PERIOD, 100);
-            p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, minOctOverlapCycles);
+            p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, minPctOverlapCycles);
+            p.Set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, minPctActiveCycles);
 
             // Global inhibition
             // N of 40 (40= 0.02*2048 columns) active cells required to activate the segment.
@@ -486,7 +490,7 @@ namespace UnitTestsProject
                 inputValues.Add((double)i);
             }
 
-            RunSpStabilityExperiment3(maxBoost, minOctOverlapCycles, inputBits, p, encoder, inputValues);
+            RunSpStabilityExperiment3(maxBoost, minPctOverlapCycles, inputBits, p, encoder, inputValues);
         }
 
         private void RunSpStabilityExperiment3(double maxBoost, double minOverlapCycles, int inputBits, Parameters p, EncoderBase encoder, List<double> inputValues)
@@ -513,40 +517,41 @@ namespace UnitTestsProject
 
             bool isInStableState = false;
 
-            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, inputValues.Count * 15, (isStable, numPatterns, actColAvg, seenInputs) =>
-            {
-                Assert.IsTrue(numPatterns == inputValues.Count);
+            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, inputValues.Count * 30, (isStable, numPatterns, actColAvg, seenInputs) =>
+           {
+               Assert.IsTrue(numPatterns == inputValues.Count);
 
-                // Event should only be fired when entering the stable state.
-                // Ideal SP should never enter unstable state after stable state.
-                if (isStable == false)
-                {
-                    isInStableState = false;
-                    Debug.WriteLine($"UNSTABLE!: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
-                }
-                else
-                {
-                    //Assert.IsTrue(isStable);
+               // Event should only be fired when entering the stable state.
+               // Ideal SP should never enter unstable state after stable state.
+               if (isStable == false)
+               {
+                   isInStableState = false;
+                   Debug.WriteLine($"INSTABLE!: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+               }
+               else
+               {
+                   //Assert.IsTrue(isStable);
 
-                    isInStableState = true;
-                    Debug.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
-                }
-            });
+                   isInStableState = true;
+                   Debug.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+               }
+           }, numOfCyclesToWaitOnChange: 50, requiredSimilarityThreshold: 0.975);
 
-            SpatialPooler sp1 = new SpatialPooler(hpa);
+            SpatialPooler sp = new SpatialPooler(hpa);
 
             p.apply(mem);
-            sp1.Init(mem, UnitTestHelpers.GetMemory());
+            sp.Init(mem, UnitTestHelpers.GetMemory());
 
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
 
             region0.AddLayer(layer1);
             layer1.HtmModules.Add("encoder", encoder);
-            layer1.HtmModules.Add("sp", sp1);
+            layer1.HtmModules.Add("sp", sp);
 
             HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
 
             double[] inputs = inputValues.ToArray();
+            Dictionary<double, List<string[]>> boostedOverlaps = new Dictionary<double, List<string[]>>();
             Dictionary<double, int[]> prevActiveCols = new Dictionary<double, int[]>();
             Dictionary<double, double> prevSimilarity = new Dictionary<double, double>();
             foreach (var input in inputs)
@@ -555,7 +560,7 @@ namespace UnitTestsProject
                 prevActiveCols.Add(input, new int[0]);
             }
 
-            int maxSPLearningCycles = 5000;
+            int maxSPLearningCycles = 2000;
 
             List<(double Element, (int Cycle, double Similarity)[] Oscilations)> oscilationResult = new List<(double Element, (int Cycle, double Similarity)[] Oscilations)>();
 
@@ -593,7 +598,7 @@ namespace UnitTestsProject
                                 var actCols = activeColumns.OrderBy(c => c).ToArray();
 
                                 //if(isInStableState)
-                                //    DrawBitmaps(encoder, input, activeColumns, 2048);
+                                //DrawBitmaps(encoder, input, activeColumns, 2048);
 
                                 Debug.WriteLine($" {cycle.ToString("D4")} SP-OUT: [{actCols.Length}/{MathHelpers.CalcArraySimilarity(prevActiveCols[input], actCols)}] - {Helpers.StringifyVector(actCols)}");
                                 sdrWriter.WriteLine($"{cycle.ToString("D4")} [{actCols.Length}/{MathHelpers.CalcArraySimilarity(prevActiveCols[input], actCols)}] - {Helpers.StringifyVector(actCols)}");
@@ -614,11 +619,19 @@ namespace UnitTestsProject
                                 similarityWriter.WriteLine($"{cycle};{similarity}");
 
                                 sdrPlotlyWriter.Flush();
+
+
                             }
                             sdrWriter.Flush();
                         }
 
                         similarityWriter.Flush();
+
+                        if (!boostedOverlaps.ContainsKey(input))
+                            boostedOverlaps.Add(input, new List<string[]>());
+
+                        ArrayUtils.RememberArray<string>(boostedOverlaps[input], 4, GetBoostedValues(mem.BoostedOverlaps));
+
                     }
 
                     oscilationResult.Add((Element: input, Oscilations: elementOscilationResult.ToArray()));
@@ -647,6 +660,29 @@ namespace UnitTestsProject
             Debug.WriteLine("------------------------------------------------------------------------\n----------------------------------------------------------------------------");
         }
 
+        private string[] GetBoostedValues(double[] boostedOverlaps)
+        {
+            List<string> boostStr = new List<string>();
+
+            Dictionary<int, double> indices = new Dictionary<int, double>();
+            for (int i = 0; i < boostedOverlaps.Length; i++)
+            {
+                indices.Add(i, boostedOverlaps[i]);
+            }
+
+            var sortedWinnerIndices = indices.OrderByDescending(k => k.Value).ToArray();
+
+            int max = 100;
+            foreach (var item in sortedWinnerIndices)
+            {
+                if (max-- < 0) break;
+
+                boostStr.Add($"{item.Key}-{item.Value.ToString("#.##")}");
+            }
+
+            return boostStr.ToArray();
+        }
+
         private void DrawBitmaps(EncoderBase encoder, double input, int[] activeArrayIndxes, int columnTopology)
         {
             var inputVector = encoder.Encode(input);
@@ -661,7 +697,7 @@ namespace UnitTestsProject
             arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray<int>(inputVector, (int)Math.Sqrt(inputVector.Length), (int)Math.Sqrt(inputVector.Length))));
 
             const int OutImgSize = 1024;
-            NeoCortexUtils.DrawBitmaps(arrays, $"Input_{input}.png", Color.Yellow, Color.Gray, OutImgSize, OutImgSize);
+            NeoCortexUtils.DrawBitmaps(arrays, $"Input_{input}.png", Color.LightGray, Color.Black, OutImgSize, OutImgSize);
         }
         #endregion
     }

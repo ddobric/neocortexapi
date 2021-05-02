@@ -1897,6 +1897,23 @@ namespace NeoCortexApi.Utility
         }
 
 
+        /// <summary>
+        /// Adds the new array to the list of arrays. The list of arrays must contain the specified number of arrays. Old elements are replaced.
+        /// </summary>
+        /// <param name="listOfArrays">The list of arrays.</param>
+        /// <param name="maxNumOfArrays">Maximum allowed number of elements.</param>
+        /// <param name="newArray">The new value.</param>
+        public static List<T[]> RememberArray<T>(List<T[]> listOfArrays, int maxNumOfArrays, T[] newArray)
+        {
+            listOfArrays.Insert(0, newArray);
+            
+            if (listOfArrays.Count > maxNumOfArrays)
+                listOfArrays.RemoveAt(listOfArrays.Count - 1);
+            
+            return listOfArrays;
+        }
+
+
 
         /// <summary>
         /// Calculates the average delta over the list. 1/N * (x2-x1 + X3-X2, + .. + XN-XN-1)
