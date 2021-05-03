@@ -184,7 +184,7 @@ namespace UnitTestsProject
                             {
                                 if (sdrs.Count == trainingImages.Length)
                                 {
-                                    CalculateResult(sdrs, inputVectors);
+                                    CalculateSimilarity(sdrs, inputVectors);
                                     return;
                                 }
 
@@ -422,47 +422,62 @@ namespace UnitTestsProject
                         cycle++;
                     }
 
-                    CalculateResult(sdrs, null);//todo
+                    CalculateSimilarity(sdrs, null);//todo
                 }
             }
         }
 
 
         /// <summary>
-        /// Calculate all required results.
-        /// 1. Correlation matrix.
-        ///    It cross compares all SDRs in the dictionary.
-        /// 2. Writes out bitmaps by by cross compare that marks in the extra color non-overlapping bits between two comparing SDRs.
+        /// Calculates the similarity matrix . 
+        /// It take all output SDRs and compares all of them.
+        /// Save the correlation coefficient in csv file.
         /// </summary>
-        /// <param name="sdrs"></param>
-        private void CalculateResult(Dictionary<string, int[]> sdrs, Dictionary<string, int[]> inputVectors)
+        /// <param name="sdrs">Dictionary of all output SDRs fro every input.</param>
+        /// <param name="inputVectors">The dictionary of corresponding inputs.</param>        
+        private void CalculateSimilarity(Dictionary<string, int[]> sdrs, Dictionary<string, int[]> inputVectors, string output = "Correlation.csv")
         {
-            foreach (var keyPairs in sdrs)
-            {
-                Debug.WriteLine(keyPairs.Key);
-                Debug.WriteLine($"{Helpers.StringifyVector(keyPairs.Value)}\n");
-            }
+            //foreach (var keyPairs in sdrs)
+            //{
+            //    Logger.LogInformation(keyPairs.Key);
+            //    Logger.LogInformation($"{Helpers.StringifyVector(keyPairs.Value)}\n");
+            //}
 
             var keyArray = sdrs.Keys.ToArray();
 
-            for (int i = 0; i < keyArray.Length - 1; i++)
+            StreamWriter streamWriter = new StreamWriter(output);
+
+            for (int i = 0; i < keyArray.Length; i++)
             {
+                var key1 = keyArray[i];
+
+                streamWriter.Write("," + key1);
+            }
+
+            for (int i = 0; i < keyArray.Length; i++)
+            {
+                var key1 = keyArray[i];
+                streamWriter.WriteLine();
+                streamWriter.Write(key1);
                 for (int j = 0; j < keyArray.Length; j++)
                 {
-                    var key1 = keyArray[i];
-                    var key2 = keyArray[2];
+                    var key2 = keyArray[j];
+                    int[] sdr1 = sdrs.GetValueOrDefault<string, int[]>(key1);
+                    int[] sdr2 = sdrs.GetValueOrDefault<string, int[]>(key2);
+                    //double outputSimilarity = CalcArraySimilarity(Array.ConvertAll<int, double>(sdr1, x => x), Array.ConvertAll<int, double>(sdr2, x => x)) * 100;
+                    double outputSimilarity = MathHelpers.CalcArraySimilarity(sdr1, sdr2);
 
-                    //alcCorr(sdrs[key1], sdrs[key2]);
+                    int[] inp1 = inputVectors.GetValueOrDefault<string, int[]>(key1);
+                    int[] inp2 = inputVectors.GetValueOrDefault<string, int[]>(key2);
+                    //double inputSimilarity = CalcArraySimilarity(Array.ConvertAll<int, double>(inp1, x => x), Array.ConvertAll<int, double>(sdr2, x => x)) * 100;
+                    double inputSimilarity = MathHelpers.CalcArraySimilarity(inp1, inp2);
+
+                    streamWriter.Write($" | {inputSimilarity.ToString("0.0")} {outputSimilarity.ToString("0.0")} ");
+                    //streamWriter.Write($" {outputSimilarity.ToString("0.0")} ");
                 }
             }
 
-            // ic10 = corr(input[1], input[0])
-            // ic21 = corr(input[w], input[q])
-            //...
-
-            // sdrc10 = corr(sdrs[1], sdrs[0])
-            // sdrc21 = corr(sdrs[w], sdrs[q])
-            //...
+            streamWriter.Close();
 
             return;
         }
