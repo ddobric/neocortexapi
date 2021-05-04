@@ -26,7 +26,7 @@ namespace UnitTestsProject
 
     public class SpatialPoolerMock2 : SpatialPooler
     {
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L;
 
         private Func<double, int[]> m_CallBackGlobal;
         private Func<double, int[]> m_CallBackLocal;

@@ -63,7 +63,7 @@ namespace UnitTestsProject
         private readonly String SDROuputDiff_CSI = "SDROutputDiff_CSI";
         private readonly String FreshComputed_CSI = "FreshComputed_CSI";
         private readonly String logOutputFolder = "logSDRcsv";
-        private readonly String mutualTest = "mutualTest";
+        //private readonly String mutualTest = "mutualTest";
         /*******************************************************************************************
          *                        _______ ______  _____ _______ _____                              *
          *                       |__   __|  ____|/ ____|__   __/ ____|                             *

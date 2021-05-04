@@ -43,7 +43,7 @@ namespace UnitTestsProject
         //[DataRow("Horizontal")]
         public void SimilarityExperiment(string inputPrefix)
         {
-            int stableStateCnt = 100;
+            //int stableStateCnt = 100;
             double minOctOverlapCycles = 1.0;
             double maxBoost = 10.0;
             //int inputBits = 100;
@@ -240,7 +240,7 @@ namespace UnitTestsProject
 
             Directory.CreateDirectory($"{nameof(SimilarityExperiment)}");
 
-            int counter = 0;
+            //int counter = 0;
             //var parameters = GetDefaultParams();
             ////parameters.Set(KEY.DUTY_CYCLE_PERIOD, 20);
             ////parameters.Set(KEY.MAX_BOOST, 1);
