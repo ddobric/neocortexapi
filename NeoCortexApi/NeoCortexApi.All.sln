@@ -34,6 +34,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{D9879A38-CCF8-4440-B939-D066196AC775}"
 	ProjectSection(SolutionItems) = preProject
 		ColumnActivity.md = ColumnActivity.md
+		Documentation\CortexLayer.md = Documentation\CortexLayer.md
+		Documentation\Encoders.md = Documentation\Encoders.md
+		Documentation\SpatialPooler.md = Documentation\SpatialPooler.md
+		Documentation\TemporalMemory.md = Documentation\TemporalMemory.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "images", "images", "{4D9AD5E0-8F00-494E-8BEF-8041C003F4E6}"

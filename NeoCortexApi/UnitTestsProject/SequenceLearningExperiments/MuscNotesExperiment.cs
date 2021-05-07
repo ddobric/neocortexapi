@@ -164,7 +164,7 @@ namespace UnitTestsProject.SequenceLearningExperiments
 
             p.apply(mem);
 
-            bool isInStableState = false;
+            //bool isInStableState = false;
 
             //HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
             HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
@@ -183,7 +183,7 @@ namespace UnitTestsProject.SequenceLearningExperiments
                     Debug.WriteLine($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
 
                 Assert.IsTrue(numPatterns == numInputs);
-                isInStableState = true;
+                //isInStableState = true;
                 cls.ClearState();
 
                 tm1.Reset(mem);

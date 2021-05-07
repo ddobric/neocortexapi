@@ -16,7 +16,7 @@ namespace NeoCortexApi.Classifiers
     {
         private Dictionary<TIN, int[]> activeMap = new Dictionary<TIN, int[]>();
 
-        private int radius = 3;
+        //private int radius = 3;
 
         public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 

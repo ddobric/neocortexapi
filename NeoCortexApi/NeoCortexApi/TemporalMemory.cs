@@ -372,8 +372,8 @@ namespace NeoCortexApi
                 double permanenceIncrement, double permanenceDecrement, bool learn, IList<Synapse> activeSynapses)
         {
             List<Cell> cellsOwnersOfActiveSegments = new List<Cell>();
-            Cell previousCell = null;
-            Cell segmOwnerCell;
+            //Cell previousCell = null;
+            //Cell segmOwnerCell;
 
             foreach (DistalDendrite segment in columnActiveSegments)
             {

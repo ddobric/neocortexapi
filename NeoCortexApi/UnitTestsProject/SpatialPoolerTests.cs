@@ -2670,26 +2670,26 @@ namespace UnitTestsProject
             sp.Init(mem);
 
             mem.HtmConfig.NumInputs = 10;
-            double connectedPct = 1;
+            //double connectedPct = 1;
             int[] mask = new int[] { 0, 1 };
             double[] perm = HtmCompute.InitSynapsePermanences(mem.HtmConfig, mask, mem.HtmConfig.Random);
             int[] trueConnected = new int[] { 0, 1 };
 
             ArrayUtils.ToDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
 
-            connectedPct = 1;
+            //connectedPct = 1;
             mask = new int[] { 4, 5, 6 };
             perm = HtmCompute.InitSynapsePermanences(mem.HtmConfig, mask, mem.HtmConfig.Random);
             trueConnected = new int[] { 4, 5, 6 };
             ArrayUtils.ToDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
 
-            connectedPct = 1;
+            //connectedPct = 1;
             mask = new int[] { 8, 9 };
             perm = HtmCompute.InitSynapsePermanences(mem.HtmConfig, mask, mem.HtmConfig.Random);
             trueConnected = new int[] { 8, 9 };
             ArrayUtils.ToDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
 
-            connectedPct = 1;
+            //connectedPct = 1;
             mask = new int[] { 0, 1, 2, 3, 4, 5, 6, 8, 9 };
             perm = HtmCompute.InitSynapsePermanences(mem.HtmConfig, mask, mem.HtmConfig.Random);
             trueConnected = new int[] { 0, 1, 2, 3, 4, 5, 6, 8, 9 };
@@ -3201,7 +3201,7 @@ namespace UnitTestsProject
             {
                 sp.Init(c);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 //fail();
                 Assert.Fail();
@@ -3273,7 +3273,7 @@ namespace UnitTestsProject
                 //fail();
                 //Assert.Fail();
             }
-            catch (ArgumentException e)
+            catch (ArgumentException)
             {
                 //assertEquals("Input array must be same size as the defined number"
                 //    + " of inputs: From Params: 8, From Input Vector: 6", e.getMessage());
@@ -3298,7 +3298,7 @@ namespace UnitTestsProject
             {
                 sp.compute(new int[matchedDims], new int[25], true);
             }
-            catch (ArgumentException e)
+            catch (ArgumentException)
             {
                 //fail();
                 Assert.Fail();
