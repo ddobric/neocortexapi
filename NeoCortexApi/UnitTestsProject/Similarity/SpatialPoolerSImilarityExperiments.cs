@@ -121,7 +121,7 @@ namespace UnitTestsProject
 
             p.apply(mem);
 
-            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, trainingImages.Length * 150, (isStable, numPatterns, actColAvg, seenInputs) =>
+            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, trainingImages.Length * 50, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                 // Event should only be fired when entering the stable state.
                 // Ideal SP should never enter unstable state after stable state.
@@ -129,7 +129,7 @@ namespace UnitTestsProject
                 Assert.IsTrue(numPatterns == trainingImages.Length);
                 isInStableState = true;
                 Debug.WriteLine($"Entered STABLE state: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
-            });
+            }, requiredSimilarityThreshold:0.975);
 
             SpatialPooler sp = new SpatialPoolerMT(hpa);
 

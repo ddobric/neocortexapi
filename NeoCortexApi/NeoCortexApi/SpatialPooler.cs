@@ -802,97 +802,12 @@ namespace NeoCortexApi
             //column.setProximalPermanencesSparse(c, perm, maskPotential);
         }
 
-        ///**
-        // * Returns a randomly generated permanence value for a synapse that is
-        // * initialized in a connected state. The basic idea here is to initialize
-        // * permanence values very close to synPermConnected so that a small number of
-        // * learning steps could make it disconnected or connected.
-        // *
-        // * Note: experimentation was done a long time ago on the best way to initialize
-        // * permanence values, but the history for this particular scheme has been lost.
-        // * 
-        // * @return  a randomly generated permanence value
-        // */
-        //public static double initPermConnected(double synPermMax, double synPermConnected, Random rnd)
-        //{
-        //    //double p = c.getSynPermConnected() + (c.getSynPermMax() - c.getSynPermConnected()) * c.random.NextDouble();
-        //    double p = synPermConnected + (synPermMax - synPermConnected) * rnd.NextDouble();
-
-        //    // Note from Python implementation on conditioning below:
-        //    // Ensure we don't have too much unnecessary precision. A full 64 bits of
-        //    // precision causes numerical stability issues across platforms and across
-        //    // implementations
-        //    p = ((int)(p * 100000)) / 100000.0d;
-        //    return p;
-        //}
-
-
-        ///// <summary>
-        ///// Returns a randomly generated permanence value for a synapses that is to be
-        ///// initialized in a non-connected state.</summary>
-        ///// <param name="synPermConnected"></param>
-        ///// <param name="rnd">Random generator to be used to generate permanence.</param>
-        ///// <returns>Permanence value.</returns>
-        //public static double initPermNonConnected(double synPermConnected, Random rnd)
-        //{
-        //    //double p = c.getSynPermConnected() * c.getRandom().NextDouble();
-        //    double p = synPermConnected * rnd.NextDouble();
-
-        //    // Note from Python implementation on conditioning below:
-        //    // Ensure we don't have too much unnecessary precision. A full 64 bits of
-        //    // precision causes numerical stability issues across platforms and across
-        //    // implementations
-        //    p = ((int)(p * 100000)) / 100000.0d;
-        //    return p;
-        //}
-
-        ///**
-        // * Initializes the permanences of a column. The method
-        // * returns a 1-D array the size of the input, where each entry in the
-        // * array represents the initial permanence value between the input bit
-        // * at the particular index in the array, and the column represented by
-        // * the 'index' parameter.
-        // * 
-        // * @param c                 the {@link Connections} which is the memory model
-        // * @param potentialPool     An array specifying the potential pool of the column.
-        // *                          Permanence values will only be generated for input bits
-        // *                          corresponding to indices for which the mask value is 1.
-        // *                          WARNING: potentialPool is sparse, not an array of "1's"
-        // * @param index             the index of the column being initialized
-        // * @param connectedPct      A value between 0 or 1 specifying the percent of the input
-        // *                          bits that might maximally start off in a connected state.
-        // *                          0.7 means, maximally 70% of potential might be connected
-        // * @return
-        // */
-        //public static double[] InitSynapsePermanences(HtmConfig htmConfig, int[] potentialPool, Random random)
-        //{
-        //    //Random random = new Random();
-        //    double[] perm = new double[htmConfig.NumInputs];
-
-        //    //foreach (int idx in column.ProximalDendrite.ConnectedInputs)
-        //    foreach (int idx in potentialPool)
-        //    {
-        //        if (random.NextDouble() <= htmConfig.InitialSynapseConnsPct)
-        //        {
-        //            perm[idx] = initPermConnected(htmConfig.SynPermMax, htmConfig.SynPermMax, random);
-        //        }
-        //        else
-        //        {
-        //            htmConfig.SynPermConnected =
-        //            perm[idx] = initPermNonConnected(htmConfig.SynPermConnected, random);
-        //        }
-
-        //        perm[idx] = perm[idx] < htmConfig.SynPermTrimThreshold ? 0 : perm[idx];
-
-        //    }
-
-        //    return perm;
-        //}
-
-
-
-
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="c"></param>
+        /// <returns></returns>
+       
         private double CalcInhibitionDensity(Connections c)
         {
             double density = c.HtmConfig.LocalAreaDensity;
@@ -917,10 +832,10 @@ namespace NeoCortexApi
         }
 
         /// <summary>
-        /// Performs inhibition. This method calculates the necessary values needed to actually perform inhibition and then delegates
-        /// the task of picking the active columns to helper functions.
+        /// Performs the inhibition algorithm. This method calculates the density of the inhibition and executes either clobal or local inhibition
+        /// algorithm.
         /// </summary>
-        /// <param name="c">the <see cref="Connections"/> matrix</param>
+        /// <param name="c">the <see cref="Connections"/> The HTM instance.</param>
         /// <param name="initialOverlaps">
         /// an array containing the overlap score for each column. The overlap score for a column is defined as the number of synapses
         /// in a "connected state" (connected synapses) that are connected to input bits which are turned on.
@@ -931,11 +846,7 @@ namespace NeoCortexApi
             double[] overlaps = new List<double>(initialOverlaps).ToArray();
 
             double density = CalcInhibitionDensity(c);
-            //Debug.WriteLine("Inhibition step......");
-            //Debug.WriteLine("Density: " + density);
-            //Add our fixed little bit of random noise to the scores to help break ties.
-            //ArrayUtils.d_add(overlaps, c.getTieBreaker());
-
+          
             if (c.HtmConfig.GlobalInhibition || c.HtmConfig.InhibitionRadius > ArrayUtils.Max(c.HtmConfig.ColumnDimensions))
             {
                 return InhibitColumnsGlobal(c, overlaps, density);
@@ -946,9 +857,9 @@ namespace NeoCortexApi
 
 
         /// <summary>
-        ///  Perform global inhibition. Performing global inhibition entails picking the
-        ///  top 'numActive' columns with the highest overlap score in the entire</summary>
-        ///  region. At most half of the columns in a local neighborhood are allowed to
+        ///  Perform global inhibition. It picks
+        ///  top 'numActive' columns with the highest overlap score in the entire region. 
+        ///  At most half of the columns in a local neighborhood are allowed to
         ///  be active.
         /// <param name="c">Connections (memory)</param>
         /// <param name="overlaps">An array containing the overlap score for each  column.</param>
