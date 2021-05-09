@@ -40,7 +40,7 @@ namespace NeoCortexApi.DistributedComputeLib
             }
         }
 
-        private int m_NumElements = 0;
+        //private int m_NumElements = 0;
 
 
         #region Properties
@@ -324,9 +324,9 @@ namespace NeoCortexApi.DistributedComputeLib
                             MaxKey = (int)(object)placement.MaxKey
                         }, this.Config.ConnectionTimeout, placement.NodePath).Result;
                     }
-                    catch (Exception ex)
-                    { 
-                    
+                    catch (Exception)
+                    {
+
                     }
                 });
             }, this.ActorMap, this.Config.BatchSize);
@@ -405,7 +405,7 @@ namespace NeoCortexApi.DistributedComputeLib
                             aggLst.TryAdd(placement.PartitionIndx, avgSpanOfPart);
                             break;
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         {
                             Thread.Sleep(1000);
                         }
@@ -819,24 +819,26 @@ namespace NeoCortexApi.DistributedComputeLib
             int pageSize = 100;// this.Config.PageSize;
             int alreadyProcessed = 0;
 
-            while (true)
+            //while (true)
+            //{
+            List<object> keysToGet = new List<object>();
+
+            foreach (var key in keys.Skip(alreadyProcessed).Take(pageSize))
             {
-                List<object> keysToGet = new List<object>();
-
-                foreach (var key in keys.Skip(alreadyProcessed).Take(pageSize))
-                {
-                    keysToGet.Add(key);
-                }
-
-                var batchResult = actorRef.Ask<List<KeyPair>>(new GetElementsMsg()
-                {
-                    Keys = keysToGet.ToArray(),
-                }).Result;
-
-                keysToGet.Clear();
+                keysToGet.Add(key);
             }
 
-            return null;
+            var batchResult = actorRef.Ask<List<KeyPair>>(new GetElementsMsg()
+            {
+                Keys = keysToGet.ToArray(),
+            }).Result;
+
+            keysToGet.Clear();
+
+            return batchResult;
+            //}
+
+            //return null;
         }
 
         #endregion

@@ -708,7 +708,7 @@ namespace UnitTestsProject
             // This test can create more layers with the goal to analyse result.
             // However sparse representation of specific layer can be used for supervised
             // prediction.
-            int targetLyrIndx = 2;
+            //int targetLyrIndx = 2;
 
             string TestOutputFolder = $"Output-{nameof(GenerateSparsityImageTest)}";
             //if (Directory.Exists(TestOutputFolder))

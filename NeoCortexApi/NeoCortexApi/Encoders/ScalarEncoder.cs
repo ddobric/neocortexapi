@@ -26,25 +26,25 @@ namespace NeoCortexApi.Encoders
         /// </summary>
         public override int Width => throw new NotImplementedException();
 
-        /// <summary>
-        /// Defines the NoOfBits. Works same as N. It is used to change Type of a variable
-        /// </summary>
-        private double NoOfBits;
+        ///// <summary>
+        ///// Defines the NoOfBits. Works same as N. It is used to change Type of a variable
+        ///// </summary>
+        //private double NoOfBits;
 
-        /// <summary>
-        /// Defines the Starting point in an array to map active bits
-        /// </summary>
-        private double StartPoint;
+        ///// <summary>
+        ///// Defines the Starting point in an array to map active bits
+        ///// </summary>
+        //private double StartPoint;
 
-        /// <summary>
-        /// Defines the EndingPoint in an array where active bits ends
-        /// </summary>
-        private double EndingPoint;
+        ///// <summary>
+        ///// Defines the EndingPoint in an array where active bits ends
+        ///// </summary>
+        //private double EndingPoint;
 
-        /// <summary>
-        /// Defines the EndingPointForPeriodic
-        /// </summary>
-        private double EndingPointForPeriodic;// Ending point in an array where active bits ends only works for periodic data
+        ///// <summary>
+        ///// Defines the EndingPointForPeriodic
+        ///// </summary>
+        //private double EndingPointForPeriodic;// Ending point in an array where active bits ends only works for periodic data
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ScalarEncoderExperimental"/> class.

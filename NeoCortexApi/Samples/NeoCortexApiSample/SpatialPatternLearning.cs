@@ -126,6 +126,8 @@ namespace NeoCortexApiSample
             // Initializes the 
             sp.Init(mem, new DistributedMemory() { ColumnDictionary = new InMemoryDistributedDictionary<int, NeoCortexApi.Entities.Column>(1) });
 
+            //mem.TraceProximalDendritePotential(true);
+            
             // It creates the instance of the neo-cortex layer.
             // Algorithm will be performed inside of that layer.
             CortexLayer<object, object> cortexLayer = new CortexLayer<object, object>("L1");

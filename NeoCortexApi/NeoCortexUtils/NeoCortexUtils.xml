@@ -4,6 +4,11 @@
         <name>NeoCortexUtils</name>
     </assembly>
     <members>
+        <member name="T:NeoCortex.NeoCortexUtils">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="M:NeoCortex.NeoCortexUtils.BinarizeImage(System.String,System.Int32,System.String)">
             <summary>
             Binarize image to binarizedImage.
@@ -31,6 +36,8 @@
             <param name="width">Output width.</param>
             <param name="height">Output height.</param>
             <param name="filePath">The bitmap PNG filename.</param>
+            <param name="inactiveCellColor"></param>
+            <param name="activeCellColor"></param>
             <param name="text">Text to be written.</param>
         </member>
         <member name="M:NeoCortex.NeoCortexUtils.DrawBitmap(System.Int32[0:,0:],System.Int32,System.String,System.Drawing.Color,System.Drawing.Color,System.String)">
@@ -40,7 +47,18 @@
             <param name="twoDimArray">Array of active columns.</param>
             <param name="scale">Scale of bitmap. If array of active columns is 10x10 and scale is 5 then output bitmap will be 50x50.</param>
             <param name="filePath">The bitmap filename.</param>
+            <param name="activeCellColor"></param>
+            <param name="inactiveCellColor"></param>
             <param name="text">Text to be written.</param>
+        </member>
+        <member name="M:NeoCortex.NeoCortexUtils.DrawBitmaps(System.Collections.Generic.List{System.Int32[0:,0:]},System.String,System.Int32,System.Int32)">
+            <summary>
+            TODO: add comment
+            </summary>
+            <param name="twoDimArrays"></param>
+            <param name="filePath"></param>
+            <param name="bmpWidth"></param>
+            <param name="bmpHeight"></param>
         </member>
         <member name="M:NeoCortex.NeoCortexUtils.DrawBitmaps(System.Collections.Generic.List{System.Int32[0:,0:]},System.String,System.Drawing.Color,System.Drawing.Color,System.Int32,System.Int32)">
             <summary>
@@ -59,8 +77,6 @@
             </summary>
             <param name="twoDimArrays">List of arrays to be represented as bitmaps.</param>
             <param name="filePath">Output image path.</param>
-            <param name="inactiveCellColor">Color of inactive bit.</param>
-            <param name="activeCellColor">Color of active bit.</param>
             <param name="bmpWidth">The width of the bitmap.</param>
             <param name="bmpHeight">The height of the bitmap.</param>
             <param name="greenStart">ALl values below this value are by defaut green.

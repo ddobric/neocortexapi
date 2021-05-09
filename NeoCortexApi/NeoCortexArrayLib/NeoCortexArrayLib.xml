@@ -10,9 +10,6 @@
             </summary>
             <remarks>author David Ray</remarks>
         </member>
-        <member name="F:NeoCortexApi.Utility.ArrayUtils.EMPTY_ARRAY">
-            Empty array constant 
-        </member>
         <member name="M:NeoCortexApi.Utility.ArrayUtils.ArrToString(System.Int32[])">
             <summary>
             TODO to be added
@@ -48,8 +45,23 @@
             <param name="ints">an array of ints.</param>
             <returns></returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:NeoCortexApi.Utility.ArrayUtils.Modulo(System.Int32,System.Int32)" -->
-        <!-- Badly formed XML comment ignored for member "M:NeoCortexApi.Utility.ArrayUtils.Modulo(System.Int32[],System.Int32)" -->
+        <member name="M:NeoCortexApi.Utility.ArrayUtils.Modulo(System.Int32,System.Int32)">
+            <summary>
+            Performs a modulus operation in Python style.
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns>Modulo.</returns>
+        </member>
+        <member name="M:NeoCortexApi.Utility.ArrayUtils.Modulo(System.Int32[],System.Int32)">
+            <summary>
+            Performs a modulus on every index of the first argument using the second argument and places the result in the same index of
+            the first argument.
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns></returns>
+        </member>
         <member name="M:NeoCortexApi.Utility.ArrayUtils.Maximum(System.Double[],System.Double)">
             <summary>
             Returns a double array whose values are the maximum of the value in the array and the max value argument.
@@ -83,7 +95,16 @@
             <param name="path"></param>
             <returns></returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:NeoCortexApi.Utility.ArrayUtils.Divide(System.Double[],System.Double[],System.Double,System.Double)" -->
+        <member name="M:NeoCortexApi.Utility.ArrayUtils.Divide(System.Double[],System.Double[],System.Double,System.Double)">
+            <summary>
+            Returns an array whose members are the quotient of the dividend array values and the divisor array values.
+            </summary>
+            <param name="dividend"></param>
+            <param name="divisor"></param>
+            <param name="dividendAdjustment"></param>
+            <param name="divisorAdjustment"></param>
+            <returns>throw ArgumentException if the two argument arrays are not the same length.</returns>
+        </member>
         <member name="M:NeoCortexApi.Utility.ArrayUtils.Divide(System.Int32[],System.Int32[])">
             <summary>
             Returns an array whose members are the quotient of the dividend array values and the divisor array values.
@@ -100,7 +121,16 @@
             <param name="divisor"></param>
             <returns></returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:NeoCortexApi.Utility.ArrayUtils.Multiply(System.Double[],System.Double[],System.Double,System.Double)" -->
+        <member name="M:NeoCortexApi.Utility.ArrayUtils.Multiply(System.Double[],System.Double[],System.Double,System.Double)">
+            <summary>
+            Returns an array whose members are the product of the multiplicand array values and the factor array values.
+            </summary>
+            <param name="multiplicand"></param>
+            <param name="factor"></param>
+            <param name="multiplicandAdjustment"></param>
+            <param name="factorAdjustment"></param>
+            <returns>throw ArgumentException if the two argument arrays are not the same length.</returns>
+        </member>
         <member name="M:NeoCortexApi.Utility.ArrayUtils.IndexWhere``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Boolean})">
             <summary>
             Gets index of item in array, which satisfies specified condition.
