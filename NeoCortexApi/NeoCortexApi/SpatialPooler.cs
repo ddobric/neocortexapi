@@ -164,8 +164,6 @@ namespace NeoCortexApi
         {
             List<double> avgSynapsesConnected = new List<double>();
 
-            //List<KeyPair> colList = new List<KeyPair>();
-
             ConcurrentDictionary<int, KeyPair> colList2 = new ConcurrentDictionary<int, KeyPair>();
 
             int numColumns = c.HtmConfig.NumColumns;

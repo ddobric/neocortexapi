@@ -1357,6 +1357,22 @@ namespace NeoCortexApi.Entities
         }
 
         /// <summary>
+        /// Gest the list of all columns.
+        /// </summary>
+        /// <returns></returns>
+        public IList<Column> GetColumns()
+        {
+            List<Column> list = new List<Column>();
+
+            for (int i = 0; i < this.HtmConfig.NumColumns; i++)
+            {
+                list.Add(this.GetColumn(i));
+            }
+
+            return list;
+        }
+
+        /// <summary>
         /// Converts a <see cref="Collection{T}"/> of <see cref="Cell"/>s to a list of cell indexes.
         /// </summary>
         /// <param name="cells"></param>
@@ -1841,18 +1857,24 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Traces out the potential of input bits.
         /// </summary>
-        public void TraceInputPotential(bool traceAllValues = false)
+        public void TraceProximalDendritePotential(bool traceAllValues = false)
         {
             int[] inputPotential = new int[this.HtmConfig.NumInputs];
 
-            for (int i = 0; i < this.HtmConfig.NumColumns; i++)
+            for (int colIndx = 0; colIndx < this.HtmConfig.NumColumns; colIndx++)
             {
-                Column col = GetColumn(i);
+                //Debug.Write($"{colIndx.ToString("0000")} : ");
+                Column col = GetColumn(colIndx);
                 for (int k = 0; k < col.ProximalDendrite.ConnectedInputs.Length; k++)
                 {
                     int inpIndx = col.ProximalDendrite.ConnectedInputs[k];
+
+                    Debug.Write($"{inpIndx.ToString("0000")}, ");
+
                     inputPotential[inpIndx] = inputPotential[inpIndx] + 1;
                 }
+
+                Debug.WriteLine("");
             }
 
             if (traceAllValues)
