@@ -11,7 +11,7 @@ using System.Linq;
 namespace NeoCortex
 {
     /// <summary>
-    /// 
+    /// Set of helper methods.
     /// </summary>
     public class NeoCortexUtils
     {
@@ -111,7 +111,7 @@ namespace NeoCortex
                                 //myBitmap.SetPixel(Xcount, Ycount, System.Drawing.Color.Black); // HERE IS YOUR LOGIC
                                 myBitmap.SetPixel(Xcount * scale + padX, Ycount * scale + padY, inactiveCellColor); // HERE IS YOUR LOGIC
                                 k++;
-                            }                        
+                            }
                         }
                     }
                 }
@@ -169,7 +169,7 @@ namespace NeoCortex
                 int w = arr.GetLength(0);
                 int h = arr.GetLength(1);
 
-                var scale = ((bmpWidth) / twoDimArrays.Count) / (w+1) ;// +1 is for offset between pictures in X dim.
+                var scale = ((bmpWidth) / twoDimArrays.Count) / (w + 1);// +1 is for offset between pictures in X dim.
 
                 //if (scale * (w + 1) < (bmpWidth))
                 //    scale++;
@@ -214,8 +214,8 @@ namespace NeoCortex
         /// <param name="yellowMiddle">The middle of the heat. Values lower than this value transforms to green.
         /// Values higher than this value transforms to red.</param>
         /// <param name="redStart">Values higher than this value are by default red. Values lower than this value transform to yellow.</param>
-        public static void DrawHeatmaps(List<double[,]> twoDimArrays, String filePath, 
-            int bmpWidth = 1024, 
+        public static void DrawHeatmaps(List<double[,]> twoDimArrays, String filePath,
+            int bmpWidth = 1024,
             int bmpHeight = 1024,
             decimal redStart = 200, decimal yellowMiddle = 127, decimal greenStart = 20)
         {
@@ -250,7 +250,7 @@ namespace NeoCortex
                         {
                             for (int padY = 0; padY < scale; padY++)
                             {
-                                myBitmap.SetPixel(n * (bmpWidth / twoDimArrays.Count) + Xcount * scale + padX, Ycount * scale + padY, GetColor(redStart, yellowMiddle, greenStart, (Decimal)arr[Xcount, Ycount])); 
+                                myBitmap.SetPixel(n * (bmpWidth / twoDimArrays.Count) + Xcount * scale + padX, Ycount * scale + padY, GetColor(redStart, yellowMiddle, greenStart, (Decimal)arr[Xcount, Ycount]));
                                 k++;
                             }
                         }
@@ -330,7 +330,7 @@ namespace NeoCortex
 
         private static int[] GetColorValues(decimal highBound, decimal lowBound, int[] highColor, int[] lowColor, decimal val)
         {
-       
+
             // proportion the val is between the high and low bounds
             decimal ratio = (val - lowBound) / (highBound - lowBound);
             int[] rgb = new int[3];
@@ -376,7 +376,7 @@ namespace NeoCortex
             return intList;
         }
 
-        private static Random  rnd = new Random(42);
+        private static Random rnd = new Random(42);
 
         /// <summary>
         /// Creates the random vector.
@@ -477,6 +477,55 @@ namespace NeoCortex
                 }
             }
             return intList;
+        }
+
+
+        /// <summary>
+        /// Creates the 2D box vector.
+        /// </summary>
+        /// <param name="heightBits">The heght of the vector.</param>
+        /// <param name="widthBits">The width of the vector.</param>
+        /// <param name="nonzeroBitStart">Position of the first nonzero bit.</param>
+        /// <param name="nonZeroBitEnd">Position of the last nonzero bit.</param>
+        /// <returns>The two dimensional box.</returns>
+        public static int[] Create2DVector(int widthBits, int heightBits, int nonzeroBitStart, int nonZeroBitEnd)
+        {
+            int[] inputVector = new int[widthBits*heightBits];
+
+            for (int i = 0; i < widthBits; i++)
+            {
+                for (int j = 0; j < heightBits; j++)
+                {
+                    if (i > nonzeroBitStart && i < nonZeroBitEnd && j > nonzeroBitStart && j < nonZeroBitEnd)
+                        inputVector[i * widthBits + j] = 1;
+                    else
+                        inputVector[i * 32 + j] = 0;
+                }
+            }
+
+            return inputVector;
+        }
+
+        /// <summary>
+        /// Creates the 1D vector.
+        /// </summary>
+        /// <param name="bits">The number of bits vector.</param>
+        /// <param name="nonzeroBitStart">Position of the first nonzero bit.</param>
+        /// <param name="nonZeroBitEnd">Position of the last nonzero bit.</param>
+        /// <returns>The one dimensional vector.</returns>
+        public static int[] CreateVector(int bits, int nonzeroBitStart, int nonZeroBitEnd)
+        {
+            int[] inputVector = new int[bits];
+
+            for (int j = 0; j < bits; j++)
+            {
+                if (j > nonzeroBitStart && j < nonZeroBitEnd)
+                    inputVector[j] = 1;
+                else
+                    inputVector[j] = 0;
+            }
+
+            return inputVector;
         }
     }
 }

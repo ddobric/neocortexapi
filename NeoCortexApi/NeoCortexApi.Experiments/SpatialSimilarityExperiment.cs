@@ -1,26 +1,26 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeoCortex;
+using NeoCortexApi.Encoders;
+using NeoCortexApi.Entities;
+using NeoCortexApi.Network;
+using NeoCortexApi.Utility;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using NeoCortexApi;
-using NeoCortexApi.Encoders;
-using NeoCortexApi.Entities;
-using NeoCortexApi.Network;
-using NeoCortexApi.Utility;
+using System.Threading.Tasks;
 
-namespace NeoCortexApiSample
+namespace NeoCortexApi.Experiments
 {
-    /// <summary>
-    /// Implements an experiment that demonstrates how to learn spatial patterns.
-    /// SP will learn every presented input in multiple iterations.
-    /// </summary>
-    public class SpatialPatternLearning
+    [TestClass]
+    public class SpatialSimilarityExperiment
     {
-        public void Run()
+        [TestMethod]
+        public void SpatialSimilarityExperimentTest()
         {
-            Console.WriteLine($"Hello NeocortexApi! Experiment {nameof(SpatialPatternLearning)}");
+            Console.WriteLine($"Hello {nameof(SpatialSimilarityExperiment)} experiment.");
 
             // Used as a boosting parameters
             // that ensure homeostatic plasticity effect.
@@ -42,10 +42,10 @@ namespace NeoCortexApiSample
                 DutyCyclePeriod = 100,
                 MinPctOverlapDutyCycles = minOctOverlapCycles,
 
-                GlobalInhibition = true,
+                GlobalInhibition = false,
                 NumActiveColumnsPerInhArea = 0.02 * numColumns,
                 PotentialRadius = (int)(0.15 * inputBits),
-                LocalAreaDensity = -1,
+                LocalAreaDensity = 0.5,
                 ActivationThreshold = 10,
                 MaxSynapsesPerSegment = (int)(0.01 * numColumns),
                 Random = new ThreadSafeRandom(42)
@@ -71,14 +71,33 @@ namespace NeoCortexApiSample
 
             //
             // We create here 100 random input values.
-            List<double> inputValues = new List<double>();
-
-            for (int i = 0; i < (int)max; i++)
-            {
-                inputValues.Add((double)i);
-            }
+            List<int[]> inputValues = GetTrainingvectors(0, inputBits);
 
             RunExperiment(cfg, encoder, inputValues);
+        }
+
+
+        /// <summary>
+        /// Creates training vectors.
+        /// </summary>
+        /// <param name="experimentCode"></param>
+        /// <param name="inputBits"></param>
+        /// <returns></returns>
+        private List<int[]> GetTrainingvectors(int experimentCode, int inputBits)
+        {
+            if (experimentCode == 0)
+            {
+                //
+                // We create here 2 vectors.
+                List<int[]> inputValues = new List<int[]>();
+
+                inputValues.Add(NeoCortexUtils.CreateVector(inputBits, 5, 15 + 5));
+                inputValues.Add(NeoCortexUtils.CreateVector(inputBits, 3, 15 + 5 + 3));
+
+                return inputValues;
+            }
+            else
+                throw new ApplicationException("Invalid experimentCode");
         }
 
         /// <summary>
@@ -87,7 +106,7 @@ namespace NeoCortexApiSample
         /// <param name="cfg"></param>
         /// <param name="encoder"></param>
         /// <param name="inputValues"></param>
-        private static void RunExperiment(HtmConfig cfg, EncoderBase encoder, List<double> inputValues)
+        private static void RunExperiment(HtmConfig cfg, EncoderBase encoder, List<int[]> inputValues)
         {
             // Creates the htm memory.
             var mem = new Connections(cfg);
@@ -124,37 +143,21 @@ namespace NeoCortexApiSample
             SpatialPooler sp = new SpatialPoolerMT(hpa);
 
             // Initializes the 
-            sp.Init(mem, new DistributedMemory() { ColumnDictionary = new InMemoryDistributedDictionary<int, NeoCortexApi.Entities.Column>(1) });
-
-           // mem.TraceProximalDendritePotential(true);
-            
-            // It creates the instance of the neo-cortex layer.
-            // Algorithm will be performed inside of that layer.
-            CortexLayer<object, object> cortexLayer = new CortexLayer<object, object>("L1");
-
-            // Add encoder as the very first module. This model is connected to the sensory input cells
-            // that receive the input. Encoder will receive the input and forward the encoded signal
-            // to the next module.
-            cortexLayer.HtmModules.Add("encoder", encoder);
-
-            // The next module in the layer is Spatial Pooler. This module will receive the output of the
-            // encoder.
-            cortexLayer.HtmModules.Add("sp", sp);
-
-            double[] inputs = inputValues.ToArray();
+            sp.Init(mem);
 
             // Will hold the SDR of every inputs.
-            Dictionary<double, int[]> prevActiveCols = new Dictionary<double, int[]>();
+            Dictionary<string, int[]> prevActiveCols = new Dictionary<string, int[]>();
 
             // Will hold the similarity of SDKk and SDRk-1 fro every input.
-            Dictionary<double, double> prevSimilarity = new Dictionary<double, double>();
+            Dictionary<string, double> prevSimilarity = new Dictionary<string, double>();
 
             //
             // Initiaize start similarity to zero.
-            foreach (var input in inputs)
+            for (int i = 0; i < inputValues.Count; i++)
             {
-                prevSimilarity.Add(input, 0.0);
-                prevActiveCols.Add(input, new int[0]);
+                string inputKey = GetInputGekFromIndex(i);
+                prevSimilarity.Add(inputKey, 0.0);
+                prevActiveCols.Add(inputKey, new int[0]);
             }
 
             // Learning process will take 1000 iterations (cycles)
@@ -166,28 +169,42 @@ namespace NeoCortexApiSample
 
                 //
                 // This trains the layer on input pattern.
-                foreach (var input in inputs)
+                for (int inputIndx = 0; inputIndx < inputValues.Count; inputIndx++)
                 {
+                    string inputKey = GetInputGekFromIndex(inputIndx);
+                    int[] input = inputValues[inputIndx];
+
                     double similarity;
+
+                    int[] activeColumns = new int[(int)cfg.NumColumns];
 
                     // Learn the input pattern.
                     // Output lyrOut is the output of the last module in the layer.
-                    // 
-                    var lyrOut = cortexLayer.Compute((object)input, true) as int[];
+                    sp.compute(input, activeColumns, true);
 
-                    // This is a general way to get the SpatialPooler result from the layer.
-                    var activeColumns = cortexLayer.GetResult("sp") as int[];
+                    List<int[,]> twoDimArrays = new List<int[,]>();
+                    int[,] twoDimInpArray = ArrayUtils.Make2DArray<int>(input, (int)(Math.Sqrt(input.Length) + 0.5), (int)(Math.Sqrt(input.Length) + 0.5));
+                    twoDimArrays.Add(twoDimInpArray = ArrayUtils.Transpose(twoDimInpArray));
+                    int[,] twoDimOutArray = ArrayUtils.Make2DArray<int>(activeColumns, (int)(Math.Sqrt(cfg.NumColumns) + 0.5), (int)(Math.Sqrt(cfg.NumColumns) + 0.5));
+                    twoDimArrays.Add(twoDimInpArray = ArrayUtils.Transpose(twoDimOutArray));
+
+                    NeoCortexUtils.DrawBitmaps(twoDimArrays, $"{inputKey}.png", Color.Yellow, Color.Gray, 1024, 1024);
 
                     var actCols = activeColumns.OrderBy(c => c).ToArray();
 
-                    similarity = MathHelpers.CalcArraySimilarity(activeColumns, prevActiveCols[input]);
+                    similarity = MathHelpers.CalcArraySimilarity(activeColumns, prevActiveCols[inputKey]);
 
                     Debug.WriteLine($"[cycle={cycle.ToString("D4")}, i={input}, cols=:{actCols.Length} s={similarity}] SDR: {Helpers.StringifyVector(actCols)}");
 
-                    prevActiveCols[input] = activeColumns;
-                    prevSimilarity[input] = similarity;
+                    prevActiveCols[inputKey] = activeColumns;
+                    prevSimilarity[inputKey] = similarity;
                 }
             }
+        }
+
+        private static string GetInputGekFromIndex(int i)
+        {
+            return $"I-{i.ToString("D2")}";
         }
     }
 }
