@@ -10,6 +10,9 @@ using System.Linq;
 
 namespace NeoCortex
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class NeoCortexUtils
     {
         /// <summary>
@@ -53,6 +56,8 @@ namespace NeoCortex
         /// <param name="width">Output width.</param>
         /// <param name="height">Output height.</param>
         /// <param name="filePath">The bitmap PNG filename.</param>
+        /// <param name="inactiveCellColor"></param>
+        /// <param name="activeCellColor"></param>
         /// <param name="text">Text to be written.</param>
         public static void DrawBitmap(int[,] twoDimArray, int width, int height, String filePath, Color inactiveCellColor, Color activeCellColor, string text = null)
         {
@@ -77,6 +82,8 @@ namespace NeoCortex
         /// <param name="twoDimArray">Array of active columns.</param>
         /// <param name="scale">Scale of bitmap. If array of active columns is 10x10 and scale is 5 then output bitmap will be 50x50.</param>
         /// <param name="filePath">The bitmap filename.</param>
+        /// <param name="activeCellColor"></param>
+        /// <param name="inactiveCellColor"></param>
         /// <param name="text">Text to be written.</param>
         public static void DrawBitmap(int[,] twoDimArray, int scale, String filePath, Color inactiveCellColor, Color activeCellColor, string text = null)
         {
@@ -117,6 +124,13 @@ namespace NeoCortex
             myBitmap.Save(filePath, ImageFormat.Png);
         }
 
+        /// <summary>
+        /// TODO: add comment
+        /// </summary>
+        /// <param name="twoDimArrays"></param>
+        /// <param name="filePath"></param>
+        /// <param name="bmpWidth"></param>
+        /// <param name="bmpHeight"></param>
         public static void DrawBitmaps(List<int[,]> twoDimArrays, String filePath, int bmpWidth = 1024, int bmpHeight = 1024)
         {
             DrawBitmaps(twoDimArrays, filePath, Color.DarkGray, Color.Yellow, bmpWidth, bmpHeight);
@@ -193,8 +207,6 @@ namespace NeoCortex
         /// </summary>
         /// <param name="twoDimArrays">List of arrays to be represented as bitmaps.</param>
         /// <param name="filePath">Output image path.</param>
-        /// <param name="inactiveCellColor">Color of inactive bit.</param>
-        /// <param name="activeCellColor">Color of active bit.</param>
         /// <param name="bmpWidth">The width of the bitmap.</param>
         /// <param name="bmpHeight">The height of the bitmap.</param>
         /// <param name="greenStart">ALl values below this value are by defaut green.

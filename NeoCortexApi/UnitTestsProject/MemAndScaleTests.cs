@@ -124,7 +124,7 @@ namespace UnitTestsProject
                     Console.Out.WriteLine("MaxValue: " + i);
 
                 }
-                catch (Exception ignored)
+                catch (Exception)
                 {
                     Console.WriteLine($"Max int array: {i - 1}");
                     return;
@@ -213,7 +213,7 @@ namespace UnitTestsProject
                         if (lastIncrement == 0) break;
                     }
                     else
-                        throw ex;
+                        throw;
                 }
             }
 

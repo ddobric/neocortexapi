@@ -43,7 +43,7 @@ namespace UnitTestsProject
         //[DataRow("Horizontal")]
         public void SimilarityExperiment(string inputPrefix)
         {
-            int stableStateCnt = 100;
+            //int stableStateCnt = 100;
             double minOctOverlapCycles = 1.0;
             double maxBoost = 10.0;
             //int inputBits = 100;
@@ -121,7 +121,7 @@ namespace UnitTestsProject
 
             p.apply(mem);
 
-            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, trainingImages.Length * 150, (isStable, numPatterns, actColAvg, seenInputs) =>
+            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, trainingImages.Length * 50, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                 // Event should only be fired when entering the stable state.
                 // Ideal SP should never enter unstable state after stable state.
@@ -129,7 +129,7 @@ namespace UnitTestsProject
                 Assert.IsTrue(numPatterns == trainingImages.Length);
                 isInStableState = true;
                 Debug.WriteLine($"Entered STABLE state: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
-            });
+            }, requiredSimilarityThreshold:0.975);
 
             SpatialPooler sp = new SpatialPoolerMT(hpa);
 
@@ -240,7 +240,7 @@ namespace UnitTestsProject
 
             Directory.CreateDirectory($"{nameof(SimilarityExperiment)}");
 
-            int counter = 0;
+            //int counter = 0;
             //var parameters = GetDefaultParams();
             ////parameters.Set(KEY.DUTY_CYCLE_PERIOD, 20);
             ////parameters.Set(KEY.MAX_BOOST, 1);

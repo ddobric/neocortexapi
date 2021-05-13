@@ -35,7 +35,7 @@ namespace NeoCortexApi.Utility
         ///////////////////////
         //    Control Lists  //
         ///////////////////////
-        private bool[] advanceList;
+        //private bool[] advanceList;
 
         #endregion
 

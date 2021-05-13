@@ -79,21 +79,22 @@ namespace UnitTestsProject
         }
 
 
-        private T deepCopyPlain<T>(T obj)
-        {
-            IFormatter formatter = new BinaryFormatter();
-            using (Stream stream = new MemoryStream())
-            {
-                formatter.Serialize(stream, obj);
-                stream.Position = 0;
-                return (T)formatter.Deserialize(stream);
-            }
+        // TODO: formatter.Serialize is obsoleted
+        //private T deepCopyPlain<T>(T obj)
+        //{
+        //    IFormatter formatter = new BinaryFormatter();
+        //    using (Stream stream = new MemoryStream())
+        //    {
+        //        formatter.Serialize(stream, obj);
+        //        stream.Position = 0;
+        //        return (T)formatter.Deserialize(stream);
+        //    }
 
-            //JsonSerializerSettings jss = new Newtonsoft.Json.JsonSerializerSettings();
+        //    //JsonSerializerSettings jss = new Newtonsoft.Json.JsonSerializerSettings();
 
-            //string serObj = JsonConvert.SerializeObject(obj);
-            //return JsonConvert.DeserializeObject<T>(serObj);
-        }
+        //    //string serObj = JsonConvert.SerializeObject(obj);
+        //    //return JsonConvert.DeserializeObject<T>(serObj);
+        //}
 
         [TestMethod]
         [TestCategory("Prod")]

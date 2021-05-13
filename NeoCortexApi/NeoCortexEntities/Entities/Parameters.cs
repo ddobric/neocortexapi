@@ -1332,7 +1332,7 @@ namespace NeoCortexApi.Entities
             }
 
             //int hc = DeepEquals.deepHashCode(paramMap);
-            paramMap.Add(KEY.RANDOM, rnd);
+            //paramMap.Add(KEY.RANDOM, rnd);
 
             //return hc;
 

@@ -34,7 +34,7 @@ namespace NeoCortexApiSample
                 GlobalInhibition = true,
                 LocalAreaDensity = -1,
                 NumActiveColumnsPerInhArea = 0.02 * numColumns,
-                PotentialRadius = 50,
+                PotentialRadius = (int)(0.15 * inputBits),
                 InhibitionRadius = 15,
 
                 MaxBoost = 10.0,
