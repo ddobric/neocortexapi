@@ -281,9 +281,30 @@ namespace UnitTestsProject
 
                     for (int k = 0; k < numOfElems - 1; k++)
                     {
-                        Assert.IsTrue(rememberedSdrs[k][0] == rememberedSdrs[k+1][0]+1);
+                        Assert.IsTrue(rememberedSdrs[k][0] == rememberedSdrs[k + 1][0] + 1);
                     }
                 }
+            }
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [TestMethod]
+        public void CalcSimilarityMatrixTest()
+        {
+            Dictionary<string, int[]> sdrs = new Dictionary<string, int[]>();
+            sdrs.Add("sdr1", new int[] { 1, 2, 3, 0 });
+            sdrs.Add("sdr2", new int[] { 1, 4, 6, 8 });
+            sdrs.Add("sdr3", new int[] { 2, 9, 11, 10 });
+            sdrs.Add("sdr4", new int[] { 0, 14, 20, 21 });
+
+            var res = MathHelpers.CalculateSimilarityMatrix(sdrs);
+
+            for (int i = 0; i < sdrs.Count; i++)
+            {
+                Assert.IsTrue(res[i, i] == 100);
             }
         }
     }

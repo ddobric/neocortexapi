@@ -27,7 +27,7 @@ namespace NeoCortexApi.Experiments
             double minOctOverlapCycles = 1.0;
             double maxBoost = 5.0;
 
-            // We will use 200 bits to represent an input vector (pattern).
+            // We will use 200 bits to represe nt an input vector (pattern).
             int inputBits = 200;
 
             // We will build a slice of the cortex with the given number of mini-columns
@@ -165,7 +165,7 @@ namespace NeoCortexApi.Experiments
 
             for (int cycle = 0; cycle < maxSPLearningCycles; cycle++)
             {
-                Debug.WriteLine($"Cycle  ** {cycle} ** Stability: {isInStableState}");
+                //Debug.WriteLine($"Cycle  ** {cycle} ** Stability: {isInStableState}");
 
                 //
                 // This trains the layer on input pattern.
@@ -182,24 +182,29 @@ namespace NeoCortexApi.Experiments
                     // Output lyrOut is the output of the last module in the layer.
                     sp.compute(input, activeColumns, true);
 
-                    List<int[,]> twoDimArrays = new List<int[,]>();
-                    int[,] twoDimInpArray = ArrayUtils.Make2DArray<int>(input, (int)(Math.Sqrt(input.Length) + 0.5), (int)(Math.Sqrt(input.Length) + 0.5));
-                    twoDimArrays.Add(twoDimInpArray = ArrayUtils.Transpose(twoDimInpArray));
-                    int[,] twoDimOutArray = ArrayUtils.Make2DArray<int>(activeColumns, (int)(Math.Sqrt(cfg.NumColumns) + 0.5), (int)(Math.Sqrt(cfg.NumColumns) + 0.5));
-                    twoDimArrays.Add(twoDimInpArray = ArrayUtils.Transpose(twoDimOutArray));
-
-                    NeoCortexUtils.DrawBitmaps(twoDimArrays, $"{inputKey}.png", Color.Yellow, Color.Gray, 1024, 1024);
+                    //DrawBitmaps(cfg, inputKey, input, activeColumns);
 
                     var actCols = activeColumns.OrderBy(c => c).ToArray();
 
                     similarity = MathHelpers.CalcArraySimilarity(activeColumns, prevActiveCols[inputKey]);
 
-                    Debug.WriteLine($"[cycle={cycle.ToString("D4")}, i={input}, cols=:{actCols.Length} s={similarity}] SDR: {Helpers.StringifyVector(actCols)}");
+                    Debug.WriteLine($"[i={inputKey}, cols=:{actCols.Length} s={similarity}] SDR: {Helpers.StringifyVector(ArrayUtils.IndexWhere(actCols, c=>c == 1))}");
 
                     prevActiveCols[inputKey] = activeColumns;
                     prevSimilarity[inputKey] = similarity;
                 }
             }
+        }
+
+        private static void DrawBitmaps(HtmConfig cfg, string inputKey, int[] input, int[] activeColumns)
+        {
+            List<int[,]> twoDimArrays = new List<int[,]>();
+            int[,] twoDimInpArray = ArrayUtils.Make2DArray<int>(input, (int)(Math.Sqrt(input.Length) + 0.5), (int)(Math.Sqrt(input.Length) + 0.5));
+            twoDimArrays.Add(twoDimInpArray = ArrayUtils.Transpose(twoDimInpArray));
+            int[,] twoDimOutArray = ArrayUtils.Make2DArray<int>(activeColumns, (int)(Math.Sqrt(cfg.NumColumns) + 0.5), (int)(Math.Sqrt(cfg.NumColumns) + 0.5));
+            twoDimArrays.Add(twoDimInpArray = ArrayUtils.Transpose(twoDimOutArray));
+
+            NeoCortexUtils.DrawBitmaps(twoDimArrays, $"{inputKey}.png", Color.Yellow, Color.Gray, 1024, 1024);
         }
 
         private static string GetInputGekFromIndex(int i)
