@@ -46,7 +46,7 @@ namespace NeoCortexApi.Entities
 
         }
         public String ReadBegin(String typeName)
-       {
+        {
             string val = ($"{TypeDelimiter} BEGIN '{typeName}' {TypeDelimiter}");
             return val;
         }
@@ -279,7 +279,7 @@ namespace NeoCortexApi.Entities
             {
                 foreach (Cell cell in val)
                 {
-                    cell.Serialize(sw);
+                   // cell.Serialize(sw);
                     sw.Write(ValueDelimiter);
                 }
             }
@@ -412,7 +412,22 @@ namespace NeoCortexApi.Entities
             }
             sw.Write(ParameterDelimiter);
         }
-
+        /// <summary>
+        /// Read the List of DistalDendrite.
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <returns>List<DistalDendrite></returns>
+        //public List<DistalDendrite> ReadListDendrite(StreamReader reader)
+        //{
+        //    List<DistalDendrite> keyValues = new List<DistalDendrite>();
+        //    string data = reader.ReadLine();
+        //    if (data == ReadBegin(nameof(DistalDendrite)))
+        //    {
+        //        keyValues.Add(DistalDendrite.Deserialize(reader));
+        //    }
+            
+        //    return keyValues;
+        //}
         ///// <summary>
         ///// Serialize the List of Synapse.
         ///// </summary>
@@ -429,7 +444,22 @@ namespace NeoCortexApi.Entities
             }
             sw.Write(ParameterDelimiter);
         }
+        /// <summary>
+        /// Read the List of Synapse.
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <returns>List<Synapse></returns>
+        //public List<Synapse> ReadListSynapse(StreamReader reader)
+        //{
+        //    List<Synapse> keyValues = new List<Synapse>();
+        //    string data = reader.ReadLine();
+        //    if (data == ReadBegin(nameof(Synapse)))
+        //    {
+        //        keyValues.Add(Synapse.Deserialize(reader));
+        //    }
 
+        //    return keyValues;
+        //}
         /// <summary>
         /// Serialize the List of Integers.
         /// </summary>
@@ -474,7 +504,7 @@ namespace NeoCortexApi.Entities
                 sw.Write(KeyValueDelimiter);
                 foreach (Synapse val in i.Value)
                 {
-                    val.Serialize(sw);
+                    //val.Serialize(sw);
                     sw.Write(ValueDelimiter);
                 }
 
@@ -492,7 +522,7 @@ namespace NeoCortexApi.Entities
             sw.Write(ValueDelimiter);
             foreach (KeyValuePair<Cell, List<DistalDendrite>> i in keyValues)
             {
-                i.Key.Serialize(sw);
+                //i.Key.Serialize(sw);
                 sw.Write(KeyValueDelimiter);
                 foreach (DistalDendrite val in i.Value)
                 {
@@ -517,7 +547,7 @@ namespace NeoCortexApi.Entities
             foreach (KeyValuePair<int, Synapse> i in keyValues)
             {
                 sw.Write(i.Key.ToString() + KeyValueDelimiter);
-                i.Value.Serialize(sw);
+                //i.Value.Serialize(sw);
                 sw.Write(ElementsDelimiter);
             }
             sw.Write(ParameterDelimiter);

@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
 using NeoCortexEntities.NeuroVisualizer;
+using Newtonsoft.Json.Linq;
 
 namespace UnitTestsProject
 {
@@ -543,37 +544,8 @@ namespace UnitTestsProject
         [DataRow(1, 2, 2, 1.0, 100)]
         public void SerializeDistalDendrite(int flatIdx, long lastUsedIteration, int ordinal, double synapsePermConnected, int numInputs)
         {
-            Cell cell = new Cell(1, 1, 1, 1, new CellActivity());
-            cell.DistalDendrites = new List<DistalDendrite>();
-            cell.DistalDendrites.Add(new DistalDendrite(cell, 1, 2, 2, 1.0, 100));
-            cell.DistalDendrites.Add(new DistalDendrite(cell, 44, 24, 34, 1.0, 100));
-            cell.ReceptorSynapses = new List<Synapse>();
-            cell.ReceptorSynapses.Add(new Synapse(cell, 1, 23, 1.0));
-            cell.ReceptorSynapses.Add(new Synapse(cell, 3, 27, 1.0));
-
-            DistalDendrite distal = new DistalDendrite(cell, flatIdx, lastUsedIteration, ordinal, synapsePermConnected, numInputs);
-            distal.Synapses.Add(new Synapse(cell, 1, 23, 1.0));
-            distal.Synapses.Add(new Synapse(cell, 3, 27, 1.0));
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeDistalDendrite)}.txt"))
-            {
-                distal.SerializeT(sw);
-            }
-
-            //Unable to deserialize as serilaization has circluar reference
-
-        }
-
-        ///<summary>
-        ///Test Synapse(Circular Reference).
-        ///</summary>
-        [TestMethod]
-        [TestCategory("Serialization")]
-        [DataRow(13, 87, 22.45)]
-        public void SerializeSynapseTest(int segmentindex, int synapseindex, double permanence)
-        {
-            
             Cell cell = new Cell(12, 14, 16, 18, new CellActivity());
-            
+
             var distSeg1 = new DistalDendrite(cell, 1, 2, 2, 1.0, 100);
             cell.DistalDendrites.Add(distSeg1);
 
@@ -586,92 +558,92 @@ namespace UnitTestsProject
 
             var synapse2 = new Synapse(cell, distSeg2.SegmentIndex, 27, 1.0);
             preSynapticcell.ReceptorSynapses.Add(synapse2);
-          
+
+           
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeDistalDendrite)}.txt"))
+            {
+                distSeg1.Serialize(sw);
+            }
+
+            //Unable to deserialize as serilaization has circluar reference
+
+        }
+
+        ///<summary>
+        ///Test Synapse.
+        ///</summary>
+        [TestMethod]
+        [TestCategory("Serialization")]
+        [DataRow(13, 87, 22.45)]
+        public void SerializeSynapseTest(int segmentindex, int synapseindex, double permanence)
+        {
+
+            Cell cell = new Cell(12, 14, 16, 18, new CellActivity());
+
+            var distSeg1 = new DistalDendrite(cell, 1, 2, 2, 1.0, 100);
+            cell.DistalDendrites.Add(distSeg1);
+
+            var distSeg2 = new DistalDendrite(cell, 44, 24, 34, 1.0, 100);
+            cell.DistalDendrites.Add(distSeg2);
+
+            Cell preSynapticcell = new Cell(11, 14, 16, 28, new CellActivity());
+
+            var synapse1 = new Synapse(cell, distSeg1.SegmentIndex, 23, 1.0);
+            preSynapticcell.ReceptorSynapses.Add(synapse1);
+
+            var synapse2 = new Synapse(cell, distSeg2.SegmentIndex, 27, 1.0);
+            preSynapticcell.ReceptorSynapses.Add(synapse2);
+
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeSynapseTest)}.txt"))
             {
                 synapse1.SerializeT(sw);
 
-                synapse2.SerializeT(sw);
+                //synapse2.SerializeT(sw);
+            }
+            
+
+            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeSynapseTest)}.txt"))
+            {
+                Cell cell1 = new Cell();
+
+                var distSegment1 = new DistalDendrite();
+                var distSegment2 = new DistalDendrite();
+                var synapseT1 = new Synapse();
+                var synapseT2 = new Synapse();
+
+                HtmSerializer2 ser = new HtmSerializer2();
+
+                while (sr.Peek() >= 0)
+                {
+                    string data = sr.ReadLine();
+                    
+                    if (data == ser.ReadBegin(nameof(Synapse)))
+                    {
+                        synapseT1 = Synapse.Deserialize(sr);
+
+                        cell1 = Cell.Deserialize(sr);
+
+                        distSegment1 = DistalDendrite.Deserialize(sr);
+
+                        distSegment2 = DistalDendrite.Deserialize(sr);
+
+                        distSegment1.ParentCell = cell1;
+                        distSegment2.ParentCell = cell1;
+                        cell1.DistalDendrites.Add(distSegment1);
+                        cell1.DistalDendrites.Add(distSegment2);
+                        synapseT1.SourceCell = cell1;
+                    }
+                }
+                
+                Assert.IsTrue(synapse1.Equals(synapseT1));
+
+
+                //var synapse = Synapse.Deserialize(sr);
+
+                //Assert.IsTrue(synapse.Equals(synapse1));
             }
 
             //Unable to deserialize as serialization has circular reference.
-        }
-
-        /// <summary>
-        /// Test Synapse.
-        /// </summary>
-        [TestMethod]
-        [TestCategory("Serialization")]
-        [DataRow(34, 24, 24.65)]
-        //[DataRow(13, 87, 22.45)]
-        //[DataRow(1000, 3400, 4573.623)]
-
-        public void SerializeSynapseTestObsolete(int segmentindex, int synapseindex, double permanence)
-        {
-            Cell cell = new Cell(12, 14, 16, 18, new CellActivity());
-            //Cell cell = new Cell();
-            cell.DistalDendrites = new List<DistalDendrite>();
-
-            cell.DistalDendrites.Add(new DistalDendrite(cell, 1, 2, 2, 1.0, 100));
-            cell.DistalDendrites.Add(new DistalDendrite(cell, 44, 24, 34, 1.0, 100));
-
-            cell.ReceptorSynapses = new List<Synapse>();
-
-            cell.ReceptorSynapses.Add(new Synapse(cell, 1, 23, 1.0));
-            cell.ReceptorSynapses.Add(new Synapse(cell, 3, 27, 1.0));
-            Synapse synapse = new Synapse(cell, segmentindex, synapseindex, permanence);
-            Synapse synapse1 = null;
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeSynapseTest)}_{synapseindex}.txt"))
-            {
-                synapse.Serialize(sw);
-
-                using (StreamWriter streamWriter = new StreamWriter($"ser_{nameof(SerializeCellTest)}_{cell.Index}.txt"))
-                {
-                    cell.Serialize(streamWriter);
-                    for (int j = 0; j < cell.DistalDendrites.Count; j++)
-                    {
-                        if (!File.Exists($"Users / mouni.kolisetty / neocortexapi / NeoCortexApi / UnitTestsProject / bin / Debug / net5.0 / ser_SerializeSynapseTest_{cell.DistalDendrites[j].Ordinal}.txt"))
-                            using (StreamWriter swLD = new StreamWriter($"ser_{nameof(SerializeDistalDendrite)}_{cell.DistalDendrites[j].Ordinal}.txt"))
-                            {
-                                cell.DistalDendrites[j].Serialize(swLD);
-                            }
-                    }
-                    for (int i = 0; i < cell.ReceptorSynapses.Count; i++)
-                    {
-                        if (!File.Exists($"Users / mouni.kolisetty / neocortexapi / NeoCortexApi / UnitTestsProject / bin / Debug / net5.0 / ser_SerializeSynapseTest_{cell.ReceptorSynapses[i].SynapseIndex}.txt"))
-                            using (StreamWriter swLS = new StreamWriter($"ser_{nameof(SerializeSynapseTest)}_{cell.ReceptorSynapses[i].SynapseIndex}.txt"))
-                            {
-                                cell.ReceptorSynapses[i].Serialize(swLS);
-                            }
-                    }
-                }
-            }
-            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeSynapseTest)}_{synapseindex}.txt"))
-            {
-                synapse1 = Synapse.Deserialize(sr);
-            }
-            using (StreamReader streamreader = new StreamReader($"ser_SerializeCellTest_{synapse1.SourceCell.Index}.txt"))
-            {
-                var mvcell = Cell.Deserialize(streamreader);
-                synapse1.SourceCell = mvcell;
-                foreach (Synapse s in synapse1.SourceCell.ReceptorSynapses)
-                {
-                    s.SourceCell = mvcell;
-                }
-                foreach (DistalDendrite dd in synapse1.SourceCell.DistalDendrites)
-                {
-                    dd.ParentCell = mvcell;
-                }
-
-            }
-
-            //Assert.IsTrue(synapse1.Equals(synapse));//Showing run time error---- maybe memory issue.
-            //using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeSynapseTest)}.txt"))
-            //{
-            //    Synapse synapse1 = Synapse.Deserialize(sr);
-
-            //    Assert.IsTrue(synapse1.Equals(synapse));
-            //}
         }
 
         /// <summary>
