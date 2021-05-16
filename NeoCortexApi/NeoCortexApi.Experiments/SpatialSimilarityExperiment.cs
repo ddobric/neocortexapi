@@ -93,7 +93,7 @@ namespace NeoCortexApi.Experiments
 
                 for (int i = 0; i < 10; i += 1)
                 {
-                    inputValues.Add(NeoCortexUtils.CreateVector(inputBits, i, width));
+                    inputValues.Add(NeoCortexUtils.CreateVector(inputBits, i, i + width));
                 }
 
 
@@ -218,7 +218,7 @@ namespace NeoCortexApi.Experiments
         private static void GenerateResult(HtmConfig cfg, List<int[]> inputValues,
             Dictionary<string, int[]> activeColIndicies, Dictionary<string, int[]> activeCols)
         {
-            int inpLen = inputValues[0].Length;
+            int inpLen = (int)(Math.Sqrt(inputValues[0].Length) + 0.5);
 
             Dictionary<string, int[]> inpVectorsMap = new Dictionary<string, int[]>();
 
@@ -240,9 +240,9 @@ namespace NeoCortexApi.Experiments
                     matrix[i, j] = $"{inRes[i, j].ToString("0.##")}/{outRes[i, j].ToString("0.##")}";
                 }
 
-                i++;
+                DrawBitmaps(cfg, inputKey, inputValues[i], inpLen, activeCols[inputKey]);
 
-                DrawBitmaps(cfg, inputKey, inpVectorsMap[inputKey], inpLen, activeCols[inputKey]);
+                i++;
             }
 
             PrintMatrix(inpVectorsMap.Keys.Count, inpVectorsMap.Keys.ToArray(), matrix);
