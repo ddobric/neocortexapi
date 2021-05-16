@@ -217,3 +217,24 @@ state. Results show that learned SDRs remain stable during the lifetime of the S
 [Presentation](https://dobricfamily-my.sharepoint.com/:p:/g/personal/damir_dobric_de/ETLj1GSdvRFElIV2a-dKS5IBXsKP4-oNSVc60Jh31K6nQw?e=mo7qpe)
 
 [See paper on the conference site](https://www.insticc.org/node/TechnicalProgram/icpram/2021/presentationDetails/103142)
+
+## Implementation of HTM FeedForward network
+
+### Author
+
+Md Mukit Khan,
+S M Mehedi Hasan
+
+### Project reference
+
+ML20/21 - 5.2
+Issue 70
+
+### Abstract
+
+HTM Feedforward network is a multilayer based artificial neural orchestrate which is a biologically propelled show of a single cortical column of the NeoCortex, is a set of six layers of the portion of mammalian cerebral cortex wherever the higher cognitive functioning is acknowledged to originate from. Previous findings in neurosciences show that there is the presence of two sets of Feedforward network in the single cortical column of the human brain among them layer L4-L2 Feedforward network plays the active role to learn new things from the environment. Within the L4-L2 Feedforward network arrange, the lower layer L4 takes the sensory data directly as input from the environment and passes the processed data to layer L2 to perform cognitive predicting & learning functions in the brain. In this paper, the idea to implement the layer L4-L2 based HTM Feed Forward network is demonstrated utilizing the most recent adaptation of NeocortexApi package, which is an open-source solution of the Hierarchical Temporal Memory Cortical Learning Algorithm. Besides, it is also examined how the implemented L4-L2 Feedforward network arrangement behaves at upper layer L2 in case of sequence learning and predicting using HTM Classifier. Aside from that, NuMenta's discoveries and guidelines are investigated as well. The results show that the proposed L4-L2 based HTM Feedforward network with NeocortexApi can learn and predict sequential data patterns with precision in the upper layer region.
+
+
+[Download student paper here](./Experiments/ML-20-21_20-5.2_HTM FeedForward_Network.pdf)
+
+[Check out implementation here](../../NeoCortexApi/NeoCortexApi.Experiments/FeedForwardExperiment_L4L2.cs)
