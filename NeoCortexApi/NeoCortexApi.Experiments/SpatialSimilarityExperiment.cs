@@ -41,23 +41,23 @@ namespace NeoCortexApi.Experiments
                 MaxBoost = maxBoost,
                 DutyCyclePeriod = 100,
                 MinPctOverlapDutyCycles = minOctOverlapCycles,
-
-                GlobalInhibition = false,
+                StimulusThreshold = 5,
+                GlobalInhibition = true,
                 NumActiveColumnsPerInhArea = 0.02 * numColumns,
                 PotentialRadius = (int)(0.15 * inputBits),
-                LocalAreaDensity = 0.5,
+                LocalAreaDensity = -1,//0.5,
                 ActivationThreshold = 10,
                 MaxSynapsesPerSegment = (int)(0.01 * numColumns),
                 Random = new ThreadSafeRandom(42)
             };
 
             double max = 100;
-
+            int width = 15;
             //
             // This dictionary defines a set of typical encoder parameters.
             Dictionary<string, object> settings = new Dictionary<string, object>()
             {
-                { "W", 15},
+                { "W", width},
                 { "N", inputBits},
                 { "Radius", -1.0},
                 { "MinVal", 0.0},
@@ -71,7 +71,7 @@ namespace NeoCortexApi.Experiments
 
             //
             // We create here 100 random input values.
-            List<int[]> inputValues = GetTrainingvectors(0, inputBits);
+            List<int[]> inputValues = GetTrainingvectors(0, inputBits, width);
 
             RunExperiment(cfg, encoder, inputValues);
         }
@@ -83,7 +83,7 @@ namespace NeoCortexApi.Experiments
         /// <param name="experimentCode"></param>
         /// <param name="inputBits"></param>
         /// <returns></returns>
-        private List<int[]> GetTrainingvectors(int experimentCode, int inputBits)
+        private List<int[]> GetTrainingvectors(int experimentCode, int inputBits, int width)
         {
             if (experimentCode == 0)
             {
@@ -91,8 +91,11 @@ namespace NeoCortexApi.Experiments
                 // We create here 2 vectors.
                 List<int[]> inputValues = new List<int[]>();
 
-                inputValues.Add(NeoCortexUtils.CreateVector(inputBits, 5, 15 + 5));
-                inputValues.Add(NeoCortexUtils.CreateVector(inputBits, 3, 15 + 5 + 3));
+                for (int i = 0; i < 10; i += 1)
+                {
+                    inputValues.Add(NeoCortexUtils.CreateVector(inputBits, i, width));
+                }
+
 
                 return inputValues;
             }
@@ -137,7 +140,7 @@ namespace NeoCortexApi.Experiments
                         // Here you can perform any action if required.
                         isInStableState = true;
                     }
-                });
+                }, requiredSimilarityThreshold: 0.975);
 
             // It creates the instance of Spatial Pooler Multithreaded version.
             SpatialPooler sp = new SpatialPoolerMT(hpa);
@@ -145,7 +148,10 @@ namespace NeoCortexApi.Experiments
             // Initializes the 
             sp.Init(mem);
 
-            // Will hold the SDR of every inputs.
+            // Holds the indicies of active columns of the SDR.
+            Dictionary<string, int[]> prevActiveColIndicies = new Dictionary<string, int[]>();
+
+            // Holds the active column SDRs.
             Dictionary<string, int[]> prevActiveCols = new Dictionary<string, int[]>();
 
             // Will hold the similarity of SDKk and SDRk-1 fro every input.
@@ -157,7 +163,7 @@ namespace NeoCortexApi.Experiments
             {
                 string inputKey = GetInputGekFromIndex(i);
                 prevSimilarity.Add(inputKey, 0.0);
-                prevActiveCols.Add(inputKey, new int[0]);
+                prevActiveColIndicies.Add(inputKey, new int[0]);
             }
 
             // Learning process will take 1000 iterations (cycles)
@@ -182,24 +188,112 @@ namespace NeoCortexApi.Experiments
                     // Output lyrOut is the output of the last module in the layer.
                     sp.compute(input, activeColumns, true);
 
-                    //DrawBitmaps(cfg, inputKey, input, activeColumns);
+                    var actColsIndicies = ArrayUtils.IndexWhere(activeColumns, c => c == 1);
 
-                    var actCols = activeColumns.OrderBy(c => c).ToArray();
+                    similarity = MathHelpers.CalcArraySimilarity(actColsIndicies, prevActiveColIndicies[inputKey]);
 
-                    similarity = MathHelpers.CalcArraySimilarity(activeColumns, prevActiveCols[inputKey]);
-
-                    Debug.WriteLine($"[i={inputKey}, cols=:{actCols.Length} s={similarity}] SDR: {Helpers.StringifyVector(ArrayUtils.IndexWhere(actCols, c=>c == 1))}");
+                    Debug.WriteLine($"[i={inputKey}, cols=:{actColsIndicies.Length} s={similarity}] SDR: {Helpers.StringifyVector(actColsIndicies)}");
 
                     prevActiveCols[inputKey] = activeColumns;
+                    prevActiveColIndicies[inputKey] = actColsIndicies;
                     prevSimilarity[inputKey] = similarity;
+
+                    if (isInStableState)
+                    {
+                        GenerateResult(cfg, inputValues, prevActiveColIndicies, prevActiveCols);
+                        return;
+                    }
                 }
             }
         }
 
-        private static void DrawBitmaps(HtmConfig cfg, string inputKey, int[] input, int[] activeColumns)
+
+        /// <summary>
+        /// Draws all inputs and related SDRs. It also outputs the similarity matrix.
+        /// </summary>
+        /// <param name="cfg"></param>
+        /// <param name="inputValues"></param>
+        /// <param name="activeColIndicies"></param>
+        /// <param name="activeCols"></param>
+        private static void GenerateResult(HtmConfig cfg, List<int[]> inputValues,
+            Dictionary<string, int[]> activeColIndicies, Dictionary<string, int[]> activeCols)
+        {
+            int inpLen = inputValues[0].Length;
+
+            Dictionary<string, int[]> inpVectorsMap = new Dictionary<string, int[]>();
+
+            for (int k = 0; k < inputValues.Count; k++)
+            {
+                inpVectorsMap.Add(GetInputGekFromIndex(k), ArrayUtils.IndexWhere(inputValues[k], c => c == 1));
+            }
+
+            var outRes = MathHelpers.CalculateSimilarityMatrix(activeColIndicies);
+
+            var inRes = MathHelpers.CalculateSimilarityMatrix(inpVectorsMap);
+
+            string[,] matrix = new string[inpVectorsMap.Keys.Count, inpVectorsMap.Keys.Count];
+            int i = 0;
+            foreach (var inputKey in inpVectorsMap.Keys)
+            {
+                for (int j = 0; j < inpVectorsMap.Keys.Count; j++)
+                {
+                    matrix[i, j] = $"{inRes[i, j].ToString("0.##")}/{outRes[i, j].ToString("0.##")}";
+                }
+
+                i++;
+
+                DrawBitmaps(cfg, inputKey, inpVectorsMap[inputKey], inpLen, activeCols[inputKey]);
+            }
+
+            PrintMatrix(inpVectorsMap.Keys.Count, inpVectorsMap.Keys.ToArray(), matrix);
+        }
+
+        private static void PrintMatrix(int dim, string[] inpVectorKeys, string[,] matrix)
+        {
+            Debug.Write($"{String.Format(" {0,-15}", "")} |");
+
+            for (int k = 0; k < dim; k++)
+            {
+                string st = String.Format(" {0,-15} |", inpVectorKeys[k]);
+                Debug.Write($"{st}");
+            }
+
+            Debug.WriteLine("");
+
+            for (int k = 0; k <= dim; k++)
+            {
+                string st = String.Format(" {0,-15} |", "---------------");
+                Debug.Write($"{st}");
+            }
+
+            Debug.WriteLine("");
+
+            for (int i = 0; i < dim; i++)
+            {
+                Debug.Write(String.Format(" {0,-15} |", inpVectorKeys[i]));
+
+                for (int j = 0; j < dim; j++)
+                {
+                    string st = String.Format(" {0,-15} |", matrix[i, j]);
+                    Debug.Write(st);
+                }
+
+                Debug.WriteLine("");
+            }
+        }
+
+        /// <summary>
+        /// Drwaws the input and the corresponding SDR.
+        /// </summary>
+        /// <param name="cfg"></param>
+        /// <param name="inputKey"></param>
+        /// <param name="input"></param>
+        /// <param name="inpLen"></param>
+        /// <param name="activeColumns"></param>
+        private static void DrawBitmaps(HtmConfig cfg, string inputKey, int[] input, int inpLen, int[] activeColumns)
         {
             List<int[,]> twoDimArrays = new List<int[,]>();
-            int[,] twoDimInpArray = ArrayUtils.Make2DArray<int>(input, (int)(Math.Sqrt(input.Length) + 0.5), (int)(Math.Sqrt(input.Length) + 0.5));
+            int[,] twoDimInpArray = ArrayUtils.Make2DArray<int>(input, inpLen, inpLen);
             twoDimArrays.Add(twoDimInpArray = ArrayUtils.Transpose(twoDimInpArray));
             int[,] twoDimOutArray = ArrayUtils.Make2DArray<int>(activeColumns, (int)(Math.Sqrt(cfg.NumColumns) + 0.5), (int)(Math.Sqrt(cfg.NumColumns) + 0.5));
             twoDimArrays.Add(twoDimInpArray = ArrayUtils.Transpose(twoDimOutArray));
