@@ -34,7 +34,6 @@ namespace NeocortexApi.Experiments
         string key;
 
 
-
         public void FeedForwardNetTest()
         {
             int cellsPerColumnL4 = 20;

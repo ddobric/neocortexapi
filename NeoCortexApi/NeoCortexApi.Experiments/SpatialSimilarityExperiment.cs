@@ -181,14 +181,7 @@ namespace NeoCortexApi.Experiments
                     // Learn the input pattern.
                     // Output lyrOut is the output of the last module in the layer.
                     sp.compute(input, activeColumns, true);
-
-                    List<int[,]> twoDimArrays = new List<int[,]>();
-                    int[,] twoDimInpArray = ArrayUtils.Make2DArray<int>(input, (int)(Math.Sqrt(input.Length) + 0.5), (int)(Math.Sqrt(input.Length) + 0.5));
-                    twoDimArrays.Add(twoDimInpArray = ArrayUtils.Transpose(twoDimInpArray));
-                    int[,] twoDimOutArray = ArrayUtils.Make2DArray<int>(activeColumns, (int)(Math.Sqrt(cfg.NumColumns) + 0.5), (int)(Math.Sqrt(cfg.NumColumns) + 0.5));
-                    twoDimArrays.Add(twoDimInpArray = ArrayUtils.Transpose(twoDimOutArray));
-
-                    NeoCortexUtils.DrawBitmaps(twoDimArrays, $"{inputKey}.png", Color.Yellow, Color.Gray, 1024, 1024);
+                   // DrawImages(cfg, inputKey, input, activeColumns);
 
                     var actCols = activeColumns.OrderBy(c => c).ToArray();
 
@@ -200,6 +193,17 @@ namespace NeoCortexApi.Experiments
                     prevSimilarity[inputKey] = similarity;
                 }
             }
+        }
+
+        private static void DrawImages(HtmConfig cfg, string inputKey, int[] input, int[] activeColumns)
+        {
+            List<int[,]> twoDimArrays = new List<int[,]>();
+            int[,] twoDimInpArray = ArrayUtils.Make2DArray<int>(input, (int)(Math.Sqrt(input.Length) + 0.5), (int)(Math.Sqrt(input.Length) + 0.5));
+            twoDimArrays.Add(twoDimInpArray = ArrayUtils.Transpose(twoDimInpArray));
+            int[,] twoDimOutArray = ArrayUtils.Make2DArray<int>(activeColumns, (int)(Math.Sqrt(cfg.NumColumns) + 0.5), (int)(Math.Sqrt(cfg.NumColumns) + 0.5));
+            twoDimArrays.Add(twoDimInpArray = ArrayUtils.Transpose(twoDimOutArray));
+
+            NeoCortexUtils.DrawBitmaps(twoDimArrays, $"{inputKey}.png", Color.Yellow, Color.Gray, 1024, 1024);
         }
 
         private static string GetInputGekFromIndex(int i)
