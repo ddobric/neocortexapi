@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Classifiers;
 using NeoCortexApi.Encoders;
@@ -19,10 +20,10 @@ namespace NeocortexApi.Experiments
 
     /// <summary>
     /// In the brain the Layer 4 has feed forforward connection with Layer 2 in CortexLayer.
-    /// So, instead of using layer name L1 we give it as L4.
+    /// SIt feeds forward the result of L4 as input to the L2. Both L4 and L2 uses SP and TM.
     /// Discussion: https://github.com/UniversityOfAppliedSciencesFrankfurt/se-cloud-2020-2021/issues/70
     /// </summary>
-
+    [TestClass]
     public class FeedForwardNetExperiment_L4L2
     {
         CortexLayer<object, object> layerL4, layerL2;
