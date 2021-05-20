@@ -14,9 +14,15 @@ using System.Threading.Tasks;
 
 namespace NeoCortexApi.Experiments
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [TestClass]
     public class SpatialSimilarityExperiment
     {
+        /// <summary>
+        /// 
+        /// </summary>
         [TestMethod]
         public void SpatialSimilarityExperimentTest()
         {

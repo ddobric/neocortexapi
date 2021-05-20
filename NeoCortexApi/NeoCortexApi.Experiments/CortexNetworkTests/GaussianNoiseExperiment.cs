@@ -23,6 +23,7 @@ namespace NeoCortexApi.Experiments
     /// Sang Nguyen phuocsangnguyen97 @gmail.com
     /// Duy Nguyen ngthanhduy7 @gmail.com
     /// https://github.com/UniversityOfAppliedSciencesFrankfurt/se-cloud-2019-2020/tree/VNGroup/Source/MyProject
+    /// Check out student paper in the following URL: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/Experiments/ML-19-20_20-5.12_SpatialPooler_NoiseRobustness.pdf
     /// </summary>
     [TestClass]
 

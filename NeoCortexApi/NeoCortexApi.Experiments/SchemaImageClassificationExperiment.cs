@@ -15,7 +15,7 @@ using LearningFoundation.ImageBinarizer;
 namespace NeoCortexApi.Experiments
 {
     /// <summary>
-    /// 
+    /// Check out student documentation in the following URL: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/Experiments/ML-19-20_20-5.11_SchemaImageClassification.pdf
     /// </summary>
     [TestClass]
     public class SchemaImageClassificationExperiment
@@ -26,6 +26,7 @@ namespace NeoCortexApi.Experiments
         /// hamming distance "distance.xlsx"
         /// </summary>
         [TestMethod]
+        [TestCategory("Experiment")]
         public void SchemaImageClassificationTest()
         {
             var imagesFolder = "..\\..\\..\\TestFiles\\SchemaImageClassification\\image";
@@ -214,7 +215,7 @@ namespace NeoCortexApi.Experiments
         }
 
         /// <summary>
-        /// save active column sequence from spatial pooler to a given file path
+        /// save active column sequence from spatial pooler to a given file path.
         /// </summary>
         /// <param name="activeArray"></param>
         /// <param name="path"></param>
@@ -262,7 +263,13 @@ namespace NeoCortexApi.Experiments
             return _destinationPath;
         }
 
-        /* copy origial image to the grouped output folder*/
+        /// <summary>
+        /// Copy origial image to the grouped output folder.
+        /// </summary>
+        /// <param name="sourcePath"></param>
+        /// <param name="destinationPath"></param>
+        /// <param name="fileName"></param>
+        /// <param name="foldername"></param>
         private void WriteFile(string sourcePath, string destinationPath, string fileName, string foldername)
         {
             string outFilePath = Path.Combine(destinationPath, foldername);//, $"{fileName}.jpg");
@@ -285,6 +292,10 @@ namespace NeoCortexApi.Experiments
             }
         }
 
+        /// <summary>
+        /// TODO: comment
+        /// </summary>
+        /// <returns></returns>
         private Parameters GetDefaultParams()
         {
             ThreadSafeRandom rnd = new ThreadSafeRandom(42);
@@ -308,7 +319,12 @@ namespace NeoCortexApi.Experiments
             return parameters;
         }
 
-        /* Spatial pooler parameter config.*/
+        /// <summary>
+        /// Spatial pooler parameter config.
+        /// </summary>
+        /// <param name="inputDimension"></param>
+        /// <param name="activeColumn"></param>
+        /// <returns></returns>
         private Parameters GetParam(int inputDimension, int activeColumn)
         {
             Parameters config = GetDefaultParams();
@@ -320,7 +336,11 @@ namespace NeoCortexApi.Experiments
             return config;
         }
 
-        /*Split path and file name*/
+        /// <summary>
+        /// Split path and file name.
+        /// </summary>
+        /// <param name="fullPath"></param>
+        /// <returns></returns>
         private (string, string) GetPathAndName(string fullPath)
         {
             int index1 = fullPath.LastIndexOf("\\") + 1;
@@ -330,7 +350,10 @@ namespace NeoCortexApi.Experiments
             return (path, name);
         }
 
-        // Delete unused image directory
+        /// <summary>
+        /// Delete unused image directory.
+        /// </summary>
+        /// <param name="target_dir"></param>
         private void DeleteDirectory(string target_dir)
         {
             string[] files = Directory.GetFiles(target_dir);
@@ -350,7 +373,12 @@ namespace NeoCortexApi.Experiments
             Directory.Delete(target_dir, false);
         }
 
-        /*Grouping according to hamming distance*/
+        /// <summary>
+        /// Grouping according to hamming distance
+        /// </summary>
+        /// <param name="activeArray"></param>
+        /// <param name="imageNames"></param>
+        /// <param name="path"></param>
         private void Groupping(List<double[]> activeArray, string[] imageNames, string path)
         {
             const double thresold = 100.0;
@@ -420,6 +448,13 @@ namespace NeoCortexApi.Experiments
                 WriteFile(path, dPath, imageNames[i], groups[i].ToString());
             }
         }
+
+        /// <summary>
+        /// TODO: comment
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         private int Difference(int[] a, int[] b)
         {
             int count = 0;
@@ -429,6 +464,12 @@ namespace NeoCortexApi.Experiments
             }
             return count;
         }
+
+        /// <summary>
+        /// TODO: comment
+        /// </summary>
+        /// <param name="distance"></param>
+        /// <param name="names"></param>
         private void Report(List<double[]> distance, string[] names)
         {
             string filePath = "..\\..\\..\\distance.xlsx";

@@ -17,6 +17,9 @@ using NeoCortexApi.Classifiers;
 
 namespace NeoCortexApi.Experiments
 {
+    /// <summary>
+    /// Check out student paper in the following URL: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/Experiments/ML-19-20_20-5.4_ParameterChangeExperiment_Paper.pdf
+    /// </summary>
     [TestClass]
     public class InputBitsExperimentTest
     {
