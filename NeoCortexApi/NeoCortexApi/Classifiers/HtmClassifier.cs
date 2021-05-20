@@ -169,7 +169,7 @@ namespace NeoCortexApi.Classifiers
                         var numOfSameBitsPct = pair.Value.Intersect(celIndicies).Count();
                         double simPercentage = Math.Round(MathHelpers.CalcArraySimilarity(pair.Value, celIndicies), 2);
                         //list.Add(new KeyValuePair<double, string>(simPercentage, $">indx:{n} \tinp/len: {pair.Key}/{pair.Value.Length} ,Same Bits = {numOfSameBitsPct}\t Similarity% {simPercentage}\t {Helpers.StringifyVector(pair.Value)}"));
-                        list2.Add(pair.Key, new ClassifierResult { PredictedInput = pair.Key, NumOfSameBits = -1, Similarity = simPercentage });
+                        list2.Add(pair.Key, new ClassifierResult { PredictedInput = pair.Key, NumOfSameBits = -1, Similarity = (float)simPercentage });
 
                         predictedList.Add(new KeyValuePair<double, string>(simPercentage, pair.Key.ToString()));
                         //list.Add(new KeyValuePair<double, string>(simPercentage, $">indx:{n} \tinp/len: {pair.Key}/{pair.Value.Length} similarity {simPercentage}\t {Helpers.StringifyVector(pair.Value)}"));
