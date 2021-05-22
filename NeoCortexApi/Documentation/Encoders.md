@@ -22,16 +22,16 @@ public Dictionary<string, object> GetDefaultEncoderSettings()
 
 ### Parameter definition
 
-| Parameter    | Data type | Definition |
-| ------------ | --------- | ---------- |
-| `N`          | Integer   |
-| `W`          | Integer   |
-| `MinVal`     | double    |
-| `MaxVal`     | double    |
-| `Radius`     | double    |
-| `Resolution` | double    |
-| `Periodic`   | boolean   |
-| `ClipInput`  | boolean   |
+| Parameter    | Data type | Definition                                                                                                                                                                                                                                |
+| ------------ | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `N`          | Integer   | The number of bits in the output. Must be greater than or equal to `W`                                                                                                                                                                    |
+| `W`          | Integer   | The number of bits that are set to encode a single value - the “width” of the output signal restriction: w must be odd to avoid centering problems.                                                                                       |
+| `MinVal`     | double    | The minimum value of the input signal.                                                                                                                                                                                                    |
+| `MaxVal`     | double    | The upper bound of the input signal. (input is strictly less if `Periodic == True`)                                                                                                                                                       |
+| `Radius`     | double    | Two inputs separated by more than the radius have non-overlapping representations. Two inputs separated by less than the radius will in general overlap in at least some of their bits. You can think of this as the radius of the input. |
+| `Resolution` | double    | Two inputs separated by greater than, or equal to the resolution are guaranteed to have different representations.                                                                                                                        |
+| `Periodic`   | boolean   | If true, then the input value “wraps around” such that `Minval` = `Maxval`. For a periodic value, the input must be strictly less than `Maxval`, otherwise `Maxval` is a true upper bound.                                                |
+| `ClipInput`  | boolean   | if true, non-periodic inputs smaller than minval or greater than maxval will be clipped to minval/maxval                                                                                                                                  |
 
 The following code snippet intialize an encoder using method `GetDefaultEncoderSettings()`
 
@@ -39,7 +39,7 @@ The following code snippet intialize an encoder using method `GetDefaultEncoderS
 ScalarEncoder encoder = new ScalarEncoder(GetDefautEncoderSettings());
 ```
 
-or
+is equivalent to writing the following
 
 ```cs
 ScalarEncoder encoder = new ScalarEncoder();
@@ -49,10 +49,27 @@ encoder.Initialize(GetDefautEncoderSettings());
 After loading encoder settings into the encoder, method `encoder.Encode()` is invoked to start the encoding process and return an array of '0's and '1's.
 
 ```cs
-public override int[] Encode(object inputData)
-{
-    ...
-}
+double input = 99.50;
+int[] result = encoder.Encode(input);
+```
+
+With the encoder settings below:
+
+| Parameter    | Data type | Definition |
+| ------------ | --------- | ---------- |
+| `N`          | Integer   | 0          |
+| `W`          | Integer   | 11         |
+| `MinVal`     | double    | 1          |
+| `MaxVal`     | double    | 100        |
+| `Radius`     | double    | 0          |
+| `Resolution` | double    | 0.15       |
+| `Periodic`   | boolean   | true       |
+| `ClipInput`  | boolean   | true       |
+
+The output result will look as follow:
+
+```
+1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1
 ```
 
 ## Current supported encoders
