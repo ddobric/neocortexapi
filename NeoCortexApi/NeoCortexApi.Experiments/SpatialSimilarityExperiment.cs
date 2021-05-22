@@ -105,6 +105,20 @@ namespace NeoCortexApi.Experiments
 
                 return inputValues;
             }
+            else if (experimentCode == 1)
+            {
+                // todo. create or load other test vectors/images here 
+                // We create here 2 vectors.
+                List<int[]> inputValues = new List<int[]>();
+
+                for (int i = 0; i < 10; i += 1)
+                {
+                    inputValues.Add(NeoCortexUtils.CreateVector(inputBits, i, i + width));
+                }
+
+
+                return inputValues;
+            }
             else
                 throw new ApplicationException("Invalid experimentCode");
         }

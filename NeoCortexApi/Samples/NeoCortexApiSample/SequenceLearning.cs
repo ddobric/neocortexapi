@@ -247,11 +247,15 @@ namespace NeoCortexApiSample
 
                         if (lyrOut.PredictiveCells.Count > 0)
                         {
-                            var predictedInputValue = cls.GetPredictedInputValue(lyrOut.PredictiveCells.ToArray());
+                            //var predictedInputValue = cls.GetPredictedInputValue(lyrOut.PredictiveCells.ToArray());
+                            var predictedInputValues = cls.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), 3);
 
-                            Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {predictedInputValue}");
-
-                            lastPredictedValue = predictedInputValue;
+                            foreach (var item in predictedInputValues)
+                            {
+                                Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {item}");
+                            }
+                            
+                            lastPredictedValue = predictedInputValues.First().PredictedInput;
                         }
                         else
                         {
