@@ -947,7 +947,9 @@ namespace NeoCortexApi
                     int numActive = (int)(0.5 + density * neighborhood.Length);
 
                     //
-                    // Column is added as a winner one if the number of higher overlapped columns than the actual column
+                    // numActive is the number of maximal active columns in the neighborhood.
+                    // numHigherOverlap is the number of columns in the neighborhood that have higher overlap than the referencing column.
+                    // Column is added as a winner one if the number of higher overlapped columns
                     // is less than number of active columns defined by density and radius.
                     if (numHigherOverlap < numActive)
                     {
