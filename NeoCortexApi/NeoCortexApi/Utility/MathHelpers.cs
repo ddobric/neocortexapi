@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using System.IO;
 
 namespace NeoCortexApi.Utility
 {
@@ -83,14 +84,6 @@ namespace NeoCortexApi.Utility
             return hammingDistance;
         }
 
-        public static bool Match(int[] originArray, int[] comparingArray, float thresholdPct)
-        {
-            var res = GetHammingDistance(originArray, comparingArray, true);
-            return true;
-
-        }
-
-
         /// <summary>
         /// Calculates how many elements of the array are same in percents. This method is useful to compare 
         /// two arays that contains indicies of active columns.
@@ -118,5 +111,37 @@ namespace NeoCortexApi.Utility
             }
         }
 
+
+        /// <summary>
+        /// Calculates the similarity matrix from the list of SDRs (arrays). 
+        /// It compares all given SDRs and calculate their similarity.
+        /// </summary>
+        /// <param name="actBitsIndexes">Dictionary of all output SDRs defined as indicies of active bits,</param>
+        public static double[,] CalculateSimilarityMatrix(Dictionary<string, int[]> actBitsIndexes)
+        {
+            double[,] res = new double[actBitsIndexes.Count, actBitsIndexes.Count];
+
+            var keyArray = actBitsIndexes.Keys.ToArray();
+
+            for (int i = 0; i < keyArray.Length; i++)
+            {
+                var key1 = keyArray[i];
+
+                for (int j = 0; j < keyArray.Length; j++)
+                {
+                    var key2 = keyArray[j];
+
+                    int[] sdr1 = actBitsIndexes.GetValueOrDefault<string, int[]>(key1);
+                    int[] sdr2 = actBitsIndexes.GetValueOrDefault<string, int[]>(key2);
+
+                    double similarity = MathHelpers.CalcArraySimilarity(sdr1, sdr2);
+
+                    res[i, j] = similarity;
+                }
+            }
+
+            return res ;
+        }
     }
 }
+

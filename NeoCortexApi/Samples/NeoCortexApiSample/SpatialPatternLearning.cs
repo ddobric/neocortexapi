@@ -44,10 +44,10 @@ namespace NeoCortexApiSample
 
                 GlobalInhibition = true,
                 NumActiveColumnsPerInhArea = 0.02 * numColumns,
-                PotentialRadius = (int)(0.8 * inputBits),
+                PotentialRadius = (int)(0.15 * inputBits),
                 LocalAreaDensity = -1,
                 ActivationThreshold = 10,
-                MaxSynapsesPerSegment = (int)(0.02 * numColumns),
+                MaxSynapsesPerSegment = (int)(0.01 * numColumns),
                 Random = new ThreadSafeRandom(42)
             };
 
@@ -126,7 +126,7 @@ namespace NeoCortexApiSample
             // Initializes the 
             sp.Init(mem, new DistributedMemory() { ColumnDictionary = new InMemoryDistributedDictionary<int, NeoCortexApi.Entities.Column>(1) });
 
-            mem.TraceProximalDendritePotential(true);
+           // mem.TraceProximalDendritePotential(true);
             
             // It creates the instance of the neo-cortex layer.
             // Algorithm will be performed inside of that layer.

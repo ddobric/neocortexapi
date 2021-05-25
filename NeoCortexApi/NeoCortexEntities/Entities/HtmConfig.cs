@@ -303,7 +303,7 @@ namespace NeoCortexApi.Entities
         public HtmModuleTopology ColumnModuleTopology { get; set; }
 
         /// <summary>
-        /// TODO property documentation
+        /// The topology of the input.
         /// </summary>
         public HtmModuleTopology InputModuleTopology { get; set; }
 
@@ -313,7 +313,7 @@ namespace NeoCortexApi.Entities
         public AbstractSparseMatrix<Column> Memory { get => memory; set { memory = value; ColumnModuleTopology = value?.ModuleTopology; } }
 
         /// <summary>
-        /// Activation threshold. If the number of active connected synapses on a segment is at least this threshold, the segment is said to be active.
+        /// Activation threshold used in sequence learning. If the number of active connected synapses on a distal segment is at least this threshold, the segment is said to be active.
         /// </summary>
         public int ActivationThreshold { get; set; } = 13;
 

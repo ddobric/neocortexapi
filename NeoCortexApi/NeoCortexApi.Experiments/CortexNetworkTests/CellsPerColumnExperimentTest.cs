@@ -17,6 +17,9 @@ using NeoCortexApi.Classifiers;
 
 namespace NeoCortexApi.Experiments
 {
+    /// <summary>
+    /// Check out student paper in the following URL: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/Experiments/ML-19-20_20-5.4_CellsPerColumnExperiment_Paper.pdf
+    /// </summary>
     [TestClass]
     public class CellsPerColumnExperimentTest
     {
@@ -35,6 +38,7 @@ namespace NeoCortexApi.Experiments
         /// </summary>
 
         [TestMethod]
+        [TestCategory("Experiment")]
         [TestCategory("NetworkTests")]
         [DataRow(1, 30)]   //Cells =1 , iter = 30                         
         [DataRow(2, 30)] //Cells =2 , iter = 30

@@ -221,6 +221,9 @@ namespace UnitTestsProject
         }
 
         /// <summary>
+        /// This is the original code that will be worked out in the thesis.
+        /// https://github.com/UniversityOfAppliedSciencesFrankfurt/thesis-htm-imgclassification-dasu/blob/67d1b65e3d13cb28c5be196b87a24ad5a7ecaa47/ImageClassification/Image_Classification_Console/Classification.cs#L237
+        /// This experimental code will be replaced.
         /// This test do spatial pooling and save hamming distance, active columns 
         /// and speed of processing in text files in Output directory.
         /// </summary>
@@ -430,7 +433,7 @@ namespace UnitTestsProject
 
         /// <summary>
         /// Calculates the similarity matrix . 
-        /// It take all output SDRs and compares all of them.
+        /// It takes all output SDRs and compares all of them.
         /// Save the correlation coefficient in csv file.
         /// </summary>
         /// <param name="sdrs">Dictionary of all output SDRs fro every input.</param>

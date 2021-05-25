@@ -11,6 +11,9 @@ using System.IO;
 
 namespace NeoCortexApi.Experiments
 {
+    /// <summary>
+    /// Check out student paper in the following URL: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/Experiments/ML-19-20_20-5.7_PerformanceSpatialPooler-between-Global-and-Local-Inhibition.pdf
+    /// </summary>
     [TestClass]
     public class SpatialPoolerInhibitionExperimentalTests
     {
@@ -27,6 +30,7 @@ namespace NeoCortexApi.Experiments
         /// <param name="imageSize"> Size of the image (image has same width and height)</param>
         /// <param name="columnDimension"> List of sparse space size.(with same width and height)</param>
         [TestMethod]
+        [TestCategory("Experiment")]
         [TestCategory("LongRunning")]
         [DataRow(@"Testfiles\digit7.png", new int[] { 32, 48, 64 }, new int[] { 16, 24, 32, 40, 48, 54, 64 })]
         [DataRow(@"Testfiles\digit8.png", new int[] { 32, 48, 64 }, new int[] { 32, 64, 128 })]
@@ -72,6 +76,7 @@ namespace NeoCortexApi.Experiments
         /// <param name="maxBoost"> Setup max boost parameter  </param>
         /// <param name="dutyCyclePeriod"> Setup duty cycle period parameter </param>
         [TestMethod]
+        [TestCategory("Experiment")]
         [TestCategory("LongRunning")]
         [DataRow(@"Testfiles\digit7.png", 32, 32, 1, 10)]
         [DataRow(@"Testfiles\digit7.png", 32, 32, 1, 100)]
@@ -119,6 +124,7 @@ namespace NeoCortexApi.Experiments
         /// <param name="columnDimension">Column dimension. Number of columns = columnDimension*columnDimension.</param>
         /// <param name="potentialRadius">The percent of the inputs, within a column's potential radius, that a column can be connected to.</param>
         [TestMethod]
+        [TestCategory("Experiment")]
         [TestCategory("LongRunning")]
         [DataRow(@"Testfiles\digit7.png", 32, 64, new int[] { 4, 8, 12, 16 })]
         [DataRow(@"Testfiles\digit8.png", 64, 64, new int[] { 4, 8, 16, 20, 24, 28, 32 })]

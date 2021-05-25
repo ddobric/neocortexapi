@@ -73,6 +73,7 @@ namespace NeoCortexApiSample
             // Stable with permanence decrement 0.25/ increment 0.15 and ActivationThreshold 25.
             // With increment=0.2 and decrement 0.3 has taken 15 min and didn't entered the stable state.
             List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 });
+            //List<double> inputValues = new List<double>(new double[] { 6.0, 7.0, 8.0, 9.0, 10.0 });
 
             RunExperiment(inputBits, cfg, encoder, inputValues);
         }
@@ -246,11 +247,15 @@ namespace NeoCortexApiSample
 
                         if (lyrOut.PredictiveCells.Count > 0)
                         {
-                            var predictedInputValue = cls.GetPredictedInputValue(lyrOut.PredictiveCells.ToArray());
+                            //var predictedInputValue = cls.GetPredictedInputValue(lyrOut.PredictiveCells.ToArray());
+                            var predictedInputValues = cls.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), 3);
 
-                            Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {predictedInputValue}");
-
-                            lastPredictedValue = predictedInputValue;
+                            foreach (var item in predictedInputValues)
+                            {
+                                Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {item}");
+                            }
+                            
+                            lastPredictedValue = predictedInputValues.First().PredictedInput;
                         }
                         else
                         {
