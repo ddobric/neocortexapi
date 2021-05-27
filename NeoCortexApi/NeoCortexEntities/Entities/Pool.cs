@@ -312,7 +312,7 @@ namespace NeoCortexApi.Entities
 
             ser.SerializeValue(this.Size, writer);
             ser.SerializeValue(this.NumInputs, writer);
-            ser.SerializeValue(this.m_SynapseConnections, writer);
+            //ser.SerializeValue(this.m_SynapseConnections, writer);
             ser.SerializeValue(this.m_SynapsesBySourceIndex, writer);
 
             ser.SerializeEnd(nameof(Pool), writer);
@@ -336,6 +336,11 @@ namespace NeoCortexApi.Entities
                 {
                     break;
                 }
+                else if (data.Contains(HtmSerializer2.KeyValueDelimiter))
+                {
+                    pool.m_SynapsesBySourceIndex = ser.ReadDictionaryISValue(data);
+                    break;
+                }
                 else
                 {
                     string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
@@ -353,11 +358,11 @@ namespace NeoCortexApi.Entities
                                     pool.NumInputs = ser.ReadIntValue(str[i]);
                                     break;
                                 }
-                            case 2:
-                                {
-                                    pool.m_SynapseConnections = ser.ReadListInt(str[i]);
-                                    break;
-                                }
+                            //case 2:
+                            //    {
+                            //        pool.m_SynapseConnections = ser.ReadListInt(str[i]);
+                            //        break;
+                            //    }
                             default:
                                 { break; }
 

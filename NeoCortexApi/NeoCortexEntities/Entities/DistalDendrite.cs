@@ -223,6 +223,40 @@ namespace NeoCortexApi.Entities
             ser.SerializeEnd(nameof(DistalDendrite), writer);
         }
 
+        /// <summary>
+        /// Serialize method for DistalDendrite
+        /// </summary>
+        /// <param name="writer"></param>
+        public override void Serialize(StreamWriter writer)
+        {
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            ser.SerializeBegin(nameof(DistalDendrite), writer);
+
+            ser.SerializeValue(this.m_LastUsedIteration, writer);
+            ser.SerializeValue(this.m_Ordinal, writer);
+            ser.SerializeValue(this.LastUsedIteration, writer);
+            ser.SerializeValue(this.Ordinal, writer);
+            ser.SerializeValue(this.SegmentIndex, writer);
+            ser.SerializeValue(this.SynapsePermConnected, writer);
+            ser.SerializeValue(this.NumInputs, writer);
+
+            if (this.boxedIndex != null)
+            {
+                this.boxedIndex.Serialize(writer);
+            }
+
+            if (this.ParentCell != null)
+            {
+                this.ParentCell.SerializeT(writer);
+            }
+
+            if (this.Synapses != null && this.Synapses.Count > 0)
+                ser.SerializeValue(this.Synapses, writer);
+
+            ser.SerializeEnd(nameof(DistalDendrite), writer);
+        }
+
         public static DistalDendrite Deserialize(StreamReader sr)
         {
             DistalDendrite distal = new DistalDendrite();
@@ -240,10 +274,11 @@ namespace NeoCortexApi.Entities
                 {
                     distal.boxedIndex = Integer.Deserialize(sr);
                 }
-                else if (data == ser.ReadBegin(nameof(Synapse)))
+                else if (data == ser.ReadBegin(nameof(Synapse)) || data == ser.ReadBegin(nameof(Cell)) )
                 {
                     return distal;
                 }
+               
                 else if (data == ser.ReadEnd(nameof(DistalDendrite)))
                 {
                     break;

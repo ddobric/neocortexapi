@@ -301,8 +301,12 @@ namespace NeoCortexApi.Entities
         }
 
         #region Serialization
-    
-        public void SerializeT(StreamWriter writer)
+
+        /// <summary>
+        /// Only cell Serialize method should invoke this method!
+        /// </summary>
+        /// <param name="writer"></param>
+        internal void SerializeT(StreamWriter writer)
         {
             HtmSerializer2 ser = new HtmSerializer2();
 
@@ -318,11 +322,42 @@ namespace NeoCortexApi.Entities
             {
                 this.BoxedIndex.Serialize(writer);
             }
+
+            // If we use this, we will get a cirular serialization.
+            //if (this.SourceCell != null)
+            //{
+            //    this.SourceCell.SerializeT(writer);
+            //}
+
+            ser.SerializeEnd(nameof(Synapse), writer);
+        }
+
+        /// <summary>
+        /// Serialize method for Synapse
+        /// </summary>
+        /// <param name="writer"></param>
+        public void Serialize(StreamWriter writer)
+        {
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            ser.SerializeBegin(nameof(Synapse), writer);
+
+            ser.SerializeValue(this.SegmentIndex, writer);
+            ser.SerializeValue(this.SynapseIndex, writer);
+            ser.SerializeValue(this.InputIndex, writer);
+            ser.SerializeValue(this.Permanence, writer);
+            ser.SerializeValue(this.IsDestroyed, writer);
+
+            if (this.BoxedIndex != null)
+            {
+                this.BoxedIndex.Serialize(writer);
+            }
+
             if (this.SourceCell != null)
             {
                 this.SourceCell.SerializeT(writer);
             }
-            
+
             ser.SerializeEnd(nameof(Synapse), writer);
         }
 

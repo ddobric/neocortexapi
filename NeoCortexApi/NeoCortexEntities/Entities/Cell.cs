@@ -162,21 +162,22 @@ namespace NeoCortexApi.Entities
         public void SerializeT(StreamWriter writer)
         {
             HtmSerializer2 ser = new HtmSerializer2();
-
+            
             ser.SerializeBegin(nameof(Cell), writer);
 
             ser.SerializeValue(this.Index, writer);
             ser.SerializeValue(this.CellId, writer);
             ser.SerializeValue(this.ParentColumnIndex, writer);
+
             if (this.DistalDendrites != null && this.DistalDendrites.Count > 0)
                 ser.SerializeValue(this.DistalDendrites, writer);
 
             if (this.ReceptorSynapses != null && this.ReceptorSynapses.Count > 0)
                 ser.SerializeValue(this.ReceptorSynapses, writer);
-
+               
             ser.SerializeEnd(nameof(Cell), writer);
 
-
+            
         }
 
         public static Cell Deserialize(StreamReader sr)

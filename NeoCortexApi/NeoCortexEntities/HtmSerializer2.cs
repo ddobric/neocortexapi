@@ -26,7 +26,7 @@ namespace NeoCortexApi.Entities
 
         public string LineDelimiter = "";
 
-        public string KeyValueDelimiter = ": ";
+        public static string KeyValueDelimiter = ": ";
 
         public const char  ElementsDelimiter = ',';
 
@@ -460,6 +460,7 @@ namespace NeoCortexApi.Entities
 
         //    return keyValues;
         //}
+
         /// <summary>
         /// Serialize the List of Integers.
         /// </summary>
@@ -547,7 +548,7 @@ namespace NeoCortexApi.Entities
             foreach (KeyValuePair<int, Synapse> i in keyValues)
             {
                 sw.Write(i.Key.ToString() + KeyValueDelimiter);
-                //i.Value.Serialize(sw);
+                i.Value.Serialize(sw);
                 sw.Write(ElementsDelimiter);
             }
             sw.Write(ParameterDelimiter);
@@ -557,17 +558,17 @@ namespace NeoCortexApi.Entities
         ///// </summary>
         ///// <param name="reader"></param>
         ///// <returns>Dictionary<int, Synapse></returns>
-        //public Dictionary<int, Synapse> ReadDictionaryISValue(string reader)
-        //{
-        //    string[] str = reader.Split(ElementsDelimiter);
-        //    Dictionary<int, Synapse> keyValues = new Dictionary<int, Synapse>();
-        //    for (int i = 0; i < str.Length - 1; i++)
-        //    {
-        //        string[] tokens = str[i].Split(KeyValueDelimiter);
-        //        keyValues.Add(Convert.ToInt32(tokens[0].Trim()), tokens[1].);
-        //    }
-        //    return keyValues;
-        //}
+        public Dictionary<int, Synapse> ReadDictionaryISValue(string reader)
+        {
+            string[] str = reader.Split(ElementsDelimiter);
+            Dictionary<int, Synapse> keyValues = new Dictionary<int, Synapse>();
+            for (int i = 0; i <= str.Length - 1; i++)
+            {
+                string[] tokens = str[i].Split(KeyValueDelimiter);
+                keyValues.Add(Convert.ToInt32(tokens[0].Trim()), null);
+            }
+            return keyValues;
+        }
 
 
 
