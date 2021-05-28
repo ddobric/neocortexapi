@@ -274,11 +274,14 @@ namespace NeoCortexApi.Entities
                 {
                     distal.boxedIndex = Integer.Deserialize(sr);
                 }
-                else if (data == ser.ReadBegin(nameof(Synapse)) || data == ser.ReadBegin(nameof(Cell)) )
+                else if (data == ser.ReadBegin(nameof(Synapse)) )
                 {
-                    return distal;
+                    distal.Synapses.Add(Synapse.Deserialize(sr));
                 }
-               
+                else if ( data == ser.ReadBegin(nameof(Cell)))
+                {
+                    distal.ParentCell = Cell.Deserialize(sr);
+                }
                 else if (data == ser.ReadEnd(nameof(DistalDendrite)))
                 {
                     break;

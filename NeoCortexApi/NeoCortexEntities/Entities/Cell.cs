@@ -195,7 +195,7 @@ namespace NeoCortexApi.Entities
                 }
                 else if (data == ser.ReadBegin(nameof(DistalDendrite)))
                 {
-                    return cell;
+                    cell.DistalDendrites.Add(DistalDendrite.Deserialize(sr));
                 }
                 else if (data == ser.ReadBegin(nameof(Synapse)))
                 {

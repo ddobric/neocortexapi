@@ -667,16 +667,16 @@ namespace UnitTestsProject
                     {
                         Synapse synapseT1 = Synapse.Deserialize(sr);
 
-                        Cell cell1 = Cell.Deserialize(sr);
+                        Cell cell1 = synapseT1.SourceCell;
 
-                        DistalDendrite distSegment1 = DistalDendrite.Deserialize(sr);
+                        DistalDendrite distSegment1 = synapseT1.SourceCell.DistalDendrites[0];
 
-                        DistalDendrite distSegment2 = DistalDendrite.Deserialize(sr);
+                        DistalDendrite distSegment2 = synapseT1.SourceCell.DistalDendrites[1];
 
                         distSegment1.ParentCell = cell1;
                         distSegment2.ParentCell = cell1;
-                        cell1.DistalDendrites.Add(distSegment1);
-                        cell1.DistalDendrites.Add(distSegment2);
+                        //cell1.DistalDendrites.Add(distSegment1);
+                        //cell1.DistalDendrites.Add(distSegment2);
                         synapseT1.SourceCell = cell1;
 
                         Assert.IsTrue(synapse1.Equals(synapseT1));

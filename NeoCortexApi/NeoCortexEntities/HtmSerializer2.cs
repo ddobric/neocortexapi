@@ -558,19 +558,15 @@ namespace NeoCortexApi.Entities
         ///// </summary>
         ///// <param name="reader"></param>
         ///// <returns>Dictionary<int, Synapse></returns>
-        public Dictionary<int, Synapse> ReadDictionaryISValue(string reader)
+        public int ReadKeyISValue(string reader)
         {
-            string[] str = reader.Split(ElementsDelimiter);
-            Dictionary<int, Synapse> keyValues = new Dictionary<int, Synapse>();
-            for (int i = 0; i <= str.Length - 1; i++)
+            string val = reader.Replace(KeyValueDelimiter, "");
+            if (val.Contains(ElementsDelimiter))
             {
-                string[] tokens = str[i].Split(KeyValueDelimiter);
-                keyValues.Add(Convert.ToInt32(tokens[0].Trim()), null);
+                val = val.Replace(ElementsDelimiter.ToString(), "");
             }
-            return keyValues;
+            return Convert.ToInt32(val);
         }
-
-
 
     }
 

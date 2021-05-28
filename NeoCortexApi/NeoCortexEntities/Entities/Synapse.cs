@@ -380,7 +380,7 @@ namespace NeoCortexApi.Entities
                 }
                 else if (data == ser.ReadBegin(nameof(Cell)))
                 {
-                    return synapse;
+                    synapse.SourceCell = Cell.Deserialize(sr);
                 }
                 else if (data == ser.ReadEnd(nameof(Synapse)))
                 {

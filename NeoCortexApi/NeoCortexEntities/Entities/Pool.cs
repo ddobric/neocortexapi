@@ -312,7 +312,7 @@ namespace NeoCortexApi.Entities
 
             ser.SerializeValue(this.Size, writer);
             ser.SerializeValue(this.NumInputs, writer);
-            //ser.SerializeValue(this.m_SynapseConnections, writer);
+            //ser.SerializeValue(this.m_SynapseConnections, writer); As it is private
             ser.SerializeValue(this.m_SynapsesBySourceIndex, writer);
 
             ser.SerializeEnd(nameof(Pool), writer);
@@ -328,7 +328,7 @@ namespace NeoCortexApi.Entities
             while (sr.Peek() >= 0)
             {
                 string data = sr.ReadLine();
-                if (data == String.Empty || data == ser.ReadBegin(nameof(Pool)))
+                if (data == String.Empty || data == ser.ReadBegin(nameof(Pool)) || (data.ToCharArray()[0] == HtmSerializer2.ElementsDelimiter && data.ToCharArray()[1] == HtmSerializer2.ParameterDelimiter))
                 {
                     continue;
                 }
@@ -336,10 +336,14 @@ namespace NeoCortexApi.Entities
                 {
                     break;
                 }
+                
                 else if (data.Contains(HtmSerializer2.KeyValueDelimiter))
                 {
-                    pool.m_SynapsesBySourceIndex = ser.ReadDictionaryISValue(data);
-                    break;
+                    int val = ser.ReadKeyISValue(data);
+                    data = sr.ReadLine();
+                    pool.m_SynapsesBySourceIndex.Add(val, Synapse.Deserialize(sr));
+                    //break;
+
                 }
                 else
                 {
