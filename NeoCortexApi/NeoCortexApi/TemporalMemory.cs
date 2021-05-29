@@ -121,7 +121,7 @@ namespace NeoCortexApi
 
             sw.Restart();
 
-            ActivateDendrites(this.connections, cycle, learn);
+            ActivateDendrites(this.connections, cycle, learn, externalPredictiveInputsActive, externalPredictiveInputsWinners);
 
             sw.Stop();
 
