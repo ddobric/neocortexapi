@@ -36,6 +36,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 		ColumnActivity.md = ColumnActivity.md
 		Documentation\CortexLayer.md = Documentation\CortexLayer.md
 		Documentation\Encoders.md = Documentation\Encoders.md
+		Documentation\experiments.md = Documentation\experiments.md
 		Documentation\SpatialPooler.md = Documentation\SpatialPooler.md
 		Documentation\TemporalMemory.md = Documentation\TemporalMemory.md
 	EndProjectSection

@@ -22,6 +22,7 @@ namespace NeocortexApi.Experiments
     /// In the brain the Layer 4 has feed forforward connection with Layer 2 in CortexLayer.
     /// SIt feeds forward the result of L4 as input to the L2. Both L4 and L2 uses SP and TM.
     /// Discussion: https://github.com/UniversityOfAppliedSciencesFrankfurt/se-cloud-2020-2021/issues/70
+    /// Check out student paper in the following URL: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/Experiments/ML-20-21_20-5.2_HTM%20FeedForward_Network.pdf
     /// </summary>
     [TestClass]
     public class FeedForwardNetExperiment_L4L2
@@ -35,6 +36,7 @@ namespace NeocortexApi.Experiments
         string key;
 
         [TestMethod]
+        [TestCategory("Experiment")]
         public void FeedForwardNetTest()
         {
             int cellsPerColumnL4 = 20;
@@ -134,8 +136,8 @@ namespace NeocortexApi.Experiments
             tm4 = new TemporalMemory();
             tm2 = new TemporalMemory();
 
+            //
             // HPC for Layer 4 SP
-
             HomeostaticPlasticityController hpa_sp_L4 = new HomeostaticPlasticityController(memL4, numInputs * 50, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                 if (isStable)
@@ -148,8 +150,8 @@ namespace NeocortexApi.Experiments
             }, numOfCyclesToWaitOnChange: 50);
 
 
+            //
             // HPC for Layer 2 SP
-
             HomeostaticPlasticityController hpa_sp_L2 = new HomeostaticPlasticityController(memL2, numInputs * 50, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                 if (isStable)
@@ -195,7 +197,6 @@ namespace NeocortexApi.Experiments
             //
             // Training SP at Layer 4 to get stable. New-born stage.
             //
-
             using (StreamWriter swL4Sdrs = new StreamWriter($"L4-SDRs-in_{cfgL2.NumInputs}-col_{cfgL2.NumColumns}-r_{cfgL2.PotentialRadius}.txt"))
             {
                 using (StreamWriter sw = new StreamWriter($"in_{cfgL2.NumInputs}-col_{cfgL2.NumColumns}-r_{cfgL2.PotentialRadius}.txt"))
@@ -244,7 +245,7 @@ namespace NeocortexApi.Experiments
                                 /// calling Layer4.Compute().
                                 /// 
                                 /// But if we receive different active cell sdr indexes then we will train Layer 2 sp
-                                /// from L4_ActiveCell_sdr_log so that during trianing
+                                /// from L4_ActiveCell_sdr_log so that during training
                                 /// Layer 2 SP gets similar stable active cell sdr indexes of layer4
                                 /// from that dictionary. As a result, L2 SP will get similar sequence
                                 /// of active cell sdr indexes during SP Tarining and reach to STABLE state
@@ -313,9 +314,8 @@ namespace NeocortexApi.Experiments
             }
 
 
-
+            //
             // SP+TM at L2
-
             for (int i = 0; i < maxCycles; i++)
             {
                 matches = 0;

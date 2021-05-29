@@ -14,9 +14,15 @@ using System.Threading.Tasks;
 
 namespace NeoCortexApi.Experiments
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [TestClass]
     public class SpatialSimilarityExperiment
     {
+        /// <summary>
+        /// 
+        /// </summary>
         [TestMethod]
         public void SpatialSimilarityExperimentTest()
         {
@@ -88,6 +94,20 @@ namespace NeoCortexApi.Experiments
             if (experimentCode == 0)
             {
                 //
+                // We create here 2 vectors.
+                List<int[]> inputValues = new List<int[]>();
+
+                for (int i = 0; i < 10; i += 1)
+                {
+                    inputValues.Add(NeoCortexUtils.CreateVector(inputBits, i, i + width));
+                }
+
+
+                return inputValues;
+            }
+            else if (experimentCode == 1)
+            {
+                // todo. create or load other test vectors/images here 
                 // We create here 2 vectors.
                 List<int[]> inputValues = new List<int[]>();
 
@@ -187,6 +207,7 @@ namespace NeoCortexApi.Experiments
                     // Learn the input pattern.
                     // Output lyrOut is the output of the last module in the layer.
                     sp.compute(input, activeColumns, true);
+                   // DrawImages(cfg, inputKey, input, activeColumns);
 
                     var actColsIndicies = ArrayUtils.IndexWhere(activeColumns, c => c == 1);
 
@@ -294,6 +315,17 @@ namespace NeoCortexApi.Experiments
         {
             List<int[,]> twoDimArrays = new List<int[,]>();
             int[,] twoDimInpArray = ArrayUtils.Make2DArray<int>(input, inpLen, inpLen);
+            twoDimArrays.Add(twoDimInpArray = ArrayUtils.Transpose(twoDimInpArray));
+            int[,] twoDimOutArray = ArrayUtils.Make2DArray<int>(activeColumns, (int)(Math.Sqrt(cfg.NumColumns) + 0.5), (int)(Math.Sqrt(cfg.NumColumns) + 0.5));
+            twoDimArrays.Add(twoDimInpArray = ArrayUtils.Transpose(twoDimOutArray));
+
+            NeoCortexUtils.DrawBitmaps(twoDimArrays, $"{inputKey}.png", Color.Yellow, Color.Gray, 1024, 1024);
+        }
+
+        private static void DrawImages(HtmConfig cfg, string inputKey, int[] input, int[] activeColumns)
+        {
+            List<int[,]> twoDimArrays = new List<int[,]>();
+            int[,] twoDimInpArray = ArrayUtils.Make2DArray<int>(input, (int)(Math.Sqrt(input.Length) + 0.5), (int)(Math.Sqrt(input.Length) + 0.5));
             twoDimArrays.Add(twoDimInpArray = ArrayUtils.Transpose(twoDimInpArray));
             int[,] twoDimOutArray = ArrayUtils.Make2DArray<int>(activeColumns, (int)(Math.Sqrt(cfg.NumColumns) + 0.5), (int)(Math.Sqrt(cfg.NumColumns) + 0.5));
             twoDimArrays.Add(twoDimInpArray = ArrayUtils.Transpose(twoDimOutArray));

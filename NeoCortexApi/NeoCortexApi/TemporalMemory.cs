@@ -376,8 +376,8 @@ namespace NeoCortexApi
 
 
         /// <summary>
-        /// TM acitivates segments on the column in the previous cycle. This method locates such segments and 
-        /// adapts them. 
+        /// TM activated segments on the column in the previous cycle. This method locates such segments and 
+        /// adapts them and return owner cells of active segments.
         /// </summary>
         /// <param name="conn"></param>
         /// <param name="columnActiveSegments">Active segments as calculated (activated) in the previous step.</param>
@@ -392,10 +392,10 @@ namespace NeoCortexApi
             List<DistalDendrite> matchingSegments, ICollection<Cell> prevActiveCells, ICollection<Cell> prevWinnerCells,
                 double permanenceIncrement, double permanenceDecrement, bool learn, IList<Synapse> activeSynapses)
         {
+            // List of cells that owns active segments. These cells will be activated in this cycle.
+            // In previous cycle they are depolarized.
             List<Cell> cellsOwnersOfActiveSegments = new List<Cell>();
-            //Cell previousCell = null;
-            //Cell segmOwnerCell;
-
+          
             foreach (DistalDendrite segment in columnActiveSegments)
             {
                 if (!cellsOwnersOfActiveSegments.Contains(segment.ParentCell))
@@ -434,6 +434,8 @@ namespace NeoCortexApi
                 {
                     AdaptSegment(conn, segment, prevActiveCells, permanenceIncrement, permanenceDecrement);
 
+                    //
+                    // Even if the segment is active, new synapses can be added that connect previously active cells with the segment.
                     int numActive = conn.LastActivity.PotentialSynapses[segment.SegmentIndex];
                     int nGrowDesired = conn.HtmConfig.MaxNewSynapseCount - numActive;
 

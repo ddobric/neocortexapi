@@ -17,6 +17,9 @@ using NeoCortexApi.Classifiers;
 
 namespace NeoCortexApi.Experiments
 {
+    /// <summary>
+    /// Check out student paper in the following URL: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/Experiments/ML-19-20_20-5.4_HtmSparsityExperiments_Paper.pdf
+    /// </summary>
     [TestClass]
     public class HtmSparsityTest
     {
@@ -31,6 +34,7 @@ namespace NeoCortexApi.Experiments
         /// </summary>
 
         [TestMethod]
+        [TestCategory("Experiment")]
         [TestCategory("NetworkTests")]
         [DataRow(9, 50, 1000)]   //Sparsity - 0.18
         [DataRow(27, 150, 1000)] //Sparsity - 0.18
@@ -202,6 +206,7 @@ namespace NeoCortexApi.Experiments
         /// </summary>
 
         [TestMethod]
+        [TestCategory("Experiment")]
         [TestCategory("NetworkTests")]
         [DataRow(9, 50, 10, 1000)] //Sparsity - 0.18
         [DataRow(9, 50, 15, 1000)] //Sparsity - 0.18
