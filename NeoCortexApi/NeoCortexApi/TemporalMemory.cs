@@ -91,6 +91,26 @@ namespace NeoCortexApi
         /// <remarks>Note: PredictiveCells are not calculated here. They are calculated on demand from active segments.</remarks>
         public ComputeCycle Compute(int[] activeColumns, bool learn)
         {
+            return Compute(activeColumns, learn, null, null);
+        }
+
+
+        /// <summary>
+        /// Performs the whole calculation of Temporal memory algorithm.
+        /// Calculation takes two parts:
+        /// <list type="number">
+        /// <item>Calculation of the cells, which become active in the current cycle.</item>
+        /// <item>Calculation of dendrite segments which becom active in the current cycle.</item>
+        /// </list>
+        /// </summary>
+        /// <param name="activeColumns"></param>
+        /// <param name="learn"></param>
+        /// <param name="externalPredictiveInputsActive">Experimental.</param>
+        /// <param name="externalPredictiveInputsWinners">Experimental.</param>
+        /// <returns></returns>
+        /// <remarks>Note: PredictiveCells are not calculated here. They are calculated on demand from active segments.</remarks>
+        public ComputeCycle Compute(int[] activeColumns, bool learn, int[] externalPredictiveInputsActive = null, int[] externalPredictiveInputsWinners = null)
+        {
             Stopwatch sw = new Stopwatch();
             sw.Start();
             ComputeCycle cycle = ActivateCells(this.connections, activeColumns, learn);
@@ -257,7 +277,8 @@ namespace NeoCortexApi
         /// <param name="conn">the Connectivity</param>
         /// <param name="cycle">Stores current compute cycle results</param>
         /// <param name="learn">If true, segment activations will be recorded. This information is used during segment cleanup.</param>
-        protected void ActivateDendrites(Connections conn, ComputeCycle cycle, bool learn)
+        /// <seealso cref="">https://github.com/htm-community/htm.core/blob/master/src/htm/algorithms/TemporalMemory.cpp</seealso>
+        protected void ActivateDendrites(Connections conn, ComputeCycle cycle, bool learn, int[] externalPredictiveInputsActive = null, int[] externalPredictiveInputsWinners = null)
         {
             SegmentActivity activity = conn.ComputeActivity(cycle.ActiveCells, conn.HtmConfig.ConnectedPermanence);
 

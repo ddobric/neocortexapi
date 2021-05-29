@@ -42,10 +42,10 @@ namespace NeoCortexApi.Experiments
                 DutyCyclePeriod = 100,
                 MinPctOverlapDutyCycles = minOctOverlapCycles,
                 StimulusThreshold = 5,
-                GlobalInhibition = true,
+                GlobalInhibition = false,
                 NumActiveColumnsPerInhArea = 0.02 * numColumns,
                 PotentialRadius = (int)(0.15 * inputBits),
-                LocalAreaDensity = -1,//0.5,
+                LocalAreaDensity = 0.5,
                 ActivationThreshold = 10,
                 MaxSynapsesPerSegment = (int)(0.01 * numColumns),
                 Random = new ThreadSafeRandom(42)
