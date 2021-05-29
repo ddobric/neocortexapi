@@ -546,16 +546,14 @@ namespace UnitTestsProject
                     {
                         Cell cell1 = Cell.Deserialize(sr);
 
-                        DistalDendrite distSegment1 = DistalDendrite.Deserialize(sr);
+                        DistalDendrite distSegment1 = cell1.DistalDendrites[0];
 
-                        DistalDendrite distSegment2 = DistalDendrite.Deserialize(sr);
+                        DistalDendrite distSegment2 = cell1.DistalDendrites[1];
 
                         distSegment1.ParentCell = cell1;
                         distSegment2.ParentCell = cell1;
-                        cell1.DistalDendrites.Add(distSegment1);
-                        cell1.DistalDendrites.Add(distSegment2);
 
-                        Assert.IsTrue(cell1.Equals(cell));
+                        Assert.IsTrue(cell1.ToString().Equals(cell.ToString()));
                     }
                 }
 
@@ -606,18 +604,14 @@ namespace UnitTestsProject
 
                         DistalDendrite distSegment1 = DistalDendrite.Deserialize(sr);
 
-                        Cell cell1 = Cell.Deserialize(sr);
+                        Cell cell1 = distSegment1.ParentCell;
 
-                        distSegment1 = DistalDendrite.Deserialize(sr);
-                        
-                        DistalDendrite distSegment2 = DistalDendrite.Deserialize(sr);
-
+                        distSegment1 = distSegment1.ParentCell.DistalDendrites[0];
                         distSegment1.ParentCell = cell1;
+                        DistalDendrite distSegment2 = distSegment1.ParentCell.DistalDendrites[1];
                         distSegment2.ParentCell = cell1;
-                        cell1.DistalDendrites.Add(distSegment1);
-                        cell1.DistalDendrites.Add(distSegment2);
 
-                        Assert.IsTrue(distSegment1.Equals(distSegment2));
+                        Assert.IsTrue(distSegment1.ToString().Equals(distSeg1.ToString()));
                     }
                 }
 
@@ -679,7 +673,7 @@ namespace UnitTestsProject
                         //cell1.DistalDendrites.Add(distSegment2);
                         synapseT1.SourceCell = cell1;
 
-                        Assert.IsTrue(synapse1.Equals(synapseT1));
+                        Assert.IsTrue(synapse1.ToString().Equals(synapseT1.ToString()));
                     }
                 }
             }
