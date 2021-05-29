@@ -280,6 +280,12 @@ namespace NeoCortexApi
         /// <seealso cref="">https://github.com/htm-community/htm.core/blob/master/src/htm/algorithms/TemporalMemory.cpp</seealso>
         protected void ActivateDendrites(Connections conn, ComputeCycle cycle, bool learn, int[] externalPredictiveInputsActive = null, int[] externalPredictiveInputsWinners = null)
         {
+            //if (externalPredictiveInputsActive != null)
+            //    cycle.ActiveCells.AddRange(externalPredictiveInputsActive);
+
+            //if (externalPredictiveInputsWinners != null)
+            //    cycle.WinnerCells.AddRange(externalPredictiveInputsActive);
+
             SegmentActivity activity = conn.ComputeActivity(cycle.ActiveCells, conn.HtmConfig.ConnectedPermanence);
 
             var activeSegments = new List<DistalDendrite>();
