@@ -553,6 +553,7 @@ namespace UnitTestsProject
                         distSegment1.ParentCell = cell1;
                         distSegment2.ParentCell = cell1;
 
+                        //Assert.IsTrue(cell1.Equals(cell)); -- getting error as stackoverflow due to circular reference
                         Assert.IsTrue(cell1.ToString().Equals(cell.ToString()));
                     }
                 }
@@ -611,6 +612,7 @@ namespace UnitTestsProject
                         DistalDendrite distSegment2 = distSegment1.ParentCell.DistalDendrites[1];
                         distSegment2.ParentCell = cell1;
 
+                        //Assert.IsTrue(distSegment1.Equals(distSeg1));  -- getting error as stackoverflow due to circular reference
                         Assert.IsTrue(distSegment1.ToString().Equals(distSeg1.ToString()));
                     }
                 }
@@ -669,10 +671,9 @@ namespace UnitTestsProject
 
                         distSegment1.ParentCell = cell1;
                         distSegment2.ParentCell = cell1;
-                        //cell1.DistalDendrites.Add(distSegment1);
-                        //cell1.DistalDendrites.Add(distSegment2);
                         synapseT1.SourceCell = cell1;
 
+                        //Assert.IsTrue(synapse1.Equals(synapseT1)); --getting error as stackoverflow due to circular reference
                         Assert.IsTrue(synapse1.ToString().Equals(synapseT1.ToString()));
                     }
                 }
@@ -728,7 +729,50 @@ namespace UnitTestsProject
                 Assert.IsTrue(pool1.Equals(pool));
             }
         }
+        ///<summary>
+        ///Test ProximalDendrite.
+        ///</summary>
+        [TestMethod]
+        [TestCategory("Serialization")]
+        [DataRow(0, 12.34, 23)]
+        public void SerializeProximalDendriteTest(int colIndx, double synapsePermConnected, int numInputs)
+        {
+            ProximalDendrite proximal = new ProximalDendrite(colIndx, synapsePermConnected, numInputs);
+            var rfPool =  new Pool(1, 28);
 
+            Cell cell = new Cell(12, 14, 16, 18, new CellActivity());
+
+            var distSeg1 = new DistalDendrite(cell, 1, 2, 2, 1.0, 100);
+            cell.DistalDendrites.Add(distSeg1);
+
+            var distSeg2 = new DistalDendrite(cell, 44, 24, 34, 1.0, 100);
+            cell.DistalDendrites.Add(distSeg2);
+
+            Cell preSynapticcell = new Cell(11, 14, 16, 28, new CellActivity());
+
+            var synapse1 = new Synapse(cell, distSeg1.SegmentIndex, 23, 1.0);
+            preSynapticcell.ReceptorSynapses.Add(synapse1);
+
+            var synapse2 = new Synapse(cell, distSeg2.SegmentIndex, 27, 1.0);
+            preSynapticcell.ReceptorSynapses.Add(synapse2);
+
+            rfPool.m_SynapsesBySourceIndex = new Dictionary<int, Synapse>();
+            rfPool.m_SynapsesBySourceIndex.Add(3, synapse1);
+            rfPool.m_SynapsesBySourceIndex.Add(67, synapse2);
+
+            proximal.RFPool = rfPool;
+
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeProximalDendriteTest)}.txt"))
+            {
+                proximal.Serialize(sw);
+            }
+            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeProximalDendriteTest)}.txt"))
+            {
+                ProximalDendrite proximal1 = ProximalDendrite.Deserialize(sr);
+
+                Assert.IsTrue(proximal.Equals(proximal1));
+            }
+        }
         ///<summary>
         ///Test HtmModuleTopology.
         ///</summary>

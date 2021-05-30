@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace NeoCortexApi.Entities
@@ -30,6 +31,13 @@ namespace NeoCortexApi.Entities
 
         }
 
+        /// <summary>
+        /// Default constructor used by deserializer.
+        /// </summary>
+        public ProximalDendrite()
+        {
+
+        }
 
         /// <summary>
         /// Array of indicies of connected inputs. Defines RF. Sometimes also called 'Potential Pool'.
@@ -127,19 +135,134 @@ namespace NeoCortexApi.Entities
             return this.RFPool.GetSparsePotential();
             //return c.getPotentialPools().get(index).getSparsePotential();
         }
+
+        public bool Equals(ProximalDendrite obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+
+            ProximalDendrite other = (ProximalDendrite)obj;
+
+            if (RFPool == null)
+            {
+                if (other.RFPool != null)
+                    return false;
+            }
+            else if (!RFPool.Equals(other.RFPool))
+                return false;
+
+            if (SegmentIndex != other.SegmentIndex)
+                return false;
+
+            if (Synapses == null)
+            {
+                if (other.Synapses != null)
+                    return false;
+            }
+            else if (!Synapses.SequenceEqual(other.Synapses))
+                    return false;
+
+            if (boxedIndex == null)
+            {
+                if (other.boxedIndex != null)
+                    return false;
+            }
+            else if (!boxedIndex.Equals(other.boxedIndex))
+                return false;
+
+            if (SynapsePermConnected != other.SynapsePermConnected)
+                return false;
+            if (NumInputs != other.NumInputs)
+                return false;
+
+            return true;
+        }
         #region Serialization
         public override void Serialize(StreamWriter writer)
         {
             HtmSerializer2 ser = new HtmSerializer2();
 
-            ser.SerializeBegin(nameof(SegmentActivity), writer);
+            ser.SerializeBegin(nameof(ProximalDendrite), writer);
 
             if (this.RFPool != null)
             {
+                ser.SerializeValue(this.SegmentIndex, writer);
+                ser.SerializeValue(this.SynapsePermConnected, writer);
+                ser.SerializeValue(this.NumInputs, writer);
+
                 this.RFPool.Serialize(writer);
+                
+                this.boxedIndex.Serialize(writer);
+
+                ser.SerializeValue(this.Synapses, writer);
+
+                ser.SerializeValue(this.Synapses, writer);
             }
 
-            ser.SerializeEnd(nameof(SegmentActivity), writer);
+            ser.SerializeEnd(nameof(ProximalDendrite), writer);
+        }
+
+        public static ProximalDendrite Deserialize(StreamReader sr)
+        {
+            ProximalDendrite proximal = new ProximalDendrite();
+
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            while (sr.Peek() >= 0)
+            {
+                string data = sr.ReadLine();
+                if (data == String.Empty || data == ser.ReadBegin(nameof(ProximalDendrite)) || (data.ToCharArray()[0] == HtmSerializer2.ElementsDelimiter && data.ToCharArray()[1] == HtmSerializer2.ParameterDelimiter) || data.ToCharArray()[1] == HtmSerializer2.ParameterDelimiter)
+                {
+                    continue;
+                }
+                else if (data == ser.ReadBegin(nameof(Pool)))
+                {
+                    proximal.RFPool = Pool.Deserialize(sr);
+                }
+                else if (data == ser.ReadBegin(nameof(Integer)))
+                {
+                    proximal.boxedIndex = Integer.Deserialize(sr);
+                }
+                else if (data == ser.ReadBegin(nameof(Synapse)))
+                {
+                    proximal.Synapses.Add(Synapse.Deserialize(sr));
+                }
+                else if (data == ser.ReadEnd(nameof(ProximalDendrite)))
+                {
+                    break;
+                }
+                else
+                {
+                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                    for (int i = 0; i < str.Length; i++)
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                {
+                                    proximal.SegmentIndex = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    proximal.SynapsePermConnected = ser.ReadDoubleValue(str[i]);
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    proximal.NumInputs = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            default:
+                                { break; }
+
+                        }
+                    }
+                }
+            }
+            return proximal;
         }
 
         #endregion
