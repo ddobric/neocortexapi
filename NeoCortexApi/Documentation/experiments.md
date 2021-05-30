@@ -79,7 +79,7 @@ The Thousand Brains Theory of Intelligence is a new and rising approach to under
 
 [Download student paper here](./Experiments/ML-19-20_20-5.12_SpatialPooler_NoiseRobustness.pdf)
 
-[Check out implementation here](../../NeoCortexApi/UnitTestsProject/CortexNetworkTests\GaussianNoiseExperiment.cs)
+[Check out implementation here](https://github.com/ddobric/neocortexapi/blob/1c14da3f6d4097470003f21698774b78cec8040c/NeoCortexApi/NeoCortexApi.Experiments/CortexNetworkTests/GaussianNoiseExperiment.cs)
 
 ## Validate Memorizing capabilities of SpatialPooler
 
