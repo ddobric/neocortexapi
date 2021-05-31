@@ -10,6 +10,7 @@ import csv
 
 import os
 
+# py -m ensurepip
 # pip install plotly
 # Without pip: py -m pip install plotly
 # py draw_figure.py -fn "C:\dev\devops-daenet\NeoCortexApi\NeoCortexApi\UnitTestsProject\bin\Debug\netcoreapp3.1\exp.csv" -gn Digit -mc 1000 -ht 15 -yt "column indicies" -xt cycle -st "Predicted/Expected/Predictive Cells" -fign CortialColumn

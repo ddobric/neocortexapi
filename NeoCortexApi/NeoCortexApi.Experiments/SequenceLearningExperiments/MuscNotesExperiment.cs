@@ -20,7 +20,7 @@ using System.Net.WebSockets;
 using System.Threading.Tasks;
 using NeoCortexApi.Classifiers;
 
-namespace NeoCortexApi.Experiments.SequenceLearningExperiments
+namespace NeoCortexApi.Experiments
 {
     [TestClass]
     public class MuscNotesExperiment

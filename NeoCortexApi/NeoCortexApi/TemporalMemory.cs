@@ -91,6 +91,26 @@ namespace NeoCortexApi
         /// <remarks>Note: PredictiveCells are not calculated here. They are calculated on demand from active segments.</remarks>
         public ComputeCycle Compute(int[] activeColumns, bool learn)
         {
+            return Compute(activeColumns, learn, null, null);
+        }
+
+
+        /// <summary>
+        /// Performs the whole calculation of Temporal memory algorithm.
+        /// Calculation takes two parts:
+        /// <list type="number">
+        /// <item>Calculation of the cells, which become active in the current cycle.</item>
+        /// <item>Calculation of dendrite segments which becom active in the current cycle.</item>
+        /// </list>
+        /// </summary>
+        /// <param name="activeColumns"></param>
+        /// <param name="learn"></param>
+        /// <param name="externalPredictiveInputsActive">Experimental.</param>
+        /// <param name="externalPredictiveInputsWinners">Experimental.</param>
+        /// <returns></returns>
+        /// <remarks>Note: PredictiveCells are not calculated here. They are calculated on demand from active segments.</remarks>
+        public ComputeCycle Compute(int[] activeColumns, bool learn, int[] externalPredictiveInputsActive = null, int[] externalPredictiveInputsWinners = null)
+        {
             Stopwatch sw = new Stopwatch();
             sw.Start();
             ComputeCycle cycle = ActivateCells(this.connections, activeColumns, learn);
@@ -101,7 +121,7 @@ namespace NeoCortexApi
 
             sw.Restart();
 
-            ActivateDendrites(this.connections, cycle, learn);
+            ActivateDendrites(this.connections, cycle, learn, externalPredictiveInputsActive, externalPredictiveInputsWinners);
 
             sw.Stop();
 
@@ -257,8 +277,15 @@ namespace NeoCortexApi
         /// <param name="conn">the Connectivity</param>
         /// <param name="cycle">Stores current compute cycle results</param>
         /// <param name="learn">If true, segment activations will be recorded. This information is used during segment cleanup.</param>
-        protected void ActivateDendrites(Connections conn, ComputeCycle cycle, bool learn)
+        /// <seealso cref="">https://github.com/htm-community/htm.core/blob/master/src/htm/algorithms/TemporalMemory.cpp</seealso>
+        protected void ActivateDendrites(Connections conn, ComputeCycle cycle, bool learn, int[] externalPredictiveInputsActive = null, int[] externalPredictiveInputsWinners = null)
         {
+            //if (externalPredictiveInputsActive != null)
+            //    cycle.ActiveCells.AddRange(externalPredictiveInputsActive);
+
+            //if (externalPredictiveInputsWinners != null)
+            //    cycle.WinnerCells.AddRange(externalPredictiveInputsActive);
+
             SegmentActivity activity = conn.ComputeActivity(cycle.ActiveCells, conn.HtmConfig.ConnectedPermanence);
 
             var activeSegments = new List<DistalDendrite>();
@@ -355,8 +382,8 @@ namespace NeoCortexApi
 
 
         /// <summary>
-        /// TM acitivates segments on the column in the previous cycle. This method locates such segments and 
-        /// adapts them. 
+        /// TM activated segments on the column in the previous cycle. This method locates such segments and 
+        /// adapts them and return owner cells of active segments.
         /// </summary>
         /// <param name="conn"></param>
         /// <param name="columnActiveSegments">Active segments as calculated (activated) in the previous step.</param>
@@ -371,10 +398,10 @@ namespace NeoCortexApi
             List<DistalDendrite> matchingSegments, ICollection<Cell> prevActiveCells, ICollection<Cell> prevWinnerCells,
                 double permanenceIncrement, double permanenceDecrement, bool learn, IList<Synapse> activeSynapses)
         {
+            // List of cells that owns active segments. These cells will be activated in this cycle.
+            // In previous cycle they are depolarized.
             List<Cell> cellsOwnersOfActiveSegments = new List<Cell>();
-            //Cell previousCell = null;
-            //Cell segmOwnerCell;
-
+          
             foreach (DistalDendrite segment in columnActiveSegments)
             {
                 if (!cellsOwnersOfActiveSegments.Contains(segment.ParentCell))
@@ -413,6 +440,8 @@ namespace NeoCortexApi
                 {
                     AdaptSegment(conn, segment, prevActiveCells, permanenceIncrement, permanenceDecrement);
 
+                    //
+                    // Even if the segment is active, new synapses can be added that connect previously active cells with the segment.
                     int numActive = conn.LastActivity.PotentialSynapses[segment.SegmentIndex];
                     int nGrowDesired = conn.HtmConfig.MaxNewSynapseCount - numActive;
 
