@@ -617,8 +617,8 @@ namespace UnitTestsProject
                         DistalDendrite distSegment2 = distSegment1.ParentCell.DistalDendrites[1];
                         distSegment2.ParentCell = cell1;
 
-                        //Assert.IsTrue(distSegment1.Equals(distSeg1));  -- getting error as stackoverflow due to circular reference
-                        Assert.IsTrue(distSegment1.ToString().Equals(distSeg1.ToString()));
+                        Assert.IsTrue(distSegment1.Equals(distSeg1));  // getting error as stackoverflow due to circular reference
+                       // Assert.IsTrue(distSegment1.ToString().Equals(distSeg1.ToString()));
                     }
                 }
 
