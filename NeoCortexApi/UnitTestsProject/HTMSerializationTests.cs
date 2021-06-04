@@ -586,11 +586,16 @@ namespace UnitTestsProject
             var synapse2 = new Synapse(cell, distSeg2.SegmentIndex, 27, 1.0);
             preSynapticcell.ReceptorSynapses.Add(synapse2);
 
-
+            // Serializes the segment to file.
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeDistalDendrite)}.txt"))
             {
                 distSeg1.Serialize(sw);
             }
+
+            // Deserilizes segment from file.
+            //DistalDendrite deserilizedSegment = DistalDendrite.Deserialize($"ser_{nameof(SerializeDistalDendrite)}.txt"));
+
+            //Assert.IsTrue(deserilizedSegment, distSeg1);
 
             using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeDistalDendrite)}.txt"))
             {
