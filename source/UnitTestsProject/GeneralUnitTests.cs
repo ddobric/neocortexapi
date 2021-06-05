@@ -14,7 +14,7 @@ using System.Linq;
 namespace UnitTestsProject
 {
     [TestClass]
-    public class UnitTest1
+    public class GeneralUnitTests
     {
 
 
@@ -306,6 +306,28 @@ namespace UnitTestsProject
             {
                 Assert.IsTrue(res[i, i] == 100);
             }
+        }
+
+        /// <summary>
+        /// Makes sure that CalulateDimilarity computes the proper result.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("test")]
+        public void CalcArraySimilarityTest()
+        {
+            int[] arr1 = new int[] { 1, 3, 4, 5, 6 };
+            int[] arr2 = new int[] { 1, 3, 4, 5, 6 };
+
+            var res = MathHelpers.CalcArraySimilarity(arr1, arr2);
+
+            Assert.IsTrue(res == 100.0);
+
+            arr1 = new int[] { 1, 3, 4, 5, 6 };
+            arr2 = new int[] { 5, 6 };
+
+            res = MathHelpers.CalcArraySimilarity(arr1, arr2);
+
+            Assert.IsTrue(res == 40);
         }
     }
 }
