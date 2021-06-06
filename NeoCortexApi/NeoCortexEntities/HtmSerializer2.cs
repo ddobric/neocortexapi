@@ -18,6 +18,10 @@ namespace NeoCortexApi.Entities
     public class HtmSerializer2
     {
         //SP
+        public string tab = "\t";
+
+        public string newLine = "\n";
+
         public string ValueDelimiter = " ";
 
         public const char TypeDelimiter = ' ';

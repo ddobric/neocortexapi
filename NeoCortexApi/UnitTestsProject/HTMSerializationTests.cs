@@ -553,8 +553,8 @@ namespace UnitTestsProject
                         distSegment1.ParentCell = cell1;
                         distSegment2.ParentCell = cell1;
 
-                        //Assert.IsTrue(cell1.Equals(cell)); -- getting error as stackoverflow due to circular reference
-                        Assert.IsTrue(cell1.ToString().Equals(cell.ToString()));
+                        Assert.IsTrue(cell1.Equals(cell)); //-- getting error as stackoverflow due to circular reference
+                        //Assert.IsTrue(cell1.ToString().Equals(cell.ToString()));
                     }
                 }
 
@@ -618,7 +618,7 @@ namespace UnitTestsProject
                         distSegment2.ParentCell = cell1;
 
                         Assert.IsTrue(distSegment1.Equals(distSeg1));  // getting error as stackoverflow due to circular reference
-                       // Assert.IsTrue(distSegment1.ToString().Equals(distSeg1.ToString()));
+                       //Assert.IsTrue(distSegment1.ToString().Equals(distSeg1.ToString()));
                     }
                 }
 
@@ -678,8 +678,8 @@ namespace UnitTestsProject
                         distSegment2.ParentCell = cell1;
                         synapseT1.SourceCell = cell1;
 
-                        //Assert.IsTrue(synapse1.Equals(synapseT1)); --getting error as stackoverflow due to circular reference
-                        Assert.IsTrue(synapse1.ToString().Equals(synapseT1.ToString()));
+                        Assert.IsTrue(synapse1.Equals(synapseT1)); //--getting error as stackoverflow due to circular reference
+                        //Assert.IsTrue(synapse1.ToString().Equals(synapseT1.ToString()));
                     }
                 }
             }

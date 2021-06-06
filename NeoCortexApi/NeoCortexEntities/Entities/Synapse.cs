@@ -274,7 +274,9 @@ namespace NeoCortexApi.Entities
                 if (obj.SourceCell != null)
                     return false;
             }
-            else if (!SourceCell.Equals(obj.SourceCell))
+            // We check here the cell id only! The cell as parent must be correctlly created to avoid having different cells with the same id.
+            // If we would use here SourceCell.Equals method, that method would cause a cicular invoke of this.Equals etc.
+            else if (SourceCell.CellId != obj.SourceCell.CellId)
                 return false;
             if (SynapseIndex != obj.SynapseIndex)
                 return false;
