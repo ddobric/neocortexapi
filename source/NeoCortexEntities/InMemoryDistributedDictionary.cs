@@ -21,6 +21,7 @@ namespace NeoCortexApi.Entities
         private Dictionary<TKey, TValue>[] dictList;
 
         private int numElements = 0;
+        public bool IsReadOnly => false;
 
         public InMemoryDistributedDictionary(int numNodes)
         {
@@ -130,8 +131,7 @@ namespace NeoCortexApi.Entities
             }
         }
 
-        public bool IsReadOnly => false;
-
+        
         /// <summary>
         /// Adds list of objects to dictioanary.
         /// </summary>
