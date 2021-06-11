@@ -25,7 +25,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public IDistributedArray backingArray;
 
-
+        
         public SparseBinaryMatrix()
         {
 

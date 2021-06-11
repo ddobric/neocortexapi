@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
 using NeoCortexEntities.NeuroVisualizer;
-using Newtonsoft.Json.Linq;
 
 namespace UnitTestsProject
 {
@@ -538,26 +536,9 @@ namespace UnitTestsProject
             {
                 HtmSerializer2 ser = new HtmSerializer2();
 
-                while (sr.Peek() >= 0)
-                {
-                    string data = sr.ReadLine();
+                Cell cell1 = ser.DeserializeCell(sr);
 
-                    if (data == ser.ReadBegin(nameof(Cell)))
-                    {
-                        Cell cell1 = Cell.Deserialize(sr);
-
-                        DistalDendrite distSegment1 = cell1.DistalDendrites[0];
-
-                        DistalDendrite distSegment2 = cell1.DistalDendrites[1];
-
-                        distSegment1.ParentCell = cell1;
-                        distSegment2.ParentCell = cell1;
-
-                        //Assert.IsTrue(cell1.Equals(cell)); -- getting error as stackoverflow due to circular reference
-                        Assert.IsTrue(cell1.ToString().Equals(cell.ToString()));
-                    }
-                }
-
+                Assert.IsTrue(cell1.Equals(cell));   
             }
         }
 
@@ -599,29 +580,13 @@ namespace UnitTestsProject
 
             using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeDistalDendrite)}.txt"))
             {
+
                 HtmSerializer2 ser = new HtmSerializer2();
 
-                while (sr.Peek() >= 0)
-                {
-                    string data = sr.ReadLine();
+                DistalDendrite distSegment1 = ser.DeserializeDistalDendrite(sr);
 
-                    if (data == ser.ReadBegin(nameof(DistalDendrite)))
-                    {
-
-                        DistalDendrite distSegment1 = DistalDendrite.Deserialize(sr);
-
-                        Cell cell1 = distSegment1.ParentCell;
-
-                        distSegment1 = distSegment1.ParentCell.DistalDendrites[0];
-                        distSegment1.ParentCell = cell1;
-                        DistalDendrite distSegment2 = distSegment1.ParentCell.DistalDendrites[1];
-                        distSegment2.ParentCell = cell1;
-
-                        Assert.IsTrue(distSegment1.Equals(distSeg1));  // getting error as stackoverflow due to circular reference
-                       // Assert.IsTrue(distSegment1.ToString().Equals(distSeg1.ToString()));
-                    }
-                }
-
+                Assert.IsTrue(distSegment1.Equals(distSeg1));  
+                   
             }
         }
         ///<summary>
@@ -660,28 +625,9 @@ namespace UnitTestsProject
             {
                 HtmSerializer2 ser = new HtmSerializer2();
 
-                while (sr.Peek() >= 0)
-                {
-                    string data = sr.ReadLine();
-                    
-                    if (data == ser.ReadBegin(nameof(Synapse)))
-                    {
-                        Synapse synapseT1 = Synapse.Deserialize(sr);
+                Synapse synapseT1 = ser.DeserializeSynapse(sr);
 
-                        Cell cell1 = synapseT1.SourceCell;
-
-                        DistalDendrite distSegment1 = synapseT1.SourceCell.DistalDendrites[0];
-
-                        DistalDendrite distSegment2 = synapseT1.SourceCell.DistalDendrites[1];
-
-                        distSegment1.ParentCell = cell1;
-                        distSegment2.ParentCell = cell1;
-                        synapseT1.SourceCell = cell1;
-
-                        //Assert.IsTrue(synapse1.Equals(synapseT1)); --getting error as stackoverflow due to circular reference
-                        Assert.IsTrue(synapse1.ToString().Equals(synapseT1.ToString()));
-                    }
-                }
+                Assert.IsTrue(synapse1.Equals(synapseT1)); 
             }
         }
 
@@ -820,7 +766,10 @@ namespace UnitTestsProject
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeIntegerTest)}.txt"))
             {
                 inte.Serialize(sw);
+
             }
+            //string[] output = lines.Scan(new { indent = 0, text = "" }, (a, x) => new { indent = a.indent + (x.StartsWith("Begin") ? 1 : 0) - (x.StartsWith("End") ? 1 : 0), text = "".PadLeft(a.indent - (x.StartsWith("End") ? 1 : 0), '\t') + x }).Select(x => x.text).ToArray();
+
 
             using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeIntegerTest)}.txt"))
             {
