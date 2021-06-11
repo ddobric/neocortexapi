@@ -61,10 +61,10 @@ namespace NeoCortexApi.Entities
 
             ser.SerializeBegin(nameof(SegmentActivity), writer);
 
-            writer.Write(ser.tab);
-            writer.Write("//ActiveSynapses | PotentialSynapses |");
-            writer.Write(ser.newLine);
-            writer.Write(ser.tab);
+            //writer.Write(ser.tab);
+            //writer.Write("//ActiveSynapses | PotentialSynapses |");
+            //writer.Write(ser.newLine);
+            //writer.Write(ser.tab);
             ser.SerializeValue(this.ActiveSynapses, writer);
             ser.SerializeValue(this.PotentialSynapses, writer);
 

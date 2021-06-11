@@ -572,6 +572,94 @@ namespace NeoCortexApi.Entities
             return Convert.ToInt32(val);
         }
 
+        ///// <summary>
+        ///// Deserializes from text file to Cell
+        ///// </summary>
+        ///// <param name="sr"></param>
+        ///// <returns>Cell</returns>
+        public Cell DeserializeCell(StreamReader sr)
+        {
+            while (sr.Peek() >= 0)
+            {
+                string data = sr.ReadLine();
+
+                if (data == ReadBegin(nameof(Cell)))
+                {
+                    Cell cell1 = Cell.Deserialize(sr);
+
+                    DistalDendrite distSegment1 = cell1.DistalDendrites[0];
+
+                    DistalDendrite distSegment2 = cell1.DistalDendrites[1];
+
+                    distSegment1.ParentCell = cell1;
+                    distSegment2.ParentCell = cell1;
+
+                    return cell1;
+                }
+            }
+            return null;
+        }
+
+        ///// <summary>
+        ///// Deserializes from text file to DistalDendrite
+        ///// </summary>
+        ///// <param name="sr"></param>
+        ///// <returns>DistalDendrite</returns>
+        public DistalDendrite DeserializeDistalDendrite(StreamReader sr)
+        {
+
+            while (sr.Peek() >= 0)
+            {
+                string data = sr.ReadLine();
+
+                if (data == ReadBegin(nameof(DistalDendrite)))
+                {
+
+                    DistalDendrite distSegment1 = DistalDendrite.Deserialize(sr);
+
+                    Cell cell1 = distSegment1.ParentCell;
+
+                    distSegment1 = distSegment1.ParentCell.DistalDendrites[0];
+                    distSegment1.ParentCell = cell1;
+                    DistalDendrite distSegment2 = distSegment1.ParentCell.DistalDendrites[1];
+                    distSegment2.ParentCell = cell1;
+
+                    return distSegment1;
+                }
+            }
+            return null;
+        }
+        ///// <summary>
+        ///// Deserializes from text file to DistalDendrite
+        ///// </summary>
+        ///// <param name="sr"></param>
+        ///// <returns>DistalDendrite</returns>
+        public Synapse DeserializeSynapse(StreamReader sr)
+        {
+            while (sr.Peek() >= 0)
+            {
+                string data = sr.ReadLine();
+
+                if (data == ReadBegin(nameof(Synapse)))
+                {
+                    Synapse synapseT1 = Synapse.Deserialize(sr);
+
+                    Cell cell1 = synapseT1.SourceCell;
+
+                    DistalDendrite distSegment1 = synapseT1.SourceCell.DistalDendrites[0];
+
+                    DistalDendrite distSegment2 = synapseT1.SourceCell.DistalDendrites[1];
+
+                    distSegment1.ParentCell = cell1;
+                    distSegment2.ParentCell = cell1;
+                    synapseT1.SourceCell = cell1;
+
+                    return synapseT1;
+                }
+            }
+            return null;
+        }
+
     }
 
 }

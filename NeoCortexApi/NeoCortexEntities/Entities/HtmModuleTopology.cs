@@ -78,10 +78,10 @@ namespace NeoCortexApi.Entities
 
             ser.SerializeBegin(nameof(HtmModuleTopology), writer);
 
-            writer.Write(ser.tab);
-            writer.Write("//Dimensions | IsMajorOrdering | DimensionMultiples |");
-            writer.Write(ser.newLine);
-            writer.Write(ser.tab);
+            //writer.Write(ser.tab);
+            //writer.Write("//Dimensions | IsMajorOrdering | DimensionMultiples |");
+            //writer.Write(ser.newLine);
+            //writer.Write(ser.tab);
             ser.SerializeValue(this.Dimensions, writer);
             ser.SerializeValue(this.IsMajorOrdering, writer);
             ser.SerializeValue(this.DimensionMultiplies, writer);

@@ -188,10 +188,10 @@ namespace NeoCortexApi.Entities
 
             if (this.RFPool != null)
             {
-                writer.Write(ser.tab);
-                writer.Write("//SegmentIndex | SynapsePermConnected | NumInputs | RFPool | boxedIndex | Synapses |");
-                writer.Write(ser.newLine);
-                writer.Write(ser.tab);
+                //writer.Write(ser.tab);
+                //writer.Write("//SegmentIndex | SynapsePermConnected | NumInputs | RFPool | boxedIndex | Synapses |");
+                //writer.Write(ser.newLine);
+                //writer.Write(ser.tab);
 
                 ser.SerializeValue(this.SegmentIndex, writer);
                 ser.SerializeValue(this.SynapsePermConnected, writer);

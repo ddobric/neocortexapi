@@ -72,10 +72,10 @@ namespace NeoCortexApi.Entities
 
             ser.SerializeBegin(nameof(Integer), writer);
 
-            writer.Write(ser.tab);
-            writer.Write("//Value |");
-            writer.Write(ser.newLine);
-            writer.Write(ser.tab);
+            //writer.Write(ser.tab);
+            //writer.Write("//Value |");
+            //writer.Write(ser.newLine);
+            //writer.Write(ser.tab);
             ser.SerializeValue(this.Value,writer);
             
             ser.SerializeEnd(nameof(Integer), writer);
