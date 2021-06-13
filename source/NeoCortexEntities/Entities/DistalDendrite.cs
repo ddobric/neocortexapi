@@ -200,6 +200,7 @@ namespace NeoCortexApi.Entities
 
             ser.SerializeBegin(nameof(DistalDendrite), writer);
 
+            
             ser.SerializeValue(this.m_LastUsedIteration, writer);
             ser.SerializeValue(this.m_Ordinal, writer);
             ser.SerializeValue(this.LastUsedIteration, writer);
@@ -235,6 +236,7 @@ namespace NeoCortexApi.Entities
 
             ser.SerializeBegin(nameof(DistalDendrite), writer);
 
+            writer.Write(ser.tab);
             ser.SerializeValue(this.m_LastUsedIteration, writer);
             ser.SerializeValue(this.m_Ordinal, writer);
             ser.SerializeValue(this.LastUsedIteration, writer);
@@ -242,6 +244,7 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.SegmentIndex, writer);
             ser.SerializeValue(this.SynapsePermConnected, writer);
             ser.SerializeValue(this.NumInputs, writer);
+
 
             if (this.boxedIndex != null)
             {

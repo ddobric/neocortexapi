@@ -659,7 +659,43 @@ namespace NeoCortexApi.Entities
             }
             return null;
         }
+        public void indent(string filename)
+        {
+            StreamReader sr = new StreamReader(filename);
+            string data = sr.ReadToEnd();
+            string[] val = data.Split(newLine);
+            int count = 0;
+            for(int i=0; i<val.Length; i++)
+            {
+                if (val[i].StartsWith("  BEGIN") || val[i].StartsWith("  END"))
+                {
+                    count += 1;
+                    if (count == 1)
+                    {
+                        val[i + 1] = tab + val[i + 1];
+                        continue;
+                    }
+                    else
+                    {
+                        val[i] = tab + val[i];
+                        val[i + 1] = tab + val[i + 1];
+                    }
+                    
+                }
+                if (i == val.Length - 2)
+                {
+                    val[i] = val[i].Replace(tab, "");
+                }
 
+            }
+            data = string.Join(newLine, val);
+
+            File.WriteAllText(filename, string.Empty);
+            using (StreamWriter sw = new StreamWriter(filename))
+            {
+                sw.Write(data);
+            }
+        }
     }
 
 }

@@ -342,6 +342,7 @@ namespace NeoCortexApi
 
             ser.SerializeBegin(nameof(HomeostaticPlasticityController), writer);
 
+            ser.SerializeValue(this.m_RequiredSimilarityThreshold, writer);
             ser.SerializeValue(this.m_MaxPreviousElements, writer);
             // m_HtmMemory is not serialized here. It is assumed to be serialized in the SP;
             ser.SerializeValue(this.m_Cycle, writer);
@@ -350,6 +351,7 @@ namespace NeoCortexApi
             ser.SerializeValue(this.m_NumOfStableCyclesForInput, writer);
             ser.SerializeValue(this.m_NumOfActiveColsForInput, writer);
             ser.SerializeValue(this.m_InOutMap, writer);
+            //ser.SerializeValue(this.m_OnStabilityStatusChanged, writer);
             ser.SerializeValue(this.m_IsStable, writer);
 
             ser.SerializeEnd(nameof(HomeostaticPlasticityController), writer);

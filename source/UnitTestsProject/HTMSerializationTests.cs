@@ -485,8 +485,22 @@ namespace UnitTestsProject
         [TestCategory("Serialization")]
         public void SerializeSegmentTest()
         {
-            //TODO
+
             Cell cell = new Cell(12, 14, 16, 18, new CellActivity());
+
+            var distSeg1 = new DistalDendrite(cell, 1, 2, 2, 1.0, 100);
+            cell.DistalDendrites.Add(distSeg1);
+
+            var distSeg2 = new DistalDendrite(cell, 44, 24, 34, 1.0, 100);
+            cell.DistalDendrites.Add(distSeg2);
+
+            Cell preSynapticcell = new Cell(11, 14, 16, 18, new CellActivity());
+
+            var synapse1 = new Synapse(cell, distSeg1.SegmentIndex, 23, 1.0);
+            preSynapticcell.ReceptorSynapses.Add(synapse1);
+
+            var synapse2 = new Synapse(cell, distSeg2.SegmentIndex, 27, 1.0);
+            preSynapticcell.ReceptorSynapses.Add(synapse2);
 
             Segment seg = new DistalDendrite(cell, 1, 2, 2, 1.0, 100);
 
@@ -496,9 +510,11 @@ namespace UnitTestsProject
             }
             using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeSegmentTest)}.txt"))
             {
-                //Segment segment1 = Segment.Deserialize(sr);
+                Segment segment1 = DistalDendrite.Deserialize(sr);//---???
 
-                // Assert.IsTrue(segment1.Equals(seg));
+                Assert.IsTrue(segment1.Equals(seg));
+
+                //string[] lines = File.ReadAllLines("C:\\mytxt.txt");
             }
         }
 
@@ -541,8 +557,6 @@ namespace UnitTestsProject
                 Assert.IsTrue(cell1.Equals(cell));   
             }
         }
-
-
         /// <summary>
         /// Test DistalDendrite.
         /// </summary>
@@ -572,11 +586,6 @@ namespace UnitTestsProject
             {
                 distSeg1.Serialize(sw);
             }
-
-            // Deserilizes segment from file.
-            //DistalDendrite deserilizedSegment = DistalDendrite.Deserialize($"ser_{nameof(SerializeDistalDendrite)}.txt"));
-
-            //Assert.IsTrue(deserilizedSegment, distSeg1);
 
             using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeDistalDendrite)}.txt"))
             {
@@ -619,7 +628,6 @@ namespace UnitTestsProject
                 synapse1.Serialize(sw);
 
             }
-            
 
             using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeSynapseTest)}.txt"))
             {
@@ -630,7 +638,6 @@ namespace UnitTestsProject
                 Assert.IsTrue(synapse1.Equals(synapseT1)); 
             }
         }
-
         /// <summary>
         /// Test Pool.
         /// </summary>
@@ -713,10 +720,12 @@ namespace UnitTestsProject
 
             proximal.RFPool = rfPool;
 
+            HtmSerializer2 htm = new HtmSerializer2();
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeProximalDendriteTest)}.txt"))
             {
                 proximal.Serialize(sw);
             }
+            htm.indent($"ser_{nameof(SerializeProximalDendriteTest)}.txt");
             using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeProximalDendriteTest)}.txt"))
             {
                 ProximalDendrite proximal1 = ProximalDendrite.Deserialize(sr);
@@ -758,27 +767,28 @@ namespace UnitTestsProject
         [DataRow(-1200010)]
         [DataRow(int.MaxValue)]
         [DataRow(-int.MaxValue)]
-
         public void SerializeIntegerTest(int val)
         {
             Integer inte = new Integer(val);
+
+            //HtmSerializer2 htm = new HtmSerializer2();
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeIntegerTest)}.txt"))
             {
                 inte.Serialize(sw);
 
             }
-            //string[] output = lines.Scan(new { indent = 0, text = "" }, (a, x) => new { indent = a.indent + (x.StartsWith("Begin") ? 1 : 0) - (x.StartsWith("End") ? 1 : 0), text = "".PadLeft(a.indent - (x.StartsWith("End") ? 1 : 0), '\t') + x }).Select(x => x.text).ToArray();
 
+            //htm.indent($"ser_{nameof(SerializeIntegerTest)}.txt");
 
             using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeIntegerTest)}.txt"))
             {
                 Integer inte1 = Integer.Deserialize(sr);
 
                 Assert.IsTrue(inte1.Equals(inte));
+                
             }
         }
-
         /// <summary>
         /// Test SegmentActivity.
         /// </summary>

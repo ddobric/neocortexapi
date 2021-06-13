@@ -159,10 +159,10 @@ namespace NeoCortexApi.Entities
         /// Serializes the cell to the stream.
         /// </summary>
         /// <param name="writer"></param>
-        public void SerializeT(StreamWriter writer)
+        public void  SerializeT(StreamWriter writer)
         {
             HtmSerializer2 ser = new HtmSerializer2();
-            
+
             ser.SerializeBegin(nameof(Cell), writer);
 
             ser.SerializeValue(this.Index, writer);
@@ -174,7 +174,7 @@ namespace NeoCortexApi.Entities
 
             if (this.ReceptorSynapses != null && this.ReceptorSynapses.Count > 0)
                 ser.SerializeValue(this.ReceptorSynapses, writer);
-               
+
             ser.SerializeEnd(nameof(Cell), writer);
 
             

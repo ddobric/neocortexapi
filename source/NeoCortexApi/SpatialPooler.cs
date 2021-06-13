@@ -1442,14 +1442,13 @@ namespace NeoCortexApi
             HtmSerializer2 ser = new HtmSerializer2();
 
             ser.SerializeBegin(nameof(SpatialPooler), writer);
+            ser.SerializeValue(this.MaxInibitionDensity, writer);
+            ser.SerializeValue(this.Name, writer);
 
             if (this.m_HomeoPlastAct != null)
             {
                 this.m_HomeoPlastAct.Serialize(writer);
             }
-
-            ser.SerializeValue(this.MaxInibitionDensity, writer);
-            ser.SerializeValue(this.Name, writer);
 
             if (this.connections != null)
             {
