@@ -1,0 +1,41 @@
+Complexity is a symptom of confusion, not a cause. Jeff Hawkins On Intelligence
+
+Imagine a child: with its neocortex, the input its received coexist with its motory signal, an evolutionary function
+both sensory and motory signal flow through the means of an SDR, coexist and creating a downslope potential (if a received vector SDR is present)
+the Brain triggers itself the next SDR to get the motory output then compare the new input with the sensory region in the SDR.
+With the learnings go on the child grows up to the mind set of a human.
+
+Base on this theory, the brain actually develop first in embryo stage of the human body, 
+and the SDR was working on basic function like harmonizing blood pressure, making heart beat, stimilating with chemicals and other subconscious motory function
+
+if the baby instead survive in a forest, raised by wolves
+some base Pattern of SDR may also present as it is the core of Earth itself: object recognition, sense of distance
+(may come from actual moving to the place and touch the previously perceived object, not only from parallax effect)
+
+How a results-oriented Turing model of intelligence differs, we design the function already. We already put initial potential into the solving function.
+and create an higher abstracted model (ANN, CNN) to cope with specialized problem (RNN, CNN, ...)
+
+This theory includes the action exerting nature of the body and the perceiving of the sensory organ, gradually.
+Reference can be peeked to which part of the brain was first develop, why do we needs a tail and go straight from the single cellular form
+
+what can be concluded:
+	learning and actuating happends simutaneausly
+	learning happends at the development of the embryo and includes the subconcious monitoring of body
+		It can be checked that the first organs was not synchronised
+		The complexity SDR potentials was gradually developed with new input, thus the development of new (motory signal) 
+		
+		
+Insight to project:
+	create an encoder based on the Video + text encoder
+	Using the above-mentioned approach: create both the output action(text encoder) toghether with the input(video encoder) in the same SDR
+	at this point an SDR-like a neocortex show a flash of the brain at a given moment
+		Procedure:
+			Create Encoder of Video and Text
+			Convert simple video and label
+			backward inferrence of video to SDR with Video+Text	
+				which actually mean Video is related to Text e.g. Smily Face
+			Scope of Intelligence:
+				Output actuator:
+					a library of predefined label {face, smile, round, square, ...}
+				Input:
+					a serie of video's image ?
