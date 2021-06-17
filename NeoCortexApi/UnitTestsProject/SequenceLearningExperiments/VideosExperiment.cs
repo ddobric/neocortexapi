@@ -19,8 +19,8 @@ using System.Threading;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
 using NeoCortexApi.Classifiers;
-
-
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace UnitTestsProject.SequenceLearningExperiments
 {
@@ -50,14 +50,9 @@ namespace UnitTestsProject.SequenceLearningExperiments
             //conditions of the ball, how it will move. The generation of the 
             //data was done using a seperate python code.
 
-            string testDir = getTestDir("SequenceLearningExperiments");
-            string testDataDir = $"{testDir}\\VideosData";
-            Debug.WriteLine(testDataDir);
-            string[] a = Directory.GetDirectories(testDataDir, "*", SearchOption.TopDirectoryOnly);
-            Debug.WriteLine(Path.GetFileName(a[0]));
-
-            //List<ImageSet> InputVideos = ...;
-
+            string[] imageDirList = fetchImagesDirList("SequenceLearningExperiments");
+            List<ImageSet> InputVideos = fetchImagesfromFolders(imageDirList);
+            InputVideos[2].checkInstance();
             //string outFolder = $"{testOutputFolder}\\{digit}\\{topologies[topologyIndx]}x{topologies[topologyIndx]}";
 
             //Directory.CreateDirectory(outFolder);
@@ -67,10 +62,72 @@ namespace UnitTestsProject.SequenceLearningExperiments
         }
         private class ImageSet{
             public List<bool[]> ImageBinValue;
-            private string IdName;
-            public ImageSet(string IdName)
+            public string IdName;
+            public ImageSet(string dir)
             {
-                this.IdName = IdName;
+                this.IdName = Path.GetFileName(dir);
+                ReadImages(dir);
+            }
+            private void ReadImages( string dir)
+            {
+                ImageBinValue = new();
+                foreach (string file in Directory.EnumerateFiles(dir, "*"))
+                {
+                    ImageBinValue.Add(ImageToBin(file));
+                }
+            }
+            private bool[] ImageToBin(string file)
+            {
+                var image = new Bitmap(file);
+                Bitmap img = ResizeBitmap(image, 10, 10);
+                int length = img.Width * img.Height;
+                bool[] imageBinary = new bool[length];
+
+                for (int i = 0; i < img.Width; i++)
+                {
+                    for (int j = 0; j < img.Height; j++)
+                    {
+                        Color pixel = img.GetPixel(i, j);
+                        if(pixel.R < 100)
+                        {
+                            imageBinary[j + i * img.Height] = false;
+                        }
+                        else
+                        {
+                            imageBinary[j + i * img.Height] = true;
+                        }
+                    } 
+                }
+                return imageBinary;
+            }
+            private Bitmap ResizeBitmap(Bitmap bmp, int width, int height)
+            {
+                Bitmap result = new Bitmap(width, height);
+                using (Graphics g = Graphics.FromImage(result))
+                {
+                    g.DrawImage(bmp, 0, 0, width, height);
+                }
+                return result;
+            }
+            public void checkInstance()
+            {
+                Debug.WriteLine(IdName);
+                foreach (bool[] imags in ImageBinValue){
+                    printBool(imags);
+                }
+            }
+            private void printBool(bool[] ba)
+            {
+                foreach(bool b in ba)
+                {
+                    if (b)
+                    {
+                        Debug.Write("0");
+                    }
+                    else
+                        Debug.Write("1");
+                }
+                Debug.Write("\n");
             }
         }
         private Parameters GetParameters()
@@ -116,7 +173,7 @@ namespace UnitTestsProject.SequenceLearningExperiments
             p.Set(KEY.PREDICTED_SEGMENT_DECREMENT, 0.1);
             return p;
         }
-        private string getTestDir(string testName)
+        private string[] fetchImagesDirList(string testName)
         {
             string currentDir = Directory.GetCurrentDirectory();
             //================ up dir one level ==========================
@@ -126,7 +183,21 @@ namespace UnitTestsProject.SequenceLearningExperiments
             //================ up dir one level ==========================
             currentDir = $"{ Directory.GetParent(currentDir)}";
             //================ test directory ============================
-            return $"{currentDir}\\{testName}";
+
+            string testDir =  $"{currentDir}\\{testName}";
+            string testDataDir = $"{testDir}\\VideosData";
+            string[] a = Directory.GetDirectories(testDataDir, "*", SearchOption.TopDirectoryOnly);
+            return a;
+        }
+        private List<ImageSet> fetchImagesfromFolders(string[] imageDirList)
+        {
+            List<ImageSet> inputImagesList = new();
+            foreach (string dir in imageDirList)
+            {
+                ImageSet temp = new ImageSet(dir);
+                inputImagesList.Add(temp);
+            } 
+            return inputImagesList;
         }
     }
 }

@@ -17,7 +17,7 @@ screenWidth  = 120
 screen = pygame.display.set_mode([screenWidth, screenHeight])
 #----------------------------------------------------------------------------
 #Declare Circle - Object
-r = 15 
+r = 40
 #Initial Position DOWN LEFT
 X = r
 Y = screenHeight - r 
