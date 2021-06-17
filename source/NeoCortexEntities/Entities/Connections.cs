@@ -832,17 +832,17 @@ namespace NeoCortexApi.Entities
             //
             // Step through all currently active cells.
             // Find synapses that points to this cell. (receptor synapses)
-            foreach (Cell cell in activeCellsInCurrentCycle)
+            foreach (Cell activeCell in activeCellsInCurrentCycle)
             {
                 //
                 // This cell is the active in the current cycle. 
                 // We step through all receptor synapses and check the permanence value of related synapses.
                 // Receptor synapses are synapses whose source cell (pre-synaptic cell) is the given cell.
-                // Receptor synapses connect the cell's axons to distal dendrite segments of other cells.
-                // The permanence value of this connection indicates the the cell owner of connected distal dendrite is expected
-                // to be activated in the next cycle.
-                // The segment owner cell in other column pointed by synapse sourced by this 'cell' is depolirized (in predicting state).
-                foreach (Synapse synapse in cell.ReceptorSynapses)
+                // Also, Receptor synapses connect with cell's axons to distal dendrite segments of other cells. This connection defines
+                // Some kind of probability that by synapse connected cell will be active in the next cycle.
+                // The permanence value of this connection defines that probability.
+                // The segment owner cell in other column pointed by synapses sourced by this 'cell' is depolirized (in predicting state).
+                foreach (Synapse synapse in activeCell.ReceptorSynapses)
                 {
                     // Now, we get the segment of the synapse of the pre-synaptic cell.
                     int segFlatIndx = synapse.SegmentIndex;
