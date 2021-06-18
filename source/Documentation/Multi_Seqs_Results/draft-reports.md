@@ -23,9 +23,30 @@ The multi-sequences tested:
 ### Without Reset:
 1. Cycle: 3500
 2. Accuracy: accuracy = matches/input length*100.0.
-3. The longest number of times it reaches 100% accuracy consecutively
-4. Second longest number of consecutive 100% correct.
+3. maxstabilitycycles: The longest number of times it reaches 100% accuracy consecutively
+4. instabilitycycles: Number of instabilities
+5. minstabilitycycles: shortest muber of cstable cycles.
 
+#### Example1
+"****************++++++++"
+
+longest=7
+Number of instabilities=0
+Shortest=0
+
+#### Example2
+"****************++++++++*****++++"
+
+longest=7
+Number of instabilities=1
+Shortest=5
+ 
+#### Example3
+"****************++++++++*****++++**++*++"
+
+longest=7
+Number of instabilities=3
+Shortest=1
 
 ## Elapsed time.
 NOTE on point 3 and 4: These are for requirement number 4. maxMatchCnt should be greater than the second longest number of times.
@@ -37,7 +58,7 @@ Same as above except point 2.
 Reason: Reset makes the first prediction to be always incorrect.
 => Easier to be counted as 100% due to this limitation.
 
-## ResultS
+## Results
 
 ### Single sequence w/wo Reset
 
@@ -59,36 +80,43 @@ Reason: Reset makes the first prediction to be always incorrect.
 
 ### Multiple  sequences (two) w/wo Reset
 
-#### Without Reset 
-		Cycle: 3500	Matches=4 of 4	 100%
-		Elapsed time: 5 min.
-		Maximum number of consecutive 100% correct: 3384
-		Last correct cycle: 3500
-		Second longest number of consecutive 100% correct: 0
-		------------ END ------------
-		Cycle: 3500	Matches=7 of 7	 100%
-		Elapsed time: 6 min.
-		Maximum number of consecutive 100% correct: 3001
-		Last correct cycle: 3500
-		Second longest number of consecutive 100% correct: 2
-		------------ END ------------
+#### Without Reset
+
+**Sequence 1**
+
+Cycle: 3500	Matches=4 of 4	 100%
+Elapsed time: 5 min.
+Maximum number of consecutive 100% correct: 3384
+Last correct cycle: 3500
+Second longest number of consecutive 100% correct: 0
+
+**Sequence 2**
+Cycle: 3500	Matches=7 of 7	 100%
+Elapsed time: 6 min.
+Maximum number of consecutive 100% correct: 3001
+Last correct cycle: 3500
+Second longest number of consecutive 100% correct: 2
 		
 #### With Reset 
 
-		Cycle: 3500	Matches=3 of 4	 100%
-		Elapsed time: 3 min.
-		Maximum number of consecutive 100% correct: 3493
-		Last correct cycle: 3500
-		Second longest number of consecutive 100% correct: 1
-		------------ END ------------
-		Cycle: 3500	Matches=6 of 7	 100%
-		Elapsed time: 6 min.
-		Maximum number of consecutive 100% correct: 2961
-		Last correct cycle: 3500
-		Second longest number of consecutive 100% correct: 3
+**Sequence 1**
+		
+Cycle: 3500	Matches=3 of 4	 100%
+Elapsed time: 3 min.
+Maximum number of consecutive 100% correct: 3493
+Last correct cycle: 3500
+Second longest number of consecutive 100% correct: 1
+
+**Sequence 2**
+
+Cycle: 3500	Matches=6 of 7	 100%
+Elapsed time: 6 min.
+Maximum number of consecutive 100% correct: 2961
+Last correct cycle: 3500
+Second longest number of consecutive 100% correct: 3
 	
-  ## Conclusion
+## Conclusion
   
-  Reduced number of consecutive 100% on the second run => takes more time to re-learn?
-	There are now some instable area (second longest number > 0) but still small => maxMatchCnt does not need to be a big number.
-	With and without Reset still feel similar.
+Reduced number of consecutive 100% on the second run => takes more time to re-learn?
+There are now some instable area (second longest number > 0) but still small => maxMatchCnt does not need to be a big number.
+With and without Reset still feel similar.
