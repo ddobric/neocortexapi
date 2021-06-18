@@ -22,7 +22,7 @@ namespace NeoCortexApi.Entities
         {
 
         }
-
+        
         /// <summary>
         /// Constructs a new <see cref="AbstractSparseBinaryMatrix"/> with the specified dimensions (defaults to row major ordering)
         /// </summary>
@@ -469,6 +469,7 @@ namespace NeoCortexApi.Entities
         public virtual void Serialize(StreamWriter writer)
         {
             throw new NotImplementedException();
+            
         }
         #endregion
     }

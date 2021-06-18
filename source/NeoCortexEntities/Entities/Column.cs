@@ -9,6 +9,7 @@ using NeoCortexApi.Utility;
 using System.Linq;
 using System.Diagnostics;
 using NeoCortexEntities.NeuroVisualizer;
+using System.IO;
 
 namespace NeoCortexApi.Entities
 {
@@ -393,6 +394,33 @@ namespace NeoCortexApi.Entities
         public override string ToString()
         {
             return $"Column: Indx:{this.Index}, Cells:{this.Cells.Length}";
+        }
+        public void Serialize(StreamWriter writer)
+        {
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            ser.SerializeBegin(nameof(Column), writer);
+
+            ser.SerializeValue(this.CellId, writer);
+            ser.SerializeValue(this.Cells, writer);
+            ser.SerializeValue(this.ConnectedInputBits, writer);
+            ser.SerializeValue(this.Index, writer);
+
+            if (this.connectedInputCounter != null)
+            {
+                this.connectedInputCounter.Serialize(writer);
+            }
+
+            if (this.ConnectedInputCounterMatrix != null)
+            {
+                this.ConnectedInputCounterMatrix.Serialize(writer);
+            }
+
+            if (this.ProximalDendrite != null)
+            {
+                this.ProximalDendrite.Serialize(writer);
+            }
+            ser.SerializeEnd(nameof(Column), writer);
         }
     }
 }

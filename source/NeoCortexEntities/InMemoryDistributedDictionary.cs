@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using NeoCortexApi.Entities;
+using System.IO;
 
 namespace NeoCortexApi.Entities
 {
@@ -338,7 +339,30 @@ namespace NeoCortexApi.Entities
             this.dictList = null;
         }
 
-   
+
         #endregion
+
+        public  void Serialize(StreamWriter writer)
+        {
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            ser.SerializeBegin(nameof(InMemoryDistributedDictionary<TKey, TValue>), writer);
+
+            ser.SerializeValue(this.Count, writer);
+            //ser.SerializeValue(this.Current, writer);
+            ser.SerializeValue(this.currentDictIndex, writer);
+            ser.SerializeValue(this.currentIndex, writer);
+            //ser.SerializeValue(this.dictList, writer);
+            
+            ser.SerializeValue(this.IsReadOnly, writer);
+            //ser.SerializeValue(this.Keys, writer);
+            ser.SerializeValue(this.numElements, writer);
+            //ser.SerializeValue(this.Values, writer);
+
+            if(this.HtmConfig != null)
+            { this.HtmConfig.Serialize(writer); }
+
+            ser.SerializeEnd(nameof(InMemoryDistributedDictionary<TKey, TValue>), writer);
+        }
     }
 }

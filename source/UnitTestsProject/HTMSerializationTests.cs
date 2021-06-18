@@ -477,6 +477,26 @@ namespace UnitTestsProject
 
 
         }
+        [TestMethod]
+        [TestCategory("Serialization")]
+        [DataRow(new int[] { 3, 4, 5 }, true, null)]
+        public void SerializeISparseMatrixTest(int[] dimensions, bool useColumnMajorOrdering, IDistributedDictionary<int, int> dict)
+        {
+            //ISparseMatrix<int> sparse = new SparseObjectMatrix<int>(dimensions, useColumnMajorOrdering, dict);
+
+        }
+        [TestMethod]
+        [TestCategory("Serialization")]
+        [DataRow(new int[] { 3, 4, 5 }, true, null)]
+        public void SerializeAbstractSparceBinaryMatrixTest(int[] dimensions, bool useColumnMajorOrdering, IDistributedArray distArray)
+        {
+            AbstractSparseBinaryMatrix matrix = new SparseBinaryMatrix(dimensions, useColumnMajorOrdering, distArray);
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeAbstractSparceBinaryMatrixTest)}.txt"))
+            {
+                matrix.Serialize(sw);
+            }
+        }
+
 
         [TestMethod]
         [TestCategory("Serialization")]

@@ -237,8 +237,9 @@ namespace NeoCortexApi.Entities
             HtmSerializer2 ser = new HtmSerializer2();
 
             ser.SerializeBegin(nameof(SparseObjectMatrix<T>), writer);
-            ser.SerializeValue(this.IsRemotelyDistributed, writer);
 
+            ser.SerializeValue(this.IsRemotelyDistributed, writer);
+            
             if (this.ModuleTopology != null)
             { this.ModuleTopology.Serialize(writer); }
 
