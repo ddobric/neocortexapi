@@ -1,0 +1,16 @@
+Cycle: 3500	Matches=4 of 4	 100%
+100% accuracy reached 3384 times.
+Exit experiment in the stable state after 30 repeats with 100% of accuracy. Elapsed time: 5 min.
+Maximum number of consecutive 100% correct: 3384
+Last correct cycle: 3500
+Second longest number of consecutive 100% correct: 0
+------------ END ------------
+
+Cycle: 3500	Matches=7 of 7	 100%
+100% accuracy reached 3001 times.
+Exit experiment in the stable state after 30 repeats with 100% of accuracy. Elapsed time: 6 min.
+Maximum number of consecutive 100% correct: 3001
+Last correct cycle: 3500
+Second longest number of consecutive 100% correct: 2
+------------ END ------------
+The program '[25940] NeoCortexApiSample.exe' has exited with code 0 (0x0).
