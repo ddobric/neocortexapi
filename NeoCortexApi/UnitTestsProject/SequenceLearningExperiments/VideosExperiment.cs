@@ -40,7 +40,7 @@ namespace UnitTestsProject.SequenceLearningExperiments
             //===============================================================
 
             //================= preparing the parameters ====================
-            //Parameters p = GetParameters();
+            Parameters p = GetParameters();
             double max = 20;
 
 
@@ -52,13 +52,92 @@ namespace UnitTestsProject.SequenceLearningExperiments
 
             string[] imageDirList = fetchImagesDirList("SequenceLearningExperiments");
             List<ImageSet> InputVideos = fetchImagesfromFolders(imageDirList);
-            InputVideos[2].checkInstance();
-            //string outFolder = $"{testOutputFolder}\\{digit}\\{topologies[topologyIndx]}x{topologies[topologyIndx]}";
+            //InputVideos[2].checkInstance();
 
-            //Directory.CreateDirectory(outFolder);
+            //================ initiating the CLA HTM model =================
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            int maxMatchCnt = 0;
+            bool learn = true;
+
+            CortexNetwork net = new CortexNetwork("my cortex");
+            List<CortexRegion> regions = new List<CortexRegion>();
+            CortexRegion region0 = new CortexRegion("1st Region");
+
+            regions.Add(region0);
+
+            var mem = new Connections();
+
+            p.apply(mem);
+
+            bool isInStableState = false;
+
+            //HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
+            HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
+
+            var numInputs = 0000000;//InputVideos[0].ImageBinValue.Distinct<double>().ToList().Count;
+
+            TemporalMemory tm1 = new TemporalMemory();
+
+            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, numInputs * 55, (isStable, numPatterns, actColAvg, seenInputs) =>
+            {
+                if (isStable)
+                    // Event should be fired when entering the stable state.
+                    Debug.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+                else
+                    // Ideal SP should never enter unstable state after stable state.
+                    Debug.WriteLine($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+
+                Assert.IsTrue(numPatterns == numInputs);
+                isInStableState = true;
+                cls.ClearState();
+
+                tm1.Reset(mem);
+            }, numOfCyclesToWaitOnChange: 25);
 
 
+            SpatialPoolerMT sp1 = new SpatialPoolerMT(hpa);
+            sp1.Init(mem, UnitTestHelpers.GetMemory());
+            tm1.Init(mem);
 
+            CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
+            region0.AddLayer(layer1);
+            layer1.HtmModules.Add("encoder", encoder);
+            layer1.HtmModules.Add("sp", sp1);
+            layer1.HtmModules.Add("tm", tm1);
+
+            double[] inputs = inputValues.ToArray();
+            int[] prevActiveCols = new int[0];
+
+            int cycle = 0;
+            int matches = 0;
+
+            string lastPredictedValue = "0";
+
+            Dictionary<double, List<List<int>>> activeColumnsLst = new Dictionary<double, List<List<int>>>();
+
+            foreach (var input in inputs)
+            {
+                if (activeColumnsLst.ContainsKey(input) == false)
+                    activeColumnsLst.Add(input, new List<List<int>>());
+            }
+
+            int maxCycles = 3500;
+            int maxPrevInputs = inputValues.Count - 1;
+            List<string> previousInputs = new List<string>();
+            previousInputs.Add("-1.0");
+
+
+            foreach (ImageSet vid in InputVideos)
+            {
+                Debug.WriteLine($"============= initiate learning on {vid.IdName} ==============");
+                foreach (bool[] imageBinary in vid.ImageBinValue)
+                {
+                    //learning
+                }
+                //do what to reset till next learning  
+            }
         }
         private class ImageSet{
             public List<bool[]> ImageBinValue;
