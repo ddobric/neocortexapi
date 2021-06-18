@@ -496,7 +496,17 @@ namespace UnitTestsProject
                 matrix.Serialize(sw);
             }
         }
-
+        [TestMethod]
+        [TestCategory("Serialization")]
+        [DataRow(3, 5, 8.3, 2)]
+        public void SerializeColumnTest(int numCells, int colIndx, double synapsePermConnected, int numInputs)
+        {
+            Column matrix = new Column(numCells, colIndx, synapsePermConnected, numInputs);
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeColumnTest)}.txt"))
+            {
+                matrix.Serialize(sw);
+            }
+        }
 
         [TestMethod]
         [TestCategory("Serialization")]
