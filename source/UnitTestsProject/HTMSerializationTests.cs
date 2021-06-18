@@ -429,73 +429,66 @@ namespace UnitTestsProject
         }
 
         /// <summary>
-        /// Test empty SpatialPooler.
+        /// Test SpatialPooler.
         /// </summary>
         [TestMethod]
         [TestCategory("Serialization")]
-        public void SerializeEmptySpatialPooler()
+        public void SerializeSpatialPooler()
         {
 
             SpatialPooler spatial = new SpatialPooler();
 
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeEmptySpatialPooler)}.txt"))
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeSpatialPooler)}.txt"))
             {
                 spatial.Serialize(sw);
             }
-            //using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeEmptySpatialPooler)}.txt"))
-
-            //{
-            //    SpatialPooler spatial1 = SpatialPooler.Deserialize(sr);
-
-            //    Assert.IsTrue(spatial1.Equals(spatial));
-            //}
-
-
+            
         }
 
         /// <summary>
-        /// Test empty HomeostaticPlasticityController.
+        /// Test HomeostaticPlasticityController.
         /// </summary>
         [TestMethod]
         [TestCategory("Serialization")]
-        public void SerializeEmptyHomeostaticPlasticityController()
+        public void SerializeHomeostaticPlasticityController()
         {
 
             HomeostaticPlasticityController homeostatic = new HomeostaticPlasticityController();
 
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeEmptyHomeostaticPlasticityController)}.txt"))
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeHomeostaticPlasticityController)}.txt"))
             {
                 homeostatic.Serialize(sw);
             }
-            //using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeEmptyHomeostaticPlasticityController)}.txt"))
-
-            //{
-            //    SpatialPooler homeostatic1 = SpatialPooler.Deserialize(sr);
-
-            //    Assert.IsTrue(homeostatic1.Equals(homeostatic));
-            //}
-
-
+            
         }
+
         [TestMethod]
         [TestCategory("Serialization")]
-        [DataRow(new int[] { 3, 4, 5 }, true, null)]
-        public void SerializeISparseMatrixTest(int[] dimensions, bool useColumnMajorOrdering, IDistributedDictionary<int, int> dict)
+        
+        public void SerializeConnectionsTest()
         {
-            //ISparseMatrix<int> sparse = new SparseObjectMatrix<int>(dimensions, useColumnMajorOrdering, dict);
-
+            int[] inputDims = { 3, 4, 5 };
+            int[] columnDims = { 35, 43, 52 };
+            HtmConfig matrix = new HtmConfig(inputDims, columnDims);
+            Connections connections = new Connections(matrix);
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeConnectionsTest)}.txt"))
+            {
+                connections.Serialize(sw);
+            }
         }
+        
         [TestMethod]
         [TestCategory("Serialization")]
-        [DataRow(new int[] { 3, 4, 5 }, true, null)]
-        public void SerializeAbstractSparceBinaryMatrixTest(int[] dimensions, bool useColumnMajorOrdering, IDistributedArray distArray)
+        [DataRow(new int[] { 3, 4, 5 }, new int[] { 35, 43, 52 })]
+        public void SerializeHtmConfigTest(int[] inputDims, int[] columnDims)
         {
-            AbstractSparseBinaryMatrix matrix = new SparseBinaryMatrix(dimensions, useColumnMajorOrdering, distArray);
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeAbstractSparceBinaryMatrixTest)}.txt"))
+            HtmConfig matrix = new HtmConfig(inputDims, columnDims);
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeHtmConfigTest)}.txt"))
             {
                 matrix.Serialize(sw);
             }
         }
+
         [TestMethod]
         [TestCategory("Serialization")]
         [DataRow(3, 5, 8.3, 2)]
@@ -505,43 +498,6 @@ namespace UnitTestsProject
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeColumnTest)}.txt"))
             {
                 matrix.Serialize(sw);
-            }
-        }
-
-        [TestMethod]
-        [TestCategory("Serialization")]
-        public void SerializeSegmentTest()
-        {
-
-            Cell cell = new Cell(12, 14, 16, 18, new CellActivity());
-
-            var distSeg1 = new DistalDendrite(cell, 1, 2, 2, 1.0, 100);
-            cell.DistalDendrites.Add(distSeg1);
-
-            var distSeg2 = new DistalDendrite(cell, 44, 24, 34, 1.0, 100);
-            cell.DistalDendrites.Add(distSeg2);
-
-            Cell preSynapticcell = new Cell(11, 14, 16, 18, new CellActivity());
-
-            var synapse1 = new Synapse(cell, distSeg1.SegmentIndex, 23, 1.0);
-            preSynapticcell.ReceptorSynapses.Add(synapse1);
-
-            var synapse2 = new Synapse(cell, distSeg2.SegmentIndex, 27, 1.0);
-            preSynapticcell.ReceptorSynapses.Add(synapse2);
-
-            Segment seg = new DistalDendrite(cell, 1, 2, 2, 1.0, 100);
-
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeSegmentTest)}.txt"))
-            {
-                seg.Serialize(sw);
-            }
-            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeSegmentTest)}.txt"))
-            {
-                Segment segment1 = DistalDendrite.Deserialize(sr);//---???
-
-                Assert.IsTrue(segment1.Equals(seg));
-
-                //string[] lines = File.ReadAllLines("C:\\mytxt.txt");
             }
         }
 
