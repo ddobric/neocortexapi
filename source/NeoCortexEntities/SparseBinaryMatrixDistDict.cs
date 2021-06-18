@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using System.Diagnostics;
-
+using System.IO;
 
 namespace NeoCortexApi.Entities
 {
@@ -281,6 +281,24 @@ namespace NeoCortexApi.Entities
         {
             throw new NotImplementedException();
         }
+        #region Serialization
+        public override void Serialize(StreamWriter writer)
+        {
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            ser.SerializeBegin(nameof(SparseBinaryMatrix), writer);
+
+            ser.SerializeValue(this.trueCounts, writer);
+           
+            if(this.ModuleTopology != null)
+            { this.ModuleTopology.Serialize(writer); }
+
+            if (this.backingArray != null)
+            { this.backingArray.Serialize(writer); }
+
+            ser.SerializeEnd(nameof(SparseBinaryMatrix), writer);
+        }
+        #endregion
     }
 }
 #endif

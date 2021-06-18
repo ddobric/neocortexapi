@@ -1895,43 +1895,30 @@ namespace NeoCortexApi.Entities
 
             ser.SerializeBegin(nameof(Connections), writer);
 
-            ser.SerializeValue(Connections.EPSILON, writer);
-            ser.SerializeValue(this.version, writer);
+            //ser.SerializeValue(Connections.EPSILON, writer); 
+            ser.SerializeValue(this.version, writer); 
             ser.SerializeValue(this.SpIterationNum, writer);
             ser.SerializeValue(this.SpIterationLearnNum, writer);
             ser.SerializeValue(this.m_TMIteration, writer);
             ser.SerializeValue(this.m_BoostedmOverlaps, writer);
-            ser.SerializeValue(this.m_Overlaps, writer);
-            ser.SerializeValue(this.m_TieBreaker, writer);
-
-            this.connectedCounts2.Serialize(writer);
-
-
-
+            ser.SerializeValue(this.m_Overlaps, writer); 
+            ser.SerializeValue(this.m_TieBreaker, writer); 
+            //ser.SerializeValue(this.ActiveCells, writer);
+            //ser.SerializeValue(this.WinnerCells, writer);
             ser.SerializeValue(this.Cells, writer);
-            ser.SerializeValue(this.m_BoostFactors, writer);
-
-
-
+            ser.SerializeValue(this.m_BoostFactors, writer); 
+            //ser.SerializeValue(this.m_ActiveCells, writer); 
+            //ser.SerializeValue(this.winnerCells, writer); 
+            //ser.SerializeValue(this.m_PredictiveCells, writer);
             ser.SerializeValue(this.m_ActiveSegments, writer);
-            ser.SerializeValue(this.m_MatchingSegments, writer);
-
-            this.m_HtmConfig.Serialize(writer);
-
-
-            //ser.SerializeValue(this.m_DistalSegments, writer);
-            ser.SerializeValue(this.m_DistalSynapses, writer);
+            ser.SerializeValue(this.m_MatchingSegments, writer); 
+            ser.SerializeValue(this.m_DistalSynapses, writer); 
             ser.SerializeValue(this.m_NextFlatIdx, writer);
             ser.SerializeValue(this.m_NextSegmentOrdinal, writer);
             ser.SerializeValue(this.m_NextSynapseOrdinal, writer);
             ser.SerializeValue(this.m_NumSynapses, writer);
             ser.SerializeValue(this.m_FreeFlatIdxs, writer);
-
-            // TODO!!!
             //ser.SerializeValue(this.m_SegmentForFlatIdx, writer);
-
-            this.LastActivity.Serialize(writer);
-
             ser.SerializeValue(this.NextSegmentOrdinal, writer);
             ser.SerializeValue(this.TieBreaker, writer);
             ser.SerializeValue(this.BoostedOverlaps, writer);
@@ -1939,6 +1926,18 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.BoostFactors, writer);
             ser.SerializeValue(this.ActiveSegments, writer);
             ser.SerializeValue(this.MatchingSegments, writer);
+            
+            if (this.connectedCounts2 != null)
+            { this.connectedCounts2.Serialize(writer); }
+
+            if (this.m_HtmConfig != null)
+            { this.m_HtmConfig.Serialize(writer); }
+
+            if (this.HtmConfig != null)
+            { this.HtmConfig.Serialize(writer); }
+
+            if (this.LastActivity != null)
+            { this.LastActivity.Serialize(writer); }
 
             ser.SerializeEnd(nameof(Connections), writer);
         }
@@ -1947,7 +1946,9 @@ namespace NeoCortexApi.Entities
         {
             Connections mem = new Connections();
             // |T|ODO
+            
             return mem;
+
         }
         #endregion
 

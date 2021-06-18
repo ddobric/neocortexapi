@@ -478,9 +478,6 @@ namespace UnitTestsProject
 
         }
 
-
-
-
         [TestMethod]
         [TestCategory("Serialization")]
         public void SerializeSegmentTest()

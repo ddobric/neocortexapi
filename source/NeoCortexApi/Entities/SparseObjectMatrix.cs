@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using System.IO;
 
 namespace NeoCortexApi.Entities
 {
@@ -229,6 +230,21 @@ namespace NeoCortexApi.Entities
         public override ICollection<KeyPair> GetObjects(int[] indexes)
         {
             throw new NotImplementedException();
+        }
+
+        public override void Serialize(StreamWriter writer)
+        {
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            ser.SerializeBegin(nameof(SparseObjectMatrix<T>), writer);
+            ser.SerializeValue(this.IsRemotelyDistributed, writer);
+
+            if (this.ModuleTopology != null)
+            { this.ModuleTopology.Serialize(writer); }
+
+            //ser.SerializeValue(this.m_SparseMap, writer);
+
+            ser.SerializeEnd(nameof(SparseObjectMatrix<T>), writer);
         }
     }
 }

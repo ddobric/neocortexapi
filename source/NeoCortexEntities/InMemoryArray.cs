@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using System.IO;
 
 namespace NeoCortexApi.Entities
 {
@@ -198,6 +199,21 @@ namespace NeoCortexApi.Entities
             }
         }
 
+        #region Serialization
+        public void Serialize(StreamWriter writer)
+        {
+            HtmSerializer2 ser = new HtmSerializer2();
 
+            ser.SerializeBegin(nameof(InMemoryArray), writer);
+
+            //ser.SerializeValue(this.backingArray, writer);
+            ser.SerializeValue(this.dimensions, writer);
+            ser.SerializeValue(this.Dimensions, writer);
+            ser.SerializeValue(this.numOfNodes, writer);
+            ser.SerializeValue(this.Rank, writer);
+
+            ser.SerializeEnd(nameof(InMemoryArray), writer);
+        }
+        #endregion
     }
 }

@@ -179,6 +179,7 @@ namespace NeoCortexApi
                 }
                 else
                 {
+
                     m_NumOfStableCyclesForInput[inpHash] = 0;
 
                     // If the new SDR output for the already seen input
@@ -344,7 +345,12 @@ namespace NeoCortexApi
 
             ser.SerializeValue(this.m_RequiredSimilarityThreshold, writer);
             ser.SerializeValue(this.m_MaxPreviousElements, writer);
-            // m_HtmMemory is not serialized here. It is assumed to be serialized in the SP;
+
+            if(this.m_HtmMemory != null)
+            {
+                this.m_HtmMemory.Serialize(writer);
+            }
+
             ser.SerializeValue(this.m_Cycle, writer);
             ser.SerializeValue(this.m_MinCycles, writer);
             ser.SerializeValue(this.m_RequiredNumOfStableCycles, writer);

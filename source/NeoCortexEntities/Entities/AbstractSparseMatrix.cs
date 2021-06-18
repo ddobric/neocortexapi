@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace NeoCortexApi.Entities
@@ -225,6 +226,11 @@ namespace NeoCortexApi.Entities
                 return arr;
             }
         }
-
+        #region Serialization
+        public virtual void Serialize(StreamWriter writer)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
     }
 }

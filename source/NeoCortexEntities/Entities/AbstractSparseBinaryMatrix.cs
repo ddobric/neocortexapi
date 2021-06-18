@@ -465,18 +465,10 @@ namespace NeoCortexApi.Entities
                 return false;
             return true;
         }
-
         #region Serialization
-        public void Serialize(StreamWriter writer)
+        public virtual void Serialize(StreamWriter writer)
         {
-            HtmSerializer2 ser = new HtmSerializer2();
-
-            ser.SerializeBegin(nameof(AbstractSparseBinaryMatrix), writer);
-
-            ser.SerializeValue(AbstractSparseBinaryMatrix.serialVersionUID, writer);
-            ser.SerializeValue(this.trueCounts, writer);
-            
-            ser.SerializeEnd(nameof(AbstractSparseBinaryMatrix), writer);
+            throw new NotImplementedException();
         }
         #endregion
     }
