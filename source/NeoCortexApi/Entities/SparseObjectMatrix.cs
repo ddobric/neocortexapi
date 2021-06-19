@@ -126,7 +126,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="index"><inheritdoc/></param>
         /// <returns><inheritdoc/></returns>
-        public override T getObject(int index)
+        public override T GetObject(int index)
         {
             return GetColumn(index);
         }

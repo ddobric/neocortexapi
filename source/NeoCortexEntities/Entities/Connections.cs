@@ -551,7 +551,7 @@ namespace NeoCortexApi.Entities
         {
             foreach (int idx in s.GetSparseIndices())
             {
-                this.HtmConfig.Memory.getObject(idx).SetPermanences(this.HtmConfig, s.getObject(idx));
+                this.HtmConfig.Memory.GetObject(idx).SetPermanences(this.HtmConfig, s.GetObject(idx));
             }
         }
 
@@ -1353,7 +1353,7 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public Column GetColumn(int index)
         {
-            return this.HtmConfig.Memory.getObject(index);
+            return this.HtmConfig.Memory.GetObject(index);
         }
 
         /// <summary>
@@ -1444,7 +1444,7 @@ namespace NeoCortexApi.Entities
             LinkedHashSet<Column> retVal = new LinkedHashSet<Column>();
             for (int i = 0; i < indexes.Length; i++)
             {
-                retVal.Add(this.HtmConfig.Memory.getObject(indexes[i]));
+                retVal.Add(this.HtmConfig.Memory.GetObject(indexes[i]));
             }
             return retVal;
         }
@@ -1459,7 +1459,7 @@ namespace NeoCortexApi.Entities
             List<Column> retVal = new List<Column>();
             for (int i = 0; i < indexes.Length; i++)
             {
-                retVal.Add(this.HtmConfig.Memory.getObject(indexes[i]));
+                retVal.Add(this.HtmConfig.Memory.GetObject(indexes[i]));
             }
             return retVal;
         }

@@ -55,10 +55,10 @@ namespace NeoCortexApi
             Cell[] cells = new Cell[numColumns * cellsPerColumn];
 
             //Used as flag to determine if Column objects have been created.
-            Column colZero = matrix.getObject(0);
+            Column colZero = matrix.GetObject(0);
             for (int i = 0; i < numColumns; i++)
             {
-                Column column = colZero == null ? new Column(cellsPerColumn, i, this.connections.HtmConfig.SynPermConnected, this.connections.HtmConfig.NumInputs) : matrix.getObject(i);
+                Column column = colZero == null ? new Column(cellsPerColumn, i, this.connections.HtmConfig.SynPermConnected, this.connections.HtmConfig.NumInputs) : matrix.GetObject(i);
                 for (int j = 0; j < cellsPerColumn; j++)
                 {
                     cells[i * cellsPerColumn + j] = column.Cells[j];

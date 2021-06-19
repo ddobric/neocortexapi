@@ -245,7 +245,7 @@ namespace NeoCortexApi.Encoders
             int[] retVal = new int[matrix.GetMaxIndex() + 1];
             for (int i = 0; i < retVal.Length; i++)
             {
-                int[] slice = matrix.getObject(i);
+                int[] slice = matrix.GetObject(i);
                 for (int j = 0; j < slice.Length; j++)
                 {
                     retVal[i] += (slice[j] * encoded[j]);
