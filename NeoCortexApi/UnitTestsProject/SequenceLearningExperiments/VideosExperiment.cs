@@ -27,7 +27,7 @@ namespace UnitTestsProject.SequenceLearningExperiments
     [TestClass]
     public class VideosExperiment
     {
-        int inputBits = 20 * 20;
+        int inputBits = 121;
         int numColumns = 2048;
         [TestMethod]
         [TestCategory("Experiment")]
@@ -52,9 +52,25 @@ namespace UnitTestsProject.SequenceLearningExperiments
 
             string[] imageDirList = fetchImagesDirList("SequenceLearningExperiments");
             List<ImageSet> InputVideos = fetchImagesfromFolders(imageDirList);
-            //InputVideos[2].checkInstance();
+            //InputVideos[0].checkInstance();
 
-            //================ initiating the CLA HTM model =================
+            //====================== getting number of different input for HomeostaticPlasticityController ===============
+            List<int[]> tempInput = new();
+            foreach (ImageSet vid in InputVideos)
+            {
+                Debug.WriteLine($"============= initiate learning on {vid.IdName} ==============");
+                foreach (int[] imageBinary in vid.ImageBinValue)
+                {
+                    if (!tempInput.Contains(imageBinary))
+                    {
+                        tempInput.Add(imageBinary);
+                    }
+                }
+            }
+            var numInputs = tempInput.Distinct<int[]>().ToList().Count;
+            Debug.WriteLine($"No of different input: {numInputs}");
+
+            //==================================== initiating the CLA HTM model ===================================
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
@@ -76,8 +92,6 @@ namespace UnitTestsProject.SequenceLearningExperiments
             //HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
             HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
 
-            var numInputs = 0000000;//InputVideos[0].ImageBinValue.Distinct<double>().ToList().Count;
-
             TemporalMemory tm1 = new TemporalMemory();
 
             HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, numInputs * 55, (isStable, numPatterns, actColAvg, seenInputs) =>
@@ -90,7 +104,7 @@ namespace UnitTestsProject.SequenceLearningExperiments
                     Debug.WriteLine($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
 
                 Assert.IsTrue(numPatterns == numInputs);
-                isInStableState = true;
+                learn = isInStableState = isStable;
                 cls.ClearState();
 
                 tm1.Reset(mem);
@@ -103,51 +117,167 @@ namespace UnitTestsProject.SequenceLearningExperiments
 
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
             region0.AddLayer(layer1);
-            layer1.HtmModules.Add("encoder", encoder);
             layer1.HtmModules.Add("sp", sp1);
             layer1.HtmModules.Add("tm", tm1);
-
-            double[] inputs = inputValues.ToArray();
-            int[] prevActiveCols = new int[0];
 
             int cycle = 0;
             int matches = 0;
 
             string lastPredictedValue = "0";
 
-            Dictionary<double, List<List<int>>> activeColumnsLst = new Dictionary<double, List<List<int>>>();
 
-            foreach (var input in inputs)
-            {
-                if (activeColumnsLst.ContainsKey(input) == false)
-                    activeColumnsLst.Add(input, new List<List<int>>());
-            }
-
-            int maxCycles = 3500;
-            int maxPrevInputs = inputValues.Count - 1;
+            int maxCycles = 4200;
+            int maxPrevInputs = tempInput.Count - 1;
             List<string> previousInputs = new List<string>();
-            previousInputs.Add("-1.0");
+            previousInputs.Add(tempInput[0].ArrToString());
 
-
-            foreach (ImageSet vid in InputVideos)
+            // Training SP to get stable. New-born stage.
+            //
+            for (int i = 0; i < maxCycles; i++)
             {
-                Debug.WriteLine($"============= initiate learning on {vid.IdName} ==============");
-                foreach (bool[] imageBinary in vid.ImageBinValue)
+                matches = 0;
+
+                cycle++;
+
+                Debug.WriteLine($"-------------- Newborn Cycle {cycle} ---------------");
+
+                foreach (var input in tempInput)
                 {
-                    //learning
+                    Debug.WriteLine($" -- {input.ArrToString()} --");
+
+                    var lyrOut = sp1.Compute(input, learn);
+                    Debug.WriteLine($"SDR:  {lyrOut}");
+                    if (isInStableState)
+                        break;
                 }
-                //do what to reset till next learning  
+
+                if (isInStableState)
+                    break;
             }
+
+
+            //
+            // Now training with SP+TM. SP is pretrained on the given input pattern set.
+            for (int i = 0; i < maxCycles; i++)
+            {
+                matches = 0;
+
+                cycle++;
+
+                Debug.WriteLine($"-------------- Cycle {cycle} ---------------");
+
+                foreach (var input in tempInput)
+                {
+                    Debug.WriteLine($"-------------- {input.ArrToString()} ---------------");
+
+                    var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
+
+                    // lyrOut is null when the TM is added to the layer inside of HPC callback by entering of the stable state.
+                    //if (isInStableState && lyrOut != null)
+                    {
+                        var activeColumns = layer1.GetResult("sp") as int[];
+
+                        //layer2.Compute(lyrOut.WinnerCells, true);
+                        //activeColumnsLst[input].Add(activeColumns.ToList());
+
+                        previousInputs.Add(input.ArrToString());
+                        if (previousInputs.Count > (maxPrevInputs + 1))
+                            previousInputs.RemoveAt(0);
+
+                        // In the pretrained SP with HPC, the TM will quickly learn cells for patterns
+                        // In that case the starting sequence 4-5-6 might have the sam SDR as 1-2-3-4-5-6,
+                        // Which will result in returning of 4-5-6 instead of 1-2-3-4-5-6.
+                        // HtmClassifier allways return the first matching sequence. Because 4-5-6 will be as first
+                        // memorized, it will match as the first one.
+                        if (previousInputs.Count < maxPrevInputs)
+                            continue;
+
+                        string key = GetKey(previousInputs, input);
+
+                        List<Cell> actCells;
+
+                        if (lyrOut.ActiveCells.Count == lyrOut.WinnerCells.Count)
+                        {
+                            actCells = lyrOut.ActiveCells;
+                        }
+                        else
+                        {
+                            actCells = lyrOut.WinnerCells;
+                        }
+
+                        cls.Learn(key, actCells.ToArray());
+
+                        if (learn == false)
+                            Debug.WriteLine($"Inference mode");
+
+                        Debug.WriteLine($"Col  SDR: {Helpers.StringifyVector(lyrOut.ActivColumnIndicies)}");
+                        Debug.WriteLine($"Cell SDR: {Helpers.StringifyVector(actCells.Select(c => c.Index).ToArray())}");
+
+                        if (key == lastPredictedValue)
+                        {
+                            matches++;
+                            Debug.WriteLine($"Match. Actual value: {key} - Predicted value: {lastPredictedValue}");
+                        }
+                        else
+                            Debug.WriteLine($"Missmatch! Actual value: {key} - Predicted value: {lastPredictedValue}");
+
+                        if (lyrOut.PredictiveCells.Count > 0)
+                        {
+                            var predictedInputValue = cls.GetPredictedInputValue(lyrOut.PredictiveCells.ToArray());
+
+                            Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {predictedInputValue}");
+
+                            lastPredictedValue = predictedInputValue;
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"NO CELLS PREDICTED for next cycle.");
+                            lastPredictedValue = String.Empty;
+                        }
+                    }
+                }
+
+                // The brain does not do that this way, so we don't use it.
+                // tm1.reset(mem);
+
+                double accuracy = (double)matches / (double)tempInput.Count * 100.0;
+
+                Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {tempInput.Count}\t {accuracy}%");
+
+                if (accuracy == 100.0)
+                {
+                    maxMatchCnt++;
+                    Debug.WriteLine($"100% accuracy reched {maxMatchCnt} times.");
+                    //
+                    // Experiment is completed if we are 30 cycles long at the 100% accuracy.
+                    if (maxMatchCnt >= 30)
+                    {
+                        sw.Stop();
+                        Debug.WriteLine($"Exit experiment in the stable state after 30 repeats with 100% of accuracy. Elapsed time: {sw.ElapsedMilliseconds / 1000 / 60} min.");
+                        learn = false;
+                        break;
+                    }
+                }
+                else if (maxMatchCnt > 0)
+                {
+                    Debug.WriteLine($"At 100% accuracy after {maxMatchCnt} repeats we get a drop of accuracy with {accuracy}. This indicates instable state. Learning will be continued.");
+                    maxMatchCnt = 0;
+                }
+            }
+
+            Debug.WriteLine("------------ END ------------");
+
         }
-        private class ImageSet{
-            public List<bool[]> ImageBinValue;
+        private class ImageSet
+        {
+            public List<int[]> ImageBinValue;
             public string IdName;
             public ImageSet(string dir)
             {
                 this.IdName = Path.GetFileName(dir);
                 ReadImages(dir);
             }
-            private void ReadImages( string dir)
+            private void ReadImages(string dir)
             {
                 ImageBinValue = new();
                 foreach (string file in Directory.EnumerateFiles(dir, "*"))
@@ -155,27 +285,27 @@ namespace UnitTestsProject.SequenceLearningExperiments
                     ImageBinValue.Add(ImageToBin(file));
                 }
             }
-            private bool[] ImageToBin(string file)
+            private int[] ImageToBin(string file)
             {
                 var image = new Bitmap(file);
-                Bitmap img = ResizeBitmap(image, 10, 10);
+                Bitmap img = ResizeBitmap(image, 11, 11);
                 int length = img.Width * img.Height;
-                bool[] imageBinary = new bool[length];
+                int[] imageBinary = new int[length];
 
                 for (int i = 0; i < img.Width; i++)
                 {
                     for (int j = 0; j < img.Height; j++)
                     {
                         Color pixel = img.GetPixel(i, j);
-                        if(pixel.R < 100)
+                        if (pixel.R < 100)
                         {
-                            imageBinary[j + i * img.Height] = false;
+                            imageBinary[j + i * img.Height] = 0;
                         }
                         else
                         {
-                            imageBinary[j + i * img.Height] = true;
+                            imageBinary[j + i * img.Height] = 1;
                         }
-                    } 
+                    }
                 }
                 return imageBinary;
             }
@@ -191,20 +321,16 @@ namespace UnitTestsProject.SequenceLearningExperiments
             public void checkInstance()
             {
                 Debug.WriteLine(IdName);
-                foreach (bool[] imags in ImageBinValue){
-                    printBool(imags);
+                foreach (int[] imags in ImageBinValue)
+                {
+                    printSerie(imags);
                 }
             }
-            private void printBool(bool[] ba)
+            private void printSerie(int[] ba)
             {
-                foreach(bool b in ba)
+                foreach (int b in ba)
                 {
-                    if (b)
-                    {
-                        Debug.Write("0");
-                    }
-                    else
-                        Debug.Write("1");
+                    Debug.Write(b);
                 }
                 Debug.Write("\n");
             }
@@ -263,7 +389,7 @@ namespace UnitTestsProject.SequenceLearningExperiments
             currentDir = $"{ Directory.GetParent(currentDir)}";
             //================ test directory ============================
 
-            string testDir =  $"{currentDir}\\{testName}";
+            string testDir = $"{currentDir}\\{testName}";
             string testDataDir = $"{testDir}\\VideosData";
             string[] a = Directory.GetDirectories(testDataDir, "*", SearchOption.TopDirectoryOnly);
             return a;
@@ -275,8 +401,22 @@ namespace UnitTestsProject.SequenceLearningExperiments
             {
                 ImageSet temp = new ImageSet(dir);
                 inputImagesList.Add(temp);
-            } 
+            }
             return inputImagesList;
+        }
+        private static string GetKey(List<string> prevInputs, int[] input)
+        {
+            string key = String.Empty;
+
+            for (int i = 0; i < prevInputs.Count; i++)
+            {
+                if (i > 0)
+                    key += "-";
+
+                key += (prevInputs[i]);
+            }
+
+            return key;
         }
     }
 }
