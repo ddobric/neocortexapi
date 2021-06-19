@@ -33,7 +33,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebSocketNeuroVisualizer", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{D9879A38-CCF8-4440-B939-D066196AC775}"
 	ProjectSection(SolutionItems) = preProject
-		ColumnActivity.md = ColumnActivity.md
+		Documentation\ColumnActivity.md = Documentation\ColumnActivity.md
 		Documentation\CortexLayer.md = Documentation\CortexLayer.md
 		Documentation\Encoders.md = Documentation\Encoders.md
 		Documentation\experiments.md = Documentation\experiments.md
