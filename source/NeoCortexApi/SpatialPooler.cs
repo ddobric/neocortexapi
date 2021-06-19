@@ -168,7 +168,12 @@ namespace NeoCortexApi
 
             int numColumns = c.HtmConfig.NumColumns;
 
-            Random rnd = new Random(42);
+            Random rnd;
+
+            if (c.HtmConfig.Random == null)
+                rnd = new Random(42);
+            else
+                rnd = c.HtmConfig.Random;
 
             for (int i = 0; i < numColumns; i++)
             {
