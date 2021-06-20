@@ -208,10 +208,10 @@ namespace NeoCortexApi.Entities
 
         protected ConcurrentDictionary<int, DistalDendrite> m_SegmentForFlatIdx = new ConcurrentDictionary<int, DistalDendrite>();
 
-        /// <summary>
-        /// Stores each cycle's most recent activity
-        /// </summary>
-        public SegmentActivity LastActivity { get; set; }
+        ///// <summary>
+        ///// Stores each cycle's most recent activity
+        ///// </summary>
+        //public SegmentActivity LastActivity { get; set; }
 
         /// <summary>
         /// The segment creation number.
@@ -1930,7 +1930,7 @@ namespace NeoCortexApi.Entities
             // TODO!!!
             //ser.SerializeValue(this.m_SegmentForFlatIdx, writer);
 
-            this.LastActivity.Serialize(writer);
+            //this.LastActivity.Serialize(writer);
 
             ser.SerializeValue(this.NextSegmentOrdinal, writer);
             ser.SerializeValue(this.TieBreaker, writer);
