@@ -1939,8 +1939,8 @@ namespace NeoCortexApi.Entities
             if (this.HtmConfig != null)
             { this.HtmConfig.Serialize(writer); }
 
-            if (this.LastActivity != null)
-            { this.LastActivity.Serialize(writer); }
+            //if (this.LastActivity != null)
+            //{ this.LastActivity.Serialize(writer); }
 
             ser.SerializeEnd(nameof(Connections), writer);
         }
