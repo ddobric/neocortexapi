@@ -208,10 +208,13 @@ namespace NeoCortexApi.Entities
         public void SerializeValue(Double[] val, StreamWriter sw)
         {
             sw.Write(ValueDelimiter);
-            foreach (Double i in val)
+            if (val != null)
             {
-                sw.Write(string.Format(CultureInfo.InvariantCulture, "{0:0.000}", i));
-                sw.Write(ElementsDelimiter);
+                foreach (Double i in val)
+                {
+                    sw.Write(string.Format(CultureInfo.InvariantCulture, "{0:0.000}", i));
+                    sw.Write(ElementsDelimiter);
+                }
             }
             sw.Write(ParameterDelimiter);
 

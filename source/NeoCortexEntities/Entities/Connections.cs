@@ -1912,7 +1912,7 @@ namespace NeoCortexApi.Entities
             //ser.SerializeValue(this.m_PredictiveCells, writer);
             ser.SerializeValue(this.m_ActiveSegments, writer);
             ser.SerializeValue(this.m_MatchingSegments, writer); 
-            ser.SerializeValue(this.m_DistalSynapses, writer); 
+            //ser.SerializeValue(this.m_DistalSynapses, writer); 
             ser.SerializeValue(this.m_NextFlatIdx, writer);
             ser.SerializeValue(this.m_NextSegmentOrdinal, writer);
             ser.SerializeValue(this.m_NextSynapseOrdinal, writer);
