@@ -71,8 +71,8 @@ namespace NeoCortexApi.Entities
         /// <param name="index">the index the object will occupy</param>
         /// <param name="value">the value to be indexed.</param>
         /// <returns></returns>
-        protected virtual AbstractSparseMatrix<T> Set(int index, double value)
-        { return null; }
+       // protected virtual AbstractSparseMatrix<T> Set(int index, double value)
+       // { return null; }
 
         /// <summary>
         /// Sets the specified object to be indexed at the index computed from the specified coordinates.
@@ -104,7 +104,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="index">the index of the T to return</param>
         /// <returns>the T at the specified index.</returns>
-        public virtual T getObject(int index)
+        public virtual T GetObject(int index)
         {
             return default(T);
         }

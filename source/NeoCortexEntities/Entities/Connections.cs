@@ -551,7 +551,7 @@ namespace NeoCortexApi.Entities
         {
             foreach (int idx in s.GetSparseIndices())
             {
-                this.HtmConfig.Memory.getObject(idx).SetPermanences(this.HtmConfig, s.getObject(idx));
+                this.HtmConfig.Memory.GetObject(idx).SetPermanences(this.HtmConfig, s.GetObject(idx));
             }
         }
 
@@ -832,17 +832,17 @@ namespace NeoCortexApi.Entities
             //
             // Step through all currently active cells.
             // Find synapses that points to this cell. (receptor synapses)
-            foreach (Cell cell in activeCellsInCurrentCycle)
+            foreach (Cell activeCell in activeCellsInCurrentCycle)
             {
                 //
                 // This cell is the active in the current cycle. 
                 // We step through all receptor synapses and check the permanence value of related synapses.
                 // Receptor synapses are synapses whose source cell (pre-synaptic cell) is the given cell.
-                // Receptor synapses connect the cell's axons to distal dendrite segments of other cells.
-                // The permanence value of this connection indicates the the cell owner of connected distal dendrite is expected
-                // to be activated in the next cycle.
-                // The segment owner cell in other column pointed by synapse sourced by this 'cell' is depolirized (in predicting state).
-                foreach (Synapse synapse in cell.ReceptorSynapses)
+                // Also, Receptor synapses connect with cell's axons to distal dendrite segments of other cells. This connection defines
+                // Some kind of probability that by synapse connected cell will be active in the next cycle.
+                // The permanence value of this connection defines that probability.
+                // The segment owner cell in other column pointed by synapses sourced by this 'cell' is depolirized (in predicting state).
+                foreach (Synapse synapse in activeCell.ReceptorSynapses)
                 {
                     // Now, we get the segment of the synapse of the pre-synaptic cell.
                     int segFlatIndx = synapse.SegmentIndex;
@@ -1353,7 +1353,7 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public Column GetColumn(int index)
         {
-            return this.HtmConfig.Memory.getObject(index);
+            return this.HtmConfig.Memory.GetObject(index);
         }
 
         /// <summary>
@@ -1444,7 +1444,7 @@ namespace NeoCortexApi.Entities
             LinkedHashSet<Column> retVal = new LinkedHashSet<Column>();
             for (int i = 0; i < indexes.Length; i++)
             {
-                retVal.Add(this.HtmConfig.Memory.getObject(indexes[i]));
+                retVal.Add(this.HtmConfig.Memory.GetObject(indexes[i]));
             }
             return retVal;
         }
@@ -1459,7 +1459,7 @@ namespace NeoCortexApi.Entities
             List<Column> retVal = new List<Column>();
             for (int i = 0; i < indexes.Length; i++)
             {
-                retVal.Add(this.HtmConfig.Memory.getObject(indexes[i]));
+                retVal.Add(this.HtmConfig.Memory.GetObject(indexes[i]));
             }
             return retVal;
         }
