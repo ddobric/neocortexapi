@@ -151,6 +151,30 @@ namespace NeoCortexApi
         /// <param name="learn"></param>
         /// <returns></returns>
 
+        protected virtual ComputeCycle ActivateCells(ISet<Cell> activeCells, ISet<Cell> winnerCells, Connections conn, int[] activeColumnIndices, bool learn)
+        {
+            throw new NotImplementedException("Work in progress.");
+        }
+
+        /// <summary>
+        /// Calculate the active cells, using the current active columns and dendrite segments. Grow and reinforce synapses.
+        /// 
+        /// <para>
+        /// Pseudocode:<br/>
+        ///   for each column<br/>
+        ///     if column is active and has active distal dendrite segments<br/>
+        ///       call activatePredictedColumn<br/>
+        ///     if column is active and doesn't have active distal dendrite segments<br/>
+        ///       call burstColumn<br/>
+        ///     if column is inactive and has matching distal dendrite segments<br/>
+        ///       call punishPredictedColumn<br/>
+        /// </para>
+        /// </summary>
+        /// <param name="conn"></param>
+        /// <param name="activeColumnIndices"></param>
+        /// <param name="learn"></param>
+        /// <returns></returns>
+
         protected virtual ComputeCycle ActivateCells(Connections conn, int[] activeColumnIndices, bool learn)
         {
             ComputeCycle cycle = new ComputeCycle
