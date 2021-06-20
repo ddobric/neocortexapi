@@ -104,18 +104,6 @@ namespace NeoCortexApi.Entities
         ///////////////////////   Synapses and segments /////////////////////////
 
      
-        /// DD We moved this as a part of the segment.
-        /// <summary>
-        /// Synapses, which belong to some distal dentrite segment.
-        /// </summary>
-        private Dictionary<Segment, List<Synapse>> m_DistalSynapses;
-
-        // Proximal synapses are a part of the column.
-        //protected Dictionary<Segment, List<Synapse>> proximalSynapses;
-
-        /** Helps index each new proximal Synapse */
-        //protected int proximalSynapseCounter = -1;
-
         /// <summary>
         /// Global tracker of the next available segment index
         /// </summary>
@@ -1861,7 +1849,7 @@ namespace NeoCortexApi.Entities
 
 
             //ser.SerializeValue(this.m_DistalSegments, writer);
-            ser.SerializeValue(this.m_DistalSynapses, writer);
+            //ser.SerializeValue(this.m_DistalSynapses, writer);
             ser.SerializeValue(this.m_NextFlatIdx, writer);
             ser.SerializeValue(this.m_NextSegmentOrdinal, writer);
             ser.SerializeValue(this.m_NextSynapseOrdinal, writer);
