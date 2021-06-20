@@ -435,8 +435,8 @@ namespace UnitTestsProject
         [TestCategory("Serialization")]
         public void SerializeSpatialPooler()
         {
-
-            SpatialPooler spatial = new SpatialPooler();
+            HomeostaticPlasticityController homeostaticPlasticityActivator = new HomeostaticPlasticityController();
+            SpatialPooler spatial = new SpatialPooler(homeostaticPlasticityActivator);
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeSpatialPooler)}.txt"))
             {
@@ -450,16 +450,20 @@ namespace UnitTestsProject
         /// </summary>
         [TestMethod]
         [TestCategory("Serialization")]
-        public void SerializeHomeostaticPlasticityController()
+        [DataRow(3, 2, 6.2)]
+        public void SerializeHomeostaticPlasticityController(int minCycles, int numOfCyclesToWaitOnChange, double requiredSimilarityThreshold)
         {
-
-            HomeostaticPlasticityController homeostatic = new HomeostaticPlasticityController();
+            int[] inputDims = { 3, 4, 5 };
+            int[] columnDims = { 35, 43, 52 };
+            HtmConfig matrix = new HtmConfig(inputDims, columnDims);
+            Connections connections = new Connections(matrix);
+            HomeostaticPlasticityController homeostatic = new HomeostaticPlasticityController(connections, minCycles, onStabilityStatusChanged, numOfCyclesToWaitOnChange , requiredSimilarityThreshold);
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeHomeostaticPlasticityController)}.txt"))
             {
                 homeostatic.Serialize(sw);
             }
-            
+
         }
 
         [TestMethod]
