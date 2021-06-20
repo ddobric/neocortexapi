@@ -27,7 +27,7 @@ namespace UnitTestsProject.SequenceLearningExperiments
     [TestClass]
     public class VideosExperiment
     {
-        int inputBits = 121;
+        int inputBits = 225;
         int numColumns = 2048;
         [TestMethod]
         [TestCategory("Experiment")]
@@ -141,12 +141,12 @@ namespace UnitTestsProject.SequenceLearningExperiments
 
                 Debug.WriteLine($"-------------- Newborn Cycle {cycle} ---------------");
 
-                foreach (var input in tempInput)
+                for (int j = 0; j < tempInput.Count;j+=1)
                 {
-                    Debug.WriteLine($" -- {input.ArrToString()} --");
+                    Debug.WriteLine($" -- {InputVideos[0].ImageNames[j]} -- {tempInput[j].ArrToString()} --");
 
-                    var lyrOut = sp1.Compute(input, learn);
-                    Debug.WriteLine($"SDR:  {lyrOut}");
+                    var lyrOut = sp1.Compute(tempInput[j], learn);
+                    Debug.WriteLine($"SDR:  {lyrOut.ArrToString()}");
                     if (isInStableState)
                         break;
                 }
@@ -166,11 +166,11 @@ namespace UnitTestsProject.SequenceLearningExperiments
 
                 Debug.WriteLine($"-------------- Cycle {cycle} ---------------");
 
-                foreach (var input in tempInput)
+                for (int j = 0; j < tempInput.Count;j+=1)
                 {
-                    Debug.WriteLine($"-------------- {input.ArrToString()} ---------------");
+                    Debug.WriteLine($"-------------- {InputVideos[0].ImageNames[j]} ---------------");
 
-                    var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
+                    var lyrOut = layer1.Compute(tempInput[j], learn) as ComputeCycle;
 
                     // lyrOut is null when the TM is added to the layer inside of HPC callback by entering of the stable state.
                     //if (isInStableState && lyrOut != null)
@@ -180,7 +180,7 @@ namespace UnitTestsProject.SequenceLearningExperiments
                         //layer2.Compute(lyrOut.WinnerCells, true);
                         //activeColumnsLst[input].Add(activeColumns.ToList());
 
-                        previousInputs.Add(input.ArrToString());
+                        previousInputs.Add(InputVideos[0].ImageNames[j]);
                         if (previousInputs.Count > (maxPrevInputs + 1))
                             previousInputs.RemoveAt(0);
 
@@ -192,7 +192,7 @@ namespace UnitTestsProject.SequenceLearningExperiments
                         if (previousInputs.Count < maxPrevInputs)
                             continue;
 
-                        string key = GetKey(previousInputs, input);
+                        string key = GetKey(previousInputs, InputVideos[0].ImageNames[j]);
 
                         List<Cell> actCells;
 
@@ -225,7 +225,7 @@ namespace UnitTestsProject.SequenceLearningExperiments
                         {
                             var predictedInputValue = cls.GetPredictedInputValue(lyrOut.PredictiveCells.ToArray());
 
-                            Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {predictedInputValue}");
+                            Debug.WriteLine($"Current Input: {InputVideos[0].ImageNames[j]} \t| Predicted Input: {predictedInputValue}");
 
                             lastPredictedValue = predictedInputValue;
                         }
@@ -271,6 +271,7 @@ namespace UnitTestsProject.SequenceLearningExperiments
         private class ImageSet
         {
             public List<int[]> ImageBinValue;
+            public List<string> ImageNames;
             public string IdName;
             public ImageSet(string dir)
             {
@@ -280,15 +281,28 @@ namespace UnitTestsProject.SequenceLearningExperiments
             private void ReadImages(string dir)
             {
                 ImageBinValue = new();
-                foreach (string file in Directory.EnumerateFiles(dir, "*"))
+                ImageNames = new();
+                foreach (string file in sortFile(dir))
                 {
                     ImageBinValue.Add(ImageToBin(file));
+                    string fname = Path.GetFileNameWithoutExtension(file.ToString());
+                    Debug.WriteLine(fname);
+                    ImageNames.Add(fname);
                 }
+            }
+            private List<string> sortFile(string dir)
+            {
+                List<string> retDir = new();
+                for(int i = 0;i<Directory.GetFiles(dir).Length;i+=1)
+                {
+                    retDir.Add($"{dir}\\{i}.jpg");
+                }
+                return retDir;
             }
             private int[] ImageToBin(string file)
             {
                 var image = new Bitmap(file);
-                Bitmap img = ResizeBitmap(image, 11, 11);
+                Bitmap img = ResizeBitmap(image, 15, 15);
                 int length = img.Width * img.Height;
                 int[] imageBinary = new int[length];
 
@@ -299,11 +313,11 @@ namespace UnitTestsProject.SequenceLearningExperiments
                         Color pixel = img.GetPixel(i, j);
                         if (pixel.R < 100)
                         {
-                            imageBinary[j + i * img.Height] = 0;
+                            imageBinary[j + i * img.Height] = 1;
                         }
                         else
                         {
-                            imageBinary[j + i * img.Height] = 1;
+                            imageBinary[j + i * img.Height] = 0;
                         }
                     }
                 }
@@ -392,6 +406,7 @@ namespace UnitTestsProject.SequenceLearningExperiments
             string testDir = $"{currentDir}\\{testName}";
             string testDataDir = $"{testDir}\\VideosData";
             string[] a = Directory.GetDirectories(testDataDir, "*", SearchOption.TopDirectoryOnly);
+            // a is a string list of all directories inside VideosData/
             return a;
         }
         private List<ImageSet> fetchImagesfromFolders(string[] imageDirList)
@@ -404,7 +419,7 @@ namespace UnitTestsProject.SequenceLearningExperiments
             }
             return inputImagesList;
         }
-        private static string GetKey(List<string> prevInputs, int[] input)
+        private static string GetKey(List<string> prevInputs, string input)
         {
             string key = String.Empty;
 
