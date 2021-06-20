@@ -76,7 +76,7 @@ namespace NeoCortexApi
         /// <summary>
         /// Used during the deserialization proicess.
         /// </summary>
-        public HomeostaticPlasticityController(Connections connections, int minCycles, void v)
+        public HomeostaticPlasticityController()
         { 
         
         }

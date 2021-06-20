@@ -448,23 +448,23 @@ namespace UnitTestsProject
         /// <summary>
         /// Test HomeostaticPlasticityController.
         /// </summary>
-        [TestMethod]
-        [TestCategory("Serialization")]
-        [DataRow(3, 2, 6.2)]
-        public void SerializeHomeostaticPlasticityController(int minCycles, int numOfCyclesToWaitOnChange, double requiredSimilarityThreshold)
-        {
-            int[] inputDims = { 3, 4, 5 };
-            int[] columnDims = { 35, 43, 52 };
-            HtmConfig matrix = new HtmConfig(inputDims, columnDims);
-            Connections connections = new Connections(matrix);
-            HomeostaticPlasticityController homeostatic = new HomeostaticPlasticityController(connections, minCycles, onStabilityStatusChanged, numOfCyclesToWaitOnChange , requiredSimilarityThreshold);
+        //[TestMethod]
+        //[TestCategory("Serialization")]
+        //[DataRow(3, 2, 6.2)]
+        //public void SerializeHomeostaticPlasticityController(int minCycles, int numOfCyclesToWaitOnChange, double requiredSimilarityThreshold)
+        //{
+        //    int[] inputDims = { 3, 4, 5 };
+        //    int[] columnDims = { 35, 43, 52 };
+        //    HtmConfig matrix = new HtmConfig(inputDims, columnDims);
+        //    Connections connections = new Connections(matrix);
+        //    HomeostaticPlasticityController homeostatic = new HomeostaticPlasticityController(connections, minCycles, onStabilityStatusChanged, numOfCyclesToWaitOnChange , requiredSimilarityThreshold);
 
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeHomeostaticPlasticityController)}.txt"))
-            {
-                homeostatic.Serialize(sw);
-            }
+        //    using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeHomeostaticPlasticityController)}.txt"))
+        //    {
+        //        homeostatic.Serialize(sw);
+        //    }
 
-        }
+        //}
 
         [TestMethod]
         [TestCategory("Serialization")]
