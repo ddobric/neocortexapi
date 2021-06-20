@@ -54,7 +54,7 @@ namespace NeoCortexApi.Entities
         /// information is readily available from 'connectedSynapses', it is
         /// stored separately for efficiency purposes.
         /// </summary>
-        private AbstractSparseBinaryMatrix connectedCounts2;
+        //private AbstractSparseBinaryMatrix connectedCounts2;
 
         /// <summary>
         /// The cells currently active as a result of the TM compute.
@@ -84,63 +84,13 @@ namespace NeoCortexApi.Entities
 
         private HtmConfig m_HtmConfig;
 
+        /// <summary>
+        /// Gets/Sets the configuration.
+        /// </summary>
         public HtmConfig HtmConfig
         {
             get
             {
-                //if (m_HtmConfig == null)
-                //{
-                //    HtmConfig cfg = new HtmConfig();
-                //    cfg.ColumnTopology = this.ColumnTopology;
-                //    cfg.InputTopology = this.InputTopology;
-                //    cfg.IsWrapAround = this.isWrapAround();
-                //    cfg.NumInputs = this.NumInputs;
-                //    cfg.NumColumns = this.getMemory() != null? this.getMemory().getMaxIndex() + 1 : -1;
-                //    cfg.PotentialPct = getPotentialPct();
-                //    cfg.PotentialRadius = getPotentialRadius();
-                //    cfg.SynPermConnected = getSynPermConnected();
-                //    cfg.InitialSynapseConnsPct = this.InitialSynapseConnsPct;
-                //    cfg.SynPermTrimThreshold = this.getSynPermTrimThreshold();
-                //    cfg.SynPermBelowStimulusInc = this.synPermBelowStimulusInc;
-                //    cfg.SynPermMax = this.getSynPermMax();
-                //    cfg.SynPermMin = this.getSynPermMin();
-                //    cfg.StimulusThreshold = this.StimulusThreshold;
-                //    cfg.CellsPerColumn = this.getCellsPerColumn();
-                //    cfg.SynPermInactiveDec = this.getSynPermInactiveDec();
-                //    cfg.PermanenceIncrement = this.getPermanenceIncrement();
-                //    cfg.PermanenceDecrement = this.getPermanenceDecrement();
-                //    //cfg.MaxNewSynapseCount = this.getMaxNewSynapseCount();
-
-                //    cfg.RandomGenSeed = this.seed;
-
-                //    m_HtmConfig = cfg;
-                //}
-
-                // TODO verify with unitTests
-                //m_HtmConfig.SynPermBelowStimulusInc = m_HtmConfig.SynPermConnected / 10.0;
-                //m_HtmConfig.SynPermTrimThreshold = m_HtmConfig.SynPermActiveInc / 2.0;
-                //m_HtmConfig.ColumnModuleTopology = m_HtmConfig.Memory?.ModuleTopology;
-                //m_HtmConfig.InputModuleTopology = m_HtmConfig.InputMatrix?.ModuleTopology;
-
-                //m_HtmConfig.InputTopology = this.InputTopology;
-                //m_HtmConfig.IsWrapAround = this.isWrapAround();
-                //m_HtmConfig.NumInputs = this.NumInputs;
-                //m_HtmConfig.NumColumns = m_HtmConfig.Memory != null ? m_HtmConfig.Memory.getMaxIndex() + 1 : -1;
-                //m_HtmConfig.PotentialPct = getPotentialPct();
-                //m_HtmConfig.PotentialRadius = getPotentialRadius();
-                //m_HtmConfig.SynPermConnected = getSynPermConnected();
-                //m_HtmConfig.InitialSynapseConnsPct = this.InitialSynapseConnsPct;
-                //m_HtmConfig.SynPermTrimThreshold = this.getSynPermTrimThreshold();
-                //m_HtmConfig.SynPermBelowStimulusInc = this.synPermBelowStimulusInc;
-                //m_HtmConfig.SynPermMax = this.getSynPermMax();
-                //m_HtmConfig.SynPermMin = this.getSynPermMin();
-                //m_HtmConfig.StimulusThreshold = this.StimulusThreshold;
-                //m_HtmConfig.CellsPerColumn = this.getCellsPerColumn();
-                //m_HtmConfig.SynPermInactiveDec = this.getSynPermInactiveDec();
-                //m_HtmConfig.PermanenceIncrement = this.getPermanenceIncrement();
-                //m_HtmConfig.PermanenceDecrement = this.getPermanenceDecrement();
-                //m_HtmConfig.RandomGenSeed = this.seed;       
-
                 return m_HtmConfig;
             }
             private set
@@ -153,16 +103,7 @@ namespace NeoCortexApi.Entities
 
         ///////////////////////   Synapses and segments /////////////////////////
 
-        /// <summary>
-        /// Reverse mapping from source cell to <see cref="Synapse"/>
-        /// </summary>
-        //private Dictionary<Cell, LinkedHashSet<Synapse>> m_ReceptorSynapses = new Dictionary<Cell, LinkedHashSet<Synapse>>();
-
-        /// <summary>
-        /// Distal segments of cells.
-        /// </summary>
-        //protected Dictionary<Cell, List<DistalDendrite>> m_DistalSegments = new Dictionary<Cell, List<DistalDendrite>>();
-
+     
         /// DD We moved this as a part of the segment.
         /// <summary>
         /// Synapses, which belong to some distal dentrite segment.
@@ -1904,7 +1845,7 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.m_Overlaps, writer);
             ser.SerializeValue(this.m_TieBreaker, writer);
 
-            this.connectedCounts2.Serialize(writer);
+            //.connectedCounts2.Serialize(writer);
 
 
 
