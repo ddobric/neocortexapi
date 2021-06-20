@@ -21,6 +21,11 @@ namespace NeoCortexApi
     {
         private static readonly double EPSILON = 0.00001;
 
+        /// <summary>
+        /// Stores each cycle's most recent activity
+        /// </summary>
+        public SegmentActivity LastActivity { get; set; }
+
         protected static readonly int cIndexofACTIVE_COLUMNS = 0;
 
         protected Connections connections;
@@ -340,7 +345,8 @@ namespace NeoCortexApi
             cycle.ActiveSegments = activeSegments;
             cycle.MatchingSegments = matchingSegments;
 
-            conn.LastActivity = activity;
+            //conn.LastActivity = activity;
+            this.LastActivity = activity;
 
             conn.ActiveCells = new HashSet<Cell>(cycle.ActiveCells);
             conn.WinnerCells = new HashSet<Cell>(cycle.WinnerCells);
@@ -466,7 +472,7 @@ namespace NeoCortexApi
 
                     //
                     // Even if the segment is active, new synapses can be added that connect previously active cells with the segment.
-                    int numActive = conn.LastActivity.PotentialSynapses[segment.SegmentIndex];
+                    int numActive = this.LastActivity.PotentialSynapses[segment.SegmentIndex];
                     int nGrowDesired = conn.HtmConfig.MaxNewSynapseCount - numActive;
 
                     if (nGrowDesired > 0)
@@ -539,7 +545,7 @@ namespace NeoCortexApi
             {
                 // Debug.Write($"B.({matchingSegments.Count})");
 
-                DistalDendrite maxPotentialSeg = GetSegmentwithHighesPotential(conn, matchingSegments, prevActiveCells);
+                DistalDendrite maxPotentialSeg = GetSegmentwithHighesPotential(matchingSegments, prevActiveCells);
 
                 leastUsedOrMaxPotentialCell = maxPotentialSeg.ParentCell;
 
@@ -547,7 +553,7 @@ namespace NeoCortexApi
                 {
                     AdaptSegment(conn, maxPotentialSeg, prevActiveCells, permanenceIncrement, permanenceDecrement);
 
-                    int nGrowDesired = conn.HtmConfig.MaxNewSynapseCount - conn.LastActivity.PotentialSynapses[maxPotentialSeg.SegmentIndex];
+                    int nGrowDesired = conn.HtmConfig.MaxNewSynapseCount - this.LastActivity.PotentialSynapses[maxPotentialSeg.SegmentIndex];
 
                     if (nGrowDesired > 0)
                     {
@@ -581,23 +587,21 @@ namespace NeoCortexApi
         /// <summary>
         /// Gets the segment with maximal potential. Segment's potential is measured by number of potential synapses.
         /// </summary>
-        /// <param name="conn"></param>
         /// <param name="matchingSegments"></param>
         /// <returns></returns>
-        private DistalDendrite GetSegmentwithHighesPotential(Connections conn, List<DistalDendrite> matchingSegments, ICollection<Cell> prevActiveCells)
+        private DistalDendrite GetSegmentwithHighesPotential(List<DistalDendrite> matchingSegments, ICollection<Cell> prevActiveCells)
         {
             DistalDendrite maxSeg = matchingSegments[0];
 
             for (int i = 0; i < matchingSegments.Count - 1; i++)
             {
-                var potSynsPlus1 = conn.LastActivity.PotentialSynapses[matchingSegments[i + 1].SegmentIndex];
+                var potSynsPlus1 = this.LastActivity.PotentialSynapses[matchingSegments[i + 1].SegmentIndex];
 
-                if (potSynsPlus1 > conn.LastActivity.PotentialSynapses[matchingSegments[i].SegmentIndex])
+                if (potSynsPlus1 > this.LastActivity.PotentialSynapses[matchingSegments[i].SegmentIndex])
                 {
                     //prevActiveCells.Contains(synapse.getPresynapticCell())
                     //if (matchingSegments[i + 1].getIndex() != indxOfLastHighestSegment)
                     {
-                        // DRAFT
                         maxSeg = matchingSegments[i + 1];
                         indxOfLastHighestSegment = matchingSegments[i + 1].SegmentIndex;
                     }
