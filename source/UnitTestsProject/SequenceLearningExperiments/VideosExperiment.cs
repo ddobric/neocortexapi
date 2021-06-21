@@ -24,6 +24,11 @@ using System.Drawing.Imaging;
 
 namespace UnitTestsProject.SequenceLearningExperiments
 {
+    /// <summary>
+    /// Experiment designed to learn the rule of a simple video:
+    /// A ball bouncing in a square box
+    /// more doc/...
+    /// </summary>
     [TestClass]
     public class VideosExperiment
     {
@@ -34,23 +39,19 @@ namespace UnitTestsProject.SequenceLearningExperiments
         [Timeout(TestTimeout.Infinite)]
         public void VideosLearningExperiment()
         {
-            //===============================================================
-            // Experiment designed to learn the rule of a simple video:
-            // A ball bouncing in a square box
-            //===============================================================
-
-            //================= preparing the parameters ====================
-            Parameters p = GetParameters();
+            // Preparing the parameters
+            Parameters p = GetParameters(); // TODO: HTMConfig
             double max = 20;
 
 
-            //===================== input collection ========================
-            //input are stored on different folders with their folder's names
-            //as the settings value. However it is only for isolating the ini
-            //conditions of the ball, how it will move. The generation of the 
-            //data was done using a seperate python code.
+            //
+            // Input collection 
+            // input are stored on different folders with their folder's names
+            // as the settings value. However it is only for isolating the ini
+            // conditions of the ball, how it will move. The generation of the 
+            // data was done using a seperate python code.
 
-            string[] imageDirList = fetchImagesDirList("SequenceLearningExperiments");
+            string[] imageDirList = FetchImagesDirList("SequenceLearningExperiments");
             List<ImageSet> InputVideos = fetchImagesfromFolders(imageDirList);
             //InputVideos[0].checkInstance();
 
@@ -295,7 +296,7 @@ namespace UnitTestsProject.SequenceLearningExperiments
                 List<string> retDir = new();
                 for(int i = 0;i<Directory.GetFiles(dir).Length;i+=1)
                 {
-                    retDir.Add($"{dir}\\{i}.jpg");
+                    retDir.Add($"{dir}\\Frame_{i}.jpg");
                 }
                 return retDir;
             }
@@ -392,22 +393,22 @@ namespace UnitTestsProject.SequenceLearningExperiments
             p.Set(KEY.PREDICTED_SEGMENT_DECREMENT, 0.1);
             return p;
         }
-        private string[] fetchImagesDirList(string testName)
+
+        /// <summary>
+        /// Describe here the purpose of the method!!
+        /// </summary>
+        /// <param name="testName">What is this??</param>
+        /// <returns></returns>
+        private string[] FetchImagesDirList(string testName)
         {
             string currentDir = Directory.GetCurrentDirectory();
-            //================ up dir one level ==========================
-            currentDir = $"{ Directory.GetParent(currentDir)}";
-            //================ up dir one level ==========================
-            currentDir = $"{ Directory.GetParent(currentDir)}";
-            //================ up dir one level ==========================
-            currentDir = $"{ Directory.GetParent(currentDir)}";
-            //================ test directory ============================
-
-            string testDir = $"{currentDir}\\{testName}";
-            string testDataDir = $"{testDir}\\VideosData";
-            string[] a = Directory.GetDirectories(testDataDir, "*", SearchOption.TopDirectoryOnly);
-            // a is a string list of all directories inside VideosData/
-            return a;
+          
+            // Get the root folder of training videos.
+            string testDir = $"{currentDir}\\{testName}\\TrainingVideos";
+            
+            string[] folders = Directory.GetDirectories(testDir, "*", SearchOption.TopDirectoryOnly);
+            
+            return folders;
         }
         private List<ImageSet> fetchImagesfromFolders(string[] imageDirList)
         {

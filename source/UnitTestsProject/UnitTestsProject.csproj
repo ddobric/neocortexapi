@@ -3710,6 +3710,30 @@
     <None Update="MnistPng28x28\training\y\9.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="SequenceLearningExperiments\TrainingVideos\R15_Angle80_Speed10\Frame_0.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="SequenceLearningExperiments\TrainingVideos\R15_Angle80_Speed10\Frame_1.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="SequenceLearningExperiments\TrainingVideos\R15_Angle80_Speed10\Frame_2.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="SequenceLearningExperiments\TrainingVideos\R15_Angle80_Speed10\Frame_3.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="SequenceLearningExperiments\TrainingVideos\R15_Angle80_Speed10\Frame_4.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="SequenceLearningExperiments\TrainingVideos\R15_Angle80_Speed10\Frame_5.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="SequenceLearningExperiments\TrainingVideos\R15_Angle80_Speed10\Frame_6.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="SequenceLearningExperiments\TrainingVideos\R15_Angle80_Speed10\Frame_7.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Similarity\TestFiles\Box1.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
