@@ -13,7 +13,7 @@ jobs:
       run:
         working-directory: ${{env.WrkDir}}
     env: 
-      WrkDir: ./NeoCortexApi
+      WrkDir: ./source
       MainSln: NeoCortexApi.All.sln
     steps:
       - uses: actions/checkout@v2
