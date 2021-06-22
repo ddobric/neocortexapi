@@ -1250,7 +1250,9 @@ namespace NeoCortexApi.Entities
         public static Connections Deserialize(StreamReader reader)
         {
             throw new NotImplementedException();
-           
+            //Connections mem = new Connections();
+            // |T|ODO
+            return mem;
         }
         #endregion
 
