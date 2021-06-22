@@ -4,23 +4,16 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Globalization;
-using NeoCortexApi.Encoders;
 using NeoCortexApi.Network;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
 using System.Diagnostics;
-using NeoCortexEntities.NeuroVisualizer;
-using WebSocketNeuroVisualizer;
 using NeoCortexApi.Utility;
-using System.Text;
 using System.IO;
 using System.Threading;
-using System.Net.WebSockets;
-using System.Threading.Tasks;
 using NeoCortexApi.Classifiers;
 using System.Drawing;
-using System.Drawing.Imaging;
+
 
 namespace UnitTestsProject.SequenceLearningExperiments
 {
