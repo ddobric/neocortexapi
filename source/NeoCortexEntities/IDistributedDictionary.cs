@@ -2,13 +2,14 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace NeoCortexApi.Entities
 {
     public interface IDistributedDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IEnumerator<KeyValuePair<TKey, TValue>>
     {
-        HtmConfig HtmConfig { get; set; }
+        HtmConfig htmConfig { get; set; }
 
         void AddOrUpdate(ICollection<KeyPair> keyValuePairs);
 
@@ -17,7 +18,12 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="keys"></param>
         /// <returns></returns>
-        ICollection<KeyPair> GetObjects(TKey[] keys);        
+        ICollection<KeyPair> GetObjects(TKey[] keys);
+
+        public void Serialize(StreamWriter writer)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     /// <summary>
@@ -51,5 +57,8 @@ namespace NeoCortexApi.Entities
         void AdaptSynapsesDist(int[] inputVector, double[] permChanges, int[] activeColumns);
 
         void BumpUpWeakColumnsDist(int[] weakColumns);
+
+        
     }
+    
 }

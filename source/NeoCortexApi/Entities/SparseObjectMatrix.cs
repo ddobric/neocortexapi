@@ -70,6 +70,10 @@ namespace NeoCortexApi.Entities
             else
                 this.m_SparseMap = dict;
         }
+        //Default constructor for Deserialisation
+        public SparseObjectMatrix()
+        {
+        }
 
 
         /// <summary>
@@ -243,9 +247,58 @@ namespace NeoCortexApi.Entities
             if (this.ModuleTopology != null)
             { this.ModuleTopology.Serialize(writer); }
 
-            //ser.SerializeValue(this.m_SparseMap, writer);
+            if(this.m_SparseMap != null)
+            { this.m_SparseMap.Serialize(writer); }
+            
 
             ser.SerializeEnd(nameof(SparseObjectMatrix<T>), writer);
+        }
+
+        public static SparseObjectMatrix<T> Deserialize(StreamReader sr)
+        {
+            SparseObjectMatrix<T> sparse = new SparseObjectMatrix<T>();
+
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            while (sr.Peek() >= 0)
+            {
+                string data = sr.ReadLine();
+                if (data == String.Empty || data == ser.ReadBegin(nameof(SparseObjectMatrix<T>)))
+                {
+                    continue;
+                }
+                else if (data == ser.ReadBegin(nameof(HtmModuleTopology)))
+                {
+                    sparse.ModuleTopology = HtmModuleTopology.Deserialize(sr);
+                }
+                else if (data == ser.ReadBegin(nameof(InMemoryDistributedDictionary<TKey, TValue>)))
+                {
+                    sparse.m_SparseMap = InMemoryDistributedDictionary<TKey, TValue>.Deserialize(sr);
+                }
+                else if (data == ser.ReadEnd(nameof(SparseObjectMatrix<T>)))
+                {
+                    break;
+                }
+                else
+                {
+                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                    for (int i = 0; i < str.Length; i++)
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                {
+                                    sparse.IsRemotelyDistributed = ser.ReadBoolValue(str[i]);
+                                    break;
+                                }
+                            default:
+                                { break; }
+
+                        }
+                    }
+                }
+            }
+            return sparse;
         }
     }
 }

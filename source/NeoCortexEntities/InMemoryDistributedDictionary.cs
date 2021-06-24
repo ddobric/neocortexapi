@@ -33,6 +33,9 @@ namespace NeoCortexApi.Entities
             }
         }
 
+        public InMemoryDistributedDictionary()
+        {
+        }
 
         public ICollection<KeyPair> GetObjects(TKey[] keys)
         {
@@ -265,7 +268,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Not used.
         /// </summary>
-        public HtmConfig HtmConfig { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public HtmConfig htmConfig { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
@@ -359,10 +362,43 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.numElements, writer);
             //ser.SerializeValue(this.Values, writer);
 
-            if(this.HtmConfig != null)
-            { this.HtmConfig.Serialize(writer); }
+            if(this.htmConfig != null)
+            { this.htmConfig.Serialize(writer); }
 
             ser.SerializeEnd(nameof(InMemoryDistributedDictionary<TKey, TValue>), writer);
+        }
+        public static InMemoryDistributedDictionary<TKey, TValue> Deserialize(StreamReader sr)
+        {
+                InMemoryDistributedDictionary<TKey, TValue> keyValues = new InMemoryDistributedDictionary<TKey, TValue>();
+
+                HtmSerializer2 ser = new HtmSerializer2();
+
+                while (sr.Peek() >= 0)
+                {
+                    string data = sr.ReadLine();
+                    if (data == String.Empty || data == ser.ReadBegin(nameof(InMemoryDistributedDictionary<TKey, TValue>)))
+                    { 
+                        continue;
+                    }
+                    else if (data == ser.ReadBegin(nameof(HtmConfig)))
+                    {
+                        keyValues.htmConfig = HtmConfig.Deserialize(sr);
+                    }
+                    else if (data == ser.ReadEnd(nameof(InMemoryDistributedDictionary<TKey, TValue>)))
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                        for (int i = 0; i < str.Length; i++)
+                        {
+                            
+                        }
+                    }
+                }
+                return keyValues;
+            
         }
     }
 }

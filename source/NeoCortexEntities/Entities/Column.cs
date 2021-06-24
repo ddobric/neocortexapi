@@ -422,5 +422,61 @@ namespace NeoCortexApi.Entities
             }
             ser.SerializeEnd(nameof(Column), writer);
         }
+        //public static Column Deserialize(StreamReader sr)
+        //{
+        //    Column column = new Column();
+
+        //    HtmSerializer2 ser = new HtmSerializer2();
+
+        //    while (sr.Peek() >= 0)
+        //    {
+        //        string data = sr.ReadLine();
+        //        if (data == String.Empty || data == ser.ReadBegin(nameof(Column)) || data.ToCharArray()[0] == HtmSerializer2.ElementsDelimiter || (data.ToCharArray()[0] == HtmSerializer2.ElementsDelimiter && data.ToCharArray()[1] == HtmSerializer2.ParameterDelimiter))
+        //        {
+        //            continue;
+        //        }
+        //        else if (data == ser.ReadBegin(nameof(DistalDendrite)))
+        //        {
+        //            cell.DistalDendrites.Add(DistalDendrite.Deserialize(sr));
+        //        }
+        //        else if (data == ser.ReadBegin(nameof(Synapse)))
+        //        {
+        //            return cell;
+        //        }
+        //        else if (data == ser.ReadEnd(nameof(Cell)))
+        //        {
+        //            break;
+        //        }
+        //        else
+        //        {
+        //            string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+        //            for (int i = 0; i < str.Length; i++)
+        //            {
+        //                switch (i)
+        //                {
+        //                    case 0:
+        //                        {
+        //                            cell.Index = ser.ReadIntValue(str[i]);
+        //                            break;
+        //                        }
+        //                    case 1:
+        //                        {
+        //                            cell.CellId = ser.ReadIntValue(str[i]);
+        //                            break;
+        //                        }
+        //                    case 2:
+        //                        {
+        //                            cell.ParentColumnIndex = ser.ReadIntValue(str[i]);
+        //                            break;
+        //                        }
+        //                    default:
+        //                        { break; }
+
+        //                }
+        //            }
+        //        }
+        //    }
+        //    return cell;
+        //}
     }
 }

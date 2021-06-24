@@ -23,7 +23,10 @@ namespace NeoCortexApi.Entities
         {
             SetHtmConfigDefaultParameters(inputDims, columnDims);
         }
+        public  HtmConfig()
+        {
 
+        }
         /// <summary>
         /// Not used!
         /// </summary>
@@ -498,7 +501,64 @@ namespace NeoCortexApi.Entities
             //ser.SerializeValue(this.Random, writer);
             ser.SerializeEnd(nameof(HtmConfig), writer);
         }
+        public static HtmConfig Deserialize(StreamReader sr)
+        {
+            HtmConfig htmConfig = new HtmConfig();
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            while (sr.Peek() >= 0)
+            {
+                string data = sr.ReadLine();
+                if (data == String.Empty || data == ser.ReadBegin(nameof(InMemoryDistributedDictionary<TKey, TValue>)))
+                {
+                    continue;
+                }
+                else if (data == ser.ReadBegin(nameof(HtmConfig)))
+                {
+                    keyValues.htmConfig = HtmConfig.Deserialize(sr);
+                }
+                else if (data == ser.ReadBegin(nameof(Synapse)))
+                {
+                    return cell;
+                }
+                else if (data == ser.ReadEnd(nameof(Cell)))
+                {
+                    break;
+                }
+                else
+                {
+                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                    for (int i = 0; i < str.Length; i++)
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                {
+                                    cell.Index = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    cell.CellId = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    cell.ParentColumnIndex = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            default:
+                                { break; }
+
+                        }
+                    }
+                }
+            }
+            return cell;
+            return htmConfig;
+        }
         #endregion
+
     }
 
     public class test

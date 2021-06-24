@@ -707,12 +707,12 @@ namespace UnitTestsProject
 
             proximal.RFPool = rfPool;
 
-            HtmSerializer2 htm = new HtmSerializer2();
+            //HtmSerializer2 htm = new HtmSerializer2();
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeProximalDendriteTest)}.txt"))
             {
                 proximal.Serialize(sw);
             }
-            htm.indent($"ser_{nameof(SerializeProximalDendriteTest)}.txt");
+            //htm.indent($"ser_{nameof(SerializeProximalDendriteTest)}.txt");
             using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeProximalDendriteTest)}.txt"))
             {
                 ProximalDendrite proximal1 = ProximalDendrite.Deserialize(sr);
@@ -758,15 +758,11 @@ namespace UnitTestsProject
         {
             Integer inte = new Integer(val);
 
-            //HtmSerializer2 htm = new HtmSerializer2();
-
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeIntegerTest)}.txt"))
             {
                 inte.Serialize(sw);
 
             }
-
-            //htm.indent($"ser_{nameof(SerializeIntegerTest)}.txt");
 
             using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeIntegerTest)}.txt"))
             {

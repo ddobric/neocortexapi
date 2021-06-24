@@ -62,7 +62,7 @@ namespace NeoCortexApi
                 //var distHtmCla = distMem.ColumnDictionary as HtmSparseIntDictionary<Column>;
                 var distHtmCla = distMem.ColumnDictionary;// as ActorSbDistributedDictionaryBase<Column>;
 
-                distHtmCla.HtmConfig = c.HtmConfig;
+                distHtmCla.htmConfig = c.HtmConfig;
             }
 
             //
