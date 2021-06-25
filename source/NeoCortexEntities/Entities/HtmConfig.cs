@@ -502,7 +502,10 @@ namespace NeoCortexApi.Entities
             {
                 this.InputModuleTopology.Serialize(writer);
             }
-
+            if (this.InputMatrix != null)
+            {
+                this.InputMatrix.Serialize(writer);
+            }
             if (this.Memory != null)
             {
                 this.Memory.Serialize(writer);
