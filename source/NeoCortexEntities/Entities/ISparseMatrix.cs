@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace NeoCortexApi.Entities
@@ -35,6 +36,13 @@ namespace NeoCortexApi.Entities
          * @return  the dense array
          */
         //T[] asDense(ITypeFactory<T> factory);
+
+        public void Serialize(StreamWriter sw)
+        {
+            throw new NotImplementedException();
+        }
+
+        
 
     }
 }
