@@ -345,12 +345,6 @@ namespace NeoCortexApi
 
             ser.SerializeValue(this.m_RequiredSimilarityThreshold, writer);
             ser.SerializeValue(this.m_MaxPreviousElements, writer);
-
-            if(this.m_HtmMemory != null)
-            {
-                this.m_HtmMemory.Serialize(writer);
-            }
-
             ser.SerializeValue(this.m_Cycle, writer);
             ser.SerializeValue(this.m_MinCycles, writer);
             ser.SerializeValue(this.m_RequiredNumOfStableCycles, writer);
@@ -360,19 +354,94 @@ namespace NeoCortexApi
             //ser.SerializeValue(this.m_OnStabilityStatusChanged, writer);
             ser.SerializeValue(this.m_IsStable, writer);
 
+            if (this.m_HtmMemory != null)
+            {
+                this.m_HtmMemory.Serialize(writer);
+            }
+
             ser.SerializeEnd(nameof(HomeostaticPlasticityController), writer);
 
         }
 
-        public static HomeostaticPlasticityController Deserialize(StreamReader reader)
+        public static HomeostaticPlasticityController Deserialize(StreamReader sr)
         {
             HomeostaticPlasticityController ctrl = new HomeostaticPlasticityController();
 
             HtmSerializer2 ser = new HtmSerializer2();
-            //ctrl.m_MaxPreviousElements = ser.ReadIntValue(reader);
-            //ctrl.m_MinCycles = ser.ReadIntValue(reader);
-            //ctrl.m_RequiredNumOfStableCycles = ser.ReadIntValue(reader);
-            ////...
+
+            while (sr.Peek() >= 0)
+            {
+                string data = sr.ReadLine();
+                if (data == String.Empty || data == ser.ReadBegin(nameof(HomeostaticPlasticityController)))
+                {
+                    continue;
+                }
+                else if (data == ser.ReadBegin(nameof(Connections)))
+                {
+                    ctrl.m_HtmMemory = Connections.Deserialize(sr);
+                }
+                else if (data == ser.ReadEnd(nameof(HomeostaticPlasticityController)))
+                {
+                    break;
+                }
+                else
+                {
+                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                    for (int i = 0; i < str.Length; i++)
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                {
+                                    ctrl.m_RequiredSimilarityThreshold = ser.ReadDoubleValue(str[i]);
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    ctrl.m_MaxPreviousElements = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    ctrl.m_Cycle = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 3:
+                                {
+                                    ctrl.m_MinCycles = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 4:
+                                {
+                                    ctrl.m_RequiredNumOfStableCycles = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 5:
+                                {
+                                    ctrl.m_NumOfActiveColsForInput = ser.ReadDictSIarray(str[i]);
+                                    break;
+                                }
+                            case 6:
+                                {
+                                    ctrl.m_InOutMap = ser.ReadDictSIarray(str[i]);
+                                    break;
+                                }
+                            case 7:
+                                {
+                                    break;
+                                }
+                            case 8:
+                                {
+                                    ctrl.m_IsStable = ser.ReadBoolValue(str[i]);
+                                    break;
+                                }
+                            default:
+                                { break; }
+
+                        }
+                    }
+                }
+            }
 
             return ctrl;
 

@@ -1463,10 +1463,56 @@ namespace NeoCortexApi
             ser.SerializeEnd(nameof(SpatialPooler), writer);
         }
 
-        public static SpatialPooler Deserialize(StreamReader reader)
+        public static SpatialPooler Deserialize(StreamReader sr)
         {
             SpatialPooler sp = new SpatialPooler();
-            // |T|ODO
+
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            while (sr.Peek() >= 0)
+            {
+                string data = sr.ReadLine();
+                if (data == String.Empty || data == ser.ReadBegin(nameof(SpatialPooler)))
+                {
+                    continue;
+                }
+                else if (data == ser.ReadBegin(nameof(HomeostaticPlasticityController)))
+                {
+                    sp.m_HomeoPlastAct = HomeostaticPlasticityController.Deserialize(sr);
+                }
+                else if (data == ser.ReadBegin(nameof(Connections)))
+                { 
+                    sp.connections = Connections.Deserialize(sr);
+                }
+                else if (data == ser.ReadEnd(nameof(SpatialPooler)))
+                {
+                    break;
+                }
+                else
+                {
+                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                    for (int i = 0; i < str.Length; i++)
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                {
+                                    sp.MaxInibitionDensity = ser.ReadDoubleValue(str[i]);
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    sp.Name = ser.ReadStringValue(str[i]);
+                                    break;
+                                }
+                            default:
+                                { break; }
+
+                        }
+                    }
+                }
+            }
+            
             return sp;
         }
     }
