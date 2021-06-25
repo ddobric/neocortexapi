@@ -271,12 +271,12 @@ namespace NeoCortexApi.Entities
                 {
                     sparse.ModuleTopology = HtmModuleTopology.Deserialize(sr);
                 }
-                else if (data == ser.ReadBegin(nameof(InMemoryDistributedDictionary<TKey, TValue>)))
-                {
-                    sparse.m_SparseMap = InMemoryDistributedDictionary<TKey, TValue>.Deserialize(sr);
-                }
+                //else if (data == ser.ReadBegin(nameof(InMemoryDistributedDictionary<TKey, TValue>)))
+                //{
+                //    sparse.m_SparseMap = InMemoryDistributedDictionary<TKey, TValue>.Deserialize(sr);
+                //}
                 else if (data == ser.ReadEnd(nameof(SparseObjectMatrix<T>)))
-                {
+                { 
                     break;
                 }
                 else
@@ -288,7 +288,7 @@ namespace NeoCortexApi.Entities
                         {
                             case 0:
                                 {
-                                    sparse.IsRemotelyDistributed = ser.ReadBoolValue(str[i]);
+                                    //sparse.IsRemotelyDistributed = ser.ReadBoolValue(str[i]);
                                     break;
                                 }
                             default:

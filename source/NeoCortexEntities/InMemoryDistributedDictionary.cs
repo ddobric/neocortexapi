@@ -393,8 +393,58 @@ namespace NeoCortexApi.Entities
                         string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
                         for (int i = 0; i < str.Length; i++)
                         {
-                            
+                        switch (i)
+                        {
+                            case 0:
+                                {
+                                    //keyValues.Count = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    //keyValues.Current = ;
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    keyValues.currentDictIndex = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 3:
+                                {
+                                    keyValues.currentIndex = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 4:
+                                {
+                                    //keyValues.dictList = ;
+                                    break;
+                                }
+                            case 5:
+                                {
+                                    //keyValues.IsReadOnly = ser.ReadBoolValue(str[i]);
+                                    break;
+                                }
+                            case 6:
+                                {
+                                    //keyValues.Keys = ;
+                                    break;
+                                }
+                            case 7:
+                                {
+                                    keyValues.numElements = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 8:
+                                {
+                                    //keyValues.Values = ;
+                                    break;
+                                }
+                            default:
+                                { break; }
+
                         }
+                    }
                     }
                 }
                 return keyValues;
