@@ -1903,41 +1903,45 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.m_BoostedmOverlaps, writer);
             ser.SerializeValue(this.m_Overlaps, writer); 
             ser.SerializeValue(this.m_TieBreaker, writer); 
-            //ser.SerializeValue(this.ActiveCells, writer);
-            //ser.SerializeValue(this.WinnerCells, writer);
-            ser.SerializeValue(this.Cells, writer);
             ser.SerializeValue(this.m_BoostFactors, writer); 
-            //ser.SerializeValue(this.m_ActiveCells, writer); 
-            //ser.SerializeValue(this.winnerCells, writer); 
-            //ser.SerializeValue(this.m_PredictiveCells, writer);
-            ser.SerializeValue(this.m_ActiveSegments, writer);
-            ser.SerializeValue(this.m_MatchingSegments, writer); 
-            //ser.SerializeValue(this.m_DistalSynapses, writer); 
             ser.SerializeValue(this.m_NextFlatIdx, writer);
             ser.SerializeValue(this.m_NextSegmentOrdinal, writer);
             ser.SerializeValue(this.m_NextSynapseOrdinal, writer);
             ser.SerializeValue(this.m_NumSynapses, writer);
             ser.SerializeValue(this.m_FreeFlatIdxs, writer);
-            //ser.SerializeValue(this.m_SegmentForFlatIdx, writer);
-
-            //this.LastActivity.Serialize(writer);
-
             ser.SerializeValue(this.NextSegmentOrdinal, writer);
             ser.SerializeValue(this.TieBreaker, writer);
             ser.SerializeValue(this.BoostedOverlaps, writer);
             ser.SerializeValue(this.Overlaps, writer);
             ser.SerializeValue(this.BoostFactors, writer);
+            
+
+            //ser.SerializeValue(this.ActiveCells, writer);
+            //ser.SerializeValue(this.WinnerCells, writer);
+            //ser.SerializeValue(this.m_ActiveCells, writer); 
+            //ser.SerializeValue(this.winnerCells, writer);
+            //ser.SerializeValue(this.m_PredictiveCells, writer);
+            ser.SerializeValue(this.m_ActiveSegments, writer);
+            ser.SerializeValue(this.m_MatchingSegments, writer);
             ser.SerializeValue(this.ActiveSegments, writer);
             ser.SerializeValue(this.MatchingSegments, writer);
-            
+            //ser.SerializeValue(this.m_DistalSynapses, writer);
+            //ser.SerializeValue(this.m_SegmentForFlatIdx, writer);
+            ser.SerializeValue(this.Cells, writer);
             if (this.connectedCounts2 != null)
-            { this.connectedCounts2.Serialize(writer); }
+            {
+                this.connectedCounts2.Serialize(writer);
+            }
 
             if (this.m_HtmConfig != null)
-            { this.m_HtmConfig.Serialize(writer); }
+            {
+                this.m_HtmConfig.Serialize(writer);
+            }
 
             if (this.HtmConfig != null)
-            { this.HtmConfig.Serialize(writer); }
+            {
+                this.HtmConfig.Serialize(writer);
+            }
 
             //if (this.LastActivity != null)
             //{ this.LastActivity.Serialize(writer); }
@@ -1945,11 +1949,144 @@ namespace NeoCortexApi.Entities
             ser.SerializeEnd(nameof(Connections), writer);
         }
 
-        public static Connections Deserialize(StreamReader reader)
+        public static Connections Deserialize(StreamReader sr)
         {
             Connections mem = new Connections();
-            // |T|ODO
-            
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            while (sr.Peek() >= 0)
+            {
+                string data = sr.ReadLine();
+                if (data == String.Empty || data == ser.ReadBegin(nameof(Connections)))
+                {
+                    continue;
+                }
+                else if (data == ser.ReadBegin(nameof(SparseBinaryMatrix)))
+                {
+                    mem.connectedCounts2 = SparseBinaryMatrix.Deserialize(sr);
+                }
+                else if (data == ser.ReadBegin(nameof(HtmConfig)))
+                {
+                    mem.HtmConfig = HtmConfig.Deserialize(sr);
+                }
+                else if (data == ser.ReadBegin(nameof(HtmConfig)))
+                {
+                    mem.m_HtmConfig = HtmConfig.Deserialize(sr);
+                }
+                else if (data == ser.ReadEnd(nameof(Connections)))
+                {
+                    break;
+                }
+                else
+                {
+                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                    for (int i = 0; i < str.Length; i++)
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                {
+                                    mem.version = ser.ReadDoubleValue(str[i]);
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    mem.SpIterationNum = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    mem.SpIterationLearnNum = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 3:
+                                {
+                                    mem.m_TMIteration = ser.ReadLongValue(str[i]);
+                                    break;
+                                }
+                            case 4:
+                                {
+                                    mem.m_BoostedmOverlaps = ser.ReadArrayDouble(str[i]);
+                                    break;
+                                }
+                            case 5:
+                                {
+                                    mem.m_Overlaps = ser.ReadArrayInt(str[i]);
+                                    break;
+                                }
+                            case 6:
+                                {
+                                    mem.m_TieBreaker = ser.ReadArrayDouble(str[i]);
+                                    break;
+                                }
+                            case 7:
+                                {
+                                    mem.m_BoostFactors = ser.ReadArrayDouble(str[i]);
+                                    break;
+                                }
+                            case 8:
+                                {
+                                    mem.m_NextFlatIdx = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 9:
+                                {
+                                    mem.m_NextSegmentOrdinal = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 10:
+                                {
+                                    mem.m_NextSynapseOrdinal = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 11:
+                                {
+                                    mem.m_NumSynapses = ser.ReadLongValue(str[i]);
+                                    break;
+                                }
+                            case 12:
+                                {
+                                    mem.m_FreeFlatIdxs = ser.ReadListInt(str[i]);
+                                    break;
+                                }
+                            case 13:
+                                {
+                                    //mem.NextSegmentOrdinal = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 14:
+                                {
+                                    mem.TieBreaker = ser.ReadArrayDouble(str[i]);
+                                    break;
+                                }
+                            case 15:
+                                {
+                                    mem.TieBreaker = ser.ReadArrayDouble(str[i]);
+                                    break;
+                                }
+                            case 16:
+                                {
+                                    mem.BoostedOverlaps = ser.ReadArrayDouble(str[i]);
+                                    break;
+                                }
+                            case 17:
+                                {
+                                    mem.Overlaps = ser.ReadArrayInt(str[i]);
+                                    break;
+                                }
+                            case 18:
+                                {
+                                    mem.BoostFactors = ser.ReadArrayDouble(str[i]);
+                                    break;
+                                }
+                            default:
+                                { break; }
+
+                        }
+                    }
+                }
+            }
+
             return mem;
 
         }

@@ -286,7 +286,7 @@ namespace NeoCortexApi.Entities
             {
                 foreach (Cell cell in val)
                 {
-                   // cell.Serialize(sw);
+                    cell.SerializeT(sw);
                     sw.Write(ValueDelimiter);
                 }
             }

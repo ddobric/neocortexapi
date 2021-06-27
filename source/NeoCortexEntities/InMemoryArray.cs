@@ -66,6 +66,10 @@ namespace NeoCortexApi.Entities
             this.dimensions = dimensions;
         }
 
+        public InMemoryArray()
+        {
+        }
+
         //public static IDistributedArray CreateInstance(Type type, int[] dimensions)
         //{
         //    var arr = new InMemoryArray(1, type, dimensions);
@@ -213,6 +217,60 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.Rank, writer);
 
             ser.SerializeEnd(nameof(InMemoryArray), writer);
+        }
+        public static InMemoryArray Deserialize(StreamReader sr)
+        {
+            InMemoryArray array = new InMemoryArray();
+
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            while (sr.Peek() >= 0)
+            {
+                string data = sr.ReadLine();
+                if (data == String.Empty || data == ser.ReadBegin(nameof(InMemoryArray)))
+                {
+                    continue;
+                }
+                else if (data == ser.ReadEnd(nameof(InMemoryArray)))
+                {
+                    break;
+                }
+                else
+                {
+                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                    for (int i = 0; i < str.Length; i++)
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                {
+                                    array.dimensions = ser.ReadArrayInt(str[i]);
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    //array.Dimensions = ser.ReadArrayInt(str[i]);
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    array.numOfNodes = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 3:
+                                {
+                                    //array.Rank = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            default:
+                                { break; }
+
+                        }
+                    }
+                }
+            }
+
+            return array;
         }
         #endregion
     }
