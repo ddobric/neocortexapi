@@ -312,7 +312,7 @@ namespace NeoCortexApi.Entities
 
             ser.SerializeValue(this.Size, writer);
             ser.SerializeValue(this.NumInputs, writer);
-            ser.SerializeValue(this.m_SynapseConnections, writer); //As it is private
+            ser.SerializeValue(this.m_SynapseConnections, writer); 
             ser.SerializeValue(this.m_SynapsesBySourceIndex, writer);
 
             ser.SerializeEnd(nameof(Pool), writer);

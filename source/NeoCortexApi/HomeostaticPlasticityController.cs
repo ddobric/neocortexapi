@@ -335,6 +335,42 @@ namespace NeoCortexApi
             }
         }
 
+        public bool Equals(HomeostaticPlasticityController obj)
+        {
+            if (this == obj)
+                return true;
+
+            if (obj == null)
+                return false;
+
+            if (m_RequiredSimilarityThreshold != obj.m_RequiredSimilarityThreshold)
+                return false;
+            else if (m_MaxPreviousElements != obj.m_MaxPreviousElements)
+                return false;
+            else if (m_Cycle != obj.m_Cycle)
+                return false;
+            else if (m_MinCycles != obj.m_MinCycles)
+                return false;
+            else if (m_RequiredNumOfStableCycles != obj.m_RequiredNumOfStableCycles)
+                return false;
+            else if (m_NumOfStableCyclesForInput.SequenceEqual(obj.m_NumOfStableCyclesForInput) && m_NumOfActiveColsForInput.SequenceEqual(m_NumOfActiveColsForInput))
+                return true;
+            else
+                return false;
+           
+
+            if (m_HtmMemory == null)
+            {
+                if (obj.m_HtmMemory != null)
+                    return false;
+            }
+            else if (!m_HtmMemory.Equals(obj.m_HtmMemory))
+                return false;
+
+
+            return true;
+
+        }
 
         #region Serialization
         public void Serialize(StreamWriter writer)

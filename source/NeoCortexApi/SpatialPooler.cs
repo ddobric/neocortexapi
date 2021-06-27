@@ -1441,6 +1441,41 @@ namespace NeoCortexApi
             return result;
         }
 
+        public bool Equals(SpatialPooler obj)
+        {
+            if (this == obj)
+                return true;
+
+            if (obj == null)
+                return false;
+
+            if (MaxInibitionDensity != obj.MaxInibitionDensity)
+                return false;
+            else if (Name != obj.Name)
+                return false;
+
+            SpatialPooler other = (SpatialPooler)obj;
+
+            if (m_HomeoPlastAct == null)
+            {
+                if (other.m_HomeoPlastAct != null)
+                    return false;
+            }
+            else if (!m_HomeoPlastAct.Equals(other.m_HomeoPlastAct))
+                return false;
+
+            if (connections == null)
+            {
+                if (other.connections != null)
+                    return false;
+            }
+            else if (!connections.Equals(other.connections))
+                return false;
+
+            return true;
+
+        }
+
 
         public void Serialize(StreamWriter writer)
         {
