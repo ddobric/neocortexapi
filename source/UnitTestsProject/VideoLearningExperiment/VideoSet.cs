@@ -22,25 +22,31 @@ namespace UnitTestsProject.VideoLearningExperiments
     /// </summary>
     public class VideoSet
     {
+        public enum ColorMode
+        {
+            BLACKWHITE,
+            RGB,
+        }
         public List<Video> videoEncodedList;
         public List<string> videoName;
         public string setLabel;
-        public VideoSet(string videoSetPath)
+        public ColorMode colorMode;
+
+        public VideoSet(string videoSetPath, ColorMode colorMode, int frameWidth, int frameHeight)
         {
             videoEncodedList = new();
             videoName = new();
-
             // Set the label of the video collection as the name of the folder that contains it 
             this.setLabel = Path.GetFileNameWithoutExtension(videoSetPath);
 
             // Read videos from the video folder path 
-            videoEncodedList = ReadVideos(videoSetPath);
+            videoEncodedList = ReadVideos(videoSetPath, colorMode, frameWidth, frameHeight);
         }
         /// <summary>
         /// Read all videos within a provided folder's full path, the foleder name will be used as videoset's Label
         /// </summary>
         /// <param name="videoSetPath"> The Path of the folder that contains the videos</param>
-        private List<Video> ReadVideos(string videoSetPath)
+        private List<Video> ReadVideos(string videoSetPath, ColorMode colorMode, int frameWidth, int frameHeight)
         {
             List<Video> videoList = new();
             // Iteate through each videos in the videos' folder
@@ -49,7 +55,7 @@ namespace UnitTestsProject.VideoLearningExperiments
                 string fileName = Path.GetFileName(videoSetPath);
                 videoName.Add(fileName);
                 Debug.WriteLine($"Video file name: {fileName}");
-                videoList.Add(new Video(file));
+                videoList.Add(new Video(file, colorMode, frameWidth, frameHeight));
             }
             return videoList;
         }
@@ -65,20 +71,28 @@ namespace UnitTestsProject.VideoLearningExperiments
     {
         public string name;
         public List<int[]> frames;
+
+        private readonly VideoSet.ColorMode colorMode;
+        private readonly int frameWidth;
+        private readonly int frameHeight;
         /// <summary>
         /// Generate a Video object
         /// </summary>
         /// <param name="videoPath">full path to the video</param>
-        public Video(string videoPath)
+        public Video(string videoPath, VideoSet.ColorMode colorMode, int frameWidth, int frameHeight)
         {
+            this.colorMode = colorMode;
+            this.frameWidth = frameWidth;
+            this.frameHeight = frameHeight;
+
             this.frames = new();
             this.name = videoPath;
-            this.frames = ReadVideo(videoPath);
+            this.frames = BitmapToBinaryArray(ReadVideo(videoPath));
         }
 
-        private static List<int[]> ReadVideo(string videoPath)
+        private static List<Bitmap> ReadVideo(string videoPath)
         {
-            List<int[]> frames_binaryArray = new();
+            List<Bitmap> frames_binaryArray = new();
 
             // using VideosReader nuget package Videos.Ultimate from GleamTech
             var videoFrameReader = new VideoFrameReader(videoPath);
@@ -88,9 +102,7 @@ namespace UnitTestsProject.VideoLearningExperiments
                 Debug.WriteLine("Coded Frame Number: " + videoFrameReader.CurrentFrameNumber);
                 Debug.WriteLine("Frame Index: " + frameIndex++);
                 Bitmap currentFrame = videoFrameReader.GetFrame();
-                int[] a = BitmapToBinaryArray(currentFrame, 10, 10);
-                Debug.WriteLine(a.ArrToString());
-                frames_binaryArray.Add(a);
+                frames_binaryArray.Add(currentFrame);
                 Debug.WriteLine($"{frames_binaryArray[frameIndex-1]}");
             }
             //
@@ -105,33 +117,49 @@ namespace UnitTestsProject.VideoLearningExperiments
         /// <para>int[] inputBitArray = ImageToBin(imageBitmapType, scaledWidth = 10, scaledHeight = 10)</para>
         /// <para>will produce an int[] inputBitArray with length 10 x 10 = 100 {1, 0, 0, 0, 1, 1, 1, ...}</para>
         /// </summary>
-        /// <param name="file"> Bitmap image object to encode</param>
+        /// <param name="image"> Bitmap image object to encode</param>
+        /// <param name="colorMode">Specify the color desired colorMode of the output image list</param>
         /// <param name="width"> Width of the output image before encoding</param>
         /// <param name="height">Height of the output image before encoding</param>
         /// <returns>returns an int[] of binarized pixels from Bitmap image object</returns>
-        private static int[] BitmapToBinaryArray(Bitmap file, int width, int height)
+        private int[] BitmapToBinaryArray(Bitmap image)
         {
-            var image = new Bitmap(file);
-            Bitmap img = ResizeBitmap(image, width, height);
-            int length = img.Width * img.Height;
-            int[] imageBinary = new int[length];
+            Bitmap img = ResizeBitmap(image, frameWidth, frameHeight);
+            List<int> imageBinary = new();
 
             for (int i = 0; i < img.Width; i++)
             {
                 for (int j = 0; j < img.Height; j++)
                 {
                     Color pixel = img.GetPixel(i, j);
-                    if (pixel.R < 100)
+                    switch (colorMode)
                     {
-                        imageBinary[j + i * img.Height] = 1;
+                        // adding different color mode here for different source of image
+                        // more info/color resolution resulted in increase of output bit
+                        case VideoSet.ColorMode.BLACKWHITE:
+                            // image binarization of GRAYSCALE source image
+                            // taking red channel as comparatee for binarization 
+                            imageBinary.Add((pixel.R > 255 / 2) ? 1 : 0);
+                            break;
+                        case VideoSet.ColorMode.RGB:
+                            // image binarization of RGB source image
+                            // taking each color channel in RGB as comparatee for binarization
+                            imageBinary.AddRange(new List<int>() { (pixel.R > 255 / 2) ? 1 : 0, (pixel.G > 255 / 2) ? 1 : 0, (pixel.B > 255 / 2) ? 1 : 0 });
+                            break;
                     }
-                    else
-                    {
-                        imageBinary[j + i * img.Height] = 0;
-                    }
+                    
                 }
             }
-            return imageBinary;
+            return imageBinary.ToArray();
+        }
+        private List<int[]> BitmapToBinaryArray(List<Bitmap> imageList)
+        {
+            List<int[]> binaryArrayList = new();
+            foreach(Bitmap bmp in imageList)
+            {
+                binaryArrayList.Add(BitmapToBinaryArray(bmp));
+            }
+            return binaryArrayList;
         }
         /// <summary>
         /// Resize a Bitmap object to desired width and height

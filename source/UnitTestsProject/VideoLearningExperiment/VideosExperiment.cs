@@ -17,44 +17,58 @@ namespace UnitTestsProject.VideoLearningExperiments
 {
     /// <summary>
     /// This Experiment focus on learning and recognition of videos 
-    /// The videos are stored as short mp4 clip in TrainingVideos/ 
+    /// The videos are stored as short mp4 clip in labeled Folder in TrainingVideos/ 
     /// more doc/...
     /// </summary>
     [TestClass]
     public class VideosExperiment
     {
-        int[] inputBits = { 225 };
-        int[] numColumns = { 2048 };
+        readonly int[] inputBits = { 225 };
+        readonly int[] numColumns = { 2048 };
 
         [TestMethod]
         [TestCategory("Experiment")]
         [Timeout(TestTimeout.Infinite)]
         public void VideosLearningExperiment()
         {
+            VideoSet.ColorMode colorMode = VideoSet.ColorMode.BLACKWHITE;
+            int frameWidth = 15;
+            int frameHeight = 15;
+            List<int[]> tempInput = new();
             // Input videos are stored in different folders under SequenceLearningExperiments/TrainingVideos/
+            // with their folder's names as key value
             string[] videoSetPaths = GetVideoSetPaths("VideoLearningExperiments");
             List<VideoSet> videoData = new();
 
-            // with their folder's names as key value
+            // Iterate through every folder in TrainingVideos/ to create VideoSet: object that stores video of same folder/label
             foreach( string path in videoSetPaths)
             {
-                videoData.Add(new VideoSet(path));
+                videoData.Add(new VideoSet(path, colorMode, frameWidth, frameHeight));
             }
+            // Iterate through every folder in TrainingVideos/
+            /*
             foreach (VideoSet set in videoData)
             {
+                // Show Set Label/ Folder Name of each video set
                 Debug.WriteLine($"VIDEO SET LABEL: {set.setLabel}");
                 foreach (Video vid in set.videoEncodedList)
                 {
+                    // Show the name of each video
                     Debug.WriteLine($"  VIDEO NAME: {vid.name}");
                     foreach (int[] frame in vid.frames)
                     {
+                        // Show the encoded content of each frame in a video, these will be used as SP learning input
                         Debug.WriteLine($"      Frame : {frame.ArrToString()}");
+
+                        // FOR RUNNING EXPERIMENT AT THIS POINT
+                        // all frame encoded binary array are stored in tempInput
+                        tempInput.Add(frame);
                     }
                 }
-            }
+            }*/
 
-            //==================================== initiating the CLA HTM model ===================================
-            /*HtmConfig htm = getHTM();
+            // initiating the CLA HTM mode
+            HtmConfig htm = getHTM();
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
@@ -72,10 +86,12 @@ namespace UnitTestsProject.VideoLearningExperiments
             bool isInStableState = false;
 
             //HtmClassifier<double, ComputeCycle> cls = new HtmClassifier<double, ComputeCycle>();
-            HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
+            HtmClassifier<string, ComputeCycle> cls = new();
 
-            TemporalMemory tm1 = new TemporalMemory();
+            TemporalMemory tm1 = new();
 
+            // Question about homeoplasticity controller 
+            /*
             HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, numInputs * 55, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                 if (isStable)
@@ -91,13 +107,13 @@ namespace UnitTestsProject.VideoLearningExperiments
 
                 tm1.Reset(mem);
             }, numOfCyclesToWaitOnChange: 25);
+            */
 
-
-            SpatialPoolerMT sp1 = new SpatialPoolerMT(hpa);
+            SpatialPoolerMT sp1 = new(/*hpa*/);
             sp1.Init(mem, UnitTestHelpers.GetMemory());
             tm1.Init(mem);
 
-            CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
+            CortexLayer<object, object> layer1 = new("L1");
             region0.AddLayer(layer1);
             layer1.HtmModules.Add("sp", sp1);
             layer1.HtmModules.Add("tm", tm1);
@@ -105,13 +121,15 @@ namespace UnitTestsProject.VideoLearningExperiments
             int cycle = 0;
             int matches = 0;
 
-            string lastPredictedValue = "0";
+            string lastPredictedValue;
 
 
             int maxCycles = 4200;
             int maxPrevInputs = tempInput.Count - 1;
-            List<string> previousInputs = new List<string>();
-            previousInputs.Add(tempInput[0].ArrToString());
+            List<string> previousInputs = new()
+            {
+                //tempInput[0].ArrToString()
+            };
 
             // Training SP to get stable. New-born stage.
             //
@@ -123,23 +141,35 @@ namespace UnitTestsProject.VideoLearningExperiments
 
                 Debug.WriteLine($"-------------- Newborn Cycle {cycle} ---------------");
 
-                for (int j = 0; j < tempInput.Count;j+=1)
+                foreach (VideoSet set in videoData)
                 {
-                    Debug.WriteLine($" -- {InputVideos[0].ImageNames[j]} -- {tempInput[j].ArrToString()} --");
-
-                    var lyrOut = sp1.Compute(tempInput[j], learn);
-                    Debug.WriteLine($"SDR:  {lyrOut.ArrToString()}");
-                    if (isInStableState)
-                        break;
+                    // Show Set Label/ Folder Name of each video set
+                    //Debug.WriteLine($"VIDEO SET LABEL: {set.setLabel}");
+                    foreach (Video vid in set.videoEncodedList)
+                    {
+                        // Show the name of each video
+                        //Debug.WriteLine($"  VIDEO NAME: {vid.name}");
+                        foreach (int[] frame in vid.frames)
+                        {
+                            // Show the encoded content of each frame in a video, these will be used as SP learning input
+                            Debug.WriteLine($"      Frame : {frame.ArrToString()}");
+                            var lyrOut = sp1.Compute(frame, learn);
+                            if (isInStableState)
+                                Debug.WriteLine("Stable State reached");
+                                break;
+                        }
+                    }
                 }
 
                 if (isInStableState)
-                    break;
+                    Debug.WriteLine("Stable State reached");
+                    break;   
             }
 
 
             //
             // Now training with SP+TM. SP is pretrained on the given input pattern set.
+            /*
             for (int i = 0; i < maxCycles; i++)
             {
                 matches = 0;
@@ -205,7 +235,7 @@ namespace UnitTestsProject.VideoLearningExperiments
 
                         if (lyrOut.PredictiveCells.Count > 0)
                         {
-                            var predictedInputValue = cls.GetPredictedInputValue(lyrOut.PredictiveCells.ToArray());
+                            var predictedInputValue = cls.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(),3);
 
                             Debug.WriteLine($"Current Input: {InputVideos[0].ImageNames[j]} \t| Predicted Input: {predictedInputValue}");
 
@@ -251,9 +281,13 @@ namespace UnitTestsProject.VideoLearningExperiments
             */
         }
 
+        /// <summary>
+        /// <para>Initiate the settings of HTM</para>
+        /// </summary>
+        /// <returns></returns>
         private HtmConfig getHTM()
         {
-            HtmConfig htm = new HtmConfig(inputBits, numColumns);
+            HtmConfig htm = new(inputBits, numColumns);
             htm.SetHtmConfigDefaultParameters(inputBits, numColumns);
             htm.NumActiveColumnsPerInhArea = (int)(0.02 * numColumns[0]);
             htm.MaxSynapsesPerSegment = (int)(0.02 * numColumns[0]);
