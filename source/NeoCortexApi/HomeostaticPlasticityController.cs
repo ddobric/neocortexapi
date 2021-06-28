@@ -343,6 +343,13 @@ namespace NeoCortexApi
             if (obj == null)
                 return false;
 
+            if (m_HtmMemory == null)
+            {
+                if (obj.m_HtmMemory != null)
+                    return false;
+            }
+            else if (!m_HtmMemory.Equals(obj.m_HtmMemory))
+                return false;
             if (m_RequiredSimilarityThreshold != obj.m_RequiredSimilarityThreshold)
                 return false;
             else if (m_MaxPreviousElements != obj.m_MaxPreviousElements)
@@ -353,21 +360,9 @@ namespace NeoCortexApi
                 return false;
             else if (m_RequiredNumOfStableCycles != obj.m_RequiredNumOfStableCycles)
                 return false;
-            else if (m_NumOfStableCyclesForInput.SequenceEqual(obj.m_NumOfStableCyclesForInput) && m_NumOfActiveColsForInput.SequenceEqual(m_NumOfActiveColsForInput))
-                return true;
-            else
+            else if (!m_NumOfStableCyclesForInput.SequenceEqual(obj.m_NumOfStableCyclesForInput) && !m_NumOfActiveColsForInput.SequenceEqual(m_NumOfActiveColsForInput))
                 return false;
            
-
-            if (m_HtmMemory == null)
-            {
-                if (obj.m_HtmMemory != null)
-                    return false;
-            }
-            else if (!m_HtmMemory.Equals(obj.m_HtmMemory))
-                return false;
-
-
             return true;
 
         }

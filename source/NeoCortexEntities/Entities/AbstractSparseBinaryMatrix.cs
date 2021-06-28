@@ -454,19 +454,21 @@ namespace NeoCortexApi.Entities
 
         public override bool Equals(object obj)
         {
-            if (this == obj)
-                return true;
-            if (!base.Equals(obj))
-                return false;
-            if ((obj.GetType() != this.GetType()))
-                return false;
-            AbstractSparseBinaryMatrix other = (AbstractSparseBinaryMatrix)obj;
-            if (!Array.Equals(trueCounts, other.trueCounts))
-                return false;
-            return true;
+            throw new NotImplementedException();
+
+            //if (this == obj)
+            //    return true;
+            //if (!base.Equals(obj))
+            //    return false;
+            //if ((obj.GetType() != this.GetType()))
+            //    return false;
+            //AbstractSparseBinaryMatrix other = (AbstractSparseBinaryMatrix)obj;
+            //if (!Array.Equals(trueCounts, other.trueCounts))
+            //    return false;
+            //return true;
         }
         #region Serialization
-        public virtual void Serialize(StreamWriter writer)
+        public override void Serialize(StreamWriter writer)
         {
             throw new NotImplementedException();
             

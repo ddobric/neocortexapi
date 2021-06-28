@@ -1659,199 +1659,142 @@ namespace NeoCortexApi.Entities
             result = prime * result + ((winnerCells == null) ? 0 : winnerCells.GetHashCode());
             return result;
         }
-
-        /*
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public override bool Equals(Object obj)
+        public bool Equals(Connections obj)
         {
             if (this == obj)
                 return true;
+
             if (obj == null)
                 return false;
-            if ((obj.GetType() != this.GetType()))
+
+            if (connectedCounts2 == null)
+            {
+                if (obj.connectedCounts2 != null)
+                    return false;
+            }
+            else if (!connectedCounts2.Equals(obj.connectedCounts2))
+                return false;
+            if (m_HtmConfig == null)
+            {
+                if (obj.m_HtmConfig != null)
+                    return false;
+            }
+            else if (!m_HtmConfig.Equals(obj.m_HtmConfig))
+                return false;
+            if (HtmConfig == null)
+            {
+                if (obj.HtmConfig != null)
+                    return false;
+            }
+            else if (!HtmConfig.Equals(obj.HtmConfig))
+                return false;
+            if (obj.Cells != null && this.Cells != null)
+            {
+
+                if (!obj.Cells.SequenceEqual(this.Cells))
+                    return false;
+            }
+            if (obj.m_BoostFactors != null && this.m_BoostFactors != null)
+            {
+
+                if (!obj.m_BoostFactors.SequenceEqual(this.m_BoostFactors))
+                    return false;
+            }
+            if (obj.m_ActiveSegments != null && this.m_ActiveSegments != null)
+            {
+
+                if (!obj.m_ActiveSegments.SequenceEqual(this.m_ActiveSegments))
+                    return false;
+            }
+            if (obj.m_MatchingSegments != null && this.m_MatchingSegments != null)
+            {
+
+                if (!obj.m_MatchingSegments.SequenceEqual(this.m_MatchingSegments))
+                    return false;
+            }
+            if (obj.m_FreeFlatIdxs != null && this.m_FreeFlatIdxs != null)
+            {
+
+                if (!obj.m_FreeFlatIdxs.SequenceEqual(this.m_FreeFlatIdxs))
+                    return false;
+            }
+            if (obj.TieBreaker != null && this.TieBreaker != null)
+            {
+
+                if (!obj.TieBreaker.SequenceEqual(this.TieBreaker))
+                    return false;
+            }
+            if (obj.BoostedOverlaps != null && this.BoostedOverlaps != null)
+            {
+
+                if (!obj.BoostedOverlaps.SequenceEqual(this.BoostedOverlaps))
+                    return false;
+            }
+            if (obj.Overlaps != null && this.Overlaps != null)
+            {
+
+                if (!obj.Overlaps.SequenceEqual(this.Overlaps))
+                    return false;
+            }
+            if (obj.BoostFactors != null && this.BoostFactors != null)
+            {
+
+                if (!obj.BoostFactors.SequenceEqual(this.BoostFactors))
+                    return false;
+            }
+            if (obj.ActiveSegments != null && this.ActiveSegments != null)
+            {
+
+                if (!obj.ActiveSegments.SequenceEqual(this.ActiveSegments))
+                    return false;
+            }
+            if (obj.MatchingSegments != null && this.MatchingSegments != null)
+            {
+
+                if (!obj.MatchingSegments.SequenceEqual(this.MatchingSegments))
+                    return false;
+            }
+            if (this.version != obj.version)
+                return false;
+            else if (this.SpIterationNum != obj.SpIterationNum)
+                return false;
+            else if (this.SpIterationLearnNum != obj.SpIterationLearnNum)
+                return false;
+            else if (this.m_TMIteration != obj.m_TMIteration)
+                return false;
+            else if (this.m_BoostedmOverlaps != obj.m_BoostedmOverlaps)
+                return false;
+            else if (this.m_Overlaps != obj.m_Overlaps)
+                return false;
+            else if (this.m_TieBreaker != obj.m_TieBreaker)
+                return false;
+            else if (this.ActiveCells != obj.ActiveCells)
+                return false;
+            else if (this.WinnerCells != obj.WinnerCells)
+                return false;
+            else if (this.m_ActiveCells != obj.m_ActiveCells)
+                return false;
+            else if (this.winnerCells != obj.winnerCells)
+                return false;
+            else if (this.m_PredictiveCells != obj.m_PredictiveCells)
+                return false;
+            else if (!m_DistalSynapses.SequenceEqual(obj.m_DistalSynapses))
+                return false;
+            else if (this.m_NextFlatIdx != obj.m_NextFlatIdx)
+                return false;
+            else if (this.m_NextSegmentOrdinal != obj.m_NextSegmentOrdinal)
+                return false;
+            else if (this.m_NextSynapseOrdinal != obj.m_NextSynapseOrdinal)
+                return false;
+            else if (this.m_NumSynapses != obj.m_NumSynapses)
+                return false;
+            else if (this.NextSegmentOrdinal != obj.NextSegmentOrdinal)
                 return false;
 
-            Connections other = (Connections)obj;
-            if (this.HtmConfig.ActivationThreshold != other.HtmConfig.ActivationThreshold)
-                return false;
-            if (m_ActiveCells == null)
-            {
-                if (other.m_ActiveCells != null)
-                    return false;
-            }
-            else if (!m_ActiveCells.Equals(other.m_ActiveCells))
-                return false;
-            if (!Array.Equals(this.HtmConfig.ActiveDutyCycles, other.HtmConfig.ActiveDutyCycles))
-                return false;
-            if (!Array.Equals(m_BoostFactors, other.m_BoostFactors))
-                return false;
-            if (!Array.Equals(Cells, other.Cells))
-                return false;
-            if (this.HtmConfig.CellsPerColumn != other.HtmConfig.CellsPerColumn)
-                return false;
-            if (!Array.Equals(this.HtmConfig.ColumnDimensions, other.HtmConfig.ColumnDimensions))
-                return false;
-            //if (connectedCounts == null)
-            //{
-            //    if (other.connectedCounts != null)
-            //        return false;
-            //}
-            //else if (!connectedCounts.Equals(other.connectedCounts))
-            //    return false;
-            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.ConnectedPermanence) != BitConverter.DoubleToInt64Bits(other.HtmConfig.ConnectedPermanence))
-                return false;
-            if (this.HtmConfig.DutyCyclePeriod != other.HtmConfig.DutyCyclePeriod)
-                return false;
-            if (this.HtmConfig.GlobalInhibition != other.HtmConfig.GlobalInhibition)
-                return false;
-            if (this.HtmConfig.InhibitionRadius != other.HtmConfig.InhibitionRadius)
-                return false;
-            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.InitialSynapseConnsPct) != BitConverter.DoubleToInt64Bits(other.HtmConfig.InitialSynapseConnsPct))
-                return false;
-            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.InitialPermanence) != BitConverter.DoubleToInt64Bits(other.HtmConfig.InitialPermanence))
-                return false;
-            if (!Array.Equals(this.HtmConfig.InputDimensions, other.HtmConfig.InputDimensions))
-                return false;
-            if (this.HtmConfig.InputMatrix == null)
-            {
-                if (other.HtmConfig.InputMatrix != null)
-                    return false;
-            }
-            else if (!this.HtmConfig.InputMatrix.Equals(other.HtmConfig.InputMatrix))
-                return false;
-            if (SpIterationLearnNum != other.SpIterationLearnNum)
-                return false;
-            if (SpIterationNum != other.SpIterationNum)
-                return false;
-            if (m_TMIteration != other.m_TMIteration)
-                return false;
-            if (this.HtmConfig.LearningRadius != other.HtmConfig.LearningRadius)
-                return false;
-            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.LocalAreaDensity) != BitConverter.DoubleToInt64Bits(other.HtmConfig.LocalAreaDensity))
-                return false;
-            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.MaxBoost) != BitConverter.DoubleToInt64Bits(other.HtmConfig.MaxBoost))
-                return false;
-            if (this.HtmConfig.MaxNewSynapseCount != other.HtmConfig.MaxNewSynapseCount)
-                return false;
-            if (this.HtmConfig.Memory == null)
-            {
-                if (other.HtmConfig.Memory != null)
-                    return false;
-            }
-            else if (!this.HtmConfig.Memory.Equals(other.HtmConfig.Memory))
-                return false;
-            if (!Array.Equals(this.HtmConfig.MinActiveDutyCycles, other.HtmConfig.MinActiveDutyCycles))
-                return false;
-            if (!Array.Equals(this.HtmConfig.MinOverlapDutyCycles, other.HtmConfig.MinOverlapDutyCycles))
-                return false;
-            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.MinPctActiveDutyCycles) != BitConverter.DoubleToInt64Bits(other.HtmConfig.MinPctActiveDutyCycles))
-                return false;
-            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.MinPctOverlapDutyCycles) != BitConverter.DoubleToInt64Bits(other.HtmConfig.MinPctOverlapDutyCycles))
-                return false;
-            if (this.HtmConfig.MinThreshold != other.HtmConfig.MinThreshold)
-                return false;
-            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.NumActiveColumnsPerInhArea) != BitConverter.DoubleToInt64Bits(other.HtmConfig.NumActiveColumnsPerInhArea))
-                return false;
-            if (this.HtmConfig.NumColumns != other.HtmConfig.NumColumns)
-                return false;
-            if (this.HtmConfig.NumInputs != other.HtmConfig.NumInputs)
-                return false;
-            if (m_NumSynapses != other.m_NumSynapses)
-                return false;
-            if (!Array.Equals(this.HtmConfig.OverlapDutyCycles, other.HtmConfig.OverlapDutyCycles))
-                return false;
-            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.PermanenceDecrement) != BitConverter.DoubleToInt64Bits(other.HtmConfig.PermanenceDecrement))
-                return false;
-            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.PermanenceIncrement) != BitConverter.DoubleToInt64Bits(other.HtmConfig.PermanenceIncrement))
-                return false;
-            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.PotentialPct) != BitConverter.DoubleToInt64Bits(other.HtmConfig.PotentialPct))
-                return false;
-            //if (potentialPools == null)
-            //{
-            //    if (other.potentialPools != null)
-            //        return false;
-            //}
-            //else if (!potentialPools.Equals(other.potentialPools))
-            //    return false;
-            if (this.HtmConfig.PotentialRadius != other.HtmConfig.PotentialRadius)
-                return false;
-            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.PredictedSegmentDecrement) != BitConverter.DoubleToInt64Bits(other.HtmConfig.PredictedSegmentDecrement))
-                return false;
-            if (m_PredictiveCells == null)
-            {
-                if (other.m_PredictiveCells != null)
-                    return false;
-            }
-            else if (!GetPredictiveCells().Equals(other.GetPredictiveCells()))
-                return false;
-            if (m_ReceptorSynapses == null)
-            {
-                if (other.m_ReceptorSynapses != null)
-                    return false;
-            }
-            else if (!m_ReceptorSynapses.ToString().Equals(other.m_ReceptorSynapses.ToString()))
-                return false;
-            if (this.HtmConfig.RandomGenSeed != other.HtmConfig.RandomGenSeed)
-                return false;
-            if (m_DistalSegments == null)
-            {
-                if (other.m_DistalSegments != null)
-                    return false;
-            }
-            else if (!m_DistalSegments.Equals(other.m_DistalSegments))
-                return false;
-            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.StimulusThreshold) != BitConverter.DoubleToInt64Bits(other.HtmConfig.StimulusThreshold))
-                return false;
-            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.SynPermActiveInc) != BitConverter.DoubleToInt64Bits(other.HtmConfig.SynPermActiveInc))
-                return false;
-            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.SynPermBelowStimulusInc) != BitConverter.DoubleToInt64Bits(other.HtmConfig.SynPermBelowStimulusInc))
-                return false;
-            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.SynPermConnected) != BitConverter.DoubleToInt64Bits(other.HtmConfig.SynPermConnected))
-                return false;
-            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.SynPermInactiveDec) != BitConverter.DoubleToInt64Bits(other.HtmConfig.SynPermInactiveDec))
-                return false;
-            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.SynPermMax) != BitConverter.DoubleToInt64Bits(other.HtmConfig.SynPermMax))
-                return false;
-            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.SynPermMin) != BitConverter.DoubleToInt64Bits(other.HtmConfig.SynPermMin))
-                return false;
-            if (BitConverter.DoubleToInt64Bits(this.HtmConfig.SynPermTrimThreshold) != BitConverter.DoubleToInt64Bits(other.HtmConfig.SynPermTrimThreshold))
-                return false;
-            //if (proximalSynapseCounter != other.proximalSynapseCounter)
-            //    return false;
-            //if (proximalSynapses == null)
-            //{
-            //    if (other.proximalSynapses != null)
-            //        return false;
-            //}
-            //else if (!proximalSynapses.Equals(other.proximalSynapses))
-            //    return false;
-            if (m_DistalSynapses == null)
-            {
-                if (other.m_DistalSynapses != null)
-                    return false;
-            }
-            else if (!m_DistalSynapses.Equals(other.m_DistalSynapses))
-                return false;
-            if (!Array.Equals(m_TieBreaker, other.m_TieBreaker))
-                return false;
-            if (this.HtmConfig.UpdatePeriod != other.HtmConfig.UpdatePeriod)
-                return false;
-            if (BitConverter.DoubleToInt64Bits(version) != BitConverter.DoubleToInt64Bits(other.version))
-                return false;
-            if (winnerCells == null)
-            {
-                if (other.winnerCells != null)
-                    return false;
-            }
-            else if (!winnerCells.Equals(other.winnerCells))
-                return false;
+
             return true;
         }
-        */
+        
         #endregion
 
         /// <summary>
@@ -1942,9 +1885,6 @@ namespace NeoCortexApi.Entities
             {
                 this.HtmConfig.Serialize(writer);
             }
-
-            //if (this.LastActivity != null)
-            //{ this.LastActivity.Serialize(writer); }
 
             ser.SerializeEnd(nameof(Connections), writer);
         }

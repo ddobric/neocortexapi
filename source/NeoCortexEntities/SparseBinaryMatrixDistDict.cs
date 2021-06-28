@@ -281,6 +281,34 @@ namespace NeoCortexApi.Entities
         {
             throw new NotImplementedException();
         }
+        public bool Equals(SparseBinaryMatrix obj)
+        {
+            if (this == obj)
+                return true;
+
+            if (obj == null)
+                return false;
+
+            if (backingArray == null)
+            {
+                if (obj.backingArray != null)
+                    return false;
+            }
+            else if (!backingArray.Equals(obj.backingArray))
+                return false;
+
+            if (ModuleTopology == null)
+            {
+                if (obj.ModuleTopology != null)
+                    return false;
+            }
+            else if (!ModuleTopology.Equals(obj.ModuleTopology))
+                return false;
+            if (this.trueCounts != obj.trueCounts)
+                return false;
+
+            return true;
+        }
         #region Serialization
         public override void Serialize(StreamWriter writer)
         {

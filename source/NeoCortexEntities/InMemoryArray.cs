@@ -202,7 +202,26 @@ namespace NeoCortexApi.Entities
                 backingArray.SetValue(0, rowIndex, i);
             }
         }
+        public bool Equals(InMemoryArray obj)
+        {
+            if (this == obj)
+                return true;
 
+            if (obj == null)
+                return false;
+            if (this.dimensions != obj.dimensions)
+                return false;
+            else if (this.backingArray != obj.backingArray)
+                return false;
+            else if (this.numOfNodes != obj.numOfNodes)
+                return false;
+            else if (this.Rank != obj.Rank)
+                return false;
+            else if (this.Dimensions != obj.Dimensions)
+                return false;
+
+            return true;
+        }
         #region Serialization
         public void Serialize(StreamWriter writer)
         {
