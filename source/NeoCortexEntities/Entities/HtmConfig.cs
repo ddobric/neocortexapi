@@ -411,7 +411,28 @@ namespace NeoCortexApi.Entities
             this.Memory = null;
             this.InputMatrix = null;
         }
+        public bool Equals(HtmConfig obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
 
+            if (memory == null)
+            {
+                if (obj.memory != null)
+                    return false;
+            }
+            else if (!memory.Equals(obj.memory))
+                return false;
+            if (this.synPermActiveInc != obj.SynPermActiveInc)
+                return false;
+            if (this.synPermConnected != obj.synPermConnected)
+                return false;
+
+            return true;
+
+        }
         #region Serialization
         public void Serialize(StreamWriter writer)
         {
