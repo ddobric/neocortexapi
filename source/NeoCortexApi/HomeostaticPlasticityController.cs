@@ -360,7 +360,9 @@ namespace NeoCortexApi
                 return false;
             else if (m_RequiredNumOfStableCycles != obj.m_RequiredNumOfStableCycles)
                 return false;
-            else if (!m_NumOfStableCyclesForInput.SequenceEqual(obj.m_NumOfStableCyclesForInput) && !m_NumOfActiveColsForInput.SequenceEqual(m_NumOfActiveColsForInput))
+            else if (!m_NumOfStableCyclesForInput.SequenceEqual(obj.m_NumOfStableCyclesForInput) && !m_NumOfActiveColsForInput.SequenceEqual(m_NumOfActiveColsForInput) && !m_InOutMap.SequenceEqual(m_InOutMap))
+                return false;
+            else if (m_IsStable != obj.m_IsStable)
                 return false;
            
             return true;
@@ -382,9 +384,8 @@ namespace NeoCortexApi
             ser.SerializeValue(this.m_NumOfStableCyclesForInput, writer);
             ser.SerializeValue(this.m_NumOfActiveColsForInput, writer);
             ser.SerializeValue(this.m_InOutMap, writer);
-            //ser.SerializeValue(this.m_OnStabilityStatusChanged, writer);
             ser.SerializeValue(this.m_IsStable, writer);
-
+            
             if (this.m_HtmMemory != null)
             {
                 this.m_HtmMemory.Serialize(writer);
@@ -449,18 +450,20 @@ namespace NeoCortexApi
                                 }
                             case 5:
                                 {
-                                    ctrl.m_NumOfActiveColsForInput = ser.ReadDictSIarray(str[i]);
+                                    ctrl.m_NumOfStableCyclesForInput = ser.ReadDictSIValue(str[i]);
                                     break;
                                 }
                             case 6:
                                 {
-                                    ctrl.m_InOutMap = ser.ReadDictSIarray(str[i]);
+                                    ctrl.m_NumOfActiveColsForInput = ser.ReadDictSIarray(str[i]);
                                     break;
                                 }
                             case 7:
                                 {
+                                    ctrl.m_InOutMap = ser.ReadDictSIarray(str[i]);
                                     break;
                                 }
+                            
                             case 8:
                                 {
                                     ctrl.m_IsStable = ser.ReadBoolValue(str[i]);

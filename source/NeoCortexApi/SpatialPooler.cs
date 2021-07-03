@@ -1482,6 +1482,7 @@ namespace NeoCortexApi
             HtmSerializer2 ser = new HtmSerializer2();
 
             ser.SerializeBegin(nameof(SpatialPooler), writer);
+            
             ser.SerializeValue(this.MaxInibitionDensity, writer);
             ser.SerializeValue(this.Name, writer);
 
