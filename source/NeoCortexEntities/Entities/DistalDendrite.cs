@@ -164,6 +164,13 @@ namespace NeoCortexApi.Entities
             }
             else if (!Synapses.SequenceEqual(obj.Synapses))
                 return false;
+            if (boxedIndex == null)
+            {
+                if (obj.boxedIndex != null)
+                    return false;
+            }
+            else if (boxedIndex.Equals(obj.boxedIndex))
+                return false;
             if (SynapsePermConnected != obj.SynapsePermConnected)
                 return false;
             if (NumInputs != obj.NumInputs)
@@ -199,7 +206,6 @@ namespace NeoCortexApi.Entities
             HtmSerializer2 ser = new HtmSerializer2();
 
             ser.SerializeBegin(nameof(DistalDendrite), writer);
-
             
             ser.SerializeValue(this.m_LastUsedIteration, writer);
             ser.SerializeValue(this.m_Ordinal, writer);
@@ -236,7 +242,6 @@ namespace NeoCortexApi.Entities
 
             ser.SerializeBegin(nameof(DistalDendrite), writer);
 
-            writer.Write(ser.tab);
             ser.SerializeValue(this.m_LastUsedIteration, writer);
             ser.SerializeValue(this.m_Ordinal, writer);
             ser.SerializeValue(this.LastUsedIteration, writer);

@@ -317,10 +317,10 @@ namespace NeoCortexApi.Entities
             ser.SerializeBegin(nameof(SparseBinaryMatrix), writer);
 
             ser.SerializeValue(this.trueCounts, writer);
-           
+            
             if(this.ModuleTopology != null)
             { this.ModuleTopology.Serialize(writer); }
-
+            
             if (this.backingArray != null)
             { this.backingArray.Serialize(writer); }
 

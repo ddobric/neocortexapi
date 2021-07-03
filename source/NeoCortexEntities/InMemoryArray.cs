@@ -228,7 +228,7 @@ namespace NeoCortexApi.Entities
             HtmSerializer2 ser = new HtmSerializer2();
 
             ser.SerializeBegin(nameof(InMemoryArray), writer);
-
+            
             //ser.SerializeValue(this.backingArray, writer);
             ser.SerializeValue(this.dimensions, writer);
             ser.SerializeValue(this.Dimensions, writer);

@@ -1688,107 +1688,107 @@ namespace NeoCortexApi.Entities
             }
             else if (!HtmConfig.Equals(obj.HtmConfig))
                 return false;
-            if (obj.Cells != null && this.Cells != null)
+            if (obj.Cells != null && Cells != null)
             {
 
-                if (!obj.Cells.SequenceEqual(this.Cells))
+                if (!obj.Cells.SequenceEqual(Cells))
                     return false;
             }
-            if (obj.m_BoostFactors != null && this.m_BoostFactors != null)
+            if (obj.m_BoostFactors != null && m_BoostFactors != null)
             {
 
-                if (!obj.m_BoostFactors.SequenceEqual(this.m_BoostFactors))
+                if (!obj.m_BoostFactors.SequenceEqual(m_BoostFactors))
                     return false;
             }
-            if (obj.m_ActiveSegments != null && this.m_ActiveSegments != null)
+            if (obj.m_ActiveSegments != null && m_ActiveSegments != null)
             {
 
-                if (!obj.m_ActiveSegments.SequenceEqual(this.m_ActiveSegments))
+                if (!obj.m_ActiveSegments.SequenceEqual(m_ActiveSegments))
                     return false;
             }
-            if (obj.m_MatchingSegments != null && this.m_MatchingSegments != null)
+            if (obj.m_MatchingSegments != null && m_MatchingSegments != null)
             {
 
-                if (!obj.m_MatchingSegments.SequenceEqual(this.m_MatchingSegments))
+                if (!obj.m_MatchingSegments.SequenceEqual(m_MatchingSegments))
                     return false;
             }
-            if (obj.m_FreeFlatIdxs != null && this.m_FreeFlatIdxs != null)
+            if (obj.m_FreeFlatIdxs != null && m_FreeFlatIdxs != null)
             {
 
-                if (!obj.m_FreeFlatIdxs.SequenceEqual(this.m_FreeFlatIdxs))
+                if (!obj.m_FreeFlatIdxs.SequenceEqual(m_FreeFlatIdxs))
                     return false;
             }
-            if (obj.TieBreaker != null && this.TieBreaker != null)
+            if (obj.TieBreaker != null && TieBreaker != null)
             {
 
-                if (!obj.TieBreaker.SequenceEqual(this.TieBreaker))
+                if (!obj.TieBreaker.SequenceEqual(TieBreaker))
                     return false;
             }
-            if (obj.BoostedOverlaps != null && this.BoostedOverlaps != null)
+            if (obj.BoostedOverlaps != null && BoostedOverlaps != null)
             {
 
-                if (!obj.BoostedOverlaps.SequenceEqual(this.BoostedOverlaps))
+                if (!obj.BoostedOverlaps.SequenceEqual(BoostedOverlaps))
                     return false;
             }
-            if (obj.Overlaps != null && this.Overlaps != null)
+            if (obj.Overlaps != null && Overlaps != null)
             {
 
-                if (!obj.Overlaps.SequenceEqual(this.Overlaps))
+                if (!obj.Overlaps.SequenceEqual(Overlaps))
                     return false;
             }
-            if (obj.BoostFactors != null && this.BoostFactors != null)
+            if (obj.BoostFactors != null && BoostFactors != null)
             {
 
-                if (!obj.BoostFactors.SequenceEqual(this.BoostFactors))
+                if (!obj.BoostFactors.SequenceEqual(BoostFactors))
                     return false;
             }
-            if (obj.ActiveSegments != null && this.ActiveSegments != null)
+            if (obj.ActiveSegments != null && ActiveSegments != null)
             {
 
-                if (!obj.ActiveSegments.SequenceEqual(this.ActiveSegments))
+                if (!obj.ActiveSegments.SequenceEqual(ActiveSegments))
                     return false;
             }
-            if (obj.MatchingSegments != null && this.MatchingSegments != null)
+            if (obj.MatchingSegments != null && MatchingSegments != null)
             {
 
-                if (!obj.MatchingSegments.SequenceEqual(this.MatchingSegments))
+                if (!obj.MatchingSegments.SequenceEqual(MatchingSegments))
                     return false;
             }
-            if (this.version != obj.version)
+            if (version != obj.version)
                 return false;
-            else if (this.SpIterationNum != obj.SpIterationNum)
+            else if (SpIterationNum != obj.SpIterationNum)
                 return false;
-            else if (this.SpIterationLearnNum != obj.SpIterationLearnNum)
+            else if (SpIterationLearnNum != obj.SpIterationLearnNum)
                 return false;
-            else if (this.m_TMIteration != obj.m_TMIteration)
+            else if (m_TMIteration != obj.m_TMIteration)
                 return false;
-            else if (this.m_BoostedmOverlaps != obj.m_BoostedmOverlaps)
+            else if (m_BoostedmOverlaps != obj.m_BoostedmOverlaps)
                 return false;
-            else if (this.m_Overlaps != obj.m_Overlaps)
+            else if (m_Overlaps != obj.m_Overlaps)
                 return false;
-            else if (this.m_TieBreaker != obj.m_TieBreaker)
+            else if (m_TieBreaker != obj.m_TieBreaker)
                 return false;
-            else if (this.ActiveCells != obj.ActiveCells)
+            else if (ActiveCells != obj.ActiveCells)
                 return false;
-            else if (this.WinnerCells != obj.WinnerCells)
+            else if (WinnerCells != obj.WinnerCells)
                 return false;
-            else if (this.m_ActiveCells != obj.m_ActiveCells)
+            else if (m_ActiveCells != obj.m_ActiveCells)
                 return false;
-            else if (this.winnerCells != obj.winnerCells)
+            else if (winnerCells != obj.winnerCells)
                 return false;
-            else if (this.m_PredictiveCells != obj.m_PredictiveCells)
+            else if (m_PredictiveCells != obj.m_PredictiveCells)
                 return false;
             else if (!m_DistalSynapses.SequenceEqual(obj.m_DistalSynapses))
                 return false;
-            else if (this.m_NextFlatIdx != obj.m_NextFlatIdx)
+            else if (m_NextFlatIdx != obj.m_NextFlatIdx)
                 return false;
-            else if (this.m_NextSegmentOrdinal != obj.m_NextSegmentOrdinal)
+            else if (m_NextSegmentOrdinal != obj.m_NextSegmentOrdinal)
                 return false;
-            else if (this.m_NextSynapseOrdinal != obj.m_NextSynapseOrdinal)
+            else if (m_NextSynapseOrdinal != obj.m_NextSynapseOrdinal)
                 return false;
-            else if (this.m_NumSynapses != obj.m_NumSynapses)
+            else if (m_NumSynapses != obj.m_NumSynapses)
                 return false;
-            else if (this.NextSegmentOrdinal != obj.NextSegmentOrdinal)
+            else if (NextSegmentOrdinal != obj.NextSegmentOrdinal)
                 return false;
 
 
@@ -2001,20 +2001,15 @@ namespace NeoCortexApi.Entities
                                 }
                             case 15:
                                 {
-                                    mem.TieBreaker = ser.ReadArrayDouble(str[i]);
+                                    mem.BoostedOverlaps = ser.ReadArrayDouble(str[i]);
                                     break;
                                 }
                             case 16:
                                 {
-                                    mem.BoostedOverlaps = ser.ReadArrayDouble(str[i]);
-                                    break;
-                                }
-                            case 17:
-                                {
                                     mem.Overlaps = ser.ReadArrayInt(str[i]);
                                     break;
                                 }
-                            case 18:
+                            case 17:
                                 {
                                     mem.BoostFactors = ser.ReadArrayDouble(str[i]);
                                     break;
