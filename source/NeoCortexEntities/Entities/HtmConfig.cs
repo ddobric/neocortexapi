@@ -425,9 +425,162 @@ namespace NeoCortexApi.Entities
             }
             else if (!memory.Equals(obj.memory))
                 return false;
-            if (this.synPermActiveInc != obj.SynPermActiveInc)
+            if (inputMatrix == null)
+            {
+                if (obj.inputMatrix != null)
+                    return false;
+            }
+            else if (!inputMatrix.Equals(obj.inputMatrix))
                 return false;
-            if (this.synPermConnected != obj.synPermConnected)
+            if (TemporalMemory == null)
+            {
+                if (obj.TemporalMemory != null)
+                    return false;
+            }
+            else if (!TemporalMemory.Equals(obj.TemporalMemory))
+                return false;
+            if (SpatialPooler == null)
+            {
+                if (obj.SpatialPooler != null)
+                    return false;
+            }
+            else if (!SpatialPooler.Equals(obj.SpatialPooler))
+                return false;
+            if (InputTopology == null)
+            {
+                if (obj.InputTopology != null)
+                    return false;
+            }
+            else if (!InputTopology.Equals(obj.InputTopology))
+                return false;
+            if (ColumnTopology == null)
+            {
+                if (obj.ColumnTopology != null)
+                    return false;
+            }
+            else if (!ColumnTopology.Equals(obj.ColumnTopology))
+                return false;
+            if (InputMatrix == null)
+            {
+                if (obj.InputMatrix != null)
+                    return false;
+            }
+            else if (!InputMatrix.Equals(obj.InputMatrix))
+                return false;
+            if (ColumnModuleTopology == null)
+            {
+                if (obj.ColumnModuleTopology != null)
+                    return false;
+            }
+            else if (!ColumnModuleTopology.Equals(obj.ColumnModuleTopology))
+                return false;
+            if (InputModuleTopology == null)
+            {
+                if (obj.InputModuleTopology != null)
+                    return false;
+            }
+            else if (!InputModuleTopology.Equals(obj.InputModuleTopology))
+                return false;
+            if (Memory == null)
+            {
+                if (obj.Memory != null)
+                    return false;
+            }
+            else if (!Memory.Equals(obj.Memory))
+                return false;
+            if (synPermActiveInc != obj.SynPermActiveInc)
+                return false;
+            if (synPermConnected != obj.synPermConnected)
+                return false;
+            if (InhibitionRadius != obj.InhibitionRadius)
+                return false;
+            if (NumInputs != obj.NumInputs)
+                return false;
+            if (NumColumns != obj.NumColumns)
+                return false;
+            if (PotentialRadius != obj.PotentialRadius)
+                return false;
+            if (PotentialPct != obj.PotentialPct)
+                return false;
+            if (StimulusThreshold != obj.StimulusThreshold)
+                return false;
+            if (SynPermBelowStimulusInc != obj.SynPermBelowStimulusInc)
+                return false;
+            if (SynPermInactiveDec != obj.SynPermInactiveDec)
+                return false;
+            if (SynPermActiveInc != obj.SynPermActiveInc)
+                return false;
+            if (SynPermConnected != obj.SynPermConnected)
+                return false;
+            if (WrapAround != obj.WrapAround)
+                return false;
+            if (GlobalInhibition != obj.GlobalInhibition)
+                return false;
+            if (LocalAreaDensity != obj.LocalAreaDensity)
+                return false;
+            if (SynPermTrimThreshold != obj.SynPermTrimThreshold)
+                return false;
+            if (SynPermMax != obj.SynPermMax)
+                return false;
+            if (SynPermMin != obj.SynPermMin)
+                return false;
+            if (InitialSynapseConnsPct != obj.InitialSynapseConnsPct)
+                return false;
+            if (NumActiveColumnsPerInhArea != obj.NumActiveColumnsPerInhArea)
+                return false;
+            if (MinPctOverlapDutyCycles != obj.MinPctOverlapDutyCycles)
+                return false;
+            if (MinPctActiveDutyCycles != obj.MinPctActiveDutyCycles)
+                return false;
+            if (PredictedSegmentDecrement != obj.PredictedSegmentDecrement)
+                return false;
+            if (DutyCyclePeriod != obj.DutyCyclePeriod)
+                return false;
+            if (MaxBoost != obj.MaxBoost)
+                return false;
+            if (IsBumpUpWeakColumnsDisabled != obj.IsBumpUpWeakColumnsDisabled)
+                return false;
+            if (UpdatePeriod != obj.UpdatePeriod)
+                return false;
+            if (OverlapDutyCycles != obj.OverlapDutyCycles)
+                return false;
+            if (ActiveDutyCycles != obj.ActiveDutyCycles)
+                return false;
+            if (MinOverlapDutyCycles != obj.MinOverlapDutyCycles)
+                return false;
+            if (MinActiveDutyCycles != obj.MinActiveDutyCycles)
+                return false;
+            if (ColumnDimensions != obj.ColumnDimensions)
+                return false;
+            if (CellsPerColumn != obj.CellsPerColumn)
+                return false;
+            if (InputDimensions != obj.InputDimensions)
+                return false;
+            if (MaxNewSynapseCount != obj.MaxNewSynapseCount)
+                return false;
+            if (MaxSegmentsPerCell != obj.MaxSegmentsPerCell)
+                return false;
+            if (MaxSynapsesPerSegment != obj.MaxSynapsesPerSegment)
+                return false;
+            if (PermanenceIncrement != obj.PermanenceIncrement)
+                return false;
+            if (PermanenceDecrement != obj.PermanenceDecrement)
+                return false;
+            if (ActivationThreshold != obj.ActivationThreshold)
+                return false;
+            if (LearningRadius != obj.LearningRadius)
+                return false;
+            if (MinThreshold != obj.MinThreshold)
+                return false;
+            if (InitialPermanence != obj.InitialPermanence)
+                return false;
+            if (ConnectedPermanence != obj.ConnectedPermanence)
+                return false;
+            if (RandomGenSeed != obj.RandomGenSeed)
+                return false;
+            if (Name != obj.Name)
+                return false;
+            if (Random != obj.Random)
                 return false;
 
             return true;
@@ -545,14 +698,6 @@ namespace NeoCortexApi.Entities
                 if (data == String.Empty || data == ser.ReadBegin(nameof(HtmConfig)))
                 {
                     continue;
-                }
-                else if (data == ser.ReadBegin(nameof(memory)))
-                {
-
-                }
-                else if (data == ser.ReadBegin(nameof(Synapse)))
-                {
-
                 }
                 else if (data == ser.ReadEnd(nameof(HtmConfig)))
                 {
