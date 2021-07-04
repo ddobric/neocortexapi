@@ -222,6 +222,15 @@ namespace NeoCortexApi.Entities
             }
             else if (!m_SparseMap.Equals(other.m_SparseMap))
                 return false;
+            if(ModuleTopology == null)
+            {
+                if (other.ModuleTopology != null)
+                    return false;
+            }
+            else if (!ModuleTopology.Equals(other.ModuleTopology))
+                return false;
+            if (IsRemotelyDistributed != other.IsRemotelyDistributed)
+                return false;
 
             return true;
         }
@@ -243,7 +252,7 @@ namespace NeoCortexApi.Entities
             ser.SerializeBegin(nameof(SparseObjectMatrix<T>), writer);
 
             ser.SerializeValue(this.IsRemotelyDistributed, writer);
-            
+           
             if (this.ModuleTopology != null)
             { this.ModuleTopology.Serialize(writer); }
 

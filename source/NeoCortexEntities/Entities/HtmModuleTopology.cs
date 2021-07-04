@@ -96,9 +96,13 @@ namespace NeoCortexApi.Entities
             {
                 string data = sr.ReadLine();
                 if (data == ser.LineDelimiter || data == ser.ReadBegin(nameof(HtmModuleTopology)) || data == ser.ReadEnd(nameof(SegmentActivity)))
-                { continue; }
+                {
+                    continue;
+                }
                 else if (data == ser.ReadEnd(nameof(HtmModuleTopology)))
-                { break; }
+                {
+                    break;
+                }
                 else
                 {
                     string[] str = data.Split(HtmSerializer2.ParameterDelimiter);

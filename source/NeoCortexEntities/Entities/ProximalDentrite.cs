@@ -176,7 +176,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (NumInputs != other.NumInputs)
                 return false;
-
+            
             return true;
         }
         #region Serialization
@@ -186,19 +186,21 @@ namespace NeoCortexApi.Entities
 
             ser.SerializeBegin(nameof(ProximalDendrite), writer);
 
+            ser.SerializeValue(this.SegmentIndex, writer);
+            ser.SerializeValue(this.SynapsePermConnected, writer);
+            ser.SerializeValue(this.NumInputs, writer);
+
             if (this.RFPool != null)
             {
-                ser.SerializeValue(this.SegmentIndex, writer);
-                ser.SerializeValue(this.SynapsePermConnected, writer);
-                ser.SerializeValue(this.NumInputs, writer);
-
                 this.RFPool.Serialize(writer);
-
-                this.boxedIndex.Serialize(writer);
-
-                ser.SerializeValue(this.Synapses, writer);
             }
 
+            if (this.boxedIndex != null)
+            {
+                this.boxedIndex.Serialize(writer);
+            }
+            ser.SerializeValue(this.Synapses, writer);
+            
             ser.SerializeEnd(nameof(ProximalDendrite), writer);
         }
 

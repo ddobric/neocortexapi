@@ -275,6 +275,8 @@ namespace NeoCortexApi.Entities
             Pool other = (Pool)obj;
             if (Size != other.Size)
                 return false;
+            if (NumInputs != other.NumInputs)
+                return false;
             if (m_SynapseConnections == null)
             {
                 if (other.m_SynapseConnections != null)
@@ -337,14 +339,14 @@ namespace NeoCortexApi.Entities
                     break;
                 }
                 
-                else if (data.Contains(HtmSerializer2.KeyValueDelimiter))
-                {
-                    int val = ser.ReadKeyISValue(data);
-                    data = sr.ReadLine();
-                    pool.m_SynapsesBySourceIndex.Add(val, Synapse.Deserialize(sr));
-                    //break;
+                //else if (data.Contains(HtmSerializer2.KeyValueDelimiter))
+                //{
+                //    int val = ser.ReadKeyISValue(data);
+                //    data = sr.ReadLine();
+                //    pool.m_SynapsesBySourceIndex.Add(val, Synapse.Deserialize(sr));
+                //    //break;
 
-                }
+                //}
                 else
                 {
                     string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
@@ -362,12 +364,11 @@ namespace NeoCortexApi.Entities
                                     pool.NumInputs = ser.ReadIntValue(str[i]);
                                     break;
                                 }
-                               
-                            //case 2:
-                            //    {
-                            //        pool.m_SynapseConnections = ser.ReadListInt(str[i]);
-                            //        break;
-                            //    }
+                            case 2:
+                                {
+                                    pool.m_SynapseConnections = ser.ReadListInt(str[i]);
+                                    break;
+                                }
                             default:
                                 { break; }
 

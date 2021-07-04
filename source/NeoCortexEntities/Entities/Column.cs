@@ -371,10 +371,45 @@ namespace NeoCortexApi.Entities
             if (obj == null)
                 return false;
 
+            if (connectedInputCounter == null)
+            {
+                if (obj.connectedInputCounter != null)
+                    return false;
+            }
+            else if (!connectedInputCounter.Equals(obj.connectedInputCounter))
+                return false;
+            if (ConnectedInputCounterMatrix == null)
+            {
+                if (obj.ConnectedInputCounterMatrix != null)
+                    return false;
+            }
+            else if (!ConnectedInputCounterMatrix.Equals(obj.ConnectedInputCounterMatrix))
+                return false;
+            if (ProximalDendrite == null)
+            {
+                if (obj.ProximalDendrite != null)
+                    return false;
+            }
+            else if (!ProximalDendrite.Equals(obj.ProximalDendrite))
+                return false;
+            if (obj.Cells != null && Cells != null)
+            {
+
+                if (!obj.Cells.SequenceEqual(Cells))
+                    return false;
+            }
+            if (obj.ConnectedInputBits != null && ConnectedInputBits != null)
+            {
+
+                if (!obj.ConnectedInputBits.SequenceEqual(ConnectedInputBits))
+                    return false;
+            }
             if (Index != obj.Index)
                 return false;
-            else
-                return true;
+            if (CellId != obj.CellId)
+                return false;
+            
+            return true;
         }
 
         public int CompareTo(Column other)
@@ -422,61 +457,70 @@ namespace NeoCortexApi.Entities
             }
             ser.SerializeEnd(nameof(Column), writer);
         }
-        //public static Column Deserialize(StreamReader sr)
-        //{
-        //    Column column = new Column();
+        public static Column Deserialize(StreamReader sr)
+        {
+            Column column = new Column();
 
-        //    HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer2 ser = new HtmSerializer2();
 
-        //    while (sr.Peek() >= 0)
-        //    {
-        //        string data = sr.ReadLine();
-        //        if (data == String.Empty || data == ser.ReadBegin(nameof(Column)) || data.ToCharArray()[0] == HtmSerializer2.ElementsDelimiter || (data.ToCharArray()[0] == HtmSerializer2.ElementsDelimiter && data.ToCharArray()[1] == HtmSerializer2.ParameterDelimiter))
-        //        {
-        //            continue;
-        //        }
-        //        else if (data == ser.ReadBegin(nameof(DistalDendrite)))
-        //        {
-        //            cell.DistalDendrites.Add(DistalDendrite.Deserialize(sr));
-        //        }
-        //        else if (data == ser.ReadBegin(nameof(Synapse)))
-        //        {
-        //            return cell;
-        //        }
-        //        else if (data == ser.ReadEnd(nameof(Cell)))
-        //        {
-        //            break;
-        //        }
-        //        else
-        //        {
-        //            string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
-        //            for (int i = 0; i < str.Length; i++)
-        //            {
-        //                switch (i)
-        //                {
-        //                    case 0:
-        //                        {
-        //                            cell.Index = ser.ReadIntValue(str[i]);
-        //                            break;
-        //                        }
-        //                    case 1:
-        //                        {
-        //                            cell.CellId = ser.ReadIntValue(str[i]);
-        //                            break;
-        //                        }
-        //                    case 2:
-        //                        {
-        //                            cell.ParentColumnIndex = ser.ReadIntValue(str[i]);
-        //                            break;
-        //                        }
-        //                    default:
-        //                        { break; }
+            while (sr.Peek() >= 0)
+            {
+                string data = sr.ReadLine();
+                if (data == String.Empty || data == ser.ReadBegin(nameof(Column)) )
+                {
+                    continue;
+                }
+                else if (data == ser.ReadBegin(nameof(SparseBinaryMatrix)))
+                {
+                    column.connectedInputCounter = SparseBinaryMatrix.Deserialize(sr);
+                }
+                else if (data == ser.ReadBegin(nameof(SparseBinaryMatrix)))
+                {
+                    column.ConnectedInputCounterMatrix = SparseBinaryMatrix.Deserialize(sr);
+                }
+                else if (data == ser.ReadBegin(nameof(ProximalDendrite)))
+                {
+                    column.ProximalDendrite = ProximalDendrite.Deserialize(sr);
+                }
+                else if (data == ser.ReadEnd(nameof(Column)))
+                {
+                    break;
+                }
+                else
+                {
+                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                    for (int i = 0; i < str.Length; i++)
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                {
+                                    //column.CellId = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    //column.Cells = 
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    //column.ConnectedInputBits = 
+                                    break;
+                                }
+                            case 3:
+                                {
+                                    column.Index = ser.ReadIntValue(str[i]); 
+                                    break;
+                                }
+                            default:
+                                { break; }
 
-        //                }
-        //            }
-        //        }
-        //    }
-        //    return cell;
-        //}
+                        }
+                    }
+                }
+            }
+            return column;
+        }
     }
 }

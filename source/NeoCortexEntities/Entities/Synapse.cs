@@ -266,7 +266,7 @@ namespace NeoCortexApi.Entities
 
             //
             // Synapses are equal if they belong to the same segment.
-            if (this.SegmentIndex != ((Synapse)obj).SegmentIndex)
+            if (SegmentIndex != ((Synapse)obj).SegmentIndex)
                 return false;
 
             if (SourceCell == null)
@@ -289,6 +289,9 @@ namespace NeoCortexApi.Entities
                 if (obj.BoxedIndex != null)
                     return false;
             }
+            else if (BoxedIndex != obj.BoxedIndex)
+                return false;
+
             return true;
         }
 

@@ -344,27 +344,61 @@ namespace NeoCortexApi.Entities
 
 
         #endregion
+        public bool Equals (InMemoryDistributedDictionary<TKey, TValue> obj)
+        {
+            if (this == obj)
+                return true;
 
+            if (obj == null)
+                return false;
+            if (htmConfig == null)
+            {
+                if (obj.htmConfig != null)
+                    return false;
+            }
+            else if (!htmConfig.Equals(obj.htmConfig))
+                return false;
+            if (!dictList.SequenceEqual(obj.dictList))
+                return false;
+            if (numElements != obj.numElements)
+                return false;
+            if (IsReadOnly != obj.IsReadOnly)
+                return false;
+            if (!Keys.SequenceEqual(obj.Keys))
+                return false;
+            if (!Values.SequenceEqual(obj.Values))
+                return false;
+            if (Count != obj.Count)
+                return false;
+            if (currentDictIndex != obj.currentDictIndex)
+                return false;
+            if (currentIndex != obj.currentIndex)
+                return false;
+            if (Current != obj.Current)
+                return false;
+
+            return true;
+
+        }
         public  void Serialize(StreamWriter writer)
         {
             HtmSerializer2 ser = new HtmSerializer2();
 
             ser.SerializeBegin(nameof(InMemoryDistributedDictionary<TKey, TValue>), writer);
 
-            ser.SerializeValue(this.Count, writer);
-            //ser.SerializeValue(this.Current, writer);
-            ser.SerializeValue(this.currentDictIndex, writer);
-            ser.SerializeValue(this.currentIndex, writer);
-            //ser.SerializeValue(this.dictList, writer);
-            
+            // ser.SerializeValue(this.dictList, writer);
+            ser.SerializeValue(this.numElements, writer);
             ser.SerializeValue(this.IsReadOnly, writer);
             //ser.SerializeValue(this.Keys, writer);
-            ser.SerializeValue(this.numElements, writer);
             //ser.SerializeValue(this.Values, writer);
+            ser.SerializeValue(this.Count, writer);
+            ser.SerializeValue(this.currentDictIndex, writer);
+            ser.SerializeValue(this.currentIndex, writer);
+            //ser.SerializeValue(this.Current, writer);
 
-            if(this.htmConfig != null)
+            if (this.htmConfig != null)
             { this.htmConfig.Serialize(writer); }
-
+            
             ser.SerializeEnd(nameof(InMemoryDistributedDictionary<TKey, TValue>), writer);
         }
         public static InMemoryDistributedDictionary<TKey, TValue> Deserialize(StreamReader sr)
@@ -397,47 +431,47 @@ namespace NeoCortexApi.Entities
                         {
                             case 0:
                                 {
-                                    //keyValues.Count = ser.ReadIntValue(str[i]);
+                                    //keyValues.dictList = ;
                                     break;
                                 }
                             case 1:
                                 {
-                                    //keyValues.Current = ;
+                                    keyValues.numElements = ser.ReadIntValue(str[i]);
                                     break;
                                 }
                             case 2:
                                 {
-                                    keyValues.currentDictIndex = ser.ReadIntValue(str[i]);
+                                    //keyValues.IsReadOnly = ser.ReadBoolValue(str[i]);
                                     break;
                                 }
                             case 3:
                                 {
-                                    keyValues.currentIndex = ser.ReadIntValue(str[i]);
+                                    //keyValues.Keys = ;
                                     break;
                                 }
                             case 4:
                                 {
-                                    //keyValues.dictList = ;
+                                    //keyValues.Values = ;
                                     break;
                                 }
                             case 5:
                                 {
-                                    //keyValues.IsReadOnly = ser.ReadBoolValue(str[i]);
+                                    //keyValues.Count = ser.ReadIntValue(str[i]);
                                     break;
                                 }
                             case 6:
                                 {
-                                    //keyValues.Keys = ;
+                                    keyValues.currentDictIndex = ser.ReadIntValue(str[i]);
                                     break;
                                 }
                             case 7:
                                 {
-                                    keyValues.numElements = ser.ReadIntValue(str[i]);
+                                    keyValues.currentIndex = ser.ReadIntValue(str[i]);
                                     break;
                                 }
                             case 8:
                                 {
-                                    //keyValues.Values = ;
+                                    //keyValues.Current = ;
                                     break;
                                 }
                             default:
