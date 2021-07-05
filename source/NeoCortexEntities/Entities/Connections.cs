@@ -1252,7 +1252,7 @@ namespace NeoCortexApi.Entities
             throw new NotImplementedException();
             //Connections mem = new Connections();
             // |T|ODO
-            return mem;
+            //return mem;
         }
         #endregion
 
