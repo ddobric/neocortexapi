@@ -338,15 +338,15 @@ namespace NeoCortexApi.Entities
                 {
                     break;
                 }
-                
-                //else if (data.Contains(HtmSerializer2.KeyValueDelimiter))
-                //{
-                //    int val = ser.ReadKeyISValue(data);
-                //    data = sr.ReadLine();
-                //    pool.m_SynapsesBySourceIndex.Add(val, Synapse.Deserialize(sr));
-                //    //break;
 
-                //}
+                else if (data.Contains(HtmSerializer2.KeyValueDelimiter))
+                {
+                    int val = ser.ReadKeyISValue(data);
+                    data = sr.ReadLine();
+                    pool.m_SynapsesBySourceIndex.Add(val, Synapse.Deserialize(sr));
+                    break;
+
+                }
                 else
                 {
                     string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
