@@ -740,6 +740,8 @@ namespace NeoCortexApi.DistributedComputeLib
         /// </summary>
         public int Nodes => throw new NotSupportedException();
 
+        public HtmConfig htmConfig { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
         /// <summary>
         /// TODO to be added
         /// </summary>
