@@ -1871,6 +1871,7 @@ namespace NeoCortexApi.Entities
             //ser.SerializeValue(this.m_DistalSynapses, writer);
             //ser.SerializeValue(this.m_SegmentForFlatIdx, writer);
             ser.SerializeValue(this.Cells, writer);
+            ser.SerializeValue(this.m_SegmentForFlatIdx, writer);
             if (this.connectedCounts2 != null)
             {
                 this.connectedCounts2.Serialize(writer);
@@ -1885,6 +1886,7 @@ namespace NeoCortexApi.Entities
             {
                 this.HtmConfig.Serialize(writer);
             }
+
 
             ser.SerializeEnd(nameof(Connections), writer);
         }

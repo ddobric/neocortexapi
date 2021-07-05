@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -574,7 +575,37 @@ namespace NeoCortexApi.Entities
             }
             return Convert.ToInt32(val);
         }
-
+        /// <summary>
+        /// Serialize the Concurrentdictionary with key:int and value:DistalDendrite.
+        /// </summary>
+        /// <param name="keyValues"></param>
+        /// <param name="sw"></param>
+        public void SerializeValue(ConcurrentDictionary<int, DistalDendrite> keyValues, StreamWriter sw)
+        {
+            sw.WriteLine();
+            sw.Write(ValueDelimiter);
+            foreach (var i in keyValues)
+            {
+                sw.Write(i.Key.ToString() + KeyValueDelimiter);
+                i.Value.Serialize(sw);
+                sw.Write(ElementsDelimiter);
+            }
+            sw.Write(ParameterDelimiter);
+        }
+        ///// <summary>
+        ///// Read the Concurrentdictionary with key:int and value:DistalDendrite.
+        ///// </summary>
+        ///// <param name="reader"></param>
+        ///// <returns>Dictionary<int, Synapse></returns>
+        public int ReadCKeyIDValue(string reader)
+        {
+            string val = reader.Replace(KeyValueDelimiter, "");
+            if (val.Contains(ElementsDelimiter))
+            {
+                val = val.Replace(ElementsDelimiter.ToString(), "");
+            }
+            return Convert.ToInt32(val);
+        }
         ///// <summary>
         ///// Deserializes from text file to Cell
         ///// </summary>
