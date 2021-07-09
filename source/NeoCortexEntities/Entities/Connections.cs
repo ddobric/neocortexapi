@@ -1250,10 +1250,10 @@ namespace NeoCortexApi.Entities
             //ser.SerializeValue(this.m_SegmentForFlatIdx, writer);
             ser.SerializeValue(this.Cells, writer);
             ser.SerializeValue(this.m_SegmentForFlatIdx, writer);
-            if (this.connectedCounts2 != null)
-            {
-                this.connectedCounts2.Serialize(writer);
-            }
+            //if (this.connectedCounts != null)
+            //{
+            //    this.connectedCounts.Serialize(writer);
+            //}
 
             if (this.m_HtmConfig != null)
             {
@@ -1287,7 +1287,7 @@ namespace NeoCortexApi.Entities
                 }
                 else if (data == ser.ReadBegin(nameof(SparseBinaryMatrix)))
                 {
-                    mem.connectedCounts2 = SparseBinaryMatrix.Deserialize(sr);
+                    //mem.connectedCounts2 = SparseBinaryMatrix.Deserialize(sr);
                 }
                 else if (data == ser.ReadBegin(nameof(HtmConfig)))
                 {
