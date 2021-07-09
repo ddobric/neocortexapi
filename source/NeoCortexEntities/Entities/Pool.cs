@@ -344,8 +344,7 @@ namespace NeoCortexApi.Entities
                     int val = ser.ReadKeyISValue(data);
                     data = sr.ReadLine();
                     pool.m_SynapsesBySourceIndex.Add(val, Synapse.Deserialize(sr));
-                    break;
-
+                    
                 }
                 else
                 {
