@@ -209,38 +209,47 @@ namespace UnitTestsProject
         {
             HtmSerializer2 htm = new HtmSerializer2();
             Cell[] cells = new Cell[2];
+            Cell[] cells1;
+            cells[0] = new Cell(12, 14, 16, 18, new CellActivity());
+
+            var distSeg1 = new DistalDendrite(cells[0], 1, 2, 2, 1.0, 100);
+            cells[0].DistalDendrites.Add(distSeg1);
+
+            var distSeg2 = new DistalDendrite(cells[0], 44, 24, 34, 1.0, 100);
+            cells[0].DistalDendrites.Add(distSeg2);
+
+            Cell preSynapticcell = new Cell(11, 14, 16, 18, new CellActivity());
+
+            var synapse1 = new Synapse(cells[0], distSeg1.SegmentIndex, 23, 1.0);
+            preSynapticcell.ReceptorSynapses.Add(synapse1);
+
+            var synapse2 = new Synapse(cells[0], distSeg2.SegmentIndex, 27, 1.0);
+            preSynapticcell.ReceptorSynapses.Add(synapse2);
+
+            cells[1] = new Cell(2, 4, 1, 8, new CellActivity());
+
+            var distSeg3 = new DistalDendrite(cells[1], 3, 4, 7, 1.0, 100);
+            cells[1].DistalDendrites.Add(distSeg3);
+
+            var distSeg4 = new DistalDendrite(cells[1], 4, 34, 94, 1.0, 100);
+            cells[1].DistalDendrites.Add(distSeg4);
+
+            Cell preSynapticcell1 = new Cell(1, 1, 6, 8, new CellActivity());
+
+            var synapse3 = new Synapse(cells[1], distSeg3.SegmentIndex, 23, 1.0);
+            preSynapticcell.ReceptorSynapses.Add(synapse1);
+
+            var synapse4 = new Synapse(cells[1], distSeg4.SegmentIndex, 27, 1.0);
+            preSynapticcell.ReceptorSynapses.Add(synapse2);
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeArrayCell)}.txt"))
             {
-                htm.SerializeBegin("UnitTest", sw);
-
-                cells[0] = new Cell(1, 1, 1, 1, new CellActivity());
-
-                cells[0].DistalDendrites = new List<DistalDendrite>();
-
-                cells[0].DistalDendrites.Add(new DistalDendrite(cells[0], 1, 2, 2, 1.0, 100));
-                cells[0].DistalDendrites.Add(new DistalDendrite(cells[0], 44, 24, 34, 1.0, 100));
-
-                cells[0].ReceptorSynapses = new List<Synapse>();
-
-                cells[0].ReceptorSynapses.Add(new Synapse(cells[0], 1, 23, 1.0));
-                cells[0].ReceptorSynapses.Add(new Synapse(cells[0], 3, 27, 1.0));
-
-                cells[1] = new Cell(1, 1, 1, 3, new CellActivity());
-
-                cells[1].DistalDendrites = new List<DistalDendrite>();
-
-                cells[1].DistalDendrites.Add(new DistalDendrite(cells[1], 1, 3, 5, 1.0, 100));
-                cells[1].DistalDendrites.Add(new DistalDendrite(cells[1], 4, 24, 3, 1.0, 100));
-
-                cells[1].ReceptorSynapses = new List<Synapse>();
-
-                cells[1].ReceptorSynapses.Add(new Synapse(cells[1], 21, 23, 1.0));
-                cells[1].ReceptorSynapses.Add(new Synapse(cells[1], 3, 7, 1.0));
-
                 htm.SerializeValue(cells, sw);
-
-                htm.SerializeEnd("UnitTest", sw);
             }
+            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeArrayCell)}.txt"))
+            {
+                cells1 = htm.DeserializeCellArray(sr);
+            }
+            Assert.IsTrue(cells.SequenceEqual(cells1));
         }
 
         [TestMethod]

@@ -169,7 +169,7 @@ namespace NeoCortexApi.Entities
                 if (obj.boxedIndex != null)
                     return false;
             }
-            else if (boxedIndex.Equals(obj.boxedIndex))
+            else if (!boxedIndex.Equals(obj.boxedIndex))
                 return false;
             if (SynapsePermConnected != obj.SynapsePermConnected)
                 return false;

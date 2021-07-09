@@ -282,6 +282,7 @@ namespace NeoCortexApi.Entities
         /// <param name="sw"></param>
         public void SerializeValue(Cell[] val, StreamWriter sw)
         {
+            SerializeBegin("CellArray",sw);
             sw.Write(ValueDelimiter);
             if (val != null)
             {
@@ -292,8 +293,36 @@ namespace NeoCortexApi.Entities
                 }
             }
             sw.Write(ParameterDelimiter);
+            SerializeEnd("CellArray", sw);
         }
+        /// <summary>
+        /// Deserialize the array of cells.
+        /// </summary>
+        /// <param name="reader"></param>
+        public Cell[] DeserializeCellArray(StreamReader reader)
+        {
+            List<Cell> cells = new List<Cell>();
+            while (reader.Peek() >= 0)
+            {
+                string data = reader.ReadLine();
+                if (data == ReadBegin(nameof(Cell)))
+                {
+                    Cell cell1 = Cell.Deserialize(reader);
 
+                    DistalDendrite distSegment1 = cell1.DistalDendrites[0];
+
+                    DistalDendrite distSegment2 = cell1.DistalDendrites[1];
+
+                    distSegment1.ParentCell = cell1;
+                    distSegment2.ParentCell = cell1;
+                    cells.Add(cell1);
+                }
+
+                
+            } 
+            Cell[] cells1 = cells.ToArray();
+            return cells1;
+        }
         /// <summary>
         /// Serialize the dictionary with key:string and value:int.
         /// </summary>

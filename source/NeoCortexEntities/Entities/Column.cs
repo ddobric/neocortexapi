@@ -437,9 +437,9 @@ namespace NeoCortexApi.Entities
             ser.SerializeBegin(nameof(Column), writer);
 
             ser.SerializeValue(this.CellId, writer);
-            ser.SerializeValue(this.Cells, writer);
             ser.SerializeValue(this.ConnectedInputBits, writer);
             ser.SerializeValue(this.Index, writer);
+            ser.SerializeValue(this.Cells, writer);
 
             if (this.connectedInputCounter != null)
             {
@@ -482,6 +482,10 @@ namespace NeoCortexApi.Entities
                 {
                     column.ProximalDendrite = ProximalDendrite.Deserialize(sr);
                 }
+                else if (data == ser.ReadBegin("CellArray"))
+                {
+                    column.Cells = ser.DeserializeCellArray(sr);
+                }
                 else if (data == ser.ReadEnd(nameof(Column)))
                 {
                     break;
@@ -499,11 +503,6 @@ namespace NeoCortexApi.Entities
                                     break;
                                 }
                             case 1:
-                                {
-                                    //column.Cells = 
-                                    break;
-                                }
-                            case 2:
                                 {
                                     //column.ConnectedInputBits = 
                                     break;
