@@ -49,14 +49,6 @@ namespace NeoCortexApi.Entities
         private double[] m_TieBreaker;
 
         /// <summary>
-        /// Stores the number of connected synapses for each column. This is simply
-        /// a sum of each row of 'connectedSynapses'. again, while this
-        /// information is readily available from 'connectedSynapses', it is
-        /// stored separately for efficiency purposes.
-        /// </summary>
-        private AbstractSparseBinaryMatrix connectedCounts2;
-
-        /// <summary>
         /// The cells currently active as a result of the TM compute.
         /// </summary>
         public ISet<Cell> ActiveCells { get => m_ActiveCells; set => m_ActiveCells = value; }
@@ -84,63 +76,13 @@ namespace NeoCortexApi.Entities
 
         private HtmConfig m_HtmConfig;
 
+        /// <summary>
+        /// Gets/Sets the configuration.
+        /// </summary>
         public HtmConfig HtmConfig
         {
             get
             {
-                //if (m_HtmConfig == null)
-                //{
-                //    HtmConfig cfg = new HtmConfig();
-                //    cfg.ColumnTopology = this.ColumnTopology;
-                //    cfg.InputTopology = this.InputTopology;
-                //    cfg.IsWrapAround = this.isWrapAround();
-                //    cfg.NumInputs = this.NumInputs;
-                //    cfg.NumColumns = this.getMemory() != null? this.getMemory().getMaxIndex() + 1 : -1;
-                //    cfg.PotentialPct = getPotentialPct();
-                //    cfg.PotentialRadius = getPotentialRadius();
-                //    cfg.SynPermConnected = getSynPermConnected();
-                //    cfg.InitialSynapseConnsPct = this.InitialSynapseConnsPct;
-                //    cfg.SynPermTrimThreshold = this.getSynPermTrimThreshold();
-                //    cfg.SynPermBelowStimulusInc = this.synPermBelowStimulusInc;
-                //    cfg.SynPermMax = this.getSynPermMax();
-                //    cfg.SynPermMin = this.getSynPermMin();
-                //    cfg.StimulusThreshold = this.StimulusThreshold;
-                //    cfg.CellsPerColumn = this.getCellsPerColumn();
-                //    cfg.SynPermInactiveDec = this.getSynPermInactiveDec();
-                //    cfg.PermanenceIncrement = this.getPermanenceIncrement();
-                //    cfg.PermanenceDecrement = this.getPermanenceDecrement();
-                //    //cfg.MaxNewSynapseCount = this.getMaxNewSynapseCount();
-
-                //    cfg.RandomGenSeed = this.seed;
-
-                //    m_HtmConfig = cfg;
-                //}
-
-                // TODO verify with unitTests
-                //m_HtmConfig.SynPermBelowStimulusInc = m_HtmConfig.SynPermConnected / 10.0;
-                //m_HtmConfig.SynPermTrimThreshold = m_HtmConfig.SynPermActiveInc / 2.0;
-                //m_HtmConfig.ColumnModuleTopology = m_HtmConfig.Memory?.ModuleTopology;
-                //m_HtmConfig.InputModuleTopology = m_HtmConfig.InputMatrix?.ModuleTopology;
-
-                //m_HtmConfig.InputTopology = this.InputTopology;
-                //m_HtmConfig.IsWrapAround = this.isWrapAround();
-                //m_HtmConfig.NumInputs = this.NumInputs;
-                //m_HtmConfig.NumColumns = m_HtmConfig.Memory != null ? m_HtmConfig.Memory.getMaxIndex() + 1 : -1;
-                //m_HtmConfig.PotentialPct = getPotentialPct();
-                //m_HtmConfig.PotentialRadius = getPotentialRadius();
-                //m_HtmConfig.SynPermConnected = getSynPermConnected();
-                //m_HtmConfig.InitialSynapseConnsPct = this.InitialSynapseConnsPct;
-                //m_HtmConfig.SynPermTrimThreshold = this.getSynPermTrimThreshold();
-                //m_HtmConfig.SynPermBelowStimulusInc = this.synPermBelowStimulusInc;
-                //m_HtmConfig.SynPermMax = this.getSynPermMax();
-                //m_HtmConfig.SynPermMin = this.getSynPermMin();
-                //m_HtmConfig.StimulusThreshold = this.StimulusThreshold;
-                //m_HtmConfig.CellsPerColumn = this.getCellsPerColumn();
-                //m_HtmConfig.SynPermInactiveDec = this.getSynPermInactiveDec();
-                //m_HtmConfig.PermanenceIncrement = this.getPermanenceIncrement();
-                //m_HtmConfig.PermanenceDecrement = this.getPermanenceDecrement();
-                //m_HtmConfig.RandomGenSeed = this.seed;       
-
                 return m_HtmConfig;
             }
             private set
@@ -153,27 +95,6 @@ namespace NeoCortexApi.Entities
 
         ///////////////////////   Synapses and segments /////////////////////////
 
-        /// <summary>
-        /// Reverse mapping from source cell to <see cref="Synapse"/>
-        /// </summary>
-        //private Dictionary<Cell, LinkedHashSet<Synapse>> m_ReceptorSynapses = new Dictionary<Cell, LinkedHashSet<Synapse>>();
-
-        /// <summary>
-        /// Distal segments of cells.
-        /// </summary>
-        //protected Dictionary<Cell, List<DistalDendrite>> m_DistalSegments = new Dictionary<Cell, List<DistalDendrite>>();
-
-        /// DD We moved this as a part of the segment.
-        /// <summary>
-        /// Synapses, which belong to some distal dentrite segment.
-        /// </summary>
-        private Dictionary<Segment, List<Synapse>> m_DistalSynapses;
-
-        // Proximal synapses are a part of the column.
-        //protected Dictionary<Segment, List<Synapse>> proximalSynapses;
-
-        /** Helps index each new proximal Synapse */
-        //protected int proximalSynapseCounter = -1;
 
         /// <summary>
         /// Global tracker of the next available segment index
@@ -200,19 +121,10 @@ namespace NeoCortexApi.Entities
         /// </summary>
         protected List<int> m_FreeFlatIdxs = new List<int>();
 
-        /// <summary>
-        /// Indexed segments by their global index (can contain nulls).
-        /// Indexed list of distal segments.
-        /// </summary>
-        //protected List<DistalDendrite> m_SegmentForFlatIdx = new List<DistalDendrite>();
-
+       
         protected ConcurrentDictionary<int, DistalDendrite> m_SegmentForFlatIdx = new ConcurrentDictionary<int, DistalDendrite>();
 
-        ///// <summary>
-        ///// Stores each cycle's most recent activity
-        ///// </summary>
-        //public SegmentActivity LastActivity { get; set; }
-
+        
         /// <summary>
         /// The segment creation number.
         /// </summary>
@@ -294,317 +206,20 @@ namespace NeoCortexApi.Entities
             return retVal;
         }
 
-        ///**
-        // * Sets the matrix containing the {@link Column}s
-        // * @param mem
-        // */
-        //public void setMemory(AbstractSparseMatrix<Column> mem)
-        //{
-        //    this.memory = mem;
-        //}
-
-        ///**
-        // * Returns the matrix containing the {@link Column}s
-        // * @return
-        // */
-        //public AbstractSparseMatrix<Column> getMemory()
-        //{
-        //    return memory;
-        //}
-
-        ///**
-        // * Returns the {@link Topology} overseeing input 
-        // * neighborhoods.
-        // * @return 
-        // */
-        //public Topology getInputTopology()
-        //{
-        //    return inputTopology;
-        //}
-
-        ///**
-        // * Sets the {@link Topology} overseeing input 
-        // * neighborhoods.
-        // * 
-        // * @param topology  the input Topology
-        // */
-        //public void setInputTopology(Topology topology)
-        //{
-        //    this.inputTopology = topology;
-        //}
-
-        ///**
-        // * Returns the {@link Topology} overseeing {@link Column} 
-        // * neighborhoods.
-        // * @return
-        // */
-        //public Topology getColumnTopology()
-        //{
-        //    return columnTopology;
-        //}
-
-        ///**
-        // * Sets the {@link Topology} overseeing {@link Column} 
-        // * neighborhoods.
-        // * 
-        // * @param topology  the column Topology
-        // */
-        //public void setColumnTopology(Topology topology)
-        //{
-        //    this.columnTopology = topology;
-        //}
-
-        ///**
-        // * Returns the input column mapping
-        // */
-        //public ISparseMatrix<int> getInputMatrix()
-        //{
-        //    return inputMatrix;
-        //}
-
-        ///**
-        // * Sets the input column mapping matrix
-        // * @param matrix
-        // */
-        //public void setInputMatrix(ISparseMatrix<int> matrix)
-        //{
-        //    this.inputMatrix = matrix;
-        //}
-
-        ////////////////////////////////////////
-        //       SpatialPooler Methods        //
-        ////////////////////////////////////////
-
-
-        ///// <summary>
-        ///// Percent of initially connected synapses. Typically 50%.
-        ///// </summary>
-        //public double InitialSynapseConnsPct
-        //{
-        //    get
-        //    {
-        //        return this.initConnectedPct;
-        //    }
-        //    set
-        //    {
-        //        this.initConnectedPct = value;
-        //    }
-        //}
-
-        ///**
-        // * Returns the cycle count.
-        // * @return
-        // */
-        //public int getIterationNum()
-        //{
-        //    return SpIterationNum;
-        //}
-
-        ///**
-        // * Sets the iteration count.
-        // * @param num
-        // */
-        //public void setIterationNum(int num)
-        //{
-        //    this.SpIterationNum = num;
-        //}
-
-        ///**
-        // * Returns the period count which is the number of cycles
-        // * between meta information updates.
-        // * @return
-        // */
-        //public int getUpdatePeriod()
-        //{
-        //    return updatePeriod;
-        //}
-
-        ///**
-        // * Sets the update period
-        // * @param period
-        // */
-        //public void setUpdatePeriod(int period)
-        //{
-        //    this.updatePeriod = period;
-        //}
-
-
-
-        ///// <summary>
-        ///// Radius of inhibition area. Called when the density of inhibition area is calculated.
-        ///// </summary>
-        //public int InhibitionRadius
-        //{
-        //    get
-        //    {
-        //        return m_InhibitionRadius;
-        //    }
-        //    set
-        //    {
-        //        this.m_InhibitionRadius = value;
-        //    }
-        //}
-
-
-        ///// <summary>
-        ///// Gets/Sets the number of input neurons in 1D space. Mathematically, 
-        ///// this is the product of the input dimensions.
-        ///// </summary>
-        //public int NumInputs
-        //{
-        //    get => numInputs;
-        //    set => this.numInputs = value;
-        //}
-
-
-        ///// <summary>
-        ///// Returns the total numbe rof columns across all dimensions.
-        ///// </summary>
-        //public int NumColumns
-        //{
-        //    get
-        //    {
-        //        return this.numColumns;
-        //    }
-        //}
-
-        ///**
-        // * Sets the product of the column dimensions to be
-        // * the column count.
-        // * @param n
-        // */
-        //public void setNumColumns(int n)
-        //{
-        //    this.numColumns = n;
-        //}
-
-        ///**
-        // * This parameter determines the extent of the input
-        // * that each column can potentially be connected to.
-        // * This can be thought of as the input bits that
-        // * are visible to each column, or a 'receptiveField' of
-        // * the field of vision. A large enough value will result
-        // * in 'global coverage', meaning that each column
-        // * can potentially be connected to every input bit. This
-        // * parameter defines a square (or hyper square) area: a
-        // * column will have a max square potential pool with
-        // * sides of length 2 * potentialRadius + 1.
-        // * 
-        // * <b>WARNING:</b> potentialRadius **must** be set to 
-        // * the inputWidth if using "globalInhibition" and if not 
-        // * using the Network API (which sets this automatically) 
-        // *
-        // *
-        // * @param potentialRadius
-        // */
-        //public void setPotentialRadius(int potentialRadius)
-        //{
-        //    this.potentialRadius = potentialRadius;
-        //}
-
-        ///**
-        // * Returns the configured potential radius
-        // * 
-        // * @return  the configured potential radius
-        // * @see setPotentialRadius
-        // */
-        //public int getPotentialRadius()
-        //{
-        //    return potentialRadius;
-        //}
-
-        ///**
-        // * The percent of the inputs, within a column's
-        // * potential radius, that a column can be connected to.
-        // * If set to 1, the column will be connected to every
-        // * input within its potential radius. This parameter is
-        // * used to give each column a unique potential pool when
-        // * a large potentialRadius causes overlap between the
-        // * columns. At initialization time we choose
-        // * ((2*potentialRadius + 1)^(# inputDimensions) *
-        // * potentialPct) input bits to comprise the column's
-        // * potential pool.
-        // *
-        // * @param potentialPct
-        // */
-        //public void setPotentialPct(double potentialPct)
-        //{
-        //    this.potentialPct = potentialPct;
-        //}
-
-        ///**
-        // * Returns the configured potential pct
-        // *
-        // * @return the configured potential pct
-        // * @see setPotentialPct
-        // */
-        //public double getPotentialPct()
-        //{
-        //    return potentialPct;
-        //}
-
+     
         /// <summary>
         /// Sets the <see cref="AbstractSparseMatrix{T}"/> which represents the proximal dendrite permanence values.
         /// </summary>
-        /// <param name="s">the <see cref="AbstractSparseMatrix{T}"/></param>
-        public void SetProximalPermanences(AbstractSparseMatrix<double[]> s)
+        /// <param name="matrix">the <see cref="AbstractSparseMatrix{T}"/></param>
+        public void SetProximalPermanences(AbstractSparseMatrix<double[]> matrix)
         {
-            foreach (int idx in s.GetSparseIndices())
+            foreach (int idx in matrix.GetSparseIndices())
             {
-                this.HtmConfig.Memory.GetObject(idx).SetPermanences(this.HtmConfig, s.GetObject(idx));
+                this.HtmConfig.Memory.GetObject(idx).SetPermanences(this.HtmConfig, matrix.GetObject(idx));
             }
         }
 
-        /**
-         * Returns the count of {@link Synapse}s on
-         * {@link ProximalDendrite}s
-         * @return
-         */
-        //public int getProximalSynapseCount()
-        //{
-        //    return proximalSynapseCounter + 1;
-        //}
-
-        /**
-         * Sets the count of {@link Synapse}s on
-         * {@link ProximalDendrite}s
-         * @param i
-         */
-        //public void setProximalSynapseCount(int i)
-        //{
-        //    this.proximalSynapseCounter = i;
-        //}
-
-        /**
-         * Increments and returns the incremented
-         * proximal {@link Synapse} count.
-         *
-         * @return
-         */
-        //public int incrementProximalSynapses()
-        //{
-        //    return ++proximalSynapseCounter;
-        //}
-
-        /**
-         * Decrements and returns the decremented
-         * proximal {link Synapse} count
-         * @return
-         */
-        //public int decrementProximalSynapses()
-        //{
-        //    return --proximalSynapseCounter;
-        //}
-
-        /**
-         * Returns the indexed count of connected synapses per column.
-         * @return
-         */
-        //public AbstractSparseBinaryMatrix getConnectedCounts()
-        //{
-        //    return connectedCounts;
-        //}
-
+      
         public int[] GetTrueCounts()
         {
             int[] counts = new int[this.HtmConfig.NumColumns];
@@ -616,16 +231,7 @@ namespace NeoCortexApi.Entities
             return counts;
         }
 
-        /**
-         * Returns the connected count for the specified column.
-         * @param columnIndex
-         * @return
-         */
-        //public int getConnectedCount(int columnIndex)
-        //{
-        //    return connectedCounts.getTrueCount(columnIndex);
-        //}
-
+      
         /// <summary>
         /// Sets the indexed count of synapses connected at the columns in each index.
         /// </summary>
@@ -641,6 +247,7 @@ namespace NeoCortexApi.Entities
 
         /// <summary>
         /// Sets the connected count <see cref="AbstractSparseBinaryMatrix"/>, which defines how synapses are connected to input.
+        /// Used for testing only.
         /// </summary>
         /// <param name="matrix"></param>
         public void SetConnectedMatrix(AbstractSparseBinaryMatrix matrix)
@@ -656,31 +263,8 @@ namespace NeoCortexApi.Entities
                     colMatrix.set(row[j], 0, j);
                 }
             }
-
-            // this.connectedCounts = matrix;
         }
 
-
-        ///**
-        // * Sets the array holding the random noise added to proximal dendrite overlaps.
-        // *
-        // * @param tieBreaker	random values to help break ties
-        // */
-        //public void setTieBreaker(double[] tieBreaker)
-        //{
-        //    this.tieBreaker = tieBreaker;
-        //}
-
-        ///**
-        // * Returns the array holding random values used to add to overlap scores
-        // * to break ties.
-        // *
-        // * @return
-        // */
-        //public double[] getTieBreaker()
-        //{
-        //    return tieBreaker;
-        //}
 
         /// <summary>
         /// Array holding the random noise added to proximal dendrite overlaps.
@@ -697,50 +281,6 @@ namespace NeoCortexApi.Entities
         public int[] Overlaps { get => m_Overlaps; set => this.m_Overlaps = value; }
 
 
-        ///**
-        // * Returns the version number
-        // * @return
-        // */
-        //public double getVersion()
-        //{
-        //    return version;
-        //}
-
-        ///**
-        // * Returns the overlap duty cycles.
-        // * @return
-        // */
-        //public double[] getOverlapDutyCycles()
-        //{
-        //    return overlapDutyCycles;
-        //}
-
-        ///**
-        // * Sets the overlap duty cycles
-        // * @param overlapDutyCycles
-        // */
-        //public void setOverlapDutyCycles(double[] overlapDutyCycles)
-        //{
-        //    this.overlapDutyCycles = overlapDutyCycles;
-        //}
-
-        ///**
-        // * Returns the dense (size=numColumns) array of duty cycle stats.
-        // * @return	the dense array of active duty cycle values.
-        // */
-        //public double[] getActiveDutyCycles()
-        //{
-        //    return activeDutyCycles;
-        //}
-
-        ///**
-        // * Sets the dense (size=numColumns) array of duty cycle stats.
-        // * @param activeDutyCycles
-        // */
-        //public void setActiveDutyCycles(double[] activeDutyCycles)
-        //{
-        //    this.activeDutyCycles = activeDutyCycles;
-        //}
 
         /// <summary>
         /// Applies the dense array values which aren't -1 to the array containing the active duty cycles of the column corresponding to the index specified.
@@ -758,58 +298,13 @@ namespace NeoCortexApi.Entities
             }
         }
 
-        ///**
-        // * Returns the minOverlapDutyCycles.
-        // * @return	the minOverlapDutyCycles.
-        // */
-        //public double[] getMinOverlapDutyCycles()
-        //{
-        //    return minOverlapDutyCycles;
-        //}
-
-        ///**
-        // * Sets the minOverlapDutyCycles
-        // * @param minOverlapDutyCycles	the minOverlapDutyCycles
-        // */
-        //public void setMinOverlapDutyCycles(double[] minOverlapDutyCycles)
-        //{
-        //    this.minOverlapDutyCycles = minOverlapDutyCycles;
-        //}
-
-        ///**
-        // * Returns the minActiveDutyCycles
-        // * @return	the minActiveDutyCycles
-        // */
-        //public double[] getMinActiveDutyCycles()
-        //{
-        //    return minActiveDutyCycles;
-        //}
-
-        ///**
-        // * Sets the minActiveDutyCycles
-        // * @param minActiveDutyCycles	the minActiveDutyCycles
-        // */
-        //public void setMinActiveDutyCycles(double[] minActiveDutyCycles)
-        //{
-        //    this.minActiveDutyCycles = minActiveDutyCycles;
-        //}
-
-        /**
-         * Returns the array of boost factors
-         * @return	the array of boost factors
-         */
-        /**
- * Sets the array of boost factors
- * @param boostFactors	the array of boost factors
- */
-        public double[] BoostFactors { get => m_BoostFactors; set => this.m_BoostFactors = value; }
 
         /// <summary>
-        /// Controls if bumping-up of weak columns shell be done.
+        /// Gets/Setrs boost factors.
         /// </summary>
-        //public bool IsBumpUpWeakColumnsDisabled { get => isBumpUpWeakColumnsDisabled; set => isBumpUpWeakColumnsDisabled = value; }
+        public double[] BoostFactors { get => m_BoostFactors; set => this.m_BoostFactors = value; }
 
-
+      
         ////////////////////////////////////////
         //       TemporalMemory Methods       //
         ////////////////////////////////////////
@@ -1659,142 +1154,8 @@ namespace NeoCortexApi.Entities
             result = prime * result + ((winnerCells == null) ? 0 : winnerCells.GetHashCode());
             return result;
         }
-        public bool Equals(Connections obj)
-        {
-            if (this == obj)
-                return true;
 
-            if (obj == null)
-                return false;
-
-            if (connectedCounts2 == null)
-            {
-                if (obj.connectedCounts2 != null)
-                    return false;
-            }
-            else if (!connectedCounts2.Equals(obj.connectedCounts2))
-                return false;
-            if (m_HtmConfig == null)
-            {
-                if (obj.m_HtmConfig != null)
-                    return false;
-            }
-            else if (!m_HtmConfig.Equals(obj.m_HtmConfig))
-                return false;
-            if (HtmConfig == null)
-            {
-                if (obj.HtmConfig != null)
-                    return false;
-            }
-            else if (!HtmConfig.Equals(obj.HtmConfig))
-                return false;
-            if (obj.Cells != null && Cells != null)
-            {
-
-                if (!obj.Cells.SequenceEqual(Cells))
-                    return false;
-            }
-            if (obj.m_BoostFactors != null && m_BoostFactors != null)
-            {
-
-                if (!obj.m_BoostFactors.SequenceEqual(m_BoostFactors))
-                    return false;
-            }
-            if (obj.m_ActiveSegments != null && m_ActiveSegments != null)
-            {
-
-                if (!obj.m_ActiveSegments.SequenceEqual(m_ActiveSegments))
-                    return false;
-            }
-            if (obj.m_MatchingSegments != null && m_MatchingSegments != null)
-            {
-
-                if (!obj.m_MatchingSegments.SequenceEqual(m_MatchingSegments))
-                    return false;
-            }
-            if (obj.m_FreeFlatIdxs != null && m_FreeFlatIdxs != null)
-            {
-
-                if (!obj.m_FreeFlatIdxs.SequenceEqual(m_FreeFlatIdxs))
-                    return false;
-            }
-            if (obj.TieBreaker != null && TieBreaker != null)
-            {
-
-                if (!obj.TieBreaker.SequenceEqual(TieBreaker))
-                    return false;
-            }
-            if (obj.BoostedOverlaps != null && BoostedOverlaps != null)
-            {
-
-                if (!obj.BoostedOverlaps.SequenceEqual(BoostedOverlaps))
-                    return false;
-            }
-            if (obj.Overlaps != null && Overlaps != null)
-            {
-
-                if (!obj.Overlaps.SequenceEqual(Overlaps))
-                    return false;
-            }
-            if (obj.BoostFactors != null && BoostFactors != null)
-            {
-
-                if (!obj.BoostFactors.SequenceEqual(BoostFactors))
-                    return false;
-            }
-            if (obj.ActiveSegments != null && ActiveSegments != null)
-            {
-
-                if (!obj.ActiveSegments.SequenceEqual(ActiveSegments))
-                    return false;
-            }
-            if (obj.MatchingSegments != null && MatchingSegments != null)
-            {
-
-                if (!obj.MatchingSegments.SequenceEqual(MatchingSegments))
-                    return false;
-            }
-            if (version != obj.version)
-                return false;
-            else if (SpIterationNum != obj.SpIterationNum)
-                return false;
-            else if (SpIterationLearnNum != obj.SpIterationLearnNum)
-                return false;
-            else if (m_TMIteration != obj.m_TMIteration)
-                return false;
-            else if (m_BoostedmOverlaps != obj.m_BoostedmOverlaps)
-                return false;
-            else if (m_Overlaps != obj.m_Overlaps)
-                return false;
-            else if (m_TieBreaker != obj.m_TieBreaker)
-                return false;
-            else if (ActiveCells != obj.ActiveCells)
-                return false;
-            else if (WinnerCells != obj.WinnerCells)
-                return false;
-            else if (m_ActiveCells != obj.m_ActiveCells)
-                return false;
-            else if (winnerCells != obj.winnerCells)
-                return false;
-            else if (m_PredictiveCells != obj.m_PredictiveCells)
-                return false;
-            else if (!m_DistalSynapses.SequenceEqual(obj.m_DistalSynapses))
-                return false;
-            else if (m_NextFlatIdx != obj.m_NextFlatIdx)
-                return false;
-            else if (m_NextSegmentOrdinal != obj.m_NextSegmentOrdinal)
-                return false;
-            else if (m_NextSynapseOrdinal != obj.m_NextSynapseOrdinal)
-                return false;
-            else if (m_NumSynapses != obj.m_NumSynapses)
-                return false;
-            else if (NextSegmentOrdinal != obj.NextSegmentOrdinal)
-                return false;
-
-
-            return true;
-        }
-        
+   
         #endregion
 
         /// <summary>
@@ -1844,9 +1205,26 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.SpIterationLearnNum, writer);
             ser.SerializeValue(this.m_TMIteration, writer);
             ser.SerializeValue(this.m_BoostedmOverlaps, writer);
-            ser.SerializeValue(this.m_Overlaps, writer); 
-            ser.SerializeValue(this.m_TieBreaker, writer); 
-            ser.SerializeValue(this.m_BoostFactors, writer); 
+            ser.SerializeValue(this.m_Overlaps, writer);
+            ser.SerializeValue(this.m_TieBreaker, writer);
+
+            //.connectedCounts2.Serialize(writer);
+
+
+
+            ser.SerializeValue(this.Cells, writer);
+            ser.SerializeValue(this.m_BoostFactors, writer);
+
+
+
+            ser.SerializeValue(this.m_ActiveSegments, writer);
+            ser.SerializeValue(this.m_MatchingSegments, writer);
+
+            this.m_HtmConfig.Serialize(writer);
+
+
+            //ser.SerializeValue(this.m_DistalSegments, writer);
+            //ser.SerializeValue(this.m_DistalSynapses, writer);
             ser.SerializeValue(this.m_NextFlatIdx, writer);
             ser.SerializeValue(this.m_NextSegmentOrdinal, writer);
             ser.SerializeValue(this.m_NextSynapseOrdinal, writer);
@@ -1893,6 +1271,10 @@ namespace NeoCortexApi.Entities
 
         public static Connections Deserialize(StreamReader sr)
         {
+            throw new NotImplementedException();
+            //Connections mem = new Connections();
+            // |T|ODO
+            //return mem;
             Connections mem = new Connections();
             HtmSerializer2 ser = new HtmSerializer2();
 

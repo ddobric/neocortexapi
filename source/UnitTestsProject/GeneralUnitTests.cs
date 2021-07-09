@@ -329,5 +329,27 @@ namespace UnitTestsProject
 
             Assert.IsTrue(res == 40);
         }
+        [TestMethod]
+        [DataRow(0)]
+        [DataRow(10)]
+        [DataRow(42)]
+        [DataRow(255)]
+        public void RandomGenTests(int seed)
+        {
+            Random rnd1 = new Random(seed);
+            Random rnd2 = new Random(seed);
+
+            Console.WriteLine($"Test with the seed {seed}");
+
+            for (int i = 0; i < 100; i++)
+            {
+                var r1 = rnd1.Next();
+                var r2 = rnd2.Next();
+
+                Console.WriteLine($"{r1}\t{r2} / rnd1 == rnd2: {r1 == r2}");                
+            }
+
+            Console.WriteLine("");
+        }
     }
 }
