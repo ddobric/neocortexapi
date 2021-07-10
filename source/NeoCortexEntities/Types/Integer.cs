@@ -71,7 +71,7 @@ namespace NeoCortexApi.Entities
             HtmSerializer2 ser = new HtmSerializer2();
 
             ser.SerializeBegin(nameof(Integer), writer);
-
+            
             ser.SerializeValue(this.Value,writer);
 
             ser.SerializeEnd(nameof(Integer), writer);

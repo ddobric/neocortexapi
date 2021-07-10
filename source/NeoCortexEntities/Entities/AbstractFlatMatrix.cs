@@ -360,27 +360,23 @@ namespace NeoCortexApi.Entities
          */
         //@SuppressWarnings("rawtypes")
         //@Override
-        public override bool Equals(object obj)
+        public bool Equals(AbstractFlatMatrix<T> obj)
         {
-            throw new NotImplementedException();
-            //if (this == obj)
-            //    return true;
-            //if (obj == null)
-            //    return false;
-            ////if (getClass() != obj.getClass())
-            //if ((obj.GetType() != this.GetType()))
-            //    return false;
-            //AbstractFlatMatrix<T> other = (AbstractFlatMatrix<T>)obj;
-
-            //if (!Array.Equals(this.ModuleTopology.DimensionMultiplies, other.ModuleTopology.DimensionMultiplies))
-            //    return false;
-            //if (!Array.Equals(this.ModuleTopology.Dimensions, other.ModuleTopology.Dimensions))
-            //    return false;
-            //if (this.ModuleTopology.IsMajorOrdering != other.ModuleTopology.IsMajorOrdering)
-            //    return false;
-            //if (this.ModuleTopology.NumDimensions != other.ModuleTopology.NumDimensions)
-            //    return false;
-            //return true;
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if ((obj.GetType() != this.GetType()))
+                return false;
+            AbstractFlatMatrix<T> other = obj;
+            if (ModuleTopology == null)
+            {
+                if (obj.ModuleTopology != null)
+                    return false;
+            }
+            else if (!ModuleTopology.Equals(obj.ModuleTopology))
+                return false;
+            return true;
         }
 
         public abstract int[] GetSparseIndices();

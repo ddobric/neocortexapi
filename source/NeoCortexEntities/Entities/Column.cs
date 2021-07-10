@@ -55,7 +55,7 @@ namespace NeoCortexApi.Entities
 
         public Column()
         {
-
+            
         }
 
         /// <summary>
@@ -398,12 +398,6 @@ namespace NeoCortexApi.Entities
                 if (!obj.Cells.SequenceEqual(Cells))
                     return false;
             }
-            if (obj.ConnectedInputBits != null && ConnectedInputBits != null)
-            {
-
-                if (!obj.ConnectedInputBits.SequenceEqual(ConnectedInputBits))
-                    return false;
-            }
             if (Index != obj.Index)
                 return false;
             if (CellId != obj.CellId)
@@ -437,7 +431,6 @@ namespace NeoCortexApi.Entities
             ser.SerializeBegin(nameof(Column), writer);
 
             ser.SerializeValue(this.CellId, writer);
-            ser.SerializeValue(this.ConnectedInputBits, writer);
             ser.SerializeValue(this.Index, writer);
             ser.SerializeValue(this.Cells, writer);
 
@@ -466,7 +459,7 @@ namespace NeoCortexApi.Entities
             while (sr.Peek() >= 0)
             {
                 string data = sr.ReadLine();
-                if (data == String.Empty || data == ser.ReadBegin(nameof(Column)) )
+                if (data == String.Empty || data == ser.ReadBegin(nameof(Column)) || data == ser.ValueDelimiter )
                 {
                     continue;
                 }
@@ -499,15 +492,10 @@ namespace NeoCortexApi.Entities
                         {
                             case 0:
                                 {
-                                    //column.CellId = ser.ReadIntValue(str[i]);
+                                    column.CellId = ser.ReadIntValue(str[i]);
                                     break;
                                 }
                             case 1:
-                                {
-                                    //column.ConnectedInputBits = 
-                                    break;
-                                }
-                            case 3:
                                 {
                                     column.Index = ser.ReadIntValue(str[i]); 
                                     break;

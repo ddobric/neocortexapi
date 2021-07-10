@@ -282,7 +282,7 @@ namespace NeoCortexApi.Entities
         /// <param name="sw"></param>
         public void SerializeValue(Cell[] val, StreamWriter sw)
         {
-            SerializeBegin("CellArray",sw);
+            SerializeBegin("CellArray", sw);
             sw.Write(ValueDelimiter);
             if (val != null)
             {
@@ -305,6 +305,7 @@ namespace NeoCortexApi.Entities
             while (reader.Peek() >= 0)
             {
                 string data = reader.ReadLine();
+
                 if (data == ReadBegin(nameof(Cell)))
                 {
                     Cell cell1 = Cell.Deserialize(reader);
@@ -318,8 +319,7 @@ namespace NeoCortexApi.Entities
                     cells.Add(cell1);
                 }
 
-                
-            } 
+            }
             Cell[] cells1 = cells.ToArray();
             return cells1;
         }
