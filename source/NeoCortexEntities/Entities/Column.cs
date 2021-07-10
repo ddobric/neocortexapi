@@ -45,9 +45,9 @@ namespace NeoCortexApi.Entities
         public Cell[] Cells { get; set; }
 
         /// <summary>
-        /// 
+        /// CellId
         /// </summary>
-        public int CellId { get; }
+        public int CellId { get; set; } 
 
         //private ReadOnlyCollection<Cell> cellList;
 
