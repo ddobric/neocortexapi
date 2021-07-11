@@ -280,7 +280,7 @@ namespace NeoCortexApi.Entities
                 {
                     sparse.ModuleTopology = HtmModuleTopology.Deserialize(sr);
                 }
-                //else if (data == ser.ReadBegin(nameof(InMemoryDistributedDictionary<TKey, TValue>)))
+                //else if (data == ser.ReadBegin(nameof(InMemoryDistributedDictionary<TKey, TValue>) <{ nameof(TKey}>))
                 //{
                 //    sparse.m_SparseMap = InMemoryDistributedDictionary<TKey, TValue>.Deserialize(sr);
                 //}

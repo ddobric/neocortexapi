@@ -1198,8 +1198,7 @@ namespace NeoCortexApi.Entities
             HtmSerializer2 ser = new HtmSerializer2();
 
             ser.SerializeBegin(nameof(Connections), writer);
-
-            //ser.SerializeValue(Connections.EPSILON, writer); 
+ 
             ser.SerializeValue(this.version, writer); 
             ser.SerializeValue(this.SpIterationNum, writer);
             ser.SerializeValue(this.SpIterationLearnNum, writer);
@@ -1207,54 +1206,22 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.m_BoostedmOverlaps, writer);
             ser.SerializeValue(this.m_Overlaps, writer);
             ser.SerializeValue(this.m_TieBreaker, writer);
-
-            //.connectedCounts2.Serialize(writer);
-
-
-
-            ser.SerializeValue(this.Cells, writer);
             ser.SerializeValue(this.m_BoostFactors, writer);
-
-
-
-            ser.SerializeValue(this.m_ActiveSegments, writer);
-            ser.SerializeValue(this.m_MatchingSegments, writer);
-
-            this.m_HtmConfig.Serialize(writer);
-
-
-            //ser.SerializeValue(this.m_DistalSegments, writer);
-            //ser.SerializeValue(this.m_DistalSynapses, writer);
             ser.SerializeValue(this.m_NextFlatIdx, writer);
             ser.SerializeValue(this.m_NextSegmentOrdinal, writer);
             ser.SerializeValue(this.m_NextSynapseOrdinal, writer);
             ser.SerializeValue(this.m_NumSynapses, writer);
             ser.SerializeValue(this.m_FreeFlatIdxs, writer);
-            ser.SerializeValue(this.NextSegmentOrdinal, writer);
             ser.SerializeValue(this.TieBreaker, writer);
             ser.SerializeValue(this.BoostedOverlaps, writer);
             ser.SerializeValue(this.Overlaps, writer);
             ser.SerializeValue(this.BoostFactors, writer);
-            
-
-            //ser.SerializeValue(this.ActiveCells, writer);
-            //ser.SerializeValue(this.WinnerCells, writer);
-            //ser.SerializeValue(this.m_ActiveCells, writer); 
-            //ser.SerializeValue(this.winnerCells, writer);
-            //ser.SerializeValue(this.m_PredictiveCells, writer);
             ser.SerializeValue(this.m_ActiveSegments, writer);
             ser.SerializeValue(this.m_MatchingSegments, writer);
             ser.SerializeValue(this.ActiveSegments, writer);
             ser.SerializeValue(this.MatchingSegments, writer);
-            //ser.SerializeValue(this.m_DistalSynapses, writer);
-            //ser.SerializeValue(this.m_SegmentForFlatIdx, writer);
-            ser.SerializeValue(this.Cells, writer);
             ser.SerializeValue(this.m_SegmentForFlatIdx, writer);
-            //if (this.connectedCounts != null)
-            //{
-            //    this.connectedCounts.Serialize(writer);
-            //}
-
+            ser.SerializeValue(this.Cells, writer);
             if (this.m_HtmConfig != null)
             {
                 this.m_HtmConfig.Serialize(writer);
@@ -1271,10 +1238,6 @@ namespace NeoCortexApi.Entities
 
         public static Connections Deserialize(StreamReader sr)
         {
-            throw new NotImplementedException();
-            //Connections mem = new Connections();
-            // |T|ODO
-            //return mem;
             Connections mem = new Connections();
             HtmSerializer2 ser = new HtmSerializer2();
 
@@ -1285,9 +1248,16 @@ namespace NeoCortexApi.Entities
                 {
                     continue;
                 }
-                else if (data == ser.ReadBegin(nameof(SparseBinaryMatrix)))
+                else if (data == ser.ReadBegin("CellArray"))
                 {
-                    //mem.connectedCounts2 = SparseBinaryMatrix.Deserialize(sr);
+                    mem.Cells = ser.DeserializeCellArray(sr);
+                }
+                else if (data == ser.ReadBegin(nameof(DistalDendrite)))
+                {
+                    //mem.m_ActiveSegments.Add(DistalDendrite.Deserialize(sr));
+                    //mem.m_MatchingSegments.Add(DistalDendrite.Deserialize(sr));
+                    //mem.ActiveSegments.Add(DistalDendrite.Deserialize(sr));
+                    //mem.MatchingSegments.Add(DistalDendrite.Deserialize(sr));
                 }
                 else if (data == ser.ReadBegin(nameof(HtmConfig)))
                 {
@@ -1375,25 +1345,20 @@ namespace NeoCortexApi.Entities
                                 }
                             case 13:
                                 {
-                                    //mem.NextSegmentOrdinal = ser.ReadIntValue(str[i]);
+                                    mem.TieBreaker = ser.ReadArrayDouble(str[i]);
                                     break;
                                 }
                             case 14:
                                 {
-                                    mem.TieBreaker = ser.ReadArrayDouble(str[i]);
+                                    mem.BoostedOverlaps = ser.ReadArrayDouble(str[i]);
                                     break;
                                 }
                             case 15:
                                 {
-                                    mem.BoostedOverlaps = ser.ReadArrayDouble(str[i]);
-                                    break;
-                                }
-                            case 16:
-                                {
                                     mem.Overlaps = ser.ReadArrayInt(str[i]);
                                     break;
                                 }
-                            case 17:
+                            case 16:
                                 {
                                     mem.BoostFactors = ser.ReadArrayDouble(str[i]);
                                     break;

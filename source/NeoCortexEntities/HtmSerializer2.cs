@@ -50,7 +50,7 @@ namespace NeoCortexApi.Entities
             sw.WriteLine();
 
         }
-        public String ReadBegin(String typeName)
+        public String ReadBegin(string typeName)
         {
             string val = ($"{TypeDelimiter} BEGIN '{typeName}' {TypeDelimiter}");
             return val;
@@ -200,7 +200,6 @@ namespace NeoCortexApi.Entities
             return val;
 
         }
-
         /// <summary>
         /// Serialize the array of type Double.
         /// </summary>
@@ -759,6 +758,8 @@ namespace NeoCortexApi.Entities
                 sw.Write(data);
             }
         }
+
+        
     }
 
 }

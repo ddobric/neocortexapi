@@ -35,7 +35,10 @@ namespace NeoCortexApi.Entities
 
         public InMemoryDistributedDictionary()
         {
+            
         }
+
+    
 
         public ICollection<KeyPair> GetObjects(TKey[] keys)
         {
