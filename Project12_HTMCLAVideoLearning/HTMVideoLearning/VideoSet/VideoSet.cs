@@ -1,17 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Diagnostics;
+
 using GleamTech.VideoUltimate;
-using NeoCortexApi.Utility;
+using System;
 
-
-namespace UnitTestsProject.VideoLearningExperiments
+namespace VideoLibrary
 {
+    /// <summary>
+    /// ColorMode is a defined mode of reading pixel's color of a video in each frame
+    /// The goal is to reduce the resolution of the Video used for testing
+    /// </summary>
+    public enum ColorMode
+    {
+        BLACKWHITE,
+        // Image Binarization by RED channel
+        // -- If a pixel has R color value more than 128 it is 0, else is it 1
+        // Size int[] = Number of pixel x 1
+        BINARIZEDRGB,
+        // Taking all the binarized value of each channels in R/G/B 
+        // -- If a pixel has R/B/G color value more than 128 it is 0, else is it 1 
+        // Size int[] = Number of pixel x 3
+        PURE,
+        // No binarization, taking all color resolution of R/G/B channel
+        // Size int[] = Number of pixel x 24
+        // Example
+        // [R,G,B] = [42, 24, 44] 
+        // -> int[] a = {0, 0, 1, 0, 1, 0, 1, 0,    red channel
+        //               0, 0, 0, 1, 1, 0, 0, 0,    green channel
+        //               0, 0, 1, 0, 1, 1, 0, 0,}   blue channel
+    }
     /// <summary>
     /// <para>VideoSet is created to represent an folder of videos</para>
     /// <para>Each videos will be read to a Video object</para>
@@ -24,23 +43,6 @@ namespace UnitTestsProject.VideoLearningExperiments
     /// </summary>
     public class VideoSet
     {
-        public enum ColorMode
-        {
-            BLACKWHITE, 
-            // Image Binarization by RED channel
-            // -- If a pixel has R color value more than 128 it is 0, else is it 1
-            // Size int[] = Number of pixel x 1
-            BINARIZEDRGB,
-            // Taking all the binarized value of each channels in R/G/B 
-            // -- If a pixel has R/B/G color value more than 128 it is 0, else is it 1 
-            // Size int[] = Number of pixel x 1
-            PURE,
-            // No binarization, taking all color resolution of R/G/B channel
-            // [R,G,B] = [42, 24, 44] 
-            // -> int[] a = {0, 0, 1, 0, 1, 0, 1, 0,    red channel
-            //               0, 0, 0, 1, 1, 0, 0, 0,    green channel
-            //               0, 0, 1, 0, 1, 1, 0, 0,}   blue channel
-        }
         public List<Video> videoEncodedList;
         public List<string> videoName;
         public string setLabel;
@@ -87,14 +89,14 @@ namespace UnitTestsProject.VideoLearningExperiments
         public string name;
         public List<int[]> frames;
 
-        private readonly VideoSet.ColorMode colorMode;
+        private readonly ColorMode colorMode;
         private readonly int frameWidth;
         private readonly int frameHeight;
         /// <summary>
         /// Generate a Video object
         /// </summary>
         /// <param name="videoPath">full path to the video</param>
-        public Video(string videoPath, VideoSet.ColorMode colorMode, int frameWidth, int frameHeight)
+        public Video(string videoPath, ColorMode colorMode, int frameWidth, int frameHeight)
         {
             this.colorMode = colorMode;
             this.frameWidth = frameWidth;
@@ -158,17 +160,17 @@ namespace UnitTestsProject.VideoLearningExperiments
                     {
                         // adding different color mode here for different format of output int[]
                         // more info/color resolution resulted in increase of output bit
-                        case VideoSet.ColorMode.BLACKWHITE:
+                        case ColorMode.BLACKWHITE:
                             // image binarization of GRAYSCALE source image
                             // taking red channel as comparatee for binarization 
                             imageBinary.Add((pixel.R > 255 / 2) ? 1 : 0);
                             break;
-                        case VideoSet.ColorMode.BINARIZEDRGB:
+                        case ColorMode.BINARIZEDRGB:
                             // image binarization of RGB source image
                             // binarize each color from RGB channels in order : red --> green --> blue
                             imageBinary.AddRange(new List<int>() { (pixel.R > 255 / 2) ? 1 : 0, (pixel.G > 255 / 2) ? 1 : 0, (pixel.B > 255 / 2) ? 1 : 0 });
                             break;
-                        case VideoSet.ColorMode.PURE:
+                        case ColorMode.PURE:
                             imageBinary.AddRange(ColorChannelToBinList(pixel.R));
                             break;
                     }
@@ -178,9 +180,13 @@ namespace UnitTestsProject.VideoLearningExperiments
             return imageBinary.ToArray();
         }
 
-        private List<int> ColorChannelToBinList(byte r)
+        public static List<int> ColorChannelToBinList(byte r)
         {
             List<int> binaryList = new();
+            string BNR = Convert.ToString(r);
+            foreach(char a in BNR){
+                binaryList.Add(a);
+            }
             return binaryList;
         }
 

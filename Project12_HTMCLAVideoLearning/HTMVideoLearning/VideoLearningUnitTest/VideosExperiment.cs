@@ -12,8 +12,9 @@ using NeoCortexApi.Utility;
 using System.IO;
 using System.Threading;
 using NeoCortexApi.Classifiers;
+using VideoLibrary;
 
-namespace UnitTestsProject.VideoLearningExperiments
+namespace VideoLearningUnitTest
 {
     /// <summary>
     /// This Experiment focus on learning and recognition of videos 
@@ -31,13 +32,13 @@ namespace UnitTestsProject.VideoLearningExperiments
         [Timeout(TestTimeout.Infinite)]
         public void VideosLearningExperiment()
         {
-            VideoSet.ColorMode colorMode = VideoSet.ColorMode.BLACKWHITE;
+            ColorMode colorMode = ColorMode.BLACKWHITE;
             int frameWidth = 15;
             int frameHeight = 15;
             List<int[]> tempInput = new();
             // Input videos are stored in different folders under SequenceLearningExperiments/TrainingVideos/
             // with their folder's names as key value
-            string[] videoSetPaths = GetVideoSetPaths("VideoLearningExperiments");
+            string[] videoSetPaths = GetVideoSetPaths("");
             List<VideoSet> videoData = new();
 
             // Iterate through every folder in TrainingVideos/ to create VideoSet: object that stores video of same folder/label
@@ -46,7 +47,7 @@ namespace UnitTestsProject.VideoLearningExperiments
                 videoData.Add(new VideoSet(path, colorMode, frameWidth, frameHeight));
             }
             // Iterate through every folder in TrainingVideos/
-            /*
+            
             foreach (VideoSet set in videoData)
             {
                 // Show Set Label/ Folder Name of each video set
@@ -65,13 +66,15 @@ namespace UnitTestsProject.VideoLearningExperiments
                         tempInput.Add(frame);
                     }
                 }
-            }*/
+            }
 
-            // initiating the CLA HTM mode
-            HtmConfig htm = GetHTM();
+            // Start the Experiment timer
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
+            // initiating the CLA HTM mode
+            HtmConfig htm = GetHTM();
+            
             int maxMatchCnt = 0;
             bool learn = true;
 
