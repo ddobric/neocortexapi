@@ -452,7 +452,7 @@ namespace NeoCortexApi.Entities
 
 
 
-        public override bool Equals(object obj)
+        public bool Equals(AbstractSparseBinaryMatrix obj)
         {
             if (this == obj)
                 return true;
@@ -460,9 +460,18 @@ namespace NeoCortexApi.Entities
                 return false;
             if ((obj.GetType() != this.GetType()))
                 return false;
+            
             AbstractSparseBinaryMatrix other = (AbstractSparseBinaryMatrix)obj;
             if (!Array.Equals(trueCounts, other.trueCounts))
                 return false;
+            if (ModuleTopology == null)
+            {
+                if (obj.ModuleTopology != null)
+                    return false;
+            }
+            else if (!ModuleTopology.Equals(obj.ModuleTopology))
+                return false;
+
             return true;
         }
         #region Serialization

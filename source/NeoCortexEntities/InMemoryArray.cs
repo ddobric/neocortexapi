@@ -229,11 +229,9 @@ namespace NeoCortexApi.Entities
 
             ser.SerializeBegin(nameof(InMemoryArray), writer);
             
-            //ser.SerializeValue(this.backingArray, writer);
+            ser.SerializeValue(this.backingArray, this.dimensions, writer);
             ser.SerializeValue(this.dimensions, writer);
-            ser.SerializeValue(this.Dimensions, writer);
             ser.SerializeValue(this.numOfNodes, writer);
-            ser.SerializeValue(this.Rank, writer);
 
             ser.SerializeEnd(nameof(InMemoryArray), writer);
         }
@@ -268,17 +266,7 @@ namespace NeoCortexApi.Entities
                                 }
                             case 1:
                                 {
-                                    //array.Dimensions = ser.ReadArrayInt(str[i]);
-                                    break;
-                                }
-                            case 2:
-                                {
                                     array.numOfNodes = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-                            case 3:
-                                {
-                                    //array.Rank = ser.ReadIntValue(str[i]);
                                     break;
                                 }
                             default:

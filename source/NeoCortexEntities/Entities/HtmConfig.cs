@@ -432,20 +432,6 @@ namespace NeoCortexApi.Entities
             }
             else if (!inputMatrix.Equals(obj.inputMatrix))
                 return false;
-            if (TemporalMemory == null)
-            {
-                if (obj.TemporalMemory != null)
-                    return false;
-            }
-            else if (!TemporalMemory.Equals(obj.TemporalMemory))
-                return false;
-            if (SpatialPooler == null)
-            {
-                if (obj.SpatialPooler != null)
-                    return false;
-            }
-            else if (!SpatialPooler.Equals(obj.SpatialPooler))
-                return false;
             if (InputTopology == null)
             {
                 if (obj.InputTopology != null)
@@ -651,22 +637,14 @@ namespace NeoCortexApi.Entities
             {
                 this.inputMatrix.Serialize(writer);
             }
-            //if (this.TemporalMemory != null)
-            //{
-            //    this.TemporalMemory.Serialize(writer);
-            //}
-            //if (this.SpatialPooler != null)
-            //{ 
-            //    this.SpatialPooler.Serialize(writer);
-            //}
-            //if (this.InputTopology != null)
-            //{
-            //    this.InputTopology.Serialize(writer);
-            //}
-            //if (this.ColumnTopology != null)
-            //{
-            //    this.ColumnTopology.Serialize(writer);
-            //}
+            if (this.InputTopology != null)
+            {
+                this.InputTopology.Serialize(writer);
+            }
+            if (this.ColumnTopology != null)
+            {
+                this.ColumnTopology.Serialize(writer);
+            }
             if  (this.ColumnModuleTopology != null)
             {
                 this.ColumnModuleTopology.Serialize(writer);
@@ -698,6 +676,16 @@ namespace NeoCortexApi.Entities
                 if (data == String.Empty || data == ser.ReadBegin(nameof(HtmConfig)))
                 {
                     continue;
+                }
+                else if (data == ser.ReadBegin(nameof(Topology)))
+                {
+                    htmConfig.InputTopology = Topology.Deserialize(sr);
+                    htmConfig.ColumnTopology = Topology.Deserialize(sr);
+                }
+                else if (data == ser.ReadBegin(nameof(HtmModuleTopology)))
+                {
+                    htmConfig.ColumnModuleTopology = HtmModuleTopology.Deserialize(sr);
+                    htmConfig.InputModuleTopology = HtmModuleTopology.Deserialize(sr);
                 }
                 else if (data == ser.ReadEnd(nameof(HtmConfig)))
                 {
@@ -941,6 +929,11 @@ namespace NeoCortexApi.Entities
                             case 45:
                                 {
                                     htmConfig.Name = ser.ReadStringValue(str[i]);
+                                    break;
+                                }
+                            case 46:
+                                {
+                                    //htmConfig.Random = ser.ReadRandomValue(str[i]);
                                     break;
                                 }
                             default:

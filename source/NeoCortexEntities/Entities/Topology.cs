@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace NeoCortexApi.Entities
@@ -71,6 +72,10 @@ namespace NeoCortexApi.Entities
             isColumnMajor = useColumnMajorOrdering;
         }
 
+        public Topology()
+        {
+        }
+
         /// <summary>
         /// Initializes internal helper array which is used for multidimensional index computation.
         /// </summary>
@@ -88,7 +93,84 @@ namespace NeoCortexApi.Entities
             }
             return dimensionMultiples;
         }
+        public bool Equals(Topology obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (dimensions != obj.dimensions)
+                return false;
+            if (dimensionMultiples != obj.dimensionMultiples)
+                return false;
+            if (isColumnMajor != obj.isColumnMajor)
+                return false;
+            if (numDimensions != obj.numDimensions)
+                return false;
 
-     
+            return true;
+        }
+        #region Serialization
+        public void Serialize(StreamWriter writer)
+        {
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            ser.SerializeBegin(nameof(Topology), writer);
+
+            ser.SerializeValue(this.dimensions, writer);
+            ser.SerializeValue(this.dimensionMultiples, writer);
+            ser.SerializeValue(this.isColumnMajor, writer);
+            ser.SerializeValue(this.numDimensions, writer);
+
+            ser.SerializeEnd(nameof(Topology), writer);
+
+        }
+        public static Topology Deserialize(StreamReader sr)
+        {
+            Topology topology = new Topology();
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            while (sr.Peek() >= 0)
+            {
+                string data = sr.ReadLine();
+                if (data == String.Empty || data == ser.ReadBegin(nameof(Topology)))
+                {
+                    continue;
+                }
+                else
+                {
+                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                    for (int i = 0; i < str.Length; i++)
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                {
+                                    topology.dimensions = ser.ReadArrayInt(str[i]);
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    topology.dimensionMultiples = ser.ReadArrayInt(str[i]);
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    topology.isColumnMajor= ser.ReadBoolValue(str[i]);
+                                    break;
+                                }
+                            case 3:
+                                {
+                                    topology.numDimensions = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+
+                        }
+                    }
+                }
+            }
+            return topology;
+        }
+        #endregion
     }
 }

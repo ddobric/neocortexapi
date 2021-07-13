@@ -10,9 +10,9 @@ namespace NeoCortexApi
     {
         public ThreadSafeRandom() : base()
         {
-
+            
         }
-
+        
         public ThreadSafeRandom(int seed) : base(seed)
         {
             

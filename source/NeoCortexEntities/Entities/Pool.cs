@@ -311,7 +311,7 @@ namespace NeoCortexApi.Entities
             HtmSerializer2 ser = new HtmSerializer2();
 
             ser.SerializeBegin(nameof(Pool), writer);
-
+            
             ser.SerializeValue(this.Size, writer);
             ser.SerializeValue(this.NumInputs, writer);
             ser.SerializeValue(this.m_SynapseConnections, writer); 
