@@ -21,11 +21,21 @@ namespace NeoCortexApi.Entities
     {
         private Dictionary<TKey, TValue>[] dictList;
 
+        /// <summary>
+        /// Used while partitioning.
+        /// </summary>
         private int numElements = 0;
         public bool IsReadOnly => false;
 
-        public InMemoryDistributedDictionary(int numNodes)
+        /// <summary>
+        /// Initializes the inmemory dictionary that can be span over multiple nodes.
+        /// </summary>
+        /// <param name="numNodes">Default value is single node.</param>
+        public InMemoryDistributedDictionary(int numNodes = 1)
         {
+            if (numNodes <= 0)
+                throw new ArgumentException("numNodes must be 1 or higher.");
+
             dictList = new Dictionary<TKey, TValue>[numNodes];
             for (int i = 0; i < numNodes; i++)
             {
@@ -385,17 +395,36 @@ namespace NeoCortexApi.Entities
             HtmSerializer2 ser = new HtmSerializer2();
 
             ser.SerializeBegin(nameof(InMemoryDistributedDictionary<TKey, TValue>), writer);
+            ser.SerializeValue(typeof(TKey).AssemblyQualifiedName, writer);
+            ser.SerializeValue(typeof(TValue).AssemblyQualifiedName, writer);
+            ser.SerializeValue(dictList.Length, writer);
 
             // ser.SerializeValue(this.dictList, writer);
             ser.SerializeValue(this.numElements, writer);
-            ser.SerializeValue(this.IsReadOnly, writer);
+            //ser.SerializeValue(this.IsReadOnly, writer);
             //ser.SerializeValue(this.Keys, writer);
             //ser.SerializeValue(this.Values, writer);
-            ser.SerializeValue(this.Count, writer);
+            //ser.SerializeValue(this.Count, writer);
             ser.SerializeValue(this.currentDictIndex, writer);
             ser.SerializeValue(this.currentIndex, writer);
             //ser.SerializeValue(this.Current, writer);
 
+            int dictCnt = 0;
+
+            foreach (var dict in dictList)
+            {
+                ser.SerializeBegin("dictionary", writer);
+                
+                ser.SerializeValue(dictCnt, writer);
+
+                foreach (var item in dict)
+                {
+                    if (typeof(TKey) == typeof(int))
+                        ser.SerializeValue(item.Key.ToString(), writer);
+                    else
+                        throw new NotSupportedException();
+                }
+            }
             if (this.htmConfig != null)
             { this.htmConfig.Serialize(writer); }
             

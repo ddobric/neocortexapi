@@ -27,7 +27,14 @@ namespace NeoCortexApi.Entities
 
         public AbstractSparseBinaryMatrix ConnectedInputCounterMatrix { get { return connectedInputCounter; } set { connectedInputCounter = value; } }
 
-        public int[] ConnectedInputBits { get => (int[])this.connectedInputCounter.GetSlice(0); }
+        public int[] ConnectedInputBits {
+            get {
+                if (connectedInputCounter != null)
+                    return (int[])this.connectedInputCounter.GetSlice(0);
+                else
+                    return new int[0];
+            }
+        }
 
         /// <summary>
         /// Column index
