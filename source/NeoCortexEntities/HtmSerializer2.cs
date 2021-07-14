@@ -146,8 +146,11 @@ namespace NeoCortexApi.Entities
         /// <returns>String</returns>
         public String ReadStringValue(String reader)
         {
-            reader = reader.Trim();
-            return reader;
+            string value = reader.Trim();
+            if (value == LineDelimiter)
+                return null;
+            else
+                return reader;
         }
 
         /// <summary>
@@ -226,15 +229,22 @@ namespace NeoCortexApi.Entities
         /// <returns>Double[]</returns>
         public Double[] ReadArrayDouble(string reader)
         {
-            string[] str = reader.Split(ElementsDelimiter);
-            Double[] vs = new double[str.Length-1];
-            for (int i = 0; i < str.Length-1; i++)
+            string value = reader.Trim();
+            if (value == LineDelimiter)
+                return null;
+            else
             {
-                
-                vs[i] = Convert.ToDouble(str[i].Trim());
-                
+                string[] str = reader.Split(ElementsDelimiter);
+                Double[] vs = new double[str.Length - 1];
+                for (int i = 0; i < str.Length - 1; i++)
+                {
+
+                    vs[i] = Convert.ToDouble(str[i].Trim());
+
+                }
+                return vs;
             }
-            return vs;
+            
         }
 
         /// <summary>

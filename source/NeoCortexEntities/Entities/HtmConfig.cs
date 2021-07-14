@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http.Headers;
 using System.Text;
 
@@ -528,20 +529,44 @@ namespace NeoCortexApi.Entities
                 return false;
             if (UpdatePeriod != obj.UpdatePeriod)
                 return false;
-            if (OverlapDutyCycles != obj.OverlapDutyCycles)
-                return false;
-            if (ActiveDutyCycles != obj.ActiveDutyCycles)
-                return false;
-            if (MinOverlapDutyCycles != obj.MinOverlapDutyCycles)
-                return false;
-            if (MinActiveDutyCycles != obj.MinActiveDutyCycles)
-                return false;
-            if (ColumnDimensions != obj.ColumnDimensions)
-                return false;
+            if (OverlapDutyCycles != null && this.OverlapDutyCycles != null)
+            {
+
+                if (!obj.OverlapDutyCycles.SequenceEqual(this.OverlapDutyCycles))
+                    return false;
+            }
+            if (ActiveDutyCycles != null && ActiveDutyCycles != null)
+            {
+
+                if (!obj.ActiveDutyCycles.SequenceEqual(ActiveDutyCycles))
+                    return false;
+            }
+            if (MinOverlapDutyCycles != null && MinOverlapDutyCycles != null)
+            {
+
+                if (!obj.MinOverlapDutyCycles.SequenceEqual(MinOverlapDutyCycles))
+                    return false;
+            }
+            if (MinActiveDutyCycles != null && MinActiveDutyCycles != null)
+            {
+
+                if (!obj.MinActiveDutyCycles.SequenceEqual(MinActiveDutyCycles))
+                    return false;
+            }
+            if (ColumnDimensions != null && ColumnDimensions != null)
+            {
+
+                if (!obj.ColumnDimensions.SequenceEqual(ColumnDimensions))
+                    return false;
+            }
             if (CellsPerColumn != obj.CellsPerColumn)
                 return false;
-            if (InputDimensions != obj.InputDimensions)
-                return false;
+            if (InputDimensions != null && InputDimensions != null)
+            {
+
+                if (!obj.InputDimensions.SequenceEqual(InputDimensions))
+                    return false;
+            }
             if (MaxNewSynapseCount != obj.MaxNewSynapseCount)
                 return false;
             if (MaxSegmentsPerCell != obj.MaxSegmentsPerCell)
@@ -600,6 +625,7 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.SynPermMin, writer);
             ser.SerializeValue(this.InitialSynapseConnsPct, writer);
             ser.SerializeValue(this.NumActiveColumnsPerInhArea, writer);
+            writer.WriteLine();
             ser.SerializeValue(this.MinPctOverlapDutyCycles, writer);
             ser.SerializeValue(this.MinPctActiveDutyCycles, writer);
             ser.SerializeValue(this.PredictedSegmentDecrement, writer);
@@ -693,256 +719,272 @@ namespace NeoCortexApi.Entities
                 }
                 else
                 {
-                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
-                    for (int i = 0; i < str.Length; i++)
+                    int count = data.Count(ch => ch == HtmSerializer2.ParameterDelimiter);
+                    if (count == 20)
                     {
-                        switch (i)
+                        string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                        for (int i = 0; i < str.Length; i++)
                         {
-                            case 0:
-                                {
-                                    htmConfig.synPermActiveInc = ser.ReadDoubleValue(str[i]);
-                                    break;
-                                }
-                            case 1:
-                                {
-                                    htmConfig.SynPermConnected = ser.ReadDoubleValue(str[i]);
-                                    break;
-                                }
-                            case 2:
-                                {
-                                    htmConfig.InhibitionRadius = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-                            case 3:
-                                {
-                                    htmConfig.NumInputs = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-                            case 4:
-                                {
-                                    htmConfig.NumColumns = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-                            case 5:
-                                {
-                                    htmConfig.PotentialRadius = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-                            case 6:
-                                {
-                                    htmConfig.PotentialPct = ser.ReadDoubleValue(str[i]);
-                                    break;
-                                }
-                            case 7:
-                                {
-                                    htmConfig.StimulusThreshold = ser.ReadDoubleValue(str[i]);
-                                    break;
-                                }
-                            case 8:
-                                {
-                                    htmConfig.SynPermBelowStimulusInc = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-                            case 9:
-                                {
-                                    htmConfig.SynPermInactiveDec = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-                            case 10:
-                                {
-                                    htmConfig.SynPermActiveInc = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-                            case 11:
-                                {
-                                    htmConfig.SynPermConnected = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-                            case 12:
-                                {
-                                    htmConfig.WrapAround = ser.ReadBoolValue(str[i]);
-                                    break;
-                                }
-                            case 13:
-                                {
-                                    htmConfig.GlobalInhibition = ser.ReadBoolValue(str[i]);
-                                    break;
-                                }
-                            case 14:
-                                {
-                                    htmConfig.LocalAreaDensity = ser.ReadDoubleValue(str[i]);
-                                    break;
-                                }
-                            case 15:
-                                {
-                                    htmConfig.SynPermTrimThreshold = ser.ReadDoubleValue(str[i]);
-                                    break;
-                                }
-                            case 16:
-                                {
-                                    htmConfig.SynPermMax = ser.ReadDoubleValue(str[i]);
-                                    break;
-                                }
-                            case 17:
-                                {
-                                    htmConfig.SynPermMin = ser.ReadDoubleValue(str[i]);
-                                    break;
-                                }
-                            case 18:
-                                {
-                                    htmConfig.InitialSynapseConnsPct = ser.ReadDoubleValue(str[i]);
-                                    break;
-                                }
-                            case 19:
-                                {
-                                    htmConfig.NumActiveColumnsPerInhArea = ser.ReadDoubleValue(str[i]);
-                                    break;
-                                }
-                            case 20:
-                                {
-                                    htmConfig.MinPctActiveDutyCycles = ser.ReadDoubleValue(str[i]);
-                                    break;
-                                }
-                            case 21:
-                                {
-                                    htmConfig.MinPctActiveDutyCycles = ser.ReadDoubleValue(str[i]);
-                                    break;
-                                }
-                            case 22:
-                                {
-                                    htmConfig.PredictedSegmentDecrement = ser.ReadDoubleValue(str[i]);
-                                    break;
-                                }
-                            case 23:
-                                {
-                                    htmConfig.DutyCyclePeriod = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-                            case 24:
-                                {
-                                    htmConfig.MaxBoost = ser.ReadDoubleValue(str[i]);
-                                    break;
-                                }
-                            case 25:
-                                {
-                                    htmConfig.IsBumpUpWeakColumnsDisabled = ser.ReadBoolValue(str[i]);
-                                    break;
-                                }
-                            case 26:
-                                {
-                                    htmConfig.UpdatePeriod = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-                            case 27:
-                                {
-                                    htmConfig.OverlapDutyCycles = ser.ReadArrayDouble(str[i]);
-                                    break;
-                                }
-                            case 28:
-                                {
-                                    htmConfig.ActiveDutyCycles = ser.ReadArrayDouble(str[i]);
-                                    break;
-                                }
-                            case 29:
-                                {
-                                    htmConfig.MinOverlapDutyCycles = ser.ReadArrayDouble(str[i]);
-                                    break;
-                                }
+                            switch (i)
+                            {
+                                case 0:
+                                    {
+                                        htmConfig.synPermActiveInc = ser.ReadDoubleValue(str[i]);
+                                        break;
+                                    }
+                                case 1:
+                                    {
+                                        htmConfig.SynPermConnected = ser.ReadDoubleValue(str[i]);
+                                        break;
+                                    }
+                                case 2:
+                                    {
+                                        htmConfig.InhibitionRadius = ser.ReadIntValue(str[i]);
+                                        break;
+                                    }
+                                case 3:
+                                    {
+                                        htmConfig.NumInputs = ser.ReadIntValue(str[i]);
+                                        break;
+                                    }
+                                case 4:
+                                    {
+                                        htmConfig.NumColumns = ser.ReadIntValue(str[i]);
+                                        break;
+                                    }
+                                case 5:
+                                    {
+                                        htmConfig.PotentialRadius = ser.ReadIntValue(str[i]);
+                                        break;
+                                    }
+                                case 6:
+                                    {
+                                        htmConfig.PotentialPct = ser.ReadDoubleValue(str[i]);
+                                        break;
+                                    }
+                                case 7:
+                                    {
+                                        htmConfig.StimulusThreshold = ser.ReadDoubleValue(str[i]);
+                                        break;
+                                    }
+                                case 8:
+                                    {
+                                        htmConfig.SynPermBelowStimulusInc = ser.ReadDoubleValue(str[i]);
+                                        break;
+                                    }
+                                case 9:
+                                    {
+                                        htmConfig.SynPermInactiveDec = ser.ReadDoubleValue(str[i]);
+                                        break;
+                                    }
 
-                            case 30:
-                                {
-                                    htmConfig.MinActiveDutyCycles = ser.ReadArrayDouble(str[i]);
-                                    break;
-                                }
-                            case 31:
-                                {
-                                    htmConfig.ColumnDimensions = ser.ReadArrayInt(str[i]);
-                                    break;
-                                }
-                            case 32:
-                                {
-                                    htmConfig.CellsPerColumn = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-                            case 33:
-                                {
-                                    htmConfig.InputDimensions = ser.ReadArrayInt(str[i]);
-                                    break;
-                                }
-                            case 34:
-                                {
-                                    htmConfig.MaxNewSynapseCount = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
+                                case 10:
+                                    {
+                                        htmConfig.SynPermActiveInc = ser.ReadDoubleValue(str[i]);
+                                        break;
+                                    }
+                                case 11:
+                                    {
+                                        htmConfig.SynPermConnected = ser.ReadDoubleValue(str[i]);
+                                        break;
+                                    }
+                                case 12:
+                                    {
+                                        htmConfig.WrapAround = ser.ReadBoolValue(str[i]);
+                                        break;
+                                    }
+                                case 13:
+                                    {
+                                        htmConfig.GlobalInhibition = ser.ReadBoolValue(str[i]);
+                                        break;
+                                    }
+                                case 14:
+                                    {
+                                        htmConfig.LocalAreaDensity = ser.ReadDoubleValue(str[i]);
+                                        break;
+                                    }
+                                case 15:
+                                    {
+                                        htmConfig.SynPermTrimThreshold = ser.ReadDoubleValue(str[i]);
+                                        break;
+                                    }
+                                case 16:
+                                    {
+                                        htmConfig.SynPermMax = ser.ReadDoubleValue(str[i]);
+                                        break;
+                                    }
+                                case 17:
+                                    {
+                                        htmConfig.SynPermMin = ser.ReadDoubleValue(str[i]);
+                                        break;
+                                    }
+                                case 18:
+                                    {
+                                        htmConfig.InitialSynapseConnsPct = ser.ReadDoubleValue(str[i]);
+                                        break;
+                                    }
+                                case 19:
+                                    {
+                                        htmConfig.NumActiveColumnsPerInhArea = ser.ReadDoubleValue(str[i]);
+                                        break;
+                                    }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                        for (int i = 0; i < str.Length; i++)
+                        {
+                            switch (i)
+                            {
+                                case 0:
+                                    {
+                                        htmConfig.MinPctActiveDutyCycles = ser.ReadDoubleValue(str[i]);
+                                        break;
+                                    }
+                                case 1:
+                                    {
+                                        htmConfig.MinPctActiveDutyCycles = ser.ReadDoubleValue(str[i]);
+                                        break;
+                                    }
+                                case 2:
+                                    {
+                                        htmConfig.PredictedSegmentDecrement = ser.ReadDoubleValue(str[i]);
+                                        break;
+                                    }
+                                case 3:
+                                    {
+                                        htmConfig.DutyCyclePeriod = ser.ReadIntValue(str[i]);
+                                        break;
+                                    }
+                                case 4:
+                                    {
+                                        htmConfig.MaxBoost = ser.ReadDoubleValue(str[i]);
+                                        break;
+                                    }
+                                case 5:
+                                    {
+                                        htmConfig.IsBumpUpWeakColumnsDisabled = ser.ReadBoolValue(str[i]);
+                                        break;
+                                    }
+                                case 6:
+                                    {
+                                        htmConfig.UpdatePeriod = ser.ReadIntValue(str[i]);
+                                        break;
+                                    }
+                                case 7:
+                                    {
+                                        htmConfig.OverlapDutyCycles = ser.ReadArrayDouble(str[i]);
+                                        break;
+                                    }
+                                case 8:
+                                    {
+                                        htmConfig.ActiveDutyCycles = ser.ReadArrayDouble(str[i]);
+                                        break;
+                                    }
+                                case 9:
+                                    {
+                                        htmConfig.MinOverlapDutyCycles = ser.ReadArrayDouble(str[i]);
+                                        break;
+                                    }
 
-                            case 35:
-                                {
-                                    htmConfig.MaxSegmentsPerCell = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-                            case 36:
-                                {
-                                    htmConfig.MaxSynapsesPerSegment = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-                            case 37:
-                                {
-                                    htmConfig.PermanenceIncrement = ser.ReadDoubleValue(str[i]);
-                                    break;
-                                }
-                            case 38:
-                                {
-                                    htmConfig.PermanenceDecrement = ser.ReadDoubleValue(str[i]);
-                                    break;
-                                }
-                            case 39:
-                                {
-                                    htmConfig.ActivationThreshold = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-                            case 40:
-                                {
-                                    htmConfig.LearningRadius = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-                            case 41:
-                                {
-                                    htmConfig.MinThreshold = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-                            case 42:
-                                {
-                                    htmConfig.InitialPermanence = ser.ReadDoubleValue(str[i]);
-                                    break;
-                                }
-                            case 43:
-                                {
-                                    htmConfig.ConnectedPermanence = ser.ReadDoubleValue(str[i]);
-                                    break;
-                                }
+                                case 10:
+                                    {
+                                        htmConfig.MinActiveDutyCycles = ser.ReadArrayDouble(str[i]);
+                                        break;
+                                    }
 
-                            case 44:
-                                {
-                                    htmConfig.RandomGenSeed = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-                            case 45:
-                                {
-                                    htmConfig.Name = ser.ReadStringValue(str[i]);
-                                    break;
-                                }
-                            case 46:
-                                {
-                                    //htmConfig.Random = ser.ReadRandomValue(str[i]);
-                                    break;
-                                }
-                            default:
-                                { break; }
+                                case 11:
+                                    {
+                                        htmConfig.ColumnDimensions = ser.ReadArrayInt(str[i]);
+                                        break;
+                                    }
+                                case 12:
+                                    {
+                                        htmConfig.CellsPerColumn = ser.ReadIntValue(str[i]);
+                                        break;
+                                    }
+                                case 13:
+                                    {
+                                        htmConfig.InputDimensions = ser.ReadArrayInt(str[i]);
+                                        break;
+                                    }
+                                case 14:
+                                    {
+                                        htmConfig.MaxNewSynapseCount = ser.ReadIntValue(str[i]);
+                                        break;
+                                    }
 
+                                case 15:
+                                    {
+                                        htmConfig.MaxSegmentsPerCell = ser.ReadIntValue(str[i]);
+                                        break;
+                                    }
+                                case 16:
+                                    {
+                                        htmConfig.MaxSynapsesPerSegment = ser.ReadIntValue(str[i]);
+                                        break;
+                                    }
+                                case 17:
+                                    {
+                                        htmConfig.PermanenceIncrement = ser.ReadDoubleValue(str[i]);
+                                        break;
+                                    }
+                                case 18:
+                                    {
+                                        htmConfig.PermanenceDecrement = ser.ReadDoubleValue(str[i]);
+                                        break;
+                                    }
+                                case 19:
+                                    {
+                                        htmConfig.ActivationThreshold = ser.ReadIntValue(str[i]);
+                                        break;
+                                    }
+                                case 20:
+                                    {
+                                        htmConfig.LearningRadius = ser.ReadIntValue(str[i]);
+                                        break;
+                                    }
+                                case 21:
+                                    {
+                                        htmConfig.MinThreshold = ser.ReadIntValue(str[i]);
+                                        break;
+                                    }
+                                case 22:
+                                    {
+                                        htmConfig.InitialPermanence = ser.ReadDoubleValue(str[i]);
+                                        break;
+                                    }
+                                case 23:
+                                    {
+                                        htmConfig.ConnectedPermanence = ser.ReadDoubleValue(str[i]);
+                                        break;
+                                    }
+
+                                case 24:
+                                    {
+                                        htmConfig.RandomGenSeed = ser.ReadIntValue(str[i]);
+                                        break;
+                                    }
+                                case 25:
+                                    {
+                                        htmConfig.Name = ser.ReadStringValue(str[i]);
+                                        break;
+                                    }
+                                case 26:
+                                    {
+                                        //htmConfig.Random = ser.ReadRandomValue(str[i]);
+                                        break;
+                                    }
+                                default:
+                                    { break; }
+
+                            }
                         }
 
-
                     }
+                    
                 }
             }
             return htmConfig;

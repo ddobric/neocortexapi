@@ -511,6 +511,12 @@ namespace UnitTestsProject
             {
                 matrix.Serialize(sw);
             }
+            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeHtmConfigTest)}.txt"))
+            {
+                HtmConfig matrix1 = HtmConfig.Deserialize(sr);
+                Assert.IsTrue(matrix.Equals(matrix1));
+            }
+            
         }
 
         [TestMethod]
