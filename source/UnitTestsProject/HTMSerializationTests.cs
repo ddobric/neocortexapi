@@ -868,5 +868,19 @@ namespace UnitTestsProject
                 Assert.IsTrue(segment1.Equals(segment));
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [TestMethod]
+        public void SerializeInMemDistDictTest()
+        {
+            InMemoryDistributedDictionary<int, Column> dict = new InMemoryDistributedDictionary<int, Column>(1);
+         
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeInMemDistDictTest)}.txt"))
+            {
+                dict.Serialize(sw);
+            }
+        }
     }
 }
