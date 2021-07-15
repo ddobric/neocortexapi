@@ -37,8 +37,8 @@ namespace VideoLibrary
     /// <para>For Example:</para>
     /// <para>
     /// <br>A folder ball/ contains 3 file one.mp4, two.mp4 and three.mp4</br>
-    /// <br>will create a VideoSet with label "ball", which contains 3 Video objects:</br>
-    /// <br>each with name field respectively: one.mp4, two</br>
+    /// <br>will create a VideoSet with label "ball", which contains 3 Video objects</br>
+    /// <br>respectively: one.mp4, two.mp4</br>
     /// </para>
     /// </summary>
     public class VideoSet
@@ -46,7 +46,6 @@ namespace VideoLibrary
         public List<Video> videoEncodedList;
         public List<string> videoName;
         public string setLabel;
-        public ColorMode colorMode;
 
         public VideoSet(string videoSetPath, ColorMode colorMode, int frameWidth, int frameHeight)
         {
@@ -96,6 +95,9 @@ namespace VideoLibrary
         /// Generate a Video object
         /// </summary>
         /// <param name="videoPath">full path to the video</param>
+        /// <param name="colorMode">Color mode to encode each frame in the Video, see enum VideoSet.ColorMode</param>
+        /// <param name="frameHeight">height in pixels of the video resolution</param>
+        /// <param name="frameWidth">width in pixels of the video resolution</param>
         public Video(string videoPath, ColorMode colorMode, int frameWidth, int frameHeight)
         {
             this.colorMode = colorMode;
@@ -103,11 +105,13 @@ namespace VideoLibrary
             this.frameHeight = frameHeight;
 
             this.frames = new();
-            this.name = videoPath;
+            this.name = Path.GetFileName(videoPath);
             this.frames = BitmapToBinaryArray(ReadVideo(videoPath));
         }
         /// <summary>
-        /// Method to read a video, from video path to a list of Bitmap
+        /// <para>Method to read a video into a list of Bitmap, from video path to a list of Bitmap</para>
+        /// The current implementation used Videos Ultimate C# wrapper from GleamTech.
+        /// Which will create a trademark when create a video after 30 days trial
         /// </summary>
         /// <param name="videoPath"> full path of the video to be read </param>
         /// <returns>List of Bitmaps</returns>
@@ -133,19 +137,11 @@ namespace VideoLibrary
             return frames_binaryArray;
         }
 
-        // Ultility Bitmap Image functions
         /// <summary>
-        /// Bitmap Binary Encoder Binarize an Bitmap type image
-        /// and encode it to an int[] of binary value
-        /// <para>Example</para> 
-        /// <para>int[] inputBitArray = ImageToBin(imageBitmapType, scaledWidth = 10, scaledHeight = 10)</para>
-        /// <para>will produce an int[] inputBitArray with length 10 x 10 = 100 {1, 0, 0, 0, 1, 1, 1, ...}</para>
+        /// Encode Bitmap to an int array by iterating through every pixel of the frame.
         /// </summary>
         /// <param name="image"> Bitmap image object to encode</param>
-        /// <param name="colorMode">Specify the color desired colorMode of the output image list</param>
-        /// <param name="width"> Width of the output image before encoding</param>
-        /// <param name="height">Height of the output image before encoding</param>
-        /// <returns>returns an int[] of binarized pixels from Bitmap image object</returns>
+        /// <returns>returns an int array from Bitmap image object</returns>
         private int[] BitmapToBinaryArray(Bitmap image)
         {
             Bitmap img = ResizeBitmap(image, frameWidth, frameHeight);
@@ -179,7 +175,14 @@ namespace VideoLibrary
             }
             return imageBinary.ToArray();
         }
-
+        /// <summary>
+        /// Convert a Color byte value to a int list of 8 bit
+        ///     FURTHER DEVELOPMENT:
+        ///         adding gray code implement (adjacent color tone have near bit representation)
+        ///         scaling color resolution e.g. 8 bit --> 5bit
+        /// </summary>
+        /// <param name="r">color byte to convert</param>
+        /// <returns></returns>
         public static List<int> ColorChannelToBinList(byte r)
         {
             List<int> binaryList = new();
@@ -189,7 +192,11 @@ namespace VideoLibrary
             }
             return binaryList;
         }
-
+        /// <summary>
+        /// Convert a List of Bitmap to an int array, which will be used as input for Spatial Pooler
+        /// </summary>
+        /// <param name="imageList">List of input Bitmap</param>
+        /// <returns></returns>
         private List<int[]> BitmapToBinaryArray(List<Bitmap> imageList)
         {
             List<int[]> binaryArrayList = new();
