@@ -491,6 +491,7 @@ namespace UnitTestsProject
             var distSeg2 = new DistalDendrite(cells, 44, 24, 34, 1.0, 100);
 
             connections.ActiveSegments.Add(distSeg1);
+            
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeConnectionsTest)}.txt"))
             {
                 connections.Serialize(sw);

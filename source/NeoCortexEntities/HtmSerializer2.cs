@@ -204,6 +204,18 @@ namespace NeoCortexApi.Entities
 
         }
         /// <summary>
+        /// Read the property of type Long.
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <returns>Bool</returns>
+        public Random ReadRandomValue(String reader)
+        {
+            int val = Convert.ToInt16(reader);
+            Random rnd = new ThreadSafeRandom(val);
+            return rnd;
+
+        }
+        /// <summary>
         /// Serialize the array of type Double.
         /// </summary>
         /// <param name="val"></param>
