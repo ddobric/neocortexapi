@@ -1250,7 +1250,7 @@ namespace NeoCortexApi.Entities
                 }
                 else if (data == ser.ReadBegin("CellArray"))
                 {
-                    mem.Cells = ser.DeserializeCellArray(sr);
+                    mem.Cells = ser.DeserializeCellArray(data,sr);
                 }
                 else if (data == ser.ReadBegin(nameof(DistalDendrite)))
                 {

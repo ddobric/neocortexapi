@@ -439,7 +439,7 @@ namespace NeoCortexApi.Entities
 
             ser.SerializeValue(this.CellId, writer);
             ser.SerializeValue(this.Index, writer);
-            ser.SerializeValue(this.Cells, writer);
+            
 
             if (this.connectedInputCounter != null)
             {
@@ -455,6 +455,7 @@ namespace NeoCortexApi.Entities
             {
                 this.ProximalDendrite.Serialize(writer);
             }
+            ser.SerializeValue(this.Cells, writer);
             ser.SerializeEnd(nameof(Column), writer);
         }
         public static Column Deserialize(StreamReader sr)
@@ -463,7 +464,8 @@ namespace NeoCortexApi.Entities
 
             HtmSerializer2 ser = new HtmSerializer2();
 
-            while (sr.Peek() >= 0)
+            
+            while (!sr.EndOfStream)
             {
                 string data = sr.ReadLine();
                 if (data == String.Empty || data == ser.ReadBegin(nameof(Column)) || data == ser.ValueDelimiter )
@@ -474,17 +476,17 @@ namespace NeoCortexApi.Entities
                 {
                     column.connectedInputCounter = SparseBinaryMatrix.Deserialize(sr);
                 }
-                else if (data == ser.ReadBegin(nameof(SparseBinaryMatrix)))
-                {
-                    column.ConnectedInputCounterMatrix = SparseBinaryMatrix.Deserialize(sr);
-                }
+                //else if (data == ser.ReadBegin(nameof(SparseBinaryMatrix)))
+                //{
+                //    column.ConnectedInputCounterMatrix = SparseBinaryMatrix.Deserialize(sr);
+                //}
                 else if (data == ser.ReadBegin(nameof(ProximalDendrite)))
                 {
                     column.ProximalDendrite = ProximalDendrite.Deserialize(sr);
                 }
-                else if (data == ser.ReadBegin("CellArray"))
+                else if (data == ser.ReadBegin(nameof(Cell)))
                 {
-                    column.Cells = ser.DeserializeCellArray(sr);
+                    column.Cells = ser.DeserializeCellArray(data,sr);
                 }
                 else if (data == ser.ReadEnd(nameof(Column)))
                 {

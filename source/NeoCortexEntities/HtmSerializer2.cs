@@ -303,7 +303,6 @@ namespace NeoCortexApi.Entities
         /// <param name="sw"></param>
         public void SerializeValue(Cell[] val, StreamWriter sw)
         {
-            SerializeBegin("CellArray", sw);
             sw.Write(ValueDelimiter);
             if (val != null)
             {
@@ -314,33 +313,52 @@ namespace NeoCortexApi.Entities
                 }
             }
             sw.Write(ParameterDelimiter);
-            SerializeEnd("CellArray", sw);
+            
         }
         /// <summary>
         /// Deserialize the array of cells.
         /// </summary>
         /// <param name="reader"></param>
-        public Cell[] DeserializeCellArray(StreamReader reader)
+        public Cell[] DeserializeCellArray(string data,StreamReader reader)
         {
             List<Cell> cells = new List<Cell>();
-            while (reader.Peek() >= 0)
+            if (data == ReadBegin(nameof(Cell)))
             {
-                string data = reader.ReadLine();
+                Cell cell1 = Cell.Deserialize(reader);
 
-                if (data == ReadBegin(nameof(Cell)))
+                if (cell1.DistalDendrites.Count != 0)
                 {
-                    Cell cell1 = Cell.Deserialize(reader);
 
                     DistalDendrite distSegment1 = cell1.DistalDendrites[0];
 
                     DistalDendrite distSegment2 = cell1.DistalDendrites[1];
 
+
                     distSegment1.ParentCell = cell1;
                     distSegment2.ParentCell = cell1;
-                    cells.Add(cell1);
                 }
-
+                cells.Add(cell1);
             }
+            while(reader.Peek() >= 0)
+            {
+                string val = reader.ReadLine();
+                if (val == ReadBegin(nameof(Cell)))
+                {
+                    Cell cell1 = Cell.Deserialize(reader);
+                    if (cell1.DistalDendrites.Count != 0)
+                    {
+                        DistalDendrite distSegment1 = cell1.DistalDendrites[0];
+
+                        DistalDendrite distSegment2 = cell1.DistalDendrites[1];
+
+                        distSegment1.ParentCell = cell1;
+                        distSegment2.ParentCell = cell1;
+                    }
+                    cells.Add(cell1);
+                    
+                }
+            }
+            
             Cell[] cells1 = cells.ToArray();
             return cells1;
         }

@@ -462,8 +462,13 @@ namespace NeoCortexApi.Entities
                 return false;
             
             AbstractSparseBinaryMatrix other = (AbstractSparseBinaryMatrix)obj;
-            if (!Array.Equals(trueCounts, other.trueCounts))
-                return false;
+            if (other.trueCounts != null && trueCounts != null)
+            {
+
+                if (!other.trueCounts.SequenceEqual(trueCounts))
+                    return false;
+            }
+            
             if (ModuleTopology == null)
             {
                 if (obj.ModuleTopology != null)
