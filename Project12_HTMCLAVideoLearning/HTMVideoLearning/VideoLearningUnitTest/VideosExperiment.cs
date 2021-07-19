@@ -52,7 +52,7 @@ namespace VideoLearningUnitTest
             {
                 // Show Set Label/ Folder Name of each video set
                 Debug.WriteLine($"VIDEO SET LABEL: {set.setLabel}");
-                foreach (Video vid in set.videoEncodedList)
+                foreach (NVideo vid in set.videoEncodedList)
                 {
                     // Show the name of each video
                     Debug.WriteLine($"  VIDEO NAME: {vid.name}");
@@ -148,7 +148,7 @@ namespace VideoLearningUnitTest
                 {
                     // Show Set Label/ Folder Name of each video set
                     //Debug.WriteLine($"VIDEO SET LABEL: {set.setLabel}");
-                    foreach (Video vid in set.videoEncodedList)
+                    foreach (NVideo vid in set.videoEncodedList)
                     {
                         // Show the name of each video
                         //Debug.WriteLine($"  VIDEO NAME: {vid.name}");

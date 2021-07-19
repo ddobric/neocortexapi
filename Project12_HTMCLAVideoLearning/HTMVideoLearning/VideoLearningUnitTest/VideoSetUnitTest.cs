@@ -19,7 +19,7 @@ namespace VideoLearningUnitTest
             Debug.WriteLine("Testing ColorChannelToBinList method =============");
             List<int> expectedOutput = new() { b1, b2, b3, b4, b5, b6, b7, b8 };
             PrintArray(expectedOutput.ToArray(),"expected output");
-            List<int> outputFromMethod = VideoLibrary.Video.ColorChannelToBinList(pixelChannelColorValue);
+            List<int> outputFromMethod = VideoLibrary.NVideo.ColorChannelToBinList(pixelChannelColorValue);
             PrintArray(outputFromMethod.ToArray(), "from method");
             Assert.IsTrue(expectedOutput == outputFromMethod);
         }

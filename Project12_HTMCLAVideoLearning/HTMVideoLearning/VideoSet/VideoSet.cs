@@ -4,6 +4,7 @@ using System.IO;
 using System.Diagnostics;
 
 using GleamTech.VideoUltimate;
+using FFmpeg.AutoGen.Native;
 using System;
 
 namespace VideoLibrary
@@ -43,34 +44,34 @@ namespace VideoLibrary
     /// </summary>
     public class VideoSet
     {
-        public List<Video> videoEncodedList;
+        public List<NVideo> videoEncodedList;
         public List<string> videoName;
         public string setLabel;
 
-        public VideoSet(string videoSetPath, ColorMode colorMode, int frameWidth, int frameHeight)
+        public VideoSet(string videoSetPath, ColorMode colorMode, int frameWidth, int frameHeight, double frameRate)
         {
-            videoEncodedList = new();
-            videoName = new();
+            videoEncodedList = new List<NVideo>();
+            videoName = new List<string>();
             // Set the label of the video collection as the name of the folder that contains it 
             this.setLabel = Path.GetFileNameWithoutExtension(videoSetPath);
 
             // Read videos from the video folder path 
-            videoEncodedList = ReadVideos(videoSetPath, colorMode, frameWidth, frameHeight);
+            videoEncodedList = ReadVideos(videoSetPath, colorMode, frameWidth, frameHeight, frameRate);
         }
         /// <summary>
         /// Read all videos within a provided folder's full path, the foleder name will be used as videoset's Label
         /// </summary>
         /// <param name="videoSetPath"> The Path of the folder that contains the videos</param>
-        private List<Video> ReadVideos(string videoSetPath, ColorMode colorMode, int frameWidth, int frameHeight)
+        private List<NVideo> ReadVideos(string videoSetPath, ColorMode colorMode, int frameWidth, int frameHeight, double frameRate)
         {
-            List<Video> videoList = new();
+            List<NVideo> videoList = new List<NVideo>();
             // Iteate through each videos in the videos' folder
             foreach (string file in Directory.GetFiles(videoSetPath))
             {
                 string fileName = Path.GetFileName(videoSetPath);
                 videoName.Add(fileName);
                 Debug.WriteLine($"Video file name: {fileName}");
-                videoList.Add(new Video(file, colorMode, frameWidth, frameHeight));
+                videoList.Add(new NVideo(file, colorMode, frameWidth, frameHeight, frameRate));
             }
             return videoList;
         }
@@ -83,7 +84,7 @@ namespace VideoLibrary
     /// <br>The Image can be scaled
     /// </para>
     /// </summary>
-    public class Video
+    public class NVideo
     {
         public string name;
         public List<int[]> frames;
@@ -91,6 +92,7 @@ namespace VideoLibrary
         private readonly ColorMode colorMode;
         private readonly int frameWidth;
         private readonly int frameHeight;
+        private readonly double frameRate;
         /// <summary>
         /// Generate a Video object
         /// </summary>
@@ -98,15 +100,16 @@ namespace VideoLibrary
         /// <param name="colorMode">Color mode to encode each frame in the Video, see enum VideoSet.ColorMode</param>
         /// <param name="frameHeight">height in pixels of the video resolution</param>
         /// <param name="frameWidth">width in pixels of the video resolution</param>
-        public Video(string videoPath, ColorMode colorMode, int frameWidth, int frameHeight)
+        public NVideo(string videoPath, ColorMode colorMode, int frameWidth, int frameHeight, double frameRate = 0)
         {
             this.colorMode = colorMode;
             this.frameWidth = frameWidth;
             this.frameHeight = frameHeight;
+            this.frameRate = frameRate;
 
-            this.frames = new();
+            this.frames = new List<int[]>();
             this.name = Path.GetFileName(videoPath);
-            this.frames = BitmapToBinaryArray(ReadVideo(videoPath));
+            this.frames = BitmapToBinaryArray(ReadVideo_GleamTech(videoPath, frameRate = 0));
         }
         /// <summary>
         /// <para>Method to read a video into a list of Bitmap, from video path to a list of Bitmap</para>
@@ -115,25 +118,36 @@ namespace VideoLibrary
         /// </summary>
         /// <param name="videoPath"> full path of the video to be read </param>
         /// <returns>List of Bitmaps</returns>
-        private static List<Bitmap> ReadVideo(string videoPath)
+        private static List<Bitmap> ReadVideo_GleamTech(string videoPath, double frameRate = 0)
         {
-            // FURTHER IMPLEMENTATION:
-            //  include frame rate read,
-            //  read metadata from video 
-            List<Bitmap> frames_binaryArray = new();
+            List<Bitmap> frames_binaryArray = new List<Bitmap>();
 
-            // using VideosReader nuget package Videos.Ultimate from GleamTech
+            // Create VideoFrameReader object for the video from videoPath
             var videoFrameReader = new VideoFrameReader(videoPath);
+            
+            double step = 1;
+            // New step for iterating the video in a lower frameRate when specified
+            if (frameRate != 0) 
+            { 
+                step = videoFrameReader.FrameRate / frameRate;
+            }
             int frameIndex = 0;
             while (videoFrameReader.Read())
             {
                 Debug.WriteLine("Coded Frame Number: " + videoFrameReader.CurrentFrameNumber);
-                Debug.WriteLine("Frame Index: " + frameIndex++);
+                Debug.WriteLine("Frame Index: " + frameIndex);
                 Bitmap currentFrame = videoFrameReader.GetFrame();
                 frames_binaryArray.Add(currentFrame);
-                Debug.WriteLine($"{frames_binaryArray[frameIndex-1]}");
+                Debug.WriteLine($"{frames_binaryArray[frameIndex]}");
+                frameIndex = (int)(frameIndex + step);
             }
             //
+            return frames_binaryArray;
+        }
+        private static List<Bitmap> ReadVideos_AForge(string videoPath)
+        {
+            List<Bitmap> frames_binaryArray = new List<Bitmap>();
+            using var vFReader = new FFmpeg.AutoGen.
             return frames_binaryArray;
         }
 
@@ -145,7 +159,7 @@ namespace VideoLibrary
         private int[] BitmapToBinaryArray(Bitmap image)
         {
             Bitmap img = ResizeBitmap(image, frameWidth, frameHeight);
-            List<int> imageBinary = new();
+            List<int> imageBinary = new List<int>();
 
             for (int i = 0; i < img.Width; i++)
             {
@@ -185,7 +199,7 @@ namespace VideoLibrary
         /// <returns></returns>
         public static List<int> ColorChannelToBinList(byte r)
         {
-            List<int> binaryList = new();
+            List<int> binaryList = new List<int>();
             string BNR = Convert.ToString(r);
             foreach(char a in BNR){
                 binaryList.Add(a);
@@ -199,7 +213,7 @@ namespace VideoLibrary
         /// <returns></returns>
         private List<int[]> BitmapToBinaryArray(List<Bitmap> imageList)
         {
-            List<int[]> binaryArrayList = new();
+            List<int[]> binaryArrayList = new List<int[]>();
             foreach(Bitmap bmp in imageList)
             {
                 binaryArrayList.Add(BitmapToBinaryArray(bmp));
@@ -215,7 +229,7 @@ namespace VideoLibrary
         /// <returns></returns>
         private static Bitmap ResizeBitmap(Bitmap bmp, int width, int height)
         {
-            Bitmap result = new(width, height);
+            Bitmap result = new Bitmap(width, height);
             using (Graphics g = Graphics.FromImage(result))
             {
                 g.DrawImage(bmp, 0, 0, width, height);
