@@ -398,9 +398,9 @@ namespace NeoCortexApi.Entities
             HtmSerializer2 ser = new HtmSerializer2();
 
             ser.SerializeBegin(nameof(InMemoryDistributedDictionary<TKey, TValue>), writer);
-            ser.SerializeValue(typeof(TKey).AssemblyQualifiedName, writer);
-            ser.SerializeValue(typeof(TValue).AssemblyQualifiedName, writer);
-            ser.SerializeValue(dictList.Length, writer);
+            //ser.SerializeValue(typeof(TKey).AssemblyQualifiedName, writer);
+            //ser.SerializeValue(typeof(TValue).AssemblyQualifiedName, writer);
+            //ser.SerializeValue(dictList, writer);
 
             // ser.SerializeValue(this.dictList, writer);
             ser.SerializeValue(this.numElements, writer);
