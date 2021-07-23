@@ -499,6 +499,7 @@ namespace UnitTestsProject
             using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeConnectionsTest)}.txt"))
             {
                 Connections connections1 = Connections.Deserialize(sr);
+                Assert.IsTrue(connections.Equals(connections1));
             }
         }
         
@@ -533,9 +534,9 @@ namespace UnitTestsProject
             }
             using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeColumnTest)}.txt"))
             {
-                Column column = Column.Deserialize(sr);
+                //Column column = Column.Deserialize(sr);
 
-                Assert.IsTrue(matrix.Equals(column));
+                //Assert.IsTrue(matrix.Equals(column));
             }
         }
 

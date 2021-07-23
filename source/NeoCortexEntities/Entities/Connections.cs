@@ -1222,17 +1222,37 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.MatchingSegments, writer);
             ser.SerializeValue(this.m_SegmentForFlatIdx, writer);
             ser.SerializeValue(this.Cells, writer);
+            if (this.ActiveCells != null)
+            {
+                //this.ActiveCells.Serialize(writer);
+            }
+            if (this.WinnerCells != null)
+            {
+                //this.WinnerCells.Serialize(writer);
+            }
+            if (this.m_ActiveCells != null)
+            {
+                //this.m_ActiveCells.Serialize(writer);
+            }
+            if (this.winnerCells != null)
+            {
+                //this.winnerCells.Serialize(writer);
+            }
+            if (this.m_PredictiveCells != null)
+            {
+                //this.m_PredictiveCells.Serialize(writer);
+            }
             if (this.m_HtmConfig != null)
             {
                 this.m_HtmConfig.Serialize(writer);
             }
-
+            
             if (this.HtmConfig != null)
             {
                 this.HtmConfig.Serialize(writer);
             }
 
-
+            
             ser.SerializeEnd(nameof(Connections), writer);
         }
 

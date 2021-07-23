@@ -215,6 +215,22 @@ namespace NeoCortexApi.Entities
             return rnd;
 
         }
+        public void SerializeValue(Array array, StreamWriter sw)
+        {
+            sw.Write(ValueDelimiter);
+            sw.WriteLine();
+            
+            for (int i = 0; i < array.GetLength(0); i++)
+            {
+                for (int j = 0; j < array.GetLength(1); j++)
+                {
+                    sw.Write(array.GetValue(i, j));
+                }
+            }
+
+            sw.Write(ValueDelimiter);
+            sw.Write(ParameterDelimiter);
+        }
         /// <summary>
         /// Serialize the array of type Double.
         /// </summary>
