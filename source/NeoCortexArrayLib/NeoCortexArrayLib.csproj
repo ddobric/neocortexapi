@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\dev\NeoCortexAPI\neocortexapi\NeoCortexApi\NeoCortexArrayLib\NeoCortexArrayLib.xml</DocumentationFile>
+    <DocumentationFile>C:\dev\NeoCortexAPI\neocortexapi\source\NeoCortexArrayLib\NeoCortexArrayLib.xml</DocumentationFile>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
