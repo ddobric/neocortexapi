@@ -6,6 +6,8 @@ using System.Diagnostics;
 using GleamTech.VideoUltimate;
 using FFmpeg.AutoGen.Native;
 using System;
+using FFmpeg.AutoGen;
+using Xabe.FFmpeg;
 
 namespace VideoLibrary
 {
@@ -48,7 +50,7 @@ namespace VideoLibrary
         public List<string> videoName;
         public string setLabel;
 
-        public VideoSet(string videoSetPath, ColorMode colorMode, int frameWidth, int frameHeight, double frameRate)
+        public VideoSet(string videoSetPath, ColorMode colorMode, int frameWidth, int frameHeight, double frameRate = 0)
         {
             videoEncodedList = new List<NVideo>();
             videoName = new List<string>();
@@ -100,7 +102,7 @@ namespace VideoLibrary
         /// <param name="colorMode">Color mode to encode each frame in the Video, see enum VideoSet.ColorMode</param>
         /// <param name="frameHeight">height in pixels of the video resolution</param>
         /// <param name="frameWidth">width in pixels of the video resolution</param>
-        public NVideo(string videoPath, ColorMode colorMode, int frameWidth, int frameHeight, double frameRate = 0)
+        public NVideo(string videoPath, ColorMode colorMode, int frameWidth, int frameHeight, double frameRate)
         {
             this.colorMode = colorMode;
             this.frameWidth = frameWidth;
@@ -144,13 +146,6 @@ namespace VideoLibrary
             //
             return frames_binaryArray;
         }
-        private static List<Bitmap> ReadVideos_AForge(string videoPath)
-        {
-            List<Bitmap> frames_binaryArray = new List<Bitmap>();
-            using var vFReader = new FFmpeg.AutoGen.
-            return frames_binaryArray;
-        }
-
         /// <summary>
         /// Encode Bitmap to an int array by iterating through every pixel of the frame.
         /// </summary>

@@ -1,6 +1,3 @@
-# Simple pygame program
-
-
 # Import and initialize the pygame library
 import math
 import os
@@ -10,21 +7,21 @@ import time
 pygame.init()
 
 
-#----------------------------------------------------------------------------
+
 #Declare XY Plane
 screenHeight = 120
 screenWidth  = 120
 screen = pygame.display.set_mode([screenWidth, screenHeight])
-#----------------------------------------------------------------------------
+
 #Declare Circle - Object
-r = 15 
+r = 20
 #Initial Position DOWN LEFT
 X = r
 Y = screenHeight - r 
-#----------------------------------------------------------------------------
+
 # Run until the user asks to quit
 running = True
-#----------------------------------------------------------------------------
+
 #Declaring a Vector
 vectorLength = 10
 Angle = -100
@@ -32,13 +29,13 @@ vectorAngle = math.radians(Angle) #-- range 0 -> 359 degree on geometric angle--
 x = int(math.cos(vectorAngle)*vectorLength)
 y = -int(math.sin(vectorAngle)*vectorLength)
 vectorTransform = { 'x': x, 'y': y}
-#----------------------------------------------------------------------------
+
 #Making Picture for learning 
 count = 0
-countLimit = 1000 #No of Pictures taken for data
-#----------------------------------------------------------------------------
+countLimit = 1000 #No of Frames taken for data
+
 experimentName = "R"+str(r)+"_Angle"+str(Angle)+"_Speed"+str(vectorLength)
-fileName = experimentName+str("/Frame")
+fileName = experimentName+str("/")
 if(not(os.path.exists(experimentName))):
     try:
         os.mkdir(experimentName)
@@ -61,8 +58,9 @@ while running:
             
         X+=vectorTransform['x']
         Y+=vectorTransform['y']
+        
         pygame.draw.circle(screen, (0, 0, 0), (X, Y), r)
-        fName = fileName+"_"+str(count)+".jpg"
+        fName = fileName+str(count)+".jpg"
         pygame.image.save(screen, fName)
         time.sleep(0.05)
         count+=1

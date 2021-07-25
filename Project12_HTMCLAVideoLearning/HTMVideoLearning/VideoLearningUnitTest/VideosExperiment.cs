@@ -18,8 +18,21 @@ namespace VideoLearningUnitTest
 {
     /// <summary>
     /// This Experiment focus on learning and recognition of videos 
-    /// The videos are stored as short mp4 clip in labeled Folder in TrainingVideos/ 
-    /// more doc/...
+    /// The folders' name are used as the label of the dataset
+    /// The videos are stored as short clip in label Folders in TrainingVideos/ 
+    /// The class VideoSet is created to represent a set of videos which are contained in the same folder, using their folder's name as the label
+    /// 
+    /// The option currently available for encoding videos are:
+    ///     reduction of FrameRate
+    ///     Resize of Frame Resolution
+    ///     Color Resolution:
+    ///         BLACKWHITE,
+    ///         BINARIZEDRGB,
+    ///         PURE,
+    ///         // see ColorMode in VideoSet.cs
+    /// to faster read Videos
+    /// 
+    /// 
     /// </summary>
     [TestClass]
     public class VideosExperiment
@@ -32,17 +45,27 @@ namespace VideoLearningUnitTest
         [Timeout(TestTimeout.Infinite)]
         public void VideosLearningExperiment()
         {
+            // Experiment Variables
             ColorMode colorMode = ColorMode.BLACKWHITE;
             int frameWidth = 15;
             int frameHeight = 15;
-            List<int[]> tempInput = new();
+
+            
+
             // Input videos are stored in different folders under SequenceLearningExperiments/TrainingVideos/
-            // with their folder's names as key value
-            string[] videoSetPaths = GetVideoSetPaths("");
+            // with their folder's names as key value. To get the paths of all folders:
+            string[] videoSetPaths = GetVideoSetPaths();
+
+            // A list of VideoSet object, each has the Videos and the name of the folder as Label, contains all the Data in TrainingVideos,
+            // this List will be the core iterator in later learning and predicting
             List<VideoSet> videoData = new();
 
+            // Because of the continous learning of the Frames in the Spatial Pooler
+            // A list of tempInput is used to stored all the encoded frames from all Videos
+            List<int[]> tempInput = new();
+
             // Iterate through every folder in TrainingVideos/ to create VideoSet: object that stores video of same folder/label
-            foreach( string path in videoSetPaths)
+            foreach ( string path in videoSetPaths)
             {
                 videoData.Add(new VideoSet(path, colorMode, frameWidth, frameHeight));
             }
@@ -94,7 +117,7 @@ namespace VideoLearningUnitTest
             TemporalMemory tm1 = new();
 
             // Question about homeoplasticity controller 
-            /*
+            int numInputs = tempInput.Count;
             HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, numInputs * 55, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                 if (isStable)
@@ -110,9 +133,9 @@ namespace VideoLearningUnitTest
 
                 tm1.Reset(mem);
             }, numOfCyclesToWaitOnChange: 25);
-            */
+            
 
-            SpatialPoolerMT sp1 = new(/*hpa*/);
+            SpatialPoolerMT sp1 = new(hpa);
             sp1.Init(mem, UnitTestHelpers.GetMemory());
             tm1.Init(mem);
 
@@ -124,7 +147,7 @@ namespace VideoLearningUnitTest
             int cycle = 0;
             int matches = 0;
 
-            string lastPredictedValue;
+            string lastPredictedValue = "";
 
 
             int maxCycles = 4200;
@@ -172,7 +195,7 @@ namespace VideoLearningUnitTest
 
             //
             // Now training with SP+TM. SP is pretrained on the given input pattern set.
-            /*
+            
             for (int i = 0; i < maxCycles; i++)
             {
                 matches = 0;
@@ -181,76 +204,84 @@ namespace VideoLearningUnitTest
 
                 Debug.WriteLine($"-------------- Cycle {cycle} ---------------");
 
-                for (int j = 0; j < tempInput.Count;j+=1)
-                {
-                    Debug.WriteLine($"-------------- {InputVideos[0].ImageNames[j]} ---------------");
+                foreach (VideoSet vs in videoData)
 
-                    var lyrOut = layer1.Compute(tempInput[j], learn) as ComputeCycle;
-
-                    // lyrOut is null when the TM is added to the layer inside of HPC callback by entering of the stable state.
-                    //if (isInStableState && lyrOut != null)
+                    foreach (VideoLibrary.NVideo vid in vs.videoEncodedList)
                     {
-                        var activeColumns = layer1.GetResult("sp") as int[];
-
-                        //layer2.Compute(lyrOut.WinnerCells, true);
-                        //activeColumnsLst[input].Add(activeColumns.ToList());
-
-                        previousInputs.Add(InputVideos[0].ImageNames[j]);
-                        if (previousInputs.Count > (maxPrevInputs + 1))
-                            previousInputs.RemoveAt(0);
-
-                        // In the pretrained SP with HPC, the TM will quickly learn cells for patterns
-                        // In that case the starting sequence 4-5-6 might have the sam SDR as 1-2-3-4-5-6,
-                        // Which will result in returning of 4-5-6 instead of 1-2-3-4-5-6.
-                        // HtmClassifier allways return the first matching sequence. Because 4-5-6 will be as first
-                        // memorized, it will match as the first one.
-                        if (previousInputs.Count < maxPrevInputs)
-                            continue;
-
-                        string key = GetKey(previousInputs, InputVideos[0].ImageNames[j]);
-
-                        List<Cell> actCells;
-
-                        if (lyrOut.ActiveCells.Count == lyrOut.WinnerCells.Count)
+                        for (int j = 0; j < vid.frames.Count; j++)
                         {
-                            actCells = lyrOut.ActiveCells;
-                        }
-                        else
-                        {
-                            actCells = lyrOut.WinnerCells;
-                        }
+                            {
+                                Debug.WriteLine($"-------------- currently playing {vid.name}, frame No. {j} ---------------");
 
-                        cls.Learn(key, actCells.ToArray());
+                                var lyrOut = layer1.Compute(vid.frames[j], learn) as ComputeCycle;
 
-                        if (learn == false)
-                            Debug.WriteLine($"Inference mode");
+                                // lyrOut is null when the TM is added to the layer inside of HPC callback by entering of the stable state.
+                                //if (isInStableState && lyrOut != null)
+                                {
+                                    var activeColumns = layer1.GetResult("sp") as int[];
 
-                        Debug.WriteLine($"Col  SDR: {Helpers.StringifyVector(lyrOut.ActivColumnIndicies)}");
-                        Debug.WriteLine($"Cell SDR: {Helpers.StringifyVector(actCells.Select(c => c.Index).ToArray())}");
+                                    //layer2.Compute(lyrOut.WinnerCells, true);
+                                    //activeColumnsLst[input].Add(activeColumns.ToList());
 
-                        if (key == lastPredictedValue)
-                        {
-                            matches++;
-                            Debug.WriteLine($"Match. Actual value: {key} - Predicted value: {lastPredictedValue}");
-                        }
-                        else
-                            Debug.WriteLine($"Missmatch! Actual value: {key} - Predicted value: {lastPredictedValue}");
+                                    previousInputs.Add(vs.setLabel);
+                                    if (previousInputs.Count > (maxPrevInputs + 1))
+                                        previousInputs.RemoveAt(0);
 
-                        if (lyrOut.PredictiveCells.Count > 0)
-                        {
-                            var predictedInputValue = cls.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(),3);
+                                    // In the pretrained SP with HPC, the TM will quickly learn cells for patterns
+                                    // In that case the starting sequence 4-5-6 might have the sam SDR as 1-2-3-4-5-6,
+                                    // Which will result in returning of 4-5-6 instead of 1-2-3-4-5-6.
+                                    // HtmClassifier allways return the first matching sequence. Because 4-5-6 will be as first
+                                    // memorized, it will match as the first one.
+                                    if (previousInputs.Count < maxPrevInputs)
+                                        continue;
 
-                            Debug.WriteLine($"Current Input: {InputVideos[0].ImageNames[j]} \t| Predicted Input: {predictedInputValue}");
+                                    string key = GetKey(previousInputs, vs.setLabel);
 
-                            lastPredictedValue = predictedInputValue;
-                        }
-                        else
-                        {
-                            Debug.WriteLine($"NO CELLS PREDICTED for next cycle.");
-                            lastPredictedValue = String.Empty;
+                                    List<Cell> actCells;
+
+                                    if (lyrOut.ActiveCells.Count == lyrOut.WinnerCells.Count)
+                                    {
+                                        actCells = lyrOut.ActiveCells;
+                                    }
+                                    else
+                                    {
+                                        actCells = lyrOut.WinnerCells;
+                                    }
+
+                                    cls.Learn(key, actCells.ToArray());
+
+                                    if (learn == false)
+                                        Debug.WriteLine($"Inference mode");
+
+                                    Debug.WriteLine($"Col  SDR: {Helpers.StringifyVector(lyrOut.ActivColumnIndicies)}");
+                                    Debug.WriteLine($"Cell SDR: {Helpers.StringifyVector(actCells.Select(c => c.Index).ToArray())}");
+
+                                    if (key == lastPredictedValue)
+                                    {
+                                        matches++;
+                                        Debug.WriteLine($"Match. Actual value: {key} - Predicted value: {lastPredictedValue}");
+                                    }
+                                    else
+                                        Debug.WriteLine($"Missmatch! Actual value: {key} - Predicted value: {lastPredictedValue}");
+
+                                    if (lyrOut.PredictiveCells.Count > 0)
+                                    {
+                                        //var predictedInputValue = cls.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(),3);
+                                        var predictedInputValue = cls.GetPredictedInputValue(lyrOut.PredictiveCells.ToArray());
+
+                                        Debug.WriteLine($"Current Input: {vid.frames[j]} \t| Predicted Input: {predictedInputValue}");
+
+                                        lastPredictedValue = predictedInputValue;
+                                    }
+                                    else
+                                    {
+                                        Debug.WriteLine($"NO CELLS PREDICTED for next cycle.");
+                                        lastPredictedValue = String.Empty;
+                                    }
+                                }
+                            }
                         }
                     }
-                }
 
                 // The brain does not do that this way, so we don't use it.
                 // tm1.reset(mem);
@@ -281,7 +312,7 @@ namespace VideoLearningUnitTest
             }
 
             Debug.WriteLine("------------ END ------------");
-            */
+            
         }
 
         /// <summary>
@@ -314,17 +345,17 @@ namespace VideoLearningUnitTest
         }
 
         /// <summary>
-        /// <para>Get Folders under bin/experimentOutputFolder/TrainingVideos</para>
-        /// <para>Project specific function for getting all the folders that contains videos</para>
+        /// <para>Get Folders under bin/TrainingVideos</para>
+        /// <para>get all folders path in TrainingVideos for adding labels of VideoSet</para>
         /// </summary>
         /// <param name="experimentOutputFolder">Output folder name of the test, found under Debug/bin/</param>
-        /// <returns></returns>
-        private static string[] GetVideoSetPaths(string experimentOutputFolder)
+        /// <returns>A String List of Label folder path</returns>
+        private static string[] GetVideoSetPaths()
         {
             string currentDir = Directory.GetCurrentDirectory();
 
             // Get the root path of training videos.
-            string testDir = $"{currentDir}\\{experimentOutputFolder}\\TrainingVideos";
+            string testDir = $"{currentDir}\\TrainingVideos";
 
             // Get all the folders that contain video sets under TrainingVideos/
             string[] videoSetPaths = Directory.GetDirectories(testDir, "*", SearchOption.TopDirectoryOnly);
