@@ -50,8 +50,6 @@ namespace VideoLearningUnitTest
             int frameWidth = 15;
             int frameHeight = 15;
 
-            
-
             // Input videos are stored in different folders under SequenceLearningExperiments/TrainingVideos/
             // with their folder's names as key value. To get the paths of all folders:
             string[] videoSetPaths = GetVideoSetPaths();
@@ -74,8 +72,8 @@ namespace VideoLearningUnitTest
             foreach (VideoSet set in videoData)
             {
                 // Show Set Label/ Folder Name of each video set
-                Debug.WriteLine($"VIDEO SET LABEL: {set.setLabel}");
-                foreach (NVideo vid in set.videoEncodedList)
+                Debug.WriteLine($"VIDEO SET LABEL: {set.VideoSetLabel}");
+                foreach (NVideo vid in set.VideoEncodedList)
                 {
                     // Show the name of each video
                     Debug.WriteLine($"  VIDEO NAME: {vid.name}");
@@ -136,7 +134,7 @@ namespace VideoLearningUnitTest
             
 
             SpatialPoolerMT sp1 = new(hpa);
-            sp1.Init(mem, UnitTestHelpers.GetMemory());
+            sp1.Init(mem);
             tm1.Init(mem);
 
             CortexLayer<object, object> layer1 = new("L1");
@@ -171,7 +169,7 @@ namespace VideoLearningUnitTest
                 {
                     // Show Set Label/ Folder Name of each video set
                     //Debug.WriteLine($"VIDEO SET LABEL: {set.setLabel}");
-                    foreach (NVideo vid in set.videoEncodedList)
+                    foreach (NVideo vid in set.VideoEncodedList)
                     {
                         // Show the name of each video
                         //Debug.WriteLine($"  VIDEO NAME: {vid.name}");
@@ -206,7 +204,7 @@ namespace VideoLearningUnitTest
 
                 foreach (VideoSet vs in videoData)
 
-                    foreach (VideoLibrary.NVideo vid in vs.videoEncodedList)
+                    foreach (VideoLibrary.NVideo vid in vs.VideoEncodedList)
                     {
                         for (int j = 0; j < vid.frames.Count; j++)
                         {
@@ -223,7 +221,7 @@ namespace VideoLearningUnitTest
                                     //layer2.Compute(lyrOut.WinnerCells, true);
                                     //activeColumnsLst[input].Add(activeColumns.ToList());
 
-                                    previousInputs.Add(vs.setLabel);
+                                    previousInputs.Add(vs.VideoSetLabel);
                                     if (previousInputs.Count > (maxPrevInputs + 1))
                                         previousInputs.RemoveAt(0);
 
@@ -235,7 +233,7 @@ namespace VideoLearningUnitTest
                                     if (previousInputs.Count < maxPrevInputs)
                                         continue;
 
-                                    string key = GetKey(previousInputs, vs.setLabel);
+                                    string key = GetKey(previousInputs, vs.VideoSetLabel);
 
                                     List<Cell> actCells;
 
@@ -321,7 +319,7 @@ namespace VideoLearningUnitTest
         /// <returns></returns>
         private HtmConfig GetHTM()
         {
-            HtmConfig htm = new(inputBits, numColumns);
+            HtmConfig htm = new HtmConfig(inputBits, numColumns);
             htm.SetHtmConfigDefaultParameters(inputBits, numColumns);
             htm.NumActiveColumnsPerInhArea = (int)(0.02 * numColumns[0]);
             htm.MaxSynapsesPerSegment = (int)(0.02 * numColumns[0]);

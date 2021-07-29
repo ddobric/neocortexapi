@@ -46,19 +46,21 @@ namespace VideoLibrary
     /// </summary>
     public class VideoSet
     {
-        public List<NVideo> videoEncodedList;
-        public List<string> videoName;
-        public string setLabel;
+        public List<NVideo> VideoEncodedList { get; set; }
+        
+        public List<string> Name { get; set; }
+
+        public string VideoSetLabel { get; set; }
 
         public VideoSet(string videoSetPath, ColorMode colorMode, int frameWidth, int frameHeight, double frameRate = 0)
         {
-            videoEncodedList = new List<NVideo>();
-            videoName = new List<string>();
+            VideoEncodedList = new List<NVideo>();
+            Name = new List<string>();
             // Set the label of the video collection as the name of the folder that contains it 
-            this.setLabel = Path.GetFileNameWithoutExtension(videoSetPath);
+            this.VideoSetLabel = Path.GetFileNameWithoutExtension(videoSetPath);
 
             // Read videos from the video folder path 
-            videoEncodedList = ReadVideos(videoSetPath, colorMode, frameWidth, frameHeight, frameRate);
+            VideoEncodedList = ReadVideos(videoSetPath, colorMode, frameWidth, frameHeight, frameRate);
         }
         /// <summary>
         /// Read all videos within a provided folder's full path, the foleder name will be used as videoset's Label
@@ -71,7 +73,7 @@ namespace VideoLibrary
             foreach (string file in Directory.GetFiles(videoSetPath))
             {
                 string fileName = Path.GetFileName(videoSetPath);
-                videoName.Add(fileName);
+                Name.Add(fileName);
                 Debug.WriteLine($"Video file name: {fileName}");
                 videoList.Add(new NVideo(file, colorMode, frameWidth, frameHeight, frameRate));
             }
@@ -111,7 +113,10 @@ namespace VideoLibrary
 
             this.frames = new List<int[]>();
             this.name = Path.GetFileName(videoPath);
-            this.frames = BitmapToBinaryArray(ReadVideo_GleamTech(videoPath, frameRate = 0));
+            //this.frames = BitmapToBinaryArray(ReadVideo_GleamTech(videoPath, frameRate = 0));
+
+            var frmBitmaps = ReadVideoGleamTech(videoPath, frameRate = 0);
+            this.frames = BitmapToBinaryArray(frmBitmaps);
         }
         /// <summary>
         /// <para>Method to read a video into a list of Bitmap, from video path to a list of Bitmap</para>
@@ -120,7 +125,7 @@ namespace VideoLibrary
         /// </summary>
         /// <param name="videoPath"> full path of the video to be read </param>
         /// <returns>List of Bitmaps</returns>
-        private static List<Bitmap> ReadVideo_GleamTech(string videoPath, double frameRate = 0)
+        private static List<Bitmap> ReadVideoGleamTech(string videoPath, double frameRate = 0)
         {
             List<Bitmap> frames_binaryArray = new List<Bitmap>();
 
