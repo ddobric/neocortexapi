@@ -6,6 +6,7 @@ using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using VideoLibrary;
 
@@ -24,6 +25,12 @@ namespace HTMVideoLearning
 
             sw.Start();
             // Define first the desired properties of the frames
+            string outputFolder = "Output";
+            string convertedVideoDir = $"{outputFolder}//ConvertedVideo";
+            if (!Directory.Exists($"{convertedVideoDir}"))
+            {
+                Directory.CreateDirectory($"{convertedVideoDir}");
+            }
             int frameWidth = 10;
             int frameHeight = 10;
             VideoLibrary.ColorMode colorMode = ColorMode.BLACKWHITE;
@@ -49,7 +56,9 @@ namespace HTMVideoLearning
             // Iterate through every folder in TrainingVideos/ to create VideoSet: object that stores video of same folder/label
             foreach (string path in videoSetPaths)
             {
-                videoData.Add(new VideoSet(path, colorMode, frameWidth, frameHeight, frameRate));
+                VideoSet vs = new VideoSet(path, colorMode, frameWidth, frameHeight, frameRate);
+                videoData.Add(vs);
+                vs.CreateConvertedVideos(convertedVideoDir);
             }
             // Iterate through every folder in TrainingVideos/
 
@@ -57,18 +66,18 @@ namespace HTMVideoLearning
             {
                 // Show Set Label/ Folder Name of each video set
                 HelperFunction.WriteLineColor($"VIDEO SET LABEL: {set.VideoSetLabel}", ConsoleColor.Cyan);
-                foreach (NVideo vid in set.VideoEncodedList)
+                foreach (NVideo vid in set.nVideoList)
                 {
                     // Show the name of each video
                     HelperFunction.WriteLineColor($"    VIDEO NAME: {vid.name}", ConsoleColor.DarkCyan);
-                    foreach (NFrame frame in vid.frames)
+                    foreach (NFrame frame in vid.nFrames)
                     {
                         // Show the encoded content of each frame in a video, these will be used as SP learning input
                         //Console.WriteLine($"      Frame : {frame.ArrToString()}");
 
                         // FOR RUNNING EXPERIMENT AT THIS POINT
                         // all frame encoded binary array are stored in tempInput
-                        tempInput.Add(frame.encodedBitArray);
+                        tempInput.Add(frame.EncodedBitArray);
                     }
                 }
             }
@@ -137,16 +146,16 @@ namespace HTMVideoLearning
                 {
                     // Show Set Label/ Folder Name of each video set
                     HelperFunction.WriteLineColor($"VIDEO SET LABEL: {set.VideoSetLabel}", ConsoleColor.Cyan);
-                    foreach (NVideo vid in set.VideoEncodedList)
+                    foreach (NVideo vid in set.nVideoList)
                     {
                         // Show the name of each video
                         HelperFunction.WriteLineColor($"    VIDEO NAME: {vid.name}", ConsoleColor.DarkCyan);
-                        foreach (NFrame frame in vid.frames)
+                        foreach (NFrame frame in vid.nFrames)
                         {
                             //reserved for displaying function
-                            Console.WriteLine($" -- {frame.frameKey} --");
+                            Console.WriteLine($" -- {frame.FrameKey} --");
 
-                            var lyrOut = layer1.Compute(frame.encodedBitArray, learn);
+                            var lyrOut = layer1.Compute(frame.EncodedBitArray, learn);
 
                             if (isInStableState)
                                 break;
@@ -169,9 +178,9 @@ namespace HTMVideoLearning
             string testVideosPath = Console.ReadLine();
             VideoSet testVideo = new(testVideosPath, colorMode, frameWidth, frameHeight, frameRate);
 
-            foreach (NVideo nv in testVideo.VideoEncodedList)
+            foreach (NVideo nv in testVideo.nVideoList)
             {
-                List<NFrame> inputVideo = nv.frames;
+                List<NFrame> inputVideo = nv.nFrames;
                 List<int[]> stableAreas = new List<int[]>();
 
                 List<string> lastPredictedValue = new List<string>();
@@ -198,14 +207,14 @@ namespace HTMVideoLearning
 
                     foreach (var input in inputVideo)
                     {
-                        Console.WriteLine($"-------------- {input.frameKey} ---------------");
+                        Console.WriteLine($"-------------- {input.FrameKey} ---------------");
 
-                        var lyrOut = layer1.Compute(input.encodedBitArray, learn) as ComputeCycle;
+                        var lyrOut = layer1.Compute(input.EncodedBitArray, learn) as ComputeCycle;
 
                         // lyrOut is null when the TM is added to the layer inside of HPC callback by entering of the stable state.
                         var activeColumns = layer1.GetResult("sp") as int[];
 
-                        previousFrames.Add(input.frameKey);
+                        previousFrames.Add(input.FrameKey);
                         if (previousFrames.Count > (maxPrevInputs + 1))
                             previousFrames.RemoveAt(0);
 

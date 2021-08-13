@@ -43,7 +43,7 @@ namespace VideoLibrary
     /// </summary>
     public class VideoSet
     {
-        public List<NVideo> VideoEncodedList { get; set; }
+        public List<NVideo> nVideoList { get; set; }
 
         public List<string> Name { get; set; }
 
@@ -51,13 +51,13 @@ namespace VideoLibrary
 
         public VideoSet(string videoSetPath, ColorMode colorMode, int frameWidth, int frameHeight, double frameRate = 0)
         {
-            VideoEncodedList = new List<NVideo>();
+            nVideoList = new List<NVideo>();
             Name = new List<string>();
             // Set the label of the video collection as the name of the folder that contains it 
             this.VideoSetLabel = Path.GetFileNameWithoutExtension(videoSetPath);
 
             // Read videos from the video folder path 
-            VideoEncodedList = ReadVideos(videoSetPath, colorMode, frameWidth, frameHeight, frameRate);
+            nVideoList = ReadVideos(videoSetPath, colorMode, frameWidth, frameHeight, frameRate);
         }
         /// <summary>
         /// Read all videos within a provided folder's full path, the foleder name will be used as videoset's Label
@@ -83,14 +83,26 @@ namespace VideoLibrary
         public int GetLongestFramesCountInSet()
         {
             int count = 0;
-            foreach (NVideo nv in VideoEncodedList)
+            foreach (NVideo nv in nVideoList)
             {
-                if (nv.frames.Count > count)
+                if (nv.nFrames.Count > count)
                 {
-                    count = nv.frames.Count;
+                    count = nv.nFrames.Count;
                 }
             }
             return count;
+        }
+        public void CreateConvertedVideos(string videoOutputDirectory)
+        {
+            foreach(NVideo nv in nVideoList)
+            {
+                string folderName = $"{videoOutputDirectory}//{nv.label}";
+                if (!Directory.Exists(folderName))
+                {
+                    Directory.CreateDirectory(folderName);
+                }
+                nv.BitmapListToVideo($"{folderName}//{nv.name}",true);
+            }
         }
     }
     /// <summary>
@@ -104,13 +116,13 @@ namespace VideoLibrary
     public class NVideo
     {
         public string name;
-        public List<NFrame> frames;
-        string label;
+        public List<NFrame> nFrames;
+        public string label;
 
         private readonly ColorMode colorMode;
-        private readonly int frameWidth;
-        private readonly int frameHeight;
-        private readonly double frameRate;
+        public readonly int frameWidth;
+        public readonly int frameHeight;
+        public readonly double frameRate;
         /// <summary>
         /// Generate a Video object
         /// </summary>
@@ -126,14 +138,14 @@ namespace VideoLibrary
             this.frameRate = frameRate;
             this.label = label;
 
-            this.frames = new List<NFrame>();
+            this.nFrames = new List<NFrame>();
             this.name = Path.GetFileNameWithoutExtension(videoPath);
             //this.frames = BitmapToBinaryArray(ReadVideo_GleamTech(videoPath, frameRate = 0));
 
             var fromBitmaps = ReadVideo(videoPath, frameRate);
             for (int i = 0; i < fromBitmaps.Count; i++)
             {
-                frames.Add(new NFrame(fromBitmaps[i], name, label, i, frameWidth, frameHeight, colorMode));
+                nFrames.Add(new NFrame(fromBitmaps[i], name, label, i, frameWidth, frameHeight, colorMode));
             }
         }
         /// <summary>
@@ -182,36 +194,37 @@ namespace VideoLibrary
 
         public int[] GetEncodedFrame(string key)
         {
-            foreach (NFrame nf in frames)
+            foreach (NFrame nf in nFrames)
             {
-                if(nf.frameKey == key)
+                if(nf.FrameKey == key)
                 {
-                    return nf.encodedBitArray;
+                    return nf.EncodedBitArray;
                 }
             }
             return new int[] { 4, 2, 3 };
         }
-        public static void BitmapListToVideo(List<Bitmap> bitmapList, string videoOutputPath, int fps, int width, int height, bool isColor)
+        public void BitmapListToVideo(string videoOutputPath,bool isColor)
         {
-            VideoWriter videoWriter = new($"{videoOutputPath}.mp4", -1, fps, new Size(width, height), isColor);
-            foreach (Bitmap frame in bitmapList)
+            VideoWriter videoWriter = new($"{videoOutputPath}.mp4",-1, frameRate, new Size(frameWidth, frameHeight),isColor);
+            foreach (NFrame frame in nFrames)
             {
-                videoWriter.Write(frame.ToMat());
+                Bitmap tempBitmap = frame.IntArrayToBitmap();
+                videoWriter.Write(tempBitmap.ToMat());
             }
             videoWriter.Dispose();
         }
     }
     public class NFrame {
 
-        public string frameKey { get; }
-        public int[] encodedBitArray { get; set; }
+        public string FrameKey { get; }
+        public int[] EncodedBitArray { get; set; }
 
-        private readonly int index;
-        private readonly string label;
-        private readonly string videoName;
-        private readonly ColorMode colorMode;
-        private readonly int frameWidth;
-        private readonly int frameHeight;
+        public readonly int index;
+        public readonly string label;
+        public readonly string videoName;
+        public readonly ColorMode colorMode;
+        public readonly int frameWidth;
+        public readonly int frameHeight;
 
         public NFrame(Bitmap bmp, string videoName, string label, int index, int frameWidth, int frameHeight, ColorMode colorMode)
         {
@@ -221,8 +234,8 @@ namespace VideoLibrary
             this.frameHeight = frameHeight;
             this.frameWidth = frameWidth;
             this.videoName = videoName;
-            frameKey = $"{label}_{videoName}_{index}";
-            encodedBitArray = BitmapToBinaryArray(bmp);
+            FrameKey = $"{label}_{videoName}_{index}";
+            EncodedBitArray = BitmapToBinaryArray(bmp);
         }
             /// <summary>
             /// Encode Bitmap to an int array by iterating through every pixel of the frame.
@@ -296,7 +309,7 @@ namespace VideoLibrary
                 }
                 return result;
             }
-        public static Bitmap IntArrayToBitmap(int[] inputBitArray, ColorMode colorMode, int frameWidth, int frameHeight)
+        public Bitmap IntArrayToBitmap()
         {
             int[] rgb = { 0, 0, 0 };
             Bitmap output = new(frameWidth,frameHeight);
@@ -306,7 +319,7 @@ namespace VideoLibrary
                     switch (colorMode)
                     {
                         case ColorMode.BLACKWHITE:
-                            if (inputBitArray[h * w + w] == 0)
+                            if (EncodedBitArray[h * w + w] == 0)
                             {
                                 output.SetPixel(w, h, Color.FromArgb(255,255,255,255));
                             }
@@ -318,17 +331,17 @@ namespace VideoLibrary
                         case ColorMode.BINARIZEDRGB:
                             for(int i = 0; i < 3; i += 1)
                             {
-                                rgb[i] = (inputBitArray[(h * w + w)*3+i] == 1) ? 255 : 0;
+                                rgb[i] = (EncodedBitArray[(h * w + w)*3+i] == 1) ? 255 : 0;
                             }
                             output.SetPixel(w, h, Color.FromArgb(255, rgb[0], rgb[1], rgb[2]));
                             break;
                         case ColorMode.PURE:
                             for (int i = 0; i < 3; i += 1)
                             {
-                                int[] binaryColorArray = SubArray<int>(inputBitArray, (h * w + w) * 24 + 8 * i, 8);
+                                int[] binaryColorArray = SubArray<int>(EncodedBitArray, (h * w + w) * 24 + 8 * i, 8);
 
-                                int colorChannelValue = Convert.ToInt32(binaryColorArray);
-                                rgb[i] = (inputBitArray[(h * w + w) * 3] + i == 1) ? 255 : 0;
+                                rgb[i] = Convert.ToInt32(binaryColorArray);
+                                
                             }
                             output.SetPixel(w, h, Color.FromArgb(255, rgb[0], rgb[1], rgb[2]));
                             break;

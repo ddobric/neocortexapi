@@ -73,11 +73,11 @@ namespace VideoLearningUnitTest
             {
                 // Show Set Label/ Folder Name of each video set
                 Debug.WriteLine($"VIDEO SET LABEL: {set.VideoSetLabel}");
-                foreach (NVideo vid in set.VideoEncodedList)
+                foreach (NVideo vid in set.nVideoList)
                 {
                     // Show the name of each video
                     Debug.WriteLine($"  VIDEO NAME: {vid.name}");
-                    foreach (int[] frame in vid.frames)
+                    foreach (int[] frame in vid.nFrames)
                     {
                         // Show the encoded content of each frame in a video, these will be used as SP learning input
                         Debug.WriteLine($"      Frame : {frame.ArrToString()}");
@@ -169,11 +169,11 @@ namespace VideoLearningUnitTest
                 {
                     // Show Set Label/ Folder Name of each video set
                     //Debug.WriteLine($"VIDEO SET LABEL: {set.setLabel}");
-                    foreach (NVideo vid in set.VideoEncodedList)
+                    foreach (NVideo vid in set.nVideoList)
                     {
                         // Show the name of each video
                         //Debug.WriteLine($"  VIDEO NAME: {vid.name}");
-                        foreach (int[] frame in vid.frames)
+                        foreach (int[] frame in vid.nFrames)
                         {
                             // Show the encoded content of each frame in a video, these will be used as SP learning input
                             Debug.WriteLine($"      Frame : {frame.ArrToString()}");
@@ -204,14 +204,14 @@ namespace VideoLearningUnitTest
 
                 foreach (VideoSet vs in videoData)
 
-                    foreach (VideoLibrary.NVideo vid in vs.VideoEncodedList)
+                    foreach (VideoLibrary.NVideo vid in vs.nVideoList)
                     {
-                        for (int j = 0; j < vid.frames.Count; j++)
+                        for (int j = 0; j < vid.nFrames.Count; j++)
                         {
                             {
                                 Debug.WriteLine($"-------------- currently playing {vid.name}, frame No. {j} ---------------");
 
-                                var lyrOut = layer1.Compute(vid.frames[j], learn) as ComputeCycle;
+                                var lyrOut = layer1.Compute(vid.nFrames[j], learn) as ComputeCycle;
 
                                 // lyrOut is null when the TM is added to the layer inside of HPC callback by entering of the stable state.
                                 //if (isInStableState && lyrOut != null)
@@ -267,7 +267,7 @@ namespace VideoLearningUnitTest
                                         //var predictedInputValue = cls.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(),3);
                                         var predictedInputValue = cls.GetPredictedInputValue(lyrOut.PredictiveCells.ToArray());
 
-                                        Debug.WriteLine($"Current Input: {vid.frames[j]} \t| Predicted Input: {predictedInputValue}");
+                                        Debug.WriteLine($"Current Input: {vid.nFrames[j]} \t| Predicted Input: {predictedInputValue}");
 
                                         lastPredictedValue = predictedInputValue;
                                     }
