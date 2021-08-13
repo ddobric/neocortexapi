@@ -2,12 +2,9 @@
 using System.Drawing;
 using System.IO;
 using System.Diagnostics;
-
-using GleamTech.VideoUltimate;
-using FFmpeg.AutoGen.Native;
 using System;
-using FFmpeg.AutoGen;
-using Xabe.FFmpeg;
+
+using Emgu.CV;
 
 namespace VideoLibrary
 {
@@ -47,7 +44,7 @@ namespace VideoLibrary
     public class VideoSet
     {
         public List<NVideo> VideoEncodedList { get; set; }
-        
+
         public List<string> Name { get; set; }
 
         public string VideoSetLabel { get; set; }
@@ -70,14 +67,30 @@ namespace VideoLibrary
         {
             List<NVideo> videoList = new List<NVideo>();
             // Iteate through each videos in the videos' folder
-            foreach (string file in Directory.GetFiles(videoSetPath))
+            foreach (string file in Directory.GetFiles(videoSetPath.Replace("\"","")))
             {
                 string fileName = Path.GetFileName(videoSetPath);
                 Name.Add(fileName);
                 Debug.WriteLine($"Video file name: {fileName}");
-                videoList.Add(new NVideo(file, colorMode, frameWidth, frameHeight, frameRate));
+                videoList.Add(new NVideo(file, VideoSetLabel, colorMode, frameWidth, frameHeight, frameRate));
             }
             return videoList;
+        }
+        /// <summary>
+        /// Getting the longest sequence of frames count available in set
+        /// </summary>
+        /// <returns></returns>
+        public int GetLongestFramesCountInSet()
+        {
+            int count = 0;
+            foreach (NVideo nv in VideoEncodedList)
+            {
+                if (nv.frames.Count > count)
+                {
+                    count = nv.frames.Count;
+                }
+            }
+            return count;
         }
     }
     /// <summary>
@@ -91,7 +104,8 @@ namespace VideoLibrary
     public class NVideo
     {
         public string name;
-        public List<int[]> frames;
+        public List<NFrame> frames;
+        string label;
 
         private readonly ColorMode colorMode;
         private readonly int frameWidth;
@@ -104,19 +118,23 @@ namespace VideoLibrary
         /// <param name="colorMode">Color mode to encode each frame in the Video, see enum VideoSet.ColorMode</param>
         /// <param name="frameHeight">height in pixels of the video resolution</param>
         /// <param name="frameWidth">width in pixels of the video resolution</param>
-        public NVideo(string videoPath, ColorMode colorMode, int frameWidth, int frameHeight, double frameRate)
+        public NVideo(string videoPath, string label, ColorMode colorMode, int frameWidth, int frameHeight, double frameRate)
         {
             this.colorMode = colorMode;
             this.frameWidth = frameWidth;
             this.frameHeight = frameHeight;
             this.frameRate = frameRate;
+            this.label = label;
 
-            this.frames = new List<int[]>();
-            this.name = Path.GetFileName(videoPath);
+            this.frames = new List<NFrame>();
+            this.name = Path.GetFileNameWithoutExtension(videoPath);
             //this.frames = BitmapToBinaryArray(ReadVideo_GleamTech(videoPath, frameRate = 0));
 
-            var frmBitmaps = ReadVideoGleamTech(videoPath, frameRate = 0);
-            this.frames = BitmapToBinaryArray(frmBitmaps);
+            var fromBitmaps = ReadVideo(videoPath, frameRate);
+            for (int i = 0; i < fromBitmaps.Count; i++)
+            {
+                frames.Add(new NFrame(fromBitmaps[i], name, label, i, frameWidth, frameHeight, colorMode));
+            }
         }
         /// <summary>
         /// <para>Method to read a video into a list of Bitmap, from video path to a list of Bitmap</para>
@@ -125,117 +143,207 @@ namespace VideoLibrary
         /// </summary>
         /// <param name="videoPath"> full path of the video to be read </param>
         /// <returns>List of Bitmaps</returns>
-        private static List<Bitmap> ReadVideoGleamTech(string videoPath, double frameRate = 0)
+        private static List<Bitmap> ReadVideo(string videoPath, double framerate = 0)
         {
-            List<Bitmap> frames_binaryArray = new List<Bitmap>();
+            List<Bitmap> videoBitmapArray = new List<Bitmap>();
 
             // Create VideoFrameReader object for the video from videoPath
-            var videoFrameReader = new VideoFrameReader(videoPath);
-            
+            VideoCapture vd = new(videoPath);
+
             double step = 1;
             // New step for iterating the video in a lower frameRate when specified
-            if (frameRate != 0) 
-            { 
-                step = videoFrameReader.FrameRate / frameRate;
-            }
-            int frameIndex = 0;
-            while (videoFrameReader.Read())
+            double framerateDefault = vd.Get(Emgu.CV.CvEnum.CapProp.Fps);
+            if (framerate != 0)
             {
-                Debug.WriteLine("Coded Frame Number: " + videoFrameReader.CurrentFrameNumber);
-                Debug.WriteLine("Frame Index: " + frameIndex);
-                Bitmap currentFrame = videoFrameReader.GetFrame();
-                frames_binaryArray.Add(currentFrame);
-                Debug.WriteLine($"{frames_binaryArray[frameIndex]}");
-                frameIndex = (int)(frameIndex + step);
+                step = framerateDefault / framerate;
             }
-            //
-            return frames_binaryArray;
-        }
-        /// <summary>
-        /// Encode Bitmap to an int array by iterating through every pixel of the frame.
-        /// </summary>
-        /// <param name="image"> Bitmap image object to encode</param>
-        /// <returns>returns an int array from Bitmap image object</returns>
-        private int[] BitmapToBinaryArray(Bitmap image)
-        {
-            Bitmap img = ResizeBitmap(image, frameWidth, frameHeight);
-            List<int> imageBinary = new List<int>();
-
-            for (int i = 0; i < img.Width; i++)
+            Mat currentFrame = new();
+            int count = 0;
+            int currentFrameIndex = 0;
+            int stepCount = 0;
+            while (currentFrame != null)
             {
-                for (int j = 0; j < img.Height; j++)
+                currentFrame = vd.QueryFrame();
+                if (count == currentFrameIndex)
                 {
-                    Color pixel = img.GetPixel(i, j);
-                    switch (colorMode)
+                    if (currentFrame == null)
                     {
-                        // adding different color mode here for different format of output int[]
-                        // more info/color resolution resulted in increase of output bit
-                        case ColorMode.BLACKWHITE:
-                            // image binarization of GRAYSCALE source image
-                            // taking red channel as comparatee for binarization 
-                            imageBinary.Add((pixel.R > 255 / 2) ? 1 : 0);
-                            break;
-                        case ColorMode.BINARIZEDRGB:
-                            // image binarization of RGB source image
-                            // binarize each color from RGB channels in order : red --> green --> blue
-                            imageBinary.AddRange(new List<int>() { (pixel.R > 255 / 2) ? 1 : 0, (pixel.G > 255 / 2) ? 1 : 0, (pixel.B > 255 / 2) ? 1 : 0 });
-                            break;
-                        case ColorMode.PURE:
-                            imageBinary.AddRange(ColorChannelToBinList(pixel.R));
-                            break;
+                        break;
                     }
-                    
+                    stepCount += 1;
+                    currentFrameIndex = (int)(stepCount*step);
+                }
+                count += 1;
+            }
+            vd.Dispose();
+            //
+            return videoBitmapArray;
+        }
+
+        public int[] GetEncodedFrame(string key)
+        {
+            foreach (NFrame nf in frames)
+            {
+                if(nf.frameKey == key)
+                {
+                    return nf.encodedBitArray;
                 }
             }
-            return imageBinary.ToArray();
+            return new int[] { 4, 2, 3 };
         }
-        /// <summary>
-        /// Convert a Color byte value to a int list of 8 bit
-        ///     FURTHER DEVELOPMENT:
-        ///         adding gray code implement (adjacent color tone have near bit representation)
-        ///         scaling color resolution e.g. 8 bit --> 5bit
-        /// </summary>
-        /// <param name="r">color byte to convert</param>
-        /// <returns></returns>
-        public static List<int> ColorChannelToBinList(byte r)
+        public static void BitmapListToVideo(List<Bitmap> bitmapList, string videoOutputPath, int fps, int width, int height, bool isColor)
         {
-            List<int> binaryList = new List<int>();
-            string BNR = Convert.ToString(r);
-            foreach(char a in BNR){
-                binaryList.Add(a);
-            }
-            return binaryList;
-        }
-        /// <summary>
-        /// Convert a List of Bitmap to an int array, which will be used as input for Spatial Pooler
-        /// </summary>
-        /// <param name="imageList">List of input Bitmap</param>
-        /// <returns></returns>
-        private List<int[]> BitmapToBinaryArray(List<Bitmap> imageList)
-        {
-            List<int[]> binaryArrayList = new List<int[]>();
-            foreach(Bitmap bmp in imageList)
+            VideoWriter videoWriter = new($"{videoOutputPath}.mp4", -1, fps, new Size(width, height), isColor);
+            foreach (Bitmap frame in bitmapList)
             {
-                binaryArrayList.Add(BitmapToBinaryArray(bmp));
+                videoWriter.Write(frame.ToMat());
             }
-            return binaryArrayList;
+            videoWriter.Dispose();
         }
-        /// <summary>
-        /// Resize a Bitmap object to desired width and height
-        /// </summary>
-        /// <param name="bmp">Bitmap Object to be resized</param>
-        /// <param name="width">Output width</param>
-        /// <param name="height">Output height</param>
-        /// <returns></returns>
-        private static Bitmap ResizeBitmap(Bitmap bmp, int width, int height)
+    }
+    public class NFrame {
+
+        public string frameKey { get; }
+        public int[] encodedBitArray { get; set; }
+
+        private readonly int index;
+        private readonly string label;
+        private readonly string videoName;
+        private readonly ColorMode colorMode;
+        private readonly int frameWidth;
+        private readonly int frameHeight;
+
+        public NFrame(Bitmap bmp, string videoName, string label, int index, int frameWidth, int frameHeight, ColorMode colorMode)
         {
-            Bitmap result = new Bitmap(width, height);
-            using (Graphics g = Graphics.FromImage(result))
+            this.index = index;
+            this.label = label;
+            this.colorMode = colorMode;
+            this.frameHeight = frameHeight;
+            this.frameWidth = frameWidth;
+            this.videoName = videoName;
+            frameKey = $"{label}_{videoName}_{index}";
+            encodedBitArray = BitmapToBinaryArray(bmp);
+        }
+            /// <summary>
+            /// Encode Bitmap to an int array by iterating through every pixel of the frame.
+            /// </summary>
+            /// <param name="image"> Bitmap image object to encode</param>
+            /// <returns>returns an int array from Bitmap image object</returns>
+            private int[] BitmapToBinaryArray(Bitmap image)
             {
+                Bitmap img = ResizeBitmap(image, frameWidth, frameHeight);
+                List<int> imageBinary = new List<int>();
+                
+                for (int i = 0; i < img.Width; i++)
+                {
+                    for (int j = 0; j < img.Height; j++)
+                    {
+                        Color pixel = img.GetPixel(i, j);
+                        switch (colorMode)
+                        {
+                            // adding different color mode here for different format of output int[]
+                            // more info/color resolution resulted in increase of output bit
+                            case ColorMode.BLACKWHITE:
+                                // image binarization of GRAYSCALE source image
+                                // taking red channel as comparatee for binarization 
+                                imageBinary.Add((pixel.R > 255 / 2) ? 0 : 1);
+                                break;
+                            case ColorMode.BINARIZEDRGB:
+                                // image binarization of RGB source image
+                                // binarize each color from RGB channels in order : red --> green --> blue
+                                imageBinary.AddRange(new List<int>() { (pixel.R > 255 / 2) ? 1 : 0, (pixel.G > 255 / 2) ? 1 : 0, (pixel.B > 255 / 2) ? 1 : 0 });
+                                break;
+                            case ColorMode.PURE:
+                                imageBinary.AddRange(ColorChannelToBinList(pixel.R));
+                                break;
+                        }
+                    }
+                }
+                return imageBinary.ToArray();
+            }
+            /// <summary>
+            /// Convert a Color byte value to a int list of 8 bit
+            ///     FURTHER DEVELOPMENT:
+            ///         adding gray code implement (adjacent color tone have near bit representation)
+            ///         scaling color resolution e.g. 8 bit --> 5bit
+            /// </summary>
+            /// <param name="r">color byte to convert</param>
+            /// <returns></returns>
+            public static List<int> ColorChannelToBinList(byte r)
+            {
+                List<int> binaryList = new List<int>();
+                string BNR = Convert.ToString(r);
+                foreach (char a in BNR)
+                {
+                    binaryList.Add(a);
+                }
+                return binaryList;
+            }
+
+            /// <summary>
+            /// Resize a Bitmap object to desired width and height
+            /// </summary>
+            /// <param name="bmp">Bitmap Object to be resized</param>
+            /// <param name="width">Output width</param>
+            /// <param name="height">Output height</param>
+            /// <returns></returns>
+            private static Bitmap ResizeBitmap(Bitmap bmp, int width, int height)
+            {
+                Bitmap result = new Bitmap(width, height);
+                using (Graphics g = Graphics.FromImage(result))
+                {
                 g.DrawImage(bmp, 0, 0, width, height);
+                }
+                return result;
             }
+        public static Bitmap IntArrayToBitmap(int[] inputBitArray, ColorMode colorMode, int frameWidth, int frameHeight)
+        {
+            int[] rgb = { 0, 0, 0 };
+            Bitmap output = new(frameWidth,frameHeight);
+            for (int h = 0; h < frameHeight; h += 1) {
+                for (int w = 0; w < frameWidth; w += 1)
+                {
+                    switch (colorMode)
+                    {
+                        case ColorMode.BLACKWHITE:
+                            if (inputBitArray[h * w + w] == 0)
+                            {
+                                output.SetPixel(w, h, Color.FromArgb(255,255,255,255));
+                            }
+                            else
+                            {
+                                output.SetPixel(w, h, Color.FromArgb(255, 0, 0, 0));
+                            }
+                            break;
+                        case ColorMode.BINARIZEDRGB:
+                            for(int i = 0; i < 3; i += 1)
+                            {
+                                rgb[i] = (inputBitArray[(h * w + w)*3+i] == 1) ? 255 : 0;
+                            }
+                            output.SetPixel(w, h, Color.FromArgb(255, rgb[0], rgb[1], rgb[2]));
+                            break;
+                        case ColorMode.PURE:
+                            for (int i = 0; i < 3; i += 1)
+                            {
+                                int[] binaryColorArray = SubArray<int>(inputBitArray, (h * w + w) * 24 + 8 * i, 8);
+
+                                int colorChannelValue = Convert.ToInt32(binaryColorArray);
+                                rgb[i] = (inputBitArray[(h * w + w) * 3] + i == 1) ? 255 : 0;
+                            }
+                            output.SetPixel(w, h, Color.FromArgb(255, rgb[0], rgb[1], rgb[2]));
+                            break;
+                    }
+                }
+            }
+            
+
+            return output;
+        }
+        public static T[] SubArray<T>(T[] data, int index, int length)
+        {
+            T[] result = new T[length];
+            Array.Copy(data, index, result, 0, length);
             return result;
         }
     }
-
 }

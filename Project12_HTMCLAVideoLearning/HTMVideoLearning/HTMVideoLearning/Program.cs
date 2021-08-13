@@ -6,7 +6,8 @@ namespace HTMVideoLearning
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            VideoLearning experiment = new VideoLearning();
+            experiment.Run();
         }
     }
 }
