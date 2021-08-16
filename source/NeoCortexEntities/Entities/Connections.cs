@@ -211,6 +211,7 @@ namespace NeoCortexApi.Entities
         /// Sets the <see cref="AbstractSparseMatrix{T}"/> which represents the proximal dendrite permanence values.
         /// </summary>
         /// <param name="matrix">the <see cref="AbstractSparseMatrix{T}"/></param>
+        /// <remarks>Used for testing only.</remarks>
         public void SetProximalPermanences(AbstractSparseMatrix<double[]> matrix)
         {
             foreach (int idx in matrix.GetSparseIndices())

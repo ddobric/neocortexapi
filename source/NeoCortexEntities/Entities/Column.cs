@@ -131,7 +131,7 @@ namespace NeoCortexApi.Entities
         }
 
         /// <summary>
-        /// Creates connections between columns and inputs.
+        /// Creates connections between mini-columns and input neurons.
         /// </summary>
         /// <param name="htmConfig"></param>
         /// <param name="inputVectorIndexes"></param>
@@ -139,7 +139,6 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public Pool CreatePotentialPool(HtmConfig htmConfig, int[] inputVectorIndexes, int startSynapseIndex)
         {
-            //var pool = ProximalDendrite.createPool(c, inputVectorIndexes);
             this.ProximalDendrite.Synapses.Clear();
 
             var pool = new Pool(inputVectorIndexes.Length, htmConfig.NumInputs);
@@ -148,23 +147,16 @@ namespace NeoCortexApi.Entities
 
             for (int i = 0; i < inputVectorIndexes.Length; i++)
             {
-                //var cnt = c.getProximalSynapseCount();
-                //var synapse = createSynapse(c, c.getSynapses(this), null, this.RFPool, synCount, inputIndexes[i]);
                 var synapse = this.ProximalDendrite.CreateSynapse(null, startSynapseIndex + i, inputVectorIndexes[i]);
+                
+                // All permanences are at the begining set to 0.
                 this.SetPermanence(synapse, htmConfig.SynPermConnected, 0);
-                //c.setProximalSynapseCount(cnt + 1);
             }
-
-            //var mem = c.getMemory();
-
-            //mem.set(this.Index, this);
-
-            //c.getPotentialPools().set(this.Index, pool);
 
             return pool;
         }
 
-        public void SetPermanence(Synapse synapse, double synPermConnected, double perm)
+        private void SetPermanence(Synapse synapse, double synPermConnected, double perm)
         {
             synapse.Permanence = perm;
 
@@ -183,8 +175,6 @@ namespace NeoCortexApi.Entities
         /// <param name="perms">the floating point degree of connectedness</param>
         public void SetPermanences(HtmConfig htmConfig, double[] perms)
         {
-            //var connCounts = c.getConnectedCounts();
-
             this.ProximalDendrite.RFPool.ResetConnections();
 
             // Every column contians a single row at index 0.
