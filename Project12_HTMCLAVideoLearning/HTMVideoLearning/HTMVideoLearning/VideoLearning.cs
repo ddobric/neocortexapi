@@ -2,7 +2,6 @@
 using NeoCortexApi.Classifiers;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Network;
-using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -25,19 +24,18 @@ namespace HTMVideoLearning
 
             sw.Start();
             // Define first the desired properties of the frames
-            string outputFolder = "Output";
-            string convertedVideoDir = $"{outputFolder}//ConvertedVideo";
+            string outputFolder = "output";
+            string convertedVideoDir = $"{outputFolder}"+@"\"+"converted";
             if (!Directory.Exists($"{convertedVideoDir}"))
             {
                 Directory.CreateDirectory($"{convertedVideoDir}");
             }
-            int frameWidth = 10;
-            int frameHeight = 10;
-            VideoLibrary.ColorMode colorMode = ColorMode.BLACKWHITE;
+            int frameWidth = 100;
+            int frameHeight = 100;
+            ColorMode colorMode = ColorMode.PURE;
             double frameRate = 10;
-
             // Define HTM parameters
-            int[] inputBits = { frameWidth * frameHeight };
+            int[] inputBits = { frameWidth * frameHeight *3 *8};
             int[] numColumns = { 1024 };
 
             // Define Reader for Videos
@@ -49,10 +47,6 @@ namespace HTMVideoLearning
             // this List will be the core iterator in later learning and predicting
             List<VideoSet> videoData = new();
 
-            // Because of the continous learning of the Frames in the Spatial Pooler
-            // A list of tempInput is used to stored all the encoded frames from all Videos
-            List<int[]> tempInput = new();
-
             // Iterate through every folder in TrainingVideos/ to create VideoSet: object that stores video of same folder/label
             foreach (string path in videoSetPaths)
             {
@@ -60,34 +54,12 @@ namespace HTMVideoLearning
                 videoData.Add(vs);
                 vs.CreateConvertedVideos(convertedVideoDir);
             }
-            // Iterate through every folder in TrainingVideos/
-
-            foreach (VideoSet set in videoData)
-            {
-                // Show Set Label/ Folder Name of each video set
-                HelperFunction.WriteLineColor($"VIDEO SET LABEL: {set.VideoSetLabel}", ConsoleColor.Cyan);
-                foreach (NVideo vid in set.nVideoList)
-                {
-                    // Show the name of each video
-                    HelperFunction.WriteLineColor($"    VIDEO NAME: {vid.name}", ConsoleColor.DarkCyan);
-                    foreach (NFrame frame in vid.nFrames)
-                    {
-                        // Show the encoded content of each frame in a video, these will be used as SP learning input
-                        //Console.WriteLine($"      Frame : {frame.ArrToString()}");
-
-                        // FOR RUNNING EXPERIMENT AT THIS POINT
-                        // all frame encoded binary array are stored in tempInput
-                        tempInput.Add(frame.EncodedBitArray);
-                    }
-                }
-            }
-
             //Initiating HTM
             HtmConfig cfg = GetHTM(inputBits, numColumns);
 
             var mem = new Connections(cfg);
 
-            HtmClassifier<int[], ComputeCycle> cls = new HtmClassifier<int[], ComputeCycle>();
+            HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
 
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
 
@@ -239,7 +211,7 @@ namespace HTMVideoLearning
                             actCells = lyrOut.WinnerCells;
                         }
 
-                        cls.Learn(nv.GetEncodedFrame(key), actCells.ToArray());
+                        cls.Learn(key, actCells.ToArray());
 
                         if (learn == false)
                             Console.WriteLine($"Inference mode");
@@ -266,8 +238,8 @@ namespace HTMVideoLearning
 
                             foreach (var item in predictedInputValues)
                             {
-                                Console.WriteLine($"Current Input: {input} \t| Predicted Input: {item.PredictedInput.ArrToString()}");
-                                lastPredictedValue.Add(item.PredictedInput.ArrToString());
+                                Console.WriteLine($"Current Input: {input} \t| Predicted Input: {item.PredictedInput}");
+                                lastPredictedValue.Add(item.PredictedInput);
                             }
                         }
                         else

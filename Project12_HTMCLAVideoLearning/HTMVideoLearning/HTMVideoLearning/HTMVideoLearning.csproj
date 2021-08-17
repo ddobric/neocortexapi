@@ -6,14 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Emgu.CV.runtime.windows" Version="4.5.3.4721" />
-    <PackageReference Include="Emgu.CV.UI" Version="4.5.3.4721" />
-    <PackageReference Include="ImageBinarizer" Version="1.0.0" />
     <PackageReference Include="NeoCortexApi" Version="1.1.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\VideoSet\VideoLibrary.csproj" />
+    <ProjectReference Include="..\VideoLibrary\VideoLibrary.csproj" />
   </ItemGroup>
 
 </Project>
