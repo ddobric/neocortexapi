@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using LearningFoundation.ImageBinarizer;
+using ImageBinarizer;
 
 namespace UnitTestProject
 {

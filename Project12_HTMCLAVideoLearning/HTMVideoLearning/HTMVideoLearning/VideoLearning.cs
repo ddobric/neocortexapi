@@ -30,8 +30,8 @@ namespace HTMVideoLearning
             {
                 Directory.CreateDirectory($"{convertedVideoDir}");
             }
-            int frameWidth = 100;
-            int frameHeight = 100;
+            int frameWidth = 17;
+            int frameHeight = 17;
             ColorMode colorMode = ColorMode.PURE;
             double frameRate = 10;
             // Define HTM parameters
@@ -100,7 +100,7 @@ namespace HTMVideoLearning
 
             }, numOfCyclesToWaitOnChange: 50);
 
-            SpatialPoolerMT sp = new SpatialPoolerMT(hpa);
+            SpatialPoolerMT sp = new(hpa);
             sp.Init(mem);
             tm.Init(mem);
             layer1.HtmModules.Add("sp", sp);
@@ -125,7 +125,7 @@ namespace HTMVideoLearning
                         foreach (NFrame frame in vid.nFrames)
                         {
                             //reserved for displaying function
-                            Console.WriteLine($" -- {frame.FrameKey} --");
+                            //Console.WriteLine($" -- {frame.FrameKey} --");
 
                             var lyrOut = layer1.Compute(frame.EncodedBitArray, learn);
 
