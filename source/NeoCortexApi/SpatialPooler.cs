@@ -1286,13 +1286,14 @@ namespace NeoCortexApi
         public virtual int[] CalculateOverlap(Connections c, int[] inputVector)
         {
             int[] overlaps = new int[c.HtmConfig.NumColumns];
+
+            //
+            // Calculates the overlapp for each mini-column.
             for (int col = 0; col < c.HtmConfig.NumColumns; col++)
             {
-                overlaps[col] = c.GetColumn(col).GetColumnOverlapp(inputVector, c.HtmConfig.StimulusThreshold);
+                overlaps[col] = c.GetColumn(col).CalcMiniColumnOverlap(inputVector, c.HtmConfig.StimulusThreshold);
             }
-            //c.getConnectedCounts().rightVecSumAtNZ(inputVector, overlaps, c.StimulusThreshold);
-            //string st = string.Join(",", overlaps);
-            //Debug.WriteLine($"Overlap: {st}");
+
             return overlaps;
         }
 
