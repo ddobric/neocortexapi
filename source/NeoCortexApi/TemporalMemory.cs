@@ -176,6 +176,9 @@ namespace NeoCortexApi
                 activeColumns.Add(conn.GetColumn(indx));
             }
 
+
+            //
+            // Gets the mini-columns that owns the segment.
             Func<Object, Column> segToCol = (segment) =>
             {
                 var colIndx = ((DistalDendrite)segment).ParentCell.ParentColumnIndex;
@@ -206,7 +209,7 @@ namespace NeoCortexApi
                     // If there are some active segments on the column already...
                     if (activeColumnData.ActiveSegments != null && activeColumnData.ActiveSegments.Count > 0)
                     {
-                        //Debug.Write(".");
+                        //Debug.Write("A");
 
                         List<Cell> cellsOwnersOfActSegs = ActivatePredictedColumn(conn, activeColumnData.ActiveSegments,
                             activeColumnData.MatchingSegments, prevActiveCells, prevWinnerCells,
@@ -468,8 +471,7 @@ namespace NeoCortexApi
         }
 
         /// <summary>
-        /// Activates all of the cells in an unpredicted active column,
-        /// chooses a winner cell, and, if learning is turned on, either adapts or
+        /// Activates all of the cells in an unpredicted active column, chooses a winner cell, and, if learning is turned on, either adapts or
         /// creates a segment. growSynapses is invoked on this segment.<br/>
         /// <para>
         /// <b>Pseudocode:</b><br/>
@@ -492,8 +494,8 @@ namespace NeoCortexApi
         /// <param name="matchingSegments">List of matching <see cref="DistalDendrite"/>s</param>
         /// <param name="prevActiveCells">Active cells in `t-1`</param>
         /// <param name="prevWinnerCells">Winner cells in `t-1`</param>
-        /// <param name="permanenceIncrement">Amount by which permanences of synapses are decremented during learning</param>
-        /// <param name="permanenceDecrement">Amount by which permanences of synapses are incremented during learning</param>
+        /// <param name="permanenceIncrement">Permanences decremented during learning.</param>
+        /// <param name="permanenceDecrement">Permanences are increment during learning.</param>
         /// <param name="random">Random number generator</param>
         /// <param name="learn">Whether or not learning is enabled</param>
         /// <returns>
@@ -548,8 +550,8 @@ namespace NeoCortexApi
                     int nGrowExact = Math.Min(conn.HtmConfig.MaxNewSynapseCount, prevWinnerCells.Count);
                     if (nGrowExact > 0)
                     {
-                        DistalDendrite bestSegment = conn.CreateDistalSegment(leastUsedOrMaxPotentialCell);
-                        GrowSynapses(conn, prevWinnerCells, bestSegment, conn.HtmConfig.InitialPermanence,
+                        DistalDendrite newSegment = conn.CreateDistalSegment(leastUsedOrMaxPotentialCell);
+                        GrowSynapses(conn, prevWinnerCells, newSegment, conn.HtmConfig.InitialPermanence,
                             nGrowExact, random);
                     }
                 }
@@ -561,7 +563,7 @@ namespace NeoCortexApi
         private int indxOfLastHighestSegment = -1;
 
         /// <summary>
-        /// Gets the segment with maximal potential. Segment's potential is measured by number of potential synapses.
+        /// Gets the segment with maximal potential from all segments in the last cycle. Segment's potential is measured by number of potential synapses.
         /// </summary>
         /// <param name="matchingSegments"></param>
         /// <returns></returns>
@@ -625,7 +627,7 @@ namespace NeoCortexApi
 
 
         /// <summary>
-        /// Gets the cell with the smallest number of segments.
+        /// Gets the cell with the smallest number of segments in the currentlly processing mini-column.
         /// </summary>
         /// <param name="conn">Connections instance currentlly in use.</param>
         /// <param name="cells">List of cells.</param>

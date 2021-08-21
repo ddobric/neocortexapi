@@ -385,7 +385,7 @@ namespace NeoCortexApi.Entities
         //     Segment (Specifically, Distal Dendrite) Operations      //
         /////////////////////////////////////////////////////////////////
 
-        #region Segment (Specifically, Distal Dendrite) methods
+        #region Distal Dentrite Segment methods
         /// <summary>
         /// Adds a new <see cref="DistalDendrite"/> segment on the specified <see cref="Cell"/>, or reuses an existing one.
         /// </summary>
@@ -621,7 +621,7 @@ namespace NeoCortexApi.Entities
         /////////////////////////////////////////////////////////////////
 
         /// <summary>
-        /// Creates a new synapse on a segment.
+        /// Creates a new synapse on a distal segment.
         /// </summary>
         /// <param name="segment">the <see cref="DistalDendrite"/> segment to which a <see cref="Synapse"/> is being created.</param>
         /// <param name="presynapticCell">the source <see cref="Cell"/>.</param>
