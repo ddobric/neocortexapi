@@ -233,13 +233,15 @@ namespace NeoCortexApi
 
                         // DRAFT. Removing this as unnecessary.
                         //cycle.ActiveCells.Add(burstingResult.BestCell);
-
-                        //
+                        
+                        
                         // Here we activate all cells by putting them to list of active cells.
-                        foreach (var item in burstingResult.Cells)
-                        {
-                            cycle.ActiveCells.Add(item);
-                        }
+                        cycle.ActiveCells.AddRange(burstingResult.Cells);
+
+                        //foreach (var item in burstingResult.Cells)
+                        //{
+                        //    cycle.ActiveCells.Add(item);
+                        //}
 
                         //var actSyns = conn.getReceptorSynapses(burstingResult.BestCell).Where(s=>prevActiveCells.Contains(s.SourceCell));
                         //foreach (var syn in actSyns)
@@ -535,8 +537,7 @@ namespace NeoCortexApi
 
                     if (nGrowDesired > 0)
                     {
-                        GrowSynapses(conn, prevWinnerCells, maxPotentialSeg, conn.HtmConfig.InitialPermanence,
-                            nGrowDesired, random);
+                        GrowSynapses(conn, prevWinnerCells, maxPotentialSeg, conn.HtmConfig.InitialPermanence, nGrowDesired, random);
                     }
                 }
             }
