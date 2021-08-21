@@ -14,7 +14,7 @@ namespace NeoCortexApi.Entities
     public class ProximalDendrite : Segment
     {
         /// <summary>
-        /// The pool of synapses.
+        /// The pool of synapses in the receptive field.
         /// </summary>
         public Pool RFPool {get;set; }
 

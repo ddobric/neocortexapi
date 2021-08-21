@@ -156,10 +156,18 @@ namespace NeoCortexApi.Entities
             return pool;
         }
 
+        /// <summary>
+        /// Used by SpatialPooler when learning spatial patterns. Spatial patterns are learned by synapses between 
+        /// proximal dendrite segment and input neurons.
+        /// </summary>
+        /// <param name="synapse"></param>
+        /// <param name="synPermConnected"></param>
+        /// <param name="perm"></param>
         private void SetPermanence(Synapse synapse, double synPermConnected, double perm)
         {
             synapse.Permanence = perm;
 
+            //
             // On proximal dendrite which has no presynaptic cell
             if (synapse.SourceCell == null)
             {
@@ -324,18 +332,6 @@ namespace NeoCortexApi.Entities
             this.ProximalDendrite.RFPool = CreatePotentialPool(c.HtmConfig, inputVectorIndexes, -1);
             //ProximalDendrite.setConnectedSynapsesForTest(c, connections);
         }
-
-
-        /**
-         * {@inheritDoc}
-         * @param otherColumn     the {@code Column} to compare to
-         * @return
-         */
-        //@Override
-        //public int compareTo(Column otherColumn)
-        //    {
-        //        return boxedIndex(otherColumn.boxedIndex);
-        //    }
 
 
         private readonly int m_Hashcode;
