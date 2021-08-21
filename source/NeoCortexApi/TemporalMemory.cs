@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 
 namespace NeoCortexApi
 {
@@ -543,7 +544,7 @@ namespace NeoCortexApi
             {
                 // Debug.Write("B.0");
 
-                leastUsedOrMaxPotentialCell = this.GetLeastUsedCell(conn, cells, random);
+                leastUsedOrMaxPotentialCell = GetLeastUsedCell(conn, cells, random);
                 if (learn)
                 {
                     int nGrowExact = Math.Min(conn.HtmConfig.MaxNewSynapseCount, prevWinnerCells.Count);
@@ -632,7 +633,7 @@ namespace NeoCortexApi
         /// <param name="cells">List of cells.</param>
         /// <param name="random">Random generator.</param>
         /// <returns></returns>
-        public Cell GetLeastUsedCell(Connections conn, IList<Cell> cells, Random random)
+        internal static Cell GetLeastUsedCell(Connections conn, IList<Cell> cells, Random random)
         {
             List<Cell> leastUsedCells = new List<Cell>();
             int minNumSegments = Integer.MaxValue;
@@ -708,11 +709,8 @@ namespace NeoCortexApi
             }
         }
 
-
-
         /// <summary>
-        /// Increments the permanence of the segment's synapse if the synapse's presynaptic cell 
-        /// was active in the previous cycle.
+        /// Increments the permanence of the segment's synapse if the synapse's presynaptic cell was active in the previous cycle.
         /// If it was not active, then it will decrement the permanence value. 
         /// If the permamence is below EPSILON, synapse is destroyed.
         /// </summary>
@@ -728,14 +726,13 @@ namespace NeoCortexApi
             // Destroying a synapse modifies the set that we're iterating through.
             List<Synapse> synapsesToDestroy = new List<Synapse>();
 
-            //DD oreach (Synapse synapse in conn.GetSynapses(segment))
-            foreach (Synapse synapse in segment.Synapses)
+            foreach (Synapse presynapticCellSynapse in segment.Synapses)
             {
-                double permanence = synapse.Permanence;
+                double permanence = presynapticCellSynapse.Permanence;
 
                 //
                 // If synapse's presynaptic cell was active in the previous cycle then streng it.
-                if (prevActiveCells.Contains(synapse.getPresynapticCell()))
+                if (prevActiveCells.Contains(presynapticCellSynapse.getPresynapticCell()))
                 {
                     permanence += permanenceIncrement;
                 }
@@ -755,11 +752,11 @@ namespace NeoCortexApi
 
                 if (permanence < EPSILON)
                 {
-                    synapsesToDestroy.Add(synapse);
+                    synapsesToDestroy.Add(presynapticCellSynapse);
                 }
                 else
                 {
-                    synapse.Permanence = permanence;
+                    presynapticCellSynapse.Permanence = permanence;
                 }
             }
 
