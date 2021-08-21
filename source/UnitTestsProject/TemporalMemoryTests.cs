@@ -1045,7 +1045,7 @@ namespace UnitTestsProject
             Synapse s2 = cn.CreateSynapse(dd, cn.GetCell(37), 0.4);
             Synapse s3 = cn.CreateSynapse(dd, cn.GetCell(477), 0.9);
 
-            tm.AdaptSegment(cn, dd, cn.GetCellSet(new int[] { 23, 37 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
+            TemporalMemory.AdaptSegment(cn, dd, cn.GetCellSet(new int[] { 23, 37 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
 
             Assert.AreEqual(0.7, s1.Permanence, 0.01);
             Assert.AreEqual(0.5, s2.Permanence, 0.01);
@@ -1065,11 +1065,11 @@ namespace UnitTestsProject
             DistalDendrite dd = cn.CreateDistalSegment(cn.GetCell(0));
             Synapse s1 = cn.CreateSynapse(dd, cn.GetCell(23), 0.9);
 
-            tm.AdaptSegment(cn, dd, cn.GetCellSet(new int[] { 23 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
+            TemporalMemory.AdaptSegment(cn, dd, cn.GetCellSet(new int[] { 23 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
             Assert.AreEqual(1.0, s1.Permanence, 0.1);
 
             // Now permanence should be at max
-            tm.AdaptSegment(cn, dd, cn.GetCellSet(new int[] { 23 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
+            TemporalMemory.AdaptSegment(cn, dd, cn.GetCellSet(new int[] { 23 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
             Assert.AreEqual(1.0, s1.Permanence, 0.1);
         }
 
@@ -1087,7 +1087,7 @@ namespace UnitTestsProject
             Synapse s1 = cn.CreateSynapse(dd, cn.GetCell(23), 0.1);
             cn.CreateSynapse(dd, cn.GetCell(1), 0.3);
 
-            tm.AdaptSegment(cn, dd, cn.GetCellSet(new int[] { }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
+            TemporalMemory.AdaptSegment(cn, dd, cn.GetCellSet(new int[] { }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
             //DD Assert.IsFalse(cn.GetSynapses(dd).Contains(s1));
             Assert.IsFalse(dd.Synapses.Contains(s1));
         }

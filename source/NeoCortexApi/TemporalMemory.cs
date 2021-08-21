@@ -507,7 +507,6 @@ namespace NeoCortexApi
             ICollection<Cell> prevActiveCells, ICollection<Cell> prevWinnerCells, double permanenceIncrement, double permanenceDecrement,
                 Random random, bool learn)
         {
-
             IList<Cell> cells = column.Cells;
             Cell leastUsedOrMaxPotentialCell = null;
 
@@ -722,7 +721,7 @@ namespace NeoCortexApi
         /// <param name="prevActiveCells">List of active cells in the current cycle (calculated in the previous cycle).</param>
         /// <param name="permanenceIncrement"></param>
         /// <param name="permanenceDecrement"></param>
-        public void AdaptSegment(Connections conn, DistalDendrite segment, ICollection<Cell> prevActiveCells,
+        public static void AdaptSegment(Connections conn, DistalDendrite segment, ICollection<Cell> prevActiveCells,
             double permanenceIncrement, double permanenceDecrement)
         {
 
