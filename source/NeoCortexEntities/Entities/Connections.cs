@@ -315,10 +315,10 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Computes the number of active and potential synapses of the each segment for a given input.
         /// </summary>
-        /// <param name="activeCellsInCurrentCycle"></param>
+        /// <param name="activeCellsInCurrentCycle">Cells that are currentlly spiking.</param>
         /// <param name="connectedPermanence"></param>
         /// <returns></returns>
-        public SegmentActivity ComputeActivity(ICollection<Cell> activeCellsInCurrentCycle, double connectedPermanence)
+        public static SegmentActivity ComputeActivity(ICollection<Cell> activeCellsInCurrentCycle, double connectedPermanence)
         {
             Dictionary<int, int> numOfActiveSynapses = new Dictionary<int, int>();
             Dictionary<int, int> numOfPotentialSynapses = new Dictionary<int, int>();

@@ -335,7 +335,7 @@ namespace NeoCortexApi.Entities
         public double InitialPermanence { get; set; } = 0.21;
 
         /// <summary>
-        /// If the permanence value for a synapse is greater than this value, it is said to be connected.
+        /// If the permanence value for a synapse is greater than this value, it is said to be connected = the potential synapse.
         /// </summary>
         public double ConnectedPermanence { get; set; } = 0.5;
 

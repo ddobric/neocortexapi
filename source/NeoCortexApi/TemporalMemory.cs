@@ -294,7 +294,7 @@ namespace NeoCortexApi
             //if (externalPredictiveInputsWinners != null)
             //    cycle.WinnerCells.AddRange(externalPredictiveInputsActive);
 
-            SegmentActivity activity = conn.ComputeActivity(cycle.ActiveCells, conn.HtmConfig.ConnectedPermanence);
+            SegmentActivity activity = Connections.ComputeActivity(cycle.ActiveCells, conn.HtmConfig.ConnectedPermanence);
 
             var activeSegments = new List<DistalDendrite>();
             foreach (var item in activity.ActiveSynapses)
