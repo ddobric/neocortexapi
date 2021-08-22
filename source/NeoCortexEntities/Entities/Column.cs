@@ -131,7 +131,7 @@ namespace NeoCortexApi.Entities
         }
 
         /// <summary>
-        /// Creates connections between columns and inputs.
+        /// Creates connections between mini-columns and input neurons.
         /// </summary>
         /// <param name="htmConfig"></param>
         /// <param name="inputVectorIndexes"></param>
@@ -139,7 +139,6 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public Pool CreatePotentialPool(HtmConfig htmConfig, int[] inputVectorIndexes, int startSynapseIndex)
         {
-            //var pool = ProximalDendrite.createPool(c, inputVectorIndexes);
             this.ProximalDendrite.Synapses.Clear();
 
             var pool = new Pool(inputVectorIndexes.Length, htmConfig.NumInputs);
@@ -148,26 +147,27 @@ namespace NeoCortexApi.Entities
 
             for (int i = 0; i < inputVectorIndexes.Length; i++)
             {
-                //var cnt = c.getProximalSynapseCount();
-                //var synapse = createSynapse(c, c.getSynapses(this), null, this.RFPool, synCount, inputIndexes[i]);
                 var synapse = this.ProximalDendrite.CreateSynapse(null, startSynapseIndex + i, inputVectorIndexes[i]);
+                
+                // All permanences are at the begining set to 0.
                 this.SetPermanence(synapse, htmConfig.SynPermConnected, 0);
-                //c.setProximalSynapseCount(cnt + 1);
             }
-
-            //var mem = c.getMemory();
-
-            //mem.set(this.Index, this);
-
-            //c.getPotentialPools().set(this.Index, pool);
 
             return pool;
         }
 
-        public void SetPermanence(Synapse synapse, double synPermConnected, double perm)
+        /// <summary>
+        /// Used by SpatialPooler when learning spatial patterns. Spatial patterns are learned by synapses between 
+        /// proximal dendrite segment and input neurons.
+        /// </summary>
+        /// <param name="synapse"></param>
+        /// <param name="synPermConnected"></param>
+        /// <param name="perm"></param>
+        private void SetPermanence(Synapse synapse, double synPermConnected, double perm)
         {
             synapse.Permanence = perm;
 
+            //
             // On proximal dendrite which has no presynaptic cell
             if (synapse.SourceCell == null)
             {
@@ -183,8 +183,6 @@ namespace NeoCortexApi.Entities
         /// <param name="perms">the floating point degree of connectedness</param>
         public void SetPermanences(HtmConfig htmConfig, double[] perms)
         {
-            //var connCounts = c.getConnectedCounts();
-
             this.ProximalDendrite.RFPool.ResetConnections();
 
             // Every column contians a single row at index 0.
@@ -277,17 +275,18 @@ namespace NeoCortexApi.Entities
         /// <param name="inputVector"></param>
         /// <param name="stimulusThreshold">Overlap will be 0 if it is less than this value.</param>
         /// <returns>The overlap of the column. 0 if it is less than stimulus threshold.</returns>
-        public int GetColumnOverlapp(int[] inputVector, double stimulusThreshold)
+        public int CalcMiniColumnOverlap(int[] inputVector, double stimulusThreshold)
         {
             int result = 0;
 
             // Gets the synapse mapping between column-i with input vector.
             int[] slice = (int[])this.connectedInputCounter.GetSlice(0);
 
-            // Step through all connections (synapses) between column and input vector.
+            //
+            // Step through all synapses between the mini-column and input vector.
             for (int inpBitIndx = 0; inpBitIndx < slice.Length; inpBitIndx++)
             {
-                // Result (overlapp) is 1 if 
+                // Result (overlap) is 1 if input bit is 1 and the mini-column is connected.
                 result += (inputVector[inpBitIndx] * slice[inpBitIndx]);
                 
                 //
@@ -334,18 +333,6 @@ namespace NeoCortexApi.Entities
             this.ProximalDendrite.RFPool = CreatePotentialPool(c.HtmConfig, inputVectorIndexes, -1);
             //ProximalDendrite.setConnectedSynapsesForTest(c, connections);
         }
-
-
-        /**
-         * {@inheritDoc}
-         * @param otherColumn     the {@code Column} to compare to
-         * @return
-         */
-        //@Override
-        //public int compareTo(Column otherColumn)
-        //    {
-        //        return boxedIndex(otherColumn.boxedIndex);
-        //    }
 
 
         private readonly int m_Hashcode;

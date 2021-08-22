@@ -216,7 +216,7 @@ namespace NeoCortexApi.DistributedComputeLib
             {
                 Column col = keyPair.Value as Column;
 
-                var overlap = col.GetColumnOverlapp(msg.InputVector, this.HtmConfig.StimulusThreshold);
+                var overlap = col.CalcMiniColumnOverlap(msg.InputVector, this.HtmConfig.StimulusThreshold);
 
                 overlaps.TryAdd(keyPair.Key is string ? int.Parse(keyPair.Key as string) : (int)keyPair.Key, overlap);
             });

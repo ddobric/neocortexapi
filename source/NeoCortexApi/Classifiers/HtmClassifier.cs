@@ -130,7 +130,7 @@ namespace NeoCortexApi.Classifiers
         /// <param name="predictiveCells"></param>
         /// <param name="howMany"></param>
         /// <returns></returns>
-        public List<ClassifierResult> GetPredictedInputValues(Cell[] predictiveCells, short howMany)
+        public List<ClassifierResult> GetPredictedInputValues(Cell[] predictiveCells, short howMany = 1)
         {
             List<ClassifierResult> res = new List<ClassifierResult>();
             double maxSameBits = 0;

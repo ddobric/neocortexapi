@@ -42,7 +42,7 @@ namespace NeoCortexApi.Entities
         public List<DistalDendrite> DistalDendrites { get; set; } = new List<DistalDendrite>();
 
         /// <summary>
-        /// List of receptor synapses that connect this cells as a source cell to the distal dendrit segment owned by some other cell.
+        /// List of receptor synapses that connect this cells as a source (presynaptic) cell to the distal dendrite segment owned by some other cell.
         /// </summary>
         public List<Synapse> ReceptorSynapses { get; set; } = new List<Synapse>();
 
