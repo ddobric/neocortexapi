@@ -28,7 +28,7 @@ During the learning process, the input in every cycle is the cell-SDR of cells p
 However, the TM does not generate the same set of active cells for the same element (i.e.’3’). The TM is building the context when learning the sequence.
 That means, the element ‘3’ followed by the element ‘2’ produces a different set of active cells than the element ‘3’ followed by the element ‘5’.
 
-But, the cells activated for bot elements ‘3’ belong always to the same set of mini-columns as activated by the SP. 
+But, the cells activated for both elements ‘3’ belong always to the same set of mini-columns as activated by the SP. 
 This is why we choose the key for the classifier in the form shown above. However, developers are free to build a key some other way. For example, if your code is using learning of video frames and you want to classify the video, but not the frame, then the key can be the name of the video with some index (i.e. myvideo-156767.avi). In this case, the classifier learns for all video frames the same key. However, the key must be a unique value for all learned elements. This is why the 156767 is appended.
 
 When predicting (GetPredcitedInputValues), the classifier is traversing through hash values of all memorized SDRs and tries to match the best ones, that matches with the highest number of bits in the SDR. Finally, the classifier returns the array of best-matching inputs.
