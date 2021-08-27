@@ -13,7 +13,7 @@ namespace VideoLibraryTest
         {
             // Read Video from a file path
             string filePath = "testFile//ReadVideo//circle_mp4.mp4";
-            NVideo nv = new(filePath, "test", ColorMode.BINARIZEDRGB, 24, 24, 24);
+            NVideo nv = new(filePath, "test", ColorMode.BLACKWHITE, 24, 24, 24);
 
             // export Video to outputFilePath
             string outputFilePath = "testFile//ReadVideo//output_mp4.mp4";

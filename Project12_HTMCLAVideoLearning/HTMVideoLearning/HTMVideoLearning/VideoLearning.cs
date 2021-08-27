@@ -25,17 +25,18 @@ namespace HTMVideoLearning
             sw.Start();
             // Define first the desired properties of the frames
             string outputFolder = "output";
-            string convertedVideoDir = $"{outputFolder}"+@"\"+"converted";
+            string convertedVideoDir = $"{outputFolder}" + @"\" + "converted";
             if (!Directory.Exists($"{convertedVideoDir}"))
             {
                 Directory.CreateDirectory($"{convertedVideoDir}");
             }
-            int frameWidth = 17;
-            int frameHeight = 17;
-            ColorMode colorMode = ColorMode.PURE;
+            int frameWidth = 18;
+            int frameHeight = 18;
+            ColorMode colorMode = ColorMode.BLACKWHITE;
             double frameRate = 10;
+            // adding condition for 
             // Define HTM parameters
-            int[] inputBits = { frameWidth * frameHeight *3 *8};
+            int[] inputBits = { frameWidth * frameHeight * (int)colorMode};
             int[] numColumns = { 1024 };
 
             // Define Reader for Videos
@@ -80,7 +81,7 @@ namespace HTMVideoLearning
                 }
             }
 
-            int maxCycles = 200;
+            int maxCycles = 100;
             int newbornCycle = 0;
 
             HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, maxNumOfElementsInSequence * 150, (isStable, numPatterns, actColAvg, seenInputs) =>
@@ -104,10 +105,11 @@ namespace HTMVideoLearning
             sp.Init(mem);
             tm.Init(mem);
             layer1.HtmModules.Add("sp", sp);
-
+            
             //
             // Training SP to get stable. New-born stage.
             //
+            ///*
             for (int i = 0; i < maxCycles; i++)
             {
                 newbornCycle++;
@@ -138,114 +140,118 @@ namespace HTMVideoLearning
                 if (isInStableState)
                     break;
             }
+            //*/
+            
 
             layer1.HtmModules.Add("tm", tm);
-
             int[] prevActiveCols = new int[0];
 
             int cycle = 0;
             int matches = 0;
 
-            HelperFunction.WriteLineColor("Please insert or drag the folder that contains the test Videos: ", ConsoleColor.Blue);
-            string testVideosPath = Console.ReadLine();
-            VideoSet testVideo = new(testVideosPath, colorMode, frameWidth, frameHeight, frameRate);
 
-            foreach (NVideo nv in testVideo.nVideoList)
+            foreach (VideoSet vd in videoData) 
             {
-                List<NFrame> inputVideo = nv.nFrames;
-                List<int[]> stableAreas = new List<int[]>();
-
-                List<string> lastPredictedValue = new List<string>();
-
-                int maxPrevInputs = inputVideo.Count - 1;
-                List<string> previousFrames = new List<string>();
-                previousFrames.Add("_placeholder_");
-
-                stableAreas.Clear();
-                cycle = 0;
-                learn = true;
-                sw.Reset();
-                sw.Start();
-                int maxMatchCnt = 0;
-                //
-                // Now training with SP+TM. SP is pretrained on the given input pattern set.
-                for (int i = 0; i < maxCycles; i++)
+                foreach (NVideo nv in vd.nVideoList)
                 {
-                    matches = 0;
+                    List<NFrame> inputVideo = nv.nFrames;
+                    cycle = 0;
+                    learn = true;
+                    sw.Reset();
+                    sw.Start();
 
-                    cycle++;
-
-                    Console.WriteLine($"-------------- Cycle {cycle} ---------------");
-
-                    foreach (var input in inputVideo)
+                    //
+                    // Now training with SP+TM. SP is pretrained on the given VideoSet.
+                    // There is a little different between a input pattern set and an input video set,
+                    // The reason is because a video consists of continously altering frame, not distinct values like the sequence learning of Scalar value.
+                    // Thus Learning with sp alone was kept
+                    for (int i = 0; i < maxCycles; i++)
                     {
-                        Console.WriteLine($"-------------- {input.FrameKey} ---------------");
+                        matches = 0;
 
-                        var lyrOut = layer1.Compute(input.EncodedBitArray, learn) as ComputeCycle;
+                        cycle++;
 
-                        // lyrOut is null when the TM is added to the layer inside of HPC callback by entering of the stable state.
-                        var activeColumns = layer1.GetResult("sp") as int[];
+                        Console.WriteLine($"-------------- Cycle {cycle} ---------------");
 
-                        previousFrames.Add(input.FrameKey);
-                        if (previousFrames.Count > (maxPrevInputs + 1))
-                            previousFrames.RemoveAt(0);
-
-                        // In the pretrained SP with HPC, the TM will quickly learn cells for patterns
-                        // In that case the starting sequence 4-5-6 might have the sam SDR as 1-2-3-4-5-6,
-                        // Which will result in returning of 4-5-6 instead of 1-2-3-4-5-6.
-                        // HtmClassifier allways return the first matching sequence. Because 4-5-6 will be as first
-                        // memorized, it will match as the first one.
-                        if (previousFrames.Count < maxPrevInputs)
-                            continue;
-
-                        string key = GetKey(previousFrames);
-
-                        List<Cell> actCells;
-
-                        if (lyrOut.ActiveCells.Count == lyrOut.WinnerCells.Count)
+                        foreach (var currentFrame in inputVideo)
                         {
-                            actCells = lyrOut.ActiveCells;
-                        }
-                        else
-                        {
-                            actCells = lyrOut.WinnerCells;
-                        }
+                            Console.WriteLine($"-------------- {currentFrame.FrameKey} ---------------");
+                            var lyrOut = layer1.Compute(currentFrame.EncodedBitArray, learn) as ComputeCycle;
 
-                        cls.Learn(key, actCells.ToArray());
+                            Console.WriteLine(string.Join(',', lyrOut.ActivColumnIndicies));
+                            // lyrOut is null when the TM is added to the layer inside of HPC callback by entering of the stable state.
+                            var activeColumns = layer1.GetResult("sp") as int[];
+                            Console.WriteLine(string.Join(',', activeColumns));
 
-                        if (learn == false)
-                            Console.WriteLine($"Inference mode");
+                            List<Cell> actCells;
 
-                        Console.WriteLine($"Col  SDR: {Helpers.StringifyVector(lyrOut.ActivColumnIndicies)}");
-                        Console.WriteLine($"Cell SDR: {Helpers.StringifyVector(actCells.Select(c => c.Index).ToArray())}");
-
-                        if (lastPredictedValue.Contains(key))
-                        {
-                            matches++;
-                            Console.WriteLine($"Match. Actual value: {key} - Predicted value: {key}");
-                            lastPredictedValue.Clear();
-                        }
-                        else
-                        {
-                            Console.WriteLine($"Mismatch! Actual value: {key} - Predicted values: {String.Join(',', lastPredictedValue)}");
-                            lastPredictedValue.Clear();
-                        }
-
-                        if (lyrOut.PredictiveCells.Count > 0)
-                        {
-                            //var predictedInputValue = cls.GetPredictedInputValue(lyrOut.PredictiveCells.ToArray());
-                            var predictedInputValues = cls.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), 3);
-
-                            foreach (var item in predictedInputValues)
+                            HelperFunction.WriteLineColor($"WinnerCell Count: {lyrOut.WinnerCells.Count}", ConsoleColor.Cyan);
+                            HelperFunction.WriteLineColor($"ActiveCell Count: {lyrOut.ActiveCells.Count}", ConsoleColor.Cyan);
+                            if (lyrOut.ActiveCells.Count == lyrOut.WinnerCells.Count)
                             {
-                                Console.WriteLine($"Current Input: {input} \t| Predicted Input: {item.PredictedInput}");
-                                lastPredictedValue.Add(item.PredictedInput);
+                                actCells = lyrOut.ActiveCells;
                             }
+                            else
+                            {
+                                actCells = lyrOut.WinnerCells;
+                            }
+
+                            cls.Learn(currentFrame.FrameKey, actCells.ToArray());
+                            /*
+                            if (lyrOut.PredictiveCells.Count > 0)
+                            {
+                                HelperFunction.WriteLineColor("Predicted Values for current frame: ", ConsoleColor.Yellow);
+                                Cell[] cellArray = lyrOut.PredictiveCells.ToArray();
+                                foreach(Cell nCell in cellArray)
+                                {
+                                    HelperFunction.WriteLineColor(nCell.ToString(),ConsoleColor.Yellow);
+                                    
+                                }
+                                //string a = Console.ReadLine();
+                                var predictedFrames = cls.GetPredictedInputValues(cellArray,5);
+                                foreach (var item in predictedFrames)
+                                {
+                                    Debug.WriteLine($"Current Input: {currentFrame.FrameKey} \t| Predicted Input: {item.PredictedInput}");
+                                    Console.WriteLine($"{item.PredictedInput} -- similarity{item.Similarity} -- NumberOfSameBit {item.NumOfSameBits}");
+                                }
+                                
+                            }
+                            else
+                            {
+                                HelperFunction.WriteLineColor($"CURRENT FRAME: {currentFrame.FrameKey}", ConsoleColor.Red);
+                                HelperFunction.WriteLineColor("NO PREDICTED CELLS FOR THIS FRAME",ConsoleColor.Red);
+                            }
+                            */
                         }
-                        else
+                        // Inferring Mode
+                        if (i>20)
                         {
-                            Console.WriteLine($"NO CELLS PREDICTED for next cycle.");
-                            lastPredictedValue.Clear();
+                        learn = false;
+                        List<List<string>> possibleOutcomeSerie = new();
+                        possibleOutcomeSerie.Add(new List<string> { inputVideo[0].FrameKey });
+                        List<string> possibleOutcome = new();
+                        tm.Reset(mem);
+                        foreach (NFrame currentFrame in inputVideo)
+                        {
+                            // Inferring the current frame encoded bit array with learned SP
+                            var lyrOut = layer1.Compute(currentFrame.EncodedBitArray, learn) as ComputeCycle;
+                            var nextFramePossibilities = cls.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), 5);
+
+                            foreach (var nextFrame in nextFramePossibilities)
+                            {
+                                if (nextFrame.Similarity > 60)
+                                {
+                                    possibleOutcome.Add(nextFrame.PredictedInput);
+                                }
+                            }
+                            possibleOutcomeSerie.Add(new(possibleOutcome));
+                            possibleOutcome.Clear();
+                        }
+                        foreach (var outcome in possibleOutcomeSerie)
+                        {
+                            HelperFunction.WriteLineColor(string.Join("---", outcome), ConsoleColor.Green);
+                        }
+                        learn = true;
                         }
                     }
                 }
@@ -257,7 +263,7 @@ namespace HTMVideoLearning
         /// <param name="inputBits">number of bit in input array</param>
         /// <param name="numColumns">number of columns in SDR</param>
         /// <returns></returns>
-        private HtmConfig GetHTM(int[] inputBits, int[] numColumns)
+        private static HtmConfig GetHTM(int[] inputBits, int[] numColumns)
         {
             HtmConfig htm = new HtmConfig(inputBits, numColumns)
             {
@@ -269,18 +275,15 @@ namespace HTMVideoLearning
             };
             return htm;
         }
+        /// <summary>
+        /// Get the key for HTMClassifier learning stage.
+        /// The key here is a serie of frames' keys, seperated by "-"
+        /// </summary>
+        /// <param name="prevInputs"></param>
+        /// <returns></returns>
         private static string GetKey(List<string> prevInputs)
         {
-            string key = String.Empty;
-
-            for (int i = 0; i < prevInputs.Count; i++)
-            {
-                if (i > 0)
-                    key += "-";
-
-                key += (prevInputs[i]);
-            }
-
+            string key = string.Join("-", prevInputs);
             return key;
         }
     }

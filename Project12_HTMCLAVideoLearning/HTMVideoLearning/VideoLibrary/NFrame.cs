@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using 
 
 namespace VideoLibrary
 {
@@ -12,15 +11,15 @@ namespace VideoLibrary
     /// </summary>
     public enum ColorMode
     {
-        BLACKWHITE,
+        BLACKWHITE = 1,
         // Image Binarization by RED channel
         // -- If a pixel has R color value more than 128 it is 0, else is it 1
         // Size int[] = Number of pixel x 1
-        BINARIZEDRGB,
+        BINARIZEDRGB = 3,
         // Taking all the binarized value of each channels in R/G/B 
         // -- If a pixel has R/B/G color value more than 128 it is 0, else is it 1 
         // Size int[] = Number of pixel x 3
-        PURE,
+        PURE = 24,
         // No binarization, taking all color resolution of R/G/B channel
         // Size int[] = Number of pixel x 24
         // Example
