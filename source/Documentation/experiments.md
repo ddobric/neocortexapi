@@ -23,7 +23,7 @@ The ability to recognize and predict temporal sequences of sensory inputs is vit
 
 [Download student paper here](./Experiments/ML-19-20_20-5.4_CellsPerColumnExperiment_Paper.pdf)
 
-[Check out implementation here](../../NeoCortexApi/NeoCortexApi.Experiments/CortexNetworkTests/CellsPerColumnExperimentTest.cs)
+[Check out implementation here](../NeoCortexApi.Experiments/CortexNetworkTests/CellsPerColumnExperimentTest.cs)
 
 #### **HTM Sparsity**
 
@@ -31,7 +31,7 @@ It is necessary for survival in natural environment to be able to identify and p
 
 [Download student paper here](./Experiments/ML-19-20_20-5.4_HtmSparsityExperiments_Paper.pdf)
 
-[Check out implementation here](../../NeoCortexApi/NeoCortexApi.Experiments/CortexNetworkTests/HtmSparsityTest.cs)
+[Check out implementation here](../NeoCortexApi.Experiments/CortexNetworkTests/HtmSparsityTest.cs)
 
 #### **Parameter Change Experiment**
 
@@ -39,7 +39,7 @@ Hierarchical Temporal Memory (HTM) is based on the supposition that the world ha
 
 [Download student paper here](./Experiments/ML-19-20_20-5.4_ParameterChangeExperiment_Paper.pdf)
 
-[Check out implementation here](../../NeoCortexApi/NeoCortexApi.Experiments/CortexNetworkTests/InputBitsExperimentTest.cs)
+[Check out implementation here](../NeoCortexApi.Experiments/CortexNetworkTests/InputBitsExperimentTest.cs)
 
 ## Performance Spatial Pooler between Global and Local Inhibition
 
@@ -59,7 +59,7 @@ Each region in the cortex receives input through millions of axons from sensory 
 
 [Download student paper here](./Experiments/ML-19-20_20-5.7_PerformanceSpatialPooler-between-Global-and-Local-Inhibition.pdf)
 
-[Check out implementation here](../../NeoCortexApi/NeoCortexApi.Experiments/SpatialPoolerInhibitionExperimentalTests.cs)
+[Check out implementation here](../NeoCortexApi.Experiments/SpatialPoolerInhibitionExperimentalTests.cs)
 
 ## Investigation of Hierarchical Temporal Memory Spatial Pooler's Noise Robustness against Gaussian noise
 
@@ -79,7 +79,7 @@ The Thousand Brains Theory of Intelligence is a new and rising approach to under
 
 [Download student paper here](./Experiments/ML-19-20_20-5.12_SpatialPooler_NoiseRobustness.pdf)
 
-[Check out implementation here](../../NeoCortexApi/NeoCortexApi.Experiments/CortexNetworkTests/GaussianNoiseExperiment.cs)
+[Check out implementation here](../NeoCortexApi.Experiments/CortexNetworkTests/GaussianNoiseExperiment.cs)
 
 ## Validate Memorizing capabilities of SpatialPooler
 
@@ -100,7 +100,7 @@ The main objective of the project is to describe memorizing capabilites as the a
 
 [Download student paper here](./Experiments/ML-19-20_20-5.10_ValdatingMemorizingCapabilitesOfSpatialPooler.pdf)
 
-[Check out implementation here](../../NeoCortexApi/NeoCortexApi.Experiments/SpatialPoolerMemorizingExperiment84.cs)
+[Check out implementation here](../NeoCortexApi.Experiments/SpatialPoolerMemorizingExperiment84.cs)
 
 ## ML19/20-5.2. Improving of implementation of the Scalar encoder in HTM
 
@@ -137,7 +137,7 @@ The image classification is a classical problem of image processing; machine lea
 
 [Download student paper here](./Experiments/ML-19-20_20-5.11_SchemaImageClassification.pdf)
 
-[Check out implementation here](../../NeoCortexApi/NeoCortexApi.Experiments/SchemaImageClassificationExperiment.cs)
+[Check out implementation here](../NeoCortexApi.Experiments/SchemaImageClassificationExperiment.cs)
 
 ## Sequence Learning - Music Notes Experiment
 
@@ -152,7 +152,7 @@ To demonstrate learning of sequences, I have originally developed an experiment 
 Every music note is represented as a scalar value, which appear in the sequence of notes. For example, notes C, D, E, F, G and H can be associated with the scalar values: C-0, D-1, E-2, F-3, G-4, H-5. By following that rule notes of some has been taken. In the very first experiment the song _twinkle, twinkle little star_ was used in the experiment: [here] (https://www.bethsnotesplus.com/2013/08/twinkle-twinkle-little-star.html).
 Over time, the experiment has grown, but we have kept the original name '_Music Notes Experiment_'. In this experiment various outputs are generated, which trace the state of active columns and active cells during the learning process. Today, we use this experiment to learn how HTM learns sequences.
 
-[Check out implementation here](../../NeoCortexApi/NeoCortexApi.Experiments/SequenceLearningExperiments/MuscNotesExperiment.cs)
+[Check out implementation here](../NeoCortexApi.Experiments/SequenceLearningExperiments/MuscNotesExperiment.cs)
 
 ## On the Relationship Between Input Sparsity and Noise Robustness in SP (Paper)
 
@@ -236,4 +236,4 @@ HTM Feedforward network is a multilayer based artificial neural orchestrate whic
 
 [Download student paper here](./Experiments/ML-20-21_20-5.2_HTM%20FeedForward_Network.pdf)
 
-[Check out implementation here](../../NeoCortexApi/NeoCortexApi.Experiments/FeedForwardExperiment_L4L2.cs)
+[Check out implementation here](../NeoCortexApi.Experiments/FeedForwardExperiment_L4L2.cs)
