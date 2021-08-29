@@ -177,7 +177,6 @@ namespace NeoCortexApi
                 activeColumns.Add(conn.GetColumn(indx));
             }
 
-
             //
             // Gets the mini-columns that owns the segment.
             Func<Object, Column> segToCol = (segment) =>
@@ -682,7 +681,7 @@ namespace NeoCortexApi
             //
             // Enumarates all synapses in a segment and remove winner-cells from
             // list of removingCandidates if they are presynaptic winners cells.
-            // So, we will recreate only synapses on cells, which are not winners in the previous step.
+            // So, we will create synapses only on cells, which are not winners in the previous cycle.
             //DD 
             foreach (Synapse synapse in segment.Synapses)
             {
@@ -698,14 +697,14 @@ namespace NeoCortexApi
 
             // We take here eather wanted growing number of desired synapes of num of candidates
             // if too many growing synapses requested.
-            int nActual = nDesiredNewSynapses < candidatesLength ? nDesiredNewSynapses : candidatesLength;
+            int numMissingSynapses = nDesiredNewSynapses < candidatesLength ? nDesiredNewSynapses : candidatesLength;
 
             //
             // Finally we randomly create new synapses. 
-            for (int i = 0; i < nActual; i++)
+            for (int i = 0; i < numMissingSynapses; i++)
             {
                 int rndIndex = random.Next(removingCandidates.Count());
-                conn.CreateSynapse(segment, removingCandidates[rndIndex], initialPermanence);
+                conn.CreateSynapse(segment, removingCandidates[7158], initialPermanence);
                 removingCandidates.RemoveAt(rndIndex);
             }
         }
