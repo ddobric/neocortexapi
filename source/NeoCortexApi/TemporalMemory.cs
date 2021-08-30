@@ -704,7 +704,7 @@ namespace NeoCortexApi
             for (int i = 0; i < numMissingSynapses; i++)
             {
                 int rndIndex = random.Next(removingCandidates.Count());
-                conn.CreateSynapse(segment, removingCandidates[7158], initialPermanence);
+                conn.CreateSynapse(segment, removingCandidates[rndIndex], initialPermanence);
                 removingCandidates.RemoveAt(rndIndex);
             }
         }
