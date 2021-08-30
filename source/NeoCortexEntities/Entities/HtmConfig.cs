@@ -591,9 +591,13 @@ namespace NeoCortexApi.Entities
                 return false;
             if (Name != obj.Name)
                 return false;
-            if (Random != obj.Random)
-                return false;
+            if (Random != null && obj.Random != null)
+            {
 
+                if (obj.Random.Next() != Random.Next())
+                    return false;
+            }
+            
             return true;
 
         }
@@ -653,7 +657,7 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.ConnectedPermanence, writer);
             ser.SerializeValue(this.RandomGenSeed, writer);
             ser.SerializeValue(this.Name, writer);
-            //ser.SerializeValue(this.Random, writer);
+            ser.SerializeValue(this.RandomGenSeed, writer);
 
             if (this.memory != null)
             {
@@ -974,7 +978,7 @@ namespace NeoCortexApi.Entities
                                     }
                                 case 26:
                                     {
-                                        //htmConfig.Random = ser.ReadRandomValue(str[i]);
+                                        htmConfig.Random = ser.ReadRandomValue(str[i]);
                                         break;
                                     }
                                 default:

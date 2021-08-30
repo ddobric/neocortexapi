@@ -1495,7 +1495,7 @@ namespace NeoCortexApi
             {
                 this.connections.Serialize(writer);
             }
-
+            
             ser.SerializeEnd(nameof(SpatialPooler), writer);
         }
 

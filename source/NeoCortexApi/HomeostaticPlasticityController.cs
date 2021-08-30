@@ -375,7 +375,7 @@ namespace NeoCortexApi
             HtmSerializer2 ser = new HtmSerializer2();
 
             ser.SerializeBegin(nameof(HomeostaticPlasticityController), writer);
-
+            
             ser.SerializeValue(this.m_RequiredSimilarityThreshold, writer);
             ser.SerializeValue(this.m_MaxPreviousElements, writer);
             ser.SerializeValue(this.m_Cycle, writer);
@@ -390,9 +390,9 @@ namespace NeoCortexApi
             {
                 this.m_HtmMemory.Serialize(writer);
             }
-
+            
             ser.SerializeEnd(nameof(HomeostaticPlasticityController), writer);
-
+            
         }
 
         public static HomeostaticPlasticityController Deserialize(StreamReader sr)

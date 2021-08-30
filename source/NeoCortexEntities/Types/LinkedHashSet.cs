@@ -13,10 +13,10 @@ namespace NeoCortexApi.Types
     public class LinkedHashSet<T> : ISet<T>
     {
        // [field: NonSerializedAttribute()]
-        private readonly IDictionary<T, LinkedListNode<T>> dict;
+        private IDictionary<T, LinkedListNode<T>> dict;
 
        // [field: NonSerializedAttribute()]
-        private readonly LinkedList<T> list;
+        private LinkedList<T> list;
 
         public LinkedHashSet(int initialCapacity)
         {
@@ -316,7 +316,10 @@ namespace NeoCortexApi.Types
             HtmSerializer2 ser = new HtmSerializer2();
 
             ser.SerializeBegin(nameof(LinkedHashSet<T>), writer);
-            
+
+            //ser.SerializeValue(this.dict, writer);
+            //ser.SerializeValue(this.list, writer);
+
             ser.SerializeEnd(nameof(LinkedHashSet<T>), writer);
         }
         #endregion
