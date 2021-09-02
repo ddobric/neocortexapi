@@ -7,7 +7,7 @@ namespace HTMVideoLearning
         static void Main(string[] args)
         {
             VideoLearning experiment = new VideoLearning();
-            experiment.Run();
+            experiment.Run2();
         }
     }
 }

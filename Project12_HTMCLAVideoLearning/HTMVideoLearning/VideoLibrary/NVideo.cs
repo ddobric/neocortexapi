@@ -102,13 +102,13 @@ namespace VideoLibrary
             }
             return new int[] { 4, 2, 3 };
         }
-        public void BitmapListToVideo(string videoOutputPath, bool isColor)
+        public static void NFrameListToVideo(List<NFrame> bitmapList, string videoOutputPath, int frameRate, Size dimension, bool isColor)
         {
-            using (VideoWriter videoWriter = new($"{videoOutputPath}.mp4", -1, (int)frameRate, new Size(frameWidth, frameHeight), isColor))
+            using (VideoWriter videoWriter = new($"{videoOutputPath}.mp4", -1, (int)frameRate, dimension, isColor))
             {
-                foreach (NFrame frame in nFrames)
+                foreach (NFrame frame in bitmapList)
                 {
-                    Bitmap tempBitmap = frame.IntArrayToBitmap();
+                    Bitmap tempBitmap = frame.IntArrayToBitmap(frame.EncodedBitArray);
                     videoWriter.Write(tempBitmap.ToMat());
                 }
             }

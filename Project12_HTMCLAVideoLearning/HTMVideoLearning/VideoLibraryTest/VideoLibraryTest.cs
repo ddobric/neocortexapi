@@ -2,6 +2,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using VideoLibrary;
 namespace VideoLibraryTest
 {
@@ -17,7 +18,8 @@ namespace VideoLibraryTest
 
             // export Video to outputFilePath
             string outputFilePath = "testFile//ReadVideo//output_mp4.mp4";
-            nv.BitmapListToVideo(outputFilePath, true);
+            List<Bitmap> bitmapList = new();
+            NVideo.NFrameListToVideo(nv.nFrames,outputFilePath,24,new Size( 24,24),false);
         }
         [TestMethod]
         public void BitmapResize()
@@ -145,6 +147,18 @@ namespace VideoLibraryTest
                 }
             }
             output.Save(outputFile);
+        }
+        [TestMethod]
+        public void WriteFile()
+        {
+            static void RecordResult(List<string> result, string fileName)
+            {
+                File.WriteAllLines($"{fileName}.txt", result);
+            }
+            List<string> a = new();
+            a.Add($"Testing meThod");
+            a.Add($"For Sequence Learning Experiment");
+            RecordResult(a, "Outputter.txt");
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
+using System.Drawing;
 
 namespace VideoLibrary
 {
@@ -75,7 +76,7 @@ namespace VideoLibrary
                 {
                     Directory.CreateDirectory(folderName);
                 }
-                nv.BitmapListToVideo($"{folderName}"+@"\"+$"{nv.name}",true);
+                NVideo.NFrameListToVideo(nv.nFrames,$"{folderName}"+@"\"+$"{nv.name}",(int)nv.frameRate,new Size(nv.frameWidth,nv.frameHeight),true);
             }
         }
     }

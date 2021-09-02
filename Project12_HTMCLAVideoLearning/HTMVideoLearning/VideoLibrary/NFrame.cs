@@ -40,7 +40,6 @@ namespace VideoLibrary
         public readonly ColorMode colorMode;
         public readonly int frameWidth;
         public readonly int frameHeight;
-
         public NFrame(Bitmap bmp, string videoName, string label, int index, int frameWidth, int frameHeight, ColorMode colorMode)
         {
             this.index = index;
@@ -127,7 +126,7 @@ namespace VideoLibrary
             }
             return result;
         }
-        public Bitmap IntArrayToBitmap()
+        public Bitmap IntArrayToBitmap(int[] EncodedBitArray)
         {
             int[] rgb = { 0, 0, 0 };
             Bitmap output = new(frameWidth, frameHeight);
