@@ -112,9 +112,8 @@ namespace NeoCortex
         /// <param swActCol1="to write in Excel file"></param>
         /// <returns></returns>
 
-        public static int TraceColumnsOverlap(List<double[,]> overlapArrays, StreamWriter swActCol1)
+        public static int TraceColumnsOverlap(List<double[,]> overlapArrays, StreamWriter swActCol1, string testName)
         {
-
             SpreadsheetInfo.SetLicense("FREE-LIMITED-KEY");
 
             // Continue to use the component in a Trial mode when free limit is reached.
@@ -138,8 +137,8 @@ namespace NeoCortex
 
                         swActCol1.WriteLine($"Column: {index} / Overlaps: {s}");
 
-
-                        //// Add data which will be used by the Excel chart.
+                        //
+                        // Add data which will be used by the Excel chart.
                         worksheet.Cells["A1"].Value = "Column /";
                         worksheet.Cells["B1"].Value = "Overlap";
                         worksheet.Cells[in2, 0].SetValue(index);
@@ -208,7 +207,7 @@ namespace NeoCortex
             // Format vertical major gridlines
             chart.Axes.Vertical.MajorGridlines.Outline.Width = Length.From(1, LengthUnit.Point);
 
-            workbook.Save(@"Column_Overlap_Chart.xlsx");
+            workbook.Save($"{testName}.xlsx");
 
             return max;
         }

@@ -781,14 +781,6 @@ namespace NeoCortexApi
         public void UpdatePermanencesForColumnSparse(Connections c, double[] perm, Column column, int[] maskPotential, bool raisePerm)
         {
             column.UpdatePermanencesForColumnSparse(c.HtmConfig, perm, maskPotential, raisePerm);
-            //if (raisePerm)
-            //{
-            //    RaisePermanenceToThresholdSparse(c, perm);
-            //}
-
-            //ArrayUtils.LessOrEqualXThanSetToY(perm, c.getSynPermTrimThreshold(), 0);
-            //ArrayUtils.Clip(perm, c.getSynPermMin(), c.getSynPermMax());
-            //column.setProximalPermanencesSparse(c, perm, maskPotential);
         }
 
         /// <summary>

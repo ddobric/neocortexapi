@@ -82,30 +82,13 @@ namespace NeoCortexApi.Entities
             {
                 var synapse = RFPool.GetSynapseForInput(inputIndexes[i]);
                 synapse.Permanence = perms[i];
-                //RFPool.setPermanence(c, RFPool.getSynapseWithInput(inputIndexes[i]), perms[i]);
+        
                 if (perms[i] >= permConnThreshold)
                 {
-                    //c.getConnectedCounts().set(1, ParentColumnIndex, i);
                     connectedCounts.set(1, 0 /*ParentColumnIndex*/, i);
                 }
             }
         }
-
-        //public double SynPermConnected { get; set; }
-
-
-        /**
-         * Sets the input vector synapse indexes which are connected (&gt;= synPermConnected)
-         * @param c
-         * @param connectedIndexes
-         */
-        //public void setConnectedSynapsesForTest(Connections c, int[] connectedIndexes)
-        //{
-        //    //Pool pool = createPool(c, connectedIndexes);
-        //    var pool = new Pool(connectedIndexes.Length, c.NumInputs);
-        //    //c.getPotentialPools().set(index, pool);
-        //    c.getPotentialPoolsOld().set(index, pool);
-        //}
 
         /// <summary>
         /// Returns an array of synapse indexes as a dense binary array.
