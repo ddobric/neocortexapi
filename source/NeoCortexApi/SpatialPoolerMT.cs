@@ -31,7 +31,8 @@ namespace NeoCortexApi
         }
 
         /// <summary>
-        /// Implements muticore initialization of pooler.
+        /// Implements muticore initialization of the Spatial Pooler.
+        /// It creates the pool of potentially connected synapses on ProximalDendrite segment.
         /// </summary>
         /// <param name="c"></param>
         protected override void ConnectAndConfigureInputs(Connections c)
@@ -44,8 +45,7 @@ namespace NeoCortexApi
 
             // Parallel implementation of initialization
             ParallelOptions opts = new ParallelOptions();
-            //int synapseCounter = 0;
-
+            
             Parallel.For(0, numColumns, opts, (indx) =>
             {
                 Random rnd = new Random(42);

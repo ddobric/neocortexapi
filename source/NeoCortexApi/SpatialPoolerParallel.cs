@@ -104,7 +104,8 @@ namespace NeoCortexApi
         }
 
         /// <summary>
-        /// Implements muticore initialization of pooler.
+        /// Implements multinode initialization of pooler.
+        /// It creates the pool of potentially connected synapses on ProximalDendrite segment.
         /// </summary>
         /// <param name="c"></param>
         protected override void ConnectAndConfigureInputs(Connections c)

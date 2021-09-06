@@ -1,7 +1,7 @@
 ﻿using GemBox.Spreadsheet;
 using GemBox.Spreadsheet.Charts;
 using GemBox.Spreadsheet.Drawing;
-using NeoCortexApi;
+//using NeoCortexApi;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -101,34 +101,6 @@ namespace NeoCortex
             }
 
             return a;
-
-        }
-
-
-
-
-        /// <summary>
-        /// shows active column in the output window
-        /// </summary>
-        /// <param cycle="no of cycles"></param>
-        /// <param trainingImage="Input Image"></param>
-        /// <param activeCols="active Columns of SDR"></param>
-        /// <returns></returns>
-        public static void TraceActiveColumns(int cycle, string trainingImage, int[] activeCols)
-        {
-            Debug.WriteLine($"Cycle: {cycle++} - Input: {trainingImage}");
-
-            Debug.WriteLine($"ActiveColumn:{Helpers.StringifyVector(activeCols)}\n");
-
-            // int index = 0;
-            /*
-            foreach (var vectorBit in activeCols)
-            {
-
-                Debug.WriteLine($"Column {index} / Overlap {vectorBit}");
-                index++;
-            }
-            */
 
         }
 

@@ -135,7 +135,7 @@ namespace UnitTestsProject.Sdr
 
                                 var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 
-                                SdrRepresentation.TraceActiveColumns(cycle++, trainingImage, activeCols);
+                                //SdrRepresentation.TraceActiveColumns(cycle++, trainingImage, activeCols);
 
                                 // Debug.WriteLine($"Cycle: {cycle++} - Input: {trainingImage}");
                                 // Debug.WriteLine($"{Helpers.StringifyVector(activeCols)}\n");
