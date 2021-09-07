@@ -113,8 +113,7 @@ namespace UnitTestsProject.Sdr
 
         private void SimilarityResult(int arr1, int arr2, Dictionary<double, int[]> sdrs, String folder)                // Function to check similarity between Inputs 
         {
-            int[] Unionarray = new int[100];
-            int[] Overlaparray = new int[100];
+
             List<int[,]> arrayOvr = new List<int[,]>();
 
             int h = arr1;
@@ -128,20 +127,16 @@ namespace UnitTestsProject.Sdr
 
             Console.WriteLine(Helpers.StringifyVector(sdrs[w]));
 
-
-
-            Overlaparray = SdrRepresentation.OverlapArraFun(sdrs[h], sdrs[w]);
+            var Overlaparray = SdrRepresentation.OverlapArraFun(sdrs[h], sdrs[w]);
             int[,] twoDimenArray2 = ArrayUtils.Make2DArray<int>(Overlaparray, (int)Math.Sqrt(Overlaparray.Length), (int)Math.Sqrt(Overlaparray.Length));
             int[,] twoDimArray1 = ArrayUtils.Transpose(twoDimenArray2);
             NeoCortexUtils.DrawBitmap(twoDimArray1, 1024, 1024, $"{folder}\\Overlap_Union\\Overlap_{h}_{w}.png", Color.PaleGreen, Color.Red, text: $"Overlap_{h}_{w}.png");
-           
 
-            Unionarray = SdrRepresentation.UnionArraFun(sdrs[h], sdrs[w]);
-            int[,] twoDimenArray4 = ArrayUtils.Make2DArray<int>(Unionarray, (int)Math.Sqrt(Unionarray.Length), (int)Math.Sqrt(Unionarray.Length));
+            var unionArr = sdrs[h].Union(sdrs[w]).ToArray();
+            int[,] twoDimenArray4 = ArrayUtils.Make2DArray<int>(unionArr, (int)Math.Sqrt(unionArr.Length), (int)Math.Sqrt(unionArr.Length));
             int[,] twoDimArray3 = ArrayUtils.Transpose(twoDimenArray4);
-           
+
             NeoCortexUtils.DrawBitmap(twoDimArray3, 1024, 1024, $"{folder}\\Overlap_Union\\Union_{h}_{w}.png", Color.PaleGreen, Color.Green, text: $"Overlap_{h}_{w}.png");
-            
 
         }
 
@@ -247,7 +242,7 @@ namespace UnitTestsProject.Sdr
             ///    It cross compares the binary arrays  of any of the two scalar values User enters.
             /// 2. Creates bitmaps of the overlaping and non-overlaping regions of the two binary arrays selected by the User.
             /// </summary>
-           
+
 
 
             int[] result1 = encoder.Encode(DateTimeOffset.Parse(inputs[0].ToString()));
@@ -266,47 +261,34 @@ namespace UnitTestsProject.Sdr
 
         public void SimilarityResult1(int[] arr1, int[] arr2, Dictionary<Object, int[]> sdrs, String folder, Object input0, Object input1)                // Function to check similarity between Inputs 
         {
-            int[] Unionarray = new int[100];
-            int[] Overlaparray = new int[100];
             List<int[,]> arrayOvr = new List<int[,]>();
 
             Object h = input0;
             Object w = input1;
 
+            var Overlaparray = SdrRepresentation.OverlapArraFun(arr1, arr2);
 
-
-
-           
-            Overlaparray = SdrRepresentation.OverlapArraFun(arr1, arr2);
-            
             int[,] twoDimenArray2 = ArrayUtils.Make2DArray<int>(Overlaparray, 32, 32);
 
-           
             var twoDimArray1 = ArrayUtils.Transpose(twoDimenArray2);
-
 
             NeoCortexUtils.DrawBitmap(twoDimArray1, 1024, 1024, $"{folder}\\Overlap_Union\\Overlap_{h.ToString().Replace("/", "-").Replace(":", "-")}_{w.ToString().Replace("/", "-").Replace(":", "-")}.png", Color.PaleGreen, Color.Red, text: $"Overlap_{h}_{w}.png");
 
-         
-
-            Unionarray = SdrRepresentation.UnionArraFun(arr1, arr2);
-                        int[,] twoDimenArray4 = ArrayUtils.Make2DArray<int>(Unionarray, 32, 32);
+            var unionArr = arr1.Union(arr2).ToArray();
+            int[,] twoDimenArray4 = ArrayUtils.Make2DArray<int>(unionArr, 32, 32);
             int[,] twoDimArray3 = ArrayUtils.Transpose(twoDimenArray4);
-           
-
 
             NeoCortexUtils.DrawBitmap(twoDimArray3, 1024, 1024, $"{folder}\\Overlap_Union\\Union{h.ToString().Replace("/", "-").Replace(":", "-")}_{w.ToString().Replace("/", "-").Replace(":", "-")}.png", Color.PaleGreen, Color.Green, text: $"Overlap_{h}_{w}.png");
-          
         }
-      
+
 
 
 
         public void CategoryEncoderTest(string[] inputs)
         {
 
-       
-      
+
+
             var outFolder = @"..\..\..\..\ScalarEncoderResults";
 
             var now = DateTimeOffset.Now;
@@ -350,7 +332,7 @@ namespace UnitTestsProject.Sdr
             ///    It cross compares the binary arrays  of any of the two scalar values User enters.
             /// 2. Creates bitmaps of the overlaping and non-overlaping regions of the two binary arrays selected by the User.
             /// </summary>
-           
+
 
             int[] result1 = categoryEncoder.Encode(inputs[0]);
 
@@ -368,40 +350,28 @@ namespace UnitTestsProject.Sdr
 
         public void SimilarityResult2(int[] arr1, int[] arr2, Dictionary<Object, int[]> sdrs, String folder, Object input0, Object input1)                // Function to check similarity between Inputs 
         {
-            int[] Unionarray = new int[100];
-            int[] Overlaparray = new int[100];
-            List<int[,]> arrayOvr = new List<int[,]>();
            
+            List<int[,]> arrayOvr = new List<int[,]>();
+
             Object h = input0;
             Object w = input1;
 
-           
+            var Overlaparray = SdrRepresentation.OverlapArraFun(arr1, arr2);
 
-            Overlaparray = SdrRepresentation.OverlapArraFun(arr1, arr2);
-           
             int[,] twoDimenArray2 = ArrayUtils.Make2DArray<int>(Overlaparray, 32, 32);
 
-           
             var twoDimArray1 = ArrayUtils.Transpose(twoDimenArray2);
-
 
             NeoCortexUtils.DrawBitmap(twoDimArray1, 1024, 1024, $"{folder}\\Overlap_Union\\Overlap_{h.ToString().Replace("/", "-").Replace(":", "-")}_{w.ToString().Replace("/", "-").Replace(":", "-")}.png", Color.PaleGreen, Color.Red, text: $"Overlap_{h}_{w}.png");
 
-            
-
-            Unionarray = SdrRepresentation.UnionArraFun(arr1, arr2);
+            var Unionarray = arr1.Union(arr2).ToArray();
             int[,] twoDimenArray4 = ArrayUtils.Make2DArray<int>(Unionarray, 32, 32);
             int[,] twoDimArray3 = ArrayUtils.Transpose(twoDimenArray4);
-            
-
 
             NeoCortexUtils.DrawBitmap(twoDimArray3, 1024, 1024, $"{folder}\\Overlap_Union\\Union{h.ToString().Replace("/", "-").Replace(":", "-")}_{w.ToString().Replace("/", "-").Replace(":", "-")}.png", Color.PaleGreen, Color.Green, text: $"Union_{h}_{w}.png");
-           
 
-
-            //// Bitmap Intersection Image of two bit arrays selected for comparison
+            // Bitmap Intersection Image of two bit arrays selected for comparison
             SdrRepresentation.DrawIntersections(twoDimArray3, twoDimArray1, 100, $"{folder}\\Overlap_Union\\Intersection_{h.ToString().Replace("/", "-").Replace(":", "-")}_{w.ToString().Replace("/", "-").Replace(":", "-")}.png", Color.Black, Color.Gray, text: $"Intersection_{h}_{w}.png");
-
         }
 
 

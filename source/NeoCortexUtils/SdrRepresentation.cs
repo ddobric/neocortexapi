@@ -44,31 +44,31 @@ namespace NeoCortex
             return ovrlap;
         }
 
-        /// <summary>
-        /// Creates a vector which consists of all no of "1's" in two input vectors/SDRs
-        /// </summary>
-        /// <param arr1="1st array"></param>
-        /// <param arr2="2nd array"></param>
-        /// <returns></returns>
-        public static int[] UnionArraFun(int[] arr1, int[] arr2)
-        {
-            int[] nw = arr1;
-            int[] old = arr2;
-            int[] un = new int[4096];
-            for (int i = 0; i < arr1.Length; i++)
-            {
+        ///// <summary>
+        ///// Creates a vector which consists of all no of "1's" in two input vectors/SDRs
+        ///// </summary>
+        ///// <param arr1="1st array"></param>
+        ///// <param arr2="2nd array"></param>
+        ///// <returns></returns>
+        //public static int[] UnionArraFun(int[] arr1, int[] arr2)
+        //{
+        //    int[] nw = arr1;
+        //    int[] old = arr2;
+        //    int[] un = new int[4096];
+        //    for (int i = 0; i < arr1.Length; i++)
+        //    {
 
-                if ((nw[i] == 0 && old[i] == 1) || (nw[i] == 1 && old[i] == 0) || (nw[i] == 1 && old[i] == 1))
-                {
-                    un[i] = 1;
-                }
-                else
-                {
-                    un[i] = 0;
-                }
-            }
-            return un;
-        }
+        //        if ((nw[i] == 0 && old[i] == 1) || (nw[i] == 1 && old[i] == 0) || (nw[i] == 1 && old[i] == 1))
+        //        {
+        //            un[i] = 1;
+        //        }
+        //        else
+        //        {
+        //            un[i] = 0;
+        //        }
+        //    }
+        //    return un;
+        //}
 
 
         /// <summary>

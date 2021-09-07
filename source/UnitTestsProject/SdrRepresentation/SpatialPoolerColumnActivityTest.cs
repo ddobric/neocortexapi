@@ -166,8 +166,7 @@ namespace UnitTestsProject.Sdr
         {
             int[] CompareArray = new int[numOfCols];
             int[] ActiveArray = new int[numOfCols];
-            int[] Array = new int[numOfCols];
-
+            
             ActiveArray = SdrRepresentation.GetIntArray(activeCols, 4096);
 
             sdrs.Add(trainingImage, activeCols);
@@ -183,12 +182,12 @@ namespace UnitTestsProject.Sdr
 
             CompareArray = SdrRepresentation.GetIntArray(FirstSDRArray, 4096);
 
-            Array = SdrRepresentation.OverlapArraFun(ActiveArray, CompareArray);
+            var Array = SdrRepresentation.OverlapArraFun(ActiveArray, CompareArray);
             int[,] twoDimenArray2 = ArrayUtils.Make2DArray<int>(Array, (int)Math.Sqrt(Array.Length), (int)Math.Sqrt(Array.Length));
             int[,] twoDimArray1 = ArrayUtils.Transpose(twoDimenArray2);
             NeoCortexUtils.DrawBitmap(twoDimArray1, 1024, 1024, $"{outFolder}\\Overlap_{sdrs.Count}.png", Color.PaleGreen, Color.Red, text: $"Overlap.png");
 
-            Array = SdrRepresentation.UnionArraFun(ActiveArray, CompareArray);
+            Array = ActiveArray.Union(CompareArray).ToArray();
             int[,] twoDimenArray4 = ArrayUtils.Make2DArray<int>(Array, (int)Math.Sqrt(Array.Length), (int)Math.Sqrt(Array.Length));
             int[,] twoDimArray3 = ArrayUtils.Transpose(twoDimenArray4);
             NeoCortexUtils.DrawBitmap(twoDimArray3, 1024, 1024, $"{outFolder}\\Union_{sdrs.Count}.png", Color.PaleGreen, Color.Green, text: $"Union.png");
