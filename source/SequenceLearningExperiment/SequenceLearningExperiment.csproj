@@ -16,7 +16,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\NeoCortexApi.Parallel\NeoCortexApi.Parallel.csproj" />
     <ProjectReference Include="..\NeoCortexApi\NeoCortexApi.csproj" />
+    <ProjectReference Include="..\NeoCortexEntities\NeoCortexEntities.csproj" />
   </ItemGroup>
 
 </Project>

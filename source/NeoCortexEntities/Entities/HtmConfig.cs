@@ -99,7 +99,7 @@ namespace NeoCortexApi.Entities
         public double PotentialPct { get; set; }
 
         /// <summary>
-        /// Minimum number of connected synapses to make column active. Specified as a percent of a fully grown synapse.
+        /// Minimum number of synapses connected to input to make the mini-column active. 
         /// </summary>
         public double StimulusThreshold { get; set; }
 
@@ -335,7 +335,7 @@ namespace NeoCortexApi.Entities
         public double InitialPermanence { get; set; } = 0.21;
 
         /// <summary>
-        /// If the permanence value for a synapse is greater than this value, it is said to be connected.
+        /// If the permanence value for a synapse is greater than this value, it is said to be connected = the potential synapse.
         /// </summary>
         public double ConnectedPermanence { get; set; } = 0.5;
 

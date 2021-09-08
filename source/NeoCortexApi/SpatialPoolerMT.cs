@@ -31,7 +31,8 @@ namespace NeoCortexApi
         }
 
         /// <summary>
-        /// Implements muticore initialization of pooler.
+        /// Implements muticore initialization of the Spatial Pooler.
+        /// It creates the pool of potentially connected synapses on ProximalDendrite segment.
         /// </summary>
         /// <param name="c"></param>
         protected override void ConnectAndConfigureInputs(Connections c)
@@ -44,8 +45,7 @@ namespace NeoCortexApi
 
             // Parallel implementation of initialization
             ParallelOptions opts = new ParallelOptions();
-            //int synapseCounter = 0;
-
+            
             Parallel.For(0, numColumns, opts, (indx) =>
             {
                 Random rnd = new Random(42);
@@ -145,20 +145,20 @@ namespace NeoCortexApi
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        /// <param name="c"></param>
+        /// <param name="conn"></param>
         /// <param name="inputVector"></param>
         /// <returns></returns>
-        public override int[] CalculateOverlap(Connections c, int[] inputVector)
+        public override int[] CalculateOverlap(Connections conn, int[] inputVector)
         {
-            ParallelOptions opts = new ParallelOptions
-            {
-                MaxDegreeOfParallelism = Environment.ProcessorCount
-            };
+            ParallelOptions opts = new ParallelOptions {MaxDegreeOfParallelism = Environment.ProcessorCount};
+
             ConcurrentDictionary<int, int> overlaps = new ConcurrentDictionary<int, int>();
 
-            Parallel.For(0, c.HtmConfig.NumColumns, (col) =>
+            //
+            // Calculates the overlapp for each mini-column.
+            Parallel.For(0, conn.HtmConfig.NumColumns, (col) =>
             {
-                var res = c.GetColumn(col).GetColumnOverlapp(inputVector, c.HtmConfig.StimulusThreshold);
+                var res = conn.GetColumn(col).CalcMiniColumnOverlap(inputVector, conn.HtmConfig.StimulusThreshold);
                 overlaps.TryAdd(col, res);
             });
 

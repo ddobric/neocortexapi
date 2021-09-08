@@ -141,5 +141,54 @@
             <param name="nonZeroBitEnd">Position of the last nonzero bit.</param>
             <returns>The one dimensional vector.</returns>
         </member>
+        <member name="M:NeoCortex.SdrRepresentation.OverlapArraFun(System.Int32[],System.Int32[])">
+            <summary>
+            Creates a vector which consists of common no of "1's" in two input vectors/SDRs
+            </summary>
+            <param arr1="1st array"></param>
+            <param arr2="2nd array"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NeoCortex.SdrRepresentation.UnionArraFun(System.Int32[],System.Int32[])">
+            <summary>
+            Creates a vector which consists of all no of "1's" in two input vectors/SDRs
+            </summary>
+            <param arr1="1st array"></param>
+            <param arr2="2nd array"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NeoCortex.SdrRepresentation.GetIntArray(System.Int32[],System.Int32)">
+            <summary>
+            Converts active columns array into to binary array 
+            </summary>
+            <param activeCols="active Columns of SDR"></param>
+            <param numOfCols="size of the output vector"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NeoCortex.SdrRepresentation.TraceActiveColumns(System.Int32,System.String,System.Int32[])">
+            <summary>
+            shows active column in the output window
+            </summary>
+            <param cycle="no of cycles"></param>
+            <param trainingImage="Input Image"></param>
+            <param activeCols="active Columns of SDR"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NeoCortex.SdrRepresentation.TraceColumnsOverlap(System.Collections.Generic.List{System.Double[0:,0:]},System.IO.StreamWriter)">
+            <summary>
+            Show SDR in "Column/Overlap Ratio" and generate its Excel file 
+            </summary>
+            <param overlapArrays="Contains the overlaps of the columns during SDR learning of Spatial Pooler"></param>
+            <param swActCol1="to write in Excel file"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NeoCortex.SdrRepresentation.DrawIntersections(System.Int32[0:,0:],System.Int32[0:,0:],System.Int32,System.String,System.Drawing.Color,System.Drawing.Color,System.String)">
+            <summary>
+            Generate intersection between two SDRs
+            </summary>
+            <param twoDimArray="Overlap array of SDR"></param>
+            <param woDimArray2="Union array of SDR"></param>
+            <returns></returns>
+        </member>
     </members>
 </doc>
