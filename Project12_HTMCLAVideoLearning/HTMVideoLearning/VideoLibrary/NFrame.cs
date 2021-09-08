@@ -73,7 +73,8 @@ namespace VideoLibrary
                         case ColorMode.BLACKWHITE:
                             // image binarization of GRAYSCALE source image
                             // taking red channel as comparatee for binarization 
-                            imageBinary.Add((pixel.R > 255 / 2) ? 0 : 1);
+                            double luminance = (3 * pixel.R + pixel.B + 4 * pixel.G)>>3; 
+                            imageBinary.Add((luminance > 255 / 2) ? 0 : 1);
                             break;
                         case ColorMode.BINARIZEDRGB:
                             // image binarization of RGB source image
@@ -90,6 +91,13 @@ namespace VideoLibrary
             }
             return imageBinary.ToArray();
         }
+
+        public void SaveFrame(string outputFile)
+        {
+            Bitmap temp = IntArrayToBitmap(EncodedBitArray);
+            temp.Save(outputFile);
+        }
+
         /// <summary>
         /// Convert a Color byte value to a int list of 8 bit
         ///     FURTHER DEVELOPMENT:

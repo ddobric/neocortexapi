@@ -77,6 +77,14 @@ namespace VideoLibrary
                     Directory.CreateDirectory(folderName);
                 }
                 NVideo.NFrameListToVideo(nv.nFrames,$"{folderName}"+@"\"+$"{nv.name}",(int)nv.frameRate,new Size(nv.frameWidth,nv.frameHeight),true);
+                if(!Directory.Exists($"{folderName}" + @"\" + $"{nv.name}"))
+                {
+                    Directory.CreateDirectory($"{folderName}" + @"\" + $"{nv.name}");
+                }
+                for(int i = 0;i<nv.nFrames.Count;i+=1 )
+                {
+                    nv.nFrames[i].SaveFrame($"{folderName}" + @"\" + $"{nv.name}" + @"\" + $"{nv.nFrames[i].FrameKey}.png");
+                }
             }
         }
     }

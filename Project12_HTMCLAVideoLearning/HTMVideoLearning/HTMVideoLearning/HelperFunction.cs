@@ -25,16 +25,23 @@ namespace HTMVideoLearning
             Console.WriteLine(str);
             Console.ResetColor();
         }
+        /// <summary>
+        /// Return an array of directories inside the passed parent directories
+        /// In this Experiment:
+        /// Return an array of each video set 's directory 
+        /// </summary>
+        /// <param name="trainingFolderPath"></param>
+        /// <returns></returns>
         public static string[] GetVideoSetPaths(string trainingFolderPath)
         {
             // remove the two outer quotation marks
             trainingFolderPath = trainingFolderPath.Replace("\"", "");
-            string[] videoSetPaths = { };
+            string[] videoSetPaths = Array.Empty<string>();
             string testDir;
             if (Directory.Exists(trainingFolderPath))
             {
                 testDir = trainingFolderPath;
-                HelperFunction.WriteLineColor($"Inserted Path is a folder", ConsoleColor.Green);
+                HelperFunction.WriteLineColor($"Inserted Path is found", ConsoleColor.Green);
                 Console.WriteLine($"Begin reading directory: {trainingFolderPath} ...");
             }
             else
