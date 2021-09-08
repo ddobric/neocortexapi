@@ -6,7 +6,8 @@ namespace HTMVideoLearning
     {
         static void Main(string[] args)
         {
-            VideoLearning.Run2();
+            VideoLearning.Run1();
+            //VideoLearning.Run2();
         }
     }
 }
