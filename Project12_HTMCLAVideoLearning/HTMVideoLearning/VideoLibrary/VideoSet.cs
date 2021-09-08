@@ -87,6 +87,20 @@ namespace VideoLibrary
                 }
             }
         }
+        public NFrame GetNFrameFromFrameKey(string currentFrameKey)
+        {
+            foreach (var nv in nVideoList)
+            {
+                foreach (var nf in nv.nFrames)
+                {
+                    if (nf.FrameKey == currentFrameKey)
+                    {
+                        return nf;
+                    }
+                }
+            }
+            return null;
+        }
     }
 
     
