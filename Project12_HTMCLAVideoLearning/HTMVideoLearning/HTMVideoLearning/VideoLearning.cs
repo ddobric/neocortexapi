@@ -15,7 +15,7 @@ namespace HTMVideoLearning
 {
     class VideoLearning
     {
-        public void Run()
+        public static void Run1()
         {
 
             Stopwatch sw = new Stopwatch();
@@ -357,7 +357,7 @@ namespace HTMVideoLearning
         }
         public static void Run2()
         {
-            Stopwatch sw = new Stopwatch();
+            Stopwatch sw = new();
             List<TimeSpan> RecordedTime = new();
 
             HelperFunction.WriteLineColor($"Hello NeoCortexApi! Conducting experiment {nameof(VideoLearning)} Toan Truong");
@@ -411,11 +411,11 @@ namespace HTMVideoLearning
 
             var mem = new Connections(cfg);
 
-            HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
+            HtmClassifier<string, ComputeCycle> cls = new();
 
-            CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
+            CortexLayer<object, object> layer1 = new("L1");
 
-            TemporalMemory tm = new TemporalMemory();
+            TemporalMemory tm = new();
 
             bool isInStableState = false;
 
@@ -424,7 +424,7 @@ namespace HTMVideoLearning
             int maxCycles = 2000;
             int newbornCycle = 0;
 
-            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, 30 * 150, (isStable, numPatterns, actColAvg, seenInputs) =>
+            HomeostaticPlasticityController hpa = new(mem, 30 * 150, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                if (isStable)
                    // Event should be fired when entering the stable state.

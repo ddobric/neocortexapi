@@ -36,7 +36,7 @@ if(not(os.path.exists(experimentName))):
         print(OSError)
 
 fourcc = VideoWriter_fourcc(*'MP42')
-video = VideoWriter('./rectangle.mp4', -1, float(FPS), (screenWidth, screenHeight))
+video = VideoWriter('./'+experimentName+'/rectangle.mp4', -1, float(FPS), (screenWidth, screenHeight))
 
 for i in range(FPS*seconds):
     frame = np.zeros((screenHeight,screenWidth,3),np.uint8)

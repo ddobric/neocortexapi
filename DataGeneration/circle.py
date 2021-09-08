@@ -9,6 +9,7 @@ screenHeight = 120
 FPS = 24
 seconds = 3
 r = 20
+
 Y = screenHeight - r  - 20
 X = r + 20
 
@@ -28,7 +29,7 @@ if(not(os.path.exists(experimentName))):
         print(OSError)
 
 fourcc = VideoWriter_fourcc(*'MP42')
-video = VideoWriter('./circle.mp4', -1, float(FPS), (screenWidth, screenHeight))
+video = VideoWriter('./'+experimentName+'/circle.mp4', -1, float(FPS), (screenWidth, screenHeight))
 
 for i in range(FPS*seconds):
     frame = np.zeros((screenHeight,screenWidth,3),np.uint8)
