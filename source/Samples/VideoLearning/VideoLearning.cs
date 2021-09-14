@@ -28,19 +28,10 @@ namespace HTMVideoLearning
             sw.Start();
             // Define first the desired properties of the frames
             string outputFolder = "Run1ExperimentOutput";
-            if (!Directory.Exists($"{outputFolder}"))
-            {
-                Directory.CreateDirectory($"{outputFolder}");
-            }
             string convertedVideoDir = $"{outputFolder}" + @"\" + "Converted";
             if (!Directory.Exists($"{convertedVideoDir}"))
             {
                 Directory.CreateDirectory($"{convertedVideoDir}");
-            }
-            string testOutputFolder = $"{outputFolder}" + @"\" + "TEST";
-            if (!Directory.Exists(testOutputFolder))
-            {
-                Directory.CreateDirectory(testOutputFolder);
             }
             int frameWidth = 18;
             int frameHeight = 18;
@@ -305,17 +296,17 @@ namespace HTMVideoLearning
             }
             // Testing Section
             string userInput;
-            
+            string testOutputFolder = $"{outputFolder}" + @"\" + "TEST";
+            if (!Directory.Exists(testOutputFolder))
+            {
+                Directory.CreateDirectory(testOutputFolder);
+            }
             HelperFunction.WriteLineColor("Drag a Frame(Picture) to recall the learned videos : ", ConsoleColor.Cyan);
+            userInput = Console.ReadLine().Replace("\"", "");
             int testNo = 0;
 
             do
             {
-                userInput = "";
-                while (userInput == "")
-                {
-                    userInput = Console.ReadLine().Replace("\"", "");
-                }
                 testNo += 1;
                 NFrame inputFrame = new(new Bitmap(userInput), "TEST", "test", 0, frameWidth, frameHeight, colorMode);
                 // Computing user input frame with trained layer 
@@ -362,11 +353,15 @@ namespace HTMVideoLearning
                     }
                     NVideo.NFrameListToVideo(
                         frameSequence,
-                        $"{dir}" + @"\" + $"testNo_{testNo}_FirstPossibility_{possibleFrame.Similarity}_FirstLabel_{possibleFrame.PredictedInput}",
-                        (int)(videoData[0].nVideoList[0].frameRate),
+                        $"{dir}" + @"\" + $"testNo_{testNo}_FirstPossibility_{possibleFrame.Similarity}_FirstLabel_{possibleFrame.PredictedInput}.mp4",
+                        (int)(videoData[0].nVideoList[0].frameRate/5),
                         new Size((int)videoData[0].nVideoList[0].frameWidth, (int)videoData[0].nVideoList[0].frameHeight),
                         true);
-                    
+                }
+                userInput = "";
+                while (userInput == "")
+                {
+                    userInput = Console.ReadLine().Replace("\"", "");
                 }
             }
             while (userInput != "Q");
@@ -387,7 +382,7 @@ namespace HTMVideoLearning
             sw.Start();
 
             // Output folder initiation
-            string outputFolder = "Run2Experiment";
+            string outputFolder = "Output";
             string convertedVideoDir = $"{outputFolder}" + @"\" + "Converted";
             if (!Directory.Exists($"{convertedVideoDir}"))
             {
@@ -398,7 +393,7 @@ namespace HTMVideoLearning
             int frameWidth = 18;
             int frameHeight = 18;
             ColorMode colorMode = ColorMode.BLACKWHITE;
-            double frameRate = 10;
+            double frameRate = 5;
             
             // Define Reader for Videos
             // Input videos are stored in different folders under TrainingVideos/
@@ -420,7 +415,7 @@ namespace HTMVideoLearning
 
             // Define HTM parameters
             int[] inputBits = { frameWidth * frameHeight * (int)colorMode };
-            int[] numColumns = { 1024 };
+            int[] numColumns = { 1024/2 };
 
             //Initiating HTM
             HtmConfig cfg = GetHTM(inputBits, numColumns);
@@ -440,7 +435,7 @@ namespace HTMVideoLearning
             int maxCycles = 1000;
             int newbornCycle = 0;
 
-            HomeostaticPlasticityController hpa = new(mem, 30 * 150, (isStable, numPatterns, actColAvg, seenInputs) =>
+            HomeostaticPlasticityController hpa = new(mem, 30 * 150 *3, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                if (isStable)
                    // Event should be fired when entering the stable state.
@@ -772,22 +767,22 @@ namespace HTMVideoLearning
 
                 CellsPerColumn = 20,
                 GlobalInhibition = true,
-                //LocalAreaDensity = -1,
+                LocalAreaDensity = -1,
                 NumActiveColumnsPerInhArea = 0.02 * numColumns[0],
                 PotentialRadius = (int)(0.15 * inputBits[0]),
-                //InhibitionRadius = 15,
+                InhibitionRadius = 15,
 
                 MaxBoost = 10.0,
-                //DutyCyclePeriod = 25,
-                //MinPctOverlapDutyCycles = 0.75,
+                DutyCyclePeriod = 25,
+                MinPctOverlapDutyCycles = 0.75,
                 MaxSynapsesPerSegment = (int)(0.02 * numColumns[0]),
 
-                //ActivationThreshold = 15,
-                //ConnectedPermanence = 0.5,
+                ActivationThreshold = 15,
+                ConnectedPermanence = 0.5,
 
                 // Learning is slower than forgetting in this case.
-                //PermanenceDecrement = 0.15,
-                //PermanenceIncrement = 0.15,
+                PermanenceDecrement = 0.15,
+                PermanenceIncrement = 0.15,
 
                 // Used by punishing of segments.
             };

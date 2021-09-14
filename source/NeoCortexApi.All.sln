@@ -55,6 +55,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexApi.Experiments", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SequenceLearningExperiment", "SequenceLearningExperiment\SequenceLearningExperiment.csproj", "{F0483F52-D2F5-4195-A1F5-C6A903EBB6AD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoLearning", "VideoLearning\VideoLearning.csproj", "{574874BC-B426-4BBF-85E7-8A0E62AD90D9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -105,6 +107,10 @@ Global
 		{F0483F52-D2F5-4195-A1F5-C6A903EBB6AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0483F52-D2F5-4195-A1F5-C6A903EBB6AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F0483F52-D2F5-4195-A1F5-C6A903EBB6AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{574874BC-B426-4BBF-85E7-8A0E62AD90D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{574874BC-B426-4BBF-85E7-8A0E62AD90D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{574874BC-B426-4BBF-85E7-8A0E62AD90D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{574874BC-B426-4BBF-85E7-8A0E62AD90D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -112,6 +118,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{4D9AD5E0-8F00-494E-8BEF-8041C003F4E6} = {D9879A38-CCF8-4440-B939-D066196AC775}
 		{15375C28-1424-4A29-B2AF-11ED92F6134C} = {99AE2313-7D07-4905-A0BB-52D304FCC2F7}
+		{574874BC-B426-4BBF-85E7-8A0E62AD90D9} = {99AE2313-7D07-4905-A0BB-52D304FCC2F7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {71185BAD-1342-4836-BCDA-6EC97118F92D}
