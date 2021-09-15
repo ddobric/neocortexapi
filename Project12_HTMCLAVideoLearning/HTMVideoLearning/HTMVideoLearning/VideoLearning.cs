@@ -387,7 +387,7 @@ namespace HTMVideoLearning
             sw.Start();
 
             // Output folder initiation
-            string outputFolder = "Run2Experiment";
+            string outputFolder = "Run2ExperimentOutput";
             string convertedVideoDir = $"{outputFolder}" + @"\" + "Converted";
             if (!Directory.Exists($"{convertedVideoDir}"))
             {
@@ -440,7 +440,7 @@ namespace HTMVideoLearning
             int maxCycles = 1000;
             int newbornCycle = 0;
 
-            HomeostaticPlasticityController hpa = new(mem, 30 * 150, (isStable, numPatterns, actColAvg, seenInputs) =>
+            HomeostaticPlasticityController hpa = new(mem, 30 * 150*3, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                if (isStable)
                    // Event should be fired when entering the stable state.
@@ -453,7 +453,7 @@ namespace HTMVideoLearning
                learn = isInStableState = isStable;
 
                // Clear all learned patterns in the classifier.
-               cls.ClearState();
+               //cls.ClearState();
 
             }, numOfCyclesToWaitOnChange: 50);
 
@@ -519,10 +519,11 @@ namespace HTMVideoLearning
                     // There is a little different between a input pattern set and an input video set,
                     // The reason is because a video consists of continously altering frame, not distinct values like the sequence learning of Scalar value.
                     // Thus Learning with sp alone was kept
+                    double lastCycleAccuracy = 0;
+                    int saturatedAccuracyCount = 0;
                     for (int i = 0; i < maxCycles; i++)
                     {
-                        matches = 0;
-
+                        matches = 0; 
                         cycle++;
 
                         Console.WriteLine($"-------------- Cycle {cycle} ---------------");
@@ -601,77 +602,42 @@ namespace HTMVideoLearning
                                 lastPredictedValue.Clear();
                             }
                         }
-                        // Reset Temporal memory after learning 1 time the video/sequence
-                        //tm.Reset(mem);
-
+                        
                         double accuracy;
                         
-                        //accuracy = (double)matches / ((double)nv.nFrames.Count - 1.0) * 100.0; // Use if with reset
-                        accuracy = (double)matches / (double)nv.nFrames.Count * 100.0; // Use if without reset
+                        accuracy = (double)matches / ((double)nv.nFrames.Count - 1.0) * 100.0; // Use if with reset
+                        //accuracy = (double)matches / (double)nv.nFrames.Count * 100.0; // Use if without reset
 
                         Console.WriteLine($"Cycle: {cycle}\tMatches={matches} of {nv.nFrames.Count}\t {accuracy}%");
-
-                        if (accuracy >= 80.0)
+                        if(accuracy == lastCycleAccuracy)
                         {
-
-                            maxMatchCnt++;
-                            Console.WriteLine($"90% accuracy surpassed {maxMatchCnt} times.");
-                            //
-                            // Experiment is completed if we are 30 cycles long at the 100% accuracy.
-                            if (maxMatchCnt >= 30)
-                            //if (cycle == maxCycles)
+                            // The learning may result in saturated accuracy
+                            // Unable to learn to higher accuracy, Exit
+                            saturatedAccuracyCount += 1;
+                            if (saturatedAccuracyCount >= 50 && lastCycleAccuracy>80)
                             {
-                                stableAreas.Add(new int[] { cycle - maxMatchCnt, cycle });
-                                sw.Stop();
-                                Console.WriteLine($"Exit experiment in the stable state after 30 repeats with {accuracy}% of accuracy. Elapsed time: {sw.ElapsedMilliseconds / 1000 / 60} min.");
-                                Console.WriteLine($"Exit experiment in the stable state after 30 repeats with 100% of accuracy. Elapsed time: {sw.ElapsedMilliseconds / 1000 / 60} min.");
-                                foreach (int[] stableArea in stableAreas)
+                                List<string> outputLog = new();
+                                if(!Directory.Exists($"{outputFolder}" + @"\" + "TEST"))
                                 {
-                                    Console.WriteLine($"----------------Stable area number: {stableAreas.IndexOf(stableArea)}----------------");
-                                    Debug.WriteLine($"----------------Stable area number: {stableAreas.IndexOf(stableArea)}----------------");
-                                    Console.WriteLine($"Starting cycle: {stableArea.Min()}");
-                                    Debug.WriteLine($"Starting cycle: {stableArea.Min()}");
-                                    Console.WriteLine($"Ending cycle: {stableArea.Max()}");
-                                    Debug.WriteLine($"Ending cycle: {stableArea.Max()}");
-                                    Console.WriteLine($"Stable area's size: {stableArea.Max() - stableArea.Min()}");
-                                    Debug.WriteLine($"Stable area's size: {stableArea.Max() - stableArea.Min()}");
-                                    Console.WriteLine($"----------------End of Stable area number: {stableAreas.IndexOf(stableArea)}----------------");
-                                    Debug.WriteLine($"----------------End of Stable area number: {stableAreas.IndexOf(stableArea)}----------------");
+                                    Directory.CreateDirectory($"{outputFolder}" + @"\" + "TEST");
                                 }
-                                learn = false;
+                                string fileName = $"{outputFolder}" + @"\" + "TEST" + @"\" + $"saturatedAccuracyLog_{nv.label}_{nv.name}";
+                                outputLog.Add($"Result Log for reaching saturated accuracy at {accuracy}");
+                                outputLog.Add($"Label: {nv.label}");
+                                outputLog.Add($"Video Name: {nv.name}");
+                                outputLog.Add($"Stop after {cycle} cycles");
+                                outputLog.Add($"Elapsed time: {sw.ElapsedMilliseconds / 1000 / 60} min.");
+                                outputLog.Add($"reaching stable after enter newborn cycle {newbornCycle}.");
+                                RecordResult(outputLog, fileName);
                                 break;
                             }
                         }
-                        else if (maxMatchCnt > 0)
-                        {
-                            Console.WriteLine($"At {accuracy}% accuracy after {maxMatchCnt} repeats we get a drop of accuracy with {accuracy}. This indicates instable state. Learning will be continued.");
-                            stableAreas.Add(new int[] { cycle - maxMatchCnt, cycle - 1 });
-                            if (cycle == maxCycles)
-                            {
-                                sw.Stop();
-                                Console.WriteLine($"Exit experiment in the stable state after 30 repeats with 100% of accuracy. Elapsed time: {sw.ElapsedMilliseconds / 1000 / 60} min.");
-                                Console.WriteLine($"Exit experiment in the stable state after 30 repeats with 100% of accuracy. Elapsed time: {sw.ElapsedMilliseconds / 1000 / 60} min.");
-                                foreach (int[] stableArea in stableAreas)
-                                {
-                                    Console.WriteLine($"----------------Stable area number: {stableAreas.IndexOf(stableArea)}----------------");
-                                    Debug.WriteLine($"----------------Stable area number: {stableAreas.IndexOf(stableArea)}----------------");
-                                    Console.WriteLine($"Starting cycle: {stableArea.Min()}");
-                                    Debug.WriteLine($"Starting cycle: {stableArea.Min()}");
-                                    Console.WriteLine($"Ending cycle: {stableArea.Max()}");
-                                    Debug.WriteLine($"Ending cycle: {stableArea.Max()}");
-                                    Console.WriteLine($"Stable area's size: {stableArea.Max() - stableArea.Min()}");
-                                    Debug.WriteLine($"Stable area's size: {stableArea.Max() - stableArea.Min()}");
-                                    Console.WriteLine($"----------------End of Stable area number: {stableAreas.IndexOf(stableArea)}----------------");
-                                    Debug.WriteLine($"----------------End of Stable area number: {stableAreas.IndexOf(stableArea)}----------------");
-                                }
-                                learn = false;
-                                break;
-                            }
-                            maxMatchCnt = 0;
-                        }
-                        
+                        lastCycleAccuracy = accuracy;
+                        //learn = true;
+                        // Reset Temporal memory after learning 1 time the video/sequence
+                        tm.Reset(mem);
                     }
-                    
+
                     Console.WriteLine("------------ END ------------");
                     previousInputs.Clear();
                 }
@@ -766,11 +732,11 @@ namespace HTMVideoLearning
         /// <returns></returns>
         private static HtmConfig GetHTM(int[] inputBits, int[] numColumns)
         {
-            HtmConfig htm = new HtmConfig(inputBits, numColumns)
+            HtmConfig htm = new(inputBits, numColumns)
             {
                 Random = new ThreadSafeRandom(42),
 
-                CellsPerColumn = 20,
+                CellsPerColumn = 30,
                 GlobalInhibition = true,
                 //LocalAreaDensity = -1,
                 NumActiveColumnsPerInhArea = 0.02 * numColumns[0],
