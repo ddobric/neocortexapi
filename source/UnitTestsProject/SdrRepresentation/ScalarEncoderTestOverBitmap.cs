@@ -143,6 +143,7 @@ namespace UnitTestsProject.Sdr
         /// <summary>
         /// Describe how to output SDR as bitmap
         /// </summary>
+        [TestMethod]
         public void CreateSdrAsBitmapTest()
         {
             Object[] d1 = new Object[] { "05/02/2020 22:58:06", "06/04/2020 01:28:07", "07/09/2019 21:15:07", "08/01/2017 11:27:07" };
@@ -191,7 +192,7 @@ namespace UnitTestsProject.Sdr
             }
         }
 
-
+        [TestMethod]
         public void DateTimeEncoderTest(Object[] inputs)
         {
             var outFolder = @"..\..\..\..\ScalarEncoderResults";
@@ -283,7 +284,7 @@ namespace UnitTestsProject.Sdr
 
 
 
-
+        [TestMethod]
         public void CategoryEncoderTest(string[] inputs)
         {
 

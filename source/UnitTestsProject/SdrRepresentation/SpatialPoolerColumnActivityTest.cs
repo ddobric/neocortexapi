@@ -32,7 +32,7 @@ namespace UnitTestsProject.Sdr
             string trainingFolder = @"..\..\..\TestFiles\Sdr";
 
             int imgSize = 28;
-           
+
             var trainingImages = Directory.GetFiles(trainingFolder, "*.jpeg");
 
             Directory.CreateDirectory($"{nameof(CreateSdrsTest)}");
@@ -166,7 +166,7 @@ namespace UnitTestsProject.Sdr
         {
             int[] CompareArray = new int[numOfCols];
             int[] ActiveArray = new int[numOfCols];
-            
+
             ActiveArray = SdrRepresentation.GetIntArray(activeCols, 4096);
 
             sdrs.Add(trainingImage, activeCols);
@@ -196,6 +196,21 @@ namespace UnitTestsProject.Sdr
             SdrRepresentation.DrawIntersections(twoDimArray3, twoDimArray1, 10, $"{outFolder}\\Intersection_{sdrs.Count}.png", Color.Black, Color.Gray, text: $"Intersection.png");
 
             return;
+        }
+
+        /// <summary>
+        /// Vaildate method <see cref="SdrRepresentation.OverlapArraFun(int[], int[])"/>
+        /// </summary>
+        [TestMethod]
+        public void OverlapArraFunTest()
+        {
+            int[] a1 = new int[] { 1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1 };
+            int[] a2 = new int[] { 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0 };
+
+            Assert.ThrowsException<IndexOutOfRangeException>(() => SdrRepresentation.OverlapArraFun(a1, a2));
+            var res = SdrRepresentation.OverlapArraFun(a2, a1);
+
+            Assert.IsNotNull(res);
         }
 
 
