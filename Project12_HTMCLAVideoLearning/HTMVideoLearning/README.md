@@ -252,6 +252,6 @@ The trained layer will use this image to try recreate the video it has learned f
 - Prediction ends with rather high accuracy 89-93% recorded after learning of a video.  
 - the output video will run from the predicted next frame from input frame to the end of the video then back to the input frame.  
 
-For an review on output folder TEST after the learning one can refer to [SampleExperimentOutputTEST]()
+For an review on output folder TEST pf both the Run after the learning one can refer to [SampleExperimentOutputTEST](https://github.com/ddobric/neocortexapi/tree/SequenceLearning_ToanTruong/Project12_HTMCLAVideoLearning/HTMVideoLearning/SampleExperimentOutputTEST).
 
 
