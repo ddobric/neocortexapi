@@ -1,0 +1,8 @@
+Result Log for stopping experiment with accuracy at cycleAccuracy 0,7142857142857143
+reaching stable after enter newborn cycle 255.
+Elapsed time: 6 min.
+circle reach average Accuracy 0,7142857142857143
+rectangle reach average Accuracy 0,4857142857142857
+triangle reach average Accuracy 0,9428571428571428
+Stop SP+TM after 49 cycles
+Elapsed time: 33 min.

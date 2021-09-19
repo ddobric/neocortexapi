@@ -1,12 +1,16 @@
 # Video Learning With NeoCortexApi:
-
+Module: Project 12  
+Instructor: Damir Dobric, Proffessor Andreas Pech.  
+Student:  
+Toan Thanh Truong, Mtr. 1185050 Major: IT Gbr. 23.02.1997  
+_this readme serves as the submitted projectreport for the registered project Video Learning with HTM_
 ## 1. Motivation:
 This work "Video Learning with HTM CLA" introduces videos data into the Cortical Learning Algorithm in [NeoCortex Api](https://github.com/ddobric/neocortexapi).  
-Experiment in current work involves using Temporal Memory to learn binary representation of videos (sequence of bitarrays - each represent 1 frame).  
-Afterwards the result of the learning is tested by giving the trained model an abitrary image, the model then try to recreate a video proceeding the input frame.
+Experiment in current work involves using Temporal Memory to learn binary representation of videos (sequence of bitarrays - each bitarray represents 1 frame).  
+Afterwards the result of the learning is tested by giving the trained model an abitrary image, the model then tries to recreate a video with proceeding frame after the input frame.
 
 ## 2. Overview:
-In this Experience, Videos are learned as sequences of Frames.  
+In this experiment, Videos are learned as sequences of Frames.  
 For example of Sequence Learning, see [SequenceLearning.cs](https://github.com/ddobric/neocortexapi/tree/master/source/Samples/NeoCortexApiSample).  
 
 Input Videos are currently generated from python scripts, using OpenCV2. See [DataGeneration](https://github.com/ddobric/neocortexapi/tree/SequenceLearning_ToanTruong/DataGeneration) for manual on usage and modification.  
@@ -28,7 +32,8 @@ There are currently 3 training set:
 The current most used set for training and debugging is SmallTrainingSet.  
 
 ## 4. Videos Reading:
-Video Library is seperated into 3 sub library:
+For more examples on how to use the Library, see [VideoLibraryTest](https://github.com/ddobric/neocortexapi/tree/SequenceLearning_ToanTruong/Project12_HTMCLAVideoLearning/HTMVideoLearning/VideoLibraryTest).  
+Video Library is seperated into 3 sub classes:
 - [**VideoSet**](https://github.com/ddobric/neocortexapi/blob/SequenceLearning_ToanTruong/Project12_HTMCLAVideoLearning/HTMVideoLearning/VideoLibrary/VideoSet.cs):  
 Group of multiple **NVideo** put under the same label.  
 Read multiple video under a folder, use the folder name as label.  
@@ -72,8 +77,10 @@ VideoWriter videoWriter = new($"{videoOutputPath}.mp4", -1, (int)frameRate, dime
 **NOTE:**  
 The current implementation of VideoLibrary saves all training data into a List of VideoSet, which contains all video information and their contents. For further scaling of the training set. It would be better to only store the index, where to access the video from the training data. This way the data would only be access when it is indexed and save memory for other processes.
 ## 4. Learning Process:
-After reading the Videos into VideoSets, the learning begins.
 
+Running the experiment Run1 and Run2 first prompt the user to input a training folder path. There are currently 3 sample training data sets, drag the folder to the command window to insert its path to the prompt. Hit `Enter` and the Video reading begins.
+
+After reading the Videos into VideoSets, the learning begins.
 ### 1. SP Learning with HomeoStatic Plasticity Controller (HPA):
 This first section of learning use Homeostatic Plasticity Controller:
 ```csharp
@@ -207,12 +214,12 @@ else
 cls.Learn(key, actCells.ToArray());
 ```
 the key used for learning is generated from the FrameKey List previousInputs of the current Video.  
-From this way of generating the key, the current frame bitArray Collums output will be learn with a key with FrameKey running from the next FrameKey from the current input to the end of the video and back to the current FrameKey.  
+From this way of generating the key, the current frame bitArray Collums output will be learn with a key in which FrameKey sequence run from the next FrameKey from the current input to the end of the video and back to the current FrameKey.  
 e.g. current frame: rectangle_vd5_4  
-Video has 8 frames, then the generated to be learned along with the active columns of current frame would be:  
+Video has 8 frames, then the generated key to be learned along with the active columns of current frame would be:  
 _rectangle_vd5_5-rectangle_vd5_6-rectangle_vd5_7-rectangle_vd5_0-rectangle_vd5_1-rectangle_vd5_2-rectangle_vd5_3-rectangle_vd5_4_  
 
-By Learning this way one frame info is associated with the information of the whole frame sequence (Video). This compared to Run1 reduce the ambiguity of predict the frame one by one, the output video can also be recalled in full length. 
+By Learning this way one frame info is associated with the information of the whole frame sequence (Video). This compared to Run1 reduce the error compared with predicting the frame one by one, the output video can also be recalled in full length. 
 
 Condition to get out of the loop:  
 - By using LOOP2, Run2 learn each video respectively. The training of one video ends after the model reach acuracy > 80% and stay the same for 50 cycles or reaching maxCycles. The models then trains with the next video until there is no video left.  
@@ -239,10 +246,12 @@ The trained layer will use this image to try recreate the video it has learned f
 
 **RESULT**
 - Due to the conversion of the input picture to fit the current model the input is also processed by VideoLibrary to the dimension of the training model. The scaled input image can also be found in the Run1ExperimentOutput/TEST/Predicted from (image name)/. 
-- under the TEST/ directory, the log files after learning each video are recorded as saturatedAccuracyLog_(label)_(video name).
+- The log files after learning each video are also recorded as saturatedAccuracyLog_(label)_(video name) in the TEST/ directory.
 - The output Video has full length of the video.
-- The prediction sometimes forget the first video and due to entering the unstable state again. This was mentioned in HPA above. The current way to cope with the phenomenom is comment out `cls.ClearState()` in declaration of HPA.
+- The prediction sometimes forget the first video and enter unstable state again. This was mentioned in HPA above. The current way to cope with the phenomenom is comment out `cls.ClearState()` in declaration of HPA.
 - Prediction ends with rather high accuracy 89-93% recorded after learning of a video.  
+- the output video will run from the predicted next frame from input frame to the end of the video then back to the input frame.  
 
+For an review on output folder TEST after the learning one can refer to [SampleExperimentOutputTEST]()
 
 

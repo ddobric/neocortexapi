@@ -1,0 +1,6 @@
+Result Log for reaching saturated accuracy at 96,55172413793103
+Label: triangle
+Video Name: vd4
+Stop after 59 cycles
+Elapsed time: 4 min.
+reaching stable after enter newborn cycle 236.

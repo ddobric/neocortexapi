@@ -1,0 +1,6 @@
+Result Log for reaching saturated accuracy at 82,75862068965517
+Label: rectangle
+Video Name: vd5
+Stop after 266 cycles
+Elapsed time: 9 min.
+reaching stable after enter newborn cycle 304.
