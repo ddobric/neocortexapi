@@ -232,7 +232,7 @@ namespace HTMVideoLearning
                         List<List<string>> possibleOutcomeSerie = new();
                         possibleOutcomeSerie.Add(new List<string> { trainingVideo[0].FrameKey });
                         List<string> possibleOutcome = new();
-                        //tm.Reset(mem);
+
                         foreach (NFrame currentFrame in trainingVideo)
                         {
                             // Inferring the current frame encoded bit array with learned SP
@@ -274,13 +274,14 @@ namespace HTMVideoLearning
                         double accuracy = correctlyPredictedFrame / (double)trainingVideo.Count;
                         videoAccuracy.Add(accuracy);
 
-                        if (accuracy > 0.8)
+                        if (accuracy > 0.9)
                         {
                             RecordResult(resultToWrite, resultFileName);
                         }
                         resultToWrite.Clear();
                         // Enter training phase again
                         learn = true;
+                        tm.Reset(mem);
                     }
                     double currentSetAccuracy = videoAccuracy.Average();
                     HelperFunction.WriteLineColor($"Video Set of Label: {vs.VideoSetLabel} reachs accuracy: {currentSetAccuracy * 100}%",ConsoleColor.Cyan);
