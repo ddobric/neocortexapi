@@ -77,7 +77,38 @@ VideoWriter videoWriter = new($"{videoOutputPath}.mp4", -1, (int)frameRate, dime
 **NOTE:**  
 The current implementation of VideoLibrary saves all training data into a List of VideoSet, which contains all video information and their contents. For further scaling of the training set. It would be better to only store the index, where to access the video from the training data. This way the data would only be access when it is indexed and save memory for other processes.
 ## 4. Learning Process:
+Current HTM Configuration:
+```csharp
+private static HtmConfig GetHTM(int[] inputBits, int[] numColumns)
+{
+    HtmConfig htm = new(inputBits, numColumns)
+    {
+        Random = new ThreadSafeRandom(42),
 
+        CellsPerColumn = 30,
+        GlobalInhibition = true,
+        //LocalAreaDensity = -1,
+        NumActiveColumnsPerInhArea = 0.02 * numColumns[0],
+        PotentialRadius = (int)(0.15 * inputBits[0]),
+        //InhibitionRadius = 15,
+
+        MaxBoost = 10.0,
+        //DutyCyclePeriod = 25,
+        //MinPctOverlapDutyCycles = 0.75,
+        MaxSynapsesPerSegment = (int)(0.02 * numColumns[0]),
+
+        //ActivationThreshold = 15,
+        //ConnectedPermanence = 0.5,
+
+        // Learning is slower than forgetting in this case.
+        //PermanenceDecrement = 0.15,
+        //PermanenceIncrement = 0.15,
+
+        // Used by punishing of segments.
+    };
+    return htm;
+}
+```
 Running the experiment Run1 and Run2 first prompt the user to input a training folder path. There are currently 3 sample training data sets, drag the folder to the command window to insert its path to the prompt. Hit `Enter` and the Video reading begins.
 
 After reading the Videos into VideoSets, the learning begins.
