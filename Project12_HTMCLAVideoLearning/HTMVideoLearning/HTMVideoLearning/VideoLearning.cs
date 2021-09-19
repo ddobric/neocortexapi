@@ -84,7 +84,7 @@ namespace HTMVideoLearning
 
             int maxNumOfElementsInSequence = videoData[0].GetLongestFramesCountInSet();
 
-            int maxCycles = 50;
+            int maxCycles = 10;
             int newbornCycle = 0;
 
             HomeostaticPlasticityController hpa = new(mem, maxNumOfElementsInSequence * 150 *3 , (isStable, numPatterns, actColAvg, seenInputs) =>
@@ -151,6 +151,7 @@ namespace HTMVideoLearning
             double cycleAccuracy = 0;
             double lastCycleAccuracy = 0;
             int stableAccuracyCount = 0;
+            long SP_TrainingTimeElapsed = sw.ElapsedMilliseconds;
             sw.Reset();
             sw.Start();
             for (int i = 0; i < maxCycles; i++)
@@ -237,7 +238,7 @@ namespace HTMVideoLearning
                         {
                             // Inferring the current frame encoded bit array with learned SP
                             var lyrOut = layer1.Compute(currentFrame.EncodedBitArray, learn) as ComputeCycle;
-                            var nextFramePossibilities = cls.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), 3);
+                            var nextFramePossibilities = cls.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), 1);
                             foreach (var predictedOutput in nextFramePossibilities)
                             {
                                 possibleOutcome.Add(predictedOutput.PredictedInput);
@@ -271,7 +272,7 @@ namespace HTMVideoLearning
                                 resultToWrite.Add($"NOTFOUND {message}");
                             }
                         }
-                        double accuracy = correctlyPredictedFrame / (double)trainingVideo.Count;
+                        double accuracy = correctlyPredictedFrame / ((double)trainingVideo.Count-1);
                         videoAccuracy.Add(accuracy);
 
                         if (accuracy > 0.9)
@@ -300,6 +301,47 @@ namespace HTMVideoLearning
                 }
                 if(stableAccuracyCount >= 40 && cycleAccuracy> 0.9)
                 {
+                    List<string> outputLog = new();
+                    if (!Directory.Exists($"{outputFolder}" + @"\" + "TEST"))
+                    {
+                        Directory.CreateDirectory($"{outputFolder}" + @"\" + "TEST");
+                    }
+                    string fileName = $"{outputFolder}" + @"\" + "TEST" + @"\" + $"saturatedAccuracyLog_Run1";
+                    outputLog.Add($"Result Log for reaching saturated accuracy at cycleAccuracy {cycleAccuracy}");
+
+                    outputLog.Add($"reaching stable after enter newborn cycle {newbornCycle}.");
+                    outputLog.Add($"Elapsed time: {SP_TrainingTimeElapsed / 1000 / 60} min.");
+
+                    for (int j = 0;j<videoData.Count; i += 1)
+                    {
+                        outputLog.Add($"{videoData[j].VideoSetLabel} reach average Accuracy {setAccuracy[j]}");
+                    }
+                    outputLog.Add($"Stop SP+TM after {i} cycles");
+                    outputLog.Add($"Elapsed time: {sw.ElapsedMilliseconds / 1000 / 60} min.");
+
+                    RecordResult(outputLog, fileName);
+                    break;
+                }
+                else if(i == maxCycles - 1)
+                {
+                    List<string> outputLog = new();
+                    if (!Directory.Exists($"{outputFolder}" + @"\" + "TEST"))
+                    {
+                        Directory.CreateDirectory($"{outputFolder}" + @"\" + "TEST");
+                    }
+                    string fileName = $"{outputFolder}" + @"\" + "TEST" + @"\" + $"MaxCycleReached";
+                    outputLog.Add($"Result Log for stopping experiment with accuracy at cycleAccuracy {cycleAccuracy}");
+
+                    outputLog.Add($"reaching stable after enter newborn cycle {newbornCycle}.");
+                    outputLog.Add($"Elapsed time: {SP_TrainingTimeElapsed / 1000 / 60} min.");
+
+                    for (int j = 0; j < videoData.Count; j += 1)
+                    {
+                        outputLog.Add($"{videoData[j].VideoSetLabel} reach average Accuracy {setAccuracy[j]}");
+                    }
+                    outputLog.Add($"Stop SP+TM after {i} cycles");
+                    outputLog.Add($"Elapsed time: {sw.ElapsedMilliseconds / 1000 / 60} min.");
+                    RecordResult(outputLog, fileName);
                     break;
                 }
                 lastCycleAccuracy = cycleAccuracy;
@@ -367,7 +409,6 @@ namespace HTMVideoLearning
                         (int)(videoData[0].nVideoList[0].frameRate),
                         new Size((int)videoData[0].nVideoList[0].frameWidth, (int)videoData[0].nVideoList[0].frameHeight),
                         true);
-                    
                 }
             }
             while (userInput != "Q");
@@ -646,7 +687,11 @@ namespace HTMVideoLearning
             //Testing Section
             string userInput;
             string testOutputFolder = $"{outputFolder}" + @"\" + "TEST";
-
+            if (!Directory.Exists(testOutputFolder))
+            {
+                Directory.CreateDirectory(testOutputFolder);
+            }
+            HelperFunction.WriteLineColor("Drag an image as input to recall the learned Video: ");
             userInput = Console.ReadLine().Replace("\"", "");
             
             int testNo = 0;
