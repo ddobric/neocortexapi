@@ -8,18 +8,35 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using VideoLibrary;
 
-namespace HTMVideoLearning
+namespace NeoCortexApiSample
 {
     class VideoLearning
     {
-        public static void Run1()
+        // Run1:
+        // Training and Learning Video with HTMClassifier with key as a frame key
+        // Testing Procedure:
+        // Read the Training dataset
+        // Preprocessing the frame into smaller resolution, lower frame rate, color to binarized value
+        // Learn the patterns(frames) with SP till reaching newborn stable state
+        // Learn the patterns(frames) with SP+TM to generate sequential relation of adjacent frames,
+        //      The learning ends when average accuracy is more than 90% and stays for 40 cycles or reaching maxcycles
+        //      Calculating Average accuracy:
+        //          Get the Predicted cells of the current frames SDR through TM
+        //          Use the Predicted cells in HTMClassifier to see if there are learned framekey
+        //          If the key of the next frame is found, count increase 1.
+        //          The average accuracy is calculated by average of videoset accuracy, 
+        //          videoset accuracy is calculated by average of all video accuracy in that set.
+        // Testing session start:
+        // Drag an Image as input, The trained layer will try to predict the next Frame, then uses the next frame as input to continue 
+        // as long as there are predicted cells.
+        // The predicted series of Frame after the input frame are made into videos under Run1Experiment/TEST/
+        public void Run1()
         {
 
-            Stopwatch sw = new();
-            List<TimeSpan> RecordedTime = new();
+            Stopwatch sw = new Stopwatch();
+            List<TimeSpan> RecordedTime = new List<TimeSpan>();
 
             HelperFunction.WriteLineColor($"Hello NeoCortexApi! Conducting experiment {nameof(VideoLearning)} Noath2302");
             HelperFunction.WriteLineColor("Please insert or drag the folder that contains the training files: ", ConsoleColor.Blue);
@@ -28,10 +45,19 @@ namespace HTMVideoLearning
             sw.Start();
             // Define first the desired properties of the frames
             string outputFolder = "Run1ExperimentOutput";
+            if (!Directory.Exists($"{outputFolder}"))
+            {
+                Directory.CreateDirectory($"{outputFolder}");
+            }
             string convertedVideoDir = $"{outputFolder}" + @"\" + "Converted";
             if (!Directory.Exists($"{convertedVideoDir}"))
             {
                 Directory.CreateDirectory($"{convertedVideoDir}");
+            }
+            string testOutputFolder = $"{outputFolder}" + @"\" + "TEST";
+            if (!Directory.Exists(testOutputFolder))
+            {
+                Directory.CreateDirectory(testOutputFolder);
             }
             int frameWidth = 18;
             int frameHeight = 18;
@@ -49,12 +75,12 @@ namespace HTMVideoLearning
 
             // A list of VideoSet object, each has the Videos and the name of the folder as Label, contains all the Data in TrainingVideos,
             // this List will be the core iterator in later learning and predicting
-            List<VideoSet> videoData = new();
+            List<VideoSet> videoData = new List<VideoSet>();
 
             // Iterate through every folder in TrainingVideos/ to create VideoSet: object that stores video of same folder/label
             foreach (string path in videoSetPaths)
             {
-                VideoSet vs = new(path, colorMode, frameWidth, frameHeight, frameRate);
+                VideoSet vs = new VideoSet(path, colorMode, frameWidth, frameHeight, frameRate);
                 videoData.Add(vs);
                 vs.CreateConvertedVideos(convertedVideoDir);
             }
@@ -63,11 +89,11 @@ namespace HTMVideoLearning
 
             var mem = new Connections(cfg);
 
-            HtmClassifier<string, ComputeCycle> cls = new();
+            HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
 
-            CortexLayer<object, object> layer1 = new("L1");
+            CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
 
-            TemporalMemory tm = new();
+            TemporalMemory tm = new TemporalMemory();
 
             bool isInStableState = false;
 
@@ -75,10 +101,10 @@ namespace HTMVideoLearning
 
             int maxNumOfElementsInSequence = videoData[0].GetLongestFramesCountInSet();
 
-            int maxCycles = 50;
+            int maxCycles = 10;
             int newbornCycle = 0;
 
-            HomeostaticPlasticityController hpa = new(mem, maxNumOfElementsInSequence * 150 *3 , (isStable, numPatterns, actColAvg, seenInputs) =>
+            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, maxNumOfElementsInSequence * 150 * 3, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                 if (isStable)
                     // Event should be fired when entering the stable state.
@@ -95,7 +121,7 @@ namespace HTMVideoLearning
 
             }, numOfCyclesToWaitOnChange: 50);
 
-            SpatialPoolerMT sp = new(hpa);
+            SpatialPoolerMT sp = new SpatialPoolerMT(hpa);
             sp.Init(mem);
             tm.Init(mem);
             layer1.HtmModules.Add("sp", sp);
@@ -105,7 +131,7 @@ namespace HTMVideoLearning
             //
             ///*
             //for (int i = 0; i < maxCycles; i++)
-            while(isInStableState == false)
+            while (isInStableState == false)
             {
                 newbornCycle++;
 
@@ -142,16 +168,17 @@ namespace HTMVideoLearning
             double cycleAccuracy = 0;
             double lastCycleAccuracy = 0;
             int stableAccuracyCount = 0;
+            long SP_TrainingTimeElapsed = sw.ElapsedMilliseconds;
             sw.Reset();
             sw.Start();
             for (int i = 0; i < maxCycles; i++)
             {
-                List<double> setAccuracy = new();
+                List<double> setAccuracy = new List<double>();
                 HelperFunction.WriteLineColor($"------------- Cycle {i} -------------", ConsoleColor.Green);
                 // Iterating through every video set
                 foreach (VideoSet vs in videoData)
                 {
-                    List<double> videoAccuracy = new();
+                    List<double> videoAccuracy = new List<double>();
                     // Iterating through every video in a VideoSet
                     foreach (NVideo nv in vs.nVideoList)
                     {
@@ -203,7 +230,7 @@ namespace HTMVideoLearning
                                 */
                                 // HTMClassifier used Predicted Cells to infer learned frame key 
                                 var predictedFrames = cls.GetPredictedInputValues(cellArray, 5);
-                                HelperFunction.WriteLineColor("Predicted next Frame's Label:",ConsoleColor.Yellow);
+                                HelperFunction.WriteLineColor("Predicted next Frame's Label:", ConsoleColor.Yellow);
                                 foreach (var item in predictedFrames)
                                 {
                                     //Console.WriteLine($"Current Input: {currentFrame.FrameKey} \t| Predicted Input: {item.PredictedInput}");
@@ -220,28 +247,28 @@ namespace HTMVideoLearning
                         // Inferring Mode
                         // 
                         learn = false;
-                        List<List<string>> possibleOutcomeSerie = new();
+                        List<List<string>> possibleOutcomeSerie = new List<List<string>>();
                         possibleOutcomeSerie.Add(new List<string> { trainingVideo[0].FrameKey });
-                        List<string> possibleOutcome = new();
-                        //tm.Reset(mem);
+                        List<string> possibleOutcome = new List<string>();
+
                         foreach (NFrame currentFrame in trainingVideo)
                         {
                             // Inferring the current frame encoded bit array with learned SP
                             var lyrOut = layer1.Compute(currentFrame.EncodedBitArray, learn) as ComputeCycle;
-                            var nextFramePossibilities = cls.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), 3);
+                            var nextFramePossibilities = cls.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), 1);
                             foreach (var predictedOutput in nextFramePossibilities)
                             {
                                 possibleOutcome.Add(predictedOutput.PredictedInput);
                             }
 
-                            possibleOutcomeSerie.Add(new(possibleOutcome));
+                            possibleOutcomeSerie.Add(new List<string>(possibleOutcome));
                             possibleOutcome.Clear();
                         }
 
                         int correctlyPredictedFrame = 0;
 
-                        List<string> resultToWrite = new();
-                        if(!Directory.Exists($"{outputFolder}" + @"\" + $"ResultLog"))
+                        List<string> resultToWrite = new List<string>();
+                        if (!Directory.Exists($"{outputFolder}" + @"\" + $"ResultLog"))
                         {
                             Directory.CreateDirectory($"{outputFolder}" + @"\" + $"ResultLog");
                         }
@@ -262,23 +289,24 @@ namespace HTMVideoLearning
                                 resultToWrite.Add($"NOTFOUND {message}");
                             }
                         }
-                        double accuracy = correctlyPredictedFrame / (double)trainingVideo.Count;
+                        double accuracy = correctlyPredictedFrame / ((double)trainingVideo.Count - 1);
                         videoAccuracy.Add(accuracy);
 
-                        if (accuracy > 0.8)
+                        if (accuracy > 0.9)
                         {
                             RecordResult(resultToWrite, resultFileName);
                         }
                         resultToWrite.Clear();
                         // Enter training phase again
                         learn = true;
+                        tm.Reset(mem);
                     }
                     double currentSetAccuracy = videoAccuracy.Average();
-                    HelperFunction.WriteLineColor($"Video Set of Label: {vs.VideoSetLabel} reachs accuracy: {currentSetAccuracy * 100}%",ConsoleColor.Cyan);
+                    HelperFunction.WriteLineColor($"Video Set of Label: {vs.VideoSetLabel} reachs accuracy: {currentSetAccuracy * 100}%", ConsoleColor.Cyan);
                     setAccuracy.Add(currentSetAccuracy);
                 }
                 cycleAccuracy = setAccuracy.Average();
-                HelperFunction.WriteLineColor($"Accuracy in Cycle {i}: {cycleAccuracy*100}%");
+                HelperFunction.WriteLineColor($"Accuracy in Cycle {i}: {cycleAccuracy * 100}%");
                 // Check if accuracy is stable
                 if (lastCycleAccuracy == cycleAccuracy)
                 {
@@ -288,41 +316,82 @@ namespace HTMVideoLearning
                 {
                     stableAccuracyCount = 0;
                 }
-                if(stableAccuracyCount >= 40 && cycleAccuracy> 0.9)
+                if (stableAccuracyCount >= 40 && cycleAccuracy > 0.9)
                 {
+                    List<string> outputLog = new List<string>();
+                    if (!Directory.Exists($"{outputFolder}" + @"\" + "TEST"))
+                    {
+                        Directory.CreateDirectory($"{outputFolder}" + @"\" + "TEST");
+                    }
+                    string fileName = $"{outputFolder}" + @"\" + "TEST" + @"\" + $"saturatedAccuracyLog_Run1";
+                    outputLog.Add($"Result Log for reaching saturated accuracy at cycleAccuracy {cycleAccuracy}");
+
+                    outputLog.Add($"reaching stable after enter newborn cycle {newbornCycle}.");
+                    outputLog.Add($"Elapsed time: {SP_TrainingTimeElapsed / 1000 / 60} min.");
+
+                    for (int j = 0; j < videoData.Count; i += 1)
+                    {
+                        outputLog.Add($"{videoData[j].VideoSetLabel} reach average Accuracy {setAccuracy[j]}");
+                    }
+                    outputLog.Add($"Stop SP+TM after {i} cycles");
+                    outputLog.Add($"Elapsed time: {sw.ElapsedMilliseconds / 1000 / 60} min.");
+
+                    RecordResult(outputLog, fileName);
+                    break;
+                }
+                else if (i == maxCycles - 1)
+                {
+                    List<string> outputLog = new List<string>();
+                    if (!Directory.Exists($"{outputFolder}" + @"\" + "TEST"))
+                    {
+                        Directory.CreateDirectory($"{outputFolder}" + @"\" + "TEST");
+                    }
+                    string fileName = $"{outputFolder}" + @"\" + "TEST" + @"\" + $"MaxCycleReached";
+                    outputLog.Add($"Result Log for stopping experiment with accuracy at cycleAccuracy {cycleAccuracy}");
+
+                    outputLog.Add($"reaching stable after enter newborn cycle {newbornCycle}.");
+                    outputLog.Add($"Elapsed time: {SP_TrainingTimeElapsed / 1000 / 60} min.");
+
+                    for (int j = 0; j < videoData.Count; j += 1)
+                    {
+                        outputLog.Add($"{videoData[j].VideoSetLabel} reach average Accuracy {setAccuracy[j]}");
+                    }
+                    outputLog.Add($"Stop SP+TM after {i} cycles");
+                    outputLog.Add($"Elapsed time: {sw.ElapsedMilliseconds / 1000 / 60} min.");
+                    RecordResult(outputLog, fileName);
                     break;
                 }
                 lastCycleAccuracy = cycleAccuracy;
             }
             // Testing Section
             string userInput;
-            string testOutputFolder = $"{outputFolder}" + @"\" + "TEST";
-            if (!Directory.Exists(testOutputFolder))
-            {
-                Directory.CreateDirectory(testOutputFolder);
-            }
+
             HelperFunction.WriteLineColor("Drag a Frame(Picture) to recall the learned videos : ", ConsoleColor.Cyan);
-            userInput = Console.ReadLine().Replace("\"", "");
             int testNo = 0;
 
             do
             {
+                userInput = "";
+                while (userInput == "")
+                {
+                    userInput = Console.ReadLine().Replace("\"", "");
+                }
                 testNo += 1;
-                NFrame inputFrame = new(new Bitmap(userInput), "TEST", "test", 0, frameWidth, frameHeight, colorMode);
+                NFrame inputFrame = new NFrame(new Bitmap(userInput), "TEST", "test", 0, frameWidth, frameHeight, colorMode);
                 // Computing user input frame with trained layer 
                 var lyrOut = layer1.Compute(inputFrame.EncodedBitArray, false) as ComputeCycle;
                 var predictedInputValue = cls.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), 5);
                 foreach (var possibleFrame in predictedInputValue)
                 {
                     bool nextPredictedFrameExists = true;
-                    List<NFrame> frameSequence = new();
+                    List<NFrame> frameSequence = new List<NFrame>();
                     frameSequence.Add(inputFrame);
                     string currentFrameKey = possibleFrame.PredictedInput;
 
                     NFrame currentFrame = null;
                     while (nextPredictedFrameExists && frameSequence.Count < 42)
                     {
-                        foreach(var vs in videoData)
+                        foreach (var vs in videoData)
                         {
                             currentFrame = vs.GetNFrameFromFrameKey(currentFrameKey);
                             if (currentFrame != null)
@@ -337,7 +406,7 @@ namespace HTMVideoLearning
                         var predictedNext = cls.GetPredictedInputValues(computedSDR.PredictiveCells.ToArray(), 3);
 
                         // Check for end of Frame sequence
-                        if(predictedNext.Count == 0)
+                        if (predictedNext.Count == 0)
                         {
                             nextPredictedFrameExists = false;
                         }
@@ -353,23 +422,36 @@ namespace HTMVideoLearning
                     }
                     NVideo.NFrameListToVideo(
                         frameSequence,
-                        $"{dir}" + @"\" + $"testNo_{testNo}_FirstPossibility_{possibleFrame.Similarity}_FirstLabel_{possibleFrame.PredictedInput}.mp4",
-                        (int)(videoData[0].nVideoList[0].frameRate/5),
+                        $"{dir}" + @"\" + $"testNo_{testNo}_FirstPossibility_{possibleFrame.Similarity}_FirstLabel_{possibleFrame.PredictedInput}",
+                        (int)(videoData[0].nVideoList[0].frameRate),
                         new Size((int)videoData[0].nVideoList[0].frameWidth, (int)videoData[0].nVideoList[0].frameHeight),
                         true);
-                }
-                userInput = "";
-                while (userInput == "")
-                {
-                    userInput = Console.ReadLine().Replace("\"", "");
                 }
             }
             while (userInput != "Q");
         }
-        public static void Run2()
+        // Run2:
+        // Training and Learning Video with HTMClassifier with key as a serie of framekey
+        // Testing Procedure:
+        // Read the Training dataset
+        // Preprocessing the frame into smaller resolution, lower frame rate, color to binarized value
+        // Learn the patterns(frames) with SP till reaching newborn stable state
+        // Learn the patterns(serie of frames) with SP+TM,
+        // The serie of frames add each framekey respectively untill it reached the videos' framecount lengths:30
+        // Then key - serie of frames with current frame as last frame is learned with the Cells index of the current frame.
+        //      e.g. current frame circle_vd1_3's cell will be associate with key "circle_vd1_4-circle_vd1_5-circle_vd1_6-...-circle_vd1_29-circle_vd1_0-circle_vd1_1-circle_vd1_2-circle_vd1_3"
+        //      through each iteration of frames in a video, the key will be framekey-shifted
+        //      a List of Last Predicted Values is saved every frame iteration to be used in the next as validation.
+        //          if LastPredictedValue of previous Frame contains the current frame's key, then match increase 1
+        //          Accuracy is calculated each iteration of each Videos.
+        //          The training ends when accuracy surpasses 80% more than 30 times or reaching max cycle
+        // Testing session start:
+        // Drag an Image as input, The trained layer will try to predict the next Frame, then uses the next frame label - framekey series
+        // to recreate the video under Run2Experiment/TEST/
+        public void Run2()
         {
-            Stopwatch sw = new();
-            List<TimeSpan> RecordedTime = new();
+            Stopwatch sw = new Stopwatch();
+            List<TimeSpan> RecordedTime = new List<TimeSpan>();
 
             HelperFunction.WriteLineColor($"Hello NeoCortexApi! Conducting experiment {nameof(VideoLearning)} Toan Truong");
 
@@ -382,7 +464,7 @@ namespace HTMVideoLearning
             sw.Start();
 
             // Output folder initiation
-            string outputFolder = "Output";
+            string outputFolder = "Run2ExperimentOutput";
             string convertedVideoDir = $"{outputFolder}" + @"\" + "Converted";
             if (!Directory.Exists($"{convertedVideoDir}"))
             {
@@ -393,8 +475,8 @@ namespace HTMVideoLearning
             int frameWidth = 18;
             int frameHeight = 18;
             ColorMode colorMode = ColorMode.BLACKWHITE;
-            double frameRate = 5;
-            
+            double frameRate = 10;
+
             // Define Reader for Videos
             // Input videos are stored in different folders under TrainingVideos/
             // with their folder's names as label value. To get the paths of all folders:
@@ -402,12 +484,12 @@ namespace HTMVideoLearning
 
             // A list of VideoSet object, each has the Videos and the name of the folder as Label, contains all the Data in TrainingVideos,
             // this List will be the core iterator in later learning and predicting
-            List<VideoSet> videoData = new();
+            List<VideoSet> videoData = new List<VideoSet>();
 
             // Iterate through every folder in TrainingVideos/ to create VideoSet: object that stores video of same folder/label
             foreach (string path in videoSetDirectories)
             {
-                VideoSet vs = new(path, colorMode, frameWidth, frameHeight, frameRate);
+                VideoSet vs = new VideoSet(path, colorMode, frameWidth, frameHeight, frameRate);
                 videoData.Add(vs);
                 // Output converted Videos to Output/Converted/
                 vs.CreateConvertedVideos(convertedVideoDir);
@@ -415,18 +497,18 @@ namespace HTMVideoLearning
 
             // Define HTM parameters
             int[] inputBits = { frameWidth * frameHeight * (int)colorMode };
-            int[] numColumns = { 1024/2 };
+            int[] numColumns = { 1024 };
 
             //Initiating HTM
             HtmConfig cfg = GetHTM(inputBits, numColumns);
 
             var mem = new Connections(cfg);
 
-            HtmClassifier<string, ComputeCycle> cls = new();
+            HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
 
-            CortexLayer<object, object> layer1 = new("L1");
+            CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
 
-            TemporalMemory tm = new();
+            TemporalMemory tm = new TemporalMemory();
 
             bool isInStableState = false;
 
@@ -435,24 +517,24 @@ namespace HTMVideoLearning
             int maxCycles = 1000;
             int newbornCycle = 0;
 
-            HomeostaticPlasticityController hpa = new(mem, 30 * 150 *3, (isStable, numPatterns, actColAvg, seenInputs) =>
-            {
-               if (isStable)
-                   // Event should be fired when entering the stable state.
-                   Console.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
-               else
-                   // Ideal SP should never enter unstable state after stable state.
-                   Console.WriteLine($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, 30 * 150 * 3, (isStable, numPatterns, actColAvg, seenInputs) =>
+              {
+                  if (isStable)
+                    // Event should be fired when entering the stable state.
+                    Console.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+                  else
+                    // Ideal SP should never enter unstable state after stable state.
+                    Console.WriteLine($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
 
-               // We are not learning in instable state.
-               learn = isInStableState = isStable;
+                // We are not learning in instable state.
+                learn = isInStableState = isStable;
 
-               // Clear all learned patterns in the classifier.
-               cls.ClearState();
+                // Clear all learned patterns in the classifier.
+                //cls.ClearState();
 
             }, numOfCyclesToWaitOnChange: 50);
 
-            SpatialPoolerMT sp = new(hpa);
+            SpatialPoolerMT sp = new SpatialPoolerMT(hpa);
             sp.Init(mem);
             tm.Init(mem);
             layer1.HtmModules.Add("sp", sp);
@@ -462,7 +544,7 @@ namespace HTMVideoLearning
             //
             ///*
             //for (int i = 0; i < maxCycles; i++)
-            while(isInStableState == false)
+            while (isInStableState == false)
             {
                 newbornCycle++;
                 Console.WriteLine($"-------------- Newborn Cycle {newbornCycle} ---------------");
@@ -490,19 +572,19 @@ namespace HTMVideoLearning
             //*/
 
             layer1.HtmModules.Add("tm", tm);
-            List<int[]> stableAreas = new();
+            List<int[]> stableAreas = new List<int[]>();
 
             int cycle = 0;
             int matches = 0;
 
-            List<string> lastPredictedValue = new();
+            List<string> lastPredictedValue = new List<string>();
 
             foreach (VideoSet vd in videoData)
             {
                 foreach (NVideo nv in vd.nVideoList)
                 {
                     int maxPrevInputs = nv.nFrames.Count - 1;
-                    List<string> previousInputs = new();
+                    List<string> previousInputs = new List<string>();
                     cycle = 0;
                     learn = true;
 
@@ -514,10 +596,11 @@ namespace HTMVideoLearning
                     // There is a little different between a input pattern set and an input video set,
                     // The reason is because a video consists of continously altering frame, not distinct values like the sequence learning of Scalar value.
                     // Thus Learning with sp alone was kept
+                    double lastCycleAccuracy = 0;
+                    int saturatedAccuracyCount = 0;
                     for (int i = 0; i < maxCycles; i++)
                     {
                         matches = 0;
-
                         cycle++;
 
                         Console.WriteLine($"-------------- Cycle {cycle} ---------------");
@@ -596,77 +679,42 @@ namespace HTMVideoLearning
                                 lastPredictedValue.Clear();
                             }
                         }
-                        // Reset Temporal memory after learning 1 time the video/sequence
-                        //tm.Reset(mem);
 
                         double accuracy;
-                        
-                        //accuracy = (double)matches / ((double)nv.nFrames.Count - 1.0) * 100.0; // Use if with reset
-                        accuracy = (double)matches / (double)nv.nFrames.Count * 100.0; // Use if without reset
+
+                        accuracy = (double)matches / ((double)nv.nFrames.Count - 1.0) * 100.0; // Use if with reset
+                        //accuracy = (double)matches / (double)nv.nFrames.Count * 100.0; // Use if without reset
 
                         Console.WriteLine($"Cycle: {cycle}\tMatches={matches} of {nv.nFrames.Count}\t {accuracy}%");
-
-                        if (accuracy >= 80.0)
+                        if (accuracy == lastCycleAccuracy)
                         {
-
-                            maxMatchCnt++;
-                            Console.WriteLine($"90% accuracy surpassed {maxMatchCnt} times.");
-                            //
-                            // Experiment is completed if we are 30 cycles long at the 100% accuracy.
-                            if (maxMatchCnt >= 30)
-                            //if (cycle == maxCycles)
+                            // The learning may result in saturated accuracy
+                            // Unable to learn to higher accuracy, Exit
+                            saturatedAccuracyCount += 1;
+                            if (saturatedAccuracyCount >= 50 && lastCycleAccuracy > 80)
                             {
-                                stableAreas.Add(new int[] { cycle - maxMatchCnt, cycle });
-                                sw.Stop();
-                                Console.WriteLine($"Exit experiment in the stable state after 30 repeats with {accuracy}% of accuracy. Elapsed time: {sw.ElapsedMilliseconds / 1000 / 60} min.");
-                                Console.WriteLine($"Exit experiment in the stable state after 30 repeats with 100% of accuracy. Elapsed time: {sw.ElapsedMilliseconds / 1000 / 60} min.");
-                                foreach (int[] stableArea in stableAreas)
+                                List<string> outputLog = new List<string>();
+                                if (!Directory.Exists($"{outputFolder}" + @"\" + "TEST"))
                                 {
-                                    Console.WriteLine($"----------------Stable area number: {stableAreas.IndexOf(stableArea)}----------------");
-                                    Debug.WriteLine($"----------------Stable area number: {stableAreas.IndexOf(stableArea)}----------------");
-                                    Console.WriteLine($"Starting cycle: {stableArea.Min()}");
-                                    Debug.WriteLine($"Starting cycle: {stableArea.Min()}");
-                                    Console.WriteLine($"Ending cycle: {stableArea.Max()}");
-                                    Debug.WriteLine($"Ending cycle: {stableArea.Max()}");
-                                    Console.WriteLine($"Stable area's size: {stableArea.Max() - stableArea.Min()}");
-                                    Debug.WriteLine($"Stable area's size: {stableArea.Max() - stableArea.Min()}");
-                                    Console.WriteLine($"----------------End of Stable area number: {stableAreas.IndexOf(stableArea)}----------------");
-                                    Debug.WriteLine($"----------------End of Stable area number: {stableAreas.IndexOf(stableArea)}----------------");
+                                    Directory.CreateDirectory($"{outputFolder}" + @"\" + "TEST");
                                 }
-                                learn = false;
+                                string fileName = $"{outputFolder}" + @"\" + "TEST" + @"\" + $"saturatedAccuracyLog_{nv.label}_{nv.name}";
+                                outputLog.Add($"Result Log for reaching saturated accuracy at {accuracy}");
+                                outputLog.Add($"Label: {nv.label}");
+                                outputLog.Add($"Video Name: {nv.name}");
+                                outputLog.Add($"Stop after {cycle} cycles");
+                                outputLog.Add($"Elapsed time: {sw.ElapsedMilliseconds / 1000 / 60} min.");
+                                outputLog.Add($"reaching stable after enter newborn cycle {newbornCycle}.");
+                                RecordResult(outputLog, fileName);
                                 break;
                             }
                         }
-                        else if (maxMatchCnt > 0)
-                        {
-                            Console.WriteLine($"At {accuracy}% accuracy after {maxMatchCnt} repeats we get a drop of accuracy with {accuracy}. This indicates instable state. Learning will be continued.");
-                            stableAreas.Add(new int[] { cycle - maxMatchCnt, cycle - 1 });
-                            if (cycle == maxCycles)
-                            {
-                                sw.Stop();
-                                Console.WriteLine($"Exit experiment in the stable state after 30 repeats with 100% of accuracy. Elapsed time: {sw.ElapsedMilliseconds / 1000 / 60} min.");
-                                Console.WriteLine($"Exit experiment in the stable state after 30 repeats with 100% of accuracy. Elapsed time: {sw.ElapsedMilliseconds / 1000 / 60} min.");
-                                foreach (int[] stableArea in stableAreas)
-                                {
-                                    Console.WriteLine($"----------------Stable area number: {stableAreas.IndexOf(stableArea)}----------------");
-                                    Debug.WriteLine($"----------------Stable area number: {stableAreas.IndexOf(stableArea)}----------------");
-                                    Console.WriteLine($"Starting cycle: {stableArea.Min()}");
-                                    Debug.WriteLine($"Starting cycle: {stableArea.Min()}");
-                                    Console.WriteLine($"Ending cycle: {stableArea.Max()}");
-                                    Debug.WriteLine($"Ending cycle: {stableArea.Max()}");
-                                    Console.WriteLine($"Stable area's size: {stableArea.Max() - stableArea.Min()}");
-                                    Debug.WriteLine($"Stable area's size: {stableArea.Max() - stableArea.Min()}");
-                                    Console.WriteLine($"----------------End of Stable area number: {stableAreas.IndexOf(stableArea)}----------------");
-                                    Debug.WriteLine($"----------------End of Stable area number: {stableAreas.IndexOf(stableArea)}----------------");
-                                }
-                                learn = false;
-                                break;
-                            }
-                            maxMatchCnt = 0;
-                        }
-                        
+                        lastCycleAccuracy = accuracy;
+                        //learn = true;
+                        // Reset Temporal memory after learning 1 time the video/sequence
+                        tm.Reset(mem);
                     }
-                    
+
                     Console.WriteLine("------------ END ------------");
                     previousInputs.Clear();
                 }
@@ -674,9 +722,13 @@ namespace HTMVideoLearning
             //Testing Section
             string userInput;
             string testOutputFolder = $"{outputFolder}" + @"\" + "TEST";
-
+            if (!Directory.Exists(testOutputFolder))
+            {
+                Directory.CreateDirectory(testOutputFolder);
+            }
+            HelperFunction.WriteLineColor("Drag an image as input to recall the learned Video: ");
             userInput = Console.ReadLine().Replace("\"", "");
-            
+
             int testNo = 0;
 
             do
@@ -688,8 +740,8 @@ namespace HTMVideoLearning
                 }
                 testNo += 1;
                 // Save the input Frame as NFrame
-                NFrame inputFrame = new(new Bitmap(userInput), "TEST", "test", 0, frameWidth, frameHeight, colorMode);
-                inputFrame.SaveFrame(Outputdir+@"\"+$"Converted_{Path.GetFileName(userInput)}");
+                NFrame inputFrame = new NFrame(new Bitmap(userInput), "TEST", "test", 0, frameWidth, frameHeight, colorMode);
+                inputFrame.SaveFrame(Outputdir + @"\" + $"Converted_{Path.GetFileName(userInput)}");
                 // Compute the SDR of the Frame
                 var lyrOut = layer1.Compute(inputFrame.EncodedBitArray, false) as ComputeCycle;
 
@@ -704,7 +756,7 @@ namespace HTMVideoLearning
                     HelperFunction.WriteLineColor(s);
                     Console.WriteLine("\n");
                     //Create List of NFrame to write to Video
-                    List<NFrame> outputNFrameList = new();
+                    List<NFrame> outputNFrameList = new List<NFrame>();
                     string Label = "";
                     List<string> frameKeyList = s.Split("-").ToList();
                     foreach (string frameKey in frameKeyList)
@@ -725,7 +777,7 @@ namespace HTMVideoLearning
                             }
                         }
                     }
-                        
+
                     // Create output video
                     NVideo.NFrameListToVideo(
                         outputNFrameList,
@@ -765,24 +817,24 @@ namespace HTMVideoLearning
             {
                 Random = new ThreadSafeRandom(42),
 
-                CellsPerColumn = 20,
+                CellsPerColumn = 30,
                 GlobalInhibition = true,
-                LocalAreaDensity = -1,
+                //LocalAreaDensity = -1,
                 NumActiveColumnsPerInhArea = 0.02 * numColumns[0],
                 PotentialRadius = (int)(0.15 * inputBits[0]),
-                InhibitionRadius = 15,
+                //InhibitionRadius = 15,
 
                 MaxBoost = 10.0,
-                DutyCyclePeriod = 25,
-                MinPctOverlapDutyCycles = 0.75,
+                //DutyCyclePeriod = 25,
+                //MinPctOverlapDutyCycles = 0.75,
                 MaxSynapsesPerSegment = (int)(0.02 * numColumns[0]),
 
-                ActivationThreshold = 15,
-                ConnectedPermanence = 0.5,
+                //ActivationThreshold = 15,
+                //ConnectedPermanence = 0.5,
 
                 // Learning is slower than forgetting in this case.
-                PermanenceDecrement = 0.15,
-                PermanenceIncrement = 0.15,
+                //PermanenceDecrement = 0.15,
+                //PermanenceIncrement = 0.15,
 
                 // Used by punishing of segments.
             };

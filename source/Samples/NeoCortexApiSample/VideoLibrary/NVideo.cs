@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-namespace VideoLearning
+namespace VideoLibrary
 {
     /// <summary>
     /// <para>
@@ -58,7 +58,7 @@ namespace VideoLearning
             List<Bitmap> videoBitmapArray = new List<Bitmap>();
 
             // Create VideoFrameReader object for the video from videoPath
-            VideoCapture vd = new(videoPath);
+            VideoCapture vd = new VideoCapture(videoPath);
 
             double step = 1;
             // New step for iterating the video in a lower frameRate when specified
@@ -67,7 +67,7 @@ namespace VideoLearning
             {
                 step = framerateDefault / framerate;
             }
-            Mat currentFrame = new();
+            Mat currentFrame = new Mat();
             int count = 0;
             int currentFrameIndex = 0;
             int stepCount = 0;
@@ -104,7 +104,7 @@ namespace VideoLearning
         }
         public static void NFrameListToVideo(List<NFrame> bitmapList, string videoOutputPath, int frameRate, Size dimension, bool isColor)
         {
-            using (VideoWriter videoWriter = new($"{videoOutputPath}.mp4", -1, (int)frameRate, dimension, isColor))
+            using (VideoWriter videoWriter = new VideoWriter($"{videoOutputPath}.mp4", -1, (int)frameRate, dimension, isColor))
             {
                 foreach (NFrame frame in bitmapList)
                 {

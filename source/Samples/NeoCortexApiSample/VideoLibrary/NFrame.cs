@@ -108,7 +108,7 @@ namespace VideoLibrary
         /// <returns></returns>
         public static List<int> ColorChannelToBinList(byte r)
         {
-            List<int> binaryList = new();
+            List<int> binaryList = new List<int>();
             string BNR = Convert.ToString(r,2).PadLeft(8,'0');
             foreach (char a in BNR)
             {
@@ -137,7 +137,7 @@ namespace VideoLibrary
         public Bitmap IntArrayToBitmap(int[] EncodedBitArray)
         {
             int[] rgb = { 0, 0, 0 };
-            Bitmap output = new(frameWidth, frameHeight);
+            Bitmap output = new Bitmap(frameWidth, frameHeight);
             for (int y = 0; y < frameHeight; y += 1)
             {
                 for (int x = 0; x < frameWidth; x += 1)

@@ -1,16 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using NeoCortexApi;
-using NeoCortexApi.Encoders;
-using NeoCortexApi.Entities;
-using NeoCortexApi.Network;
-using NeoCortexApi.Utility;
-
-namespace NeoCortexApiSample
+﻿namespace NeoCortexApiSample
 {
     class Program
     {
@@ -29,8 +17,13 @@ namespace NeoCortexApiSample
 
             //
             // Starts experiment that demonstrates how to learn spatial patterns.
-            SequenceLearning experiment = new SequenceLearning();
-            experiment.Run();
+            //SequenceLearning experiment = new SequenceLearning();
+
+
+            //Entry for Video Learning Project
+            VideoLearning experiment = new VideoLearning();
+            //experiment.Run1();
+            experiment.Run2();
         }
       
     }
