@@ -10,8 +10,9 @@ Experiment in current work involves using Temporal Memory to learn binary repres
 Afterwards the result of the learning is tested by giving the trained model an abitrary image, the model then tries to recreate a video with proceeding frame after the input frame.
 
 ## 2. Overview:
-In this experiment, Videos are learned as sequences of Frames.  
-For example of Sequence Learning, see [SequenceLearning.cs](https://github.com/ddobric/neocortexapi/tree/master/source/Samples/NeoCortexApiSample).  
+In this experiment, Videos are learned as sequences of Frames. The link to the project code can be found in [VideoLearning.cs](https://github.com/ddobric/neocortexapi/blob/SequenceLearning_ToanTruong/Project12_HTMCLAVideoLearning/HTMVideoLearning/HTMVideoLearning/VideoLearning.cs). An overall view of the experiment can be found in the [Projet Folder](https://github.com/ddobric/neocortexapi/tree/SequenceLearning_ToanTruong/Project12_HTMCLAVideoLearning/HTMVideoLearning).  
+
+This project references Sequence Learning sample, see [SequenceLearning.cs](https://github.com/ddobric/neocortexapi/tree/master/source/Samples/NeoCortexApiSample).  
 
 Input Videos are currently generated from python scripts, using OpenCV2. See [DataGeneration](https://github.com/ddobric/neocortexapi/tree/SequenceLearning_ToanTruong/DataGeneration) for manual on usage and modification.  
 
