@@ -336,6 +336,7 @@ namespace NeoCortexApi.Entities
 
         /// <summary>
         /// If the permanence value for a synapse is greater than this value, it is said to be connected = the potential synapse.
+        /// Synapses that exceeds this value are used in computation of active segments.
         /// </summary>
         public double ConnectedPermanence { get; set; } = 0.5;
 

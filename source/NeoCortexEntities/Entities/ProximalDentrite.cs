@@ -16,7 +16,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// The pool of synapses in the receptive field.
         /// </summary>
-        public Pool RFPool {get;set; }
+        public Pool RFPool { get; set; }
 
         /// <summary>
         /// 
@@ -40,7 +40,7 @@ namespace NeoCortexApi.Entities
                 int[] lst = new int[this.Synapses.Count];
                 for (int i = 0; i < lst.Length; i++)
                 {
-                    lst[i]=  this.Synapses[i].InputIndex;
+                    lst[i] = this.Synapses[i].InputIndex;
                 }
 
                 return lst;
@@ -82,7 +82,7 @@ namespace NeoCortexApi.Entities
             {
                 var synapse = RFPool.GetSynapseForInput(inputIndexes[i]);
                 synapse.Permanence = perms[i];
-        
+
                 if (perms[i] >= permConnThreshold)
                 {
                     connectedCounts.set(1, 0 /*ParentColumnIndex*/, i);
