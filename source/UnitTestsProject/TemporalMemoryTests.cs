@@ -456,7 +456,8 @@ namespace UnitTestsProject
 
             //List<DistalDendrite> segments = winnerCells[0].Segments;
             Assert.AreEqual(1, segments.Count);
-            List<Synapse> synapses = segments[0].GetAllSynapses(cn);
+            //List<Synapse> synapses = segments[0].GetAllSynapses(cn);
+            List<Synapse> synapses = segments[0].Synapses;
 
             List<Cell> presynapticCells = new List<Cell>();
             foreach (Synapse synapse in synapses)
@@ -581,14 +582,10 @@ namespace UnitTestsProject
             cc = tm.Compute(activeColumns, true) as ComputeCycle;
 
             List<Cell> presynapticCells = new List<Cell>();
-            foreach (var syn in activeSegment.GetAllSynapses(cn))
+            foreach (var syn in activeSegment.Synapses)
             {
                 presynapticCells.Add(syn.getPresynapticCell());
             }
-
-            //= cn.getSynapses(activeSegment).stream()
-            //.map(s->s.getPresynapticCell())
-            //.collect(Collectors.toSet());
 
             Assert.IsTrue(
                 presynapticCells.Count == 4 && (
@@ -901,7 +898,7 @@ namespace UnitTestsProject
                 }
 
                 Assert.AreEqual(1, segments.Count);
-                List<Synapse> synapses = segments[0].GetAllSynapses(cn);
+                List<Synapse> synapses = segments[0].Synapses;
                 Assert.AreEqual(4, synapses.Count);
 
                 ISet<Column> columnCheckList = cn.GetColumnSet(prevActiveColumns);

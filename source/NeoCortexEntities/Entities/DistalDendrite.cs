@@ -63,18 +63,6 @@ namespace NeoCortexApi.Entities
 
 
         /// <summary>
-        /// Gets all synapses owned by this distal dentrite segment.
-        /// </summary>
-        /// <param name="mem"></param>
-        /// <returns>Synapses.</returns>
-        public List<Synapse> GetAllSynapses(Connections mem)
-        {
-            //DD  return mem.GetSynapses(this);
-            return this.Synapses;
-        }
-
-
-        /// <summary>
         /// <inheritdoc/>
         /// </summary>
         /// <returns></returns>

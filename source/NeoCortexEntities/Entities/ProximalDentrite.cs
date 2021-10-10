@@ -40,7 +40,7 @@ namespace NeoCortexApi.Entities
         /// <seealso cref="Synapse"/>
         public Synapse CreateSynapse(int index, int inputIndex)
         {
-            Synapse synapse = new Synapse(null, this.SegmentIndex, index, inputIndex);
+            Synapse synapse = new Synapse(this.SegmentIndex, index, inputIndex);
             this.Synapses.Add(synapse);
             return synapse;
         }
