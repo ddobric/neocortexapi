@@ -23,7 +23,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public int SegmentIndex { get; set; }
 
-        protected Integer boxedIndex { get; set; }
+        //protected Integer boxedIndex { get; set; }
 
         /// <summary>
         /// Synapses connected to the segment.
@@ -46,7 +46,7 @@ namespace NeoCortexApi.Entities
         protected Segment()
         {
             this.Synapses = new List<Synapse>();
-            this.boxedIndex = new Integer();
+           // this.boxedIndex = new Integer();
 
         }
 
@@ -62,7 +62,7 @@ namespace NeoCortexApi.Entities
             this.SynapsePermConnected = synapsePermConnected;
             this.Synapses = new List<Synapse>();
             this.SegmentIndex = index;
-            this.boxedIndex = new Integer(index);
+            //this.boxedIndex = new Integer(index);
         }
 
 

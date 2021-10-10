@@ -168,10 +168,10 @@ namespace NeoCortexApi.Entities
 
            ser.SerializeBegin(nameof(DistalDendrite), writer);
 
-            if (this.boxedIndex != null)
-            {
-                this.boxedIndex.Serialize(writer);
-            }
+            //if (this.boxedIndex != null)
+            //{
+            //    this.boxedIndex.Serialize(writer);
+            //}
 
             if (this.ParentCell != null)
             {
@@ -212,10 +212,10 @@ namespace NeoCortexApi.Entities
                 {
                     //distal.ParentCell = Cell.Deserialize(sr);
                 }
-                else if (data == ser.ReadBegin(nameof(Integer)))
-                {
-                    distal.boxedIndex = Integer.Deserialize(sr);
-                }
+                //else if (data == ser.ReadBegin(nameof(Integer)))
+                //{
+                //    distal.boxedIndex = Integer.Deserialize(sr);
+                //}
                 else if (data == ser.ReadEnd(nameof(DistalDendrite)))
                 {
                     break;
