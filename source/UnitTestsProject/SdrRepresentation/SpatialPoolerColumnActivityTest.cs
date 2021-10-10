@@ -1,8 +1,6 @@
-﻿using GemBox.Spreadsheet;
-using GemBox.Spreadsheet.Charts;
-using GemBox.Spreadsheet.Drawing;
-using NeoCortexApi;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortex;
+using NeoCortexApi;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
@@ -11,7 +9,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace UnitTestsProject.Sdr
 {

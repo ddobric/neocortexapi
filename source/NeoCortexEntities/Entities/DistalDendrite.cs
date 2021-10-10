@@ -1,11 +1,9 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using NeoCortexApi.Types;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace NeoCortexApi.Entities
 {
@@ -19,7 +17,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// The cell that owns (parent) the segment.
         /// </summary>        
-        public Cell ParentCell ; 
+        public Cell ParentCell;
 
         private long m_LastUsedIteration;
 
@@ -38,9 +36,9 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Default constructor used by deserializer.
         /// </summary>
-        public DistalDendrite() 
-        { 
-        
+        public DistalDendrite()
+        {
+
         }
 
 
@@ -60,7 +58,7 @@ namespace NeoCortexApi.Entities
         {
             this.ParentCell = parentCell;
             this.m_Ordinal = ordinal;
-            this.m_LastUsedIteration = lastUsedIteration;            
+            this.m_LastUsedIteration = lastUsedIteration;
         }
 
 
@@ -75,7 +73,7 @@ namespace NeoCortexApi.Entities
             return this.Synapses;
         }
 
-           
+
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
@@ -166,7 +164,7 @@ namespace NeoCortexApi.Entities
         {
             HtmSerializer2 ser = new HtmSerializer2();
 
-           ser.SerializeBegin(nameof(DistalDendrite), writer);
+            ser.SerializeBegin(nameof(DistalDendrite), writer);
 
             //if (this.boxedIndex != null)
             //{
@@ -190,7 +188,7 @@ namespace NeoCortexApi.Entities
             // We serialize synapse indixes only to avoid circular references.
             if (this.Synapses != null && this.Synapses.Count > 0)
                 ser.SerializeValue(this.Synapses.Select(s => s.SynapseIndex).ToArray(), writer);
-               
+
             ser.SerializeEnd(nameof(DistalDendrite), writer);
         }
 
@@ -221,7 +219,7 @@ namespace NeoCortexApi.Entities
                     break;
                 }
                 else
-                { 
+                {
                     string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
                     for (int i = 0; i < str.Length; i++)
                     {
@@ -231,7 +229,7 @@ namespace NeoCortexApi.Entities
                                 {
                                     distal.ParentCell = new Cell();
                                     distal.ParentCell.Index = ser.ReadIntValue(str[i]);
-                                    
+
                                     break;
                                 }
                             case 1:
@@ -269,21 +267,21 @@ namespace NeoCortexApi.Entities
                                     distal.NumInputs = ser.ReadIntValue(str[i]);
                                     break;
                                 }
-                            
+
                             default:
                                 { break; }
 
                         }
                     }
                 }
-                
+
             }
 
             return distal;
 
         }
 
-   
+
 
         #endregion
 

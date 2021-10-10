@@ -1,17 +1,17 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeoCortex;
 using NeoCortexApi;
+using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
+using NeoCortexApi.Network;
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Drawing;
-using NeoCortex;
-using NeoCortexApi.Network;
-using System.Linq;
-using NeoCortexApi.Encoders;
 using System.Drawing.Imaging;
+using System.IO;
+using System.Linq;
 /*
 * Version 1.0.0:
 * |DONE|

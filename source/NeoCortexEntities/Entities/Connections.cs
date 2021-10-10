@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using NeoCortexApi.Types;
-using NeoCortexApi.Utility;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -10,7 +9,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 
 namespace NeoCortexApi.Entities
 {
@@ -121,10 +119,10 @@ namespace NeoCortexApi.Entities
         /// </summary>
         protected List<int> m_FreeFlatIdxs = new List<int>();
 
-       
+
         protected ConcurrentDictionary<int, DistalDendrite> m_SegmentForFlatIdx = new ConcurrentDictionary<int, DistalDendrite>();
 
-        
+
         /// <summary>
         /// The segment creation number.
         /// </summary>
@@ -206,7 +204,7 @@ namespace NeoCortexApi.Entities
             return retVal;
         }
 
-     
+
         /// <summary>
         /// Sets the <see cref="AbstractSparseMatrix{T}"/> which represents the proximal dendrite permanence values.
         /// </summary>
@@ -220,7 +218,7 @@ namespace NeoCortexApi.Entities
             }
         }
 
-      
+
         public int[] GetTrueCounts()
         {
             int[] counts = new int[this.HtmConfig.NumColumns];
@@ -232,7 +230,7 @@ namespace NeoCortexApi.Entities
             return counts;
         }
 
-      
+
         /// <summary>
         /// Sets the indexed count of synapses connected at the columns in each index.
         /// </summary>
@@ -305,7 +303,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public double[] BoostFactors { get => m_BoostFactors; set => this.m_BoostFactors = value; }
 
-      
+
         ////////////////////////////////////////
         //       TemporalMemory Methods       //
         ////////////////////////////////////////
@@ -1156,7 +1154,7 @@ namespace NeoCortexApi.Entities
             return result;
         }
 
-   
+
         #endregion
 
         /// <summary>

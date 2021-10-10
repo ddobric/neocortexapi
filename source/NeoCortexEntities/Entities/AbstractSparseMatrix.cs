@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace NeoCortexApi.Entities
 {
@@ -70,8 +69,8 @@ namespace NeoCortexApi.Entities
         /// <param name="index">the index the object will occupy</param>
         /// <param name="value">the value to be indexed.</param>
         /// <returns></returns>
-       // protected virtual AbstractSparseMatrix<T> Set(int index, double value)
-       // { return null; }
+        // protected virtual AbstractSparseMatrix<T> Set(int index, double value)
+        // { return null; }
 
         /// <summary>
         /// Sets the specified object to be indexed at the index computed from the specified coordinates.

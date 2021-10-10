@@ -3,17 +3,10 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
-using NeoCortexApi.Utility;
+using NeoCortexApi.Types;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.IO;
-using System.Runtime.Serialization;
-using NeoCortexApi.Types;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace UnitTestsProject
 {
@@ -102,7 +95,7 @@ namespace UnitTestsProject
         [DataRow(1)]
         public void TestActivateCorrectlyPredictiveCells(int tmImplementation)
         {
-            TemporalMemory tm = tmImplementation == 0? new TemporalMemory() : new TemporalMemoryMT();
+            TemporalMemory tm = tmImplementation == 0 ? new TemporalMemory() : new TemporalMemoryMT();
             Connections cn = new Connections();
             Parameters p = getDefaultParameters();
             p.apply(cn);

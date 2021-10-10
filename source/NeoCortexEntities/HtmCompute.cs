@@ -4,9 +4,8 @@ using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-using System.Diagnostics;
+using System.Text;
 
 namespace NeoCortexApi
 {
@@ -46,7 +45,7 @@ namespace NeoCortexApi
             return retVal;
         }
 
-      
+
         /// <summary>
         /// Maps a column to its input bits. This method encapsulates the topology of the region. It takes the index of the column as an argument and calculates 
         /// indexes of the input vector that represent column's potential pool. The return value is a list containing the indices of 
@@ -100,7 +99,7 @@ namespace NeoCortexApi
             return sb.ToString();
         }
 
-      
+
         /// <summary>
         /// Uniform Column Mapping <br></br>
         /// Maps a column to its respective input index, keeping to the topology of the region. It takes the index of the column as an argument and determines 
@@ -269,7 +268,7 @@ namespace NeoCortexApi
             return baseNum;
         }
 
-              
+
         /// <summary>
         /// Gets a neighborhood of inputs. Simply calls topology.wrappingNeighborhood or topology.neighborhood. A subclass can insert different topology behavior by overriding this method.
         /// </summary>
@@ -320,7 +319,7 @@ namespace NeoCortexApi
             return perm;
         }
 
-      
+
         /// <summary>
         /// Returns a randomly generated permanence value for a synapse that is initialized in a connected state. The basic idea here is to initialize
         /// permanence values very close to <c>synPermConnected</c> so that a small number of learning steps could make it disconnected or connected.
@@ -444,7 +443,7 @@ namespace NeoCortexApi
                 ArrayUtils.RaiseValuesBy(htmConfig.SynPermBelowStimulusInc, perm);
             }
         }
-      
+
         /// <summary>
         /// This method updates the permanence matrix with a column's new permanence values. The column is identified by its index, which reflects the row in
         /// the matrix, and the permanence is given in 'sparse' form, i.e. an array whose members are associated with specific indexes. It is in charge of 

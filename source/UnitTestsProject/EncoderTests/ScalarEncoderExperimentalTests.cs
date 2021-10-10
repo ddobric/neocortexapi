@@ -1,16 +1,16 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeoCortex;
+using NeoCortexApi.Encoders;
 using NeoCortexApi.Network;
+using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using NeoCortexApi.Encoders;
 using System.Diagnostics;
-using NeoCortexApi.Utility;
 using System.Drawing;
-using NeoCortex;
 using System.IO;
+using System.Linq;
 
 namespace UnitTestsProject.EncoderTests
 {

@@ -1,20 +1,14 @@
-﻿using NeoCortexApi.Entities;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 
 namespace NeoCortexApi.Entities
 {
-   /// <summary>
-   /// Serialization class used for serialization and deserialization of primitive types.
-   /// </summary>
+    /// <summary>
+    /// Serialization class used for serialization and deserialization of primitive types.
+    /// </summary>
     public class HtmSerializer2
     {
         //SP
@@ -28,7 +22,7 @@ namespace NeoCortexApi.Entities
 
         public string KeyValueDelimiter = ": ";
 
-        public const char  ElementsDelimiter = ',';
+        public const char ElementsDelimiter = ',';
 
         /// <summary>
         /// Serializes the begin marker of the type.
@@ -46,7 +40,7 @@ namespace NeoCortexApi.Entities
 
         }
         public String ReadBegin(String typeName)
-       {
+        {
             string val = ($"{TypeDelimiter} BEGIN '{typeName}' {TypeDelimiter}");
             return val;
         }
@@ -220,12 +214,12 @@ namespace NeoCortexApi.Entities
         public Double[] ReadArrayDouble(string reader)
         {
             string[] str = reader.Split(ElementsDelimiter);
-            Double[] vs = new double[str.Length-1];
-            for (int i = 0; i < str.Length-1; i++)
+            Double[] vs = new double[str.Length - 1];
+            for (int i = 0; i < str.Length - 1; i++)
             {
-                
+
                 vs[i] = Convert.ToDouble(str[i].Trim());
-                
+
             }
             return vs;
         }
@@ -296,7 +290,7 @@ namespace NeoCortexApi.Entities
                 sw.Write(i.Key + KeyValueDelimiter + i.Value.ToString());
                 sw.Write(ElementsDelimiter);
             }
-                sw.Write(ParameterDelimiter);
+            sw.Write(ParameterDelimiter);
         }
         /// <summary>
         /// Read the dictionary with key:string and value:int.
@@ -310,7 +304,7 @@ namespace NeoCortexApi.Entities
             for (int i = 0; i < str.Length - 1; i++)
             {
                 string[] tokens = str[i].Split(KeyValueDelimiter);
-                keyValues.Add(tokens[0].Trim(), Convert.ToInt32(tokens[1])) ;
+                keyValues.Add(tokens[0].Trim(), Convert.ToInt32(tokens[1]));
             }
 
             return keyValues;
@@ -335,11 +329,11 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="reader"></param>
         /// <returns>Dictionary<int, int></returns>
-        public Dictionary<int,int> ReadDictionaryIIValue(string reader)
+        public Dictionary<int, int> ReadDictionaryIIValue(string reader)
         {
             string[] str = reader.Split(ElementsDelimiter);
             Dictionary<int, int> keyValues = new Dictionary<int, int>();
-            for (int i = 0; i < str.Length-1; i++)
+            for (int i = 0; i < str.Length - 1; i++)
             {
                 string[] tokens = str[i].Split(KeyValueDelimiter);
                 keyValues.Add(Convert.ToInt32(tokens[0].Trim()), Convert.ToInt32(tokens[1]));
@@ -377,7 +371,7 @@ namespace NeoCortexApi.Entities
         {
             string[] str = reader.Split(ElementsDelimiter);
             Dictionary<String, int[]> keyValues = new Dictionary<String, int[]>();
-            for (int i = 0; i < str.Length-1; i++)
+            for (int i = 0; i < str.Length - 1; i++)
             {
                 string[] tokens = str[i].Split(KeyValueDelimiter);
                 string[] values = tokens[1].Split(ValueDelimiter);
@@ -489,9 +483,9 @@ namespace NeoCortexApi.Entities
             }
             sw.Write(ParameterDelimiter);
         }
-        
-        
-        
+
+
+
     }
 
 }

@@ -2,9 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-using System.IO;
 
 namespace NeoCortexApi.Utility
 {
@@ -140,7 +138,7 @@ namespace NeoCortexApi.Utility
                 }
             }
 
-            return res ;
+            return res;
         }
     }
 }

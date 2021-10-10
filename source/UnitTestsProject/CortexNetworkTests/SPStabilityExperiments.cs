@@ -1,25 +1,21 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeoCortex;
+using NeoCortexApi;
+using NeoCortexApi.Classifiers;
+using NeoCortexApi.Encoders;
+using NeoCortexApi.Entities;
+using NeoCortexApi.Network;
+using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Globalization;
-using NeoCortexApi.Encoders;
-using NeoCortexApi.Network;
-using NeoCortexApi;
-using NeoCortexApi.Entities;
 using System.Diagnostics;
-using NeoCortexEntities.NeuroVisualizer;
-using WebSocketNeuroVisualizer;
-using NeoCortexApi.Utility;
-using System.Text;
-using System.IO;
-using System.Threading;
-using System.Net.WebSockets;
-using NeoCortex;
 using System.Drawing;
-using NeoCortexApi.Classifiers;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading;
 
 namespace UnitTestsProject
 {

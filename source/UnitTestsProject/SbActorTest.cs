@@ -2,16 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using AkkaSb.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NeoCortex;
-using NeoCortexApi;
 using NeoCortexApi.DistributedComputeLib;
-using NeoCortexApi.Entities;
-using NeoCortexApi.Utility;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 

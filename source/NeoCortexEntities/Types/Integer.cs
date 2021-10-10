@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace NeoCortexApi.Entities
 {
@@ -72,8 +71,8 @@ namespace NeoCortexApi.Entities
 
             ser.SerializeBegin(nameof(Integer), writer);
 
-            ser.SerializeValue(this.Value,writer);
-            
+            ser.SerializeValue(this.Value, writer);
+
             ser.SerializeEnd(nameof(Integer), writer);
         }
 
@@ -116,7 +115,7 @@ namespace NeoCortexApi.Entities
             }
 
             return inte;
-            
+
         }
 
         #endregion
@@ -126,4 +125,4 @@ namespace NeoCortexApi.Entities
             return this.Value.GetHashCode();
         }
     }
-    }
+}

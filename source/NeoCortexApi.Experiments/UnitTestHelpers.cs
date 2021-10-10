@@ -1,16 +1,11 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using AkkaSb.Net;
-using LearningFoundation.ImageBinarizer;
 using Microsoft.Extensions.Logging;
-using NeoCortexApi;
 using NeoCortexApi.DistributedComputeLib;
 using NeoCortexApi.Entities;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Text;
 
 namespace NeoCortexApi.Experiments
 {
@@ -29,8 +24,8 @@ namespace NeoCortexApi.Experiments
         /// </summary>
         /// <param name="logger"></param>
         /// <returns></returns>
-        public static ILogger GetLogger(string logger="UnitTest")
-        {         
+        public static ILogger GetLogger(string logger = "UnitTest")
+        {
             ILoggerFactory factory = LoggerFactory.Create(logBuilder =>
             {
                 logBuilder.AddDebug();
@@ -68,7 +63,7 @@ namespace NeoCortexApi.Experiments
         public static DistributedMemory GetDistributedDictionary(HtmConfig htmConfig)
         {
             var cfg = UnitTestHelpers.DefaultSbConfig;
-           
+
             return new DistributedMemory()
             {
                 ColumnDictionary = new ActorSbDistributedDictionaryBase<Column>(cfg, UnitTestHelpers.GetLogger()),
@@ -88,7 +83,7 @@ namespace NeoCortexApi.Experiments
         }
 
 
-      
+
 
         /// <summary>
         /// Creates appropriate instance of SpatialPooler.

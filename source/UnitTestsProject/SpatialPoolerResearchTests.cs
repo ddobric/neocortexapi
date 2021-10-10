@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using LearningFoundation.ImageBinarizer;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeoCortex;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
@@ -9,11 +11,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using System.Drawing;
-using NeoCortex;
-using NeoCortexApi.Network;
-using System.Linq;
-using LearningFoundation.ImageBinarizer;
 
 namespace UnitTestsProject
 {

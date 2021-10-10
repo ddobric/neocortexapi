@@ -20,7 +20,7 @@ namespace NeoCortexApi
     /// </summary>
     public class HomeostaticPlasticityController
     {
-        private double m_RequiredSimilarityThreshold ;
+        private double m_RequiredSimilarityThreshold;
 
         private int m_MaxPreviousElements = 5;
 
@@ -77,8 +77,8 @@ namespace NeoCortexApi
         /// Used during the deserialization proicess.
         /// </summary>
         public HomeostaticPlasticityController()
-        { 
-        
+        {
+
         }
 
         /// <summary>
@@ -255,7 +255,7 @@ namespace NeoCortexApi
                         cnt++;
                 }
 
-                return ((double)cnt / (double)Math.Max(originArray.Length, comparingArray.Length)) ;
+                return ((double)cnt / (double)Math.Max(originArray.Length, comparingArray.Length));
             }
             else
             {
@@ -307,7 +307,7 @@ namespace NeoCortexApi
 
                     var sdr = Helpers.StringifyVector(ArrayUtils.IndexWhere(m_InOutMap[item.Key], k => k == 1));
 
-                    string str = $"[{cnt++} - stable cycles: {this.m_NumOfStableCyclesForInput[item.Key]},len = {m_InOutMap[item.Key].Count(l=>l==1)}] \t {sdr}";
+                    string str = $"[{cnt++} - stable cycles: {this.m_NumOfStableCyclesForInput[item.Key]},len = {m_InOutMap[item.Key].Count(l => l == 1)}] \t {sdr}";
 
                     //Debug.WriteLine(keyStr);
                     //Debug.WriteLine($"{res}");

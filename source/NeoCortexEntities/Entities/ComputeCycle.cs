@@ -1,10 +1,7 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using NeoCortexApi.Types;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using NeoCortexApi;
 using System.Linq;
 
 namespace NeoCortexApi.Entities
@@ -49,14 +46,14 @@ namespace NeoCortexApi.Entities
         public List<Synapse> ActiveSynapses { get; set; } = new List<Synapse>();
 
 
-        public int[] ActivColumnIndicies{ get; set; }
+        public int[] ActivColumnIndicies { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
         public ComputeCycle() { }
 
-       
+
         /// <summary>
         /// 
         /// </summary>

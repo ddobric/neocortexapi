@@ -1,14 +1,11 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeoCortex;
+using NeoCortexApi;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
-using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-using NeoCortexApi;
-using NeoCortex;
 
 namespace UnitTestsProject
 {
@@ -90,7 +87,7 @@ namespace UnitTestsProject
             int[] arr1 = new int[] { 0, 1, 0, 1, 0, 1, 0, 0, 0, 1 };
             int[] arr2 = new int[] { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 };
 
-            var res = HomeostaticPlasticityController.CalcArraySimilarity(ArrayUtils.IndexWhere(arr1, i=>i == 1), ArrayUtils.IndexWhere(arr2, i => i == 1));
+            var res = HomeostaticPlasticityController.CalcArraySimilarity(ArrayUtils.IndexWhere(arr1, i => i == 1), ArrayUtils.IndexWhere(arr2, i => i == 1));
 
             Assert.IsTrue(res == 0.8);
         }
@@ -108,7 +105,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         public void TestCorrelation4()
-        {           
+        {
             int[] arr1 = new int[] { 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0 };
             int[] arr2 = new int[] { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 };
 

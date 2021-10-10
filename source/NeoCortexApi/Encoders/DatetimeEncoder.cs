@@ -2,8 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Linq;
 
 
 namespace NeoCortexApi.Encoders
@@ -56,9 +54,13 @@ namespace NeoCortexApi.Encoders
 
         private ScalarEncoder m_WeekendEncoder;
 
+#pragma warning disable CS0169 // The field 'DateTimeEncoder.m_CustomDaysEncoder' is never used
         private ScalarEncoder m_CustomDaysEncoder;
+#pragma warning restore CS0169 // The field 'DateTimeEncoder.m_CustomDaysEncoder' is never used
 
+#pragma warning disable CS0169 // The field 'DateTimeEncoder.m_HolidayEncoder' is never used
         private ScalarEncoder m_HolidayEncoder;
+#pragma warning restore CS0169 // The field 'DateTimeEncoder.m_HolidayEncoder' is never used
 
         #endregion
 
@@ -97,7 +99,7 @@ namespace NeoCortexApi.Encoders
 
                 this.m_Settings["DateTimeEncoder"]["MaxVal"] = GetValue(this.m_Precision, (DateTimeOffset)this.m_Settings["DateTimeEncoder"]["MaxVal"] - (DateTimeOffset)this.m_Settings["DateTimeEncoder"]["MinVal"]);
                 this.m_Settings["DateTimeEncoder"]["MinVal"] = 0.0;
-                
+
                 this.m_DateTimeEncoder = new ScalarEncoder(this.m_Settings["DateTimeEncoder"]);
                 //this.m_DateTimeEncoder.MinVal = 0.0;
                 //this.m_DateTimeEncoder.MaxVal = GetValue(this.m_Precision,
@@ -131,7 +133,7 @@ namespace NeoCortexApi.Encoders
                 case Precision.Miliseconds:
                     val = span.TotalMilliseconds;
                     break;
-                    
+
                 case Precision.Microseconds:
                     val = span.Ticks / 100 / 1000;
                     break;
@@ -157,7 +159,7 @@ namespace NeoCortexApi.Encoders
             if (this.m_DateTimeEncoder != null)
             {
                 var val = GetValue(this.m_Precision, input - this.m_MinDateTime);
-                
+
                 var sdr = this.m_DateTimeEncoder.Encode(val);
 
                 result.AddRange(sdr);

@@ -5,7 +5,6 @@ using NeoCortexApi;
 using NeoCortexApi.Classifiers;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace UnitTestsProject.CortexNetworkTests
 {

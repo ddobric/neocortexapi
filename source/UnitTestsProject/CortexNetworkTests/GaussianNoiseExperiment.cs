@@ -11,10 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.Globalization;
 using System.IO;
-using System.Linq;
-using UnitTestsProject;
 
 
 namespace UnitTestsProject.CortexNetworkTests
@@ -47,9 +44,9 @@ namespace UnitTestsProject.CortexNetworkTests
             int number_testing_set = 401; // Decimal numbers range from -20 to 20 with step of 0.1.
 
             string experimentFolder = nameof(GaussianNoiseExperiment);
-           // string SP_noisyinFolder = nameof(GoussianNoiseExperiment);
+            // string SP_noisyinFolder = nameof(GoussianNoiseExperiment);
             Directory.CreateDirectory(experimentFolder);
-           // Directory.CreateDirectory(SP_noisyinFolder);
+            // Directory.CreateDirectory(SP_noisyinFolder);
             string SP_inFile = $"{experimentFolder}\\MyEncoderOut.csv";
             string SP_noisyinFile = $"{experimentFolder}\\MyNoisyEncoderOut.csv";
             //string SP_outFolder = "MySPOutput";
@@ -69,7 +66,7 @@ namespace UnitTestsProject.CortexNetworkTests
             p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
 
             //------------------SPATIAL POOLER PARAMETERS-----------------
-            p.Set(KEY.INPUT_DIMENSIONS, new int[] { E_outBits    });
+            p.Set(KEY.INPUT_DIMENSIONS, new int[] { E_outBits });
             p.Set(KEY.POTENTIAL_RADIUS, -1);
             p.Set(KEY.POTENTIAL_PCT, 0.75);
             p.Set(KEY.GLOBAL_INHIBITION, true);
@@ -82,7 +79,7 @@ namespace UnitTestsProject.CortexNetworkTests
             p.Set(KEY.SYN_PERM_CONNECTED, 0.10);
             p.Set(KEY.SYN_PERM_BELOW_STIMULUS_INC, 0.01);
             p.Set(KEY.SYN_PERM_TRIM_THRESHOLD, 0.05);
-           
+
             p.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 1);
             p.Set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.001);
             p.Set(KEY.DUTY_CYCLE_PERIOD, 100);
@@ -97,7 +94,7 @@ namespace UnitTestsProject.CortexNetworkTests
             p.Set(KEY.LEARN, true);
 
             //-------------------TEMPORAL MEMORY PARAMETERS----------------
-            p.Set(KEY.COLUMN_DIMENSIONS, new int[] { columnsNumber});
+            p.Set(KEY.COLUMN_DIMENSIONS, new int[] { columnsNumber });
             p.Set(KEY.CELLS_PER_COLUMN, 32);
             p.Set(KEY.ACTIVATION_THRESHOLD, 10);
             p.Set(KEY.LEARNING_RADIUS, 10);

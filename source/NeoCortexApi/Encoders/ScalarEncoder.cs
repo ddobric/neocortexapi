@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using NeoCortexApi.Encoders;
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
@@ -190,9 +189,9 @@ namespace NeoCortexApi.Encoders
                 if (input < MinVal)
                 {
                     if (ClipInput && !Periodic)
-                    {                        
+                    {
                         Debug.WriteLine("Clipped input " + Name + "=" + input + " to minval " + MinVal);
-                        
+
                         input = MinVal;
                     }
                     else
@@ -215,8 +214,8 @@ namespace NeoCortexApi.Encoders
                 {
                     if (ClipInput)
                     {
-                        
-                        Debug.WriteLine($"Clipped input {Name} = {input} to maxval MaxVal");                        
+
+                        Debug.WriteLine($"Clipped input {Name} = {input} to maxval MaxVal");
                         input = MaxVal;
                     }
                     else

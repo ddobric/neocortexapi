@@ -1,10 +1,7 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Net.Http.Headers;
-using System.Text;
 
 namespace NeoCortexApi.Entities
 {
@@ -19,7 +16,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="inputDims"></param>
         /// <param name="columnDims"></param>
-        public HtmConfig(int[] inputDims,  int[] columnDims)
+        public HtmConfig(int[] inputDims, int[] columnDims)
         {
             SetHtmConfigDefaultParameters(inputDims, columnDims);
         }
@@ -381,9 +378,9 @@ namespace NeoCortexApi.Entities
             this.PermanenceIncrement = 0.10;
             this.PermanenceDecrement = 0.10;
             this.PredictedSegmentDecrement = 0.1;
-            
+
             // Spatial Pooler parameters
-          
+
             this.PotentialRadius = 15;
             this.PotentialPct = 0.75;
             this.GlobalInhibition = true;
@@ -431,7 +428,7 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.PotentialRadius, writer);
             ser.SerializeValue(this.PotentialPct, writer);
             ser.SerializeValue(this.StimulusThreshold, writer);
-            ser.SerializeValue(this.SynPermBelowStimulusInc,writer);
+            ser.SerializeValue(this.SynPermBelowStimulusInc, writer);
             ser.SerializeValue(this.SynPermInactiveDec, writer);
             ser.SerializeValue(this.SynPermActiveInc, writer);
             ser.SerializeValue(this.SynPermConnected, writer);
@@ -464,7 +461,7 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.MaxSynapsesPerSegment, writer);
             ser.SerializeValue(this.PermanenceIncrement, writer);
             ser.SerializeValue(this.PermanenceDecrement, writer);
-            ser.SerializeValue(this.ActivationThreshold,writer);
+            ser.SerializeValue(this.ActivationThreshold, writer);
             ser.SerializeValue(this.LearningRadius, writer);
             ser.SerializeValue(this.MinThreshold, writer);
             ser.SerializeValue(this.InitialPermanence, writer);
@@ -481,7 +478,7 @@ namespace NeoCortexApi.Entities
     {
         public test()
         {
-            HtmConfig htm = new HtmConfig(new int[] { 100}, new int[] { 1024 });
+            HtmConfig htm = new HtmConfig(new int[] { 100 }, new int[] { 1024 });
 
             Connections c = new Connections(htm);
 

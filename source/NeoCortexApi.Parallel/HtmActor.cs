@@ -1,17 +1,16 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using AkkaSb.Net;
+using Microsoft.Extensions.Logging;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Linq;
-using AkkaSb.Net;
-using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 
 namespace NeoCortexApi.DistributedComputeLib
 {

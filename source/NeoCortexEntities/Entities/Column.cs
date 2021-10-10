@@ -130,8 +130,8 @@ namespace NeoCortexApi.Entities
         /// Creates connections between mini-columns and input neurons.
         /// </summary>
         /// <param name="htmConfig"></param>
-        /// <param name="inputVectorIndexes"></param>
-        /// <param name="startSynapseIndex"></param>
+        /// <param name="inputVectorIndexes">Sensory cells providing spatial input that will be learned by SP.</param>
+        /// <param name="startSynapseIndex">Starting index.</param>
         /// <returns></returns>
         public Pool CreatePotentialPool(HtmConfig htmConfig, int[] inputVectorIndexes, int startSynapseIndex)
         {
@@ -144,7 +144,7 @@ namespace NeoCortexApi.Entities
             for (int i = 0; i < inputVectorIndexes.Length; i++)
             {
                 var synapse = this.ProximalDendrite.CreateSynapse(startSynapseIndex + i, inputVectorIndexes[i]);
-                
+
                 // All permanences are at the begining set to 0.
                 this.SetPermanence(synapse, htmConfig.SynPermConnected, 0);
             }
@@ -195,7 +195,7 @@ namespace NeoCortexApi.Entities
             }
         }
 
-        
+
         /// <summary>
         /// Sets the permanences on the <see cref="ProximalDendrite"/> <see cref="Synapse"/>s
         /// </summary>
@@ -267,7 +267,7 @@ namespace NeoCortexApi.Entities
             {
                 // Result (overlap) is 1 if input bit is 1 and the mini-column is connected.
                 result += (inputVector[inpBitIndx] * slice[inpBitIndx]);
-                
+
                 //
                 // After the overlap is calculated, we set it on 0 if it is under stimulus threshold.
                 if (inpBitIndx == slice.Length - 1)

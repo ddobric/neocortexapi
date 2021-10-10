@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
-using System.IO;
-using System.Reflection;
-using System.Diagnostics;
-using System.Linq;
 using NeoCortexApi.Utility;
-using NeoCortex;
-using Newtonsoft.Json;
-
-using Newtonsoft.Json.Serialization;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 
 namespace UnitTestsProject
 {
@@ -107,7 +100,7 @@ namespace UnitTestsProject
 
         // Assert.IsTrue(ser.SequenceEqual(des));
 
-       
+
         //}
 
 

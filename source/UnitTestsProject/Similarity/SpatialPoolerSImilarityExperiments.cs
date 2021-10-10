@@ -1,25 +1,17 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeoCortex;
 using NeoCortexApi;
+using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Text;
 using System.Drawing;
-using NeoCortex;
-using NeoCortexApi.Network;
-using LearningFoundation;
-using System.Globalization;
-using MLPerceptron;
+using System.IO;
 using System.Linq;
-using NeuralNet.MLPerceptron;
-using Microsoft.ML;
-using Microsoft.ML.Data;
-using NeoCortexApi.Encoders;
 
 namespace UnitTestsProject
 {
@@ -129,7 +121,7 @@ namespace UnitTestsProject
                 Assert.IsTrue(numPatterns == trainingImages.Length);
                 isInStableState = true;
                 Debug.WriteLine($"Entered STABLE state: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
-            }, requiredSimilarityThreshold:0.975);
+            }, requiredSimilarityThreshold: 0.975);
 
             SpatialPooler sp = new SpatialPoolerMT(hpa);
 

@@ -1,8 +1,8 @@
-using System;
-using System.Collections.Generic;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Exception;
 using NeoCortexApi.Utility;
+using System;
+using System.Collections.Generic;
 
 namespace NeoCortexApi.Classifiers
 {

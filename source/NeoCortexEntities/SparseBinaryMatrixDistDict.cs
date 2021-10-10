@@ -2,12 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 #if USE_AKKA
 
-using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-using System.Diagnostics;
 
 
 namespace NeoCortexApi.Entities

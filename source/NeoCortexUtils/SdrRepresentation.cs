@@ -4,13 +4,9 @@ using GemBox.Spreadsheet.Drawing;
 //using NeoCortexApi;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NeoCortex
 {
@@ -29,7 +25,7 @@ namespace NeoCortex
         public static int[] OverlapArraFun(int[] arr1, int[] arr2)
         {
             // TODO: why do we need to assign arr1 and arr2 to new array???
-            
+
             int[] nw = arr1;
             int[] old = arr2;
             int[] ovrlap = new int[arr1.Length]; //Math.Min(arr1.Length, arr2.Length);

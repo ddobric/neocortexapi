@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace NeoCortexApi.Entities
 {
@@ -17,7 +16,7 @@ namespace NeoCortexApi.Entities
     /// Apical segment connects cells between different regions.
     /// </summary>
     public abstract class Segment : IEquatable<Segment>
-    {       
+    {
         /// <summary>
         /// The index of the segment.
         /// </summary>
@@ -46,7 +45,7 @@ namespace NeoCortexApi.Entities
         protected Segment()
         {
             this.Synapses = new List<Synapse>();
-           // this.boxedIndex = new Integer();
+            // this.boxedIndex = new Integer();
 
         }
 
@@ -66,7 +65,7 @@ namespace NeoCortexApi.Entities
         }
 
 
-     
+
 
 
         /// <summary>
@@ -125,9 +124,9 @@ namespace NeoCortexApi.Entities
             //ser.SerializeEnd(nameof(Segment), writer);
         }
 
-     
 
-       
+
+
         #endregion
     }
 }

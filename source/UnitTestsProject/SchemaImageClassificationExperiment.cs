@@ -2,6 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IronXL;
+using LearningFoundation.ImageBinarizer;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
@@ -9,8 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using LearningFoundation.ImageBinarizer;
 
 namespace UnitTestProject
 {
@@ -32,7 +32,7 @@ namespace UnitTestProject
             var csvPath = "..\\..\\..\\TestFiles\\SchemaImageClassification\\csv";
             string[] files = Directory.GetFiles(imagesFolder, "*", SearchOption.AllDirectories);
 
-            string path, name; 
+            string path, name;
             (path, name) = GetPathAndName(files[0]);
 
             int activeColumn = 60;

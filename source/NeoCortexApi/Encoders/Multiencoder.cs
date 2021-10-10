@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using NeoCortexApi.Network;
 using System;
 using System.Collections.Generic;
 
@@ -34,7 +33,7 @@ namespace NeoCortexApi.Encoders
             List<int> output = new List<int>();
 
             foreach (var encoder in this.m_Encoders)
-            {              
+            {
                 output.AddRange(encoder.Encode(input[encoder.Name]));
 
                 output.AddRange(new int[encoder.Offset]);

@@ -3,9 +3,8 @@
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
+using System.Linq;
 
 namespace NeoCortexApi.Entities
 {
@@ -43,7 +42,7 @@ namespace NeoCortexApi.Entities
 
             this.trueCounts = new int[dimensions[0]];
         }
-        
+
         /// <summary>
         /// Returns the slice specified by the passed in coordinates. The array is returned as an object, therefore it is the caller's
         /// responsibility to cast the array to the appropriate dimensions.
@@ -182,7 +181,7 @@ namespace NeoCortexApi.Entities
             return GetColumn(ComputeIndex(coordinates));
         }
 
-        
+
 
 #pragma warning disable IDE1006 // Naming Styles
         // public abstract Integer get(int index);

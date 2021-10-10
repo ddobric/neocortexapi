@@ -84,7 +84,7 @@ namespace NeoCortexApi.Encoders
                 IsRealCortexModel = false;
                 N = 0;
                 Resolution = -1.0;
-                Radius = - 1.0;
+                Radius = -1.0;
                 Periodic = false;
                 ClipInput = false;
 
@@ -137,7 +137,7 @@ namespace NeoCortexApi.Encoders
         /// <summary>
         /// In real cortex mode, W must be >= 21. Empirical value.
         /// </summary>
-        public bool IsRealCortexModel { get => (bool)this["IsRealCortexModel"]; set => this["IsRealCortexModel"] = (bool)value; } 
+        public bool IsRealCortexModel { get => (bool)this["IsRealCortexModel"]; set => this["IsRealCortexModel"] = (bool)value; }
 
         /// <summary>
         /// The width of output vector of encoder. 
@@ -147,7 +147,7 @@ namespace NeoCortexApi.Encoders
         public int N { get => (int)this["N"]; set => this["N"] = (int)value; }
 
         public int NInternal { get => (int)this["NInternal"]; set => this["NInternal"] = (int)value; }
-                
+
         /// <summary>
         /// Number of bits set on one, which represents single encoded value.
         /// </summary>
@@ -183,7 +183,7 @@ namespace NeoCortexApi.Encoders
 
         public string Name { get => (string)this["Name"]; set => this["Name"] = value; }
 
-        public int Offset{ get => (int)this["Offset"]; set => this["Offset"] = value; }
+        public int Offset { get => (int)this["Offset"]; set => this["Offset"] = value; }
 
         #endregion
 

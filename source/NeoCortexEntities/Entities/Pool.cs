@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using NeoCortexApi.Utility;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 
 
@@ -16,7 +13,7 @@ namespace NeoCortexApi.Entities
     /// </summary>
     public class Pool
     {
-        int Size;
+        private int size;
 
         /// <summary>
         /// Number of inut neuron cells.
@@ -33,7 +30,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Indexed according to the source Input Vector Bit (for ProximalDendrites), and source cell (for DistalDendrites).
         /// </summary>
-        public Dictionary<int, Synapse> m_SynapsesBySourceIndex { get; set; } = new Dictionary<int, Synapse>();
+        private Dictionary<int, Synapse> m_SynapsesBySourceIndex { get; set; } = new Dictionary<int, Synapse>();
 
         /// <summary>
         /// 
@@ -43,7 +40,7 @@ namespace NeoCortexApi.Entities
         public Pool(int size, int numInputs)
         {
             this.NumInputs = numInputs;
-            this.Size = size;
+            this.size = size;
         }
 
         /// <summary>
@@ -90,16 +87,16 @@ namespace NeoCortexApi.Entities
         }
 
         /// <summary>
-        /// Returns an array of permanence values
+        /// Returns an array of permanence values.
         /// </summary>
         /// <returns></returns>
         public double[] GetSparsePermanences()
         {
-            double[] retVal = new double[Size];
+            double[] retVal = new double[size];
             int[] keys = GetSynapseKeys();// synapsesBySourceIndex.Keys;
-            for (int x = 0, j = Size - 1; x < Size; x++, j--)
+            for (int x = 0, j = size - 1; x < size; x++, j--)
             {
-                retVal[j] = this.m_SynapsesBySourceIndex[keys[Size - x - 1]].Permanence;
+                retVal[j] = this.m_SynapsesBySourceIndex[keys[size - x - 1]].Permanence;
             }
 
             return retVal;
@@ -199,7 +196,7 @@ namespace NeoCortexApi.Entities
         {
             int prime = 31;
             int result = 1;
-            result = prime * result + Size;
+            result = prime * result + size;
             result = prime * result + ((m_SynapseConnections == null) ? 0 : m_SynapseConnections.ToString().GetHashCode());
             result = prime * result + ((m_SynapsesBySourceIndex == null) ? 0 : m_SynapsesBySourceIndex.ToString().GetHashCode());
             return result;
@@ -219,7 +216,7 @@ namespace NeoCortexApi.Entities
             if (typeof(Pool) != obj.GetType())
                 return false;
             Pool other = (Pool)obj;
-            if (Size != other.Size)
+            if (size != other.size)
                 return false;
             if (m_SynapseConnections == null)
             {

@@ -1,10 +1,10 @@
 // Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using System;
-using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi.Classifiers;
 using NeoCortexApi.Exception;
+using System;
+using System.Collections.Generic;
 
 namespace UnitTestsProject
 {
@@ -44,7 +44,7 @@ namespace UnitTestsProject
 
         }
 
-        
+
         /// <summary>
         /// This test checks for exception throwing in case of classification object is null. 
         /// </summary>
@@ -70,7 +70,7 @@ namespace UnitTestsProject
         public void TestComputeShouldThrowObjectShouldNotBeNUllExceptionForPatternNZ()
         {
             SdrClassifier<int, int> sdr = new SdrClassifier<int, int>();
-            List< object> list = new List<object>();
+            List<object> list = new List<object>();
             try
             {
                 sdr.Compute(0, list, null);
@@ -99,10 +99,10 @@ namespace UnitTestsProject
                 sdr.Compute(i, classification, new int[] { 1, 5 });
             }
             Assert.AreEqual(1, sdr.Predict(new int[] { 1, 5 })[0], 0.5);
-        
+
         }
-        
-        
+
+
 
         /// <summary>
         /// Tests the compute and learning algorithm using single iteration and validates the result by comparing the probabiliy of each
@@ -113,7 +113,7 @@ namespace UnitTestsProject
         {
             double alpha = 0.1;
             SdrClassifier<int, int> sdr = new SdrClassifier<int, int>(alpha);
-            List< Object> classification = new List<object>();
+            List<Object> classification = new List<object>();
             classification.Add(4);
             classification.Add(34.7);
 
@@ -183,10 +183,10 @@ namespace UnitTestsProject
 
             double alpha = 0.1;
             SdrClassifier<int, int> sdr = new SdrClassifier<int, int>(alpha);
-            List< Object> classification = new List<object>();
+            List<Object> classification = new List<object>();
             classification.Add(4);
             classification.Add(34.7);
-            
+
             try
             {
                 sdr.Predict(new int[] { 1, 5 });
@@ -276,7 +276,7 @@ namespace UnitTestsProject
         public void TestBucketEntriesMultipleInputs()
         {
             SdrClassifier<int, int> sdr = new SdrClassifier<int, int>();
-            List< Object> classification = new List<object>();
+            List<Object> classification = new List<object>();
             classification.Add(4);
             classification.Add(34.7);
             sdr.Compute(0, classification, new int[] { 0, 6, 9, 11 });

@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using NeoCortexApi.Encoders;
 using System;
 using System.Collections.Generic;
 
@@ -27,22 +26,22 @@ namespace NeoCortexApi.Encoders
         /// <summary>
         /// Defines the NoOfBits. Works same as N. It is used to change Type of a variable
         /// </summary>
-        private  double NoOfBits;
+        private double NoOfBits;
 
         /// <summary>
         /// Defines the Starting point in an array to map active bits
         /// </summary>
-        private  double StartPoint;
+        private double StartPoint;
 
         /// <summary>
         /// Defines the EndingPoint in an array where active bits ends
         /// </summary>
-        private  double EndingPoint;
+        private double EndingPoint;
 
         /// <summary>
         /// Defines the EndingPointForPeriodic
         /// </summary>
-        private  double EndingPointForPeriodic;// Ending point in an array where active bits ends only works for periodic data
+        private double EndingPointForPeriodic;// Ending point in an array where active bits ends only works for periodic data
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ScalarEncoderExperimental"/> class.
@@ -121,7 +120,7 @@ namespace NeoCortexApi.Encoders
 
 
             // Setting the Range in which the encoder works
-            
+
             HalfWidth = (W - 1) / 2;
 
             if (MinVal >= MaxVal)
@@ -130,7 +129,7 @@ namespace NeoCortexApi.Encoders
             }
             else
             {
-                RangeInternal = (MaxVal- MinVal);
+                RangeInternal = (MaxVal - MinVal);
 
             }
 
@@ -230,7 +229,7 @@ namespace NeoCortexApi.Encoders
                     double LeftOver = Math.Min(EndingPointForPeriodic - N, N);
 
                     if (input > RangeInternal)
-                    { 
+                    {
                         LeftOver -= N;
                     }
 

@@ -1,10 +1,6 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace NeoCortexApi.DistributedComputeLib
 {
     public class Placement<TKey>
@@ -23,7 +19,7 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public override string ToString()
         {
-            return $"Partition: {PartitionIndx}, Node: {NodePath}, MinKey:{MinKey}, MaxKey: {MaxKey} TotalKeys: {(int)(object)MaxKey-(int)(object)MinKey + 1}" ;
+            return $"Partition: {PartitionIndx}, Node: {NodePath}, MinKey:{MinKey}, MaxKey: {MaxKey} TotalKeys: {(int)(object)MaxKey - (int)(object)MinKey + 1}";
         }
     }
 }

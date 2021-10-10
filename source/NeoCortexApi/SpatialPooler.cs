@@ -3,13 +3,12 @@
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
-using System.Diagnostics;
 using System.Collections.Concurrent;
-using System.Threading;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace NeoCortexApi
 {
@@ -92,7 +91,7 @@ namespace NeoCortexApi
         /// <param name="conn"></param>
         /// <param name="distMem">Optionally used if the paralle version of the SP should be used.</param>
         public virtual void InitMatrices(Connections conn, DistributedMemory distMem)
-        {   
+        {
             if (conn.HtmConfig.Memory == null)
                 conn.HtmConfig.Memory = new SparseObjectMatrix<Column>(conn.HtmConfig.ColumnDimensions, dict: null);
 
@@ -132,9 +131,9 @@ namespace NeoCortexApi
             sw.Start();
 
             conn.HtmConfig.Memory.set(colList);
-            
+
             sw.Stop();
-            
+
             //Initialize state meta-management statistics
             conn.HtmConfig.OverlapDutyCycles = new double[numColumns];
             conn.HtmConfig.ActiveDutyCycles = new double[numColumns];
@@ -177,7 +176,7 @@ namespace NeoCortexApi
                 // It creates the pool on proximal dendrite segment of the column.
                 // After initialization permancences are set to zero.
                 column.CreatePotentialPool(conn.HtmConfig, potential, -1);
-                
+
                 double[] perm = HtmCompute.InitSynapsePermanences(conn.HtmConfig, potential, rnd /*c.getRandom()*/);
 
                 HtmCompute.UpdatePermanencesForColumn(conn.HtmConfig, perm, column, potential, true);
@@ -509,7 +508,7 @@ namespace NeoCortexApi
             c.HtmConfig.ActiveDutyCycles = UpdateDutyCyclesHelper(c, c.HtmConfig.ActiveDutyCycles, activeArray, period);
         }
 
-      
+
         /// <summary>
         /// Updates a duty cycle estimate with a new value. This is a helper function that is used to update several duty cycle variables in
         /// the Column class, such as: overlapDutyCucle, activeDutyCycle, minPctDutyCycleBeforeInh, minPctDutyCycleAfterInh, etc. returns
@@ -788,7 +787,7 @@ namespace NeoCortexApi
         /// </summary>
         /// <param name="c"></param>
         /// <returns></returns>
-       
+
         private double CalcInhibitionDensity(Connections c)
         {
             double density = c.HtmConfig.LocalAreaDensity;
@@ -827,7 +826,7 @@ namespace NeoCortexApi
             double[] overlaps = new List<double>(initialOverlaps).ToArray();
 
             double density = CalcInhibitionDensity(c);
-          
+
             if (c.HtmConfig.GlobalInhibition || c.HtmConfig.InhibitionRadius > ArrayUtils.Max(c.HtmConfig.ColumnDimensions))
             {
                 return InhibitColumnsGlobal(c, overlaps, density);

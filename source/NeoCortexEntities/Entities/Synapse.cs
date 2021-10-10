@@ -1,10 +1,7 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 
 namespace NeoCortexApi.Entities
@@ -307,12 +304,12 @@ namespace NeoCortexApi.Entities
 
             ser.SerializeBegin(nameof(Synapse), writer);
 
-            if(this.BoxedIndex != null)
+            if (this.BoxedIndex != null)
             {
                 this.BoxedIndex.Serialize(writer);
             }
 
-            if(this.SourceCell != null)
+            if (this.SourceCell != null)
             {
                 // We are serializeing the index only to avoid circular references.
                 ser.SerializeValue(this.SourceCell.Index, writer);
@@ -359,7 +356,7 @@ namespace NeoCortexApi.Entities
                                 {
                                     synapse.SourceCell = new Cell();
                                     synapse.SourceCell.Index = ser.ReadIntValue(str[i]);
-                                    
+
                                     break;
                                 }
                             case 1:

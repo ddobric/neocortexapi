@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace NeoCortexApi.Entities
 {
@@ -86,7 +85,7 @@ namespace NeoCortexApi.Entities
                         {
                             case 0:
                                 {
-                                   
+
                                     segment.ActiveSynapses = ser.ReadDictionaryIIValue(str[i]);
                                     break;
                                 }
@@ -105,7 +104,7 @@ namespace NeoCortexApi.Entities
 
             return segment;
         }
-            #endregion
+        #endregion
 
-        }
+    }
 }

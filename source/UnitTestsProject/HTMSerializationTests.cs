@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
 using NeoCortexEntities.NeuroVisualizer;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace UnitTestsProject
 {
@@ -202,7 +201,7 @@ namespace UnitTestsProject
             Assert.IsTrue(vs1.SequenceEqual(vs));
         }
 
-     
+
 
         [TestMethod]
         [TestCategory("Serialization")]
@@ -271,7 +270,7 @@ namespace UnitTestsProject
 
                     if (data == String.Empty || data == htm.ReadBegin("UnitTest"))
                     {
-                        
+
                     }
                     else if (data == htm.ReadEnd("UnitTest"))
                     {
@@ -411,7 +410,7 @@ namespace UnitTestsProject
             Assert.IsTrue(keyValuePairs.SequenceEqual(keyValues));
         }
 
-        
+
 
         [TestMethod]
         [TestCategory("Serialization")]
@@ -479,9 +478,9 @@ namespace UnitTestsProject
 
         }
 
-        
 
-        
+
+
         [TestMethod]
         [TestCategory("Serialization")]
         public void SerializeSegmentTest()
@@ -584,7 +583,7 @@ namespace UnitTestsProject
             using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeDistalDendriteList)}"))
             {
                 List<DistalDendrite> distals1 = new List<DistalDendrite>();
-                while(sr.Peek() > 0)
+                while (sr.Peek() > 0)
                 {
                     string str = sr.ReadLine();
                     if (str == htm.ReadBegin(nameof(DistalDendrite)))
@@ -592,7 +591,7 @@ namespace UnitTestsProject
                         distals1.Add(DistalDendrite.Deserialize(sr));
                     }
                 }
-                
+
             }
         }
         /// <summary>
@@ -641,10 +640,10 @@ namespace UnitTestsProject
             using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeSynapseList)}.txt"))
             {
                 List<Synapse> synapses1 = new List<Synapse>();
-                while(sr.Peek() > 0)
+                while (sr.Peek() > 0)
                 {
                     string data = sr.ReadLine();
-                    if (data == String.Empty || data == htm.ReadBegin("UnitTest") )
+                    if (data == String.Empty || data == htm.ReadBegin("UnitTest"))
                     {
                         continue;
                     }
@@ -666,7 +665,7 @@ namespace UnitTestsProject
         //[DataRow(13, 87, 22.45)]
         //[DataRow(1000, 3400, 4573.623)]
 
-        public void SerializeSynapseTest(int segmentindex,int synapseindex,double permanence)
+        public void SerializeSynapseTest(int segmentindex, int synapseindex, double permanence)
         {
             Cell cell = new Cell(12, 14, 16, 18, new CellActivity());
             //Cell cell = new Cell();
@@ -685,12 +684,12 @@ namespace UnitTestsProject
             {
                 synapse.Serialize(sw);
 
-                using (StreamWriter streamWriter = new StreamWriter($"ser_{nameof(SerializeCellTest)}_{cell.Index}.txt") )
+                using (StreamWriter streamWriter = new StreamWriter($"ser_{nameof(SerializeCellTest)}_{cell.Index}.txt"))
                 {
                     cell.Serialize(streamWriter);
-                    for(int j = 0; j < cell.DistalDendrites.Count; j++)
+                    for (int j = 0; j < cell.DistalDendrites.Count; j++)
                     {
-                        if(!File.Exists($"Users / mouni.kolisetty / neocortexapi / NeoCortexApi / UnitTestsProject / bin / Debug / net5.0 / ser_SerializeSynapseTest_{cell.DistalDendrites[j].Ordinal}.txt"))
+                        if (!File.Exists($"Users / mouni.kolisetty / neocortexapi / NeoCortexApi / UnitTestsProject / bin / Debug / net5.0 / ser_SerializeSynapseTest_{cell.DistalDendrites[j].Ordinal}.txt"))
                             using (StreamWriter swLD = new StreamWriter($"ser_{nameof(SerializeDistalDendrite)}_{cell.DistalDendrites[j].Ordinal}.txt"))
                             {
                                 cell.DistalDendrites[j].Serialize(swLD);
@@ -708,13 +707,13 @@ namespace UnitTestsProject
             }
             using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeSynapseTest)}_{synapseindex}.txt"))
             {
-                 synapse1 = Synapse.Deserialize(sr);
+                synapse1 = Synapse.Deserialize(sr);
             }
             using (StreamReader streamreader = new StreamReader($"ser_SerializeCellTest_{synapse1.SourceCell.Index}.txt"))
             {
                 var mvcell = Cell.Deserialize(streamreader);
                 synapse1.SourceCell = mvcell;
-                foreach(Synapse s in synapse1.SourceCell.ReceptorSynapses)
+                foreach (Synapse s in synapse1.SourceCell.ReceptorSynapses)
                 {
                     s.SourceCell = mvcell;
                 }
@@ -724,7 +723,7 @@ namespace UnitTestsProject
                 }
 
             }
-            
+
             Assert.IsTrue(synapse1.SourceCell.ReceptorSynapses.SequenceEqual(synapse.SourceCell.ReceptorSynapses));
             //using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeSynapseTest)}.txt"))
             //{
@@ -733,7 +732,7 @@ namespace UnitTestsProject
             //    Assert.IsTrue(synapse1.Equals(synapse));
             //}
         }
-        
+
         /// <summary>
         /// Test integer value.
         /// </summary>

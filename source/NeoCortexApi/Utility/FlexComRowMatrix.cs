@@ -7,7 +7,7 @@ namespace NeoCortexApi.Utility
     {
         public List<List<object>> Matrix = new List<List<object>>();
 
-        public void AddAndUpdate(int row, int collumn , double value)
+        public void AddAndUpdate(int row, int collumn, double value)
         {
             Matrix[row][collumn] = Convert.ToDouble(Matrix[row][collumn]) + value;
         }

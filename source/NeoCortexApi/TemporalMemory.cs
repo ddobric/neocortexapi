@@ -1,17 +1,11 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using NeoCortexApi.Entities;
+using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-using NeoCortexApi.Utility;
-using static NeoCortexApi.Entities.Connections;
 using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
-using System.Collections.Concurrent;
-using System.Runtime.CompilerServices;
+using System.Linq;
 
 namespace NeoCortexApi
 {
@@ -232,8 +226,8 @@ namespace NeoCortexApi
 
                         // DRAFT. Removing this as unnecessary.
                         //cycle.ActiveCells.Add(burstingResult.BestCell);
-                        
-                        
+
+
                         // Here we activate all cells by putting them to list of active cells.
                         cycle.ActiveCells.AddRange(burstingResult.Cells);
 
@@ -302,7 +296,7 @@ namespace NeoCortexApi
             foreach (var item in activity.ActiveSynapses)
             {
                 var seg = conn.GetSegmentForFlatIdx(item.Key);
-                if(seg != null && item.Value >= conn.HtmConfig.ActivationThreshold)
+                if (seg != null && item.Value >= conn.HtmConfig.ActivationThreshold)
                     activeSegments.Add(seg);
             }
 
@@ -412,7 +406,7 @@ namespace NeoCortexApi
             // List of cells that owns active segments. These cells will be activated in this cycle.
             // In previous cycle they are depolarized.
             List<Cell> cellsOwnersOfActiveSegments = new List<Cell>();
-          
+
             foreach (DistalDendrite segment in columnActiveSegments)
             {
                 if (!cellsOwnersOfActiveSegments.Contains(segment.ParentCell))
@@ -444,7 +438,7 @@ namespace NeoCortexApi
                     //        //    // for debugging.
                     //        //}
                     //    }
-                //}
+                    //}
                 }
 
                 if (learn)

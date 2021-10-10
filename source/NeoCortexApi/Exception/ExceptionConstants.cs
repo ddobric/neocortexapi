@@ -1,5 +1,3 @@
-using System;
-
 namespace NeoCortexApi.Exception
 {
     public class ExceptionConstants

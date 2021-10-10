@@ -1,14 +1,14 @@
-﻿using NeoCortexApi.Encoders;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeoCortex;
+using NeoCortexApi;
+using NeoCortexApi.Encoders;
+using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
-using NeoCortexApi.Utility;
-using System.Drawing;
-using NeoCortexApi;
-using NeoCortex;
-using System.Linq;
 using System.Diagnostics;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Drawing;
 using System.IO;
+using System.Linq;
 
 namespace UnitTestsProject.Sdr
 {
@@ -351,7 +351,7 @@ namespace UnitTestsProject.Sdr
 
         public void SimilarityResult2(int[] arr1, int[] arr2, Dictionary<Object, int[]> sdrs, String folder, Object input0, Object input1)                // Function to check similarity between Inputs 
         {
-           
+
             List<int[,]> arrayOvr = new List<int[,]>();
 
             Object h = input0;

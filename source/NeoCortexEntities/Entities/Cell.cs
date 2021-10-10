@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using NeoCortexEntities.NeuroVisualizer;
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.IO;
-using NeoCortexApi.Entities;
-using NeoCortexEntities.NeuroVisualizer;
+using System.Linq;
 
 namespace NeoCortexApi.Entities
 {
@@ -19,12 +18,12 @@ namespace NeoCortexApi.Entities
         /// Index of the cell.
         /// </summary>
         public int Index { get; set; }
-        
+
         /// <summary>
         /// The identifier of the cell.
         /// </summary>
         public int CellId { get; private set; }
-               
+
 
         /// <summary>
         /// The column, which owns this cell.
@@ -51,9 +50,9 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public Cell()
         {
-     
+
         }
-       
+
         /// <summary>
         /// Constructs a new <see cref="Cell"/> object
         /// </summary>
@@ -65,9 +64,9 @@ namespace NeoCortexApi.Entities
         public Cell(int parentColumnIndx, int colSeq, int numCellsPerColumn, int cellId, CellActivity cellActivity)
         {
             this.ParentColumnIndex = parentColumnIndx;
-            
+
             this.Index = parentColumnIndx * numCellsPerColumn + colSeq;
-            
+
             this.CellId = cellId;
         }
 
@@ -251,7 +250,7 @@ namespace NeoCortexApi.Entities
                                             cell.ReceptorSynapses[j] = Synapse.Deserialize(swLS);
                                         }
                                     }
-                                    
+
                                     break;
                                 }
                             default:
