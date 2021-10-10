@@ -11,8 +11,11 @@ namespace NeoCortexApi.Entities
 
     /// <summary>
     /// Base class for different types of segments. It which handles the creation of synapses (<seealso cref="Synapse"/>) on behalf of inheriting class types.
+    /// The HTM defines following segment types: Proximal, Distal and Apical.
+    /// Proximal segment connects mini-columns to sensory cells.<br/>
+    /// Distal (or basal) segment connects cells between mini-columns.<br/>
+    /// Apical segment connects cells between different regions.
     /// </summary>
-
     public abstract class Segment : IEquatable<Segment>
     {       
         /// <summary>

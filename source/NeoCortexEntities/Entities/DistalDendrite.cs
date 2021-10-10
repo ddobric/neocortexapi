@@ -14,9 +14,6 @@ namespace NeoCortexApi.Entities
     /// Segments are owned by <see cref="Cell"/>s and in turn own <see cref="Synapse"/>s which are obversely connected to by a "source cell", 
     /// which is the <see cref="Cell"/> which will activate a given <see cref="Synapse"/> owned by this <see cref="Segment"/>.
     /// </summary>
-    /// <remarks>
-    /// Authors of the JAVA implementation: Chetan Surpur, David Ray
-    /// </remarks>
     public class DistalDendrite : Segment, IComparable<DistalDendrite>, IEquatable<DistalDendrite>
     {
         /// <summary>
@@ -77,28 +74,6 @@ namespace NeoCortexApi.Entities
             //DD  return mem.GetSynapses(this);
             return this.Synapses;
         }
-
-        /// <summary>
-        /// Gets all active synapses of this segment, which have presynaptic cell as active one.
-        /// </summary>
-        /// <param name="c"></param>
-        /// <param name="activeCells"></param>
-        /// <returns></returns>
-        //public ISet<Synapse> GetActiveSynapses(Connections c, ISet<Cell> activeCells)
-        //{
-        //    ISet<Synapse> activeSynapses = new LinkedHashSet<Synapse>();
-
-        //    //DD foreach (var synapse in c.GetSynapses(this))
-        //    foreach (var synapse in this.Synapses)
-        //    {
-        //        if (activeCells.Contains(synapse.getPresynapticCell()))
-        //        {
-        //            activeSynapses.Add(synapse);
-        //        }
-        //    }
-
-        //    return activeSynapses;
-        //}
 
            
         /// <summary>
