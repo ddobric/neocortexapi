@@ -47,7 +47,7 @@ namespace NeoCortexApi.Entities
         }
 
         /// <summary>
-        /// Updates this <see cref="Pool"/>'s store of permanences for the specified <see cref="Synapse"/>
+        /// Updates this <see cref="Pool"/>'s store of permanences for the specified <see cref="Synapse"/>.
         /// </summary>
         /// <param name="synPermConnected">The synapse is added to the list of connected synapses if the permanence value is greather than this value.</param>
         /// <param name="synapse">the synapse who's permanence is recorded</param>

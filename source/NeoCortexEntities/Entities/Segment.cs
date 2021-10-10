@@ -33,7 +33,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Permanence threshold value to declare synapse as connected.
         /// </summary>
-        public double SynapsePermConnected { get; set; }
+        protected double SynapsePermConnected { get; set; }
 
         /// <summary>
         /// Number of input cells. Used by proximal dendrite segment by Spatial Pooler.
@@ -41,7 +41,7 @@ namespace NeoCortexApi.Entities
         public int NumInputs { get; set; }
 
         /// <summary>
-        /// Default constructor used by deserializer.
+        /// Default constructor used by serialization.
         /// </summary>
         protected Segment()
         {
@@ -66,24 +66,7 @@ namespace NeoCortexApi.Entities
         }
 
 
-        /// <summary>
-        /// Creates and returns a newly created synapse with the specified source cell, permanence, and index.
-        /// </summary>       
-        /// <param name="sourceCell">This value is typically set to NULL in a case of proximal segment. This is because, proximal segments 
-        /// build synaptic connections from column to the sensory input. They do not cobbect a specific cell inside of the column.</param>
-        /// <param name="index">Sequence within gthe pool.</param>
-        /// <param name="inputIndex">The index of the sensory neuron connected by this synapse.</param>
-        /// <remarks>
-        /// <b>This method is only called for Proximal Synapses.</b> For ProximalDendrites, there are many synapses within a pool, and in that case, the index
-        /// specifies the synapse's sequence order within the pool object, and may be referenced by that index</remarks>
-        /// <returns>Instance of the new synapse.</returns>
-        /// <seealso cref="Synapse"/>
-        public Synapse CreateSynapse(Cell sourceCell, int index, int inputIndex)
-        {
-            Synapse synapse = new Synapse(sourceCell, this.SegmentIndex, index, inputIndex);
-            this.Synapses.Add(synapse);
-            return synapse;
-        }
+     
 
 
         /// <summary>

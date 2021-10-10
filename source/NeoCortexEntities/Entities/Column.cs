@@ -1,14 +1,10 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using NeoCortexApi.Utility;
+using NeoCortexEntities.NeuroVisualizer;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Text;
-using NeoCortexApi.Entities;
-using NeoCortexApi.Utility;
-using System.Linq;
-using System.Diagnostics;
-using NeoCortexEntities.NeuroVisualizer;
 
 namespace NeoCortexApi.Entities
 {
@@ -147,7 +143,7 @@ namespace NeoCortexApi.Entities
 
             for (int i = 0; i < inputVectorIndexes.Length; i++)
             {
-                var synapse = this.ProximalDendrite.CreateSynapse(null, startSynapseIndex + i, inputVectorIndexes[i]);
+                var synapse = this.ProximalDendrite.CreateSynapse(startSynapseIndex + i, inputVectorIndexes[i]);
                 
                 // All permanences are at the begining set to 0.
                 this.SetPermanence(synapse, htmConfig.SynPermConnected, 0);
