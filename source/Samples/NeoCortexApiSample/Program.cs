@@ -12,13 +12,13 @@
         {
             //
             // Starts experiment that demonstrates how to learn spatial patterns.
-            //SpatialPatternLearning experiment = new SpatialPatternLearning();
-            //experiment.Run();
+            SpatialPatternLearning experiment = new SpatialPatternLearning();
+            experiment.Run();
 
             //
             // Starts experiment that demonstrates how to learn spatial patterns.
-            SequenceLearning experiment = new SequenceLearning();
-            experiment.Run();
+            //SequenceLearning experiment = new SequenceLearning();
+            //experiment.Run();
         }
 
     }

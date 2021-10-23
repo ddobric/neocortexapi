@@ -332,7 +332,7 @@ namespace NeoCortexApi.Entities
                 // This cell is the active in the current cycle. 
                 // We step through all receptor synapses and check their permanence value.
                 // Receptor synapses are synapses whose source cell (pre-synaptic cell) is the given cell.
-                // Also, Receptor synapses connect with cell's axons to distal dendrite segments of other cells. This connection defines
+                // Receptor synapses connect with cell's axons to distal dendrite segments of other cells. This connection defines
                 // some kind of probability that by synapse connected cell will be active in the next cycle.
                 // The permanence value of this connection defines that probability.
                 // The segment owner cell in other column pointed by synapses sourced by this 'cell' is depolirized (in predicting state).

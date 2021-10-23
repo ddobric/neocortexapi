@@ -793,8 +793,9 @@ namespace NeoCortexApi
             double density = c.HtmConfig.LocalAreaDensity;
             double inhibitionArea;
 
+            //
             // If density is not specified then inhibition radius must be specified.
-            // In that case we calculate density from inhibition radius.
+            // In that case the density is calculated from inhibition radius.
             if (density <= 0)
             {
                 // inhibition area can be higher than num of all columns, if 
