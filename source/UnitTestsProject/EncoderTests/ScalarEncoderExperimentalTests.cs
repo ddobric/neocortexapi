@@ -122,8 +122,6 @@ namespace UnitTestsProject.EncoderTests
             {
                 { "W",7},
                 { "N", 9 },
-              //{ "Radius", 80.0},
-              //{ "Resolution", 80.0 },
                 { "MinVal", (double)0},    // The lowest noise intensity is 0db.
                 { "MaxVal", (double)160},  // The highest noise intensity is 160db.
                 { "Periodic", false},
@@ -520,8 +518,13 @@ namespace UnitTestsProject.EncoderTests
         }
 
 
-        // This Method is used by all the UnitTests to create a separate folder for each UnitTest cases and correspondingly generates Bitmap files in it.
-        // The Bitmap files contain 2D bitmap images(Pixel Images in .png format) that has all the encoded values from our UnitTest cases.
+        /// <summary>
+        /// Prints out the images of encoded values in the whole range.
+        /// This Method is used by all the UnitTests to create a separate folder for each UnitTest cases and correspondingly generates Bitmap files in it.
+        /// The Bitmap files contain 2D bitmap images(Pixel Images in .png format) that has all the encoded values from our UnitTest cases.
+        /// </summary>
+        /// <param name="encoder"></param>
+        /// <param name="folderName"></param>
         public void printBitMap(ScalarEncoder encoder, string folderName)
         {
             string filename;
@@ -529,10 +532,12 @@ namespace UnitTestsProject.EncoderTests
             for (double i = (long)encoder.MinVal; i < (long)encoder.MaxVal; i += 1)
             {
                 var result1 = encoder.Encode(i);
+
+                MathHelpers.CalculateSimilarityMatrix()
                 int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(result1, (int)Math.Sqrt(result1.Length), (int)Math.Sqrt(result1.Length));
                 var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
                 filename = i + ".png";
-                NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, Path.Combine(folderName, filename), Color.Yellow, Color.Black, text: i.ToString());
+                NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, Path.Combine(folderName, filename), Color.Black, Color.Gray, text: i.ToString());
             }
         }
     }

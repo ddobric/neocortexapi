@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace NeoCortexApi
@@ -207,6 +208,57 @@ namespace NeoCortexApi
             {
                 x += 1.2732;
             }
+        }
+
+
+        /// <summary>
+        /// Formats 
+        /// </summary>
+        /// <param name="dim"></param>
+        /// <param name="inpVectorKeys"></param>
+        /// <param name="matrix"></param>
+        /// <returns></returns>
+
+        public static string PrintMatrix( string[] inpVectorKeys, string[,] matrix)
+        {
+            System.IO.StringWriter sw = new System.IO.StringWriter();
+            
+            sw.Write($"{string.Format(" {0,-15}", "")} |");
+
+            for (int k = 0; k < inpVectorKeys.Length; k++)
+            {
+                string st = String.Format(" {0,-15} |", inpVectorKeys[k]);
+                sw.Write($"{st}");
+            }
+
+            sw.WriteLine("");
+
+            for (int k = 0; k <= inpVectorKeys.Length; k++)
+            {
+                string st = String.Format(" {0,-15} |", "---------------");
+                sw.Write($"{st}");
+            }
+
+            sw.WriteLine("");
+
+            for (int i = 0; i < inpVectorKeys.Length; i++)
+            {
+                sw.Write(String.Format(" {0,-15} |", inpVectorKeys[i]));
+
+                for (int j = 0; j < inpVectorKeys.Length; j++)
+                {
+                    string st = String.Format(" {0,-15} |", matrix[i, j]);
+                    sw.Write(st);
+                }
+
+                sw.WriteLine("");
+            }
+
+            sw.Flush();
+
+            var result = sw.GetStringBuilder().ToString();
+
+            return result;
         }
     }
 }

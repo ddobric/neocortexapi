@@ -432,12 +432,6 @@ namespace UnitTestsProject
         /// <param name="inputVectors">The dictionary of corresponding inputs.</param>        
         private void CalculateSimilarity(Dictionary<string, int[]> sdrs, Dictionary<string, int[]> inputVectors, string output = "Correlation.csv")
         {
-            //foreach (var keyPairs in sdrs)
-            //{
-            //    Logger.LogInformation(keyPairs.Key);
-            //    Logger.LogInformation($"{Helpers.StringifyVector(keyPairs.Value)}\n");
-            //}
-
             var keyArray = sdrs.Keys.ToArray();
 
             StreamWriter streamWriter = new StreamWriter(output);
@@ -459,16 +453,14 @@ namespace UnitTestsProject
                     var key2 = keyArray[j];
                     int[] sdr1 = sdrs.GetValueOrDefault<string, int[]>(key1);
                     int[] sdr2 = sdrs.GetValueOrDefault<string, int[]>(key2);
-                    //double outputSimilarity = CalcArraySimilarity(Array.ConvertAll<int, double>(sdr1, x => x), Array.ConvertAll<int, double>(sdr2, x => x)) * 100;
+                    
                     double outputSimilarity = MathHelpers.CalcArraySimilarity(sdr1, sdr2);
 
                     int[] inp1 = inputVectors.GetValueOrDefault<string, int[]>(key1);
                     int[] inp2 = inputVectors.GetValueOrDefault<string, int[]>(key2);
-                    //double inputSimilarity = CalcArraySimilarity(Array.ConvertAll<int, double>(inp1, x => x), Array.ConvertAll<int, double>(sdr2, x => x)) * 100;
                     double inputSimilarity = MathHelpers.CalcArraySimilarity(inp1, inp2);
 
-                    streamWriter.Write($" | {inputSimilarity.ToString("0.0")} {outputSimilarity.ToString("0.0")} ");
-                    //streamWriter.Write($" {outputSimilarity.ToString("0.0")} ");
+                    streamWriter.Write($" | {inputSimilarity.ToString("0.0")} {outputSimilarity.ToString("0.0")} ");                    
                 }
             }
 
@@ -476,8 +468,6 @@ namespace UnitTestsProject
 
             return;
         }
-
-
 
         #region Private Helpers
 
@@ -530,11 +520,4 @@ namespace UnitTestsProject
         #endregion
 
     }
-
-    //class InputData
-    //{
-    //    [ColumnName("PixelValues")]
-    //    [VectorType(64)]
-    //    public Boolean[] PixelValues;
-    //}
 }
