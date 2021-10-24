@@ -210,7 +210,6 @@ namespace NeoCortexApi
             }
         }
 
-
         /// <summary>
         /// Formats 
         /// </summary>

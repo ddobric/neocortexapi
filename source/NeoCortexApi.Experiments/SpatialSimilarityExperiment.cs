@@ -266,47 +266,12 @@ namespace NeoCortexApi.Experiments
             var res = Helpers.PrintMatrix(inpVectorsMap.Keys.ToArray(), matrix);
             
             Console.WriteLine(res);
-            Debug.WriteLine(res);
-           
+            Debug.WriteLine(res);           
         }
 
-        // Moved to helpers.
-        //private static void PrintMatrix(int dim, string[] inpVectorKeys, string[,] matrix)
-        //{
-        //    Debug.Write($"{String.Format(" {0,-15}", "")} |");
-
-        //    for (int k = 0; k < dim; k++)
-        //    {
-        //        string st = String.Format(" {0,-15} |", inpVectorKeys[k]);
-        //        Debug.Write($"{st}");
-        //    }
-
-        //    Debug.WriteLine("");
-
-        //    for (int k = 0; k <= dim; k++)
-        //    {
-        //        string st = String.Format(" {0,-15} |", "---------------");
-        //        Debug.Write($"{st}");
-        //    }
-
-        //    Debug.WriteLine("");
-
-        //    for (int i = 0; i < dim; i++)
-        //    {
-        //        Debug.Write(String.Format(" {0,-15} |", inpVectorKeys[i]));
-
-        //        for (int j = 0; j < dim; j++)
-        //        {
-        //            string st = String.Format(" {0,-15} |", matrix[i, j]);
-        //            Debug.Write(st);
-        //        }
-
-        //        Debug.WriteLine("");
-        //    }
-        //}
-
+      
         /// <summary>
-        /// Drwaws the input and the corresponding SDR.
+        /// Draws the input and the corresponding SDR.
         /// </summary>
         /// <param name="cfg"></param>
         /// <param name="inputKey"></param>

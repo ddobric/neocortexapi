@@ -533,7 +533,7 @@ namespace UnitTestsProject.EncoderTests
             {
                 var result1 = encoder.Encode(i);
 
-                MathHelpers.CalculateSimilarityMatrix()
+               // MathHelpers.CalculateSimilarityMatrix()
                 int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(result1, (int)Math.Sqrt(result1.Length), (int)Math.Sqrt(result1.Length));
                 var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
                 filename = i + ".png";
