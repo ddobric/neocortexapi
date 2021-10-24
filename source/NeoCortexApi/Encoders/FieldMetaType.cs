@@ -17,7 +17,7 @@ namespace NeoCortexApi.Encoders
 
         public const string FLOAT = "float";
 
-        public const string BOOLEAN = "bool";
+        public const string BOOLEAN = "bool"; 
 
         public const string LIST = "list";
 

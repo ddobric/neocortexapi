@@ -192,19 +192,7 @@ namespace NeoCortexApi
             UpdateInhibitionRadius(conn, avgSynapsesConnected);
         }
 
-        ///// <summary>
-        ///// Performs SpatialPooler compute algorithm.
-        ///// </summary>
-        ///// <param name="input">Input vector</param>
-        ///// <param name="activeArray">The column array with computed SDR code.</param>
-        ///// <param name="learn">Learn or Predict.</param>
-        ///// <returns>Indicies of active columns.</returns>
-        //public int[] Compute(int[] input, int[] activeArray, bool learn)
-        //{
-        //    this.compute(input, activeArray, learn);
-        //    return ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
-        //}
-
+      
         /// <summary>
         /// Performs SpatialPooler compute algorithm.
         /// </summary>

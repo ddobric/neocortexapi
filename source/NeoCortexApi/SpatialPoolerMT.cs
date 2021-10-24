@@ -30,7 +30,7 @@ namespace NeoCortexApi
         }
 
         /// <summary>
-        /// Implements muticore initialization of the Spatial Pooler.
+        /// Implements multicore initialization of the Spatial Pooler.
         /// It creates the pool of potentially connected synapses on ProximalDendrite segment.
         /// </summary>
         /// <param name="c"></param>
