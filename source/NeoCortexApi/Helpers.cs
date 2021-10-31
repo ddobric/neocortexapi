@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -210,29 +211,57 @@ namespace NeoCortexApi
             }
         }
 
+
         /// <summary>
-        /// Formats 
+        /// Calculates and renders the matrix of cross-similarities between a set of values.
         /// </summary>
-        /// <param name="dim"></param>
-        /// <param name="inpVectorKeys"></param>
-        /// <param name="matrix"></param>
+        /// <param name="values">The list of values that will be correlated to eacher.</param>
+        /// <param name="similarities">Th etwo-dimensional array of already calculated cross-similarities.</param>
+        /// <returns></returns>
+        public static string CreateSimilarityMatrix(List<string> values, double[,] similarities)
+        {
+            string[,] matrix = new string[values.Count, values.Count];
+
+            StringBuilder sb = new StringBuilder();
+
+            for (int i = 0; i < values.Count; i++)
+            {
+                var str = String.Join(';', similarities.GetRow(0));
+                sb.AppendLine(str);
+
+                for (int j = 0; j < values.Count; j++)
+                {
+                    matrix[i, j] = similarities[i, j].ToString("0.##");
+                }
+            }
+
+            var results = Helpers.RenderSimilarityMatrix(values.ToArray(), matrix);
+
+            return results;
+        }
+
+        /// <summary>
+        /// Renders the similarity matrix into the readable format. 
+        /// </summary>
+        /// <param name="values">The list of values that will be compared.</param>
+        /// <param name="matrix">Two-dimensianal matrix of cross-similarities between given values. Values are already rendered as string.</param>
         /// <returns></returns>
 
-        public static string PrintMatrix( string[] inpVectorKeys, string[,] matrix)
+        public static string RenderSimilarityMatrix( string[] values, string[,] matrix)
         {
             System.IO.StringWriter sw = new System.IO.StringWriter();
             
             sw.Write($"{string.Format(" {0,-15}", "")} |");
 
-            for (int k = 0; k < inpVectorKeys.Length; k++)
+            for (int k = 0; k < values.Length; k++)
             {
-                string st = String.Format(" {0,-15} |", inpVectorKeys[k]);
+                string st = String.Format(" {0,-15} |", values[k]);
                 sw.Write($"{st}");
             }
 
             sw.WriteLine("");
 
-            for (int k = 0; k <= inpVectorKeys.Length; k++)
+            for (int k = 0; k <= values.Length; k++)
             {
                 string st = String.Format(" {0,-15} |", "---------------");
                 sw.Write($"{st}");
@@ -240,11 +269,11 @@ namespace NeoCortexApi
 
             sw.WriteLine("");
 
-            for (int i = 0; i < inpVectorKeys.Length; i++)
+            for (int i = 0; i < values.Length; i++)
             {
-                sw.Write(String.Format(" {0,-15} |", inpVectorKeys[i]));
+                sw.Write(String.Format(" {0,-15} |", values[i]));
 
-                for (int j = 0; j < inpVectorKeys.Length; j++)
+                for (int j = 0; j < values.Length; j++)
                 {
                     string st = String.Format(" {0,-15} |", matrix[i, j]);
                     sw.Write(st);
