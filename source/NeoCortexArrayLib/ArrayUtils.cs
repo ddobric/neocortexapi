@@ -331,6 +331,27 @@ namespace NeoCortexApi.Utility
         }
 
         /// <summary>
+        /// Gets index of item in array, which satisfies specified condition.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static int[] IndexesWithNonZeros(this IEnumerable<int> source)
+        {
+            List<int> retVal = new List<int>();
+            
+            int indx = 0;
+            foreach (var item in source)
+            {
+                if (item == 1)
+                    retVal.Add(indx);
+
+                indx++;
+            }
+
+            return retVal.ToArray();
+        }
+
+        /// <summary>
         /// Returns an array whose members are the product of the multiplicand array values and the factor array values.
         /// </summary>
         /// <param name="multiplicand"></param>
