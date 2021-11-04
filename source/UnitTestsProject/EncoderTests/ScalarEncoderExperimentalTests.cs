@@ -34,7 +34,7 @@ namespace UnitTestsProject.EncoderTests
     ///            Formulae to calculate:
     ///            Resolution when Periodic = 'true' => (Range)/(N) => (MaxVal-MinVal)/(N).
     ///            Resolution when Periodic = 'false' => (Range)/(N-W) => (MaxVal-MinVal)/(N-W).
-   ///</summary>
+    ///</summary>
     [TestClass]
     public class ScalarEncoderScalarEncoderExperimentalTestsTests
     {
@@ -76,7 +76,7 @@ namespace UnitTestsProject.EncoderTests
 
             var result = encoder.Encode(input); // Encoding the input according to the encoding parameters.
 
-            printBitMap(encoder, nameof(ScalarEncoderUnitTestWeek)); // Calling the Bitmap method to show output in Bitmap Format.
+            //printBitMap(encoder, nameof(ScalarEncoderUnitTestWeek)); // Calling the Bitmap method to show output in Bitmap Format.
 
             Debug.WriteLine(input);
             Debug.WriteLine(NeoCortexApi.Helpers.StringifyVector(result));
@@ -131,7 +131,7 @@ namespace UnitTestsProject.EncoderTests
 
             var result = encoder.Encode(input); // Encoding the input according to the encoding parameters.
 
-            printBitMap(encoder, nameof(ScalarEncoderUnitTestHearingFrequency)); // Calling the Bitmap method to show output in Bitmap Format.
+            //printBitMap(encoder, nameof(ScalarEncoderUnitTestHearingFrequency)); // Calling the Bitmap method to show output in Bitmap Format.
 
             Debug.WriteLine(input);
             Debug.WriteLine(NeoCortexApi.Helpers.StringifyVector(result));
@@ -182,7 +182,7 @@ namespace UnitTestsProject.EncoderTests
 
             var result = encoder.Encode(input); // Encoding the input according to the encoding parameters.
 
-            printBitMap(encoder, nameof(ScalarEncoderUnitTestPassenger)); // Calling the Bitmap method to show output in Bitmap Format.
+            //printBitMap(encoder, nameof(ScalarEncoderUnitTestPassenger)); // Calling the Bitmap method to show output in Bitmap Format.
 
             Debug.WriteLine(input);
             Debug.WriteLine(NeoCortexApi.Helpers.StringifyVector(result));
@@ -231,7 +231,7 @@ namespace UnitTestsProject.EncoderTests
 
             var result = encoder.Encode(input); // Encoding the input according to the encoding parameters.
 
-            printBitMap(encoder, nameof(ScalarEncoderUnitTestGoals)); // Calling the Bitmap method to show output in Bitmap Format.
+            //printBitMap(encoder, nameof(ScalarEncoderUnitTestGoals)); // Calling the Bitmap method to show output in Bitmap Format.
 
             Debug.WriteLine(input);
             Debug.WriteLine(NeoCortexApi.Helpers.StringifyVector(result));
@@ -283,7 +283,7 @@ namespace UnitTestsProject.EncoderTests
             });
 
             var result = encoder.Encode(input); // Encoding the input according to the encoding parameters.
-            
+
             Debug.WriteLine(input);
             Debug.WriteLine(NeoCortexApi.Helpers.StringifyVector(result));
             Debug.WriteLine(NeoCortexApi.Helpers.StringifyVector(expectedResult));
@@ -513,23 +513,29 @@ namespace UnitTestsProject.EncoderTests
         {
             ScalarEncoder encoder = new ScalarEncoder(new Dictionary<string, object>()
             {
-                { "W", 7},
-                { "N", 744},
-                { "MinVal", (double)0}, 
-                { "MaxVal", (double)100},
+                { "W", 3},
+                { "N", 10},
+                { "MinVal", (double)0},
+                { "MaxVal", (double)8},
                 { "Periodic", false},
                 { "Name", "Power Consumption in December"},
                 { "ClipInput", true},
             });
 
+            string results = encoder.TraceSimilarities();
+
+            Debug.WriteLine(results);
+            Debug.WriteLine("");
             Debug.WriteLine(MathHelpers.SdrMem(7, 100));
             Debug.WriteLine(MathHelpers.SdrMem(10, 100));
             Debug.WriteLine(MathHelpers.SdrMem(15, 100));
             Debug.WriteLine(MathHelpers.SdrMem(20, 100));
 
-            printBitMap(encoder, nameof(ScalarEncodingTest));
+            PrintBitMap(encoder, nameof(ScalarEncodingTest));
 
         }
+
+
 
         /// <summary>
         /// Prints out the images of encoded values in the whole range.
@@ -538,7 +544,7 @@ namespace UnitTestsProject.EncoderTests
         /// </summary>
         /// <param name="encoder"></param>
         /// <param name="folderName"></param>
-        public void printBitMap(ScalarEncoder encoder, string folderName)
+        public void PrintBitMap(ScalarEncoder encoder, string folderName)
         {
             string filename;
             Directory.CreateDirectory(folderName);
@@ -565,26 +571,30 @@ namespace UnitTestsProject.EncoderTests
 
             var similarities = MathHelpers.CalculateSimilarityMatrix(sdrMap);
 
-            string[,] matrix = new string[inputValues.Count, inputValues.Count];
+            var results = Helpers.RenderSimilarityMatrix(inputValues, similarities);
 
-            StringBuilder sb = new StringBuilder();
+            //string[,] matrix = new string[inputValues.Count, inputValues.Count];
 
-            for (int i = 0; i < inputValues.Count; i++)
-            {
-                var str = String.Join(';', similarities.GetRow(0));
-                sb.AppendLine(str);
+            //StringBuilder sb = new StringBuilder();
 
-                for (int j = 0; j < inputValues.Count; j++)
-                {
-                    matrix[i, j] = similarities[i, j].ToString("0.##");
-                }     
-            }
+            //for (int i = 0; i < inputValues.Count; i++)
+            //{
+            //    var str = String.Join(';', similarities.GetRow(0));
+            //    sb.AppendLine(str);
 
-            var results = Helpers.PrintMatrix(inputValues.ToArray(), matrix);
+            //    for (int j = 0; j < inputValues.Count; j++)
+            //    {
+            //        matrix[i, j] = similarities[i, j].ToString("0.##");
+            //    }     
+            //}
+
+            //var results = Helpers.PrintMatrix(inputValues.ToArray(), matrix);
+
             Debug.Write(results);
             Debug.WriteLine("");
-            Debug.WriteLine(sb.ToString());
+            //Debug.WriteLine(sb.ToString());
         }
+
 
         private string getKey(double i)
         {

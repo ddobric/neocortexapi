@@ -36,41 +36,38 @@ namespace NeoCortexApi
         /// Creates string representation from one dimensional vector.
         /// </summary>
         /// <param name="vector"></param>
+        /// <param name="separator">The separator used between bits.</param>
         /// <returns></returns>
-        public static string StringifyVector(int[] vector)
+        public static string StringifyVector(int[] vector, string separator=", ")
         {
             StringBuilder sb = new StringBuilder();
 
             foreach (var vectorBit in vector)
             {
                 sb.Append(vectorBit);
-                sb.Append(", ");
+                if(separator != null)
+                    sb.Append(separator);
             }
 
             return sb.ToString();
         }
 
-        public static string StringifyVector(string[] vector)
+        /// <summary>
+        /// Creates string representation from one dimensional vector.
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <param name="separator">The separator used between bits.</param>
+        /// <returns></returns>
+
+        public static string StringifyVector(double[] vector, string separator = ", ")
         {
             StringBuilder sb = new StringBuilder();
 
             foreach (var vectorBit in vector)
             {
                 sb.Append(vectorBit);
-                sb.Append(", ");
-            }
-
-            return sb.ToString();
-        }
-
-        public static string StringifyVector(double[] vector)
-        {
-            StringBuilder sb = new StringBuilder();
-
-            foreach (var vectorBit in vector)
-            {
-                sb.Append(vectorBit);
-                sb.Append(", ");
+                if (separator != null)
+                    sb.Append(separator);
             }
 
             return sb.ToString();
@@ -218,7 +215,7 @@ namespace NeoCortexApi
         /// <param name="values">The list of values that will be correlated to eacher.</param>
         /// <param name="similarities">Th etwo-dimensional array of already calculated cross-similarities.</param>
         /// <returns></returns>
-        public static string CreateSimilarityMatrix(List<string> values, double[,] similarities)
+        public static string RenderSimilarityMatrix(List<string> values, double[,] similarities)
         {
             string[,] matrix = new string[values.Count, values.Count];
 
@@ -239,6 +236,7 @@ namespace NeoCortexApi
 
             return results;
         }
+
 
         /// <summary>
         /// Renders the similarity matrix into the readable format. 
