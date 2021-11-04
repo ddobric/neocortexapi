@@ -76,7 +76,7 @@ namespace NeoCortexApi.Experiments
             // We create here 100 random input values.
             List<int[]> inputValues = GetTrainingvectors(0, inputBits, width);
 
-            RunExperiment(cfg, encoder, inputValues);
+            RunExperiment(cfg, inputValues);
         }
 
 
