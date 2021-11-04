@@ -126,7 +126,7 @@ namespace NeoCortexApi.Experiments
         /// <param name="cfg"></param>
         /// <param name="encoder"></param>
         /// <param name="inputValues"></param>
-        private static void RunExperiment(HtmConfig cfg, EncoderBase encoder, List<int[]> inputValues)
+        private static void RunExperiment(HtmConfig cfg, List<int[]> inputValues)
         {
             // Creates the htm memory.
             var mem = new Connections(cfg);
@@ -263,7 +263,7 @@ namespace NeoCortexApi.Experiments
                 i++;
             }
 
-            var res = Helpers.PrintMatrix(inpVectorsMap.Keys.ToArray(), matrix);
+            var res = Helpers.RenderSimilarityMatrix(inpVectorsMap.Keys.ToArray(), matrix);
             
             Console.WriteLine(res);
             Debug.WriteLine(res);           
