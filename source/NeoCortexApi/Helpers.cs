@@ -212,8 +212,8 @@ namespace NeoCortexApi
         /// <summary>
         /// Calculates and renders the matrix of cross-similarities between a set of values.
         /// </summary>
-        /// <param name="values">The list of values that will be correlated to eacher.</param>
-        /// <param name="similarities">Th etwo-dimensional array of already calculated cross-similarities.</param>
+        /// <param name="values">The list of values that will are correlated to eacher.</param>
+        /// <param name="similarities">The two-dimensional array of already calculated cross-similarities.</param>
         /// <returns></returns>
         public static string RenderSimilarityMatrix(List<string> values, double[,] similarities)
         {
