@@ -25,8 +25,6 @@ namespace NeoCortexApi.Classifiers
 
         private Dictionary<int[], int> inputSequenceMap = new Dictionary<int[], int>();
 
-        private Dictionary<int[], TIN> activeMap = new Dictionary<int[], TIN>();
-
         /// <summary>
         /// Recording of all SDRs. See maxRecordedElements.
         /// </summary>
@@ -37,17 +35,12 @@ namespace NeoCortexApi.Classifiers
         /// </summary>
         private Dictionary<TIN, int[]> m_ActiveMap2 = new Dictionary<TIN, int[]>();
 
-
+        /// <summary>
+        /// Clears th elearned state.
+        /// </summary>
         public void ClearState()
         {
-            //this.activeMap.Clear();
             m_ActiveMap2.Clear();
-            // this.inputSequence.Clear();
-        }
-
-        public void Learn(TIN input, Cell[] activeCells, bool learn)
-        {
-            throw new NotImplementedException();
         }
 
 
@@ -87,18 +80,6 @@ namespace NeoCortexApi.Classifiers
             }
             else
                 m_ActiveMap2.Add(input, cellIndicies);
-        }
-
-        public void Learn(TIN input, Cell[] output, Cell[] predictedOutput)
-        {
-            inputSequence.Add(input);
-
-            inputSequenceMap.Add(GetCellIndicies(output), inputSequence.Count - 1);
-
-            if (!activeMap.ContainsKey(GetCellIndicies(output)))
-            {
-                activeMap.Add(GetCellIndicies(output), input);
-            }
         }
 
 
@@ -154,8 +135,7 @@ namespace NeoCortexApi.Classifiers
                 {
                     if (pair.Value.SequenceEqual(celIndicies))
                     {
-                        Debug.WriteLine(
-                            $">indx:{n}\tinp/len: {pair.Key}/{pair.Value.Length}\tsimilarity 100pct\t {Helpers.StringifyVector(pair.Value)}");
+                        Debug.WriteLine($">indx:{n}\tinp/len: {pair.Key}/{pair.Value.Length}\tsimilarity 100pct\t {Helpers.StringifyVector(pair.Value)}");
 
                         res.Add(new ClassifierResult { PredictedInput = pair.Key, Similarity = (float)1.0, NumOfSameBits = pair.Value.Length });
                     }
