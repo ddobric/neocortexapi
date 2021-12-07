@@ -311,7 +311,7 @@ namespace NeoCortexApi.Entities
         public AbstractSparseMatrix<Column> Memory { get => memory; set { memory = value; ColumnModuleTopology = value?.ModuleTopology; } }
 
         /// <summary>
-        /// Activation threshold used in sequence learning. If the number of active connected synapses on a distal segment is at least this threshold, the segment is said to be active.
+        /// Activation threshold used in sequence learning. If the number of active connected synapses on a distal segment is at least this threshold, the segment is declared as active one.
         /// </summary>
         public int ActivationThreshold { get; set; } = 13;
 

@@ -13,6 +13,28 @@ using System.Text;
 namespace NeoCortexApi.Classifiers
 {
     /// <summary>
+    /// Defines the predicting input.
+    /// </summary>
+    public class ClassifierResult<TIN>
+    {
+        /// <summary>
+        /// The predicted input value.
+        /// </summary>
+        public TIN PredictedInput { get; set; }
+
+        /// <summary>
+        /// Number of identical non-zero bits in the SDR.
+        /// </summary>
+        public int NumOfSameBits { get; set; }
+
+        /// <summary>
+        /// The similarity between the SDR of  predicted cell set with the SDR of the input.
+        /// </summary>
+        public double Similarity { get; set; }
+    }
+
+
+    /// <summary>
     /// Classifier implementation which memorize all seen values.
     /// </summary>
     /// <typeparam name="TIN"></typeparam>
@@ -83,27 +105,6 @@ namespace NeoCortexApi.Classifiers
         }
 
 
-        /// <summary>
-        /// Defines the predicting input.
-        /// </summary>
-        public class ClassifierResult
-        {
-            /// <summary>
-            /// The predicted input value.
-            /// </summary>
-            public TIN PredictedInput { get; set; }
-
-            /// <summary>
-            /// Number of identical non-zero bits in the SDR.
-            /// </summary>
-            public int NumOfSameBits { get; set; }
-
-            /// <summary>
-            /// The similarity between the SDR of  predicted cell set with the SDR of the input.
-            /// </summary>
-            public double Similarity { get; set; }
-        }
-
 
         /// <summary>
         /// Gets multiple predicted values.
@@ -111,12 +112,12 @@ namespace NeoCortexApi.Classifiers
         /// <param name="predictiveCells">The current set of predictive cells.</param>
         /// <param name="howMany">The number of predections to return.</param>
         /// <returns>List of predicted values with their similarities.</returns>
-        public List<ClassifierResult> GetPredictedInputValues(Cell[] predictiveCells, short howMany = 1)
+        public List<ClassifierResult<TIN>> GetPredictedInputValues(Cell[] predictiveCells, short howMany = 1)
         {
-            List<ClassifierResult> res = new List<ClassifierResult>();
+            List<ClassifierResult<TIN>> res = new List<ClassifierResult<TIN>>();
             double maxSameBits = 0;
             TIN predictedValue = default;
-            Dictionary<TIN, ClassifierResult> dict = new Dictionary<TIN, ClassifierResult>();
+            Dictionary<TIN, ClassifierResult<TIN>> dict = new Dictionary<TIN, ClassifierResult<TIN>>();
 
             var predictedList = new List<KeyValuePair<double, string>>();
             if (predictiveCells.Length != 0)
@@ -135,9 +136,9 @@ namespace NeoCortexApi.Classifiers
                 {
                     if (pair.Value.SequenceEqual(celIndicies))
                     {
-                        Debug.WriteLine($">indx:{n}\tinp/len: {pair.Key}/{pair.Value.Length}\tsimilarity 100pct\t {Helpers.StringifyVector(pair.Value)}");
+                        Debug.WriteLine($">indx:{n.ToString("D3")}\tinp/len: {pair.Key}/{pair.Value.Length}, Same Bits = {celIndicies.Length.ToString("D3")}\t, Similarity 100.00 %\t {Helpers.StringifyVector(pair.Value)}");
 
-                        res.Add(new ClassifierResult { PredictedInput = pair.Key, Similarity = (float)1.0, NumOfSameBits = pair.Value.Length });
+                        res.Add(new ClassifierResult<TIN> { PredictedInput = pair.Key, Similarity = (float)1.0, NumOfSameBits = pair.Value.Length});
                     }
                     else
                     {
@@ -146,18 +147,18 @@ namespace NeoCortexApi.Classifiers
                         //double numOfSameBitsPct = (double)(((double)(pair.Value.Intersect(celIndicies).Count()) / (double)pair.Value.Length));// ;
                         var numOfSameBitsPct = pair.Value.Intersect(celIndicies).Count();
                         double simPercentage = Math.Round(MathHelpers.CalcArraySimilarity(pair.Value, celIndicies), 2);
-                        dict.Add(pair.Key, new ClassifierResult { PredictedInput = pair.Key, NumOfSameBits = numOfSameBitsPct, Similarity = simPercentage });
+                        dict.Add(pair.Key, new ClassifierResult<TIN> { PredictedInput = pair.Key, NumOfSameBits = numOfSameBitsPct, Similarity = simPercentage });
                         predictedList.Add(new KeyValuePair<double, string>(simPercentage, pair.Key.ToString()));
 
                         if (numOfSameBitsPct > maxSameBits)
                         {
-                            Debug.WriteLine($">indx:{n}\tinp/len: {pair.Key}/{pair.Value.Length} ,Same Bits = {numOfSameBitsPct}\t, Similarity% {simPercentage} \t {Helpers.StringifyVector(pair.Value)}");
+                            Debug.WriteLine($">indx:{n.ToString("D3")}\tinp/len: {pair.Key}/{pair.Value.Length}, Same Bits = {numOfSameBitsPct.ToString("D3")}\t, Similarity {simPercentage.ToString("000.00")} % \t {Helpers.StringifyVector(pair.Value)}");
                             maxSameBits = numOfSameBitsPct;
                             predictedValue = pair.Key;
                             indxOfMatchingInp = n;
                         }
                         else
-                            Debug.WriteLine($"<indx:{n}\tinp/len: {pair.Key}/{pair.Value.Length} ,Same Bits = {numOfSameBitsPct}\t, Similarity% {simPercentage}\t {Helpers.StringifyVector(pair.Value)}");
+                            Debug.WriteLine($"<indx:{n.ToString("D3")}\tinp/len: {pair.Key}/{pair.Value.Length}, Same Bits = {numOfSameBitsPct.ToString("D3")}\t, Similarity {simPercentage.ToString("000.00")} %\t {Helpers.StringifyVector(pair.Value)}");
                     }
                     n++;
                 }
@@ -175,14 +176,17 @@ namespace NeoCortexApi.Classifiers
         }
 
 
+        public List<ClassifierResult<TIN>> GetPredictedInputValues2(Cell[] predictiveCells, short howMany = 1)
+        {
+            throw new System.Exception("");
+        }
 
-
-        /// <summary>
-        /// Gets predicted value for next cycle
-        /// </summary>
-        /// <param name="predictiveCells">The list of predictive cells.</param>
-        /// <returns></returns>
-        [Obsolete("This method will be removed in the future. Use GetPredictedInputValues instead. ")]
+            /// <summary>
+            /// Gets predicted value for next cycle
+            /// </summary>
+            /// <param name="predictiveCells">The list of predictive cells.</param>
+            /// <returns></returns>
+            [Obsolete("This method will be removed in the future. Use GetPredictedInputValues instead. ")]
         public TIN GetPredictedInputValue(Cell[] predictiveCells)
         {
             // bool x = false;
