@@ -351,5 +351,9 @@ namespace NeoCortexApi.Classifiers
             throw new NotImplementedException();
         }
 
+        public void Learn(TIN input, Cell[] output)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

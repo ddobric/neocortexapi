@@ -96,6 +96,11 @@ namespace NeoCortexApi.Classifiers
             }
         }
 
+        public void Learn(TIN input, Cell[] output)
+        {
+            throw new System.NotImplementedException();
+        }
+
         private int[] GetUnionArr(int[] prevCells, int[] currCells)
         {
             return prevCells.Union(currCells).ToArray();

@@ -536,6 +536,78 @@ namespace UnitTestsProject.EncoderTests
         }
 
 
+        /// <summary>
+        /// Prints out all encoder values with their similarities by encoding of the Day and Time in the combined SDR.
+        /// </summary>
+        [TestMethod]
+        public void WeekTimeEncodingTest()
+        {
+            var folderName = Directory.CreateDirectory(nameof(WeekTimeEncodingTest)).Name;
+
+            ScalarEncoder timeEncoder = new ScalarEncoder(new Dictionary<string, object>()
+            {
+                { "W", 5},
+                { "N", 30},
+                { "MinVal", (double)0},
+                { "MaxVal", (double)24},
+                { "Periodic", false},
+                { "Name", "Time of the day."},
+                { "ClipInput", true},
+            });
+
+            Console.WriteLine("\nTime");
+            Console.WriteLine(timeEncoder.TraceSimilarities());
+
+            ScalarEncoder dayEncoder = new ScalarEncoder(new Dictionary<string, object>()
+            {
+                { "W", 3},
+                { "N", 10},
+                { "MinVal", (double)1},
+                { "MaxVal", (double)8},
+                { "Periodic", false},
+                { "Name", "Day of the week."},
+                { "ClipInput", true},
+            });
+
+            Console.WriteLine("\nDay of the Week");
+            Console.WriteLine(dayEncoder.TraceSimilarities());
+
+            string results = timeEncoder.TraceSimilarities();
+
+            Dictionary<string, int[]> sdrDict = new Dictionary<string, int[]>();
+
+            for (int day = 1; day < 8; day++)
+            {
+                for (int hour = 0; hour < 24; hour++)
+                {
+                    var sdrHour = timeEncoder.Encode(hour);
+                    var sdrDay = dayEncoder.Encode(day);
+                    List<int> sdrDayTime = new List<int>();
+
+                    sdrDayTime.AddRange(sdrDay);
+                    sdrDayTime.AddRange(sdrHour);
+
+                    string key = $"{day.ToString("00")}-{hour.ToString("00")}";
+
+                    sdrDict.Add(key, sdrDayTime.ToArray());
+
+                    var str =Helpers.StringifyVector(sdrDayTime.ToArray());
+
+                    //int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(sdrDayTime.ToArray(), (int)Math.Sqrt(sdrDayTime.ToArray().Length), (int)Math.Sqrt(sdrDayTime.ToArray().Length));
+                    //var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
+                    
+                    //NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, Path.Combine(folderName, $"{key}.jpg"), Color.Black, Color.Gray, text: $"{day}-{hour}".ToString());
+                }
+            }
+
+            Console.WriteLine("\nDay-Time");
+
+            Console.WriteLine(EncoderBase.TraceSimilarities(sdrDict));
+        
+            PrintBitMap(timeEncoder, nameof(ScalarEncodingTest));
+
+        }
+
 
         /// <summary>
         /// Prints out the images of encoded values in the whole range.
@@ -572,27 +644,9 @@ namespace UnitTestsProject.EncoderTests
             var similarities = MathHelpers.CalculateSimilarityMatrix(sdrMap);
 
             var results = Helpers.RenderSimilarityMatrix(inputValues, similarities);
-
-            //string[,] matrix = new string[inputValues.Count, inputValues.Count];
-
-            //StringBuilder sb = new StringBuilder();
-
-            //for (int i = 0; i < inputValues.Count; i++)
-            //{
-            //    var str = String.Join(';', similarities.GetRow(0));
-            //    sb.AppendLine(str);
-
-            //    for (int j = 0; j < inputValues.Count; j++)
-            //    {
-            //        matrix[i, j] = similarities[i, j].ToString("0.##");
-            //    }     
-            //}
-
-            //var results = Helpers.PrintMatrix(inputValues.ToArray(), matrix);
-
+            
             Debug.Write(results);
             Debug.WriteLine("");
-            //Debug.WriteLine(sb.ToString());
         }
 
 

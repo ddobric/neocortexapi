@@ -285,5 +285,37 @@ namespace NeoCortexApi.Encoders
 
             return sb.ToString() + results;
         }
+
+        /// <summary>
+        /// Traceout similarities between the list of provided values.
+        /// </summary>
+        /// <param name="encodedValues">Dictionary of encoded values. Key is the input value and the value is encoded input value as SDR.</param>
+        /// <param name="traceValues"></param>
+        /// <returns></returns>
+        public static string TraceSimilarities(Dictionary<string, int[]> encodedValues, bool traceValues = true)
+        {
+            Dictionary<string, int[]> sdrMap = new Dictionary<string, int[]>();
+            List<string> inpVals = new List<string>();
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var pair in encodedValues)
+            {
+                sdrMap.Add($"{pair.Key}", ArrayUtils.IndexWhere(pair.Value, (el) => el == 1));
+                inpVals.Add($"{pair.Key}");
+
+                if (traceValues)
+                {
+                    sb.AppendLine($"{pair.Key} - {Helpers.StringifyVector(pair.Value, separator: null)}");
+                }
+            }
+
+            sb.AppendLine();
+
+            var similarities = MathHelpers.CalculateSimilarityMatrix(sdrMap);
+
+            var results = Helpers.RenderSimilarityMatrix(inpVals, similarities);
+
+            return sb.ToString() + results;
+        }
     }
 }

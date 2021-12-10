@@ -1,4 +1,10 @@
-﻿namespace NeoCortexApiSample
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using static NeoCortexApiSample.MultiSequenceLearning;
+
+namespace NeoCortexApiSample
 {
     class Program
     {
@@ -12,14 +18,62 @@
         {
             //
             // Starts experiment that demonstrates how to learn spatial patterns.
-            SpatialPatternLearning experiment = new SpatialPatternLearning();
-            experiment.Run();
+            //SpatialPatternLearning experiment = new SpatialPatternLearning();
+            //experiment.Run();
 
             //
             // Starts experiment that demonstrates how to learn spatial patterns.
             //SequenceLearning experiment = new SequenceLearning();
             //experiment.Run();
+
+            RunMultiSequenceLearningExperiment();
         }
 
+        private static void RunMultiSequenceLearningExperiment()
+        {
+            Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
+
+            //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 }));
+            //sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 0.0, 3.0, 3.0, 4.0, 5.0, 6.0, 5.0, 7.0, 2.0, 7.0, 1.0, 9.0, 11.0, 11.0, 10.0, 13.0, 14.0, 11.0, 7.0, 6.0, 5.0, 7.0, 6.0, 5.0, 3.0, 2.0, 3.0, 4.0, 3.0, 4.0 }));
+
+            sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, }));
+            sequences.Add("S2", new List<double>(new double[] { 8.0, 1.0, 2.0, 9.0, 10.0, 7.0, 11.00 }));
+
+            //
+            // Prototype for building the prediction engine.
+            MultiSequenceLearning experiment = new MultiSequenceLearning();
+            var predictor = experiment.Run(sequences);
+
+            predictor.Reset();
+
+            var list1 = new double[] { 1.0, 2.0, 3.0 };
+            var list2 = new double[] { 2.0, 3.0, 4.0 };
+            var list3 = new double[] { 8.0, 1.0, 2.0 };
+
+            PredictNextElement(predictor, list1);
+            PredictNextElement(predictor, list2);
+            PredictNextElement(predictor, list3);
+        }
+
+        private static void PredictNextElement(HtmPredictionEngine predictor, double[] list)
+        {
+            Debug.WriteLine("------------------------------");
+
+            foreach (var item in list)
+            {
+                var res = predictor.Predict(item);
+
+                foreach (var pred in res)
+                {
+                    Debug.WriteLine($"{pred.PredictedInput} - {pred.Similarity}");
+                }
+
+                var tokens = res.First().PredictedInput.Split('_');
+
+                Debug.WriteLine($"Predicted Sequence: {tokens[0]}, predicted next element {tokens[tokens.Length-1]}");
+            }
+
+            Debug.WriteLine("------------------------------");
+        }
     }
 }

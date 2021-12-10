@@ -145,7 +145,7 @@ namespace NeoCortexApi.Experiments
                         {
                             var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
 
-                            cls.Learn(input, lyrOut.ActiveCells.ToArray(), lyrOut.PredictiveCells.ToArray());
+                            cls.Learn(input, lyrOut.ActiveCells.ToArray());
 
                             Debug.WriteLine($"-------------- {input} ---------------");
 
