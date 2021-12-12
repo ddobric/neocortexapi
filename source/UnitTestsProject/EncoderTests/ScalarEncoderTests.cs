@@ -203,7 +203,7 @@ namespace UnitTestsProject.EncoderTests
                 { "ClipInput", false},
             });
 
-            for (double i = 0.0; i < (long)encoder.MaxVal; i += 0.1)
+            for (decimal i = 0.0M; i < (long)encoder.MaxVal; i += 0.1M)
             {
                 var result = encoder.Encode(i);
 
