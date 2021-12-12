@@ -82,7 +82,7 @@ namespace NeoCortexApiSample
             sw.Start();
 
             int maxMatchCnt = 0;
-        
+
             var mem = new Connections(cfg);
 
             bool isInStableState = false;
@@ -174,7 +174,7 @@ namespace NeoCortexApiSample
                 int maxPrevInputs = sequenceKeyPair.Value.Count - 1;
 
                 List<string> previousInputs = new List<string>();
-               
+
                 previousInputs.Add("-1.0");
 
                 //
@@ -184,6 +184,8 @@ namespace NeoCortexApiSample
                     matches = 0;
 
                     cycle++;
+
+                    Debug.WriteLine("");
 
                     Debug.WriteLine($"-------------- Cycle {cycle} ---------------");
 
@@ -221,7 +223,7 @@ namespace NeoCortexApiSample
                         }
 
                         cls.Learn(key, actCells.ToArray());
-                                                
+
                         Debug.WriteLine($"Col  SDR: {Helpers.StringifyVector(lyrOut.ActivColumnIndicies)}");
                         Debug.WriteLine($"Cell SDR: {Helpers.StringifyVector(actCells.Select(c => c.Index).ToArray())}");
 
@@ -253,7 +255,7 @@ namespace NeoCortexApiSample
                     }
 
                     // The first element (a single element) in the sequence cannot be predicted
-                    double maxPossibleAccuraccy = (double)((double)sequenceKeyPair.Value.Count-1) / (double)sequenceKeyPair.Value.Count * 100.0;
+                    double maxPossibleAccuraccy = (double)((double)sequenceKeyPair.Value.Count - 1) / (double)sequenceKeyPair.Value.Count * 100.0;
 
                     double accuracy = (double)matches / (double)sequenceKeyPair.Value.Count * 100.0;
 
@@ -281,7 +283,7 @@ namespace NeoCortexApiSample
 
                     // This resets the learned state, so the first element starts allways from the beginning.
                     tm.Reset(mem);
-                }        
+                }
             }
 
             Debug.WriteLine("------------ END ------------");

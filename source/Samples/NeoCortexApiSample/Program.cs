@@ -44,14 +44,17 @@ namespace NeoCortexApiSample
             MultiSequenceLearning experiment = new MultiSequenceLearning();
             var predictor = experiment.Run(sequences);
 
-            predictor.Reset();
-
             var list1 = new double[] { 1.0, 2.0, 3.0 };
             var list2 = new double[] { 2.0, 3.0, 4.0 };
             var list3 = new double[] { 8.0, 1.0, 2.0 };
 
+            predictor.Reset();
             PredictNextElement(predictor, list1);
+
+            predictor.Reset();
             PredictNextElement(predictor, list2);
+
+            predictor.Reset();
             PredictNextElement(predictor, list3);
         }
 
@@ -63,14 +66,19 @@ namespace NeoCortexApiSample
             {
                 var res = predictor.Predict(item);
 
-                foreach (var pred in res)
+                if (res.Count > 0)
                 {
-                    Debug.WriteLine($"{pred.PredictedInput} - {pred.Similarity}");
+                    foreach (var pred in res)
+                    {
+                        Debug.WriteLine($"{pred.PredictedInput} - {pred.Similarity}");
+                    }
+
+                    var tokens = res.First().PredictedInput.Split('_');
+                    var tokens2 = res.First().PredictedInput.Split('-');
+                    Debug.WriteLine($"Predicted Sequence: {tokens[0]}, predicted next element {tokens2[tokens.Length - 1]}");
                 }
-
-                var tokens = res.First().PredictedInput.Split('_');
-
-                Debug.WriteLine($"Predicted Sequence: {tokens[0]}, predicted next element {tokens[tokens.Length-1]}");
+                else
+                    Debug.WriteLine("Nothing predicted :(");
             }
 
             Debug.WriteLine("------------------------------");
