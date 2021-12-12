@@ -1,19 +1,14 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Globalization;
-using NeoCortexApi.Encoders;
-using NeoCortexApi.Network;
-using NeoCortexApi;
-using NeoCortexApi.Entities;
-using System.Diagnostics;
-using NeoCortexEntities.NeuroVisualizer;
-using WebSocketNeuroVisualizer;
-using System.IO;
 using NeoCortexApi.Classifiers;
+using NeoCortexApi.Encoders;
+using NeoCortexApi.Entities;
+using NeoCortexApi.Network;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 
 namespace NeoCortexApi.Experiments
 {
@@ -147,7 +142,7 @@ namespace NeoCortexApi.Experiments
                         {
                             var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
 
-                            cls.Learn(input, lyrOut.ActiveCells.ToArray(), lyrOut.PredictiveCells.ToArray());
+                            cls.Learn(input, lyrOut.ActiveCells.ToArray());
 
                             Debug.WriteLine($"-------------- {input} ---------------");
 
@@ -157,7 +152,7 @@ namespace NeoCortexApi.Experiments
                             Debug.WriteLine($"W: {Helpers.StringifyVector(lyrOut.WinnerCells.Select(c => c.Index).ToArray())}");
                             Debug.WriteLine($"P: {Helpers.StringifyVector(lyrOut.PredictiveCells.Select(c => c.Index).ToArray())}");
 
-                            var predictedValue = cls.GetPredictedInputValue(lyrOut.PredictiveCells.ToArray());
+                            var predictedValue = cls.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray()).First().PredictedInput;
 
                             Debug.WriteLine($"Current Input: {input} \t| - Predicted value in previous cycle: {lastPredictedValue} \t| Predicted Input for the next cycle: {predictedValue}");
 
@@ -312,7 +307,7 @@ namespace NeoCortexApi.Experiments
                         {
                             var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
 
-                            cls.Learn(input, lyrOut.ActiveCells.ToArray(), lyrOut.PredictiveCells.ToArray());
+                            cls.Learn(input, lyrOut.ActiveCells.ToArray());
 
                             Debug.WriteLine($"-------------- {input} ---------------");
 

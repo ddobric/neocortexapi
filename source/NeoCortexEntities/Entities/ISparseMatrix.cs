@@ -8,11 +8,11 @@ using System.Text;
 namespace NeoCortexApi.Entities
 {
     // TODO naming convention for interface method
-    public interface ISparseMatrix 
+    public interface ISparseMatrix
     {
 
     }
-    
+
     public interface ISparseMatrix<T> : ISparseMatrix, IFlatMatrix<T>
     {
         /// <summary>

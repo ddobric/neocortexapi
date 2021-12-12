@@ -3,17 +3,10 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
-using NeoCortexApi.Utility;
+using NeoCortexApi.Types;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.IO;
-using System.Runtime.Serialization;
-using NeoCortexApi.Types;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace UnitTestsProject
 {
@@ -102,7 +95,7 @@ namespace UnitTestsProject
         [DataRow(1)]
         public void TestActivateCorrectlyPredictiveCells(int tmImplementation)
         {
-            TemporalMemory tm = tmImplementation == 0? new TemporalMemory() : new TemporalMemoryMT();
+            TemporalMemory tm = tmImplementation == 0 ? new TemporalMemory() : new TemporalMemoryMT();
             Connections cn = new Connections();
             Parameters p = getDefaultParameters();
             p.apply(cn);
@@ -463,7 +456,8 @@ namespace UnitTestsProject
 
             //List<DistalDendrite> segments = winnerCells[0].Segments;
             Assert.AreEqual(1, segments.Count);
-            List<Synapse> synapses = segments[0].GetAllSynapses(cn);
+            //List<Synapse> synapses = segments[0].GetAllSynapses(cn);
+            List<Synapse> synapses = segments[0].Synapses;
 
             List<Cell> presynapticCells = new List<Cell>();
             foreach (Synapse synapse in synapses)
@@ -588,14 +582,10 @@ namespace UnitTestsProject
             cc = tm.Compute(activeColumns, true) as ComputeCycle;
 
             List<Cell> presynapticCells = new List<Cell>();
-            foreach (var syn in activeSegment.GetAllSynapses(cn))
+            foreach (var syn in activeSegment.Synapses)
             {
                 presynapticCells.Add(syn.getPresynapticCell());
             }
-
-            //= cn.getSynapses(activeSegment).stream()
-            //.map(s->s.getPresynapticCell())
-            //.collect(Collectors.toSet());
 
             Assert.IsTrue(
                 presynapticCells.Count == 4 && (
@@ -908,7 +898,7 @@ namespace UnitTestsProject
                 }
 
                 Assert.AreEqual(1, segments.Count);
-                List<Synapse> synapses = segments[0].GetAllSynapses(cn);
+                List<Synapse> synapses = segments[0].Synapses;
                 Assert.AreEqual(4, synapses.Count);
 
                 ISet<Column> columnCheckList = cn.GetColumnSet(prevActiveColumns);
@@ -1026,7 +1016,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < 100; i++)
             {
-                Assert.AreEqual(1, tm.GetLeastUsedCell(cn, cn.GetColumn(0).Cells, cn.HtmConfig.Random).Index);
+                Assert.AreEqual(1, TemporalMemory.GetLeastUsedCell(cn, cn.GetColumn(0).Cells, cn.HtmConfig.Random).Index);
             }
         }
 
@@ -1045,7 +1035,7 @@ namespace UnitTestsProject
             Synapse s2 = cn.CreateSynapse(dd, cn.GetCell(37), 0.4);
             Synapse s3 = cn.CreateSynapse(dd, cn.GetCell(477), 0.9);
 
-            tm.AdaptSegment(cn, dd, cn.GetCellSet(new int[] { 23, 37 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
+            TemporalMemory.AdaptSegment(cn, dd, cn.GetCellSet(new int[] { 23, 37 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
 
             Assert.AreEqual(0.7, s1.Permanence, 0.01);
             Assert.AreEqual(0.5, s2.Permanence, 0.01);
@@ -1065,11 +1055,11 @@ namespace UnitTestsProject
             DistalDendrite dd = cn.CreateDistalSegment(cn.GetCell(0));
             Synapse s1 = cn.CreateSynapse(dd, cn.GetCell(23), 0.9);
 
-            tm.AdaptSegment(cn, dd, cn.GetCellSet(new int[] { 23 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
+            TemporalMemory.AdaptSegment(cn, dd, cn.GetCellSet(new int[] { 23 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
             Assert.AreEqual(1.0, s1.Permanence, 0.1);
 
             // Now permanence should be at max
-            tm.AdaptSegment(cn, dd, cn.GetCellSet(new int[] { 23 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
+            TemporalMemory.AdaptSegment(cn, dd, cn.GetCellSet(new int[] { 23 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
             Assert.AreEqual(1.0, s1.Permanence, 0.1);
         }
 
@@ -1087,7 +1077,7 @@ namespace UnitTestsProject
             Synapse s1 = cn.CreateSynapse(dd, cn.GetCell(23), 0.1);
             cn.CreateSynapse(dd, cn.GetCell(1), 0.3);
 
-            tm.AdaptSegment(cn, dd, cn.GetCellSet(new int[] { }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
+            TemporalMemory.AdaptSegment(cn, dd, cn.GetCellSet(new int[] { }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
             //DD Assert.IsFalse(cn.GetSynapses(dd).Contains(s1));
             Assert.IsFalse(dd.Synapses.Contains(s1));
         }

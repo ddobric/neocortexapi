@@ -1,24 +1,23 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using LearningFoundation;
+using Microsoft.ML;
+using Microsoft.ML.Data;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MLPerceptron;
+using NeoCortex;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
+using NeoCortexApi.Network;
 using NeoCortexApi.Utility;
+using NeuralNet.MLPerceptron;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Text;
 using System.Drawing;
-using NeoCortex;
-using NeoCortexApi.Network;
-using LearningFoundation;
 using System.Globalization;
-using MLPerceptron;
+using System.IO;
 using System.Linq;
-using NeuralNet.MLPerceptron;
-using Microsoft.ML;
-using Microsoft.ML.Data;
 
 
 namespace UnitTestsProject
@@ -259,7 +258,7 @@ namespace UnitTestsProject
 
                                     for (int k = 0; k < numIterationsPerImage; k++)
                                     {
-                                        sp.compute( inputVector, activeArray, true);
+                                        sp.compute(inputVector, activeArray, true);
 
                                         var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
                                         var distance = MathHelpers.GetHammingDistance(oldArray, activeArray);
@@ -833,7 +832,7 @@ namespace UnitTestsProject
 
                             for (int k = 0; k < numIterationsPerImage; k++)
                             {
-                                sp.compute( inputVector, activeArray, true);
+                                sp.compute(inputVector, activeArray, true);
 
                                 var distance = MathHelpers.GetHammingDistance(oldArray, activeArray);
 

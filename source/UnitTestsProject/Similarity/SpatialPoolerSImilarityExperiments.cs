@@ -1,25 +1,17 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeoCortex;
 using NeoCortexApi;
+using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Text;
 using System.Drawing;
-using NeoCortex;
-using NeoCortexApi.Network;
-using LearningFoundation;
-using System.Globalization;
-using MLPerceptron;
+using System.IO;
 using System.Linq;
-using NeuralNet.MLPerceptron;
-using Microsoft.ML;
-using Microsoft.ML.Data;
-using NeoCortexApi.Encoders;
 
 namespace UnitTestsProject
 {
@@ -129,7 +121,7 @@ namespace UnitTestsProject
                 Assert.IsTrue(numPatterns == trainingImages.Length);
                 isInStableState = true;
                 Debug.WriteLine($"Entered STABLE state: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
-            }, requiredSimilarityThreshold:0.975);
+            }, requiredSimilarityThreshold: 0.975);
 
             SpatialPooler sp = new SpatialPoolerMT(hpa);
 
@@ -440,12 +432,6 @@ namespace UnitTestsProject
         /// <param name="inputVectors">The dictionary of corresponding inputs.</param>        
         private void CalculateSimilarity(Dictionary<string, int[]> sdrs, Dictionary<string, int[]> inputVectors, string output = "Correlation.csv")
         {
-            //foreach (var keyPairs in sdrs)
-            //{
-            //    Logger.LogInformation(keyPairs.Key);
-            //    Logger.LogInformation($"{Helpers.StringifyVector(keyPairs.Value)}\n");
-            //}
-
             var keyArray = sdrs.Keys.ToArray();
 
             StreamWriter streamWriter = new StreamWriter(output);
@@ -467,16 +453,14 @@ namespace UnitTestsProject
                     var key2 = keyArray[j];
                     int[] sdr1 = sdrs.GetValueOrDefault<string, int[]>(key1);
                     int[] sdr2 = sdrs.GetValueOrDefault<string, int[]>(key2);
-                    //double outputSimilarity = CalcArraySimilarity(Array.ConvertAll<int, double>(sdr1, x => x), Array.ConvertAll<int, double>(sdr2, x => x)) * 100;
+                    
                     double outputSimilarity = MathHelpers.CalcArraySimilarity(sdr1, sdr2);
 
                     int[] inp1 = inputVectors.GetValueOrDefault<string, int[]>(key1);
                     int[] inp2 = inputVectors.GetValueOrDefault<string, int[]>(key2);
-                    //double inputSimilarity = CalcArraySimilarity(Array.ConvertAll<int, double>(inp1, x => x), Array.ConvertAll<int, double>(sdr2, x => x)) * 100;
                     double inputSimilarity = MathHelpers.CalcArraySimilarity(inp1, inp2);
 
-                    streamWriter.Write($" | {inputSimilarity.ToString("0.0")} {outputSimilarity.ToString("0.0")} ");
-                    //streamWriter.Write($" {outputSimilarity.ToString("0.0")} ");
+                    streamWriter.Write($" | {inputSimilarity.ToString("0.0")} {outputSimilarity.ToString("0.0")} ");                    
                 }
             }
 
@@ -484,8 +468,6 @@ namespace UnitTestsProject
 
             return;
         }
-
-
 
         #region Private Helpers
 
@@ -538,11 +520,4 @@ namespace UnitTestsProject
         #endregion
 
     }
-
-    //class InputData
-    //{
-    //    [ColumnName("PixelValues")]
-    //    [VectorType(64)]
-    //    public Boolean[] PixelValues;
-    //}
 }

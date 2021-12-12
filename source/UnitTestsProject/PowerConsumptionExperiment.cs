@@ -117,7 +117,7 @@ namespace UnitTestsProject
             sw.Stop();
 
             Debug.WriteLine($"Training duration: {sw.ElapsedMilliseconds / 1000} s");
-        
+
         }
 
         double lastPredictedValue = 0.0;
@@ -244,7 +244,7 @@ namespace UnitTestsProject
         {
             Dictionary<String, Object> encoderSettings = new Dictionary<string, object>();
             encoderSettings.Add("W", 15 /*21*/);                       //the number of bits that are set to encode a single value -the "width" of the output signal 
-                                                                //restriction: w must be odd to avoid centering problems.
+                                                                       //restriction: w must be odd to avoid centering problems.
             encoderSettings.Add("N", inputBits /*4096*/);                     //The number of bits in the output. Must be greater than or equal to w
             encoderSettings.Add("MinVal", (double)0.0);         //The minimum value of the input signal.
             encoderSettings.Add("MaxVal", (double)60);       //The upper bound of the input signal
@@ -254,8 +254,8 @@ namespace UnitTestsProject
                                                              //encoderSettings.Add("Resolution", (double)0.15);  // Two inputs separated by greater than, or equal to the resolution are guaranteed
                                                              //to have different representations.
             encoderSettings.Add("Periodic", (bool)false);        //If true, then the input value "wraps around" such that minval = maxval
-                                                                //For a periodic value, the input must be strictly less than maxval,
-                                                                //otherwise maxval is a true upper bound.
+                                                                 //For a periodic value, the input must be strictly less than maxval,
+                                                                 //otherwise maxval is a true upper bound.
             encoderSettings.Add("ClipInput", (bool)false);       //if true, non-periodic inputs smaller than minval or greater than maxval 
                                                                  //will be clipped to minval/maxval
 

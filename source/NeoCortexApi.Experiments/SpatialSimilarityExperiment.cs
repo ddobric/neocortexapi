@@ -2,15 +2,12 @@
 using NeoCortex;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
-using NeoCortexApi.Network;
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NeoCortexApi.Experiments
 {
@@ -79,7 +76,7 @@ namespace NeoCortexApi.Experiments
             // We create here 100 random input values.
             List<int[]> inputValues = GetTrainingvectors(0, inputBits, width);
 
-            RunExperiment(cfg, encoder, inputValues);
+            RunExperiment(cfg, inputValues);
         }
 
 
@@ -129,7 +126,7 @@ namespace NeoCortexApi.Experiments
         /// <param name="cfg"></param>
         /// <param name="encoder"></param>
         /// <param name="inputValues"></param>
-        private static void RunExperiment(HtmConfig cfg, EncoderBase encoder, List<int[]> inputValues)
+        private static void RunExperiment(HtmConfig cfg, List<int[]> inputValues)
         {
             // Creates the htm memory.
             var mem = new Connections(cfg);
@@ -207,7 +204,7 @@ namespace NeoCortexApi.Experiments
                     // Learn the input pattern.
                     // Output lyrOut is the output of the last module in the layer.
                     sp.compute(input, activeColumns, true);
-                   // DrawImages(cfg, inputKey, input, activeColumns);
+                    // DrawImages(cfg, inputKey, input, activeColumns);
 
                     var actColsIndicies = ArrayUtils.IndexWhere(activeColumns, c => c == 1);
 
@@ -266,45 +263,15 @@ namespace NeoCortexApi.Experiments
                 i++;
             }
 
-            PrintMatrix(inpVectorsMap.Keys.Count, inpVectorsMap.Keys.ToArray(), matrix);
+            var res = Helpers.RenderSimilarityMatrix(inpVectorsMap.Keys.ToArray(), matrix);
+            
+            Console.WriteLine(res);
+            Debug.WriteLine(res);           
         }
 
-        private static void PrintMatrix(int dim, string[] inpVectorKeys, string[,] matrix)
-        {
-            Debug.Write($"{String.Format(" {0,-15}", "")} |");
-
-            for (int k = 0; k < dim; k++)
-            {
-                string st = String.Format(" {0,-15} |", inpVectorKeys[k]);
-                Debug.Write($"{st}");
-            }
-
-            Debug.WriteLine("");
-
-            for (int k = 0; k <= dim; k++)
-            {
-                string st = String.Format(" {0,-15} |", "---------------");
-                Debug.Write($"{st}");
-            }
-
-            Debug.WriteLine("");
-
-            for (int i = 0; i < dim; i++)
-            {
-                Debug.Write(String.Format(" {0,-15} |", inpVectorKeys[i]));
-
-                for (int j = 0; j < dim; j++)
-                {
-                    string st = String.Format(" {0,-15} |", matrix[i, j]);
-                    Debug.Write(st);
-                }
-
-                Debug.WriteLine("");
-            }
-        }
-
+      
         /// <summary>
-        /// Drwaws the input and the corresponding SDR.
+        /// Draws the input and the corresponding SDR.
         /// </summary>
         /// <param name="cfg"></param>
         /// <param name="inputKey"></param>

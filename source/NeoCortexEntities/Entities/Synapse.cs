@@ -1,10 +1,7 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 
 namespace NeoCortexApi.Entities
@@ -57,6 +54,9 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public int InputIndex { get; set; }
 
+        /// <summary>
+        /// The synaptic weight.
+        /// </summary>
         public double Permanence { get; set; }
 
         /// <summary>
@@ -65,13 +65,13 @@ namespace NeoCortexApi.Entities
         public bool IsDestroyed { get; set; }
 
         /// <summary>
-        /// 
+        /// Used by serialization.
         /// </summary>
         public Synapse() { }
 
 
         /// <summary>
-        /// Creates the synapse on the distal segment, which connect cells during temporal learning process.
+        /// Creates the synapse on the DistalDendrite, which connect cells during temporal learning process.
         /// </summary>
         /// <param name="presynapticCell">The cell which connects to the segment.</param>
         /// <param name="distalSegmentIndex">The index of the segment.</param>
@@ -91,70 +91,18 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Creates the synapse on the PriximalDendrite segment, which connects columns to sensory input.
         /// </summary>
-        /// <param name="presynapticCell">The cell which connects to the segment.</param>
         /// <param name="segmentIndex">The index of the segment.</param>
         /// <param name="inputIndex">The index of the synapse.</param>
-        public Synapse(Cell sourceCell, int segmentIndex, int synapseIndex, int inputIndex)
+        public Synapse( int segmentIndex, int synapseIndex, int inputIndex)
         {
-            this.SourceCell = sourceCell;
+            this.SourceCell = null;
             this.SegmentIndex = segmentIndex;
             this.SynapseIndex = synapseIndex;
             this.BoxedIndex = new Integer(synapseIndex);
             this.InputIndex = inputIndex;
         }
 
-        ///**
-        // * Returns this {@code Synapse}'s index.
-        // * @return
-        // */
-        //public int getIndex()
-        //{
-        //    return SynapseIndex;
-        //}
-
-        ///**
-        // * Returns the index of this {@code Synapse}'s input item
-        // * whether it is a "sourceCell" or inputVector bit.
-        // * @return
-        // */
-        //public int getInputIndex()
-        //{
-        //    return InputIndex;
-        //}
-
-        ///// <summary>
-        ///// Returns this {@code Synapse}'s degree of connectedness.
-        ///// </summary>
-        //public double getPermanence()
-        //{
-        //    return Permanence;
-        //}
-
-        ///**
-        // * Sets this {@code Synapse}'s degree of connectedness.
-        // * @param perm
-        // * TODO: Remove synPermConnected. Not used here
-        // */
-        //public void setPermanence(double synPermConnected, double perm)
-        //{
-        //    this.Permanence = perm;
-
-        //    //// On proximal dendrite which has no presynaptic cell
-        //    //if (SourceCell == null)
-        //    //{
-        //    //    Pool.updatePool(synPermConnected, this, perm);
-        //    //}
-        //}
-
-        ///**
-        // * Returns the owning dendritic segment
-        // * @return
-        // */
-        //public Segment getSegment()
-        //{
-        //    return Segment;
-        //}
-
+      
         /// <summary>
         /// Called by <see cref="Connections.DestroySynapse(Synapse, DistalDendrite)"/> to assign a reused Synapse to another presynaptic Cell
         /// </summary>
@@ -173,24 +121,7 @@ namespace NeoCortexApi.Entities
             return SourceCell;
         }
 
-        ///**
-        // * Returns the flag indicating whether this segment has been destroyed.
-        // * @return  the flag indicating whether this segment has been destroyed.
-        // */
-        //public bool destroyed()
-        //{
-        //    return IsDestroyed;
-        //}
-
-        ///**
-        // * Sets the flag indicating whether this segment has been destroyed.
-        // * @param b the flag indicating whether this segment has been destroyed.
-        // */
-        //public void setDestroyed(bool b)
-        //{
-        //    this.IsDestroyed = b;
-        //}
-
+      
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
@@ -207,7 +138,10 @@ namespace NeoCortexApi.Entities
         }
 
 
-
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
             int prime = 31;
@@ -219,11 +153,10 @@ namespace NeoCortexApi.Entities
             return result;
         }
 
-
-        /* (non-Javadoc)
-         * @see java.lang.Object#equals(java.lang.Object)
-         */
-        // @Override
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <returns></returns>
         public override bool Equals(object obj)
         {
             if (this == obj)
@@ -253,6 +186,11 @@ namespace NeoCortexApi.Entities
             return true;
         }
 
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <returns></returns>
         public bool Equals(Synapse obj)
         {
             if (this == obj)
@@ -295,6 +233,10 @@ namespace NeoCortexApi.Entities
             return true;
         }
 
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <returns></returns>
         public int CompareTo(Synapse other)
         {
             if (this.SegmentIndex < other.SegmentIndex)

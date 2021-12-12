@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,7 +9,7 @@ using System.Text;
 
 namespace NeoCortexApi
 {
-  
+
     /**
    * Contains methods for Serialization and Deserialization and is applicable to Spatial Pooler and Temoral Memory Class
    */

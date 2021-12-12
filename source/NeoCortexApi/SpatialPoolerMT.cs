@@ -2,22 +2,21 @@
 // Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+using NeoCortexApi.Entities;
+using NeoCortexApi.Utility;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using NeoCortexApi.Entities;
 using System.Linq;
-using NeoCortexApi.Utility;
+using System.Threading.Tasks;
 
 namespace NeoCortexApi
 {
     public class SpatialPoolerMT : SpatialPooler
     {
         public SpatialPoolerMT(HomeostaticPlasticityController homeostaticPlasticityActivator = null) : base(homeostaticPlasticityActivator)
-        { 
-        
+        {
+
         }
 
         /// <summary>
@@ -31,7 +30,8 @@ namespace NeoCortexApi
         }
 
         /// <summary>
-        /// Implements muticore initialization of pooler.
+        /// Implements multicore initialization of the Spatial Pooler.
+        /// It creates the pool of potentially connected synapses on ProximalDendrite segment.
         /// </summary>
         /// <param name="c"></param>
         protected override void ConnectAndConfigureInputs(Connections c)
@@ -44,7 +44,6 @@ namespace NeoCortexApi
 
             // Parallel implementation of initialization
             ParallelOptions opts = new ParallelOptions();
-            //int synapseCounter = 0;
 
             Parallel.For(0, numColumns, opts, (indx) =>
             {
@@ -72,7 +71,7 @@ namespace NeoCortexApi
 
                 data.AvgConnected = GetAvgSpanOfConnectedSynapses(c, colIndex);
 
-                HtmCompute.UpdatePermanencesForColumn( c.HtmConfig, data.Perm, data.Column, data.Potential, true);
+                HtmCompute.UpdatePermanencesForColumn(c.HtmConfig, data.Perm, data.Column, data.Potential, true);
 
                 if (!colList2.TryAdd(colIndex, new KeyPair() { Key = colIndex, Value = data }))
                 {
@@ -126,7 +125,7 @@ namespace NeoCortexApi
             }
 
             SparseObjectMatrix<Column> mem = (SparseObjectMatrix<Column>)c.HtmConfig.Memory;
-            
+
             if (mem.IsRemotelyDistributed)
             {
                 // Pool is created and attached to the local instance of Column.
@@ -145,20 +144,20 @@ namespace NeoCortexApi
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        /// <param name="c"></param>
+        /// <param name="conn"></param>
         /// <param name="inputVector"></param>
         /// <returns></returns>
-        public override int[] CalculateOverlap(Connections c, int[] inputVector)
+        public override int[] CalculateOverlap(Connections conn, int[] inputVector)
         {
-            ParallelOptions opts = new ParallelOptions
-            {
-                MaxDegreeOfParallelism = Environment.ProcessorCount
-            };
+            ParallelOptions opts = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount };
+
             ConcurrentDictionary<int, int> overlaps = new ConcurrentDictionary<int, int>();
 
-            Parallel.For(0, c.HtmConfig.NumColumns, (col) =>
+            //
+            // Calculates the overlapp for each mini-column.
+            Parallel.For(0, conn.HtmConfig.NumColumns, (col) =>
             {
-                var res = c.GetColumn(col).GetColumnOverlapp(inputVector, c.HtmConfig.StimulusThreshold);
+                var res = conn.GetColumn(col).CalcMiniColumnOverlap(inputVector, conn.HtmConfig.StimulusThreshold);
                 overlaps.TryAdd(col, res);
             });
 

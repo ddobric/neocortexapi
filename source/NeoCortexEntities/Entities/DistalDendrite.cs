@@ -1,11 +1,9 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using NeoCortexApi.Types;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace NeoCortexApi.Entities
 {
@@ -14,15 +12,12 @@ namespace NeoCortexApi.Entities
     /// Segments are owned by <see cref="Cell"/>s and in turn own <see cref="Synapse"/>s which are obversely connected to by a "source cell", 
     /// which is the <see cref="Cell"/> which will activate a given <see cref="Synapse"/> owned by this <see cref="Segment"/>.
     /// </summary>
-    /// <remarks>
-    /// Authors of the JAVA implementation: Chetan Surpur, David Ray
-    /// </remarks>
     public class DistalDendrite : Segment, IComparable<DistalDendrite>, IEquatable<DistalDendrite>
     {
         /// <summary>
         /// The cell that owns (parent) the segment.
         /// </summary>        
-        public Cell ParentCell ; 
+        public Cell ParentCell;
 
         private long m_LastUsedIteration;
 
@@ -41,9 +36,9 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Default constructor used by deserializer.
         /// </summary>
-        public DistalDendrite() 
-        { 
-        
+        public DistalDendrite()
+        {
+
         }
 
 
@@ -63,44 +58,10 @@ namespace NeoCortexApi.Entities
         {
             this.ParentCell = parentCell;
             this.m_Ordinal = ordinal;
-            this.m_LastUsedIteration = lastUsedIteration;            
+            this.m_LastUsedIteration = lastUsedIteration;
         }
 
 
-        /// <summary>
-        /// Gets all synapses owned by this distal dentrite segment.
-        /// </summary>
-        /// <param name="mem"></param>
-        /// <returns>Synapses.</returns>
-        public List<Synapse> GetAllSynapses(Connections mem)
-        {
-            //DD  return mem.GetSynapses(this);
-            return this.Synapses;
-        }
-
-        /// <summary>
-        /// Gets all active synapses of this segment, which have presynaptic cell as active one.
-        /// </summary>
-        /// <param name="c"></param>
-        /// <param name="activeCells"></param>
-        /// <returns></returns>
-        //public ISet<Synapse> GetActiveSynapses(Connections c, ISet<Cell> activeCells)
-        //{
-        //    ISet<Synapse> activeSynapses = new LinkedHashSet<Synapse>();
-
-        //    //DD foreach (var synapse in c.GetSynapses(this))
-        //    foreach (var synapse in this.Synapses)
-        //    {
-        //        if (activeCells.Contains(synapse.getPresynapticCell()))
-        //        {
-        //            activeSynapses.Add(synapse);
-        //        }
-        //    }
-
-        //    return activeSynapses;
-        //}
-
-           
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
@@ -338,7 +299,7 @@ namespace NeoCortexApi.Entities
                                     distal.NumInputs = ser.ReadIntValue(str[i]);
                                     break;
                                 }
-                           
+                            
                             default:
                                 { break; }
 

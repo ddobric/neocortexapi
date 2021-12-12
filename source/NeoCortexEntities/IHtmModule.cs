@@ -1,15 +1,12 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace NeoCortexApi
 {
     public interface IHtmModule
     {
         string Name { get; set; }
-   
+
     }
 
     /// <summary>
@@ -17,7 +14,7 @@ namespace NeoCortexApi
     /// </summary>
     public interface IHtmModule<TIN, TOUT> : IHtmModule
     {
-     
+
 
         TOUT Compute(TIN input, bool learn);
 
@@ -26,7 +23,7 @@ namespace NeoCortexApi
         //IModuleData Input { get; }
     }
 
-  
+
     public interface IModuleData
     {
 
@@ -49,9 +46,9 @@ namespace NeoCortexApi
     //        this.Output = array;
     //    }
 
-      
+
     //    public int[] Data { get { return this.Output; } }
 
- 
+
     //}
 }

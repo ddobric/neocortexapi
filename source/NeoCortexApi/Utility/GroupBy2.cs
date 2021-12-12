@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-using System.Collections;
 using NeoCortexApi.Entities;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace NeoCortexApi.Utility
 {
@@ -372,7 +371,9 @@ namespace NeoCortexApi.Utility
             /// </summary>
             /// <param name="obj">an object to be tested for equality</param>
             /// <returns>true if the other object is "equal to" this object otherwise false</returns>
+#pragma warning disable CS0114 // 'GroupBy2<R>.Slot<T>.Equals(object)' hides inherited member 'object.Equals(object)'. To make the current member override that implementation, add the override keyword. Otherwise add the new keyword.
             public bool Equals(object obj)
+#pragma warning restore CS0114 // 'GroupBy2<R>.Slot<T>.Equals(object)' hides inherited member 'object.Equals(object)'. To make the current member override that implementation, add the override keyword. Otherwise add the new keyword.
             {
                 if (this == obj)
                 {

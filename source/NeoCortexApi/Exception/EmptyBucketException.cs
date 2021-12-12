@@ -8,7 +8,7 @@ namespace NeoCortexApi.Exception
         public EmptyBucketException(String message)
           : base(message)
         {
-            
+
         }
     }
 }

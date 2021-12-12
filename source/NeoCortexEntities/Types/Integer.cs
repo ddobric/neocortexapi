@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace NeoCortexApi.Entities
 {
@@ -116,19 +115,14 @@ namespace NeoCortexApi.Entities
             }
 
             return inte;
-            
+
         }
 
         #endregion
-
-        public override bool Equals(object obj)
-        {
-            return base.Equals(obj);
-        }
 
         public override int GetHashCode()
         {
             return this.Value.GetHashCode();
         }
     }
-    }
+}

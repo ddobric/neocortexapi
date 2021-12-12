@@ -5,7 +5,6 @@ using NeoCortexApi.Network;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace NeoCortexApi.DataMappers
 {
@@ -17,7 +16,7 @@ namespace NeoCortexApi.DataMappers
         private DataDescriptor m_Descriptor;
 
         private CortexNetworkContext m_Context;
-        
+
         /// <summary>
         /// Width of input across of all encoders.
         /// </summary>
@@ -46,7 +45,7 @@ namespace NeoCortexApi.DataMappers
             {
                 if (feature.EncoderSettings != null)
                 {
-                    feature.Encoder = this.m_Context.CreateEncoder(feature.EncoderSettings);                    
+                    feature.Encoder = this.m_Context.CreateEncoder(feature.EncoderSettings);
                 }
                 else
                 {
@@ -82,10 +81,10 @@ namespace NeoCortexApi.DataMappers
 
                 int[] encodedValue = col.Encoder.Encode(vector[featureIndx]);
 
-                output.AddRange(encodedValue);              
+                output.AddRange(encodedValue);
             }
 
-            
+
             //after real data is transformed in to numeric format, then we can calculate number of feature
             // ctx.DataDescriptor.NumOfFeatures = rows.FirstOrDefault().Count;
 

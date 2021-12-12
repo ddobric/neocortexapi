@@ -155,6 +155,9 @@ Results|![][img05.07.2011] | ![][img06.07.2012] | ![][img07.07.2013] | ![][img08
 [img07.07.2013]: ./images/DateTimeEncoder/DateTime_out_07-07-2013%2021-58-07_32x32-N-1024-W-21.png
 [img08.07.2014]: ./images/DateTimeEncoder/DateTime_out_08-07-2014%2021-58-07_32x32-N-1024-W-21.png
 
+Further unit tests can be found [here](../UnitTestsProject/EncoderTests/DateTimeEncoderTests.cs)
+
+
 ### Geo-Spatial Encoder
 
 ```csharp
@@ -187,11 +190,11 @@ public int[] GermanyToItalyLongitude(double input)
 }
 ```
 
-Further unit tests can be found here: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/UnitTestsProject/EncoderTests/GeoSpatialEncoderExperimentalTests.cs
+Further unit tests can be found [here](../UnitTestsProject/EncoderTests/GeoSpatialEncoderExperimentalTests.cs)
+
 
 ### Multi-Encoder
-
-Further unit tests can be found here: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/UnitTestsProject/EncoderTests/MultiEncoderTests.cs
+Further unit tests can be found [here](../UnitTestsProject/EncoderTests/MultiEncoderTests.cs)
 
 ```csharp
 // Not Implemented
@@ -236,4 +239,4 @@ The following table visualizes the result from several numbers of the above unit
 [img17.6]: ./images/ScalarEncoder/17.6.png
 [img18.0]: ./images/ScalarEncoder/18.0.png
 
-Further unit tests can be found here: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/UnitTestsProject/EncoderTests/ScalarEncoderTests.cs
+Further unit tests can be found [here](../UnitTestsProject/EncoderTests/ScalarEncoderTests.cs)

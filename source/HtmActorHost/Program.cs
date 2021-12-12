@@ -1,9 +1,8 @@
 ﻿
-using Microsoft.Extensions.Logging;
-using System;
-using System.Configuration;
 using AkkaSb.Net;
+using Microsoft.Extensions.Logging;
 using NeoCortexApi.DistributedComputeLib;
+using System;
 
 namespace HtmAkkaHost
 {

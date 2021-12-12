@@ -490,7 +490,7 @@ namespace NeoCortex
         /// <returns>The two dimensional box.</returns>
         public static int[] Create2DVector(int widthBits, int heightBits, int nonzeroBitStart, int nonZeroBitEnd)
         {
-            int[] inputVector = new int[widthBits*heightBits];
+            int[] inputVector = new int[widthBits * heightBits];
 
             for (int i = 0; i < widthBits; i++)
             {

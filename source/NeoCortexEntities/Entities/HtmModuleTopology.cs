@@ -37,7 +37,7 @@ namespace NeoCortexApi.Entities
 
         public int[] Dimensions { get; set; }
 
-        public bool IsMajorOrdering { get; set; } 
+        public bool IsMajorOrdering { get; set; }
 
         public int[] DimensionMultiplies { get; set; }
 

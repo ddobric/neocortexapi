@@ -346,7 +346,7 @@ namespace UnitTestsProject
                 var r1 = rnd1.Next();
                 var r2 = rnd2.Next();
 
-                Console.WriteLine($"{r1}\t{r2} / rnd1 == rnd2: {r1 == r2}");                
+                Console.WriteLine($"{r1}\t{r2} / rnd1 == rnd2: {r1 == r2}");
             }
 
             Console.WriteLine("");

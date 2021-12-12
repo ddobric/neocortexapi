@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using NeoCortexApi;
+﻿using NeoCortexApi;
 using NeoCortexApi.Classifiers;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Network;
-using NeoCortexApi.Utility;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 
 
 namespace NeoCortexApiSample
@@ -124,7 +121,7 @@ namespace NeoCortexApiSample
             }, numOfCyclesToWaitOnChange: 50);
 
 
-            SpatialPoolerMT sp = new SpatialPoolerMT(hpa);
+            SpatialPooler sp = new SpatialPooler(hpa);
             sp.Init(mem);
             tm.Init(mem);
 
@@ -254,7 +251,7 @@ namespace NeoCortexApiSample
                             {
                                 Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {item}");
                             }
-                            
+
                             lastPredictedValue = predictedInputValues.First().PredictedInput;
                         }
                         else

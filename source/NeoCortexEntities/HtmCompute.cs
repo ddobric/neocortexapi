@@ -4,9 +4,8 @@ using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-using System.Diagnostics;
+using System.Text;
 
 namespace NeoCortexApi
 {
@@ -46,7 +45,7 @@ namespace NeoCortexApi
             return retVal;
         }
 
-      
+
         /// <summary>
         /// Maps a column to its input bits. This method encapsulates the topology of the region. It takes the index of the column as an argument and calculates 
         /// indexes of the input vector that represent column's potential pool. The return value is a list containing the indices of 
@@ -61,7 +60,8 @@ namespace NeoCortexApi
         ///     If the topology is one dimensional, and the potentialRadius is 5, this method will return an array containing 5 consecutive values centered on 
         ///     the index of the column (wrapping around if necessary).
         ///     </item>
-        ///     <item>If the topology is two dimensional (not implemented), and the potentialRadius is 5, the method should return an array containing 25 '1's, where 
+        ///     <item>
+        ///     If the topology is two dimensional (not implemented), and the potentialRadius is 5, the method should return an array containing 25 '1's, where 
         ///     the exact indices are to be determined by the mapping from 1-D index to 2-D position.
         ///     </item>
         /// </list>
@@ -99,7 +99,7 @@ namespace NeoCortexApi
             return sb.ToString();
         }
 
-      
+
         /// <summary>
         /// Uniform Column Mapping <br></br>
         /// Maps a column to its respective input index, keeping to the topology of the region. It takes the index of the column as an argument and determines 
@@ -268,7 +268,7 @@ namespace NeoCortexApi
             return baseNum;
         }
 
-              
+
         /// <summary>
         /// Gets a neighborhood of inputs. Simply calls topology.wrappingNeighborhood or topology.neighborhood. A subclass can insert different topology behavior by overriding this method.
         /// </summary>
@@ -319,7 +319,7 @@ namespace NeoCortexApi
             return perm;
         }
 
-      
+
         /// <summary>
         /// Returns a randomly generated permanence value for a synapse that is initialized in a connected state. The basic idea here is to initialize
         /// permanence values very close to <c>synPermConnected</c> so that a small number of learning steps could make it disconnected or connected.
@@ -443,7 +443,7 @@ namespace NeoCortexApi
                 ArrayUtils.RaiseValuesBy(htmConfig.SynPermBelowStimulusInc, perm);
             }
         }
-      
+
         /// <summary>
         /// This method updates the permanence matrix with a column's new permanence values. The column is identified by its index, which reflects the row in
         /// the matrix, and the permanence is given in 'sparse' form, i.e. an array whose members are associated with specific indexes. It is in charge of 

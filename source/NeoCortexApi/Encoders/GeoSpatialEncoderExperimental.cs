@@ -28,10 +28,6 @@ namespace NeoCortexApi.Encoders
         /// <summary>
         /// Defines the NoOfBits. Works same as N. It is used to change Type of a variable
         /// </summary>
-
-
-
-
         /// <param name="encoderSettings">The encoderSettings<see cref="Dictionary{string, object}"/></param>
         public GeoSpatialEncoderExperimental(Dictionary<string, object> encoderSettings)
         {

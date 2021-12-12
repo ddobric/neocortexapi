@@ -1,21 +1,15 @@
-﻿using NeoCortexApi.Entities;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 
 namespace NeoCortexApi.Entities
 {
-   /// <summary>
-   /// Serialization class used for serialization and deserialization of primitive types.
-   /// </summary>
+    /// <summary>
+    /// Serialization class used for serialization and deserialization of primitive types.
+    /// </summary>
     public class HtmSerializer2
     {
         //SP
@@ -33,7 +27,7 @@ namespace NeoCortexApi.Entities
 
         public static string KeyValueDelimiter = ": ";
 
-        public const char  ElementsDelimiter = ',';
+        public const char ElementsDelimiter = ',';
 
         /// <summary>
         /// Serializes the begin marker of the type.
@@ -391,7 +385,7 @@ namespace NeoCortexApi.Entities
                 sw.Write(i.Key + KeyValueDelimiter + i.Value.ToString());
                 sw.Write(ElementsDelimiter);
             }
-                sw.Write(ParameterDelimiter);
+            sw.Write(ParameterDelimiter);
         }
         /// <summary>
         /// Read the dictionary with key:string and value:int.
@@ -405,7 +399,7 @@ namespace NeoCortexApi.Entities
             for (int i = 0; i < str.Length - 1; i++)
             {
                 string[] tokens = str[i].Split(KeyValueDelimiter);
-                keyValues.Add(tokens[0].Trim(), Convert.ToInt32(tokens[1])) ;
+                keyValues.Add(tokens[0].Trim(), Convert.ToInt32(tokens[1]));
             }
 
             return keyValues;
@@ -430,11 +424,11 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="reader"></param>
         /// <returns>Dictionary<int, int></returns>
-        public Dictionary<int,int> ReadDictionaryIIValue(string reader)
+        public Dictionary<int, int> ReadDictionaryIIValue(string reader)
         {
             string[] str = reader.Split(ElementsDelimiter);
             Dictionary<int, int> keyValues = new Dictionary<int, int>();
-            for (int i = 0; i < str.Length-1; i++)
+            for (int i = 0; i < str.Length - 1; i++)
             {
                 string[] tokens = str[i].Split(KeyValueDelimiter);
                 keyValues.Add(Convert.ToInt32(tokens[0].Trim()), Convert.ToInt32(tokens[1]));
@@ -472,7 +466,7 @@ namespace NeoCortexApi.Entities
         {
             string[] str = reader.Split(ElementsDelimiter);
             Dictionary<String, int[]> keyValues = new Dictionary<String, int[]>();
-            for (int i = 0; i < str.Length-1; i++)
+            for (int i = 0; i < str.Length - 1; i++)
             {
                 string[] tokens = str[i].Split(KeyValueDelimiter);
                 string[] values = tokens[1].Split(ValueDelimiter);
@@ -676,145 +670,8 @@ namespace NeoCortexApi.Entities
             }
             sw.Write(ParameterDelimiter);
         }
-        ///// <summary>
-        ///// Read the Concurrentdictionary with key:int and value:DistalDendrite.
-        ///// </summary>
-        ///// <param name="reader"></param>
-        ///// <returns>Dictionary<int, Synapse></returns>
-        public int ReadCKeyIDValue(string reader)
-        {
-            string val = reader.Replace(KeyValueDelimiter, "");
-            if (val.Contains(ElementsDelimiter))
-            {
-                val = val.Replace(ElementsDelimiter.ToString(), "");
-            }
-            return Convert.ToInt32(val);
-        }
-        ///// <summary>
-        ///// Deserializes from text file to Cell
-        ///// </summary>
-        ///// <param name="sr"></param>
-        ///// <returns>Cell</returns>
-        public Cell DeserializeCell(StreamReader sr)
-        {
-            while (sr.Peek() >= 0)
-            {
-                string data = sr.ReadLine();
-
-                if (data == ReadBegin(nameof(Cell)))
-                {
-                    Cell cell1 = Cell.Deserialize(sr);
-
-                    DistalDendrite distSegment1 = cell1.DistalDendrites[0];
-
-                    DistalDendrite distSegment2 = cell1.DistalDendrites[1];
-
-                    distSegment1.ParentCell = cell1;
-                    distSegment2.ParentCell = cell1;
-
-                    return cell1;
-                }
-            }
-            return null;
-        }
-
-        ///// <summary>
-        ///// Deserializes from text file to DistalDendrite
-        ///// </summary>
-        ///// <param name="sr"></param>
-        ///// <returns>DistalDendrite</returns>
-        public DistalDendrite DeserializeDistalDendrite(StreamReader sr)
-        {
-
-            while (sr.Peek() >= 0)
-            {
-                string data = sr.ReadLine();
-
-                if (data == ReadBegin(nameof(DistalDendrite)))
-                {
-
-                    DistalDendrite distSegment1 = DistalDendrite.Deserialize(sr);
-
-                    Cell cell1 = distSegment1.ParentCell;
-
-                    distSegment1 = distSegment1.ParentCell.DistalDendrites[0];
-                    distSegment1.ParentCell = cell1;
-                    DistalDendrite distSegment2 = distSegment1.ParentCell.DistalDendrites[1];
-                    distSegment2.ParentCell = cell1;
-
-                    return distSegment1;
-                }
-            }
-            return null;
-        }
-        ///// <summary>
-        ///// Deserializes from text file to DistalDendrite
-        ///// </summary>
-        ///// <param name="sr"></param>
-        ///// <returns>DistalDendrite</returns>
-        public Synapse DeserializeSynapse(StreamReader sr)
-        {
-            while (sr.Peek() >= 0)
-            {
-                string data = sr.ReadLine();
-
-                if (data == ReadBegin(nameof(Synapse)))
-                {
-                    Synapse synapseT1 = Synapse.Deserialize(sr);
-
-                    Cell cell1 = synapseT1.SourceCell;
-
-                    DistalDendrite distSegment1 = synapseT1.SourceCell.DistalDendrites[0];
-
-                    DistalDendrite distSegment2 = synapseT1.SourceCell.DistalDendrites[1];
-
-                    distSegment1.ParentCell = cell1;
-                    distSegment2.ParentCell = cell1;
-                    synapseT1.SourceCell = cell1;
-
-                    return synapseT1;
-                }
-            }
-            return null;
-        }
-        public void indent(string filename)
-        {
-            StreamReader sr = new StreamReader(filename);
-            string data = sr.ReadToEnd();
-            string[] val = data.Split(newLine);
-            int count = 0;
-            for(int i=0; i<val.Length; i++)
-            {
-                if (val[i].StartsWith("  BEGIN") || val[i].StartsWith("  END"))
-                {
-                    count += 1;
-                    if (count == 1)
-                    {
-                        val[i + 1] = tab + val[i + 1];
-                        continue;
-                    }
-                    else
-                    {
-                        val[i] = tab + val[i];
-                        val[i + 1] = tab + val[i + 1];
-                    }
-                    
-                }
-                if (i == val.Length - 2)
-                {
-                    val[i] = val[i].Replace(tab, "");
-                }
-
-            }
-            data = string.Join(newLine, val);
-
-            File.WriteAllText(filename, string.Empty);
-            using (StreamWriter sw = new StreamWriter(filename))
-            {
-                sw.Write(data);
-            }
-        }
-
+        
+        
         
     }
 

@@ -1,8 +1,8 @@
-using System;
-using System.Collections.Generic;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Exception;
 using NeoCortexApi.Utility;
+using System;
+using System.Collections.Generic;
 
 namespace NeoCortexApi.Classifiers
 {
@@ -351,5 +351,9 @@ namespace NeoCortexApi.Classifiers
             throw new NotImplementedException();
         }
 
+        public void Learn(TIN input, Cell[] output)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

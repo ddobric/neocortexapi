@@ -16,9 +16,9 @@ namespace NeoCortexApi.Entities
     public class ProximalDendrite : Segment
     {
         /// <summary>
-        /// The pool of synapses.
+        /// The pool of synapses in the receptive field.
         /// </summary>
-        public Pool RFPool {get;set; }
+        public Pool RFPool { get; set; }
 
         /// <summary>
         /// 
@@ -32,10 +32,23 @@ namespace NeoCortexApi.Entities
         }
 
         /// <summary>
-        /// Default constructor used by deserializer.
-        /// </summary>
-        public ProximalDendrite()
+        /// Creates and returns a newly created synapse with the specified source cell, permanence, and index.
+        /// </summary>       
+        /// <param name="sourceCell">This value is typically set to NULL in a case of proximal segment. This is because, proximal segments 
+        /// build synaptic connections from column to the sensory input. They do not cobbect a specific cell inside of the column.</param>
+        /// <param name="index">Sequence within gthe pool.</param>
+        /// <param name="inputIndex">The index of the sensory neuron connected by this synapse.</param>
+        /// <remarks>
+        /// <b>This method is only called for Proximal Synapses.</b> For ProximalDendrites, there are many synapses within a pool, and in that case, the index
+        /// specifies the synapse's sequence order within the pool object, and may be referenced by that index</remarks>
+        /// <returns>Instance of the new synapse.</returns>
+        /// <seealso cref="Synapse"/>
+        public Synapse CreateSynapse(int index, int inputIndex)
         {
+            Synapse synapse = new Synapse(this.SegmentIndex, index, inputIndex);
+            this.Synapses.Add(synapse);
+            return synapse;
+        }
 
         }
 
@@ -49,7 +62,7 @@ namespace NeoCortexApi.Entities
                 int[] lst = new int[this.Synapses.Count];
                 for (int i = 0; i < lst.Length; i++)
                 {
-                    lst[i]=  this.Synapses[i].InputIndex;
+                    lst[i] = this.Synapses[i].InputIndex;
                 }
 
                 return lst;
@@ -91,30 +104,13 @@ namespace NeoCortexApi.Entities
             {
                 var synapse = RFPool.GetSynapseForInput(inputIndexes[i]);
                 synapse.Permanence = perms[i];
-                //RFPool.setPermanence(c, RFPool.getSynapseWithInput(inputIndexes[i]), perms[i]);
+
                 if (perms[i] >= permConnThreshold)
                 {
-                    //c.getConnectedCounts().set(1, ParentColumnIndex, i);
                     connectedCounts.set(1, 0 /*ParentColumnIndex*/, i);
                 }
             }
         }
-
-        //public double SynPermConnected { get; set; }
-
-
-        /**
-         * Sets the input vector synapse indexes which are connected (&gt;= synPermConnected)
-         * @param c
-         * @param connectedIndexes
-         */
-        //public void setConnectedSynapsesForTest(Connections c, int[] connectedIndexes)
-        //{
-        //    //Pool pool = createPool(c, connectedIndexes);
-        //    var pool = new Pool(connectedIndexes.Length, c.NumInputs);
-        //    //c.getPotentialPools().set(index, pool);
-        //    c.getPotentialPoolsOld().set(index, pool);
-        //}
 
         /// <summary>
         /// Returns an array of synapse indexes as a dense binary array.

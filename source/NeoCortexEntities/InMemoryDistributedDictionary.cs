@@ -3,7 +3,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 using NeoCortexApi.Entities;
 using System.IO;
@@ -203,7 +202,7 @@ namespace NeoCortexApi.Entities
             {
                 if (this.dictList[i].ContainsKey(key))
                 {
-                        return true;
+                    return true;
                 }
             }
 
@@ -272,7 +271,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Current index in currentdictionary
         /// </summary>
-        private int currentIndex =-1;
+        private int currentIndex = -1;
 
         public object Current => this.dictList[this.currentDictIndex].ElementAt(currentIndex);
 

@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace NeoCortexApi.Entities
 {
@@ -11,16 +10,19 @@ namespace NeoCortexApi.Entities
 
     /// <summary>
     /// Base class for different types of segments. It which handles the creation of synapses (<seealso cref="Synapse"/>) on behalf of inheriting class types.
+    /// The HTM defines following segment types: Proximal, Distal and Apical.
+    /// Proximal segment connects mini-columns to sensory cells.<br/>
+    /// Distal (or basal) segment connects cells between mini-columns.<br/>
+    /// Apical segment connects cells between different regions.
     /// </summary>
-
     public abstract class Segment : IEquatable<Segment>
-    {       
+    {
         /// <summary>
         /// The index of the segment.
         /// </summary>
         public int SegmentIndex { get; set; }
 
-        protected Integer boxedIndex { get; set; }
+        //protected Integer boxedIndex { get; set; }
 
         /// <summary>
         /// Synapses connected to the segment.
@@ -30,7 +32,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Permanence threshold value to declare synapse as connected.
         /// </summary>
-        public double SynapsePermConnected { get; set; }
+        protected double SynapsePermConnected { get; set; }
 
         /// <summary>
         /// Number of input cells. Used by proximal dendrite segment by Spatial Pooler.
@@ -38,12 +40,12 @@ namespace NeoCortexApi.Entities
         public int NumInputs { get; set; }
 
         /// <summary>
-        /// Default constructor used by deserializer.
+        /// Default constructor used by serialization.
         /// </summary>
         protected Segment()
         {
             this.Synapses = new List<Synapse>();
-            this.boxedIndex = new Integer();
+            // this.boxedIndex = new Integer();
 
         }
 
@@ -59,28 +61,11 @@ namespace NeoCortexApi.Entities
             this.SynapsePermConnected = synapsePermConnected;
             this.Synapses = new List<Synapse>();
             this.SegmentIndex = index;
-            this.boxedIndex = new Integer(index);
+            //this.boxedIndex = new Integer(index);
         }
 
 
-        /// <summary>
-        /// Creates and returns a newly created synapse with the specified source cell, permanence, and index.
-        /// </summary>       
-        /// <param name="sourceCell">This value is typically set to NULL in a case of proximal segment. This is because, proximal segments 
-        /// build synaptic connections from column to the sensory input. They do not cobbect a specific cell inside of the column.</param>
-        /// <param name="index">Sequence within gthe pool.</param>
-        /// <param name="inputIndex">The index of the sensory neuron connected by this synapse.</param>
-        /// <remarks>
-        /// <b>This method is only called for Proximal Synapses.</b> For ProximalDendrites, there are many synapses within a pool, and in that case, the index
-        /// specifies the synapse's sequence order within the pool object, and may be referenced by that index</remarks>
-        /// <returns>Instance of the new synapse.</returns>
-        /// <seealso cref="Synapse"/>
-        public Synapse CreateSynapse(Cell sourceCell, int index, int inputIndex)
-        {
-            Synapse synapse = new Synapse(sourceCell, this.SegmentIndex, index, inputIndex);
-            this.Synapses.Add(synapse);
-            return synapse;
-        }
+
 
 
         /// <summary>
@@ -127,6 +112,9 @@ namespace NeoCortexApi.Entities
         {
             throw new NotImplementedException(); 
         }
+
+
+
 
         #endregion
     }

@@ -3,8 +3,6 @@
 using NeoCortexApi;
 using NeoCortexApi.Entities;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace UnitTestsProject
 {
@@ -12,7 +10,7 @@ namespace UnitTestsProject
     {
         private int[] m_InhibitColumns;
 
-      
+
         public SpatialPoolerMock(int[] inhibitColumns)
         {
             m_InhibitColumns = inhibitColumns;
@@ -31,12 +29,12 @@ namespace UnitTestsProject
         private Func<double, int[]> m_CallBackGlobal;
         private Func<double, int[]> m_CallBackLocal;
 
-        public SpatialPoolerMock2( Func<double, int[]> callBackGlobal, Func<double, int[]> callBackLocal)
+        public SpatialPoolerMock2(Func<double, int[]> callBackGlobal, Func<double, int[]> callBackLocal)
         {
             m_CallBackGlobal = callBackGlobal;
             m_CallBackLocal = callBackLocal;
         }
-        
+
 
         public override int[] InhibitColumnsGlobal(Connections c, double[] overlap, double density)
         {
@@ -59,7 +57,7 @@ namespace UnitTestsProject
 
     public class SpatialPoolerMock3 : SpatialPooler
     {
-     
+
         private double m_avgConnectedSpanForColumnND;
 
         private double m_avgColumnsPerInput;
@@ -85,10 +83,10 @@ namespace UnitTestsProject
 
     public class SpatialPoolerMock4 : SpatialPooler
     {
-     
+
         public SpatialPoolerMock4()
         {
-           
+
 
         }
 

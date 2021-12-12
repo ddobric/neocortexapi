@@ -1,24 +1,17 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeoCortexApi;
+using NeoCortexApi.Classifiers;
+using NeoCortexApi.Encoders;
+using NeoCortexApi.Entities;
+using NeoCortexApi.Network;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Globalization;
-using NeoCortexApi.Encoders;
-using NeoCortexApi.Network;
-using NeoCortexApi;
-using NeoCortexApi.Entities;
 using System.Diagnostics;
-using NeoCortexEntities.NeuroVisualizer;
-using WebSocketNeuroVisualizer;
-using NeoCortexApi.Utility;
-using System.Text;
 using System.IO;
+using System.Linq;
 using System.Threading;
-using System.Net.WebSockets;
-using System.Threading.Tasks;
-using NeoCortexApi.Classifiers;
 
 namespace UnitTestsProject.SequenceLearningExperiments
 {
@@ -43,9 +36,9 @@ namespace UnitTestsProject.SequenceLearningExperiments
             p.Set(KEY.RANDOM, new ThreadSafeRandom(42));
             p.Set(KEY.INPUT_DIMENSIONS, new int[] { inputBits });
             p.Set(KEY.COLUMN_DIMENSIONS, new int[] { numColumns });
-            
+
             p.Set(KEY.CELLS_PER_COLUMN, 25);
-       
+
             p.Set(KEY.GLOBAL_INHIBITION, true);
             p.Set(KEY.LOCAL_AREA_DENSITY, -1); // In a case of global inhibition.
 
@@ -153,7 +146,7 @@ namespace UnitTestsProject.SequenceLearningExperiments
 
             int maxMatchCnt = 0;
             bool learn = true;
-    
+
             CortexNetwork net = new CortexNetwork("my cortex");
             List<CortexRegion> regions = new List<CortexRegion>();
             CortexRegion region0 = new CortexRegion("1st Region");
@@ -403,14 +396,14 @@ namespace UnitTestsProject.SequenceLearningExperiments
         public void TestCortexLayer()
         {
             int inputBits = 100;
-            
+
             double max = 20;
             int numColumns = 2048;
 
             List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 });
             int numInputs = inputValues.Distinct().ToList().Count;
 
-            var inputs = inputValues.ToArray();            
+            var inputs = inputValues.ToArray();
 
             Dictionary<string, object> settings = new Dictionary<string, object>()
             {
@@ -484,7 +477,7 @@ namespace UnitTestsProject.SequenceLearningExperiments
                 foreach (var input in inputs)
                 {
                     var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
-                } 
+                }
             }
         }
     }

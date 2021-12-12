@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using NeoCortexApi.Encoders;
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
@@ -25,26 +24,6 @@ namespace NeoCortexApi.Encoders
         /// Gets the Width
         /// </summary>
         public override int Width => throw new NotImplementedException();
-
-        ///// <summary>
-        ///// Defines the NoOfBits. Works same as N. It is used to change Type of a variable
-        ///// </summary>
-        //private double NoOfBits;
-
-        ///// <summary>
-        ///// Defines the Starting point in an array to map active bits
-        ///// </summary>
-        //private double StartPoint;
-
-        ///// <summary>
-        ///// Defines the EndingPoint in an array where active bits ends
-        ///// </summary>
-        //private double EndingPoint;
-
-        ///// <summary>
-        ///// Defines the EndingPointForPeriodic
-        ///// </summary>
-        //private double EndingPointForPeriodic;// Ending point in an array where active bits ends only works for periodic data
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ScalarEncoderExperimental"/> class.
@@ -190,9 +169,9 @@ namespace NeoCortexApi.Encoders
                 if (input < MinVal)
                 {
                     if (ClipInput && !Periodic)
-                    {                        
+                    {
                         Debug.WriteLine("Clipped input " + Name + "=" + input + " to minval " + MinVal);
-                        
+
                         input = MinVal;
                     }
                     else
@@ -215,8 +194,8 @@ namespace NeoCortexApi.Encoders
                 {
                     if (ClipInput)
                     {
-                        
-                        Debug.WriteLine($"Clipped input {Name} = {input} to maxval MaxVal");                        
+
+                        Debug.WriteLine($"Clipped input {Name} = {input} to maxval MaxVal");
                         input = MaxVal;
                     }
                     else

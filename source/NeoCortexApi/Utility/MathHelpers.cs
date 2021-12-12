@@ -2,9 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-using System.IO;
 
 namespace NeoCortexApi.Utility
 {
@@ -86,7 +84,8 @@ namespace NeoCortexApi.Utility
 
         /// <summary>
         /// Calculates how many elements of the array are same in percents. This method is useful to compare 
-        /// two arays that contains indicies of active columns.
+        /// two arays that contains indicies of active columns. Please note that arrays must not contain elements with the same index.
+        /// This method does not validate this for performance resons.
         /// </summary>
         /// <param name="originArray">Indexes of non-zero bits in the SDR.</param>
         /// <param name="comparingArray">Indexes of non-zero bits in the SDR.</param>
@@ -140,7 +139,35 @@ namespace NeoCortexApi.Utility
                 }
             }
 
-            return res ;
+            return res;
+        }
+
+        /// <summary>
+        /// Calculates the memory of the SDR.
+        /// </summary>
+        /// <param name="w">The number of non-zero bits used to encode the value.</param>
+        /// <param name="n">The total number of bits.</param>
+        /// <returns>The number of possible patterns that can be encoded.</returns>
+        public static double SdrMem(int w, int n)
+        {
+            return Factorial(n) / (Factorial(w) * (Factorial(n - w)));
+        }
+
+
+        /// <summary>
+        /// Calculates the factorial of n.
+        /// </summary>
+        /// <param name="n">The value to calculate the factorial.</param>
+        /// <returns></returns>
+        public static double Factorial(int n)
+        {
+            double fact = 1;
+            for (int i = 1; i <= n; i++)
+            {
+                fact *= i;
+            }
+
+            return fact;
         }
     }
 }

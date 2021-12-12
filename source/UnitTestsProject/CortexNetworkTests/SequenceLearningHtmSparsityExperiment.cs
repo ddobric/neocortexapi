@@ -2,16 +2,14 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
+using NeoCortexApi.Classifiers;
+using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
-using System;
+using NeoCortexApi.Network;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
-using System.Linq;
 using System.IO;
-using NeoCortexApi.Network;
-using NeoCortexApi.Encoders;
-using NeoCortexApi.Classifiers;
+using System.Linq;
 
 namespace UnitTestsProject.CortexNetworkTests
 {

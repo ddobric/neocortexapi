@@ -3,19 +3,14 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
+using NeoCortexApi.Utility;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Linq;
-using NeoCortexApi.Utility;
 using System.Diagnostics;
-using NeoCortex;
+using System.Linq;
+using System.Reflection;
 
 namespace UnitTestsProject
 {
@@ -72,7 +67,7 @@ namespace UnitTestsProject
 
             var jsonMem = JsonConvert.SerializeObject(mem1, settings);
 
-            var mem2 = JsonConvert.DeserializeObject<Connections>(jsonMem, settings);          
+            var mem2 = JsonConvert.DeserializeObject<Connections>(jsonMem, settings);
 
             var jsonSp = JsonConvert.SerializeObject(sp, settings);
 
@@ -123,13 +118,13 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 32, 32 });
             parameters.setColumnDimensions(new int[] { 64, 64 });
             parameters.setNumActiveColumnsPerInhArea(0.02 * 64 * 64);
-           
+
             var mem = new Connections();
             parameters.apply(mem);
 
             var sp = new SpatialPooler();
             sp.Init(mem);
-          
+
 
             int[] activeArray = new int[64 * 64];
 
@@ -139,7 +134,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < 2; i++)
             {
-                sp.compute( inputVector, activeArray, true);
+                sp.compute(inputVector, activeArray, true);
 
                 var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 
@@ -158,7 +153,7 @@ namespace UnitTestsProject
 
             for (int i = 10; i < 20; i++)
             {
-                sp2.compute( inputVector, activeArray, true);
+                sp2.compute(inputVector, activeArray, true);
 
                 var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 

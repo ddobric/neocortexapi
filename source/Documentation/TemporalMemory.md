@@ -46,4 +46,4 @@ public void TestBurstUnpredictedColumns1()
 }
 ```
 
-Further unit tests can be found here: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/UnitTestsProject/TemporalMemoryTests.cs
+Further unit tests can be found [here](../UnitTestsProject/TemporalMemoryTests.cs)

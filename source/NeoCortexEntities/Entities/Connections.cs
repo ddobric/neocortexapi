@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using NeoCortexApi.Types;
-using NeoCortexApi.Utility;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -10,7 +9,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 
 namespace NeoCortexApi.Entities
 {
@@ -121,10 +119,10 @@ namespace NeoCortexApi.Entities
         /// </summary>
         protected List<int> m_FreeFlatIdxs = new List<int>();
 
-       
+
         protected ConcurrentDictionary<int, DistalDendrite> m_SegmentForFlatIdx = new ConcurrentDictionary<int, DistalDendrite>();
 
-        
+
         /// <summary>
         /// The segment creation number.
         /// </summary>
@@ -206,11 +204,12 @@ namespace NeoCortexApi.Entities
             return retVal;
         }
 
-     
+
         /// <summary>
         /// Sets the <see cref="AbstractSparseMatrix{T}"/> which represents the proximal dendrite permanence values.
         /// </summary>
         /// <param name="matrix">the <see cref="AbstractSparseMatrix{T}"/></param>
+        /// <remarks>Used for testing only.</remarks>
         public void SetProximalPermanences(AbstractSparseMatrix<double[]> matrix)
         {
             foreach (int idx in matrix.GetSparseIndices())
@@ -219,7 +218,7 @@ namespace NeoCortexApi.Entities
             }
         }
 
-      
+
         public int[] GetTrueCounts()
         {
             int[] counts = new int[this.HtmConfig.NumColumns];
@@ -231,7 +230,7 @@ namespace NeoCortexApi.Entities
             return counts;
         }
 
-      
+
         /// <summary>
         /// Sets the indexed count of synapses connected at the columns in each index.
         /// </summary>
@@ -304,7 +303,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public double[] BoostFactors { get => m_BoostFactors; set => this.m_BoostFactors = value; }
 
-      
+
         ////////////////////////////////////////
         //       TemporalMemory Methods       //
         ////////////////////////////////////////
@@ -314,10 +313,10 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Computes the number of active and potential synapses of the each segment for a given input.
         /// </summary>
-        /// <param name="activeCellsInCurrentCycle"></param>
+        /// <param name="activeCellsInCurrentCycle">Cells that are currentlly spiking.</param>
         /// <param name="connectedPermanence"></param>
         /// <returns></returns>
-        public SegmentActivity ComputeActivity(ICollection<Cell> activeCellsInCurrentCycle, double connectedPermanence)
+        public static SegmentActivity ComputeActivity(ICollection<Cell> activeCellsInCurrentCycle, double connectedPermanence)
         {
             Dictionary<int, int> numOfActiveSynapses = new Dictionary<int, int>();
             Dictionary<int, int> numOfPotentialSynapses = new Dictionary<int, int>();
@@ -326,15 +325,15 @@ namespace NeoCortexApi.Entities
 
             //
             // Step through all currently active cells.
-            // Find synapses that points to this cell. (receptor synapses)
+            // Find synapses that points to each active cell (receptor synapses).
             foreach (Cell activeCell in activeCellsInCurrentCycle)
             {
                 //
                 // This cell is the active in the current cycle. 
-                // We step through all receptor synapses and check the permanence value of related synapses.
+                // We step through all receptor synapses and check their permanence value.
                 // Receptor synapses are synapses whose source cell (pre-synaptic cell) is the given cell.
-                // Also, Receptor synapses connect with cell's axons to distal dendrite segments of other cells. This connection defines
-                // Some kind of probability that by synapse connected cell will be active in the next cycle.
+                // Receptor synapses connect with cell's axons to distal dendrite segments of other cells. This connection defines
+                // some kind of probability that by synapse connected cell will be active in the next cycle.
                 // The permanence value of this connection defines that probability.
                 // The segment owner cell in other column pointed by synapses sourced by this 'cell' is depolirized (in predicting state).
                 foreach (Synapse synapse in activeCell.ReceptorSynapses)
@@ -384,7 +383,7 @@ namespace NeoCortexApi.Entities
         //     Segment (Specifically, Distal Dendrite) Operations      //
         /////////////////////////////////////////////////////////////////
 
-        #region Segment (Specifically, Distal Dendrite) methods
+        #region Distal Dentrite Segment methods
         /// <summary>
         /// Adds a new <see cref="DistalDendrite"/> segment on the specified <see cref="Cell"/>, or reuses an existing one.
         /// </summary>
@@ -620,7 +619,7 @@ namespace NeoCortexApi.Entities
         /////////////////////////////////////////////////////////////////
 
         /// <summary>
-        /// Creates a new synapse on a segment.
+        /// Creates a new synapse on a distal segment.
         /// </summary>
         /// <param name="segment">the <see cref="DistalDendrite"/> segment to which a <see cref="Synapse"/> is being created.</param>
         /// <param name="presynapticCell">the source <see cref="Cell"/>.</param>
@@ -1155,7 +1154,7 @@ namespace NeoCortexApi.Entities
             return result;
         }
 
-   
+
         #endregion
 
         /// <summary>

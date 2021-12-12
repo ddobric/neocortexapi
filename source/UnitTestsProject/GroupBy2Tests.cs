@@ -5,8 +5,6 @@ using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Linq;
 
 namespace UnitTestsProject
 {
@@ -207,7 +205,7 @@ namespace UnitTestsProject
             {
                 if (t.Key is Integer)
                     Assert.IsTrue(((Integer)t.Key).Value == (int)expectedValues[i].Key);
-    
+
                 int j = 0;
                 foreach (var o in t.Value)
                 {

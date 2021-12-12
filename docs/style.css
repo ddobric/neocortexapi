@@ -36,7 +36,7 @@ button {
     font-family: "Segoe UI Semibold", "Segoe UI", Helvetica, Arial, sans-serif;
     margin: 20px 30px;
     text-transform: capitalize;
-    transition: all 0.15s;
+    transition: all 2s;
 }
 
 .banner {
@@ -217,7 +217,7 @@ a {
     justify-content: center;
 }
 
-@media only screen and (max-width: 900px) {
+/*@media screen and (max-width: 900px) {
     .navigation {
         flex-direction: column;
     }
@@ -234,4 +234,4 @@ a {
     .gifexample {
         width: 80%;
     }
-}
+}*/

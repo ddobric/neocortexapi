@@ -4,7 +4,6 @@ using NeoCortexApi.Entities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 
 namespace NeoCortexApi.Utility
 {
@@ -45,7 +44,7 @@ namespace NeoCortexApi.Utility
         //private static readonly long serialVersionUID = 1L;
 
         private bool m_IsStarted;
-        
+
         private List<T> m_ElementList;
         private Func<T, R> m_Func;
         private IntGenerator m_IntegerGenerator;

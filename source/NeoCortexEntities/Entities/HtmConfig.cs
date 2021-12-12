@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -55,6 +54,8 @@ namespace NeoCortexApi.Entities
 
         #region Spatial Pooler Variables
         /// <summary>
+        /// Do not set this value, it is automatically calculated. It will be removed from the HtmConfig class in the future version
+        /// of the NeoCortexApi.
         /// The inhibition radius determines the size of a column's local neighborhood. of a column. A cortical column must overcome the overlap
         /// score of columns in its neighborhood in order to become actives. This radius is updated every learning round. It grows and shrinks with the
         /// average number of connected synapses per column.
@@ -87,10 +88,8 @@ namespace NeoCortexApi.Entities
         /// the field of vision. A large enough value will result in 'global coverage', meaning that each column
         /// can potentially be connected to every input bit. This parameter defines a square (or hyper square) area: a
         /// column will have a max square potential pool with sides of length 2 * <see cref="PotentialRadius"/> + 1.<br/>
-        /// 
-        /// <b>WARNING:</b> <see cref="PotentialRadius"/> <b><i>must</i></b> be set to the inputWidth if using 
-        /// <see cref="GlobalInhibition"/> and if not using the Network API (which sets this automatically).
         /// </summary>
+        /// <remarks>It must be set to the inputWidth if using <see cref="GlobalInhibition"/>.</remarks>
         public int PotentialRadius { get; set; }
 
         /// <summary>
@@ -103,7 +102,7 @@ namespace NeoCortexApi.Entities
         public double PotentialPct { get; set; }
 
         /// <summary>
-        /// Minimum number of connected synapses to make column active. Specified as a percent of a fully grown synapse.
+        /// Minimum number of synapses connected to input to make the mini-column active. 
         /// </summary>
         public double StimulusThreshold { get; set; }
 
@@ -133,20 +132,6 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public bool WrapAround { get; set; } = true;
 
-        /// <summary>
-        /// Enforses using of global inhibition process.
-        /// </summary>
-        public bool GlobalInhibition { get; set; } = false;
-
-        /// <summary>
-        /// The desired density of active columns within a local inhibition area (the size of which is set by the
-        /// internally calculated <see cref="InhibitionRadius"/>, which is in turn determined from the average size of the
-        /// connected potential pools of all columns). The inhibition logic will insure that at most N columns
-        /// remain ON within a local inhibition area, where N = <see cref="LocalAreaDensity"/> * (total number of columns in
-        /// inhibition area).
-        /// </summary>
-        public double LocalAreaDensity { get; set; } = -1.0;
-
         public double SynPermTrimThreshold { get; set; }
 
         /// <summary>
@@ -170,8 +155,13 @@ namespace NeoCortexApi.Entities
         public ISparseMatrix<int> InputMatrix { get => inputMatrix; set { inputMatrix = value; InputModuleTopology = value?.ModuleTopology; } }
 
         /// <summary>
+        /// Enforses using of global inhibition process.
+        /// </summary>
+        public bool GlobalInhibition { get; set; } = false;
+
+        /// <summary>
         /// The configured number of active columns per inhibition area.<br/>
-        /// An alternate way to control the density of the active columns. If numActivePerInhArea is specified then
+        /// An alternate way to control the density of the active columns. If this value is specified then
         /// localAreaDensity must be less than 0, and vice versa. When using numActivePerInhArea, the inhibition logic
         /// will insure that at most <see cref="NumActiveColumnsPerInhArea"/> columns remain ON within a local inhibition area (the
         /// size of which is set by the internally calculated inhibitionRadius, which is in turn determined from
@@ -181,6 +171,16 @@ namespace NeoCortexApi.Entities
         /// the density of active columns the same regardless of the size of their receptive fields.
         /// </summary>
         public double NumActiveColumnsPerInhArea { get; set; }
+
+        /// <summary>
+        /// The desired density of active columns within a local inhibition area (the size of which is set by the
+        /// internally calculated <see cref="InhibitionRadius"/>, which is in turn determined from the average size of the
+        /// connected potential pools of all columns). The inhibition logic will insure that at most N columns
+        /// remain ON within a local inhibition area, where N = <see cref="LocalAreaDensity"/> * (total number of columns in
+        /// inhibition area).
+        /// </summary>
+        public double LocalAreaDensity { get; set; } = -1.0;
+
 
         /// <summary>
         /// A number between 0 and 1.0, used to set a floor on how often a column should have at least
@@ -317,7 +317,7 @@ namespace NeoCortexApi.Entities
         public AbstractSparseMatrix<Column> Memory { get => memory; set { memory = value; ColumnModuleTopology = value?.ModuleTopology; } }
 
         /// <summary>
-        /// Activation threshold used in sequence learning. If the number of active connected synapses on a distal segment is at least this threshold, the segment is said to be active.
+        /// Activation threshold used in sequence learning. If the number of active connected synapses on a distal segment is at least this threshold, the segment is declared as active one.
         /// </summary>
         public int ActivationThreshold { get; set; } = 13;
 
@@ -339,7 +339,8 @@ namespace NeoCortexApi.Entities
         public double InitialPermanence { get; set; } = 0.21;
 
         /// <summary>
-        /// If the permanence value for a synapse is greater than this value, it is said to be connected.
+        /// If the permanence value for a synapse is greater than this value, it is said to be connected = the potential synapse.
+        /// Synapses that exceeds this value are used in computation of active segments.
         /// </summary>
         public double ConnectedPermanence { get; set; } = 0.5;
 

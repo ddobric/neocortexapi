@@ -1,16 +1,14 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeoCortex;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-using System.Diagnostics;
 using System.Threading.Tasks;
-using NeoCortex;
 
 namespace UnitTestsProject
 {
@@ -1142,7 +1140,7 @@ namespace UnitTestsProject
             for (int i = 0; i < 10000; i++)
             {
                 var inpVector = NeoCortexUtils.CreateRandomVector(inpBits, 90);
-               
+
                 sp.compute(inpVector, actCols, true);
 
                 // We set all MinPctActiveDutyCycles to zero and make sure that no any is changed.
@@ -1150,7 +1148,7 @@ namespace UnitTestsProject
 
                 // This condition can be found in UpdateBoostFactors. If satisfied all columns boosts will be set to 1.0
                 // In that case no boost will happen. This condition is used by HomeostaticPlasticityController, to turn off boosting.
-                Assert.IsTrue(mem.HtmConfig.ActiveDutyCycles.Count(c=>c >= 0) == mem.HtmConfig.ActiveDutyCycles.Length);
+                Assert.IsTrue(mem.HtmConfig.ActiveDutyCycles.Count(c => c >= 0) == mem.HtmConfig.ActiveDutyCycles.Length);
 
                 // This is the same asser as the previous one All boost factors must be 1.0 when MinPctActiveDutyCycles is 0.0
                 Assert.IsTrue(mem.BoostFactors.Sum() == mem.BoostFactors.Length);
@@ -1239,7 +1237,7 @@ namespace UnitTestsProject
             ArrayUtils.FillArray(activeDutyCycles, 1);
 
             mem.HtmConfig.ActiveDutyCycles = activeDutyCycles;
-        
+
             sp.UpdateBoostFactors(mem);
 
             Assert.IsTrue(mem.BoostFactors.SequenceEqual(originalBoostFactors));
