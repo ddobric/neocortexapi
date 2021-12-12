@@ -29,4 +29,5 @@ C:\temp\exp.csv
 
 ### Result
 
-<img src="/NeoCortexApi/Documentation/images/sdr-compare.png" alt="Result of compare" style="float: left; margin-right: 10px;" width=50% height=50% />
+<img src="/NeoCortexApi/blob/master/source/Documentation/images/sdr-compare.png" alt="Result of compare" style="float: left; margin-right: 10px;" width=50% height=50% />
+https://github.com/ddobric/neocortexapi/blob/master/source/Documentation/images/sdr-compare.png
