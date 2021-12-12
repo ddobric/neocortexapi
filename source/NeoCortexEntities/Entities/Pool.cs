@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using System;
 
 namespace NeoCortexApi.Entities
 {
@@ -30,7 +31,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Indexed according to the source Input Vector Bit (for ProximalDendrites), and source cell (for DistalDendrites).
         /// </summary>
-        private Dictionary<int, Synapse> m_SynapsesBySourceIndex { get; set; } = new Dictionary<int, Synapse>();
+        internal Dictionary<int, Synapse> m_SynapsesBySourceIndex { get; set; } = new Dictionary<int, Synapse>();
 
         /// <summary>
         /// Default constructor used by deserializer.
@@ -269,7 +270,7 @@ namespace NeoCortexApi.Entities
 
             ser.SerializeBegin(nameof(Pool), writer);
             
-            ser.SerializeValue(this.Size, writer);
+            ser.SerializeValue(this.size, writer);
             ser.SerializeValue(this.NumInputs, writer);
             ser.SerializeValue(this.m_SynapseConnections, writer); 
             ser.SerializeValue(this.m_SynapsesBySourceIndex, writer);
@@ -312,7 +313,7 @@ namespace NeoCortexApi.Entities
                         {
                             case 0:
                                 {
-                                    pool.Size = ser.ReadIntValue(str[i]);
+                                    pool.size = ser.ReadIntValue(str[i]);
                                     break;
                                 }
                             case 1:

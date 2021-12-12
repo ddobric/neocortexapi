@@ -31,6 +31,11 @@ namespace NeoCortexApi.Entities
 
         }
 
+        public ProximalDendrite()
+        {
+
+        }
+
         /// <summary>
         /// Creates and returns a newly created synapse with the specified source cell, permanence, and index.
         /// </summary>       
@@ -50,7 +55,7 @@ namespace NeoCortexApi.Entities
             return synapse;
         }
 
-        }
+        
 
         /// <summary>
         /// Array of indicies of connected inputs. Defines RF. Sometimes also called 'Potential Pool'.
@@ -160,13 +165,13 @@ namespace NeoCortexApi.Entities
             else if (!Synapses.SequenceEqual(other.Synapses))
                     return false;
 
-            if (boxedIndex == null)
-            {
-                if (other.boxedIndex != null)
-                    return false;
-            }
-            else if (!boxedIndex.Equals(other.boxedIndex))
-                return false;
+            //if (boxedIndex == null)
+            //{
+            //    if (other.boxedIndex != null)
+            //        return false;
+            //}
+            //else if (!boxedIndex.Equals(other.boxedIndex))
+            //    return false;
 
             if (SynapsePermConnected != other.SynapsePermConnected)
                 return false;
@@ -191,10 +196,10 @@ namespace NeoCortexApi.Entities
                 this.RFPool.Serialize(writer);
             }
 
-            if (this.boxedIndex != null)
-            {
-                this.boxedIndex.Serialize(writer);
-            }
+            //if (this.boxedIndex != null)
+            //{
+            //    this.boxedIndex.Serialize(writer);
+            //}
             ser.SerializeValue(this.Synapses, writer);
             
             ser.SerializeEnd(nameof(ProximalDendrite), writer);
@@ -217,10 +222,10 @@ namespace NeoCortexApi.Entities
                 {
                     proximal.RFPool = Pool.Deserialize(sr);
                 }
-                else if (data == ser.ReadBegin(nameof(Integer)))
-                {
-                    proximal.boxedIndex = Integer.Deserialize(sr);
-                }
+                //else if (data == ser.ReadBegin(nameof(Integer)))
+                //{
+                //    proximal.boxedIndex = Integer.Deserialize(sr);
+                //}
                 else if (data == ser.ReadBegin(nameof(Synapse)))
                 {
                     proximal.Synapses.Add(Synapse.Deserialize(sr));

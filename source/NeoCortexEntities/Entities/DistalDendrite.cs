@@ -125,13 +125,13 @@ namespace NeoCortexApi.Entities
             }
             else if (!Synapses.SequenceEqual(obj.Synapses))
                 return false;
-            if (boxedIndex == null)
-            {
-                if (obj.boxedIndex != null)
-                    return false;
-            }
-            else if (!boxedIndex.Equals(obj.boxedIndex))
-                return false;
+            //if (boxedIndex == null)
+            //{
+            //    if (obj.boxedIndex != null)
+            //        return false;
+            //}
+            //else if (!boxedIndex.Equals(obj.boxedIndex))
+            //    return false;
             if (SynapsePermConnected != obj.SynapsePermConnected)
                 return false;
             if (NumInputs != obj.NumInputs)
@@ -176,10 +176,10 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.SynapsePermConnected, writer);
             ser.SerializeValue(this.NumInputs, writer);
 
-            if (this.boxedIndex != null)
-            {
-                this.boxedIndex.Serialize(writer);
-            }
+            //if (this.boxedIndex != null)
+            //{
+            //    this.boxedIndex.Serialize(writer);
+            //}
 
             // If we use this, we will get a cirular serialization.
             //if (this.ParentCell != null)
@@ -212,10 +212,10 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.NumInputs, writer);
 
 
-            if (this.boxedIndex != null)
-            {
-                this.boxedIndex.Serialize(writer);
-            }
+            //if (this.boxedIndex != null)
+            //{
+            //    this.boxedIndex.Serialize(writer);
+            //}
 
             if (this.ParentCell != null)
             {
@@ -241,10 +241,10 @@ namespace NeoCortexApi.Entities
                 {
                     continue;
                 }
-                else if (data == ser.ReadBegin(nameof(Integer)))
-                {
-                    distal.boxedIndex = Integer.Deserialize(sr);
-                }
+                //else if (data == ser.ReadBegin(nameof(Integer)))
+                //{
+                //    distal.boxedIndex = Integer.Deserialize(sr);
+                //}
                 else if (data == ser.ReadBegin(nameof(Synapse)) )
                 {
                     distal.Synapses.Add(Synapse.Deserialize(sr));

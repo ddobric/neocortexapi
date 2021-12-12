@@ -664,6 +664,7 @@ namespace UnitTestsProject
                 Assert.IsTrue(synapse1.Equals(synapseT1)); 
             }
         }
+
         /// <summary>
         /// Test Pool.
         /// </summary>
