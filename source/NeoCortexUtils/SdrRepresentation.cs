@@ -46,35 +46,36 @@ namespace NeoCortex
             return ovrlap;
         }
 
-        ///// <summary>
-        ///// Creates a vector which consists of all no of "1's" in two input vectors/SDRs
-        ///// </summary>
-        ///// <param arr1="1st array"></param>
-        ///// <param arr2="2nd array"></param>
-        ///// <returns></returns>
-        //public static int[] UnionArraFun(int[] arr1, int[] arr2)
-        //{
-        //    int[] nw = arr1;
-        //    int[] old = arr2;
-        //    int[] un = new int[4096];
-        //    for (int i = 0; i < arr1.Length; i++)
-        //    {
-
-        //        if ((nw[i] == 0 && old[i] == 1) || (nw[i] == 1 && old[i] == 0) || (nw[i] == 1 && old[i] == 1))
-        //        {
-        //            un[i] = 1;
-        //        }
-        //        else
-        //        {
-        //            un[i] = 0;
-        //        }
-        //    }
-        //    return un;
-        //}
+        /// <summary>
+        /// Creates a vector which consists of all no of "1's" in two input vectors/SDRs
+        /// </summary>
+        /// <returns></returns>
+        public static int[] ArrayUnion(List<int[]> arrList)
+        {
+            // The length of the Union array is the length of the maximum length of array in the list
+            int arrayLengthUnion = 0;
+            
+            foreach(int[] arr in arrList)
+            {
+                if (arr.Length > arrayLengthUnion)
+                {
+                    arrayLengthUnion = arr.Length;
+                }
+            }
+            int[] unionArray = new int[arrayLengthUnion];
+            foreach (int[] arr in arrList)
+            {
+                for (int i = 0; i < arr.Length; i++)
+                {
+                    unionArray[i] = ((unionArray[i] + arr[i]) >= 1) ? 1 : 0;
+                }
+            }
+            return unionArray;
+        }
 
 
         /// <summary>
-        /// Converts active columns array into to binary array 
+        /// Converts active columns index array into to binary array 
         /// </summary>
         /// <param activeCols="active Columns of SDR"></param>
         /// <param numOfCols="size of the output vector"></param>
@@ -98,8 +99,6 @@ namespace NeoCortex
 
                 if (c1 == activeCols.Length)
                 { break; }
-
-
             }
 
             return a;
@@ -271,7 +270,167 @@ namespace NeoCortex
             myBitmap.Save(filePath, ImageFormat.Png);
         }
 
+        // To trace out the column Overlap values in Excel, Line trace and Graph format
+        /// <summary>
+        /// <br>values: Text, Excel or Graph</br>
+        /// </summary>
+        public enum TraceFormat
+        {
+            Text, 
+            Excel, 
+            Graph,
+        }
+        /// <summary>
+        /// <br>Choice function for ease of switching between the modes</br>
+        /// <br>The functions called inside can also be called independently</br>
+        /// <br>TraceColumnsOverlap()</br>
+        /// <br>TraceInLineFormat()</br>
+        /// <br>TraceInGraphFormat()</br>
+        /// </summary>
+        /// <param name="overlapArrays"></param>
+        /// <param name="colDims"></param>
+        /// <param name="formatTypes"></param>
+        /// <param name="threshold"></param>
+        /// <param name="aboveThreshold"></param>
+        /// <param name="belowThreshold"></param>
+        public static void TraceColumnsOverlap(List<double[,]> overlapArrays, int[] colDims, TraceFormat formatTypes, double threshold, Color aboveThreshold, Color belowThreshold)  //To Trace out the Columns /Overlap count
+        {
+            switch (formatTypes)
+            {
+                case TraceFormat.Text:
+                    TraceInLineFormat(overlapArrays, colDims);
+                    break;
 
+                case TraceFormat.Graph:
+                    TraceInGraphFormat(overlapArrays, colDims, threshold, aboveThreshold, belowThreshold);
+                    break;
+
+                case TraceFormat.Excel:
+                    TraceInExcelFormat(overlapArrays, colDims);
+                    break;
+
+                default:
+                    //Debug.WriteLine($"Not A correct Trace Format! ");
+                    break;
+            }
+
+        }
+
+        /// <summary>
+        /// <br>To trace out the column Overlap values and output them to a txt file.</br>
+        /// <br>at SdrRepresentation_Output/TraceInLineFormat.txt </br>
+        /// <br>Needs to Include link md to description</br>
+        /// </summary>
+        /// <param name="overlapArrays">overlap result from calling an object of type Connection.OverLaps</param>
+        /// <param name="colDims">dimension in [width, length] array</param>        
+        public static void TraceInLineFormat(List<double[,]> overlapArrays, int[] colDims)
+        {
+            List<string> vs = new List<string>();
+            int column = 0;
+            foreach (var entry in overlapArrays)
+            {
+                for (int i = 0; i < colDims[0]; ++i)
+                {
+                    for (int j = 0; j < colDims[1]; ++j)
+                    {
+                        vs.Add($"{column},{entry[i, j]}");
+                        column++;
+                    }
+                }
+            }
+            if (!Directory.Exists("SdrRepresentation_Output"))
+            {
+                Directory.CreateDirectory("SdrRepresentation_Output");
+            }
+            File.WriteAllLines("SdrRepresentation_Output/TraceInLineFormat.txt", vs.ToArray());
+        }
+
+        /// <summary>
+        /// <br>To represent the column overlap values in graph format</br>
+        /// <br>The current default output size of the graph is 500, 524</br>
+        /// <br>Needs to Include link md to description</br>
+        /// </summary>
+        /// <param name="overlapArrays">overlap result from calling an object of type Connection.OverLaps</param>
+        /// <param name="colDims">dimension in [width, length] array</param>
+        /// <param name="threshold"></param>
+        /// <param name="aboveThreshold"></param>
+        /// <param name="belowThreshold"></param>
+        public static void TraceInGraphFormat(List<double[,]> overlapArrays, int[] colDims, double threshold, Color aboveThreshold, Color belowThreshold, int width = 500, int height = 524)
+        {
+            int row = 0;
+
+            Image image = new Bitmap(width, height);
+
+            Graphics graph = Graphics.FromImage(image);
+
+            graph.Clear(Color.Azure);
+            Pen pen = new Pen(belowThreshold);
+
+            foreach (var entry in overlapArrays)
+            {
+                for (int i = 0; i < colDims[0]; ++i)
+                {
+                    for (int j = 0; j < colDims[1]; ++j)
+                    {
+                        var overlapValue = (entry[i, j]);
+                        if (overlapValue > threshold)
+                        {
+                            Pen penthreshold = new Pen(aboveThreshold);
+                            graph.DrawLines(penthreshold, new Point[] { new Point(row, (int)entry[i, j]), new Point(row, 0) });
+                        }
+                        else
+                        {
+                            graph.DrawLines(pen, new Point[] { new Point(row, (int)entry[i, j]), new Point(row, 0) });
+                        }
+                        row++;
+                    }
+                }
+            }
+            if (!Directory.Exists("SdrRepresentation_Output"))
+            {
+                Directory.CreateDirectory("SdrRepresentation_Output");
+            }
+            image.Save("SdrRepresentation_Output/trace_col_overlap_graph.png", System.Drawing.Imaging.ImageFormat.Png);
+        }
+
+        /// <summary>
+        /// <br>To export the column overlap values to excel</br>
+        /// <br>Needs to Include link md to description</br>
+        /// </summary>
+        /// <param name="overlapArrays">overlap result from calling an object of type Connection.OverLaps</param>
+        /// <param name="colDims">dimension in [width, length] array</param>       
+        public static void TraceInExcelFormat(List<double[,]> overlapArrays, int[] colDims)
+        {
+            SpreadsheetInfo.SetLicense("FREE-LIMITED-KEY");
+            SpreadsheetInfo.FreeLimitReached += (sender, e) => e.FreeLimitReachedAction = FreeLimitReachedAction.ContinueAsTrial;
+            var workbook = new ExcelFile();
+            var worksheet = workbook.Worksheets.Add("TraceColumnOverlap");
+            worksheet.Cells["A1"].Value = "Tracing out all the values for Column overlap:";
+            worksheet.Cells["A2"].Value = "Column";
+            worksheet.Cells["B2"].Value = "Overlap Value";
+
+            // Write header data to Excel cells.
+            int colval = 2;
+            int indexVal = 0;
+            foreach (var entry in overlapArrays)
+            {
+                for (int i = 0; i < colDims[0]; ++i)
+                {
+                    for (int j = 0; j < colDims[1]; ++j)
+                    {
+                        worksheet.Cells[colval, 0].SetValue(indexVal);
+                        worksheet.Cells[colval, 1].SetValue(entry[i, j]);
+                        colval++;
+                        indexVal++;
+                    }
+                }
+            }
+            if (!Directory.Exists("SdrRepresentation_Output"))
+            {
+                Directory.CreateDirectory("SdrRepresentation_Output");
+            }
+            workbook.Save("SdrRepresentation_Output/ColumnOverlapTracing.xlsx");
+        }
 
     }
 }
