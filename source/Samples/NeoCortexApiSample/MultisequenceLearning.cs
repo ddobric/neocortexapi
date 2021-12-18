@@ -125,10 +125,9 @@ namespace NeoCortexApiSample
             int cycle = 0;
             int matches = 0;
 
-            string lastPredictedValue = "0";
-
+            var lastPredictedValues = new List<string>(new string[] { "0"});
+            
             int maxCycles = 3500;
-
 
             //
             // Training SP to get stable. New-born stage.
@@ -227,13 +226,13 @@ namespace NeoCortexApiSample
                         Debug.WriteLine($"Col  SDR: {Helpers.StringifyVector(lyrOut.ActivColumnIndicies)}");
                         Debug.WriteLine($"Cell SDR: {Helpers.StringifyVector(actCells.Select(c => c.Index).ToArray())}");
 
-                        if (key == lastPredictedValue)
+                        if (lastPredictedValues.Contains(key))
                         {
                             matches++;
-                            Debug.WriteLine($"Match. Actual value: {key} - Predicted value: {lastPredictedValue}");
+                            Debug.WriteLine($"Match. Actual value: {key} - Predicted value: {lastPredictedValues.FirstOrDefault(key)}.");
                         }
                         else
-                            Debug.WriteLine($"Missmatch! Actual value: {key} - Predicted value: {lastPredictedValue}");
+                            Debug.WriteLine($"Missmatch! Actual value: {key} - Predicted values: {String.Join(',', lastPredictedValues)}");
 
                         if (lyrOut.PredictiveCells.Count > 0)
                         {
@@ -245,12 +244,12 @@ namespace NeoCortexApiSample
                                 Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {item.PredictedInput} - {item.Similarity}");
                             }
 
-                            lastPredictedValue = predictedInputValues.First().PredictedInput;
+                            lastPredictedValues = predictedInputValues.Select(v=>v.PredictedInput).ToList();
                         }
                         else
                         {
                             Debug.WriteLine($"NO CELLS PREDICTED for next cycle.");
-                            lastPredictedValue = String.Empty;
+                            lastPredictedValues = new List<string> ();
                         }
                     }
 
