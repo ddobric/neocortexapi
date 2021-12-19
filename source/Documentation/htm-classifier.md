@@ -1,81 +1,115 @@
 ## HtmClassifier
-The HtmClassifier is a *neocortexapi* module that is used to predict of the next element in the process of learning of the sequences.
+The HtmClassifier is a neocortexapi module that is used for prediction of the next element by presenting the current sequence state. The classifier provides two methods:
 The classifier provides two methods:
 
+The first one is used for learning of the SDR assotiated with the given key. For example, the SDR=00001110001110010011000 might represent some label 'A'. In that case the label 'A' is used as a key and the SDR is the array that will be associated to that key. That means, the HtmClassifier is rather an association algorithm than a classical learning algorithm. To associated an SDR int-array with the key, following method is used:
+
 ~~~csharp
-Learn(string key, int[] sdr)
+void Learn(string key, int[] sdr)
 ~~~
 
-and
+The second important method in this context is the prediction method. After the learning process is completed, the prediction code is typicall implemented to predict the label (key) from the given element. For example, imaging there is a learned sequence ABCDE. The prediction code should return B for a given A, then D for a given C and so on. 
 
 ~~~csharp
 public List<ClassifierResult> GetPredictedInputValues(Cell[] predictiveCells, short howMany)
 ~~~
+This method returns the list of guesses (predictions) for the given element. The returned prediction is a list that contains the predicted value the similarity in percent and the number of same (overlapped) bits.
 
-The method receives the key string, that represents the sequence and memorizes the SDR for the given key. This value can be anything. It should solely describe the input.
-Assume, the following sequence is learned: 
-~~~
-1-2-3-4-5-3-5
-~~~
-In every cycle, the experiment might create the key that represents the sequence in that cycle. For example, the key might look like:
+~~~csharp
+    /// <summary>
+    /// Defines the predicting input.
+    /// </summary>
+    public class ClassifierResult<TIN>
+    {
+        /// <summary>
+        /// The predicted input value.
+        /// </summary>
+        public TIN PredictedInput { get; set; }
 
-Cycle 1: '1-2-3-4-5-3-5' , 
-Cycle 2: '2-3-4-5-3-5-1', 
-Cycle 3: '3-4-5-3-5-1-2', 
+        /// <summary>
+        /// Number of identical non-zero bits in the SDR.
+        /// </summary>
+        public int NumOfSameBits { get; set; }
+
+        /// <summary>
+        /// The similarity between the SDR of  predicted cell set with the SDR of the input.
+        /// </summary>
+        public double Similarity { get; set; }
+    }
+~~~
+
+### The learning process
+The *Learn*-method receives as a first argument the key string, that represents the “name” or “identifier” of the learning element that should be associated with the learning SDR. The *HtmClassifier* will memorize that association. The key can be any value. It should solely describe the input.
+For example, assume, the following sequence S1 is learned:
+
+~~~
+S1: 1.0 2.0 3.0 4.0 5.0 6.0 7.0 
+~~~
+
+In every cycle, the experiment will create the key that represents the element in context of the sequence in the current cycle. For example, the key might look like:
+
+Cycle 1: 'S1_-1.0-1-2-3-4-5' , 
+Cycle 2: 'S1_-1.0-1-2-3-4-5-6', 
+Cycle 3: 'S1_1-2-3-4-5-6-7', 
 etc..
 
-During the learning process, the input in every cycle is the cell-SDR of cells produced by the Temporal Memory (TM) algorithm. The same Spatial Pooler (SP) output (column SDR) for some element (i.e.: ‘3’) will be represented by the same column-SDR if the SP is in a stable state. 
-However, the TM does not generate the same set of active cells for the same element (i.e.’3’). The TM is building the context when learning the sequence.
-That means, the element ‘3’ followed by the element ‘2’ produces a different set of active cells than the element ‘3’ followed by the element ‘5’.
+This means, the sequence starts from beginning, which is indicated by ‘-1’. This value can be anything. As next, the element 1.0 appears, then 2.0 etc (S1_-1.0-1-2-3-4-5). In the next cycle, S1_-1.0-1-2-3-4-5-6, element 6 will appear, because the code creates the key up to 6 elements. Then the following key will appear S1_1-2-3-4-5-6-7. We build keys in our examples as a sequence, so we know when for example number 7 appears, that it has appeared after number six. This is important because the same number 7 can inside of the same sequence appears after other numbers too. We build the key a convenient way to be able to know the position of the element. But, you can use any other way to build the key, that might be more suitable for your scenario. For example, if your code is using learning of video frames and you want to classify the video, but not the frame, then the key can be the name of the video with some index (i.e. myvideo-156767.avi). In this case, the classifier learns for all video frames the same key. However, the key must be a unique value for all learned elements. This is why the 156767 is appended.Another useful example is learning of multiple sequences. This is very similar to learning of videos. To build the key, it is important to know that tmClassifier requires the unique key for every element. F your prediction code must predict the sequence instead of element (like the video as a sequence of frames), then the key should contain the sequence. For example “SEQUENCE1_Element1-Element2-..” or “VIDEO1_Framne1_Frame2…”.
 
-But, the cells activated for both elements ‘3’ belong always to the same set of mini-columns as activated by the SP. 
-This is why we choose the key for the classifier in the form shown above. However, developers are free to build a key some other way. For example, if your code is using learning of video frames and you want to classify the video, but not the frame, then the key can be the name of the video with some index (i.e. myvideo-156767.avi). In this case, the classifier learns for all video frames the same key. However, the key must be a unique value for all learned elements. This is why the 156767 is appended.
+During the learning process, the input in every cycle is the cell-SDR of cells produced by the Temporal Memory (TM) algorithm. The same Spatial Pooler (SP) output (column SDR) for some element (i.e.: ‘3’) will be represented by the same column-SDR if the SP is in a stable state. However, the TM does not generate the same set of active cells for the same element (i.e.’3’). The TM is building the context when learning the sequence.
+That means, the element ‘3’ followed by the element ‘2’ produces a different set of active cells than the element ‘3’ followed by the element ‘5’. However, cells activated for both elements ‘3’ belong always to the same set of mini-columns as activated by the SP. 
 
-When predicting (GetPredcitedInputValues), the classifier is traversing through hash values of all memorized SDRs and tries to match the best ones, that matches with the highest number of bits in the SDR. Finally, the classifier returns the array of best-matching inputs.
-The argument *howMany* defines the wanted number of top predictions that should be considered in the predicted list from the HTM Classifier.
-The following example shows the trace for a sequence and here the index 0,3,12 have a similarity of 100. The classifier implementation provides top three possible outcomes. 
-~~~
-2-3
-2-4
-2-6
-~~~
-
-If you use the SequenceExperiment.cs, following output will be created:
+If you use the MultisequenceLearning.cs or similar experiments that can be found in this repository, following output will be created.
 
 ~~~
-Match. Actual value: 2-6-2-6-2-5-2-3-2-3-2-5-2-6-2-3-2-5 - Predicted value: 2-6-2-6-2-5-2-3-2-3-2-5-2-6-2-3-2-5\
-Item length: 40	 Items: 18\
-Predictive cells: 40 	 7111, 7604, 7862, 8022, 8068, 8332, 8452, 8503, 8552, 8604, 8654, 8688, 8852, 9016, 9112, 9262, 9533, 9693, 9904, 10337, 10418, 1.        0474, 10591, 10761, 10825, 10881, 11128, 11392, 11446, 11591, 11719, 11872, 11881, 11902, 12030, 12237, 12956, 13032, 13555, 13637, \
->indx:0	inp/len: 6-2-3-2-5-2-6-2-6-2-5-2-3-2-3-2-5-2/40	similarity 100%	 7111, 7604, 7862, 8022, 8068, 8332, 8452, 8503, 8552, 8604, 8654, 8688, 8852,            9016, 9112, 9262, 9533, 9693, 9904, 10337, 10418, 10474, 10591, 10761, 10825, 10881, 11128, 11392, 11446, 11591, 11719, 11872, 11881, 11902, 12030, 12237,          12956, 13032, 13555, 13637, 
->indx:3	inp/len: 2-5-2-6-2-6-2-5-2-3-2-3-2-5-2-6-2-3/904 ,Same Bits = 18	, similarity 100% 	 9300, 9301, 9302, 9303, 9304, 9305, 9306, 9307,          9308, 9309, 9310, 9311, 9312, 9313, 9314, 9315, 9316, 9317, 9318, 9319, 9320, 9321, 9322, 9323, 9324, 9400, 9401, 9402, 9403, 9404, 9405, 9406, 9407, 9408,        9409, 9410, 9411, 9412, 9413, 9414, 9415, 9416, 9417, 9418, 9419, 9420, 9421, 9422, 9423, 9424, 9525, 9526, 9527, 9528, 9529, 9530, 9531, 9532, 9533, 9534,        9535, 9536, 9537, 9538 
->indx:12	inp/len: 3-2-3-2-5-2-6-2-3-2-5-2-6-2-6-2-5-2/40	similarity 100%	 7111, 7604, 7862, 8022, 8068, 8332, 8452, 8503, 8552, 8604, 8654, 8688, 8852,            9016, 9112, 9262, 9533, 9693, 9904, 10337, 10418, 10474, 10591, 10761, 10825, 10881, 11128, 11392, 11446, 11591, 11719, 11872, 11881, 11902, 12030, 12237,          12956, 13032, 13555, 13637, 
-Current Input: 5
-The predictions with similarity greater than 50% are\
-Predicted Input: 6-2-3-2-5-2-6-2-6-2-5-2-3-2-3-2-5-2,	Similarity Percentage: 100, 	Number of Same Bits: 40\
-Predicted Input: 6-2-6-2-5-2-3-2-3-2-5-2-6-2-3-2-5-2,	Similarity Percentage: 100, 	Number of Same Bits: 40\
-Predicted Input: 3-2-3-2-5-2-6-2-3-2-5-2-6-2-6-2-5-2,	Similarity Percentage: 100, 	Number of Same Bits: 40\
-~~~
-Once the classifier has learnt the sequence (code omitted), you can write the inferring (prediction) code. The following example illustrates this. The method *InputSequence* requires the user to input a few sequence elements.
-~~~csharp
-      private static List<double> InputSequence( List<double> inputValues)
-       {
-            Console.WriteLine("HTM Classifier is ready");
-            Console.WriteLine("Please enter a sequence to be learnt");
-            string userValue = Console.ReadLine();
-            var numbers = userValue.Split(',');
-            double sequence;
-            foreach (var number in numbers)
-            {
-                if (double.TryParse(number, out sequence))
-                {
-                    inputValues.Add(sequence);
-                }
-         }
+-------------- 5 ---------------
 
-            return inputValues;
-        }
-~~~     
-The following method is implementing prediction.
+Active segments: 20, Matching segments: 20
+Col  SDR: 271, 274, 281, 282, 288, 292, 296, 305, 327, 328, 342, 344, 356, 358, 363, 364, 388, 395, 396, 400, 
+Cell SDR: 6798, 6869, 7038, 7069, 7222, 7305, 7412, 7629, 8179, 8219, 8560, 8618, 8908, 8950, 9082, 9117, 9710, 9876, 9911, 10008, 
+Match. Actual value: S1_6-7-1-2-3-4-5 - Predicted value: S1_6-7-1-2-3-4-5.
+Item length: 20	 Items: 9
+Predictive cells: 20 	 7062, 8178, 8204, 8520, 8552, 8615, 8678, 8972, 9259, 9775, 9887, 9903, 10019, 10049, 10098, 10133, 10213, 10390, 10582, 11200, 
+<indx:000	inp/len: S1_-1.0-1-2-3-4-5/20, Same Bits = 000	, Similarity 000.00 %	 6778, 6869, 7038, 7069, 7082, 7217, 7324, 7417, 7626, 7685, 8179, 8219, 8436, 8618, 8902, 8950, 9082, 9121, 9710, 9911, 
+>indx:001	inp/len: S1_-1.0-1-2-3-4-5-6/20, Same Bits = 010	, Similarity 050.00 % 	 7038, 7069, 8179, 8219, 8520, 8560, 8618, 8678, 8950, 9259, 9775, 9876, 9911, 10008, 10049, 10098, 10133, 10213, 10390, 10582, 
+<indx:002	inp/len: S1_1-2-3-4-5-6-7/20, Same Bits = 000	, Similarity 000.00 %	 8184, 8572, 8617, 8686, 8966, 9265, 9471, 9777, 10006, 10099, 10125, 10208, 10590, 10716, 10737, 11216, 11390, 11546, 12354, 12433, 
+<indx:003	inp/len: S1_2-3-4-5-6-7-1/20, Same Bits = 000	, Similarity 000.00 %	 1104, 1397, 2327, 2950, 3414, 3858, 4044, 4117, 4177, 4217, 4506, 4803, 5375, 5411, 5464, 5671, 5721, 5879, 6225, 6349, 
+<indx:004	inp/len: S1_3-4-5-6-7-1-2/20, Same Bits = 000	, Similarity 000.00 %	 3863, 4123, 4182, 4203, 4516, 4816, 5226, 5399, 5417, 5472, 5600, 5656, 5702, 5786, 5877, 6040, 6227, 6338, 7093, 7321, 
+<indx:005	inp/len: S1_4-5-6-7-1-2-3/20, Same Bits = 000	, Similarity 000.00 %	 4204, 5357, 5399, 5466, 5592, 5600, 5656, 5702, 5781, 5887, 6034, 6227, 6784, 7034, 7093, 7321, 7420, 7478, 7542, 8449, 
+<indx:006	inp/len: S1_5-6-7-1-2-3-4/20, Same Bits = 000	, Similarity 000.00 %	 5714, 5779, 6039, 6228, 6610, 6778, 7030, 7065, 7082, 7217, 7324, 7417, 7528, 7626, 7685, 7905, 8190, 8436, 8902, 9121, 
+<indx:007	inp/len: S1_6-7-1-2-3-4-5/20, Same Bits = 000	, Similarity 000.00 %	 6798, 6869, 7038, 7069, 7222, 7305, 7412, 7629, 8179, 8219, 8560, 8618, 8908, 8950, 9082, 9117, 9710, 9876, 9911, 10008, 
+>indx:008	inp/len: S1_7-1-2-3-4-5-6/20, Same Bits = 020	, Similarity 100.00 %	 7062, 8178, 8204, 8520, 8552, 8615, 8678, 8972, 9259, 9775, 9887, 9903, 10019, 10049, 10098, 10133, 10213, 10390, 10582, 11200, 
+Current Input: 5 	| Predicted Input: S1_7-1-2-3-4-5-6 - 1
+Current Input: 5 	| Predicted Input: S1_-1.0-1-2-3-4-5-6 - 50
+Current Input: 5 	| Predicted Input: S1_-1.0-1-2-3-4-5 - 0
+Current Input: 5 	| Predicted Input: S1_1-2-3-4-5-6-7 - 0
+-------------- 6 ---------------
+
+Active segments: 20, Matching segments: 20
+Col  SDR: 282, 327, 328, 340, 342, 344, 347, 358, 370, 391, 395, 396, 400, 401, 403, 405, 408, 415, 423, 448, 
+Cell SDR: 7062, 8178, 8204, 8520, 8552, 8615, 8678, 8972, 9259, 9775, 9887, 9903, 10019, 10049, 10098, 10133, 10213, 10390, 10582, 11200, 
+Match. Actual value: S1_7-1-2-3-4-5-6 - Predicted value: S1_7-1-2-3-4-5-6.
+Item length: 20	 Items: 9
+Predictive cells: 20 	 8184, 8572, 8617, 8686, 8966, 9265, 9471, 9777, 10006, 10099, 10125, 10208, 10590, 10716, 10737, 11216, 11390, 11546, 12354, 12433, 
+<indx:000	inp/len: S1_-1.0-1-2-3-4-5/20, Same Bits = 000	, Similarity 000.00 %	 6778, 6869, 7038, 7069, 7082, 7217, 7324, 7417, 7626, 7685, 8179, 8219, 8436, 8618, 8902, 8950, 9082, 9121, 9710, 9911, 
+<indx:001	inp/len: S1_-1.0-1-2-3-4-5-6/20, Same Bits = 000	, Similarity 000.00 %	 7038, 7069, 8179, 8219, 8520, 8560, 8618, 8678, 8950, 9259, 9775, 9876, 9911, 10008, 10049, 10098, 10133, 10213, 10390, 10582, 
+>indx:002	inp/len: S1_1-2-3-4-5-6-7/20, Same Bits = 020	, Similarity 100.00 %	 8184, 8572, 8617, 8686, 8966, 9265, 9471, 9777, 10006, 10099, 10125, 10208, 10590, 10716, 10737, 11216, 11390, 11546, 12354, 12433, 
+<indx:003	inp/len: S1_2-3-4-5-6-7-1/20, Same Bits = 000	, Similarity 000.00 %	 1104, 1397, 2327, 2950, 3414, 3858, 4044, 4117, 4177, 4217, 4506, 4803, 5375, 5411, 5464, 5671, 5721, 5879, 6225, 6349, 
+<indx:004	inp/len: S1_3-4-5-6-7-1-2/20, Same Bits = 000	, Similarity 000.00 %	 3863, 4123, 4182, 4203, 4516, 4816, 5226, 5399, 5417, 5472, 5600, 5656, 5702, 5786, 5877, 6040, 6227, 6338, 7093, 7321, 
+<indx:005	inp/len: S1_4-5-6-7-1-2-3/20, Same Bits = 000	, Similarity 000.00 %	 4204, 5357, 5399, 5466, 5592, 5600, 5656, 5702, 5781, 5887, 6034, 6227, 6784, 7034, 7093, 7321, 7420, 7478, 7542, 8449, 
+<indx:006	inp/len: S1_5-6-7-1-2-3-4/20, Same Bits = 000	, Similarity 000.00 %	 5714, 5779, 6039, 6228, 6610, 6778, 7030, 7065, 7082, 7217, 7324, 7417, 7528, 7626, 7685, 7905, 8190, 8436, 8902, 9121, 
+<indx:007	inp/len: S1_6-7-1-2-3-4-5/20, Same Bits = 000	, Similarity 000.00 %	 6798, 6869, 7038, 7069, 7222, 7305, 7412, 7629, 8179, 8219, 8560, 8618, 8908, 8950, 9082, 9117, 9710, 9876, 9911, 10008, 
+<indx:008	inp/len: S1_7-1-2-3-4-5-6/20, Same Bits = 000	, Similarity 000.00 %	 7062, 8178, 8204, 8520, 8552, 8615, 8678, 8972, 9259, 9775, 9887, 9903, 10019, 10049, 10098, 10133, 10213, 10390, 10582, 11200, 
+Current Input: 6 	| Predicted Input: S1_1-2-3-4-5-6-7 - 1
+Current Input: 6 	| Predicted Input: S1_-1.0-1-2-3-4-5 - 0
+Current Input: 6 	| Predicted Input: S1_-1.0-1-2-3-4-5-6 - 0
+Current Input: 6 	| Predicted Input: S1_2-3-4-5-6-7-1 - 0
+-------------- 7 ---------------
+~~~
+
+When predicting (GetPredcitedInputValues), the classifier is traversing through hash values of all memorized SDRs (lines 93-101) and tries to match the best ones, that matches with the highest number of bits in the SDR. Finally, the classifier returns the array of best-matching inputs. The argument *howMany* defines the wanted number of top predictions that should be considered in the predicted list from the HTM Classifier (see lines 81-84 and 102-105).
+
+Once the classifier has learnt the sequence (code omitted), you can write the inferring (prediction) code. The following example illustrates this. The method *InputSequence* requires the user to input a few sequence elements. The following code-snippet shows an exaple that implements the prediction.
+
 ~~~csharp
        private static void Predict(int input, bool learn, CortexLayer<object, object> layer1, HtmClassifier<string, ComputeCycle> cls)
         {
@@ -93,7 +127,7 @@ The following method is implementing prediction.
 
 Now the implemented HTM classifier method returns all possibilities as shown in the following trace:
 ~~~
-Please enter a number that has been learnt
+Please enter a number that has been learned
     2
 ~~~
 After the user enters the number that has been learnt before by the classifier, the possible predicted outputs will be shown.
