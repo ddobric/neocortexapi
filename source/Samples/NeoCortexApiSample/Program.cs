@@ -17,21 +17,6 @@ namespace NeoCortexApiSample
         /// <param name="args"></param>
         static void Main(string[] args)
         {
-
-            ScalarEncoder encoder = new ScalarEncoder(new Dictionary<string, object>()
-            {
-                { "W", 21},
-                { "N", 1024},
-                { "Radius", -1.0},
-                { "MinVal", 0.0},
-                { "MaxVal", 100.0 },
-                { "Periodic", false},
-                { "Name", "scalar"},
-                { "ClipInput", false},
-            });
-
-            encoder.Encode();
-
             //
             // Starts experiment that demonstrates how to learn spatial patterns.
             //SpatialPatternLearning experiment = new SpatialPatternLearning();
@@ -42,8 +27,24 @@ namespace NeoCortexApiSample
             //SequenceLearning experiment = new SequenceLearning();
             //experiment.Run();
 
-            RunMultiSequenceLearningExperiment();
+            RunMultiSimpleSequenceLearningExperiment();
+            //RunMultiSequenceLearningExperiment();
         }
+
+        private static void RunMultiSimpleSequenceLearningExperiment()
+        {
+            Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
+
+            sequences.Add("S1", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, }));
+            sequences.Add("S2", new List<double>(new double[] { 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 }));
+
+            //
+            // Prototype for building the prediction engine.
+            MultiSequenceLearning experiment = new MultiSequenceLearning();
+            var predictor = experiment.Run(sequences);
+         
+        }
+
 
         private static void RunMultiSequenceLearningExperiment()
         {

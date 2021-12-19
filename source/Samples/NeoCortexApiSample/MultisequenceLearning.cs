@@ -95,6 +95,7 @@ namespace NeoCortexApiSample
 
             TemporalMemory tm = new TemporalMemory();
 
+            // For more information see following paper: https://www.scitepress.org/Papers/2021/103142/103142.pdf
             HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, numUniqueInputs * 150, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                 if (isStable)
@@ -116,6 +117,11 @@ namespace NeoCortexApiSample
             sp.Init(mem);
             tm.Init(mem);
 
+            // Please note that we do not add here TM in the layer.
+            // This is omitted for practical reasons, because we first eneter the newborn-stage of the algorithm
+            // In this stage we want that SP get boosted and see all elements before we start learning with TM.
+            // All would also work fine with TM in layer, but it would work much slower.
+            // So, to improve the speed of experiment, we first ommit the TM and then after the newborn-stage we add it to the layer.
             layer1.HtmModules.Add("encoder", encoder);
             layer1.HtmModules.Add("sp", sp);
 
@@ -187,6 +193,7 @@ namespace NeoCortexApiSample
                     Debug.WriteLine("");
 
                     Debug.WriteLine($"-------------- Cycle {cycle} ---------------");
+                    Debug.WriteLine("");
 
                     foreach (var input in sequenceKeyPair.Value)
                     {
@@ -226,6 +233,9 @@ namespace NeoCortexApiSample
                         Debug.WriteLine($"Col  SDR: {Helpers.StringifyVector(lyrOut.ActivColumnIndicies)}");
                         Debug.WriteLine($"Cell SDR: {Helpers.StringifyVector(actCells.Select(c => c.Index).ToArray())}");
 
+                        //
+                        // If the list of predicted values from the previous step contains the currently presenting value,
+                        // we have a match.
                         if (lastPredictedValues.Contains(key))
                         {
                             matches++;
