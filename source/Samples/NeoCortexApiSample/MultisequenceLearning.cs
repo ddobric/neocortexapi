@@ -331,6 +331,15 @@ namespace NeoCortexApiSample
             return num;
         }
 
+        /// <summary>
+        /// Constracts the unique key of the element of an sequece. This key is used as input for HtmClassifier.
+        /// It makes sure that alle elements that belong to the same sequence are prefixed with the sequence.
+        /// The prediction code can then extract the sequence prefix to the predicted element.
+        /// </summary>
+        /// <param name="prevInputs"></param>
+        /// <param name="input"></param>
+        /// <param name="sequence"></param>
+        /// <returns></returns>
         private static string GetKey(List<string> prevInputs, double input, string sequence)
         {
             string key = String.Empty;
