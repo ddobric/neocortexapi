@@ -67,42 +67,55 @@ The following example shows the trace for a sequence and here the index 0,3,12 h
 2-6
 ~~~
 
-If you use the SequenceExperiment.cs, following output will be created:
+If you use the SequenceExperiment.cs, following output will be created.
 
 ~~~
-Match. Actual value: 2-6-2-6-2-5-2-3-2-3-2-5-2-6-2-3-2-5 - Predicted value: 2-6-2-6-2-5-2-3-2-3-2-5-2-6-2-3-2-5\
-Item length: 40	 Items: 18\
-Predictive cells: 40 	 7111, 7604, 7862, 8022, 8068, 8332, 8452, 8503, 8552, 8604, 8654, 8688, 8852, 9016, 9112, 9262, 9533, 9693, 9904, 10337, 10418, 1.        0474, 10591, 10761, 10825, 10881, 11128, 11392, 11446, 11591, 11719, 11872, 11881, 11902, 12030, 12237, 12956, 13032, 13555, 13637, \
->indx:0	inp/len: 6-2-3-2-5-2-6-2-6-2-5-2-3-2-3-2-5-2/40	similarity 100%	 7111, 7604, 7862, 8022, 8068, 8332, 8452, 8503, 8552, 8604, 8654, 8688, 8852,            9016, 9112, 9262, 9533, 9693, 9904, 10337, 10418, 10474, 10591, 10761, 10825, 10881, 11128, 11392, 11446, 11591, 11719, 11872, 11881, 11902, 12030, 12237,          12956, 13032, 13555, 13637, 
->indx:3	inp/len: 2-5-2-6-2-6-2-5-2-3-2-3-2-5-2-6-2-3/904 ,Same Bits = 18	, similarity 100% 	 9300, 9301, 9302, 9303, 9304, 9305, 9306, 9307,          9308, 9309, 9310, 9311, 9312, 9313, 9314, 9315, 9316, 9317, 9318, 9319, 9320, 9321, 9322, 9323, 9324, 9400, 9401, 9402, 9403, 9404, 9405, 9406, 9407, 9408,        9409, 9410, 9411, 9412, 9413, 9414, 9415, 9416, 9417, 9418, 9419, 9420, 9421, 9422, 9423, 9424, 9525, 9526, 9527, 9528, 9529, 9530, 9531, 9532, 9533, 9534,        9535, 9536, 9537, 9538 
->indx:12	inp/len: 3-2-3-2-5-2-6-2-3-2-5-2-6-2-6-2-5-2/40	similarity 100%	 7111, 7604, 7862, 8022, 8068, 8332, 8452, 8503, 8552, 8604, 8654, 8688, 8852,            9016, 9112, 9262, 9533, 9693, 9904, 10337, 10418, 10474, 10591, 10761, 10825, 10881, 11128, 11392, 11446, 11591, 11719, 11872, 11881, 11902, 12030, 12237,          12956, 13032, 13555, 13637, 
-Current Input: 5
-The predictions with similarity greater than 50% are\
-Predicted Input: 6-2-3-2-5-2-6-2-6-2-5-2-3-2-3-2-5-2,	Similarity Percentage: 100, 	Number of Same Bits: 40\
-Predicted Input: 6-2-6-2-5-2-3-2-3-2-5-2-6-2-3-2-5-2,	Similarity Percentage: 100, 	Number of Same Bits: 40\
-Predicted Input: 3-2-3-2-5-2-6-2-3-2-5-2-6-2-6-2-5-2,	Similarity Percentage: 100, 	Number of Same Bits: 40\
-~~~
-Once the classifier has learnt the sequence (code omitted), you can write the inferring (prediction) code. The following example illustrates this. The method *InputSequence* requires the user to input a few sequence elements.
-~~~csharp
-      private static List<double> InputSequence( List<double> inputValues)
-       {
-            Console.WriteLine("HTM Classifier is ready");
-            Console.WriteLine("Please enter a sequence to be learnt");
-            string userValue = Console.ReadLine();
-            var numbers = userValue.Split(',');
-            double sequence;
-            foreach (var number in numbers)
-            {
-                if (double.TryParse(number, out sequence))
-                {
-                    inputValues.Add(sequence);
-                }
-         }
+-------------- 5 ---------------
 
-            return inputValues;
-        }
-~~~     
-The following method is implementing prediction.
+Active segments: 20, Matching segments: 20
+Col  SDR: 271, 274, 281, 282, 288, 292, 296, 305, 327, 328, 342, 344, 356, 358, 363, 364, 388, 395, 396, 400, 
+Cell SDR: 6798, 6869, 7038, 7069, 7222, 7305, 7412, 7629, 8179, 8219, 8560, 8618, 8908, 8950, 9082, 9117, 9710, 9876, 9911, 10008, 
+Match. Actual value: S1_6-7-1-2-3-4-5 - Predicted value: S1_6-7-1-2-3-4-5.
+Item length: 20	 Items: 9
+Predictive cells: 20 	 7062, 8178, 8204, 8520, 8552, 8615, 8678, 8972, 9259, 9775, 9887, 9903, 10019, 10049, 10098, 10133, 10213, 10390, 10582, 11200, 
+<indx:000	inp/len: S1_-1.0-1-2-3-4-5/20, Same Bits = 000	, Similarity 000.00 %	 6778, 6869, 7038, 7069, 7082, 7217, 7324, 7417, 7626, 7685, 8179, 8219, 8436, 8618, 8902, 8950, 9082, 9121, 9710, 9911, 
+>indx:001	inp/len: S1_-1.0-1-2-3-4-5-6/20, Same Bits = 010	, Similarity 050.00 % 	 7038, 7069, 8179, 8219, 8520, 8560, 8618, 8678, 8950, 9259, 9775, 9876, 9911, 10008, 10049, 10098, 10133, 10213, 10390, 10582, 
+<indx:002	inp/len: S1_1-2-3-4-5-6-7/20, Same Bits = 000	, Similarity 000.00 %	 8184, 8572, 8617, 8686, 8966, 9265, 9471, 9777, 10006, 10099, 10125, 10208, 10590, 10716, 10737, 11216, 11390, 11546, 12354, 12433, 
+<indx:003	inp/len: S1_2-3-4-5-6-7-1/20, Same Bits = 000	, Similarity 000.00 %	 1104, 1397, 2327, 2950, 3414, 3858, 4044, 4117, 4177, 4217, 4506, 4803, 5375, 5411, 5464, 5671, 5721, 5879, 6225, 6349, 
+<indx:004	inp/len: S1_3-4-5-6-7-1-2/20, Same Bits = 000	, Similarity 000.00 %	 3863, 4123, 4182, 4203, 4516, 4816, 5226, 5399, 5417, 5472, 5600, 5656, 5702, 5786, 5877, 6040, 6227, 6338, 7093, 7321, 
+<indx:005	inp/len: S1_4-5-6-7-1-2-3/20, Same Bits = 000	, Similarity 000.00 %	 4204, 5357, 5399, 5466, 5592, 5600, 5656, 5702, 5781, 5887, 6034, 6227, 6784, 7034, 7093, 7321, 7420, 7478, 7542, 8449, 
+<indx:006	inp/len: S1_5-6-7-1-2-3-4/20, Same Bits = 000	, Similarity 000.00 %	 5714, 5779, 6039, 6228, 6610, 6778, 7030, 7065, 7082, 7217, 7324, 7417, 7528, 7626, 7685, 7905, 8190, 8436, 8902, 9121, 
+<indx:007	inp/len: S1_6-7-1-2-3-4-5/20, Same Bits = 000	, Similarity 000.00 %	 6798, 6869, 7038, 7069, 7222, 7305, 7412, 7629, 8179, 8219, 8560, 8618, 8908, 8950, 9082, 9117, 9710, 9876, 9911, 10008, 
+>indx:008	inp/len: S1_7-1-2-3-4-5-6/20, Same Bits = 020	, Similarity 100.00 %	 7062, 8178, 8204, 8520, 8552, 8615, 8678, 8972, 9259, 9775, 9887, 9903, 10019, 10049, 10098, 10133, 10213, 10390, 10582, 11200, 
+Current Input: 5 	| Predicted Input: S1_7-1-2-3-4-5-6 - 1
+Current Input: 5 	| Predicted Input: S1_-1.0-1-2-3-4-5-6 - 50
+Current Input: 5 	| Predicted Input: S1_-1.0-1-2-3-4-5 - 0
+Current Input: 5 	| Predicted Input: S1_1-2-3-4-5-6-7 - 0
+-------------- 6 ---------------
+
+Active segments: 20, Matching segments: 20
+Col  SDR: 282, 327, 328, 340, 342, 344, 347, 358, 370, 391, 395, 396, 400, 401, 403, 405, 408, 415, 423, 448, 
+Cell SDR: 7062, 8178, 8204, 8520, 8552, 8615, 8678, 8972, 9259, 9775, 9887, 9903, 10019, 10049, 10098, 10133, 10213, 10390, 10582, 11200, 
+Match. Actual value: S1_7-1-2-3-4-5-6 - Predicted value: S1_7-1-2-3-4-5-6.
+Item length: 20	 Items: 9
+Predictive cells: 20 	 8184, 8572, 8617, 8686, 8966, 9265, 9471, 9777, 10006, 10099, 10125, 10208, 10590, 10716, 10737, 11216, 11390, 11546, 12354, 12433, 
+<indx:000	inp/len: S1_-1.0-1-2-3-4-5/20, Same Bits = 000	, Similarity 000.00 %	 6778, 6869, 7038, 7069, 7082, 7217, 7324, 7417, 7626, 7685, 8179, 8219, 8436, 8618, 8902, 8950, 9082, 9121, 9710, 9911, 
+<indx:001	inp/len: S1_-1.0-1-2-3-4-5-6/20, Same Bits = 000	, Similarity 000.00 %	 7038, 7069, 8179, 8219, 8520, 8560, 8618, 8678, 8950, 9259, 9775, 9876, 9911, 10008, 10049, 10098, 10133, 10213, 10390, 10582, 
+>indx:002	inp/len: S1_1-2-3-4-5-6-7/20, Same Bits = 020	, Similarity 100.00 %	 8184, 8572, 8617, 8686, 8966, 9265, 9471, 9777, 10006, 10099, 10125, 10208, 10590, 10716, 10737, 11216, 11390, 11546, 12354, 12433, 
+<indx:003	inp/len: S1_2-3-4-5-6-7-1/20, Same Bits = 000	, Similarity 000.00 %	 1104, 1397, 2327, 2950, 3414, 3858, 4044, 4117, 4177, 4217, 4506, 4803, 5375, 5411, 5464, 5671, 5721, 5879, 6225, 6349, 
+<indx:004	inp/len: S1_3-4-5-6-7-1-2/20, Same Bits = 000	, Similarity 000.00 %	 3863, 4123, 4182, 4203, 4516, 4816, 5226, 5399, 5417, 5472, 5600, 5656, 5702, 5786, 5877, 6040, 6227, 6338, 7093, 7321, 
+<indx:005	inp/len: S1_4-5-6-7-1-2-3/20, Same Bits = 000	, Similarity 000.00 %	 4204, 5357, 5399, 5466, 5592, 5600, 5656, 5702, 5781, 5887, 6034, 6227, 6784, 7034, 7093, 7321, 7420, 7478, 7542, 8449, 
+<indx:006	inp/len: S1_5-6-7-1-2-3-4/20, Same Bits = 000	, Similarity 000.00 %	 5714, 5779, 6039, 6228, 6610, 6778, 7030, 7065, 7082, 7217, 7324, 7417, 7528, 7626, 7685, 7905, 8190, 8436, 8902, 9121, 
+<indx:007	inp/len: S1_6-7-1-2-3-4-5/20, Same Bits = 000	, Similarity 000.00 %	 6798, 6869, 7038, 7069, 7222, 7305, 7412, 7629, 8179, 8219, 8560, 8618, 8908, 8950, 9082, 9117, 9710, 9876, 9911, 10008, 
+<indx:008	inp/len: S1_7-1-2-3-4-5-6/20, Same Bits = 000	, Similarity 000.00 %	 7062, 8178, 8204, 8520, 8552, 8615, 8678, 8972, 9259, 9775, 9887, 9903, 10019, 10049, 10098, 10133, 10213, 10390, 10582, 11200, 
+Current Input: 6 	| Predicted Input: S1_1-2-3-4-5-6-7 - 1
+Current Input: 6 	| Predicted Input: S1_-1.0-1-2-3-4-5 - 0
+Current Input: 6 	| Predicted Input: S1_-1.0-1-2-3-4-5-6 - 0
+Current Input: 6 	| Predicted Input: S1_2-3-4-5-6-7-1 - 0
+-------------- 7 ---------------
+~~~
+
+Once the classifier has learnt the sequence (code omitted), you can write the inferring (prediction) code. The following example illustrates this. The method *InputSequence* requires the user to input a few sequence elements. The following method is implementing prediction.
 ~~~csharp
        private static void Predict(int input, bool learn, CortexLayer<object, object> layer1, HtmClassifier<string, ComputeCycle> cls)
         {
