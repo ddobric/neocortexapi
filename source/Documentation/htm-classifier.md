@@ -1,25 +1,53 @@
 ## HtmClassifier
-The HtmClassifier is a *neocortexapi* module that is used to predict of the next element in the process of learning of the sequences.
+The HtmClassifier is a neocortexapi module that is used for prediction of the next element by presenting the current sequence state. The classifier provides two methods:
 The classifier provides two methods:
 
+The first one is used for learning of the SDR assotiated with the given key. For example, the SDR=00001110001110010011000 might represent some label 'A'. In that case the label 'A' is used as a key and the SDR is the array that will be associated to that key. That means, the HtmClassifier is rather an association algorithm than a classical learning algorithm. To associated an SDR int-array with the key, following method is used:
+
 ~~~csharp
-Learn(string key, int[] sdr)
+void Learn(string key, int[] sdr)
 ~~~
 
-and
+The second important method in this context is the prediction method. After the learning process is completed, the prediction code is typicall implemented to predict the label (key) from the given element. For example, imaging there is a learned sequence ABCDE. The prediction code should return B for a given A, then D for a given C and so on. 
 
 ~~~csharp
 public List<ClassifierResult> GetPredictedInputValues(Cell[] predictiveCells, short howMany)
 ~~~
+This method returns the list of guesses (predictions) for the given element. The returned prediction is a list that contains the predicted value the similarity in percent and the number of same (overlapped) bits.
 
-The method receives the key string, that represents the sequence and memorizes the SDR for the given key. This value can be anything. It should solely describe the input.
-Assume, the following sequence is learned: 
+~~~csharp
+    /// <summary>
+    /// Defines the predicting input.
+    /// </summary>
+    public class ClassifierResult<TIN>
+    {
+        /// <summary>
+        /// The predicted input value.
+        /// </summary>
+        public TIN PredictedInput { get; set; }
+
+        /// <summary>
+        /// Number of identical non-zero bits in the SDR.
+        /// </summary>
+        public int NumOfSameBits { get; set; }
+
+        /// <summary>
+        /// The similarity between the SDR of  predicted cell set with the SDR of the input.
+        /// </summary>
+        public double Similarity { get; set; }
+    }
+~~~
+
+### The learning process
+The *Learn*-method receives as a first argument the key string, that represents the “name” or “identifier” of the learning element that should be associated with the learning SDR. The *HtmClassifier* will memorize that association. The key can be any value. It should solely describe the input.
+For example, assume, the following sequence is learned:
+
 ~~~
 1-2-3-4-5-3-5
 ~~~
 In every cycle, the experiment might create the key that represents the sequence in that cycle. For example, the key might look like:
 
-Cycle 1: '1-2-3-4-5-3-5' , 
+Cycle 1: '-1-2-3-4-5-3-5' , 
 Cycle 2: '2-3-4-5-3-5-1', 
 Cycle 3: '3-4-5-3-5-1-2', 
 etc..
