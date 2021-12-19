@@ -58,16 +58,7 @@ This means, the sequence starts from beginning, which is indicated by ‘-1’. 
 During the learning process, the input in every cycle is the cell-SDR of cells produced by the Temporal Memory (TM) algorithm. The same Spatial Pooler (SP) output (column SDR) for some element (i.e.: ‘3’) will be represented by the same column-SDR if the SP is in a stable state. However, the TM does not generate the same set of active cells for the same element (i.e.’3’). The TM is building the context when learning the sequence.
 That means, the element ‘3’ followed by the element ‘2’ produces a different set of active cells than the element ‘3’ followed by the element ‘5’. However, cells activated for both elements ‘3’ belong always to the same set of mini-columns as activated by the SP. 
 
-When predicting (GetPredcitedInputValues), the classifier is traversing through hash values of all memorized SDRs and tries to match the best ones, that matches with the highest number of bits in the SDR. Finally, the classifier returns the array of best-matching inputs.
-The argument *howMany* defines the wanted number of top predictions that should be considered in the predicted list from the HTM Classifier.
-The following example shows the trace for a sequence and here the index 0,3,12 have a similarity of 100. The classifier implementation provides top three possible outcomes. 
-~~~
-2-3
-2-4
-2-6
-~~~
-
-If you use the SequenceExperiment.cs, following output will be created.
+If you use the MultisequenceLearning.cs or similar experiments that can be found in this repository, following output will be created.
 
 ~~~
 -------------- 5 ---------------
@@ -115,7 +106,10 @@ Current Input: 6 	| Predicted Input: S1_2-3-4-5-6-7-1 - 0
 -------------- 7 ---------------
 ~~~
 
-Once the classifier has learnt the sequence (code omitted), you can write the inferring (prediction) code. The following example illustrates this. The method *InputSequence* requires the user to input a few sequence elements. The following method is implementing prediction.
+When predicting (GetPredcitedInputValues), the classifier is traversing through hash values of all memorized SDRs (lines 93-101) and tries to match the best ones, that matches with the highest number of bits in the SDR. Finally, the classifier returns the array of best-matching inputs. The argument *howMany* defines the wanted number of top predictions that should be considered in the predicted list from the HTM Classifier (see lines 81-84 and 102-105).
+
+Once the classifier has learnt the sequence (code omitted), you can write the inferring (prediction) code. The following example illustrates this. The method *InputSequence* requires the user to input a few sequence elements. The following code-snippet shows an exaple that implements the prediction.
+
 ~~~csharp
        private static void Predict(int input, bool learn, CortexLayer<object, object> layer1, HtmClassifier<string, ComputeCycle> cls)
         {
@@ -133,7 +127,7 @@ Once the classifier has learnt the sequence (code omitted), you can write the in
 
 Now the implemented HTM classifier method returns all possibilities as shown in the following trace:
 ~~~
-Please enter a number that has been learnt
+Please enter a number that has been learned
     2
 ~~~
 After the user enters the number that has been learnt before by the classifier, the possible predicted outputs will be shown.
