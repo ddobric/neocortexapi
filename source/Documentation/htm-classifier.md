@@ -40,20 +40,22 @@ This method returns the list of guesses (predictions) for the given element. The
 
 ### The learning process
 The *Learn*-method receives as a first argument the key string, that represents the “name” or “identifier” of the learning element that should be associated with the learning SDR. The *HtmClassifier* will memorize that association. The key can be any value. It should solely describe the input.
-For example, assume, the following sequence is learned:
+For example, assume, the following sequence S1 is learned:
 
 ~~~
-1-2-3-4-5-3-5
+S1: 1.0 2.0 3.0 4.0 5.0 6.0 7.0 
 ~~~
-In every cycle, the experiment might create the key that represents the sequence in that cycle. For example, the key might look like:
 
-Cycle 1: '-1-2-3-4-5-3-5' , 
-Cycle 2: '2-3-4-5-3-5-1', 
-Cycle 3: '3-4-5-3-5-1-2', 
+In every cycle, the experiment will create the key that represents the element in context of the sequence in the current cycle. For example, the key might look like:
+
+Cycle 1: 'S1_-1.0-1-2-3-4-5' , 
+Cycle 2: 'S1_-1.0-1-2-3-4-5-6', 
+Cycle 3: 'S1_1-2-3-4-5-6-7', 
 etc..
 
-During the learning process, the input in every cycle is the cell-SDR of cells produced by the Temporal Memory (TM) algorithm. The same Spatial Pooler (SP) output (column SDR) for some element (i.e.: ‘3’) will be represented by the same column-SDR if the SP is in a stable state. 
-However, the TM does not generate the same set of active cells for the same element (i.e.’3’). The TM is building the context when learning the sequence.
+This means, the sequence starts from beginning, which is indicated by ‘-1’. This value can be anything. As next, the element 1.0 appears, then 2.0 etc (S1_-1.0-1-2-3-4-5). In the next cycle, S1_-1.0-1-2-3-4-5-6, element 6 will appear, because the code creates the key up to 6 elements. Then the following key will appear S1_1-2-3-4-5-6-7. We build keys in our examples as a sequence, so we know when for example number 7 appears, that it has appeared after number six. This is important because the same number 7 can inside of the same sequence appears after other numbers too. We build the key a convenient way to be able to know the position of the element. But, you can use any other way to build the key, that might be more suitable for your scenario.
+
+During the learning process, the input in every cycle is the cell-SDR of cells produced by the Temporal Memory (TM) algorithm. The same Spatial Pooler (SP) output (column SDR) for some element (i.e.: ‘3’) will be represented by the same column-SDR if the SP is in a stable state. However, the TM does not generate the same set of active cells for the same element (i.e.’3’). The TM is building the context when learning the sequence.
 That means, the element ‘3’ followed by the element ‘2’ produces a different set of active cells than the element ‘3’ followed by the element ‘5’.
 
 But, the cells activated for both elements ‘3’ belong always to the same set of mini-columns as activated by the SP. 
