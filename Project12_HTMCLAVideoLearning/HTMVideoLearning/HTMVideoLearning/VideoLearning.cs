@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using VideoLibrary;
 
 namespace HTMVideoLearning
@@ -87,7 +86,7 @@ namespace HTMVideoLearning
             int maxCycles = 10;
             int newbornCycle = 0;
 
-            HomeostaticPlasticityController hpa = new(mem, maxNumOfElementsInSequence * 150 *3 , (isStable, numPatterns, actColAvg, seenInputs) =>
+            HomeostaticPlasticityController hpa = new(mem, maxNumOfElementsInSequence * 150 * 3, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                 if (isStable)
                     // Event should be fired when entering the stable state.
@@ -114,7 +113,7 @@ namespace HTMVideoLearning
             //
             ///*
             //for (int i = 0; i < maxCycles; i++)
-            while(isInStableState == false)
+            while (isInStableState == false)
             {
                 newbornCycle++;
 
@@ -213,7 +212,7 @@ namespace HTMVideoLearning
                                 */
                                 // HTMClassifier used Predicted Cells to infer learned frame key 
                                 var predictedFrames = cls.GetPredictedInputValues(cellArray, 5);
-                                HelperFunction.WriteLineColor("Predicted next Frame's Label:",ConsoleColor.Yellow);
+                                HelperFunction.WriteLineColor("Predicted next Frame's Label:", ConsoleColor.Yellow);
                                 foreach (var item in predictedFrames)
                                 {
                                     //Console.WriteLine($"Current Input: {currentFrame.FrameKey} \t| Predicted Input: {item.PredictedInput}");
@@ -251,7 +250,7 @@ namespace HTMVideoLearning
                         int correctlyPredictedFrame = 0;
 
                         List<string> resultToWrite = new();
-                        if(!Directory.Exists($"{outputFolder}" + @"\" + $"ResultLog"))
+                        if (!Directory.Exists($"{outputFolder}" + @"\" + $"ResultLog"))
                         {
                             Directory.CreateDirectory($"{outputFolder}" + @"\" + $"ResultLog");
                         }
@@ -272,7 +271,7 @@ namespace HTMVideoLearning
                                 resultToWrite.Add($"NOTFOUND {message}");
                             }
                         }
-                        double accuracy = correctlyPredictedFrame / ((double)trainingVideo.Count-1);
+                        double accuracy = correctlyPredictedFrame / ((double)trainingVideo.Count - 1);
                         videoAccuracy.Add(accuracy);
 
                         if (accuracy > 0.9)
@@ -285,11 +284,11 @@ namespace HTMVideoLearning
                         tm.Reset(mem);
                     }
                     double currentSetAccuracy = videoAccuracy.Average();
-                    HelperFunction.WriteLineColor($"Video Set of Label: {vs.VideoSetLabel} reachs accuracy: {currentSetAccuracy * 100}%",ConsoleColor.Cyan);
+                    HelperFunction.WriteLineColor($"Video Set of Label: {vs.VideoSetLabel} reachs accuracy: {currentSetAccuracy * 100}%", ConsoleColor.Cyan);
                     setAccuracy.Add(currentSetAccuracy);
                 }
                 cycleAccuracy = setAccuracy.Average();
-                HelperFunction.WriteLineColor($"Accuracy in Cycle {i}: {cycleAccuracy*100}%");
+                HelperFunction.WriteLineColor($"Accuracy in Cycle {i}: {cycleAccuracy * 100}%");
                 // Check if accuracy is stable
                 if (lastCycleAccuracy == cycleAccuracy)
                 {
@@ -299,7 +298,7 @@ namespace HTMVideoLearning
                 {
                     stableAccuracyCount = 0;
                 }
-                if(stableAccuracyCount >= 40 && cycleAccuracy> 0.9)
+                if (stableAccuracyCount >= 40 && cycleAccuracy > 0.9)
                 {
                     List<string> outputLog = new();
                     if (!Directory.Exists($"{outputFolder}" + @"\" + "TEST"))
@@ -312,7 +311,7 @@ namespace HTMVideoLearning
                     outputLog.Add($"reaching stable after enter newborn cycle {newbornCycle}.");
                     outputLog.Add($"Elapsed time: {SP_TrainingTimeElapsed / 1000 / 60} min.");
 
-                    for (int j = 0;j<videoData.Count; i += 1)
+                    for (int j = 0; j < videoData.Count; i += 1)
                     {
                         outputLog.Add($"{videoData[j].VideoSetLabel} reach average Accuracy {setAccuracy[j]}");
                     }
@@ -322,7 +321,7 @@ namespace HTMVideoLearning
                     RecordResult(outputLog, fileName);
                     break;
                 }
-                else if(i == maxCycles - 1)
+                else if (i == maxCycles - 1)
                 {
                     List<string> outputLog = new();
                     if (!Directory.Exists($"{outputFolder}" + @"\" + "TEST"))
@@ -348,7 +347,7 @@ namespace HTMVideoLearning
             }
             // Testing Section
             string userInput;
-            
+
             HelperFunction.WriteLineColor("Drag a Frame(Picture) to recall the learned videos : ", ConsoleColor.Cyan);
             int testNo = 0;
 
@@ -374,7 +373,7 @@ namespace HTMVideoLearning
                     NFrame currentFrame = null;
                     while (nextPredictedFrameExists && frameSequence.Count < 42)
                     {
-                        foreach(var vs in videoData)
+                        foreach (var vs in videoData)
                         {
                             currentFrame = vs.GetNFrameFromFrameKey(currentFrameKey);
                             if (currentFrame != null)
@@ -389,7 +388,7 @@ namespace HTMVideoLearning
                         var predictedNext = cls.GetPredictedInputValues(computedSDR.PredictiveCells.ToArray(), 3);
 
                         // Check for end of Frame sequence
-                        if(predictedNext.Count == 0)
+                        if (predictedNext.Count == 0)
                         {
                             nextPredictedFrameExists = false;
                         }
@@ -441,7 +440,7 @@ namespace HTMVideoLearning
             int frameHeight = 18;
             ColorMode colorMode = ColorMode.BLACKWHITE;
             double frameRate = 10;
-            
+
             // Define Reader for Videos
             // Input videos are stored in different folders under TrainingVideos/
             // with their folder's names as label value. To get the paths of all folders:
@@ -482,22 +481,22 @@ namespace HTMVideoLearning
             int maxCycles = 1000;
             int newbornCycle = 0;
 
-            HomeostaticPlasticityController hpa = new(mem, 30 * 150*3, (isStable, numPatterns, actColAvg, seenInputs) =>
-            {
-               if (isStable)
-                   // Event should be fired when entering the stable state.
-                   Console.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
-               else
-                   // Ideal SP should never enter unstable state after stable state.
-                   Console.WriteLine($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+            HomeostaticPlasticityController hpa = new(mem, 30 * 150 * 3, (isStable, numPatterns, actColAvg, seenInputs) =>
+              {
+                  if (isStable)
+                      // Event should be fired when entering the stable state.
+                      Console.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+                  else
+                      // Ideal SP should never enter unstable state after stable state.
+                      Console.WriteLine($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
 
-               // We are not learning in instable state.
-               learn = isInStableState = isStable;
+                  // We are not learning in instable state.
+                  learn = isInStableState = isStable;
 
-               // Clear all learned patterns in the classifier.
-               //cls.ClearState();
+                  // Clear all learned patterns in the classifier.
+                  //cls.ClearState();
 
-            }, numOfCyclesToWaitOnChange: 50);
+              }, numOfCyclesToWaitOnChange: 50);
 
             SpatialPoolerMT sp = new(hpa);
             sp.Init(mem);
@@ -509,7 +508,7 @@ namespace HTMVideoLearning
             //
             ///*
             //for (int i = 0; i < maxCycles; i++)
-            while(isInStableState == false)
+            while (isInStableState == false)
             {
                 newbornCycle++;
                 Console.WriteLine($"-------------- Newborn Cycle {newbornCycle} ---------------");
@@ -565,7 +564,7 @@ namespace HTMVideoLearning
                     int saturatedAccuracyCount = 0;
                     for (int i = 0; i < maxCycles; i++)
                     {
-                        matches = 0; 
+                        matches = 0;
                         cycle++;
 
                         Console.WriteLine($"-------------- Cycle {cycle} ---------------");
@@ -644,22 +643,22 @@ namespace HTMVideoLearning
                                 lastPredictedValue.Clear();
                             }
                         }
-                        
+
                         double accuracy;
-                        
+
                         accuracy = (double)matches / ((double)nv.nFrames.Count - 1.0) * 100.0; // Use if with reset
                         //accuracy = (double)matches / (double)nv.nFrames.Count * 100.0; // Use if without reset
 
                         Console.WriteLine($"Cycle: {cycle}\tMatches={matches} of {nv.nFrames.Count}\t {accuracy}%");
-                        if(accuracy == lastCycleAccuracy)
+                        if (accuracy == lastCycleAccuracy)
                         {
                             // The learning may result in saturated accuracy
                             // Unable to learn to higher accuracy, Exit
                             saturatedAccuracyCount += 1;
-                            if (saturatedAccuracyCount >= 50 && lastCycleAccuracy>80)
+                            if (saturatedAccuracyCount >= 50 && lastCycleAccuracy > 80)
                             {
                                 List<string> outputLog = new();
-                                if(!Directory.Exists($"{outputFolder}" + @"\" + "TEST"))
+                                if (!Directory.Exists($"{outputFolder}" + @"\" + "TEST"))
                                 {
                                     Directory.CreateDirectory($"{outputFolder}" + @"\" + "TEST");
                                 }
@@ -693,7 +692,7 @@ namespace HTMVideoLearning
             }
             HelperFunction.WriteLineColor("Drag an image as input to recall the learned Video: ");
             userInput = Console.ReadLine().Replace("\"", "");
-            
+
             int testNo = 0;
 
             do
@@ -706,7 +705,7 @@ namespace HTMVideoLearning
                 testNo += 1;
                 // Save the input Frame as NFrame
                 NFrame inputFrame = new(new Bitmap(userInput), "TEST", "test", 0, frameWidth, frameHeight, colorMode);
-                inputFrame.SaveFrame(Outputdir+@"\"+$"Converted_{Path.GetFileName(userInput)}");
+                inputFrame.SaveFrame(Outputdir + @"\" + $"Converted_{Path.GetFileName(userInput)}");
                 // Compute the SDR of the Frame
                 var lyrOut = layer1.Compute(inputFrame.EncodedBitArray, false) as ComputeCycle;
 
@@ -742,7 +741,7 @@ namespace HTMVideoLearning
                             }
                         }
                     }
-                        
+
                     // Create output video
                     NVideo.NFrameListToVideo(
                         outputNFrameList,

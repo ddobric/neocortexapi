@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HTMVideoLearning
 {
@@ -16,8 +12,8 @@ namespace HTMVideoLearning
         /// <param name="foregroundColor">Text color</param>
         /// <param name="backgroundColor">Hightlight Color</param>
         public static void WriteLineColor(
-            string str, 
-            ConsoleColor foregroundColor = ConsoleColor.White, 
+            string str,
+            ConsoleColor foregroundColor = ConsoleColor.White,
             ConsoleColor backgroundColor = ConsoleColor.Black)
         {
             Console.ForegroundColor = foregroundColor;
@@ -48,7 +44,7 @@ namespace HTMVideoLearning
             {
                 string currentDir = Directory.GetCurrentDirectory();
                 HelperFunction.WriteLineColor($"The inserted path for the training folder is invalid. " +
-                    $"If you have trouble adding the path, copy your training folder with name TrainingVideos to {currentDir}",ConsoleColor.Yellow);
+                    $"If you have trouble adding the path, copy your training folder with name TrainingVideos to {currentDir}", ConsoleColor.Yellow);
                 // Get the root path of training videos.
                 testDir = $"{currentDir}\\TrainingVideos";
             }
@@ -59,7 +55,7 @@ namespace HTMVideoLearning
                 HelperFunction.WriteLineColor("Complete reading directory ...");
                 return videoSetPaths;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 WriteLineColor("=========== Caught exception ============", ConsoleColor.Magenta);
                 WriteLineColor(e.Message, ConsoleColor.Magenta);

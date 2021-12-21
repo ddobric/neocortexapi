@@ -19,7 +19,7 @@ namespace VideoLibraryTest
             // export Video to outputFilePath
             string outputFilePath = "testFile//ReadVideo//output_mp4.mp4";
             List<Bitmap> bitmapList = new();
-            NVideo.NFrameListToVideo(nv.nFrames,outputFilePath,24,new Size( 24,24),false);
+            NVideo.NFrameListToVideo(nv.nFrames, outputFilePath, 24, new Size(24, 24), false);
         }
         [TestMethod]
         public void BitmapResize()
@@ -43,7 +43,7 @@ namespace VideoLibraryTest
             List<int> a = NFrame.ColorChannelToBinList(value);
 
             Debug.WriteLine("Testing byte conversion to Binary array");
-            foreach(int i in a)
+            foreach (int i in a)
             {
                 Debug.WriteLine(i);
             }
@@ -55,7 +55,7 @@ namespace VideoLibraryTest
             int[] a = { 1, 2, 3, 4, 5 };
             int[] outputArray = NFrame.SubArray<int>(a, 3, 2);
             Debug.WriteLine("Testing with sub array function");
-            foreach(int i in outputArray)
+            foreach (int i in outputArray)
             {
                 Debug.WriteLine(i);
             }
@@ -75,7 +75,7 @@ namespace VideoLibraryTest
             {
                 for (int x = 0; x < img.Width; x++)
                 {
-                    Color pixel = img.GetPixel(x,y);
+                    Color pixel = img.GetPixel(x, y);
                     switch (colorMode)
                     {
                         // adding different color mode here for different format of output int[]
@@ -137,11 +137,11 @@ namespace VideoLibraryTest
                         case ColorMode.PURE:
                             for (int i = 0; i < 3; i += 1)
                             {
-                                int[] binaryColorArray = NFrame.SubArray<int>(imageBinary.ToArray(), (y * img.Width+x) * 24 + 8 * i, 8);
+                                int[] binaryColorArray = NFrame.SubArray<int>(imageBinary.ToArray(), (y * img.Width + x) * 24 + 8 * i, 8);
                                 rgb[i] = NFrame.BinaryToDecimal(binaryColorArray);
 
                             }
-                            output.SetPixel( x, y, Color.FromArgb(255, rgb[0], rgb[1], rgb[2]));
+                            output.SetPixel(x, y, Color.FromArgb(255, rgb[0], rgb[1], rgb[2]));
                             break;
                     }
                 }

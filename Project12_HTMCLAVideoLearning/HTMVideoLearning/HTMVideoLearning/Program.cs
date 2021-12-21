@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace HTMVideoLearning
+﻿namespace HTMVideoLearning
 {
     class Program
     {

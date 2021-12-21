@@ -11,10 +11,10 @@ seconds = 3
 r = 20
 
 Y = screenHeight - r  - 20
-X = r + 20
+X = r + 40
 
 vectorLength = 10
-Angle = 30
+Angle = -30
 vectorAngle = math.radians(Angle) #-- range 0 -> 359 degree on geometric angle--
 x = int(math.cos(vectorAngle)*vectorLength)
 y = -int(math.sin(vectorAngle)*vectorLength)
@@ -42,7 +42,7 @@ for i in range(FPS*seconds):
         vectorTransform['y'] = -vectorTransform['y']
     X+=vectorTransform['x']
     Y+=vectorTransform['y']
-    cv2.circle(frame, (X, Y), r, (150, 100, 100), -1)
+    cv2.circle(frame, (X, Y), r, (0, 0, 0), -1)
     video.write(frame)
 
 video.release()

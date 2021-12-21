@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 
 namespace VideoLibrary
@@ -73,7 +72,7 @@ namespace VideoLibrary
                         case ColorMode.BLACKWHITE:
                             // image binarization of GRAYSCALE source image
                             // taking red channel as comparatee for binarization 
-                            double luminance = (3 * pixel.R + pixel.B + 4 * pixel.G)>>3; 
+                            double luminance = (3 * pixel.R + pixel.B + 4 * pixel.G) >> 3;
                             imageBinary.Add((luminance > 255 / 2) ? 0 : 1);
                             break;
                         case ColorMode.BINARIZEDRGB:
@@ -109,7 +108,7 @@ namespace VideoLibrary
         public static List<int> ColorChannelToBinList(byte r)
         {
             List<int> binaryList = new();
-            string BNR = Convert.ToString(r,2).PadLeft(8,'0');
+            string BNR = Convert.ToString(r, 2).PadLeft(8, '0');
             foreach (char a in BNR)
             {
                 //Debug.WriteLine(Char.GetNumericValue(a));
@@ -181,9 +180,9 @@ namespace VideoLibrary
         {
             int decimalValue = 0;
             int power = 0;
-            for(int i = binaryArray.Length-1;i>=0;i-=1)
+            for (int i = binaryArray.Length - 1; i >= 0; i -= 1)
             {
-                decimalValue += binaryArray[i]*(int)Math.Pow(2, power);
+                decimalValue += binaryArray[i] * (int)Math.Pow(2, power);
                 power += 1;
             }
             return decimalValue;

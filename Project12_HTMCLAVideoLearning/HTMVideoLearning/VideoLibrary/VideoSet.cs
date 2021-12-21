@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 
 namespace VideoLibrary
 {
@@ -42,7 +42,7 @@ namespace VideoLibrary
         {
             List<NVideo> videoList = new List<NVideo>();
             // Iteate through each videos in the videos' folder
-            foreach (string file in Directory.GetFiles(videoSetPath.Replace("\"","")))
+            foreach (string file in Directory.GetFiles(videoSetPath.Replace("\"", "")))
             {
                 string fileName = Path.GetFileName(videoSetPath);
                 Name.Add(fileName);
@@ -69,19 +69,19 @@ namespace VideoLibrary
         }
         public void CreateConvertedVideos(string videoOutputDirectory)
         {
-            foreach(NVideo nv in nVideoList)
+            foreach (NVideo nv in nVideoList)
             {
-                string folderName = $"{videoOutputDirectory}"+@"\"+$"{nv.label}";
+                string folderName = $"{videoOutputDirectory}" + @"\" + $"{nv.label}";
                 if (!Directory.Exists(folderName))
                 {
                     Directory.CreateDirectory(folderName);
                 }
-                NVideo.NFrameListToVideo(nv.nFrames,$"{folderName}"+@"\"+$"{nv.name}",(int)nv.frameRate,new Size(nv.frameWidth,nv.frameHeight),true);
-                if(!Directory.Exists($"{folderName}" + @"\" + $"{nv.name}"))
+                NVideo.NFrameListToVideo(nv.nFrames, $"{folderName}" + @"\" + $"{nv.name}", (int)nv.frameRate, new Size(nv.frameWidth, nv.frameHeight), true);
+                if (!Directory.Exists($"{folderName}" + @"\" + $"{nv.name}"))
                 {
                     Directory.CreateDirectory($"{folderName}" + @"\" + $"{nv.name}");
                 }
-                for(int i = 0;i<nv.nFrames.Count;i+=1 )
+                for (int i = 0; i < nv.nFrames.Count; i += 1)
                 {
                     nv.nFrames[i].SaveFrame($"{folderName}" + @"\" + $"{nv.name}" + @"\" + $"{nv.nFrames[i].FrameKey}.png");
                 }
@@ -103,5 +103,5 @@ namespace VideoLibrary
         }
     }
 
-    
+
 }

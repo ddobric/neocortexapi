@@ -51,7 +51,7 @@ for i in range(FPS*seconds):
         vectorTransform['y'] = -vectorTransform['y']
     X+=vectorTransform['x']
     Y+=vectorTransform['y']
-    cv2.fillPoly(frame, pts= [triag_Point], color =(100, 0, 250))
+    cv2.fillPoly(frame, pts= [triag_Point], color =(0, 0, 0))
     video.write(frame)
 
 video.release()
