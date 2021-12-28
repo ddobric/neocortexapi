@@ -15,20 +15,27 @@ def  nNadk(n, k):
 # n: Bits
 # q: Threshold
 def errProbability(n, a, q):   
+    a=int(a)
     f1 = nNadk(a, q) 
     f2 = nNadk(n-a, a-q) 
     f3 = nNadk(n, a) 
     res = (f1*f2)/f3
     return res
 
-
-for q in range(40, 18, -1):
-     a = 40
-     n = 600
-     print("%d %10.3E" % (q, errProbability(n, a, q)))
+print(" EXPERIMENT False Positives ")
 
 f = 0.02
+ 
 
+for n in range(512, 5000, 512):
+    print("--------------- %d --------------", n)
+    a = int(n * f)
+    b = int(a/3)
+    # 30% of possible active bits are used as a threshold. 
+    for q in range(a, b, -1):
+       #print("%d %d %d %10.3E" % (n, a, q, errProbability(n, a, q)))
+       print("%d %d %10.3E" % (n, q, errProbability(n, a, q)))
+    
 lines = open("./sparse.txt", 'w')
 
 for x in range(100, 4096, 500):

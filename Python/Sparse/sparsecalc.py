@@ -12,6 +12,10 @@ f = 0.02
 
 lines = open("./sparse.txt", 'w')
 
+n=16
+w=1
+print(factorial(n)/(factorial(w)*factorial(n-w)))
+
 for x in range(500, 4096, 100):
 
     n = x
