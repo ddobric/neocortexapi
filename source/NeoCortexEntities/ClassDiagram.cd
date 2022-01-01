@@ -68,15 +68,16 @@
         <Position X="-0.013" Y="0.995" />
       </MemberNameLabel>
     </AssociationLine>
-    <AssociationLine Name="ReceptorSynapses" Type="NeoCortexApi.Entities.Synapse" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="ReceptorSynapses" Type="NeoCortexApi.Entities.Synapse" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="7.625" Y="2.812" />
-        <Point X="7.625" Y="6.125" />
-        <Point X="6.562" Y="6.125" />
-        <Point X="6.562" Y="6.5" />
+        <Point X="7.625" Y="5.844" />
+        <Point X="5.375" Y="5.844" />
+        <Point X="5.375" Y="6.75" />
+        <Point X="5.75" Y="6.75" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
-        <Position X="-0.932" Y="0.737" />
+        <Position X="-1.773" Y="1.204" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
