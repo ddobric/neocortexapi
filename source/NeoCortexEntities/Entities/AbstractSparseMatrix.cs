@@ -16,13 +16,8 @@ namespace NeoCortexApi.Entities
     /// at construction time and immutable - matrix fixed size data structure.
     /// </summary>
     /// <typeparam name="T"></typeparam>    
-    /// <remarks>
-    /// Authors of the JAVA implementation: David Ray, Jose Luis Martin
-    /// </remarks>
-    //[Serializable]
     public abstract class AbstractSparseMatrix<T> : AbstractFlatMatrix<T>, ISparseMatrix<T>
     {
-
         public AbstractSparseMatrix()
         {
 
@@ -48,8 +43,6 @@ namespace NeoCortexApi.Entities
 
         }
 
-        // protected <S extends AbstractSparseMatrix<T>> S set(int index, int value) { return null; }
-
         // TODO naming convention with override method
         /// <summary>
         /// Sets the object to occupy the specified index.
@@ -61,18 +54,6 @@ namespace NeoCortexApi.Entities
         {
             return null;
         }
-        //        public override AbstractFlatMatrix<T> set(int index, int value)
-        //#pragma warning restore IDE1006 // Naming Styles
-        //        { return null; }
-
-        /// <summary>
-        /// Sets the object to occupy the specified index.
-        /// </summary>
-        /// <param name="index">the index the object will occupy</param>
-        /// <param name="value">the value to be indexed.</param>
-        /// <returns></returns>
-        // protected virtual AbstractSparseMatrix<T> Set(int index, double value)
-        // { return null; }
 
         /// <summary>
         /// Sets the specified object to be indexed at the index computed from the specified coordinates.
