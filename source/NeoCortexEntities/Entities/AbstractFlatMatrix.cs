@@ -65,12 +65,7 @@ namespace NeoCortexApi.Entities
             return @base;
         }
 
-        /**
-        * Checks the indexes specified to see whether they are within the
-        * configured bounds and size parameters of this array configuration.
-        * 
-        * @param index the array dimensions to check
-        */
+  
         /// <summary>
         /// Checks the indexes specified to see whether they are within the configured bounds and size parameters of this array configuration.
         /// </summary>
@@ -103,20 +98,6 @@ namespace NeoCortexApi.Entities
         {
             string res = string.Join(",", arr);
             return res;
-            //if (aObject is Array)
-            //{
-            //    if (!typeof(T).IsValueType) // can we cast to Object[]
-            //        return aObject.ToString();
-            //    else
-            //    {  // we can't cast to Object[] - case of primitive arrays
-            //        int length = ((Array)aObject).Length;
-            //        Object[] objArr = new Object[length];
-            //        for (int i = 0; i < length; i++)
-            //            objArr[i] = ((Array)aObject).GetValue(i);
-            //        return objArr.ToString();
-            //    }
-            //}
-            //return "[]";
         }
 
         /// <summary>
@@ -129,6 +110,7 @@ namespace NeoCortexApi.Entities
             int holder = 1;
             int len = dimensions.Length;
             int[] dimensionMultiples = new int[dimensions.Length];
+
             for (int i = 0; i < len; i++)
             {
                 holder *= (i == 0 ? 1 : dimensions[len - i]);
@@ -151,7 +133,9 @@ namespace NeoCortexApi.Entities
 
         }
 
-
+        /// <summary>
+        /// Gets/Sets the topology of the HTM model.
+        /// </summary>
         public HtmModuleTopology ModuleTopology { get; set; }
 
         //protected int[] dimensions;

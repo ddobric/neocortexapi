@@ -8,15 +8,6 @@ using System.Text;
 
 namespace NeoCortexApi.Entities
 {
-    /// <summary>
-    /// Used as container for properties, which define topology of HTM module.
-    /// </summary>
-    //public class HtmModuleTopology
-    //{
-    //    public HtmEnpointTopology InputTopology { get; set; }
-
-    //    public HtmEnpointTopology ColumnTopology { get; set; } 
-    //}
 
     /// <summary>
     /// Used as container for properties, which define topology of HTM module.

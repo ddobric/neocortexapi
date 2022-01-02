@@ -128,52 +128,48 @@ namespace NeoCortexApi.Entities
         /// <returns>the indexed object</returns>
         protected double GetDoubleValue(int[] coordinates) { return -1.0; }
 
-        // @Override
+        
+        /// <summary>
+        /// RETURNS NULL.   
+        /// </summary>
+        /// <returns></returns>
         public override int[] GetSparseIndices()
         {
             return null;
         }
 
-        //  @Override
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override int[] Get1DIndexes()
         {
             List<int> results = new List<int>(GetMaxIndex() + 1);
-            Visit(GetDimensions(), 0, new int[GetNumDimensions()], results);
+            FlattThroughDimensions(GetDimensions(), 0, new int[GetNumDimensions()], results);
             return results.ToArray();
         }
 
         /// <summary>
         /// Recursively loops through the matrix dimensions to fill the results array with flattened computed array indexes.
         /// </summary>
-        /// <param name="bounds"></param>
+        /// <param name="dims">Dimension bounds.</param>
         /// <param name="currentDimension"></param>
         /// <param name="p"></param>
         /// <param name="results"></param>
-        private void Visit(int[] bounds, int currentDimension, int[] p, List<int> results)
+        private void FlattThroughDimensions(int[] dims, int currentDimension, int[] p, List<int> results)
         {
-            for (int i = 0; i < bounds[currentDimension]; i++)
+            for (int i = 0; i < dims[currentDimension]; i++)
             {
                 p[currentDimension] = i;
                 if (currentDimension == p.Length - 1)
                 {
                     results.Add(ComputeIndex(p));
                 }
-                else Visit(bounds, currentDimension + 1, p, results);
+                else 
+                    FlattThroughDimensions(dims, currentDimension + 1, p, results);
             }
         }
 
-
-        //public override T[] asDense(ITypeFactory<T> factory)
-        //{
-        //    throw NotImplementedException();
-
-        //    int[] dimensions = getDimensions();
-        //    T[] retVal = (T[])Array.CreateInstance(typeof(T), dimensions);
-
-        //    fill(factory, 0, dimensions, dimensions[0], (object[])(object)retVal);
-
-        //    return retVal;
-        //}
 
         /// <summary>
         /// Uses reflection to create and fill a dynamically created multidimensional array.
