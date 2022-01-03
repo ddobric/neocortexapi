@@ -15,15 +15,15 @@ namespace NeoCortexApi.Experiments
     /// 
     /// </summary>
     [TestClass]
-    public class SpatialSimilarityExperiment
+    public class SpatialPoolerVectorSimilarityExperiment
     {
         /// <summary>
-        /// 
+        /// Generates artifficial vectors and calculates the similarity.
         /// </summary>
         [TestMethod]
-        public void SpatialSimilarityExperimentTest()
+        public void VectorSimilarityExperimentTest()
         {
-            Console.WriteLine($"Hello {nameof(SpatialSimilarityExperiment)} experiment.");
+            Console.WriteLine($"Hello {nameof(SpatialPoolerVectorSimilarityExperiment)} experiment.");
 
             // Used as a boosting parameters
             // that ensure homeostatic plasticity effect.
@@ -54,29 +54,13 @@ namespace NeoCortexApi.Experiments
                 Random = new ThreadSafeRandom(42)
             };
 
-            double max = 100;
             int width = 15;
-            //
-            // This dictionary defines a set of typical encoder parameters.
-            Dictionary<string, object> settings = new Dictionary<string, object>()
-            {
-                { "W", width},
-                { "N", inputBits},
-                { "Radius", -1.0},
-                { "MinVal", 0.0},
-                { "Periodic", false},
-                { "Name", "scalar"},
-                { "ClipInput", false},
-                { "MaxVal", max}
-            };
-
-            EncoderBase encoder = new ScalarEncoder(settings);
-
+ 
             //
             // We create here 100 random input values.
             List<int[]> inputValues = GetTrainingvectors(0, inputBits, width);
 
-            RunExperiment(cfg, encoder, inputValues);
+            RunExperiment(cfg, inputValues);
         }
 
 
@@ -113,7 +97,6 @@ namespace NeoCortexApi.Experiments
                     inputValues.Add(NeoCortexUtils.CreateVector(inputBits, i, i + width));
                 }
 
-
                 return inputValues;
             }
             else
@@ -126,7 +109,7 @@ namespace NeoCortexApi.Experiments
         /// <param name="cfg"></param>
         /// <param name="encoder"></param>
         /// <param name="inputValues"></param>
-        private static void RunExperiment(HtmConfig cfg, EncoderBase encoder, List<int[]> inputValues)
+        private static void RunExperiment(HtmConfig cfg, List<int[]> inputValues)
         {
             // Creates the htm memory.
             var mem = new Connections(cfg);

@@ -17,7 +17,7 @@ namespace UnitTestsProject
 {
     [TestClass]
     [TestCategory("Experiment")]
-    public class SpatialPoolerSimilarityExperiments
+    public class SpatialPoolerImiageSimilarityExperiments
     {
         private const int OutImgSize = 1024;
 
@@ -33,7 +33,7 @@ namespace UnitTestsProject
         [DataRow("Vertical")]
         //[DataRow("Box")]
         //[DataRow("Horizontal")]
-        public void SimilarityExperiment(string inputPrefix)
+        public void ImageSimilarityExperiment(string inputPrefix)
         {
             //int stableStateCnt = 100;
             double minOctOverlapCycles = 1.0;
@@ -48,11 +48,11 @@ namespace UnitTestsProject
             //var colDims = new int[] { 64, 64 };
             //int numOfActCols = colDims[0] * colDims[1];
 
-            string TestOutputFolder = $"Output-{nameof(SimilarityExperiment)}";
+            string TestOutputFolder = $"Output-{nameof(ImageSimilarityExperiment)}";
 
             var trainingImages = Directory.GetFiles(trainingFolder, $"{inputPrefix}*.png");
 
-            Directory.CreateDirectory($"{nameof(SimilarityExperiment)}");
+            Directory.CreateDirectory($"{nameof(ImageSimilarityExperiment)}");
 
             int counter = 0;
             //var parameters = GetDefaultParams();
@@ -231,9 +231,9 @@ namespace UnitTestsProject
             var colDims = new int[] { 64 * 64 };
             int numOfActCols = colDims[0];
             int numColumns = colDims[0];
-            string TestOutputFolder = $"Output-{nameof(SimilarityExperiment)}";
+            string TestOutputFolder = $"Output-{nameof(ImageSimilarityExperiment)}";
 
-            Directory.CreateDirectory($"{nameof(SimilarityExperiment)}");
+            Directory.CreateDirectory($"{nameof(ImageSimilarityExperiment)}");
 
             //int counter = 0;
             //var parameters = GetDefaultParams();

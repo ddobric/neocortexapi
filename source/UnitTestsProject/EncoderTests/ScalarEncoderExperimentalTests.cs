@@ -602,7 +602,7 @@ namespace UnitTestsProject.EncoderTests
 
             Console.WriteLine("\nDay-Time");
 
-            Console.WriteLine(EncoderBase.TraceSimilarities(sdrDict));
+            Console.WriteLine(Helpers.TraceSimilarities(sdrDict));
         
             PrintBitMap(timeEncoder, nameof(ScalarEncodingTest));
 
