@@ -255,7 +255,7 @@ namespace NeoCortexApi.Entities
             }
 
             ArrayUtils.LessOrEqualXThanSetToY(perm, htmConfig.SynPermTrimThreshold, 0);
-            ArrayUtils.Clip(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
+            ArrayUtils.EnsureBetweenMinAndMax(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
             setProximalPermanencesSparse(htmConfig, perm, maskPotential);
         }
 
@@ -270,7 +270,7 @@ namespace NeoCortexApi.Entities
         {
             int result = 0;
 
-            // Gets the synapse mapping between column-i with input vector.
+            // Gets the synapse map  between this column and the input vector.
             int[] slice = (int[])this.connectedInputCounter.GetSlice(0);
 
             //

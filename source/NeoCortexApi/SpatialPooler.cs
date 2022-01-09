@@ -40,7 +40,7 @@ namespace NeoCortexApi
 
         public double MaxInibitionDensity { get; set; } = 0.5;
 
-        public string Name { get; set; } 
+        public string Name { get; set; }
 
         /// <summary>
         /// Default constructor.
@@ -192,7 +192,7 @@ namespace NeoCortexApi
             UpdateInhibitionRadius(conn, avgSynapsesConnected);
         }
 
-      
+
         /// <summary>
         /// Performs SpatialPooler compute algorithm.
         /// </summary>
@@ -641,34 +641,33 @@ namespace NeoCortexApi
         /// and the chosen columns after inhibition round. Permanence values are increased for synapses connected to input bits
         /// that are turned on, and decreased for synapses connected to inputs bits that are turned off.
         /// </summary>
-        /// <param name="c">the <see cref="Connections"/> (spatial pooler memory)</param>
+        /// <param name="conn">the <see cref="Connections"/> (spatial pooler memory)</param>
         /// <param name="inputVector">a integer array that comprises the input to the spatial pooler. There exists an entry in the array for every input bit.</param>
         /// <param name="activeColumns">an array containing the indices of the columns that survived inhibition.</param>
-        public virtual void AdaptSynapses(Connections c, int[] inputVector, int[] activeColumns)
+        public virtual void AdaptSynapses(Connections conn, int[] inputVector, int[] activeColumns)
         {
 
             // Get all indicies of input vector, which are set on '1'.
             var inputIndices = ArrayUtils.IndexWhere(inputVector, inpBit => inpBit > 0);
 
-            double[] permChanges = new double[c.HtmConfig.NumInputs];
+            double[] permChanges = new double[conn.HtmConfig.NumInputs];
 
             // First we initialize all permChanges to minimum decrement values,
             // which are used in a case of none-connections to input.
-            ArrayUtils.InitArray(permChanges, -1 * c.HtmConfig.SynPermInactiveDec);
+            ArrayUtils.InitArray(permChanges, -1 * conn.HtmConfig.SynPermInactiveDec);
 
             // Then we update all connected permChanges to increment values for connected values.
             // Permanences are set in conencted input bits to default incremental value.
-            ArrayUtils.SetIndexesTo(permChanges, inputIndices.ToArray(), c.HtmConfig.SynPermActiveInc);
+            ArrayUtils.SetIndexesTo(permChanges, inputIndices.ToArray(), conn.HtmConfig.SynPermActiveInc);
 
             for (int i = 0; i < activeColumns.Length; i++)
             {
-                //Pool pool = c.getPotentialPools().get(activeColumns[i]);
-                Pool pool = c.GetColumn(activeColumns[i]).ProximalDendrite.RFPool;
-                double[] perm = pool.GetDensePermanences(c.HtmConfig.NumInputs);
+                Pool pool = conn.GetColumn(activeColumns[i]).ProximalDendrite.RFPool;
+                double[] perm = pool.GetDensePermanences(conn.HtmConfig.NumInputs);
                 int[] indexes = pool.GetSparsePotential();
                 ArrayUtils.RaiseValuesBy(permChanges, perm);
-                Column col = c.GetColumn(activeColumns[i]);
-                HtmCompute.UpdatePermanencesForColumn(c.HtmConfig, perm, col, indexes, true);
+                Column col = conn.GetColumn(activeColumns[i]);
+                HtmCompute.UpdatePermanencesForColumn(conn.HtmConfig, perm, col, indexes, true);
             }
 
             //Debug.WriteLine("Permance after update in adaptSynapses: " + permChangesStr);
@@ -1449,7 +1448,7 @@ namespace NeoCortexApi
             HtmSerializer2 ser = new HtmSerializer2();
 
             ser.SerializeBegin(nameof(SpatialPooler), writer);
-            
+
             ser.SerializeValue(this.MaxInibitionDensity, writer);
             ser.SerializeValue(this.Name, writer);
 
@@ -1462,7 +1461,7 @@ namespace NeoCortexApi
             {
                 this.connections.Serialize(writer);
             }
-            
+
             ser.SerializeEnd(nameof(SpatialPooler), writer);
         }
 
@@ -1484,7 +1483,7 @@ namespace NeoCortexApi
                     sp.m_HomeoPlastAct = HomeostaticPlasticityController.Deserialize(sr);
                 }
                 else if (data == ser.ReadBegin(nameof(Connections)))
-                { 
+                {
                     sp.connections = Connections.Deserialize(sr);
                 }
                 else if (data == ser.ReadEnd(nameof(SpatialPooler)))
@@ -1515,7 +1514,7 @@ namespace NeoCortexApi
                     }
                 }
             }
-            
+
             return sp;
         }
     }

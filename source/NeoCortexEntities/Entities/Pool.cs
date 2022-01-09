@@ -126,11 +126,8 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Returns a dense array representing the potential pool permanences
         /// </summary>
-        /// <param name="numInputs"></param>
-        /// <returns></returns>
-        /// <remarks>
-        /// Note: Only called from tests for now...
-        /// </remarks>
+        /// <param name="numInputs">NUmber of input neurons used for spatial training.</param>
+        /// <returns>Permanences of all synapses connected to inut neurons.</returns>
         public double[] GetDensePermanences(int numInputs)
         {
             double[] retVal = new double[numInputs];
@@ -139,6 +136,7 @@ namespace NeoCortexApi.Entities
             {
                 retVal[inputIndex] = m_SynapsesBySourceIndex[inputIndex].Permanence;
             }
+
             return retVal;
         }
 

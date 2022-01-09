@@ -132,6 +132,11 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public bool WrapAround { get; set; } = true;
 
+        /// <summary>
+        /// This value is used by SP. When some permanencen is under this value, it is set on zero.
+        /// In this case the synapse remains the potential one and still can participate in learning.
+        /// By following structural plasticity the synapce would become disconnected from the mini-column.
+        /// </summary>
         public double SynPermTrimThreshold { get; set; }
 
         /// <summary>

@@ -18,7 +18,7 @@ namespace NeoCortexApi.Experiments
     public class SpatialPoolerVectorSimilarityExperiment
     {
         /// <summary>
-        /// Generates artifficial vectors and calculates the similarity.
+        /// Generates artifficial vectors and calculates the input and output similarity.
         /// </summary>
         [TestMethod]
         public void VectorSimilarityExperimentTest()
