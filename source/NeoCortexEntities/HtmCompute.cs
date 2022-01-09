@@ -380,6 +380,7 @@ namespace NeoCortexApi
 
             int[] maxCoord = new int[htmConfig.InputModuleTopology.Dimensions.Length];
             int[] minCoord = new int[maxCoord.Length];
+
             ArrayUtils.FillArray(maxCoord, -1);
             ArrayUtils.FillArray(minCoord, ArrayUtils.Max(htmConfig.InputModuleTopology.Dimensions));
 
@@ -387,11 +388,19 @@ namespace NeoCortexApi
             // It takes all connected synapses
             for (int i = 0; i < connected.Length; i++)
             {
-                maxCoord = ArrayUtils.MaxBetween(maxCoord, AbstractFlatMatrix.ComputeCoordinates(htmConfig.InputModuleTopology.Dimensions.Length,
-                   htmConfig.InputModuleTopology.DimensionMultiplies, htmConfig.InputModuleTopology.IsMajorOrdering, connected[i]));
+                var data = AbstractFlatMatrix.ComputeCoordinates(htmConfig.InputModuleTopology.Dimensions.Length,
+                  htmConfig.InputModuleTopology.DimensionMultiplies, htmConfig.InputModuleTopology.IsMajorOrdering, connected[i]);
 
-                minCoord = ArrayUtils.MinBetween(minCoord, AbstractFlatMatrix.ComputeCoordinates(htmConfig.InputModuleTopology.Dimensions.Length,
-                   htmConfig.InputModuleTopology.DimensionMultiplies, htmConfig.InputModuleTopology.IsMajorOrdering, connected[i]));
+                maxCoord = ArrayUtils.MaxBetween(maxCoord, data);
+
+                minCoord = ArrayUtils.MinBetween(minCoord, data);
+
+
+                //maxCoord = ArrayUtils.MaxBetween(maxCoord, AbstractFlatMatrix.ComputeCoordinates(htmConfig.InputModuleTopology.Dimensions.Length,
+                //   htmConfig.InputModuleTopology.DimensionMultiplies, htmConfig.InputModuleTopology.IsMajorOrdering, connected[i]));
+
+                //minCoord = ArrayUtils.MinBetween(minCoord, AbstractFlatMatrix.ComputeCoordinates(htmConfig.InputModuleTopology.Dimensions.Length,
+                //   htmConfig.InputModuleTopology.DimensionMultiplies, htmConfig.InputModuleTopology.IsMajorOrdering, connected[i]));
             }
 
             return ArrayUtils.Average(ArrayUtils.Add(ArrayUtils.Subtract(maxCoord, minCoord), 1));
