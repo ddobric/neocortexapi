@@ -53,14 +53,7 @@ namespace NeoCortexApi.Entities
         public SpatialPoolerConfig SpatialPooler { get; set; } = new SpatialPoolerConfig();
 
         #region Spatial Pooler Variables
-        /// <summary>
-        /// Do not set this value, it is automatically calculated. It will be removed from the HtmConfig class in the future version
-        /// of the NeoCortexApi.
-        /// The inhibition radius determines the size of a column's local neighborhood. of a column. A cortical column must overcome the overlap
-        /// score of columns in its neighborhood in order to become actives. This radius is updated every learning round. It grows and shrinks with the
-        /// average number of connected synapses per column.
-        /// </summary>
-        public int InhibitionRadius { get; set; } = 0;
+     
 
         /// <summary>
         /// Manages input neighborhood transformations.
@@ -190,6 +183,15 @@ namespace NeoCortexApi.Entities
         /// Maximum allowed inhibtion density.
         /// </summary>
         public double MaxInibitionDensity { get; set; } = 0.5;
+
+        /// <summary>
+        /// This value is used when the <see cref="LocalAreaDensity"/> is set on -1 (not used). It helps to calculate the inhibition density.
+        /// Please not that this value is automatically calculated in every cycle and it will be updated during the training process.
+        /// The inhibition radius determines the size of a column's local neighborhood. of a column. A cortical column must overcome the overlap
+        /// score of columns in its neighborhood in order to become actives. This radius is updated every learning round. It grows and shrinks with the
+        /// average number of connected synapses per column.
+        /// </summary>
+        public int InhibitionRadius { get; set; } = 0;
 
         /// <summary>
         /// A number between 0 and 1.0, used to set a floor on how often a column should have at least

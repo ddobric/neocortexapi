@@ -772,7 +772,6 @@ namespace NeoCortexApi
         /// </summary>
         /// <param name="c"></param>
         /// <returns></returns>
-
         private double CalcInhibitionDensity(Connections c)
         {
             double density = c.HtmConfig.LocalAreaDensity;
