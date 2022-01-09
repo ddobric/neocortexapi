@@ -186,6 +186,10 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public double LocalAreaDensity { get; set; } = -1.0;
 
+        /// <summary>
+        /// Maximum allowed inhibtion density.
+        /// </summary>
+        public double MaxInibitionDensity { get; set; } = 0.5;
 
         /// <summary>
         /// A number between 0 and 1.0, used to set a floor on how often a column should have at least

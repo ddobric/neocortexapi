@@ -38,8 +38,6 @@ namespace NeoCortexApi
         /// </summary>
         private HomeostaticPlasticityController m_HomeoPlastAct;
 
-        public double MaxInibitionDensity { get; set; } = 0.5;
-
         public string Name { get; set; }
 
         /// <summary>
@@ -770,7 +768,7 @@ namespace NeoCortexApi
         }
 
         /// <summary>
-        /// 
+        /// If the <see cref="HtmConfig.LocalAreaDensity"/> is specified, then this value is used as density.
         /// </summary>
         /// <param name="c"></param>
         /// <returns></returns>
@@ -793,7 +791,7 @@ namespace NeoCortexApi
 
                 density = c.HtmConfig.NumActiveColumnsPerInhArea / inhibitionArea;
 
-                density = Math.Min(density, MaxInibitionDensity);
+                density = Math.Min(density, c.HtmConfig.MaxInibitionDensity);
             }
 
             return density;
@@ -819,19 +817,21 @@ namespace NeoCortexApi
             {
                 return InhibitColumnsGlobal(c, overlaps, density);
             }
-            return InhibitColumnsLocal(c, overlaps, density);
+            else
+            {
+                return InhibitColumnsLocal(c, overlaps, density);
+            }
             //return inhibitColumnsLocalNewApproach(c, overlaps);
         }
 
 
         /// <summary>
-        ///  Perform global inhibition. It picks
-        ///  top 'numActive' columns with the highest overlap score in the entire region. 
-        ///  At most half of the columns in a local neighborhood are allowed to
-        ///  be active.
+        ///  Perform global inhibition. It selects top active columns with the highest overlap score in the entire region. 
+        ///  The number of selected active columns is defined by the 'density' argument.
+        ///  At most half of the columns in a local neighborhood are allowed tobe active.
         /// <param name="c">Connections (memory)</param>
         /// <param name="overlaps">An array containing the overlap score for each  column.</param>
-        /// <param name="density"> The fraction of the overlap score for a column is defined as the numbern of columns to survive inhibition.</param>
+        /// <param name="density">Defines the number of columns that will survive the inhibition.</param>
         /// <returns>We return all columns, of synapses in a "connected state" (connected synapses) that have overlap greather than stimulusThreshold.</returns>
         public virtual int[] InhibitColumnsGlobal(Connections c, double[] overlaps, double density)
         {
@@ -1415,8 +1415,6 @@ namespace NeoCortexApi
             if (obj == null)
                 return false;
 
-            if (MaxInibitionDensity != obj.MaxInibitionDensity)
-                return false;
             else if (Name != obj.Name)
                 return false;
 
@@ -1449,7 +1447,6 @@ namespace NeoCortexApi
 
             ser.SerializeBegin(nameof(SpatialPooler), writer);
 
-            ser.SerializeValue(this.MaxInibitionDensity, writer);
             ser.SerializeValue(this.Name, writer);
 
             if (this.m_HomeoPlastAct != null)
@@ -1499,7 +1496,7 @@ namespace NeoCortexApi
                         {
                             case 0:
                                 {
-                                    sp.MaxInibitionDensity = ser.ReadDoubleValue(str[i]);
+                                    //sp.MaxInibitionDensity = ser.ReadDoubleValue(str[i]);
                                     break;
                                 }
                             case 1:

@@ -270,7 +270,9 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public double[] TieBreaker { get => m_TieBreaker; set => m_TieBreaker = value; }
 
-
+        /// <summary>
+        /// Keeps the overlap state of all columns calculated by the SP in every learning cycle.
+        /// </summary>
         public double[] BoostedOverlaps { get => m_BoostedmOverlaps; set => this.m_BoostedmOverlaps = value; }
 
 

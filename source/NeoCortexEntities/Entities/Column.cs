@@ -271,18 +271,18 @@ namespace NeoCortexApi.Entities
             int result = 0;
 
             // Gets the synapse map  between this column and the input vector.
-            int[] slice = (int[])this.connectedInputCounter.GetSlice(0);
+            int[] synMap = (int[])this.connectedInputCounter.GetSlice(0);
 
             //
             // Step through all synapses between the mini-column and input vector.
-            for (int inpBitIndx = 0; inpBitIndx < slice.Length; inpBitIndx++)
+            for (int inpBitIndx = 0; inpBitIndx < synMap.Length; inpBitIndx++)
             {
                 // Result (overlap) is 1 if input bit is 1 and the mini-column is connected.
-                result += (inputVector[inpBitIndx] * slice[inpBitIndx]);
+                result += (inputVector[inpBitIndx] * synMap[inpBitIndx]);
 
                 //
                 // After the overlap is calculated, we set it on 0 if it is under stimulus threshold.
-                if (inpBitIndx == slice.Length - 1)
+                if (inpBitIndx == synMap.Length - 1)
                 {
                     // If the overlap (num of connected synapses to TRUE input) is less than stimulusThreshold then we set result on 0.
                     // If the overlap (num of connected synapses to TRUE input) is greather than stimulusThreshold then result remains as calculated.
