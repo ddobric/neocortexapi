@@ -362,12 +362,21 @@ namespace NeoCortexApi
         }
 
         /// <summary>
+        /// This value is automatically calculated when the RF is created on init of the SP and in every learning cycle.
+        /// It helps to calculate the inhibition density.
+        /// The inhibition radius determines the size of a column's local neighborhood. of a column. A cortical column must overcome the overlap
+        /// score of columns in its neighborhood in order to become actives.
+        /// It grows and shrinks with the average number of connected synapses per column.
+        /// </summary>
+        internal int InhibitionRadius { get; set; } = 0;
+
+        /// <summary>
         /// Updates the minimum duty cycles defining normal activity for a column. A column with activity duty cycle below this minimum threshold is boosted.
         /// </summary>
         /// <param name="c"></param>
         public void UpdateMinDutyCycles(Connections c)
         {
-            if (c.HtmConfig.GlobalInhibition || c.HtmConfig.InhibitionRadius > c.HtmConfig.NumInputs)
+            if (c.HtmConfig.GlobalInhibition || this.InhibitionRadius > c.HtmConfig.NumInputs)
             {
                 UpdateMinDutyCyclesGlobal(c);
             }
@@ -420,7 +429,7 @@ namespace NeoCortexApi
         public void UpdateMinDutyCyclesLocal(Connections c)
         {
             int len = c.HtmConfig.NumColumns;
-            int inhibitionRadius = c.HtmConfig.InhibitionRadius;
+            
             double[] activeDutyCycles = c.HtmConfig.ActiveDutyCycles;
             double minPctActiveDutyCycles = c.HtmConfig.MinPctActiveDutyCycles;
             double[] overlapDutyCycles = c.HtmConfig.OverlapDutyCycles;
@@ -428,7 +437,7 @@ namespace NeoCortexApi
 
             Parallel.For(0, len, (i) =>
             {
-                int[] neighborhood = GetColumnNeighborhood(c, i, inhibitionRadius);
+                int[] neighborhood = GetColumnNeighborhood(c, i, this.InhibitionRadius);
 
                 double maxActiveDuty = ArrayUtils.Max(ArrayUtils.ListOfValuesByIndicies(activeDutyCycles, neighborhood));
                 double maxOverlapDuty = ArrayUtils.Max(ArrayUtils.ListOfValuesByIndicies(overlapDutyCycles, neighborhood));
@@ -530,7 +539,7 @@ namespace NeoCortexApi
         {
             if (c.HtmConfig.GlobalInhibition)
             {
-                c.HtmConfig.InhibitionRadius = ArrayUtils.Max(c.HtmConfig.ColumnDimensions);
+                this.InhibitionRadius = ArrayUtils.Max(c.HtmConfig.ColumnDimensions);
                 return;
             }
 
@@ -550,7 +559,7 @@ namespace NeoCortexApi
             double radius = (diameter - 1) / 2.0d;
             radius = Math.Max(1, radius);
 
-            c.HtmConfig.InhibitionRadius = (int)(radius + 0.5);
+            this.InhibitionRadius = (int)(radius + 0.5);
         }
 
 
@@ -785,7 +794,7 @@ namespace NeoCortexApi
                 // inhibition area can be higher than num of all columns, if 
                 // radius is near to number of columns of a dimension with highest number of columns.
                 // In that case we limit it to number of all columns.
-                inhibitionArea = Math.Pow(2 * c.HtmConfig.InhibitionRadius + 1, c.HtmConfig.ColumnDimensions.Length);
+                inhibitionArea = Math.Pow(2 * this.InhibitionRadius + 1, c.HtmConfig.ColumnDimensions.Length);
                 inhibitionArea = Math.Min(c.HtmConfig.NumColumns, inhibitionArea);
 
                 density = c.HtmConfig.NumActiveColumnsPerInhArea / inhibitionArea;
@@ -812,7 +821,7 @@ namespace NeoCortexApi
 
             double density = CalcInhibitionDensity(c);
 
-            if (c.HtmConfig.GlobalInhibition || c.HtmConfig.InhibitionRadius > ArrayUtils.Max(c.HtmConfig.ColumnDimensions))
+            if (c.HtmConfig.GlobalInhibition || this.InhibitionRadius > ArrayUtils.Max(c.HtmConfig.ColumnDimensions))
             {
                 return InhibitColumnsGlobal(c, overlaps, density);
             }
@@ -898,7 +907,7 @@ namespace NeoCortexApi
 
             List<int> winners = new List<int>();
 
-            int inhibitionRadius = mem.HtmConfig.InhibitionRadius;
+            int inhibitionRadius = this.InhibitionRadius;
 
             for (int column = 0; column < overlaps.Length; column++)
             {
@@ -1080,16 +1089,13 @@ namespace NeoCortexApi
 
             double[] tieBrokenOverlaps = new List<double>(overlaps).ToArray();
 
-
-            int inhibitionRadius = c.HtmConfig.InhibitionRadius;
-
             Parallel.ForEach(overlaps, (val, b, index) =>
             {
                 // int column = i;
                 if ((int)index >= c.HtmConfig.StimulusThreshold)
                 {
                     // GETS INDEXES IN THE ARRAY FOR THE NEIGHBOURS WITHIN THE INHIBITION RADIUS.
-                    List<int> neighborhood = GetColumnNeighborhood(c, (int)index, inhibitionRadius).ToList();
+                    List<int> neighborhood = GetColumnNeighborhood(c, (int)index, this.InhibitionRadius).ToList();
 
                     // GETS THE NEIGHBOURS WITHIN THE INHI
                     // Take overlapps of neighbors
