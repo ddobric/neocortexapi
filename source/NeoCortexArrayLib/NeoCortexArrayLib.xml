@@ -140,6 +140,13 @@
             <param name="predicate"></param>
             <returns></returns>
         </member>
+        <member name="M:NeoCortexApi.Utility.ArrayUtils.IndexesWithNonZeros(System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Gets index of item in array, which satisfies specified condition.
+            </summary>
+            <param name="source"></param>
+            <returns></returns>
+        </member>
         <member name="M:NeoCortexApi.Utility.ArrayUtils.Multiply(System.Double[],System.Int32[])">
             <summary>
             Returns an array whose members are the product of the multiplicand array values and the factor array values.

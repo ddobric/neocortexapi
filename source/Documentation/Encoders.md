@@ -157,7 +157,6 @@ Results|![][img05.07.2011] | ![][img06.07.2012] | ![][img07.07.2013] | ![][img08
 
 Further unit tests can be found [here](../UnitTestsProject/EncoderTests/DateTimeEncoderTests.cs)
 
-
 ### Geo-Spatial Encoder
 
 ```csharp
@@ -192,8 +191,8 @@ public int[] GermanyToItalyLongitude(double input)
 
 Further unit tests can be found [here](../UnitTestsProject/EncoderTests/GeoSpatialEncoderExperimentalTests.cs)
 
-
 ### Multi-Encoder
+
 Further unit tests can be found [here](../UnitTestsProject/EncoderTests/MultiEncoderTests.cs)
 
 ```csharp
@@ -240,3 +239,26 @@ The following table visualizes the result from several numbers of the above unit
 [img18.0]: ./images/ScalarEncoder/18.0.png
 
 Further unit tests can be found [here](../UnitTestsProject/EncoderTests/ScalarEncoderTests.cs)
+
+## How to create new Encoder?
+
+New encoder should extend `EncoderBase` class as follow:
+
+```cs
+{
+    public class BloodPressureEncoder : EncoderBase
+    {
+        public override int Width { get; }
+        public override bool IsDelta { get { return false; } }
+        public override int[] Encode(object inputData)
+        {
+            // Implementation of the blood pressure encoder
+            // Output is 1D array SDR
+        }
+        public override List<T> GetBucketValues<T>()
+        {
+            throw new NotImplementedException();
+        }
+    }
+}
+```
