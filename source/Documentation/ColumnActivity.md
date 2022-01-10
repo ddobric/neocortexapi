@@ -29,5 +29,5 @@ C:\temp\exp.csv
 
 ### Result
 
-<img src="/source/Documentation/images/sdr-compare.png" alt="Result of compare" style="float: left; margin-right: 10px;" width=50% height=50% />
+<img src="images/sdr-compare.png" alt="Result of compare" style="float: left; margin-right: 10px;" width=50% height=50% />
 

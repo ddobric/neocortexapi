@@ -1,6 +1,5 @@
 ## HtmClassifier
 The HtmClassifier is a neocortexapi module that is used for prediction of the next element by presenting the current sequence state. The classifier provides two methods:
-The classifier provides two methods:
 
 The first one is used for learning of the SDR assotiated with the given key. For example, the SDR=00001110001110010011000 might represent some label 'A'. In that case the label 'A' is used as a key and the SDR is the array that will be associated to that key. That means, the HtmClassifier is rather an association algorithm than a classical learning algorithm. To associated an SDR int-array with the key, following method is used:
 
