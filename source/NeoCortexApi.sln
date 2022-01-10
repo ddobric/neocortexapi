@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29009.5
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexApi", "NeoCortexApi\NeoCortexApi.csproj", "{F5BEDB25-C6A3-4826-A8C6-679098F5CB9C}"
 EndProject
@@ -11,6 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexUtils", "NeoCortex
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{23838D99-F23D-47B6-BC70-92FA0A34FF1C}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		nuget-vsonline.config = nuget-vsonline.config
 		nuget.config = nuget.config
 	EndProjectSection
@@ -46,7 +47,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexApi.Parallel", "Ne
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtmActorHost", "HtmActorHost\HtmActorHost.csproj", "{47B60F4A-2561-4C94-9E47-3D616B1D142E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeoCortexApi.Experiments", "NeoCortexApi.Experiments\NeoCortexApi.Experiments.csproj", "{90E5DAF2-9C50-4E73-B82A-61F7A42965C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexApi.Experiments", "NeoCortexApi.Experiments\NeoCortexApi.Experiments.csproj", "{90E5DAF2-9C50-4E73-B82A-61F7A42965C9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
