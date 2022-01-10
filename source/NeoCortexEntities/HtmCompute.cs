@@ -380,6 +380,7 @@ namespace NeoCortexApi
 
             int[] maxCoord = new int[htmConfig.InputModuleTopology.Dimensions.Length];
             int[] minCoord = new int[maxCoord.Length];
+
             ArrayUtils.FillArray(maxCoord, -1);
             ArrayUtils.FillArray(minCoord, ArrayUtils.Max(htmConfig.InputModuleTopology.Dimensions));
 
@@ -387,11 +388,19 @@ namespace NeoCortexApi
             // It takes all connected synapses
             for (int i = 0; i < connected.Length; i++)
             {
-                maxCoord = ArrayUtils.MaxBetween(maxCoord, AbstractFlatMatrix.ComputeCoordinates(htmConfig.InputModuleTopology.Dimensions.Length,
-                   htmConfig.InputModuleTopology.DimensionMultiplies, htmConfig.InputModuleTopology.IsMajorOrdering, connected[i]));
+                var data = AbstractFlatMatrix.ComputeCoordinates(htmConfig.InputModuleTopology.Dimensions.Length,
+                  htmConfig.InputModuleTopology.DimensionMultiplies, htmConfig.InputModuleTopology.IsMajorOrdering, connected[i]);
 
-                minCoord = ArrayUtils.MinBetween(minCoord, AbstractFlatMatrix.ComputeCoordinates(htmConfig.InputModuleTopology.Dimensions.Length,
-                   htmConfig.InputModuleTopology.DimensionMultiplies, htmConfig.InputModuleTopology.IsMajorOrdering, connected[i]));
+                maxCoord = ArrayUtils.MaxBetween(maxCoord, data);
+
+                minCoord = ArrayUtils.MinBetween(minCoord, data);
+
+
+                //maxCoord = ArrayUtils.MaxBetween(maxCoord, AbstractFlatMatrix.ComputeCoordinates(htmConfig.InputModuleTopology.Dimensions.Length,
+                //   htmConfig.InputModuleTopology.DimensionMultiplies, htmConfig.InputModuleTopology.IsMajorOrdering, connected[i]));
+
+                //minCoord = ArrayUtils.MinBetween(minCoord, AbstractFlatMatrix.ComputeCoordinates(htmConfig.InputModuleTopology.Dimensions.Length,
+                //   htmConfig.InputModuleTopology.DimensionMultiplies, htmConfig.InputModuleTopology.IsMajorOrdering, connected[i]));
             }
 
             return ArrayUtils.Average(ArrayUtils.Add(ArrayUtils.Subtract(maxCoord, minCoord), 1));
@@ -417,7 +426,7 @@ namespace NeoCortexApi
                 throw new ArgumentException("StimulusThreshold as number of required connected synapses cannot be greather than number of neurons in receptive field.");
             }
 
-            ArrayUtils.Clip(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
+            ArrayUtils.EnsureBetweenMinAndMax(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
             while (true)
             {
                 // Gets number of synapses with permanence value grather than 'PermConnected'.
@@ -435,7 +444,7 @@ namespace NeoCortexApi
 
         public static void RaisePermanenceToThresholdSparse(HtmConfig htmConfig, double[] perm)
         {
-            ArrayUtils.Clip(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
+            ArrayUtils.EnsureBetweenMinAndMax(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
             while (true)
             {
                 int numConnected = ArrayUtils.ValueGreaterCount(htmConfig.SynPermConnected, perm);
@@ -455,21 +464,21 @@ namespace NeoCortexApi
         /// <param name="htmConfig">the configuration used in <see cref="Connections"/>.</param>
         /// <param name="perm">An array of permanence values for a column. The array is "dense", i.e. it contains an entry for each input bit, even if the permanence value is 0.</param>
         /// <param name="column">The column in the permanence, potential and connectivity matrices.</param>
-        /// <param name="maskPotential">The indexes of inputs in the specified <see cref="Column"/>'s pool.</param>
+        /// <param name="potentialIndexes">The indexes of inputs in the specified <see cref="Column"/>'s pool.</param>
         /// <param name="raisePerm">a boolean value indicating whether the permanence values</param>
-        public static void UpdatePermanencesForColumn(HtmConfig htmConfig, double[] perm, Column column, int[] maskPotential, bool raisePerm)
+        public static void UpdatePermanencesForColumn(HtmConfig htmConfig, double[] perm, Column column, int[] potentialIndexes, bool raisePerm)
         {
             if (raisePerm)
             {
                 // During every learning cycle, this method ensures that every column 
                 // has enough connections ('SynPermConnected') to iput space.
-                RaisePermanenceToThreshold(htmConfig, perm, maskPotential);
+                RaisePermanenceToThreshold(htmConfig, perm, potentialIndexes);
             }
 
             // Here we set all permanences to 0 
             ArrayUtils.LessOrEqualXThanSetToY(perm, htmConfig.SynPermTrimThreshold, 0);
 
-            ArrayUtils.Clip(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
+            ArrayUtils.EnsureBetweenMinAndMax(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
 
             column.SetPermanences(htmConfig, perm);
         }

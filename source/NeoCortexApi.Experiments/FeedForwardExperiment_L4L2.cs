@@ -54,7 +54,7 @@ namespace NeocortexApi.Experiments
                 LocalAreaDensity = -1,
                 NumActiveColumnsPerInhArea = 0.02 * numColumnsL4,
                 PotentialRadius = inputBits,// Ever column is connected to 50 of 100 input cells.
-                InhibitionRadius = 15,
+                //InhibitionRadius = 15,
                 MaxBoost = maxBoost,
                 DutyCyclePeriod = 25,
                 MinPctOverlapDutyCycles = minOctOverlapCycles,
@@ -78,7 +78,7 @@ namespace NeocortexApi.Experiments
                 LocalAreaDensity = -1,
                 NumActiveColumnsPerInhArea = 0.1 * numColumnsL2,
                 PotentialRadius = inputsL2, // Every columns 
-                InhibitionRadius = 15,
+                //InhibitionRadius = 15,
                 MaxBoost = maxBoost,
                 DutyCyclePeriod = 25,
                 MinPctOverlapDutyCycles = minOctOverlapCycles,

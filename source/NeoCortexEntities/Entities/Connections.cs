@@ -270,7 +270,9 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public double[] TieBreaker { get => m_TieBreaker; set => m_TieBreaker = value; }
 
-
+        /// <summary>
+        /// Keeps the overlap state of all columns calculated by the SP in every learning cycle.
+        /// </summary>
         public double[] BoostedOverlaps { get => m_BoostedmOverlaps; set => this.m_BoostedmOverlaps = value; }
 
 
@@ -976,7 +978,7 @@ namespace NeoCortexApi.Entities
             sb.Append("potentialRadius            = " + this.HtmConfig.PotentialRadius);
             sb.Append("globalInhibition           = " + this.HtmConfig.GlobalInhibition);
             sb.Append("localAreaDensity           = " + this.HtmConfig.LocalAreaDensity);
-            sb.Append("inhibitionRadius           = " + this.HtmConfig.InhibitionRadius);
+            //sb.Append("inhibitionRadius           = " + this.HtmConfig.InhibitionRadius);
             sb.Append("stimulusThreshold          = " + this.HtmConfig.StimulusThreshold);
             sb.Append("synPermActiveInc           = " + this.HtmConfig.SynPermActiveInc);
             sb.Append("synPermInactiveDec         = " + this.HtmConfig.SynPermInactiveDec);
@@ -1080,7 +1082,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + (int)(temp ^ (temp >> 32));//it was temp >>> 32
             result = prime * result + this.HtmConfig.DutyCyclePeriod;
             result = prime * result + (this.HtmConfig.GlobalInhibition ? 1231 : 1237);
-            result = prime * result + this.HtmConfig.InhibitionRadius;
+            //result = prime * result + this.HtmConfig.InhibitionRadius;
             temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.InitialSynapseConnsPct);
             result = prime * result + (int)(temp ^ (temp >> 32));
             temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.InitialPermanence);

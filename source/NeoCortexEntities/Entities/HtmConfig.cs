@@ -53,14 +53,7 @@ namespace NeoCortexApi.Entities
         public SpatialPoolerConfig SpatialPooler { get; set; } = new SpatialPoolerConfig();
 
         #region Spatial Pooler Variables
-        /// <summary>
-        /// Do not set this value, it is automatically calculated. It will be removed from the HtmConfig class in the future version
-        /// of the NeoCortexApi.
-        /// The inhibition radius determines the size of a column's local neighborhood. of a column. A cortical column must overcome the overlap
-        /// score of columns in its neighborhood in order to become actives. This radius is updated every learning round. It grows and shrinks with the
-        /// average number of connected synapses per column.
-        /// </summary>
-        public int InhibitionRadius { get; set; } = 0;
+
 
         /// <summary>
         /// Manages input neighborhood transformations.
@@ -132,6 +125,11 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public bool WrapAround { get; set; } = true;
 
+        /// <summary>
+        /// This value is used by SP. When some permanencen is under this value, it is set on zero.
+        /// In this case the synapse remains the potential one and still can participate in learning.
+        /// By following structural plasticity the synapce would become disconnected from the mini-column.
+        /// </summary>
         public double SynPermTrimThreshold { get; set; }
 
         /// <summary>
@@ -181,6 +179,10 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public double LocalAreaDensity { get; set; } = -1.0;
 
+        /// <summary>
+        /// Maximum allowed inhibtion density.
+        /// </summary>
+        public double MaxInibitionDensity { get; set; } = 0.5;
 
         /// <summary>
         /// A number between 0 and 1.0, used to set a floor on how often a column should have at least
@@ -391,7 +393,7 @@ namespace NeoCortexApi.Entities
             this.PotentialRadius = 15;
             this.PotentialPct = 0.75;
             this.GlobalInhibition = true;
-            this.InhibitionRadius = 15;
+            //this.InhibitionRadius = 15;
             this.LocalAreaDensity = -1.0;
             this.NumActiveColumnsPerInhArea = 0.02 * 2048;
             this.StimulusThreshold = 5.0;
@@ -480,8 +482,8 @@ namespace NeoCortexApi.Entities
                 return false;
             if (synPermConnected != obj.synPermConnected)
                 return false;
-            if (InhibitionRadius != obj.InhibitionRadius)
-                return false;
+            //if (InhibitionRadius != obj.InhibitionRadius)
+            //    return false;
             if (NumInputs != obj.NumInputs)
                 return false;
             if (NumColumns != obj.NumColumns)
@@ -598,7 +600,7 @@ namespace NeoCortexApi.Entities
                 if (obj.Random.Next() != Random.Next())
                     return false;
             }
-            
+
             return true;
 
         }
@@ -612,7 +614,7 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.synPermActiveInc, writer);
             ser.SerializeValue(this.SynPermConnected, writer);
             //Spatial Pooler Variables
-            ser.SerializeValue(this.InhibitionRadius, writer);
+            //ser.SerializeValue(this.InhibitionRadius, writer);
             ser.SerializeValue(this.NumInputs, writer);
             ser.SerializeValue(this.NumColumns, writer);
             ser.SerializeValue(this.PotentialRadius, writer);
@@ -676,7 +678,7 @@ namespace NeoCortexApi.Entities
             {
                 this.ColumnTopology.Serialize(writer);
             }
-            if  (this.ColumnModuleTopology != null)
+            if (this.ColumnModuleTopology != null)
             {
                 this.ColumnModuleTopology.Serialize(writer);
             }
@@ -744,7 +746,7 @@ namespace NeoCortexApi.Entities
                                     }
                                 case 2:
                                     {
-                                        htmConfig.InhibitionRadius = ser.ReadIntValue(str[i]);
+                                        // htmConfig.InhibitionRadius = ser.ReadIntValue(str[i]);
                                         break;
                                     }
                                 case 3:
@@ -989,7 +991,7 @@ namespace NeoCortexApi.Entities
                         }
 
                     }
-                    
+
                 }
             }
             return htmConfig;

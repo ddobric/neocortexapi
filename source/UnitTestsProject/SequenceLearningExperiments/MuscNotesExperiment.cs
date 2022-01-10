@@ -427,7 +427,6 @@ namespace UnitTestsProject.SequenceLearningExperiments
                 LocalAreaDensity = -1,
                 NumActiveColumnsPerInhArea = 0.02 * numColumns,
                 PotentialRadius = 50,
-                InhibitionRadius = 15,
                 MaxBoost = 10.0,
                 DutyCyclePeriod = 25,
                 MinPctOverlapDutyCycles = 0.75,

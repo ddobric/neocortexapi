@@ -761,14 +761,14 @@ namespace NeoCortexApi.Utility
         /// Sets the values in the specified values array at the indexes specified,
         /// to the value "setTo".
         /// </summary>
-        /// <param name="values">the values to alter if at the specified indexes.</param>
+        /// <param name="valuesToSet">The values to alter if at the specified indexes.</param>
         /// <param name="indexes">the indexes of the values array to alter.</param>
         /// <param name="val">the value to set at the specified indexes.</param>
-        public static void SetIndexesTo(double[] values, int[] indexes, double val)
+        public static void SetIndexesTo(double[] valuesToSet, int[] indexes, double val)
         {
             for (int i = 0; i < indexes.Length; i++)
             {
-                values[indexes[i]] = val;
+                valuesToSet[indexes[i]] = val;
             }
         }
 
@@ -852,7 +852,7 @@ namespace NeoCortexApi.Utility
         /// <param name="max">the maximum value.</param>
         /// <returns></returns>
         /// TODO min max ???
-        public static double[] Clip(double[] values, double min, double max)
+        public static double[] EnsureBetweenMinAndMax(double[] values, double min, double max)
         {
             for (int i = 0; i < values.Length; i++)
             {
@@ -1066,17 +1066,17 @@ namespace NeoCortexApi.Utility
 
 
         /// <summary>
-        /// Makes all values in the specified array which are less than or equal to the specified <paramref name="x"/> value,
-        /// equal to the specified <paramref name="y"/>.
+        /// Makes all values in the specified array which are less than or equal to the specified <paramref name="comparingValue"/> value,
+        /// equal to the specified <paramref name="valueToBeSet"/>.
         /// </summary>
-        /// <param name="array"></param>
-        /// <param name="x">the comparison.</param>
-        /// <param name="y">the value to set if the comparison fails.</param>
-        public static void LessOrEqualXThanSetToY(double[] array, double x, double y)
+        /// <param name="array">Traverses through this array and set the element on 'y' if the current value of the element is less than 'x'. </param>
+        /// <param name="comparingValue">the comparison.</param>
+        /// <param name="valueToBeSet">the value to set if the comparison fails.</param>
+        public static void LessOrEqualXThanSetToY(double[] array, double comparingValue, double valueToBeSet)
         {
             for (int i = 0; i < array.Length; i++)
             {
-                if (array[i] <= x) array[i] = y;
+                if (array[i] <= comparingValue) array[i] = valueToBeSet;
             }
         }
 

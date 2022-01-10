@@ -38,9 +38,7 @@ namespace NeoCortexApi
         /// </summary>
         private HomeostaticPlasticityController m_HomeoPlastAct;
 
-        public double MaxInibitionDensity { get; set; } = 0.5;
-
-        public string Name { get; set; } 
+        public string Name { get; set; }
 
         /// <summary>
         /// Default constructor.
@@ -192,7 +190,7 @@ namespace NeoCortexApi
             UpdateInhibitionRadius(conn, avgSynapsesConnected);
         }
 
-      
+
         /// <summary>
         /// Performs SpatialPooler compute algorithm.
         /// </summary>
@@ -364,12 +362,21 @@ namespace NeoCortexApi
         }
 
         /// <summary>
+        /// This value is automatically calculated when the RF is created on init of the SP and in every learning cycle.
+        /// It helps to calculate the inhibition density.
+        /// The inhibition radius determines the size of a column's local neighborhood. of a column. A cortical column must overcome the overlap
+        /// score of columns in its neighborhood in order to become actives.
+        /// It grows and shrinks with the average number of connected synapses per column.
+        /// </summary>
+        internal int InhibitionRadius { get; set; } = 0;
+
+        /// <summary>
         /// Updates the minimum duty cycles defining normal activity for a column. A column with activity duty cycle below this minimum threshold is boosted.
         /// </summary>
         /// <param name="c"></param>
         public void UpdateMinDutyCycles(Connections c)
         {
-            if (c.HtmConfig.GlobalInhibition || c.HtmConfig.InhibitionRadius > c.HtmConfig.NumInputs)
+            if (c.HtmConfig.GlobalInhibition || this.InhibitionRadius > c.HtmConfig.NumInputs)
             {
                 UpdateMinDutyCyclesGlobal(c);
             }
@@ -422,7 +429,7 @@ namespace NeoCortexApi
         public void UpdateMinDutyCyclesLocal(Connections c)
         {
             int len = c.HtmConfig.NumColumns;
-            int inhibitionRadius = c.HtmConfig.InhibitionRadius;
+            
             double[] activeDutyCycles = c.HtmConfig.ActiveDutyCycles;
             double minPctActiveDutyCycles = c.HtmConfig.MinPctActiveDutyCycles;
             double[] overlapDutyCycles = c.HtmConfig.OverlapDutyCycles;
@@ -430,7 +437,7 @@ namespace NeoCortexApi
 
             Parallel.For(0, len, (i) =>
             {
-                int[] neighborhood = GetColumnNeighborhood(c, i, inhibitionRadius);
+                int[] neighborhood = GetColumnNeighborhood(c, i, this.InhibitionRadius);
 
                 double maxActiveDuty = ArrayUtils.Max(ArrayUtils.ListOfValuesByIndicies(activeDutyCycles, neighborhood));
                 double maxOverlapDuty = ArrayUtils.Max(ArrayUtils.ListOfValuesByIndicies(overlapDutyCycles, neighborhood));
@@ -532,7 +539,7 @@ namespace NeoCortexApi
         {
             if (c.HtmConfig.GlobalInhibition)
             {
-                c.HtmConfig.InhibitionRadius = ArrayUtils.Max(c.HtmConfig.ColumnDimensions);
+                this.InhibitionRadius = ArrayUtils.Max(c.HtmConfig.ColumnDimensions);
                 return;
             }
 
@@ -552,7 +559,7 @@ namespace NeoCortexApi
             double radius = (diameter - 1) / 2.0d;
             radius = Math.Max(1, radius);
 
-            c.HtmConfig.InhibitionRadius = (int)(radius + 0.5);
+            this.InhibitionRadius = (int)(radius + 0.5);
         }
 
 
@@ -641,34 +648,33 @@ namespace NeoCortexApi
         /// and the chosen columns after inhibition round. Permanence values are increased for synapses connected to input bits
         /// that are turned on, and decreased for synapses connected to inputs bits that are turned off.
         /// </summary>
-        /// <param name="c">the <see cref="Connections"/> (spatial pooler memory)</param>
+        /// <param name="conn">the <see cref="Connections"/> (spatial pooler memory)</param>
         /// <param name="inputVector">a integer array that comprises the input to the spatial pooler. There exists an entry in the array for every input bit.</param>
         /// <param name="activeColumns">an array containing the indices of the columns that survived inhibition.</param>
-        public virtual void AdaptSynapses(Connections c, int[] inputVector, int[] activeColumns)
+        public virtual void AdaptSynapses(Connections conn, int[] inputVector, int[] activeColumns)
         {
 
             // Get all indicies of input vector, which are set on '1'.
             var inputIndices = ArrayUtils.IndexWhere(inputVector, inpBit => inpBit > 0);
 
-            double[] permChanges = new double[c.HtmConfig.NumInputs];
+            double[] permChanges = new double[conn.HtmConfig.NumInputs];
 
             // First we initialize all permChanges to minimum decrement values,
             // which are used in a case of none-connections to input.
-            ArrayUtils.InitArray(permChanges, -1 * c.HtmConfig.SynPermInactiveDec);
+            ArrayUtils.InitArray(permChanges, -1 * conn.HtmConfig.SynPermInactiveDec);
 
             // Then we update all connected permChanges to increment values for connected values.
             // Permanences are set in conencted input bits to default incremental value.
-            ArrayUtils.SetIndexesTo(permChanges, inputIndices.ToArray(), c.HtmConfig.SynPermActiveInc);
+            ArrayUtils.SetIndexesTo(permChanges, inputIndices.ToArray(), conn.HtmConfig.SynPermActiveInc);
 
             for (int i = 0; i < activeColumns.Length; i++)
             {
-                //Pool pool = c.getPotentialPools().get(activeColumns[i]);
-                Pool pool = c.GetColumn(activeColumns[i]).ProximalDendrite.RFPool;
-                double[] perm = pool.GetDensePermanences(c.HtmConfig.NumInputs);
+                Pool pool = conn.GetColumn(activeColumns[i]).ProximalDendrite.RFPool;
+                double[] perm = pool.GetDensePermanences(conn.HtmConfig.NumInputs);
                 int[] indexes = pool.GetSparsePotential();
                 ArrayUtils.RaiseValuesBy(permChanges, perm);
-                Column col = c.GetColumn(activeColumns[i]);
-                HtmCompute.UpdatePermanencesForColumn(c.HtmConfig, perm, col, indexes, true);
+                Column col = conn.GetColumn(activeColumns[i]);
+                HtmCompute.UpdatePermanencesForColumn(conn.HtmConfig, perm, col, indexes, true);
             }
 
             //Debug.WriteLine("Permance after update in adaptSynapses: " + permChangesStr);
@@ -771,11 +777,10 @@ namespace NeoCortexApi
         }
 
         /// <summary>
-        /// 
+        /// If the <see cref="HtmConfig.LocalAreaDensity"/> is specified, then this value is used as density.
         /// </summary>
         /// <param name="c"></param>
         /// <returns></returns>
-
         private double CalcInhibitionDensity(Connections c)
         {
             double density = c.HtmConfig.LocalAreaDensity;
@@ -789,12 +794,12 @@ namespace NeoCortexApi
                 // inhibition area can be higher than num of all columns, if 
                 // radius is near to number of columns of a dimension with highest number of columns.
                 // In that case we limit it to number of all columns.
-                inhibitionArea = Math.Pow(2 * c.HtmConfig.InhibitionRadius + 1, c.HtmConfig.ColumnDimensions.Length);
+                inhibitionArea = Math.Pow(2 * this.InhibitionRadius + 1, c.HtmConfig.ColumnDimensions.Length);
                 inhibitionArea = Math.Min(c.HtmConfig.NumColumns, inhibitionArea);
 
                 density = c.HtmConfig.NumActiveColumnsPerInhArea / inhibitionArea;
 
-                density = Math.Min(density, MaxInibitionDensity);
+                density = Math.Min(density, c.HtmConfig.MaxInibitionDensity);
             }
 
             return density;
@@ -816,23 +821,25 @@ namespace NeoCortexApi
 
             double density = CalcInhibitionDensity(c);
 
-            if (c.HtmConfig.GlobalInhibition || c.HtmConfig.InhibitionRadius > ArrayUtils.Max(c.HtmConfig.ColumnDimensions))
+            if (c.HtmConfig.GlobalInhibition || this.InhibitionRadius > ArrayUtils.Max(c.HtmConfig.ColumnDimensions))
             {
                 return InhibitColumnsGlobal(c, overlaps, density);
             }
-            return InhibitColumnsLocal(c, overlaps, density);
+            else
+            {
+                return InhibitColumnsLocal(c, overlaps, density);
+            }
             //return inhibitColumnsLocalNewApproach(c, overlaps);
         }
 
 
         /// <summary>
-        ///  Perform global inhibition. It picks
-        ///  top 'numActive' columns with the highest overlap score in the entire region. 
-        ///  At most half of the columns in a local neighborhood are allowed to
-        ///  be active.
+        ///  Perform global inhibition. It selects top active columns with the highest overlap score in the entire region. 
+        ///  The number of selected active columns is defined by the 'density' argument.
+        ///  At most half of the columns in a local neighborhood are allowed tobe active.
         /// <param name="c">Connections (memory)</param>
         /// <param name="overlaps">An array containing the overlap score for each  column.</param>
-        /// <param name="density"> The fraction of the overlap score for a column is defined as the numbern of columns to survive inhibition.</param>
+        /// <param name="density">Defines the number of columns that will survive the inhibition.</param>
         /// <returns>We return all columns, of synapses in a "connected state" (connected synapses) that have overlap greather than stimulusThreshold.</returns>
         public virtual int[] InhibitColumnsGlobal(Connections c, double[] overlaps, double density)
         {
@@ -900,7 +907,7 @@ namespace NeoCortexApi
 
             List<int> winners = new List<int>();
 
-            int inhibitionRadius = mem.HtmConfig.InhibitionRadius;
+            int inhibitionRadius = this.InhibitionRadius;
 
             for (int column = 0; column < overlaps.Length; column++)
             {
@@ -1082,16 +1089,13 @@ namespace NeoCortexApi
 
             double[] tieBrokenOverlaps = new List<double>(overlaps).ToArray();
 
-
-            int inhibitionRadius = c.HtmConfig.InhibitionRadius;
-
             Parallel.ForEach(overlaps, (val, b, index) =>
             {
                 // int column = i;
                 if ((int)index >= c.HtmConfig.StimulusThreshold)
                 {
                     // GETS INDEXES IN THE ARRAY FOR THE NEIGHBOURS WITHIN THE INHIBITION RADIUS.
-                    List<int> neighborhood = GetColumnNeighborhood(c, (int)index, inhibitionRadius).ToList();
+                    List<int> neighborhood = GetColumnNeighborhood(c, (int)index, this.InhibitionRadius).ToList();
 
                     // GETS THE NEIGHBOURS WITHIN THE INHI
                     // Take overlapps of neighbors
@@ -1416,8 +1420,6 @@ namespace NeoCortexApi
             if (obj == null)
                 return false;
 
-            if (MaxInibitionDensity != obj.MaxInibitionDensity)
-                return false;
             else if (Name != obj.Name)
                 return false;
 
@@ -1449,8 +1451,7 @@ namespace NeoCortexApi
             HtmSerializer2 ser = new HtmSerializer2();
 
             ser.SerializeBegin(nameof(SpatialPooler), writer);
-            
-            ser.SerializeValue(this.MaxInibitionDensity, writer);
+
             ser.SerializeValue(this.Name, writer);
 
             if (this.m_HomeoPlastAct != null)
@@ -1462,7 +1463,7 @@ namespace NeoCortexApi
             {
                 this.connections.Serialize(writer);
             }
-            
+
             ser.SerializeEnd(nameof(SpatialPooler), writer);
         }
 
@@ -1484,7 +1485,7 @@ namespace NeoCortexApi
                     sp.m_HomeoPlastAct = HomeostaticPlasticityController.Deserialize(sr);
                 }
                 else if (data == ser.ReadBegin(nameof(Connections)))
-                { 
+                {
                     sp.connections = Connections.Deserialize(sr);
                 }
                 else if (data == ser.ReadEnd(nameof(SpatialPooler)))
@@ -1500,7 +1501,7 @@ namespace NeoCortexApi
                         {
                             case 0:
                                 {
-                                    sp.MaxInibitionDensity = ser.ReadDoubleValue(str[i]);
+                                    //sp.MaxInibitionDensity = ser.ReadDoubleValue(str[i]);
                                     break;
                                 }
                             case 1:
@@ -1515,7 +1516,7 @@ namespace NeoCortexApi
                     }
                 }
             }
-            
+
             return sp;
         }
     }
