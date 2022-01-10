@@ -546,8 +546,8 @@ namespace NeoCortexApi
             if (avgCollected == null)
             {
                 avgCollected = new List<double>();
-                int len = c.HtmConfig.NumColumns;
-                for (int i = 0; i < len; i++)
+                
+                for (int i = 0; i < c.HtmConfig.NumColumns; i++)
                 {
                     avgCollected.Add(GetAvgSpanOfConnectedSynapses(c, i));
                 }
@@ -602,10 +602,6 @@ namespace NeoCortexApi
         /// <returns></returns>
         public virtual double GetAvgSpanOfConnectedSynapses(Connections c, int columnIndex)
         {
-            //var dims = c.getInputDimensions();
-
-            //var dimensionMultiplies = AbstractFlatMatrix<Column>.InitDimensionMultiples(dims);
-
             return HtmCompute.CalcAvgSpanOfConnectedSynapses(c.GetColumn(columnIndex), c.HtmConfig);
         }
 

@@ -1505,14 +1505,7 @@ namespace UnitTestsProject
             new double[] { 0.110, 0.748, 0.055, 0.000, 0.060, 0.000, 0.218, 0.000 }
         };
 
-            //    Condition <?> cond = new Condition.Adapter<Integer>()
-            //    {
-            //    public boolean eval(int n)
-            //    {
-            //        return n == 1;
-            //    }
-            //};
-
+          
             for (int i = 0; i < mem.HtmConfig.NumColumns; i++)
             {
                 int[] indexes = ArrayUtils.IndexWhere(potentialPools[i], n => n == 1);
@@ -1527,7 +1520,6 @@ namespace UnitTestsProject
 
             for (int i = 0; i < mem.HtmConfig.NumColumns; i++)
             {
-                //double[] perms = mem.getPotentialPools().get(i).getDensePermanences(mem);
                 double[] perms = mem.GetColumn(i).ProximalDendrite.RFPool.GetDensePermanences(mem.HtmConfig.NumInputs);
                 for (int j = 0; j < truePermanences[i].Length; j++)
                 {

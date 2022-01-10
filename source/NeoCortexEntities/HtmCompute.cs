@@ -388,12 +388,12 @@ namespace NeoCortexApi
             // It takes all connected synapses
             for (int i = 0; i < connected.Length; i++)
             {
-                var data = AbstractFlatMatrix.ComputeCoordinates(htmConfig.InputModuleTopology.Dimensions.Length,
+                var coordinates = AbstractFlatMatrix.ComputeCoordinates(htmConfig.InputModuleTopology.Dimensions.Length,
                   htmConfig.InputModuleTopology.DimensionMultiplies, htmConfig.InputModuleTopology.IsMajorOrdering, connected[i]);
 
-                maxCoord = ArrayUtils.MaxBetween(maxCoord, data);
+                maxCoord = ArrayUtils.MaxBetween(maxCoord, coordinates);
 
-                minCoord = ArrayUtils.MinBetween(minCoord, data);
+                minCoord = ArrayUtils.MinBetween(minCoord, coordinates);
 
 
                 //maxCoord = ArrayUtils.MaxBetween(maxCoord, AbstractFlatMatrix.ComputeCoordinates(htmConfig.InputModuleTopology.Dimensions.Length,
@@ -403,7 +403,9 @@ namespace NeoCortexApi
                 //   htmConfig.InputModuleTopology.DimensionMultiplies, htmConfig.InputModuleTopology.IsMajorOrdering, connected[i]));
             }
 
-            return ArrayUtils.Average(ArrayUtils.Add(ArrayUtils.Subtract(maxCoord, minCoord), 1));
+            var spans = ArrayUtils.Subtract(maxCoord, minCoord);
+
+            return ArrayUtils.Average(ArrayUtils.Add(spans, 1));
         }
 
 

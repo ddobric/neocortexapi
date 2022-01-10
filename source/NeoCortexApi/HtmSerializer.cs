@@ -332,8 +332,7 @@ namespace NeoCortexApi
                 {
                     if (reader.IsProperty)
                     {
-                        MemberInfo memberInfo;
-                        currentMemberType = GetMemberType(GetPropertyName(reader), currentInst.GetType(), out memberInfo);
+                        currentMemberType = GetMemberType(GetPropertyName(reader), currentInst.GetType(), out MemberInfo memberInfo);
 
                         if (currentMemberType.IsPrimitive || currentMemberType == typeof(string))
                         {
