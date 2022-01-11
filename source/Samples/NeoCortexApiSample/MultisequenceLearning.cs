@@ -127,7 +127,7 @@ namespace NeoCortexApiSample
 
             //double[] inputs = inputValues.ToArray();
             int[] prevActiveCols = new int[0];
-
+            
             int cycle = 0;
             int matches = 0;
 
@@ -152,7 +152,7 @@ namespace NeoCortexApiSample
                     foreach (var input in inputs.Value)
                     {
                         Debug.WriteLine($" -- {inputs.Key} - {input} --");
-
+                    
                         var lyrOut = layer1.Compute(input, false);
 
                         if (isInStableState)
@@ -335,7 +335,7 @@ namespace NeoCortexApiSample
             foreach (var inputs in sequences)
             {
                 //num += inputs.Value.Distinct().Count();
-                num += inputs.Value.Count();
+                num += inputs.Value.Count;
             }
 
             return num;

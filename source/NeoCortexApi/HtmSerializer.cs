@@ -40,7 +40,7 @@ namespace NeoCortexApi
 
             StringBuilder sb = new StringBuilder();
 
-            sb.Append("{");
+            sb.Append('{');
 
             bool isFirst = true;
 
@@ -130,11 +130,10 @@ namespace NeoCortexApi
             var arrStr = JsonConvert.SerializeObject(value);
 
             sb.AppendLine();
-            sb.Append("\"");
+            sb.Append('\"');
             sb.Append(name);
-            sb.Append("\"");
+            sb.Append('\"');
             sb.Append(": ");
-
             sb.Append(arrStr);
         }
 
