@@ -711,7 +711,7 @@ namespace NeoCortexApi
                 }
             }
 
-            int candidatesLength = removingCandidates.Count();
+            int candidatesLength = removingCandidates.Count;
 
             // We take here eather wanted growing number of desired synapes of num of candidates
             // if too many growing synapses requested.
@@ -721,7 +721,7 @@ namespace NeoCortexApi
             // Finally we randomly create new synapses. 
             for (int i = 0; i < numMissingSynapses; i++)
             {
-                int rndIndex = random.Next(removingCandidates.Count());
+                int rndIndex = random.Next(removingCandidates.Count);
                 conn.CreateSynapse(segment, removingCandidates[rndIndex], initialPermanence);
                 removingCandidates.RemoveAt(rndIndex);
             }

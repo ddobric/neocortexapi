@@ -856,11 +856,11 @@ namespace NeoCortexApi
 
             // Calculate difference between num of columns and num of active. Num of active is less than 
             // num of columns, because of specified density.
-            int start = sortedWinnerIndices.Count() - numActive;
+            int start = sortedWinnerIndices.Length - numActive;
 
             //
             // Here we peek columns with highest overlap
-            while (start < sortedWinnerIndices.Count())
+            while (start < sortedWinnerIndices.Length)
             {
                 int i = sortedWinnerIndices[start].Key;
                 if (overlaps[i] >= stimulusThreshold) break;

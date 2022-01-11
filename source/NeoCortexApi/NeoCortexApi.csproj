@@ -23,6 +23,7 @@
 	  <PackageReleaseNotes>Added method GetPredictedInputValues to the HtmClassifier</PackageReleaseNotes>
 	  <EnableNETAnalyzers>True</EnableNETAnalyzers>
 	  <AnalysisLevel>latest</AnalysisLevel>
+	  <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
   </PropertyGroup>
 
   <ItemGroup>

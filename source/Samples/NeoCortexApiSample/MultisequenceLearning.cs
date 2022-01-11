@@ -335,7 +335,7 @@ namespace NeoCortexApiSample
             foreach (var inputs in sequences)
             {
                 //num += inputs.Value.Distinct().Count();
-                num += inputs.Value.Count();
+                num += inputs.Value.Count;
             }
 
             return num;
