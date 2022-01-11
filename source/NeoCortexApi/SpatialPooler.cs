@@ -429,7 +429,7 @@ namespace NeoCortexApi
         public void UpdateMinDutyCyclesLocal(Connections c)
         {
             int len = c.HtmConfig.NumColumns;
-            
+
             double[] activeDutyCycles = c.HtmConfig.ActiveDutyCycles;
             double minPctActiveDutyCycles = c.HtmConfig.MinPctActiveDutyCycles;
             double[] overlapDutyCycles = c.HtmConfig.OverlapDutyCycles;
@@ -546,7 +546,7 @@ namespace NeoCortexApi
             if (avgCollected == null)
             {
                 avgCollected = new List<double>();
-                
+
                 for (int i = 0; i < c.HtmConfig.NumColumns; i++)
                 {
                     avgCollected.Add(GetAvgSpanOfConnectedSynapses(c, i));
@@ -1164,6 +1164,7 @@ namespace NeoCortexApi
 
             return winners.ToArray();
         }
+
 
         /// <summary>
         /// Update the boost factors for all columns. The boost factors are used to increase the overlap of inactive columns to improve
