@@ -16,7 +16,6 @@ namespace HTMVideoLearning
     {
         public static void Run1()
         {
-
             Stopwatch sw = new();
             List<TimeSpan> RecordedTime = new();
 
