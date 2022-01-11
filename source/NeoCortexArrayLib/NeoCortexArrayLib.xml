@@ -337,7 +337,7 @@
             Sets the values in the specified values array at the indexes specified,
             to the value "setTo".
             </summary>
-            <param name="values">the values to alter if at the specified indexes.</param>
+            <param name="valuesToSet">The values to alter if at the specified indexes.</param>
             <param name="indexes">the indexes of the values array to alter.</param>
             <param name="val">the value to set at the specified indexes.</param>
         </member>
@@ -376,7 +376,7 @@
             <param name="random"></param>
             <returns></returns>
         </member>
-        <member name="M:NeoCortexApi.Utility.ArrayUtils.Clip(System.Double[],System.Double,System.Double)">
+        <member name="M:NeoCortexApi.Utility.ArrayUtils.EnsureBetweenMinAndMax(System.Double[],System.Double,System.Double)">
             <summary>
             Ensures that each entry in the specified array has a min value equal to or greater than the specified min and a maximum value less
             than or equal to the specified max. For example, if min = 0, then negative permanence values will be rounded to 0.
@@ -480,12 +480,12 @@
         </member>
         <member name="M:NeoCortexApi.Utility.ArrayUtils.LessOrEqualXThanSetToY(System.Double[],System.Double,System.Double)">
             <summary>
-            Makes all values in the specified array which are less than or equal to the specified <paramref name="x"/> value,
-            equal to the specified <paramref name="y"/>.
+            Makes all values in the specified array which are less than or equal to the specified <paramref name="comparingValue"/> value,
+            equal to the specified <paramref name="valueToBeSet"/>.
             </summary>
-            <param name="array"></param>
-            <param name="x">the comparison.</param>
-            <param name="y">the value to set if the comparison fails.</param>
+            <param name="array">Traverses through this array and set the element on 'y' if the current value of the element is less than 'x'. </param>
+            <param name="comparingValue">the comparison.</param>
+            <param name="valueToBeSet">the value to set if the comparison fails.</param>
         </member>
         <member name="M:NeoCortexApi.Utility.ArrayUtils.GreaterThanXThanSetToYInB(System.Int32[],System.Double[],System.Int32,System.Double)">
             <summary>
