@@ -4,31 +4,25 @@ using NeoCortexApi.Utility;
 using NeoCortexEntities.NeuroVisualizer;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using NeoCortexApi.Entities;
-using NeoCortexApi.Utility;
-using System.Linq;
-using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace NeoCortexApi.Entities
 {
-
-
     /// <summary>
     /// Implementation of the mini-column.
     /// </summary>
-    /// <remarks>
-    /// Authors of the JAVA implementation:Chetan Surpur, David Ray
-    /// </remarks>
     public class Column : IEquatable<Column>, IComparable<Column>
     {
         public AbstractSparseBinaryMatrix connectedInputCounter;
 
         public AbstractSparseBinaryMatrix ConnectedInputCounterMatrix { get { return connectedInputCounter; } set { connectedInputCounter = value; } }
 
-        public int[] ConnectedInputBits {
-            get {
+        public int[] ConnectedInputBits
+        {
+            get
+            {
                 if (connectedInputCounter != null)
                     return (int[])this.connectedInputCounter.GetSlice(0);
                 else
@@ -54,7 +48,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// CellId
         /// </summary>
-        public int CellId { get; set; } 
+        public int CellId { get; set; }
 
         //private ReadOnlyCollection<Cell> cellList;
 
@@ -62,7 +56,7 @@ namespace NeoCortexApi.Entities
 
         public Column()
         {
-            
+
         }
 
         /// <summary>
@@ -259,6 +253,64 @@ namespace NeoCortexApi.Entities
             setProximalPermanencesSparse(htmConfig, perm, maskPotential);
         }
 
+        /// <summary>
+        /// Trace synapse permanences.
+        /// </summary>
+        /// <returns></returns>
+        public string Trace()
+        {
+            double permSum = 0.0;
+
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var syn in this.ProximalDendrite.Synapses)
+            {
+                sb.AppendLine($"{syn.InputIndex} - {syn.Permanence}");
+                permSum += syn.Permanence;
+            }
+
+            sb.AppendLine($"Col: {this.Index}\t Synapses: {this.ProximalDendrite.Synapses.Count} \t PermSum: {permSum}");
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Gets the min,max and avg permanence of all connected synapses.
+        /// </summary>
+        /// <returns></returns>
+        public HtmStatistics GetStatistics(HtmConfig config)
+        {
+            double permSum = 0.0;
+
+            double max = 0.0;
+
+            double min = 2.0;
+
+            int connectedSynapses = 0;
+
+            foreach (var syn in this.ProximalDendrite.Synapses.Where(s => s.Permanence > config.SynPermConnected))
+            {
+                permSum += syn.Permanence;
+
+                if (syn.Permanence < min)
+                    min = syn.Permanence;
+
+                if (syn.Permanence > max)
+                    max = syn.Permanence;
+
+                connectedSynapses++;
+            }
+
+            return new HtmStatistics
+            {
+                SynapticActivity = (double)connectedSynapses / (double)this.ProximalDendrite.Synapses.Count,
+                AvgPermanence = permSum / connectedSynapses,
+                MinPermanence = min,
+                MaxPermanence = max,
+                ConnectedSynapses = connectedSynapses,
+                Synapses = this.ProximalDendrite.Synapses.Count
+            };
+        }
 
         /// <summary>
         /// Calculates the overlapp of the column.
@@ -379,7 +431,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (CellId != obj.CellId)
                 return false;
-            
+
             return true;
         }
 
@@ -409,7 +461,7 @@ namespace NeoCortexApi.Entities
 
             ser.SerializeValue(this.CellId, writer);
             ser.SerializeValue(this.Index, writer);
-            
+
 
             if (this.connectedInputCounter != null)
             {
@@ -434,11 +486,11 @@ namespace NeoCortexApi.Entities
 
             HtmSerializer2 ser = new HtmSerializer2();
 
-            
+
             while (!sr.EndOfStream)
             {
                 string data = sr.ReadLine();
-                if (data == String.Empty || data == ser.ReadBegin(nameof(Column)) || data == ser.ValueDelimiter )
+                if (data == String.Empty || data == ser.ReadBegin(nameof(Column)) || data == ser.ValueDelimiter)
                 {
                     continue;
                 }
@@ -456,7 +508,7 @@ namespace NeoCortexApi.Entities
                 }
                 else if (data == ser.ReadBegin(nameof(Cell)))
                 {
-                    column.Cells = ser.DeserializeCellArray(data,sr);
+                    column.Cells = ser.DeserializeCellArray(data, sr);
                 }
                 else if (data == ser.ReadEnd(nameof(Column)))
                 {
@@ -476,7 +528,7 @@ namespace NeoCortexApi.Entities
                                 }
                             case 1:
                                 {
-                                    column.Index = ser.ReadIntValue(str[i]); 
+                                    column.Index = ser.ReadIntValue(str[i]);
                                     break;
                                 }
                             default:

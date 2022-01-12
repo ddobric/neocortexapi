@@ -429,12 +429,13 @@ namespace NeoCortexApi
             }
 
             ArrayUtils.EnsureBetweenMinAndMax(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
+
             while (true)
             {
-                // Gets number of synapses with permanence value grather than 'PermConnected'.
+                // Gets number of synapses with permanence value grather than 'SynPermConnected' = Connected Synapses.
                 int numConnected = ArrayUtils.ValueGreaterThanCountAtIndex(htmConfig.SynPermConnected, perm, maskPotential);
 
-                // If enough synapces are connected, all ok.
+                // If enough synapses are connected, all ok.
                 if (numConnected >= htmConfig.StimulusThreshold)
                     return;
 
@@ -456,7 +457,7 @@ namespace NeoCortexApi
         }
 
         /// <summary>
-        /// This method updates the permanence matrix with a column's new permanence values. The column is identified by its index, which reflects the row in
+        /// This method updates the permanences with a column's new permanence values. The column is identified by its index, which reflects the row in
         /// the matrix, and the permanence is given in 'sparse' form, i.e. an array whose members are associated with specific indexes. It is in charge of 
         /// implementing 'clipping' - ensuring that the permanence values are always between 0 and 1 - and 'trimming' - enforcing sparseness by zeroing out
         /// all permanence values below 'synPermTrimThreshold'. It also maintains the consistency between 'permanences' (the matrix storing the permanence values), 
@@ -465,7 +466,7 @@ namespace NeoCortexApi
         /// </summary>
         /// <param name="htmConfig">the configuration used in <see cref="Connections"/>.</param>
         /// <param name="perm">An array of permanence values for a column. The array is "dense", i.e. it contains an entry for each input bit, even if the permanence value is 0.</param>
-        /// <param name="column">The column in the permanence, potential and connectivity matrices.</param>
+        /// <param name="column">The column to be updated.</param>
         /// <param name="potentialIndexes">The indexes of inputs in the specified <see cref="Column"/>'s pool.</param>
         /// <param name="raisePerm">a boolean value indicating whether the permanence values</param>
         public static void UpdatePermanencesForColumn(HtmConfig htmConfig, double[] perm, Column column, int[] potentialIndexes, bool raisePerm)
