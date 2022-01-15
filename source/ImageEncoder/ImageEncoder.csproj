@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <Nullable>enable</Nullable>
 
     <IsPackable>false</IsPackable>
@@ -16,18 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HtmActorHost\HtmActorHost.csproj" />
-    <ProjectReference Include="..\NeoCortexApi.Parallel\NeoCortexApi.Parallel.csproj" />
     <ProjectReference Include="..\NeoCortexApi\NeoCortexApi.csproj" />
-    <ProjectReference Include="..\NeoCortexArrayLib\NeoCortexArrayLib.csproj" />
-    <ProjectReference Include="..\NeoCortexEntities\NeoCortexEntities.csproj" />
-    <ProjectReference Include="..\NeoCortexUtils\NeoCortexUtils.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="inputImage.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>

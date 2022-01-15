@@ -6,10 +6,11 @@ using System.Globalization;
 using Daenet.ImageBinarizerLib.Entities;
 using Daenet.ImageBinarizerLib;
 using Newtonsoft.Json;
+using System.IO;
 
 namespace NeoCortexApi.Encoders
 {
-    internal class ImageEncoder : EncoderBase
+    public class ImageEncoder : EncoderBase
     {
         #region NotImplementedParts
         public override int Width => throw new NotImplementedException();
@@ -22,12 +23,12 @@ namespace NeoCortexApi.Encoders
         }
         #endregion
 
-        BinarizerParams parameters;
-
         /// <summary>
         /// The instance of the binarized to be used while encoding.
         /// </summary>
         ImageBinarizer imageBinarizer;
+
+        BinarizerParams binarizerParmas;
 
         #region Constructors and Initialization
 
@@ -36,16 +37,18 @@ namespace NeoCortexApi.Encoders
         /// <summary>
         /// Creates the instance of the image encoder.
         /// </summary>
-        /// <param name="binarizerProps"></param>
+        /// <param name="binarizerParmas"></param>
         /// <exception cref="ArgumentException"></exception>
-        public ImageEncoder(BinarizerParams binarizerProps)
+        public ImageEncoder(BinarizerParams binarizerParmas)
         {
-            if (binarizerProps == null)
+            if (binarizerParmas == null)
             {
                 throw new ArgumentException("Invalid encoder setting for ImageEncoder");
             }
 
-            this.imageBinarizer = new ImageBinarizer(parameters);
+            this.binarizerParmas = binarizerParmas;
+
+            this.imageBinarizer = new ImageBinarizer(binarizerParmas);
         }
         #endregion
 
@@ -53,28 +56,25 @@ namespace NeoCortexApi.Encoders
         /// <summary>
         /// Encoding an image with a given full path to a binary array
         /// </summary>
-        /// <param name="inputFilePath">Input image's full path</param>
+        /// <param name="inputFile">Input image's full path</param>
         /// <returns></returns>
-        public override int[] Encode(object inputFilePath)
+        public override int[] Encode(object inputFile)
         {
-            try
-            {
-                parameters.InputImagePath = (string)inputFilePath;
-            }
-            catch (System.Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-            }
+            this.binarizerParmas.InputImagePath = (string)inputFile;
 
-            return GetIntArray();
+            var binarizer = new ImageBinarizer(binarizerParmas);
+
+            return GetArray<int>(binarizer);
         }
 
-        public void EncodeAndSave()
+        public void EncodeAndSave(string inputFile, string outputFile)
         {
+            this.binarizerParmas.InputImagePath = inputFile;
+            this.binarizerParmas.OutputImagePath = outputFile;
             this.imageBinarizer.Run();
         }
 
-        public void EncodeAndSaveAsImage(string imagePath)
+        public void EncodeAndSaveAsImage(string inputFile, string outputFile)
         {
             // Bitmap does not work on Linux.
             // see https://developers.de/2022/01/14/bye-by-system-drawing-and-gdi/
@@ -99,27 +99,18 @@ namespace NeoCortexApi.Encoders
             return imageBinarizer.GetArrayBinary();
         }
 
-    
+
 
         #endregion
 
         #region Private Methods
 
+      
         /// <summary>
         /// Method to convert GetArrayBinary from data type double[,,] to int[]
         /// </summary>
         /// <returns></returns>
-        private int[] GetIntArray()
-        {
-            return GetArray<int>();
-        }
-
-
-        /// <summary>
-        /// Method to convert GetArrayBinary from data type double[,,] to int[]
-        /// </summary>
-        /// <returns></returns>
-        private T[] GetArray<T>()
+        private static T[] GetArray<T>(ImageBinarizer imageBinarizer)
         {
             var doubleArray = imageBinarizer.GetArrayBinary();
             var hg = doubleArray.GetLength(1);
@@ -130,7 +121,7 @@ namespace NeoCortexApi.Encoders
             {
                 for (int i = 0; i < wd; i++)
                 {
-                    intArray[j * wd + i] = (T)Convert.ChangeType(doubleArray[i, j, 0], typeof(double));
+                    intArray[j * wd + i] = (T)Convert.ChangeType(doubleArray[i, j, 0], typeof(int));
                 }
             }
             return intArray;
