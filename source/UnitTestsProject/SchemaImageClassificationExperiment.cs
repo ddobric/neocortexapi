@@ -1,8 +1,9 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using Daenet.ImageBinarizerLib;
+using Daenet.ImageBinarizerLib.Entities;
 using IronXL;
-using LearningFoundation.ImageBinarizer;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
@@ -245,21 +246,19 @@ namespace UnitTestProject
 
         private string BinarizeImage(string sourcepath, int imageWidth, int imageHeight, string destinationPath, string name)
         {
-            string binaryImage;
-
-            Binarizer imageBinarizer = new Binarizer(200, 200, 200, imageWidth, imageHeight);
-            //binaryImage = $"{testName}.txt";
             if (!Directory.Exists(destinationPath)) Directory.CreateDirectory(destinationPath);
-            string _destinationPath = Path.Combine(destinationPath, $"{name}.jpg");
-            string _sourcePath = Path.Combine(sourcepath, $"{name}.jpg");
-            if (File.Exists(_destinationPath))
-                File.Delete(_destinationPath);
 
-            imageBinarizer.CreateBinary(_sourcePath, _destinationPath);
-            binaryImage = imageBinarizer.GetBinary(_sourcePath);
-            // Console.WriteLine(binaryImage);
-            //int[] vector =  
-            return _destinationPath;
+            string imgDestinationPath = Path.Combine(destinationPath, $"{name}.jpg");
+            
+            string _sourcePath = Path.Combine(sourcepath, $"{name}.jpg");
+            if (File.Exists(destinationPath))
+                File.Delete(destinationPath);
+
+            ImageBinarizer imageBinarizer = new ImageBinarizer(new BinarizerParams { RedThreshold = 200, GreenThreshold = 200, BlueThreshold = 200, ImageWidth = imageWidth, ImageHeight = imageHeight, InputImagePath = sourcepath, OutputImagePath = imgDestinationPath });
+
+            imageBinarizer.Run();
+
+            return destinationPath;
         }
 
         /* copy origial image to the grouped output folder*/

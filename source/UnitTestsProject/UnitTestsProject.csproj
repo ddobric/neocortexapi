@@ -33,7 +33,7 @@
 
   <ItemGroup>
     <PackageReference Include="DotNetActors" Version="1.0.3" />
-    <PackageReference Include="ImageBinarizer" Version="1.0.0" />
+    <PackageReference Include="ImageBinarizer" Version="1.5.6" />
     <PackageReference Include="IronXL.Excel" Version="2020.12.2" />
     <PackageReference Include="LearningApi" Version="1.3.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="5.0.0" />

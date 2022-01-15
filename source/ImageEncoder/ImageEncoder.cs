@@ -6,7 +6,6 @@ using System.Globalization;
 using Daenet.ImageBinarizerLib.Entities;
 using Daenet.ImageBinarizerLib;
 using Newtonsoft.Json;
-using System.Drawing;
 
 namespace NeoCortexApi.Encoders
 {
@@ -16,6 +15,7 @@ namespace NeoCortexApi.Encoders
         public override int Width => throw new NotImplementedException();
 
         public override bool IsDelta => throw new NotImplementedException();
+
         public override List<T> GetBucketValues<T>()
         {
             throw new NotImplementedException();
@@ -23,28 +23,33 @@ namespace NeoCortexApi.Encoders
         #endregion
 
         BinarizerParams parameters;
+
+        /// <summary>
+        /// The instance of the binarized to be used while encoding.
+        /// </summary>
         ImageBinarizer imageBinarizer;
 
-        #region Contructor
+        #region Constructors and Initialization
+
         public ImageEncoder() { }
-        public ImageEncoder(Dictionary<string, object> encoderSettings)
+
+        /// <summary>
+        /// Creates the instance of the image encoder.
+        /// </summary>
+        /// <param name="binarizerProps"></param>
+        /// <exception cref="ArgumentException"></exception>
+        public ImageEncoder(BinarizerParams binarizerProps)
         {
-            if (encoderSettings == null)
+            if (binarizerProps == null)
             {
-                return;
+                throw new ArgumentException("Invalid encoder setting for ImageEncoder");
             }
 
-            this.Initialize(encoderSettings);
-            var json = JsonConvert.SerializeObject(Properties);
-            parameters = JsonConvert.DeserializeObject<BinarizerParams>(json);
-
-            if (parameters == null)
-            {
-                throw new System.Exception("Invalid encoder setting for ImageEncoder");
-            }
+            this.imageBinarizer = new ImageBinarizer(parameters);
         }
         #endregion
 
+        #region Public Methods
         /// <summary>
         /// Encoding an image with a given full path to a binary array
         /// </summary>
@@ -60,11 +65,45 @@ namespace NeoCortexApi.Encoders
             {
                 Debug.WriteLine(ex.Message);
             }
-            imageBinarizer = new ImageBinarizer(parameters);
+
             return GetIntArray();
         }
 
-        #region API for communicating with the library Daenet.ImageBinarizerLib
+        public void EncodeAndSave()
+        {
+            this.imageBinarizer.Run();
+        }
+
+        public void EncodeAndSaveAsImage(string imagePath)
+        {
+            // Bitmap does not work on Linux.
+            // see https://developers.de/2022/01/14/bye-by-system-drawing-and-gdi/
+            //    Bitmap bmp = new Bitmap(width, height);
+
+            //    for (int y = 0; y < bmp.Height; y++)
+            //    {
+            //        for (int x = 0; x < bmp.Width; x++)
+            //        {
+            //            int b = (int)binarizedImage[y, x, 0];
+            //            bmp.SetPixel(x, y, Color.FromArgb(255, 255 * b, 255 * b, 255 * b));
+            //        }
+            //    }
+        }
+
+        /// <summary>
+        /// Gets the image pixels.
+        /// </summary>
+        /// <returns></returns>
+        public double[,,] GetPixels()
+        {
+            return imageBinarizer.GetArrayBinary();
+        }
+
+    
+
+        #endregion
+
+        #region Private Methods
 
         /// <summary>
         /// Method to convert GetArrayBinary from data type double[,,] to int[]
@@ -72,35 +111,47 @@ namespace NeoCortexApi.Encoders
         /// <returns></returns>
         private int[] GetIntArray()
         {
+            return GetArray<int>();
+        }
+
+
+        /// <summary>
+        /// Method to convert GetArrayBinary from data type double[,,] to int[]
+        /// </summary>
+        /// <returns></returns>
+        private T[] GetArray<T>()
+        {
             var doubleArray = imageBinarizer.GetArrayBinary();
             var hg = doubleArray.GetLength(1);
             var wd = doubleArray.GetLength(0);
-            var intArray = new int[hg * wd];
+            T[] intArray = new T[hg * wd];
+
             for (int j = 0; j < hg; j++)
             {
                 for (int i = 0; i < wd; i++)
                 {
-                    intArray[j * wd + i] = (int)doubleArray[i, j, 0];
+                    intArray[j * wd + i] = (T)Convert.ChangeType(doubleArray[i, j, 0], typeof(double));
                 }
             }
             return intArray;
         }
 
-        public void SaveBinarizedImage(string outputFilePath)
-        {
-            Bitmap bmp = new Bitmap(parameters.ImageWidth, parameters.ImageHeight);
-            double[,,] binarizedImage = imageBinarizer.GetArrayBinary();
-            for (int y = 0; y < bmp.Height; y++)
-            {
-                for (int x = 0; x < bmp.Width; x++)
-                {
-                    int b = (int)binarizedImage[y, x, 0];
-                    bmp.SetPixel(x, y, Color.FromArgb(255, 255*b, 255 * b, 255 * b));
-                }
-            }
-            bmp.Save(outputFilePath);
-        }
+        // see https://developers.de/2022/01/14/bye-by-system-drawing-and-gdi/
+        // We should not use the bitmap here.
+        //private void SaveBinarizedImage(string outputFilePath, int width, int height, double[,,] binarizedImage)
+        //{
+        //    Bitmap bmp = new Bitmap(width, height);
 
+        //    for (int y = 0; y < bmp.Height; y++)
+        //    {
+        //        for (int x = 0; x < bmp.Width; x++)
+        //        {
+        //            int b = (int)binarizedImage[y, x, 0];
+        //            bmp.SetPixel(x, y, Color.FromArgb(255, 255 * b, 255 * b, 255 * b));
+        //        }
+        //    }
+        //    bmp.Save(outputFilePath);
+        //}
         #endregion
     }
 }

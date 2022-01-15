@@ -1,6 +1,8 @@
+using Daenet.ImageBinarizerLib.Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 
 namespace NeoCortexApi.Encoders
@@ -16,24 +18,22 @@ namespace NeoCortexApi.Encoders
         public void ImageEncoderTest(int width, int height, string testName)
         {
             string testFolder = InitTestFolder();
+         
             string inputImagePath = "inputImage.jpg";
-            Dictionary<string, object> encoderSettings = new Dictionary<string, object>()
-            {
-                { "ImageHeight" , height},
-                { "ImageWidth", width },
-                //{ "BlueThreshold", 150},
-                //{ "RedThreshold", 150},
-                //{ "GreenThreshold", 150}
-            };
-            ImageEncoder encoder = new ImageEncoder(encoderSettings);
+         
+            ImageEncoder encoder = new ImageEncoder(new BinarizerParams {  ImageWidth = width, ImageHeight = height, OutputImagePath = Path.Combine(testFolder, inputImagePath) });
+          
             int[] encodedValue = encoder.Encode(inputImagePath);
-            encoder.SaveBinarizedImage($"{testFolder}//encodedImage_{testName}.png");
+
+            encoder.EncodeAndSaveAsImage(Path.Combine(testFolder,$"encodedImage_{testName}.png"));
         }
         [TestMethod]
         public void LearningInLayerTest()
         {
 
         }
+
+
         static public string InitTestFolder()
         {
             StackTrace stackTrace = new StackTrace();
@@ -45,5 +45,7 @@ namespace NeoCortexApi.Encoders
             }
             return testName;
         }
+
+
     }
 }
