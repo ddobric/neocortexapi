@@ -523,7 +523,7 @@ namespace NeoCortexApi
         /// <see cref="BurstingResult.Cells"/>:      list of the processed column's cells<br/>
         /// <see cref="BurstingResult.BestCell"/>:    the best cell
         /// </returns>
-        public BurstingResult BurstColumn(Connections conn, Column column, List<DistalDendrite> matchingSegments,
+        protected BurstingResult BurstColumn(Connections conn, Column column, List<DistalDendrite> matchingSegments,
             ICollection<Cell> prevActiveCells, ICollection<Cell> prevWinnerCells, double permanenceIncrement, double permanenceDecrement,
                 Random random, bool learn)
         {
