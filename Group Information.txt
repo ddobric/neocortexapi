@@ -40,13 +40,14 @@ Date        time          date   segment
 
 You should think about how to do that and propose one or more solutions.
 The second task is to use the learned model for prediction. The user enters the time-segment (08-01-2021 01) and the classifier is used to predict the number of passengers.
-var predictedValues = 
-htmClassifier.GetPredictedInputValues(encoded time-segment);
+
+var predictedValues = htmClassifier.GetPredictedInputValues(encoded time-segment);
 
 You should analyse the result and calculate the prediction acurray.
 For more information about sequence learning please see: Editing neocortexapi/htm-classifier.md at master · ddobric/neocortexapi (github.com). Please also provide or commit improvements to this document.
 For more information please see also following thesis: UniversityOfAppliedSciencesFrankfurt/thesis-LSTM0-vs-HTM-Yash-Vyas: Comparison of performance LSTM vs HTM (github.com). (Only students who chose this project will get access to the thesis).
 The taxi passenger count is just an example. One dataset example can be used by max. two students working together in the group. You can find another interesting example.
+
 
 
 
