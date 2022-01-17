@@ -856,5 +856,9 @@ namespace UnitTestsProject
                 dict.Serialize(sw);
             }
         }
+
+        #region Serialization SparseObjectMatrix<T>
+
+        #endregion
     }
 }
