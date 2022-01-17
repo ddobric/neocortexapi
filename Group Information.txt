@@ -1,0 +1,13 @@
+----------------CodeWarriors-----------------
+
+
+This is our Software Engineering project team. 
+
+Our project topic is: ML21/22 24.  Investigate Label Prediction from the time-series sequence (taxi)
+
+Our team members are:
+1. Md Jubayar Hosan
+2. Md Rizwanul Islam
+3. Md Rabiul Islam
+
+
