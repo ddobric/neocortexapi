@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using LearningFoundation.ImageBinarizer;
+using Daenet.ImageBinarizerLib;
+using Daenet.ImageBinarizerLib.Entities;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -16,7 +17,7 @@ namespace NeoCortex
     public class NeoCortexUtils
     {
         /// <summary>
-        /// Binarize image to binarizedImage.
+        /// Binarize image to the file with the test name.
         /// </summary>
         /// <param name="mnistImage"></param>
         /// <param name="imageSize"></param>
@@ -26,12 +27,14 @@ namespace NeoCortex
         {
             string binaryImage;
 
-            Binarizer imageBinarizer = new Binarizer(200, 200, 200, imageSize, imageSize);
             binaryImage = $"{testName}.txt";
+
             if (File.Exists(binaryImage))
                 File.Delete(binaryImage);
 
-            imageBinarizer.CreateBinary(mnistImage, binaryImage);
+            ImageBinarizer imageBinarizer = new ImageBinarizer(new BinarizerParams { RedThreshold = 200, GreenThreshold = 200, BlueThreshold = 200, ImageWidth = imageSize, ImageHeight = imageSize, InputImagePath = mnistImage, OutputImagePath = binaryImage });
+
+            imageBinarizer.Run();
 
             return binaryImage;
         }

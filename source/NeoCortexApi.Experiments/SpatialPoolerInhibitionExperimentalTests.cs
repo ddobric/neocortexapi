@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using LearningFoundation.ImageBinarizer;
+using Daenet.ImageBinarizerLib;
+using Daenet.ImageBinarizerLib.Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortex;
 using NeoCortexApi.Entities;
@@ -356,9 +357,8 @@ namespace NeoCortexApi.Experiments
         /// <returns>Path to the output binarized image</returns>
         private static string BinarizeImage(string mnistImage, int imageSize)
         {
-            string binaryImage;
-            Binarizer binarizer = new Binarizer(200, 200, 200, imageSize, imageSize);
-            binaryImage = $@"Output\{GetFileName(mnistImage)}.txt";
+            var binaryImage = $@"Output\{GetFileName(mnistImage)}.txt";
+            
             Directory.CreateDirectory($"Output");
 
             if (File.Exists(binaryImage))
@@ -366,7 +366,9 @@ namespace NeoCortexApi.Experiments
                 File.Delete(binaryImage);
             }
 
-            binarizer.CreateBinary(mnistImage, binaryImage);
+            ImageBinarizer imageBinarizer = new ImageBinarizer(new BinarizerParams { RedThreshold = 200, GreenThreshold = 200, BlueThreshold = 200, ImageWidth = imageSize, ImageHeight = imageSize, InputImagePath = mnistImage, OutputImagePath = binaryImage });
+
+            imageBinarizer.Run();
 
             return binaryImage;
         }
