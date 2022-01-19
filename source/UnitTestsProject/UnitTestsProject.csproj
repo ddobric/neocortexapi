@@ -33,7 +33,7 @@
 
   <ItemGroup>
     <PackageReference Include="DotNetActors" Version="1.0.3" />
-    <PackageReference Include="ImageBinarizer" Version="1.0.0" />
+    <PackageReference Include="ImageBinarizer" Version="1.5.6" />
     <PackageReference Include="IronXL.Excel" Version="2020.12.2" />
     <PackageReference Include="LearningApi" Version="1.3.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="5.0.0" />
@@ -41,15 +41,14 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="5.0.0" />
     <PackageReference Include="Microsoft.ML" Version="0.11.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
 
-    <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
     <PackageReference Include="NeuralNet.MLPerceptron" Version="1.2.2" />
     <PackageReference Include="NeuralNetworks.Core" Version="1.2.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ImageEncoder\ImageEncoder.csproj" />
     <ProjectReference Include="..\NeoCortexApi.Parallel\NeoCortexApi.Parallel.csproj" />
     <ProjectReference Include="..\NeoCortexApi\NeoCortexApi.csproj" />
     <ProjectReference Include="..\NeoCortexArrayLib\NeoCortexArrayLib.csproj" />
@@ -3747,6 +3746,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="TestFiles\digit7.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFiles\digit7a.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="TestFiles\digit7_32bit.png">
