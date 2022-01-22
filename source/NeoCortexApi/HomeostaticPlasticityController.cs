@@ -179,7 +179,6 @@ namespace NeoCortexApi
                 }
                 else
                 {
-
                     m_NumOfStableCyclesForInput[inpHash] = 0;
 
                     // If the new SDR output for the already seen input

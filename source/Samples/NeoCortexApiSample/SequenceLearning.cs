@@ -14,6 +14,7 @@ namespace NeoCortexApiSample
     /// <summary>
     /// Implements an experiment that demonstrates how to learn sequences.
     /// </summary>
+    [Obsolete("Please use multisequence learning.")]
     public class SequenceLearning
     {
         public void Run()

@@ -32,6 +32,11 @@ namespace NeoCortexApi
             return vector;
         }
 
+        public string TraceSdrsMethod(List<int[]> indexesOfNoneZeros, string paddingTxt = " ", bool renderSimilarityMatrix = false)
+        { 
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Creates string representation from one dimensional vector.
         /// </summary>

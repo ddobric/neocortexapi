@@ -642,7 +642,7 @@ namespace UnitTestsProject
             cell.DistalDendrites.Add(distSeg2);
 
             Cell preSynapticcell = new Cell(11, 14, 16, 28, new CellActivity());
-
+            
             var synapse1 = new Synapse(cell, distSeg1.SegmentIndex, 23, 1.0);
             preSynapticcell.ReceptorSynapses.Add(synapse1);
 

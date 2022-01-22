@@ -429,7 +429,7 @@ namespace NeoCortexApi
         public void UpdateMinDutyCyclesLocal(Connections c)
         {
             int len = c.HtmConfig.NumColumns;
-            
+
             double[] activeDutyCycles = c.HtmConfig.ActiveDutyCycles;
             double minPctActiveDutyCycles = c.HtmConfig.MinPctActiveDutyCycles;
             double[] overlapDutyCycles = c.HtmConfig.OverlapDutyCycles;
@@ -546,7 +546,7 @@ namespace NeoCortexApi
             if (avgCollected == null)
             {
                 avgCollected = new List<double>();
-                
+
                 for (int i = 0; i < c.HtmConfig.NumColumns; i++)
                 {
                     avgCollected.Add(GetAvgSpanOfConnectedSynapses(c, i));
@@ -856,11 +856,11 @@ namespace NeoCortexApi
 
             // Calculate difference between num of columns and num of active. Num of active is less than 
             // num of columns, because of specified density.
-            int start = sortedWinnerIndices.Count() - numActive;
+            int start = sortedWinnerIndices.Length - numActive;
 
             //
             // Here we peek columns with highest overlap
-            while (start < sortedWinnerIndices.Count())
+            while (start < sortedWinnerIndices.Length)
             {
                 int i = sortedWinnerIndices[start].Key;
                 if (overlaps[i] >= stimulusThreshold) break;
@@ -1165,6 +1165,7 @@ namespace NeoCortexApi
             return winners.ToArray();
         }
 
+
         /// <summary>
         /// Update the boost factors for all columns. The boost factors are used to increase the overlap of inactive columns to improve
         /// their chances of becoming active. and hence encourage participation of more columns in the learning process. 
@@ -1281,69 +1282,6 @@ namespace NeoCortexApi
             return ArrayUtils.Divide(overlaps, columnsCounts);
         }
 
-        //    /**
-        //     * Similar to _getNeighbors1D and _getNeighbors2D (Not included in this implementation), 
-        //     * this function Returns a list of indices corresponding to the neighbors of a given column. 
-        //     * Since the permanence values are stored in such a way that information about topology
-        //     * is lost. This method allows for reconstructing the topology of the inputs,
-        //     * which are flattened to one array. Given a column's index, its neighbors are
-        //     * defined as those columns that are 'radius' indices away from it in each
-        //     * dimension. The method returns a list of the flat indices of these columns.
-        //     * 
-        //     * @param c                     matrix configured to this {@code SpatialPooler}'s dimensions
-        //     *                              for transformation work.
-        //     * @param columnIndex           The index identifying a column in the permanence, potential
-        //     *                              and connectivity matrices.
-        //     * @param topology              A {@link SparseMatrix} with dimensionality info.
-        //     * @param inhibitionRadius      Indicates how far away from a given column are other
-        //     *                              columns to be considered its neighbors. In the previous 2x3
-        //     *                              example, each column with coordinates:
-        //     *                              [2+/-radius, 3+/-radius] is considered a neighbor.
-        //     * @param wrapAround            A boolean value indicating whether to consider columns at
-        //     *                              the border of a dimensions to be adjacent to columns at the
-        //     *                              other end of the dimension. For example, if the columns are
-        //     *                              laid out in one dimension, columns 1 and 10 will be
-        //     *                              considered adjacent if wrapAround is set to true:
-        //     *                              [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        //     *               
-        //     * @return              a list of the flat indices of these columns
-        //     */
-        //    public TIntArrayList getNeighborsND(Connections c, int columnIndex, SparseMatrix<?> topology, int inhibitionRadius, boolean wrapAround) {
-        //        final int[] dimensions = topology.getDimensions();
-        //        int[] columnCoords = topology.computeCoordinates(columnIndex);
-        //        List<int[]> dimensionCoords = new ArrayList<>();
-        //
-        //        for(int i = 0;i < dimensions.length;i++) {
-        //            int[] range = ArrayUtils.range(columnCoords[i] - inhibitionRadius, columnCoords[i] + inhibitionRadius + 1);
-        //            int[] curRange = new int[range.length];
-        //
-        //            if(wrapAround) {
-        //                for(int j = 0;j < curRange.length;j++) {
-        //                    curRange[j] = (int)ArrayUtils.positiveRemainder(range[j], dimensions[i]);
-        //                }
-        //            }else{
-        //                final int idx = i;
-        //                curRange = ArrayUtils.retainLogicalAnd(range, 
-        //                    new Condition[] { ArrayUtils.GREATER_OR_EQUAL_0,
-        //                        new Condition.Adapter<Integer>() {
-        //                            @Override public boolean eval(int n) { return n < dimensions[idx]; }
-        //                        }
-        //                    }
-        //                );
-        //            }
-        //            dimensionCoords.add(ArrayUtils.unique(curRange));
-        //        }
-        //
-        //        List<int[]> neighborList = ArrayUtils.dimensionsToCoordinateList(dimensionCoords);
-        //        TIntArrayList neighbors = new TIntArrayList(neighborList.size());
-        //        int size = neighborList.size();
-        //        for(int i = 0;i < size;i++) {
-        //            int flatIndex = topology.computeIndex(neighborList.get(i), false);
-        //            if(flatIndex == columnIndex) continue;
-        //            neighbors.add(flatIndex);
-        //        }
-        //        return neighbors;
-        //    }
 
         /// <summary>
         /// Returns true if enough rounds have passed to warrant updates of duty cycles
