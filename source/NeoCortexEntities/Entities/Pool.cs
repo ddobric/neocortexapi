@@ -141,13 +141,11 @@ namespace NeoCortexApi.Entities
         }
 
         /// <summary>
-        /// Returns an array of input bit indexes indicating the index of the source. (input vector bit or lateral cell)
+        /// Returns an array of indexes of input neurons connected to this pool. 
         /// </summary>
         /// <returns>the sparse array</returns>
         public int[] GetSparsePotential()
         {
-            // Original requires reverse, because JAVA keys() methode returns keys reversed.
-            //return ArrayUtils.reverse(synapsesBySourceIndex.Keys.Select(i => i).ToArray());
             return m_SynapsesBySourceIndex.Keys.Select(i => i).ToArray();
         }
 
