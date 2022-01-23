@@ -364,9 +364,8 @@ namespace NeoCortexApi
         /// <summary>
         /// This value is automatically calculated when the RF is created on init of the SP and in every learning cycle.
         /// It helps to calculate the inhibition density.
-        /// The inhibition radius determines the size of a column's local neighborhood. of a column. A cortical column must overcome the overlap
-        /// score of columns in its neighborhood in order to become actives.
-        /// It grows and shrinks with the average number of connected synapses per column.
+        /// The inhibition radius determines the size of a column's local neighborhood. 
+        /// A mini-column's overlap mist be highest in its neighborhood in order to become active.
         /// </summary>
         internal int InhibitionRadius { get; set; } = 0;
 
@@ -774,12 +773,13 @@ namespace NeoCortexApi
 
         /// <summary>
         /// If the <see cref="HtmConfig.LocalAreaDensity"/> is specified, then this value is used as density.
+        /// d = min(MaxInibitionDensity=0.5, NumActiveColumnsPerInhArea/[(2*InhibitionRadius + 1)**ColumnDimensions.Length]
         /// </summary>
-        /// <param name="c"></param>
+        /// <param name="conn"></param>
         /// <returns></returns>
-        private double CalcInhibitionDensity(Connections c)
+        private double CalcInhibitionDensity(Connections conn)
         {
-            double density = c.HtmConfig.LocalAreaDensity;
+            double density = conn.HtmConfig.LocalAreaDensity;
             double inhibitionArea;
 
             //
@@ -790,12 +790,15 @@ namespace NeoCortexApi
                 // inhibition area can be higher than num of all columns, if 
                 // radius is near to number of columns of a dimension with highest number of columns.
                 // In that case we limit it to number of all columns.
-                inhibitionArea = Math.Pow(2 * this.InhibitionRadius + 1, c.HtmConfig.ColumnDimensions.Length);
-                inhibitionArea = Math.Min(c.HtmConfig.NumColumns, inhibitionArea);
+                inhibitionArea = Math.Pow(2 * this.InhibitionRadius + 1, conn.HtmConfig.ColumnDimensions.Length);
 
-                density = c.HtmConfig.NumActiveColumnsPerInhArea / inhibitionArea;
+                // TODO; 
+                inhibitionArea = Math.Min(conn.HtmConfig.NumColumns, inhibitionArea);
+                //inhibitionArea = Math.Min(conn.HtmConfig.NumInputs, inhibitionArea);
 
-                density = Math.Min(density, c.HtmConfig.MaxInibitionDensity);
+                density = conn.HtmConfig.NumActiveColumnsPerInhArea / inhibitionArea;
+
+                density = Math.Min(density, conn.HtmConfig.MaxInibitionDensity);
             }
 
             return density;

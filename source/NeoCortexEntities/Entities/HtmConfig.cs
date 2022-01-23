@@ -95,7 +95,7 @@ namespace NeoCortexApi.Entities
         public double PotentialPct { get; set; }
 
         /// <summary>
-        /// Minimum number of connected synapses to the input to declare the mini-column active. 
+        /// Minimum number of connected synapses (mini-columns with active synapses) to the input to declare the mini-column active. 
         /// </summary>
         public double StimulusThreshold { get; set; }
 
@@ -126,9 +126,9 @@ namespace NeoCortexApi.Entities
         public bool WrapAround { get; set; } = true;
 
         /// <summary>
-        /// This value is used by SP. When some permanencen is under this value, it is set on zero.
+        /// This value is used by SP. When some permanence is under this value, it is set on zero.
         /// In this case the synapse remains the potential one and still can participate in learning.
-        /// By following structural plasticity the synapce would become disconnected from the mini-column.
+        /// By following structural plasticity principal the synapse would become disconnected from the mini-column.
         /// </summary>
         public double SynPermTrimThreshold { get; set; }
 
