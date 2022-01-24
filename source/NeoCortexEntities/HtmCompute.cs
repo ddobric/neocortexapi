@@ -385,7 +385,7 @@ namespace NeoCortexApi
             ArrayUtils.FillArray(minCoord, ArrayUtils.Max(htmConfig.InputModuleTopology.Dimensions));
 
             //
-            // It takes all connected synapses
+            // Traverse all connected input neurons.
             for (int i = 0; i < connected.Length; i++)
             {
                 var coordinates = AbstractFlatMatrix.ComputeCoordinates(htmConfig.InputModuleTopology.Dimensions.Length,
