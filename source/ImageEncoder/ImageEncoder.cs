@@ -75,16 +75,24 @@ namespace NeoCortexApi.Encoders
             this.imageBinarizer.Run();
         }
 
-        public void EncodeAndSaveAsImage(string inputFile, string outputFile)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="inputFile"></param>
+        /// <param name="outputFile"></param>
+        /// <param name="encodingFormat">One of following formats is supported: Bmp, Gif, Ico, JpegPng, WbmpWebpPkm, Ktx, AstcDng, Heif </param>
+        public void EncodeAndSaveAsImage(string inputFile, string outputFile, string encodingFormat = "Png")
         {
+            //
             // 1. Initiate the parameters
             this.binarizerParams.InputImagePath = inputFile;
             this.binarizerParams.OutputImagePath = outputFile;
             double[,,] binarizedImage = GetPixels();
-            
+
+            //
             // 2. Reading the inputFile image to type SKBitmap
             SKBitmap inputBitmap = SKBitmap.Decode(inputFile);
-            SKBitmap outputBitmap = new SKBitmap(binarizerParams.ImageWidth,binarizerParams.ImageHeight);
+            SKBitmap outputBitmap = new SKBitmap(binarizerParams.ImageWidth, binarizerParams.ImageHeight);
             inputBitmap.ScalePixels(outputBitmap, SKFilterQuality.High);
             for (int y = 0; y < outputBitmap.Height; y++)
             {
@@ -94,11 +102,14 @@ namespace NeoCortexApi.Encoders
                     outputBitmap.SetPixel(x, y, new SKColor((byte)(255 * b), (byte)(255 * b), (byte)(255 * b)));
                 }
             }
+
+            //
             // 3. Reading a Picture file in pixels
             using (var image = SKImage.FromBitmap(outputBitmap))
             {
-                //
-                using (var data = image.Encode(SKEncodedImageFormat.Png, 80))
+                SKEncodedImageFormat frm = (SKEncodedImageFormat)Enum.Parse(typeof(SKEncodedImageFormat), "");
+
+                using (var data = image.Encode(frm, 80))
                 {
                     // save the data to a stream
                     using (var stream = File.OpenWrite($"{outputFile}"))
