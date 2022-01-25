@@ -68,10 +68,53 @@ namespace TimeSeriesSequence
                 { "MaxVal", max}
             };
 
-            EncoderBase encoder = new ScalarEncoder(settings);
+            //var dateTimeEncoderSettings = dateTimeEncodersSettings();
 
+            EncoderBase encoder = new ScalarEncoder(settings);
             return RunExperiment(inputBits, cfg, encoder, sequences);
         }
+        /// <summary>
+        /// adding encoder settings for date and time
+        /// </summary>
+        /// <returns></returns>
+        private static Dictionary<string, Dictionary<string, object>> dateTimeEncodersSettings()
+        {
+            Dictionary<string, Dictionary<string, object>> encoderSettings = new Dictionary<string, Dictionary<string, object>>();
+
+            encoderSettings.Add("DateEncoder",
+                new Dictionary<string, object>()
+                {
+                    { "W", 21},
+                    { "N", 128},
+                    { "MinVal", 0.0},
+                    { "MaxVal", 7.0},
+                    { "Periodic", false},
+                    { "Name", "DateEncoder"},
+                    { "ClipInput", false},
+                    { "Offset", 50},
+                });
+
+            encoderSettings.Add("TimeEncoder",
+                new Dictionary<string, object>()
+                {
+                    { "W", 21},
+                    { "N", 128},
+                    { "MinVal", 0.0},
+                    { "MaxVal", 7.0},
+                    { "Periodic", false},
+                    { "Name", "TimeEncoder"},
+                    { "ClipInput", false},
+                    { "Offset", 50},
+                });
+            return encoderSettings;
+        }
+
+      
+        //private Dictionary<string, Dictionary<string, object>> dateTimeEncoderSettings()
+        //{
+            
+        //}
+
 
         /// <summary>
         ///
