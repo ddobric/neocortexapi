@@ -359,7 +359,7 @@ namespace NeoCortexApi
                 return false;
             else if (m_RequiredNumOfStableCycles != obj.m_RequiredNumOfStableCycles)
                 return false;
-            else if (!m_NumOfStableCyclesForInput.SequenceEqual(obj.m_NumOfStableCyclesForInput) && !m_NumOfActiveColsForInput.SequenceEqual(m_NumOfActiveColsForInput) && !m_InOutMap.SequenceEqual(m_InOutMap))
+            else if (!m_NumOfStableCyclesForInput.SequenceEqual(obj.m_NumOfStableCyclesForInput) && !m_NumOfActiveColsForInput.SequenceEqual(obj.m_NumOfActiveColsForInput) && !m_InOutMap.SequenceEqual(obj.m_InOutMap))
                 return false;
             else if (m_IsStable != obj.m_IsStable)
                 return false;
