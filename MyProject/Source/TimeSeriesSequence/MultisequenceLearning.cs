@@ -68,20 +68,24 @@ namespace TimeSeriesSequence
                 { "MaxVal", max}
             };
 
-            //var dateTimeEncoderSettings = dateTimeEncodersSettings();
+            Dictionary<string, Dictionary<string, object>> dateEncoderSetting = dateTimeEncoderSettings();
 
             EncoderBase encoder = new ScalarEncoder(settings);
+
+            DateTimeEncoder dtEncoder = new DateTimeEncoder(dateEncoderSetting, DateTimeEncoder.Precision.Hours);
+
             return RunExperiment(inputBits, cfg, encoder, sequences);
         }
+
         /// <summary>
-        /// adding encoder settings for date and time
+        /// Encoder settings for date and time
         /// </summary>
         /// <returns></returns>
-        private static Dictionary<string, Dictionary<string, object>> dateTimeEncodersSettings()
+        private Dictionary<string, Dictionary<string, object>> dateTimeEncoderSettings()
         {
             Dictionary<string, Dictionary<string, object>> encoderSettings = new Dictionary<string, Dictionary<string, object>>();
 
-            encoderSettings.Add("DateEncoder",
+            encoderSettings.Add("DayOfWeekEncoder",
                 new Dictionary<string, object>()
                 {
                     { "W", 21},
@@ -89,32 +93,39 @@ namespace TimeSeriesSequence
                     { "MinVal", 0.0},
                     { "MaxVal", 7.0},
                     { "Periodic", false},
-                    { "Name", "DateEncoder"},
+                    { "Name", "DayOfWeekEncoder"},
                     { "ClipInput", false},
                     { "Offset", 50},
                 });
 
-            encoderSettings.Add("TimeEncoder",
-                new Dictionary<string, object>()
+            encoderSettings.Add("WeekendEncoder", new Dictionary<string, object>()
                 {
                     { "W", 21},
-                    { "N", 128},
+                    { "N", 42},
                     { "MinVal", 0.0},
-                    { "MaxVal", 7.0},
+                    { "MaxVal", 1.0},
                     { "Periodic", false},
-                    { "Name", "TimeEncoder"},
-                    { "ClipInput", false},
+                    { "Name", "WeekendEncoder"},
+                    { "ClipInput", true},
                     { "Offset", 50},
                 });
+
+
+            encoderSettings.Add("DateTimeEncoder", new Dictionary<string, object>()
+                {
+                    { "W", 21},
+                    { "N", 8640},
+                     // This means 8640 hours.
+                    { "MinVal", new DateTimeOffset(new DateTime(2010, 1, 1), TimeSpan.FromHours(0))},
+                    { "MaxVal", new DateTimeOffset(new DateTime(2011, 1, 1), TimeSpan.FromHours(0))},
+                    { "Periodic", false},
+                    { "Name", "DateTimeEncoder"},
+                    { "ClipInput", false},
+                    { "Offset", 128},
+                });
+
             return encoderSettings;
         }
-
-      
-        //private Dictionary<string, Dictionary<string, object>> dateTimeEncoderSettings()
-        //{
-            
-        //}
-
 
         /// <summary>
         ///
@@ -170,12 +181,12 @@ namespace TimeSeriesSequence
 
             //double[] inputs = inputValues.ToArray();
             int[] prevActiveCols = new int[0];
-            
+
             int cycle = 0;
             int matches = 0;
 
-            var lastPredictedValues = new List<string>(new string[] { "0"});
-            
+            var lastPredictedValues = new List<string>(new string[] { "0" });
+
             int maxCycles = 3500;
 
             //
@@ -195,7 +206,7 @@ namespace TimeSeriesSequence
                     foreach (var input in inputs.Value)
                     {
                         Debug.WriteLine($" -- {inputs.Key} - {input} --");
-                    
+
                         var lyrOut = layer1.Compute(input, true);
 
                         if (isInStableState)
@@ -297,12 +308,12 @@ namespace TimeSeriesSequence
                                 Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {item.PredictedInput} - {item.Similarity}");
                             }
 
-                            lastPredictedValues = predictedInputValues.Select(v=>v.PredictedInput).ToList();
+                            lastPredictedValues = predictedInputValues.Select(v => v.PredictedInput).ToList();
                         }
                         else
                         {
                             Debug.WriteLine($"NO CELLS PREDICTED for next cycle.");
-                            lastPredictedValues = new List<string> ();
+                            lastPredictedValues = new List<string>();
                         }
                     }
 
