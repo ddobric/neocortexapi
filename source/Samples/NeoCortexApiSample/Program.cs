@@ -14,6 +14,7 @@ namespace NeoCortexApiSample
 {
     class Program
     {
+        public static bool writeOnConsole = true, drawBitmap = false;
         /// <summary>
         /// This sample shows a typical experiment code for SP and TM.
         /// You must start this code in debugger to follow the trace.
@@ -33,10 +34,70 @@ namespace NeoCortexApiSample
             //experiment.Run();
 
             //RunMultiSimpleSequenceLearningExperiment();
-            //RunMultiSequenceLearningExperiment();
+            RunMultiSequenceLearningExperiment();
 
             EncodeDateTimeByHour();
+            //PoweConsumptionByHour();
             //ScalarEncodingTest();
+        }
+
+        private static void PoweConsumptionByHour()
+        {
+            var folderName = Directory.CreateDirectory(nameof(PoweConsumptionByHour)).Name;
+            string filename;
+            double minKWh = 0.0, maxKWh = 99.9;
+
+            ScalarEncoder powerEncoder = new ScalarEncoder(new Dictionary<string, object>()
+            {
+                { "W", 25},
+                { "N", 1024},
+                { "MinVal", (double)minKWh},
+                { "MaxVal", (double)maxKWh + 0.1},
+                { "Resolution", 0.1 }, // not needed 
+                { "Periodic", false},
+                { "Name", "KWh in Hour."},
+                { "ClipInput", true},
+            });
+
+            if (writeOnConsole)
+            {
+                Console.WriteLine("--------------------------------------------------------------------------------------------------------------");
+                Console.WriteLine("KWh in Hour");
+                Console.WriteLine(powerEncoder.TraceSimilarities());
+                Console.WriteLine("--------------------------------------------------------------------------------------------------------------");
+            }
+
+            Dictionary<string, int[]> sdrDict = new Dictionary<string, int[]>();
+            for (double power = minKWh; power <= maxKWh; power = power + 0.1)
+            {
+                var sdrKWh = powerEncoder.Encode(power);
+
+                List<int> sdrPower = new List<int>();
+
+                sdrPower.AddRange(sdrKWh);
+
+
+                string key = $"{(power * 10).ToString("000")}";  /* eg : KWh 1.1 , key = 011 */
+                //Console.WriteLine($"{key}");
+
+                sdrDict.Add(key, sdrPower.ToArray());
+                
+                int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(sdrPower.ToArray(), (int)Math.Sqrt(sdrPower.ToArray().Length), (int)Math.Sqrt(sdrPower.ToArray().Length));
+                var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
+
+                if (writeOnConsole)
+                {
+                    Console.WriteLine("--------------------------------------------------------------------------------------------------------------");
+                    Console.WriteLine($"KWH: {key} \nSDR: {Helpers.StringifyVector(sdrPower.ToArray())} \nand 2D Array: ");
+                    Print2DArray(twoDimArray);
+                    Console.WriteLine("--------------------------------------------------------------------------------------------------------------");
+                }
+
+                filename = $"{(power * 10).ToString("000")}" + ".png";
+                if (drawBitmap)
+                    NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, Path.Combine(folderName, filename), Color.Black, Color.Gray, text: key.ToString());
+            }
+
         }
 
         private static void EncodeDateTimeByHour()
@@ -45,7 +106,6 @@ namespace NeoCortexApiSample
             string filename;
             int minHour = 0, maxHour = 23, minDate = 1, maxDate = 31, minMonth = 1, maxMonth = 12;
             int[] daysOfMonth = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-            bool leapYear = false, writeOnConsole = false;
 
             ScalarEncoder hourEncoder = new ScalarEncoder(new Dictionary<string, object>()
             {
@@ -104,6 +164,9 @@ namespace NeoCortexApiSample
                 Console.WriteLine("--------------------------------------------------------------------------------------------------------------");
             }
 
+            if (writeOnConsole)
+                return;
+
             Dictionary<string, int[]> sdrDict = new Dictionary<string, int[]>();
             Dictionary<string, int[]> sdrImg = new Dictionary<string, int[]>();
             
@@ -127,17 +190,11 @@ namespace NeoCortexApiSample
                         sdrDateTime.AddRange(sdrHour);
 
 
-                        string key = $"{date.ToString("00")}/{month.ToString("00")}-{hour.ToString("00")}:00";  /* eg : 20/01-15:00 */
+                        string key = $"{date.ToString("00")}/{month.ToString("00")}-{hour.ToString("00")}:00";  /* eg : DD/MM-HH:00 20/01-15:00 */
                         //Console.WriteLine($"{key}");
 
                         sdrDict.Add(key, sdrDateTime.ToArray());
                         //sdrImg.Add(key, ArrayUtils.IndexWhere(sdrDateTime.ToArray(), (el) => el == 1));
-
-                        //PrintBitMap((ScalarEncoder)sdrDateTime, nameof(EncodeDateTimeByHour));
-
-                        //int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(sdrDateTime.ToArray(), (int)Math.Sqrt(sdrDateTime.ToArray().Length), (int)Math.Sqrt(sdrDateTime.ToArray().Length));
-                        //var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
-                        //NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, Path.Combine(folderName, $"{key}.png"), Color.Black, Color.Gray, text: key.ToString());
 
                         int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(sdrDateTime.ToArray(), (int)Math.Sqrt(sdrDateTime.ToArray().Length), (int)Math.Sqrt(sdrDateTime.ToArray().Length));
                         var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
@@ -151,8 +208,8 @@ namespace NeoCortexApiSample
                         }
 
                         filename = $"{date.ToString("00")}_{month.ToString("00")}_{hour.ToString("00")}_00" + ".png";
-
-                        NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, Path.Combine(folderName, filename), Color.Black, Color.Gray, text: key.ToString());
+                        if(drawBitmap)
+                            NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, Path.Combine(folderName, filename), Color.Black, Color.Gray, text: key.ToString());
                     }
                 }
             }
