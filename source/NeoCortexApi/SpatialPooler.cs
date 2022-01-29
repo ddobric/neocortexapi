@@ -792,8 +792,10 @@ namespace NeoCortexApi
                 // In that case we limit it to number of all columns.
                 inhibitionArea = Math.Pow(2 * this.InhibitionRadius + 1, conn.HtmConfig.ColumnDimensions.Length);
 
-                // TODO; 
                 inhibitionArea = Math.Min(conn.HtmConfig.NumColumns, inhibitionArea);
+
+                // TODO; The ihibition Area is here calculated in the column dimension. However it should be calculated in th einput dimension.
+                //inhibitionArea = Math.Pow(2 * this.InhibitionRadius + 1, conn.HtmConfig.InputDimensions.Length);
                 //inhibitionArea = Math.Min(conn.HtmConfig.NumInputs, inhibitionArea);
 
                 density = conn.HtmConfig.NumActiveColumnsPerInhArea / inhibitionArea;
