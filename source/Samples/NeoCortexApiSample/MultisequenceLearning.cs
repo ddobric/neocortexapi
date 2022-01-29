@@ -96,7 +96,7 @@ namespace NeoCortexApiSample
             TemporalMemory tm = new TemporalMemory();
 
             // For more information see following paper: https://www.scitepress.org/Papers/2021/103142/103142.pdf
-            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, numUniqueInputs * 150, (isStable, numPatterns, actColAvg, seenInputs) =>
+            HomeostaticPlasticityController hpc = new HomeostaticPlasticityController(mem, numUniqueInputs * 150, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                 if (isStable)
                     // Event should be fired when entering the stable state.
@@ -113,7 +113,7 @@ namespace NeoCortexApiSample
             }, numOfCyclesToWaitOnChange: 50);
 
 
-            SpatialPoolerMT sp = new SpatialPoolerMT(hpa);
+            SpatialPoolerMT sp = new SpatialPoolerMT(hpc);
             sp.Init(mem);
             tm.Init(mem);
 
@@ -153,7 +153,7 @@ namespace NeoCortexApiSample
                     {
                         Debug.WriteLine($" -- {inputs.Key} - {input} --");
                     
-                        var lyrOut = layer1.Compute(input, false);
+                        var lyrOut = layer1.Compute(input, true);
 
                         if (isInStableState)
                             break;

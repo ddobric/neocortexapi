@@ -124,17 +124,15 @@ namespace NeoCortexApi.Entities
         public int[] GetConnectedSynapsesDense()
         {
             return this.RFPool.GetDenseConnected();
-            //return c.getPotentialPools().get(index).getDenseConnected(c);
         }
 
         /// <summary>
-        /// Returns an sparse array of synapse indexes representing the connected bits.
+        /// Returns an array of indexes of input neurons connected to this pool. 
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Indexes of connected input neurons.</returns>
         public int[] GetConnectedSynapsesSparse()
         {
             return this.RFPool.GetSparsePotential();
-            //return c.getPotentialPools().get(index).getSparsePotential();
         }
 
         public bool Equals(ProximalDendrite obj)

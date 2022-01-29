@@ -364,9 +364,8 @@ namespace NeoCortexApi
         /// <summary>
         /// This value is automatically calculated when the RF is created on init of the SP and in every learning cycle.
         /// It helps to calculate the inhibition density.
-        /// The inhibition radius determines the size of a column's local neighborhood. of a column. A cortical column must overcome the overlap
-        /// score of columns in its neighborhood in order to become actives.
-        /// It grows and shrinks with the average number of connected synapses per column.
+        /// The inhibition radius determines the size of a column's local neighborhood. 
+        /// A mini-column's overlap mist be highest in its neighborhood in order to become active.
         /// </summary>
         internal int InhibitionRadius { get; set; } = 0;
 
@@ -774,12 +773,13 @@ namespace NeoCortexApi
 
         /// <summary>
         /// If the <see cref="HtmConfig.LocalAreaDensity"/> is specified, then this value is used as density.
+        /// d = min(MaxInibitionDensity=0.5, NumActiveColumnsPerInhArea/[(2*InhibitionRadius + 1)**ColumnDimensions.Length]
         /// </summary>
-        /// <param name="c"></param>
+        /// <param name="conn"></param>
         /// <returns></returns>
-        private double CalcInhibitionDensity(Connections c)
+        private double CalcInhibitionDensity(Connections conn)
         {
-            double density = c.HtmConfig.LocalAreaDensity;
+            double density = conn.HtmConfig.LocalAreaDensity;
             double inhibitionArea;
 
             //
@@ -790,12 +790,17 @@ namespace NeoCortexApi
                 // inhibition area can be higher than num of all columns, if 
                 // radius is near to number of columns of a dimension with highest number of columns.
                 // In that case we limit it to number of all columns.
-                inhibitionArea = Math.Pow(2 * this.InhibitionRadius + 1, c.HtmConfig.ColumnDimensions.Length);
-                inhibitionArea = Math.Min(c.HtmConfig.NumColumns, inhibitionArea);
+                inhibitionArea = Math.Pow(2 * this.InhibitionRadius + 1, conn.HtmConfig.ColumnDimensions.Length);
 
-                density = c.HtmConfig.NumActiveColumnsPerInhArea / inhibitionArea;
+                inhibitionArea = Math.Min(conn.HtmConfig.NumColumns, inhibitionArea);
 
-                density = Math.Min(density, c.HtmConfig.MaxInibitionDensity);
+                // TODO; The ihibition Area is here calculated in the column dimension. However it should be calculated in th einput dimension.
+                //inhibitionArea = Math.Pow(2 * this.InhibitionRadius + 1, conn.HtmConfig.InputDimensions.Length);
+                //inhibitionArea = Math.Min(conn.HtmConfig.NumInputs, inhibitionArea);
+
+                density = conn.HtmConfig.NumActiveColumnsPerInhArea / inhibitionArea;
+
+                density = Math.Min(density, conn.HtmConfig.MaxInibitionDensity);
             }
 
             return density;
@@ -1282,69 +1287,6 @@ namespace NeoCortexApi
             return ArrayUtils.Divide(overlaps, columnsCounts);
         }
 
-        //    /**
-        //     * Similar to _getNeighbors1D and _getNeighbors2D (Not included in this implementation), 
-        //     * this function Returns a list of indices corresponding to the neighbors of a given column. 
-        //     * Since the permanence values are stored in such a way that information about topology
-        //     * is lost. This method allows for reconstructing the topology of the inputs,
-        //     * which are flattened to one array. Given a column's index, its neighbors are
-        //     * defined as those columns that are 'radius' indices away from it in each
-        //     * dimension. The method returns a list of the flat indices of these columns.
-        //     * 
-        //     * @param c                     matrix configured to this {@code SpatialPooler}'s dimensions
-        //     *                              for transformation work.
-        //     * @param columnIndex           The index identifying a column in the permanence, potential
-        //     *                              and connectivity matrices.
-        //     * @param topology              A {@link SparseMatrix} with dimensionality info.
-        //     * @param inhibitionRadius      Indicates how far away from a given column are other
-        //     *                              columns to be considered its neighbors. In the previous 2x3
-        //     *                              example, each column with coordinates:
-        //     *                              [2+/-radius, 3+/-radius] is considered a neighbor.
-        //     * @param wrapAround            A boolean value indicating whether to consider columns at
-        //     *                              the border of a dimensions to be adjacent to columns at the
-        //     *                              other end of the dimension. For example, if the columns are
-        //     *                              laid out in one dimension, columns 1 and 10 will be
-        //     *                              considered adjacent if wrapAround is set to true:
-        //     *                              [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        //     *               
-        //     * @return              a list of the flat indices of these columns
-        //     */
-        //    public TIntArrayList getNeighborsND(Connections c, int columnIndex, SparseMatrix<?> topology, int inhibitionRadius, boolean wrapAround) {
-        //        final int[] dimensions = topology.getDimensions();
-        //        int[] columnCoords = topology.computeCoordinates(columnIndex);
-        //        List<int[]> dimensionCoords = new ArrayList<>();
-        //
-        //        for(int i = 0;i < dimensions.length;i++) {
-        //            int[] range = ArrayUtils.range(columnCoords[i] - inhibitionRadius, columnCoords[i] + inhibitionRadius + 1);
-        //            int[] curRange = new int[range.length];
-        //
-        //            if(wrapAround) {
-        //                for(int j = 0;j < curRange.length;j++) {
-        //                    curRange[j] = (int)ArrayUtils.positiveRemainder(range[j], dimensions[i]);
-        //                }
-        //            }else{
-        //                final int idx = i;
-        //                curRange = ArrayUtils.retainLogicalAnd(range, 
-        //                    new Condition[] { ArrayUtils.GREATER_OR_EQUAL_0,
-        //                        new Condition.Adapter<Integer>() {
-        //                            @Override public boolean eval(int n) { return n < dimensions[idx]; }
-        //                        }
-        //                    }
-        //                );
-        //            }
-        //            dimensionCoords.add(ArrayUtils.unique(curRange));
-        //        }
-        //
-        //        List<int[]> neighborList = ArrayUtils.dimensionsToCoordinateList(dimensionCoords);
-        //        TIntArrayList neighbors = new TIntArrayList(neighborList.size());
-        //        int size = neighborList.size();
-        //        for(int i = 0;i < size;i++) {
-        //            int flatIndex = topology.computeIndex(neighborList.get(i), false);
-        //            if(flatIndex == columnIndex) continue;
-        //            neighbors.add(flatIndex);
-        //        }
-        //        return neighbors;
-        //    }
 
         /// <summary>
         /// Returns true if enough rounds have passed to warrant updates of duty cycles

@@ -959,11 +959,55 @@ namespace NeoCortexApi.Entities
             }
             return retVal;
         }
+
+        /// <summary>
+        /// Gets the statistics of the current memory state.
+        /// </summary>
+        /// <returns></returns>
+        public HtmStatistics GetStatistics()
+        {
+            HtmStatistics stats = new HtmStatistics();
+
+            double permAvgSum = 0.0;
+
+            double max = 0.0;
+
+            double min = 2.0;
+
+            int cnt = 0;
+
+            for (int i = 0; i < this.HtmConfig.NumColumns; i++)
+            {
+                Column column = this.GetColumn(i);
+
+                var colStats = column.GetStatistics(this.HtmConfig);
+
+                if (colStats.MaxPermanence > max)
+                    max = colStats.MaxPermanence;
+
+                if (colStats.MinPermanence < min)
+                    min = colStats.MinPermanence;
+
+                stats.ConnectedSynapses += colStats.ConnectedSynapses;
+                stats.Synapses += colStats.Synapses;
+                permAvgSum += colStats.AvgPermanence;
+
+                cnt++;
+            }
+
+            stats.AvgPermanence= permAvgSum/cnt;
+            stats.MaxPermanence = max;
+            stats.MinPermanence = min;
+            stats.SynapticActivity = (double)stats.ConnectedSynapses / (double)stats.Synapses;
+
+            return stats;
+        }
         #endregion
-        /**
-         * High 
-         * e output useful for debugging
-         */
+      
+        /// <summary>
+        /// Used for debugging.
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -1199,8 +1243,8 @@ namespace NeoCortexApi.Entities
             HtmSerializer2 ser = new HtmSerializer2();
 
             ser.SerializeBegin(nameof(Connections), writer);
- 
-            ser.SerializeValue(this.version, writer); 
+
+            ser.SerializeValue(this.version, writer);
             ser.SerializeValue(this.SpIterationNum, writer);
             ser.SerializeValue(this.SpIterationLearnNum, writer);
             ser.SerializeValue(this.m_TMIteration, writer);
@@ -1247,13 +1291,13 @@ namespace NeoCortexApi.Entities
             {
                 this.m_HtmConfig.Serialize(writer);
             }
-            
+
             if (this.HtmConfig != null)
             {
                 this.HtmConfig.Serialize(writer);
             }
 
-            
+
             ser.SerializeEnd(nameof(Connections), writer);
         }
 
@@ -1271,7 +1315,7 @@ namespace NeoCortexApi.Entities
                 }
                 else if (data == ser.ReadBegin("CellArray"))
                 {
-                    mem.Cells = ser.DeserializeCellArray(data,sr);
+                    mem.Cells = ser.DeserializeCellArray(data, sr);
                 }
                 else if (data == ser.ReadBegin(nameof(DistalDendrite)))
                 {
