@@ -66,7 +66,38 @@ namespace LabelPrediction
         {
             List<Dictionary<string,int[]>> listOfSDR = new List<Dictionary<string,int[]>>();
 
-            //needs implementation
+            ScalarEncoder hourEncoder = FetchHourEncoder();
+            ScalarEncoder dayEncoder = FetchDayEncoder();
+            ScalarEncoder monthEncoder = FetchMonthEncoder();
+            ScalarEncoder yearEncoder = FetchYearEncoder();
+
+            foreach (var sequence in data)
+            {
+                var tempDic = new Dictionary<string, int[]>();
+
+                foreach (var keyValuePair in sequence)
+                {
+                    var label = keyValuePair.Key;
+                    var value = keyValuePair.Value;
+
+                    DateTime dateTime = DateTime.Parse(value);
+                    int day = dateTime.Day;
+                    int month = dateTime.Month;
+                    int year = dateTime.Year;
+                    int hour = dateTime.Hour;
+
+                    int[] sdr = new int[0];
+
+                    sdr = sdr.Concat(dayEncoder.Encode(day)).ToArray();
+                    sdr = sdr.Concat(monthEncoder.Encode(month)).ToArray();
+                    sdr = sdr.Concat(yearEncoder.Encode(year)).ToArray();
+                    sdr = sdr.Concat(hourEncoder.Encode(hour)).ToArray();
+
+                    tempDic.Add(label, sdr);
+                }
+                listOfSDR.Add(tempDic);
+            }
+
 
             return listOfSDR;
         }
@@ -119,16 +150,32 @@ namespace LabelPrediction
 
         public static ScalarEncoder FetchYearEncoder()
         {
-            ScalarEncoder yearEncoder = new ScalarEncoder(/*needs implementation*/);
+            ScalarEncoder yearEncoder = new ScalarEncoder(new Dictionary<string, object>()
+            {
+                { "W", 3},
+                { "N", 7},
+                { "MinVal", (double)2009}, // Min value = (2009).
+                { "MaxVal", (double)2012}, // Max value = (2012).
+                { "Periodic", false},
+                { "Name", "Year"},
+                { "ClipInput", true},
+            });
             return yearEncoder;
         }
 
         public static MultiEncoder FetchDateTimeEncoder()
         {
-            /*needs implementation*/
+            ScalarEncoder hourEncoder = FetchHourEncoder();
+            ScalarEncoder dayEncoder = FetchDayEncoder();
+            ScalarEncoder monthEncoder = FetchMonthEncoder();
+            ScalarEncoder yearEncoder = FetchYearEncoder();
 
             List<EncoderBase> datetime = new List<EncoderBase>();
-            
+            datetime.Add(hourEncoder);
+            datetime.Add(dayEncoder);
+            datetime.Add(monthEncoder);
+            datetime.Add(yearEncoder);
+
             MultiEncoder datetimeEncoder = new MultiEncoder(datetime);
 
             return datetimeEncoder;
