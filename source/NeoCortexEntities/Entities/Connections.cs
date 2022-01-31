@@ -868,6 +868,19 @@ namespace NeoCortexApi.Entities
             return list;
         }
 
+
+        /// <summary>
+        /// Traces permanences of all columns.
+        /// </summary>
+        public void TraceColumnPermanences()
+        {
+            foreach (var col in GetColumns())
+            {
+                col.Trace();
+            }
+        }
+
+
         /// <summary>
         /// Converts a <see cref="Collection{T}"/> of <see cref="Cell"/>s to a list of cell indexes.
         /// </summary>

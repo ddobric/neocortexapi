@@ -17,6 +17,9 @@ namespace NeoCortexApi.Entities
     {
         public AbstractSparseBinaryMatrix connectedInputCounter;
 
+        /// <summary>
+        /// TODO: There is no need for this matrix. It should be removed. All required synapses atr no in the Proximal Dendrite Segment => Pool.
+        /// </summary>
         public AbstractSparseBinaryMatrix ConnectedInputCounterMatrix { get { return connectedInputCounter; } set { connectedInputCounter = value; } }
 
         public int[] ConnectedInputBits
@@ -163,8 +166,8 @@ namespace NeoCortexApi.Entities
         /// proximal dendrite segment and input neurons.
         /// </summary>
         /// <param name="synapse"></param>
-        /// <param name="synPermConnected"></param>
-        /// <param name="perm"></param>
+        /// <param name="synPermConnected">The synapse is the connected oneif its permanence value is greather than this threshold.</param>
+        /// <param name="perm">The permanence value of the synapse.</param>
         private void SetPermanence(Synapse synapse, double synPermConnected, double perm)
         {
             synapse.Permanence = perm;
@@ -188,15 +191,15 @@ namespace NeoCortexApi.Entities
             this.ProximalDendrite.RFPool.ResetConnections();
 
             // Every column contians a single row at index 0.
-            this.ConnectedInputCounterMatrix.ClearStatistics(0 /*this.Index*/);
+            this.ConnectedInputCounterMatrix.ClearStatistics(0);
 
-            foreach (Synapse s in this.ProximalDendrite.Synapses)
+            foreach (Synapse synapse in this.ProximalDendrite.Synapses)
             {
-                this.SetPermanence(s, htmConfig.SynPermConnected, perms[s.InputIndex]);
+                this.SetPermanence(synapse, htmConfig.SynPermConnected, perms[synapse.InputIndex]);
 
-                if (perms[s.InputIndex] >= htmConfig.SynPermConnected)
+                if (perms[synapse.InputIndex] >= htmConfig.SynPermConnected)
                 {
-                    this.ConnectedInputCounterMatrix.set(1, 0 /*this.Index*/, s.InputIndex);
+                    this.ConnectedInputCounterMatrix.set(1, 0 /*this.Index*/, synapse.InputIndex);
                 }
             }
         }
@@ -208,29 +211,11 @@ namespace NeoCortexApi.Entities
         /// <param name="htmConfig"></param>
         /// <param name="permanences">floating point degree of connectedness</param>
         /// <param name="inputVectorIndexes"></param>
-        public void setProximalPermanencesSparse(HtmConfig htmConfig, double[] permanences, int[] inputVectorIndexes)
+        public void SetProximalPermanencesSparse(HtmConfig htmConfig, double[] permanences, int[] inputVectorIndexes)
         {
             this.ProximalDendrite.SetPermanences(this.ConnectedInputCounterMatrix, htmConfig, permanences, inputVectorIndexes);
         }
 
-        // TODO better parameters documentation
-        /**
-        * This method updates the permanence matrix with a column's new permanence
-        * values. The column is identified by its index, which reflects the row in
-        * the matrix, and the permanence is given in 'sparse' form, (i.e. an array
-        * whose members are associated with specific indexes). It is in
-        * charge of implementing 'clipping' - ensuring that the permanence values are
-        * always between 0 and 1 - and 'trimming' - enforcing sparseness by zeroing out
-        * all permanence values below 'synPermTrimThreshold'. Every method wishing
-        * to modify the permanence matrix should do so through this method.
-        * 
-        * @param c                 the {@link Connections} which is the memory model.
-        * @param perm              An array of permanence values for a column. The array is
-        *                          "sparse", i.e. it contains an entry for each input bit, even
-        *                          if the permanence value is 0.
-        * @param column            The column in the permanence, potential and connectivity matrices
-        * @param raisePerm         a boolean value indicating whether the permanence values
-        */
         /// <summary>
         /// This method updates the permanence matrix with a column's new permanence values. The column is identified by its index, which reflects the row in
         /// the matrix, and the permanence is given in 'sparse' form, (i.e. an array whose members are associated with specific indexes). It is in charge of 
@@ -250,7 +235,7 @@ namespace NeoCortexApi.Entities
 
             ArrayUtils.LessOrEqualXThanSetToY(perm, htmConfig.SynPermTrimThreshold, 0);
             ArrayUtils.EnsureBetweenMinAndMax(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
-            setProximalPermanencesSparse(htmConfig, perm, maskPotential);
+            SetProximalPermanencesSparse(htmConfig, perm, maskPotential);
         }
 
         /// <summary>
