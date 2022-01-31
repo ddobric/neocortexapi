@@ -10,6 +10,9 @@ using System.IO;
 
 namespace NeoCortexApi.Encoders
 {
+    /// <summary>
+    /// It encodes the image by using the binarization algorithm. The SDR produced by this encoder is a set of binary bits that represent pixels in the image.
+    /// </summary>
     public class ImageEncoder : EncoderBase
     {
         #region NotImplementedParts
