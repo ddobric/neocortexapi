@@ -115,7 +115,7 @@ namespace NeoCortexApi.Entities
         public double SynPermActiveInc { get => synPermActiveInc; set { this.synPermActiveInc = value; SynPermTrimThreshold = value / 2.0; } }
 
         /// <summary>
-        /// The default connected threshold. Any synapse whose permanence value is above the connected threshold is
+        /// Connected permanence Threshold. Any synapse whose permanence value is above the connected prtmanence threshold value is
         /// a "connected synapse", meaning it can contribute to the cell's firing.
         /// </summary>
         public double SynPermConnected { get => synPermConnected; set { synPermConnected = value; SynPermBelowStimulusInc = value / 10.0; } }

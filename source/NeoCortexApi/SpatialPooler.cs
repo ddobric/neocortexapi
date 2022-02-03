@@ -582,16 +582,7 @@ namespace NeoCortexApi
             return ArrayUtils.Average(columnsPerInput);
         }
 
-        /**
-       * The range of connectedSynapses per column, averaged for each dimension.
-       * This value is used to calculate the inhibition radius. This variation of
-       * the function supports arbitrary column dimensions.
-       *  
-       * @param c             the {@link Connections} (spatial pooler memory)
-       * @param columnIndex   the current column for which to avg.
-       * @return
-       */
-
+ 
         /// <summary>
         /// It traverses all connected synapses of the column and calculates the span, which synapses
         /// span between all input bits. Then it calculates average of spans accross all dimensions. 
@@ -604,39 +595,6 @@ namespace NeoCortexApi
             return HtmCompute.CalcAvgSpanOfConnectedSynapses(c.GetColumn(columnIndex), c.HtmConfig);
         }
 
-        ///// <summary>
-        ///// It traverses all connected synapses of the column and calculates the span, which synapses
-        ///// spans between all input bits. Then it calculates average of spans accross all dimensions. 
-        ///// </summary>
-        ///// <param name="c"></param>
-        ///// <param name="columnIndex"></param>
-        ///// <returns></returns>
-        //internal static double CalcAvgSpanOfConnectedSynapses(Column column, int[] inpDims, int[] dimensionMultiplies, bool isColumnMajor)
-        //{
-        //    // Gets synapses connected to input bits.(from pool of the column)
-        //    int[] connected = column.ProximalDendrite.getConnectedSynapsesSparse();
-
-        //    if (connected == null || connected.Length == 0) return 0;
-
-        //    int[] maxCoord = new int[inpDims.Length];
-        //    int[] minCoord = new int[inpDims.Length];
-        //    ArrayUtils.fillArray(maxCoord, -1);
-        //    ArrayUtils.fillArray(minCoord, ArrayUtils.max(inpDims));
-
-        //    //
-        //    // It takes all connected synapses
-        //    for (int i = 0; i < connected.Length; i++)
-        //    {
-        //        maxCoord = ArrayUtils.maxBetween(maxCoord, AbstractFlatMatrix.ComputeCoordinates(inpDims.Length,
-        //           dimensionMultiplies , isColumnMajor, connected[i]));
-
-        //        minCoord = ArrayUtils.minBetween(minCoord, AbstractFlatMatrix.ComputeCoordinates(inpDims.Length,
-        //           dimensionMultiplies, isColumnMajor, connected[i]));
-
-        //    }
-
-        //    return ArrayUtils.average(ArrayUtils.add(ArrayUtils.subtract(maxCoord, minCoord), 1));
-        //}
 
         /// <summary>
         /// The primary method in charge of learning. Adapts the permanence values of the synapses based on the input vector, 
@@ -648,9 +606,8 @@ namespace NeoCortexApi
         /// <param name="activeColumns">an array containing the indices of the columns that survived inhibition.</param>
         public virtual void AdaptSynapses(Connections conn, int[] inputVector, int[] activeColumns)
         {
-
             // Get all indicies of input vector, which are set on '1'.
-            var inputIndices = ArrayUtils.IndexWhere(inputVector, inpBit => inpBit > 0);
+            var actInputIndexes = ArrayUtils.IndexWhere(inputVector, inpBit => inpBit > 0);
 
             double[] permChanges = new double[conn.HtmConfig.NumInputs];
 
@@ -658,18 +615,25 @@ namespace NeoCortexApi
             // which are used in a case of none-connections to input.
             ArrayUtils.InitArray(permChanges, -1 * conn.HtmConfig.SynPermInactiveDec);
 
-            // Then we update all connected permChanges to increment values for connected values.
-            // Permanences are set in conencted input bits to default incremental value.
-            ArrayUtils.SetIndexesTo(permChanges, inputIndices.ToArray(), conn.HtmConfig.SynPermActiveInc);
+            // Then we set SynPermActiveInc to all connected synapses.
+            ArrayUtils.SetIndexesTo(permChanges, actInputIndexes.ToArray(), conn.HtmConfig.SynPermActiveInc);
 
             for (int i = 0; i < activeColumns.Length; i++)
             {
-                Pool pool = conn.GetColumn(activeColumns[i]).ProximalDendrite.RFPool;
-                double[] perm = pool.GetDensePermanences(conn.HtmConfig.NumInputs);
-                int[] indexes = pool.GetSparsePotential();
-                ArrayUtils.RaiseValuesBy(permChanges, perm);
                 Column col = conn.GetColumn(activeColumns[i]);
-                HtmCompute.UpdatePermanencesForColumn(conn.HtmConfig, perm, col, indexes, true);
+
+                Pool pool = col.ProximalDendrite.RFPool;
+
+                // Gets permanences of all synapses to all input bits.
+                double[] permanences = pool.GetDensePermanences(conn.HtmConfig.NumInputs);
+
+                // The current permanence values in 'permanences' will be raised by values in permChanges.
+                ArrayUtils.RaiseValuesBy(permChanges, permanences);
+
+                // Get indexes of input bits that are synaptically connected with this column.
+                int[] indexes = pool.GetSparsePotential();
+
+                HtmCompute.UpdatePermanencesForColumn(conn.HtmConfig, permanences, col, indexes, true);
             }
 
             //Debug.WriteLine("Permance after update in adaptSynapses: " + permChangesStr);
@@ -715,7 +679,7 @@ namespace NeoCortexApi
         /// <param name="maskPotential"></param>
         public virtual void RaisePermanenceToThreshold(HtmConfig htmConfig, double[] perm, int[] maskPotential)
         {
-            HtmCompute.RaisePermanenceToThreshold(htmConfig, perm, maskPotential);
+            HtmCompute.BoostProximalSegment(htmConfig, perm, maskPotential);
             //if (maskPotential.Length < c.StimulusThreshold)
             //{
             //    throw new ArgumentException("This is likely due to a " +
