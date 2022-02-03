@@ -29,7 +29,7 @@ namespace NeoCortexApi.Entities
         private List<int> m_SynapseConnections { get; set; } = new List<int>();
 
         /// <summary>
-        /// Indexed according to the source Input Vector Bit (for ProximalDendrites), and source cell (for DistalDendrites).
+        /// List of potential synapses.Indexed according to the source Input Vector Bit (for ProximalDendrites), and source cell (for DistalDendrites).
         /// </summary>
         internal Dictionary<int, Synapse> m_SynapsesBySourceIndex { get; set; } = new Dictionary<int, Synapse>();
 

@@ -33,8 +33,8 @@ namespace NeoCortexApiSample
                 LocalAreaDensity = -1,
                 NumActiveColumnsPerInhArea = 0.02 * numColumns,
                 PotentialRadius = (int)(0.15 * inputBits),
-                //InhibitionRadius = 15,
-
+                StimulusThreshold = 5.0,
+                
                 MaxBoost = 10.0,
                 DutyCyclePeriod = 25,
                 MinPctOverlapDutyCycles = 0.75,
@@ -48,8 +48,8 @@ namespace NeoCortexApiSample
                 PermanenceIncrement = 0.15,
 
                 // Used by punishing of segments.
-                PredictedSegmentDecrement = 0.1
-            };
+                PredictedSegmentDecrement = 0.1,                
+        };
 
             double max = 20;
 

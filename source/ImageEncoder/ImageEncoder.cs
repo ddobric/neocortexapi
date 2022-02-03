@@ -7,9 +7,13 @@ using Daenet.ImageBinarizerLib.Entities;
 using Daenet.ImageBinarizerLib;
 using Newtonsoft.Json;
 using System.IO;
+using SkiaSharp;
 
 namespace NeoCortexApi.Encoders
 {
+    /// <summary>
+    /// It encodes the image by using the binarization algorithm. The SDR produced by this encoder is a set of binary bits that represent pixels in the image.
+    /// </summary>
     public class ImageEncoder : EncoderBase
     {
         #region NotImplementedParts
@@ -28,7 +32,7 @@ namespace NeoCortexApi.Encoders
         /// </summary>
         ImageBinarizer imageBinarizer;
 
-        BinarizerParams binarizerParmas;
+        BinarizerParams binarizerParams;
 
         #region Constructors and Initialization
 
@@ -46,7 +50,7 @@ namespace NeoCortexApi.Encoders
                 throw new ArgumentException("Invalid encoder setting for ImageEncoder");
             }
 
-            this.binarizerParmas = binarizerParmas;
+            this.binarizerParams = binarizerParmas;
 
             this.imageBinarizer = new ImageBinarizer(binarizerParmas);
         }
@@ -60,40 +64,70 @@ namespace NeoCortexApi.Encoders
         /// <returns></returns>
         public override int[] Encode(object inputFile)
         {
-            this.binarizerParmas.InputImagePath = (string)inputFile;
+            this.binarizerParams.InputImagePath = (string)inputFile;
 
-            var binarizer = new ImageBinarizer(binarizerParmas);
+            var binarizer = new ImageBinarizer(binarizerParams);
 
             return GetArray<int>(binarizer);
         }
 
         public void EncodeAndSave(string inputFile, string outputFile)
         {
-            this.binarizerParmas.InputImagePath = inputFile;
-            this.binarizerParmas.OutputImagePath = outputFile;
+            this.binarizerParams.InputImagePath = inputFile;
+            this.binarizerParams.OutputImagePath = outputFile;
             this.imageBinarizer.Run();
         }
 
-        public void EncodeAndSaveAsImage(string inputFile, string outputFile)
+        /// <summary>
+        /// <br>Encode the Input file Image, binarize it and save to an output file image</br>
+        /// <br>Default image format: Png</br>
+        /// </summary>
+        /// <param name="inputFile">Input image path</param>
+        /// <param name="outputFile">Output image path</param>
+        /// <param name="encodingFormat">One of following formats is supported: Bmp, Gif, Ico, Jpeg, Png, Wbmp, Webp, Pkm, Ktx, Astc, Dng, Heif </param>
+        public void EncodeAndSaveAsImage(string inputFile, string outputFile, string encodingFormat = "Png")
         {
-            // Bitmap does not work on Linux.
-            // see https://developers.de/2022/01/14/bye-by-system-drawing-and-gdi/
-            //    Bitmap bmp = new Bitmap(width, height);
+            //
+            // 1. Initiate the parameters
+            this.binarizerParams.InputImagePath = inputFile;
+            this.binarizerParams.OutputImagePath = outputFile;
+            double[,,] binarizedImage = GetPixels();
 
-            //    for (int y = 0; y < bmp.Height; y++)
-            //    {
-            //        for (int x = 0; x < bmp.Width; x++)
-            //        {
-            //            int b = (int)binarizedImage[y, x, 0];
-            //            bmp.SetPixel(x, y, Color.FromArgb(255, 255 * b, 255 * b, 255 * b));
-            //        }
-            //    }
+            //
+            // 2. Reading the inputFile image to type SKBitmap
+            SKBitmap inputBitmap = SKBitmap.Decode(inputFile);
+            SKBitmap outputBitmap = new SKBitmap(binarizerParams.ImageWidth, binarizerParams.ImageHeight);
+            inputBitmap.ScalePixels(outputBitmap, SKFilterQuality.High);
+            for (int y = 0; y < outputBitmap.Height; y++)
+            {
+                for (int x = 0; x < outputBitmap.Width; x++)
+                {
+                    int b = (int)binarizedImage[y, x, 0];
+                    outputBitmap.SetPixel(x, y, new SKColor((byte)(255 * b), (byte)(255 * b), (byte)(255 * b)));
+                }
+            }
+
+            //
+            // 3. Reading a Picture file in pixels
+            using (var image = SKImage.FromBitmap(outputBitmap))
+            {
+                SKEncodedImageFormat frm = (SKEncodedImageFormat)Enum.Parse(typeof(SKEncodedImageFormat), encodingFormat);
+
+                using (var data = image.Encode(frm, 80))
+                {
+                    // save the data to a stream
+                    using (var stream = File.OpenWrite($"{outputFile}"))
+                    {
+                        data.SaveTo(stream);
+                    }
+                }
+            }
         }
 
         /// <summary>
         /// Gets the image pixels.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>double 3D array of greyscale value</returns>
         public double[,,] GetPixels()
         {
             return imageBinarizer.GetArrayBinary();
@@ -105,7 +139,7 @@ namespace NeoCortexApi.Encoders
 
         #region Private Methods
 
-      
+
         /// <summary>
         /// Method to convert GetArrayBinary from data type double[,,] to int[]
         /// </summary>
@@ -126,23 +160,6 @@ namespace NeoCortexApi.Encoders
             }
             return intArray;
         }
-
-        // see https://developers.de/2022/01/14/bye-by-system-drawing-and-gdi/
-        // We should not use the bitmap here.
-        //private void SaveBinarizedImage(string outputFilePath, int width, int height, double[,,] binarizedImage)
-        //{
-        //    Bitmap bmp = new Bitmap(width, height);
-
-        //    for (int y = 0; y < bmp.Height; y++)
-        //    {
-        //        for (int x = 0; x < bmp.Width; x++)
-        //        {
-        //            int b = (int)binarizedImage[y, x, 0];
-        //            bmp.SetPixel(x, y, Color.FromArgb(255, 255 * b, 255 * b, 255 * b));
-        //        }
-        //    }
-        //    bmp.Save(outputFilePath);
-        //}
         #endregion
     }
 }
