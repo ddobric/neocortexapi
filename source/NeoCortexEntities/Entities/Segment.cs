@@ -25,7 +25,7 @@ namespace NeoCortexApi.Entities
         //protected Integer boxedIndex { get; set; }
 
         /// <summary>
-        /// Synapses connected to the segment.
+        /// Synapses connected to the segment. Also called potential synapses.
         /// </summary>
         public List<Synapse> Synapses { get; set; }
 

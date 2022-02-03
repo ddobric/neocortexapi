@@ -419,21 +419,22 @@ namespace NeoCortexApi
         /// are increased until the minimum number of connections are formed.        /// 
         /// </summary>
         /// <param name="htmConfig"></param>
-        /// <param name="perm"></param>
-        /// <param name="maskPotential"></param>
-        public static void RaisePermanenceToThreshold(HtmConfig htmConfig, double[] perm, int[] maskPotential)
+        /// <param name="permanences">An array of permanence values for a column. The array is "dense", i.e. it contains an entry for each input bit, even if the permanence value is 0.</param>
+        /// <param name="potentialIndexes">The indexes of inputs in the specified <see cref="Column"/>'s pool.</param>
+        public static void BoostProximalSegment(HtmConfig htmConfig, double[] permanences, int[] potentialIndexes)
         {
-            if (maskPotential.Length < htmConfig.StimulusThreshold)
+            // TODO. Consider moving this condition to the initialization of teh SP.
+            if (potentialIndexes.Length < htmConfig.StimulusThreshold)
             {
                 throw new ArgumentException("StimulusThreshold as number of required connected synapses cannot be greather than number of neurons in receptive field.");
             }
 
-            ArrayUtils.EnsureBetweenMinAndMax(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
+            ArrayUtils.EnsureBetweenMinAndMax(permanences, htmConfig.SynPermMin, htmConfig.SynPermMax);
 
             while (true)
             {
                 // Gets number of synapses with permanence value grather than 'SynPermConnected' = Connected Synapses.
-                int numConnected = ArrayUtils.ValueGreaterThanCountAtIndex(htmConfig.SynPermConnected, perm, maskPotential);
+                int numConnected = ArrayUtils.ValueGreaterThanCountAtIndex(htmConfig.SynPermConnected, permanences, potentialIndexes);
 
                 // If enough synapses are connected, all ok.
                 if (numConnected >= htmConfig.StimulusThreshold)
@@ -441,7 +442,7 @@ namespace NeoCortexApi
 
                 // If number of connected synapses is below threshold, 
                 // then permanences of all synapses will be incremented (raised) until column is connected.
-                ArrayUtils.RaiseValuesBy(htmConfig.SynPermBelowStimulusInc, perm, maskPotential);
+                ArrayUtils.RaiseValuesBy(htmConfig.SynPermBelowStimulusInc, permanences, potentialIndexes);
             }
         }
 
@@ -474,11 +475,11 @@ namespace NeoCortexApi
             if (raisePerm)
             {
                 // During every learning cycle, this method ensures that every column 
-                // has enough connections ('SynPermConnected') to iput space.
-                RaisePermanenceToThreshold(htmConfig, perm, potentialIndexes);
+                // has enough connections (perm > SynPermConnected) to the iput space.
+                BoostProximalSegment(htmConfig, perm, potentialIndexes);
             }
 
-            // Here we set all permanences to 0 
+            // Here we set all permanences to 0 if the permanence value is less than SynPermTrimThreshold.
             ArrayUtils.LessOrEqualXThanSetToY(perm, htmConfig.SynPermTrimThreshold, 0);
 
             ArrayUtils.EnsureBetweenMinAndMax(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);

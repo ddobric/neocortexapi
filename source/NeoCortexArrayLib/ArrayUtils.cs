@@ -1076,7 +1076,8 @@ namespace NeoCortexApi.Utility
         {
             for (int i = 0; i < array.Length; i++)
             {
-                if (array[i] <= comparingValue) array[i] = valueToBeSet;
+                if (array[i] <= comparingValue) 
+                    array[i] = valueToBeSet;
             }
         }
 

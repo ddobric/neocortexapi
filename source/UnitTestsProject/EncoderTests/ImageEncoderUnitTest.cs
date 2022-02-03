@@ -1,9 +1,5 @@
-using Daenet.ImageBinarizerLib;
 using Daenet.ImageBinarizerLib.Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Threading;
 
@@ -29,7 +25,7 @@ namespace NeoCortexApi.Encoders
 
             encoder.EncodeAndSaveAsImage(inputImage, Path.Combine(outFolder, $"encodedImage_{imageName}"));
 
-            encoder.EncodeAndSave(inputImage, Path.Combine(outFolder, $"encodedImage_{imageName}.txt")) ;
+            encoder.EncodeAndSave(inputImage, Path.Combine(outFolder, $"encodedImage_{Path.GetFileNameWithoutExtension(imageName)}.txt")) ;
         }
 
 
