@@ -18,9 +18,11 @@ namespace UnitTestsProject
         /// </summary>
         /// <param name="period"></param>
         [TestMethod]
+        [TestCategory("prod")]
         [DataRow(100)]
         [DataRow(200)]
         [DataRow(500)]
+        [DataRow(50000)]
         public void BoostTest50Pct(int period)
         { 
             int numCols = 1;
@@ -30,15 +32,15 @@ namespace UnitTestsProject
 
             double max = 0.0;
 
-            for (int i = 0; i < 10000; i++)
+            for (int i = 0; i < period*100; i++)
             {
                 // Active in every cycle.
                 currentAtivity[0] = currentAtivity[0] ==1? 0:1;
 
                 // Calculate boost result by boosting formel.
-                overallActivity = ArrayUtils.Divide(ArrayUtils.AddOffset(ArrayUtils.Multiply(overallActivity, period - 1), currentAtivity), period);
+                overallActivity = SpatialPooler.CalculatioActivationFrequency(overallActivity, currentAtivity, period);
 
-                if (overallActivity[0] > 0)
+                if (overallActivity[0] > max)
                     max = overallActivity[0];
 
                 //Trace.WriteLine(Helpers.StringifyVector(overallActivity));
@@ -49,9 +51,11 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("prod")]
         [DataRow(100)]
         [DataRow(200)]
         [DataRow(500)]
+        [DataRow(50000)]
         public void BoostTest100Pct(int period)
         {
             int numCols = 1;
@@ -61,15 +65,15 @@ namespace UnitTestsProject
 
             double max = 0.0;
 
-            for (int i = 0; i < 10000; i++)
+            for (int i = 0; i < period*100; i++)
             {
                 // Active in every cycle.
                 currentAtivity[0] = 1;
 
                 // Calculate boost result by boosting formel.
-                overallActivity = ArrayUtils.Divide(ArrayUtils.AddOffset(ArrayUtils.Multiply(overallActivity, period - 1), currentAtivity), period);
+                overallActivity = SpatialPooler.CalculatioActivationFrequency(overallActivity, currentAtivity, period);
 
-                if (overallActivity[0] > 0)
+                if (overallActivity[0] > max)
                     max = overallActivity[0];
 
                 //Trace.WriteLine(Helpers.StringifyVector(overallActivity));

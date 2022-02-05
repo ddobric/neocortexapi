@@ -499,9 +499,9 @@ namespace NeoCortexApi
                 period = c.SpIterationNum;
             }
 
-            c.HtmConfig.OverlapDutyCycles = CalculatioActivationFrequency(c, c.HtmConfig.OverlapDutyCycles, overlapCycles, period);
+            c.HtmConfig.OverlapDutyCycles = CalculatioActivationFrequency(c.HtmConfig.OverlapDutyCycles, overlapCycles, period);
 
-            c.HtmConfig.ActiveDutyCycles = CalculatioActivationFrequency(c, c.HtmConfig.ActiveDutyCycles, activeCycles, period);
+            c.HtmConfig.ActiveDutyCycles = CalculatioActivationFrequency(c.HtmConfig.ActiveDutyCycles, activeCycles, period);
         }
 
 
@@ -523,7 +523,7 @@ namespace NeoCortexApi
         /// This looks a bit complicate. But, simplified, dutycycle is simple counter that counts how many times the column was 
         /// connected to the non-zero input bit (in a case of the overlapp) or how often the column was active (in a case of active).</remarks>
         /// <returns></returns>
-        public static double[] CalculatioActivationFrequency(Connections c, double[] dutyCycles, double[] newInput, double period)
+        public static double[] CalculatioActivationFrequency(double[] dutyCycles, double[] newInput, double period)
         {
             return ArrayUtils.Divide(ArrayUtils.AddOffset(ArrayUtils.Multiply(dutyCycles, period - 1), newInput), period);
         }
