@@ -429,35 +429,16 @@ namespace NeoCortexApi
         {
             int len = c.HtmConfig.NumColumns;
 
-            double[] activeDutyCycles = c.HtmConfig.ActiveDutyCycles;
-            double minPctActiveDutyCycles = c.HtmConfig.MinPctActiveDutyCycles;
-            double[] overlapDutyCycles = c.HtmConfig.OverlapDutyCycles;
-            double minPctOverlapDutyCycles = c.HtmConfig.MinPctOverlapDutyCycles;
-
             Parallel.For(0, len, (i) =>
             {
                 int[] neighborhood = GetColumnNeighborhood(c, i, this.InhibitionRadius);
 
-                double maxActiveDuty = ArrayUtils.Max(ArrayUtils.ListOfValuesByIndicies(activeDutyCycles, neighborhood));
-                double maxOverlapDuty = ArrayUtils.Max(ArrayUtils.ListOfValuesByIndicies(overlapDutyCycles, neighborhood));
+                double maxActiveDuty = ArrayUtils.Max(ArrayUtils.ListOfValuesByIndicies(c.HtmConfig.ActiveDutyCycles, neighborhood));
+                double maxOverlapDuty = ArrayUtils.Max(ArrayUtils.ListOfValuesByIndicies(c.HtmConfig.OverlapDutyCycles, neighborhood));
 
-                // Used for debugging of thread-safe capability.
-                //System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                c.HtmConfig.MinActiveDutyCycles[i] = maxActiveDuty * c.HtmConfig.MinPctActiveDutyCycles;
 
-                //sb.Append("[");
-                //for (int k = 0; k < neighborhood.Length; k++)
-                //{
-                //    sb.Append(neighborhood[k]);
-                //    sb.Append(" - ");
-                //    var x = overlapDutyCycles[k].ToString("N8");
-                //    sb.Append(x);
-                //    sb.Append(" | ");
-                //}
-                //sb.Append("]");
-
-                c.HtmConfig.MinActiveDutyCycles[i] = maxActiveDuty * minPctActiveDutyCycles;
-
-                c.HtmConfig.MinOverlapDutyCycles[i] = maxOverlapDuty * minPctOverlapDutyCycles;
+                c.HtmConfig.MinOverlapDutyCycles[i] = maxOverlapDuty * c.HtmConfig.MinPctOverlapDutyCycles;
             });
         }
 
@@ -499,9 +480,9 @@ namespace NeoCortexApi
                 period = c.SpIterationNum;
             }
 
-            c.HtmConfig.OverlapDutyCycles = CalculatioActivationFrequency(c.HtmConfig.OverlapDutyCycles, overlapCycles, period);
+            c.HtmConfig.OverlapDutyCycles = CalcActivationFrequency(c.HtmConfig.OverlapDutyCycles, overlapCycles, period);
 
-            c.HtmConfig.ActiveDutyCycles = CalculatioActivationFrequency(c.HtmConfig.ActiveDutyCycles, activeCycles, period);
+            c.HtmConfig.ActiveDutyCycles = CalcActivationFrequency(c.HtmConfig.ActiveDutyCycles, activeCycles, period);
         }
 
 
@@ -523,7 +504,7 @@ namespace NeoCortexApi
         /// This looks a bit complicate. But, simplified, dutycycle is simple counter that counts how many times the column was 
         /// connected to the non-zero input bit (in a case of the overlapp) or how often the column was active (in a case of active).</remarks>
         /// <returns></returns>
-        public static double[] CalculatioActivationFrequency(double[] dutyCycles, double[] newInput, double period)
+        public static double[] CalcActivationFrequency(double[] dutyCycles, double[] newInput, double period)
         {
             return ArrayUtils.Divide(ArrayUtils.AddOffset(ArrayUtils.Multiply(dutyCycles, period - 1), newInput), period);
         }

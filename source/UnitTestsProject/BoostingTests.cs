@@ -18,7 +18,7 @@ namespace UnitTestsProject
         /// </summary>
         /// <param name="period"></param>
         [TestMethod]
-        [TestCategory("prod")]
+        [TestCategory("Prod")]
         [DataRow(100)]
         [DataRow(200)]
         [DataRow(500)]
@@ -38,7 +38,7 @@ namespace UnitTestsProject
                 currentAtivity[0] = currentAtivity[0] ==1? 0:1;
 
                 // Calculate boost result by boosting formel.
-                overallActivity = SpatialPooler.CalculatioActivationFrequency(overallActivity, currentAtivity, period);
+                overallActivity = SpatialPooler.CalcActivationFrequency(overallActivity, currentAtivity, period);
 
                 if (overallActivity[0] > max)
                     max = overallActivity[0];
@@ -51,7 +51,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("prod")]
+        [TestCategory("Prod")]
         [DataRow(100)]
         [DataRow(200)]
         [DataRow(500)]
@@ -71,7 +71,7 @@ namespace UnitTestsProject
                 currentAtivity[0] = 1;
 
                 // Calculate boost result by boosting formel.
-                overallActivity = SpatialPooler.CalculatioActivationFrequency(overallActivity, currentAtivity, period);
+                overallActivity = SpatialPooler.CalcActivationFrequency(overallActivity, currentAtivity, period);
 
                 if (overallActivity[0] > max)
                     max = overallActivity[0];
