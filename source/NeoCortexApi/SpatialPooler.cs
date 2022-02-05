@@ -462,7 +462,8 @@ namespace NeoCortexApi
         }
 
         /// <summary>
-        /// Updates the duty cycles for each column. The OVERLAP duty cycle is a moving average of the number of inputs which overlapped with each column.
+        /// Updates the duty cycles for each column. 
+        /// The OVERLAP duty cycle is a moving average of the number of inputs which overlapped with each column.
         /// The ACTIVITY duty cycles is a moving average of the frequency of activation for each column.
         /// </summary>
         /// <param name="c">the <see cref="Connections"/> (spatial pooler memory)</param>
@@ -476,19 +477,20 @@ namespace NeoCortexApi
         public void UpdateDutyCycles(Connections c, int[] overlaps, int[] activeColumns)
         {
             // All columns with overlap are set to 1. Otherwise 0.
-            double[] overlapArray = new double[c.HtmConfig.NumColumns];
+            double[] overlapCycles = new double[c.HtmConfig.NumColumns];
 
             // All active columns are set on 1, otherwise 0.
-            double[] activeArray = new double[c.HtmConfig.NumColumns];
+            double[] activeCycles = new double[c.HtmConfig.NumColumns];
 
             //
             // if (sourceA[i] > 0) then targetB[i] = 1;
-            // This ensures that all values in overlapArray are set to 1, if column has some overlap.
-            ArrayUtils.GreaterThanXThanSetToYInB(overlaps, overlapArray, 0, 1);
+            // This ensures that all values in overlapCycles are set to 1, if column has some overlap.
+            ArrayUtils.GreaterThanXThanSetToYInB(overlaps, overlapCycles, 0, 1);
+          
             if (activeColumns.Length > 0)
             {
-                // After this step, all rows in activeArray are set to 1 at the index of active column.
-                ArrayUtils.SetIndexesTo(activeArray, activeColumns, 1);
+                // After this step, all rows in activeCycles are set to 1 at the index of active column.
+                ArrayUtils.SetIndexesTo(activeCycles, activeColumns, 1);
             }
 
             int period = c.HtmConfig.DutyCyclePeriod;
@@ -497,9 +499,9 @@ namespace NeoCortexApi
                 period = c.SpIterationNum;
             }
 
-            c.HtmConfig.OverlapDutyCycles = UpdateDutyCyclesHelper(c, c.HtmConfig.OverlapDutyCycles, overlapArray, period);
+            c.HtmConfig.OverlapDutyCycles = CalculatioActivationFrequency(c, c.HtmConfig.OverlapDutyCycles, overlapCycles, period);
 
-            c.HtmConfig.ActiveDutyCycles = UpdateDutyCyclesHelper(c, c.HtmConfig.ActiveDutyCycles, activeArray, period);
+            c.HtmConfig.ActiveDutyCycles = CalculatioActivationFrequency(c, c.HtmConfig.ActiveDutyCycles, activeCycles, period);
         }
 
 
@@ -519,9 +521,9 @@ namespace NeoCortexApi
         /// <param name="period">The period of the duty cycle</param>
         /// <remarks>
         /// This looks a bit complicate. But, simplified, dutycycle is simple counter that counts how many times the column was 
-        /// connected to the non-zero input bit (in a case of the overlapp) or how often the column was active.</remarks>
+        /// connected to the non-zero input bit (in a case of the overlapp) or how often the column was active (in a case of active).</remarks>
         /// <returns></returns>
-        public double[] UpdateDutyCyclesHelper(Connections c, double[] dutyCycles, double[] newInput, double period)
+        public static double[] CalculatioActivationFrequency(Connections c, double[] dutyCycles, double[] newInput, double period)
         {
             return ArrayUtils.Divide(ArrayUtils.AddOffset(ArrayUtils.Multiply(dutyCycles, period - 1), newInput), period);
         }
@@ -657,7 +659,7 @@ namespace NeoCortexApi
             for (int i = 0; i < weakColumns.Length; i++)
             {
                 Column col = c.GetColumn(weakColumns[i]);
-                //Pool pool = c.getPotentialPools().get(weakColumns[i]);
+        
                 Pool pool = col.ProximalDendrite.RFPool;
                 double[] perm = pool.GetSparsePermanences();
                 ArrayUtils.RaiseValuesBy(c.HtmConfig.SynPermBelowStimulusInc, perm);
@@ -1164,29 +1166,21 @@ namespace NeoCortexApi
             double[] activeDutyCycles = c.HtmConfig.ActiveDutyCycles;
             double[] minActiveDutyCycles = c.HtmConfig.MinActiveDutyCycles;
 
-            //List<int> mask = new List<int>();
-
-            //for (int i = 0; i < minActiveDutyCycles.Length; i++)
-            //{
-            //    if (minActiveDutyCycles[i] > 0)
-            //        mask.Add(i);
-            //}
-
-            double[] boostInterim;
+            double[] boostFactors;
 
             //
             // Boost factors are NOT recalculated if minimum active duty cycles are all set on 0.
             if (minActiveDutyCycles.Count(ma => ma > 0) == 0)
             {
-                boostInterim = c.BoostFactors;
+                boostFactors = c.BoostFactors;
             }
             else
             {
                 double[] oneMinusMaxBoostFact = new double[c.HtmConfig.NumColumns];
                 ArrayUtils.InitArray(oneMinusMaxBoostFact, 1 - c.HtmConfig.MaxBoost);
-                boostInterim = ArrayUtils.Divide(oneMinusMaxBoostFact, minActiveDutyCycles, 0, 0);
-                boostInterim = ArrayUtils.Multiply(boostInterim, activeDutyCycles, 0, 0);
-                boostInterim = ArrayUtils.AddAmount(boostInterim, c.HtmConfig.MaxBoost);
+                boostFactors = ArrayUtils.Divide(oneMinusMaxBoostFact, minActiveDutyCycles, 0, 0);
+                boostFactors = ArrayUtils.Multiply(boostFactors, activeDutyCycles, 0, 0);
+                boostFactors = ArrayUtils.AddAmount(boostFactors, c.HtmConfig.MaxBoost);
             }
 
             // Filtered indexes are indexes of columns whose activeDutyCycles is larger than calculated minActiveDutyCycles of the column.
@@ -1202,9 +1196,9 @@ namespace NeoCortexApi
 
             // Already very active columns will have boost factor 1.0. That mean their synapses on the proximal segment 
             // will not be stimulated.
-            ArrayUtils.SetIndexesTo(boostInterim, idxOfActiveColumns.ToArray(), 1.0d);
+            ArrayUtils.SetIndexesTo(boostFactors, idxOfActiveColumns.ToArray(), 1.0d);
 
-            c.BoostFactors = boostInterim;
+            c.BoostFactors = boostFactors;
         }
 
 
