@@ -231,7 +231,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Controls if bumping-up of weak columns shell be done.
         /// </summary>
-        public bool IsBumpUpWeakColumnsDisabled { get; set; } = false;
+        //public bool IsBumpUpWeakColumnsDisabled { get; set; } = false;
 
         /// <summary>
         /// Period count which is the number of cycles between updates of inhibition radius and min. duty cycles.
@@ -532,8 +532,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (MaxBoost != obj.MaxBoost)
                 return false;
-            if (IsBumpUpWeakColumnsDisabled != obj.IsBumpUpWeakColumnsDisabled)
-                return false;
+           
             if (UpdatePeriod != obj.UpdatePeriod)
                 return false;
             if (OverlapDutyCycles != null && this.OverlapDutyCycles != null)
@@ -642,7 +641,7 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.PredictedSegmentDecrement, writer);
             ser.SerializeValue(this.DutyCyclePeriod, writer);
             ser.SerializeValue(this.MaxBoost, writer);
-            ser.SerializeValue(this.IsBumpUpWeakColumnsDisabled, writer);
+           
             ser.SerializeValue(this.UpdatePeriod, writer);
             ser.SerializeValue(this.OverlapDutyCycles, writer);
             ser.SerializeValue(this.ActiveDutyCycles, writer);
@@ -876,7 +875,7 @@ namespace NeoCortexApi.Entities
                                     }
                                 case 5:
                                     {
-                                        htmConfig.IsBumpUpWeakColumnsDisabled = ser.ReadBoolValue(str[i]);
+                                        //htmConfig.IsBumpUpWeakColumnsDisabled = ser.ReadBoolValue(str[i]);
                                         break;
                                     }
                                 case 6:

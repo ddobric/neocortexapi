@@ -627,16 +627,13 @@ namespace NeoCortexApi
 
         /// <summary>
         /// This method increases the permanence values of synapses of columns whose 
-        /// overlap level has been too low. Such columns are identified by having an 
-        /// overlap duty cycle that drops too much below those of their peers. The 
-        /// permanence values for such columns are increased. 
+        /// overlap level is too low. Such columns are identified by having an 
+        /// overlap duty cycle (activation frequency) that drops too much below those of their peers. 
+        /// The permanence values for such columns are increased. 
         /// </summary>
         /// <param name="c"></param>
         public virtual void BumpUpWeakColumns(Connections c)
         {
-            if (c.HtmConfig.IsBumpUpWeakColumnsDisabled)
-                return;
-
             var weakColumns = c.HtmConfig.Memory.Get1DIndexes().Where(i => c.HtmConfig.OverlapDutyCycles[i] < c.HtmConfig.MinOverlapDutyCycles[i]).ToArray();
 
             for (int i = 0; i < weakColumns.Length; i++)
