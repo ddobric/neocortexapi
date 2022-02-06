@@ -38,7 +38,7 @@ namespace UnitTestsProject
                 currentAtivity[0] = currentAtivity[0] ==1? 0:1;
 
                 // Calculate boost result by boosting formel.
-                overallActivity = SpatialPooler.CalcActivationFrequency(overallActivity, currentAtivity, period);
+                overallActivity = SpatialPooler.CalcEventFrequency(overallActivity, currentAtivity, period);
 
                 if (overallActivity[0] > max)
                     max = overallActivity[0];
@@ -71,7 +71,7 @@ namespace UnitTestsProject
                 currentAtivity[0] = 1;
 
                 // Calculate boost result by boosting formel.
-                overallActivity = SpatialPooler.CalcActivationFrequency(overallActivity, currentAtivity, period);
+                overallActivity = SpatialPooler.CalcEventFrequency(overallActivity, currentAtivity, period);
 
                 if (overallActivity[0] > max)
                     max = overallActivity[0];

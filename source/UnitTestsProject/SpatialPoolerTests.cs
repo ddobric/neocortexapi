@@ -2704,7 +2704,7 @@ namespace UnitTestsProject
             ArrayUtils.InitArray(dc, 1000.0);
             double[] newvals = new double[5];
             int period = 1000;
-            double[] newDc = SpatialPooler.CalcActivationFrequency( dc, newvals, period);
+            double[] newDc = SpatialPooler.CalcEventFrequency( dc, newvals, period);
             double[] expectedDutyCycles = new double[] { 999, 999, 999, 999, 999 };
             Assert.IsTrue(expectedDutyCycles.SequenceEqual(newDc));
 
@@ -2713,7 +2713,7 @@ namespace UnitTestsProject
             newvals = new double[5];
             ArrayUtils.InitArray(newvals, 1000);
             period = 1000;
-            newDc = SpatialPooler.CalcActivationFrequency( dc, newvals, period);
+            newDc = SpatialPooler.CalcEventFrequency( dc, newvals, period);
 
             expectedDutyCycles = new double[5];
             Array.Copy(dc, expectedDutyCycles, expectedDutyCycles.Length);
@@ -2724,14 +2724,14 @@ namespace UnitTestsProject
             ArrayUtils.InitArray(dc, 1000.0);
             newvals = new double[] { 2000, 4000, 5000, 6000, 7000 };
             period = 1000;
-            newDc = SpatialPooler.CalcActivationFrequency( dc, newvals, period);
+            newDc = SpatialPooler.CalcEventFrequency( dc, newvals, period);
             expectedDutyCycles = new double[] { 1001, 1003, 1004, 1005, 1006 };
             Assert.IsTrue(expectedDutyCycles.SequenceEqual(newDc));
 
             dc = new double[] { 1000, 800, 600, 400, 2000 };
             newvals = new double[5];
             period = 2;
-            newDc = SpatialPooler.CalcActivationFrequency( dc, newvals, period);
+            newDc = SpatialPooler.CalcEventFrequency( dc, newvals, period);
             expectedDutyCycles = new double[] { 500, 400, 300, 200, 1000 };
             Assert.IsTrue(expectedDutyCycles.SequenceEqual(newDc));
         }
