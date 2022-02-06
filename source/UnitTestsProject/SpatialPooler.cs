@@ -49,20 +49,30 @@ namespace UnitTestsProject
 
         
 
-        public SpatialPooler()
-        {
-        }
-
         public SpatialPooler(HomeostaticPlasticityController homeostaticPlasticityActivator)
         {
-            this.homeostaticPlasticityActivator = homeostaticPlasticityActivator;
+        }
+        public void SerializeSpatialPooler()
+        {
+            HomeostaticPlasticityController homeostaticPlasticityActivator = new HomeostaticPlasticityController();
+            SpatialPooler spatial = new SpatialPooler(homeostaticPlasticityActivator);
+
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeSpatialPooler)}.txt"))
+            {
+                spatial.SerializeSpatialPooler(sw);
+            }
+
+        }
+
+        private void SerializeSpatialPooler(StreamWriter sw)
+        {
+            throw new NotImplementedException();
         }
 
         internal void Serialize(StreamWriter sw)
         {
             throw new NotImplementedException();
         }
-
     }
 
 } 
