@@ -724,6 +724,17 @@ namespace TimeSeriesSequence
                     { "Offset", 50},
                 });
 
+            encoderSettings.Add("ThreeDaysLongWeekendEncoder", new Dictionary<string, object>()
+                {
+                    { "W", 21},
+                    { "N", 42},
+                    { "MinVal", 0.0},
+                    { "MaxVal", 3.0},
+                    { "Periodic", false},
+                    { "Name", "ThreeDaysLongWeekendEncoder"},
+                    { "ClipInput", true},
+                    { "Offset", 50},
+                });
 
             encoderSettings.Add("DateTimeEncoder", new Dictionary<string, object>()
                 {
