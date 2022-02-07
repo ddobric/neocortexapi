@@ -224,7 +224,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="htmConfig"></param>
         /// <param name="perm">An array of permanence values for a column. The array is "sparse", i.e. it contains an entry for each input bit, even if the permanence value is 0.</param>
-        /// <param name="maskPotential"></param>
+        /// <param name="maskPotential">Indexes of potential connections to input neurons.</param>
         /// <param name="raisePerm">a boolean value indicating whether the permanence values</param>
         public void UpdatePermanencesForColumnSparse(HtmConfig htmConfig, double[] perm, int[] maskPotential, bool raisePerm)
         {

@@ -692,10 +692,10 @@ namespace NeoCortexApi
         /// <param name="c">the <see cref="Connections"/> memory</param>
         /// <param name="perm">permanence values</param>
         /// <remarks>Note: This method services the "sparse" versions of corresponding methods</remarks>
-        public virtual void RaisePermanenceToThresholdSparse(Connections c, double[] perm)
-        {
-            HtmCompute.RaisePermanenceToThresholdSparse(c.HtmConfig, perm);
-        }
+        //public virtual void RaisePermanenceToThresholdSparse(Connections c, double[] perm)
+        //{
+        //    HtmCompute.RaisePermanenceToThresholdSparse(c.HtmConfig, perm);
+        //}
 
         /// <summary>
         /// This method updates the permanence matrix with a column's new permanence values. The column is identified by its index,
@@ -710,7 +710,7 @@ namespace NeoCortexApi
         /// the permanence value is 0.
         /// </param>
         /// <param name="column">The column in the permanence, potential and connectivity matrices</param>
-        /// <param name="maskPotential"></param>
+        /// <param name="maskPotential">Indexes of potential connections to input neurons.</param>
         /// <param name="raisePerm">a boolean value indicating whether the permanence values</param>
         public void UpdatePermanencesForColumnSparse(Connections c, double[] perm, Column column, int[] maskPotential, bool raisePerm)
         {
