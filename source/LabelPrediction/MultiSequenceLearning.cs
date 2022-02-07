@@ -31,7 +31,7 @@ namespace LabelPrediction
             int numColumns = 2048;
 
             Console.WriteLine("Reading CSV File..");
-            var csvData = HelperMethods.ReadPowerConsumptionDataFromCSV(PowerConsumptionCSV_Exp);
+            var csvData = HelperMethods.ReadPowerConsumptionDataFromCSV(PowerConsumptionCSV);
             Console.WriteLine("Completed reading CSV File..");
 
             Console.WriteLine("Encoding data read from CSV...");
@@ -45,20 +45,23 @@ namespace LabelPrediction
             var trainedClassifier  = trainedHTMmodel.Values.ElementAt(0);
             Console.WriteLine("Done Learning");
 
-            Debug.WriteLine("PLEASE ENTER DATE FOR PREDICTING PASSENGER COUNT:      *note format->dd-mm-yyyy");
-            Console.WriteLine("PLEASE ENTER DATE FOR PREDICTING PASSENGER COUNT:      *note format->dd-mm-yyyy");
+            Debug.WriteLine("PLEASE ENTER DATE FOR PREDICTING POWER CONSUMPTION:      *note format->dd-mm-yyyy hh:00");
+            Console.WriteLine("PLEASE ENTER DATE FOR PREDICTING POWER CONSUMPTION:      *note format->dd-mm-yyyy hh:00");
             var userInput = Console.ReadLine();
 
             while (!userInput.Equals("q") && userInput != "Q")
             {
-                var sdr = HelperMethods.EncodeSingleInput(userInput);
-                var userLayerOutput = trainedCortexLayer.Compute(sdr, false) as ComputeCycle;
-                var predictedValuesForUserInput = trainedClassifier.GetPredictedInputValues(userLayerOutput.PredictiveCells.ToArray(), 5);
-                foreach (var predictedVal in predictedValuesForUserInput)
+                if (userInput != null)
                 {
-                    Console.WriteLine("SIMILARITY " + predictedVal.Similarity + " PREDICTED VALUE :" + predictedVal.PredictedInput);
+                    var sdr = HelperMethods.EncodeSingleInput(userInput);
+                    var userLayerOutput = trainedCortexLayer.Compute(sdr, false) as ComputeCycle;
+                    var predictedValuesForUserInput = trainedClassifier.GetPredictedInputValues(userLayerOutput.PredictiveCells.ToArray(), 5);
+                    foreach (var predictedVal in predictedValuesForUserInput)
+                    {
+                        Console.WriteLine("SIMILARITY " + predictedVal.Similarity + " PREDICTED VALUE :" + predictedVal.PredictedInput);
+                    }
                 }
-                Console.WriteLine("TAKING USERINPUT FOR CHECKING PREDICTED PASSENGER COUNT");
+                Console.WriteLine("TAKING USERINPUT FOR CHECKING PREDICTED POWER CONSUMPTION");
                 userInput = Console.ReadLine();
             }
         }
