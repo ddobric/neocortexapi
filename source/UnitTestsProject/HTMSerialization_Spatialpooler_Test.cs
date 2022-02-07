@@ -52,6 +52,11 @@ namespace UnitTestsProject
         public SpatialPooler(HomeostaticPlasticityController homeostaticPlasticityActivator)
         {
         }
+
+        public SpatialPooler()
+        {
+        }
+
         public void SerializeSpatialPooler()
         {
             HomeostaticPlasticityController homeostaticPlasticityActivator = new HomeostaticPlasticityController();

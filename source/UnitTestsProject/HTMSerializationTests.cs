@@ -6,10 +6,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
 using NeoCortexEntities.NeuroVisualizer;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace UnitTestsProject
 {

@@ -83,6 +83,11 @@ namespace NeoCortexApi
             //Console.WriteLine($"Init time: {(float)sw.ElapsedMilliseconds / (float)1000} s");
         }
 
+        internal void SerializeSpatialPooler(StreamWriter sw)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Initialzes mini-columns, sensory input and other required lists like duty cycles and boost factors. 
         /// </summary>
