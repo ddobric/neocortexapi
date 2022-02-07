@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using static TimeSeriesSequence.Entity.HelperClasses;
 using static TimeSeriesSequence.MultiSequenceLearning;
 
 namespace TimeSeriesSequence
@@ -23,7 +24,8 @@ namespace TimeSeriesSequence
             //SequenceLearning experiment = new SequenceLearning();
             //experiment.Run();
 
-            RunMultiSimpleSequenceLearningExperiment();
+            //RunMultiSimpleSequenceLearningExperiment();
+            RunPassangerTimeSeriesSequenceExperiment();
             //RunMultiSequenceLearningExperiment();
         }
 
@@ -89,7 +91,24 @@ namespace TimeSeriesSequence
 
         private static void ProcessExistingDatafromCSVfile()
         {
-            throw new NotImplementedException();
+            List<TaxiData> taxiDatas = new List<TaxiData>();
+
+            using (StreamReader sr = new StreamReader("C:\\Users\\wcg\\Desktop\\CSV Files\\CA_CSVFiles\\CA_CSVFiles\\green_tripdata_2021-01.csv"))
+            {
+                string line = string.Empty;
+                sr.ReadLine();
+                while ((line = sr.ReadLine()) != null)
+                {
+                    string[] strRow = line.Split(','); ;
+                    TaxiData taxiData = new TaxiData();
+                    if (strRow[7] != "")
+                    {
+                        taxiData.lpep_pickup_datetime = Convert.ToDateTime(strRow[1]);
+                        taxiData.passenger_count = Convert.ToInt32(strRow[7]);
+                        taxiDatas.Add(taxiData);
+                    }
+                }
+            }
         }
 
         private static void PredictNextElement(HtmPredictionEngine predictor, double[] list)
