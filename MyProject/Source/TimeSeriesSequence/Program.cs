@@ -73,6 +73,25 @@ namespace TimeSeriesSequence
             PredictNextElement(predictor, list3);
         }
 
+        /// <summary>
+        /// Prediction of taxi passangers based on data set
+        /// </summary>
+        private static void RunPassangerTimeSeriesSequenceExperiment()
+        {
+            ProcessExistingDatafromCSVfile();
+            Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
+
+
+            MultiSequenceLearning experiment = new MultiSequenceLearning();
+            var predictor = experiment.Run(sequences);
+
+        }
+
+        private static void ProcessExistingDatafromCSVfile()
+        {
+            throw new NotImplementedException();
+        }
+
         private static void PredictNextElement(HtmPredictionEngine predictor, double[] list)
         {
             Debug.WriteLine("------------------------------");
