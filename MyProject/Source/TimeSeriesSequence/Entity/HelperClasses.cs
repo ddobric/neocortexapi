@@ -28,5 +28,10 @@ namespace TimeSeriesSequence.Entity
             public string Segment { get; set; }
             public int Passanger_count { get; set; }
         }
+        public class TaxiData
+        {
+            public DateTime lpep_pickup_datetime { get; set; }
+            public int passenger_count { get; set; }
+        }
     }
 }
