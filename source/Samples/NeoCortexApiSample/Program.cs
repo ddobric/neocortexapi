@@ -9,18 +9,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using static NeoCortexApiSample.MultiSequenceLearning;
-using NeoCortex;
-using NeoCortexApi.Utility;
-using System.IO;
-using NeoCortexApi;
-using System.Drawing;
-
 
 namespace NeoCortexApiSample
 {
     class Program
     {
-        public static bool writeOnConsole = true, drawBitmap = false;
+        public static bool writeOnConsole = false, drawBitmap = false;
         /// <summary>
         /// This sample shows a typical experiment code for SP and TM.
         /// You must start this code in debugger to follow the trace.
@@ -31,8 +25,8 @@ namespace NeoCortexApiSample
         {
             //
             // Starts experiment that demonstrates how to learn spatial patterns.
-            SpatialPatternLearning experiment = new SpatialPatternLearning();
-            experiment.Run();
+            //SpatialPatternLearning experiment = new SpatialPatternLearning();
+            //experiment.Run();
 
             //
             // Starts experiment that demonstrates how to learn spatial patterns.
@@ -40,7 +34,7 @@ namespace NeoCortexApiSample
             //experiment.Run();
 
             //RunMultiSimpleSequenceLearningExperiment();
-            RunMultiSequenceLearningExperiment();
+            //RunMultiSequenceLearningExperiment();
 
             EncodeDateTimeByHour();
             //PoweConsumptionByHour();
@@ -170,8 +164,8 @@ namespace NeoCortexApiSample
                 Console.WriteLine("--------------------------------------------------------------------------------------------------------------");
             }
 
-            if (writeOnConsole)
-                return;
+            //if (writeOnConsole)
+            //    return;
 
             Dictionary<string, int[]> sdrDict = new Dictionary<string, int[]>();
             Dictionary<string, int[]> sdrImg = new Dictionary<string, int[]>();
@@ -205,7 +199,7 @@ namespace NeoCortexApiSample
                         int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(sdrDateTime.ToArray(), (int)Math.Sqrt(sdrDateTime.ToArray().Length), (int)Math.Sqrt(sdrDateTime.ToArray().Length));
                         var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
 
-                        if(writeOnConsole)
+                        if(/*writeOnConsole*/ true)
                         {
                             Console.WriteLine("--------------------------------------------------------------------------------------------------------------");
                             Console.WriteLine($"DateTime: {key} \nSDR: {Helpers.StringifyVector(sdrDateTime.ToArray())} \nand 2D Array: ");
@@ -251,8 +245,8 @@ namespace NeoCortexApiSample
         {
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
 
-            //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 }));
-            //sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 0.0, 3.0, 3.0, 4.0, 5.0, 6.0, 5.0, 7.0, 2.0, 7.0, 1.0, 9.0, 11.0, 11.0, 10.0, 13.0, 14.0, 11.0, 7.0, 6.0, 5.0, 7.0, 6.0, 5.0, 3.0, 2.0, 3.0, 4.0, 3.0, 4.0 }));
+            sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 }));
+            sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 0.0, 3.0, 3.0, 4.0, 5.0, 6.0, 5.0, 7.0, 2.0, 7.0, 1.0, 9.0, 11.0, 11.0, 10.0, 13.0, 14.0, 11.0, 7.0, 6.0, 5.0, 7.0, 6.0, 5.0, 3.0, 2.0, 3.0, 4.0, 3.0, 4.0 }));
 
             // Prototype for building the prediction engine.
             MultiSequenceLearning experiment = new MultiSequenceLearning();
