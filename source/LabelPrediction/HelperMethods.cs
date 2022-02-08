@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace LabelPrediction
         { }
 
         /// <summary>
-        /// Reads PowerConsumption CSV file and returns it into List of Dictionary
+        /// Reads PowerConsumption CSV file and pre-processes the data and returns it into List of Dictionary
         /// </summary>
         /// <param name="csvFilePath">CSV file</param>
         /// <returns></returns>
@@ -25,34 +26,79 @@ namespace LabelPrediction
             List<Dictionary<string, string>> sequencesCollection = new List<Dictionary<string, string>>();
 
             int keyForUniqueIndexes = 0;
-            
-            if(File.Exists(csvFilePath))
+            int[] daysOfMonth = { -1, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+
+            int count = 0, maxCount = 0;
+
+            bool firstTime = true;
+
+            if (File.Exists(csvFilePath))
             {
                 using(StreamReader reader = new StreamReader(csvFilePath))
                 {
                     Dictionary<string, string> sequence = new Dictionary<string, string>();
-                    while(reader.Peek() >= 0)
+                    while (reader.Peek() >= 0)
                     {
                         var line = reader.ReadLine();
                         string[] values = line.Split(",");
 
                         keyForUniqueIndexes++;
+                        count++;
 
                         var columnDateTime = values[0];
                         var columnPower    = values[1];
 
+                        /* 
+                         * This is a bit mess. The DateTime in date set is M/d/yy h:mm or MM/dd/yy hh:mm parsing with ParseExact seemed difficult, 
+                         * reformatting to dd/MM/yy hh:mm 
+                         */
+                        string[] splitDateTime = columnDateTime.Split(" ");
+
+                        string[] date = splitDateTime[0].Split("/");
+                        int dd = int.Parse(date[1]);
+                        int MM = int.Parse(date[0]);
+                        int yy = int.Parse(date[2]);
+
+                        /* 
+                         * Parse only one month of data
+                         */
+                        if(firstTime)
+                        {
+                            maxCount = daysOfMonth[MM] * 24;
+                            firstTime = false;
+                        }
+
+                        string[] time = splitDateTime[1].Split(":");
+                        int hh = int.Parse(time[0]);
+                        int mm = int.Parse(time[1]);
+
+                        string dateTime = dd.ToString("00") + "/" + MM.ToString("00") + "/" + yy.ToString("00") + " " + hh.ToString("00") + ":" + mm.ToString("00");
+
                         if (sequence.ContainsKey(columnPower))
                         {
                             var newKey = columnPower + "," + keyForUniqueIndexes;
-                            sequence.Add(newKey, columnDateTime);
+                            sequence.Add(newKey, dateTime);
                         }
                         else
-                            sequence.Add(columnPower, columnDateTime);
+                            sequence.Add(columnPower, dateTime);
+
+                        /*
+                         * Creating multiple sequences for each month
+                         */
+                        if(count >= maxCount)
+                        {
+                            count = 0;
+                            maxCount = 0;
+                            firstTime = true;
+
+                            sequencesCollection.Add(sequence);
+
+                            sequence = new Dictionary<string, string>();
+                        }
                     }
-                    sequencesCollection.Add(sequence);
                 }
 
-                return sequencesCollection; ;
+                return sequencesCollection; 
             }
 
             return null;
@@ -139,6 +185,8 @@ namespace LabelPrediction
                     var label = keyValuePair.Key;
                     var value = keyValuePair.Value;
 
+                    string[] formats = { "MM/dd/yy hh:mm" };
+                    //DateTime dateTime = DateTime.ParseExact(value, formats, CultureInfo.InvariantCulture);
                     DateTime dateTime = DateTime.Parse(value);
                     int day = dateTime.Day;
                     int month = dateTime.Month;
