@@ -185,12 +185,13 @@ namespace NeoCortexApi.Entities
         public double MaxInibitionDensity { get; set; } = 0.5;
 
         /// <summary>
-        /// A number between 0 and 1.0, used to set a floor on how often a column should have at least
-        /// stimulusThreshold active inputs. Periodically, each column looks at the overlap duty cycle of
+        /// A number between 0 and 1.0, used to set a floor on how often a column should be activated, 
+        /// when learning spatial patterns. Periodically, each column looks at the overlap duty cycle of
         /// all other columns within its inhibition radius and sets its own internal minimal acceptable duty cycle
         /// to: minPctDutyCycleBeforeInh * max(other columns' duty cycles).
         /// On each iteration, any column whose overlap duty cycle falls below this computed value will  get
-        /// all of its permanence values boosted up by <see cref="SynPermActiveInc"/>. Raising all permanences in response
+        /// all of its permanence values boosted up by <see cref="SynPermActiveInc"/>. 
+        /// Raising all permanences in response
         /// to a sub-par duty cycle before  inhibition allows a cell to search for new inputs when either its
         /// previously learned inputs are no longer ever active, or when the vast majority of them have been
         /// "hijacked" by other columns.
@@ -230,7 +231,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Controls if bumping-up of weak columns shell be done.
         /// </summary>
-        public bool IsBumpUpWeakColumnsDisabled { get; set; } = false;
+        //public bool IsBumpUpWeakColumnsDisabled { get; set; } = false;
 
         /// <summary>
         /// Period count which is the number of cycles between updates of inhibition radius and min. duty cycles.
@@ -244,17 +245,20 @@ namespace NeoCortexApi.Entities
         public double[] OverlapDutyCycles { get; set; }
 
         /// <summary>
+        /// TODO: Should be removed to Connections class.
         /// The dense (size=numColumns) array of duty cycle stats.
         /// </summary>
         public double[] ActiveDutyCycles { get; set; }
 
         /// <summary>
         /// TODO property documentation
+        /// TODO: Should be removed to Connections class.
         /// </summary>
         public double[] MinOverlapDutyCycles { get; set; }
 
         /// <summary>
         /// TODO property documentation
+        /// TODO: Should be removed to Connections class.
         /// </summary>
         public double[] MinActiveDutyCycles { get; set; }
 
@@ -528,8 +532,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (MaxBoost != obj.MaxBoost)
                 return false;
-            if (IsBumpUpWeakColumnsDisabled != obj.IsBumpUpWeakColumnsDisabled)
-                return false;
+           
             if (UpdatePeriod != obj.UpdatePeriod)
                 return false;
             if (OverlapDutyCycles != null && this.OverlapDutyCycles != null)
@@ -638,7 +641,7 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.PredictedSegmentDecrement, writer);
             ser.SerializeValue(this.DutyCyclePeriod, writer);
             ser.SerializeValue(this.MaxBoost, writer);
-            ser.SerializeValue(this.IsBumpUpWeakColumnsDisabled, writer);
+           
             ser.SerializeValue(this.UpdatePeriod, writer);
             ser.SerializeValue(this.OverlapDutyCycles, writer);
             ser.SerializeValue(this.ActiveDutyCycles, writer);
@@ -872,7 +875,7 @@ namespace NeoCortexApi.Entities
                                     }
                                 case 5:
                                     {
-                                        htmConfig.IsBumpUpWeakColumnsDisabled = ser.ReadBoolValue(str[i]);
+                                        //htmConfig.IsBumpUpWeakColumnsDisabled = ser.ReadBoolValue(str[i]);
                                         break;
                                     }
                                 case 6:

@@ -42,7 +42,7 @@ namespace NeoCortexApi.Entities
         }
 
         /// <summary>
-        /// 
+        /// Creates the instance of the pool.
         /// </summary>
         /// <param name="size">Number of connected input neurons. These neurons define RF fo the segment, which owns this pool.</param>
         /// <param name="numInputs">Total number of input neurons.</param>

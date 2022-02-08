@@ -416,14 +416,14 @@ namespace NeoCortexApi
         /// inhibition phase, columns without such minimal number of connections, even
         /// if all the input bits they are connected to turn on, have no chance of
         /// obtaining the minimum threshold. For such columns, the permanence values
-        /// are increased until the minimum number of connections are formed.        /// 
+        /// are increased until the minimum number of connections are formed.        
         /// </summary>
         /// <param name="htmConfig"></param>
         /// <param name="permanences">An array of permanence values for a column. The array is "dense", i.e. it contains an entry for each input bit, even if the permanence value is 0.</param>
         /// <param name="potentialIndexes">The indexes of inputs in the specified <see cref="Column"/>'s pool.</param>
         public static void BoostProximalSegment(HtmConfig htmConfig, double[] permanences, int[] potentialIndexes)
         {
-            // TODO. Consider moving this condition to the initialization of teh SP.
+            // TODO. Consider moving this condition to the initialization of the SP.
             if (potentialIndexes.Length < htmConfig.StimulusThreshold)
             {
                 throw new ArgumentException("StimulusThreshold as number of required connected synapses cannot be greather than number of neurons in receptive field.");
@@ -434,7 +434,7 @@ namespace NeoCortexApi
             while (true)
             {
                 // Gets number of synapses with permanence value grather than 'SynPermConnected' = Connected Synapses.
-                int numConnected = ArrayUtils.ValueGreaterThanCountAtIndex(htmConfig.SynPermConnected, permanences, potentialIndexes);
+                int numConnected = ArrayUtils.GreaterThanAtIndex(htmConfig.SynPermConnected, permanences, potentialIndexes);
 
                 // If enough synapses are connected, all ok.
                 if (numConnected >= htmConfig.StimulusThreshold)
