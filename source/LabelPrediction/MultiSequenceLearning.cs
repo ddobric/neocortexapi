@@ -29,9 +29,11 @@ namespace LabelPrediction
             int inputBits = 100;
             int maxCycles = 15;
             int numColumns = 2048;
+            string[] sequenceFormatType = { "byMonth", "byWeek", "byDay" };
 
             Console.WriteLine("Reading CSV File..");
-            var csvData = HelperMethods.ReadPowerConsumptionDataFromCSV(PowerConsumptionCSV);
+            //var csvData = HelperMethods.ReadPowerConsumptionDataFromCSV(PowerConsumptionCSV, sequenceFormatType[0]);
+            var csvData = HelperMethods.ReadPowerConsumptionDataFromCSV(PowerConsumptionCSV_Exp, sequenceFormatType[2]);
             Console.WriteLine("Completed reading CSV File..");
 
             Console.WriteLine("Encoding data read from CSV...");

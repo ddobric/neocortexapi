@@ -21,11 +21,13 @@ namespace LabelPrediction
         /// </summary>
         /// <param name="csvFilePath">CSV file</param>
         /// <returns></returns>
-        public static List<Dictionary<string,string>> ReadPowerConsumptionDataFromCSV(string csvFilePath)
+        public static List<Dictionary<string,string>> ReadPowerConsumptionDataFromCSV(string csvFilePath, string sequenceFormat)
         {
             List<Dictionary<string, string>> sequencesCollection = new List<Dictionary<string, string>>();
 
             int keyForUniqueIndexes = 0;
+            string[] sequenceFormatType = { "byMonth", "byWeek", "byDay" };
+
             int[] daysOfMonth = { -1, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
             int count = 0, maxCount = 0;
@@ -64,7 +66,13 @@ namespace LabelPrediction
                          */
                         if(firstTime)
                         {
-                            maxCount = daysOfMonth[MM] * 24;
+                            if (sequenceFormatType[0].Equals(sequenceFormat))        /* byMonth */
+                                maxCount = daysOfMonth[MM] * 24;
+                            else if (sequenceFormatType[1].Equals(sequenceFormat))   /* byWeek  */
+                                maxCount = 7 * 24;
+                            else if (sequenceFormatType[2].Equals(sequenceFormat))   /* byDay   */
+                                maxCount = 24;
+
                             firstTime = false;
                         }
 
