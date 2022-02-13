@@ -17,7 +17,7 @@ namespace UnitTestsProject
         [TestCategory("DeSerialization")]
         public void DeserializeValueTest()
         {
-            HtmDeserializer2 htm = new HtmDeserializer2();
+            HtmDeserializer1 htm = new HtmDeserializer1();
 
             using (StreamWriter sw = new StreamWriter("ser.txt"))
             {
