@@ -176,6 +176,7 @@ namespace NeoCortexApi.Entities
         /// connected potential pools of all columns). The inhibition logic will insure that at most N columns
         /// remain ON within a local inhibition area, where N = <see cref="LocalAreaDensity"/> * (total number of columns in
         /// inhibition area).
+        /// Higher values increase similarity of inputs.
         /// </summary>
         public double LocalAreaDensity { get; set; } = -1.0;
 

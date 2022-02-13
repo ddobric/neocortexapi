@@ -634,6 +634,7 @@ namespace NeoCortexApi
         /// <param name="c"></param>
         public virtual void BumpUpWeakColumns(Connections c)
         {
+            // Get columns with too low overlap.
             var weakColumns = c.HtmConfig.Memory.Get1DIndexes().Where(i => c.HtmConfig.OverlapDutyCycles[i] < c.HtmConfig.MinOverlapDutyCycles[i]).ToArray();
 
             for (int i = 0; i < weakColumns.Length; i++)
@@ -884,6 +885,7 @@ namespace NeoCortexApi
                 }
             }
 
+            //return winners.OrderBy(w=>w).Take((int)mem.HtmConfig.NumActiveColumnsPerInhArea).ToArray();
             return winners.ToArray();
         }
 
