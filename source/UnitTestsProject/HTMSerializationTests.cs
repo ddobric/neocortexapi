@@ -779,6 +779,7 @@ namespace UnitTestsProject
                 Assert.IsTrue(htm1.Equals(htm));
             }
         }
+        // deserializer partial memory
         /// <summary>
         /// Test integer value.
         /// </summary>
@@ -852,9 +853,11 @@ namespace UnitTestsProject
                 dict.Serialize(sw);
             }
         }
+       
 
-        #region Serialization SparseObjectMatrix<T>
 
-        #endregion
+        
     }
+    
 }
+
