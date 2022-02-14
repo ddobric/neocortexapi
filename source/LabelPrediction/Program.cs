@@ -10,14 +10,14 @@ namespace LabelPrediction
             /// Predict Power consumption using Multisequence Learning
             /// </summary>
 
-            Console.WriteLine("Press any key to continue");
-            Console.ReadKey();
+            //Console.WriteLine("Press any key to continue");
+            //Console.ReadKey();
 
             Console.WriteLine("Starting to learn power comsumption data");
 
             MultiSequenceLearning mseq = new MultiSequenceLearning();
 
-            mseq.StartLearning();
+            mseq.StartExperiment();
 
 
 

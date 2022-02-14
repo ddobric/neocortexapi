@@ -38,6 +38,7 @@ namespace LabelPrediction
             {
                 using(StreamReader reader = new StreamReader(csvFilePath))
                 {
+                    // [Power, "MM/10 SEG"]
                     Dictionary<string, string> sequence = new Dictionary<string, string>();
                     while (reader.Peek() >= 0)
                     {
@@ -175,7 +176,7 @@ namespace LabelPrediction
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static List<Dictionary<string, int[]>> EncodePowerConsumptionData(List<Dictionary<string,string>> data)
+        public static List<Dictionary<string, int[]>> EncodePowerConsumptionData(List<Dictionary<string,string>> data, bool trace = false)
         {
             List<Dictionary<string,int[]>> listOfSDR = new List<Dictionary<string,int[]>>();
 
@@ -203,13 +204,16 @@ namespace LabelPrediction
 
                     int[] sdr = new int[0];
 
-                    sdr = sdr.Concat(dayEncoder.Encode(day)).ToArray();
-                    sdr = sdr.Concat(monthEncoder.Encode(month)).ToArray();
                     sdr = sdr.Concat(yearEncoder.Encode(year)).ToArray();
+                    sdr = sdr.Concat(monthEncoder.Encode(month)).ToArray();
+                    sdr = sdr.Concat(dayEncoder.Encode(day)).ToArray();
                     sdr = sdr.Concat(hourEncoder.Encode(hour)).ToArray();
+
+                    //logger.WriteInformation(Helpers.StringifyVector(sdr));
 
                     tempDic.Add(label, sdr);
                 }
+                
                 listOfSDR.Add(tempDic);
             }
 

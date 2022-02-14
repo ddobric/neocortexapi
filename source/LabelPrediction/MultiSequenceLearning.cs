@@ -24,31 +24,55 @@ namespace LabelPrediction
             //needs no implementation
         }
 
-        public void StartLearning()
+        public void StartExperiment()
         {
             int inputBits = 100;
             int maxCycles = 15;
             int numColumns = 2048;
             string[] sequenceFormatType = { "byMonth" /* 720 */, "byWeek" /* 168 */, "byDay" /* 24 */};
 
+            List<Dictionary<string, int[]>> encodedData;
+            EncoderBase encoderDateTime;
+            CortexLayer<object, object> trainedCortexLayer;
+            HtmClassifier<string, ComputeCycle> trainedClassifier;
+
+            PrepareTrainingData(sequenceFormatType, out encodedData, out encoderDateTime);
+
+            RunTraining(inputBits, maxCycles, numColumns, encodedData, encoderDateTime, out trainedCortexLayer, out trainedClassifier);
+
+            RunPrediction(trainedCortexLayer, trainedClassifier);
+        }
+
+        private static void PrepareTrainingData(string[] sequenceFormatType, out List<Dictionary<string, int[]>> encodedData, out EncoderBase encoderDateTime)
+        {
             Console.WriteLine("Reading CSV File..");
             //var csvData = HelperMethods.ReadPowerConsumptionDataFromCSV(PowerConsumptionCSV, sequenceFormatType[0]);
             var csvData = HelperMethods.ReadPowerConsumptionDataFromCSV(PowerConsumptionCSV_Exp, sequenceFormatType[2]);
             Console.WriteLine("Completed reading CSV File..");
 
             Console.WriteLine("Encoding data read from CSV...");
-            var encodedData = HelperMethods.EncodePowerConsumptionData(csvData);
+            encodedData = HelperMethods.EncodePowerConsumptionData(csvData, true);
+            encoderDateTime = HelperMethods.FetchDateTimeEncoder();
+        }
 
-            EncoderBase encoderDateTime = HelperMethods.FetchDateTimeEncoder();
-
+        private void RunTraining(int inputBits, int maxCycles, int numColumns, List<Dictionary<string, int[]>> encodedData, EncoderBase encoderDateTime, out CortexLayer<object, object> trainedCortexLayer, out HtmClassifier<string, ComputeCycle> trainedClassifier)
+        {
             Console.WriteLine("Started Learning...");
-            var trainedHTMmodel = Run(inputBits, maxCycles, numColumns, encoderDateTime, encodedData);
-            var trainedCortexLayer = trainedHTMmodel.Keys.ElementAt(0);
-            var trainedClassifier  = trainedHTMmodel.Values.ElementAt(0);
-            Console.WriteLine("Done Learning");
 
+            // ???
+            var trainedHTMmodel = Run(inputBits, maxCycles, numColumns, encoderDateTime, encodedData);
+
+
+            trainedCortexLayer = trainedHTMmodel.Keys.ElementAt(0);
+            trainedClassifier = trainedHTMmodel.Values.ElementAt(0);
+            Console.WriteLine("Done Learning");
+        }
+
+        private static void RunPrediction(CortexLayer<object, object> trainedCortexLayer, HtmClassifier<string, ComputeCycle> trainedClassifier)
+        {
             Debug.WriteLine("PLEASE ENTER DATE FOR PREDICTING POWER CONSUMPTION:      *note format->dd/mm/yy hh:00");
             Console.WriteLine("PLEASE ENTER DATE FOR PREDICTING POWER CONSUMPTION:      *note format->dd/mm/yy hh:00");
+
             var userInput = Console.ReadLine();
 
             while (!userInput.Equals("q") && userInput != "Q")
@@ -180,27 +204,24 @@ namespace LabelPrediction
                 {
                     List<string> ElementWiseClasses = new List<string>();
 
-                    int ElementMatches = 0;
+                    int elementMatches = 0;
 
                     foreach (var Elements in sequence)
                     {
                         var observationLabel = Elements.Key;
-                        // ELEMENT SDR LIST FOR A SINGLE SEQUENCE
-                        var ElementSdr = Elements.Value;
-
-                        List<Cell> actCells = new List<Cell>();
+                 
                         var lyrOut = new ComputeCycle();
 
-                        lyrOut = layer1.Compute(ElementSdr, learn) as ComputeCycle;
+                        lyrOut = layer1.Compute(Elements.Value, learn) as ComputeCycle;
                         Debug.WriteLine(string.Join(',', lyrOut.ActivColumnIndicies));
 
-                        actCells = (lyrOut.ActiveCells.Count == lyrOut.WinnerCells.Count) ? lyrOut.ActiveCells : lyrOut.WinnerCells;
+                        List<Cell>  actCells = (lyrOut.ActiveCells.Count == lyrOut.WinnerCells.Count) ? lyrOut.ActiveCells : lyrOut.WinnerCells;
 
                         cls.Learn(observationLabel, actCells.ToArray());
 
                         if (lastPredictedValue == observationLabel && lastPredictedValue != "")
                         {
-                            ElementMatches++;
+                            elementMatches++;
                             Debug.WriteLine($"Match. Actual value: {observationLabel} - Predicted value: {lastPredictedValue}");
                         }
                         else
@@ -224,7 +245,6 @@ namespace LabelPrediction
                             foreach (var t in predictedInputValue)
                             {
 
-
                                 if (t.Similarity >= (double)50.00)
                                 {
                                     Debug.WriteLine($"Predicted Input: {string.Join(", ", t.PredictedInput)},\tSimilarity Percentage: {string.Join(", ", t.Similarity)}, \tNumber of Same Bits: {string.Join(", ", t.NumOfSameBits)}");
@@ -236,7 +256,7 @@ namespace LabelPrediction
                         }
                     }
 
-                    accuracy = ((double)ElementMatches / (sequence.Count)) * 100;
+                    accuracy = ((double)elementMatches / (sequence.Count)) * 100;
                     Debug.WriteLine($"Cycle : {i} \t Accuracy:{accuracy}");
                     tempLOGGRAPH.Add(i, accuracy);
                     if (accuracy == 100)
@@ -292,7 +312,7 @@ namespace LabelPrediction
             //*****************
 
             DateTime now = DateTime.Now;
-            string filename = now.ToString("g");
+            string filename = now.ToString("g"); //
 
             filename = "PowwerConsumptionPredictionExperiment" + filename.Split(" ")[0] + "_" + now.Ticks.ToString() + ".txt";
             string path = System.AppDomain.CurrentDomain.BaseDirectory + "\\TrainingLogs\\" + filename;
