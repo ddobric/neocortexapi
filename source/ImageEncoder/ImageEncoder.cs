@@ -133,8 +133,16 @@ namespace NeoCortexApi.Encoders
             return imageBinarizer.GetArrayBinary();
         }
 
-
-
+        /// <summary>
+        /// This method enables running in the network.
+        /// </summary>
+        /// <param name="inputData"></param>
+        /// <param name="learn"></param>
+        /// <returns></returns>
+        public int[] Compute(object inputData, bool learn)
+        {
+            return Encode(inputData);
+        }
         #endregion
 
         #region Private Methods
