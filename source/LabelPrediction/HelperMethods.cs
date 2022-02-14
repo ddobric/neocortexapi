@@ -140,7 +140,7 @@ namespace LabelPrediction
                 // Used by punishing of segments.
                 PredictedSegmentDecrement = 0.1,
 
-                NumInputs = 88
+                //NumInputs = 88
             };
 
             return cfg;

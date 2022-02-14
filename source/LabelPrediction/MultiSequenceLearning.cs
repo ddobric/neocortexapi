@@ -29,7 +29,7 @@ namespace LabelPrediction
             int inputBits = 100;
             int maxCycles = 15;
             int numColumns = 2048;
-            string[] sequenceFormatType = { "byMonth", "byWeek", "byDay" };
+            string[] sequenceFormatType = { "byMonth" /* 720 */, "byWeek" /* 168 */, "byDay" /* 24 */};
 
             Console.WriteLine("Reading CSV File..");
             //var csvData = HelperMethods.ReadPowerConsumptionDataFromCSV(PowerConsumptionCSV, sequenceFormatType[0]);
@@ -47,8 +47,8 @@ namespace LabelPrediction
             var trainedClassifier  = trainedHTMmodel.Values.ElementAt(0);
             Console.WriteLine("Done Learning");
 
-            Debug.WriteLine("PLEASE ENTER DATE FOR PREDICTING POWER CONSUMPTION:      *note format->dd-mm-yyyy hh:00");
-            Console.WriteLine("PLEASE ENTER DATE FOR PREDICTING POWER CONSUMPTION:      *note format->dd-mm-yyyy hh:00");
+            Debug.WriteLine("PLEASE ENTER DATE FOR PREDICTING POWER CONSUMPTION:      *note format->dd/mm/yy hh:00");
+            Console.WriteLine("PLEASE ENTER DATE FOR PREDICTING POWER CONSUMPTION:      *note format->dd/mm/yy hh:00");
             var userInput = Console.ReadLine();
 
             while (!userInput.Equals("q") && userInput != "Q")
@@ -63,7 +63,7 @@ namespace LabelPrediction
                         Console.WriteLine("SIMILARITY " + predictedVal.Similarity + " PREDICTED VALUE :" + predictedVal.PredictedInput);
                     }
                 }
-                Console.WriteLine("TAKING USERINPUT FOR CHECKING PREDICTED POWER CONSUMPTION");
+                Console.WriteLine("PLEASE ENTER DATE FOR PREDICTING POWER CONSUMPTION:      *note format->dd/mm/yy hh:00");
                 userInput = Console.ReadLine();
             }
         }
