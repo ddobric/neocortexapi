@@ -6,10 +6,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
 using NeoCortexEntities.NeuroVisualizer;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace UnitTestsProject
 {
@@ -487,6 +483,7 @@ namespace UnitTestsProject
             int[] inputDims = { 3, 4, 5 };
             int[] columnDims = { 35, 43, 52 };
             HtmConfig cfg = new HtmConfig(inputDims, columnDims);
+            
             Connections connections = new Connections(cfg);
 
             Cell cells = new Cell(12, 14, 16, 18, new CellActivity());
@@ -862,28 +859,9 @@ namespace UnitTestsProject
 
         #endregion
 
-        private bool IsEqual(object obj1, object obj2)
+        [Obsolete(" We have moved this method to HtmSerializer2.")]
+        internal static bool IsEqual(object obj1, object obj2)
         {
-            const System.Reflection.BindingFlags bindingAttr = System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
-
-            var props1 = obj1.GetType().GetProperties(bindingAttr);
-
-            foreach (var prop1 in props1)
-            {
-                var prop2 = obj1.GetType().GetProperty(prop1.Name);
-                if (prop2.GetType().IsClass)
-                {
-                    if (!IsEqual(prop1, prop2))
-                        throw new Exception("todo/..");
-                }
-
-                if (prop1.GetValue(obj2) != prop2.GetValue(obj1))
-                    throw new Exception("todo.");
-            }
-
-            var fields = obj1.GetType().GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-
-
             return false;
         }
     }

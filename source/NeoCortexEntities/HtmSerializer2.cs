@@ -761,9 +761,33 @@ namespace NeoCortexApi.Entities
             }
             sw.Write(ParameterDelimiter);
         }
-        
-        
-        
+
+
+        internal static bool IsEqual(object obj1, object obj2)
+        {
+            const System.Reflection.BindingFlags bindingAttr = System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+
+            var props1 = obj1.GetType().GetProperties(bindingAttr);
+
+            foreach (var prop1 in props1)
+            {
+                var prop2 = obj1.GetType().GetProperty(prop1.Name);
+                if (prop2.GetType().IsClass)
+                {
+                    if (!IsEqual(prop1, prop2))
+                        throw new Exception("todo/..");
+                }
+
+                if (prop1.GetValue(obj2) != prop2.GetValue(obj1))
+                    throw new Exception("todo.");
+            }
+
+            var fields = obj1.GetType().GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+
+
+            return false;
+        }
+
     }
 
 }
