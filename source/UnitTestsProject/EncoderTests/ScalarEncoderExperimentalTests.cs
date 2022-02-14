@@ -591,11 +591,11 @@ namespace UnitTestsProject.EncoderTests
 
                     sdrDict.Add(key, sdrDayTime.ToArray());
 
-                    var str =Helpers.StringifyVector(sdrDayTime.ToArray());
+                    var str = Helpers.StringifyVector(sdrDayTime.ToArray());
 
                     //int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(sdrDayTime.ToArray(), (int)Math.Sqrt(sdrDayTime.ToArray().Length), (int)Math.Sqrt(sdrDayTime.ToArray().Length));
                     //var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
-                    
+
                     //NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, Path.Combine(folderName, $"{key}.jpg"), Color.Black, Color.Gray, text: $"{day}-{hour}".ToString());
                 }
             }
@@ -603,7 +603,7 @@ namespace UnitTestsProject.EncoderTests
             Console.WriteLine("\nDay-Time");
 
             Console.WriteLine(Helpers.TraceSimilarities(sdrDict));
-        
+
             PrintBitMap(timeEncoder, nameof(ScalarEncodingTest));
 
         }
@@ -621,19 +621,19 @@ namespace UnitTestsProject.EncoderTests
             string filename;
             Directory.CreateDirectory(folderName);
             Dictionary<string, int[]> sdrMap = new Dictionary<string, int[]>();
-      
-            List<string> inputValues = new List<string>();  
+
+            List<string> inputValues = new List<string>();
 
             for (double i = (long)encoder.MinVal; i < (long)encoder.MaxVal; i++)
             {
                 string key;
 
                 inputValues.Add(key = getKey(i));
-                
+
                 var encodedInput = encoder.Encode(i);
 
-                sdrMap.Add(key, ArrayUtils.IndexWhere(encodedInput, (el) => el == 1)); 
-               
+                sdrMap.Add(key, ArrayUtils.IndexWhere(encodedInput, (el) => el == 1));
+
                 int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(encodedInput, (int)Math.Sqrt(encodedInput.Length), (int)Math.Sqrt(encodedInput.Length));
                 var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
                 filename = i + ".png";
@@ -644,7 +644,7 @@ namespace UnitTestsProject.EncoderTests
             var similarities = MathHelpers.CalculateSimilarityMatrix(sdrMap);
 
             var results = Helpers.RenderSimilarityMatrix(inputValues, similarities);
-            
+
             Debug.Write(results);
             Debug.WriteLine("");
         }
