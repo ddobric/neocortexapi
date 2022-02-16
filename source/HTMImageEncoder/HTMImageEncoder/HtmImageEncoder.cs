@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using Daenet.ImageBinarizerLib.Entities;
+﻿using Daenet.ImageBinarizerLib.Entities;
 using Daenet.ImageBinarizerLib;
-using System.IO;
 using SkiaSharp;
 using NeoCortexApi.Encoders;
-using System;
 
 namespace ImageEncoderLib
 {
