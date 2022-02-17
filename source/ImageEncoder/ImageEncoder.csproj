@@ -8,13 +8,13 @@
 
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 
-    <PackageId>ImageEncoderLib</PackageId>
+    <PackageId>HtmImageEncoder</PackageId>
 
     <Version>1.0.0</Version>
 
     <Authors>Toan Thanh Truong</Authors>
 
-    <Product>ImageEncoderLib</Product>
+    <Product>HtmImageEncoder</Product>
 
     <Description>Package that extends NeocortexApi to work with images through ImageEncoder</Description>
 
@@ -29,10 +29,7 @@
 
   <ItemGroup>
     <PackageReference Include="ImageBinarizer" Version="1.5.6" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\NeoCortexApi\NeoCortexApi.csproj" />
+    <PackageReference Include="NeoCortexApi" Version="1.1.2" />
   </ItemGroup>
 
 </Project>
