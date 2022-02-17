@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
-using ImageEncoderLib;
+using HtmImageEncoder;
 namespace NeoCortexApi.Encoders
 {
     [TestClass]
