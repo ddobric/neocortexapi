@@ -18,10 +18,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ImageEncoderTest\**" />
     <Compile Remove="MnistTestImages\**" />
     <Compile Remove="Output\**" />
+    <EmbeddedResource Remove="ImageEncoderTest\**" />
     <EmbeddedResource Remove="MnistTestImages\**" />
     <EmbeddedResource Remove="Output\**" />
+    <None Remove="ImageEncoderTest\**" />
     <None Remove="MnistTestImages\**" />
     <None Remove="Output\**" />
   </ItemGroup>
@@ -33,7 +36,6 @@
 
   <ItemGroup>
     <PackageReference Include="DotNetActors" Version="1.0.3" />
-    <PackageReference Include="ImageBinarizer" Version="1.5.6" />
     <PackageReference Include="IronXL.Excel" Version="2020.12.2" />
     <PackageReference Include="LearningApi" Version="1.3.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="5.0.0" />
@@ -49,7 +51,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ImageEncoder\ImageEncoder.csproj" />
     <ProjectReference Include="..\NeoCortexApi.Parallel\NeoCortexApi.Parallel.csproj" />
     <ProjectReference Include="..\NeoCortexApi\NeoCortexApi.csproj" />
     <ProjectReference Include="..\NeoCortexArrayLib\NeoCortexArrayLib.csproj" />

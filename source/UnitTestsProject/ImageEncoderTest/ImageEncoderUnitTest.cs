@@ -8,7 +8,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using HtmImageEncoder;
-namespace NeoCortexApi.Encoders
+using NeoCortexApi;
+
+namespace ImageEncoderTest
 {
     [TestClass]
     public class ImageEncoderUnitTest

@@ -32,8 +32,4 @@
     <PackageReference Include="NeoCortexApi" Version="1.1.2" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\NeoCortexApi\NeoCortexApi.csproj" />
-  </ItemGroup>
-
 </Project>
