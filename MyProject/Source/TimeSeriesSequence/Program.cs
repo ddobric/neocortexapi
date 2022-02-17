@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using System.Reflection;
+using System.Text;
 using static TimeSeriesSequence.Entity.HelperClasses;
 using static TimeSeriesSequence.MultiSequenceLearning;
 
@@ -92,8 +94,10 @@ namespace TimeSeriesSequence
         private static void ProcessExistingDatafromCSVfile()
         {
             List<TaxiData> taxiDatas = new List<TaxiData>();
+            string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"DataSet\2021_Green.csv");
 
-            using (StreamReader sr = new StreamReader("C:\\Users\\wcg\\Desktop\\CSV Files\\CA_CSVFiles\\CA_CSVFiles\\green_tripdata_2021-01.csv"))
+
+            using (StreamReader sr = new StreamReader(path))
             {
                 string line = string.Empty;
                 sr.ReadLine();
@@ -109,6 +113,15 @@ namespace TimeSeriesSequence
                     }
                 }
             }
+            StringBuilder csvcontent = new StringBuilder();
+            csvcontent.AppendLine("lpep_pickup_datetime, passenger_count");
+            foreach (var taxiData in taxiDatas)
+            {
+                var newLine = string.Format("{0},{1}", taxiData.lpep_pickup_datetime, taxiData.passenger_count);
+                csvcontent.AppendLine(newLine);
+            }
+            string csvpath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"DataSet\2021_Green_Processed.csv");
+            File.AppendAllText(csvpath, csvcontent.ToString());
         }
 
         private static void PredictNextElement(HtmPredictionEngine predictor, double[] list)
