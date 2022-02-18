@@ -82,22 +82,23 @@ namespace TimeSeriesSequence
         /// </summary>
         private static void RunPassangerTimeSeriesSequenceExperiment()
         {
+            //Read the taxi data set and write into new processed csv with reuired column
             ProcessExistingDatafromCSVfile();
+
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
-
-
             MultiSequenceLearning experiment = new MultiSequenceLearning();
             var predictor = experiment.Run(sequences);
 
         }
-
+        /// <summary>
+        /// Read the datas from taxi data set and process it
+        /// </summary>
         private static void ProcessExistingDatafromCSVfile()
         {
             List<TaxiData> taxiDatas = new List<TaxiData>();
-            string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"DataSet\2021_Green.csv");
+            string path = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, @"DataSet\");
 
-
-            using (StreamReader sr = new StreamReader(path))
+            using (StreamReader sr = new StreamReader(path + "2021_Green.csv"))
             {
                 string line = string.Empty;
                 sr.ReadLine();
@@ -113,6 +114,17 @@ namespace TimeSeriesSequence
                     }
                 }
             }
+
+            CreateProcessedCSVFile(taxiDatas, path);
+        }
+
+        /// <summary>
+        /// Create the processed CSV file with required column
+        /// </summary>
+        /// <param name="taxiDatas"></param>
+        /// <param name="path"></param>
+        private static void CreateProcessedCSVFile(List<TaxiData> taxiDatas, string path)
+        {
             StringBuilder csvcontent = new StringBuilder();
             csvcontent.AppendLine("lpep_pickup_datetime, passenger_count");
             foreach (var taxiData in taxiDatas)
@@ -120,8 +132,15 @@ namespace TimeSeriesSequence
                 var newLine = string.Format("{0},{1}", taxiData.lpep_pickup_datetime, taxiData.passenger_count);
                 csvcontent.AppendLine(newLine);
             }
-            string csvpath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"DataSet\2021_Green_Processed.csv");
-            File.AppendAllText(csvpath, csvcontent.ToString());
+
+            // Delete the existing file to avoid duplicate records.
+            if (File.Exists(path + "2021_Green_Processed"))
+            {
+                File.Delete(path + "2021_Green_Processed");
+            }
+
+            // Save processed CSV data
+            File.AppendAllText(path + "2021_Green_Processed", csvcontent.ToString());
         }
 
         private static void PredictNextElement(HtmPredictionEngine predictor, double[] list)
