@@ -7,9 +7,11 @@ using static TimeSeriesSequence.Entity.HelperClasses;
 
 namespace TimeSeriesSequence
 {
-    public class HelperMethods
+    public static class HelperMethods
     {
-        List<Slot> timeSlots = new List<Slot>
+        public static List<Slot> GetSlots()
+        {
+            List<Slot> timeSlots = new List<Slot>
             {
                new Slot { Segment="00", StartTime=new TimeSpan(0,0,0), EndTime= new TimeSpan(0,59,59) },
                new Slot { Segment="01", StartTime=new TimeSpan(1,0,0), EndTime= new TimeSpan(1,59,59) },
@@ -36,5 +38,8 @@ namespace TimeSeriesSequence
                new Slot { Segment="22", StartTime=new TimeSpan(22,0,0), EndTime= new TimeSpan(22,59,59) },
                new Slot { Segment="23", StartTime=new TimeSpan(23,0,0), EndTime= new TimeSpan(23,59,59) },
             };
+
+            return timeSlots;
+        }  
     }
 }
