@@ -125,24 +125,66 @@ namespace TimeSeriesSequence
         /// <param name="path"></param>
         private static void CreateProcessedCSVFile(List<TaxiData> taxiDatas, string path)
         {
-            StringBuilder csvcontent = new StringBuilder();
-            csvcontent.AppendLine("lpep_pickup_datetime, passenger_count");
-            foreach (var taxiData in taxiDatas)
+            List<ProcessedData> processedTaxiDatas = new List<ProcessedData>();
+
+            foreach (var item in taxiDatas)
             {
-                var newLine = string.Format("{0},{1}", taxiData.lpep_pickup_datetime, taxiData.passenger_count);
+                var pickupTime = item.lpep_pickup_datetime.ToString("HH:mm");
+                Slot result = GetSlot(pickupTime, HelperMethods.GetSlots());
+
+                ProcessedData processedData = new ProcessedData();
+                processedData.Date = item.lpep_pickup_datetime.Date;
+                processedData.TimeSpan = result.StartTime.ToString() + " - " + result.EndTime.ToString();
+                processedData.Segment = result.Segment;
+                processedData.Passanger_count = item.passenger_count;
+                processedTaxiDatas.Add(processedData);
+            }
+
+            var accumulatedPassangerData = processedTaxiDatas.GroupBy(c => new
+            {
+                c.Date,
+                c.Segment
+            }).Select(
+                        g => new
+                        {
+                            Date = g.First().Date,
+                            TimeSpan = g.First().TimeSpan,
+                            Segment = g.First().Segment,
+                            Passsanger_Count = g.Sum(s => s.Passanger_count),
+                        }).ToList();
+
+
+            StringBuilder csvcontent = new StringBuilder();
+            csvcontent.AppendLine("Pickup_Date,TimeSpan,Segment,Passenger_count");
+            foreach (var taxiData in accumulatedPassangerData)
+            {
+                var newLine = string.Format("{0},{1},{2},{3}", taxiData.Date, taxiData.TimeSpan, taxiData.Segment, taxiData.Passsanger_Count);
                 csvcontent.AppendLine(newLine);
             }
 
             // Delete the existing file to avoid duplicate records.
-            if (File.Exists(path + "2021_Green_Processed"))
+            if (File.Exists(path + "2021_Green_Processed.csv"))
             {
-                File.Delete(path + "2021_Green_Processed");
+                File.Delete(path + "2021_Green_Processed.csv");
             }
 
             // Save processed CSV data
-            File.AppendAllText(path + "2021_Green_Processed", csvcontent.ToString());
+            File.AppendAllText(path + "2021_Green_Processed.csv", csvcontent.ToString());
         }
 
+        /// <summary>
+        /// Get the slot based on pick up time
+        /// </summary>
+        /// <param name="pickupTime"></param>
+        /// <param name="timeSlots"></param>
+        /// <returns></returns>
+        private static Slot GetSlot(string pickupTime, List<Slot> timeSlots)
+        {
+            var time = TimeSpan.Parse(pickupTime);
+            Slot slots = timeSlots.FirstOrDefault(x => x.EndTime >= time && x.StartTime <= time);
+
+            return slots;
+        }
         private static void PredictNextElement(HtmPredictionEngine predictor, double[] list)
         {
             Debug.WriteLine("------------------------------");
