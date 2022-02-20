@@ -158,7 +158,6 @@ namespace NeoCortexApi
 
         /// <summary>
         /// Calculate the active cells, using the current active columns and dendrite segments. Grow and reinforce synapses.
-        /// 
         /// <para>
         /// Pseudocode:<br/>
         ///   for each column<br/>
