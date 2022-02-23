@@ -1,6 +1,6 @@
 # Temporal Memory
 
-Temporal memory is an algorithm which learns sequences of Sparse Distributed Representations (SDRs) formed by the Spatial Pooling algorithm, and makes predictions of what the next input SDR will be. ([reference](https://numenta.com/resources/biological-and-machine-intelligence/temporal-memory-algorithm/))
+Temporal memory is an algorithm which learns sequences of Sparse Distributed Representations (SDRs) formed by the Spatial Pooling algorithm, and makes predictions of what the next input SDR will be.
 
 Temporal memory alogirithm's input is the active columns output of Spatial Pooler algorithm.
 
@@ -34,16 +34,13 @@ public void TemporalMemoryInit()
 }
 ```
 
-Similar to Spatial Pooler, Temporal memory has a same method to calculate the output SDR: `tm.Compute(int[] activeColumns, bool learn)`. This method takes the result of active columns in the stable output SDR from the Spatial Pooler (training is off) with learning option to produce a `ComputeCycle` object which holds the information of winner cells and predictive cells.
+Similar to Spatial Pooler, Temporal memory has a same method to calculate the output [SDR](./SdrRepresentation.md): `tm.Compute(int[] activeColumns, bool learn)`. This method takes the result of active columns in the stable output SDR from the Spatial Pooler (training is off) with learning option to produce a `ComputeCycle` object which holds the information of winner cells and predictive cells.
 
 ```cs
 public ComputeCycle Compute(int[] activeColumns, bool learn)
-{
-    ...
-}
 ```
 
-Temporal Memory algorithm predicts what the next input SDR will be based on sequences of Sparse Distributed Representations (SDRs) produced by the Spatial Pooling algorithm. Each column in the SDR consists of many cells. Each cell can have three states: active, predictive, and inactive. These cells should have one proximal segment and many distal dendrite segments. The proximal segment is the connection of its the column and several bits in the input space. The distal dendrite segments represent the connection of the cell to nearby cells. When a certain input is fed into the HTM system with no prior state or there is no context of the input, every cell in the active column is active. This is called bursting (see Fig.1). With the prior state, the algorithm will choose winner cell for each column based on the context of the previous input. From these winner cells, other cells will have the predictive state when the connections to the current active cells in the distal segment of those cells reach a certain value of ACTIVATION_THRESHOLD.
+Temporal Memory algorithm predicts what the next input SDR will be based on sequences of Sparse Distributed Representations (SDRs) produced by the Spatial Pooling algorithm. Each column in the SDR consists of many cells. Each cell can have three states: active, predictive, and inactive. These cells should have one proximal segment and many distal dendrite segments. The proximal segment is the connection of its the column and several bits in the input space. The distal dendrite segments represent the connection of the cell to nearby cells. When a certain input is fed into the HTM system with no prior state or there is no context of the input, every cell in the active column is active. This is called bursting (see **Fig.1**). With the prior state, the algorithm will choose winner cell for each column based on the context of the previous input. From these winner cells, other cells will have the predictive state when the connections to the current active cells in the distal segment of those cells reach a certain value of ACTIVATION_THRESHOLD.
 
 <figure>
 <p align="center">
@@ -146,7 +143,7 @@ PredictNextElement(predictor, list2);
 predictor.Reset();
 PredictNextElement(predictor, list3);
 ```
-It will predict which sequence that the value belong to and which value is likely to come after that. The result is recorded in the Debug console.
+It will predict which sequence that the value belong to and which value is likely to come after that. The result is logged in the Debug console.
 ```cs
 private static void PredictNextElement(HtmPredictionEngine predictor, double[] list)
 {
@@ -205,8 +202,6 @@ foreach (var sequenceKeyPair in sequences)
 In every cycle, single value from the sequence is sequentially presented to the algorithm by calling `layer1.Compute(input, true) as ComputeCycle`. 
 
 ```cs
-//
-// Now training with SP+TM. SP is pretrained on the given input pattern set.
 for (int i = 0; i < maxCycles; i++)
 {
     matches = 0;
@@ -247,7 +242,6 @@ The number of match prediction is also documented
 After each learning cycle, the learning accuracy is calulated. Based on this result, the learning cycle will be ended early if the algorithm successfully predict the input for at least 30 cycles consecutively.
 Otherwise, the algorithm will be performed until the maximum cycle is reached and the predictor from such case is unstable and cannot be used for the prediction process. This is hardly the case as the cycle limit is usually a large number (at least 1000).
 ```cs
-...
 if (accuracy >= maxPossibleAccuraccy)
 {
     maxMatchCnt++;
@@ -262,6 +256,4 @@ if (accuracy >= maxPossibleAccuraccy)
         break;
     }
 }
-
-...
 ```
