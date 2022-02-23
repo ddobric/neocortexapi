@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using static TimeSeriesSequence.Entity.HelperClasses;
@@ -16,66 +17,8 @@ namespace TimeSeriesSequence
         /// <param name="args"></param>
         static void Main(string[] args)
         {
-            //
-            // Starts experiment that demonstrates how to learn spatial patterns.
-            //SpatialPatternLearning experiment = new SpatialPatternLearning();
-            //experiment.Run();
-
-            //
-            // Starts experiment that demonstrates how to learn spatial patterns.
-            //SequenceLearning experiment = new SequenceLearning();
-            //experiment.Run();
-
-            //RunMultiSimpleSequenceLearningExperiment();
             RunPassangerTimeSeriesSequenceExperiment();
-            //RunMultiSequenceLearningExperiment();
-        }
-
-        private static void RunMultiSimpleSequenceLearningExperiment()
-        {
-            Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
-
-            sequences.Add("S1", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, }));
-            sequences.Add("S2", new List<double>(new double[] { 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 }));
-
-            //
-            // Prototype for building the prediction engine.
-            MultiSequenceLearning experiment = new MultiSequenceLearning();
-            //var predictor = experiment.Run(sequences);
-
-            experiment.RunPowerPredictionExperiment();
-
-        }
-
-
-        private static void RunMultiSequenceLearningExperiment()
-        {
-            Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
-
-            //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 }));
-            //sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 0.0, 3.0, 3.0, 4.0, 5.0, 6.0, 5.0, 7.0, 2.0, 7.0, 1.0, 9.0, 11.0, 11.0, 10.0, 13.0, 14.0, 11.0, 7.0, 6.0, 5.0, 7.0, 6.0, 5.0, 3.0, 2.0, 3.0, 4.0, 3.0, 4.0 }));
-
-            sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, }));
-            sequences.Add("S2", new List<double>(new double[] { 8.0, 1.0, 2.0, 9.0, 10.0, 7.0, 11.00 }));
-
-            //
-            // Prototype for building the prediction engine.
-            MultiSequenceLearning experiment = new MultiSequenceLearning();
-            var predictor = experiment.Run(sequences);
-
-            var list1 = new double[] { 1.0, 2.0, 3.0 };
-            var list2 = new double[] { 2.0, 3.0, 4.0 };
-            var list3 = new double[] { 8.0, 1.0, 2.0 };
-
-            predictor.Reset();
-            PredictNextElement(predictor, list1);
-
-            predictor.Reset();
-            PredictNextElement(predictor, list2);
-
-            predictor.Reset();
-            PredictNextElement(predictor, list3);
-        }
+        } 
 
         /// <summary>
         /// Prediction of taxi passangers based on data set
@@ -83,17 +26,19 @@ namespace TimeSeriesSequence
         private static void RunPassangerTimeSeriesSequenceExperiment()
         {
             //Read the taxi data set and write into new processed csv with reuired column
-            ProcessExistingDatafromCSVfile();
+            var taxiData =  ProcessExistingDatafromCSVfile();
 
-            Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
-            MultiSequenceLearning experiment = new MultiSequenceLearning();
-            var predictor = experiment.Run(sequences);
+            var trainTaxiData = HelperMethods.EncodePassengerData(taxiData);
+
+            //Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
+            //MultiSequenceLearning experiment = new MultiSequenceLearning();
+            //var predictor = experiment.Run(sequences);
 
         }
         /// <summary>
         /// Read the datas from taxi data set and process it
         /// </summary>
-        private static void ProcessExistingDatafromCSVfile()
+        private static List<object> ProcessExistingDatafromCSVfile()
         {
             List<TaxiData> taxiDatas = new List<TaxiData>();
             string path = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, @"DataSet\");
@@ -115,7 +60,9 @@ namespace TimeSeriesSequence
                 }
             }
 
-            CreateProcessedCSVFile(taxiDatas, path);
+            var processedTaxiData = CreateProcessedCSVFile(taxiDatas, path);
+
+            return processedTaxiData;
         }
 
         /// <summary>
@@ -123,7 +70,7 @@ namespace TimeSeriesSequence
         /// </summary>
         /// <param name="taxiDatas"></param>
         /// <param name="path"></param>
-        private static void CreateProcessedCSVFile(List<TaxiData> taxiDatas, string path)
+        private static List<object> CreateProcessedCSVFile(List<TaxiData> taxiDatas, string path)
         {
             List<ProcessedData> processedTaxiDatas = new List<ProcessedData>();
 
@@ -151,7 +98,8 @@ namespace TimeSeriesSequence
                             TimeSpan = g.First().TimeSpan,
                             Segment = g.First().Segment,
                             Passsanger_Count = g.Sum(s => s.Passanger_count),
-                        }).ToList();
+                        }).AsEnumerable()
+                          .Cast<dynamic>();
 
 
             StringBuilder csvcontent = new StringBuilder();
@@ -170,6 +118,8 @@ namespace TimeSeriesSequence
 
             // Save processed CSV data
             File.AppendAllText(path + "2021_Green_Processed.csv", csvcontent.ToString());
+
+            return accumulatedPassangerData.ToList();
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NeoCortexApi.Encoders;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -40,6 +41,101 @@ namespace TimeSeriesSequence
             };
 
             return timeSlots;
-        }  
+        }
+
+        internal static object EncodePassengerData(List<object> taxiData)
+        {
+            List<Dictionary<string, int[]>> ListOfEncodedTrainingSDR = new List<Dictionary<string, int[]>>();
+
+            ScalarEncoder dayEncoder = FetchDayEncoder();
+            ScalarEncoder monthEncoder = FetchMonthEncoder();
+            ScalarEncoder segmentEncoder = FetchSegmentEncoder();
+            ScalarEncoder dayOfWeekEncoder = FetchWeekDayEncoder();
+
+            foreach (ProcessedData sequence in taxiData)
+            {
+                var tempDictionary = new Dictionary<string, int[]>();
+
+                var observationLabel = sequence.Passanger_count;
+                int day = sequence.Date.Day;
+                int month = sequence.Date.Month;
+                int segement = Convert.ToInt32(sequence.Segment);
+                int dayOfWeek = (int)sequence.Date.DayOfWeek;
+
+                //    int[] sdr = new int[0];
+
+                //    sdr = sdr.Concat(DayEncoder.Encode(day)).ToArray();
+                //    sdr = sdr.Concat(MonthEncoder.Encode(month)).ToArray();
+                //    sdr = sdr.Concat(YearEncoder.Encode(year)).ToArray();
+                //    sdr = sdr.Concat(DayOfWeekEncoder.Encode(dayOfWeek)).ToArray();
+
+                //    //    UNCOMMENT THESE LINES TO DRAW SDR BITMAP
+                //    int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(sdr, 100, 100);
+                //    var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
+                //    NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"{observationDateTime.Day.ToString()}.png", null);
+                //    tempDictionary.Add(observationLabel, sdr);
+                //}
+
+                ListOfEncodedTrainingSDR.Add(tempDictionary);
+            }
+            return null;
+        }
+        public static ScalarEncoder FetchWeekDayEncoder()
+        {
+            ScalarEncoder weekOfDayEncoder = new ScalarEncoder(new Dictionary<string, object>()
+            {
+                { "W", 3},
+                { "N", 11},
+                { "MinVal", (double)0}, // Min value = (0).
+                { "MaxVal", (double)7}, // Max value = (7).
+                { "Periodic", true}, // Since Monday would repeat again.
+                { "Name", "WeekDay"},
+                { "ClipInput", true},
+            });
+            return weekOfDayEncoder;
+        }
+        public static ScalarEncoder FetchDayEncoder()
+        {
+            ScalarEncoder dayEncoder = new ScalarEncoder(new Dictionary<string, object>()
+            {
+                { "W", 3},
+                { "N", 35},
+                { "MinVal", (double)1}, // Min value = (0).
+                { "MaxVal", (double)32}, // Max value = (7).
+                { "Periodic", true},
+                { "Name", "Date"},
+                { "ClipInput", true},
+           });
+
+            return dayEncoder;
+        }
+        public static ScalarEncoder FetchMonthEncoder()
+        {
+            ScalarEncoder monthEncoder = new ScalarEncoder(new Dictionary<string, object>()
+            {
+                { "W", 3},
+                { "N", 15},
+                { "MinVal", (double)1}, // Min value = (0).
+                { "MaxVal", (double)12}, // Max value = (7).
+                { "Periodic", true}, // Since Monday would repeat again.
+                { "Name", "Month"},
+                { "ClipInput", true},
+            });
+            return monthEncoder;
+        }
+        public static ScalarEncoder FetchSegmentEncoder()
+        {
+            ScalarEncoder segmentEncoder = new ScalarEncoder(new Dictionary<string, object>()
+            {
+                { "W", 3},
+                { "N", 27},
+                { "MinVal", (double)0}, // Min value = (2018).
+                { "MaxVal", (double)23}, // Max value = (2021).
+                { "Periodic", true}, // Since Monday would repeat again.
+                { "Name", "Segment"},
+                { "ClipInput", true},
+            });
+            return segmentEncoder;
+        }
     }
 }
