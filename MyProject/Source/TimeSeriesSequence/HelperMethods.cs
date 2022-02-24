@@ -1,4 +1,6 @@
-﻿using NeoCortexApi.Encoders;
+﻿using NeoCortex;
+using NeoCortexApi.Encoders;
+using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,6 +45,24 @@ namespace TimeSeriesSequence
             return timeSlots;
         }
 
+        internal static object FetchDateTimeEncoder()
+        {
+            EncoderBase dayEncoder = FetchDayEncoder();
+            EncoderBase monthEncoder = FetchMonthEncoder();
+            EncoderBase segmentEncoder = FetchSegmentEncoder();
+            EncoderBase dayOfWeek = FetchWeekDayEncoder();
+
+            List<EncoderBase> encoder = new List<EncoderBase>();
+            encoder.Add(dayEncoder);
+            encoder.Add(monthEncoder);
+            encoder.Add(segmentEncoder);
+            encoder.Add(dayOfWeek);
+
+            MultiEncoder encoderSetting = new MultiEncoder(encoder);
+
+            return encoderSetting;
+        }
+
         internal static object EncodePassengerData(List<object> taxiData)
         {
             List<Dictionary<string, int[]>> ListOfEncodedTrainingSDR = new List<Dictionary<string, int[]>>();
@@ -62,23 +82,23 @@ namespace TimeSeriesSequence
                 int segement = Convert.ToInt32(sequence.Segment);
                 int dayOfWeek = (int)sequence.Date.DayOfWeek;
 
-                //    int[] sdr = new int[0];
+                int[] sdr = new int[0];
 
-                //    sdr = sdr.Concat(DayEncoder.Encode(day)).ToArray();
-                //    sdr = sdr.Concat(MonthEncoder.Encode(month)).ToArray();
-                //    sdr = sdr.Concat(YearEncoder.Encode(year)).ToArray();
-                //    sdr = sdr.Concat(DayOfWeekEncoder.Encode(dayOfWeek)).ToArray();
+                sdr = sdr.Concat(dayEncoder.Encode(day)).ToArray();
+                sdr = sdr.Concat(monthEncoder.Encode(month)).ToArray();
+                sdr = sdr.Concat(segmentEncoder.Encode(segement)).ToArray();
+                sdr = sdr.Concat(dayOfWeekEncoder.Encode(dayOfWeek)).ToArray();
 
-                //    //    UNCOMMENT THESE LINES TO DRAW SDR BITMAP
-                //    int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(sdr, 100, 100);
-                //    var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
-                //    NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"{observationDateTime.Day.ToString()}.png", null);
-                //    tempDictionary.Add(observationLabel, sdr);
-                //}
+                //    UNCOMMENT THESE LINES TO DRAW SDR BITMAP
+                int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(sdr, 100, 100);
+                var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
+                NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"{sequence.Date.Day}.png", null);
+                tempDictionary.Add(observationLabel.ToString(), sdr);
 
                 ListOfEncodedTrainingSDR.Add(tempDictionary);
             }
-            return null;
+
+            return ListOfEncodedTrainingSDR;
         }
         public static ScalarEncoder FetchWeekDayEncoder()
         {
@@ -129,9 +149,9 @@ namespace TimeSeriesSequence
             {
                 { "W", 3},
                 { "N", 27},
-                { "MinVal", (double)0}, // Min value = (2018).
-                { "MaxVal", (double)23}, // Max value = (2021).
-                { "Periodic", true}, // Since Monday would repeat again.
+                { "MinVal", (double)0}, // Min value = (0).
+                { "MaxVal", (double)23}, // Max value = (23).
+                { "Periodic", true}, // Since Segment would repeat again.
                 { "Name", "Segment"},
                 { "ClipInput", true},
             });
