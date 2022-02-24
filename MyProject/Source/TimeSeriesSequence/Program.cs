@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using NeoCortexApi;
+using NeoCortexApi.Entities;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -25,16 +27,55 @@ namespace TimeSeriesSequence
         /// </summary>
         private static void RunPassangerTimeSeriesSequenceExperiment()
         {
+            int inputBits = 72;
+            int maxCycles = 15;
+            int numColumns = 1024;
+
+            HtmConfig cfg = new HtmConfig(new int[] { inputBits }, new int[] { numColumns })
+            {
+                Random = new ThreadSafeRandom(42),
+
+                CellsPerColumn = 25,
+                GlobalInhibition = true,
+                LocalAreaDensity = -1,
+                NumActiveColumnsPerInhArea = 0.02 * numColumns,
+                PotentialRadius = (int)(0.15 * inputBits),
+                //InhibitionRadius = 15,
+
+                MaxBoost = 10.0,
+                DutyCyclePeriod = 25,
+                MinPctOverlapDutyCycles = 0.75,
+                MaxSynapsesPerSegment = (int)(0.02 * numColumns),
+
+                ActivationThreshold = 15,
+                ConnectedPermanence = 0.5,
+
+                // Learning is slower than forgetting in this case.
+                PermanenceDecrement = 0.25,
+                PermanenceIncrement = 0.15,
+
+                // Used by punishing of segments.
+                PredictedSegmentDecrement = 0.1
+            };
+
             //Read the taxi data set and write into new processed csv with reuired column
             var taxiData =  ProcessExistingDatafromCSVfile();
 
             var trainTaxiData = HelperMethods.EncodePassengerData(taxiData);
 
-            //Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
-            //MultiSequenceLearning experiment = new MultiSequenceLearning();
-            //var predictor = experiment.Run(sequences);
+            var encoder = HelperMethods.FetchDateTimeEncoder();
+
+            // var trained_HTM_model = Run(inputBits, maxCycles, numColumns, trainingDataProcessed, false);
+            var trained_HTM_model1 =  RunExperiment(inputBits, cfg, encoder, trainTaxiData);
+
 
         }
+
+        private static object RunExperiment(int inputBits, HtmConfig cfg, object encoder, object trainTaxiData)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Read the datas from taxi data set and process it
         /// </summary>
