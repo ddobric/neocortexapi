@@ -45,7 +45,7 @@ namespace TimeSeriesSequence
             return timeSlots;
         }
 
-        internal static object FetchDateTimeEncoder()
+        internal static EncoderBase FetchDateTimeEncoder()
         {
             EncoderBase dayEncoder = FetchDayEncoder();
             EncoderBase monthEncoder = FetchMonthEncoder();
@@ -63,7 +63,7 @@ namespace TimeSeriesSequence
             return encoderSetting;
         }
 
-        internal static object EncodePassengerData(List<object> taxiData)
+        internal static Dictionary<string, List<double>> EncodePassengerData(List<object> taxiData)
         {
             List<Dictionary<string, int[]>> ListOfEncodedTrainingSDR = new List<Dictionary<string, int[]>>();
 
