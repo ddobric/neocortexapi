@@ -63,7 +63,7 @@ namespace TimeSeriesSequence
             return encoderSetting;
         }
 
-        internal static Dictionary<string, List<double>> EncodePassengerData(List<object> taxiData)
+        internal static object EncodePassengerData(List<object> taxiData)
         {
             List<Dictionary<string, int[]>> ListOfEncodedTrainingSDR = new List<Dictionary<string, int[]>>();
 

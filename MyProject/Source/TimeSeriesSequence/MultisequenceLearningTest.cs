@@ -19,7 +19,7 @@ namespace TimeSeriesSequence
     /// <summary>
     /// Implements an experiment that demonstrates how to learn sequences.
     /// </summary>
-    public class MultiSequenceLearning
+    public class MultisequenceLearningTest
     {
         /// <summary>
         /// Runs the learning of sequences.
@@ -27,7 +27,7 @@ namespace TimeSeriesSequence
         /// <param name="sequences">Dictionary of sequences. KEY is the sewuence name, the VALUE is th elist of element of the sequence.</param>
         public HtmPredictionEngine Run(Dictionary<string, List<double>> sequences)
         {
-            Console.WriteLine($"Hello NeocortexApi! Experiment {nameof(MultiSequenceLearning)}");
+            Console.WriteLine($"Hello NeocortexApi! Experiment {nameof(MultisequenceLearningTest)}");
 
             int inputBits = 100;
             int numColumns = 1024;
