@@ -424,7 +424,7 @@ namespace UnitTestsProject
             foreach (Synapse synapse in synapses)
             {
                 Assert.AreEqual(0.21, synapse.Permanence, 0.01);
-                Assert.IsTrue(prevWinnerCells.Contains(synapse.getPresynapticCell()));
+                Assert.IsTrue(prevWinnerCells.Contains(synapse.GetPresynapticCell()));
             }
         }
 
@@ -463,7 +463,7 @@ namespace UnitTestsProject
             foreach (Synapse synapse in synapses)
             {
                 Assert.AreEqual(0.21, synapse.Permanence, 0.01);
-                presynapticCells.Add(synapse.getPresynapticCell());
+                presynapticCells.Add(synapse.GetPresynapticCell());
             }
 
             presynapticCells.Sort();
@@ -500,12 +500,12 @@ namespace UnitTestsProject
             synapses.Sort();
             foreach (Synapse synapse in synapses)
             {
-                if (synapse.getPresynapticCell().Index == 0) continue;
+                if (synapse.GetPresynapticCell().Index == 0) continue;
 
                 Assert.AreEqual(0.21, synapse.Permanence, 0.01);
-                Assert.IsTrue(synapse.getPresynapticCell().Index == 1 ||
-                           synapse.getPresynapticCell().Index == 2 ||
-                           synapse.getPresynapticCell().Index == 3);
+                Assert.IsTrue(synapse.GetPresynapticCell().Index == 1 ||
+                           synapse.GetPresynapticCell().Index == 2 ||
+                           synapse.GetPresynapticCell().Index == 3);
             }
         }
 
@@ -541,10 +541,10 @@ namespace UnitTestsProject
 
             foreach (Synapse synapse in synapses)
             {
-                if (synapse.getPresynapticCell().Index == 0) continue;
+                if (synapse.GetPresynapticCell().Index == 0) continue;
 
                 Assert.AreEqual(0.21, synapse.Permanence, 0.01);
-                Assert.AreEqual(1, synapse.getPresynapticCell().Index);
+                Assert.AreEqual(1, synapse.GetPresynapticCell().Index);
             }
         }
 
@@ -584,7 +584,7 @@ namespace UnitTestsProject
             List<Cell> presynapticCells = new List<Cell>();
             foreach (var syn in activeSegment.Synapses)
             {
-                presynapticCells.Add(syn.getPresynapticCell());
+                presynapticCells.Add(syn.GetPresynapticCell());
             }
 
             Assert.IsTrue(
@@ -693,7 +693,7 @@ namespace UnitTestsProject
             //DD foreach (var syn in cn.GetSynapses(matchingSegment))
             foreach (var syn in matchingSegment.Synapses)
             {
-                presynapticCells.Add(syn.getPresynapticCell());
+                presynapticCells.Add(syn.GetPresynapticCell());
             }
 
             Assert.IsFalse(presynapticCells.Count(c => c.Index == 0) > 0);
@@ -744,7 +744,7 @@ namespace UnitTestsProject
             //    .collect(Collectors.toSet());
 
             //var oldPresynaptic = cn.GetSynapses(oldestSegment).Select(s => s.getPresynapticCell()).ToList();
-            var oldPresynaptic = oldestSegment.Synapses.Select(s => s.getPresynapticCell()).ToList();
+            var oldPresynaptic = oldestSegment.Synapses.Select(s => s.GetPresynapticCell()).ToList();
 
             tm.Reset(cn);
             tm.Compute(prevActiveColumns3, true);
@@ -766,7 +766,7 @@ namespace UnitTestsProject
                 //    .map(s->s.getPresynapticCell())
                 //    .collect(Collectors.toSet());
                 //DD var newPresynaptic = cn.GetSynapses(segment).Select(s => s.getPresynapticCell()).ToList();
-                var newPresynaptic = segment.Synapses.Select(s => s.getPresynapticCell()).ToList();
+                var newPresynaptic = segment.Synapses.Select(s => s.GetPresynapticCell()).ToList();
 
                 Assert.IsTrue(areDisjoined<Cell>(oldPresynaptic, newPresynaptic));
             }
@@ -907,7 +907,7 @@ namespace UnitTestsProject
                 {
                     Assert.AreEqual(0.2, synapse.Permanence, 0.01);
 
-                    var parentColIndx = synapse.getPresynapticCell().ParentColumnIndex;
+                    var parentColIndx = synapse.GetPresynapticCell().ParentColumnIndex;
                     Column column = cn.HtmConfig.Memory.GetColumn(parentColIndx);
                     Assert.IsTrue(columnCheckList.Contains(column));
                     columnCheckList.Remove(column);

@@ -680,7 +680,7 @@ namespace NeoCortexApi.Entities
         /// <param name="synapse">the synapse to remove</param>
         public void RemoveSynapseFromPresynapticMap(Synapse synapse)
         {
-            Cell cell = synapse.getPresynapticCell();
+            Cell cell = synapse.GetPresynapticCell();
             cell.ReceptorSynapses.Remove(synapse);
             //DD
             //LinkedHashSet<Synapse> presynapticSynapses;
