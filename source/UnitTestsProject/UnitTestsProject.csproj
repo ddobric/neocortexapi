@@ -17,6 +17,17 @@
 		<DebugSymbols>true</DebugSymbols>
 	</PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="ImageEncoderTest\**" />
+    <Compile Remove="MnistTestImages\**" />
+    <Compile Remove="Output\**" />
+    <EmbeddedResource Remove="ImageEncoderTest\**" />
+    <EmbeddedResource Remove="MnistTestImages\**" />
+    <EmbeddedResource Remove="Output\**" />
+    <None Remove="ImageEncoderTest\**" />
+    <None Remove="MnistTestImages\**" />
+    <None Remove="Output\**" />
+  </ItemGroup>
 	<ItemGroup>
 		<Compile Remove="MnistTestImages\**" />
 		<Compile Remove="Output\**" />

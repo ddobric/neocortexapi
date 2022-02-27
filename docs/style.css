@@ -137,11 +137,15 @@ a {
 
 .navigation {
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    flex-grow: 1;
+    
     align-items: center;
     margin: 1rem;
+}
+.navigation > * {
+    width: 100%;
 }
 
 .tile {
@@ -170,11 +174,9 @@ a {
 
 .furtherinfo {
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    flex-direction: column;
+    
     margin-bottom: 2rem;
-    align-items: center;
     width: 90%;
 }
 
@@ -191,9 +193,10 @@ a {
     font-size: 2rem;
 }
 
-@media (max-width: 750px) {
+@media screen and (min-width: 750px) {
     .navigation {
-        flex-direction: column;
+        flex-direction: row;
+        justify-content: space-between;
     }
 
     .tile {
@@ -201,8 +204,8 @@ a {
     }
 
     .furtherinfo {
-        flex-direction: column;
-        align-items: center;
+        flex-direction: row;
+        justify-content: space-between;
     }
 
     .gifexample {
