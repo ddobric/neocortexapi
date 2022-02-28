@@ -1,5 +1,6 @@
 :root {
   --banner-bg-color: #5B84B1;
+  --banner-bg-img: linear-gradient(180deg, #7014e8 30.12%, #0e5ecf 120.47%);
   --banner-text-color: #FC766A;
   --content-odd-bg-color: #7c90e6;
   --content-odd-text-color: #ffffff;
