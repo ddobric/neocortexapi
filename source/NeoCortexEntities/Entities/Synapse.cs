@@ -116,7 +116,7 @@ namespace NeoCortexApi.Entities
         /// Returns the containing <see cref="Cell"/>
         /// </summary>
         /// <returns></returns>
-        public Cell getPresynapticCell()
+        public Cell GetPresynapticCell()
         {
             return SourceCell;
         }
