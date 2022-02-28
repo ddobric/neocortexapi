@@ -4,63 +4,120 @@
 <head>
     <title>NeoCortexAPI</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <link href="./style.css" type="text/css" rel="stylesheet">
-    <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+    <link href="./stylesheet.css" type="text/css" rel="stylesheet">
+    <link rel="shortcut icon" href="./images/favicon.png" type="image/x-icon">
+    <script src="/script.js" defer></script>
 </head>
 
 <body id="start">
-    <section class="banner">
-        <div class="">
-            <h1 id="title">NeoCortex API</h1>
-            <p id="subtext">
-                C# Implementation of Hierarchical Temporal Memory Cortical Learning Algorithm in .NET Core and more.
-            </p>
-            <p style="height:50px">
-                <a href="https://github.com/ddobric/neocortexapi/" class="btnBanner" target="_blank">View on GitHub</a>
-            </p>
+    <section class="banner d-flex">
+        <h1 id="title">NeoCortex API</h1>
+        <div class="text-center" style="margin: 0 1em;" id="subtext">
+            C# Implementation of Hierarchical Temporal Memory Cortical Learning Algorithm in .NET Core and more.
+        </div>
+        <a class="btnMain scale" href="https://github.com/ddobric/neocortexapi/" class="btnBanner" target="_blank">
+            View on GitHub
+        </a>
+    </section>
+
+    <section class="d-flex navigation">
+        <button id="get-started">Getting Started</button>
+        <button id="spatial-pooler">Spatial Pooler</button>
+        <button id="temporal-memory">Temporal Memory</button>
+        <div class="d-flex ml-auto">
+            <div class="spacer"></div>
+            <a class="btn" href="https://github.com/ddobric/neocortexapi/" target="_blank">View on Github</a>
         </div>
     </section>
 
-    <div class="content">
-        <section class="navigation">
-            <a class="tile getstarted"
-               href="https://github.com/ddobric/neocortexapi/blob/master/source/Documentation/gettingStarted.md"
-               target="_blank">
-                <h3>Getting started</h3>
+    <div id="gs" class="content">
+        <div>
+            <h3>Getting Started</h3>
+            <div>
+                The Hierarchical Temporal Memory Cortical Learning Algorithm (HTM CLA) is a theory and machine learning
+                technology that aims to capture cortical algorithm of the neocortex. HTM consists of 2 different
+                components: Spatial Pooler and Temporal Memory. Inside the algorithms, there are multiple mini columns
+                act as synapses in our brain. These columns will be activated or deactivated depend on the input that is
+                given. This is similar to the synapse activity. HTM, like many other machine learning algorithm, only
+                deals with number. Therefore, it requires an encoder to transform the real world concept into digitized
+                world of '0's and '1's.
+            </div>
+            <a class="getstarted"
+                href="https://github.com/ddobric/neocortexapi/blob/master/source/Documentation/gettingStarted.md"
+                target="_blank">
+                Click here to read more about NeoCortexAPI.
             </a>
-            <a class="tile tutorial"
-               href="https://github.com/ddobric/neocortexapi/blob/master/source/Documentation/tutorial.md"
-               target="_blank">
-                <h3>Tutorial</h3>
-            </a>
-            <a class="tile experiments"
-               href="https://github.com/ddobric/neocortexapi/blob/master/source/Documentation/experiments.md"
-               target="_blank">
-                <h3>Experiments</h3>
-            </a>
-        </section>
+        </div>
+        <div class="img-holder">
+            <img class="image" src="./images/HTM CLA.png" />
+        </div>
+
+
     </div>
-    <div class="content secOdd">
-        <section class="furtherinfo">
-            <div class="externallink">
-                <h3>External links</h3>
-                <ul>
-                    <li>
-                        Temporal Memory:&nbsp; <a href="https://en.wikipedia.org/wiki/Hierarchical_temporal_memory"
-                                                  target="_blank">Wikipedia</a>
-                    </li>
-                    <li>HTM school:&nbsp;<a href="https://numenta.org/htm-school/" target="_blank">Numenta.org</a></li>
-                    <li>
-                        HTM in other programing languages:&nbsp;<a href="https://numenta.org/implementations/" target="_blank">Numenta htm implementation</a>
-                    </li>
-                    <li>HTM Forum:&nbsp;<a href="https://discourse.numenta.org/" target="_blank">Forum</a></li>
-                </ul>
+
+    <div id="sp" class="content hightlight">
+        <div>
+            <h3>Spatial Pooler</h3>
+            <div>
+                Spatial Pooler (SP) is a learning algorithm that is designed to replicate the neurons functionality
+                of human brain. Essentially, if a brain sees one thing multiple times, it is going to strengthen the
+                synapses that react to the specific input result in the recognition of the object. Similarly, if
+                several
+                similar SDRs are presented to the SP algorithm, it will reinforce the columns that are active
+                according
+                to the on bits in the SDRs. If the number of training iterations is big enough, the SP will be able
+                to
+                identify the objects by producing different set of active columns within the specified size of SDR
+                for
+                different objects.
             </div>
-            <div class="gifexample">
-                <h3>Example</h3>
-                <div id="gif">GIF VIDEO</div>
+            <a href="https://github.com/ddobric/neocortexapi/blob/master/source/Documentation/SpatialPooler.md"
+                target="_blank">
+                Click here to read more about Spatial Pooler.
+            </a>
+        </div>
+        <div class="img-holder">
+            <img class="image" src="./images/SP.png" />
+        </div>
+    </div>
+    <div id="tm" class="content">
+        <div>
+            <h3>Temporal memory</h3>
+            <div>
+                Temporal memory is an algorithm which learns sequences of Sparse Distributed Representations (SDRs)
+                formed by the Spatial Pooling algorithm, and makes predictions of what the next input SDR will be.
             </div>
-        </section>
+            <a href="https://github.com/ddobric/neocortexapi/blob/master/source/Documentation/TemporalMemory.md"
+                target="_blank">
+                Click here to read more about Temporal Memory.
+            </a>
+        </div>
+        <div class="img-holder"></div>
+    </div>
+
+    <div class="content hightlight align-item-start">
+        <div>
+            <h3>Example</h3>
+            <div class="img-holder">
+                <img class="image" src="./images/NeoCortexApiSample.gif" />
+            </div>
+        </div>
+        <div class="externallink">
+            <h3>External links</h3>
+            <ul>
+                <li>
+                    Temporal Memory:&nbsp; <a href="https://en.wikipedia.org/wiki/Hierarchical_temporal_memory"
+                        target="_blank">Wikipedia</a>
+                </li>
+                <li>HTM school:&nbsp;<a href="https://numenta.org/htm-school/" target="_blank">Numenta.org</a>
+                </li>
+                <li>
+                    HTM in other programing languages:&nbsp;<a href="https://numenta.org/implementations/"
+                        target="_blank">Numenta htm implementation</a>
+                </li>
+                <li>HTM Forum:&nbsp;<a href="https://discourse.numenta.org/" target="_blank">Forum</a></li>
+            </ul>
+        </div>
     </div>
 </body>
 
