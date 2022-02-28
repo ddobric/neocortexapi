@@ -763,29 +763,86 @@ namespace NeoCortexApi.Entities
         }
 
 
-        internal static bool IsEqual(object obj1, object obj2)
+        public static bool IsEqual(object obj1, object obj2)
         {
-            const System.Reflection.BindingFlags bindingAttr = System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+            if (obj1 == null && obj2 == null)
+            {
+                return true;
+            }
+            else if ((obj1 == null && obj2 != null) || (obj1 != null && obj2 == null))
+            {
+                return false;
+            }
 
-            var props1 = obj1.GetType().GetProperties(bindingAttr);
+            const System.Reflection.BindingFlags bindingAttr = System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+
+            var props1 = obj1.GetType().GetFields(bindingAttr);
 
             foreach (var prop1 in props1)
             {
-                var prop2 = obj1.GetType().GetProperty(prop1.Name);
-                if (prop2.GetType().IsClass)
+                var name = prop1.Name;
+                var type = prop1.FieldType;
+
+                if (type.IsPrimitive || type == typeof(Decimal) || type == typeof(String))
                 {
-                    if (!IsEqual(prop1, prop2))
-                        throw new Exception("todo/..");
+                    var prop1Value = prop1.GetValue(obj1);
+
+                    var prop2 = obj2.GetType().GetField(name, bindingAttr);
+                    var prop2Value = prop2.GetValue(obj2);
+
+                    if ((prop1Value == null && prop2Value != null) || (prop1Value != null && prop2Value == null))
+                    {
+                        return false;
+                    }
+                    else if ((prop1Value == null && prop2Value == null) || prop1Value.ToString() == prop2Value.ToString())
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+
+                }
+                else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Dictionary<,>))
+                {
+                    // TODO
+                }
+                else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ConcurrentDictionary<,>))
+                {
+                    // TODO
+                }
+                else if (type.FullName.StartsWith("System.Action"))
+                {
+                    // SKIP
+                }
+                else if (type.IsArray)
+                {
+                    // TODO
+                }
+                else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
+                {
+                    // TODO
+                }
+                else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ISet<>))
+                {
+                    // TODO
+                }
+                else if (type.IsAbstract)
+                {
+                    // SKIP
+                }
+                else
+                {
+                    var prop2 = obj2.GetType().GetField(name, bindingAttr);
+                    if (!IsEqual(prop1.GetValue(obj1), prop2.GetValue(obj2)))
+                    {
+                        return false;
+                    }
                 }
 
-                if (prop1.GetValue(obj2) != prop2.GetValue(obj1))
-                    throw new Exception("todo.");
             }
-
-            var fields = obj1.GetType().GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-
-
-            return false;
+            return true;
         }
 
     }
