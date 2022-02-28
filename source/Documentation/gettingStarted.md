@@ -15,15 +15,12 @@ HTM consists of 2 different components: Spatial Pooler and Temporal Memory. The 
 First, input is given as a list.
 
 ```cs
-            int inputBits = 100;
-
-            double max = 20;
-            int numColumns = 2048;
-
-            List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 });
-            int numInputs = inputValues.Distinct().ToList().Count;
-
-            var inputs = inputValues.ToArray();
+int inputBits = 100;
+double max = 20;
+int numColumns = 2048;
+List<double> inputValues = new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 });
+int numInputs = inputValues.Distinct().ToList().Count;
+var inputs = inputValues.ToArray();
 ```
 
 ## Sparse Distributed Representations
@@ -54,41 +51,38 @@ Encoder is chosen according to the type of the inputs. There are some encoder av
 In this example, ScalarEncoder is preferred as inputs are all numbers. The encoder is instantiated with predefined settings. The inputs will be encoded as series of '0's and '1's so that the spatial pooler will understand and proceed with its own computation.
 
 ```cs
-            Dictionary<string, object> settings = new Dictionary<string, object>()
-            {
-                { "W", 15},
-                { "N", inputBits},
-                { "Radius", -1.0},
-                { "MinVal", 0.0},
-                { "Periodic", false},
-                { "Name", "scalar"},
-                { "ClipInput", false},
-                { "MaxVal", max}
-            };
-
-            EncoderBase encoder = new ScalarEncoder(settings);
+Dictionary<string, object> settings = new Dictionary<string, object>()
+{
+    { "W", 15},
+    { "N", inputBits},
+    { "Radius", -1.0},
+    { "MinVal", 0.0},
+    { "Periodic", false},
+    { "Name", "scalar"},
+    { "ClipInput", false},
+    { "MaxVal", max}
+};
+EncoderBase encoder = new ScalarEncoder(settings);
 ```
 
-See more: [Encoder](./tutorial.md#encoder)
+More detail about encoders: [Encoders.md](./Encoders.md)
 
 ## Spatial Pooler
 
 Encoder produces output to be fed into Spatial Pooler algorithm. Type of Spatial Pooler (SP) that is used in this example is the multithreaded version that utilize multicore of the machine to run the spatial pooler algorithm.
 
 ```cs
-            HtmConfig htmConfig = new HtmConfig
-            {
-                Random = new ThreadSafeRandom(42),
-                InputDimensions = new int[] { inputBits },
-                ColumnDimensions = new int[] { numColumns },
-                CellsPerColumn = 25,
-                GlobalInhibition = true,
-                LocalAreaDensity = -1,
-
-                // further parameters
-            };
-
-            Connections memory = new Connections(htmConfig);
+HtmConfig htmConfig = new HtmConfig
+{
+    Random = new ThreadSafeRandom(42),
+    InputDimensions = new int[] { inputBits },
+    ColumnDimensions = new int[] { numColumns },
+    CellsPerColumn = 25,
+    GlobalInhibition = true,
+    LocalAreaDensity = -1,
+    // further parameters
+};
+Connections memory = new Connections(htmConfig);
 ```
 
 Further explaination of parameters configuration can be found in [Spatial Pooler parameter description](./SpatialPooler.md#parameter-desription).
@@ -123,22 +117,23 @@ An example SDR produced by Spatial Pooler algorithm is presented in the Fig.1. T
 <figcaption align = "center"><b>Fig.2 SDR of a binarized MNIST image.</b></figcaption>
 </figure>
 
-See more: [SpatialPooler.md](./SpatialPooler.md)  
+Click [here](./SpatialPooler.md)  to read more about SpatialPooler.
 
 **SDR result**
 
 ## Temporal Memory
 
 The output of Spatial Pooler (SDR) is used as the input of Temporal Memory.
+Temporal memory algorithm will then learn the temporal pattern from spatial pattern.
 
-Initialization of Temporal Memory.
+Initialization of Temporal Memory can be done similar to Spatial Pooler using `HtmConfig` and `Connection`.
 
 ```cs
 TemporalMemory temporalMemory = new TemporalMemory();
-temporalMemory.Init(memory);
+temporalMemory.Init(mem);
 ```
 
-See more: [TemporalMemory.md](./TemporalMemory.md)
+See more in: [TemporalMemory.md](./TemporalMemory.md)
 
 ## Combine components
 
