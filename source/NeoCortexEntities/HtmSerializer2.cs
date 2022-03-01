@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -774,74 +775,91 @@ namespace NeoCortexApi.Entities
                 return false;
             }
 
-            const System.Reflection.BindingFlags bindingAttr = System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+            var type = obj1.GetType();
 
-            var props1 = obj1.GetType().GetFields(bindingAttr);
 
-            foreach (var prop1 in props1)
+            if (type.IsPrimitive || type == typeof(Decimal) || type == typeof(String))
             {
-                var name = prop1.Name;
-                var type = prop1.FieldType;
+                var obj1Value = obj1.ToString();
+                var obj2Value = obj2.ToString();
 
-                if (type.IsPrimitive || type == typeof(Decimal) || type == typeof(String))
+                if (obj1Value != obj2Value)
                 {
-                    var prop1Value = prop1.GetValue(obj1);
+                    return false;
+                }
+            }
+            else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Dictionary<,>))
+            {
+                var dict1 = obj1 as IDictionary;
+                var dict2 = obj2 as IDictionary;
 
-                    var prop2 = obj2.GetType().GetField(name, bindingAttr);
-                    var prop2Value = prop2.GetValue(obj2);
+                var keys = dict1.Keys;
 
-                    if ((prop1Value == null && prop2Value != null) || (prop1Value != null && prop2Value == null))
+                foreach (var key in keys)
+                {
+                    var dict1Item = dict1[key];
+                    var dict2Item = dict2[key];
+                    if (!IsEqual(dict1Item, dict2Item))
                     {
                         return false;
                     }
-                    else if ((prop1Value == null && prop2Value == null) || prop1Value.ToString() == prop2Value.ToString())
-                    {
-                        continue;
-                    }
-                    else
+                }
+            }
+            else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ConcurrentDictionary<,>))
+            {
+                // TODO
+            }
+            else if (type.FullName.StartsWith("System.Action"))
+            {
+                // SKIP
+            }
+            else if (type.IsArray)
+            {
+                var array1 = (IEnumerable)obj1;
+                var array2 = (IEnumerable)obj2;
+
+                var sequence1 = array1.GetEnumerator();
+                var sequence2 = array2.GetEnumerator();
+
+                while (sequence1.MoveNext())
+                {
+                    sequence2.MoveNext();
+                    if (!IsEqual(sequence1.Current, sequence2.Current))
                     {
                         return false;
                     }
+                }
+            }
+            else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
+            {
+                // TODO
+            }
+            else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ISet<>))
+            {
+                // TODO
+            }
+            else if (type.IsAbstract)
+            {
+                // SKIP
+            }
+            else
+            {
+                const System.Reflection.BindingFlags bindingAttr = System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
 
-                }
-                else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Dictionary<,>))
+                var props1 = obj1.GetType().GetFields(bindingAttr); //GetProperties(bindingAttr);
+
+                foreach (var prop1 in props1)
                 {
-                    // TODO
-                }
-                else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ConcurrentDictionary<,>))
-                {
-                    // TODO
-                }
-                else if (type.FullName.StartsWith("System.Action"))
-                {
-                    // SKIP
-                }
-                else if (type.IsArray)
-                {
-                    // TODO
-                }
-                else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
-                {
-                    // TODO
-                }
-                else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ISet<>))
-                {
-                    // TODO
-                }
-                else if (type.IsAbstract)
-                {
-                    // SKIP
-                }
-                else
-                {
+                    var name = prop1.Name;
                     var prop2 = obj2.GetType().GetField(name, bindingAttr);
+
                     if (!IsEqual(prop1.GetValue(obj1), prop2.GetValue(obj2)))
                     {
                         return false;
                     }
                 }
-
             }
+
             return true;
         }
 
