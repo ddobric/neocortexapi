@@ -38,7 +38,7 @@ namespace LabelPrediction
             {
                 using(StreamReader reader = new StreamReader(csvFilePath))
                 {
-                    // [Power, "MM/10 SEG"]
+                    // [Power, "dd/MM hh SEG"]
                     Dictionary<string, string> sequence = new Dictionary<string, string>();
                     while (reader.Peek() >= 0)
                     {
@@ -52,8 +52,8 @@ namespace LabelPrediction
                         var columnPower    = values[1];
 
                         /* 
-                         * This is a bit mess. The DateTime in date set is M/d/yy h:mm or MM/dd/yy hh:mm parsing with ParseExact seemed difficult, 
-                         * reformatting to dd/MM/yy hh:mm 
+                         * This is a bit mess. The DateTime in date set is M/d/yy h:mm or MM/dd/yy hh:mm 
+                         * parsing with ParseExact seemed difficult, reformatting to dd/MM/yy hh:mm 
                          */
                         string[] splitDateTime = columnDateTime.Split(" ");
 
@@ -81,8 +81,15 @@ namespace LabelPrediction
                         int hh = int.Parse(time[0]);
                         int mm = int.Parse(time[1]);
 
+                        /*
+                         * Recreating date as dd/MM/yy hh:mm
+                         */
                         string dateTime = dd.ToString("00") + "/" + MM.ToString("00") + "/" + yy.ToString("00") + " " + hh.ToString("00") + ":" + mm.ToString("00");
-
+                        
+                        /*
+                         * If the label(key) is same then add a unique number 
+                         * to key before adding to sequence to create multiple sequences
+                         */
                         if (sequence.ContainsKey(columnPower))
                         {
                             var newKey = columnPower + "," + keyForUniqueIndexes;
