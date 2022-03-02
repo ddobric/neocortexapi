@@ -81,7 +81,11 @@ namespace TimeSeriesSequence
             return cfg;
         }
 
-        internal static EncoderBase FetchDateTimeEncoder()
+        /// <summary>
+        /// Multi encoder for day month and segment 
+        /// </summary>
+        /// <returns></returns>
+        public static EncoderBase FetchDateTimeEncoder()
         {
             EncoderBase dayEncoder = FetchDayEncoder();
             EncoderBase monthEncoder = FetchMonthEncoder();
@@ -99,7 +103,12 @@ namespace TimeSeriesSequence
             return encoderSetting;
         }
 
-        internal static object EncodePassengerData(List<object> taxiData)
+        /// <summary>
+        /// Encode the passenger data based on day month segment and day of week
+        /// </summary>
+        /// <param name="taxiData"></param>
+        /// <returns></returns>
+        public static object EncodePassengerData(List<object> taxiData)
         {
             List<Dictionary<string, int[]>> ListOfEncodedTrainingSDR = new List<Dictionary<string, int[]>>();
 
@@ -194,7 +203,11 @@ namespace TimeSeriesSequence
             return segmentEncoder;
         }
 
-
+        /// <summary>
+        /// Processed the raw passenger data set
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public static List<object> ProcessExistingDatafromCSVfile( string path)
         {
             List<TaxiData> taxiDatas = new List<TaxiData>();
