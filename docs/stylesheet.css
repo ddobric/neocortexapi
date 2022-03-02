@@ -30,7 +30,7 @@ body {
   margin: 0;
   position: relative;
 }
-h3 {
+h3, h2 {
   font-family: var(--header-font-family);
   font-size: 34px;
 }
@@ -38,7 +38,7 @@ h3 {
 .navigation > h3 {  
   font-size: var(--nav-font-size);
   color: var(--header-color);
-  margin: 0 1em;
+  margin: 0.25em 1em;
   cursor: default;
   margin-bottom: 0;
   line-height: 1cm;
@@ -50,10 +50,11 @@ h3 {
   letter-spacing: 0.71px;
   top: 0;
   background-color: var(--nav-bg-color);
-  border-bottom: solid 1px gray;
+  /* border-bottom: solid 1px gray; */
   text-decoration: none;
   padding-top: 1em;
   padding-bottom: 1em;
+  box-shadow: 0px 3px 6px #00000029;
 }
 .spacer {
   width: 2px;
@@ -65,8 +66,8 @@ h3 {
 .btn {
   text-decoration: none;
   font-family: var(--header-font-family-bold);
-  font-size: var(--nav-font-size);
-  background-color: var(--subtext-bg-color);
+  font-size: 28px;
+  background-color: #FFD600;
   cursor: default;
   color: var(--header-color);
   padding: 0.2em 1.3em;
@@ -81,10 +82,13 @@ h3 {
 }
 
 .banner-content {
-  position: absolute;
-  top: 10%;
-  width: 100%;
-  height: 15%;
+  /* position: absolute;
+  top: 10%; */
+  height: 40vh;
+  background-image: url(./images/Header-banner.svg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  padding-top: 10%;
 }
 
 .banner-content > img {
@@ -97,9 +101,9 @@ h3 {
   height: 100%;
 }
 
-.banner-content > h3 {
+.banner-content > h2 {
   color: #FFFFFF;
-  font-size: 1.75em;
+  font-size: calc(1.75em * 1.618);
   margin: 0;
   margin-left:2%;
   
@@ -210,7 +214,12 @@ h3 {
   .section {
       gap: 5em;
   }
-  .banner-content > h3 {
-    font-size: 3em;
+  .banner-content > h2 {
+    font-size: calc(3em * 1.618);
+  }
+
+  .banner-content {
+    padding-top: 5%;
+    height: 50vh;
   }
 }
