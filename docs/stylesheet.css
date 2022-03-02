@@ -1,107 +1,144 @@
 :root {
-  --banner-bg-color: #5B84B1;
-  --banner-bg-img: linear-gradient(180deg, #7014e8 30.12%, #0e5ecf 120.47%);
-  --banner-text-color: #FC766A;
-  --content-odd-bg-color: #7c90e6;
-  --content-odd-text-color: #ffffff;
+  --header-font-family: Raleway, SemiBold;
+  --nav-font-size: 23px;
+  --header-color: #404040;
   --nav-bg-color: #ffffff;
-  --nav-text-color: #8ea4ec;
-  --font-size: 1em;
+  
+  --spacer-color: #62B1EE;
+
+  --header-font-family-bold: Raleway, Bold;
+
+  --subtext-bg-color: #FFEC89;
+
+  --content-color: #161616;
+  --content-text-font-family: Open Sans, Regular;
+  --link-font-family: Open Sans, Bold;
+  --content-odd-bg-color: #DBEAFF;
+
   --content-padding-vertical: 7em;
   --content-padding-horizontal: 3em;
   --content-min-height: 100vh;
 }
 a {
-    color: #FC766A;
+  color: #1583D8;
+  font-family: var(--link-font-family);
+  font-weight: 600;
+  letter-spacing: 0.74px;
 }
 
 body {
-  font-family: "Segoe UI", Helvetica, Arial, sans-serif;
   margin: 0;
   position: relative;
-  font-size: var(--font-size);
+}
+h3 {
+  font-family: var(--header-font-family);
+  font-size: 34px;
 }
 
-.banner {
-  height: 20em;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
-  background-color: var(--banner-bg-color);
+.navigation > h3 {  
+  font-size: var(--nav-font-size);
+  color: var(--header-color);
+  margin: 0 1em;
+  cursor: default;
+  margin-bottom: 0;
+  line-height: 1cm;
 }
-
-.banner > * {
-  color: var(--banner-text-color);
-}
-
-.btnMain {
-  margin-top: 2em;
-  border-width: 2px;
-  border-style: solid;
-  padding: 1em 2em;
-  border-color: var(--banner-text-color);
-}
-
-.scale {
-  transition: all 0.3s ease-in-out;
-}
-
-.scale:hover {
-  transform: scale(1.05);
-}
-
 .navigation {
+  text-align: center;
+  width: 100%;
   position: sticky;
+  letter-spacing: 0.71px;
   top: 0;
   background-color: var(--nav-bg-color);
-  padding: 1em;
   border-bottom: solid 1px gray;
   text-decoration: none;
-}
-.navigation > * {
-  color: var(--nav-text-color);
-  font-size: 1em;
-}
-
-.navigation > button {
-  border: none;
-  background-color: transparent;
-}
-
-.navigation .spacer {
-  margin-right: 10px;
+  padding-top: 1em;
+  padding-bottom: 1em;
 }
 .spacer {
-  width: 1px;
-  background-color: #d7dcdf;
+  width: 2px;
+  background-color: var(--spacer-color);
+  margin-top: 10px;
+  margin-bottom: 14px;
 }
 
 .btn {
   text-decoration: none;
+  font-family: var(--header-font-family-bold);
+  font-size: var(--nav-font-size);
+  background-color: var(--subtext-bg-color);
   cursor: default;
-  color: #000000;
-  font-size: 1em;
+  color: var(--header-color);
+  padding: 0.2em 1.3em;
+  border-radius: 5px;
+  font-weight: 600;
+  margin-right: 1em;
 }
 
-.content {
-  min-height: calc(
+.banner {
+  position: relative;
+  z-index: -1;
+}
+
+.banner-content {
+  position: absolute;
+  top: 50px;
+  width: 100%;
+}
+
+.banner-content > .spacer {
+  color: #DBEAFF;
+}
+
+.banner-content > h3 {
+  color: #FFFFFF;
+  font-size: 1.5em;
+  margin-left: 2em;
+}
+
+.sub-banner {
+  background-color: var(--subtext-bg-color);
+  font-family: var(--header-font-family-bold);
+  font-weight: 600;
+  font-size: 31.5px;
+  letter-spacing: 0.98px;
+  color: var(--header-color);
+  padding: 35px 50px;
+}
+
+
+.section {
+  /* min-height: calc(
     var(--content-min-height) - 2 * var(--content-padding-vertical)
-  );
+  ); */
   padding: var(--content-padding-vertical) var(--content-padding-horizontal);
 
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 2em;
 }
 .hightlight {
   background-color: var(--content-odd-bg-color);
-  color: var(--content-odd-text-color);
+}
+.content > h3 {
+  letter-spacing: 1.05px;
+}
+
+.content > a {
+  margin-top: 140px;
+}
+
+.read-more {
+  margin-top: 20px;
+}
+
+.text {
+  font-family: var(--content-text-font-family);
+  font-size: 21px;
 }
 
 .image {
   width: 100%;
-  border: solid 1px #000000;
 }
 .img-holder {
    margin: 0;
@@ -123,6 +160,22 @@ body {
     align-items: flex-start;
 }
 
+.justify-content-center {
+  justify-content: center;
+}
+
+.align-item-center {
+  align-items: center;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
 @media screen and (min-width: 1000px) {
   :root {
     --font-size: 1.1em;
@@ -130,11 +183,11 @@ body {
     --content-padding-horizontal: 5em;
     --content-min-height: 0;
   }
-  .content {
+  .section {
     flex-direction: row;
     gap: 2em;
   }
-  .content > * {
+  .section > * {
     width: 100%;
   }
 }
@@ -145,7 +198,10 @@ body {
     --content-padding-horizontal: 10em;
     --content-min-height: 0;
   }
-  .content {
+  .section {
       gap: 5em;
+  }
+  .banner-content > h3 {
+    font-size: 3em;
   }
 }
