@@ -14,10 +14,10 @@ namespace UnitTestsProject
     public class HTMSerialization_Deserialization
     {
         [TestMethod]
-        [TestCategory("DeSerialization")]
+        [TestCategory("Deserialization")]
         public void DeserializeValueTest()
         {
-            HtmDeserializer1 htm = new HtmDeserializer1();
+            HtmDeserializer2 htm = new HtmDserializer2();
 
             using (StreamWriter sw = new StreamWriter("ser.txt"))
             {
@@ -30,6 +30,119 @@ namespace UnitTestsProject
                 htm.SerializeValue(true, sw);
                 htm.SerializeEnd("UnitTest", sw);
             }
+
+            using (StreamReader sr = new StreamReader("ser.txt"))
+            {
+                int intfulldata;
+                double doublefulldata;
+                long longfulldata;
+                string stringfulldata;
+                bool boolfulldata;
+                while (sr.Peek() > 0)
+                {
+                    string data = sr.ReadLine();
+                    if (data == string.Empty || data == htm.ReadBegin("UnitTest"))
+                    {
+                        continue;
+                    }
+                    else if (data == htm.ReadEnd("UnitTest"))
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                        for (int i = 0; i < str.Length; i++)
+                        {
+                            switch (i)
+                            {
+                                case 0:
+                                    {
+                                        intfulldata = htm.ReadIntValue(str[i]);
+                                        break;
+                                    }
+                                case 1:
+                                    {
+                                        doublefulldata = htm.ReadDoubleValue(str[i]);
+                                        break;
+                                    }
+                                case 2:
+                                    {
+                                        longfulldata = htm.ReadLongValue(str[i]);
+                                        break;
+                                    }
+                                case 3:
+                                    {
+                                        stringfulldata = htm.ReadStringValue(str[i]);
+                                        break;
+                                    }
+                                case 4:
+                                    {
+                                        boolfulldata = htm.ReadBoolValue(str[i]);
+                                        break;
+                                    }
+                                default:
+                                    { break; }
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+         public void DeserializeArrayDouble()
+        {
+            HtmDeserializer2 htm = new HtmDeserializer2();
+            Double[] visual = new Double[10];
+            Double[] visual1 = new Double[10];
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(DeserializeArrayDouble)}.txt"))
+            {
+                htm.DeserializeBegin("UnitTest", sw);
+
+                for (int i = 0; i < 10; i++)
+                {
+                    visual[i] = i;
+                }
+
+                htm.DeserializeValue(visual, sw);
+
+                htm.DeserializeEnd("UnitTest", sw);
+            }
+            using (StreamReader sr = new StreamReader($"ser_{nameof(DeserializeArrayDouble)}.txt"))
+            {
+                while (sr.Peek() >= 0)
+                {
+                    string data = sr.ReadLine();
+
+                    if (data == String.Empty || data == htm.ReadBegin("UnitTest"))
+                    {
+                        continue;
+                    }
+                    else if (data == htm.ReadEnd("UnitTest"))
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                        for (int i = 0; i < str.Length; i++)
+                        {
+                            switch (i)
+                            {
+                                case 0:
+                                    visual1 = htm.ReadArrayDouble(str[i]);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+                }
+
+            }
+            Assert.IsTrue(visual1.SequenceEqual(visual));
 
         }
 
