@@ -108,7 +108,7 @@ namespace TimeSeriesSequence
         /// </summary>
         /// <param name="taxiData"></param>
         /// <returns></returns>
-        public static object EncodePassengerData(List<object> taxiData)
+        public static List<Dictionary<string, int[]>> EncodePassengerData(List<ProcessedData> taxiData)
         {
             List<Dictionary<string, int[]>> ListOfEncodedTrainingSDR = new List<Dictionary<string, int[]>>();
 
@@ -135,11 +135,11 @@ namespace TimeSeriesSequence
                 sdr = sdr.Concat(dayOfWeekEncoder.Encode(dayOfWeek)).ToArray();
 
                 //    UNCOMMENT THESE LINES TO DRAW SDR BITMAP
-                int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(sdr, 100, 100);
-                var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
-                NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"{sequence.Date.Day}.png", null);
-                tempDictionary.Add(observationLabel.ToString(), sdr);
+                //int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(sdr, 100, 100);
+                //var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
+                //NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"{sequence.Date.Day}.png", null);
 
+                tempDictionary.Add(observationLabel.ToString(), sdr);
                 ListOfEncodedTrainingSDR.Add(tempDictionary);
             }
 
@@ -166,7 +166,7 @@ namespace TimeSeriesSequence
                 { "W", 3},
                 { "N", 35},
                 { "MinVal", (double)1}, // Min value = (0).
-                { "MaxVal", (double)32}, // Max value = (7).
+                { "MaxVal", (double)32}, // Max value = (32).
                 { "Periodic", true},
                 { "Name", "Date"},
                 { "ClipInput", true},
@@ -181,7 +181,7 @@ namespace TimeSeriesSequence
                 { "W", 3},
                 { "N", 15},
                 { "MinVal", (double)1}, // Min value = (0).
-                { "MaxVal", (double)12}, // Max value = (7).
+                { "MaxVal", (double)13}, // Max value = (12).
                 { "Periodic", true}, // Since Monday would repeat again.
                 { "Name", "Month"},
                 { "ClipInput", true},
@@ -195,7 +195,7 @@ namespace TimeSeriesSequence
                 { "W", 3},
                 { "N", 27},
                 { "MinVal", (double)0}, // Min value = (0).
-                { "MaxVal", (double)23}, // Max value = (23).
+                { "MaxVal", (double)24}, // Max value = (23).
                 { "Periodic", true}, // Since Segment would repeat again.
                 { "Name", "Segment"},
                 { "ClipInput", true},
@@ -208,7 +208,7 @@ namespace TimeSeriesSequence
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static List<object> ProcessExistingDatafromCSVfile( string path)
+        public static List<ProcessedData> ProcessExistingDatafromCSVfile( string path)
         {
             List<TaxiData> taxiDatas = new List<TaxiData>();
 
@@ -239,7 +239,7 @@ namespace TimeSeriesSequence
         /// </summary>
         /// <param name="taxiDatas"></param>
         /// <param name="path"></param>
-        private static List<object> CreateProcessedCSVFile(List<TaxiData> taxiDatas, string path)
+        private static List<ProcessedData> CreateProcessedCSVFile(List<TaxiData> taxiDatas, string path)
         {
             List<ProcessedData> processedTaxiDatas = new List<ProcessedData>();
 
@@ -270,11 +270,13 @@ namespace TimeSeriesSequence
                         }).AsEnumerable()
                           .Cast<dynamic>();
 
-
+            var totalPassangerData = accumulatedPassangerData.ToList();
             StringBuilder csvcontent = new StringBuilder();
             csvcontent.AppendLine("Pickup_Date,TimeSpan,Segment,Passenger_count");
-            foreach (var taxiData in accumulatedPassangerData)
+            processedTaxiDatas.Clear();
+            foreach (var taxiData in totalPassangerData)
             {
+                processedTaxiDatas.Add(new ProcessedData { Date = taxiData.Date, Passanger_count = taxiData.Passsanger_Count, Segment = taxiData.Segment, TimeSpan = taxiData.TimeSpan });
                 var newLine = string.Format("{0},{1},{2},{3}", taxiData.Date, taxiData.TimeSpan, taxiData.Segment, taxiData.Passsanger_Count);
                 csvcontent.AppendLine(newLine);
             }
@@ -288,7 +290,7 @@ namespace TimeSeriesSequence
             // Save processed CSV data
             File.AppendAllText(path + "2021_Green_Processed.csv", csvcontent.ToString());
 
-            return accumulatedPassangerData.ToList();
+            return processedTaxiDatas;
         }
 
         /// <summary>

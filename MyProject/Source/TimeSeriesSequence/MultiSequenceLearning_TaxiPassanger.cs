@@ -28,21 +28,21 @@ namespace TimeSeriesSequence
         {
             Console.WriteLine("Starting to learn Taxi Passanger data");
 
-            int inputBits = 72;
+            int inputBits = 88;
             int maxCycles = 15;
             int numColumns = 1024;
 
             //Read the taxi data set and write into new processed csv with reuired column
             var taxiData = HelperMethods.ProcessExistingDatafromCSVfile(path);
 
-            var trainTaxiData = (Dictionary<string, List<double>>)HelperMethods.EncodePassengerData(taxiData);
+            List<Dictionary<string, int[]>> trainTaxiData = HelperMethods.EncodePassengerData(taxiData);
 
             EncoderBase encoder = HelperMethods.FetchDateTimeEncoder();
 
             RunExperiment(inputBits, maxCycles, numColumns, encoder, trainTaxiData);
         }
 
-        private static HtmPredictionEngine RunExperiment(int inputBits, int maxCycles, int numColumns, EncoderBase encoder, Dictionary<string, List<double>> trainTaxiData)
+        private static HtmPredictionEngine RunExperiment(int inputBits, int maxCycles, int numColumns, EncoderBase encoder, List<Dictionary<string, int[]>> trainTaxiData)
         {
             var OUTPUT_LOG_LIST = new List<Dictionary<int, string>>();
             var OUTPUT_LOG = new Dictionary<int, string>();
@@ -60,7 +60,7 @@ namespace TimeSeriesSequence
 
             HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
 
-            var numUniqueInputs = GetNumberOfInputs(trainTaxiData);
+            var numUniqueInputs = trainTaxiData.Count;
 
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
 
@@ -93,12 +93,12 @@ namespace TimeSeriesSequence
             // In this stage we want that SP get boosted and see all elements before we start learning with TM.
             // All would also work fine with TM in layer, but it would work much slower.
             // So, to improve the speed of experiment, we first ommit the TM and then after the newborn-stage we add it to the layer.
-            layer1.HtmModules.Add("encoder", encoder);
+            //layer1.HtmModules.Add("encoder", encoder);
             layer1.HtmModules.Add("sp", sp);
 
             //double[] inputs = inputValues.ToArray();
             int[] prevActiveCols = new int[0];
-
+            bool learn = true;
             int cycle = 0;
             int matches = 0;
 
@@ -118,13 +118,27 @@ namespace TimeSeriesSequence
 
                 Debug.WriteLine($"-------------- Newborn Cycle {cycle} ---------------");
 
-                foreach (var inputs in trainTaxiData)
+                foreach (var sequence in trainTaxiData)
                 {
-                    foreach (var input in inputs.Value)
-                    {
-                        Debug.WriteLine($" -- {inputs.Key} - {input} --");
+                    //foreach (var input in data)
+                    //{
+                    //    Debug.WriteLine($" -- {data.} - {input} --");
 
-                        var lyrOut = layer1.Compute(input, true);
+                    //    var lyrOut = layer1.Compute(input, true);
+
+                    //    if (isInStableState)
+                    //        break;
+                    //}
+
+                    foreach (var element in sequence)
+                    {
+                        var observationClass = element.Key; // OBSERVATION LABEL || SEQUENCE LABEL
+                        var elementSDR = element.Value; // ALL ELEMENT IN ONE SEQUENCE
+
+                        Console.WriteLine($"-------------- {observationClass} ---------------");
+
+                        var lyrOut = layer1.Compute(elementSDR, true);     /* CORTEX LAYER OUTPUT with elementSDR as INPUT and LEARN = TRUE */
+                        //var lyrOut = layer1.Compute(elementSDR, learn);    /* CORTEX LAYER OUTPUT with elementSDR as INPUT and LEARN = if TRUE */
 
                         if (isInStableState)
                             break;
@@ -150,102 +164,70 @@ namespace TimeSeriesSequence
 
             //
             // Loop over all sequences.
-            foreach (var sequenceKeyPair in trainTaxiData)
+            foreach (var sequence in trainTaxiData)
             {
                 int SequencesMatchCount = 0; // NUMBER OF MATCHES
                 var tempLOGFILE = new Dictionary<int, string>();
                 var tempLOGGRAPH = new Dictionary<int, double>();
                 double SaturatedAccuracyCount = 0;
 
-                Debug.WriteLine($"-------------- Sequences {sequenceKeyPair.Key} ---------------");
-
-                int maxPrevInputs = sequenceKeyPair.Value.Count - 1;
-
-                List<string> previousInputs = new List<string>();
-
-                previousInputs.Add("-1.0");
-
-                //
-                // Now training with SP+TM. SP is pretrained on the given input pattern set.
                 for (int i = 0; i < maxCycles; i++)
                 {
-                    matches = 0;
-                    cycle++;
+                    List<string> ElementWiseClasses = new List<string>();
 
-                    Debug.WriteLine("");
+                    int elementMatches = 0;
 
-                    Debug.WriteLine($"-------------- Cycle {cycle} ---------------");
-                    Debug.WriteLine("");
-
-                    foreach (var input in sequenceKeyPair.Value)
+                    foreach (var Elements in sequence)
                     {
-                        Debug.WriteLine($"-------------- {input} ---------------");
+                        var observationLabel = Elements.Key;
 
-                        var lyrOut = layer1.Compute(input, true) as ComputeCycle;
+                        var lyrOut = new ComputeCycle();
 
-                        var activeColumns = layer1.GetResult("sp") as int[];
+                        lyrOut = layer1.Compute(Elements.Value, learn) as ComputeCycle;
+                        Debug.WriteLine(string.Join(',', lyrOut.ActivColumnIndicies));
 
-                        previousInputs.Add(input.ToString());
-                        if (previousInputs.Count > (maxPrevInputs + 1))
-                            previousInputs.RemoveAt(0);
+                        List<Cell> actCells = (lyrOut.ActiveCells.Count == lyrOut.WinnerCells.Count) ? lyrOut.ActiveCells : lyrOut.WinnerCells;
 
-                        // In the pretrained SP with HPC, the TM will quickly learn cells for patterns
-                        // In that case the starting sequence 4-5-6 might have the sam SDR as 1-2-3-4-5-6,
-                        // Which will result in returning of 4-5-6 instead of 1-2-3-4-5-6.
-                        // HtmClassifier allways return the first matching sequence. Because 4-5-6 will be as first
-                        // memorized, it will match as the first one.
-                        if (previousInputs.Count < maxPrevInputs)
-                            continue;
+                        cls.Learn(observationLabel, actCells.ToArray());
 
-                        string key = GetKey(previousInputs, input, sequenceKeyPair.Key);
-
-                        List<Cell> actCells;
-
-                        if (lyrOut.ActiveCells.Count == lyrOut.WinnerCells.Count)
+                        if (lastPredictedValue == observationLabel && lastPredictedValue != "")
                         {
-                            actCells = lyrOut.ActiveCells;
+                            elementMatches++;
+                            Debug.WriteLine($"Match. Actual value: {observationLabel} - Predicted value: {lastPredictedValue}");
                         }
                         else
                         {
-                            actCells = lyrOut.WinnerCells;
+                            Debug.WriteLine($"Mismatch! Actual value: {observationLabel} - Predicted values: {lastPredictedValue}");
                         }
-
-                        cls.Learn(key, actCells.ToArray());
 
                         Debug.WriteLine($"Col  SDR: {Helpers.StringifyVector(lyrOut.ActivColumnIndicies)}");
                         Debug.WriteLine($"Cell SDR: {Helpers.StringifyVector(actCells.Select(c => c.Index).ToArray())}");
 
-                        //
-                        // If the list of predicted values from the previous step contains the currently presenting value,
-                        // we have a match.
-                        if (lastPredictedValues.Contains(key))
-                        {
-                            matches++;
-                            Debug.WriteLine($"Match. Actual value: {key} - Predicted value: {lastPredictedValues.FirstOrDefault(key)}.");
-                        }
-                        else
-                            Debug.WriteLine($"Missmatch! Actual value: {key} - Predicted values: {String.Join(',', lastPredictedValues)}");
+                        if (learn == false)
+                            Debug.WriteLine($"Inference mode");
 
                         if (lyrOut.PredictiveCells.Count > 0)
                         {
-                            //var predictedInputValue = cls.GetPredictedInputValue(lyrOut.PredictiveCells.ToArray());
-                            var predictedInputValues = cls.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), 3);
+                            var predictedInputValue = cls.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), 3);
 
-                            foreach (var item in predictedInputValues)
+                            Debug.WriteLine($"Current Input: {observationLabel}");
+                            Debug.WriteLine("The predictions with similarity greater than 50% are");
+
+                            foreach (var t in predictedInputValue)
                             {
-                                Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {item.PredictedInput} - {item.Similarity}");
+
+                                if (t.Similarity >= (double)50.00)
+                                {
+                                    Debug.WriteLine($"Predicted Input: {string.Join(", ", t.PredictedInput)},\tSimilarity Percentage: {string.Join(", ", t.Similarity)}, \tNumber of Same Bits: {string.Join(", ", t.NumOfSameBits)}");
+                                }
                             }
 
-                            lastPredictedValues = predictedInputValues.Select(v => v.PredictedInput).ToList();
-                        }
-                        else
-                        {
-                            Debug.WriteLine($"NO CELLS PREDICTED for next cycle.");
-                            lastPredictedValues = new List<string>();
+                            lastPredictedValue = predictedInputValue.First().PredictedInput;
+
                         }
                     }
 
-                    accuracy = ((double)matches / (trainTaxiData.Count)) * 100;
+                    accuracy = ((double)elementMatches / (sequence.Count)) * 100;
                     Debug.WriteLine($"Cycle : {i} \t Accuracy:{accuracy}");
                     tempLOGGRAPH.Add(i, accuracy);
                     if (accuracy == 100)
@@ -286,8 +268,9 @@ namespace TimeSeriesSequence
                 }
 
                 tm.Reset(mem);
-               // learn = true;
+                learn = true;
                 OUTPUT_LOG_LIST.Add(tempLOGFILE);
+
             }
 
 
