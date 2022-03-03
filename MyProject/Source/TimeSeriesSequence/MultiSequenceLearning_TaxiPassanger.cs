@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using static TimeSeriesSequence.Entity.HelperClasses;
+using static TimeSeriesSequence.MultisequenceLearningTest;
 
 namespace TimeSeriesSequence
 {
@@ -34,18 +35,18 @@ namespace TimeSeriesSequence
             //Read the taxi data set and write into new processed csv with reuired column
             var taxiData = HelperMethods.ProcessExistingDatafromCSVfile(path);
 
-            var trainTaxiData = (Dictionary<string, List<double>>) HelperMethods.EncodePassengerData(taxiData);
+            var trainTaxiData = (Dictionary<string, List<double>>)HelperMethods.EncodePassengerData(taxiData);
 
             EncoderBase encoder = HelperMethods.FetchDateTimeEncoder();
 
-            // var trained_HTM_model = Run(inputBits, maxCycles, numColumns, trainingDataProcessed, false);
-            //var trained_HTM_model1 =  
             RunExperiment(inputBits, maxCycles, numColumns, encoder, trainTaxiData);
         }
 
-        private static void RunExperiment(int inputBits, int maxCycles, int numColumns, EncoderBase encoder, Dictionary<string, List<double>> trainTaxiData)
+        private static HtmPredictionEngine RunExperiment(int inputBits, int maxCycles, int numColumns, EncoderBase encoder, Dictionary<string, List<double>> trainTaxiData)
         {
-
+            var OUTPUT_LOG_LIST = new List<Dictionary<int, string>>();
+            var OUTPUT_LOG = new Dictionary<int, string>();
+            var OUTPUT_trainingAccuracy_graph = new List<Dictionary<int, double>>();
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
@@ -140,10 +141,22 @@ namespace TimeSeriesSequence
             // We activate here the Temporal Memory algorithm.
             layer1.HtmModules.Add("tm", tm);
 
+            string lastPredictedValue = "-1";
+            List<string> lastPredictedValueList = new List<string>();
+            double lastCycleAccuracy = 0;
+            double accuracy = 0;
+
+            List<List<string>> possibleSequence = new List<List<string>>();
+
             //
             // Loop over all sequences.
             foreach (var sequenceKeyPair in trainTaxiData)
             {
+                int SequencesMatchCount = 0; // NUMBER OF MATCHES
+                var tempLOGFILE = new Dictionary<int, string>();
+                var tempLOGGRAPH = new Dictionary<int, double>();
+                double SaturatedAccuracyCount = 0;
+
                 Debug.WriteLine($"-------------- Sequences {sequenceKeyPair.Key} ---------------");
 
                 int maxPrevInputs = sequenceKeyPair.Value.Count - 1;
@@ -157,7 +170,6 @@ namespace TimeSeriesSequence
                 for (int i = 0; i < maxCycles; i++)
                 {
                     matches = 0;
-
                     cycle++;
 
                     Debug.WriteLine("");
@@ -232,10 +244,117 @@ namespace TimeSeriesSequence
                             lastPredictedValues = new List<string>();
                         }
                     }
+
+                    accuracy = ((double)matches / (trainTaxiData.Count)) * 100;
+                    Debug.WriteLine($"Cycle : {i} \t Accuracy:{accuracy}");
+                    tempLOGGRAPH.Add(i, accuracy);
+                    if (accuracy == 100)
+                    {
+                        SequencesMatchCount++;
+                        if (SequencesMatchCount >= 30)
+                        {
+                            tempLOGFILE.Add(i, $"Cycle : {i} \t  Accuracy:{accuracy} \t Number of times repeated {SequencesMatchCount}");
+                            break;
+                        }
+                        tempLOGFILE.Add(i, $"Cycle : {i} \t  Accuracy:{accuracy} \t Number of times repeated {SequencesMatchCount}");
+
+                    }
+                    else if (lastCycleAccuracy == accuracy && accuracy != 0)
+                    {
+                        SaturatedAccuracyCount++;
+                        if (SaturatedAccuracyCount >= 20 && lastCycleAccuracy > 70)
+                        {
+                            Debug.WriteLine($"NO FURTHER ACCURACY CAN BE ACHIEVED");
+                            Debug.WriteLine($"Saturated Accuracy : {lastCycleAccuracy} \t Number of times repeated {SaturatedAccuracyCount}");
+                            tempLOGFILE.Add(i, $"Cycle: { i} \t Accuracy:{accuracy} \t Number of times repeated {SaturatedAccuracyCount}");
+                            break;
+                        }
+                        else
+                        {
+                            tempLOGFILE.Add(i, $"Cycle: { i} \t Saturated Accuracy : {lastCycleAccuracy} \t Number of times repeated {SaturatedAccuracyCount}");
+                        }
+                    }
+                    else
+                    {
+                        SaturatedAccuracyCount = 0;
+                        SequencesMatchCount = 0;
+                        lastCycleAccuracy = accuracy;
+                        tempLOGFILE.Add(i, $"cycle : {i} \t Accuracy :{accuracy} \t ");
+                    }
+                    lastPredictedValueList.Clear();
+
+                }
+
+                tm.Reset(mem);
+               // learn = true;
+                OUTPUT_LOG_LIST.Add(tempLOGFILE);
+            }
+
+
+            sw.Stop();
+
+            //****************DISPLAY STATUS OF EXPERIMENT
+            Debug.WriteLine("-------------------TRAINING END------------------------");
+            Console.WriteLine("-----------------TRAINING END------------------------");
+            Debug.WriteLine("-------------------WRTING TRAINING OUTPUT LOGS---------------------");
+            Console.WriteLine("-------------------WRTING TRAINING OUTPUT LOGS------------------------");
+            //*****************
+
+            DateTime now = DateTime.Now;
+            string filename = now.ToString("g"); //
+
+            filename = "TaxiPassangerPredictionExperiment" + filename.Split(" ")[0] + "_" + now.Ticks.ToString() + ".txt";
+            string path = System.AppDomain.CurrentDomain.BaseDirectory + "\\TrainingLogs\\" + filename;
+
+            using (StreamWriter swOutput = File.CreateText(path))
+            {
+                swOutput.WriteLine($"{filename}");
+                foreach (var SequencelogCycle in OUTPUT_LOG_LIST)
+                {
+                    swOutput.WriteLine("******Sequence Starting*****");
+                    foreach (var cycleOutPutLog in SequencelogCycle)
+                    {
+                        swOutput.WriteLine(cycleOutPutLog.Value, true);
+                    }
+                    swOutput.WriteLine("****Sequence Ending*****");
+
                 }
             }
+
+            Debug.WriteLine("-------------------TRAINING LOGS HAS BEEN CREATED---------------------");
+            Console.WriteLine("-------------------TRAINING LOGS HAS BEEN CREATED------------------------");
+
+            // var returnDictionary = new Dictionary<CortexLayer<object, object>, HtmClassifier<string, ComputeCycle>>();
+            // returnDictionary.Add(layer1, cls);
+
+            //return returnDictionary;
+
+            return new HtmPredictionEngine { Layer = layer1, Classifier = cls, Connections = mem };
+
         }
 
+        public class HtmPredictionEngine
+        {
+            public void Reset()
+            {
+                var tm = this.Layer.HtmModules.FirstOrDefault(m => m.Value is TemporalMemory);
+                ((TemporalMemory)tm.Value).Reset(this.Connections);
+            }
+            public List<ClassifierResult<string>> Predict(double input)
+            {
+                var lyrOut = this.Layer.Compute(input, false) as ComputeCycle;
+
+                List<ClassifierResult<string>> predictedInputValues = this.Classifier.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), 3);
+
+                return predictedInputValues;
+            }
+
+            public Connections Connections { get; set; }
+
+            public CortexLayer<object, object> Layer { get; set; }
+
+            public HtmClassifier<string, ComputeCycle> Classifier { get; set; }
+        }
         /// <summary>
         /// Read the datas from taxi data set and process it
         /// </summary>
