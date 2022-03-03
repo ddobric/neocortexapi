@@ -35,12 +35,13 @@ namespace LabelPrediction
             EncoderBase encoderDateTime;
             CortexLayer<object, object> trainedCortexLayer;
             HtmClassifier<string, ComputeCycle> trainedClassifier;
+            HtmPredictionEngine trainedEngine;
 
             PrepareTrainingData(sequenceFormatType, out encodedData, out encoderDateTime);
 
-            RunTraining(inputBits, maxCycles, numColumns, encodedData, encoderDateTime, out trainedCortexLayer, out trainedClassifier);
+            RunTraining(inputBits, maxCycles, numColumns, encodedData, encoderDateTime, out trainedEngine);
 
-            RunPrediction(trainedCortexLayer, trainedClassifier);
+            RunPrediction(trainedEngine);
         }
 
         private static void PrepareTrainingData(string[] sequenceFormatType, out List<Dictionary<string, int[]>> encodedData, out EncoderBase encoderDateTime)
@@ -55,20 +56,20 @@ namespace LabelPrediction
             encoderDateTime = HelperMethods.FetchDateTimeEncoder();
         }
 
-        private void RunTraining(int inputBits, int maxCycles, int numColumns, List<Dictionary<string, int[]>> encodedData, EncoderBase encoderDateTime, out CortexLayer<object, object> trainedCortexLayer, out HtmClassifier<string, ComputeCycle> trainedClassifier)
+        private void RunTraining(int inputBits, int maxCycles, int numColumns, List<Dictionary<string, int[]>> encodedData, EncoderBase encoderDateTime, out HtmPredictionEngine trainedHTMmodel)
         {
             Console.WriteLine("Started Learning...");
 
-            // ???
-            var trainedHTMmodel = Run(inputBits, maxCycles, numColumns, encoderDateTime, encodedData);
+            //
+            trainedHTMmodel = Run(inputBits, maxCycles, numColumns, encoderDateTime, encodedData);
 
 
-            trainedCortexLayer = trainedHTMmodel.Keys.ElementAt(0);
-            trainedClassifier = trainedHTMmodel.Values.ElementAt(0);
+            //trainedCortexLayer = trainedHTMmodel.Keys.ElementAt(0);
+            //trainedClassifier = trainedHTMmodel.Values.ElementAt(0);
             Console.WriteLine("Done Learning");
         }
 
-        private static void RunPrediction(CortexLayer<object, object> trainedCortexLayer, HtmClassifier<string, ComputeCycle> trainedClassifier)
+        private static void RunPrediction(HtmPredictionEngine trainedEngine)
         {
             Debug.WriteLine("PLEASE ENTER DATE FOR PREDICTING POWER CONSUMPTION:      *note format->dd/mm/yy hh:00");
             Console.WriteLine("PLEASE ENTER DATE FOR PREDICTING POWER CONSUMPTION:      *note format->dd/mm/yy hh:00");
@@ -80,19 +81,29 @@ namespace LabelPrediction
                 if (userInput != null)
                 {
                     var sdr = HelperMethods.EncodeSingleInput(userInput);
-                    var userLayerOutput = trainedCortexLayer.Compute(sdr, false) as ComputeCycle;
-                    var predictedValuesForUserInput = trainedClassifier.GetPredictedInputValues(userLayerOutput.PredictiveCells.ToArray(), 5);
+                    var predictedValuesForUserInput = trainedEngine.Predict(sdr);
                     foreach (var predictedVal in predictedValuesForUserInput)
                     {
                         Console.WriteLine("SIMILARITY " + predictedVal.Similarity + " PREDICTED VALUE :" + predictedVal.PredictedInput);
                     }
+                    trainedEngine.Reset();
                 }
                 Console.WriteLine("PLEASE ENTER DATE FOR PREDICTING POWER CONSUMPTION:      *note format->dd/mm/yy hh:00");
                 userInput = Console.ReadLine();
             }
         }
 
-        public Dictionary<CortexLayer<object,object>, HtmClassifier<string, ComputeCycle>> Run(int inputBits, int maxCycles, int numColumns, EncoderBase encoder, List<Dictionary<string,int[]>> sequences)
+        /// <summary>
+        /// Multi-sequence Learning MOdel is trained here
+        /// </summary>
+        /// <param name="inputBits"></param>
+        /// <param name="maxCycles"></param>
+        /// <param name="numColumns"></param>
+        /// <param name="encoder"></param>
+        /// <param name="sequences">Multi Sequence for training</param>
+        /// <returns>Learned CortexLayer and HtmClassifier for prediction</returns>
+        //public Dictionary<CortexLayer<object,object>, HtmClassifier<string, ComputeCycle>> Run(int inputBits, int maxCycles, int numColumns, EncoderBase encoder, List<Dictionary<string,int[]>> sequences)
+        public HtmPredictionEngine Run(int inputBits, int maxCycles, int numColumns, EncoderBase encoder, List<Dictionary<string,int[]>> sequences)
         {
             var htmConfig = HelperMethods.FetchHTMConfig(inputBits, numColumns);
 
@@ -314,7 +325,7 @@ namespace LabelPrediction
             DateTime now = DateTime.Now;
             string filename = now.ToString("g"); //
 
-            filename = "PowwerConsumptionPredictionExperiment" + filename.Split(" ")[0] + "_" + now.Ticks.ToString() + ".txt";
+            filename = "PowerConsumptionPredictionExperiment" + filename.Split(" ")[0] + "_" + now.Ticks.ToString() + ".txt";
             string path = System.AppDomain.CurrentDomain.BaseDirectory + "\\TrainingLogs\\" + filename;
 
             using (StreamWriter swOutput = File.CreateText(path))
@@ -337,8 +348,9 @@ namespace LabelPrediction
 
             var returnDictionary = new Dictionary<CortexLayer<object, object>, HtmClassifier<string, ComputeCycle>>();
             returnDictionary.Add(layer1, cls);
-            return returnDictionary;
+            //return returnDictionary;
 
+            return new HtmPredictionEngine { Layer = layer1, Classifier = cls, Connections = mem };
         }
 
         public class HtmPredictionEngine
@@ -348,7 +360,7 @@ namespace LabelPrediction
                 var tm = this.Layer.HtmModules.FirstOrDefault(m => m.Value is TemporalMemory);
                 ((TemporalMemory)tm.Value).Reset(this.Connections);
             }
-            public List<ClassifierResult<string>> Predict(double input)
+            public List<ClassifierResult<string>> Predict(int[] input)
             {
                 var lyrOut = this.Layer.Compute(input, false) as ComputeCycle;
 
