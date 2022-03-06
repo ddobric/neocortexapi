@@ -26,7 +26,6 @@ namespace TimeSeriesSequence
         /// </summary>
         public void RunPassangerTimeSeriesSequenceExperiment()
         {
-            Console.WriteLine("Starting to learn Taxi Passanger data");
 
             int inputBits = 88;
             int maxCycles = 15;
@@ -39,10 +38,50 @@ namespace TimeSeriesSequence
 
             EncoderBase encoder = HelperMethods.FetchDateTimeEncoder();
 
-            RunExperiment(inputBits, maxCycles, numColumns, encoder, trainTaxiData);
+
+            Console.WriteLine("Starting to learn Taxi Passanger data");
+
+            var learningExpResult = RunExperiment(inputBits, maxCycles, numColumns, encoder, trainTaxiData);
+
+            CortexLayer<object, object> trainedCortexLayer = learningExpResult.Keys.ElementAt(0);
+            HtmClassifier<string, ComputeCycle>  trainedClassifier = learningExpResult.Values.ElementAt(0);
+
+            Console.WriteLine("Complete Learning");
+
+            Console.WriteLine("PLEASE ENTER DATE and TIME FOR PREDICTING TAXI PASSANGER:      *note format->dd/mm/yyyy hh:00");
+           
+            var userInputDateTime = Console.ReadLine();
+
+            RunPassangerPrediction(userInputDateTime, trainedCortexLayer, trainedClassifier);
         }
 
-        private static HtmPredictionEngine RunExperiment(int inputBits, int maxCycles, int numColumns, EncoderBase encoder, List<Dictionary<string, int[]>> trainTaxiData)
+        /// <summary>
+        /// Predict the no of passanger based on user Input Date time
+        /// </summary>
+        /// <param name="userInputDateTime"></param>
+        /// <param name="trainedPassangerCortexLayer"></param>
+        /// <param name="trainedPassangerClassifier"></param>
+        private void RunPassangerPrediction(string? userInputDateTime, CortexLayer<object, object> trainedPassangerCortexLayer, HtmClassifier<string, ComputeCycle> trainedPassangerClassifier)
+        {
+            if (userInputDateTime != null)
+            {
+                DateTime userInput = DateTime.Parse(userInputDateTime);
+
+                var sdr = HelperMethods.GetSDRofDateTime(userInput);
+                var userLayerOutput = trainedPassangerCortexLayer.Compute(sdr, false) as ComputeCycle;
+                var predictedValuesForUserInput = trainedPassangerClassifier.GetPredictedInputValues(userLayerOutput.PredictiveCells.ToArray(), 5);
+                foreach (var predictedVal in predictedValuesForUserInput)
+                {
+                    Console.WriteLine("PASSANGER SIMILARITY " + predictedVal.Similarity + " PREDICTED PASSANGER NO :" + predictedVal.PredictedInput);
+                }
+            }
+
+            else
+                Console.WriteLine("Enter valid Date Time for Passanger Predicting");
+
+        }
+
+        private static Dictionary<CortexLayer<object, object>, HtmClassifier<string, ComputeCycle>> RunExperiment(int inputBits, int maxCycles, int numColumns, EncoderBase encoder, List<Dictionary<string, int[]>> trainTaxiData)
         {
             var OUTPUT_LOG_LIST = new List<Dictionary<int, string>>();
             var OUTPUT_LOG = new Dictionary<int, string>();
@@ -307,12 +346,12 @@ namespace TimeSeriesSequence
             Debug.WriteLine("-------------------TRAINING LOGS HAS BEEN CREATED---------------------");
             Console.WriteLine("-------------------TRAINING LOGS HAS BEEN CREATED------------------------");
 
-            // var returnDictionary = new Dictionary<CortexLayer<object, object>, HtmClassifier<string, ComputeCycle>>();
-            // returnDictionary.Add(layer1, cls);
+            var returnDictionary = new Dictionary<CortexLayer<object, object>, HtmClassifier<string, ComputeCycle>>();
+            returnDictionary.Add(layer1, cls);
 
-            //return returnDictionary;
+            return returnDictionary;
 
-            return new HtmPredictionEngine { Layer = layer1, Classifier = cls, Connections = mem };
+            // return new HtmPredictionEngine { Layer = layer1, Classifier = cls, Connections = mem };
 
         }
 

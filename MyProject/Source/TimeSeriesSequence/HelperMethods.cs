@@ -145,6 +145,29 @@ namespace TimeSeriesSequence
 
             return ListOfEncodedTrainingSDR;
         }
+
+        public static int[] GetSDRofDateTime(DateTime dateTime)
+        {
+            ScalarEncoder dayEncoder = FetchDayEncoder();
+            ScalarEncoder monthEncoder = FetchMonthEncoder();
+            ScalarEncoder segmentEncoder = FetchSegmentEncoder();
+            ScalarEncoder dayOfWeekEncoder = FetchWeekDayEncoder();
+
+            int day = dateTime.Day;
+            int month = dateTime.Month;
+            Slot result = GetSlot(dateTime.ToString("H:mm"), GetSlots());
+            int segement = Convert.ToInt32(result.Segment);
+            int dayOfWeek = (int)dateTime.DayOfWeek;
+
+            int[] sdr = new int[0];
+
+            sdr = sdr.Concat(dayEncoder.Encode(day)).ToArray();
+            sdr = sdr.Concat(monthEncoder.Encode(month)).ToArray();
+            sdr = sdr.Concat(segmentEncoder.Encode(segement)).ToArray();
+            sdr = sdr.Concat(dayOfWeekEncoder.Encode(dayOfWeek)).ToArray();
+            return sdr;
+        }
+
         public static ScalarEncoder FetchWeekDayEncoder()
         {
             ScalarEncoder weekOfDayEncoder = new ScalarEncoder(new Dictionary<string, object>()
@@ -246,7 +269,7 @@ namespace TimeSeriesSequence
             foreach (var item in taxiDatas)
             {
                 var pickupTime = item.lpep_pickup_datetime.ToString("HH:mm");
-                Slot result = GetSlot(pickupTime, HelperMethods.GetSlots());
+                Slot result = GetSlot(pickupTime, GetSlots());
 
                 ProcessedData processedData = new ProcessedData();
                 processedData.Date = item.lpep_pickup_datetime.Date;
