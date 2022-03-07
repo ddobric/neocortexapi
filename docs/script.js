@@ -15,7 +15,7 @@ function addImageLink(x) {
   if (x.matches) {
     for (var i = 0; i < imageHolders.length; i++) {
       var holder = imageHolders[i];
-      var link = holder.getElementsByTagName("a");
+      var link = holder.getElementsByClassName("optional");
       if (link != null) {
         for (let index = 0; index < link.length; index++) {
           const element = link[index];
@@ -28,13 +28,19 @@ function addImageLink(x) {
       var holder = imageHolders[i];
       var image = holder.getElementsByClassName("image")[0];
       if (image != null) {
+
+        var optionalElement = document.createElement("div");
+        optionalElement.classList.add("optional");
+        optionalElement.classList.add("read-more");
+
         var link = document.createElement("a");
         link.href = image.src;
         link.target = "_blank";
         link.appendChild(
           document.createTextNode("Click to view original size.")
         );
-        holder.appendChild(link);
+        optionalElement.appendChild(link);
+        holder.appendChild(optionalElement);
       }
     }
   }
