@@ -49,10 +49,16 @@ namespace TimeSeriesSequence
             Console.WriteLine("Complete Learning");
 
             Console.WriteLine("PLEASE ENTER DATE and TIME FOR PREDICTING TAXI PASSANGER:      *note format->dd/mm/yyyy hh:00");
-           
             var userInputDateTime = Console.ReadLine();
 
-            RunPassangerPrediction(userInputDateTime, trainedCortexLayer, trainedClassifier);
+            while (!userInputDateTime.Equals("e") && userInputDateTime != "E")
+            {
+                RunPassangerPrediction(userInputDateTime, trainedCortexLayer, trainedClassifier);
+
+                Console.WriteLine("PLEASE ENTER DATE and TIME FOR PREDICTING TAXI PASSANGER:      *note format->dd/mm/yyyy hh:00");
+                userInputDateTime = Console.ReadLine();
+
+            }
         }
 
         /// <summary>
@@ -87,6 +93,9 @@ namespace TimeSeriesSequence
             var OUTPUT_LOG = new Dictionary<int, string>();
             var OUTPUT_trainingAccuracy_graph = new List<Dictionary<int, double>>();
             Stopwatch sw = new Stopwatch();
+
+            trainTaxiData = trainTaxiData.Take(2).ToList();
+
             sw.Start();
 
             int maxMatchCnt = 0;
@@ -325,10 +334,10 @@ namespace TimeSeriesSequence
             DateTime now = DateTime.Now;
             string filename = now.ToString("g"); //
 
-            filename = "TaxiPassangerPredictionExperiment" + filename.Split(" ")[0] + "_" + now.Ticks.ToString() + ".txt";
+            filename = "TaxiPassangerPredictionExperiment" + now.Ticks.ToString() + ".txt";
             string path = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, @"TrainingLogs\");
 
-            using (StreamWriter swOutput = File.CreateText(path))
+            using (StreamWriter swOutput = File.CreateText(path + filename))
             {
                 swOutput.WriteLine($"{filename}");
                 foreach (var SequencelogCycle in OUTPUT_LOG_LIST)
