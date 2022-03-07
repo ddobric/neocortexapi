@@ -326,7 +326,7 @@ namespace TimeSeriesSequence
             string filename = now.ToString("g"); //
 
             filename = "TaxiPassangerPredictionExperiment" + filename.Split(" ")[0] + "_" + now.Ticks.ToString() + ".txt";
-            string path = System.AppDomain.CurrentDomain.BaseDirectory + "\\TrainingLogs\\" + filename;
+            string path = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, @"TrainingLogs\");
 
             using (StreamWriter swOutput = File.CreateText(path))
             {
