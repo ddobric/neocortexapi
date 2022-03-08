@@ -130,6 +130,18 @@ namespace TimeSeriesSequence
                     { "Offset", 128},
                 });
 
+            encoderSettings.Add("MonthEncoder", new Dictionary<string, object>()
+                {
+                    { "W", 3},
+                    { "N", 15},
+                     // This means 8640 hours.
+                    { "MinVal", 0.0},
+                    { "MaxVal", 12.0},
+                    { "Periodic", false},
+                    { "Name", "MonthEncoder"},
+                    { "ClipInput", false},
+                    { "Offset", 128},
+                });
 
             encoderSettings.Add("ThreeDaysLongWeekendEncoder", new Dictionary<string, object>()
                 {
