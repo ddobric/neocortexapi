@@ -706,13 +706,13 @@ namespace NeoCortexApi
                 int index = removingCandidates.IndexOf(presynapticCell);
                 if (index != -1)
                 {
-                    removingCandidates.RemoveAt(index);
+                    removingCandidates.RemoveAt(index); ;
                 }
             }
 
             int candidatesLength = removingCandidates.Count;
 
-            // We take here eather wanted growing number of desired synapes of num of candidates
+            // We take here eather wanted growing number of desired synapes or num of candidates
             // if too many growing synapses requested.
             int numMissingSynapses = nDesiredNewSynapses < candidatesLength ? nDesiredNewSynapses : candidatesLength;
 
