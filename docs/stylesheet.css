@@ -1,6 +1,7 @@
 :root {
   --header-font-family: Raleway, SemiBold;
   --nav-font-size: 23px;
+  --nav-font-size-mobile: 18px;
   --header-color: #404040;
   --nav-bg-color: #ffffff;
   
@@ -36,7 +37,7 @@ h3, h2 {
 }
 
 .navigation > h3 {  
-  font-size: var(--nav-font-size);
+  font-size: var(--nav-font-size-mobile);
   color: var(--header-color);
   margin: 0.25em 1em;
   cursor: default;
@@ -66,7 +67,7 @@ h3, h2 {
 .btn {
   text-decoration: none;
   font-family: var(--header-font-family-bold);
-  font-size: 28px;
+  font-size: 20px;
   background-color: #FFD600;
   cursor: default;
   color: var(--header-color);
@@ -82,31 +83,23 @@ h3, h2 {
 }
 
 .banner-content {
-  /* position: absolute;
-  top: 10%; */
-  height: 40vh;
   background-image: url(./images/Header-banner.svg);
   background-repeat: no-repeat;
   background-size: cover;
-  padding-top: 10%;
+  height: 40vh;
 }
 
 .banner-content > img {
-  height: 100%;
-  margin-right: 2%;
-}
-
-.banner-content > .spacer {
-  color: #DBEAFF;
-  height: 100%;
+  display: none;
+  width: 100%;
 }
 
 .banner-content > h2 {
+  position: absolute;
   color: #FFFFFF;
   font-size: calc(1.75em * 1.618);
   margin: 0;
-  margin-left:2%;
-  
+  top: 15%;
 }
 
 .sub-banner {
@@ -203,6 +196,20 @@ h3, h2 {
   .section > * {
     width: 100%;
   }
+
+  .navigation > h3 {  
+    font-size: var(--nav-font-size);
+  }
+
+  .btn {
+    font-size: 28px;
+    padding: 0.2em 1.3em;
+  }
+
+  .banner-content > img {
+    display: block;
+    visibility: hidden;
+  }
 }
 
 @media screen and (min-width: 1250px) {
@@ -217,9 +224,7 @@ h3, h2 {
   .banner-content > h2 {
     font-size: calc(3em * 1.618);
   }
-
   .banner-content {
-    padding-top: 5%;
-    height: 50vh;
+    height: auto;
   }
 }
