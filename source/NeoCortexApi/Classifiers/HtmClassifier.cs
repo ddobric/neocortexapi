@@ -93,7 +93,7 @@ namespace NeoCortexApi.Classifiers
             foreach (var sdr in m_AllInputs[input])
             {
                 var numOfSameBitsPct = sdr.Intersect(cellIndicies).Count();
-                if (numOfSameBitsPct > maxSameBits)
+                if (numOfSameBitsPct >= maxSameBits)
                 {
                     maxSameBits = numOfSameBitsPct;
                     bestSdr = sdr;
@@ -119,9 +119,13 @@ namespace NeoCortexApi.Classifiers
             if (m_AllInputs.ContainsKey(input) == false)
                 m_AllInputs.Add(input, new List<int[]>());
 
-            // Store teh SDR only if it was not stored under the same key already.
+            // Store the SDR only if it was not stored under the same key already.
             if (!ContainsSdr(input, cellIndicies))
                 m_AllInputs[input].Add(cellIndicies);
+            else
+            {
+                // for debugging
+            }
 
             //
             // Make sure that only few last SDRs are recorded.
@@ -176,7 +180,7 @@ namespace NeoCortexApi.Classifiers
                     {
                         Debug.WriteLine($">indx:{n.ToString("D3")}\tinp/len: {pair.Key}/{cellIndicies.Length}, Same Bits = {cellIndicies.Length.ToString("D3")}\t, Similarity 100.00 %\t {Helpers.StringifyVector(cellIndicies)}");
 
-                        res.Add(new ClassifierResult<TIN> { PredictedInput = pair.Key, Similarity = (float)1.0, NumOfSameBits = cellIndicies.Length });
+                        res.Add(new ClassifierResult<TIN> { PredictedInput = pair.Key, Similarity = (float)100.0, NumOfSameBits = cellIndicies.Length });
                     }
                     else
                     {
