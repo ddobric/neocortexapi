@@ -27,8 +27,8 @@ namespace NeoCortexApiSample
             //SequenceLearning experiment = new SequenceLearning();
             //experiment.Run();
 
-            RunMultiSimpleSequenceLearningExperiment();
-            //RunMultiSequenceLearningExperiment();
+            //RunMultiSimpleSequenceLearningExperiment();
+            RunMultiSequenceLearningExperiment();
         }
 
         private static void RunMultiSimpleSequenceLearningExperiment()
@@ -41,8 +41,7 @@ namespace NeoCortexApiSample
             //
             // Prototype for building the prediction engine.
             MultiSequenceLearning experiment = new MultiSequenceLearning();
-            var predictor = experiment.Run(sequences);
-         
+            var predictor = experiment.Run(sequences);         
         }
 
         private static void RunMultiSequenceLearningExperiment()

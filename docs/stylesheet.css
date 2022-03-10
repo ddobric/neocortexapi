@@ -1,0 +1,230 @@
+:root {
+  --header-font-family: Raleway, SemiBold;
+  --nav-font-size: 23px;
+  --nav-font-size-mobile: 18px;
+  --header-color: #404040;
+  --nav-bg-color: #ffffff;
+  
+  --spacer-color: #62B1EE;
+
+  --header-font-family-bold: Raleway, Bold;
+
+  --subtext-bg-color: #FFEC89;
+
+  --content-color: #161616;
+  --content-text-font-family: Open Sans, Regular;
+  --link-font-family: Open Sans, Bold;
+  --content-odd-bg-color: #DBEAFF;
+
+  --content-padding-vertical: 7em;
+  --content-padding-horizontal: 3em;
+  --content-min-height: 100vh;
+}
+a {
+  color: #1583D8;
+  font-family: var(--link-font-family);
+  font-weight: 600;
+  letter-spacing: 0.74px;
+}
+
+body {
+  margin: 0;
+  position: relative;
+}
+h3, h2 {
+  font-family: var(--header-font-family);
+  font-size: 34px;
+}
+
+.navigation > h3 {  
+  font-size: var(--nav-font-size-mobile);
+  color: var(--header-color);
+  margin: 0.25em 1em;
+  cursor: default;
+  margin-bottom: 0;
+  line-height: 1cm;
+}
+.navigation {
+  text-align: center;
+  width: 100%;
+  position: sticky;
+  letter-spacing: 0.71px;
+  top: 0;
+  background-color: var(--nav-bg-color);
+  /* border-bottom: solid 1px gray; */
+  text-decoration: none;
+  padding-top: 1em;
+  padding-bottom: 1em;
+  box-shadow: 0px 3px 6px #00000029;
+}
+.spacer {
+  width: 2px;
+  background-color: var(--spacer-color);
+  margin-top: 10px;
+  margin-bottom: 14px;
+}
+
+.btn {
+  text-decoration: none;
+  font-family: var(--header-font-family-bold);
+  font-size: 20px;
+  background-color: #FFD600;
+  cursor: default;
+  color: var(--header-color);
+  padding: 0.2em 1.3em;
+  border-radius: 5px;
+  font-weight: 600;
+  margin-right: 1em;
+}
+
+.banner {
+  position: relative;
+  z-index: -1;
+}
+
+.banner-content {
+  background-image: url(./images/Header-banner.svg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 40vh;
+}
+
+.banner-content > img {
+  display: none;
+  width: 100%;
+}
+
+.banner-content > h2 {
+  position: absolute;
+  color: #FFFFFF;
+  font-size: calc(1.75em * 1.618);
+  margin: 0;
+  top: 15%;
+}
+
+.sub-banner {
+  background-color: var(--subtext-bg-color);
+  font-family: var(--header-font-family-bold);
+  font-weight: 600;
+  font-size: 31.5px;
+  letter-spacing: 0.98px;
+  color: var(--header-color);
+  padding: 35px 50px;
+}
+
+
+.section {
+  /* min-height: calc(
+    var(--content-min-height) - 2 * var(--content-padding-vertical)
+  ); */
+  padding: var(--content-padding-vertical) var(--content-padding-horizontal);
+
+  display: flex;
+  flex-direction: column;
+  gap: 2em;
+}
+.hightlight {
+  background-color: var(--content-odd-bg-color);
+}
+.content > h3 {
+  letter-spacing: 1.05px;
+}
+
+.content > a {
+  margin-top: 140px;
+}
+
+.read-more {
+  margin-top: 20px;
+}
+
+.text {
+  font-family: var(--content-text-font-family);
+  font-size: 21px;
+}
+
+.image {
+  width: 100%;
+}
+.img-holder {
+   margin: 0;
+}
+
+/* common format */
+.d-flex {
+  display: flex;
+}
+.ml-auto {
+  margin-left: auto;
+  line-height: 1.5;
+}
+
+.text-center {
+  text-align: center;
+}
+.align-items-start {
+    align-items: flex-start;
+}
+
+.justify-content-center {
+  justify-content: center;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+@media screen and (min-width: 1000px) {
+  :root {
+    --font-size: 1.1em;
+    --content-padding-vertical: 5em;
+    --content-padding-horizontal: 5em;
+    --content-min-height: 0;
+  }
+  .section {
+    flex-direction: row;
+    gap: 2em;
+  }
+  .section > * {
+    width: 100%;
+  }
+
+  .navigation > h3 {  
+    font-size: var(--nav-font-size);
+  }
+
+  .btn {
+    font-size: 28px;
+    padding: 0.2em 1.3em;
+  }
+
+  .banner-content > img {
+    display: block;
+    visibility: hidden;
+  }
+}
+
+@media screen and (min-width: 1250px) {
+  :root {
+    --content-padding-vertical: 5em;
+    --content-padding-horizontal: 10em;
+    --content-min-height: 0;
+  }
+  .section {
+      gap: 5em;
+  }
+  .banner-content > h2 {
+    font-size: calc(3em * 1.618);
+  }
+  .banner-content {
+    height: auto;
+  }
+}

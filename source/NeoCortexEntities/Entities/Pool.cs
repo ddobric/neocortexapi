@@ -29,7 +29,7 @@ namespace NeoCortexApi.Entities
         private List<int> m_SynapseConnections { get; set; } = new List<int>();
 
         /// <summary>
-        /// Indexed according to the source Input Vector Bit (for ProximalDendrites), and source cell (for DistalDendrites).
+        /// List of potential synapses.Indexed according to the source Input Vector Bit (for ProximalDendrites), and source cell (for DistalDendrites).
         /// </summary>
         internal Dictionary<int, Synapse> m_SynapsesBySourceIndex { get; set; } = new Dictionary<int, Synapse>();
 
@@ -42,7 +42,7 @@ namespace NeoCortexApi.Entities
         }
 
         /// <summary>
-        /// 
+        /// Creates the instance of the pool.
         /// </summary>
         /// <param name="size">Number of connected input neurons. These neurons define RF fo the segment, which owns this pool.</param>
         /// <param name="numInputs">Total number of input neurons.</param>
@@ -141,13 +141,11 @@ namespace NeoCortexApi.Entities
         }
 
         /// <summary>
-        /// Returns an array of input bit indexes indicating the index of the source. (input vector bit or lateral cell)
+        /// Returns an array of indexes of input neurons connected to this pool. 
         /// </summary>
         /// <returns>the sparse array</returns>
         public int[] GetSparsePotential()
         {
-            // Original requires reverse, because JAVA keys() methode returns keys reversed.
-            //return ArrayUtils.reverse(synapsesBySourceIndex.Keys.Select(i => i).ToArray());
             return m_SynapsesBySourceIndex.Keys.Select(i => i).ToArray();
         }
 
