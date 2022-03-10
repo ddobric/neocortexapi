@@ -158,7 +158,6 @@ namespace NeoCortexApi
 
         /// <summary>
         /// Calculate the active cells, using the current active columns and dendrite segments. Grow and reinforce synapses.
-        /// 
         /// <para>
         /// Pseudocode:<br/>
         ///   for each column<br/>
@@ -703,17 +702,17 @@ namespace NeoCortexApi
             //DD 
             foreach (Synapse synapse in segment.Synapses)
             {
-                Cell presynapticCell = synapse.getPresynapticCell();
+                Cell presynapticCell = synapse.GetPresynapticCell();
                 int index = removingCandidates.IndexOf(presynapticCell);
                 if (index != -1)
                 {
-                    removingCandidates.RemoveAt(index);
+                    removingCandidates.RemoveAt(index); ;
                 }
             }
 
             int candidatesLength = removingCandidates.Count;
 
-            // We take here eather wanted growing number of desired synapes of num of candidates
+            // We take here eather wanted growing number of desired synapes or num of candidates
             // if too many growing synapses requested.
             int numMissingSynapses = nDesiredNewSynapses < candidatesLength ? nDesiredNewSynapses : candidatesLength;
 
@@ -750,7 +749,7 @@ namespace NeoCortexApi
 
                 //
                 // If synapse's presynaptic cell was active in the previous cycle then streng it.
-                if (prevActiveCells.Contains(presynapticCellSynapse.getPresynapticCell()))
+                if (prevActiveCells.Contains(presynapticCellSynapse.GetPresynapticCell()))
                 {
                     permanence += permanenceIncrement;
                 }

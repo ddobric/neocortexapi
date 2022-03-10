@@ -41,7 +41,7 @@ namespace NeoCortexApi.Classifiers
     /// <typeparam name="TOUT"></typeparam>
     public class HtmClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>
     {
-        private int maxRecordedElements = 5;
+        private int maxRecordedElements = 10;
 
         private List<TIN> inputSequence = new List<TIN>();
 
@@ -55,14 +55,54 @@ namespace NeoCortexApi.Classifiers
         /// <summary>
         /// Mapping between the input key and the SDR assootiated to the input.
         /// </summary>
-        private Dictionary<TIN, int[]> m_ActiveMap2 = new Dictionary<TIN, int[]>();
+        //private Dictionary<TIN, int[]> m_ActiveMap2 = new Dictionary<TIN, int[]>();
 
         /// <summary>
         /// Clears th elearned state.
         /// </summary>
         public void ClearState()
         {
-            m_ActiveMap2.Clear();
+            m_AllInputs.Clear();
+        }
+
+        /// <summary>
+        /// Checks if the same SDR is already stored under the given key.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="sdr"></param>
+        /// <returns></returns>
+        private bool ContainsSdr(TIN input, int[] sdr)
+        {
+            foreach (var item in m_AllInputs[input])
+            {
+                if (item.SequenceEqual(sdr))
+                    return true;
+                else
+                    return false;
+            }
+
+            return false;
+        }
+
+
+        private int GetBestMatch(TIN input, int[] cellIndicies, out double similarity, out int[] bestSdr)
+        {
+            int maxSameBits = 0;
+            bestSdr = new int[1];
+
+            foreach (var sdr in m_AllInputs[input])
+            {
+                var numOfSameBitsPct = sdr.Intersect(cellIndicies).Count();
+                if (numOfSameBitsPct >= maxSameBits)
+                {
+                    maxSameBits = numOfSameBitsPct;
+                    bestSdr = sdr;
+                }
+            }
+
+            similarity = Math.Round(MathHelpers.CalcArraySimilarity(bestSdr, cellIndicies), 2);
+
+            return maxSameBits;
         }
 
 
@@ -74,34 +114,36 @@ namespace NeoCortexApi.Classifiers
         /// <param name="predictedOutput"></param>
         public void Learn(TIN input, Cell[] output)
         {
-            // this.inputSequence.Add(input);
-
             var cellIndicies = GetCellIndicies(output);
 
             if (m_AllInputs.ContainsKey(input) == false)
                 m_AllInputs.Add(input, new List<int[]>());
 
-            // Record SDR
-            m_AllInputs[input].Add(cellIndicies);
+            // Store the SDR only if it was not stored under the same key already.
+            if (!ContainsSdr(input, cellIndicies))
+                m_AllInputs[input].Add(cellIndicies);
+            else
+            {
+                // for debugging
+            }
 
+            //
             // Make sure that only few last SDRs are recorded.
             if (m_AllInputs[input].Count > maxRecordedElements)
-                m_AllInputs[input].RemoveAt(0);
-
-            if (m_ActiveMap2.ContainsKey(input))
             {
-                if (!m_ActiveMap2[input].SequenceEqual(cellIndicies))
-                {
-                    // double numOfSameBitsPct = (double)(((double)(this.activeMap2[input].Intersect(cellIndicies).Count()) / Math.Max((double)cellIndicies.Length, this.activeMap2[input].Length)));
-                    // double numOfSameBitsPct = (double)(((double)(this.activeMap2[input].Intersect(cellIndicies).Count()) / (double)this.activeMap2[input].Length));
-                    var numOfSameBitsPct = m_ActiveMap2[input].Intersect(cellIndicies).Count();
-                    Debug.WriteLine($"Prev/Now/Same={m_ActiveMap2[input].Length}/{cellIndicies.Length}/{numOfSameBitsPct}");
-                }
-
-                m_ActiveMap2[input] = cellIndicies;
+                Debug.WriteLine($"The input {input} has more ");
+                m_AllInputs[input].RemoveAt(0);
             }
-            else
-                m_ActiveMap2.Add(input, cellIndicies);
+
+            var previousOne = m_AllInputs[input][Math.Max(0, m_AllInputs[input].Count - 2)];
+
+            if (!previousOne.SequenceEqual(cellIndicies))
+            {
+                // double numOfSameBitsPct = (double)(((double)(this.activeMap2[input].Intersect(cellIndicies).Count()) / Math.Max((double)cellIndicies.Length, this.activeMap2[input].Length)));
+                // double numOfSameBitsPct = (double)(((double)(this.activeMap2[input].Intersect(cellIndicies).Count()) / (double)this.activeMap2[input].Length));
+                var numOfSameBitsPct = previousOne.Intersect(cellIndicies).Count();
+                Debug.WriteLine($"Prev/Now/Same={previousOne.Length}/{cellIndicies.Length}/{numOfSameBitsPct}");
+            }
         }
 
 
@@ -123,42 +165,44 @@ namespace NeoCortexApi.Classifiers
             if (predictiveCells.Length != 0)
             {
                 int indxOfMatchingInp = 0;
-                Debug.WriteLine($"Item length: {predictiveCells.Length}\t Items: {m_ActiveMap2.Keys.Count}");
+                Debug.WriteLine($"Item length: {predictiveCells.Length}\t Items: {this.m_AllInputs.Keys.Count}");
                 int n = 0;
 
                 List<int> sortedMatches = new List<int>();
 
-                var celIndicies = GetCellIndicies(predictiveCells);
+                var cellIndicies = GetCellIndicies(predictiveCells);
 
-                Debug.WriteLine($"Predictive cells: {celIndicies.Length} \t {Helpers.StringifyVector(celIndicies)}");
+                Debug.WriteLine($"Predictive cells: {cellIndicies.Length} \t {Helpers.StringifyVector(cellIndicies)}");
 
-                foreach (var pair in m_ActiveMap2)
+                foreach (var pair in this.m_AllInputs)
                 {
-                    if (pair.Value.SequenceEqual(celIndicies))
+                    if (ContainsSdr(pair.Key, cellIndicies))
                     {
-                        Debug.WriteLine($">indx:{n.ToString("D3")}\tinp/len: {pair.Key}/{pair.Value.Length}, Same Bits = {celIndicies.Length.ToString("D3")}\t, Similarity 100.00 %\t {Helpers.StringifyVector(pair.Value)}");
+                        Debug.WriteLine($">indx:{n.ToString("D3")}\tinp/len: {pair.Key}/{cellIndicies.Length}, Same Bits = {cellIndicies.Length.ToString("D3")}\t, Similarity 100.00 %\t {Helpers.StringifyVector(cellIndicies)}");
 
-                        res.Add(new ClassifierResult<TIN> { PredictedInput = pair.Key, Similarity = (float)1.0, NumOfSameBits = pair.Value.Length});
+                        res.Add(new ClassifierResult<TIN> { PredictedInput = pair.Key, Similarity = (float)100.0, NumOfSameBits = cellIndicies.Length });
                     }
                     else
                     {
                         // Tried following:
                         //double numOfSameBitsPct = (double)(((double)(pair.Value.Intersect(arr).Count()) / Math.Max(arr.Length, pair.Value.Count())));
                         //double numOfSameBitsPct = (double)(((double)(pair.Value.Intersect(celIndicies).Count()) / (double)pair.Value.Length));// ;
-                        var numOfSameBitsPct = pair.Value.Intersect(celIndicies).Count();
-                        double simPercentage = Math.Round(MathHelpers.CalcArraySimilarity(pair.Value, celIndicies), 2);
-                        dict.Add(pair.Key, new ClassifierResult<TIN> { PredictedInput = pair.Key, NumOfSameBits = numOfSameBitsPct, Similarity = simPercentage });
-                        predictedList.Add(new KeyValuePair<double, string>(simPercentage, pair.Key.ToString()));
+                        double similarity;
+                        int[] bestMatch;
+                        var numOfSameBitsPct = GetBestMatch(pair.Key, cellIndicies, out similarity, out bestMatch);// pair.Value.Intersect(cellIndicies).Count();
+                        //double simPercentage = Math.Round(MathHelpers.CalcArraySimilarity(pair.Value, cellIndicies), 2);
+                        dict.Add(pair.Key, new ClassifierResult<TIN> { PredictedInput = pair.Key, NumOfSameBits = numOfSameBitsPct, Similarity = similarity });
+                        predictedList.Add(new KeyValuePair<double, string>(similarity, pair.Key.ToString()));
 
                         if (numOfSameBitsPct > maxSameBits)
                         {
-                            Debug.WriteLine($">indx:{n.ToString("D3")}\tinp/len: {pair.Key}/{pair.Value.Length}, Same Bits = {numOfSameBitsPct.ToString("D3")}\t, Similarity {simPercentage.ToString("000.00")} % \t {Helpers.StringifyVector(pair.Value)}");
+                            Debug.WriteLine($">indx:{n.ToString("D3")}\tinp/len: {pair.Key}/{bestMatch.Length}, Same Bits = {numOfSameBitsPct.ToString("D3")}\t, Similarity {similarity.ToString("000.00")} % \t {Helpers.StringifyVector(bestMatch)}");
                             maxSameBits = numOfSameBitsPct;
                             predictedValue = pair.Key;
                             indxOfMatchingInp = n;
                         }
                         else
-                            Debug.WriteLine($"<indx:{n.ToString("D3")}\tinp/len: {pair.Key}/{pair.Value.Length}, Same Bits = {numOfSameBitsPct.ToString("D3")}\t, Similarity {simPercentage.ToString("000.00")} %\t {Helpers.StringifyVector(pair.Value)}");
+                            Debug.WriteLine($"<indx:{n.ToString("D3")}\tinp/len: {pair.Key}/{bestMatch.Length}, Same Bits = {numOfSameBitsPct.ToString("D3")}\t, Similarity {similarity.ToString("000.00")} %\t {Helpers.StringifyVector(bestMatch)}");
                     }
                     n++;
                 }
@@ -176,62 +220,59 @@ namespace NeoCortexApi.Classifiers
         }
 
 
-        public List<ClassifierResult<TIN>> GetPredictedInputValues2(Cell[] predictiveCells, short howMany = 1)
-        {
-            throw new System.Exception("");
-        }
 
-            /// <summary>
-            /// Gets predicted value for next cycle
-            /// </summary>
-            /// <param name="predictiveCells">The list of predictive cells.</param>
-            /// <returns></returns>
-            [Obsolete("This method will be removed in the future. Use GetPredictedInputValues instead. ")]
+        /// <summary>
+        /// Gets predicted value for next cycle
+        /// </summary>
+        /// <param name="predictiveCells">The list of predictive cells.</param>
+        /// <returns></returns>
+        [Obsolete("This method will be removed in the future. Use GetPredictedInputValues instead.")]
         public TIN GetPredictedInputValue(Cell[] predictiveCells)
         {
+            throw new NotImplementedException("This method will be removed in the future. Use GetPredictedInputValues instead.");
             // bool x = false;
-            double maxSameBits = 0;
-            TIN predictedValue = default;
+            //double maxSameBits = 0;
+            //TIN predictedValue = default;
 
-            if (predictiveCells.Length != 0)
-            {
-                int indxOfMatchingInp = 0;
-                Debug.WriteLine($"Item length: {predictiveCells.Length}\t Items: {m_ActiveMap2.Keys.Count}");
-                int n = 0;
+            //if (predictiveCells.Length != 0)
+            //{
+            //    int indxOfMatchingInp = 0;
+            //    Debug.WriteLine($"Item length: {predictiveCells.Length}\t Items: {m_ActiveMap2.Keys.Count}");
+            //    int n = 0;
 
-                List<int> sortedMatches = new List<int>();
+            //    List<int> sortedMatches = new List<int>();
 
-                var celIndicies = GetCellIndicies(predictiveCells);
+            //    var celIndicies = GetCellIndicies(predictiveCells);
 
-                Debug.WriteLine($"Predictive cells: {celIndicies.Length} \t {Helpers.StringifyVector(celIndicies)}");
+            //    Debug.WriteLine($"Predictive cells: {celIndicies.Length} \t {Helpers.StringifyVector(celIndicies)}");
 
-                foreach (var pair in m_ActiveMap2)
-                {
-                    if (pair.Value.SequenceEqual(celIndicies))
-                    {
-                        Debug.WriteLine($">indx:{n}\tinp/len: {pair.Key}/{pair.Value.Length}\tsimilarity 100pct\t {Helpers.StringifyVector(pair.Value)}");
-                        return pair.Key;
-                    }
+            //    foreach (var pair in m_ActiveMap2)
+            //    {
+            //        if (pair.Value.SequenceEqual(celIndicies))
+            //        {
+            //            Debug.WriteLine($">indx:{n}\tinp/len: {pair.Key}/{pair.Value.Length}\tsimilarity 100pct\t {Helpers.StringifyVector(pair.Value)}");
+            //            return pair.Key;
+            //        }
 
-                    // Tried following:
-                    //double numOfSameBitsPct = (double)(((double)(pair.Value.Intersect(arr).Count()) / Math.Max(arr.Length, pair.Value.Count())));
-                    //double numOfSameBitsPct = (double)(((double)(pair.Value.Intersect(celIndicies).Count()) / (double)pair.Value.Length));// ;
-                    var numOfSameBitsPct = pair.Value.Intersect(celIndicies).Count();
-                    if (numOfSameBitsPct > maxSameBits)
-                    {
-                        Debug.WriteLine($">indx:{n}\tinp/len: {pair.Key}/{pair.Value.Length} = similarity {numOfSameBitsPct}\t {Helpers.StringifyVector(pair.Value)}");
-                        maxSameBits = numOfSameBitsPct;
-                        predictedValue = pair.Key;
-                        indxOfMatchingInp = n;
-                    }
-                    else
-                        Debug.WriteLine($"<indx:{n}\tinp/len: {pair.Key}/{pair.Value.Length} = similarity {numOfSameBitsPct}\t {Helpers.StringifyVector(pair.Value)}");
+            //        // Tried following:
+            //        //double numOfSameBitsPct = (double)(((double)(pair.Value.Intersect(arr).Count()) / Math.Max(arr.Length, pair.Value.Count())));
+            //        //double numOfSameBitsPct = (double)(((double)(pair.Value.Intersect(celIndicies).Count()) / (double)pair.Value.Length));// ;
+            //        var numOfSameBitsPct = pair.Value.Intersect(celIndicies).Count();
+            //        if (numOfSameBitsPct > maxSameBits)
+            //        {
+            //            Debug.WriteLine($">indx:{n}\tinp/len: {pair.Key}/{pair.Value.Length} = similarity {numOfSameBitsPct}\t {Helpers.StringifyVector(pair.Value)}");
+            //            maxSameBits = numOfSameBitsPct;
+            //            predictedValue = pair.Key;
+            //            indxOfMatchingInp = n;
+            //        }
+            //        else
+            //            Debug.WriteLine($"<indx:{n}\tinp/len: {pair.Key}/{pair.Value.Length} = similarity {numOfSameBitsPct}\t {Helpers.StringifyVector(pair.Value)}");
 
-                    n++;
-                }
-            }
+            //        n++;
+            //    }
+            //}
 
-            return predictedValue;
+            //return predictedValue;
         }
         /*
         //
@@ -304,15 +345,13 @@ namespace NeoCortexApi.Classifiers
 
             List<TIN> processedValues = new List<TIN>();
 
-            foreach (var item in m_ActiveMap2)
+            //
+            // Trace out the last stored state.
+            foreach (var item in this.m_AllInputs)
             {
                 Debug.WriteLine("");
                 Debug.WriteLine($"{item.Key}");
-                Debug.WriteLine($"{Helpers.StringifyVector(item.Value)}");
-
-                sw.WriteLine("");
-                sw.WriteLine($"{item.Key}");
-                sw.WriteLine($"{Helpers.StringifyVector(item.Value)}");
+                Debug.WriteLine($"{Helpers.StringifyVector(item.Value.Last())}");
             }
 
             if (sw != null)

@@ -116,7 +116,6 @@ namespace TimeSeriesSequence
                     { "Offset", 50},
                 });
 
-
             encoderSettings.Add("Segment", new Dictionary<string, object>()
                 {
                     { "W", 3},
@@ -129,6 +128,7 @@ namespace TimeSeriesSequence
                     { "ClipInput", false},
                     { "Offset", 128},
                 });
+
             encoderSettings.Add("MonthEncoder", new Dictionary<string, object>()
                 {
                     { "W", 3},

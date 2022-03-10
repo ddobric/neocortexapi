@@ -942,7 +942,7 @@ namespace NeoCortexApi.Utility
         /// <param name="array">the values being compared.</param>
         /// <param name="indexes">indices of array being compared.</param>
         /// <returns>the count of values greater.</returns>
-        public static int ValueGreaterThanCountAtIndex(double compareValue, double[] array, int[] indexes)
+        public static int GreaterThanAtIndex(double compareValue, double[] array, int[] indexes)
         {
             int count = 0;
             for (int i = 0; i < indexes.Length; i++)
@@ -1076,7 +1076,8 @@ namespace NeoCortexApi.Utility
         {
             for (int i = 0; i < array.Length; i++)
             {
-                if (array[i] <= comparingValue) array[i] = valueToBeSet;
+                if (array[i] <= comparingValue) 
+                    array[i] = valueToBeSet;
             }
         }
 
