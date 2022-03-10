@@ -14,7 +14,7 @@ namespace NeoCortexApi.Utility
     /// </summary>
     /// <typeparam name="R">The return type of the user-provided <see cref="Func{T, TResult}"/>s</typeparam>
     /// <remarks>
-    /// Author: cogmission
+    /// Author: cogmission, ddobric
     /// </remarks>
     public class GroupBy2<R> : IEnumerable<Pair<R, List<List<Object>>>>, IEnumerator<Pair<R, List<List<Object>>>> where R : class//, Generator<Tuple> 
                                                                                                                                  //  where R : IComparable<R>
@@ -62,15 +62,7 @@ namespace NeoCortexApi.Utility
         }
 
 
-        /* @return a n + 1 dimensional tuple, where the first element is the
-        * key of the group and the other n entries are lists of
-        * objects that are a member of the current group that is being
-        * iterated over in the nth list passed in. Note that this
-        *          is a generator and a n+1 dimensional tuple is yielded for
-        *          every group.If a list has no members in the current
-        *          group, {
-            @link Slot#NONE} is returned in place of a generator.
-        */
+ 
         /// <summary>
         /// TODO: change to C# code
         /// Returns a {@code GroupBy2} instance which is used to group lists of objects in ascending order using keys supplied by their associated {@link Function}s. <para/>

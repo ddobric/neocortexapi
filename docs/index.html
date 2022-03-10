@@ -3,63 +3,191 @@
 
 <head>
     <title>NeoCortexAPI</title>
-    <link href="./style.css" type="text/css" rel="stylesheet">
-    <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link href="./stylesheet.css" type="text/css" rel="stylesheet">
+    <link rel="shortcut icon" href="./images/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Raleway" />
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" />
+    <!-- <script? src="./script.js" defer></script> -->
+    <script defer>
+
+        function scrollBtn(btnId, targetId) {
+            var btn = document.getElementById(btnId);
+            btn.addEventListener("click", function () {
+                var target = document.getElementById(targetId);
+                target.scrollIntoView({ behavior: "smooth" });
+            });
+        }
+
+        function addImageLink(x) {
+            var imageHolders = document.getElementsByClassName("img-holder");
+            if (x.matches) {
+                for (var i = 0; i < imageHolders.length; i++) {
+                    var holder = imageHolders[i];
+                    var link = holder.getElementsByClassName("optional");
+                    if (link != null) {
+                        for (let index = 0; index < link.length; index++) {
+                            const element = link[index];
+                            holder.removeChild(element);
+                        }
+                    }
+                }
+            } else {
+                for (var i = 0; i < imageHolders.length; i++) {
+                    var holder = imageHolders[i];
+                    var image = holder.getElementsByClassName("image")[0];
+                    if (image != null) {
+
+                        var optionalElement = document.createElement("div");
+                        optionalElement.classList.add("optional");
+                        optionalElement.classList.add("read-more");
+
+                        var link = document.createElement("a");
+                        link.href = image.src;
+                        link.target = "_blank";
+                        link.appendChild(
+                            document.createTextNode("Click to view original size.")
+                        );
+                        optionalElement.appendChild(link);
+                        holder.appendChild(optionalElement);
+                    }
+                }
+            }
+        }
+        window.addEventListener('DOMContentLoaded', function () {
+            //do something with b-lazy plugin, lightbox plugin and then with flexslider
+            scrollBtn("get-started", "gs");
+            scrollBtn("spatial-pooler", "sp");
+            scrollBtn("temporal-memory", "tm");
+
+            var x = window.matchMedia("(min-width: 1000px)");
+            addImageLink(x); // Call listener function at run time
+            x.addListener(addImageLink);
+        });
+
+    </script>
 </head>
 
 <body id="start">
-    <section class="banner">
-        <div class="">
-            <h1 id="title">NeoCortex API</h1>
-            <p id="subtext">
-                C# Implementation of Hierarchical Temporal Memory Cortical Learning Algorithm in .NET Core and more.
-            </p>
-            <p style="height:50px">
-                <a href="https://github.com/ddobric/neocortexapi/" class="btnBanner" target="_blank">View on GitHub</a>
-            </p>
+    <div class="d-flex navigation flex-wrap">
+        <h3 id="get-started">Getting Started</h3>
+        <div class="spacer"></div>
+        <h3 id="spatial-pooler">Spatial Pooler</h3>
+        <div class="spacer"></div>
+        <h3 id="temporal-memory">Temporal Memory</h3>
+        <div class="d-flex ml-auto">
+            <a class="btn" href="https://github.com/ddobric/neocortexapi/" target="_blank">Visit us on Github!</a>
         </div>
-    </section>
-
-    <div class="content">
-        <section class="navigation">
-            <a class="tile getstarted"
-               href="https://github.com/ddobric/neocortexapi/blob/master/source/Documentation/gettingStarted.md"
-               target="_blank">
-                <h3>Getting started</h3>
-            </a>
-            <a class="tile tutorial"
-               href="https://github.com/ddobric/neocortexapi/blob/master/source/Documentation/tutorial.md"
-               target="_blank">
-                <h3>Tutorial</h3>
-            </a>
-            <a class="tile experiments"
-               href="https://github.com/ddobric/neocortexapi/blob/master/source/Documentation/experiments.md"
-               target="_blank">
-                <h3>Experiments</h3>
-            </a>
-        </section>
     </div>
-    <div class="content secOdd">
-        <section class="furtherinfo">
-            <div class="externallink">
-                <h3>External links</h3>
-                <ul>
-                    <li>
-                        Temporal Memory:&nbsp; <a href="https://en.wikipedia.org/wiki/Hierarchical_temporal_memory"
-                                                  target="_blank">Wikipedia</a>
-                    </li>
-                    <li>HTM school:&nbsp;<a href="https://numenta.org/htm-school/" target="_blank">Numenta.org</a></li>
-                    <li>
-                        HTM in other programing languages:&nbsp;<a href="https://numenta.org/implementations/" target="_blank">Numenta htm implementation</a>
-                    </li>
-                    <li>HTM Forum:&nbsp;<a href="https://discourse.numenta.org/" target="_blank">Forum</a></li>
-                </ul>
+
+    <div class="banner">
+        <!-- <img class="image" src="./images/Header-banner.svg" /> -->
+        <div class="banner-content d-flex justify-content-center">
+            <img src="./images/Header-banner.svg" alt="banner"/>
+            <h2>NeocortexAPI</h2>
+        </div>
+    </div>
+    <div class="sub-banner text-center">
+        C# Implementation of Hierarchical Temporal Memory Cortical Learning Algorithm in .NET Core and more.
+    </div>
+
+
+
+    <div id="gs" class="section">
+        <div class="content">
+            <h3>Getting Started</h3>
+            <div class="text">
+                The Hierarchical Temporal Memory Cortical Learning Algorithm (HTM CLA) is a theory and machine learning
+                technology that aims to capture cortical algorithm of the neocortex. HTM consists of 2 different
+                components: Spatial Pooler and Temporal Memory. Inside the algorithms, there are multiple mini columns
+                act as synapses in our brain. These columns will be activated or deactivated depend on the input that is
+                given. This is similar to the synapse activity. HTM, like many other machine learning algorithm, only
+                deals with number. Therefore, it requires an encoder to transform the real world concept into digitized
+                world of '0's and '1's.
             </div>
-            <div class="gifexample">
-                <h3>Example</h3>
-                <div id="gif">GIF VIDEO</div>
+            <div class="read-more">
+                <a href="https://github.com/ddobric/neocortexapi/blob/master/source/Documentation/gettingStarted.md"
+                    target="_blank">
+                    Click here to read more about NeoCortexAPI.
+                </a>
             </div>
-        </section>
+        </div>
+        <div class="img-holder">
+            <img class="image" src="./images/HTM-Architecture.png" />
+        </div>
+
+
+    </div>
+
+    <div id="sp" class="section hightlight">
+        <div class="content">
+            <h3>Spatial Pooler</h3>
+            <div class="text">
+                Spatial Pooler (SP) is a learning algorithm that is designed to replicate the neurons functionality
+                of human brain. Essentially, if a brain sees one thing multiple times, it is going to strengthen the
+                synapses that react to the specific input result in the recognition of the object. Similarly, if
+                several
+                similar SDRs are presented to the SP algorithm, it will reinforce the columns that are active
+                according
+                to the on bits in the SDRs. If the number of training iterations is big enough, the SP will be able
+                to
+                identify the objects by producing different set of active columns within the specified size of SDR
+                for
+                different objects.
+            </div>
+            <div class="read-more">
+                <a href="https://github.com/ddobric/neocortexapi/blob/master/source/Documentation/SpatialPooler.md"
+                    target="_blank">
+                    Click here to read more about Spatial Pooler.
+                </a>
+            </div>
+        </div>
+        <div class="img-holder">
+            <img class="image" src="./images/Spatial-Pooler.png" />
+        </div>
+    </div>
+    <div id="tm" class="section">
+        <div class="content">
+            <h3>Temporal memory</h3>
+            <div class="text">
+                Temporal memory is an algorithm which learns sequences of Sparse Distributed Representations (SDRs)
+                formed by the Spatial Pooling algorithm, and makes predictions of what the next input SDR will be.
+            </div>
+            <div class="read-more">
+                <a href="https://github.com/ddobric/neocortexapi/blob/master/source/Documentation/TemporalMemory.md"
+                    target="_blank">
+                    Click here to read more about Temporal Memory.
+                </a>
+            </div>
+        </div>
+        <div class="img-holder">
+            <img class="image" src="./images/Temporal-Memory.png" />
+        </div>
+    </div>
+
+    <div class="section hightlight footer">
+        <div>
+            <h3>Example</h3>
+            <div class="img-holder">
+                <img class="image" src="./images/NeoCortexApiSample.gif" />
+            </div>
+        </div>
+        <div class="externallink">
+            <h3>External links</h3>
+            <ul class="text">
+                <li>
+                    Temporal Memory:&nbsp; <a href="https://en.wikipedia.org/wiki/Hierarchical_temporal_memory"
+                        target="_blank">Wikipedia</a>
+                </li>
+                <li>HTM school:&nbsp;<a href="https://numenta.org/htm-school/" target="_blank">Numenta.org</a>
+                </li>
+                <li>
+                    HTM in other programing languages:&nbsp;<a href="https://numenta.org/implementations/"
+                        target="_blank">Numenta htm implementation</a>
+                </li>
+                <li>HTM Forum:&nbsp;<a href="https://discourse.numenta.org/" target="_blank">Forum</a></li>
+            </ul>
+        </div>
     </div>
 </body>
 
