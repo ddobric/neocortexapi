@@ -22,7 +22,7 @@ namespace TimeSeriesSequence
         /// <param name="args"></param>
         static void Main(string[] args)
         {
-            MultiSequenceLearning_TaxiPassanger learning_TaxiPassanger = new MultiSequenceLearning_TaxiPassanger();
+            MultiSequenceTaxiPassanger learning_TaxiPassanger = new MultiSequenceTaxiPassanger();
 
             /// Prediction of taxi passangers based on data set
             learning_TaxiPassanger.RunPassangerTimeSeriesSequenceExperiment();
