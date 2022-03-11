@@ -12,7 +12,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using static TimeSeriesSequence.Entity.HelperClasses;
-using static TimeSeriesSequence.MultisequenceLearningTest;
 
 namespace TimeSeriesSequence
 {
