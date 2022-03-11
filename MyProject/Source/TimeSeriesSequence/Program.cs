@@ -1,16 +1,4 @@
-﻿using NeoCortexApi;
-using NeoCortexApi.Classifiers;
-using NeoCortexApi.Encoders;
-using NeoCortexApi.Entities;
-using NeoCortexApi.Network;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using static TimeSeriesSequence.Entity.HelperClasses;
-using static TimeSeriesSequence.MultisequenceLearningTest;
-
-namespace TimeSeriesSequence
+﻿namespace TimeSeriesSequence
 {
     class program
     {
