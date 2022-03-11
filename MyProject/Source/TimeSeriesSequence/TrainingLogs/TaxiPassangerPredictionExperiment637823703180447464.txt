@@ -1,0 +1,35 @@
+TaxiPassangerPredictionExperiment637823703180447464.txt
+******Sequence Starting*****
+cycle : 0 	 Accuracy :0 	 
+cycle : 1 	 Accuracy :0 	 
+cycle : 2 	 Accuracy :0 	 
+cycle : 3 	 Accuracy :0 	 
+cycle : 4 	 Accuracy :0 	 
+Cycle : 5 	  Accuracy:100 	 Number of times repeated 1
+Cycle : 6 	  Accuracy:100 	 Number of times repeated 2
+Cycle : 7 	  Accuracy:100 	 Number of times repeated 3
+Cycle : 8 	  Accuracy:100 	 Number of times repeated 4
+Cycle : 9 	  Accuracy:100 	 Number of times repeated 5
+Cycle : 10 	  Accuracy:100 	 Number of times repeated 6
+Cycle : 11 	  Accuracy:100 	 Number of times repeated 7
+Cycle : 12 	  Accuracy:100 	 Number of times repeated 8
+Cycle : 13 	  Accuracy:100 	 Number of times repeated 9
+Cycle : 14 	  Accuracy:100 	 Number of times repeated 10
+****Sequence Ending*****
+******Sequence Starting*****
+cycle : 0 	 Accuracy :0 	 
+cycle : 1 	 Accuracy :0 	 
+cycle : 2 	 Accuracy :0 	 
+cycle : 3 	 Accuracy :0 	 
+Cycle : 4 	  Accuracy:100 	 Number of times repeated 1
+Cycle : 5 	  Accuracy:100 	 Number of times repeated 2
+cycle : 6 	 Accuracy :0 	 
+cycle : 7 	 Accuracy :0 	 
+cycle : 8 	 Accuracy :0 	 
+cycle : 9 	 Accuracy :0 	 
+cycle : 10 	 Accuracy :0 	 
+cycle : 11 	 Accuracy :0 	 
+cycle : 12 	 Accuracy :0 	 
+cycle : 13 	 Accuracy :0 	 
+cycle : 14 	 Accuracy :0 	 
+****Sequence Ending*****
