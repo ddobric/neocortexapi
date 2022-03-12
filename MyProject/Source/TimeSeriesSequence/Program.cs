@@ -10,6 +10,7 @@
         /// <param name="args"></param>
         static void Main(string[] args)
         {
+            Console.WriteLine("Starting to learn Taxi Passanger data");
             MultiSequenceTaxiPassanger learning_TaxiPassanger = new MultiSequenceTaxiPassanger();
 
             /// Prediction of taxi passangers based on data set
