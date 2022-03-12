@@ -36,14 +36,15 @@ h3, h2 {
   font-size: 34px;
 }
 
-.navigation > h3 {  
+.navigation h3  {  
   font-size: var(--nav-font-size-mobile);
   color: var(--header-color);
   margin: 0.25em 1em;
-  cursor: default;
+  cursor: pointer;
   margin-bottom: 0;
   line-height: 1cm;
 }
+
 .navigation {
   text-align: center;
   width: 100%;
@@ -69,7 +70,7 @@ h3, h2 {
   font-family: var(--header-font-family-bold);
   font-size: 20px;
   background-color: #FFD600;
-  cursor: default;
+  /* cursor: default; */
   color: var(--header-color);
   padding: 0.2em 1.3em;
   border-radius: 5px;

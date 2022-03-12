@@ -57,6 +57,7 @@
                 }
             }
         }
+        window.ondragstart = function() { return false; } 
         window.addEventListener('DOMContentLoaded', function () {
             //do something with b-lazy plugin, lightbox plugin and then with flexslider
             scrollBtn("get-started", "gs");
