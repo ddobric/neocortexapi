@@ -12,7 +12,7 @@ These instructions will get you a copy of the project up and running on your loc
 * **../ML21/22 24.  Investigate Label Prediction from the time-series sequence (taxi)/** 
 ```
 This directory has our Final Project codes 
-https://github.com/rabiul64/neocortexapi/tree/master/MyProject/Source/TimeSeriesSequence
+[Final Project Codes](https://github.com/rabiul64/neocortexapi/tree/master/MyProject/Source/TimeSeriesSequence)
 
 ```
 * **../Documents/** 
