@@ -14,6 +14,10 @@ namespace TimeSeriesSequence
 {
     public static class HelperMethods
     {
+        /// <summary>
+        /// Slots of segment with 1 hours intervel
+        /// </summary>
+        /// <returns></returns>
         public static List<Slot> GetSlots()
         {
             List<Slot> timeSlots = new List<Slot>
@@ -47,7 +51,13 @@ namespace TimeSeriesSequence
             return timeSlots;
         }
 
-        internal static HtmConfig FetchHTMConfig(int inputBits, int numColumns)
+        /// <summary>
+        /// HTM configuaration oblect initialization
+        /// </summary>
+        /// <param name="inputBits"></param>
+        /// <param name="numColumns"></param>
+        /// <returns></returns>
+        public static HtmConfig FetchHTMConfig(int inputBits, int numColumns)
         {
             HtmConfig cfg = new HtmConfig(new int[] { inputBits }, new int[] { numColumns })
             {
@@ -146,6 +156,11 @@ namespace TimeSeriesSequence
             return ListOfEncodedTrainingSDR;
         }
 
+        /// <summary>
+        /// Get SDR of a date time
+        /// </summary>
+        /// <param name="dateTime"></param>
+        /// <returns></returns>
         public static int[] GetSDRofDateTime(DateTime dateTime)
         {
             ScalarEncoder dayEncoder = FetchDayEncoder();
@@ -167,7 +182,6 @@ namespace TimeSeriesSequence
             sdr = sdr.Concat(dayOfWeekEncoder.Encode(dayOfWeek)).ToArray();
             return sdr;
         }
-
         public static ScalarEncoder FetchWeekDayEncoder()
         {
             ScalarEncoder weekOfDayEncoder = new ScalarEncoder(new Dictionary<string, object>()
