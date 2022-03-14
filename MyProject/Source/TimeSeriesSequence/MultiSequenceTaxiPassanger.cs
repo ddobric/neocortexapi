@@ -42,7 +42,7 @@ namespace TimeSeriesSequence
         /// Taking user input and sending for prediction
         /// </summary>
         /// <param name="learningExpResult"></param>
-        private void PredictPassanagerWithUserInput(Dictionary<CortexLayer<object, object>, HtmClassifier<string, ComputeCycle>> learningExpResult)
+        private void PredictPassanagerWithUserInput(HtmPredictionEngine learningExpResult)
         {
             Console.WriteLine("PLEASE ENTER DATE and TIME FOR PREDICTING TAXI PASSANGER:      *note format->dd/mm/yyyy hh:00");
             var userInputDateTime = Console.ReadLine();
@@ -61,18 +61,14 @@ namespace TimeSeriesSequence
         /// </summary>
         /// <param name="userInputDateTime"></param>
         /// <param name="learningExpResult"></param>
-        private void RunPassangerPrediction(string userInputDateTime, Dictionary<CortexLayer<object, object>, HtmClassifier<string, ComputeCycle>> learningExpResult)
+        private void RunPassangerPrediction(string userInputDateTime, HtmPredictionEngine learningExpResult)
         {
-            CortexLayer<object, object> trainedPassangerCortexLayer = learningExpResult.Keys.ElementAt(0);
-            HtmClassifier<string, ComputeCycle> trainedPassangerClassifier = learningExpResult.Values.ElementAt(0);
-
             if (userInputDateTime != null)
             {
                 DateTime userInput = DateTime.Parse(userInputDateTime);
                 // Encode the user input and return the SDR
                 var sdr = HelperMethods.GetSDRofDateTime(userInput);
-                var userLayerOutput = trainedPassangerCortexLayer.Compute(sdr, false) as ComputeCycle;
-                var predictedValuesForUserInput = trainedPassangerClassifier.GetPredictedInputValues(userLayerOutput!.PredictiveCells.ToArray(), 5);
+                var predictedValuesForUserInput = learningExpResult.Predict(sdr);
                 foreach (var predictedVal in predictedValuesForUserInput)
                 {
                     Console.WriteLine("PASSANGER SIMILARITY " + predictedVal.Similarity + " PREDICTED PASSANGER NO :" + predictedVal.PredictedInput);
@@ -91,14 +87,14 @@ namespace TimeSeriesSequence
         /// <param name="encoder"></param>
         /// <param name="trainTaxiData"></param>
         /// <returns></returns>
-        private static Dictionary<CortexLayer<object, object>, HtmClassifier<string, ComputeCycle>> RunExperiment(int inputBits, int maxCycles, int numColumns, EncoderBase encoder, List<Dictionary<string, int[]>> trainTaxiData)
+        private static HtmPredictionEngine RunExperiment(int inputBits, int maxCycles, int numColumns, EncoderBase encoder, List<Dictionary<string, int[]>> trainTaxiData)
         {
             var OUTPUT_LOG_LIST = new List<Dictionary<int, string>>();
             var OUTPUT_LOG = new Dictionary<int, string>();
             var OUTPUT_trainingAccuracy_graph = new List<Dictionary<int, double>>();
             Stopwatch sw = new Stopwatch();
 
-            trainTaxiData = trainTaxiData.Take(1000).ToList();
+            trainTaxiData = trainTaxiData.Take(10).ToList();
 
             sw.Start();
 
@@ -336,7 +332,32 @@ namespace TimeSeriesSequence
             returnDictionary.Add(layer1, cls);
             Console.WriteLine("Complete Learning");
 
-            return returnDictionary;
+            //return returnDictionary;
+
+            return new HtmPredictionEngine { Layer = layer1, Classifier = cls, Connections = mem };
         }
+        public class HtmPredictionEngine
+        {
+            public void Reset()
+            {
+                var tm = this.Layer.HtmModules.FirstOrDefault(m => m.Value is TemporalMemory);
+                ((TemporalMemory)tm.Value).Reset(this.Connections);
+            }
+            public List<ClassifierResult<string>> Predict(int[] input)
+            {
+                var lyrOut = this.Layer.Compute(input, false) as ComputeCycle;
+
+                List<ClassifierResult<string>> predictedInputValues = this.Classifier.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), 3);
+
+                return predictedInputValues;
+            }
+
+            public Connections Connections { get; set; }
+
+            public CortexLayer<object, object> Layer { get; set; }
+
+            public HtmClassifier<string, ComputeCycle> Classifier { get; set; }
+        }
+
     }
 }

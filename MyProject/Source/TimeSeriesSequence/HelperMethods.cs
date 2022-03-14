@@ -120,6 +120,13 @@ namespace TimeSeriesSequence
         /// <returns></returns>
         public static List<Dictionary<string, int[]>> EncodePassengerData(List<ProcessedData> taxiData)
         {
+            var unsortedTaxiData = taxiData.GroupBy(c => new
+            {
+                c.Date
+
+            }).AsEnumerable().Cast<dynamic>();
+
+            var multSequenceTaxiData = unsortedTaxiData.ToList();
             List<Dictionary<string, int[]>> ListOfEncodedTrainingSDR = new List<Dictionary<string, int[]>>();
 
             ScalarEncoder dayEncoder = FetchDayEncoder();
@@ -127,29 +134,39 @@ namespace TimeSeriesSequence
             ScalarEncoder segmentEncoder = FetchSegmentEncoder();
             ScalarEncoder dayOfWeekEncoder = FetchWeekDayEncoder();
 
-            foreach (ProcessedData sequence in taxiData)
+            foreach (var sequenceData in multSequenceTaxiData)
             {
                 var tempDictionary = new Dictionary<string, int[]>();
 
-                var observationLabel = sequence.Passanger_count;
-                int day = sequence.Date.Day;
-                int month = sequence.Date.Month;
-                int segement = Convert.ToInt32(sequence.Segment);
-                int dayOfWeek = (int)sequence.Date.DayOfWeek;
+                foreach (var sequence in sequenceData)
+                {
+                    var observationLabel = sequence.Passanger_count;
+                    int day = sequence.Date.Day;
+                    int month = sequence.Date.Month;
+                    int segement = Convert.ToInt32(sequence.Segment);
+                    int dayOfWeek = (int)sequence.Date.DayOfWeek;
 
-                int[] sdr = new int[0];
+                    int[] sdr = new int[0];
 
-                sdr = sdr.Concat(dayEncoder.Encode(day)).ToArray();
-                sdr = sdr.Concat(monthEncoder.Encode(month)).ToArray();
-                sdr = sdr.Concat(segmentEncoder.Encode(segement)).ToArray();
-                sdr = sdr.Concat(dayOfWeekEncoder.Encode(dayOfWeek)).ToArray();
+                    sdr = sdr.Concat(dayEncoder.Encode(day)).ToArray();
+                    sdr = sdr.Concat(monthEncoder.Encode(month)).ToArray();
+                    sdr = sdr.Concat(segmentEncoder.Encode(segement)).ToArray();
+                    sdr = sdr.Concat(dayOfWeekEncoder.Encode(dayOfWeek)).ToArray();
 
-                //    UNCOMMENT THESE LINES TO DRAW SDR BITMAP
-                //int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(sdr, 100, 100);
-                //var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
-                //NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"{sequence.Date.Day}.png", null);
+                    //    UNCOMMENT THESE LINES TO DRAW SDR BITMAP
+                    //int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(sdr, 100, 100);
+                    //var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
+                    //NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"{sequence.Date.Day}.png", null);
 
-                tempDictionary.Add(observationLabel.ToString(), sdr);
+                    if (tempDictionary.Count > 0 && tempDictionary.ContainsKey(observationLabel.ToString()))
+                    {
+                        var newKey = observationLabel + "," + segement;
+                        tempDictionary.Add(newKey, sdr);
+                    }
+                    else
+                        tempDictionary.Add(observationLabel.ToString(), sdr);
+                }
+
                 ListOfEncodedTrainingSDR.Add(tempDictionary);
             }
 
