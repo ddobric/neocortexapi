@@ -14,8 +14,11 @@
         function scrollBtn(btnId, targetId) {
             var btn = document.getElementById(btnId);
             btn.addEventListener("click", function () {
+                const offset = 55;
                 var target = document.getElementById(targetId);
-                target.scrollIntoView({ behavior: "smooth" });
+                var navBar = document.getElementsByClassName("navigation")[0];
+                window.scroll({ top: (target.offsetTop - navBar.clientHeight), left: 0, behavior: 'smooth' });
+                // target.scrollIntoView({ behavior: "smooth" });
             });
         }
 
@@ -54,6 +57,7 @@
                 }
             }
         }
+        window.ondragstart = function() { return false; } 
         window.addEventListener('DOMContentLoaded', function () {
             //do something with b-lazy plugin, lightbox plugin and then with flexslider
             scrollBtn("get-started", "gs");
@@ -80,11 +84,15 @@
         </div>
     </div>
 
-    <div class="banner">
+    <div>
         <!-- <img class="image" src="./images/Header-banner.svg" /> -->
-        <div class="banner-content d-flex justify-content-center">
-            <img src="./images/Header-banner.svg" alt="banner"/>
-            <h2>NeocortexAPI</h2>
+        <div>
+            <div class="logo d-flex justify-content-center">
+                <img src="./images/logo-NeoCortexAPI.svg" alt="logo NeoCortextAPI" />
+            </div>
+            <div class="banner">
+                <img src="./images/Header-banner.svg" alt="banner" />
+            </div>
         </div>
     </div>
     <div class="sub-banner text-center">

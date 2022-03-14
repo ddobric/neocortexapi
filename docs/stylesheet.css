@@ -36,14 +36,15 @@ h3, h2 {
   font-size: 34px;
 }
 
-.navigation > h3 {  
+.navigation h3  {  
   font-size: var(--nav-font-size-mobile);
   color: var(--header-color);
   margin: 0.25em 1em;
-  cursor: default;
+  cursor: pointer;
   margin-bottom: 0;
   line-height: 1cm;
 }
+
 .navigation {
   text-align: center;
   width: 100%;
@@ -69,7 +70,7 @@ h3, h2 {
   font-family: var(--header-font-family-bold);
   font-size: 20px;
   background-color: #FFD600;
-  cursor: default;
+  /* cursor: default; */
   color: var(--header-color);
   padding: 0.2em 1.3em;
   border-radius: 5px;
@@ -78,28 +79,21 @@ h3, h2 {
 }
 
 .banner {
-  position: relative;
-  z-index: -1;
-}
-
-.banner-content {
-  background-image: url(./images/Header-banner.svg);
-  background-repeat: no-repeat;
-  background-size: cover;
-  height: 40vh;
-}
-
-.banner-content > img {
-  display: none;
   width: 100%;
+  overflow: hidden;
+  line-height: 0;
 }
 
-.banner-content > h2 {
-  position: absolute;
-  color: #FFFFFF;
-  font-size: calc(1.75em * 1.618);
-  margin: 0;
-  top: 15%;
+.banner img {
+  margin-top: -150px;
+}
+
+.logo {
+  padding: 2em 0;
+}
+
+.logo img {
+  width: 80%;
 }
 
 .sub-banner {
@@ -114,9 +108,6 @@ h3, h2 {
 
 
 .section {
-  /* min-height: calc(
-    var(--content-min-height) - 2 * var(--content-padding-vertical)
-  ); */
   padding: var(--content-padding-vertical) var(--content-padding-horizontal);
 
   display: flex;
@@ -206,9 +197,8 @@ h3, h2 {
     padding: 0.2em 1.3em;
   }
 
-  .banner-content > img {
-    display: block;
-    visibility: hidden;
+  .logo img {
+    width: auto;
   }
 }
 
