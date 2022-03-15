@@ -276,7 +276,10 @@ namespace TimeSeriesSequence
                     TaxiData taxiData = new TaxiData();
                     if (strRow[7] != "")
                     {
-                        taxiData.lpep_pickup_datetime = Convert.ToDateTime(strRow[1]);
+                        var pickupDate = strRow[1].ToString();
+                        string dateTime = GetPickUpDateTime(pickupDate);
+
+                        taxiData.lpep_pickup_datetime = Convert.ToDateTime(dateTime);
                         taxiData.passenger_count = Convert.ToInt32(strRow[7]);
                         taxiDatas.Add(taxiData);
                     }
@@ -286,6 +289,22 @@ namespace TimeSeriesSequence
             var processedTaxiData = CreateProcessedCSVFile(taxiDatas, path);
 
             return processedTaxiData;
+        }
+
+        private static string GetPickUpDateTime(string pickupDate)
+        {
+            string[] splitDateTime = pickupDate.Split(" ");
+
+            string[] date = splitDateTime[0].Split("/");
+            int dd = int.Parse(date[1]);
+            int MM = int.Parse(date[0]);
+            int yy = int.Parse(date[2]);
+            string[] time = splitDateTime[1].Split(":");
+            int hh = int.Parse(time[0]);
+            int mm = int.Parse(time[1]);
+            string dateTime = MM.ToString("00") + "/" + dd.ToString("00") + "/" + yy.ToString("00") + " " + hh.ToString("00") + ":" + mm.ToString("00");
+
+            return dateTime;
         }
 
         /// <summary>
