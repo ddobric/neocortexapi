@@ -30,7 +30,7 @@ namespace TimeSeriesSequence.Entity
         }
         public class TaxiData
         {
-            public DateTime lpep_pickup_datetime { get; set; }
+            public string lpep_pickup_datetime { get; set; }
             public int passenger_count { get; set; }
         }
     }
