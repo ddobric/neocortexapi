@@ -5,6 +5,7 @@ using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -278,8 +279,7 @@ namespace TimeSeriesSequence
                     {
                         var pickupDate = strRow[1].ToString();
                         string dateTime = GetPickUpDateTime(pickupDate);
-
-                        taxiData.lpep_pickup_datetime = Convert.ToDateTime(dateTime);
+                        taxiData.lpep_pickup_datetime = dateTime;
                         taxiData.passenger_count = Convert.ToInt32(strRow[7]);
                         taxiDatas.Add(taxiData);
                     }
@@ -290,7 +290,11 @@ namespace TimeSeriesSequence
 
             return processedTaxiData;
         }
-
+        /// <summary>
+        /// Formated the date time
+        /// </summary>
+        /// <param name="pickupDate"></param>
+        /// <returns></returns>
         private static string GetPickUpDateTime(string pickupDate)
         {
             string[] splitDateTime = pickupDate.Split(" ");
@@ -302,7 +306,7 @@ namespace TimeSeriesSequence
             string[] time = splitDateTime[1].Split(":");
             int hh = int.Parse(time[0]);
             int mm = int.Parse(time[1]);
-            string dateTime = MM.ToString("00") + "/" + dd.ToString("00") + "/" + yy.ToString("00") + " " + hh.ToString("00") + ":" + mm.ToString("00");
+            string dateTime = dd.ToString("00") + "/" + MM.ToString("00") + "/" + yy.ToString("00") + " " + hh.ToString("00") + ":" + mm.ToString("00");
 
             return dateTime;
         }
@@ -318,11 +322,12 @@ namespace TimeSeriesSequence
 
             foreach (var item in taxiDatas)
             {
-                var pickupTime = item.lpep_pickup_datetime.ToString("HH:mm");
+                DateTime dateTime = DateTime.Parse(item.lpep_pickup_datetime);
+                var pickupTime = dateTime.ToString("HH:mm");
                 Slot result = GetSlot(pickupTime, GetSlots());
 
                 ProcessedData processedData = new ProcessedData();
-                processedData.Date = item.lpep_pickup_datetime.Date;
+                processedData.Date = dateTime.Date;
                 processedData.TimeSpan = result.StartTime.ToString() + " - " + result.EndTime.ToString();
                 processedData.Segment = result.Segment;
                 processedData.Passanger_count = item.passenger_count;
