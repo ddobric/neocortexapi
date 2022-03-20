@@ -77,6 +77,7 @@ namespace TimeSeriesSequence
             else
                 Console.WriteLine("Enter valid Date Time for Passanger Predicting");
         }
+        
         /// <summary>
         /// Run experiment based on the taxi passanger data
         /// </summary>
@@ -250,6 +251,7 @@ namespace TimeSeriesSequence
                     accuracy = ((double)elementMatches / (sequence.Count)) * 100;
                     Debug.WriteLine($"Cycle : {i} \t Accuracy:{accuracy}");
                     tempLOGGRAPH.Add(i, accuracy);
+                    
                     if (accuracy >= 100)
                     {
                         SequencesMatchCount++;
@@ -334,6 +336,7 @@ namespace TimeSeriesSequence
 
             return new HtmPredictionEngine { Layer = layer1, Classifier = cls, Connections = mem };
         }
+        
         public class HtmPredictionEngine
         {
             public void Reset()
@@ -341,6 +344,7 @@ namespace TimeSeriesSequence
                 var tm = this.Layer.HtmModules.FirstOrDefault(m => m.Value is TemporalMemory);
                 ((TemporalMemory)tm.Value).Reset(this.Connections);
             }
+            
             public List<ClassifierResult<string>> Predict(int[] input)
             {
                 var lyrOut = this.Layer.Compute(input, false) as ComputeCycle;

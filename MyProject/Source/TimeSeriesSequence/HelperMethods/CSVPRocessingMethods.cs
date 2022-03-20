@@ -51,6 +51,7 @@ namespace TimeSeriesSequence.HelperMethods
 
             return timeSlots;
         }
+        
         /// <summary>
         /// Processed the raw passenger data set
         /// </summary>
@@ -64,6 +65,7 @@ namespace TimeSeriesSequence.HelperMethods
             {
                 string line = string.Empty;
                 sr.ReadLine();
+                
                 while ((line = sr.ReadLine()) != null)
                 {
                     string[] strRow = line.Split(','); ;
@@ -83,6 +85,7 @@ namespace TimeSeriesSequence.HelperMethods
 
             return processedTaxiData;
         }
+        
         /// <summary>
         /// Formated the date time
         /// </summary>
@@ -103,6 +106,7 @@ namespace TimeSeriesSequence.HelperMethods
 
             return dateTime;
         }
+        
         /// <summary>
         /// Create the processed CSV file with required column
         /// </summary>
@@ -144,6 +148,7 @@ namespace TimeSeriesSequence.HelperMethods
             StringBuilder csvcontent = new StringBuilder();
             csvcontent.AppendLine("Pickup_Date,TimeSpan,Segment,Passenger_count");
             processedTaxiDatas.Clear();
+            
             foreach (var taxiData in totalPassangerData)
             {
                 processedTaxiDatas.Add(new ProcessedData { Date = taxiData.Date, Passanger_count = taxiData.Passsanger_Count, Segment = taxiData.Segment, TimeSpan = taxiData.TimeSpan });
@@ -162,6 +167,7 @@ namespace TimeSeriesSequence.HelperMethods
 
             return processedTaxiDatas;
         }
+        
         /// <summary>
         /// Get the slot based on pick up time
         /// </summary>
