@@ -11,9 +11,9 @@ using System.Text;
 using System.Threading.Tasks;
 using static TimeSeriesSequence.Entity.HelperClasses;
 
-namespace TimeSeriesSequence
+namespace TimeSeriesSequence.HelperMethods
 {
-    public static class HelperMethods
+    public static class CSVPRocessingMethods
     {
         /// <summary>
         /// Slots of segment with 1 hours intervel
@@ -51,213 +51,6 @@ namespace TimeSeriesSequence
 
             return timeSlots;
         }
-
-        /// <summary>
-        /// HTM configuaration oblect initialization
-        /// </summary>
-        /// <param name="inputBits"></param>
-        /// <param name="numColumns"></param>
-        /// <returns></returns>
-        public static HtmConfig FetchHTMConfig(int inputBits, int numColumns)
-        {
-            HtmConfig cfg = new HtmConfig(new int[] { inputBits }, new int[] { numColumns })
-            {
-                Random = new ThreadSafeRandom(42),
-
-                CellsPerColumn = 25,
-                GlobalInhibition = true,
-                LocalAreaDensity = -1,
-                NumActiveColumnsPerInhArea = 0.02 * numColumns,
-                PotentialRadius = (int)(0.15 * inputBits),
-                //InhibitionRadius = 15,
-
-                MaxBoost = 10.0,
-                DutyCyclePeriod = 25,
-                MinPctOverlapDutyCycles = 0.75,
-                MaxSynapsesPerSegment = (int)(0.02 * numColumns),
-
-                ActivationThreshold = 15,
-                ConnectedPermanence = 0.5,
-
-                // Learning is slower than forgetting in this case.
-                PermanenceDecrement = 0.25,
-                PermanenceIncrement = 0.15,
-
-                // Used by punishing of segments.
-                PredictedSegmentDecrement = 0.1,
-
-                //NumInputs = 88
-            };
-
-            return cfg;
-        }
-
-        /// <summary>
-        /// Multi encoder for day month and segment 
-        /// </summary>
-        /// <returns></returns>
-        public static EncoderBase FetchDateTimeEncoder()
-        {
-            EncoderBase dayEncoder = FetchDayEncoder();
-            EncoderBase monthEncoder = FetchMonthEncoder();
-            EncoderBase segmentEncoder = FetchSegmentEncoder();
-            EncoderBase dayOfWeek = FetchWeekDayEncoder();
-
-            List<EncoderBase> encoder = new List<EncoderBase>();
-            encoder.Add(dayEncoder);
-            encoder.Add(monthEncoder);
-            encoder.Add(segmentEncoder);
-            encoder.Add(dayOfWeek);
-
-            MultiEncoder encoderSetting = new MultiEncoder(encoder);
-
-            return encoderSetting;
-        }
-
-        /// <summary>
-        /// Encode the passenger data based on day month segment and day of week
-        /// </summary>
-        /// <param name="taxiData"></param>
-        /// <returns></returns>
-        public static List<Dictionary<string, int[]>> EncodePassengerData(List<ProcessedData> taxiData)
-        {
-            var unsortedTaxiData = taxiData.GroupBy(c => new
-            {
-                c.Date
-
-            }).AsEnumerable().Cast<dynamic>();
-
-            var multSequenceTaxiData = unsortedTaxiData.ToList();
-            List<Dictionary<string, int[]>> ListOfEncodedTrainingSDR = new List<Dictionary<string, int[]>>();
-
-            ScalarEncoder dayEncoder = FetchDayEncoder();
-            ScalarEncoder monthEncoder = FetchMonthEncoder();
-            ScalarEncoder segmentEncoder = FetchSegmentEncoder();
-            ScalarEncoder dayOfWeekEncoder = FetchWeekDayEncoder();
-
-            foreach (var sequenceData in multSequenceTaxiData)
-            {
-                var tempDictionary = new Dictionary<string, int[]>();
-
-                foreach (var sequence in sequenceData)
-                {
-                    var observationLabel = sequence.Passanger_count;
-                    int day = sequence.Date.Day;
-                    int month = sequence.Date.Month;
-                    int segement = Convert.ToInt32(sequence.Segment);
-                    int dayOfWeek = (int)sequence.Date.DayOfWeek;
-
-                    int[] sdr = new int[0];
-
-                    sdr = sdr.Concat(dayEncoder.Encode(day)).ToArray();
-                    sdr = sdr.Concat(monthEncoder.Encode(month)).ToArray();
-                    sdr = sdr.Concat(segmentEncoder.Encode(segement)).ToArray();
-                    sdr = sdr.Concat(dayOfWeekEncoder.Encode(dayOfWeek)).ToArray();
-
-                    //    UNCOMMENT THESE LINES TO DRAW SDR BITMAP
-                    //int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(sdr, 100, 100);
-                    //var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
-                    //NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"{sequence.Date.Day}.png", null);
-
-                    if (tempDictionary.Count > 0 && tempDictionary.ContainsKey(observationLabel.ToString()))
-                    {
-                        var newKey = observationLabel + "," + segement;
-                        tempDictionary.Add(newKey, sdr);
-                    }
-                    else
-                        tempDictionary.Add(observationLabel.ToString(), sdr);
-                }
-
-                ListOfEncodedTrainingSDR.Add(tempDictionary);
-            }
-
-            return ListOfEncodedTrainingSDR;
-        }
-
-        /// <summary>
-        /// Get SDR of a date time
-        /// </summary>
-        /// <param name="dateTime"></param>
-        /// <returns></returns>
-        public static int[] GetSDRofDateTime(DateTime dateTime)
-        {
-            ScalarEncoder dayEncoder = FetchDayEncoder();
-            ScalarEncoder monthEncoder = FetchMonthEncoder();
-            ScalarEncoder segmentEncoder = FetchSegmentEncoder();
-            ScalarEncoder dayOfWeekEncoder = FetchWeekDayEncoder();
-
-            int day = dateTime.Day;
-            int month = dateTime.Month;
-            Slot result = GetSlot(dateTime.ToString("H:mm"), GetSlots());
-            int segement = Convert.ToInt32(result.Segment);
-            int dayOfWeek = (int)dateTime.DayOfWeek;
-
-            int[] sdr = new int[0];
-
-            sdr = sdr.Concat(dayEncoder.Encode(day)).ToArray();
-            sdr = sdr.Concat(monthEncoder.Encode(month)).ToArray();
-            sdr = sdr.Concat(segmentEncoder.Encode(segement)).ToArray();
-            sdr = sdr.Concat(dayOfWeekEncoder.Encode(dayOfWeek)).ToArray();
-            return sdr;
-        }
-        public static ScalarEncoder FetchWeekDayEncoder()
-        {
-            ScalarEncoder weekOfDayEncoder = new ScalarEncoder(new Dictionary<string, object>()
-            {
-                { "W", 3},
-                { "N", 11},
-                { "MinVal", (double)0}, // Min value = (0).
-                { "MaxVal", (double)7}, // Max value = (7).
-                { "Periodic", true}, // Since Monday would repeat again.
-                { "Name", "WeekDay"},
-                { "ClipInput", true},
-            });
-            return weekOfDayEncoder;
-        }
-        public static ScalarEncoder FetchDayEncoder()
-        {
-            ScalarEncoder dayEncoder = new ScalarEncoder(new Dictionary<string, object>()
-            {
-                { "W", 3},
-                { "N", 35},
-                { "MinVal", (double)1}, // Min value = (0).
-                { "MaxVal", (double)32}, // Max value = (32).
-                { "Periodic", true},
-                { "Name", "Date"},
-                { "ClipInput", true},
-           });
-
-            return dayEncoder;
-        }
-        public static ScalarEncoder FetchMonthEncoder()
-        {
-            ScalarEncoder monthEncoder = new ScalarEncoder(new Dictionary<string, object>()
-            {
-                { "W", 3},
-                { "N", 15},
-                { "MinVal", (double)1}, // Min value = (0).
-                { "MaxVal", (double)13}, // Max value = (12).
-                { "Periodic", true}, // Since Monday would repeat again.
-                { "Name", "Month"},
-                { "ClipInput", true},
-            });
-            return monthEncoder;
-        }
-        public static ScalarEncoder FetchSegmentEncoder()
-        {
-            ScalarEncoder segmentEncoder = new ScalarEncoder(new Dictionary<string, object>()
-            {
-                { "W", 3},
-                { "N", 27},
-                { "MinVal", (double)0}, // Min value = (0).
-                { "MaxVal", (double)24}, // Max value = (23).
-                { "Periodic", true}, // Since Segment would repeat again.
-                { "Name", "Segment"},
-                { "ClipInput", true},
-            });
-            return segmentEncoder;
-        }
-
         /// <summary>
         /// Processed the raw passenger data set
         /// </summary>
@@ -310,7 +103,6 @@ namespace TimeSeriesSequence
 
             return dateTime;
         }
-
         /// <summary>
         /// Create the processed CSV file with required column
         /// </summary>
@@ -324,7 +116,7 @@ namespace TimeSeriesSequence
             {
                 DateTime dateTime = DateTime.Parse(item.lpep_pickup_datetime);
                 var pickupTime = dateTime.ToString("HH:mm");
-                Slot result = GetSlot(pickupTime, GetSlots());
+                Slot result = GetSlot(pickupTime);
 
                 ProcessedData processedData = new ProcessedData();
                 processedData.Date = dateTime.Date;
@@ -370,15 +162,15 @@ namespace TimeSeriesSequence
 
             return processedTaxiDatas;
         }
-
         /// <summary>
         /// Get the slot based on pick up time
         /// </summary>
         /// <param name="pickupTime"></param>
         /// <param name="timeSlots"></param>
         /// <returns></returns>
-        private static Slot GetSlot(string pickupTime, List<Slot> timeSlots)
+        public static Slot GetSlot(string pickupTime)
         {
+            var timeSlots = GetSlots();
             var time = TimeSpan.Parse(pickupTime);
             Slot slots = timeSlots.FirstOrDefault(x => x.EndTime >= time && x.StartTime <= time);
 

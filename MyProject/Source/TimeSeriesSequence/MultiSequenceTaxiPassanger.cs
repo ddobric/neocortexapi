@@ -4,12 +4,12 @@ using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Network;
 using System.Diagnostics;
+using TimeSeriesSequence.HelperMethods;
 
 namespace TimeSeriesSequence
 {
     public class MultiSequenceTaxiPassanger
     {
-
         string path = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory())!.Parent!.Parent!.FullName, $"DataSet/");
 
         /// <summary>
@@ -18,17 +18,17 @@ namespace TimeSeriesSequence
         public void RunPassangerTimeSeriesSequenceExperiment()
         {
             int inputBits = 88;
-            int maxCycles = 50;
+            int maxCycles = 100;
             int numColumns = 1024;
 
             // Read the taxi data set and write into new processed csv with reuired column
-            var taxiData = HelperMethods.ProcessExistingDatafromCSVfile(path);
+            var taxiData = CSVPRocessingMethods.ProcessExistingDatafromCSVfile(path);
 
             // Encode the processed taxi passanger data
-            List<Dictionary<string, int[]>> trainTaxiData = HelperMethods.EncodePassengerData(taxiData);
+            List<Dictionary<string, int[]>> trainTaxiData = DateTimeEncoders.EncodePassengerData(taxiData);
 
             // Encode with multi encoder
-            EncoderBase encoder = HelperMethods.FetchDateTimeEncoder();
+            EncoderBase encoder = DateTimeEncoders.FetchDateTimeEncoder();
 
             // Run experiment with trained taxi passanger data
             var learningExpResult = RunExperiment(inputBits, maxCycles, numColumns, encoder, trainTaxiData);
@@ -36,7 +36,6 @@ namespace TimeSeriesSequence
             // Predic no of passanger based on user Input
             PredictPassanagerWithUserInput(learningExpResult);
         }
-
 
         /// <summary>
         /// Taking user input and sending for prediction
@@ -67,7 +66,7 @@ namespace TimeSeriesSequence
             {
                 DateTime userInput = DateTime.Parse(userInputDateTime);
                 // Encode the user input and return the SDR
-                var sdr = HelperMethods.GetSDRofDateTime(userInput);
+                var sdr = DateTimeEncoders.GetSDRofDateTime(userInput);
                 var predictedValuesForUserInput = learningExpResult.Predict(sdr);
                 foreach (var predictedVal in predictedValuesForUserInput)
                 {
@@ -94,11 +93,12 @@ namespace TimeSeriesSequence
             var OUTPUT_trainingAccuracy_graph = new List<Dictionary<int, double>>();
             Stopwatch sw = new Stopwatch();
 
-            trainTaxiData = trainTaxiData.Take(10).ToList();
+            trainTaxiData = trainTaxiData.Take(50).ToList();
 
             sw.Start();
 
-            var htmConfig = HelperMethods.FetchHTMConfig(inputBits, numColumns);
+            //var htmConfig = HelperMethods.FetchHTMConfig(inputBits, numColumns);
+            var htmConfig = new HtmConfig(new int[] { inputBits }, new int[] { numColumns });
 
             var mem = new Connections(htmConfig);
 
@@ -332,8 +332,6 @@ namespace TimeSeriesSequence
             returnDictionary.Add(layer1, cls);
             Console.WriteLine("Complete Learning");
 
-            //return returnDictionary;
-
             return new HtmPredictionEngine { Layer = layer1, Classifier = cls, Connections = mem };
         }
         public class HtmPredictionEngine
@@ -359,5 +357,44 @@ namespace TimeSeriesSequence
             public HtmClassifier<string, ComputeCycle> Classifier { get; set; }
         }
 
+        /// <summary>
+        /// HTM configuaration oblect initialization
+        /// </summary>
+        /// <param name="inputBits"></param>
+        /// <param name="numColumns"></param>
+        /// <returns></returns>
+        public static HtmConfig FetchHTMConfig(int inputBits, int numColumns)
+        {
+            HtmConfig cfg = new HtmConfig(new int[] { inputBits }, new int[] { numColumns })
+            {
+                Random = new ThreadSafeRandom(42),
+
+                CellsPerColumn = 25,
+                GlobalInhibition = true,
+                LocalAreaDensity = -1,
+                NumActiveColumnsPerInhArea = 0.02 * numColumns,
+                PotentialRadius = (int)(0.15 * inputBits),
+                //InhibitionRadius = 15,
+
+                MaxBoost = 10.0,
+                DutyCyclePeriod = 25,
+                MinPctOverlapDutyCycles = 0.75,
+                MaxSynapsesPerSegment = (int)(0.02 * numColumns),
+
+                ActivationThreshold = 15,
+                ConnectedPermanence = 0.5,
+
+                // Learning is slower than forgetting in this case.
+                PermanenceDecrement = 0.25,
+                PermanenceIncrement = 0.15,
+
+                // Used by punishing of segments.
+                PredictedSegmentDecrement = 0.1,
+
+                //NumInputs = 88
+            };
+
+            return cfg;
+        }
     }
 }
