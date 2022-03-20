@@ -230,6 +230,10 @@ https://doi.org/10.1145/3393822.3432317
 Improved HTM Spatial Pooler with Homeostatic Plasticity Control (Awarded with: *Best Industrial Paper*)
 https://www.insticc.org/node/TechnicalProgram/icpram/2021/presentationDetails/103142
 
+#### Springer Nature - Computer Sciences
+On the Importance of the Newborn Stage When Learning Patterns with the Spatial Pooler
+https://rdcu.be/cIcoc
+
 # Contribute
 If your want to contribute on this project please contact us. 
 

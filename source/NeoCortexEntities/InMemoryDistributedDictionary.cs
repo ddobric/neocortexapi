@@ -24,7 +24,27 @@ namespace NeoCortexApi.Entities
         /// Used while partitioning.
         /// </summary>
         private int numElements = 0;
+
         public bool IsReadOnly => false;
+
+        /// <summary>
+        /// The number of elements in the dictionary.
+        /// </summary>
+        public int Count
+        {
+            get
+            {
+                int cnt = 0;
+
+                foreach (var item in this.dictList)
+                {
+                    cnt += item.Values.Count;
+                }
+
+                return cnt;
+            }
+        }
+
 
         /// <summary>
         /// Initializes the inmemory dictionary that can be span over multiple nodes.
@@ -131,21 +151,6 @@ namespace NeoCortexApi.Entities
             }
         }
 
-
-        public int Count
-        {
-            get
-            {
-                int cnt = 0;
-
-                foreach (var item in this.dictList)
-                {
-                    cnt += item.Values.Count;
-                }
-
-                return cnt;
-            }
-        }
 
         
         /// <summary>
@@ -395,7 +400,7 @@ namespace NeoCortexApi.Entities
         public  void Serialize(StreamWriter writer)
         {
             HtmSerializer2 ser = new HtmSerializer2();
-
+            
             ser.SerializeBegin(nameof(InMemoryDistributedDictionary<TKey, TValue>), writer);
             //ser.SerializeValue(typeof(TKey).AssemblyQualifiedName, writer);
             //ser.SerializeValue(typeof(TValue).AssemblyQualifiedName, writer);
