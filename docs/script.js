@@ -28,7 +28,6 @@ function addImageLink(x) {
       var holder = imageHolders[i];
       var image = holder.getElementsByClassName("image")[0];
       if (image != null) {
-
         var optionalElement = document.createElement("div");
         optionalElement.classList.add("optional");
         optionalElement.classList.add("read-more");
@@ -46,6 +45,26 @@ function addImageLink(x) {
   }
 }
 
+function replaceBanner(x) {
+  var element = document.getElementById("banner-img");
+  if (x.matches) {
+    element.src = "./images/Header-banner.svg";
+  } else {
+    element.src = "./images/Neocortex_smartphone.svg";
+  }
+}
+
+var hamburger = document.getElementsByClassName("hamburger")[0];
+if (hamburger != undefined) {
+  hamburger.addEventListener("click", function () {
+    hamburger.classList.toggle("open");
+    var navElement = document.getElementsByClassName("nav-element-mobile")[0];
+    navElement.classList.toggle("collapse");
+  });
+}
+
 var x = window.matchMedia("(min-width: 1000px)");
 addImageLink(x); // Call listener function at run time
-x.addListener(addImageLink);
+replaceBanner(x);
+x.addEventListener(addImageLink);
+x.addEventListener(replaceBanner);
