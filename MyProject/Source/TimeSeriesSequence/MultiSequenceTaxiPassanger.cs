@@ -77,6 +77,7 @@ namespace TimeSeriesSequence
             else
                 Console.WriteLine("Enter valid Date Time for Passanger Predicting");
         }
+        
         /// <summary>
         /// Run experiment based on the taxi passanger data
         /// </summary>
@@ -334,6 +335,7 @@ namespace TimeSeriesSequence
 
             return new HtmPredictionEngine { Layer = layer1, Classifier = cls, Connections = mem };
         }
+        
         public class HtmPredictionEngine
         {
             public void Reset()

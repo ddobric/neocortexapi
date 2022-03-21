@@ -24,6 +24,7 @@ namespace TimeSeriesSequence.HelperMethods
             });
             return weekOfDayEncoder;
         }
+        
         public static ScalarEncoder FetchDayEncoder()
         {
             ScalarEncoder dayEncoder = new ScalarEncoder(new Dictionary<string, object>()
@@ -39,6 +40,7 @@ namespace TimeSeriesSequence.HelperMethods
 
             return dayEncoder;
         }
+        
         public static ScalarEncoder FetchMonthEncoder()
         {
             ScalarEncoder monthEncoder = new ScalarEncoder(new Dictionary<string, object>()
@@ -53,6 +55,7 @@ namespace TimeSeriesSequence.HelperMethods
             });
             return monthEncoder;
         }
+        
         public static ScalarEncoder FetchSegmentEncoder()
         {
             ScalarEncoder segmentEncoder = new ScalarEncoder(new Dictionary<string, object>()
@@ -89,6 +92,7 @@ namespace TimeSeriesSequence.HelperMethods
 
             return encoderSetting;
         }
+        
         /// <summary>
         /// Encode the passenger data based on day month segment and day of week
         /// </summary>
@@ -148,6 +152,7 @@ namespace TimeSeriesSequence.HelperMethods
 
             return ListOfEncodedTrainingSDR;
         }
+        
         /// <summary>
         /// Get SDR of a date time
         /// </summary>
