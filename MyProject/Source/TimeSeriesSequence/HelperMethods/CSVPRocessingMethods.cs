@@ -51,7 +51,7 @@ namespace TimeSeriesSequence.HelperMethods
 
             return timeSlots;
         }
-        
+
         /// <summary>
         /// Processed the raw passenger data set
         /// </summary>
