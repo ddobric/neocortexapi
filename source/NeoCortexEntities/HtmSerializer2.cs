@@ -84,32 +84,46 @@ namespace NeoCortexApi.Entities
 
         public void SerializeValue(object val, Type type, StreamWriter sw)
         {
-            sw.Write(ValueDelimiter);
-
             if (type.IsValueType)
             {
-                //if(type == typeof(int) || type == typeof(double)
+                sw.Write(ValueDelimiter);
                 sw.Write(val.ToString());
+                sw.Write(ValueDelimiter);
+                sw.Write(ParameterDelimiter);
             }
             else
             {
-                var method = type.GetMethod("", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                var method = type.GetMethod("Serialize", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
                 if (method != null)
                 {
                     method.Invoke(val, new object[] { sw });
                 }
                 else
                     throw new NotSupportedException($"No serialization implemented on the type {type}!");
-
-                sw.Write(ValueDelimiter);
-                sw.Write(ParameterDelimiter);
             }
         }
 
-            public void DeserializeValue(object value, Type type)
+        public T DeserializeValue<T>(StreamReader sr)
+        {
+            Type type = typeof(T);
+
+            if (type.IsValueType)
             {
-                //todo..
+                var reader = sr.ReadLine().Trim().Replace(ParameterDelimiter.ToString(), "");
+                return (T)Convert.ChangeType(reader, type);
             }
+            else
+            {
+                var method = type.GetMethod("Deserialize");
+                if (method != null)
+                {
+                    return (T) method.Invoke(null, new object[] { sr });
+                }
+                else
+                    throw new NotSupportedException($"No de-serialization implemented on the type {type}!");
+            }
+            
+        }
 
 
             /// <summary>
