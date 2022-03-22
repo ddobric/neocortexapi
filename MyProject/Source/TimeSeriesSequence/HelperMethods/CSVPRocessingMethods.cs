@@ -51,6 +51,7 @@ namespace TimeSeriesSequence.HelperMethods
 
             return timeSlots;
         }
+       
         /// <summary>
         /// Processed the raw passenger data set
         /// </summary>
@@ -83,6 +84,7 @@ namespace TimeSeriesSequence.HelperMethods
 
             return processedTaxiData;
         }
+        
         /// <summary>
         /// Formated the date time
         /// </summary>
@@ -103,6 +105,7 @@ namespace TimeSeriesSequence.HelperMethods
 
             return dateTime;
         }
+        
         /// <summary>
         /// Create the processed CSV file with required column
         /// </summary>
@@ -162,6 +165,7 @@ namespace TimeSeriesSequence.HelperMethods
 
             return processedTaxiDatas;
         }
+        
         /// <summary>
         /// Get the slot based on pick up time
         /// </summary>

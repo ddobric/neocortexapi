@@ -18,7 +18,7 @@ namespace TimeSeriesSequence
         public void RunPassangerTimeSeriesSequenceExperiment()
         {
             int inputBits = 88;
-            int maxCycles = 100;
+            int maxCycles = 50;
             int numColumns = 1024;
 
             // Read the taxi data set and write into new processed csv with reuired column
@@ -77,6 +77,7 @@ namespace TimeSeriesSequence
             else
                 Console.WriteLine("Enter valid Date Time for Passanger Predicting");
         }
+        
         /// <summary>
         /// Run experiment based on the taxi passanger data
         /// </summary>
@@ -93,7 +94,7 @@ namespace TimeSeriesSequence
             var OUTPUT_trainingAccuracy_graph = new List<Dictionary<int, double>>();
             Stopwatch sw = new Stopwatch();
 
-            trainTaxiData = trainTaxiData.Take(50).ToList();
+            trainTaxiData = trainTaxiData.Take(5).ToList();
 
             sw.Start();
 
@@ -159,7 +160,8 @@ namespace TimeSeriesSequence
                 {
                     foreach (var element in sequence)
                     {
-                        var observationClass = element.Key; // OBSERVATION LABEL || SEQUENCE LABEL
+                        string[] splitKey = element.Key.Split(",");
+                        var observationClass = splitKey[0]; // OBSERVATION LABEL || SEQUENCE LABEL
                         var elementSDR = element.Value; // ALL ELEMENT IN ONE SEQUENCE
 
                         Console.WriteLine($"-------------- {observationClass} ---------------");
@@ -203,7 +205,8 @@ namespace TimeSeriesSequence
 
                     foreach (var Elements in sequence)
                     {
-                        var observationLabel = Elements.Key;
+                        string[] splitKey = Elements.Key.Split(",");
+                        var observationLabel = splitKey[0];
 
                         var lyrOut = new ComputeCycle();
 
@@ -334,6 +337,7 @@ namespace TimeSeriesSequence
 
             return new HtmPredictionEngine { Layer = layer1, Classifier = cls, Connections = mem };
         }
+        
         public class HtmPredictionEngine
         {
             public void Reset()
