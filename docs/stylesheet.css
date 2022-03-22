@@ -16,8 +16,8 @@
   --link-font-family: Open Sans, Bold;
   --content-odd-bg-color: #dbeaff;
 
-  --content-padding-vertical: 7em;
-  --content-padding-horizontal: 3em;
+  --content-padding-vertical: 1.5em;
+  --content-padding-horizontal: 4.5em;
   --content-min-height: 100vh;
 }
 body {
@@ -47,12 +47,13 @@ h2 {
   line-height: 0;
   border-style: solid;
   border-width: 1.5px;
-  border-radius: 1px;
+  border-radius: 5px;
   background-color: #707070;
   border-color: #707070;
   height: 0.5px;
   overflow: hidden;
   transition-duration: 500ms;
+  
 }
 
 /* .hamburger.open div {
@@ -60,14 +61,18 @@ h2 {
 } */
 
 .hamburger.open div:nth-child(1) {
-  transform: rotate(45deg) translateY(15px) translateX(3.8px);
+  transform: rotate(45deg) translateY(15px) translateX(3.8px) scale(1.2);
 }
 .hamburger.open div:nth-child(2) {
-  transform: translateY(-500px) translateX(-500px);
+  transform: translateX(-500px);
   transition-duration: 0ms;
 }
+.hamburger div:nth-child(2){
+  transition-duration: 1000ms;
+  transition-timing-function: cubic-bezier(0.86, 0.01, 0.09, 1.13);
+}
 .hamburger.open div:nth-child(3) {
-  transform: rotate(-45deg) translateY(-15px) translateX(3.8px);
+  transform: rotate(-45deg) translateY(-15px) translateX(3.8px) scale(1.2);
 }
 
 .nav-element {
@@ -86,6 +91,7 @@ h2 {
 .nav-element-mobile.collapse {
   height: 0;
   opacity: 0;
+  visibility: hidden;
 }
 
 .navigation h3 {
