@@ -1,11 +1,13 @@
 # Project Title : Investigate Label Prediction from the time-series sequence
 ------------------------------------------------------------------------------
 
-# Introduction : This project is an investigation of label prediction from the time series sequence and develops the code for multisequence learning and prediction 
-in the [neocortexapi](https://github.com/ddobric/neocortexapi) repository. The project's findings also demonstrated that label prediction from a time series data
-set utilizing multisequence learning is the best option for dealing with time prediction. 
+# Introduction : 
+This project is an investigation of label prediction from the time series sequence and develops the code for multisequence learning and prediction in 
+the [neocortexapi](https://github.com/ddobric/neocortexapi) repository. The project's findings also demonstrated that label prediction from a time series
+data set utilizing multisequence learning is the best option for dealing with time prediction. 
 
-#Getting Started : For development and testing reasons, follow these procedures to get a copy of the project up and running on your own system. Look at the notes on
+# Getting Started : 
+For development and testing reasons, follow these procedures to get a copy of the project up and running on your own system. Look at the notes on
 how to deploy the project and experiment it out on a live system. Here is the necessary links:
 - Project Solution File [NeoCortexApi](https://github.com/rabiul64/neocortexapi/blob/master/source/NeoCortexApi.sln)
 - Final Project Codes [TimeSeriesSequence](https://github.com/rabiul64/neocortexapi/tree/master/source/MySEProject/TimeSeriesSequence)
@@ -306,64 +308,121 @@ public List<ClassifierResult<string>> Predict(int[] input)
 ```
 
 
-4.Results : More than twenty experiments are done and here is the sample output accuracy logs and the result based on user input.
+4.Results :
 -------------
+More than twenty experiments are done and here is the sample output accuracy logs and the result based on user input.
+
 - Accuracy Logs : Output Accuracy Logs for [maxCycles 50](https://github.com/rabiul64/neocortexapi/commit/d53a7060952a0c6211dd9a809eea7d93fa29e010) 
+--------------------------------------
 [TaxiPassangerPredictionExperiment]
+----------------------------------
 ******Sequence Starting*****
-cycle : 0 	 Accuracy :0 	 
-cycle : 1 	 Accuracy :16.666666666666664 	 
-cycle : 2 	 Accuracy :20.833333333333336 	 
+----------------------------------
+cycle : 0 	 Accuracy :0 	
+----------------------------------- 
+cycle : 1 	 Accuracy :16.666666666666664
+--------------------------------------------- 
+cycle : 2 	 Accuracy :20.833333333333336 
+------------------------------------------------	 
 Cycle: 3 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 1
-cycle : 4 	 Accuracy :16.666666666666664 	 
-cycle : 5 	 Accuracy :33.33333333333333 	 
-cycle : 6 	 Accuracy :20.833333333333336 	 
-cycle : 7 	 Accuracy :37.5 	 
-cycle : 8 	 Accuracy :33.33333333333333 	 
-cycle : 9 	 Accuracy :54.166666666666664 	 
-cycle : 10 	 Accuracy :62.5 	 
+------------------------------------------------------------------------------------------
+cycle : 4 	 Accuracy :16.666666666666664 
+-----------------------------------------------------	 
+cycle : 5 	 Accuracy :33.33333333333333 
+------------------------------------------------------	 
+cycle : 6 	 Accuracy :20.833333333333336 
+----------------------------------------------------	 
+cycle : 7 	 Accuracy :37.5 
+--------------------------------------------	 
+cycle : 8 	 Accuracy :33.33333333333333 
+-----------------------------------------------	 
+cycle : 9 	 Accuracy :54.166666666666664
+-----------------------------------------------	 	 
+cycle : 10 	 Accuracy :62.5 
+-----------------------------------------------		 
 Cycle: 11 	 Saturated Accuracy : 62.5 	 Number of times repeated 1
-cycle : 12 	 Accuracy :50 	 
-cycle : 13 	 Accuracy :70.83333333333334 	 
-cycle : 14 	 Accuracy :54.166666666666664 	 
-cycle : 15 	 Accuracy :58.333333333333336 	 
-cycle : 16 	 Accuracy :70.83333333333334 	 
-cycle : 17 	 Accuracy :79.16666666666666 	 
-cycle : 18 	 Accuracy :66.66666666666666 	 
-cycle : 19 	 Accuracy :79.16666666666666 	 
-cycle : 20 	 Accuracy :75 	 
+---------------------------------------------------------------------------------
+cycle : 12 	 Accuracy :50
+-----------------------------------------------	
+cycle : 13 	 Accuracy :70.83333333333334
+-----------------------------------------------	 	 
+cycle : 14 	 Accuracy :54.166666666666664
+-----------------------------------------------	 	 
+cycle : 15 	 Accuracy :58.333333333333336
+-----------------------------------------------	 	 
+cycle : 16 	 Accuracy :70.83333333333334
+-----------------------------------------------	 	 
+cycle : 17 	 Accuracy :79.16666666666666
+-----------------------------------------------	 	 
+cycle : 18 	 Accuracy :66.66666666666666
+-----------------------------------------------		 
+cycle : 19 	 Accuracy :79.16666666666666
+-----------------------------------------------	 	 
+cycle : 20 	 Accuracy :75
+-----------------------------------------------	 	 
 Cycle: 21 	 Saturated Accuracy : 75 	 Number of times repeated 1
-cycle : 22 	 Accuracy :66.66666666666666 	 
+-----------------------------------------------	
+cycle : 22 	 Accuracy :66.66666666666666 	
+-----------------------------------------------	
 cycle : 23 	 Accuracy :75 	 
-cycle : 24 	 Accuracy :66.66666666666666 	 
-cycle : 25 	 Accuracy :70.83333333333334 	 
-cycle : 26 	 Accuracy :75 	 
-cycle : 27 	 Accuracy :70.83333333333334 	 
-cycle : 28 	 Accuracy :66.66666666666666 	 
-cycle : 29 	 Accuracy :62.5 	 
-cycle : 30 	 Accuracy :75 	 
-cycle : 31 	 Accuracy :58.333333333333336 	 
-cycle : 32 	 Accuracy :66.66666666666666 	 
-cycle : 33 	 Accuracy :70.83333333333334 	 
-cycle : 34 	 Accuracy :79.16666666666666 	 
-cycle : 35 	 Accuracy :70.83333333333334 	 
-cycle : 36 	 Accuracy :79.16666666666666 	 
-cycle : 37 	 Accuracy :75 	 
+-----------------------------------------------	
+cycle : 24 	 Accuracy :66.66666666666666
+-----------------------------------------------	 	 
+cycle : 25 	 Accuracy :70.83333333333334
+-----------------------------------------------	 	 
+cycle : 26 	 Accuracy :75
+-----------------------------------------------	 	 
+cycle : 27 	 Accuracy :70.83333333333334 
+-----------------------------------------------		 
+cycle : 28 	 Accuracy :66.66666666666666 
+-----------------------------------------------		 
+cycle : 29 	 Accuracy :62.5 
+-----------------------------------------------		 
+cycle : 30 	 Accuracy :75
+-----------------------------------------------	 	 
+cycle : 31 	 Accuracy :58.333333333333336 
+-----------------------------------------------		 
+cycle : 32 	 Accuracy :66.66666666666666 
+-----------------------------------------------		 
+cycle : 33 	 Accuracy :70.83333333333334 
+-----------------------------------------------		 
+cycle : 34 	 Accuracy :79.16666666666666 
+-----------------------------------------------		 
+cycle : 35 	 Accuracy :70.83333333333334 
+-----------------------------------------------		 
+cycle : 36 	 Accuracy :79.16666666666666 
+-----------------------------------------------		 
+cycle : 37 	 Accuracy :75
+-----------------------------------------------	 	 
 Cycle: 38 	 Saturated Accuracy : 75 	 Number of times repeated 1
-cycle : 39 	 Accuracy :70.83333333333334 	 
-cycle : 40 	 Accuracy :66.66666666666666 	 
-cycle : 41 	 Accuracy :75 	 
-cycle : 42 	 Accuracy :70.83333333333334 	 
-cycle : 43 	 Accuracy :75 	 
+---------------------------------------------------------------------------------	
+cycle : 39 	 Accuracy :70.83333333333334
+-----------------------------------------------	 	 
+cycle : 40 	 Accuracy :66.66666666666666 
+-----------------------------------------------		 
+cycle : 41 	 Accuracy :75 
+-----------------------------------------------		 
+cycle : 42 	 Accuracy :70.83333333333334 
+-----------------------------------------------		 
+cycle : 43 	 Accuracy :75 
+-----------------------------------------------		 
 Cycle: 44 	 Saturated Accuracy : 75 	 Number of times repeated 1
-cycle : 45 	 Accuracy :70.83333333333334 	 
+------------------------------------------------------------------------------
+cycle : 45 	 Accuracy :70.83333333333334 
+-----------------------------------------------		 
 Cycle: 46 	 Saturated Accuracy : 70.83333333333334 	 Number of times repeated 1
-cycle : 47 	 Accuracy :75 	 
-cycle : 48 	 Accuracy :70.83333333333334 	 
-cycle : 49 	 Accuracy :79.16666666666666 	 
+--------------------------------------------------------------------------------------------
+cycle : 47 	 Accuracy :75 
+-----------------------------------------------		 
+cycle : 48 	 Accuracy :70.83333333333334 
+-----------------------------------------------		 
+cycle : 49 	 Accuracy :79.16666666666666
+-----------------------------------------------	 
 ****Sequence Ending*****
 
+
 - User Input Result : segment A date-time of 01-01-2022 00:18 is considered.
+
 ![UserInputResult](https://user-images.githubusercontent.com/31253296/159751185-27397564-0a57-4809-abf6-28b8f6a40b64.PNG)
 
 5.Discussion
