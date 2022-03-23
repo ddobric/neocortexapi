@@ -142,7 +142,7 @@ II. Encode the segment
 
 Then read data from the modified CSV file and encode it. For encoding, these four encoders dayEncoder, monthEncoder, segmentEncoder, and dayofWeek 
 have been used to train data. Please note that because the year is static, it is not taken into consideration during encoding. 
-The encoder used is [Scalar Encoder] (https://github.com/i-am-mandar/neocortexapi/blob/master/source/NeoCortexApi/Encoders/ScalarEncoder.cs)
+The encoder used is [Scalar Encoder] (https://github.com/rabiul64/neocortexapi/blob/master/source/NeoCortexApi/Encoders/ScalarEncoder.cs)
 The following is the setup that was used:
 
 
@@ -325,6 +325,8 @@ d. [Properties of Sparse Distributed Representations and their Application to Hi
 e. [A thousand brains: toward biologically constrained AI](https://link.springer.com/article/10.1007/s42452-021-04715-0)
 
 f. [The HTM Spatial Pooler—A Neocortical Algorithm for Online Sparse Distributed Coding](https://numenta.com/neuroscience-research/research-publications/papers/htm-spatial-pooler-neocortical-algorithm-for-online-sparse-distributed-coding/)
+
+g. [A Labeling Method for Financial Time Series Prediction Based on Trends](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7597331/)
 
 ## Similar Studies/Research used as References
 [1] Continuous online sequence learning with an unsupervised neural network model.
