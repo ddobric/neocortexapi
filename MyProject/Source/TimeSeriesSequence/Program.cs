@@ -16,8 +16,5 @@
             /// Prediction of taxi passangers based on data set
             learning_TaxiPassanger.RunPassangerTimeSeriesSequenceExperiment();
         } 
-
-
-
     }
 }
