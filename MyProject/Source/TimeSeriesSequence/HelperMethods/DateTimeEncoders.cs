@@ -42,7 +42,6 @@ namespace TimeSeriesSequence.HelperMethods
             var unsortedTaxiData = taxiData.GroupBy(c => new
             {
                 c.Date
-
             }).AsEnumerable().Cast<dynamic>();
 
             var multSequenceTaxiData = unsortedTaxiData.ToList();
