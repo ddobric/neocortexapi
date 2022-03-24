@@ -51,7 +51,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexApi.Experiments", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtmImageEncoder", "ImageEncoder\HtmImageEncoder.csproj", "{60C4DA9F-1D93-4556-A793-02240E08ADA4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeSeriesSequence", "..\MyProject\Source\TimeSeriesSequence\TimeSeriesSequence.csproj", "{69296633-B7D6-47E1-8F52-2EF392640BB8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeSeriesSequence", "MySEProject\TimeSeriesSequence\TimeSeriesSequence.csproj", "{69296633-B7D6-47E1-8F52-2EF392640BB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

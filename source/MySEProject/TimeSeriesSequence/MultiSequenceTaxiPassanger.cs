@@ -94,7 +94,9 @@ namespace TimeSeriesSequence
             var OUTPUT_trainingAccuracy_graph = new List<Dictionary<int, double>>();
             Stopwatch sw = new Stopwatch();
 
-            trainTaxiData = trainTaxiData.Take(5).ToList();
+            trainTaxiData = trainTaxiData.Take(20).ToList();
+
+            trainTaxiData = trainTaxiData.Take(20).ToList();
 
             sw.Start();
 
