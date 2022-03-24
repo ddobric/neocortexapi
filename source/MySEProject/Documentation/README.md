@@ -95,12 +95,17 @@ Passing the lpep_pickup_datetime to get slots and accumated the passanger on tha
 We have made csv file something like this
 
 Datetime, segment, number of passenger
+
 01-01-2021 01:00 00 2000 --- all the passengers will be accumulated from 01-01-2021 00:00 to 01-01-2021 01:00
+
 01-01-2021 02:00 01 2000
+
 01-01-2021 03:00 02 3000
+
 ....
 01-01-2021 05:00 05 4000
-For learning time-series and predicting it we are using Multi-sequence Learning using HTM Classifier [example] (https://github.com/i-am-mandar/neocortexapi/blob/master/source/Samples/NeoCortexApiSample/MultisequenceLearning.cs) which is been forked form [NeoCortexApi](https://github.com/ddobric/neocortexapi)
+
+For learning time-series and predicting it we are using Multi-sequence Learning using HTM Classifier [example] (https://github.com/rabiul64/neocortexapi/blob/master/source/Samples/NeoCortexApiSample/MultisequenceLearning.cs) which is been forked form [NeoCortexApi](https://github.com/ddobric/neocortexapi)
 
 
 The HTM Classifier consists of Spatial Pooler and Temporal Memory which takes in encoded data to learn the sequence.
