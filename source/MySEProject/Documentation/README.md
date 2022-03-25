@@ -321,110 +321,58 @@ More than twenty experiments are done and here is the sample output accuracy log
 
 [TaxiPassangerPredictionExperiment]
 
-******Sequence Starting******
-
-cycle : 0 	 Accuracy :0
- 	
-cycle : 1 	 Accuracy :16.666666666666664
-
-cycle : 2 	 Accuracy :20.833333333333336 
-	 
-Cycle: 3 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 1
-
-cycle : 4 	 Accuracy :16.666666666666664
-  
-cycle : 5 	 Accuracy :33.33333333333333
- 
-cycle : 6 	 Accuracy :20.833333333333336 
- 
-cycle : 7 	 Accuracy :37.5 
-	 
-cycle : 8 	 Accuracy :33.33333333333333 
- 
-cycle : 9 	 Accuracy :54.166666666666664
-	 
-cycle : 10 	 Accuracy :62.5 
-	 
-Cycle: 11 	 Saturated Accuracy : 62.5 	 Number of times repeated 1
-
-cycle : 12 	 Accuracy :50
-
-cycle : 13 	 Accuracy :70.83333333333334
- 	 
-cycle : 14 	 Accuracy :54.166666666666664
- 	 
-cycle : 15 	 Accuracy :58.333333333333336
-	 
-cycle : 16 	 Accuracy :70.83333333333334
- 	 
-cycle : 17 	 Accuracy :79.16666666666666
-	 
-cycle : 18 	 Accuracy :66.66666666666666
-	 
-cycle : 19 	 Accuracy :79.16666666666666
-	 
-cycle : 20 	 Accuracy :75
-	 	 
-Cycle: 21 	 Saturated Accuracy : 75 	 Number of times repeated 1
-
-cycle : 22 	 Accuracy :66.66666666666666 	
-	
-cycle : 23 	 Accuracy :75 	 
-
-cycle : 24 	 Accuracy :66.66666666666666
-	 
-cycle : 25 	 Accuracy :70.83333333333334
-	 	 
-cycle : 26 	 Accuracy :75
- 	 
-cycle : 27 	 Accuracy :70.83333333333334 
-	 
-cycle : 28 	 Accuracy :66.66666666666666 
-	 
-cycle : 29 	 Accuracy :62.5 
-	 
-cycle : 30 	 Accuracy :75
- 	 
-cycle : 31 	 Accuracy :58.333333333333336 
-	 
-cycle : 32 	 Accuracy :66.66666666666666 
-	 
-cycle : 33 	 Accuracy :70.83333333333334 
-	 
-cycle : 34 	 Accuracy :79.16666666666666 
-	 
-cycle : 35 	 Accuracy :70.83333333333334 
-	 
-cycle : 36 	 Accuracy :79.16666666666666 
-	 
-cycle : 37 	 Accuracy :75
- 	 
-Cycle: 38 	 Saturated Accuracy : 75 	 Number of times repeated 1
-	
-cycle : 39 	 Accuracy :70.83333333333334
-	 
-cycle : 40 	 Accuracy :66.66666666666666 
-	 
-cycle : 41 	 Accuracy :75 
-	 
-cycle : 42 	 Accuracy :70.83333333333334 
-	 
-cycle : 43 	 Accuracy :75 
-	 
-Cycle: 44 	 Saturated Accuracy : 75 	 Number of times repeated 1
-
-cycle : 45 	 Accuracy :70.83333333333334 
-	 
-Cycle: 46 	 Saturated Accuracy : 70.83333333333334 	 Number of times repeated 1
-
-cycle : 47 	 Accuracy :75 
-		 
-cycle : 48 	 Accuracy :70.83333333333334 
-	 
-cycle : 49 	 Accuracy :79.16666666666666
-
-*****Sequence Ending*****
-
+******Sequence Starting*****
+cycle : 0 	 Accuracy :4.166666666666666 	 
+cycle : 1 	 Accuracy :45.83333333333333 	 
+Cycle: 2 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 1
+cycle : 3 	 Accuracy :58.333333333333336 	 
+cycle : 4 	 Accuracy :54.166666666666664 	 
+cycle : 5 	 Accuracy :62.5 	 
+cycle : 6 	 Accuracy :70.83333333333334 	 
+Cycle: 7 	 Saturated Accuracy : 70.83333333333334 	 Number of times repeated 1
+cycle : 8 	 Accuracy :79.16666666666666 	 
+cycle : 9 	 Accuracy :75 	 
+cycle : 10 	 Accuracy :70.83333333333334 	 
+cycle : 11 	 Accuracy :75 	 
+cycle : 12 	 Accuracy :83.33333333333334 	 
+Cycle: 13 	 Saturated Accuracy : 83.33333333333334 	 Number of times repeated 1
+Cycle: 14 	 Saturated Accuracy : 83.33333333333334 	 Number of times repeated 2
+cycle : 15 	 Accuracy :75 	 
+cycle : 16 	 Accuracy :87.5 	 
+Cycle: 17 	 Saturated Accuracy : 87.5 	 Number of times repeated 1
+Cycle: 18 	 Saturated Accuracy : 87.5 	 Number of times repeated 2
+cycle : 19 	 Accuracy :91.66666666666666 	 
+Cycle: 20 	 Saturated Accuracy : 91.66666666666666 	 Number of times repeated 1
+Cycle: 21 	 Saturated Accuracy : 91.66666666666666 	 Number of times repeated 2
+Cycle: 22 	 Saturated Accuracy : 91.66666666666666 	 Number of times repeated 3
+cycle : 23 	 Accuracy :87.5 	 
+cycle : 24 	 Accuracy :91.66666666666666 	 
+Cycle: 25 	 Saturated Accuracy : 91.66666666666666 	 Number of times repeated 1
+Cycle: 26 	 Saturated Accuracy : 91.66666666666666 	 Number of times repeated 2
+Cycle: 27 	 Saturated Accuracy : 91.66666666666666 	 Number of times repeated 3
+Cycle: 28 	 Saturated Accuracy : 91.66666666666666 	 Number of times repeated 4
+Cycle: 29 	 Saturated Accuracy : 91.66666666666666 	 Number of times repeated 5
+Cycle: 30 	 Saturated Accuracy : 91.66666666666666 	 Number of times repeated 6
+Cycle: 31 	 Saturated Accuracy : 91.66666666666666 	 Number of times repeated 7
+Cycle: 32 	 Saturated Accuracy : 91.66666666666666 	 Number of times repeated 8
+Cycle: 33 	 Saturated Accuracy : 91.66666666666666 	 Number of times repeated 9
+cycle : 34 	 Accuracy :95.83333333333334 	 
+cycle : 35 	 Accuracy :91.66666666666666 	 
+Cycle: 36 	 Saturated Accuracy : 91.66666666666666 	 Number of times repeated 1
+cycle : 37 	 Accuracy :95.83333333333334 	 
+Cycle: 38 	 Saturated Accuracy : 95.83333333333334 	 Number of times repeated 1
+Cycle: 39 	 Saturated Accuracy : 95.83333333333334 	 Number of times repeated 2
+Cycle: 40 	 Saturated Accuracy : 95.83333333333334 	 Number of times repeated 3
+Cycle: 41 	 Saturated Accuracy : 95.83333333333334 	 Number of times repeated 4
+Cycle: 42 	 Saturated Accuracy : 95.83333333333334 	 Number of times repeated 5
+cycle : 43 	 Accuracy :91.66666666666666 	 
+Cycle: 44 	 Saturated Accuracy : 91.66666666666666 	 Number of times repeated 1
+Cycle: 45 	 Saturated Accuracy : 91.66666666666666 	 Number of times repeated 2
+Cycle: 46 	 Saturated Accuracy : 91.66666666666666 	 Number of times repeated 3
+Cycle: 47 	 Saturated Accuracy : 91.66666666666666 	 Number of times repeated 4
+Cycle: 48 	 Saturated Accuracy : 91.66666666666666 	 Number of times repeated 5
+Cycle: 49 	 Saturated Accuracy : 91.66666666666666 	 Number of times repeated 6
+****Sequence Ending*****
 -----------------------------------------------------------------------------
 
 - User Input Result : segment A date-time of 01-01-2022 00:18 is considered.
