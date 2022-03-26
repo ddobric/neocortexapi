@@ -1,6 +1,12 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeoCortex;
+using NeoCortexApi.Encoders;
+using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.Linq;
 using TimeSeriesSequence.HelperMethods;
 using static TimeSeriesSequence.Entity.HelperClasses;
 
@@ -30,6 +36,28 @@ namespace UnitTestProject
             Assert.AreEqual("01", timeSolt.Segment);
             Assert.AreEqual(new TimeSpan(1, 0, 0), timeSolt.StartTime);
             Assert.AreEqual(new TimeSpan(1, 59, 59), timeSolt.EndTime);
+        }
+
+        [TestMethod]
+        [DataRow("10:58")]
+        [DataRow("01:20")]
+        [DataRow("05:18")]
+        [DataRow("12:10")]
+        [DataRow("11:48")]
+        public void TimeSlotTest(string time)
+        {
+            //Arrange
+            var solts = CSVPRocessingMethods.GetSlots();
+            var testTime = TimeSpan.Parse(time);
+            Slot slots = solts.FirstOrDefault(x => x.EndTime >= testTime && x.StartTime <= testTime);
+
+            //Act
+            var timeSolt = CSVPRocessingMethods.GetSlot(time);
+
+            //Assert
+            Assert.AreEqual(slots.Segment, timeSolt.Segment);
+            Assert.AreEqual(slots.StartTime, timeSolt.StartTime);
+            Assert.AreEqual(slots.EndTime, timeSolt.EndTime);
         }
 
         [TestMethod]
@@ -69,6 +97,48 @@ namespace UnitTestProject
             //Assert
             Assert.IsNotNull(csvProcessedDatas);
             Assert.AreEqual(6, csvProcessedDatas.Count);
+        }
+
+        /// <summary>
+        /// Generates encoded images for week days.
+        /// </summary>
+        /// <param name="input"></param>
+        [TestMethod]
+        [DataRow("05/10/2022 10:58:07")]
+        [DataRow("05/01/2022 01:20:11")]
+        [DataRow("05/02/2022 05:18:22")]
+
+        public void DayOfWeekEncoderTest(string input)
+        {
+            ScalarEncoder dayEncoder = DateTimeEncoders.FetchDayEncoder();
+            DateTime dateTime = DateTime.Parse(input);
+            int dayOfWeek = (int)dateTime.DayOfWeek;
+
+            var result = dayEncoder.Encode(dayOfWeek);
+            int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(result, 100, 100);
+            var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
+            NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"{dateTime.Day}.png", null);
+        }
+
+        /// <summary>
+        /// Generates encoded images for day.
+        /// </summary>
+        /// <param name="input"></param>
+        [TestMethod]
+        [DataRow("05/10/2022 10:58:07")]
+        [DataRow("05/01/2022 01:20:11")]
+        [DataRow("05/02/2022 05:18:22")]
+
+        public void DayEncoderTest(string input)
+        {
+            ScalarEncoder dayEncoder = DateTimeEncoders.FetchDayEncoder();
+            DateTime dateTime = DateTime.Parse(input);
+            int day = dateTime.Day;
+
+            var result = dayEncoder.Encode(day);
+            int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(result, 100, 100);
+            var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
+            NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"{dateTime.Day}.png", null);
         }
     }
 }
