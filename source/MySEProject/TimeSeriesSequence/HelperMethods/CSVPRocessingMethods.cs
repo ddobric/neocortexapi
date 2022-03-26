@@ -13,7 +13,7 @@ using static TimeSeriesSequence.Entity.HelperClasses;
 
 namespace TimeSeriesSequence.HelperMethods
 {
-    public static class CSVPRocessingMethods
+    public class CSVPRocessingMethods
     {
         /// <summary>
         /// Slots of segment with 1 hours intervel
@@ -112,7 +112,7 @@ namespace TimeSeriesSequence.HelperMethods
         /// </summary>
         /// <param name="taxiDatas"></param>
         /// <param name="path"></param>
-        private static List<ProcessedData> CreateProcessedCSVFile(List<TaxiData> taxiDatas, string path)
+        public static List<ProcessedData> CreateProcessedCSVFile(List<TaxiData> taxiDatas, string path)
         {
             List<ProcessedData> processedTaxiDatas = new List<ProcessedData>();
 
@@ -156,14 +156,17 @@ namespace TimeSeriesSequence.HelperMethods
                 csvcontent.AppendLine(newLine);
             }
 
-            // Delete the existing file to avoid duplicate records.
-            if (File.Exists(path + "2021_Green_Processed.csv"))
+            if (!String.IsNullOrEmpty(path))
             {
-                File.Delete(path + "2021_Green_Processed.csv");
-            }
+                // Delete the existing file to avoid duplicate records.
+                if (File.Exists(path + "2021_Green_Processed.csv"))
+                {
+                    File.Delete(path + "2021_Green_Processed.csv");
+                }
 
-            // Save processed CSV data
-            File.AppendAllText(path + "2021_Green_Processed.csv", csvcontent.ToString());
+                // Save processed CSV data
+                File.AppendAllText(path + "2021_Green_Processed.csv", csvcontent.ToString());
+            }
 
             return processedTaxiDatas;
         }

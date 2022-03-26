@@ -8,7 +8,7 @@ using static TimeSeriesSequence.Entity.HelperClasses;
 
 namespace TimeSeriesSequence.HelperMethods
 {
-    public static class DateTimeEncoders
+    public class DateTimeEncoders
     {
         /// <summary>
         /// Multi encoder for day month and segment 
