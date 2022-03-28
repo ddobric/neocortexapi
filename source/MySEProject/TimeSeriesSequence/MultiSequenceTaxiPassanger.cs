@@ -343,24 +343,24 @@ namespace TimeSeriesSequence
         {
             public void Reset()
             {
-                var tm = this.Layer.HtmModules.FirstOrDefault(m => m.Value is TemporalMemory);
+                var tm = this.Layer!.HtmModules.FirstOrDefault(m => m.Value is TemporalMemory);
                 ((TemporalMemory)tm.Value).Reset(this.Connections);
             }
             
             public List<ClassifierResult<string>> Predict(int[] input)
             {
-                var lyrOut = this.Layer.Compute(input, false) as ComputeCycle;
+                var lyrOut = this.Layer!.Compute(input, false) as ComputeCycle;
 
-                List<ClassifierResult<string>> predictedInputValues = this.Classifier.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), 3);
+                List<ClassifierResult<string>> predictedInputValues = this.Classifier!.GetPredictedInputValues(lyrOut!.PredictiveCells.ToArray(), 3);
 
                 return predictedInputValues;
             }
 
-            public Connections Connections { get; set; }
+            public Connections? Connections { get; set; }
 
-            public CortexLayer<object, object> Layer { get; set; }
+            public CortexLayer<object, object>? Layer { get; set; }
 
-            public HtmClassifier<string, ComputeCycle> Classifier { get; set; }
+            public HtmClassifier<string, ComputeCycle>? Classifier { get; set; }
         }
 
         /// <summary>
