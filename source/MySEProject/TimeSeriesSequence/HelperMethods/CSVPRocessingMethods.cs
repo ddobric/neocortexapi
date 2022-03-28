@@ -66,7 +66,7 @@ namespace TimeSeriesSequence.HelperMethods
                 string line = string.Empty;
                 sr.ReadLine();
                 
-                while ((line = sr.ReadLine()) != null)
+                while ((line = sr.ReadLine()!) != null)
                 {
                     string[] strRow = line.Split(','); ;
                     TaxiData taxiData = new TaxiData();
@@ -118,7 +118,7 @@ namespace TimeSeriesSequence.HelperMethods
 
             foreach (var item in taxiDatas)
             {
-                DateTime dateTime = DateTime.Parse(item.lpep_pickup_datetime);
+                DateTime dateTime = DateTime.Parse(item.lpep_pickup_datetime!);
                 var pickupTime = dateTime.ToString("HH:mm");
                 Slot result = GetSlot(pickupTime);
 
@@ -181,7 +181,7 @@ namespace TimeSeriesSequence.HelperMethods
         {
             var timeSlots = GetSlots();
             var time = TimeSpan.Parse(pickupTime);
-            Slot slots = timeSlots.FirstOrDefault(x => x.EndTime >= time && x.StartTime <= time);
+            Slot slots = timeSlots!.FirstOrDefault(x => x.EndTime >= time && x.StartTime <= time)!;
 
             return slots;
         }

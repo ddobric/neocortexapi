@@ -10,7 +10,7 @@ namespace TimeSeriesSequence.Entity
     {
         public class Slot
         {
-            public string Segment { get; set; }
+            public string? Segment { get; set; }
             public TimeSpan StartTime { get; set; }
             public TimeSpan EndTime { get; set; }
         }
@@ -24,14 +24,14 @@ namespace TimeSeriesSequence.Entity
         public class ProcessedData
         {
             public DateTime Date { get; set; }
-            public string TimeSpan { get; set; }
-            public string Segment { get; set; }
+            public string? TimeSpan { get; set; }
+            public string? Segment { get; set; }
             public int Passanger_count { get; set; }
         }
         
         public class TaxiData
         {
-            public string lpep_pickup_datetime { get; set; }
+            public string? lpep_pickup_datetime { get; set; }
             public int passenger_count { get; set; }
         }
     }
