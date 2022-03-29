@@ -18,7 +18,7 @@ namespace TimeSeriesSequence
         public void RunPassangerTimeSeriesSequenceExperiment()
         {
             int inputBits = 88;
-            int maxCycles = 120;
+            int maxCycles = 80;
             int numColumns = 1024;
 
             // Read the taxi data set and write into new processed csv with reuired column
@@ -94,7 +94,7 @@ namespace TimeSeriesSequence
             var OUTPUT_trainingAccuracy_graph = new List<Dictionary<int, double>>();
             Stopwatch sw = new Stopwatch();
 
-            trainTaxiData = trainTaxiData.Take(60).ToList();
+            trainTaxiData = trainTaxiData.Take(50).ToList();
 
             sw.Start();
 
