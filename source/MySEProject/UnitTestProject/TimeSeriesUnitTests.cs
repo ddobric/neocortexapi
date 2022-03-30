@@ -163,6 +163,24 @@ namespace UnitTestProject
             NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"{dateTime.Day}.png", null);
         }
 
+        [TestMethod]
+        [DataRow("05/10/2022 10:58:07")]
+        [DataRow("15/06/2022 01:20:11")]
+        [DataRow("10/02/2022 05:18:22")]
+
+        public void SegmentEncoderTest(string input)
+        {
+            ScalarEncoder segmentEncoder = DateTimeEncoders.FetchSegmentEncoder();
+            DateTime dateTime = DateTime.Parse(input);
+            var time = dateTime.ToString("HH:mm");
+            Slot result = CSVPRocessingMethods.GetSlot(time);
+
+            var result = segmentEncoder.Encode(result.Segment);
+            int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(result, 100, 100);
+            var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
+            NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"{dateTime.Day}.png", null);
+        }
+
         #endregion
     }
 }
