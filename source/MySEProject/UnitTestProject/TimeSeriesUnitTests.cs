@@ -97,6 +97,9 @@ namespace UnitTestProject
             //Assert
             Assert.IsNotNull(csvProcessedDatas);
             Assert.AreEqual(6, csvProcessedDatas.Count);
+
+            var processedData = csvProcessedDatas.Find(x => x.GetSegment() == "00")
+            Assert.AreEqual(23+15+6, processedData.GetPassanger_count())
         }
         #endregion
         #region Test Methods for Encoder Methods
