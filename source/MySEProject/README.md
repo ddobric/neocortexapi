@@ -320,8 +320,7 @@ public List<ClassifierResult<string>> Predict(int[] input)
 After Processing the data and creating the sequences, we have found 216 sequences where every date is a squence and every date has 24 segments. As working with 216 sequences
 are very time consuming, so we consider 50 sequences with 50 cycles for learning and predicting the user input. After learning the sequences we have tracked the accuracy in 
 a log file. The Output Accuracy Logs for [maxCycles 50](https://github.com/rabiul64/neocortexapi/blob/master/source/MySEProject/TimeSeriesSequence/TrainingLogs/TaxiPassangerPredictionExperiment637835742529422044.txt)
-
-[TaxiPassangerPredictionExperiment]
+We are showing here 1 sequence accuracy with 50 cycles:
 
 ******Sequence Starting******
 cycle : 0 	 Accuracy :4.166666666666666
