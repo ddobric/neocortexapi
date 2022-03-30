@@ -18,7 +18,7 @@ namespace TimeSeriesSequence
         public void RunPassangerTimeSeriesSequenceExperiment()
         {
             int inputBits = 88;
-            int maxCycles = 60;
+            int maxCycles = 3;
             int numColumns = 1024;
 
             // Read the taxi data set and write into new processed csv with reuired column
@@ -64,20 +64,28 @@ namespace TimeSeriesSequence
         {
             if (userInputDateTime != null)
             {
-                DateTime userInput = DateTime.Parse(userInputDateTime);
-                // Encode the user input and return the SDR
-                var sdr = DateTimeEncoders.GetSDRofDateTime(userInput);
-                var predictedValuesForUserInput = learningExpResult.Predict(sdr);
-                foreach (var predictedVal in predictedValuesForUserInput)
+                try
                 {
-                    Console.WriteLine("PASSANGER SIMILARITY " + predictedVal.Similarity + " PREDICTED PASSANGER NO :" + predictedVal.PredictedInput);
+                    DateTime userInput = DateTime.Parse(userInputDateTime);
+                    // Encode the user input and return the SDR
+                    var sdr = DateTimeEncoders.GetSDRofDateTime(userInput);
+                    var predictedValuesForUserInput = learningExpResult.Predict(sdr);
+                    foreach (var predictedVal in predictedValuesForUserInput)
+                    {
+                        Console.WriteLine("PASSANGER SIMILARITY " + predictedVal.Similarity + " PREDICTED PASSANGER NO :" + predictedVal.PredictedInput);
+                    }
+                }
+                catch (Exception e)
+                {
+                    // if there is any wromg imput provided by the user, it catch error and will continoue
+                    Console.WriteLine("Enter valid Date Time for Passanger Predicting");
                 }
             }
 
             else
                 Console.WriteLine("Enter valid Date Time for Passanger Predicting");
         }
-        
+
         /// <summary>
         /// Run experiment based on the taxi passanger data
         /// </summary>
@@ -94,7 +102,7 @@ namespace TimeSeriesSequence
             var OUTPUT_trainingAccuracy_graph = new List<Dictionary<int, double>>();
             Stopwatch sw = new Stopwatch();
 
-            trainTaxiData = trainTaxiData.Take(30).ToList();
+            trainTaxiData = trainTaxiData.Take(2).ToList();
 
             sw.Start();
 
@@ -155,7 +163,7 @@ namespace TimeSeriesSequence
                 cycle++;
 
                 Debug.WriteLine($"-------------- Newborn Cycle {cycle} ---------------");
-
+                Console.WriteLine($"-------------- Newborn Cycle {cycle} ---------------");
                 foreach (var sequence in trainTaxiData)
                 {
                     foreach (var element in sequence)
@@ -164,7 +172,7 @@ namespace TimeSeriesSequence
                         var observationClass = splitKey[0]; // OBSERVATION LABEL || SEQUENCE LABEL
                         var elementSDR = element.Value; // ALL ELEMENT IN ONE SEQUENCE
 
-                        Console.WriteLine($"-------------- {observationClass} ---------------");
+                        Debug.WriteLine($"-------------- {observationClass} ---------------");
 
                         var lyrOut = layer1.Compute(elementSDR, true);     /* CORTEX LAYER OUTPUT with elementSDR as INPUT and LEARN = TRUE */
 
@@ -253,7 +261,7 @@ namespace TimeSeriesSequence
                     accuracy = ((double)elementMatches / (sequence.Count)) * 100;
                     Debug.WriteLine($"Cycle : {i} \t Accuracy:{accuracy}");
                     tempLOGGRAPH.Add(i, accuracy);
-                    
+
                     if (accuracy >= 100)
                     {
                         SequencesMatchCount++;
@@ -338,7 +346,7 @@ namespace TimeSeriesSequence
 
             return new HtmPredictionEngine { Layer = layer1, Classifier = cls, Connections = mem };
         }
-        
+
         public class HtmPredictionEngine
         {
             public void Reset()
@@ -346,7 +354,7 @@ namespace TimeSeriesSequence
                 var tm = this.Layer!.HtmModules.FirstOrDefault(m => m.Value is TemporalMemory);
                 ((TemporalMemory)tm.Value).Reset(this.Connections);
             }
-            
+
             public List<ClassifierResult<string>> Predict(int[] input)
             {
                 var lyrOut = this.Layer!.Compute(input, false) as ComputeCycle;

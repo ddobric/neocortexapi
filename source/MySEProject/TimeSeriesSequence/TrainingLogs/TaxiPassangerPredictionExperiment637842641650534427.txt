@@ -1,0 +1,11 @@
+TaxiPassangerPredictionExperiment637842641650534427.txt
+******Sequence Starting*****
+cycle : 0 	 Accuracy :4.166666666666666 	 
+cycle : 1 	 Accuracy :25 	 
+Cycle: 2 	 Saturated Accuracy : 25 	 Number of times repeated 1
+****Sequence Ending*****
+******Sequence Starting*****
+cycle : 0 	 Accuracy :0 	 
+cycle : 1 	 Accuracy :0 	 
+cycle : 2 	 Accuracy :0 	 
+****Sequence Ending*****
