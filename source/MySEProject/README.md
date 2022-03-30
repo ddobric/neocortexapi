@@ -122,7 +122,8 @@ IV. Predict the label
 3.Encoding and Learning
 -------------
 
-I.After reformatting the datetime, several sequences of the segments were formed, as seen below:
+I.After reformatting the datetime, we found a processed CSV file where every dates have 24 segments (https://github.com/rabiul64/neocortexapi/tree/master/source/MySEProject/TimeSeriesSequence/DataSet/2021_Green_Processed.csv). 
+Then we grouped by the date and segment for making a sequence. We have considered every date as a sequence which have 24 segments. In the example below, we can see 01/01/2021 is sequence with 24 segments. as seen below:
 
 Sequence 1:
 ```
@@ -316,9 +317,9 @@ public List<ClassifierResult<string>> Predict(int[] input)
 
 4.Results :
 -------------
-More than twenty experiments are done and here is the sample output accuracy logs and the result based on user input.
-
-- Accuracy Logs : Output Accuracy Logs for [maxCycles 50](https://github.com/rabiul64/neocortexapi/commit/d53a7060952a0c6211dd9a809eea7d93fa29e010) 
+After Processing the data and creating the sequences, we have found 216 sequences where every date is a squence and every date has 24 segments. As working with 216 sequences
+are very time consuming, so we consider 50 sequences with 50 cycles for learning and predicting the user input. After learning the sequences we have tracked the accuracy in 
+a log file. The Output Accuracy Logs for [maxCycles 50](https://github.com/rabiul64/neocortexapi/blob/master/source/MySEProject/TimeSeriesSequence/TrainingLogs/TaxiPassangerPredictionExperiment637835742529422044.txt)
 
 [TaxiPassangerPredictionExperiment]
 
