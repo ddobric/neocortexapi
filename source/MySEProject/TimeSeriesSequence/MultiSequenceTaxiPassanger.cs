@@ -18,7 +18,7 @@ namespace TimeSeriesSequence
         public void RunPassangerTimeSeriesSequenceExperiment()
         {
             int inputBits = 88;
-            int maxCycles = 60;
+            int maxCycles = 50;
             int numColumns = 1024;
 
             // Read the taxi data set and write into new processed csv with reuired column
@@ -78,12 +78,12 @@ namespace TimeSeriesSequence
                 catch (Exception e)
                 {
                     // if there is any wromg imput provided by the user, it catch error and will continoue
-                    Console.WriteLine("Enter valid Date Time for Passanger Predicting");
+                    Console.WriteLine("ENTER VALID DATE TIME");
                 }
             }
 
             else
-                Console.WriteLine("Enter valid Date Time for Passanger Predicting");
+                Console.WriteLine("ENTER VALID DATE TIME");
         }
 
         /// <summary>
@@ -102,11 +102,11 @@ namespace TimeSeriesSequence
             var OUTPUT_trainingAccuracy_graph = new List<Dictionary<int, double>>();
             Stopwatch sw = new Stopwatch();
           
-            trainTaxiData = trainTaxiData.Take(30).ToList();
+            trainTaxiData = trainTaxiData.Take(50).ToList();
 
             sw.Start();
 
-            //var htmConfig = HelperMethods.FetchHTMConfig(inputBits, numColumns);
+            //Configure HTMConfig with default paramaeters 
             var htmConfig = new HtmConfig(new int[] { inputBits }, new int[] { numColumns });
 
             var mem = new Connections(htmConfig);
@@ -215,14 +215,15 @@ namespace TimeSeriesSequence
                     {
                         string[] splitKey = Elements.Key.Split(",");
                         var observationLabel = splitKey[0];
-
                         var lyrOut = new ComputeCycle();
 
+                        // Train data with TM
                         lyrOut = layer1.Compute(Elements.Value, learn) as ComputeCycle;
                         Debug.WriteLine(string.Join(',', lyrOut!.ActivColumnIndicies));
 
                         List<Cell> actCells = (lyrOut.ActiveCells.Count == lyrOut.WinnerCells.Count) ? lyrOut.ActiveCells : lyrOut.WinnerCells;
 
+                        //Learn sequences with HTM classifier
                         cls.Learn(observationLabel, actCells.ToArray());
 
                         if (lastPredictedValues.Contains(observationLabel))
