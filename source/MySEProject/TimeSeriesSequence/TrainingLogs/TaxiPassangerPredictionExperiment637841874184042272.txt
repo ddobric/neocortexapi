@@ -1,0 +1,1032 @@
+TaxiPassangerPredictionExperiment637841874184042272.txt
+******Sequence Starting*****
+cycle : 0 	 Accuracy :8.333333333333332 	 
+cycle : 1 	 Accuracy :25 	 
+cycle : 2 	 Accuracy :50 	 
+cycle : 3 	 Accuracy :54.166666666666664 	 
+cycle : 4 	 Accuracy :58.333333333333336 	 
+Cycle: 5 	 Saturated Accuracy : 58.333333333333336 	 Number of times repeated 1
+Cycle: 6 	 Saturated Accuracy : 58.333333333333336 	 Number of times repeated 2
+cycle : 7 	 Accuracy :62.5 	 
+cycle : 8 	 Accuracy :54.166666666666664 	 
+cycle : 9 	 Accuracy :58.333333333333336 	 
+cycle : 10 	 Accuracy :62.5 	 
+cycle : 11 	 Accuracy :70.83333333333334 	 
+cycle : 12 	 Accuracy :66.66666666666666 	 
+Cycle: 13 	 Saturated Accuracy : 66.66666666666666 	 Number of times repeated 1
+Cycle: 14 	 Saturated Accuracy : 66.66666666666666 	 Number of times repeated 2
+cycle : 15 	 Accuracy :70.83333333333334 	 
+Cycle: 16 	 Saturated Accuracy : 70.83333333333334 	 Number of times repeated 1
+Cycle: 17 	 Saturated Accuracy : 70.83333333333334 	 Number of times repeated 2
+Cycle: 18 	 Saturated Accuracy : 70.83333333333334 	 Number of times repeated 3
+cycle : 19 	 Accuracy :58.333333333333336 	 
+cycle : 20 	 Accuracy :54.166666666666664 	 
+cycle : 21 	 Accuracy :70.83333333333334 	 
+cycle : 22 	 Accuracy :58.333333333333336 	 
+cycle : 23 	 Accuracy :70.83333333333334 	 
+cycle : 24 	 Accuracy :66.66666666666666 	 
+cycle : 25 	 Accuracy :50 	 
+cycle : 26 	 Accuracy :45.83333333333333 	 
+cycle : 27 	 Accuracy :25 	 
+cycle : 28 	 Accuracy :62.5 	 
+Cycle: 29 	 Saturated Accuracy : 62.5 	 Number of times repeated 1
+cycle : 30 	 Accuracy :58.333333333333336 	 
+Cycle: 31 	 Saturated Accuracy : 58.333333333333336 	 Number of times repeated 1
+cycle : 32 	 Accuracy :62.5 	 
+cycle : 33 	 Accuracy :54.166666666666664 	 
+cycle : 34 	 Accuracy :58.333333333333336 	 
+cycle : 35 	 Accuracy :54.166666666666664 	 
+cycle : 36 	 Accuracy :50 	 
+cycle : 37 	 Accuracy :58.333333333333336 	 
+Cycle: 38 	 Saturated Accuracy : 58.333333333333336 	 Number of times repeated 1
+Cycle: 39 	 Saturated Accuracy : 58.333333333333336 	 Number of times repeated 2
+cycle : 40 	 Accuracy :66.66666666666666 	 
+cycle : 41 	 Accuracy :62.5 	 
+cycle : 42 	 Accuracy :58.333333333333336 	 
+cycle : 43 	 Accuracy :62.5 	 
+Cycle: 44 	 Saturated Accuracy : 62.5 	 Number of times repeated 1
+Cycle: 45 	 Saturated Accuracy : 62.5 	 Number of times repeated 2
+Cycle: 46 	 Saturated Accuracy : 62.5 	 Number of times repeated 3
+Cycle: 47 	 Saturated Accuracy : 62.5 	 Number of times repeated 4
+cycle : 48 	 Accuracy :54.166666666666664 	 
+cycle : 49 	 Accuracy :66.66666666666666 	 
+****Sequence Ending*****
+******Sequence Starting*****
+cycle : 0 	 Accuracy :0 	 
+cycle : 1 	 Accuracy :0 	 
+cycle : 2 	 Accuracy :0 	 
+cycle : 3 	 Accuracy :0 	 
+cycle : 4 	 Accuracy :0 	 
+Cycle : 5 	  Accuracy:100 	 Number of times repeated 1
+cycle : 6 	 Accuracy :0 	 
+Cycle : 7 	  Accuracy:100 	 Number of times repeated 1
+cycle : 8 	 Accuracy :0 	 
+Cycle : 9 	  Accuracy:100 	 Number of times repeated 1
+cycle : 10 	 Accuracy :0 	 
+Cycle : 11 	  Accuracy:100 	 Number of times repeated 1
+cycle : 12 	 Accuracy :0 	 
+Cycle : 13 	  Accuracy:100 	 Number of times repeated 1
+Cycle : 14 	  Accuracy:100 	 Number of times repeated 2
+cycle : 15 	 Accuracy :0 	 
+Cycle : 16 	  Accuracy:100 	 Number of times repeated 1
+Cycle : 17 	  Accuracy:100 	 Number of times repeated 2
+cycle : 18 	 Accuracy :0 	 
+Cycle : 19 	  Accuracy:100 	 Number of times repeated 1
+Cycle : 20 	  Accuracy:100 	 Number of times repeated 2
+cycle : 21 	 Accuracy :0 	 
+Cycle : 22 	  Accuracy:100 	 Number of times repeated 1
+Cycle : 23 	  Accuracy:100 	 Number of times repeated 2
+cycle : 24 	 Accuracy :0 	 
+Cycle : 25 	  Accuracy:100 	 Number of times repeated 1
+Cycle : 26 	  Accuracy:100 	 Number of times repeated 2
+Cycle : 27 	  Accuracy:100 	 Number of times repeated 3
+cycle : 28 	 Accuracy :0 	 
+Cycle : 29 	  Accuracy:100 	 Number of times repeated 1
+Cycle : 30 	  Accuracy:100 	 Number of times repeated 2
+Cycle : 31 	  Accuracy:100 	 Number of times repeated 3
+cycle : 32 	 Accuracy :0 	 
+Cycle : 33 	  Accuracy:100 	 Number of times repeated 1
+Cycle : 34 	  Accuracy:100 	 Number of times repeated 2
+Cycle : 35 	  Accuracy:100 	 Number of times repeated 3
+cycle : 36 	 Accuracy :0 	 
+Cycle : 37 	  Accuracy:100 	 Number of times repeated 1
+Cycle : 38 	  Accuracy:100 	 Number of times repeated 2
+Cycle : 39 	  Accuracy:100 	 Number of times repeated 3
+cycle : 40 	 Accuracy :0 	 
+Cycle : 41 	  Accuracy:100 	 Number of times repeated 1
+Cycle : 42 	  Accuracy:100 	 Number of times repeated 2
+Cycle : 43 	  Accuracy:100 	 Number of times repeated 3
+Cycle : 44 	  Accuracy:100 	 Number of times repeated 4
+Cycle : 45 	  Accuracy:100 	 Number of times repeated 5
+Cycle : 46 	  Accuracy:100 	 Number of times repeated 6
+Cycle : 47 	  Accuracy:100 	 Number of times repeated 7
+Cycle : 48 	  Accuracy:100 	 Number of times repeated 8
+Cycle : 49 	  Accuracy:100 	 Number of times repeated 9
+****Sequence Ending*****
+******Sequence Starting*****
+cycle : 0 	 Accuracy :4.166666666666666 	 
+cycle : 1 	 Accuracy :29.166666666666668 	 
+cycle : 2 	 Accuracy :41.66666666666667 	 
+Cycle: 3 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 1
+cycle : 4 	 Accuracy :25 	 
+cycle : 5 	 Accuracy :33.33333333333333 	 
+cycle : 6 	 Accuracy :25 	 
+Cycle: 7 	 Saturated Accuracy : 25 	 Number of times repeated 1
+cycle : 8 	 Accuracy :33.33333333333333 	 
+cycle : 9 	 Accuracy :37.5 	 
+cycle : 10 	 Accuracy :50 	 
+Cycle: 11 	 Saturated Accuracy : 50 	 Number of times repeated 1
+cycle : 12 	 Accuracy :62.5 	 
+cycle : 13 	 Accuracy :58.333333333333336 	 
+cycle : 14 	 Accuracy :54.166666666666664 	 
+Cycle: 15 	 Saturated Accuracy : 54.166666666666664 	 Number of times repeated 1
+cycle : 16 	 Accuracy :50 	 
+Cycle: 17 	 Saturated Accuracy : 50 	 Number of times repeated 1
+cycle : 18 	 Accuracy :58.333333333333336 	 
+cycle : 19 	 Accuracy :54.166666666666664 	 
+cycle : 20 	 Accuracy :58.333333333333336 	 
+Cycle: 21 	 Saturated Accuracy : 58.333333333333336 	 Number of times repeated 1
+cycle : 22 	 Accuracy :54.166666666666664 	 
+Cycle: 23 	 Saturated Accuracy : 54.166666666666664 	 Number of times repeated 1
+cycle : 24 	 Accuracy :58.333333333333336 	 
+Cycle: 25 	 Saturated Accuracy : 58.333333333333336 	 Number of times repeated 1
+Cycle: 26 	 Saturated Accuracy : 58.333333333333336 	 Number of times repeated 2
+cycle : 27 	 Accuracy :62.5 	 
+Cycle: 28 	 Saturated Accuracy : 62.5 	 Number of times repeated 1
+cycle : 29 	 Accuracy :66.66666666666666 	 
+Cycle: 30 	 Saturated Accuracy : 66.66666666666666 	 Number of times repeated 1
+cycle : 31 	 Accuracy :70.83333333333334 	 
+Cycle: 32 	 Saturated Accuracy : 70.83333333333334 	 Number of times repeated 1
+Cycle: 33 	 Saturated Accuracy : 70.83333333333334 	 Number of times repeated 2
+Cycle: 34 	 Saturated Accuracy : 70.83333333333334 	 Number of times repeated 3
+Cycle: 35 	 Saturated Accuracy : 70.83333333333334 	 Number of times repeated 4
+Cycle: 36 	 Saturated Accuracy : 70.83333333333334 	 Number of times repeated 5
+Cycle: 37 	 Saturated Accuracy : 70.83333333333334 	 Number of times repeated 6
+Cycle: 38 	 Saturated Accuracy : 70.83333333333334 	 Number of times repeated 7
+cycle : 39 	 Accuracy :75 	 
+cycle : 40 	 Accuracy :70.83333333333334 	 
+Cycle: 41 	 Saturated Accuracy : 70.83333333333334 	 Number of times repeated 1
+Cycle: 42 	 Saturated Accuracy : 70.83333333333334 	 Number of times repeated 2
+Cycle: 43 	 Saturated Accuracy : 70.83333333333334 	 Number of times repeated 3
+Cycle: 44 	 Saturated Accuracy : 70.83333333333334 	 Number of times repeated 4
+Cycle: 45 	 Saturated Accuracy : 70.83333333333334 	 Number of times repeated 5
+Cycle: 46 	 Saturated Accuracy : 70.83333333333334 	 Number of times repeated 6
+Cycle: 47 	 Saturated Accuracy : 70.83333333333334 	 Number of times repeated 7
+Cycle: 48 	 Saturated Accuracy : 70.83333333333334 	 Number of times repeated 8
+Cycle: 49 	 Saturated Accuracy : 70.83333333333334 	 Number of times repeated 9
+****Sequence Ending*****
+******Sequence Starting*****
+cycle : 0 	 Accuracy :0 	 
+cycle : 1 	 Accuracy :37.5 	 
+Cycle: 2 	 Saturated Accuracy : 37.5 	 Number of times repeated 1
+cycle : 3 	 Accuracy :50 	 
+cycle : 4 	 Accuracy :45.83333333333333 	 
+cycle : 5 	 Accuracy :16.666666666666664 	 
+Cycle: 6 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 1
+cycle : 7 	 Accuracy :41.66666666666667 	 
+Cycle: 8 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 1
+cycle : 9 	 Accuracy :45.83333333333333 	 
+Cycle: 10 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 1
+Cycle: 11 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 2
+Cycle: 12 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 3
+Cycle: 13 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 4
+cycle : 14 	 Accuracy :50 	 
+cycle : 15 	 Accuracy :54.166666666666664 	 
+cycle : 16 	 Accuracy :62.5 	 
+cycle : 17 	 Accuracy :58.333333333333336 	 
+Cycle: 18 	 Saturated Accuracy : 58.333333333333336 	 Number of times repeated 1
+cycle : 19 	 Accuracy :54.166666666666664 	 
+cycle : 20 	 Accuracy :50 	 
+cycle : 21 	 Accuracy :58.333333333333336 	 
+cycle : 22 	 Accuracy :62.5 	 
+cycle : 23 	 Accuracy :58.333333333333336 	 
+cycle : 24 	 Accuracy :62.5 	 
+cycle : 25 	 Accuracy :58.333333333333336 	 
+Cycle: 26 	 Saturated Accuracy : 58.333333333333336 	 Number of times repeated 1
+cycle : 27 	 Accuracy :62.5 	 
+Cycle: 28 	 Saturated Accuracy : 62.5 	 Number of times repeated 1
+Cycle: 29 	 Saturated Accuracy : 62.5 	 Number of times repeated 2
+Cycle: 30 	 Saturated Accuracy : 62.5 	 Number of times repeated 3
+Cycle: 31 	 Saturated Accuracy : 62.5 	 Number of times repeated 4
+Cycle: 32 	 Saturated Accuracy : 62.5 	 Number of times repeated 5
+Cycle: 33 	 Saturated Accuracy : 62.5 	 Number of times repeated 6
+Cycle: 34 	 Saturated Accuracy : 62.5 	 Number of times repeated 7
+Cycle: 35 	 Saturated Accuracy : 62.5 	 Number of times repeated 8
+Cycle: 36 	 Saturated Accuracy : 62.5 	 Number of times repeated 9
+Cycle: 37 	 Saturated Accuracy : 62.5 	 Number of times repeated 10
+Cycle: 38 	 Saturated Accuracy : 62.5 	 Number of times repeated 11
+cycle : 39 	 Accuracy :58.333333333333336 	 
+cycle : 40 	 Accuracy :54.166666666666664 	 
+Cycle: 41 	 Saturated Accuracy : 54.166666666666664 	 Number of times repeated 1
+Cycle: 42 	 Saturated Accuracy : 54.166666666666664 	 Number of times repeated 2
+cycle : 43 	 Accuracy :50 	 
+cycle : 44 	 Accuracy :54.166666666666664 	 
+cycle : 45 	 Accuracy :50 	 
+Cycle: 46 	 Saturated Accuracy : 50 	 Number of times repeated 1
+Cycle: 47 	 Saturated Accuracy : 50 	 Number of times repeated 2
+Cycle: 48 	 Saturated Accuracy : 50 	 Number of times repeated 3
+Cycle: 49 	 Saturated Accuracy : 50 	 Number of times repeated 4
+****Sequence Ending*****
+******Sequence Starting*****
+cycle : 0 	 Accuracy :4.166666666666666 	 
+cycle : 1 	 Accuracy :25 	 
+Cycle: 2 	 Saturated Accuracy : 25 	 Number of times repeated 1
+Cycle: 3 	 Saturated Accuracy : 25 	 Number of times repeated 2
+cycle : 4 	 Accuracy :20.833333333333336 	 
+Cycle: 5 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 1
+Cycle: 6 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 2
+cycle : 7 	 Accuracy :25 	 
+Cycle: 8 	 Saturated Accuracy : 25 	 Number of times repeated 1
+Cycle: 9 	 Saturated Accuracy : 25 	 Number of times repeated 2
+cycle : 10 	 Accuracy :33.33333333333333 	 
+cycle : 11 	 Accuracy :41.66666666666667 	 
+Cycle: 12 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 1
+cycle : 13 	 Accuracy :37.5 	 
+Cycle: 14 	 Saturated Accuracy : 37.5 	 Number of times repeated 1
+cycle : 15 	 Accuracy :41.66666666666667 	 
+Cycle: 16 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 1
+Cycle: 17 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 2
+Cycle: 18 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 3
+Cycle: 19 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 4
+Cycle: 20 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 5
+Cycle: 21 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 6
+Cycle: 22 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 7
+Cycle: 23 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 8
+Cycle: 24 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 9
+Cycle: 25 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 10
+cycle : 26 	 Accuracy :37.5 	 
+Cycle: 27 	 Saturated Accuracy : 37.5 	 Number of times repeated 1
+Cycle: 28 	 Saturated Accuracy : 37.5 	 Number of times repeated 2
+Cycle: 29 	 Saturated Accuracy : 37.5 	 Number of times repeated 3
+Cycle: 30 	 Saturated Accuracy : 37.5 	 Number of times repeated 4
+Cycle: 31 	 Saturated Accuracy : 37.5 	 Number of times repeated 5
+Cycle: 32 	 Saturated Accuracy : 37.5 	 Number of times repeated 6
+cycle : 33 	 Accuracy :41.66666666666667 	 
+Cycle: 34 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 1
+Cycle: 35 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 2
+Cycle: 36 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 3
+Cycle: 37 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 4
+Cycle: 38 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 5
+Cycle: 39 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 6
+Cycle: 40 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 7
+Cycle: 41 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 8
+cycle : 42 	 Accuracy :37.5 	 
+Cycle: 43 	 Saturated Accuracy : 37.5 	 Number of times repeated 1
+Cycle: 44 	 Saturated Accuracy : 37.5 	 Number of times repeated 2
+Cycle: 45 	 Saturated Accuracy : 37.5 	 Number of times repeated 3
+Cycle: 46 	 Saturated Accuracy : 37.5 	 Number of times repeated 4
+Cycle: 47 	 Saturated Accuracy : 37.5 	 Number of times repeated 5
+Cycle: 48 	 Saturated Accuracy : 37.5 	 Number of times repeated 6
+Cycle: 49 	 Saturated Accuracy : 37.5 	 Number of times repeated 7
+****Sequence Ending*****
+******Sequence Starting*****
+cycle : 0 	 Accuracy :4.166666666666666 	 
+cycle : 1 	 Accuracy :12.5 	 
+Cycle: 2 	 Saturated Accuracy : 12.5 	 Number of times repeated 1
+cycle : 3 	 Accuracy :16.666666666666664 	 
+cycle : 4 	 Accuracy :12.5 	 
+cycle : 5 	 Accuracy :20.833333333333336 	 
+cycle : 6 	 Accuracy :25 	 
+cycle : 7 	 Accuracy :29.166666666666668 	 
+Cycle: 8 	 Saturated Accuracy : 29.166666666666668 	 Number of times repeated 1
+Cycle: 9 	 Saturated Accuracy : 29.166666666666668 	 Number of times repeated 2
+Cycle: 10 	 Saturated Accuracy : 29.166666666666668 	 Number of times repeated 3
+Cycle: 11 	 Saturated Accuracy : 29.166666666666668 	 Number of times repeated 4
+cycle : 12 	 Accuracy :33.33333333333333 	 
+cycle : 13 	 Accuracy :37.5 	 
+cycle : 14 	 Accuracy :41.66666666666667 	 
+cycle : 15 	 Accuracy :45.83333333333333 	 
+Cycle: 16 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 1
+cycle : 17 	 Accuracy :41.66666666666667 	 
+Cycle: 18 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 1
+Cycle: 19 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 2
+Cycle: 20 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 3
+cycle : 21 	 Accuracy :45.83333333333333 	 
+Cycle: 22 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 1
+Cycle: 23 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 2
+Cycle: 24 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 3
+Cycle: 25 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 4
+cycle : 26 	 Accuracy :41.66666666666667 	 
+Cycle: 27 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 1
+Cycle: 28 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 2
+Cycle: 29 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 3
+Cycle: 30 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 4
+Cycle: 31 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 5
+Cycle: 32 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 6
+Cycle: 33 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 7
+Cycle: 34 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 8
+cycle : 35 	 Accuracy :45.83333333333333 	 
+cycle : 36 	 Accuracy :41.66666666666667 	 
+Cycle: 37 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 1
+Cycle: 38 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 2
+Cycle: 39 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 3
+cycle : 40 	 Accuracy :45.83333333333333 	 
+Cycle: 41 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 1
+Cycle: 42 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 2
+Cycle: 43 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 3
+Cycle: 44 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 4
+Cycle: 45 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 5
+Cycle: 46 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 6
+cycle : 47 	 Accuracy :41.66666666666667 	 
+Cycle: 48 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 1
+Cycle: 49 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 2
+****Sequence Ending*****
+******Sequence Starting*****
+cycle : 0 	 Accuracy :4.3478260869565215 	 
+cycle : 1 	 Accuracy :17.391304347826086 	 
+Cycle: 2 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 1
+Cycle: 3 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 2
+Cycle: 4 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 3
+Cycle: 5 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 4
+Cycle: 6 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 5
+Cycle: 7 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 6
+Cycle: 8 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 7
+Cycle: 9 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 8
+cycle : 10 	 Accuracy :21.73913043478261 	 
+Cycle: 11 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 1
+Cycle: 12 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 2
+Cycle: 13 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 3
+Cycle: 14 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 4
+Cycle: 15 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 5
+Cycle: 16 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 6
+Cycle: 17 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 7
+Cycle: 18 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 8
+Cycle: 19 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 9
+Cycle: 20 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 10
+Cycle: 21 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 11
+Cycle: 22 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 12
+Cycle: 23 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 13
+Cycle: 24 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 14
+Cycle: 25 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 15
+Cycle: 26 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 16
+Cycle: 27 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 17
+Cycle: 28 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 18
+Cycle: 29 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 19
+Cycle: 30 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 20
+Cycle: 31 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 21
+Cycle: 32 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 22
+Cycle: 33 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 23
+Cycle: 34 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 24
+Cycle: 35 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 25
+Cycle: 36 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 26
+Cycle: 37 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 27
+Cycle: 38 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 28
+Cycle: 39 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 29
+Cycle: 40 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 30
+Cycle: 41 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 31
+Cycle: 42 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 32
+Cycle: 43 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 33
+Cycle: 44 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 34
+Cycle: 45 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 35
+Cycle: 46 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 36
+Cycle: 47 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 37
+Cycle: 48 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 38
+Cycle: 49 	 Saturated Accuracy : 21.73913043478261 	 Number of times repeated 39
+****Sequence Ending*****
+******Sequence Starting*****
+cycle : 0 	 Accuracy :8.333333333333332 	 
+cycle : 1 	 Accuracy :12.5 	 
+cycle : 2 	 Accuracy :16.666666666666664 	 
+Cycle: 3 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 1
+cycle : 4 	 Accuracy :20.833333333333336 	 
+cycle : 5 	 Accuracy :16.666666666666664 	 
+Cycle: 6 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 1
+Cycle: 7 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 2
+Cycle: 8 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 3
+cycle : 9 	 Accuracy :20.833333333333336 	 
+cycle : 10 	 Accuracy :25 	 
+Cycle: 11 	 Saturated Accuracy : 25 	 Number of times repeated 1
+Cycle: 12 	 Saturated Accuracy : 25 	 Number of times repeated 2
+Cycle: 13 	 Saturated Accuracy : 25 	 Number of times repeated 3
+Cycle: 14 	 Saturated Accuracy : 25 	 Number of times repeated 4
+Cycle: 15 	 Saturated Accuracy : 25 	 Number of times repeated 5
+Cycle: 16 	 Saturated Accuracy : 25 	 Number of times repeated 6
+Cycle: 17 	 Saturated Accuracy : 25 	 Number of times repeated 7
+Cycle: 18 	 Saturated Accuracy : 25 	 Number of times repeated 8
+Cycle: 19 	 Saturated Accuracy : 25 	 Number of times repeated 9
+Cycle: 20 	 Saturated Accuracy : 25 	 Number of times repeated 10
+Cycle: 21 	 Saturated Accuracy : 25 	 Number of times repeated 11
+Cycle: 22 	 Saturated Accuracy : 25 	 Number of times repeated 12
+Cycle: 23 	 Saturated Accuracy : 25 	 Number of times repeated 13
+Cycle: 24 	 Saturated Accuracy : 25 	 Number of times repeated 14
+Cycle: 25 	 Saturated Accuracy : 25 	 Number of times repeated 15
+Cycle: 26 	 Saturated Accuracy : 25 	 Number of times repeated 16
+Cycle: 27 	 Saturated Accuracy : 25 	 Number of times repeated 17
+Cycle: 28 	 Saturated Accuracy : 25 	 Number of times repeated 18
+Cycle: 29 	 Saturated Accuracy : 25 	 Number of times repeated 19
+Cycle: 30 	 Saturated Accuracy : 25 	 Number of times repeated 20
+Cycle: 31 	 Saturated Accuracy : 25 	 Number of times repeated 21
+Cycle: 32 	 Saturated Accuracy : 25 	 Number of times repeated 22
+Cycle: 33 	 Saturated Accuracy : 25 	 Number of times repeated 23
+Cycle: 34 	 Saturated Accuracy : 25 	 Number of times repeated 24
+Cycle: 35 	 Saturated Accuracy : 25 	 Number of times repeated 25
+Cycle: 36 	 Saturated Accuracy : 25 	 Number of times repeated 26
+Cycle: 37 	 Saturated Accuracy : 25 	 Number of times repeated 27
+Cycle: 38 	 Saturated Accuracy : 25 	 Number of times repeated 28
+Cycle: 39 	 Saturated Accuracy : 25 	 Number of times repeated 29
+Cycle: 40 	 Saturated Accuracy : 25 	 Number of times repeated 30
+Cycle: 41 	 Saturated Accuracy : 25 	 Number of times repeated 31
+Cycle: 42 	 Saturated Accuracy : 25 	 Number of times repeated 32
+Cycle: 43 	 Saturated Accuracy : 25 	 Number of times repeated 33
+Cycle: 44 	 Saturated Accuracy : 25 	 Number of times repeated 34
+Cycle: 45 	 Saturated Accuracy : 25 	 Number of times repeated 35
+Cycle: 46 	 Saturated Accuracy : 25 	 Number of times repeated 36
+Cycle: 47 	 Saturated Accuracy : 25 	 Number of times repeated 37
+Cycle: 48 	 Saturated Accuracy : 25 	 Number of times repeated 38
+Cycle: 49 	 Saturated Accuracy : 25 	 Number of times repeated 39
+****Sequence Ending*****
+******Sequence Starting*****
+cycle : 0 	 Accuracy :8.333333333333332 	 
+cycle : 1 	 Accuracy :20.833333333333336 	 
+cycle : 2 	 Accuracy :25 	 
+cycle : 3 	 Accuracy :29.166666666666668 	 
+cycle : 4 	 Accuracy :37.5 	 
+cycle : 5 	 Accuracy :41.66666666666667 	 
+Cycle: 6 	 Saturated Accuracy : 41.66666666666667 	 Number of times repeated 1
+cycle : 7 	 Accuracy :45.83333333333333 	 
+Cycle: 8 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 1
+Cycle: 9 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 2
+Cycle: 10 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 3
+Cycle: 11 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 4
+Cycle: 12 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 5
+Cycle: 13 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 6
+Cycle: 14 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 7
+Cycle: 15 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 8
+Cycle: 16 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 9
+Cycle: 17 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 10
+Cycle: 18 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 11
+Cycle: 19 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 12
+Cycle: 20 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 13
+Cycle: 21 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 14
+Cycle: 22 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 15
+Cycle: 23 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 16
+Cycle: 24 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 17
+Cycle: 25 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 18
+Cycle: 26 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 19
+Cycle: 27 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 20
+Cycle: 28 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 21
+Cycle: 29 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 22
+Cycle: 30 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 23
+Cycle: 31 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 24
+Cycle: 32 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 25
+Cycle: 33 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 26
+Cycle: 34 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 27
+Cycle: 35 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 28
+Cycle: 36 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 29
+Cycle: 37 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 30
+Cycle: 38 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 31
+Cycle: 39 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 32
+Cycle: 40 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 33
+Cycle: 41 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 34
+Cycle: 42 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 35
+Cycle: 43 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 36
+Cycle: 44 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 37
+Cycle: 45 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 38
+Cycle: 46 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 39
+Cycle: 47 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 40
+Cycle: 48 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 41
+Cycle: 49 	 Saturated Accuracy : 45.83333333333333 	 Number of times repeated 42
+****Sequence Ending*****
+******Sequence Starting*****
+cycle : 0 	 Accuracy :4.166666666666666 	 
+cycle : 1 	 Accuracy :20.833333333333336 	 
+Cycle: 2 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 1
+Cycle: 3 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 2
+Cycle: 4 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 3
+Cycle: 5 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 4
+Cycle: 6 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 5
+Cycle: 7 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 6
+Cycle: 8 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 7
+Cycle: 9 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 8
+Cycle: 10 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 9
+Cycle: 11 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 10
+Cycle: 12 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 11
+cycle : 13 	 Accuracy :25 	 
+Cycle: 14 	 Saturated Accuracy : 25 	 Number of times repeated 1
+Cycle: 15 	 Saturated Accuracy : 25 	 Number of times repeated 2
+Cycle: 16 	 Saturated Accuracy : 25 	 Number of times repeated 3
+Cycle: 17 	 Saturated Accuracy : 25 	 Number of times repeated 4
+Cycle: 18 	 Saturated Accuracy : 25 	 Number of times repeated 5
+Cycle: 19 	 Saturated Accuracy : 25 	 Number of times repeated 6
+Cycle: 20 	 Saturated Accuracy : 25 	 Number of times repeated 7
+Cycle: 21 	 Saturated Accuracy : 25 	 Number of times repeated 8
+Cycle: 22 	 Saturated Accuracy : 25 	 Number of times repeated 9
+Cycle: 23 	 Saturated Accuracy : 25 	 Number of times repeated 10
+Cycle: 24 	 Saturated Accuracy : 25 	 Number of times repeated 11
+Cycle: 25 	 Saturated Accuracy : 25 	 Number of times repeated 12
+Cycle: 26 	 Saturated Accuracy : 25 	 Number of times repeated 13
+Cycle: 27 	 Saturated Accuracy : 25 	 Number of times repeated 14
+Cycle: 28 	 Saturated Accuracy : 25 	 Number of times repeated 15
+Cycle: 29 	 Saturated Accuracy : 25 	 Number of times repeated 16
+Cycle: 30 	 Saturated Accuracy : 25 	 Number of times repeated 17
+Cycle: 31 	 Saturated Accuracy : 25 	 Number of times repeated 18
+Cycle: 32 	 Saturated Accuracy : 25 	 Number of times repeated 19
+Cycle: 33 	 Saturated Accuracy : 25 	 Number of times repeated 20
+Cycle: 34 	 Saturated Accuracy : 25 	 Number of times repeated 21
+Cycle: 35 	 Saturated Accuracy : 25 	 Number of times repeated 22
+Cycle: 36 	 Saturated Accuracy : 25 	 Number of times repeated 23
+Cycle: 37 	 Saturated Accuracy : 25 	 Number of times repeated 24
+Cycle: 38 	 Saturated Accuracy : 25 	 Number of times repeated 25
+Cycle: 39 	 Saturated Accuracy : 25 	 Number of times repeated 26
+Cycle: 40 	 Saturated Accuracy : 25 	 Number of times repeated 27
+Cycle: 41 	 Saturated Accuracy : 25 	 Number of times repeated 28
+Cycle: 42 	 Saturated Accuracy : 25 	 Number of times repeated 29
+Cycle: 43 	 Saturated Accuracy : 25 	 Number of times repeated 30
+Cycle: 44 	 Saturated Accuracy : 25 	 Number of times repeated 31
+Cycle: 45 	 Saturated Accuracy : 25 	 Number of times repeated 32
+Cycle: 46 	 Saturated Accuracy : 25 	 Number of times repeated 33
+Cycle: 47 	 Saturated Accuracy : 25 	 Number of times repeated 34
+Cycle: 48 	 Saturated Accuracy : 25 	 Number of times repeated 35
+Cycle: 49 	 Saturated Accuracy : 25 	 Number of times repeated 36
+****Sequence Ending*****
+******Sequence Starting*****
+cycle : 0 	 Accuracy :16.666666666666664 	 
+cycle : 1 	 Accuracy :20.833333333333336 	 
+Cycle: 2 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 1
+Cycle: 3 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 2
+Cycle: 4 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 3
+Cycle: 5 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 4
+Cycle: 6 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 5
+Cycle: 7 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 6
+Cycle: 8 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 7
+Cycle: 9 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 8
+Cycle: 10 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 9
+Cycle: 11 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 10
+Cycle: 12 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 11
+Cycle: 13 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 12
+Cycle: 14 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 13
+Cycle: 15 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 14
+Cycle: 16 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 15
+Cycle: 17 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 16
+Cycle: 18 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 17
+Cycle: 19 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 18
+Cycle: 20 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 19
+Cycle: 21 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 20
+Cycle: 22 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 21
+Cycle: 23 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 22
+Cycle: 24 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 23
+Cycle: 25 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 24
+Cycle: 26 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 25
+Cycle: 27 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 26
+Cycle: 28 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 27
+Cycle: 29 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 28
+Cycle: 30 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 29
+Cycle: 31 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 30
+Cycle: 32 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 31
+Cycle: 33 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 32
+Cycle: 34 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 33
+Cycle: 35 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 34
+Cycle: 36 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 35
+Cycle: 37 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 36
+Cycle: 38 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 37
+Cycle: 39 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 38
+Cycle: 40 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 39
+Cycle: 41 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 40
+Cycle: 42 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 41
+Cycle: 43 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 42
+Cycle: 44 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 43
+Cycle: 45 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 44
+Cycle: 46 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 45
+Cycle: 47 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 46
+Cycle: 48 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 47
+Cycle: 49 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 48
+****Sequence Ending*****
+******Sequence Starting*****
+cycle : 0 	 Accuracy :8.333333333333332 	 
+cycle : 1 	 Accuracy :20.833333333333336 	 
+Cycle: 2 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 1
+Cycle: 3 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 2
+Cycle: 4 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 3
+Cycle: 5 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 4
+Cycle: 6 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 5
+Cycle: 7 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 6
+Cycle: 8 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 7
+Cycle: 9 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 8
+Cycle: 10 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 9
+Cycle: 11 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 10
+Cycle: 12 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 11
+Cycle: 13 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 12
+Cycle: 14 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 13
+Cycle: 15 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 14
+Cycle: 16 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 15
+Cycle: 17 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 16
+Cycle: 18 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 17
+Cycle: 19 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 18
+Cycle: 20 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 19
+Cycle: 21 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 20
+Cycle: 22 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 21
+Cycle: 23 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 22
+Cycle: 24 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 23
+Cycle: 25 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 24
+Cycle: 26 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 25
+Cycle: 27 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 26
+Cycle: 28 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 27
+Cycle: 29 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 28
+Cycle: 30 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 29
+Cycle: 31 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 30
+Cycle: 32 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 31
+Cycle: 33 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 32
+Cycle: 34 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 33
+Cycle: 35 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 34
+Cycle: 36 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 35
+Cycle: 37 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 36
+Cycle: 38 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 37
+Cycle: 39 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 38
+Cycle: 40 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 39
+Cycle: 41 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 40
+Cycle: 42 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 41
+Cycle: 43 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 42
+Cycle: 44 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 43
+Cycle: 45 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 44
+Cycle: 46 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 45
+Cycle: 47 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 46
+Cycle: 48 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 47
+Cycle: 49 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 48
+****Sequence Ending*****
+******Sequence Starting*****
+cycle : 0 	 Accuracy :4.3478260869565215 	 
+cycle : 1 	 Accuracy :13.043478260869565 	 
+Cycle: 2 	 Saturated Accuracy : 13.043478260869565 	 Number of times repeated 1
+Cycle: 3 	 Saturated Accuracy : 13.043478260869565 	 Number of times repeated 2
+cycle : 4 	 Accuracy :8.695652173913043 	 
+Cycle: 5 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 1
+Cycle: 6 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 2
+Cycle: 7 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 3
+Cycle: 8 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 4
+Cycle: 9 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 5
+Cycle: 10 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 6
+Cycle: 11 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 7
+Cycle: 12 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 8
+Cycle: 13 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 9
+Cycle: 14 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 10
+Cycle: 15 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 11
+Cycle: 16 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 12
+Cycle: 17 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 13
+Cycle: 18 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 14
+Cycle: 19 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 15
+Cycle: 20 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 16
+Cycle: 21 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 17
+Cycle: 22 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 18
+Cycle: 23 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 19
+Cycle: 24 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 20
+Cycle: 25 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 21
+Cycle: 26 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 22
+Cycle: 27 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 23
+Cycle: 28 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 24
+Cycle: 29 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 25
+Cycle: 30 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 26
+Cycle: 31 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 27
+Cycle: 32 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 28
+Cycle: 33 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 29
+Cycle: 34 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 30
+Cycle: 35 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 31
+Cycle: 36 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 32
+Cycle: 37 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 33
+Cycle: 38 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 34
+Cycle: 39 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 35
+Cycle: 40 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 36
+Cycle: 41 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 37
+Cycle: 42 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 38
+Cycle: 43 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 39
+Cycle: 44 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 40
+Cycle: 45 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 41
+Cycle: 46 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 42
+Cycle: 47 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 43
+Cycle: 48 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 44
+Cycle: 49 	 Saturated Accuracy : 8.695652173913043 	 Number of times repeated 45
+****Sequence Ending*****
+******Sequence Starting*****
+cycle : 0 	 Accuracy :4.3478260869565215 	 
+cycle : 1 	 Accuracy :17.391304347826086 	 
+Cycle: 2 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 1
+Cycle: 3 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 2
+Cycle: 4 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 3
+Cycle: 5 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 4
+Cycle: 6 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 5
+Cycle: 7 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 6
+Cycle: 8 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 7
+Cycle: 9 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 8
+Cycle: 10 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 9
+Cycle: 11 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 10
+Cycle: 12 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 11
+Cycle: 13 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 12
+Cycle: 14 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 13
+Cycle: 15 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 14
+Cycle: 16 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 15
+Cycle: 17 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 16
+Cycle: 18 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 17
+Cycle: 19 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 18
+Cycle: 20 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 19
+Cycle: 21 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 20
+Cycle: 22 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 21
+Cycle: 23 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 22
+Cycle: 24 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 23
+Cycle: 25 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 24
+Cycle: 26 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 25
+Cycle: 27 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 26
+Cycle: 28 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 27
+Cycle: 29 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 28
+Cycle: 30 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 29
+Cycle: 31 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 30
+Cycle: 32 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 31
+Cycle: 33 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 32
+Cycle: 34 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 33
+Cycle: 35 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 34
+Cycle: 36 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 35
+Cycle: 37 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 36
+Cycle: 38 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 37
+Cycle: 39 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 38
+Cycle: 40 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 39
+Cycle: 41 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 40
+Cycle: 42 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 41
+Cycle: 43 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 42
+Cycle: 44 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 43
+Cycle: 45 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 44
+Cycle: 46 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 45
+Cycle: 47 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 46
+Cycle: 48 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 47
+Cycle: 49 	 Saturated Accuracy : 17.391304347826086 	 Number of times repeated 48
+****Sequence Ending*****
+******Sequence Starting*****
+cycle : 0 	 Accuracy :0 	 
+cycle : 1 	 Accuracy :8.333333333333332 	 
+cycle : 2 	 Accuracy :12.5 	 
+Cycle: 3 	 Saturated Accuracy : 12.5 	 Number of times repeated 1
+Cycle: 4 	 Saturated Accuracy : 12.5 	 Number of times repeated 2
+Cycle: 5 	 Saturated Accuracy : 12.5 	 Number of times repeated 3
+Cycle: 6 	 Saturated Accuracy : 12.5 	 Number of times repeated 4
+Cycle: 7 	 Saturated Accuracy : 12.5 	 Number of times repeated 5
+Cycle: 8 	 Saturated Accuracy : 12.5 	 Number of times repeated 6
+Cycle: 9 	 Saturated Accuracy : 12.5 	 Number of times repeated 7
+Cycle: 10 	 Saturated Accuracy : 12.5 	 Number of times repeated 8
+Cycle: 11 	 Saturated Accuracy : 12.5 	 Number of times repeated 9
+Cycle: 12 	 Saturated Accuracy : 12.5 	 Number of times repeated 10
+Cycle: 13 	 Saturated Accuracy : 12.5 	 Number of times repeated 11
+Cycle: 14 	 Saturated Accuracy : 12.5 	 Number of times repeated 12
+Cycle: 15 	 Saturated Accuracy : 12.5 	 Number of times repeated 13
+Cycle: 16 	 Saturated Accuracy : 12.5 	 Number of times repeated 14
+Cycle: 17 	 Saturated Accuracy : 12.5 	 Number of times repeated 15
+Cycle: 18 	 Saturated Accuracy : 12.5 	 Number of times repeated 16
+Cycle: 19 	 Saturated Accuracy : 12.5 	 Number of times repeated 17
+Cycle: 20 	 Saturated Accuracy : 12.5 	 Number of times repeated 18
+Cycle: 21 	 Saturated Accuracy : 12.5 	 Number of times repeated 19
+Cycle: 22 	 Saturated Accuracy : 12.5 	 Number of times repeated 20
+Cycle: 23 	 Saturated Accuracy : 12.5 	 Number of times repeated 21
+Cycle: 24 	 Saturated Accuracy : 12.5 	 Number of times repeated 22
+Cycle: 25 	 Saturated Accuracy : 12.5 	 Number of times repeated 23
+Cycle: 26 	 Saturated Accuracy : 12.5 	 Number of times repeated 24
+Cycle: 27 	 Saturated Accuracy : 12.5 	 Number of times repeated 25
+Cycle: 28 	 Saturated Accuracy : 12.5 	 Number of times repeated 26
+Cycle: 29 	 Saturated Accuracy : 12.5 	 Number of times repeated 27
+Cycle: 30 	 Saturated Accuracy : 12.5 	 Number of times repeated 28
+Cycle: 31 	 Saturated Accuracy : 12.5 	 Number of times repeated 29
+Cycle: 32 	 Saturated Accuracy : 12.5 	 Number of times repeated 30
+Cycle: 33 	 Saturated Accuracy : 12.5 	 Number of times repeated 31
+Cycle: 34 	 Saturated Accuracy : 12.5 	 Number of times repeated 32
+Cycle: 35 	 Saturated Accuracy : 12.5 	 Number of times repeated 33
+Cycle: 36 	 Saturated Accuracy : 12.5 	 Number of times repeated 34
+Cycle: 37 	 Saturated Accuracy : 12.5 	 Number of times repeated 35
+Cycle: 38 	 Saturated Accuracy : 12.5 	 Number of times repeated 36
+Cycle: 39 	 Saturated Accuracy : 12.5 	 Number of times repeated 37
+Cycle: 40 	 Saturated Accuracy : 12.5 	 Number of times repeated 38
+Cycle: 41 	 Saturated Accuracy : 12.5 	 Number of times repeated 39
+Cycle: 42 	 Saturated Accuracy : 12.5 	 Number of times repeated 40
+Cycle: 43 	 Saturated Accuracy : 12.5 	 Number of times repeated 41
+Cycle: 44 	 Saturated Accuracy : 12.5 	 Number of times repeated 42
+Cycle: 45 	 Saturated Accuracy : 12.5 	 Number of times repeated 43
+Cycle: 46 	 Saturated Accuracy : 12.5 	 Number of times repeated 44
+Cycle: 47 	 Saturated Accuracy : 12.5 	 Number of times repeated 45
+Cycle: 48 	 Saturated Accuracy : 12.5 	 Number of times repeated 46
+Cycle: 49 	 Saturated Accuracy : 12.5 	 Number of times repeated 47
+****Sequence Ending*****
+******Sequence Starting*****
+cycle : 0 	 Accuracy :50 	 
+Cycle: 1 	 Saturated Accuracy : 50 	 Number of times repeated 1
+Cycle: 2 	 Saturated Accuracy : 50 	 Number of times repeated 2
+Cycle: 3 	 Saturated Accuracy : 50 	 Number of times repeated 3
+Cycle: 4 	 Saturated Accuracy : 50 	 Number of times repeated 4
+Cycle: 5 	 Saturated Accuracy : 50 	 Number of times repeated 5
+Cycle: 6 	 Saturated Accuracy : 50 	 Number of times repeated 6
+Cycle: 7 	 Saturated Accuracy : 50 	 Number of times repeated 7
+Cycle : 8 	  Accuracy:100 	 Number of times repeated 1
+Cycle: 9 	 Saturated Accuracy : 50 	 Number of times repeated 8
+Cycle : 10 	  Accuracy:100 	 Number of times repeated 2
+Cycle : 11 	  Accuracy:100 	 Number of times repeated 3
+Cycle: 12 	 Saturated Accuracy : 50 	 Number of times repeated 9
+Cycle : 13 	  Accuracy:100 	 Number of times repeated 4
+Cycle: 14 	 Saturated Accuracy : 50 	 Number of times repeated 10
+Cycle : 15 	  Accuracy:100 	 Number of times repeated 5
+Cycle : 16 	  Accuracy:100 	 Number of times repeated 6
+Cycle : 17 	  Accuracy:100 	 Number of times repeated 7
+Cycle : 18 	  Accuracy:100 	 Number of times repeated 8
+Cycle : 19 	  Accuracy:100 	 Number of times repeated 9
+Cycle : 20 	  Accuracy:100 	 Number of times repeated 10
+Cycle : 21 	  Accuracy:100 	 Number of times repeated 11
+Cycle : 22 	  Accuracy:100 	 Number of times repeated 12
+Cycle : 23 	  Accuracy:100 	 Number of times repeated 13
+Cycle : 24 	  Accuracy:100 	 Number of times repeated 14
+Cycle : 25 	  Accuracy:100 	 Number of times repeated 15
+Cycle : 26 	  Accuracy:100 	 Number of times repeated 16
+Cycle : 27 	  Accuracy:100 	 Number of times repeated 17
+Cycle : 28 	  Accuracy:100 	 Number of times repeated 18
+Cycle : 29 	  Accuracy:100 	 Number of times repeated 19
+Cycle : 30 	  Accuracy:100 	 Number of times repeated 20
+Cycle : 31 	  Accuracy:100 	 Number of times repeated 21
+Cycle : 32 	  Accuracy:100 	 Number of times repeated 22
+Cycle : 33 	  Accuracy:100 	 Number of times repeated 23
+Cycle : 34 	  Accuracy:100 	 Number of times repeated 24
+Cycle : 35 	  Accuracy:100 	 Number of times repeated 25
+Cycle : 36 	  Accuracy:100 	 Number of times repeated 26
+Cycle : 37 	  Accuracy:100 	 Number of times repeated 27
+Cycle : 38 	  Accuracy:100 	 Number of times repeated 28
+Cycle : 39 	  Accuracy:100 	 Number of times repeated 29
+Cycle : 40 	  Accuracy:100 	 Number of times repeated 30
+****Sequence Ending*****
+******Sequence Starting*****
+cycle : 0 	 Accuracy :8.333333333333332 	 
+cycle : 1 	 Accuracy :25 	 
+cycle : 2 	 Accuracy :33.33333333333333 	 
+Cycle: 3 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 1
+cycle : 4 	 Accuracy :37.5 	 
+Cycle: 5 	 Saturated Accuracy : 37.5 	 Number of times repeated 1
+Cycle: 6 	 Saturated Accuracy : 37.5 	 Number of times repeated 2
+Cycle: 7 	 Saturated Accuracy : 37.5 	 Number of times repeated 3
+Cycle: 8 	 Saturated Accuracy : 37.5 	 Number of times repeated 4
+Cycle: 9 	 Saturated Accuracy : 37.5 	 Number of times repeated 5
+Cycle: 10 	 Saturated Accuracy : 37.5 	 Number of times repeated 6
+Cycle: 11 	 Saturated Accuracy : 37.5 	 Number of times repeated 7
+Cycle: 12 	 Saturated Accuracy : 37.5 	 Number of times repeated 8
+Cycle: 13 	 Saturated Accuracy : 37.5 	 Number of times repeated 9
+Cycle: 14 	 Saturated Accuracy : 37.5 	 Number of times repeated 10
+Cycle: 15 	 Saturated Accuracy : 37.5 	 Number of times repeated 11
+Cycle: 16 	 Saturated Accuracy : 37.5 	 Number of times repeated 12
+Cycle: 17 	 Saturated Accuracy : 37.5 	 Number of times repeated 13
+Cycle: 18 	 Saturated Accuracy : 37.5 	 Number of times repeated 14
+Cycle: 19 	 Saturated Accuracy : 37.5 	 Number of times repeated 15
+Cycle: 20 	 Saturated Accuracy : 37.5 	 Number of times repeated 16
+Cycle: 21 	 Saturated Accuracy : 37.5 	 Number of times repeated 17
+Cycle: 22 	 Saturated Accuracy : 37.5 	 Number of times repeated 18
+Cycle: 23 	 Saturated Accuracy : 37.5 	 Number of times repeated 19
+Cycle: 24 	 Saturated Accuracy : 37.5 	 Number of times repeated 20
+Cycle: 25 	 Saturated Accuracy : 37.5 	 Number of times repeated 21
+Cycle: 26 	 Saturated Accuracy : 37.5 	 Number of times repeated 22
+Cycle: 27 	 Saturated Accuracy : 37.5 	 Number of times repeated 23
+Cycle: 28 	 Saturated Accuracy : 37.5 	 Number of times repeated 24
+Cycle: 29 	 Saturated Accuracy : 37.5 	 Number of times repeated 25
+Cycle: 30 	 Saturated Accuracy : 37.5 	 Number of times repeated 26
+Cycle: 31 	 Saturated Accuracy : 37.5 	 Number of times repeated 27
+Cycle: 32 	 Saturated Accuracy : 37.5 	 Number of times repeated 28
+Cycle: 33 	 Saturated Accuracy : 37.5 	 Number of times repeated 29
+Cycle: 34 	 Saturated Accuracy : 37.5 	 Number of times repeated 30
+Cycle: 35 	 Saturated Accuracy : 37.5 	 Number of times repeated 31
+Cycle: 36 	 Saturated Accuracy : 37.5 	 Number of times repeated 32
+Cycle: 37 	 Saturated Accuracy : 37.5 	 Number of times repeated 33
+Cycle: 38 	 Saturated Accuracy : 37.5 	 Number of times repeated 34
+Cycle: 39 	 Saturated Accuracy : 37.5 	 Number of times repeated 35
+Cycle: 40 	 Saturated Accuracy : 37.5 	 Number of times repeated 36
+Cycle: 41 	 Saturated Accuracy : 37.5 	 Number of times repeated 37
+Cycle: 42 	 Saturated Accuracy : 37.5 	 Number of times repeated 38
+Cycle: 43 	 Saturated Accuracy : 37.5 	 Number of times repeated 39
+Cycle: 44 	 Saturated Accuracy : 37.5 	 Number of times repeated 40
+Cycle: 45 	 Saturated Accuracy : 37.5 	 Number of times repeated 41
+Cycle: 46 	 Saturated Accuracy : 37.5 	 Number of times repeated 42
+Cycle: 47 	 Saturated Accuracy : 37.5 	 Number of times repeated 43
+Cycle: 48 	 Saturated Accuracy : 37.5 	 Number of times repeated 44
+Cycle: 49 	 Saturated Accuracy : 37.5 	 Number of times repeated 45
+****Sequence Ending*****
+******Sequence Starting*****
+cycle : 0 	 Accuracy :8.333333333333332 	 
+cycle : 1 	 Accuracy :29.166666666666668 	 
+Cycle: 2 	 Saturated Accuracy : 29.166666666666668 	 Number of times repeated 1
+cycle : 3 	 Accuracy :20.833333333333336 	 
+Cycle: 4 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 1
+Cycle: 5 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 2
+Cycle: 6 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 3
+Cycle: 7 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 4
+Cycle: 8 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 5
+Cycle: 9 	 Saturated Accuracy : 20.833333333333336 	 Number of times repeated 6
+cycle : 10 	 Accuracy :25 	 
+Cycle: 11 	 Saturated Accuracy : 25 	 Number of times repeated 1
+cycle : 12 	 Accuracy :33.33333333333333 	 
+Cycle: 13 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 1
+Cycle: 14 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 2
+Cycle: 15 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 3
+Cycle: 16 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 4
+Cycle: 17 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 5
+Cycle: 18 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 6
+Cycle: 19 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 7
+Cycle: 20 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 8
+Cycle: 21 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 9
+Cycle: 22 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 10
+Cycle: 23 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 11
+Cycle: 24 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 12
+Cycle: 25 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 13
+cycle : 26 	 Accuracy :29.166666666666668 	 
+Cycle: 27 	 Saturated Accuracy : 29.166666666666668 	 Number of times repeated 1
+Cycle: 28 	 Saturated Accuracy : 29.166666666666668 	 Number of times repeated 2
+Cycle: 29 	 Saturated Accuracy : 29.166666666666668 	 Number of times repeated 3
+Cycle: 30 	 Saturated Accuracy : 29.166666666666668 	 Number of times repeated 4
+cycle : 31 	 Accuracy :33.33333333333333 	 
+Cycle: 32 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 1
+Cycle: 33 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 2
+Cycle: 34 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 3
+Cycle: 35 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 4
+Cycle: 36 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 5
+Cycle: 37 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 6
+Cycle: 38 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 7
+Cycle: 39 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 8
+Cycle: 40 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 9
+Cycle: 41 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 10
+Cycle: 42 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 11
+Cycle: 43 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 12
+Cycle: 44 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 13
+Cycle: 45 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 14
+Cycle: 46 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 15
+Cycle: 47 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 16
+Cycle: 48 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 17
+Cycle: 49 	 Saturated Accuracy : 33.33333333333333 	 Number of times repeated 18
+****Sequence Ending*****
+******Sequence Starting*****
+cycle : 0 	 Accuracy :0 	 
+cycle : 1 	 Accuracy :16.666666666666664 	 
+Cycle: 2 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 1
+Cycle: 3 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 2
+Cycle: 4 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 3
+Cycle: 5 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 4
+Cycle: 6 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 5
+Cycle: 7 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 6
+Cycle: 8 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 7
+Cycle: 9 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 8
+Cycle: 10 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 9
+Cycle: 11 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 10
+Cycle: 12 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 11
+Cycle: 13 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 12
+Cycle: 14 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 13
+Cycle: 15 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 14
+Cycle: 16 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 15
+cycle : 17 	 Accuracy :12.5 	 
+Cycle: 18 	 Saturated Accuracy : 12.5 	 Number of times repeated 1
+Cycle: 19 	 Saturated Accuracy : 12.5 	 Number of times repeated 2
+Cycle: 20 	 Saturated Accuracy : 12.5 	 Number of times repeated 3
+Cycle: 21 	 Saturated Accuracy : 12.5 	 Number of times repeated 4
+Cycle: 22 	 Saturated Accuracy : 12.5 	 Number of times repeated 5
+Cycle: 23 	 Saturated Accuracy : 12.5 	 Number of times repeated 6
+Cycle: 24 	 Saturated Accuracy : 12.5 	 Number of times repeated 7
+Cycle: 25 	 Saturated Accuracy : 12.5 	 Number of times repeated 8
+Cycle: 26 	 Saturated Accuracy : 12.5 	 Number of times repeated 9
+Cycle: 27 	 Saturated Accuracy : 12.5 	 Number of times repeated 10
+Cycle: 28 	 Saturated Accuracy : 12.5 	 Number of times repeated 11
+cycle : 29 	 Accuracy :16.666666666666664 	 
+Cycle: 30 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 1
+Cycle: 31 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 2
+Cycle: 32 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 3
+Cycle: 33 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 4
+Cycle: 34 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 5
+Cycle: 35 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 6
+Cycle: 36 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 7
+Cycle: 37 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 8
+Cycle: 38 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 9
+Cycle: 39 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 10
+Cycle: 40 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 11
+Cycle: 41 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 12
+Cycle: 42 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 13
+Cycle: 43 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 14
+Cycle: 44 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 15
+Cycle: 45 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 16
+Cycle: 46 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 17
+Cycle: 47 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 18
+Cycle: 48 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 19
+Cycle: 49 	 Saturated Accuracy : 16.666666666666664 	 Number of times repeated 20
+****Sequence Ending*****
+******Sequence Starting*****
+cycle : 0 	 Accuracy :4.166666666666666 	 
+cycle : 1 	 Accuracy :25 	 
+Cycle: 2 	 Saturated Accuracy : 25 	 Number of times repeated 1
+Cycle: 3 	 Saturated Accuracy : 25 	 Number of times repeated 2
+Cycle: 4 	 Saturated Accuracy : 25 	 Number of times repeated 3
+Cycle: 5 	 Saturated Accuracy : 25 	 Number of times repeated 4
+Cycle: 6 	 Saturated Accuracy : 25 	 Number of times repeated 5
+Cycle: 7 	 Saturated Accuracy : 25 	 Number of times repeated 6
+Cycle: 8 	 Saturated Accuracy : 25 	 Number of times repeated 7
+Cycle: 9 	 Saturated Accuracy : 25 	 Number of times repeated 8
+Cycle: 10 	 Saturated Accuracy : 25 	 Number of times repeated 9
+Cycle: 11 	 Saturated Accuracy : 25 	 Number of times repeated 10
+Cycle: 12 	 Saturated Accuracy : 25 	 Number of times repeated 11
+Cycle: 13 	 Saturated Accuracy : 25 	 Number of times repeated 12
+Cycle: 14 	 Saturated Accuracy : 25 	 Number of times repeated 13
+Cycle: 15 	 Saturated Accuracy : 25 	 Number of times repeated 14
+Cycle: 16 	 Saturated Accuracy : 25 	 Number of times repeated 15
+Cycle: 17 	 Saturated Accuracy : 25 	 Number of times repeated 16
+Cycle: 18 	 Saturated Accuracy : 25 	 Number of times repeated 17
+Cycle: 19 	 Saturated Accuracy : 25 	 Number of times repeated 18
+Cycle: 20 	 Saturated Accuracy : 25 	 Number of times repeated 19
+Cycle: 21 	 Saturated Accuracy : 25 	 Number of times repeated 20
+Cycle: 22 	 Saturated Accuracy : 25 	 Number of times repeated 21
+Cycle: 23 	 Saturated Accuracy : 25 	 Number of times repeated 22
+Cycle: 24 	 Saturated Accuracy : 25 	 Number of times repeated 23
+Cycle: 25 	 Saturated Accuracy : 25 	 Number of times repeated 24
+Cycle: 26 	 Saturated Accuracy : 25 	 Number of times repeated 25
+Cycle: 27 	 Saturated Accuracy : 25 	 Number of times repeated 26
+Cycle: 28 	 Saturated Accuracy : 25 	 Number of times repeated 27
+Cycle: 29 	 Saturated Accuracy : 25 	 Number of times repeated 28
+Cycle: 30 	 Saturated Accuracy : 25 	 Number of times repeated 29
+Cycle: 31 	 Saturated Accuracy : 25 	 Number of times repeated 30
+Cycle: 32 	 Saturated Accuracy : 25 	 Number of times repeated 31
+Cycle: 33 	 Saturated Accuracy : 25 	 Number of times repeated 32
+Cycle: 34 	 Saturated Accuracy : 25 	 Number of times repeated 33
+Cycle: 35 	 Saturated Accuracy : 25 	 Number of times repeated 34
+Cycle: 36 	 Saturated Accuracy : 25 	 Number of times repeated 35
+Cycle: 37 	 Saturated Accuracy : 25 	 Number of times repeated 36
+Cycle: 38 	 Saturated Accuracy : 25 	 Number of times repeated 37
+Cycle: 39 	 Saturated Accuracy : 25 	 Number of times repeated 38
+Cycle: 40 	 Saturated Accuracy : 25 	 Number of times repeated 39
+Cycle: 41 	 Saturated Accuracy : 25 	 Number of times repeated 40
+Cycle: 42 	 Saturated Accuracy : 25 	 Number of times repeated 41
+Cycle: 43 	 Saturated Accuracy : 25 	 Number of times repeated 42
+Cycle: 44 	 Saturated Accuracy : 25 	 Number of times repeated 43
+Cycle: 45 	 Saturated Accuracy : 25 	 Number of times repeated 44
+Cycle: 46 	 Saturated Accuracy : 25 	 Number of times repeated 45
+Cycle: 47 	 Saturated Accuracy : 25 	 Number of times repeated 46
+Cycle: 48 	 Saturated Accuracy : 25 	 Number of times repeated 47
+Cycle: 49 	 Saturated Accuracy : 25 	 Number of times repeated 48
+****Sequence Ending*****
