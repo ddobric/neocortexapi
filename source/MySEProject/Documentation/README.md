@@ -122,7 +122,8 @@ IV. Predict the label
 3.Encoding and Learning
 -------------
 
-I.After reformatting the datetime, several sequences of the segments were formed, as seen below:
+I.After reformatting the datetime, we found a processed CSV file where every dates have 24 segments (https://github.com/rabiul64/neocortexapi/tree/master/source/MySEProject/TimeSeriesSequence/DataSet/2021_Green_Processed.csv). 
+Then we grouped by the date and segment for making a sequence. We have considered every date as a sequence which have 24 segments. In the example below, we can see 01/01/2021 is sequence with 24 segments. as seen below:
 
 Sequence 1:
 ```
@@ -316,13 +317,17 @@ public List<ClassifierResult<string>> Predict(int[] input)
 
 4.Results :
 -------------
-More than twenty experiments are done and here is the sample output accuracy logs and the result based on user input.
+After Processing the data and creating the sequences, we have found 216 sequences where every date is a squence and every date has 24 segments. As working with 216 sequences
+are very time consuming, so we consider 50 sequences with 50 cycles for learning and predicting the user input. After learning the sequences we have tracked the accuracy in 
+a log file. 
 
-- Accuracy Logs : Output Accuracy Logs for [maxCycles 50](https://github.com/rabiul64/neocortexapi/commit/d53a7060952a0c6211dd9a809eea7d93fa29e010) 
+4.1 Accuracy Results:
+------------------------
+The Output Accuracy Logs for [maxCycles 50](https://github.com/rabiul64/neocortexapi/blob/master/source/MySEProject/TimeSeriesSequence/TrainingLogs/TaxiPassangerPredictionExperiment637835742529422044.txt)
+We are showing here 1 sequence accuracy with 50 cycles:
 
-[TaxiPassangerPredictionExperiment]
+===========Sequence Starting================= 
 
-******Sequence Starting******
 cycle : 0 	 Accuracy :4.166666666666666
  	 
 cycle : 1 	 Accuracy :45.83333333333333
@@ -423,17 +428,43 @@ Cycle: 48 	 Saturated Accuracy : 91.66666666666666 	 Number of times repeated 5
 
 Cycle: 49 	 Saturated Accuracy : 91.66666666666666 	 Number of times repeated 6
 
-*****Sequence Ending*****
------------------------------------------------------------------------------
+=========================Sequence Ending===================================
 
-- User Input Result : segment A date-time of 01-01-2022 00:18 is considered.
+4.2 User Input Result :
+------------------------
+ 
+After giving the user inputs as dd/MM/yyyy hh:mm format, user can see the predicated results. 
+Results provide the best 3 results with similarity.
 
-![UserInputResult](https://user-images.githubusercontent.com/31253296/159751185-27397564-0a57-4809-abf6-28b8f6a40b64.PNG)
+![3](https://user-images.githubusercontent.com/31253296/160933384-e26d30c4-1111-40ee-a378-a88adbbdc19d.PNG)
+
+Based on the above result, we can see that user has input following dates from table:
+
+|   User Date  | Predicted Passengers |    Similarity   | Actual Passenger |
+| :----------: | :----------------:   | :-------------: | :------------:   |
+| 05-01-2022 04:00 | 20,30,16 | 57.14%, 57.14%, 57.14% | 23,30,13 |
+| 26-02-2022 01:00 | 2,65,145 | 50%,50%,50% | 70,190,6 |
+| 21-01-2022 03:00 | 2,7,65   | 75%,60%,33.33% | 5,12,75 |
+| 21-02-2022 06:00 | 29,112,128 | 50%,50%,50% | 32,120,150 |
+
 
 5.Discussion
 -------------
 
-Yet to be done.
+In this paper, time series and sequences are thoroughly studied from two aspects, sequence learning, and prediction making.
+A detailed review summarizing existing approaches is provided. We observe that time series have been studied for decades and
+various models/learning methods are available but adapting the existing methods to high-dimensional and noisy scenarios remains
+a challenge. The study on sequences/point processes is relatively new and improvements have been made in recent years. 
+We used HTM sequence memory, a newly created neural network model, to solve real-time sequence learning issues with time-varying input 
+streams in this research. The sequence memory concept is based on cortical pyramidal neurons’ computational principles. On real-world datasets,
+we discussed model performance. The model meets a set of requirements for online sequence learning from input streams with constantly changing
+statistics, an issue that the cortex must deal with in natural settings. These characteristics determine an algorithm’s overall
+flexibility and its ability to be employed automatically. Even though HTM is still in its infancy compared to other classic neural network
+models, it satisfies these features and shows promise on real-time sequence learning issues. In the experiments, HTM gives better performance
+for single element sequences but for sequences that are constituted of multiple elements HTM gives a comparable performance which provides 
+an insight that still there is scope for improvement in that direction. We have used HTM configuration for this experiment which proves there
+is no need for hyper-parameter tuning for different kinds of data which in this case is not true. Time taken for HTM training is less, 
+as HTM takes the whole sequence set for training which is not time and resource-consuming
 
 ## Similar Studies/Research used as References
 [1] Continuous online sequence learning with an unsupervised neural network model.
