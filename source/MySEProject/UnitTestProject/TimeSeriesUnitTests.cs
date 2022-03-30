@@ -16,12 +16,12 @@ namespace UnitTestProject
     public class TimeSeriesUnitTests
     {
         public CSVPRocessingMethods _csvPRocessingMethod;
-
         public TimeSeriesUnitTests()
         {
             _csvPRocessingMethod = new CSVPRocessingMethods();
         }
 
+        #region Test methods for CSV processing
         [TestMethod]
         public void CheckSegmentsOfTime()
         {
@@ -98,7 +98,8 @@ namespace UnitTestProject
             Assert.IsNotNull(csvProcessedDatas);
             Assert.AreEqual(6, csvProcessedDatas.Count);
         }
-
+        #endregion
+        #region Test Methods for Encoder Methods
         /// <summary>
         /// Generates encoded images for week days.
         /// </summary>
@@ -129,6 +130,10 @@ namespace UnitTestProject
         [DataRow("05/01/2022 01:20:11")]
         [DataRow("05/02/2022 05:18:22")]
 
+        /// <summary>
+        /// Generates encoded images for month.
+        /// </summary>
+        /// <param name="input"></param>
         public void DayEncoderTest(string input)
         {
             ScalarEncoder dayEncoder = DateTimeEncoders.FetchDayEncoder();
@@ -140,5 +145,24 @@ namespace UnitTestProject
             var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
             NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"{dateTime.Day}.png", null);
         }
+
+        [TestMethod]
+        [DataRow("05/10/2022 10:58:07")]
+        [DataRow("15/06/2022 01:20:11")]
+        [DataRow("10/02/2022 05:18:22")]
+
+        public void MonthEncoderTest(string input)
+        {
+            ScalarEncoder monthEncoder = DateTimeEncoders.FetchMonthEncoder();
+            DateTime dateTime = DateTime.Parse(input);
+            int month = dateTime.Month;
+
+            var result = monthEncoder.Encode(month);
+            int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(result, 100, 100);
+            var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
+            NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"{dateTime.Day}.png", null);
+        }
+
+        #endregion
     }
 }
