@@ -111,19 +111,20 @@ namespace NeoCortexApi
         /// <remarks>Note: PredictiveCells are not calculated here. They are calculated on demand from active segments.</remarks>
         public ComputeCycle Compute(int[] activeColumns, bool learn, int[] externalPredictiveInputsActive = null, int[] externalPredictiveInputsWinners = null)
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
+            //Stopwatch sw = new Stopwatch();
+            //sw.Start();
+            
             ComputeCycle cycle = ActivateCells(this.connections, activeColumns, learn);
 
-            sw.Stop();
+            //sw.Stop();
 
-            var sec1 = sw.ElapsedMilliseconds;
+            //var sec1 = sw.ElapsedMilliseconds;
 
-            sw.Restart();
+            //sw.Restart();
 
             ActivateDendrites(this.connections, cycle, learn, externalPredictiveInputsActive, externalPredictiveInputsWinners);
 
-            sw.Stop();
+            //sw.Stop();
 
             //tmperf1.WriteLine($"{sec1}, {sw.ElapsedMilliseconds}, {sec1 + sw.ElapsedMilliseconds}");
 
