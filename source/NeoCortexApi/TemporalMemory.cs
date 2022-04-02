@@ -247,24 +247,10 @@ namespace NeoCortexApi
                             prevActiveCells, prevWinnerCells, permanenceIncrement, permanenceDecrement, conn.HtmConfig.Random,
                                learn);
 
-                        // DRAFT. Removing this as unnecessary.
-                        //cycle.ActiveCells.Add(burstingResult.BestCell);
-
-
                         // Here we activate all cells by putting them to list of active cells.
                         cycle.ActiveCells.AddRange(burstingResult.Cells);
 
-                        //foreach (var item in burstingResult.Cells)
-                        //{
-                        //    cycle.ActiveCells.Add(item);
-                        //}
-
-                        //var actSyns = conn.getReceptorSynapses(burstingResult.BestCell).Where(s=>prevActiveCells.Contains(s.SourceCell));
-                        //foreach (var syn in actSyns)
-                        //{
-                        //    cycle.ActiveSynapses.Add(syn);
-                        //}
-
+                        // The winner cell is added to th elots of winner cells in the cycle.
                         cycle.WinnerCells.Add((Cell)burstingResult.BestCell);
                     }
                 }
