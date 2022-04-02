@@ -12,14 +12,18 @@
     <script defer>
 
         function scrollBtn(btnId, targetId) {
-            var btn = document.getElementById(btnId);
-            btn.addEventListener("click", function () {
-                const offset = 55;
-                var target = document.getElementById(targetId);
-                var navBar = document.getElementsByClassName("navigation")[0];
-                window.scroll({ top: (target.offsetTop - navBar.clientHeight), left: 0, behavior: 'smooth' });
-                // target.scrollIntoView({ behavior: "smooth" });
-            });
+            var btns = document.getElementsByClassName(btnId);
+            for (let btn of btns) {
+                if (btn == undefined)
+                    continue;
+                btn.addEventListener("click", function () {
+                    const offset = 55;
+                    var target = document.getElementById(targetId);
+                    var navBar = document.getElementsByClassName("navigation")[0];
+                    window.scroll({ top: (target.offsetTop - navBar.clientHeight), left: 0, behavior: 'smooth' });
+                    // target.scrollIntoView({ behavior: "smooth" });
+                });
+            }
         }
 
         function addImageLink(x) {
@@ -57,8 +61,29 @@
                 }
             }
         }
-        window.ondragstart = function() { return false; } 
+
+        function replaceBanner(x) {
+            var element = document.getElementById("banner-img");
+            if (x.matches) {
+                element.src = "./images/Header-banner.svg";
+            }
+            else {
+                element.src = "./images/Neocortex_smartphone.svg";
+            }
+        }
+
+
+
+        window.ondragstart = function () { return false; }
         window.addEventListener('DOMContentLoaded', function () {
+            var hamburger = document.getElementsByClassName("hamburger")[0];
+            if (hamburger != undefined) {
+                hamburger.addEventListener('click', function () {
+                    hamburger.classList.toggle("open");
+                    var navElement = document.getElementsByClassName("nav-element-mobile")[0];
+                    navElement.classList.toggle('collapse');
+                });
+            }
             //do something with b-lazy plugin, lightbox plugin and then with flexslider
             scrollBtn("get-started", "gs");
             scrollBtn("spatial-pooler", "sp");
@@ -67,20 +92,37 @@
             var x = window.matchMedia("(min-width: 1000px)");
             addImageLink(x); // Call listener function at run time
             x.addListener(addImageLink);
+
+            replaceBanner(x);
+            x.addListener(replaceBanner);
         });
 
     </script>
 </head>
 
 <body id="start">
-    <div class="d-flex navigation flex-wrap">
-        <h3 id="get-started">Getting Started</h3>
-        <div class="spacer"></div>
-        <h3 id="spatial-pooler">Spatial Pooler</h3>
-        <div class="spacer"></div>
-        <h3 id="temporal-memory">Temporal Memory</h3>
-        <div class="d-flex ml-auto">
-            <a class="btn" href="https://github.com/ddobric/neocortexapi/" target="_blank">Visit us on Github!</a>
+    <div class="navigation">
+        <div class="d-flex flex-wrap align-items-center">
+            <div class="hamburger d-flex justify-content-between flex-column">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+            <div class="nav-element">
+                <h3 class="get-started">Getting Started</h3>
+                <div class="spacer"></div>
+                <h3 class="spatial-pooler">Spatial Pooler</h3>
+                <div class="spacer"></div>
+                <h3 class="temporal-memory">Temporal Memory</h3>
+            </div>
+            <div class="d-flex ml-auto">
+                <a class="btn" href="https://github.com/ddobric/neocortexapi/" target="_blank">Visit us on Github!</a>
+            </div>
+        </div>
+        <div class="nav-element-mobile collapse">
+            <h3 class="get-started">Getting Started</h3>
+            <h3 class="spatial-pooler">Spatial Pooler</h3>
+            <h3 class="temporal-memory">Temporal Memory</h3>
         </div>
     </div>
 
@@ -91,7 +133,7 @@
                 <img src="./images/logo-NeoCortexAPI.svg" alt="logo NeoCortextAPI" />
             </div>
             <div class="banner">
-                <img src="./images/Header-banner.svg" alt="banner" />
+                <img id="banner-img" src="./images/Header-banner.svg" alt="banner" />
             </div>
         </div>
     </div>

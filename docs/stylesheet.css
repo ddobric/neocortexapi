@@ -4,39 +4,97 @@
   --nav-font-size-mobile: 18px;
   --header-color: #404040;
   --nav-bg-color: #ffffff;
-  
-  --spacer-color: #62B1EE;
+
+  --spacer-color: #62b1ee;
 
   --header-font-family-bold: Raleway, Bold;
 
-  --subtext-bg-color: #FFEC89;
+  --subtext-bg-color: #ffec89;
 
   --content-color: #161616;
   --content-text-font-family: Open Sans, Regular;
   --link-font-family: Open Sans, Bold;
-  --content-odd-bg-color: #DBEAFF;
+  --content-odd-bg-color: #dbeaff;
 
-  --content-padding-vertical: 7em;
+  --content-padding-vertical: 1.5em;
   --content-padding-horizontal: 3em;
   --content-min-height: 100vh;
 }
+body {
+  margin: 0;
+  position: relative;
+}
 a {
-  color: #1583D8;
+  color: #1583d8;
   font-family: var(--link-font-family);
   font-weight: 600;
   letter-spacing: 0.74px;
 }
 
-body {
-  margin: 0;
-  position: relative;
-}
-h3, h2 {
+h3,
+h2 {
   font-family: var(--header-font-family);
   font-size: 34px;
 }
 
-.navigation h3  {  
+.hamburger {
+  height: 30px;
+  width: 35px;
+  padding: 0px 20px;
+}
+
+.hamburger div {
+  line-height: 0;
+  border-style: solid;
+  border-width: 1.5px;
+  border-radius: 5px;
+  background-color: #707070;
+  border-color: #707070;
+  height: 0.5px;
+  overflow: hidden;
+  transition-duration: 500ms;
+  
+}
+
+/* .hamburger.open div {
+  transform: rotate(45deg);
+} */
+
+.hamburger.open div:nth-child(1) {
+  transform: rotate(45deg) translateY(15px) translateX(3.8px) scale(1.2);
+}
+.hamburger.open div:nth-child(2) {
+  transform: translateX(-500px);
+  transition-duration: 0ms;
+}
+.hamburger div:nth-child(2){
+  transition-duration: 1000ms;
+  transition-timing-function: cubic-bezier(0.86, 0.01, 0.09, 1.13);
+}
+.hamburger.open div:nth-child(3) {
+  transform: rotate(-45deg) translateY(-15px) translateX(3.8px) scale(1.2);
+}
+
+.nav-element {
+  display: none;
+}
+
+.nav-element-mobile {
+  height: 125px;
+  -webkit-transition: height 0.25s ease;
+  -moz-transition: height 0.25s ease;
+  -o-transition: height 0.25s ease;
+  -ms-transition: height 0.25s ease;
+  transition: height 0.25s ease, opacity 0.25s ease;
+}
+
+.nav-element-mobile.collapse {
+  height: 0;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.navigation h3 {
   font-size: var(--nav-font-size-mobile);
   color: var(--header-color);
   margin: 0.25em 1em;
@@ -61,15 +119,15 @@ h3, h2 {
 .spacer {
   width: 2px;
   background-color: var(--spacer-color);
-  margin-top: 10px;
-  margin-bottom: 14px;
+  margin-top: 5px;
+  height: 35px;
 }
 
 .btn {
   text-decoration: none;
   font-family: var(--header-font-family-bold);
   font-size: 20px;
-  background-color: #FFD600;
+  background-color: #ffd600;
   /* cursor: default; */
   color: var(--header-color);
   padding: 0.2em 1.3em;
@@ -85,7 +143,8 @@ h3, h2 {
 }
 
 .banner img {
-  margin-top: -150px;
+  /* margin -top: -150px; */
+  width: 100%;
 }
 
 .logo {
@@ -93,7 +152,7 @@ h3, h2 {
 }
 
 .logo img {
-  width: 80%;
+  width: 70%;
 }
 
 .sub-banner {
@@ -105,7 +164,6 @@ h3, h2 {
   color: var(--header-color);
   padding: 35px 50px;
 }
-
 
 .section {
   padding: var(--content-padding-vertical) var(--content-padding-horizontal);
@@ -138,13 +196,14 @@ h3, h2 {
   width: 100%;
 }
 .img-holder {
-   margin: 0;
+  margin: 0;
 }
 
 /* common format */
 .d-flex {
   display: flex;
 }
+
 .ml-auto {
   margin-left: auto;
   line-height: 1.5;
@@ -154,11 +213,14 @@ h3, h2 {
   text-align: center;
 }
 .align-items-start {
-    align-items: flex-start;
+  align-items: flex-start;
 }
 
 .justify-content-center {
   justify-content: center;
+}
+.justify-content-between {
+  justify-content: space-between;
 }
 
 .align-items-center {
@@ -187,8 +249,7 @@ h3, h2 {
   .section > * {
     width: 100%;
   }
-
-  .navigation > h3 {  
+  .navigation h3 {
     font-size: var(--nav-font-size);
   }
 
@@ -208,13 +269,31 @@ h3, h2 {
     --content-padding-horizontal: 10em;
     --content-min-height: 0;
   }
+
+  .hamburger {
+    display: none;
+  }
+
+  .nav-element {
+    display: flex;
+  }
+
   .section {
-      gap: 5em;
+    gap: 5em;
   }
   .banner-content > h2 {
     font-size: calc(3em * 1.618);
   }
   .banner-content {
     height: auto;
+  }
+  .banner img {
+    margin-top: -100px;
+  }
+}
+
+@media screen and (min-width: 2000px) {
+  .banner img {
+    margin-top: -150px;
   }
 }
