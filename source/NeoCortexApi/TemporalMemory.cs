@@ -113,7 +113,7 @@ namespace NeoCortexApi
         {
             //Stopwatch sw = new Stopwatch();
             //sw.Start();
-            
+
             ComputeCycle cycle = ActivateCells(this.connections, activeColumns, learn);
 
             //sw.Stop();
@@ -305,9 +305,12 @@ namespace NeoCortexApi
             var activeSegments = new List<DistalDendrite>();
             foreach (var item in activity.ActiveSynapses)
             {
-                var seg = conn.GetSegmentForFlatIdx(item.Key);
-                if (seg != null && item.Value >= conn.HtmConfig.ActivationThreshold)
-                    activeSegments.Add(seg);
+                if (item.Value >= conn.HtmConfig.ActivationThreshold)
+                {
+                    var seg = conn.GetSegmentForFlatIdx(item.Key);
+                    if (seg != null)
+                        activeSegments.Add(seg);
+                }
             }
 
             //
