@@ -226,7 +226,7 @@ namespace NeoCortexApi
                     // If there are some active segments on the column already...
                     if (activeColumnData.ActiveSegments != null && activeColumnData.ActiveSegments.Count > 0)
                     {
-                        //Debug.Write("A");
+                        //Debug.Write("A");1    
 
                         List<Cell> cellsOwnersOfActSegs = ActivatePredictedColumn(conn, activeColumnData.ActiveSegments,
                             activeColumnData.MatchingSegments, prevActiveCells, prevWinnerCells,
@@ -564,6 +564,8 @@ namespace NeoCortexApi
                 leastUsedOrMaxPotentialCell = GetLeastUsedCell(conn, cells, random);
                 if (learn)
                 {
+                    // This can be optimized. Right now, we assume that every winner cell has a single synaptic connection to the segment.
+                    // This is why we substract number of cells from the MaxNewSynapseCount.
                     int nGrowExact = Math.Min(conn.HtmConfig.MaxNewSynapseCount, prevWinnerCells.Count);
                     if (nGrowExact > 0)
                     {
@@ -610,7 +612,7 @@ namespace NeoCortexApi
         }
 
         /// <summary>
-        /// Punishes the Segments that incorrectly predicted a column to be active.
+        /// Punishes the MatchingSegments that incorrectly predicted a column to be active.
         /// <para>
         /// Pseudocode:<br/>
         ///  for each matching segment in the column<br/>
@@ -619,7 +621,7 @@ namespace NeoCortexApi
         /// </summary>
         /// <param name="conn">Connections instance for the <see cref="TemporalMemory"/></param>
         /// <param name="activeSegments">An iterable of <see cref="DistalDendrite"/> actives</param>
-        /// <param name="matchingSegments">An iterable of <see cref="DistalDendrite"/> matching for the column compute is operating on that are matching; None if empty</param>
+        /// <param name="matchingSegments"><see cref="DistalDendrite"/> matching for the column.</param>
         /// <param name="prevActiveCells">Active cells in `t-1`</param>
         /// <param name="prevWinnerCells">Winner cells in `t-1` are decremented during learning.</param>
         /// <param name="predictedSegmentDecrement">Amount by which segments are punished for incorrect predictions</param>
@@ -634,14 +636,15 @@ namespace NeoCortexApi
                 {
                     AdaptSegment(conn, segment, prevActiveCells, -conn.HtmConfig.PredictedSegmentDecrement, 0);
                 }
+
+                //foreach (DistalDendrite segment in activeSegments)
+                //{
+                //    AdaptSegment(conn, segment, prevActiveCells, -conn.HtmConfig.PredictedSegmentDecrement, 0);
+                //}
             }
         }
 
         #region Helper Methods
-        ////////////////////////////
-        //     Helper Methods     //
-        ////////////////////////////
-
 
         /// <summary>
         /// Gets the cell with the smallest number of segments in the currentlly processing mini-column.

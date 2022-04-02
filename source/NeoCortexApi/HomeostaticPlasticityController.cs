@@ -18,6 +18,11 @@ namespace NeoCortexApi
     /// and switches-off the boosting mechanism (new-born effect) after the SP has entered a stable state 
     /// for all seen input patterns.
     /// </summary>
+    /// <remarks>
+    /// The research related to this component can be found here:
+    /// https://www.researchgate.net/publication/358996456_On_the_Importance_of_the_Newborn_Stage_When_Learning_Patterns_with_the_Spatial_Pooler
+    /// Published 2022 in Springer Nature Computer Sciences.
+    /// </remarks>
     public class HomeostaticPlasticityController
     {
         private double m_RequiredSimilarityThreshold;
@@ -105,7 +110,7 @@ namespace NeoCortexApi
         /// </summary>
         /// <param name="input">The input of the SP in the current cycle.</param>
         /// <param name="output">The output SDR of the Spatial Pooler compute cycle.</param>
-        /// <returns></returns>
+        /// <returns>True if the PS has enetered the stable state.</returns>
         public bool Compute(int[] input, int[] output)
         {
             bool res = false;
