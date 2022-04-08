@@ -1,0 +1,237 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NeoCortexUtils</name>
+    </assembly>
+    <members>
+        <member name="T:NeoCortex.NeoCortexUtils">
+            <summary>
+            Set of helper methods.
+            </summary>
+        </member>
+        <member name="M:NeoCortex.NeoCortexUtils.BinarizeImage(System.String,System.Int32,System.String)">
+            <summary>
+            Binarize image to binarizedImage.
+            </summary>
+            <param name="mnistImage"></param>
+            <param name="imageSize"></param>
+            <param name="testName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NeoCortex.NeoCortexUtils.DrawBitmap(System.Int32[0:,0:],System.Int32,System.Int32,System.String,System.String)">
+            <summary>
+            Draws the bitmap from array of active columns.
+            </summary>
+            <param name="twoDimArray">Array of active columns.</param>
+            <param name="width">Output width.</param>
+            <param name="height">Output height.</param>
+            <param name="filePath">The bitmap PNG filename.</param>
+            <param name="text">Text to be written.</param>
+        </member>
+        <member name="M:NeoCortex.NeoCortexUtils.DrawBitmap(System.Int32[0:,0:],System.Int32,System.Int32,System.String,System.Drawing.Color,System.Drawing.Color,System.String)">
+            <summary>
+            Draws the bitmap from array of active columns.
+            </summary>
+            <param name="twoDimArray">Array of active columns.</param>
+            <param name="width">Output width.</param>
+            <param name="height">Output height.</param>
+            <param name="filePath">The bitmap PNG filename.</param>
+            <param name="inactiveCellColor"></param>
+            <param name="activeCellColor"></param>
+            <param name="text">Text to be written.</param>
+        </member>
+        <member name="M:NeoCortex.NeoCortexUtils.DrawBitmap(System.Int32[0:,0:],System.Int32,System.String,System.Drawing.Color,System.Drawing.Color,System.String)">
+            <summary>
+            Draws the bitmap from array of active columns.
+            </summary>
+            <param name="twoDimArray">Array of active columns.</param>
+            <param name="scale">Scale of bitmap. If array of active columns is 10x10 and scale is 5 then output bitmap will be 50x50.</param>
+            <param name="filePath">The bitmap filename.</param>
+            <param name="activeCellColor"></param>
+            <param name="inactiveCellColor"></param>
+            <param name="text">Text to be written.</param>
+        </member>
+        <member name="M:NeoCortex.NeoCortexUtils.DrawBitmaps(System.Collections.Generic.List{System.Int32[0:,0:]},System.String,System.Int32,System.Int32)">
+            <summary>
+            TODO: add comment
+            </summary>
+            <param name="twoDimArrays"></param>
+            <param name="filePath"></param>
+            <param name="bmpWidth"></param>
+            <param name="bmpHeight"></param>
+        </member>
+        <member name="M:NeoCortex.NeoCortexUtils.DrawBitmaps(System.Collections.Generic.List{System.Int32[0:,0:]},System.String,System.Drawing.Color,System.Drawing.Color,System.Int32,System.Int32)">
+            <summary>
+            Drawas bitmaps from list of arrays.
+            </summary>
+            <param name="twoDimArrays">List of arrays to be represented as bitmaps.</param>
+            <param name="filePath">Output image path.</param>
+            <param name="inactiveCellColor">Color of inactive bit.</param>
+            <param name="activeCellColor">Color of active bit.</param>
+            <param name="bmpWidth">The width of the bitmap.</param>
+            <param name="bmpHeight">The height of the bitmap.</param>
+        </member>
+        <member name="M:NeoCortex.NeoCortexUtils.DrawHeatmaps(System.Collections.Generic.List{System.Double[0:,0:]},System.String,System.Int32,System.Int32,System.Decimal,System.Decimal,System.Decimal)">
+            <summary>
+            Drawas bitmaps from list of arrays.
+            </summary>
+            <param name="twoDimArrays">List of arrays to be represented as bitmaps.</param>
+            <param name="filePath">Output image path.</param>
+            <param name="bmpWidth">The width of the bitmap.</param>
+            <param name="bmpHeight">The height of the bitmap.</param>
+            <param name="greenStart">ALl values below this value are by defaut green.
+            Values higher than this value transform to yellow.</param>
+            <param name="yellowMiddle">The middle of the heat. Values lower than this value transforms to green.
+            Values higher than this value transforms to red.</param>
+            <param name="redStart">Values higher than this value are by default red. Values lower than this value transform to yellow.</param>
+        </member>
+        <member name="M:NeoCortex.NeoCortexUtils.ReadCsvIntegers(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NeoCortex.NeoCortexUtils.CreateRandomVector(System.Int32,System.Int32)">
+            <summary>
+            Creates the random vector.
+            </summary>
+            <param name="bits"></param>
+            <param name="nonZeroPct"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NeoCortex.NeoCortexUtils.MeanOf(System.Double[])">
+            <summary>
+            Calculate mean value of array of numbers. 
+            </summary>
+            <param name="colData"> array of values </param>
+            <returns>calculated mean</returns>
+        </member>
+        <member name="M:NeoCortex.NeoCortexUtils.CorrelationPearson(System.Double[],System.Double[])">
+            <summary>
+            Calculates Pearson correlation coefficient of two data sets
+            </summary>
+            <param name="data1"> first data set</param>
+            <param name="data2">second data set </param>
+            <returns></returns>
+        </member>
+        <member name="M:NeoCortex.NeoCortexUtils.ReadCsvFileTest(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NeoCortex.NeoCortexUtils.Create2DVector(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Creates the 2D box vector.
+            </summary>
+            <param name="heightBits">The heght of the vector.</param>
+            <param name="widthBits">The width of the vector.</param>
+            <param name="nonzeroBitStart">Position of the first nonzero bit.</param>
+            <param name="nonZeroBitEnd">Position of the last nonzero bit.</param>
+            <returns>The two dimensional box.</returns>
+        </member>
+        <member name="M:NeoCortex.NeoCortexUtils.CreateVector(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Creates the 1D vector.
+            </summary>
+            <param name="bits">The number of bits vector.</param>
+            <param name="nonzeroBitStart">Position of the first nonzero bit.</param>
+            <param name="nonZeroBitEnd">Position of the last nonzero bit.</param>
+            <returns>The one dimensional vector.</returns>
+        </member>
+        <member name="T:NeoCortex.SdrRepresentation">
+            <summary>
+            Sparse distributed representations 
+            </summary>
+        </member>
+        <member name="M:NeoCortex.SdrRepresentation.OverlapArraFun(System.Int32[],System.Int32[])">
+            <summary>
+            Creates a vector which consists of common no of "1's" in two input vectors/SDRs
+            </summary>
+            <param arr1="1st array"></param>
+            <param arr2="2nd array"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NeoCortex.SdrRepresentation.ArrayUnion(System.Collections.Generic.List{System.Int32[]})">
+            <summary>
+            Creates a vector which consists of all no of "1's" in two input vectors/SDRs
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NeoCortex.SdrRepresentation.GetIntArray(System.Int32[],System.Int32)">
+            <summary>
+            Converts active columns index array into to binary array 
+            </summary>
+            <param activeCols="active Columns of SDR"></param>
+            <param numOfCols="size of the output vector"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NeoCortex.SdrRepresentation.TraceColumnsOverlap(System.Collections.Generic.List{System.Double[0:,0:]},System.IO.StreamWriter,System.String)">
+            <summary>
+            Show SDR in "Column/Overlap Ratio" and generate its Excel file 
+            </summary>
+            <param overlapArrays="Contains the overlaps of the columns during SDR learning of Spatial Pooler"></param>
+            <param swActCol1="to write in Excel file"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NeoCortex.SdrRepresentation.DrawIntersections(System.Int32[0:,0:],System.Int32[0:,0:],System.Int32,System.String,System.Drawing.Color,System.Drawing.Color,System.String)">
+            <summary>
+            Generate intersection between two SDRs
+            </summary>
+            <param twoDimArray="Overlap array of SDR"></param>
+            <param woDimArray2="Union array of SDR"></param>
+            <returns></returns>
+        </member>
+        <member name="T:NeoCortex.SdrRepresentation.TraceFormat">
+            <summary>
+            <br>values: Text, Excel or Graph</br>
+            </summary>
+        </member>
+        <member name="M:NeoCortex.SdrRepresentation.TraceColumnsOverlap(System.Collections.Generic.List{System.Double[0:,0:]},System.Int32[],NeoCortex.SdrRepresentation.TraceFormat,System.Double,System.Drawing.Color,System.Drawing.Color)">
+            <summary>
+            <br>Choice function for ease of switching between the modes</br>
+            <br>The functions called inside can also be called independently</br>
+            <br>TraceColumnsOverlap()</br>
+            <br>TraceInLineFormat()</br>
+            <br>TraceInGraphFormat()</br>
+            </summary>
+            <param name="overlapArrays"></param>
+            <param name="colDims"></param>
+            <param name="formatTypes"></param>
+            <param name="threshold"></param>
+            <param name="aboveThreshold"></param>
+            <param name="belowThreshold"></param>
+        </member>
+        <member name="M:NeoCortex.SdrRepresentation.TraceInLineFormat(System.Collections.Generic.List{System.Double[0:,0:]},System.Int32[])">
+            <summary>
+            <br>To trace out the column Overlap values and output them to a txt file.</br>
+            <br>at SdrRepresentation_Output/TraceInLineFormat.txt </br>
+            <br>Needs to Include link md to description</br>
+            </summary>
+            <param name="overlapArrays">overlap result from calling an object of type Connection.OverLaps</param>
+            <param name="colDims">dimension in [width, length] array</param>        
+        </member>
+        <member name="M:NeoCortex.SdrRepresentation.TraceInGraphFormat(System.Collections.Generic.List{System.Double[0:,0:]},System.Int32[],System.Double,System.Drawing.Color,System.Drawing.Color,System.Int32,System.Int32)">
+            <summary>
+            <br>To represent the column overlap values in graph format</br>
+            <br>The current default output size of the graph is 500, 524</br>
+            <br>Needs to Include link md to description</br>
+            </summary>
+            <param name="overlapArrays">overlap result from calling an object of type Connection.OverLaps</param>
+            <param name="colDims">dimension in [width, length] array</param>
+            <param name="threshold"></param>
+            <param name="aboveThreshold"></param>
+            <param name="belowThreshold"></param>
+        </member>
+        <member name="M:NeoCortex.SdrRepresentation.TraceInExcelFormat(System.Collections.Generic.List{System.Double[0:,0:]},System.Int32[])">
+            <summary>
+            <br>To export the column overlap values to excel</br>
+            <br>Needs to Include link md to description</br>
+            </summary>
+            <param name="overlapArrays">overlap result from calling an object of type Connection.OverLaps</param>
+            <param name="colDims">dimension in [width, length] array</param>       
+        </member>
+    </members>
+</doc>

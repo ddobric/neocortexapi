@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <RootNamespace>NeoCortexApi.DistributedComputeLib</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="AkkaDistributedDictionaryBase.cs" />
+    <Compile Remove="DictNodeActor.cs" />
+    <Compile Remove="InMemoryArrayMOVETTORNTITIES.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="AkkaDistributedDictionaryBase.cs" />
+    <None Include="DictNodeActor.cs" />
+    <None Include="InMemoryArrayMOVETTORNTITIES.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DotNetActors" Version="1.0.3" />
+    <PackageReference Include="ImageBinarizer" Version="1.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NeoCortexArrayLib\NeoCortexArrayLib.csproj" />
+    <ProjectReference Include="..\NeoCortexEntities\NeoCortexEntities.csproj" />
+  </ItemGroup>
+
+</Project>

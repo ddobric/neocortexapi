@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net5.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<PackageLicenseFile>license.txt</PackageLicenseFile>
+		<IsPackable>true</IsPackable>
+
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+
+		<PackageId>HtmImageEncoder</PackageId>
+
+		<Version>1.0.1</Version>
+
+		<Authors>Toan Thanh Truong, Damir Dobric</Authors>
+
+		<Product>HtmImageEncoder</Product>
+
+		<Description>Package that extends NeocortexApi to work with images through ImageEncoder. It encodes the image to to the SDR.</Description>
+
+		<PackageProjectUrl>https://github.com/ddobric/neocortexapi/tree/ImageBinarizerEncoder/source/ImageEncoder</PackageProjectUrl>
+
+		<RepositoryUrl>https://github.com/ddobric/neocortexapi/tree/ImageBinarizerEncoder</RepositoryUrl>
+
+		<AssemblyVersion>1.0.1</AssemblyVersion>
+
+		<FileVersion>1.0.1</FileVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\..\license.txt">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
+	
+	<ItemGroup>
+		<PackageReference Include="ImageBinarizer" Version="1.5.6" />
+		<PackageReference Include="NeoCortexApi" Version="1.1.2" />
+	</ItemGroup>
+
+</Project>

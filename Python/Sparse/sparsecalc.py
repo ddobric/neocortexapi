@@ -1,17 +1,22 @@
 import numpy as np
+from decimal import *
 
 def factorial(n):
     fact = 1
     for i in range(1,n+1): 
         fact = fact * i 
     
-    return fact
+    return Decimal(fact)
 
-f = 0.2
+f = 0.02
 
 lines = open("./sparse.txt", 'w')
 
-for x in range(16, 128, 10):
+n=16
+w=1
+print(factorial(n)/(factorial(w)*factorial(n-w)))
+
+for x in range(500, 4096, 100):
 
     n = x
     w = int(x * f)
