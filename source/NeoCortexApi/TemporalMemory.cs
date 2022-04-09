@@ -251,8 +251,11 @@ namespace NeoCortexApi
                         // Here we activate all cells by putting them to list of active cells.
                         cycle.ActiveCells.AddRange(burstingResult.Cells);
 
+                        // Test was done. Better performance is when BestCell is used only instead of adding all cells.
+                        //cycle.WinnerCells.AddRange(burstingResult.Cells);
+
                         // The winner cell is added to th elots of winner cells in the cycle.
-                        cycle.WinnerCells.Add((Cell)burstingResult.BestCell);
+                        cycle.WinnerCells.Add(burstingResult.BestCell);
                     }
                 }
                 else
@@ -691,8 +694,9 @@ namespace NeoCortexApi
             //
             // Enumarates all synapses in a segment and remove winner-cells from
             // list of removingCandidates if they are presynaptic winners cells.
-            // So, we will create synapses only on cells, which are not winners in the previous cycle.
-            //DD 
+            // So, we will create synapses only from cells, which do not already have synaptic connection to the segment. 
+            // DD: Removing of this loop creates same result as with the loop.
+            // This should be investigated.
             foreach (Synapse synapse in segment.Synapses)
             {
                 Cell presynapticCell = synapse.GetPresynapticCell();
