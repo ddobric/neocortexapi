@@ -291,6 +291,93 @@ namespace NeoCortexApi
             }
         }
 
+        public static HomeostaticPlasticityController Deserialize(StreamReader sr, Connections htmMemory = null)
+        {
+            HomeostaticPlasticityController ctrl = new HomeostaticPlasticityController();
+            ctrl.m_HtmMemory = htmMemory;
+
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            while (sr.Peek() >= 0)
+            {
+                string data = sr.ReadLine();
+                if (data == String.Empty || data == ser.ReadBegin(nameof(HomeostaticPlasticityController)))
+                {
+                    continue;
+                }
+                else if (data == ser.ReadBegin(nameof(Connections)))
+                {
+                    ctrl.m_HtmMemory = Connections.Deserialize(sr);
+                }
+                else if (data == ser.ReadEnd(nameof(HomeostaticPlasticityController)))
+                {
+                    break;
+                }
+                else
+                {
+                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                    for (int i = 0; i < str.Length; i++)
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                {
+                                    ctrl.m_RequiredSimilarityThreshold = ser.ReadDoubleValue(str[i]);
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    ctrl.m_MaxPreviousElements = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    ctrl.m_Cycle = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 3:
+                                {
+                                    ctrl.m_MinCycles = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 4:
+                                {
+                                    ctrl.m_RequiredNumOfStableCycles = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 5:
+                                {
+                                    ctrl.m_NumOfStableCyclesForInput = ser.ReadDictSIValue(str[i]);
+                                    break;
+                                }
+                            case 6:
+                                {
+                                    ctrl.m_NumOfActiveColsForInput = ser.ReadDictSIarray(str[i]);
+                                    break;
+                                }
+                            case 7:
+                                {
+                                    ctrl.m_InOutMap = ser.ReadDictSIarray(str[i]);
+                                    break;
+                                }
+
+                            case 8:
+                                {
+                                    ctrl.m_IsStable = ser.ReadBoolValue(str[i]);
+                                    break;
+                                }
+                            default:
+                                { break; }
+
+                        }
+                    }
+                }
+            }
+
+            return ctrl;
+
+        }
+
         /// <summary>
         /// Traces out all cell indicies grouped by input value.
         /// </summary>
