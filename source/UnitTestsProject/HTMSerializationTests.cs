@@ -781,6 +781,7 @@ namespace UnitTestsProject
                 Assert.IsTrue(htm1.Equals(htm));
             }
         }
+
         /// <summary>
         /// Test integer value.
         /// </summary>
@@ -841,23 +842,89 @@ namespace UnitTestsProject
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        #region Serialization SparseObjectMatrix<T>
         [TestMethod]
-        public void SerializeInMemDistDictTest()
+        [DataRow(1024)]
+        public void SerializeSparseObjectMatrix(int num)
         {
-            InMemoryDistributedDictionary<int, Column> dict = new InMemoryDistributedDictionary<int, Column>(1);
+            // Create SparseObjectMatrix
+            // either by dicrect creation or running experiment
+            int[] dimensions = { 10, 10 };
 
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeInMemDistDictTest)}.txt"))
+            //IDistributedDictionary<int, int[]> dict = new();
+
+            SparseObjectMatrix<int[]> matrix = new(dimensions, false);
+            for (int i = 0; i < num; i+=10)
             {
-                dict.Serialize(sw);
+                matrix.set(i, new int[] { 1, 2, 3, 4, 5 });
+            }
+          
+            // Serialize 
+            using (StreamWriter sw = new StreamWriter("ser.txt"))
+            {
+                matrix.Serialize(sw);
+            }
+            // Deserizlize
+            SparseObjectMatrix<int[]> matrixNew = new();
+            using (StreamReader sr = new StreamReader("ser.txt"))
+            {
+                matrixNew = SparseObjectMatrix<int[]>.Deserialize(sr);
+
+                HtmSerializer2.IsEqual(matrix, matrixNew);
+            }
+        }
+        #endregion
+
+        [TestMethod]
+        public void SerializeInMemoryDistributedDictionary()
+        {
+            InMemoryDistributedDictionary<int, int> numNodes = new InMemoryDistributedDictionary<int, int>(3);
+            // There are no Serialize of Dictionary in InMemoryDistributedDictionary
+            numNodes.Add(145, 29);
+            numNodes.Add(123, 26);
+            numNodes.Add(531, 26);
+            numNodes.Add(1536, 26);
+            numNodes.Add(1529, 26);
+            // Serialize 
+            using (StreamWriter sw = new StreamWriter("InMem.txt"))
+            {
+                numNodes.Serialize(sw);
+            }
+            // Deserizlize
+            InMemoryDistributedDictionary<int, int> newTest = new InMemoryDistributedDictionary<int, int>();
+            using (StreamReader sr = new StreamReader("InMem.txt"))
+            {
+                newTest = InMemoryDistributedDictionary<int, int>.Deserialize(sr);
+
+                HtmSerializer2.IsEqual(numNodes, newTest);
             }
         }
 
-        #region Serialization SparseObjectMatrix<T>
+        [TestMethod]
+        public void SerializeSparseBinaryMatrix()
+        {
+            // Create SParse BinarySparseMatrix
+            // either by dicrect creation or running experiment
+            int[] dimensions = { 100, 100 };
 
-        #endregion
+            //IDistributedDictionary<int, int[]> dict = new();
+
+            SparseBinaryMatrix binaryMatrix = new(dimensions, false);
+
+            // Serialize 
+            using (StreamWriter sw = new StreamWriter("Binary.txt"))
+            {
+                binaryMatrix.Serialize(sw);
+            }
+            // Deserizlize
+            SparseBinaryMatrix newBinary = new();
+            using (StreamReader sr = new StreamReader("Binary.txt"))
+            {
+                newBinary = SparseBinaryMatrix.Deserialize(sr);
+
+                HtmSerializer2.IsEqual(binaryMatrix, newBinary);
+            }
+        }
 
         [Obsolete(" We have moved this method to HtmSerializer2.")]
         internal static bool IsEqual(object obj1, object obj2)
