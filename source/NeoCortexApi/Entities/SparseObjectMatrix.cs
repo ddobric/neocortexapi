@@ -244,6 +244,7 @@ namespace NeoCortexApi.Entities
             throw new NotImplementedException();
         }
 
+   
         public override void Serialize(StreamWriter writer)
         {
             HtmSerializer2 ser = new HtmSerializer2();
@@ -251,13 +252,13 @@ namespace NeoCortexApi.Entities
             ser.SerializeBegin(nameof(SparseObjectMatrix<T>), writer);
 
             ser.SerializeValue(this.IsRemotelyDistributed, writer);
-           
+
             if (this.ModuleTopology != null)
             { this.ModuleTopology.Serialize(writer); }
 
-            if(this.m_SparseMap != null)
+            if (this.m_SparseMap != null)
             { this.m_SparseMap.Serialize(writer); }
-            
+
 
             ser.SerializeEnd(nameof(SparseObjectMatrix<T>), writer);
         }
