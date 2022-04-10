@@ -118,7 +118,7 @@ namespace TimeSeriesSequence.HelperMethods
 
             foreach (var item in taxiDatas)
             {
-                DateTime dateTime = DateTime.Parse(item.lpep_pickup_datetime!);
+                DateTime dateTime = DateTime.Parse(item.lpep_pickup_datetime!, CultureInfo.GetCultureInfo("de-DE"));
                 var pickupTime = dateTime.ToString("HH:mm");
                 Slot result = GetSlot(pickupTime);
 
