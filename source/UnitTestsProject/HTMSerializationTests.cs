@@ -10,7 +10,7 @@ using NeoCortexEntities.NeuroVisualizer;
 namespace UnitTestsProject
 {
     [TestClass]
-    public class HTMSerializationTests
+    public partial class HTMSerializationTests
     {
 
         [TestMethod]
