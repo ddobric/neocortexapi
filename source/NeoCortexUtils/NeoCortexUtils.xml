@@ -11,7 +11,7 @@
         </member>
         <member name="M:NeoCortex.NeoCortexUtils.BinarizeImage(System.String,System.Int32,System.String)">
             <summary>
-            Binarize image to binarizedImage.
+            Binarize image to the file with the test name.
             </summary>
             <param name="mnistImage"></param>
             <param name="imageSize"></param>
