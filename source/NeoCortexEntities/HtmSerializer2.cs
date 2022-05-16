@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 
 namespace NeoCortexApi.Entities
 {
@@ -79,6 +80,187 @@ namespace NeoCortexApi.Entities
             sw.Write(val.ToString());
             sw.Write(ValueDelimiter);
             sw.Write(ParameterDelimiter);
+        }
+
+        public static void SerializeValue(string propertyName, object val, StreamWriter sw)
+        {
+            sw.Write(propertyName);
+            sw.Write(" ");
+
+            var content = val.ToString();
+            if (val.GetType() == typeof(string))
+            {
+                content = $"\"{val}\"";
+            }
+            sw.Write(content);
+            sw.Write(ParameterDelimiter);
+        }
+
+        public static void Serialize(object obj, StreamWriter sw)
+        {
+            var type = obj.GetType();
+            // TODO: check if T is List or class or valueType
+
+            if (type.IsValueType || type == typeof(string))
+            {
+                SerializeValue(null, obj, sw);
+            }
+            else if (IsList(type))
+            {
+                // List begin
+                SerializeIEnumerable(null, obj, sw);
+
+                // List end
+            }
+            else
+            {
+                var properties = type.GetProperties();
+
+                var fields = type.GetFields();
+                foreach (var property in properties)
+                {
+                    if (property.CanRead)
+                    {
+                        if (property.PropertyType.IsValueType || property.PropertyType == typeof(string))
+                        {
+                            object val = property.GetValue(obj, null);
+                            SerializeValue(property.Name, val, sw);
+                        }
+                        //
+                        // The case of List and dictionary
+                        else if (IsList(property.PropertyType))
+                        {
+                            SerializeIEnumerable(property.Name, property.GetValue(obj, null), sw);
+                        }
+
+                        else
+                        {
+                            Serialize(property.GetValue(obj, null), sw);
+                        }
+                    }
+                }
+            }
+        }
+
+        private static bool IsList(Type type)
+        {
+            return type.GetInterfaces().Any(i => i.Name == nameof(IEnumerable));
+        }
+
+        private static void SerializeIEnumerable(string propertyName, object obj, StreamWriter sw)
+        {
+            if (string.IsNullOrEmpty(propertyName) == false)
+            {
+                sw.Write(propertyName);
+            }
+            sw.Write("[");
+            var enumerable = ((IEnumerable)obj);
+            foreach (var item in enumerable)
+            {
+                if (item != null)
+                {
+                    Serialize(item, sw);
+                    sw.Write(ElementsDelimiter);
+                }
+            }
+            sw.Write("]");
+        }
+        private static IEnumerable DeserializeIEnumerable(string propertyName, Type genericType, StreamReader sr)
+        {
+            List<object> enumerable = new List<object>();
+            //enumerable = (Activator.CreateInstance(typeof(List<>).MakeGenericType(genericType)) as IEnumerable).Cast<object>();
+
+            var content = sr.ReadLine().TrimStart('[').TrimEnd(']');
+
+            if (!string.IsNullOrEmpty(propertyName))
+            {
+                if (content.Contains(propertyName) == false)
+                {
+                    throw new Exception("Wrong property");
+                }
+                content = content.Replace(propertyName, "");
+            }
+            else
+            {
+                var stringItems = content.Split(ElementsDelimiter);
+
+                foreach (var stringItem in stringItems)
+                {
+                    var deserializeMethod = typeof(HtmSerializer2).GetMethod("Deserialize").MakeGenericMethod(genericType);
+                    var ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(stringItem));
+                    var reader = new StreamReader(ms);
+
+                    var item = deserializeMethod.Invoke(null, new object[] { reader });
+                    enumerable.Add(item);
+
+                }
+            }
+
+            return enumerable;
+
+        }
+
+        public static T Deserialize<T>(StreamReader sr)
+        {
+            T obj;
+            var type = typeof(T);
+
+            if (!IsList(type))
+            {
+                obj = (T)Activator.CreateInstance(type);
+            }
+            while (sr.Peek() > 0)
+            {
+                if (type.IsValueType || type == typeof(string))
+                {
+                    var reader = sr.ReadLine().Trim().Replace(ParameterDelimiter.ToString(), "");
+                    return (T)Convert.ChangeType(reader, type);
+                }
+                if (IsList(type))
+                {
+                    Type genericType;
+                    string convertMethodName;
+
+                    if (type.IsGenericType)
+                    {
+                        genericType = type.GetGenericArguments()[0];
+                        convertMethodName = nameof(System.Linq.Enumerable.ToList);
+                    }
+                    else
+                    {
+                        genericType = type.GetElementType();
+                        convertMethodName = nameof(System.Linq.Enumerable.ToArray);
+                    }
+
+                    if (genericType != null)
+                    {
+                        var enumerable = DeserializeIEnumerable(null, genericType, sr);
+
+                        var castMethod = typeof(Enumerable).GetMethod("Cast").MakeGenericMethod(genericType);
+
+                        var enumerableCast = castMethod.Invoke(null, new object[] { enumerable });
+
+                        var convertMethod = typeof(Enumerable).GetMethod(convertMethodName).MakeGenericMethod(genericType);
+
+                        obj = (T)convertMethod.Invoke(null, new object[] { enumerableCast });
+
+                        return obj;
+                    }
+                }
+                else
+                {
+
+                }
+            }
+
+            return default(T);
+        }
+
+        private bool TryGetNullableType(Type type, out Type underlyingType)
+        {
+            underlyingType = Nullable.GetUnderlyingType(type);
+
+            return underlyingType != null;
         }
 
 
