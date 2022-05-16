@@ -424,7 +424,7 @@
             <param name="array">the values being compared.</param>
             <returns></returns>
         </member>
-        <member name="M:NeoCortexApi.Utility.ArrayUtils.ValueGreaterThanCountAtIndex(System.Double,System.Double[],System.Int32[])">
+        <member name="M:NeoCortexApi.Utility.ArrayUtils.GreaterThanAtIndex(System.Double,System.Double[],System.Int32[])">
             <summary>
             Returns the number of values in the specified array that are greater than the specified 'compare' value.
             </summary>

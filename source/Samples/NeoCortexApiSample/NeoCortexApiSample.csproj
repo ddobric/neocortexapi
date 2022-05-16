@@ -17,6 +17,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Program1.cs" />
+    <Compile Remove="Program2.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Program2.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\NeoCortexApi\NeoCortexApi.csproj" />
     <ProjectReference Include="..\..\NeoCortexEntities\NeoCortexEntities.csproj" />
     <ProjectReference Include="..\..\NeoCortexUtils\NeoCortexUtils.csproj" />
