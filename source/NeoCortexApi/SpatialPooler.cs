@@ -632,6 +632,7 @@ namespace NeoCortexApi
         /// The permanence values for such columns are increased. 
         /// </summary>
         /// <param name="c"></param>
+        /// <remarks>In PHD known as BoostByOverlapFrequency</remarks>
         public virtual void BumpUpWeakColumns(Connections c)
         {
             // Get columns with too low overlap.
@@ -1143,6 +1144,7 @@ namespace NeoCortexApi
         ///         minActiveDutyCycle
         /// </summary>
         /// <param name="c"></param>
+        /// <remarks>In PHD known as BoostByActivationFrequency.</remarks>
         public void UpdateBoostFactors(Connections c)
         {
             double[] activeDutyCycles = c.HtmConfig.ActiveDutyCycles;
@@ -1152,6 +1154,7 @@ namespace NeoCortexApi
 
             //
             // Boost factors are NOT recalculated if minimum active duty cycles are all set on 0.
+            // The HPC will set this value in 0 if the SP enters the stable state.
             // MinActiveDutyCycles is set in UpdateMinDutyCycles and also controlled by HomeostaticPlasticityController.
             if (minActiveDutyCycles.Count(ma => ma > 0) == 0)
             {
