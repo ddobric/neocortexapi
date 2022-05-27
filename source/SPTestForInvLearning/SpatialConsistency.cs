@@ -6,7 +6,7 @@ using System.Diagnostics;
 namespace SPTestForInvLearning
 {
     [TestClass]
-    public class UnitTest1
+    public class SpatialConsistency
     {
         private bool isInStableState1 = false;
         private bool isInStableState2 = false;
