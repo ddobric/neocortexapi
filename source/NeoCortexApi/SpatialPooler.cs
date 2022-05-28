@@ -284,7 +284,7 @@ namespace NeoCortexApi
                 AdaptSynapses(this.connections, inputVector, activeColumns);
                 UpdateDutyCycles(this.connections, overlaps, activeColumns);
                 BoostColsWithLowOverlap(this.connections);
-                UpdateBoostFactors(this.connections);
+                BoostByActivationFrequency(this.connections);
                 if (IsUpdateRound(this.connections))
                 {
                     UpdateInhibitionRadius(this.connections);
@@ -647,7 +647,8 @@ namespace NeoCortexApi
                 ArrayUtils.RaiseValuesBy(c.HtmConfig.SynPermBelowStimulusInc, perm);
                 int[] indexes = pool.GetSparsePotential();
 
-                UpdatePermanencesForColumnSparse(c, perm, col, indexes, true);
+                col.UpdatePermanencesForColumnSparse(c.HtmConfig, perm, indexes, true);
+                //UpdatePermanencesForColumnSparse(c, perm, col, indexes, true);
             }
         }
 
@@ -714,10 +715,10 @@ namespace NeoCortexApi
         /// <param name="column">The column in the permanence, potential and connectivity matrices</param>
         /// <param name="maskPotential">Indexes of potential connections to input neurons.</param>
         /// <param name="raisePerm">a boolean value indicating whether the permanence values</param>
-        public void UpdatePermanencesForColumnSparse(Connections c, double[] perm, Column column, int[] maskPotential, bool raisePerm)
-        {
-            column.UpdatePermanencesForColumnSparse(c.HtmConfig, perm, maskPotential, raisePerm);
-        }
+        //public void UpdatePermanencesForColumnSparse(Connections c, double[] perm, Column column, int[] maskPotential, bool raisePerm)
+        //{
+        //    column.UpdatePermanencesForColumnSparse(c.HtmConfig, perm, maskPotential, raisePerm);
+        //}
 
         /// <summary>
         /// If the <see cref="HtmConfig.LocalAreaDensity"/> is specified, then this value is used as density.
@@ -1144,8 +1145,8 @@ namespace NeoCortexApi
         ///         minActiveDutyCycle
         /// </summary>
         /// <param name="c"></param>
-        /// <remarks>In PHD known as BoostByActivationFrequency.</remarks>
-        public void UpdateBoostFactors(Connections c)
+        /// <remarks>In PHD known as UpdateBoostFactors.</remarks>
+        public void BoostByActivationFrequency(Connections c)
         {
             double[] activeDutyCycles = c.HtmConfig.ActiveDutyCycles;
             double[] minActiveDutyCycles = c.HtmConfig.MinActiveDutyCycles;
