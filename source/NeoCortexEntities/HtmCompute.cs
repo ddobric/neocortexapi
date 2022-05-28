@@ -446,13 +446,24 @@ namespace NeoCortexApi
             }
         }
 
-        public static void RaisePermanenceToThresholdSparse(HtmConfig htmConfig, double[] perm)
+
+        /// <summary>
+        /// Traverses all synapses and incremments their permanence values until the number of connected synapses 
+        /// is greather than StimulusThreshold.
+        /// </summary>
+        /// <param name="htmConfig"></param>
+        /// <param name="perm">Permanence values.</param>
+        public static void RaisePermanenceToThreshold(HtmConfig htmConfig, double[] perm)
         {
             ArrayUtils.EnsureBetweenMinAndMax(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
+
             while (true)
             {
                 int numConnected = ArrayUtils.ValueGreaterCount(htmConfig.SynPermConnected, perm);
-                if (numConnected >= htmConfig.StimulusThreshold) return;
+
+                if (numConnected >= htmConfig.StimulusThreshold) 
+                    return;
+
                 ArrayUtils.RaiseValuesBy(htmConfig.SynPermBelowStimulusInc, perm);
             }
         }
