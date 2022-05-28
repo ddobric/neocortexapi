@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
+using NeoCortexApi.Utility;
 using System.Diagnostics;
 
 namespace SPTestForInvLearning
@@ -12,7 +13,9 @@ namespace SPTestForInvLearning
         private bool isInStableState2 = false;
 
         /// <summary>
-        /// This is test for Spatial Pooler consistency. 2 Spatial Pooler will undergo same learning for 1 pattern, to see if they behave the same in case of same random seed
+        /// This is test for Spatial Pooler consistency. 
+        /// 2 Spatial Pooler will undergo same learning for 1 pattern, to see if they behave the same in case of same random seed
+        /// The output learned SDRs of 2 SP for a same pattern is saved under OutputFilePath/sp1.csv and sp2.csv.    
         /// </summary>
         [TestMethod]
         [TestCategory("Invariant Learning")]
@@ -68,24 +71,58 @@ namespace SPTestForInvLearning
             sp1.Init(mem1);
             sp2.Init(mem2);
 
-            RecordOutput(sp1, input, ref this.isInStableState1, path1);
-            RecordOutput(sp2, input, ref this.isInStableState2, path2);
+            var SDRlist1 = RecordOutput(sp1, input, ref this.isInStableState1, path1);
+            var SDRlist2 = RecordOutput(sp2, input, ref this.isInStableState2, path2);
 
+            CheckSame(SDRlist1, SDRlist2,outputFolder);
         }
 
-        private void RecordOutput(SpatialPoolerMT sp, int[] input, ref bool isInStableState, string path)
+        /// <summary>
+        /// check if the 2 SDR lists are the same via means of correlation
+        /// </summary>
+        /// <param name="sDRlist1"></param>
+        /// <param name="sDRlist2"></param>
+        /// <param name="outputFolder"></param>
+        private void CheckSame(List<int[]> sDRlist1, List<int[]> sDRlist2, string outputFolder)
+        {
+            Debug.WriteLine($"length of SDRlist 1: {sDRlist1.Count}, length of SDRlist 2: {sDRlist2}");
+            for(int i = 0; i < ((sDRlist1.Count <= sDRlist2.Count) ? sDRlist1.Count : sDRlist2.Count); i += 1)
+            {
+                double correlation = MathHelpers.CalcArraySimilarity(sDRlist1[i], sDRlist2[i]);
+                Debug.WriteLine($"pair number {i}: {correlation}");
+                double[] temp = new double[] { correlation};
+                WriteArray<double>(temp, Path.Combine(outputFolder, "correlation.txt"));
+            }
+        }
+
+        /// <summary>
+        /// Spatial Pooler learn an input pattern till it gets stable or 1000 cycles.
+        /// During the learning, every output SDR of the input is recorded in a csv file
+        /// </summary>
+        /// <param name="sp">the spatial pooler to train</param>
+        /// <param name="input">the input bit array to train</param>
+        /// <param name="isInStableState">passing from class to function, as there are 2 SPs</param>
+        /// <param name="path">the csv file to record the SDRs</param>
+        private List<int[]> RecordOutput(SpatialPoolerMT sp, int[] input, ref bool isInStableState, string path)
         {
             // Experiment parameter
             int MaxCycle = 1000;
             int currentCycle = 0;
 
-
+            // List of unique SDRs
+            List<int[]> output = new List<int[]>();
 
             // While loop
             while (!isInStableState)
             {
+                // learning
                 var lyrOut = sp.Compute(input, true);
-                WriteArray(lyrOut, path);
+                
+                // Displaying on output and record
+                WriteArray<int>(lyrOut, path);
+
+                // saving SDRs list
+                output.Add(lyrOut);
 
                 // Outing 
                 if (currentCycle >= MaxCycle)
@@ -94,7 +131,15 @@ namespace SPTestForInvLearning
                     break;
                 }
             }
+            return output;
         }
+
+        /// <summary>
+        /// GetHTM Config
+        /// </summary>
+        /// <param name="inputDim"></param>
+        /// <param name="columnDim"></param>
+        /// <returns></returns>
         private HtmConfig GetHtmConfig(int[] inputDim, int[] columnDim)
         {
             HtmConfig cfg = new HtmConfig(inputDim, columnDim)
@@ -125,9 +170,15 @@ namespace SPTestForInvLearning
             };
             return cfg;
         }
-        private void WriteArray(int[] lyrOut, string filepath)
+
+        /// <summary>
+        /// Append the SDR to the file
+        /// </summary>
+        /// <param name="lyrOut">SDR to be written</param>
+        /// <param name="filepath">csv file</param>
+        private void WriteArray<T>(T[] lyrOut, string filepath)
         {
-            string toWrite = string.Join(",", lyrOut);
+            string toWrite = string.Join(',', lyrOut);
             // Writing to debug
             Debug.WriteLine(toWrite);
 
