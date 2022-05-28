@@ -267,7 +267,7 @@ namespace NeoCortexApi
             remoteHtm.AdaptSynapsesDist(inputVector, permChanges, activeColumns);
         }
 
-        public override void BumpUpWeakColumns(Connections c)
+        public override void BoostColsWithLowOverlap(Connections c)
         {
             IHtmDistCalculus remoteHtm = this.distMemConfig.ColumnDictionary as IHtmDistCalculus;
             if (remoteHtm == null)

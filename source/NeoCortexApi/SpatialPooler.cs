@@ -283,7 +283,7 @@ namespace NeoCortexApi
             {
                 AdaptSynapses(this.connections, inputVector, activeColumns);
                 UpdateDutyCycles(this.connections, overlaps, activeColumns);
-                BumpUpWeakColumns(this.connections);
+                BoostColsWithLowOverlap(this.connections);
                 UpdateBoostFactors(this.connections);
                 if (IsUpdateRound(this.connections))
                 {
@@ -632,8 +632,8 @@ namespace NeoCortexApi
         /// The permanence values for such columns are increased. 
         /// </summary>
         /// <param name="c"></param>
-        /// <remarks>In PHD known as BoostByOverlapFrequency</remarks>
-        public virtual void BumpUpWeakColumns(Connections c)
+        /// <remarks>Previously known as BumpUpWeekColumns.</remarks>
+        public virtual void BoostColsWithLowOverlap(Connections c)
         {
             // Get columns with too low overlap.
             var weakColumns = c.HtmConfig.Memory.Get1DIndexes().Where(i => c.HtmConfig.OverlapDutyCycles[i] < c.HtmConfig.MinOverlapDutyCycles[i]).ToArray();

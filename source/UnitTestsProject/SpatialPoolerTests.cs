@@ -1516,7 +1516,7 @@ namespace UnitTestsProject
             }
 
             //Execute method being tested
-            sp.BumpUpWeakColumns(mem);
+            sp.BoostColsWithLowOverlap(mem);
 
             for (int i = 0; i < mem.HtmConfig.NumColumns; i++)
             {
