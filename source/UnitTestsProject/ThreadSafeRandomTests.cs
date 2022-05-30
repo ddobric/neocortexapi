@@ -15,9 +15,18 @@ namespace UnitTestsProject
     public class ThreadSafeRandomTests
     {
         [TestMethod]
-        public void Test1()
-        { 
-        
+        [TestCategory("Invariant Learning")]
+        public void RandomTestRun()
+        {
+            Random a = new ThreadSafeRandom(42);
+            Random b = new ThreadSafeRandom(42);
+            for (int i = 0; i < 10; i++)
+            {
+                Debug.WriteLine($"a is {a.NextDouble()}");
+                Debug.WriteLine($"b is {a.NextDouble()}");
+                Debug.WriteLine($"are equal: {((a == b) ? "yes" : "no")}");
+                Debug.WriteLine("");
+            }
         }
     }
 }
