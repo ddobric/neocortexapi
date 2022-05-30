@@ -241,16 +241,13 @@ namespace HtmClassifierUnitTest
 
 
         /// <summary>
-        /// Here our taget is to whether 
-        /// we are getting any predicted value for input
-        /// we have given one sequence s1
-        /// and check from this sequence each input, 
-        /// will we get prediction or not
+        /// Here our taget is to whether we are getting any predicted value for input we have given one sequence s1
+        /// and check from this sequence each input, will we get prediction or not.
         /// </summary>
         [DataTestMethod]
         [DataRow(0)]
         [DataRow(1)]
-        [TestCategory("Prod")]
+        [TestCategory("ProdTODO")]
         [TestMethod]
         public void CheckNextValueIsNotEmpty(int input)
         {
