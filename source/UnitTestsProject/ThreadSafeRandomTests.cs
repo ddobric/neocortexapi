@@ -8,6 +8,7 @@ using NeoCortexApi.DistributedComputeLib;
 using NeoCortexApi.Entities;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace UnitTestsProject
 {
