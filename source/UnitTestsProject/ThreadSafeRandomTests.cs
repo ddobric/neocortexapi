@@ -17,15 +17,37 @@ namespace UnitTestsProject
     {
         [TestMethod]
         [TestCategory("Invariant Learning")]
+        [TestCategory("Prod")]
         public void RandomTestRun()
         {
-            Random a = new ThreadSafeRandom(42);
-            Random b = new ThreadSafeRandom(42);
+            Random tsr1 = new ThreadSafeRandom(42);
+            Random tsr2 = new ThreadSafeRandom(42);
+
+            Random r1 = new Random(42);
+            Random r2 = new Random(42);
+
+
             for (int i = 0; i < 10; i++)
             {
-                Debug.WriteLine($"a is {a.NextDouble()}");
-                Debug.WriteLine($"b is {a.NextDouble()}");
-                Debug.WriteLine($"are equal: {((a == b) ? "yes" : "no")}");
+                double val1 = tsr1.NextDouble();
+                double val2 = tsr2.NextDouble();
+
+                Debug.WriteLine($"ThreadsafeRandom: {val1} \t {val2}");
+                
+                Debug.WriteLine($"are equal: {((val1== val2) ? "yes" : "no")}");
+                
+                Assert.IsTrue(val1 == val2);
+
+
+                val1 = r1.NextDouble();
+                val2 = r2.NextDouble();
+                
+                Debug.WriteLine($"Random:  {val1} \t {val2}");
+
+                Debug.WriteLine($"are equal: {((val1 == val2) ? "yes" : "no")}");
+
+                Assert.IsTrue(val1==val2);
+                
                 Debug.WriteLine("");
             }
         }
