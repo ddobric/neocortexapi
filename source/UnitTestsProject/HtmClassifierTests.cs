@@ -21,17 +21,31 @@ namespace HtmClassifierUnitTest
     [TestClass]
     public class HtmClassifierTest
     {
-        private int inputBits = 100;
-        private int numColumns = 1024;
-        private HtmConfig cfg;
-        Dictionary<string, object> settings;
-        private double max = 20;
-        private Connections mem = null;
-        private CortexLayer<object, object> layer;
-        private HtmClassifier<string, ComputeCycle> htmClassifier;
-        private Dictionary<string, List<double>> sequences;
+        private static int inputBits = 100;
+        private static int numColumns = 1024;
+        private static HtmConfig cfg;
+        private static Dictionary<string, object> settings;
+        private static double max = 20;
+        private static Connections mem = null;
+        private static CortexLayer<object, object> layer;
+        private static HtmClassifier<string, ComputeCycle> htmClassifier;
+        private static Dictionary<string, List<double>> sequences;
 
-        private void SetupHtmConfiguration()
+        [ClassInitialize()]
+        public static void Setup(TestContext testContext)
+        {
+            SetupHtmConfiguration();
+            SetupEncoderSettings();
+            mem = null;
+            htmClassifier = new HtmClassifier<string, ComputeCycle>();
+            layer = new CortexLayer<object, object>("L1");
+            mem = new Connections(cfg);
+
+            SetupSequences();
+            LearnHtmClassifier();
+        }
+
+        private static void SetupHtmConfiguration()
         {
             cfg = new HtmConfig(new int[] { inputBits }, new int[] { numColumns })
             {
@@ -61,7 +75,7 @@ namespace HtmClassifierUnitTest
             };
         }
 
-        private void SetupEncoderSettings()
+        private static void SetupEncoderSettings()
         {
             settings = new Dictionary<string, object>()
             {
@@ -76,19 +90,13 @@ namespace HtmClassifierUnitTest
             };
         }
 
-        [TestInitialize]
-        public void Setup()
+        private static void SetupSequences()
         {
-            SetupHtmConfiguration();
-            SetupEncoderSettings();
-            mem = null;
-            htmClassifier = new HtmClassifier<string, ComputeCycle>();
-            layer = new CortexLayer<object, object>("L1");
-            mem = new Connections(cfg);
-
+            sequences = new Dictionary<string, List<double>>();
+            sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
         }
 
-        private void LearnHtmClassifier()
+        private static void LearnHtmClassifier()
         {
             int maxMatchCnt = 0;
 
@@ -108,21 +116,7 @@ namespace HtmClassifierUnitTest
 
             var lastPredictedValues = new List<string>(new string[] { "0" });
 
-            int maxCycles = 100;
-
-            for (int i = 0; i < maxCycles; i++)
-            {
-                matches = 0;
-                cycle++;
-                foreach (var inputs in sequences)
-                {
-                    foreach (var input in inputs.Value)
-                    {
-
-                        var lyrOut = layer.Compute(input, true);
-                    }
-                }
-            }
+            int maxCycles = 60;
 
             layer.HtmModules.Add("tm", tm);
 
@@ -251,11 +245,6 @@ namespace HtmClassifierUnitTest
         [TestMethod]
         public void CheckNextValueIsNotEmpty(int input)
         {
-            sequences = new Dictionary<string, List<double>>();
-            sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
-
-            LearnHtmClassifier();
-
             //var tm = layer1.HtmModules.FirstOrDefault(m => m.Value is TemporalMemory);
             //((TemporalMemory)tm.Value).Reset(mem);
 
@@ -293,11 +282,6 @@ namespace HtmClassifierUnitTest
         [TestMethod]
         public void CheckHowManyOfGetPredictedInputValues(int howMany)
         {
-            sequences = new Dictionary<string, List<double>>();
-            sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, }));
-
-            LearnHtmClassifier();
-
             var lyrOut = layer.Compute(1, false) as ComputeCycle;
 
             var res = htmClassifier.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), Convert.ToInt16(howMany));
