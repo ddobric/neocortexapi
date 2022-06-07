@@ -36,9 +36,14 @@
         }
     }
 
-    internal object PickRandom()
+    /// <summary>
+    /// Pick a random element in the set, with a specified seed
+    /// </summary>
+    /// <param name="seed"></param>
+    /// <returns></returns>
+    internal InvImage PickRandom(int seed = 42)
     {
-        var random = new Random();
+        var random = new Random(seed);
         int index = random.Next(this.Count);
         return images[index];
     }

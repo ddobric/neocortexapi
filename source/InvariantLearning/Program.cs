@@ -24,16 +24,16 @@ HomeostaticPlasticityController hpa_sp_L4 = new HomeostaticPlasticityController(
     }, numOfCyclesToWaitOnChange: 50);
 #endregion
 
-// Reading Config from json
+// reading Config from json
 var config = Utility.ReadConfig("experimentParams.json");
 string PathToTrainingFolder = config.PathToTrainingFolder;
 
 
-// Generate the training data
+// generate the training data
 TrainingData invariantSet = new TrainingData(PathToTrainingFolder);
 
 
-// Passing the training data to the training experiment
+// passing the training data to the training experiment
 InvariantExperiment experiment  = new(invariantSet, config.runParams);
 
 // train the network
