@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace NeoCortexApiSample
 {
-    class Program
+    class Program2
     {
         static Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>()
         {
