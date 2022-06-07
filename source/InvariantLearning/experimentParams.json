@@ -1,0 +1,8 @@
+{
+  "PathToTrainingFolder": "C:\\Users\\Noath\\Downloads\\project-1-at-2022-04-13-17-20-8d9b931b",
+  "experimentParams": {
+    "epochs": 100,
+    "HtmConfig": {
+    }
+  }
+}
