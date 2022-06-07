@@ -1,7 +1,7 @@
 ﻿using NeoCortexApi;
 using NeoCortexApi.Entities;
 using System.Diagnostics;
-
+using InvariantLearning;
 #region Testing Code
 List<Connections> conns = new();
 List<HtmConfig> htmConfigs = new List<HtmConfig>();
@@ -27,21 +27,26 @@ HomeostaticPlasticityController hpa_sp_L4 = new HomeostaticPlasticityController(
 // Reading Config from json
 var config = Utility.ReadConfig("experimentParams.json");
 string PathToTrainingFolder = config.PathToTrainingFolder;
-string PathToFeatureFolder = config.PathToFeatureFolder;
+
 
 // Generate the training data
-var invariantSet = new TrainingData(PathToTrainingFolder);
-var featureSet = new TrainingData(PathToFeatureFolder);
+TrainingData invariantSet = new TrainingData(PathToTrainingFolder);
+
 
 // Passing the training data to the training experiment
-InvariantExp exp  = new(invariantSet, config.experimentParams);
-Debug.WriteLine(invariantSet.Count);
+InvariantExperiment experiment  = new(invariantSet, config.runParams);
 
 // train the network
-exp.Train();
+experiment.Train();
 
 // using the predictor to classify image from dataset
+CancellationToken cancelToken = new CancellationToken();
 while(true){
-    var result = exp.Predict(invariantSet.PickRandom());
-    Console.ReadLine();
+    if (cancelToken.IsCancellationRequested)
+    {
+        return;
+    }
+    var result = experiment.Predict(invariantSet.PickRandom());
+    Debug.WriteLine(result);
+    Task.Delay(1000);
 }

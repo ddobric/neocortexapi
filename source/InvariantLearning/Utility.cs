@@ -1,51 +1,34 @@
-﻿using NeoCortexApi.Entities;
-using Newtonsoft;
+﻿using Newtonsoft;
 using Newtonsoft.Json;
-
-public class Utility
+namespace InvariantLearning
 {
-    internal static ExpCfg ReadConfig(string jsonFilePath)
+    public class Utility
     {
-        string json = File.ReadAllText(jsonFilePath);
-        return JsonConvert.DeserializeObject<ExpCfg>(json);
-    }
-
-    public static void CreateFolderIfNotExist(string Folder)
-    {
-        if (Directory.Exists(Folder))
+        /// <summary>
+        /// Read configuration from json file
+        /// </summary>
+        /// <param name="jsonFilePath">path of the json file</param>
+        /// <returns></returns>
+        internal static ExperimentConfig ReadConfig(string jsonFilePath)
         {
-            return;
+            string json = File.ReadAllText(jsonFilePath);
+            return JsonConvert.DeserializeObject<ExperimentConfig>(json);
         }
-        else
+
+        /// <summary>
+        /// Create Folder
+        /// </summary>
+        /// <param name="Folder">relative path of the folder from directory of the running program or absolute path</param>
+        public static void CreateFolderIfNotExist(string Folder)
         {
-            Directory.CreateDirectory(Folder);
+            if (Directory.Exists(Folder))
+            {
+                return;
+            }
+            else
+            {
+                Directory.CreateDirectory(Folder);
+            }
         }
     }
-}
-
-/// <summary>
-/// Experiment Folder Configuration
-/// </summary>
-public class ExpCfg
-{
-    public string PathToTrainingFolder;
-    public string PathToFeatureFolder;
-
-    public RunConfig experimentParams;
-}
-
-/// <summary>
-/// Experiment running configuration
-/// </summary>
-public class RunConfig
-{
-    /// <summary>
-    /// Hierarchical Temporal Memory Configuration
-    /// </summary>
-    public HtmConfig htmConfig;
-
-    /// <summary>
-    /// Iteration through whole dataset
-    /// </summary>
-    public int epochs;
 }

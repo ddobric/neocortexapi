@@ -1,23 +1,32 @@
-﻿using YOLO;
+﻿using System.Diagnostics;
 
-internal class InvariantExp
+namespace InvariantLearning
 {
-    private object invariantSet;
-    private RunConfig experimentParams;
-
-    public InvariantExp(object invariantSet, RunConfig experimentParams)
+    internal class InvariantExperiment
     {
-        this.invariantSet = invariantSet;
-        this.experimentParams = experimentParams;
-    }
+        private object invariantSet;
+        private RunConfig experimentParams;
+        private int count = 0;
 
-    internal object Train()
-    {
-        throw new NotImplementedException();
-    }
+        /// <summary>
+        /// Experiment specification for Htm Invariant Object Representation Learning
+        /// </summary>
+        /// <param name="invariantSet">the image set used for invariant learning</param>
+        /// <param name="experimentParams">experiment parameters used for experiment</param>
+        public InvariantExperiment(TrainingData invariantSet, RunConfig experimentParams)
+        {
+            this.invariantSet = invariantSet;
+            this.experimentParams = experimentParams;
+        }
 
-    internal object Predict(object v)
-    {
-        throw new NotImplementedException();
+        internal void Train()
+        {
+            Debug.WriteLine("-------------- Training in Progress---------------");
+        }
+
+        internal string Predict(object v)
+        {
+            return "- Prediction in Progress -";
+        }
     }
 }
