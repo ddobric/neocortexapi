@@ -64,6 +64,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InvariantLearning", "Invari
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InvariantLearning_Test", "InvariantLearning_Test\InvariantLearning_Test.csproj", "{1EF7D1B3-918B-4700-8F2A-AB0431894294}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MnistDataGen", "MnistDataGen\MnistDataGen.csproj", "{A57388F6-8EC1-4AB4-A673-AC72A4B64060}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MnistDataGen_test", "MnistDataGen_test\MnistDataGen_test.csproj", "{38D64BC6-805F-49FF-80C6-A51342251654}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -130,6 +134,14 @@ Global
 		{1EF7D1B3-918B-4700-8F2A-AB0431894294}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1EF7D1B3-918B-4700-8F2A-AB0431894294}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1EF7D1B3-918B-4700-8F2A-AB0431894294}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A57388F6-8EC1-4AB4-A673-AC72A4B64060}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A57388F6-8EC1-4AB4-A673-AC72A4B64060}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A57388F6-8EC1-4AB4-A673-AC72A4B64060}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A57388F6-8EC1-4AB4-A673-AC72A4B64060}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38D64BC6-805F-49FF-80C6-A51342251654}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38D64BC6-805F-49FF-80C6-A51342251654}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38D64BC6-805F-49FF-80C6-A51342251654}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38D64BC6-805F-49FF-80C6-A51342251654}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
