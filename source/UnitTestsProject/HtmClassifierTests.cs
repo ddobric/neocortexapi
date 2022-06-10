@@ -81,7 +81,7 @@ namespace HtmClassifierUnitTest
         ///Check how many prediction results will be retrieved.
         /// </summary>
         [DataTestMethod]
-        [TestCategory("Prod")]
+        [TestCategory("ProdTODO")]
         [DataRow(3)]
         [DataRow(4)]
         [TestMethod]
