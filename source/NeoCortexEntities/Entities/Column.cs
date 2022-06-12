@@ -478,7 +478,7 @@ namespace NeoCortexApi.Entities
             while (!sr.EndOfStream)
             {
                 string data = sr.ReadLine();
-                if (data == String.Empty || data == ser.ReadBegin(nameof(Column)) || data == ser.ValueDelimiter)
+                if (data == String.Empty || data == ser.ReadBegin(nameof(Column)) || data == HtmSerializer2.ValueDelimiter)
                 {
                     continue;
                 }
