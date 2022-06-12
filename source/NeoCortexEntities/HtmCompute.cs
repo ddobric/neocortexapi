@@ -446,24 +446,33 @@ namespace NeoCortexApi
             }
         }
 
-        public static void RaisePermanenceToThresholdSparse(HtmConfig htmConfig, double[] perm)
+
+        /// <summary>
+        /// Traverses all synapses and incremments their permanence values until the number of connected synapses 
+        /// is greather than StimulusThreshold.
+        /// </summary>
+        /// <param name="htmConfig"></param>
+        /// <param name="perm">Permanence values.</param>
+        public static void RaisePermanenceToThreshold(HtmConfig htmConfig, double[] perm)
         {
             ArrayUtils.EnsureBetweenMinAndMax(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
+
             while (true)
             {
                 int numConnected = ArrayUtils.ValueGreaterCount(htmConfig.SynPermConnected, perm);
-                if (numConnected >= htmConfig.StimulusThreshold) return;
+
+                if (numConnected >= htmConfig.StimulusThreshold) 
+                    return;
+
                 ArrayUtils.RaiseValuesBy(htmConfig.SynPermBelowStimulusInc, perm);
             }
         }
 
         /// <summary>
-        /// This method updates the permanences with a column's new permanence values. The column is identified by its index, which reflects the row in
-        /// the matrix, and the permanence is given in 'sparse' form, i.e. an array whose members are associated with specific indexes. It is in charge of 
-        /// implementing 'clipping' - ensuring that the permanence values are always between 0 and 1 - and 'trimming' - enforcing sparseness by zeroing out
-        /// all permanence values below 'synPermTrimThreshold'. It also maintains the consistency between 'permanences' (the matrix storing the permanence values), 
-        /// 'connectedSynapses', (the matrix storing the bits each column is connected to), and 'connectedCounts' (an array storing the number of input bits each 
-        /// column is connected to). Every method wishing to modify the permanence matrix should do so through this method.
+        /// This method updates the permanences with a column's new permanence values. 
+        /// It is in charge of implementing 'clipping' - ensuring that the permanence values are always between 0
+        /// and 1 - and 'trimming' - enforcing sparseness by zeroing out
+        /// all permanence values below 'synPermTrimThreshold'.
         /// </summary>
         /// <param name="htmConfig">the configuration used in <see cref="Connections"/>.</param>
         /// <param name="perm">An array of permanence values for a column. The array is "dense", i.e. it contains an entry for each input bit, even if the permanence value is 0.</param>
