@@ -1178,7 +1178,7 @@ namespace UnitTestsProject
             mem.HtmConfig.ActiveDutyCycles = activeDutyCycles;
 
             double[] trueBoostFactors = new double[] { 1, 1, 1, 1, 1, 1 };
-            sp.UpdateBoostFactors(mem);
+            sp.BoostByActivationFrequency(mem);
             double[] boostFactors = mem.BoostFactors;
             for (int i = 0; i < boostFactors.Length; i++)
             {
@@ -1189,7 +1189,7 @@ namespace UnitTestsProject
             minActiveDutyCycles = new double[] { 0.1, 0.3, 0.02, 0.04, 0.7, 0.12 };
             mem.HtmConfig.MinActiveDutyCycles = minActiveDutyCycles;
             ArrayUtils.FillArray(mem.BoostFactors, 0);
-            sp.UpdateBoostFactors(mem);
+            sp.BoostByActivationFrequency(mem);
             boostFactors = mem.BoostFactors;
             for (int i = 0; i < boostFactors.Length; i++)
             {
@@ -1201,7 +1201,7 @@ namespace UnitTestsProject
             activeDutyCycles = new double[] { 0.01, 0.02, 0.002, 0.003, 0.07, 0.012 };
             mem.HtmConfig.ActiveDutyCycles = activeDutyCycles;
             trueBoostFactors = new double[] { 9.1, 9.1, 9.1, 9.1, 9.1, 9.1 };
-            sp.UpdateBoostFactors(mem);
+            sp.BoostByActivationFrequency(mem);
             boostFactors = mem.BoostFactors;
             for (int i = 0; i < boostFactors.Length; i++)
             {
@@ -1214,7 +1214,7 @@ namespace UnitTestsProject
             ArrayUtils.FillArray(activeDutyCycles, 0);
             mem.HtmConfig.ActiveDutyCycles = activeDutyCycles;
             ArrayUtils.InitArray(trueBoostFactors, 10.0);
-            sp.UpdateBoostFactors(mem);
+            sp.BoostByActivationFrequency(mem);
             boostFactors = mem.BoostFactors;
             for (int i = 0; i < boostFactors.Length; i++)
             {
@@ -1238,7 +1238,7 @@ namespace UnitTestsProject
 
             mem.HtmConfig.ActiveDutyCycles = activeDutyCycles;
 
-            sp.UpdateBoostFactors(mem);
+            sp.BoostByActivationFrequency(mem);
 
             Assert.IsTrue(mem.BoostFactors.SequenceEqual(originalBoostFactors));
         }
@@ -1516,7 +1516,7 @@ namespace UnitTestsProject
             }
 
             //Execute method being tested
-            sp.BumpUpWeakColumns(mem);
+            sp.BoostColsWithLowOverlap(mem);
 
             for (int i = 0; i < mem.HtmConfig.NumColumns; i++)
             {

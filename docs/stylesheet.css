@@ -123,6 +123,19 @@ h2 {
   height: 35px;
 }
 
+.github {
+  margin-right: 10px;
+  width: 32px;
+}
+
+.text-no-decoration {
+  text-decoration: none;
+}
+
+.text-black {
+  color: #000000;
+}
+
 .btn {
   text-decoration: none;
   font-family: var(--header-font-family-bold);

@@ -230,11 +230,14 @@ namespace NeoCortexApi.Entities
         {
             if (raisePerm)
             {
-                HtmCompute.RaisePermanenceToThresholdSparse(htmConfig, perm);
+                HtmCompute.RaisePermanenceToThreshold(htmConfig, perm);
             }
 
+            // All values less than SynPermTrimThreshold will be set to zero.
             ArrayUtils.LessOrEqualXThanSetToY(perm, htmConfig.SynPermTrimThreshold, 0);
+            
             ArrayUtils.EnsureBetweenMinAndMax(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
+
             SetProximalPermanencesSparse(htmConfig, perm, maskPotential);
         }
 

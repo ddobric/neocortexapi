@@ -1,4 +1,5 @@
-﻿using NeoCortexApi.Encoders;
+﻿using NeoCortexApi;
+using NeoCortexApi.Encoders;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -45,6 +46,12 @@ namespace NeoCortexApiSample
         }
 
 
+        /// <summary>
+        /// This example demonstrates how to learn two sequences and how to use the prediction mechanism.
+        /// First, two sequences are learned.
+        /// Second, three short sequences with three elements each are created und used for prediction. The predictor used by experiment privides to the HTM every element of every predicting sequence.
+        /// The predictor tries to predict the next element.
+        /// </summary>
         private static void RunMultiSequenceLearningExperiment()
         {
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
@@ -60,7 +67,11 @@ namespace NeoCortexApiSample
             MultiSequenceLearning experiment = new MultiSequenceLearning();
             var predictor = experiment.Run(sequences);
 
-            var list1 = new double[] { 1.0, 2.0, 3.0 };
+            //
+            // These list are used to see how the prediction works.
+            // Predictor is traversing the list element by element. 
+            // By providing more elements to the prediction, the predictor delivers more precise result.
+            var list1 = new double[] { 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 };
             var list2 = new double[] { 2.0, 3.0, 4.0 };
             var list3 = new double[] { 8.0, 1.0, 2.0 };
 
@@ -74,7 +85,7 @@ namespace NeoCortexApiSample
             PredictNextElement(predictor, list3);
         }
 
-        private static void PredictNextElement(HtmPredictionEngine predictor, double[] list)
+        private static void PredictNextElement(Predictor predictor, double[] list)
         {
             Debug.WriteLine("------------------------------");
 
