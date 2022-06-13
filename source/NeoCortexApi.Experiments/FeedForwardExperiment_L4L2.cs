@@ -390,7 +390,7 @@ namespace NeocortexApi.Experiments
 
                     if (layerL2Out.PredictiveCells.Count > 0)
                     {
-                        string predictedInputValue = cls.GetPredictedInputValue(layerL2Out.PredictiveCells.ToArray());
+                        string predictedInputValue = cls.GetPredictedInputValues(layerL2Out.PredictiveCells.ToArray()).First().PredictedInput;
 
                         Debug.WriteLine($"Current Input: {input} \t| New Predicted Input Sequence: {predictedInputValue}");
 
