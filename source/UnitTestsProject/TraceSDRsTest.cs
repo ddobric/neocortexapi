@@ -17,6 +17,7 @@ namespace UnitTestsProject
     {
         /// <summary>
         /// Compares the similarity of multiple SDRs.
+        /// <see cref=""/>
         /// </summary>
         [TestMethod]
         [TestCategory("Trace SDR")]
