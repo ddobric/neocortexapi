@@ -41,8 +41,9 @@ namespace NeoCortexApi
         /// <summary>
         /// Creates string representation from one dimensional value. 
         /// </summary>
-        /// <param name="sdrs">Stores the SDR sets.</param>
-        /// <returns></returns>
+        /// <see cref=""/>
+        /// <param name="sdrs">the SDR sets</param>
+        /// <returns>string of traced output SDRs</returns>
         public static string StringifyTraceSDR(List<int[]> sdrs)
         {
             //List of string of arrays for SDR set
