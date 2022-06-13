@@ -25,7 +25,7 @@ namespace InvariantLearning
             #region training process
             // BEGIN EXPERIMENT
             // Initiate Spatial Pooler
-            
+            var sp = GetSpatialPooler();
             // for loop with epochs
             for (int epoch = 1; epoch <= experimentParams.epochs; epoch += 1)
             {

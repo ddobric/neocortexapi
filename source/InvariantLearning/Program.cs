@@ -36,8 +36,10 @@ TrainingData invariantSet = new TrainingData(PathToTrainingFolder);
 // passing the training data to the training experiment
 InvariantExperiment experiment  = new(invariantSet, config.runParams);
 
+
 // train the network
 experiment.Train();
+
 
 // using the predictor to classify image from dataset
 CancellationToken cancelToken = new CancellationToken();
