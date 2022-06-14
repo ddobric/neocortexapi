@@ -22,7 +22,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// The identifier of the cell.
         /// </summary>
-        public int CellId { get; private set; }
+        //public int CellId { get; private set; }
 
 
         /// <summary>
@@ -68,13 +68,13 @@ namespace NeoCortexApi.Entities
         /// <param name="numCellsPerColumn"></param>
         /// <param name="cellId"></param>
         /// <param name="cellActivity"></param>
-        public Cell(int parentColumnIndx, int colSeq, int numCellsPerColumn, int cellId, CellActivity cellActivity)
+        public Cell(int parentColumnIndx, int colSeq, int numCellsPerColumn, CellActivity cellActivity)
         {
             this.ParentColumnIndex = parentColumnIndx;
 
             this.Index = parentColumnIndx * numCellsPerColumn + colSeq;
 
-            this.CellId = cellId;
+            //this.CellId = cellId;
         }
 
         /// <summary>
@@ -113,8 +113,8 @@ namespace NeoCortexApi.Entities
                 if (obj.ParentColumnIndex != this.ParentColumnIndex)
                     return false;
 
-                if (obj.CellId != this.CellId)
-                    return false;
+                //if (obj.CellId != this.CellId)
+                //    return false;
 
                 if (obj.DistalDendrites != null && this.DistalDendrites != null)
                 {
@@ -172,7 +172,7 @@ namespace NeoCortexApi.Entities
             ser.SerializeBegin(nameof(Cell), writer);
 
             ser.SerializeValue(this.Index, writer);
-            ser.SerializeValue(this.CellId, writer);
+            //ser.SerializeValue(this.CellId, writer);
             ser.SerializeValue(this.ParentColumnIndex, writer);
 
             if (this.DistalDendrites != null && this.DistalDendrites.Count > 0)
@@ -225,7 +225,7 @@ namespace NeoCortexApi.Entities
                                 }
                             case 1:
                                 {
-                                    cell.CellId = ser.ReadIntValue(str[i]);
+                                   // cell.CellId = ser.ReadIntValue(str[i]);
                                     break;
                                 }
                             case 2:

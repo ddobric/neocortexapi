@@ -79,7 +79,7 @@ namespace NeoCortexEntities.NeuroVisualizer
             for (int i = 0; i < cells.Length; i++)
             {
                 cellId += 1;
-                Cell cell = new Cell(areaID, i, cellId, parentColumnIndx, CellActivity.PredictiveCell);
+                Cell cell = new Cell(areaID, i, parentColumnIndx, CellActivity.PredictiveCell);
 
                 cells[i] = cell;
             }

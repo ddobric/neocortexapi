@@ -147,7 +147,7 @@ namespace HtmClassifierUnitTest
                 int numCellsPerColumn = Random.Shared.Next(0, cellsPerColumn);
                 int colSeq = Random.Shared.Next(0, cellsPerColumn);
 
-                cells.Add(new Cell(parentColumnIndx, colSeq, numCellsPerColumn, 0, cellActivity));
+                cells.Add(new Cell(parentColumnIndx, colSeq, numCellsPerColumn, cellActivity));
             }
 
             if (cellActivity == CellActivity.ActiveCell)

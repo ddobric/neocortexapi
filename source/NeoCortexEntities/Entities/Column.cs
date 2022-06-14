@@ -48,13 +48,6 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public Cell[] Cells { get; set; }
 
-        /// <summary>
-        /// CellId
-        /// </summary>
-        public int CellId { get; set; }
-
-        //private ReadOnlyCollection<Cell> cellList;
-
         private readonly int hashcode;
 
         public Column()
@@ -79,7 +72,7 @@ namespace NeoCortexApi.Entities
 
             for (int i = 0; i < numCells; i++)
             {
-                Cells[i] = new Cell(this.Index, i, this.GetNumCellsPerColumn(), this.CellId, CellActivity.ActiveCell);
+                Cells[i] = new Cell(this.Index, i, this.GetNumCellsPerColumn(), CellActivity.ActiveCell);
             }
 
             // We keep tracking of this column only
@@ -417,8 +410,8 @@ namespace NeoCortexApi.Entities
             }
             if (Index != obj.Index)
                 return false;
-            if (CellId != obj.CellId)
-                return false;
+           // if (CellId != obj.CellId)
+              //  return false;
 
             return true;
         }
@@ -447,7 +440,7 @@ namespace NeoCortexApi.Entities
 
             ser.SerializeBegin(nameof(Column), writer);
 
-            ser.SerializeValue(this.CellId, writer);
+            //ser.SerializeValue(this.CellId, writer);
             ser.SerializeValue(this.Index, writer);
 
 
@@ -511,7 +504,7 @@ namespace NeoCortexApi.Entities
                         {
                             case 0:
                                 {
-                                    column.CellId = ser.ReadIntValue(str[i]);
+                                   // column.CellId = ser.ReadIntValue(str[i]);
                                     break;
                                 }
                             case 1:
