@@ -106,8 +106,8 @@ namespace NeoCortexApi.Entities
             }
             // We check here the cell id only! The cell as parent must be correctlly created to avoid having different cells with the same id.
             // If we would use here ParenCell.Equals method, that method would cause a cicular invoke of this.Equals etc.
-            else if (ParentCell.CellId != other.ParentCell.CellId)
-                return false;
+            //else if (ParentCell.CellId != other.ParentCell.CellId)
+            //    return false;
             if (m_LastUsedIteration != other.m_LastUsedIteration)
                 return false;
             if (m_Ordinal != other.m_Ordinal)
