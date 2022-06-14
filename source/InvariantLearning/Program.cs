@@ -48,6 +48,7 @@ while(true){
     {
         return;
     }
+    // This can be later changed to the validation test
     var result = experiment.Predict(invariantSet.PickRandom());
     Debug.WriteLine(result);
     Task.Delay(1000);

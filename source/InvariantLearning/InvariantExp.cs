@@ -21,15 +21,21 @@ namespace InvariantLearning
 
         internal void Train()
         {
-            Debug.WriteLine($"-------------- Training in Progress with {experimentParams.epochs} epochs---------------");
+            Debug.WriteLine($"-------------- Training in Progress with {experimentParams.Epoch} epochs---------------");
             #region training process
             // BEGIN EXPERIMENT
-            // Initiate Spatial Pooler
-            var sp = GetSpatialPooler();
+            // prepare regions for image
+
+
+            // Initiate Spatial Pooler Dictionaries
+            Dictionary<string, SpatialPooler> poolerDict = new Dictionary<string, SpatialPooler>();
+
+            
             // for loop with epochs
-            for (int epoch = 1; epoch <= experimentParams.epochs; epoch += 1)
+            for (int epoch = 1; epoch <= experimentParams.Epoch; epoch += 1)
             {
-                
+                // for loop with training:
+                for
             }
             // END EXPERIMENT
             #endregion
