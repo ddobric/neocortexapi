@@ -197,7 +197,7 @@ namespace NeoCortexApi.Entities
         /// Serialize method for DistalDendrite
         /// </summary>
         /// <param name="writer"></param>
-        public override void Serialize(StreamWriter writer)
+        public void Serialize(StreamWriter writer)
         {
             HtmSerializer2 ser = new HtmSerializer2();
 

@@ -36,12 +36,17 @@ namespace NeoCortexApi.Entities
         private readonly int m_Hashcode;
 
         /// <summary>
-        /// List of dendrites of the cell. Every dendrite segment is owned bt the cell.
+        /// List of dendrites of the cell.
         /// </summary>
         public List<DistalDendrite> DistalDendrites { get; set; } = new List<DistalDendrite>();
 
         /// <summary>
-        /// List of receptor synapses that connect this cells as a source (presynaptic) cell to the distal dendrite segment owned by some other cell.
+        /// List of apical dendrites of the cell. 
+        /// </summary>
+        public List<ApicalDendrite> ApicalDendrites { get; set; } = new List<ApicalDendrite>();
+
+        /// <summary>
+        /// List of receptor synapses (outgoing synapses) that connect this cells as a source (presynaptic) cell to the distal dendrite segment owned by some other cell.
         /// This synapse assotiates the cell (presynaptic = source cell) with the next cell (postsynaptic = destination cell).
         /// The destination cell is the parent cell of the segment to which the presynaptic cell is connected.
         /// </summary>
