@@ -920,26 +920,26 @@ namespace NeoCortexApi.Entities
             return keyValues;
         }
 
-        /// <summary>
-        /// Serialize the Dictionary<Segment, List<Synapse>>.
-        /// </summary>
-        public void SerializeValue(Dictionary<Segment, List<Synapse>> keyValues, StreamWriter sw)
-        {
-            sw.Write(ValueDelimiter);
-            foreach (KeyValuePair<Segment, List<Synapse>> i in keyValues)
-            {
-                i.Key.Serialize(sw);
-                sw.Write(KeyValueDelimiter);
-                foreach (Synapse val in i.Value)
-                {
-                    //val.Serialize(sw);
-                    sw.Write(ValueDelimiter);
-                }
+        ///// <summary>
+        ///// Serialize the Dictionary<Segment, List<Synapse>>.
+        ///// </summary>
+        //public void SerializeValue(Dictionary<Segment, List<Synapse>> keyValues, StreamWriter sw)
+        //{
+        //    sw.Write(ValueDelimiter);
+        //    foreach (KeyValuePair<Segment, List<Synapse>> i in keyValues)
+        //    {
+        //        i.Key.Serialize(sw);
+        //        sw.Write(KeyValueDelimiter);
+        //        foreach (Synapse val in i.Value)
+        //        {
+        //            //val.Serialize(sw);
+        //            sw.Write(ValueDelimiter);
+        //        }
 
-                sw.Write(ElementsDelimiter);
-            }
-            sw.Write(ParameterDelimiter);
-        }
+        //        sw.Write(ElementsDelimiter);
+        //    }
+        //    sw.Write(ParameterDelimiter);
+        //}
         //private Dictionary<Cell, LinkedHashSet<Synapse>> m_ReceptorSynapses;
 
         /// <summary>

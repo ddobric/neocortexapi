@@ -22,8 +22,6 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public int SegmentIndex { get; set; }
 
-        //protected Integer boxedIndex { get; set; }
-
         /// <summary>
         /// Synapses connected to the segment. Also called potential synapses.
         /// </summary>
@@ -45,8 +43,6 @@ namespace NeoCortexApi.Entities
         protected Segment()
         {
             this.Synapses = new List<Synapse>();
-            // this.boxedIndex = new Integer();
-
         }
 
         /// <summary>
@@ -63,10 +59,6 @@ namespace NeoCortexApi.Entities
             this.SegmentIndex = index;
             //this.boxedIndex = new Integer(index);
         }
-
-
-
-
 
         /// <summary>
         /// Hashcode calculation.
@@ -106,17 +98,6 @@ namespace NeoCortexApi.Entities
         {
             return $"Seg: {this.SegmentIndex}";
         }
-
-        #region Serialization
-        public virtual void Serialize(StreamWriter writer)
-        {
-            throw new NotImplementedException(); 
-        }
-
-
-
-
-        #endregion
     }
 }
 
