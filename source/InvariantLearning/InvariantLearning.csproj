@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ImageEncoder\HtmImageEncoder.csproj" />
     <ProjectReference Include="..\NeoCortexApi\NeoCortexApi.csproj" />
     <ProjectReference Include="..\NeoCortexEntities\NeoCortexEntities.csproj" />
   </ItemGroup>

@@ -1,7 +1,7 @@
 ﻿using SkiaSharp;
 public class InvImage
 {
-    private string imagePath;
+    public string imagePath;
 
     public string label;
 

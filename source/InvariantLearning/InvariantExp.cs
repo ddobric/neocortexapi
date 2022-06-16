@@ -30,7 +30,7 @@ namespace InvariantLearning
             poolerDict = new Dictionary<string, LearningUnit>();
             foreach(var dim in InvFrame.GetDivisionIndex(10,invariantSet.images[0].imageHeight,10))
             {
-                poolerDict.Add(dim.ToString(),new LearningUnit(dim*dim,1024));
+                poolerDict.Add(dim.ToString(),new LearningUnit(dim,1024));
             }
 
             // iterate through all learning unit
