@@ -91,7 +91,9 @@ namespace InvariantLearning
 
         internal Dictionary<string, double> Predict(InvImage image)
         {
-            throw new NotImplementedException();
+            Dictionary<string, double> result = new Dictionary<string, double>();
+
+            return result;
         }
     }
 }
