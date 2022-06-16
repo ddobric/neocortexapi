@@ -99,4 +99,30 @@
         }
         return result;
     }
+
+    internal static List<InvFrame> GetConvFramesbyPixel(int imgWidth, int imgHeight, int frameWidth, int frameHeight)
+    {
+        List<InvFrame> result = new List<InvFrame>();
+
+        var xIndicies = GetDivisionIndexByPixel(0, imgWidth - frameWidth);
+        var yIndicies = GetDivisionIndexByPixel(0, imgHeight - frameHeight);
+        for (int i = 0; i < xIndicies.Count; i++)
+        {
+            for (int j = 0; j < yIndicies.Count; j++)
+            {
+                result.Add(new InvFrame(xIndicies[i], yIndicies[j], xIndicies[i] + frameWidth - 1, yIndicies[j] + frameHeight - 1));
+            }
+        }
+        return result;
+    }
+
+    private static List<int> GetDivisionIndexByPixel(int head, int tails)
+    {
+        List<int> result = new List<int>();
+        for (int i = head; i <= tails; i += 1)
+        {
+            result.Add(i);
+        }
+        return result;
+    }
 }

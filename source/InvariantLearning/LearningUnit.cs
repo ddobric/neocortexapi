@@ -9,7 +9,7 @@ namespace InvariantLearning
 {
     internal class LearningUnit
     {
-
+        public string OutputPredictFolder;
         private CortexLayer<object, object> cortexLayer;
         private bool isInStableState;
         Classifier<string> cls; 
@@ -63,7 +63,7 @@ namespace InvariantLearning
             isInStableState = false;
 
             // HTM CLASSIFIER
-            cls = new HtmClassifier<string, int[]>();
+            cls = new Classifier<string>();
         }
 
         internal void Learn(InvImage sample)
@@ -75,17 +75,34 @@ namespace InvariantLearning
             if (isInStableState)
             {
                 // SP CLASSIFIER
-                var activeColumns = cortexLayer.GetResult("sp");
+                var activeColumns = cortexLayer.GetResult("sp") as int[];
                 cls.Learn(sample.label, activeColumns);
             }
         }
 
         internal Dictionary<string, double> Predict(InvImage image)
         {
+            // Create the folder for the frame extracted by InvImage
+            string spFolder = Path.Combine("Predict", OutputPredictFolder, $"SP of {inputDim}x{inputDim}");
+            Utility.CreateFolderIfNotExist(spFolder);
+
+            // dictionary for saving result
             Dictionary<string, double> result = new Dictionary<string, double>();
 
-            //var frameMatrix = InvFrame.GetConvFrames();
+            var frameMatrix = InvFrame.GetConvFramesbyPixel(image.imageWidth,image.imageHeight,inputDim,inputDim);
 
+            foreach (var frame in frameMatrix) 
+            {
+                // Save frame to folder
+                string outFile = Path.Combine(spFolder,$"frame__{frame.tlX}_{frame.tlY}.png");
+                InvImage.SaveAsImage(image.GetPixels(frame),outFile);
+
+                // Compute the SDR
+                var sdr = cortexLayer.Compute(outFile, false) as int[];
+
+                // Get Predicted Labels
+                var predictedLabel = cls.GetPredictedInputValues(sdr, 1);
+            }
             return result;
         }
     }

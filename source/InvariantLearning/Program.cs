@@ -20,7 +20,9 @@ InvariantExperiment experiment  = new(invariantSet, config.runParams);
 experiment.Train();
 
 
-// using the predictor to classify image from dataset
+// using predict to classify image from dataset
+Utility.CreateFolderIfNotExist("Predict");
+
 CancellationToken cancelToken = new CancellationToken();
 while(true){
     if (cancelToken.IsCancellationRequested)

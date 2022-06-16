@@ -72,13 +72,17 @@ namespace InvariantLearning
         internal (string, string) Predict(InvImage inputImage)
         {
             List<Dictionary<string,double>> cosensus = new List<Dictionary<string,double>>();
-            
+
+            // Prepare Output Folder
+            string predictProcessName = Path.GetFileNameWithoutExtension(inputImage.imagePath) + Utility.GetHash();
+            Utility.CreateFolderIfNotExist(Path.Combine("Predict", predictProcessName));
+
             // Collecting Vote
             foreach (var sp in poolerDict)
             {
+                sp.Value.OutputPredictFolder = predictProcessName;
                 Dictionary<string, double> a = sp.Value.Predict(inputImage);
                 cosensus.Add(a);
-                
             }
 
             // Calculating Vote

@@ -1,5 +1,6 @@
 ﻿using Newtonsoft;
 using Newtonsoft.Json;
+using shortid;
 namespace InvariantLearning
 {
     public class Utility
@@ -29,6 +30,11 @@ namespace InvariantLearning
             {
                 Directory.CreateDirectory(Folder);
             }
+        }
+
+        internal static string GetHash()
+        {
+            return ShortId.Generate();
         }
     }
 }
