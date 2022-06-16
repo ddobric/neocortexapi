@@ -13,9 +13,11 @@ namespace InvariantLearning
         private CortexLayer<object, object> cortexLayer;
         private bool isInStableState;
         HtmClassifier<string, ComputeCycle> cls;
+        private int inputDim;
 
         public LearningUnit(int inputDim, int columnDim)
         {
+            this.inputDim = inputDim;
             // HTM CONFIG
             HtmConfig config = new HtmConfig(new int[] { inputDim*inputDim }, new int[]{columnDim});
 
@@ -92,6 +94,8 @@ namespace InvariantLearning
         internal Dictionary<string, double> Predict(InvImage image)
         {
             Dictionary<string, double> result = new Dictionary<string, double>();
+
+            var frameMatrix = InvFrame.GetConvFrames();
 
             return result;
         }
