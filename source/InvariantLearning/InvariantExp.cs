@@ -6,23 +6,23 @@ namespace InvariantLearning
     internal class InvariantExperiment
     {
         private TrainingData invariantSet;
-        private RunConfig experimentParams;
+        private RunConfig runParams;
         Dictionary<string, LearningUnit> poolerDict;
 
         /// <summary>
         /// Experiment specification for Htm Invariant Object Representation Learning
         /// </summary>
         /// <param name="invariantSet">the image set used for invariant learning</param>
-        /// <param name="experimentParams">experiment parameters used for experiment</param>
-        public InvariantExperiment(TrainingData invariantSet, RunConfig experimentParams)
+        /// <param name="runParams">experiment parameters used for experiment</param>
+        public InvariantExperiment(TrainingData invariantSet, RunConfig runParams)
         {
             this.invariantSet = invariantSet;
-            this.experimentParams = experimentParams;
+            this.runParams = runParams;
         }
 
         internal void Train()
         {
-            Debug.WriteLine($"-------------- Training in Progress with {experimentParams.Epoch} epochs---------------");
+            Debug.WriteLine($"-------------- Training in Progress with {runParams.Epoch} epochs---------------");
             #region training process
             // BEGIN EXPERIMENT
 
@@ -36,7 +36,7 @@ namespace InvariantLearning
             // iterate through all learning unit
             foreach (var unit in poolerDict) {
                 // for loop with epochs
-                for (int epoch = 1; epoch <= experimentParams.Epoch; epoch += 1)
+                for (int epoch = 1; epoch <= runParams.Epoch; epoch += 1)
                 {
                     // for loop with training:
                     foreach(var sample in invariantSet.images)

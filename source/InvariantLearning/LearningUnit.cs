@@ -4,7 +4,7 @@ using NeoCortexApi.Network;
 using System.Diagnostics;
 using HtmImageEncoder;
 using NeoCortexApi.Classifiers;
-
+using Classifier;
 namespace InvariantLearning
 {
     internal class LearningUnit
@@ -12,14 +12,14 @@ namespace InvariantLearning
 
         private CortexLayer<object, object> cortexLayer;
         private bool isInStableState;
-        HtmClassifier<string, ComputeCycle> cls;
+        Classifier<string> cls; 
         private int inputDim;
 
         public LearningUnit(int inputDim, int columnDim)
         {
             this.inputDim = inputDim;
             // HTM CONFIG
-            HtmConfig config = new HtmConfig(new int[] { inputDim*inputDim }, new int[]{columnDim});
+            HtmConfig config = new HtmConfig(new int[] { inputDim*inputDim }, new int[] { columnDim });
 
             // CONNECTIONS
             Connections conn = new Connections(config);
@@ -48,7 +48,7 @@ namespace InvariantLearning
             // IMAGE ENCODER
             ImageEncoder imgEncoder = new(new Daenet.ImageBinarizerLib.Entities.BinarizerParams()
             {
-                Inverse = true,
+                Inverse = false,
                 ImageHeight = inputDim,
                 ImageWidth = inputDim,
                 GreyScale = true,
@@ -63,31 +63,20 @@ namespace InvariantLearning
             isInStableState = false;
 
             // HTM CLASSIFIER
-            cls = new HtmClassifier<string, ComputeCycle>();
+            cls = new HtmClassifier<string, int[]>();
         }
 
         internal void Learn(InvImage sample)
         {
             // SPATIAL POOLER
-            var SDR = cortexLayer.Compute(sample.imagePath, true) as ComputeCycle;
+            Debug.WriteLine($"Label: {sample.label}___{Path.GetFileNameWithoutExtension(sample.imagePath)}");
+            var SDR = cortexLayer.Compute(sample.imagePath, true);
 
             if (isInStableState)
             {
-                // HTM CLASSIFIER
-                var activeColumns = cortexLayer.GetResult("sp") as int[];
-
-                List<Cell> actCells;
-
-                if (SDR.ActiveCells.Count == SDR.WinnerCells.Count)
-                {
-                    actCells = SDR.ActiveCells;
-                }
-                else
-                {
-                    actCells = SDR.WinnerCells;
-                }
-
-                cls.Learn(sample.label, actCells.ToArray());
+                // SP CLASSIFIER
+                var activeColumns = cortexLayer.GetResult("sp");
+                cls.Learn(sample.label, activeColumns);
             }
         }
 
@@ -95,7 +84,7 @@ namespace InvariantLearning
         {
             Dictionary<string, double> result = new Dictionary<string, double>();
 
-            var frameMatrix = InvFrame.GetConvFrames();
+            //var frameMatrix = InvFrame.GetConvFrames();
 
             return result;
         }

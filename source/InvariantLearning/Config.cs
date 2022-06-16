@@ -21,7 +21,7 @@ namespace InvariantLearning
         /// <summary>
         /// Run Parameter of the Experiment
         /// </summary>
-        public RunConfig? runParams { get; set; }
+        public RunConfig runParams { get; set; }
     }
 
     /// <summary>
@@ -32,7 +32,7 @@ namespace InvariantLearning
         /// <summary>
         /// Hierarchical Temporal Memory Configuration
         /// </summary>
-        public HtmConfig? htmConfig { get; set; }
+        public HtmConfig htmConfig { get; set; }
 
         /// <summary>
         /// Iteration through whole dataset
