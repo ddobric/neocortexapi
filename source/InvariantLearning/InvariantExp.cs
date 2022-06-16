@@ -7,6 +7,7 @@ namespace InvariantLearning
     {
         private TrainingData invariantSet;
         private RunConfig experimentParams;
+        Dictionary<string, LearningUnit> poolerDict;
 
         /// <summary>
         /// Experiment specification for Htm Invariant Object Representation Learning
@@ -24,20 +25,27 @@ namespace InvariantLearning
             Debug.WriteLine($"-------------- Training in Progress with {experimentParams.Epoch} epochs---------------");
             #region training process
             // BEGIN EXPERIMENT
-            // prepare regions for image
-
 
             // Initiate Spatial Pooler Dictionaries
-            Dictionary<string, SpatialPooler> poolerDict = new Dictionary<string, SpatialPooler>();
-
-            
-            // for loop with epochs
-            for (int epoch = 1; epoch <= experimentParams.Epoch; epoch += 1)
+            poolerDict = new Dictionary<string, LearningUnit>();
+            foreach(var dim in InvFrame.GetDivisionIndex(10,invariantSet.images[0].imageHeight,10))
             {
-                // for loop with training:
-                for
+                poolerDict.Add(dim.ToString(),new LearningUnit(dim*dim,1024));
             }
-            // END EXPERIMENT
+
+            // iterate through all learning unit
+            foreach (var unit in poolerDict) {
+                // for loop with epochs
+                for (int epoch = 1; epoch <= experimentParams.Epoch; epoch += 1)
+                {
+                    // for loop with training:
+                    foreach(var sample in invariantSet.images)
+                    {
+                        unit.Value.Learn(sample);
+                    }
+                }
+            }
+            // END Training
             #endregion
         }
 
@@ -61,9 +69,36 @@ namespace InvariantLearning
         /// </summary>
         /// <param name="v">input image in InvImage</param>
         /// <returns></returns>
-        internal (string, string) Predict(InvImage v)
+        internal (string, string) Predict(InvImage inputImage)
         {
-            return ("- Prediction in Progress -", v.label);
+            List<Dictionary<string,double>> cosensus = new List<Dictionary<string,double>>();
+            
+            // Collecting Vote
+            foreach (var sp in poolerDict)
+            {
+                Dictionary<string, double> a = sp.Value.Predict(inputImage);
+                cosensus.Add(a);
+                
+            }
+
+            // Calculating Vote
+            Dictionary<string, double> result = new Dictionary<string, double>();
+            foreach(var label in invariantSet.classes)
+            {
+                result.Add(label, 0);
+            }
+
+            foreach (var spVote in cosensus)
+            {
+                foreach (var classResult in spVote)
+                {
+                    result[classResult.Key]+= classResult.Value;
+                }
+            }
+            // Check highest label score
+            var predictedLabel = result.Aggregate((l, r) => l.Value > r.Value ? l : r).Key;
+
+            return (predictedLabel, inputImage.label);
         }
     }
 }
