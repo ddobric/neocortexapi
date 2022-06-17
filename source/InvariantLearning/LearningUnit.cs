@@ -9,7 +9,7 @@ namespace InvariantLearning
 {
     internal class LearningUnit
     {
-        public string OutputPredictFolder;
+        public string OutputPredictFolder = "";
         private CortexLayer<object, object> cortexLayer;
         private bool isInStableState;
         Classifier<string> cls; 
@@ -102,6 +102,18 @@ namespace InvariantLearning
 
                 // Get Predicted Labels
                 var predictedLabel = cls.GetPredictedInputValues(sdr, 1);
+
+                // Check if there are Predicted Label ?
+                if (predictedLabel.Count!=0)
+                {
+                    foreach (var a in predictedLabel)
+                    {
+                        Debug.WriteLine($"Predicting image: {image.imagePath}");
+                        Debug.WriteLine($"label predicted as : {a.PredictedInput}");
+                        Debug.WriteLine($"similarity : {a.Similarity}");
+                        Debug.WriteLine($"Number of Same Bits: {a.NumOfSameBits}");
+                    }
+                }
             }
             return result;
         }

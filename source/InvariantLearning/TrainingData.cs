@@ -4,8 +4,11 @@
 
     public List<InvImage> images;
 
+    public Random random;
     public TrainingData(string pathToTrainingFolder)
     {
+        random = new Random(42);
+
         images = new List<InvImage>();
         // Getting the classes
         ClassesInit(pathToTrainingFolder);
@@ -43,7 +46,6 @@
     /// <returns></returns>
     internal InvImage PickRandom(int seed = 42)
     {
-        var random = new Random(seed);
         int index = random.Next(this.Count);
         return images[index];
     }

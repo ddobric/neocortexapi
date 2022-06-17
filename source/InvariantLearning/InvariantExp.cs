@@ -18,16 +18,16 @@ namespace InvariantLearning
         {
             this.invariantSet = invariantSet;
             this.runParams = runParams;
+            poolerDict = new Dictionary<string, LearningUnit>();
         }
 
         internal void Train()
         {
             Debug.WriteLine($"-------------- Training in Progress with {runParams.Epoch} epochs---------------");
             #region training process
-            // BEGIN EXPERIMENT
+            // BEGIN TRAINING
 
             // Initiate Spatial Pooler Dictionaries
-            poolerDict = new Dictionary<string, LearningUnit>();
             foreach(var dim in InvFrame.GetDivisionIndex(10,invariantSet.images[0].imageHeight,10))
             {
                 poolerDict.Add(dim.ToString(),new LearningUnit(dim,1024));
@@ -45,7 +45,7 @@ namespace InvariantLearning
                     }
                 }
             }
-            // END Training
+            // END TRAINING
             #endregion
         }
 
