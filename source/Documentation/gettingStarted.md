@@ -36,6 +36,11 @@ As illustrated in Fig. 1, an SDR is a large array of bits, the majority of which
 <figcaption align = "center"><b>Fig.1 Sparse Distributed Representations</b></figcaption>
 </figure>
 
+</br></br>
+An SDR is made up of thousands of bits, with a small percentage of them being 1's and the remainder being 0's at any given time.
+An SDR's bits correlate to brain neurons, with a 1 indicating a relatively active neuron and a 0 indicating a comparatively inactive neuron.
+SDRs' most crucial feature is that each bit has meaning and as a result, the set of active bits in any given representation conveys the collection of semantic properties of the thing being represented. 
+
 [See more in SdrRepresentation.md](./SdrRepresentation.md)
 
 ## Encoder
