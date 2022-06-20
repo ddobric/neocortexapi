@@ -28,15 +28,13 @@ The result of above mentioned method, shows indexes of bits that are active. Now
 ---
 **Block of Code**
 
-string Stringify_TraceSDR(List<int[]> sdrs)
-
-     {
-
-          var heads = new List<int>(newint[sdrs.Count]);
-
-          var outputs = new StringBuilder[sdrs.Count]);
-     }
----
+```csharp
+public static string StringifyTraceSDR(List<int[]> sdrs)
+{
+     var heads = new List<int>(newint[sdrs.Count]);
+     var outputs = new StringBuilder[sdrs.Count]);
+}
+```
 
 ### Part II:
 
@@ -48,14 +46,15 @@ The next step of our approach was to differentiate between the two SDRs which ha
 
 **Block of Code**
 
+```csharp
 
 var numOfSpaces = minActiveColumn.ToString().Length; 
-
-                for (var j = 0; j < numOfSpaces; j++)
-                {
-                    outputs[i].Append(" ");
-                }
-                outputs[i].Append(", ");
+for (var j = 0; j < numOfSpaces; j++)
+{
+     outputs[i].Append(" ");
+}
+outputs[i].Append(", ");
+```
 ---
 
 ## Result:
@@ -73,30 +72,29 @@ A Unit Test project has been also implemented for our project, tested out the St
 ---
 **Code**:
 
+```csharp
 public void StringifyTest()
+{
 
-        {
+     var list = new int[] { 51, 76, 87 };
 
-            var list = new int[] { 51, 76, 87 };
+     var list1 = new int[] { 51, 76, 113 };
 
-            var list1 = new int[] { 51, 76, 113 };
+     var output = Helpers.StringifyTraceSDR(new  List<int[]> { list, list1 });
 
-            var output = Helpers.StringifyTraceSDR(new  List<int[]> { list, list1 });
+     var expectedResult = new StringBuilder();
+     var sdr1 = new StringBuilder();
+     sdr1.Append("51, 76, 87,    , ");
 
-            var expectedResult = new StringBuilder();
-          var sdr1 = new StringBuilder();
-            sdr1.Append("51, 76, 87,    , ");
+     var sdr2 = new StringBuilder();
+     sdr2.Append("51, 76,   , 113, ");
 
-            var sdr2 = new StringBuilder();
-            sdr2.Append("51, 76,   , 113, ");
+     expectedResult.AppendLine(sdr1.ToString());
+     expectedResult.AppendLine(sdr2.ToString());
 
-            expectedResult.AppendLine(sdr1.ToString());
-            expectedResult.AppendLine(sdr2.ToString());
-
-           Assert.IsTrue(output == expectedResult.ToString());
-        }
-
-
+     Assert.IsTrue(output == expectedResult.ToString());
+}
+```
 
 ---
 
@@ -107,10 +105,10 @@ In Hierarchical Temporal Memory, the underlying algorithm tracks the SDRs. These
 
 ## Documentation
 
-The documentation of this project can be found [here](https://github.com/aishincp/neocortexapi/blob/Infinity/My_Project/Documentation/Implement_Trace_SDR_Method.docx)
+The documentation of this project can be found [here](./ML-21-22-26_Implement_Trace_SDR_Method.pdf)
 
 ## Code
 
-The code for this project can be followed [here](https://github.com/aishincp/neocortexapi/tree/Infinity/My_Project/Trace_SDR_Method/Trace_SDR)
+The code for this project can be followed [here](../NeoCortexApi/Helpers.cs#L35-L147)
 
-And, the Unit test project is [here](https://github.com/aishincp/neocortexapi/tree/Infinity/My_Project/Trace_SDR_Method/Trace_SDR.UnitTests)
+And, the Unit test project is [here](../UnitTestsProject/TraceSDRsTest.cs)
