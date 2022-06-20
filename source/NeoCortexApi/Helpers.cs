@@ -33,18 +33,15 @@ namespace NeoCortexApi
         }
 
         #region TraceSDR
-        public string _TraceSdrsMethod(List<int[]> indexesOfNoneZeros, string paddingTxt = " ", bool renderSimilarityMatrix = false)
-        { 
-            throw new NotImplementedException();
-        }
 
+        
         /// <summary>
         /// Creates string representation from one dimensional value. 
         /// </summary>
         /// <see cref=""/>
         /// <param name="sdrs">the SDR sets</param>
         /// <returns>string of traced output SDRs</returns>
-        public static string StringifyTraceSDR(List<int[]> sdrs)
+        public static string StringifySdr(List<int[]> sdrs)
         {
             //List of string of arrays for SDR set
             var heads = new List<int>(new int[sdrs.Count]);
@@ -56,7 +53,8 @@ namespace NeoCortexApi
             {
                 //We set the minimum value as initial value of SDRs can be 0
                 int minActiveColumn = -1;
-                minActiveColumn = SDR_Results(sdrs, heads, minActiveColumn);
+
+                minActiveColumn = ArrangeSdr(sdrs, heads, minActiveColumn);
 
                 if (minActiveColumn == -1)
                 {
@@ -71,9 +69,9 @@ namespace NeoCortexApi
                 }
 
                 Append_ActiveColumn(sdrs, heads, outputs, minActiveColumn);
-
             }
         }
+
 
         /// <summary>
         /// Stores the SDR values from both sets and arrange them.
@@ -114,9 +112,9 @@ namespace NeoCortexApi
         }
 
         /// <summary>
-        /// Creates the reusults of SDRs in a well arrangement
+        /// Creates the results of SDRs in a well arrangement
         /// </summary>
-        public static int SDR_Results(List<int[]> sdrs, List<int> heads, int minActiveColumn)
+        private static int ArrangeSdr(List<int[]> sdrs, List<int> heads, int minActiveColumn)
         {
             for (int i = 0; i < sdrs.Count; i++)
             {
@@ -141,9 +139,10 @@ namespace NeoCortexApi
                     }
                 }
             }
-            return minActiveColumn;
 
+            return minActiveColumn;
         }
+
         #endregion
         /// <summary>
         /// Creates string representation from one dimensional vector.
@@ -151,14 +150,14 @@ namespace NeoCortexApi
         /// <param name="vector"></param>
         /// <param name="separator">The separator used between bits.</param>
         /// <returns></returns>
-        public static string StringifyVector(int[] vector, string separator=", ")
+        public static string StringifyVector(int[] vector, string separator = ", ")
         {
             StringBuilder sb = new StringBuilder();
 
             foreach (var vectorBit in vector)
             {
                 sb.Append(vectorBit);
-                if(separator != null)
+                if (separator != null)
                     sb.Append(separator);
             }
 
@@ -358,10 +357,10 @@ namespace NeoCortexApi
         /// <param name="matrix">Two-dimensianal matrix of cross-similarities between given values. Values are already rendered as string.</param>
         /// <returns></returns>
 
-        public static string RenderSimilarityMatrix( string[] values, string[,] matrix)
+        public static string RenderSimilarityMatrix(string[] values, string[,] matrix)
         {
             System.IO.StringWriter sw = new System.IO.StringWriter();
-            
+
             sw.Write($"{string.Format(" {0,-15}", "")} |");
 
             for (int k = 0; k < values.Length; k++)
