@@ -29,7 +29,7 @@ namespace UnitTestsProject
             //Second SDR vector
             var list1 = new int[] { 51, 76, 113 };
             //Stores the two SDRs
-            var output = Helpers.StringifyTraceSDR(new List<int[]> { list, list1 });
+            var output = Helpers.StringifySdr(new List<int[]> { list, list1 });
 
             /// <summary>
             /// This result stores the SDR vectors same as output for the comparison. 
@@ -66,7 +66,7 @@ namespace UnitTestsProject
             var list = new int[] { 51, 76, 87, 113, 116, 118, 122, 152, 156, 163, 179, 181, 183, 186, 188, 190, 195, 210, 214, 224, };
             var list1 = new int[] { 51, 76, 113, 116, 118, 156, 163, 179, 181, 182, 183, 186, 188, 190, 195, 197, 210, 214, 224, 243 };
 
-            var output = Helpers.StringifyTraceSDR(new List<int[]> { list, list1 });
+            var output = Helpers.StringifySdr(new List<int[]> { list, list1 });
             Debug.WriteLine(output);
         }
     }

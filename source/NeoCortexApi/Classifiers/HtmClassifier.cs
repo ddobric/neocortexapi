@@ -363,11 +363,13 @@ namespace NeoCortexApi.Classifiers
 
                 strSw.WriteLine($"{item.Key}");
 
-                foreach (var cellState in item.Value)
-                {
-                    var str = Helpers.StringifyVector(cellState);
-                    strSw.WriteLine(str);
-                }
+                strSw.Write(Helpers.StringifySdr(new List<int[]> (item.Value)));
+
+                //foreach (var cellState in item.Value)
+                //{
+                //    var str = Helpers.StringifySdr(cellState);
+                //    strSw.WriteLine(str);
+                //}
             }
 
             if (sw != null)
