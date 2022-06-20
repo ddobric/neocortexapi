@@ -22,7 +22,7 @@ experiment.Train();
 
 // using predict to classify image from dataset
 Utility.CreateFolderIfNotExist("Predict");
-
+List<string> currentResList = new List<string>();
 CancellationToken cancelToken = new CancellationToken();
 while(true){
     if (cancelToken.IsCancellationRequested)
@@ -31,6 +31,10 @@ while(true){
     }
     // This can be later changed to the validation test
     var result = experiment.Predict(invariantSet.PickRandom());
-    Debug.WriteLine(result);
-    Task.Delay(1000);
+    Debug.WriteLine($"predicted as {result.Item1}, correct label: {result.Item2}");
+
+    
+    double accuracy = Utility.AccuracyCal(currentResList);
+    currentResList.Add($"{result.Item1}_{result.Item2}");
+    //Utility.WriteToFile(Path.Combine("Predict", "PredictionOutput.csv"),result);
 }

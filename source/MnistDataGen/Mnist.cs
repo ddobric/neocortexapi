@@ -123,5 +123,10 @@ namespace MnistDataGen
             }
             return true;
         }
+
+        public static void InvariantTestDataGen()
+        {
+
+        }
     }
 }

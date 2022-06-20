@@ -5,6 +5,7 @@ using System.Diagnostics;
 using HtmImageEncoder;
 using NeoCortexApi.Classifiers;
 using Classifier;
+
 namespace InvariantLearning
 {
     internal class LearningUnit
@@ -114,8 +115,27 @@ namespace InvariantLearning
                         Debug.WriteLine($"Number of Same Bits: {a.NumOfSameBits}");
                     }
                 }
+                // Aggregate Label to Result
+                AddResult(ref result, predictedLabel, frameMatrix.Count);
+
             }
             return result;
+        }
+
+        private void AddResult(ref Dictionary<string, double> result, List<Classifier<string>.ClassifierResult<string>> predictedLabel, int frameCount)
+        {
+            Dictionary<string, double> res = new Dictionary<string, double>();
+            foreach (var label in predictedLabel)
+            {
+                if (result.ContainsKey(label.PredictedInput))
+                {
+                    result[label.PredictedInput]+=label.NumOfSameBits/frameCount;
+                }
+                else
+                {
+                    result.Add(label.PredictedInput, label.NumOfSameBits/frameCount);
+                }
+            }
         }
     }
 }

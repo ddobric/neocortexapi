@@ -14,7 +14,7 @@ namespace MnistDataGen
         [TestCategory("Mnist Dataset")]
         public void DataGenTest()
         {
-            Mnist.DataGen("MnistDataSet", "TrainingFolder", 100);
+            Mnist.DataGen("MnistDataSet", "TrainingFolder", 7);
         }
     }
 }

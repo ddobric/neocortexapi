@@ -1,6 +1,7 @@
 ﻿using Newtonsoft;
 using Newtonsoft.Json;
 using shortid;
+
 namespace InvariantLearning
 {
     public class Utility
@@ -35,6 +36,21 @@ namespace InvariantLearning
         internal static string GetHash()
         {
             return ShortId.Generate();
+        }
+
+        internal static double AccuracyCal(List<string> currentResList)
+        {
+            double accuracy = 0;
+            double match = 0;
+            foreach (string currentRes in currentResList)
+            {
+                var a = currentRes.Split('_');
+                if (a[0] == a[1])
+                {
+                    match += 1;
+                }
+            }
+            return match/currentResList.Count;
         }
     }
 }
