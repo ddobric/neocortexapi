@@ -335,13 +335,14 @@ namespace NeoCortexApi.Classifiers
         /// <summary>
         /// Traces out all cell indicies grouped by input value.
         /// </summary>
-        public void TraceState(string fileName = null)
+        public string TraceState(string fileName = null)
         {
+            StringWriter strSw = new StringWriter();
+
             StreamWriter sw = null;
+
             if (fileName != null)
                 sw = new StreamWriter(fileName);
-            else
-                sw = new StreamWriter(fileName.Replace(".csv", "HtmClassifier.state.csv"));
 
             List<TIN> processedValues = new List<TIN>();
 
@@ -349,36 +350,35 @@ namespace NeoCortexApi.Classifiers
             // Trace out the last stored state.
             foreach (var item in this.m_AllInputs)
             {
-                Debug.WriteLine("");
-                Debug.WriteLine($"{item.Key}");
-                Debug.WriteLine($"{Helpers.StringifyVector(item.Value.Last())}");
+                strSw.WriteLine("");
+                strSw.WriteLine($"{item.Key}");
+                strSw.WriteLine($"{Helpers.StringifyVector(item.Value.Last())}");
+            }
+
+            strSw.WriteLine("........... Cell State .............");
+
+            foreach (var item in m_AllInputs)
+            {
+                strSw.WriteLine("");
+
+                strSw.WriteLine($"{item.Key}");
+
+                foreach (var cellState in item.Value)
+                {
+                    var str = Helpers.StringifyVector(cellState);
+                    strSw.WriteLine(str);
+                }
             }
 
             if (sw != null)
             {
+                sw.Write(strSw.ToString());
                 sw.Flush();
                 sw.Close();
             }
 
-            Debug.WriteLine("........... Cell State .............");
-
-            using (var cellStateSw = new StreamWriter(fileName.Replace(".csv", "HtmClassifier.fullstate.csv")))
-            {
-                foreach (var item in m_AllInputs)
-                {
-                    Debug.WriteLine("");
-                    Debug.WriteLine($"{item.Key}");
-
-                    cellStateSw.WriteLine("");
-                    cellStateSw.WriteLine($"{item.Key}");
-                    foreach (var cellState in item.Value)
-                    {
-                        var str = Helpers.StringifyVector(cellState);
-                        Debug.WriteLine(str);
-                        cellStateSw.WriteLine(str);
-                    }
-                }
-            }
+            Debug.WriteLine(strSw.ToString());
+            return strSw.ToString();
         }
 
 
