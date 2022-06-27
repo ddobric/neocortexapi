@@ -67,7 +67,7 @@ namespace InvariantLearning
             cls = new Classifier<string>();
         }
 
-        internal void Learn(InvImage sample)
+        internal void Learn(Picture sample)
         {
             // SPATIAL POOLER
             Debug.WriteLine($"Label: {sample.label}___{Path.GetFileNameWithoutExtension(sample.imagePath)}");
@@ -81,7 +81,7 @@ namespace InvariantLearning
             }
         }
 
-        internal Dictionary<string, double> Predict(InvImage image)
+        internal Dictionary<string, double> Predict(Picture image)
         {
             // Create the folder for the frame extracted by InvImage
             string spFolder = Path.Combine("Predict", OutputPredictFolder, $"SP of {inputDim}x{inputDim}");
@@ -90,13 +90,13 @@ namespace InvariantLearning
             // dictionary for saving result
             Dictionary<string, double> result = new Dictionary<string, double>();
 
-            var frameMatrix = InvFrame.GetConvFramesbyPixel(image.imageWidth,image.imageHeight,inputDim,inputDim);
+            var frameMatrix = Frame.GetConvFramesbyPixel(image.imageWidth,image.imageHeight,inputDim,inputDim);
 
             foreach (var frame in frameMatrix) 
             {
                 // Save frame to folder
                 string outFile = Path.Combine(spFolder,$"frame__{frame.tlX}_{frame.tlY}.png");
-                InvImage.SaveAsImage(image.GetPixels(frame),outFile);
+                Picture.SaveAsImage(image.GetPixels(frame),outFile);
 
                 // Compute the SDR
                 var sdr = cortexLayer.Compute(outFile, false) as int[];

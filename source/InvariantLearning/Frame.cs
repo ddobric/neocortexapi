@@ -1,4 +1,4 @@
-﻿public class InvFrame
+﻿public class Frame
 {
     /// <summary>
     /// top left x coordinate
@@ -27,7 +27,7 @@
     /// <param name="v2">top left Y coord</param>
     /// <param name="lastXIndex">bottom right X coord</param>
     /// <param name="lastYIndex">bottom right Y coord</param>
-    public InvFrame(int v1, int v2, int lastXIndex, int lastYIndex)
+    public Frame(int v1, int v2, int lastXIndex, int lastYIndex)
     {
         tlX = v1;
         tlY = v2;
@@ -84,9 +84,9 @@
     /// <param name="NoX">number of convolutional frame in 1 width-length row</param>
     /// <param name="NoY">number of convolutional frame in 1 height-length column</param>
     /// <returns></returns>
-    public static List<InvFrame> GetConvFrames(int imgWidth, int imgHeight, int frameWidth, int frameHeight, int NoX, int NoY)
+    public static List<Frame> GetConvFrames(int imgWidth, int imgHeight, int frameWidth, int frameHeight, int NoX, int NoY)
     {
-        List<InvFrame> result = new List<InvFrame>();
+        List<Frame> result = new List<Frame>();
 
         var xIndicies = GetDivisionIndex(0,imgWidth-frameWidth,NoX);
         var yIndicies = GetDivisionIndex(0,imgHeight-frameHeight,NoY);
@@ -94,15 +94,15 @@
         {
             for (int j = 0; j < yIndicies.Count; j++)
             {
-                result.Add(new InvFrame(xIndicies[i], yIndicies[j], xIndicies[i] + frameWidth - 1, yIndicies[j] + frameHeight - 1));
+                result.Add(new Frame(xIndicies[i], yIndicies[j], xIndicies[i] + frameWidth - 1, yIndicies[j] + frameHeight - 1));
             }
         }
         return result;
     }
 
-    internal static List<InvFrame> GetConvFramesbyPixel(int imgWidth, int imgHeight, int frameWidth, int frameHeight)
+    internal static List<Frame> GetConvFramesbyPixel(int imgWidth, int imgHeight, int frameWidth, int frameHeight)
     {
-        List<InvFrame> result = new List<InvFrame>();
+        List<Frame> result = new List<Frame>();
 
         var xIndicies = GetDivisionIndexByPixel(0, imgWidth - frameWidth);
         var yIndicies = GetDivisionIndexByPixel(0, imgHeight - frameHeight);
@@ -110,7 +110,7 @@
         {
             for (int j = 0; j < yIndicies.Count; j++)
             {
-                result.Add(new InvFrame(xIndicies[i], yIndicies[j], xIndicies[i] + frameWidth - 1, yIndicies[j] + frameHeight - 1));
+                result.Add(new Frame(xIndicies[i], yIndicies[j], xIndicies[i] + frameWidth - 1, yIndicies[j] + frameHeight - 1));
             }
         }
         return result;

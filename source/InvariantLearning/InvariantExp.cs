@@ -5,7 +5,7 @@ namespace InvariantLearning
 {
     internal class InvariantExperiment
     {
-        private TrainingData invariantSet;
+        private DataSet invariantSet;
         private RunConfig runParams;
         Dictionary<string, LearningUnit> poolerDict;
 
@@ -14,7 +14,7 @@ namespace InvariantLearning
         /// </summary>
         /// <param name="invariantSet">the image set used for invariant learning</param>
         /// <param name="runParams">experiment parameters used for experiment</param>
-        public InvariantExperiment(TrainingData invariantSet, RunConfig runParams)
+        public InvariantExperiment(DataSet invariantSet, RunConfig runParams)
         {
             this.invariantSet = invariantSet;
             this.runParams = runParams;
@@ -28,7 +28,7 @@ namespace InvariantLearning
             // BEGIN TRAINING
 
             // Initiate Spatial Pooler Dictionaries
-            foreach(var dim in InvFrame.GetDivisionIndex(10,invariantSet.images[0].imageHeight,10))
+            foreach(var dim in Frame.GetDivisionIndex(10,invariantSet.images[0].imageHeight,10))
             {
                 poolerDict.Add(dim.ToString(),new LearningUnit(dim,1024));
             }
@@ -69,7 +69,7 @@ namespace InvariantLearning
         /// </summary>
         /// <param name="v">input image in InvImage</param>
         /// <returns></returns>
-        internal (string, string) Predict(InvImage inputImage)
+        internal (string, string) Predict(Picture inputImage)
         {
             List<Dictionary<string,double>> cosensus = new List<Dictionary<string,double>>();
 

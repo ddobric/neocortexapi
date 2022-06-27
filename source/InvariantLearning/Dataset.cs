@@ -1,15 +1,15 @@
-﻿internal class TrainingData
+﻿internal class DataSet
 {
     public List<string> classes;
 
-    public List<InvImage> images;
+    public List<Picture> images;
 
     public Random random;
-    public TrainingData(string pathToTrainingFolder)
+    public DataSet(string pathToTrainingFolder)
     {
         random = new Random(42);
 
-        images = new List<InvImage>();
+        images = new List<Picture>();
         // Getting the classes
         ClassesInit(pathToTrainingFolder);
 
@@ -19,7 +19,7 @@
             string label = Path.GetFileName(classFolder);
             foreach (var imagePath in Directory.GetFiles(classFolder))
             {
-                images.Add(new InvImage(imagePath, label));
+                images.Add(new Picture(imagePath, label));
             }
         }
     }
@@ -44,7 +44,7 @@
     /// </summary>
     /// <param name="seed"></param>
     /// <returns></returns>
-    internal InvImage PickRandom(int seed = 42)
+    internal Picture PickRandom(int seed = 42)
     {
         int index = random.Next(this.Count);
         return images[index];

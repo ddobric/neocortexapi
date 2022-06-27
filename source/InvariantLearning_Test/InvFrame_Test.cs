@@ -24,7 +24,7 @@ namespace InvariantLearning_Test
         [DataRow(10,100,21)]
         public void GetDivisionIndex_Test(int head, int tail, int No)
         {
-            var results = InvFrame.GetDivisionIndex(head, tail, No);
+            var results = Frame.GetDivisionIndex(head, tail, No);
             foreach(var i in results)
             {
                 // printing the divided index on pixels
@@ -55,18 +55,18 @@ namespace InvariantLearning_Test
             Utility.CreateFolderIfNotExist(Path.Combine("TEST_OUTPUT", testName, folderName));
             #endregion
 
-            InvImage invImage = new InvImage(imagePath, "test");
+            Picture invImage = new Picture(imagePath, "test");
             Debug.WriteLine($"{invImage.label}");
 
             var a = invImage.GetPixels();
-            InvImage.SaveAsImage(a, "out_apple2.png");
-            var b = InvFrame.GetConvFrames(invImage.imageWidth, invImage.imageHeight, frameWidth, frameHeight, NoX, NoY);
+            Picture.SaveAsImage(a, "out_apple2.png");
+            var b = Frame.GetConvFrames(invImage.imageWidth, invImage.imageHeight, frameWidth, frameHeight, NoX, NoY);
             int count = 0;
             foreach(var frame in b)
             {
                 count += 1;
                 string imgPath = Path.Combine("TEST_OUTPUT",testName,folderName,$"{Path.GetFileNameWithoutExtension(imagePath)}{frame.brX}{frame.brY}_i.png");
-                InvImage.SaveAsImage(invImage.GetPixels(frame),imgPath);
+                Picture.SaveAsImage(invImage.GetPixels(frame),imgPath);
             }
         }
     }

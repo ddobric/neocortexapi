@@ -14,14 +14,19 @@ namespace InvariantLearning
     public class ExperimentConfig
     {
         /// <summary>
-        /// Path to the the folder which containthe training image
+        /// Path to the the folder which contains the training images
         /// </summary>
-        public string? PathToTrainingFolder;
+        public string? PathToTrainDataFolder;
+
+        /// <summary>
+        /// Path to the folder which contains the testing image
+        /// </summary>
+        public string? PathToTestDataFolder;
 
         /// <summary>
         /// Run Parameter of the Experiment
         /// </summary>
-        public RunConfig runParams { get; set; }
+        public RunConfig? runParams { get; set; }
     }
 
     /// <summary>
@@ -32,7 +37,7 @@ namespace InvariantLearning
         /// <summary>
         /// Hierarchical Temporal Memory Configuration
         /// </summary>
-        public HtmConfig htmConfig { get; set; }
+        public HtmConfig? htmConfig { get; set; }
 
         /// <summary>
         /// Iteration through whole dataset

@@ -1,5 +1,5 @@
 ﻿using SkiaSharp;
-public class InvImage
+public class Picture
 {
     public string imagePath;
 
@@ -9,7 +9,7 @@ public class InvImage
 
     public int imageHeight;
 
-    public InvImage(string imagePath, string label)
+    public Picture(string imagePath, string label)
     {
         this.label = label;
         this.imagePath = imagePath;
@@ -21,9 +21,9 @@ public class InvImage
     {
         int lastXIndex = SKBitmap.Decode(this.imagePath).Width-1;
         int lastYIndex = SKBitmap.Decode(this.imagePath).Height-1;
-        return GetPixels(new InvFrame(0, 0, lastXIndex, lastYIndex));
+        return GetPixels(new Frame(0, 0, lastXIndex, lastYIndex));
     }
-    public double[,,] GetPixels(InvFrame frame)
+    public double[,,] GetPixels(Frame frame)
     {
         using (SKBitmap inputBitmap = SKBitmap.Decode(this.imagePath))
         {

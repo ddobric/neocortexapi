@@ -22,12 +22,12 @@ namespace InvariantLearning_Test
             Utility.CreateFolderIfNotExist(Path.Combine("TEST_OUTPUT", testName, folderName));
             #endregion
 
-            InvImage invImage = new InvImage(imagePath, "test");
+            Picture invImage = new Picture(imagePath, "test");
             Debug.WriteLine($"{invImage.label}");
 
             var a = invImage.GetPixels();
             string outImg = Path.Combine("TEST_OUTPUT", testName, folderName, "out_apple.png");
-            InvImage.SaveAsImage(a, outImg);
+            Picture.SaveAsImage(a, outImg);
         }
         /// <summary>
         /// Taking the frame out from the image
@@ -51,14 +51,14 @@ namespace InvariantLearning_Test
             // folder creation
             Utility.CreateFolderIfNotExist(Path.Combine("TEST_OUTPUT", testName, folderName));
             #endregion
-            InvFrame frame = new InvFrame(tlX, tlY, brX, brY);
-            InvImage invImage = new InvImage(imagePath, "test");
+            Frame frame = new Frame(tlX, tlY, brX, brY);
+            Picture invImage = new Picture(imagePath, "test");
             Debug.WriteLine($"{invImage.label}");
 
             var a = invImage.GetPixels(frame);
 
             string outImg = Path.Combine("TEST_OUTPUT",testName,folderName,"out_apple2.png");
-            InvImage.SaveAsImage(a, outImg);
+            Picture.SaveAsImage(a, outImg);
         }
     }
 }
