@@ -1,6 +1,6 @@
 ﻿using NeoCortexApi;
 using System.Diagnostics;
-
+using dataSet;
 namespace InvariantLearning
 {
     internal class InvariantExperiment

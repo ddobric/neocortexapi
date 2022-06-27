@@ -2,7 +2,7 @@
 using NeoCortexApi.Entities;
 using System.Diagnostics;
 using InvariantLearning;
-
+using dataSet;
 namespace InvariantLearning
 {
     public class InvariantLearning

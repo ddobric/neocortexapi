@@ -9,11 +9,11 @@
 
   <ItemGroup>
     <PackageReference Include="shortid" Version="4.0.0" />
-    <PackageReference Include="SkiaSharp" Version="2.80.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Classifier\Classifier.csproj" />
+    <ProjectReference Include="..\DataSet\DataSet.csproj" />
     <ProjectReference Include="..\ImageEncoder\HtmImageEncoder.csproj" />
     <ProjectReference Include="..\NeoCortexApi\NeoCortexApi.csproj" />
     <ProjectReference Include="..\NeoCortexEntities\NeoCortexEntities.csproj" />

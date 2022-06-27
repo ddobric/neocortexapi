@@ -3,6 +3,7 @@ using SkiaSharp;
 using System;
 using System.Diagnostics;
 using System.IO;
+using dataSet;
 
 namespace MnistDataGen
 {
@@ -48,6 +49,87 @@ namespace MnistDataGen
                     return;
                 }
             }
+        }
+
+        /// <summary>
+        /// Generate Invariant Representation data from Mnist Dataset
+        /// </summary>
+        public static void TestDataGen(string MnistFolder, string outputPath, int NoSample)
+        {
+            var data = FileReaderMNIST.LoadImagesAndLables
+                (
+                Path.Combine(MnistFolder, "train-labels-idx1-ubyte.gz"),
+                Path.Combine(MnistFolder, "train-images-idx3-ubyte.gz")
+                );
+
+            if (!Directory.Exists(outputPath))
+            {
+                Directory.CreateDirectory(outputPath);
+            }
+            for (int i = 0; i < 10; i++)
+            {
+                if (!Directory.Exists(Path.Combine(outputPath, $"{i}")))
+                {
+                    Directory.CreateDirectory(Path.Combine(outputPath, $"{i}"));
+                }
+            }
+
+            int[] checkArray = new int[10];
+
+            Random random = new Random();
+
+            foreach (var a in data)
+            {
+                //Visualize(a);
+                TestCase invA = GenerateInvFrame(a,random.Next());
+                if (checkArray[(int)a.Label] < NoSample)
+                {
+                    checkArray[(int)a.Label] += 1;
+                    SaveImage(invA, outputPath, checkArray[(int)a.Label]);
+                }
+                if (EnoughSample(ref checkArray, NoSample))
+                {
+                    return;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Generate test case. Settings found now in function
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="nextInt64"></param>
+        /// <returns></returns>
+        private static TestCase GenerateInvFrame(TestCase a, int nextInt64)
+        {
+            var InvA = new TestCase();
+
+            // assigning label
+            InvA.Label = a.Label;
+
+            byte[,] newbyte = new byte[100, 100];
+
+            var framelist = Frame.GetConvFramesbyPixel(newbyte.GetLength(1), newbyte.GetLength(0), a.Image.GetLength(0), a.Image.GetLength(1));
+            
+
+            Random random = new Random(nextInt64);
+            var selectedFrame = framelist[random.Next() % framelist.Count];
+
+
+            for(int i = 0; i < newbyte.GetLength(0); i += 1)
+            {
+                for(int j = 0; j < newbyte.GetLength(1); j += 1)
+                {
+                    if(i>= selectedFrame.tlY && i<=selectedFrame.brY && j>= selectedFrame.tlX && j <= selectedFrame.brX)
+                    {
+                        newbyte[i, j] = a.Image[i - selectedFrame.tlY, j - selectedFrame.tlX];
+                    }
+                }
+            }
+
+            InvA.Image = newbyte;
+
+            return InvA;
         }
 
         /// <summary>

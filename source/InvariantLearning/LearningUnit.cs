@@ -5,10 +5,10 @@ using System.Diagnostics;
 using HtmImageEncoder;
 using NeoCortexApi.Classifiers;
 using Classifier;
-
+using dataSet;
 namespace InvariantLearning
 {
-    internal class LearningUnit
+    public class LearningUnit
     {
         public string OutputPredictFolder = "";
         private CortexLayer<object, object> cortexLayer;
@@ -67,7 +67,7 @@ namespace InvariantLearning
             cls = new Classifier<string>();
         }
 
-        internal void Learn(Picture sample)
+        public void Learn(Picture sample)
         {
             // SPATIAL POOLER
             Debug.WriteLine($"Label: {sample.label}___{Path.GetFileNameWithoutExtension(sample.imagePath)}");
@@ -81,7 +81,7 @@ namespace InvariantLearning
             }
         }
 
-        internal Dictionary<string, double> Predict(Picture image)
+        public Dictionary<string, double> Predict(Picture image)
         {
             // Create the folder for the frame extracted by InvImage
             string spFolder = Path.Combine("Predict", OutputPredictFolder, $"SP of {inputDim}x{inputDim}");
