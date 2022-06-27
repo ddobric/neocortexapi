@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NeoCortexApi\NeoCortexApi.csproj" />
-    <ProjectReference Include="..\NeoCortexUtils\NeoCortexUtils.csproj" />
+    <ProjectReference Include="..\..\NeoCortexApi\NeoCortexApi.csproj" />
+    <ProjectReference Include="..\..\NeoCortexUtils\NeoCortexUtils.csproj" />
   </ItemGroup>
 
 </Project>

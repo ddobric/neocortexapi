@@ -16,12 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\NeoCortexApi.Parallel\NeoCortexApi.Parallel.csproj" />
     <ProjectReference Include="..\InvariantLearning\InvariantLearning.csproj" />
-    <ProjectReference Include="..\NeoCortexApi.Parallel\NeoCortexApi.Parallel.csproj" />
-    <ProjectReference Include="..\NeoCortexApi\NeoCortexApi.csproj" />
-    <ProjectReference Include="..\NeoCortexArrayLib\NeoCortexArrayLib.csproj" />
-    <ProjectReference Include="..\NeoCortexEntities\NeoCortexEntities.csproj" />
-    <ProjectReference Include="..\NeoCortexUtils\NeoCortexUtils.csproj" />
   </ItemGroup>
 
 </Project>

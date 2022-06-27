@@ -94,5 +94,21 @@ namespace dataSet
                 }
             }
         }
+
+        public bool IsRegionEmpty(Frame frame)
+        {
+            var test = this.GetPixels(frame);
+            for (int y = 0; y < test.GetLength(0); y++)
+            {
+                for (int x = 0; x < test.GetLength(1); x++)
+                {
+                    if(test[x, y, 0] > 0)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
     }
 }

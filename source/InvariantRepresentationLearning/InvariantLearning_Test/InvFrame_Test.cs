@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using InvariantLearning;
-
+using dataSet;
 namespace InvariantLearning_Test
 {
     [TestClass]
@@ -24,7 +24,7 @@ namespace InvariantLearning_Test
         [DataRow(10,100,21)]
         public void GetDivisionIndex_Test(int head, int tail, int No)
         {
-            var results = Frame.GetDivisionIndex(head, tail, No);
+            var results = Frame.GetIndexes(head, tail, No);
             foreach(var i in results)
             {
                 // printing the divided index on pixels

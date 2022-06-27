@@ -43,14 +43,14 @@
         /// <br>input head = 0; tail = 6, No = 3</br>
         /// <br>output list = {0, 3, 6}</br>
         /// </summary>
-        /// <param name="head"></param>
-        /// <param name="tail"></param>
+        /// <param name="firstIndex">first index of output series</param>
+        /// <param name="lastIndex">last index of output series</param>
         /// <param name="No"></param>
         /// <returns></returns>
-        public static List<int> GetDivisionIndex(int head, int tail, int No)
+        public static List<int> GetIndexes(int firstIndex, int lastIndex, int No)
         {
             #region error input
-            if (tail <= head)
+            if (lastIndex <= firstIndex)
             {
                 throw new Exception("head index cannot be larger than tail index");
             }
@@ -58,22 +58,22 @@
             {
                 throw new Exception("number of frame index cannot be smaller than 2");
             }
-            else if (head < 0 | tail < 0 | No < 0)
+            else if (firstIndex < 0 | lastIndex < 0 | No < 0)
             {
                 throw new Exception("None of the input params can be negative");
             }
             #endregion
             List<int> result = new List<int>();
-            result.Add(head);
+            result.Add(firstIndex);
             if (No > 2)
             {
                 for (int i = 1; i <= No - 2; i++)
                 {
-                    double nextIndex = (double)(tail - head) / (No - 1) * i + head;
+                    double nextIndex = (double)(lastIndex - firstIndex) / (No - 1) * i + firstIndex;
                     result.Add((int)nextIndex);
                 }
             }
-            result.Add(tail);
+            result.Add(lastIndex);
             return result;
         }
 
@@ -91,8 +91,8 @@
         {
             List<Frame> result = new List<Frame>();
 
-            var xIndicies = GetDivisionIndex(0, imgWidth - frameWidth, NoX);
-            var yIndicies = GetDivisionIndex(0, imgHeight - frameHeight, NoY);
+            var xIndicies = GetIndexes(0, imgWidth - frameWidth, NoX);
+            var yIndicies = GetIndexes(0, imgHeight - frameHeight, NoY);
             for (int i = 0; i < xIndicies.Count; i++)
             {
                 for (int j = 0; j < yIndicies.Count; j++)
@@ -103,16 +103,24 @@
             return result;
         }
 
-        public static List<Frame> GetConvFramesbyPixel(int imgWidth, int imgHeight, int frameWidth, int frameHeight)
+        public static List<Frame> GetConvFramesbyPixel(int imgWidth, int imgHeight, int frameWidth, int frameHeight, int NoPixels = 1)
         {
             List<Frame> result = new List<Frame>();
 
             var xIndicies = GetDivisionIndexByPixel(0, imgWidth - frameWidth);
             var yIndicies = GetDivisionIndexByPixel(0, imgHeight - frameHeight);
-            for (int i = 0; i < xIndicies.Count; i++)
+            for (int i = 0; i < xIndicies.Count; i+=NoPixels)
             {
-                for (int j = 0; j < yIndicies.Count; j++)
+                if (i > xIndicies.Count)
                 {
+                    continue;
+                }
+                for (int j = 0; j < yIndicies.Count; j+=NoPixels)
+                {
+                    if (j > yIndicies.Count)
+                    {
+                        continue;
+                    }
                     result.Add(new Frame(xIndicies[i], yIndicies[j], xIndicies[i] + frameWidth - 1, yIndicies[j] + frameHeight - 1));
                 }
             }

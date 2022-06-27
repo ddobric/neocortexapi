@@ -2,6 +2,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics;
 using System.IO;
 using InvariantLearning;
+using dataSet;
+
 namespace InvariantLearning_Test
 {
     [TestClass]

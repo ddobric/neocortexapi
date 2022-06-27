@@ -69,13 +69,13 @@ namespace InvariantLearning
 
         public void Learn(Picture sample)
         {
-            // SPATIAL POOLER
             Debug.WriteLine($"Label: {sample.label}___{Path.GetFileNameWithoutExtension(sample.imagePath)}");
-            var SDR = cortexLayer.Compute(sample.imagePath, true);
+
+            // Active Columns
+            var sdr = cortexLayer.Compute(sample.imagePath, true);
 
             if (isInStableState)
             {
-                // SP CLASSIFIER
                 var activeColumns = cortexLayer.GetResult("sp") as int[];
                 cls.Learn(sample.label, activeColumns);
             }
@@ -90,34 +90,41 @@ namespace InvariantLearning
             // dictionary for saving result
             Dictionary<string, double> result = new Dictionary<string, double>();
 
-            var frameMatrix = Frame.GetConvFramesbyPixel(image.imageWidth,image.imageHeight,inputDim,inputDim);
+            var frameMatrix = Frame.GetConvFramesbyPixel(image.imageWidth,image.imageHeight,inputDim,inputDim, 5);
+
 
             foreach (var frame in frameMatrix) 
             {
-                // Save frame to folder
-                string outFile = Path.Combine(spFolder,$"frame__{frame.tlX}_{frame.tlY}.png");
-                Picture.SaveAsImage(image.GetPixels(frame),outFile);
-
-                // Compute the SDR
-                var sdr = cortexLayer.Compute(outFile, false) as int[];
-
-                // Get Predicted Labels
-                var predictedLabel = cls.GetPredictedInputValues(sdr, 1);
-
-                // Check if there are Predicted Label ?
-                if (predictedLabel.Count!=0)
+                if (image.IsRegionEmpty(frame))
                 {
-                    foreach (var a in predictedLabel)
-                    {
-                        Debug.WriteLine($"Predicting image: {image.imagePath}");
-                        Debug.WriteLine($"label predicted as : {a.PredictedInput}");
-                        Debug.WriteLine($"similarity : {a.Similarity}");
-                        Debug.WriteLine($"Number of Same Bits: {a.NumOfSameBits}");
-                    }
+                    continue;
                 }
-                // Aggregate Label to Result
-                AddResult(ref result, predictedLabel, frameMatrix.Count);
+                else
+                {
+                    // Save frame to folder
+                    string outFile = Path.Combine(spFolder, $"frame__{frame.tlX}_{frame.tlY}.png");
+                    Picture.SaveAsImage(image.GetPixels(frame), outFile);
 
+                    // Compute the SDR
+                    var sdr = cortexLayer.Compute(outFile, false) as int[];
+
+                    // Get Predicted Labels
+                    var predictedLabel = cls.GetPredictedInputValues(sdr, 1);
+
+                    // Check if there are Predicted Label ?
+                    if (predictedLabel.Count != 0)
+                    {
+                        foreach (var a in predictedLabel)
+                        {
+                            Debug.WriteLine($"Predicting image: {image.imagePath}");
+                            Debug.WriteLine($"label predicted as : {a.PredictedInput}");
+                            Debug.WriteLine($"similarity : {a.Similarity}");
+                            Debug.WriteLine($"Number of Same Bits: {a.NumOfSameBits}");
+                        }
+                    }
+                    // Aggregate Label to Result
+                    AddResult(ref result, predictedLabel, frameMatrix.Count);
+                }
             }
             return result;
         }
@@ -129,11 +136,11 @@ namespace InvariantLearning
             {
                 if (result.ContainsKey(label.PredictedInput))
                 {
-                    result[label.PredictedInput]+=label.NumOfSameBits/frameCount;
+                    result[label.PredictedInput]+=label.NumOfSameBits;
                 }
                 else
                 {
-                    result.Add(label.PredictedInput, label.NumOfSameBits/frameCount);
+                    result.Add(label.PredictedInput, label.NumOfSameBits);
                 }
             }
         }

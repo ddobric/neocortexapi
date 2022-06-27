@@ -24,29 +24,25 @@ namespace InvariantLearning
         internal void Train()
         {
             Debug.WriteLine($"-------------- Training in Progress with {runParams.Epoch} epochs---------------");
-            #region training process
-            // BEGIN TRAINING
-
             // Initiate Spatial Pooler Dictionaries
-            foreach(var dim in Frame.GetDivisionIndex(10,invariantSet.images[0].imageHeight,10))
+            foreach (var dim in Frame.GetIndexes(10, invariantSet.images[0].imageHeight, 10))
             {
-                poolerDict.Add(dim.ToString(),new LearningUnit(dim,1024));
+                poolerDict.Add(dim.ToString(), new LearningUnit(dim, 1024));
             }
 
             // iterate through all learning unit
-            foreach (var unit in poolerDict) {
+            foreach (var unit in poolerDict)
+            {
                 // for loop with epochs
                 for (int epoch = 1; epoch <= runParams.Epoch; epoch += 1)
                 {
                     // for loop with training:
-                    foreach(var sample in invariantSet.images)
+                    foreach (var sample in invariantSet.images)
                     {
                         unit.Value.Learn(sample);
                     }
                 }
             }
-            // END TRAINING
-            #endregion
         }
 
         /// <summary>
@@ -56,12 +52,12 @@ namespace InvariantLearning
         internal void Validate(int times)
         {
             int correctGuess = 0;
-            for(int time = 0; time< times; time += 1)
+            for (int time = 0; time < times; time += 1)
             {
                 (string predicted, string realLabel) = Predict(invariantSet.PickRandom());
-                correctGuess += (predicted == realLabel)? 1 : 0;
+                correctGuess += (predicted == realLabel) ? 1 : 0;
             }
-            Debug.WriteLine($"validation of {times} datapoints: {(double)(correctGuess/times)}");
+            Debug.WriteLine($"validation of {times} datapoints: {(double)(correctGuess / times)}");
         }
 
         /// <summary>
@@ -71,7 +67,7 @@ namespace InvariantLearning
         /// <returns></returns>
         internal (string, string) Predict(Picture inputImage)
         {
-            List<Dictionary<string,double>> cosensus = new List<Dictionary<string,double>>();
+            List<Dictionary<string, double>> cosensus = new List<Dictionary<string, double>>();
 
             // Prepare Output Folder
             string predictProcessName = Path.GetFileNameWithoutExtension(inputImage.imagePath) + Utility.GetHash();
@@ -87,7 +83,7 @@ namespace InvariantLearning
 
             // Calculating Vote
             Dictionary<string, double> result = new Dictionary<string, double>();
-            foreach(var label in invariantSet.classes)
+            foreach (var label in invariantSet.classes)
             {
                 result.Add(label, 0);
             }
@@ -96,7 +92,7 @@ namespace InvariantLearning
             {
                 foreach (var classResult in spVote)
                 {
-                    result[classResult.Key]+= classResult.Value;
+                    result[classResult.Key] += classResult.Value;
                 }
             }
             // Check highest label score
