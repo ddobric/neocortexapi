@@ -1,6 +1,8 @@
 ﻿using NeoCortexApi;
 using System.Diagnostics;
 using dataSet;
+using System.Linq;
+
 namespace InvariantLearning
 {
     internal class InvariantExperiment
@@ -24,11 +26,43 @@ namespace InvariantLearning
         internal void Train()
         {
             Debug.WriteLine($"-------------- Training in Progress with {runParams.Epoch} epochs---------------");
+
             // Initiate Spatial Pooler Dictionaries
-            foreach (var dim in Frame.GetIndexes(10, invariantSet.images[0].imageHeight, 10))
+            var SpatialPoolerDimensionList = Frame.GetIndexes(10, invariantSet.images[0].imageHeight, 10);
+            foreach (var dim in SpatialPoolerDimensionList)
             {
                 poolerDict.Add(dim.ToString(), new LearningUnit(dim, 1024));
             }
+
+            // Visualize Training DataSet
+
+            string trainDataFolder = "TrainingSet"+Utility.GetHash();
+
+            foreach (var dim in SpatialPoolerDimensionList)
+            {
+                string pathForTrainDataOfOneSpatialPooler = Path.Combine(trainDataFolder, $"SP dim {dim.ToString()}");
+
+                Utility.CreateFolderIfNotExist(pathForTrainDataOfOneSpatialPooler);
+
+                foreach (var label in invariantSet.classes)
+                {
+                    string pathForImageInOneLabelFolder = Path.Combine(trainDataFolder, $"SP dim {dim.ToString()}", label);
+
+                    Utility.CreateFolderIfNotExist(pathForImageInOneLabelFolder);
+
+                    var imagesFilteredByLabel = invariantSet.images.Where(a => (a.label == label));
+
+                    int index = 0;
+
+                    foreach(var img in imagesFilteredByLabel)
+                    {
+                        string imagePath = Path.Combine(pathForImageInOneLabelFolder, $"{index}.png");
+                        img.SaveImageWithSquareDimension(imagePath, dim);
+                        index++;
+                    }
+                }
+            }
+            
 
             // iterate through all learning unit
             foreach (var unit in poolerDict)

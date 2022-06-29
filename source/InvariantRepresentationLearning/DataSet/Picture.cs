@@ -95,6 +95,35 @@ namespace dataSet
             }
         }
 
+        /// <summary>
+        /// Saved the Image into a square shaped image
+        /// </summary>
+        /// <param name="imagePath">outputImagePath</param>
+        /// <param name="dimension">pixel length of square side</param>
+        public void SaveImageWithSquareDimension(string imagePath, int dimension)
+        {
+            SKBitmap output = new SKBitmap(dimension,dimension);
+            using (SKBitmap inputBitmap = SKBitmap.Decode(this.imagePath))
+            {
+                inputBitmap.ScalePixels(output, SKFilterQuality.High);
+                using (var image = SKImage.FromBitmap(output))
+                {
+                    string encodingFormat = "Png";
+                    SKEncodedImageFormat frm = (SKEncodedImageFormat)Enum.Parse(typeof(SKEncodedImageFormat), encodingFormat);
+
+
+                    using (var data = image.Encode(frm, 80))
+                    {
+                        // save the data to a stream
+                        using (var stream = File.OpenWrite($"{imagePath}"))
+                        {
+                            data.SaveTo(stream);
+                        }
+                    }
+                }
+            };
+        }
+
         public bool IsRegionEmpty(Frame frame)
         {
             var test = this.GetPixels(frame);
