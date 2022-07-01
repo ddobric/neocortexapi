@@ -1,9 +1,15 @@
 ﻿using NeoCortexApi;
+using NeoCortexApi.Classifiers;
 using NeoCortexApi.Utility;
 using System.Diagnostics;
 
 namespace Classifier
 {
+    public class MyClassifier<TLabel> : NeoCortexApi.Classifiers.HtmClassifier<string, List<int[]>>
+    {
+
+    }
+
     public class Classifier<TLabel>
     {
         private Dictionary<TLabel, List<int[]>> recordedEntries = new Dictionary<TLabel, List<int[]>>();
@@ -11,26 +17,26 @@ namespace Classifier
         private int maxRecordedElements = 10;
 
 
-        /// <summary>
-        /// Defines the predicting input.
-        /// </summary>
-        public class ClassifierResult<TLabel>
-        {
-            /// <summary>
-            /// The predicted input value.
-            /// </summary>
-            public TLabel PredictedInput { get; set; }
+        ///// <summary>
+        ///// Defines the predicting input.
+        ///// </summary>
+        //public class ClassifierResult<TLabel>
+        //{
+        //    /// <summary>
+        //    /// The predicted input value.
+        //    /// </summary>
+        //    public TLabel PredictedInput { get; set; }
 
-            /// <summary>
-            /// Number of identical non-zero bits in the SDR.
-            /// </summary>
-            public int NumOfSameBits { get; set; }
+        //    /// <summary>
+        //    /// Number of identical non-zero bits in the SDR.
+        //    /// </summary>
+        //    public int NumOfSameBits { get; set; }
 
-            /// <summary>
-            /// The similarity between the SDR of  predicted cell set with the SDR of the input.
-            /// </summary>
-            public double Similarity { get; set; }
-        }
+        //    /// <summary>
+        //    /// The similarity between the SDR of  predicted cell set with the SDR of the input.
+        //    /// </summary>
+        //    public double Similarity { get; set; }
+        //}
 
         /// <summary>
         /// Checks if the same SDR is already stored under the given key.
@@ -185,7 +191,7 @@ namespace Classifier
 
             return res;
         }
-        
+
         /// <summary>
         /// Clear all recorded Entries
         /// </summary>

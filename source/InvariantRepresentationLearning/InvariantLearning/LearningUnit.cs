@@ -4,7 +4,7 @@ using NeoCortexApi.Network;
 using System.Diagnostics;
 using HtmImageEncoder;
 using NeoCortexApi.Classifiers;
-using Classifier;
+
 using dataSet;
 namespace InvariantLearning
 {
@@ -13,8 +13,11 @@ namespace InvariantLearning
         public string OutputPredictFolder = "";
         private CortexLayer<object, object> cortexLayer;
         private bool isInStableState;
-        Classifier<string> cls; 
+    
         private int inputDim;
+
+        private HtmClassifier<string, int[]> classifier;
+
 
         public LearningUnit(int inputDim, int columnDim)
         {
@@ -64,7 +67,7 @@ namespace InvariantLearning
             isInStableState = false;
 
             // HTM CLASSIFIER
-            cls = new Classifier<string>();
+            classifier = new HtmClassifier<string, int[]>();
         }
 
         public void Learn(Picture sample)
@@ -77,7 +80,7 @@ namespace InvariantLearning
             if (isInStableState)
             {
                 var activeColumns = cortexLayer.GetResult("sp") as int[];
-                cls.Learn(sample.label, activeColumns);
+                classifier.Learn(sample.label, activeColumns);
             }
         }
 
@@ -109,7 +112,7 @@ namespace InvariantLearning
                     var sdr = cortexLayer.Compute(outFile, false) as int[];
 
                     // Get Predicted Labels
-                    var predictedLabel = cls.GetPredictedInputValues(sdr, 1);
+                    var predictedLabel = classifier.GetPredictedInputValues(sdr, 1);
 
                     // Check if there are Predicted Label ?
                     if (predictedLabel.Count != 0)
@@ -129,7 +132,7 @@ namespace InvariantLearning
             return result;
         }
 
-        private void AddResult(ref Dictionary<string, double> result, List<Classifier<string>.ClassifierResult<string>> predictedLabel, int frameCount)
+        private void AddResult(ref Dictionary<string, double> result, List<ClassifierResult<string>> predictedLabel, int frameCount)
         {
             Dictionary<string, double> res = new Dictionary<string, double>();
             foreach (var label in predictedLabel)

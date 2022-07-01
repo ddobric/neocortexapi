@@ -116,6 +116,11 @@ namespace NeoCortexApi.Classifiers
         {
             var cellIndicies = GetCellIndicies(output);
 
+            Learn(input, cellIndicies);
+        }
+
+        public void Learn(TIN input, int[] cellIndicies)
+        {
             if (m_AllInputs.ContainsKey(input) == false)
                 m_AllInputs.Add(input, new List<int[]>());
 
@@ -146,7 +151,12 @@ namespace NeoCortexApi.Classifiers
             }
         }
 
+        public List<ClassifierResult<TIN>> GetPredictedInputValues(Cell[] predictiveCells, short howMany = 1)
+        {
+            var cellIndicies = GetCellIndicies(predictiveCells);
 
+            return GetPredictedInputValues(cellIndicies, howMany);
+        }
 
         /// <summary>
         /// Gets multiple predicted values.
@@ -154,7 +164,7 @@ namespace NeoCortexApi.Classifiers
         /// <param name="predictiveCells">The current set of predictive cells.</param>
         /// <param name="howMany">The number of predections to return.</param>
         /// <returns>List of predicted values with their similarities.</returns>
-        public List<ClassifierResult<TIN>> GetPredictedInputValues(Cell[] predictiveCells, short howMany = 1)
+        public List<ClassifierResult<TIN>> GetPredictedInputValues(int[] cellIndicies, short howMany = 1)
         {
             List<ClassifierResult<TIN>> res = new List<ClassifierResult<TIN>>();
             double maxSameBits = 0;
@@ -162,15 +172,13 @@ namespace NeoCortexApi.Classifiers
             Dictionary<TIN, ClassifierResult<TIN>> dict = new Dictionary<TIN, ClassifierResult<TIN>>();
 
             var predictedList = new List<KeyValuePair<double, string>>();
-            if (predictiveCells.Length != 0)
+            if (cellIndicies.Length != 0)
             {
                 int indxOfMatchingInp = 0;
-                Debug.WriteLine($"Item length: {predictiveCells.Length}\t Items: {this.m_AllInputs.Keys.Count}");
+                Debug.WriteLine($"Item length: {cellIndicies.Length}\t Items: {this.m_AllInputs.Keys.Count}");
                 int n = 0;
 
                 List<int> sortedMatches = new List<int>();
-
-                var cellIndicies = GetCellIndicies(predictiveCells);
 
                 Debug.WriteLine($"Predictive cells: {cellIndicies.Length} \t {Helpers.StringifyVector(cellIndicies)}");
 
