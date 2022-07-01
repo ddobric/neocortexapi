@@ -45,6 +45,8 @@ namespace NeoCortexApi.Entities
             this.Synapses = new List<Synapse>();
         }
 
+ 
+
         /// <summary>
         /// Creates the proximal dentrite segment with specified index.
         /// </summary>

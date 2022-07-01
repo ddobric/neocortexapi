@@ -495,5 +495,70 @@ namespace NeoCortexApi
 
             column.SetPermanences(htmConfig, perm);
         }
+
+        /// <summary>
+        /// Returns the <see cref="Cell"/> with the least number of <see cref="DistalDendrite"/>s.
+        /// </summary>
+        /// <param name="random"></param>
+        /// <param name="cells"></param>
+        /// <returns></returns>
+        public static Cell GetLeastUsedCell(IList<Cell> cells, Random random)
+        {
+            List<Cell> leastUsedCells = new List<Cell>();
+            int minNumSegments = Integer.MaxValue;
+
+            foreach (var cell in cells)
+            {
+                //DD
+                //int numSegments = cell.GetSegments(c).Count;
+                int numSegments = cell.DistalDendrites.Count;
+                //int numSegments = cell.Segments.Count;
+
+                if (numSegments < minNumSegments)
+                {
+                    minNumSegments = numSegments;
+                    leastUsedCells.Clear();
+                }
+
+                if (numSegments == minNumSegments)
+                {
+                    leastUsedCells.Add(cell);
+                }
+            }
+
+            int index = random.Next(leastUsedCells.Count);
+            leastUsedCells.Sort();
+            return leastUsedCells[index];
+        }
+
+
+        /// <summary>
+        /// Gets the segment with maximal potential from all segments in the last cycle. Segment's potential is measured by number of potential synapses.
+        /// </summary>
+        /// <param name="matchingSegments"></param>
+        /// <returns></returns>
+        public static DistalDendrite GetSegmentwithHighesPotential(
+            List<DistalDendrite> matchingSegments, 
+            ICollection<Cell> prevActiveCells,
+             Dictionary<int, int> potentialSynapses)
+        {
+            DistalDendrite maxSeg = matchingSegments[0];
+            int indxOfLastHighestSegment = -1;
+
+            for (int i = 0; i < matchingSegments.Count - 1; i++)
+            {
+                var potSynsPlus1 = potentialSynapses[matchingSegments[i + 1].SegmentIndex];
+
+                if (potSynsPlus1 > potentialSynapses[matchingSegments[i].SegmentIndex])
+                {
+                    if (matchingSegments[i + 1].SegmentIndex != indxOfLastHighestSegment)
+                    {
+                        maxSeg = matchingSegments[i + 1];
+                        indxOfLastHighestSegment = matchingSegments[i + 1].SegmentIndex;
+                    }
+                }
+            }
+            return maxSeg;
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using NeoCortexApi.Entities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace NeoCortexApi
@@ -38,6 +39,22 @@ namespace NeoCortexApi
                 Column column = new Column(config.CellsPerColumn, i, config.SynPermConnected, config.NumInputs);
 
                 Columns.Add(column);
+            }
+        }
+
+        public Cell[] AllCells
+        {
+            get
+            {
+                return this.Columns.SelectMany(c => c.Cells).ToArray();             
+            }
+        }
+
+        public DistalDendrite[] AllDistalDendrites
+        {
+            get
+            {
+                return AllCells.SelectMany(c => c.DistalDendrites).ToArray();
             }
         }
     }
