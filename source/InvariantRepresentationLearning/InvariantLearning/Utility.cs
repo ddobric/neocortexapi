@@ -40,7 +40,6 @@ namespace InvariantLearning
 
         internal static double AccuracyCal(List<string> currentResList)
         {
-            double accuracy = 0;
             double match = 0;
             foreach (string currentRes in currentResList)
             {
@@ -51,6 +50,13 @@ namespace InvariantLearning
                 }
             }
             return match/currentResList.Count;
+        }
+
+        internal static void WriteResultOfOneSP(Dictionary<string, double> a, string filePath)
+        {
+            using (StreamWriter file = new StreamWriter($"{filePath}.csv"))
+                foreach (var entry in a)
+                    file.WriteLine("[{0}, {1}]", entry.Key, entry.Value.ToString());
         }
     }
 }
