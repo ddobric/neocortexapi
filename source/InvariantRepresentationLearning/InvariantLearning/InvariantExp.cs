@@ -1,81 +1,94 @@
 ﻿using NeoCortexApi;
 using System.Diagnostics;
-using dataSet;
 using System.Linq;
+using Invariant.Entities;
 
 namespace InvariantLearning
 {
     internal class InvariantExperiment
     {
-        private DataSet invariantSet;
+        private DataSet trainingDataSet;
         private RunConfig runParams;
         Dictionary<string, LearningUnit> poolerDict;
 
         /// <summary>
         /// Experiment specification for Htm Invariant Object Representation Learning
         /// </summary>
-        /// <param name="invariantSet">the image set used for invariant learning</param>
+        /// <param name="trainigDataSet">the image set used for invariant learning</param>
         /// <param name="runParams">experiment parameters used for experiment</param>
-        public InvariantExperiment(DataSet invariantSet, RunConfig runParams)
+        public InvariantExperiment(DataSet trainigDataSet, RunConfig runParams)
         {
-            this.invariantSet = invariantSet;
+            this.trainingDataSet = trainigDataSet;
             this.runParams = runParams;
             poolerDict = new Dictionary<string, LearningUnit>();
         }
 
-        internal void Train()
+
+        /// <summary>
+        /// 
+        /// </summary>
+        internal void Train(bool visualizeTrainingImages = true)
         {
             Debug.WriteLine($"-------------- Training in Progress with {runParams.Epoch} epochs---------------");
 
-            // Initiate Spatial Pooler Dictionaries
-            var SpatialPoolerDimensionList = Frame.GetIndexes(10, invariantSet.images[0].imageHeight, 10);
-            foreach (var dim in SpatialPoolerDimensionList)
-            {
-                poolerDict.Add(dim.ToString(), new LearningUnit(dim, 1024));
-            }
+            CreateSpatialPoolers();
 
-            // Visualize Training DataSet
+            if(visualizeTrainingImages)
+                VisualizeTrainingImages($"TrainingSet_{Utility.GetHash()}");
 
-            string trainDataFolder = "TrainingSet"+Utility.GetHash();
-
-            foreach (var dim in SpatialPoolerDimensionList)
-            {
-                string pathForTrainDataOfOneSpatialPooler = Path.Combine(trainDataFolder, $"SP dim {dim.ToString()}");
-
-                Utility.CreateFolderIfNotExist(pathForTrainDataOfOneSpatialPooler);
-
-                foreach (var label in invariantSet.classes)
-                {
-                    string pathForImageInOneLabelFolder = Path.Combine(trainDataFolder, $"SP dim {dim.ToString()}", label);
-
-                    Utility.CreateFolderIfNotExist(pathForImageInOneLabelFolder);
-
-                    var imagesFilteredByLabel = invariantSet.images.Where(a => (a.label == label));
-
-                    int index = 0;
-
-                    foreach(var img in imagesFilteredByLabel)
-                    {
-                        string imagePath = Path.Combine(pathForImageInOneLabelFolder, $"{index}.png");
-                        img.SaveImageWithSquareDimension(imagePath, dim);
-                        index++;
-                    }
-                }
-            }
-            
-
-            // iterate through all learning unit
+            //
+            // Performs the training
+            // It iterates through all learning units and learns corresponding images.
             foreach (var unit in poolerDict)
             {
                 // for loop with epochs
                 for (int epoch = 1; epoch <= runParams.Epoch; epoch += 1)
                 {
                     // for loop with training:
-                    foreach (var sample in invariantSet.images)
+                    foreach (var sample in trainingDataSet.images)
                     {
                         unit.Value.Learn(sample);
                     }
                 }
+            }
+        }
+
+        private void VisualizeTrainingImages(string trainDataFolder)
+        {
+            foreach (var dim in poolerDict.Keys)
+            {
+                string pathForTrainDataOfOneSpatialPooler = Path.Combine(trainDataFolder, $"SP dim {dim.ToString()}");
+
+                Utility.CreateFolderIfNotExist(pathForTrainDataOfOneSpatialPooler);
+
+                foreach (var label in trainingDataSet.imageClasses)
+                {
+                    string pathForImageInOneLabelFolder = Path.Combine(trainDataFolder, $"SP dim {dim.ToString()}", label);
+
+                    Utility.CreateFolderIfNotExist(pathForImageInOneLabelFolder);
+
+                    var imagesFilteredByLabel = trainingDataSet.images.Where(a => (a.label == label));
+
+                    int index = 0;
+
+                    foreach (var img in imagesFilteredByLabel)
+                    {
+                        string imagePath = Path.Combine(pathForImageInOneLabelFolder, $"{index}.png");
+                        img.SaveImageWithSquareDimension(imagePath, int.Parse(dim));
+                        index++;
+                    }
+                }
+            }
+        }
+
+        private void CreateSpatialPoolers()
+        {
+            // Initiate Spatial Pooler Dictionaries
+            var spFrameSizeLst = Frame.GetIndexes(10, trainingDataSet.images[0].imageHeight, 10);
+
+            foreach (var dim in spFrameSizeLst)
+            {
+                poolerDict.Add(dim.ToString(), new LearningUnit(dim, 1024));
             }
         }
 
@@ -88,7 +101,7 @@ namespace InvariantLearning
             int correctGuess = 0;
             for (int time = 0; time < times; time += 1)
             {
-                (string predicted, string realLabel) = Predict(invariantSet.PickRandom());
+                (string predicted, string realLabel) = Predict(trainingDataSet.PickRandom());
                 correctGuess += (predicted == realLabel) ? 1 : 0;
             }
             Debug.WriteLine($"validation of {times} datapoints: {(double)(correctGuess / times)}");
@@ -117,7 +130,7 @@ namespace InvariantLearning
 
             // Calculating Vote
             Dictionary<string, double> result = new Dictionary<string, double>();
-            foreach (var label in invariantSet.classes)
+            foreach (var label in trainingDataSet.imageClasses)
             {
                 result.Add(label, 0);
             }

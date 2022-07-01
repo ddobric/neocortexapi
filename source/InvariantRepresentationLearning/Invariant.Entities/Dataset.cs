@@ -1,19 +1,25 @@
-﻿namespace dataSet
+﻿namespace Invariant.Entities
 {
     public class DataSet
     {
-        public List<string> classes;
+        /// <summary>
+        /// List of image names that represent labels in the learning process.
+        /// </summary>
+        public List<string> imageClasses;
 
         public List<Picture> images;
 
         public Random random;
+
+        public int Count { get { return images.Count; } }
+
         public DataSet(string pathToTrainingFolder)
         {
             random = new Random(42);
 
             images = new List<Picture>();
             // Getting the classes
-            ClassesInit(pathToTrainingFolder);
+            InitImageClasses(pathToTrainingFolder);
 
             // Reading the images from path
             foreach (var classFolder in Directory.GetDirectories(pathToTrainingFolder))
@@ -26,18 +32,18 @@
             }
         }
 
-        public int Count { get { return images.Count; } }
 
         /// <summary>
-        /// adding classes to the Training Data's Class(Label) List
+        /// Adding classes to the Training Data's Class(Label) List
         /// </summary>
         /// <param name="pathToTrainingFolder"></param>
-        private void ClassesInit(string pathToTrainingFolder)
+        private void InitImageClasses(string pathToTrainingFolder)
         {
-            classes = new List<string>();
+            imageClasses = new List<string>();
+
             foreach (var a in Directory.GetDirectories(pathToTrainingFolder))
             {
-                classes.Add(Path.GetFileNameWithoutExtension(a));
+                imageClasses.Add(Path.GetFileNameWithoutExtension(a));
             }
         }
 

@@ -5,7 +5,8 @@ using System.Diagnostics;
 using HtmImageEncoder;
 using NeoCortexApi.Classifiers;
 
-using dataSet;
+using Invariant.Entities;
+
 namespace InvariantLearning
 {
     public class LearningUnit
@@ -74,8 +75,8 @@ namespace InvariantLearning
         {
             Debug.WriteLine($"Label: {sample.label}___{Path.GetFileNameWithoutExtension(sample.imagePath)}");
 
-            // Active Columns
-            var sdr = cortexLayer.Compute(sample.imagePath, true);
+            // Claculates the SDR of Active Columns.
+            cortexLayer.Compute(sample.imagePath, true);
 
             if (isInStableState)
             {

@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DataSet\DataSet.csproj" />
+    <ProjectReference Include="..\Invariant.Entities\Invariant.Entities.csproj" />
   </ItemGroup>
 
 </Project>

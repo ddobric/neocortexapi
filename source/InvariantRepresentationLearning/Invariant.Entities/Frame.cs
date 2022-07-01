@@ -1,4 +1,4 @@
-﻿namespace dataSet
+﻿namespace Invariant.Entities
 {
     public class Frame
     {

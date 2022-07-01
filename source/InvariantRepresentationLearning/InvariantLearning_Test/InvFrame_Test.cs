@@ -7,7 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using InvariantLearning;
-using dataSet;
+using Invariant.Entities;
+
 namespace InvariantLearning_Test
 {
     [TestClass]

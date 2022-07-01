@@ -54,8 +54,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtmImageEncoder", "ImageEnc
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "InvariantLearning", "InvariantLearning", "{B7C9F9B0-E2A2-471C-A9BC-1B9E16C3F85C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataSet", "InvariantRepresentationLearning\DataSet\DataSet.csproj", "{1EFE9F41-D3F7-4102-A23B-45B9103CB25F}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InvariantLearning", "InvariantRepresentationLearning\InvariantLearning\InvariantLearning.csproj", "{ADA53629-9B52-4893-A05A-4956EE5CEBA0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InvariantLearning_Test", "InvariantRepresentationLearning\InvariantLearning_Test\InvariantLearning_Test.csproj", "{1932DCF8-179D-431A-B77E-0CDB12641A50}"
@@ -65,6 +63,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MnistDataGen_test", "InvariantRepresentationLearning\MnistDataGen_test\MnistDataGen_test.csproj", "{BC9DA643-47C4-4DEF-A8D5-242B6D9E2F49}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SPTestForInvLearning", "InvariantRepresentationLearning\SPTestForInvLearning\SPTestForInvLearning.csproj", "{560B304D-FA2C-4962-B5F2-A9A47356FD72}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Invariant.Entities", "InvariantRepresentationLearning\Invariant.Entities\Invariant.Entities.csproj", "{C9CBAF5E-8FF2-480E-A825-7BAB053D719C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -120,10 +120,6 @@ Global
 		{18560247-0A1A-4B91-AE90-B8949B9EDDFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18560247-0A1A-4B91-AE90-B8949B9EDDFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18560247-0A1A-4B91-AE90-B8949B9EDDFA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1EFE9F41-D3F7-4102-A23B-45B9103CB25F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1EFE9F41-D3F7-4102-A23B-45B9103CB25F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1EFE9F41-D3F7-4102-A23B-45B9103CB25F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1EFE9F41-D3F7-4102-A23B-45B9103CB25F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ADA53629-9B52-4893-A05A-4956EE5CEBA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ADA53629-9B52-4893-A05A-4956EE5CEBA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ADA53629-9B52-4893-A05A-4956EE5CEBA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -144,6 +140,10 @@ Global
 		{560B304D-FA2C-4962-B5F2-A9A47356FD72}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{560B304D-FA2C-4962-B5F2-A9A47356FD72}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{560B304D-FA2C-4962-B5F2-A9A47356FD72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9CBAF5E-8FF2-480E-A825-7BAB053D719C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9CBAF5E-8FF2-480E-A825-7BAB053D719C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9CBAF5E-8FF2-480E-A825-7BAB053D719C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9CBAF5E-8FF2-480E-A825-7BAB053D719C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -151,12 +151,12 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{4D9AD5E0-8F00-494E-8BEF-8041C003F4E6} = {D9879A38-CCF8-4440-B939-D066196AC775}
 		{15375C28-1424-4A29-B2AF-11ED92F6134C} = {99AE2313-7D07-4905-A0BB-52D304FCC2F7}
-		{1EFE9F41-D3F7-4102-A23B-45B9103CB25F} = {B7C9F9B0-E2A2-471C-A9BC-1B9E16C3F85C}
 		{ADA53629-9B52-4893-A05A-4956EE5CEBA0} = {B7C9F9B0-E2A2-471C-A9BC-1B9E16C3F85C}
 		{1932DCF8-179D-431A-B77E-0CDB12641A50} = {B7C9F9B0-E2A2-471C-A9BC-1B9E16C3F85C}
 		{DB3E2691-1BEE-4973-A32A-42FEB6808B2A} = {B7C9F9B0-E2A2-471C-A9BC-1B9E16C3F85C}
 		{BC9DA643-47C4-4DEF-A8D5-242B6D9E2F49} = {B7C9F9B0-E2A2-471C-A9BC-1B9E16C3F85C}
 		{560B304D-FA2C-4962-B5F2-A9A47356FD72} = {B7C9F9B0-E2A2-471C-A9BC-1B9E16C3F85C}
+		{C9CBAF5E-8FF2-480E-A825-7BAB053D719C} = {B7C9F9B0-E2A2-471C-A9BC-1B9E16C3F85C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {71185BAD-1342-4836-BCDA-6EC97118F92D}

@@ -2,7 +2,8 @@
 using NeoCortexApi.Entities;
 using System.Diagnostics;
 using InvariantLearning;
-using dataSet;
+using Invariant.Entities;
+
 namespace InvariantLearning
 {
     public class InvariantLearning
@@ -11,14 +12,14 @@ namespace InvariantLearning
         {
             // reading Config from json
             var config = Utility.ReadConfig("experimentParams.json");
-            string PathToTrainDataFolder = config.PathToTrainDataFolder;
-            string PathToTestDataFolder = config.PathToTestDataFolder;
+            string pathToTrainDataFolder = config.PathToTrainDataFolder;
+            string pathToTestDataFolder = config.PathToTestDataFolder;
 
             // generate the training data
-            DataSet trainingSet = new DataSet(PathToTrainDataFolder);
+            DataSet trainingSet = new DataSet(pathToTrainDataFolder);
 
             // generate the testing data
-            DataSet testingSet = new DataSet(PathToTestDataFolder);
+            DataSet testingSet = new DataSet(pathToTestDataFolder);
 
             // passing the training data to the training experiment
             InvariantExperiment experiment = new(trainingSet, config.runParams);

@@ -1,9 +1,9 @@
-﻿using MNIST.IO;
+﻿using Invariant.Entities;
+using MNIST.IO;
 using SkiaSharp;
 using System;
 using System.Diagnostics;
 using System.IO;
-using dataSet;
 
 namespace MnistDataGen
 {

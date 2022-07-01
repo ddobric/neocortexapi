@@ -2,7 +2,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics;
 using System.IO;
 using InvariantLearning;
-using dataSet;
+using Invariant.Entities;
 
 namespace InvariantLearning_Test
 {

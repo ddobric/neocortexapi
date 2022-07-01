@@ -1,6 +1,6 @@
 ﻿using SkiaSharp;
 
-namespace dataSet
+namespace Invariant.Entities
 {
     public class Picture
     {
