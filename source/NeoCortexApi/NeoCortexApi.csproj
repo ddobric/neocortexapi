@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>NeoCortexApi</PackageId>
-    <Version>1.1.3</Version>
+    <Version>1.1.4</Version>
     <Authors>Damir Dobric</Authors>
     <Company>daenet GmbH</Company>
     <Product>Hierarchical Temporal Framework in C#</Product>
@@ -53,6 +53,10 @@
     <Compile Remove="DistributedCompute\HtmSparseIntDictionary.cs" />
     <Compile Remove="Encoders\EncoderBuilder.cs" />
     <Compile Remove="HtmSerializer2.cs" />
+    <Compile Remove="NAA\ComputeCycleInput.cs" />
+    <Compile Remove="NAA\ComputeState.cs" />
+    <Compile Remove="NAA\CorticalArea.cs" />
+    <Compile Remove="NAA\NeuralAssociationsAlgorithm.cs" />
     <Compile Remove="Network\NearestClassifier.cs" />
   </ItemGroup>
 
@@ -67,6 +71,10 @@
     <None Include="DistributedCompute\HtmSparseIntDictionary.cs" />
     <None Include="Encoders\EncoderBuilder.cs" />
     <None Include="HtmSerializer2.cs" />
+    <None Include="NAA\ComputeCycleInput.cs" />
+    <None Include="NAA\ComputeState.cs" />
+    <None Include="NAA\CorticalArea.cs" />
+    <None Include="NAA\NeuralAssociationsAlgorithm.cs" />
     <None Include="NeoCortexApi\NeoCortexAPI.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>

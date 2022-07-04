@@ -179,7 +179,7 @@ namespace NeoCortexApi.Entities
             return true;
         }
         #region Serialization
-        public override void Serialize(StreamWriter writer)
+        public void Serialize(StreamWriter writer)
         {
             HtmSerializer2 ser = new HtmSerializer2();
 

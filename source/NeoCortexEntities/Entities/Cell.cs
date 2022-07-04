@@ -22,7 +22,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// The identifier of the cell.
         /// </summary>
-        public int CellId { get; private set; }
+        //public int CellId { get; private set; }
 
 
         /// <summary>
@@ -36,12 +36,17 @@ namespace NeoCortexApi.Entities
         private readonly int m_Hashcode;
 
         /// <summary>
-        /// List of dendrites of the cell. Every dendrite segment is owned bt the cell.
+        /// List of dendrites of the cell.
         /// </summary>
         public List<DistalDendrite> DistalDendrites { get; set; } = new List<DistalDendrite>();
 
         /// <summary>
-        /// List of receptor synapses that connect this cells as a source (presynaptic) cell to the distal dendrite segment owned by some other cell.
+        /// List of apical dendrites of the cell. 
+        /// </summary>
+        public List<ApicalDendrite> ApicalDendrites { get; set; } = new List<ApicalDendrite>();
+
+        /// <summary>
+        /// List of receptor synapses (outgoing synapses) that connect this cells as a source (presynaptic) cell to the distal dendrite segment owned by some other cell.
         /// This synapse assotiates the cell (presynaptic = source cell) with the next cell (postsynaptic = destination cell).
         /// The destination cell is the parent cell of the segment to which the presynaptic cell is connected.
         /// </summary>
@@ -63,13 +68,13 @@ namespace NeoCortexApi.Entities
         /// <param name="numCellsPerColumn"></param>
         /// <param name="cellId"></param>
         /// <param name="cellActivity"></param>
-        public Cell(int parentColumnIndx, int colSeq, int numCellsPerColumn, int cellId, CellActivity cellActivity)
+        public Cell(int parentColumnIndx, int colSeq, int numCellsPerColumn, CellActivity cellActivity)
         {
             this.ParentColumnIndex = parentColumnIndx;
 
             this.Index = parentColumnIndx * numCellsPerColumn + colSeq;
 
-            this.CellId = cellId;
+            //this.CellId = cellId;
         }
 
         /// <summary>
@@ -108,8 +113,8 @@ namespace NeoCortexApi.Entities
                 if (obj.ParentColumnIndex != this.ParentColumnIndex)
                     return false;
 
-                if (obj.CellId != this.CellId)
-                    return false;
+                //if (obj.CellId != this.CellId)
+                //    return false;
 
                 if (obj.DistalDendrites != null && this.DistalDendrites != null)
                 {
@@ -167,7 +172,7 @@ namespace NeoCortexApi.Entities
             ser.SerializeBegin(nameof(Cell), writer);
 
             ser.SerializeValue(this.Index, writer);
-            ser.SerializeValue(this.CellId, writer);
+            //ser.SerializeValue(this.CellId, writer);
             ser.SerializeValue(this.ParentColumnIndex, writer);
 
             if (this.DistalDendrites != null && this.DistalDendrites.Count > 0)
@@ -220,7 +225,7 @@ namespace NeoCortexApi.Entities
                                 }
                             case 1:
                                 {
-                                    cell.CellId = ser.ReadIntValue(str[i]);
+                                   // cell.CellId = ser.ReadIntValue(str[i]);
                                     break;
                                 }
                             case 2:

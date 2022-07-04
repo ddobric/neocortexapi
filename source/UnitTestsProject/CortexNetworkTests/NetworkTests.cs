@@ -517,7 +517,7 @@ namespace UnitTestsProject
                     cls.Learn(GetKey(prevInput, input), lyrOut.ActiveCells.ToArray());
 
                     List<Synapse> synapses = new List<Synapse>();
-                    Cell cell = new Cell(0, 1, 6, 0, CellActivity.ActiveCell);// where to get all these values
+                    Cell cell = new Cell(0, 1, 6, CellActivity.ActiveCell);// where to get all these values
                     Synapse synap = new Synapse(cell, 1, 1, 0.78);// here is just supposed to update the permanence, all other values remains same; where do we get all other values
                     synapses.Add(synap);
                     await vis.UpdateSynapsesAsync(synapses);//update Synapse or add new ones
@@ -878,7 +878,7 @@ namespace UnitTestsProject
 
 
             List<Synapse> synapses = new List<Synapse>();
-            Cell cell = new Cell(0, 1, 6, 1, CellActivity.PredictiveCell);
+            Cell cell = new Cell(0, 1, 6, CellActivity.PredictiveCell);
             Synapse synap = new Synapse(cell, 1, 1, 0.75);
             synapses.Add(synap);
 
