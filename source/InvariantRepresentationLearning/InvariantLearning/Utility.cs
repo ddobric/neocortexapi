@@ -52,6 +52,11 @@ namespace InvariantLearning
             return match/currentResList.Count;
         }
 
+        /// <summary>
+        /// Write the predict result of one SpatialPooler into a file
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="filePath"></param>
         internal static void WriteResultOfOneSP(Dictionary<string, double> a, string filePath)
         {
             using (StreamWriter file = new StreamWriter($"{filePath}.csv"))

@@ -57,6 +57,10 @@ namespace InvariantLearning
             }
         }
 
+        /// <summary>
+        /// Visualizing the input image after preprocessing befor they get into every spatial poolers
+        /// </summary>
+        /// <param name="trainDataFolder">the training input folder</param>
         private void VisualizeTrainingImages(string trainDataFolder)
         {
             foreach (var dim in poolerDict.Keys)
@@ -88,7 +92,7 @@ namespace InvariantLearning
         private void CreateSpatialPoolers()
         {
             // Initiate Spatial Pooler Dictionaries
-            var spFrameSizeLst = Frame.GetIndexes(20, 38, 5);
+            var spFrameSizeLst = Frame.GetIndexes(28, 29, 2);
 
             foreach (var dim in spFrameSizeLst)
             {
@@ -118,7 +122,7 @@ namespace InvariantLearning
         /// <returns></returns>
         internal (string, string) Predict(Picture inputImage)
         {
-            List<Dictionary<string, double>> cosensus = new List<Dictionary<string, double>>();
+            List<Dictionary<string, double>> allSPPredictResult = new List<Dictionary<string, double>>();
 
             // Prepare Output Folder
             string predictProcessName = Path.GetFileNameWithoutExtension(inputImage.imagePath) + Utility.GetHash();
@@ -128,8 +132,11 @@ namespace InvariantLearning
             foreach (var sp in poolerDict)
             {
                 sp.Value.OutputPredictFolder = predictProcessName;
-                Dictionary<string, double> a = sp.Value.Predict(inputImage);
-                cosensus.Add(a);
+                Dictionary<string, double> predictResultOfCurrentSP = sp.Value.Predict(inputImage);
+                allSPPredictResult.Add(predictResultOfCurrentSP);
+
+                //Write result to file
+                Utility.WriteResultOfOneSP(predictResultOfCurrentSP, Path.Combine("Predict", predictProcessName, $"sp_{sp.Key}"));
             }
 
             // Calculating Vote
@@ -139,7 +146,7 @@ namespace InvariantLearning
                 result.Add(label, 0);
             }
 
-            foreach (var spVote in cosensus)
+            foreach (var spVote in allSPPredictResult)
             {
                 foreach (var classResult in spVote)
                 {
