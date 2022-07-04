@@ -25,7 +25,7 @@ namespace InvariantLearning
             InvariantExperiment experiment = new(trainingSet, config.runParams);
 
             // train the network
-            experiment.Train();
+            experiment.Train(false);
 
 
             // using predict to classify image from dataset

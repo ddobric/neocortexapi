@@ -14,23 +14,38 @@ namespace InvariantLearning
         public string OutputPredictFolder = "";
         private CortexLayer<object, object> cortexLayer;
         private bool isInStableState;
-    
-        private int inputDim;
 
+        private int inputDim;
+        private int columnDim;
         private HtmClassifier<string, int[]> classifier;
 
 
         public LearningUnit(int inputDim, int columnDim)
         {
             this.inputDim = inputDim;
+            this.columnDim = columnDim;
+
+            // CortexLayer
+            cortexLayer = new CortexLayer<object, object>("Invariant");
+
+            // HTM CLASSIFIER
+            classifier = new HtmClassifier<string, int[]>();
+        }
+
+        /// <summary>
+        /// Training with newborn cycle before Real Learning of DataSet
+        /// </summary>
+        /// <param name="trainingDataSet">the Training Dataset</param>
+        public void TrainingNewbornCycle(DataSet trainingDataSet)
+        {
             // HTM CONFIG
-            HtmConfig config = new HtmConfig(new int[] { inputDim*inputDim }, new int[] { columnDim });
+            HtmConfig config = new HtmConfig(new int[] { inputDim * inputDim }, new int[] { columnDim });
 
             // CONNECTIONS
             Connections conn = new Connections(config);
 
             // HPC
-            HomeostaticPlasticityController hpc = new HomeostaticPlasticityController(conn, 150, (isStable, numPatterns, actColAvg, seenInputs) =>
+            HomeostaticPlasticityController hpc = new HomeostaticPlasticityController(conn, trainingDataSet.Count * 50, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                 if (isStable)
                     // Event should be fired when entering the stable state.
@@ -57,18 +72,28 @@ namespace InvariantLearning
                 ImageHeight = inputDim,
                 ImageWidth = inputDim,
                 GreyScale = true,
-            });  
+            });
 
             // CORTEX LAYER
-            cortexLayer = new CortexLayer<object, object>("Invariant");
             cortexLayer.AddModule("encoder", imgEncoder);
             cortexLayer.AddModule("sp", sp);
 
             // STABLE STATE
             isInStableState = false;
 
-            // HTM CLASSIFIER
-            classifier = new HtmClassifier<string, int[]>();
+            // New Born Cycle Loop
+            int cycle = 0;
+            while (!this.isInStableState)
+            {
+                Debug.Write($"Cycle {cycle}: ");
+                foreach (var sample in trainingDataSet.images)
+                {
+                    Debug.Write(".");
+                    cortexLayer.Compute(sample.imagePath, true);
+                }
+                Debug.Write("\n");
+                cycle++;
+            }
         }
 
         public void Learn(Picture sample)
@@ -78,11 +103,8 @@ namespace InvariantLearning
             // Claculates the SDR of Active Columns.
             cortexLayer.Compute(sample.imagePath, true);
 
-            if (isInStableState)
-            {
-                var activeColumns = cortexLayer.GetResult("sp") as int[];
-                classifier.Learn(sample.label, activeColumns);
-            }
+            var activeColumns = cortexLayer.GetResult("sp") as int[];
+            classifier.Learn(sample.label, activeColumns);
         }
 
         public Dictionary<string, double> Predict(Picture image)
@@ -94,10 +116,10 @@ namespace InvariantLearning
             // dictionary for saving result
             Dictionary<string, double> result = new Dictionary<string, double>();
 
-            var frameMatrix = Frame.GetConvFramesbyPixel(image.imageWidth,image.imageHeight,inputDim,inputDim, 5);
+            var frameMatrix = Frame.GetConvFramesbyPixel(image.imageWidth, image.imageHeight, inputDim, inputDim, 5);
 
 
-            foreach (var frame in frameMatrix) 
+            foreach (var frame in frameMatrix)
             {
                 if (image.IsRegionEmpty(frame))
                 {
@@ -140,7 +162,7 @@ namespace InvariantLearning
             {
                 if (result.ContainsKey(label.PredictedInput))
                 {
-                    result[label.PredictedInput]+=label.NumOfSameBits;
+                    result[label.PredictedInput] += label.NumOfSameBits;
                 }
                 else
                 {

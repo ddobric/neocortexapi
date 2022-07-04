@@ -41,6 +41,10 @@ namespace InvariantLearning
             // It iterates through all learning units and learns corresponding images.
             foreach (var unit in poolerDict)
             {
+                Debug.WriteLine("Stage 1: Training in Newborn cycle");
+                unit.Value.TrainingNewbornCycle(trainingDataSet);
+
+                Debug.WriteLine("Stage 2: Training of Images");
                 // for loop with epochs
                 for (int epoch = 1; epoch <= runParams.Epoch; epoch += 1)
                 {
@@ -84,7 +88,7 @@ namespace InvariantLearning
         private void CreateSpatialPoolers()
         {
             // Initiate Spatial Pooler Dictionaries
-            var spFrameSizeLst = Frame.GetIndexes(10, trainingDataSet.images[0].imageHeight, 10);
+            var spFrameSizeLst = Frame.GetIndexes(20, 38, 5);
 
             foreach (var dim in spFrameSizeLst)
             {
