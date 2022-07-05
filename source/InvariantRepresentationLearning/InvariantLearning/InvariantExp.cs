@@ -92,7 +92,7 @@ namespace InvariantLearning
         private void CreateSpatialPoolers()
         {
             // Initiate Spatial Pooler Dictionaries
-            var spFrameSizeLst = Frame.GetIndexes(28, 29, 2);
+            var spFrameSizeLst = Frame.GetIndexes(20, 29, 2);
 
             foreach (var dim in spFrameSizeLst)
             {

@@ -115,6 +115,7 @@ namespace InvariantLearning
 
             // dictionary for saving result
             Dictionary<string, double> result = new Dictionary<string, double>();
+            Dictionary<string, string> allResultForEachFrame = new Dictionary<string, string>();
 
             var frameMatrix = Frame.GetConvFramesbyPixel(image.imageWidth, image.imageHeight, inputDim, inputDim, 5);
 
@@ -148,11 +149,24 @@ namespace InvariantLearning
                             Debug.WriteLine($"Number of Same Bits: {a.NumOfSameBits}");
                         }
                     }
+
+                    allResultForEachFrame.Add(outFile,GetStringFromResult(predictedLabel));
                     // Aggregate Label to Result
                     AddResult(ref result, predictedLabel, frameMatrix.Count);
                 }
             }
+            Utility.WriteResultOfOneSPDetailed(allResultForEachFrame, Path.Combine(spFolder,$"SP of {inputDim}x{inputDim} detailed.csv"));
             return result;
+        }
+
+        private string GetStringFromResult(List<ClassifierResult<string>> predictedLabel)
+        {
+            string resultString = "";
+            foreach (ClassifierResult<string> result in predictedLabel)
+            {
+                resultString += $",{result.PredictedInput}__{result.NumOfSameBits}_{result.Similarity}";
+            }
+            return resultString;
         }
 
         private void AddResult(ref Dictionary<string, double> result, List<ClassifierResult<string>> predictedLabel, int frameCount)

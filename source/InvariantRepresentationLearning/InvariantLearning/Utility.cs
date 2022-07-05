@@ -63,5 +63,12 @@ namespace InvariantLearning
                 foreach (var entry in a)
                     file.WriteLine("[{0}, {1}]", entry.Key, entry.Value.ToString());
         }
+
+        internal static void WriteResultOfOneSPDetailed(Dictionary<string, string> allResultForEachFrame, string filePath)
+        {
+            using (StreamWriter file = new StreamWriter($"{filePath}.csv"))
+                foreach (var entry in allResultForEachFrame)
+                    file.WriteLine("[{0}, {1}]", entry.Key, entry.Value);
+        }
     }
 }
