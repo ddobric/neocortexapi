@@ -45,7 +45,7 @@ namespace InvariantLearning
 
                 double accuracy = Utility.AccuracyCal(currentResList);
                 currentResList.Add($"{result.Item1}_{result.Item2}");
-                //Utility.WriteToFile(Path.Combine("Predict", "PredictionOutput.csv"),result);
+                Utility.WriteOutputToFile(Path.Combine("Predict", "PredictionOutput"),result);
             }
         }
     }

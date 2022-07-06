@@ -41,7 +41,7 @@ namespace NeoCortexApi.Classifiers
     /// <typeparam name="TOUT"></typeparam>
     public class HtmClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>
     {
-        private int maxRecordedElements = 10;
+        private int maxRecordedElements = 20;
 
         private List<TIN> inputSequence = new List<TIN>();
 
