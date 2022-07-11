@@ -151,6 +151,13 @@ namespace NeoCortexApi.Classifiers
             }
         }
 
+
+        /// <summary>
+        /// Gets multiple predicted values.
+        /// </summary>
+        /// <param name="predictiveCells">The current set of predictive cells.</param>
+        /// <param name="howMany">The number of predections to return.</param>
+        /// <returns>List of predicted values with their similarities.</returns>
         public List<ClassifierResult<TIN>> GetPredictedInputValues(Cell[] predictiveCells, short howMany = 1)
         {
             var cellIndicies = GetCellIndicies(predictiveCells);
