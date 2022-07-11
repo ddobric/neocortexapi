@@ -77,10 +77,11 @@ namespace InvariantLearning
                 Debug.WriteLine($"predicted as {result.Item1}, correct label: {result.Item2}");
 
                 double accuracy = Utility.AccuracyCal(currentResList);
-                
+
                 currentResList.Add($"{result.Item1}_{result.Item2}");
-                
-                Utility.WriteOutputToFile(Path.Combine("Predict", "PredictionOutput"), result);
+
+                Utility.WriteOutputToFile(Path.Combine("Predict", $"PredictionOutput of testImage_{testImage.imagePath} of {testImage.label}"), result);
             });
+        }
     }
 }

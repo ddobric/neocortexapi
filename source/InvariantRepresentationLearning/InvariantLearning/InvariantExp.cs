@@ -27,7 +27,7 @@ namespace InvariantLearning
         /// <summary>
         /// 
         /// </summary>
-        internal async void Train(bool visualizeTrainingImages = true)
+        internal void Train(bool visualizeTrainingImages = true)
         {
             Debug.WriteLine($"-------------- Training in Progress with {runParams.Epoch} epochs---------------");
 
@@ -38,20 +38,19 @@ namespace InvariantLearning
 
             Debug.WriteLine("Stage 1: Training in Newborn cycle");
             var newBornCycleTasks = new List<Task>();
-            foreach (var unit in poolerDict)
+            Parallel.ForEach(poolerDict, new ParallelOptions(), (unit) =>
             {
-                newBornCycleTasks.Add(unit.Value.TrainingNewbornCycle(trainingDataSet));
-            }
-            await Task.WhenAll(newBornCycleTasks);
+                unit.Value.TrainingNewbornCycle(trainingDataSet);
+            });
 
             
             Debug.WriteLine("Stage 2: Training of Images");
             var trainingNormalTasks = new List<Task>();
-            foreach (var unit in poolerDict)
+            Parallel.ForEach(poolerDict, new ParallelOptions(), (unit)=>
             {
-                trainingNormalTasks.Add(unit.Value.TrainingNormal(trainingDataSet,runParams.Epoch));
-            }
-            await Task.WhenAll(trainingNormalTasks);
+                unit.Value.TrainingNormal(trainingDataSet,runParams.Epoch);
+            });
+
         }
 
         /// <summary>
