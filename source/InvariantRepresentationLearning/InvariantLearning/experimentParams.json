@@ -1,6 +1,6 @@
 {
-  "PathToTrainDataFolder": "E:\\MyProjects\\Thesis Research\\neocortexapi\\source\\InvariantRepresentationLearning\\MnistDataGen_test\\bin\\Debug\\net6.0\\TrainingFolder",
-  "PathToTestDataFolder": "E:\\MyProjects\\Thesis Research\\neocortexapi\\source\\InvariantRepresentationLearning\\MnistDataGen_test\\bin\\Debug\\net6.0\\TestingFolder",
+  "PathToTrainDataFolder": "TrainingFolder",
+  "PathToTestDataFolder": "TestingFolder",
   "runParams": {
     "Epoch": 100,
     "HtmConfig": {

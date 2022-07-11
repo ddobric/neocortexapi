@@ -3,6 +3,7 @@ using NeoCortexApi.Entities;
 using System.Diagnostics;
 using InvariantLearning;
 using Invariant.Entities;
+using MnistDataGen;
 
 namespace InvariantLearning
 {
@@ -10,6 +11,10 @@ namespace InvariantLearning
     {
         public static void Main()
         {
+            // populate the training dataset with Mnist DataGen
+            Mnist.DataGen("MnistDataset", "TrainingFolder", 10);
+            Mnist.TestDataGen("MnistDataset", "TestingFolder", 10);
+
             // reading Config from json
             var config = Utility.ReadConfig("experimentParams.json");
             string pathToTrainDataFolder = config.PathToTrainDataFolder;
@@ -31,6 +36,7 @@ namespace InvariantLearning
             // using predict to classify image from dataset
             Utility.CreateFolderIfNotExist("Predict");
             List<string> currentResList = new List<string>();
+            /*
             CancellationToken cancelToken = new CancellationToken();
             while (true)
             {
@@ -46,6 +52,17 @@ namespace InvariantLearning
                 double accuracy = Utility.AccuracyCal(currentResList);
                 currentResList.Add($"{result.Item1}_{result.Item2}");
                 Utility.WriteOutputToFile(Path.Combine("Predict", "PredictionOutput"),result);
+            }
+            */
+            foreach(var testSample in testingSet.images)
+            {
+                var result = experiment.Predict(testSample);
+                Debug.WriteLine($"predicted as {result.Item1}, correct label: {result.Item2}");
+
+
+                double accuracy = Utility.AccuracyCal(currentResList);
+                currentResList.Add($"{result.Item1}_{result.Item2}");
+                Utility.WriteOutputToFile(Path.Combine("Predict", "PredictionOutput"), result);
             }
         }
     }

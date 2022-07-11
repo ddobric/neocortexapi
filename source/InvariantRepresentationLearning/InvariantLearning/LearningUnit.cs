@@ -176,11 +176,11 @@ namespace InvariantLearning
             {
                 if (result.ContainsKey(label.PredictedInput))
                 {
-                    result[label.PredictedInput] += label.NumOfSameBits;
+                    result[label.PredictedInput] += label.Similarity/frameCount;
                 }
                 else
                 {
-                    result.Add(label.PredictedInput, label.NumOfSameBits);
+                    result.Add(label.PredictedInput, label.Similarity/frameCount);
                 }
             }
         }

@@ -58,8 +58,8 @@ namespace MnistDataGen
         {
             var data = FileReaderMNIST.LoadImagesAndLables
                 (
-                Path.Combine(MnistFolder, "train-labels-idx1-ubyte.gz"),
-                Path.Combine(MnistFolder, "train-images-idx3-ubyte.gz")
+                Path.Combine(MnistFolder, "t10k-labels-idx1-ubyte.gz"),
+                Path.Combine(MnistFolder, "t10k-images-idx3-ubyte.gz")
                 );
 
             if (!Directory.Exists(outputPath))
