@@ -36,25 +36,22 @@ namespace InvariantLearning
             if(visualizeTrainingImages)
                 VisualizeTrainingImages($"TrainingSet_{Utility.GetHash()}");
 
-            //
-            // Performs the training
-            // It iterates through all learning units and learns corresponding images.
+            Debug.WriteLine("Stage 1: Training in Newborn cycle");
+            var newBornCycleTasks = new List<Task>();
             foreach (var unit in poolerDict)
             {
-                Debug.WriteLine("Stage 1: Training in Newborn cycle");
-                unit.Value.TrainingNewbornCycle(trainingDataSet);
-
-                Debug.WriteLine("Stage 2: Training of Images");
-                // for loop with epochs
-                for (int epoch = 1; epoch <= runParams.Epoch; epoch += 1)
-                {
-                    // for loop with training:
-                    foreach (var sample in trainingDataSet.images)
-                    {
-                        unit.Value.Learn(sample);
-                    }
-                }
+                newBornCycleTasks.Add(unit.Value.TrainingNewbornCycle(trainingDataSet));
             }
+            await Task.WhenAll(newBornCycleTasks);
+
+            
+            Debug.WriteLine("Stage 2: Training of Images");
+            var trainingNormalTasks = new List<Task>();
+            foreach (var unit in poolerDict)
+            {
+                trainingNormalTasks.Add(unit.Value.TrainingNormal(trainingDataSet,runParams.Epoch));
+            }
+            await Task.WhenAll(trainingNormalTasks);
         }
 
         /// <summary>
@@ -132,7 +129,7 @@ namespace InvariantLearning
             foreach (var sp in poolerDict)
             {
                 sp.Value.OutputPredictFolder = predictProcessName;
-                Dictionary<string, double> predictResultOfCurrentSP = sp.Value.Predict(inputImage);
+                Dictionary<string, double> predictResultOfCurrentSP = sp.Value.Predict(inputImage).Result;
                 allSPPredictResult.Add(predictResultOfCurrentSP);
 
                 //Write result to file

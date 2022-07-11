@@ -36,7 +36,7 @@ namespace InvariantLearning
         /// Training with newborn cycle before Real Learning of DataSet
         /// </summary>
         /// <param name="trainingDataSet">the Training Dataset</param>
-        public void TrainingNewbornCycle(DataSet trainingDataSet)
+        public async Task TrainingNewbornCycle(DataSet trainingDataSet)
         {
             // HTM CONFIG
             HtmConfig config = new HtmConfig(new int[] { inputDim * inputDim }, new int[] { columnDim });
@@ -93,6 +93,25 @@ namespace InvariantLearning
                 }
                 Debug.Write("\n");
                 cycle++;
+            }
+        }
+
+
+        /// <summary>
+        /// Training after newborncycle with a training dataset
+        /// </summary>
+        /// <param name="trainingDataSet"></param>
+        /// <param name="epoch">number of training cycle</param>
+        public async Task TrainingNormal(DataSet trainingDataSet, int epoch)
+        {
+            // for loop with epochs
+            for (int cycle = 1; cycle <= epoch; cycle += 1)
+            {
+                // for loop with training:
+                foreach (var sample in trainingDataSet.images)
+                {
+                    this.Learn(sample);
+                }
             }
         }
 
