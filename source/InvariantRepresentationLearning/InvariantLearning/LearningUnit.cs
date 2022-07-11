@@ -107,7 +107,7 @@ namespace InvariantLearning
             classifier.Learn(sample.label, activeColumns);
         }
 
-        public Dictionary<string, double> Predict(Picture image)
+        public async Task<Dictionary<string, double>> Predict(Picture image)
         {
             // Create the folder for the frame extracted by InvImage
             string spFolder = Path.Combine("Predict", OutputPredictFolder, $"SP of {inputDim}x{inputDim}");

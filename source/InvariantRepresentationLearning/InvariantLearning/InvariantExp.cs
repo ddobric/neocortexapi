@@ -27,7 +27,7 @@ namespace InvariantLearning
         /// <summary>
         /// 
         /// </summary>
-        internal void Train(bool visualizeTrainingImages = true)
+        internal async void Train(bool visualizeTrainingImages = true)
         {
             Debug.WriteLine($"-------------- Training in Progress with {runParams.Epoch} epochs---------------");
 
