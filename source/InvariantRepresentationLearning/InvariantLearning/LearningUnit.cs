@@ -86,7 +86,7 @@ namespace InvariantLearning
             while (!this.isInStableState)
             {
                 Debug.Write($"Cycle {cycle}: ");
-                foreach (var sample in trainingDataSet.images)
+                foreach (var sample in trainingDataSet.Images)
                 {
                     Debug.Write(".");
                     cortexLayer.Compute(sample.imagePath, true);
@@ -108,7 +108,7 @@ namespace InvariantLearning
             for (int cycle = 1; cycle <= epoch; cycle += 1)
             {
                 // for loop with training:
-                foreach (var sample in trainingDataSet.images)
+                foreach (var sample in trainingDataSet.Images)
                 {
                     this.Learn(sample);
                 }

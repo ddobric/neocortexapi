@@ -7,17 +7,17 @@
         /// </summary>
         public List<string> imageClasses;
 
-        public List<Picture> images;
+        public List<Picture> Images;
 
         public Random random;
 
-        public int Count { get { return images.Count; } }
+        public int Count { get { return Images.Count; } }
 
         public DataSet(string pathToTrainingFolder)
         {
             random = new Random(42);
 
-            images = new List<Picture>();
+            Images = new List<Picture>();
             // Getting the classes
             InitImageClasses(pathToTrainingFolder);
 
@@ -27,7 +27,7 @@
                 string label = Path.GetFileName(classFolder);
                 foreach (var imagePath in Directory.GetFiles(classFolder))
                 {
-                    images.Add(new Picture(imagePath, label));
+                    Images.Add(new Picture(imagePath, label));
                 }
             }
         }
@@ -56,7 +56,7 @@
         public Picture PickRandom(int seed = 42)
         {
             int index = random.Next(this.Count);
-            return images[index];
+            return Images[index];
         }
     }
 }

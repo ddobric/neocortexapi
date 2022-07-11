@@ -54,16 +54,33 @@ namespace InvariantLearning
                 Utility.WriteOutputToFile(Path.Combine("Predict", "PredictionOutput"),result);
             }
             */
-            foreach(var testSample in testingSet.images)
+
+
+            //foreach(var testSample in testingSet.images)
+            //{
+            //    var result = experiment.Predict(testSample);
+            //    Debug.WriteLine($"predicted as {result.Item1}, correct label: {result.Item2}");
+
+
+            //    double accuracy = Utility.AccuracyCal(currentResList);
+            //    currentResList.Add($"{result.Item1}_{result.Item2}");
+            //    Utility.WriteOutputToFile(Path.Combine("Predict", "PredictionOutput"), result);
+            //}
+
+            // Parallel implementation of initialization
+            ParallelOptions opts = new ParallelOptions();
+
+            Parallel.ForEach(testingSet.Images, opts, (testImage) =>
             {
-                var result = experiment.Predict(testSample);
+                var result = experiment.Predict(testImage);
+
                 Debug.WriteLine($"predicted as {result.Item1}, correct label: {result.Item2}");
 
-
                 double accuracy = Utility.AccuracyCal(currentResList);
+                
                 currentResList.Add($"{result.Item1}_{result.Item2}");
+                
                 Utility.WriteOutputToFile(Path.Combine("Predict", "PredictionOutput"), result);
-            }
-        }
+            });
     }
 }

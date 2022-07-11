@@ -72,7 +72,7 @@ namespace InvariantLearning
 
                     Utility.CreateFolderIfNotExist(pathForImageInOneLabelFolder);
 
-                    var imagesFilteredByLabel = trainingDataSet.images.Where(a => (a.label == label));
+                    var imagesFilteredByLabel = trainingDataSet.Images.Where(a => (a.label == label));
 
                     int index = 0;
 
