@@ -11,7 +11,7 @@ namespace InvariantLearning
     {
         public static void Main()
         {
-            // populate the training dataset with Mnist DataGen
+            // populate the training and testing dataset with Mnist DataGen
             Mnist.DataGen("MnistDataset", "TrainingFolder", 10);
             Mnist.TestDataGen("MnistDataset", "TestingFolder", 10);
 
@@ -30,7 +30,7 @@ namespace InvariantLearning
             InvariantExperiment experiment = new(trainingSet, config.runParams);
 
             // train the network
-            experiment.Train(false);
+            experiment.Train(true);
 
 
             // using predict to classify image from dataset
