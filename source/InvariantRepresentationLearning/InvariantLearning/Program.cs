@@ -80,7 +80,7 @@ namespace InvariantLearning
 
                 currentResList.Add($"{result.Item1}_{result.Item2}");
 
-                Utility.WriteOutputToFile(Path.Combine("Predict", $"PredictionOutput of testImage_{Path.GetFileNameWithoutExtension(testImage.imagePath)} of {testImage.label}"), result);
+                Utility.WriteOutputToFile(Path.Combine("Predict", $"{Utility.GetHash()}_____PredictionOutput of testImage label {testImage.label}"), result);
             });
         }
     }
