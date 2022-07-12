@@ -22,6 +22,13 @@
         /// </summary>
         public int brY;
 
+        public int PixelCount { get 
+            { 
+                int count = (brX-tlX+1)*(brY-tlY+1);
+                return count;
+            } 
+        }
+
         /// <summary>
         /// pixel-scale tool variable for defining a frame
         /// </summary>

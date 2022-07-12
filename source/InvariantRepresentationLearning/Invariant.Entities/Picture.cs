@@ -139,5 +139,23 @@ namespace Invariant.Entities
             }
             return true;
         }
+
+        public bool IsRegionBelowDensity(Frame frame, double pixelDensityThreshold)
+        {
+            var test = this.GetPixels(frame);
+            int whitePixelsCount = 0;
+            for (int y = 0; y < test.GetLength(0); y++)
+            {
+                for (int x = 0; x < test.GetLength(1); x++)
+                {
+                    if (test[x, y, 0] > 0)
+                    {
+                       whitePixelsCount++;
+                    }
+                }
+            }
+            double whitePixelDensity = whitePixelsCount/(frame.PixelCount);
+            return (whitePixelDensity>=pixelDensityThreshold)? true : false;
+        }
     }
 }

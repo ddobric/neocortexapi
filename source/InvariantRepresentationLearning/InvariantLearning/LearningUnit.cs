@@ -141,7 +141,7 @@ namespace InvariantLearning
 
             foreach (var frame in frameMatrix)
             {
-                if (image.IsRegionEmpty(frame))
+                if (image.IsRegionBelowDensity(frame, 0.05))
                 {
                     continue;
                 }
