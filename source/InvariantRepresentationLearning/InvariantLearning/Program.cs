@@ -22,7 +22,7 @@ namespace InvariantLearning
             string pathToTrainDataFolder = config.PathToTrainDataFolder;
 
             //Mnist.DataGenAll("MnistDataset", "TrainingFolder");
-            Mnist.DataGen("MnistDataset", "TrainingFolder",5);
+            Mnist.DataGen("MnistDataset", "TrainingFolder",10);
 
             List<DataSet> testingData = new List<DataSet>();
             List<DataSet> trainingData = new List<DataSet>();
