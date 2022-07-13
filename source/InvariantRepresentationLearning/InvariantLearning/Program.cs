@@ -27,7 +27,7 @@ namespace InvariantLearning
             DataSet testingSet = new DataSet(pathToTestDataFolder);
 
             // passing the training data to the training experiment
-            InvariantExperiment experiment = new(trainingSet, config.runParams);
+            InvariantExperimentImageClassification experiment = new(trainingSet, config.runParams);
 
             // train the network
             experiment.Train(true);
@@ -56,21 +56,7 @@ namespace InvariantLearning
             */
 
 
-            //foreach(var testSample in testingSet.images)
-            //{
-            //    var result = experiment.Predict(testSample);
-            //    Debug.WriteLine($"predicted as {result.Item1}, correct label: {result.Item2}");
-
-
-            //    double accuracy = Utility.AccuracyCal(currentResList);
-            //    currentResList.Add($"{result.Item1}_{result.Item2}");
-            //    Utility.WriteOutputToFile(Path.Combine("Predict", "PredictionOutput"), result);
-            //}
-
-            // Parallel implementation of initialization
-            ParallelOptions opts = new ParallelOptions();
-
-            Parallel.ForEach(testingSet.Images, opts, (testImage) =>
+            foreach(var testImage in testingSet.Images)
             {
                 var result = experiment.Predict(testImage);
 
@@ -81,7 +67,7 @@ namespace InvariantLearning
                 currentResList.Add($"{result.Item1}_{result.Item2}");
 
                 Utility.WriteOutputToFile(Path.Combine("Predict", $"{Utility.GetHash()}_____PredictionOutput of testImage label {testImage.label}"), result);
-            });
+            }
         }
     }
 }

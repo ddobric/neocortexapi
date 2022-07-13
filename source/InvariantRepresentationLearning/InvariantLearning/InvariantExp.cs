@@ -5,7 +5,7 @@ using Invariant.Entities;
 
 namespace InvariantLearning
 {
-    internal class InvariantExperiment
+    internal class InvariantExperimentImageClassification
     {
         private DataSet trainingDataSet;
         private RunConfig runParams;
@@ -16,7 +16,7 @@ namespace InvariantLearning
         /// </summary>
         /// <param name="trainigDataSet">the image set used for invariant learning</param>
         /// <param name="runParams">experiment parameters used for experiment</param>
-        public InvariantExperiment(DataSet trainigDataSet, RunConfig runParams)
+        public InvariantExperimentImageClassification(DataSet trainigDataSet, RunConfig runParams)
         {
             this.trainingDataSet = trainigDataSet;
             this.runParams = runParams;
