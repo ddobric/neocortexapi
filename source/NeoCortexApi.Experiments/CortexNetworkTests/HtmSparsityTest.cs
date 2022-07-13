@@ -317,7 +317,7 @@ namespace NeoCortexApi.Experiments
                             Debug.WriteLine($"W: {Helpers.StringifyVector(lyrOut.WinnerCells.Select(c => c.Index).ToArray())}");
                             Debug.WriteLine($"P: {Helpers.StringifyVector(lyrOut.PredictiveCells.Select(c => c.Index).ToArray())}");
 
-                            var predictedValue = cls.GetPredictedInputValue(lyrOut.PredictiveCells.ToArray());
+                            var predictedValue = cls.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray()).First().PredictedInput;
 
                             Debug.WriteLine($"Current Input: {input} \t| - Predicted value in previous cycle: {lastPredictedValue} \t| Predicted Input for the next cycle: {predictedValue}");
 

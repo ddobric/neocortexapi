@@ -20,7 +20,7 @@ namespace UnitTestsProject
             HtmSerializer2 serializer = new HtmSerializer2();
 
             Cell[] cells = new Cell[2];
-            cells[0] = new Cell(12, 14, 16, 18, new CellActivity());
+            cells[0] = new Cell(12, 14, 16, new CellActivity());
 
             var distSeg1 = new DistalDendrite(cells[0], 1, 2, 2, 1.0, 100);
             cells[0].DistalDendrites.Add(distSeg1);
@@ -53,14 +53,14 @@ namespace UnitTestsProject
         {
             var dict = new Dictionary<string, Cell>();
 
-            var cell1 = new Cell(12, 14, 16, 18, new CellActivity());
+            var cell1 = new Cell(12, 14, 16, new CellActivity());
             var distSeg1 = new DistalDendrite(cell1, 1, 2, 2, 1.0, 100);
             var distSeg2 = new DistalDendrite(cell1, 2, 2, 12, 1.0, 100);
             cell1.DistalDendrites.Add(distSeg1);
             cell1.DistalDendrites.Add(distSeg2);
             dict.Add("1", cell1);
 
-            var cell2 = new Cell(12, 14, 16, 18, new CellActivity());
+            var cell2 = new Cell(12, 14, 16, new CellActivity());
             var distSeg3 = new DistalDendrite(cell2, 44, 24, 34, 1.0, 102);
             cell2.DistalDendrites.Add(distSeg3);
             dict.Add("2", cell2);
@@ -106,6 +106,11 @@ namespace UnitTestsProject
             using (StreamReader sr = new StreamReader($"ser_{nameof(Test)}_123.txt"))
             {
                 var d = HtmSerializer2.Deserialize<DistalDendrite[]>(sr);
+
+                for (int i = 0; i < dd.Length; i++)
+                {
+                    Assert.IsTrue(dd[i].Equals(d[i]));
+                }
             }
         }
 

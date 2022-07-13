@@ -483,8 +483,6 @@ namespace NeoCortexApi.Entities
         /// <returns>the least recently activated segment on the specified cell.</returns>
         private DistalDendrite LeastRecentlyUsedSegment(Cell cell)
         {
-            //DD
-            //List<DistalDendrite> segments = GetSegments(cell, false);
             List<DistalDendrite> segments = cell.DistalDendrites;
 
             DistalDendrite minSegment = null;
@@ -502,20 +500,7 @@ namespace NeoCortexApi.Entities
             return minSegment;
         }
 
-        ///**
-        // * Returns the total number of {@link DistalDendrite}s
-        // * 
-        // * @return  the total number of segments
-        // */
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <returns></returns>
-        //public int NumSegments()
-        //{
-        //    return NumSegments(null);
-        //}
-
+   
         /// <summary>
         /// Returns the number of <see cref="DistalDendrite"/>s on a given <see cref="Cell"/> if specified, or the total number if the <see cref="Cell"/> is null.
         /// </summary>
