@@ -49,7 +49,8 @@ namespace InvariantLearning
                     match += 1;
                 }
             }
-            return match/currentResList.Count;
+            double accuracy = match / currentResList.Count;
+            return accuracy;
         }
 
         /// <summary>

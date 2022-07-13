@@ -11,9 +11,66 @@ namespace InvariantLearning
     {
         public static void Main()
         {
+            //ExperimentPredictingWithFrameGrid();
+            ExperimentNormalImageClassification();
+        }
+
+        private static void ExperimentNormalImageClassification()
+        {
+            // reading Config from json
+            var config = Utility.ReadConfig("experimentParams.json");
+            string pathToTrainDataFolder = config.PathToTrainDataFolder;
+
+            //Mnist.DataGenAll("MnistDataset", "TrainingFolder");
+            Mnist.DataGen("MnistDataset", "TrainingFolder",5);
+
+            List<DataSet> testingData = new List<DataSet>();
+            List<DataSet> trainingData = new List<DataSet>();
+
+            DataSet originalTrainingDataSet = new DataSet(pathToTrainDataFolder);
+
+            int k = 5;
+
+            (trainingData, testingData) = originalTrainingDataSet.KFoldDataSetSplit(k);
+
+            Dictionary<string, double> foldValidationResult = new Dictionary<string, double>();
+
+            for (int i = 0; i < k; i += 1)
+            {
+                // passing the training data to the training experiment
+                InvariantExperimentImageClassification experiment = new(trainingData[i], config.runParams);
+
+                // train the network
+                experiment.Train(false);
+
+                double currentAccuracy = 0;
+
+                foreach (var testImage in testingData[i].Images)
+                {
+                    Utility.CreateFolderIfNotExist($"Predict_{i}");
+                    List<string> currentResList = new List<string>();
+
+                    var result = experiment.Predict(testImage, i.ToString());
+
+                    Debug.WriteLine($"predicted as {result.Item1}, correct label: {result.Item2}");
+
+                    currentResList.Add($"{result.Item1}_{result.Item2}");
+
+                    currentAccuracy = Utility.AccuracyCal(currentResList);
+
+                    Utility.WriteOutputToFile(Path.Combine($"Predict_{i}", $"{Utility.GetHash()}_____PredictionOutput of testImage label {testImage.label}"), result);
+                }
+
+                foldValidationResult.Add($"Fold_{i}_accuracy", currentAccuracy);
+            }
+            Utility.WriteResultOfOneSP(foldValidationResult, $"KFold_{k}_Validation_Result");
+        }
+
+        private static void ExperimentPredictingWithFrameGrid()
+        {
             // populate the training and testing dataset with Mnist DataGen
-            Mnist.DataGen("MnistDataset", "TrainingFolder", 10);
-            Mnist.TestDataGen("MnistDataset", "TestingFolder", 10);
+            Mnist.DataGen("MnistDataset", "TrainingFolder", 5);
+            Mnist.TestDataGen("MnistDataset", "TestingFolder", 5);
 
             // reading Config from json
             var config = Utility.ReadConfig("experimentParams.json");
@@ -56,7 +113,7 @@ namespace InvariantLearning
             */
 
 
-            foreach(var testImage in testingSet.Images)
+            foreach (var testImage in testingSet.Images)
             {
                 var result = experiment.Predict(testImage);
 

@@ -65,7 +65,7 @@ namespace InvariantLearning
 
                 Utility.CreateFolderIfNotExist(pathForTrainDataOfOneSpatialPooler);
 
-                foreach (var label in trainingDataSet.imageClasses)
+                foreach (var label in trainingDataSet.ImageClasses)
                 {
                     string pathForImageInOneLabelFolder = Path.Combine(trainDataFolder, $"SP dim {dim.ToString()}", label);
 
@@ -116,28 +116,28 @@ namespace InvariantLearning
         /// </summary>
         /// <param name="v">input image in InvImage</param>
         /// <returns></returns>
-        internal (string, string) Predict(Picture inputImage)
+        internal (string, string) Predict(Picture inputImage, string kFold = "")
         {
             List<Dictionary<string, double>> allSPPredictResult = new List<Dictionary<string, double>>();
 
             // Prepare Output Folder
             string predictProcessName = Path.GetFileNameWithoutExtension(inputImage.imagePath) + Utility.GetHash();
-            Utility.CreateFolderIfNotExist(Path.Combine("Predict", predictProcessName));
+            Utility.CreateFolderIfNotExist(Path.Combine($"Predict_{kFold}", predictProcessName));
 
             // Collecting Vote
             foreach (var sp in poolerDict)
             {
                 sp.Value.OutputPredictFolder = predictProcessName;
-                Dictionary<string, double> predictResultOfCurrentSP = sp.Value.Predict(inputImage).Result;
+                Dictionary<string, double> predictResultOfCurrentSP = sp.Value.PredictScaledImage(inputImage, $"Predict_{kFold}");
                 allSPPredictResult.Add(predictResultOfCurrentSP);
 
                 //Write result to file
-                Utility.WriteResultOfOneSP(predictResultOfCurrentSP, Path.Combine("Predict", predictProcessName, $"sp_{sp.Key}"));
+                Utility.WriteResultOfOneSP(predictResultOfCurrentSP, Path.Combine($"Predict_{kFold}", predictProcessName, $"sp_{sp.Key}"));
             }
 
             // Calculating Vote
             Dictionary<string, double> result = new Dictionary<string, double>();
-            foreach (var label in trainingDataSet.imageClasses)
+            foreach (var label in trainingDataSet.ImageClasses)
             {
                 result.Add(label, 0);
             }

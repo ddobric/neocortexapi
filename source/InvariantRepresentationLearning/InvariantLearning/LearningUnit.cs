@@ -6,6 +6,7 @@ using HtmImageEncoder;
 using NeoCortexApi.Classifiers;
 
 using Invariant.Entities;
+using SkiaSharp;
 
 namespace InvariantLearning
 {
@@ -126,7 +127,58 @@ namespace InvariantLearning
             classifier.Learn(sample.label, activeColumns);
         }
 
-        public async Task<Dictionary<string, double>> Predict(Picture image)
+        /// <summary>
+        /// Predicting image without using frame
+        /// </summary>
+        /// <param name="image"></param>
+        /// <returns></returns>
+        public Dictionary<string, double> PredictScaledImage(Picture image, string predictOutputPath)
+        {
+            // Create the folder for the frame extracted by InvImage
+            string spFolder = Path.Combine(predictOutputPath, OutputPredictFolder, $"SP of {inputDim}x{inputDim}");
+            Utility.CreateFolderIfNotExist(spFolder);
+
+            // dictionary for saving result
+            Dictionary<string, double> result = new Dictionary<string, double>();
+
+            var frameMatrix = Frame.GetConvFramesbyPixel(image.imageWidth, image.imageHeight, inputDim, inputDim, 5);
+
+            int lastXIndex = image.imageWidth - 1;
+            int lastYIndex = image.imageHeight - 1;
+            Frame frame = new Frame(0, 0, lastXIndex, lastYIndex);
+            if (image.IsRegionBelowDensity(frame, 0.05))
+            {
+                return result;
+            }
+            else
+            {
+                // Save frame to folder
+                string outFile = Path.Combine(spFolder, $"testImage of label {image.label}.png");
+                Picture.SaveAsImage(image.GetPixels(), outFile);
+
+                // Compute the SDR
+                var sdr = cortexLayer.Compute(outFile, false) as int[];
+
+                // Get Predicted Labels
+                var predictedLabel = classifier.GetPredictedInputValues(sdr, 10);
+
+                // Check if there are Predicted Label ?
+                if (predictedLabel.Count != 0)
+                {
+                    foreach (var a in predictedLabel)
+                    {
+                        Debug.WriteLine($"Predicting image: {image.imagePath}");
+                        Debug.WriteLine($"label predicted as : {a.PredictedInput}");
+                        Debug.WriteLine($"similarity : {a.Similarity}");
+                        Debug.WriteLine($"Number of Same Bits: {a.NumOfSameBits}");
+                        result.Add(a.PredictedInput, a.Similarity);
+                    }
+                }
+            }
+            Utility.WriteResultOfOneSP(result, Path.Combine(spFolder, $"SP of {inputDim}x{inputDim} detailed.csv"));
+            return result;
+        }
+        public Dictionary<string, double> PredictWithFrameGrid(Picture image)
         {
             // Create the folder for the frame extracted by InvImage
             string spFolder = Path.Combine("Predict", OutputPredictFolder, $"SP of {inputDim}x{inputDim}");

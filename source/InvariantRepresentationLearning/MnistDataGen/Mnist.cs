@@ -2,6 +2,7 @@
 using MNIST.IO;
 using SkiaSharp;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
@@ -16,23 +17,7 @@ namespace MnistDataGen
         /// <returns></returns>
         public static void DataGen(string MnistFolder, string outputPath, int NoSample)
         {
-            var data = FileReaderMNIST.LoadImagesAndLables
-                (
-                Path.Combine(MnistFolder,"train-labels-idx1-ubyte.gz"),
-                Path.Combine(MnistFolder,"train-images-idx3-ubyte.gz")
-                );
-
-            if (!Directory.Exists(outputPath))
-            {
-                Directory.CreateDirectory(outputPath);
-            }
-            for(int i = 0; i < 10; i++)
-            {
-                if (!Directory.Exists(Path.Combine(outputPath, $"{i}")))
-                {
-                    Directory.CreateDirectory(Path.Combine(outputPath, $"{i}"));
-                }
-            }
+            IEnumerable<TestCase> data = InitMnistSetAndDirectories(MnistFolder, outputPath);
 
             int[] checkArray = new int[10];
 
@@ -48,6 +33,45 @@ namespace MnistDataGen
                 {
                     return;
                 }
+            }
+        }
+
+        private static IEnumerable<TestCase> InitMnistSetAndDirectories(string MnistFolder, string outputPath)
+        {
+            var data = FileReaderMNIST.LoadImagesAndLables
+                            (
+                            Path.Combine(MnistFolder, "train-labels-idx1-ubyte.gz"),
+                            Path.Combine(MnistFolder, "train-images-idx3-ubyte.gz")
+                            );
+
+            if (!Directory.Exists(outputPath))
+            {
+                Directory.CreateDirectory(outputPath);
+            }
+            for (int i = 0; i < 10; i++)
+            {
+                if (!Directory.Exists(Path.Combine(outputPath, $"{i}")))
+                {
+                    Directory.CreateDirectory(Path.Combine(outputPath, $"{i}"));
+                }
+            }
+
+            return data;
+        }
+
+        /// <summary>
+        /// Generate all Mnist Dataset
+        /// </summary>
+        /// <param name="MnistFolder"></param>
+        /// <param name="outputPath"></param>
+        public static void DataGenAll(string MnistFolder, string outputPath)
+        {
+            IEnumerable<TestCase> data = InitMnistSetAndDirectories(MnistFolder, outputPath);
+            int[] indexArray = new int[10];
+            foreach (var a in data)
+            {
+                indexArray[(int)a.Label] += 1;
+                SaveImage(a, outputPath, indexArray[(int)a.Label]);
             }
         }
 
