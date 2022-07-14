@@ -62,7 +62,7 @@ namespace InvariantLearning
 
                     Utility.WriteOutputToFile(Path.Combine($"Predict_{i}", $"{Utility.GetHash()}_____PredictionOutput of testImage label {testImage.label}"), result);
                 }
-
+                //
                 foldValidationResult.TryAdd($"Fold_{i}_accuracy", currentAccuracy);
             });
             Utility.WriteResultOfOneSP(new Dictionary<string, double>(foldValidationResult), $"KFold_{k}_Validation_Result");
