@@ -196,5 +196,99 @@ namespace UnitTestsProject
 
             Assert.IsTrue(array.SequenceEqual(res));
         }
+
+        [TestMethod]
+        public void DeserializeHtmConfigTest()
+        {
+            int cellsPerColumnL4 = 20;
+            int numColumnsL4 = 500;
+            int cellsPerColumnL2 = 20;
+            int numColumnsL2 = 500;
+            int inputBits = 100;
+            double minOctOverlapCycles = 1.0;
+            double maxBoost = 10.0;
+            double max = 20;
+            int inputsL2 = numColumnsL4 * cellsPerColumnL4;
+            HtmConfig htmConfig_L2 = new HtmConfig(new int[] { inputsL2 }, new int[] { numColumnsL2 })
+            {
+                Random = new NeoCortexApi.ThreadSafeRandom(42),
+
+                CellsPerColumn = cellsPerColumnL2,
+                GlobalInhibition = true,
+                LocalAreaDensity = -1,
+                NumActiveColumnsPerInhArea = 0.1 * numColumnsL2,
+                PotentialRadius = inputsL2, // Every columns 
+                //InhibitionRadius = 15,
+                MaxBoost = maxBoost,
+                DutyCyclePeriod = 25,
+                MinPctOverlapDutyCycles = minOctOverlapCycles,
+                MaxSynapsesPerSegment = (int)(0.05 * numColumnsL2),
+                ActivationThreshold = 15,
+                ConnectedPermanence = 0.5,
+                PermanenceDecrement = 0.25,
+                PermanenceIncrement = 0.15,
+                PredictedSegmentDecrement = 0.1
+            };
+
+            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            {
+                HtmSerializer2.Serialize(htmConfig_L2, null, sw);
+            }
+            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            {
+                var htmConfig = HtmSerializer2.Deserialize<HtmConfig>(sr);
+
+                Assert.IsTrue(htmConfig_L2.Equals(htmConfig));
+            }
+        }
+
+        [TestMethod]
+        public void DeserializeConnectionsTest()
+        {
+            int cellsPerColumnL4 = 20;
+            int numColumnsL4 = 500;
+            int cellsPerColumnL2 = 20;
+            int numColumnsL2 = 500;
+            int inputBits = 100;
+            double minOctOverlapCycles = 1.0;
+            double maxBoost = 10.0;
+            double max = 20;
+            int inputsL2 = numColumnsL4 * cellsPerColumnL4;
+            HtmConfig htmConfig_L2 = new HtmConfig(new int[] { inputsL2 }, new int[] { numColumnsL2 })
+            {
+                Random = new NeoCortexApi.ThreadSafeRandom(42),
+
+                CellsPerColumn = cellsPerColumnL2,
+                GlobalInhibition = true,
+                LocalAreaDensity = -1,
+                NumActiveColumnsPerInhArea = 0.1 * numColumnsL2,
+                PotentialRadius = inputsL2, // Every columns 
+                //InhibitionRadius = 15,
+                MaxBoost = maxBoost,
+                DutyCyclePeriod = 25,
+                MinPctOverlapDutyCycles = minOctOverlapCycles,
+                MaxSynapsesPerSegment = (int)(0.05 * numColumnsL2),
+                ActivationThreshold = 15,
+                ConnectedPermanence = 0.5,
+                PermanenceDecrement = 0.25,
+                PermanenceIncrement = 0.15,
+                PredictedSegmentDecrement = 0.1
+            };
+
+            var mem = new Connections(htmConfig_L2);
+
+            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            {
+                HtmSerializer2.Serialize(mem, null, sw);
+            }
+            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            {
+                var content = sr.ReadToEnd();
+            }
+            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            {
+                var connection = HtmSerializer2.Deserialize<Connections>(sr);
+            }
+        }
     }
 }

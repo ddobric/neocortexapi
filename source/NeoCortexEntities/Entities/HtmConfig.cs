@@ -619,6 +619,7 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.SynPermConnected, writer);
             //Spatial Pooler Variables
             //ser.SerializeValue(this.InhibitionRadius, writer);
+            ser.SerializeValue(-1, writer);
             ser.SerializeValue(this.NumInputs, writer);
             ser.SerializeValue(this.NumColumns, writer);
             ser.SerializeValue(this.PotentialRadius, writer);

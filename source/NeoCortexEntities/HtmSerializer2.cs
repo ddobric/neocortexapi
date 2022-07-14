@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -105,7 +106,19 @@ namespace NeoCortexApi.Entities
             }
             else if (type.IsClass || type.IsValueType)
             {
-                SerializeObject(obj, name, sw);
+                if (type == typeof(DistalDendrite))
+                {
+                    // serialize distal dendrite
+                    SerializeDistalDendrite(obj, name, sw);
+                }
+                else if (type == typeof(HtmConfig))
+                {
+                    SerializeHtmConfig(obj, name, sw);
+                }
+                else
+                {
+                    SerializeObject(obj, name, sw);
+                }
             }
             SerializeEnd(name, obj, sw);
 
@@ -191,19 +204,53 @@ namespace NeoCortexApi.Entities
             }
         }
 
-        private static void SerializeObject(object obj, string name, StreamWriter sw)
+        private static void SerializeObject(object obj, string name, StreamWriter sw, List<string> excludeEntries = null)
         {
+            if (obj == null)
+                return;
             var type = obj.GetType();
 
             var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
             foreach (var property in properties)
             {
+                if (excludeEntries != null && excludeEntries.Contains(property.Name))
+                {
+                    continue;
+                }
                 if (property.CanRead)
                 {
                     Serialize(property.GetValue(obj, null), property.Name, sw);
                 }
             }
+
+            var fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Where(f => f.GetCustomAttribute<CompilerGeneratedAttribute>() == null);
+
+            foreach (var field in fields)
+            {
+                if (excludeEntries != null && excludeEntries.Contains(field.Name))
+                {
+                    continue;
+                }
+                var value = field.GetValue(obj);
+                Serialize(value, field.Name, sw);
+            }
+        }
+
+        private static void SerializeDistalDendrite(object obj, string name, StreamWriter sw)
+        {
+            var excludeEntries = new List<string> { nameof(DistalDendrite.ParentCell) };
+            SerializeObject(obj, name, sw, excludeEntries);
+        }
+
+        private static void SerializeHtmConfig(object obj, string name, StreamWriter sw)
+        {
+            var excludeEntries = new List<string> { nameof(HtmConfig.Random) };
+            SerializeObject(obj, name, sw, excludeEntries);
+
+            var htmConfig = obj as HtmConfig;
+            Serialize(htmConfig.RandomGenSeed, nameof(HtmConfig.Random), sw);
+
         }
 
         public static T Deserialize<T>(StreamReader sr, string propName = null)
@@ -236,8 +283,15 @@ namespace NeoCortexApi.Entities
             }
             else
             {
-                // deserialize object
-                obj = DeserializeObject<T>(sr, propName);
+                if (type == typeof(HtmConfig))
+                {
+                    obj = (T)DeserializeHtmConfig(sr, propName);
+                }
+                else
+                {
+                    // deserialize object
+                    obj = DeserializeObject<T>(sr, propName);
+                }
 
                 if (type == typeof(Cell))
                 {
@@ -264,7 +318,14 @@ namespace NeoCortexApi.Entities
             if (type.IsGenericType)
             {
                 elementType = type.GetGenericArguments()[0];
-                convertMethodName = nameof(System.Linq.Enumerable.ToList);
+                if (IsSet(type))
+                {
+                    convertMethodName = nameof(System.Linq.Enumerable.ToHashSet);
+                }
+                else
+                {
+                    convertMethodName = nameof(System.Linq.Enumerable.ToList);
+                }
             }
             else
             {
@@ -293,8 +354,8 @@ namespace NeoCortexApi.Entities
             }
             object enumerableCast = CastListToType(enumerable, elementType);
 
-            var convertMethod = typeof(Enumerable).GetMethod(convertMethodName).MakeGenericMethod(elementType);
-            T obj = (T)convertMethod.Invoke(null, new object[] { enumerableCast });
+            var convertMethod = typeof(Enumerable).GetMethods().FirstOrDefault(m => m.Name == convertMethodName)?.MakeGenericMethod(elementType);
+            T obj = (T)convertMethod?.Invoke(null, new object[] { enumerableCast });
 
             return obj;
         }
@@ -360,12 +421,13 @@ namespace NeoCortexApi.Entities
             return obj;
         }
 
-        public static T DeserializeObject<T>(StreamReader sr, string propertyName)
+        public static T DeserializeObject<T>(StreamReader sr, string propertyName, List<string> excludeEntries = null, Action<T, string> action = null)
         {
             var type = typeof(T);
             T obj = (T)Activator.CreateInstance(type);
 
             var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            var fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Where(f => f.GetCustomAttribute<CompilerGeneratedAttribute>() == null);
             while (sr.Peek() > 0)
             {
                 var content = sr.ReadLine().Trim();
@@ -382,14 +444,33 @@ namespace NeoCortexApi.Entities
                 var components = content.Split(' ');
                 if (components.Length == 3)
                 {
-                    var property = properties.FirstOrDefault(p => p.Name == components[1]);
-                    if (property != null && property.CanWrite)
+                    if (excludeEntries == null || excludeEntries.Contains(components[1]) == false)
                     {
-                        var deserializeMethod = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.Deserialize)).MakeGenericMethod(property.PropertyType);
+                        var property = properties.FirstOrDefault(p => p.Name == components[1]);
+                        if (property != null && property.CanWrite)
+                        {
+                            var deserializeMethod = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.Deserialize)).MakeGenericMethod(property.PropertyType);
 
-                        var propertyValue = deserializeMethod.Invoke(null, new object[] { sr, property.Name });
-                        property.SetValue(obj, propertyValue);
-                        Debug.WriteLine($"set {propertyName ?? type.Name}.{property.Name} to {propertyValue.ToString()}");
+                            var propertyValue = deserializeMethod.Invoke(null, new object[] { sr, property.Name });
+                            property.SetValue(obj, propertyValue);
+                            Debug.WriteLine($"set {propertyName ?? type.Name}.{property.Name} to {propertyValue.ToString()}");
+                        }
+                        else
+                        {
+                            var field = fields.FirstOrDefault(f => f.Name == components[1]);
+                            if (field != null && field.IsInitOnly == false)
+                            {
+                                var deserializeMethod = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.Deserialize)).MakeGenericMethod(field.FieldType);
+
+                                var fieldValue = deserializeMethod.Invoke(null, new object[] { sr, field.Name });
+                                field.SetValue(obj, fieldValue);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Deserialize the excluded fields or properties
+                        action?.Invoke(obj, components[1]);
                     }
                 }
             }
@@ -397,7 +478,23 @@ namespace NeoCortexApi.Entities
             return obj;
         }
 
-        public static T DeserializeValue<T>(StreamReader sr, string propertyName)
+        private static object DeserializeHtmConfig(StreamReader sr, string propertyName)
+        {
+            var excludeEntries = new List<string> { nameof(HtmConfig.Random) };
+            var htmConfig = DeserializeObject<HtmConfig>(sr, propertyName, excludeEntries, (config, propertyName) =>
+            {
+                if (propertyName == nameof(HtmConfig.Random))
+                {
+                    var seed = Deserialize<int>(sr, propertyName);
+                    config.Random = new ThreadSafeRandom(seed);
+                }
+            });
+            return htmConfig;
+
+
+        }
+
+        private static T DeserializeValue<T>(StreamReader sr, string propertyName)
         {
             T obj = default;
             while (sr.Peek() > 0)
@@ -441,6 +538,11 @@ namespace NeoCortexApi.Entities
         private static bool IsList(Type type)
         {
             return type.GetInterfaces().Any(i => i.Name == nameof(IEnumerable));
+        }
+
+        private static bool IsSet(Type type)
+        {
+            return type.IsGenericType && (typeof(ISet<>) == type.GetGenericTypeDefinition());
         }
 
         private bool TryGetNullableType(Type type, out Type underlyingType)
