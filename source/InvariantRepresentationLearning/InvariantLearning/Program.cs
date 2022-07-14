@@ -4,6 +4,7 @@ using System.Diagnostics;
 using InvariantLearning;
 using Invariant.Entities;
 using MnistDataGen;
+using System.Collections.Concurrent;
 
 namespace InvariantLearning
 {
@@ -22,7 +23,7 @@ namespace InvariantLearning
             string pathToTrainDataFolder = config.PathToTrainDataFolder;
 
             //Mnist.DataGenAll("MnistDataset", "TrainingFolder");
-            Mnist.DataGen("MnistDataset", "TrainingFolder",20);
+            Mnist.DataGen("MnistDataset", "TrainingFolder",30);
 
             List<DataSet> testingData = new List<DataSet>();
             List<DataSet> trainingData = new List<DataSet>();
@@ -33,9 +34,10 @@ namespace InvariantLearning
 
             (trainingData, testingData) = originalTrainingDataSet.KFoldDataSetSplit(k);
 
-            Dictionary<string, double> foldValidationResult = new Dictionary<string, double>();
+            ConcurrentDictionary<string, double> foldValidationResult = new ConcurrentDictionary<string, double>();
 
-            for (int i = 0; i < k; i += 1)
+            Parallel.For(0, k, (i) =>
+            //for (int i = 0; i < k; i += 1)
             {
                 // passing the training data to the training experiment
                 InvariantExperimentImageClassification experiment = new(trainingData[i], config.runParams);
@@ -44,11 +46,11 @@ namespace InvariantLearning
                 experiment.Train(false);
 
                 double currentAccuracy = 0;
+                List<string> currentResList = new List<string>();
 
                 foreach (var testImage in testingData[i].Images)
                 {
                     Utility.CreateFolderIfNotExist($"Predict_{i}");
-                    List<string> currentResList = new List<string>();
 
                     var result = experiment.Predict(testImage, i.ToString());
 
@@ -61,9 +63,9 @@ namespace InvariantLearning
                     Utility.WriteOutputToFile(Path.Combine($"Predict_{i}", $"{Utility.GetHash()}_____PredictionOutput of testImage label {testImage.label}"), result);
                 }
 
-                foldValidationResult.Add($"Fold_{i}_accuracy", currentAccuracy);
-            }
-            Utility.WriteResultOfOneSP(foldValidationResult, $"KFold_{k}_Validation_Result");
+                foldValidationResult.TryAdd($"Fold_{i}_accuracy", currentAccuracy);
+            });
+            Utility.WriteResultOfOneSP(new Dictionary<string, double>(foldValidationResult), $"KFold_{k}_Validation_Result");
         }
 
         private static void ExperimentPredictingWithFrameGrid()
