@@ -77,5 +77,20 @@ namespace InvariantLearning
                 foreach (var entry in allResultForEachFrame)
                     file.WriteLine("{0}, {1}", entry.Key, entry.Value);
         }
+
+        internal static void WriteListToCsv(string path,  List<Dictionary<string, string>> allResult)
+        {
+
+            using(StreamWriter file = new StreamWriter($"{path}.csv"))
+            {
+                // Header
+                file.WriteLine(string.Join(";", allResult[0].Keys));
+                // Info
+                foreach (var entry in allResult)
+                {
+                    file.WriteLine(string.Join(";", entry.Values));
+                }
+            }
+        }
     }
 }

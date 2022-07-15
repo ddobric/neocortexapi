@@ -116,5 +116,22 @@
 
             return (trainingDataSet, testingDataSet);
         }
+
+        public void VisualizeSet(string path)
+        {
+            foreach(var imageClass in ImageClasses)
+            {
+                string imageClassPath = Path.Combine(path, $"{imageClass}"))
+                if (!Directory.Exists(imageClassPath)
+                {
+                    Directory.CreateDirectory(imageClassPath);
+                }
+            }
+            foreach(var image in Images)
+            {
+                string imagePath = Path.Combine(path, image.label, Path.GetFileNameWithoutExtension(image.imagePath));
+                image.SaveTo(imagePath);
+            }
+        }
     }
 }

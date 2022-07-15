@@ -97,28 +97,13 @@ namespace InvariantLearning
         }
 
         /// <summary>
-        /// Validate the training process
-        /// </summary>
-        /// <param name="times"></param>
-        internal void Validate(int times)
-        {
-            int correctGuess = 0;
-            for (int time = 0; time < times; time += 1)
-            {
-                (string predicted, string realLabel) = Predict(trainingDataSet.PickRandom());
-                correctGuess += (predicted == realLabel) ? 1 : 0;
-            }
-            Debug.WriteLine($"validation of {times} datapoints: {(double)(correctGuess / times)}");
-        }
-
-        /// <summary>
         /// Predict the object, returning the correct label from the set and the predicted label
         /// </summary>
         /// <param name="v">input image in InvImage</param>
         /// <returns></returns>
-        internal (string, string) Predict(Picture inputImage, string kFold = "")
+        internal Dictionary<string, Dictionary<string, string>> Predict(Picture inputImage, string kFold = "")
         {
-            List<Dictionary<string, double>> allSPPredictResult = new List<Dictionary<string, double>>();
+            Dictionary<string, Dictionary<string, string>> allSPPredictResult = new Dictionary<string, Dictionary<string, string>>();
 
             // Prepare Output Folder
             string predictProcessName = Path.GetFileNameWithoutExtension(inputImage.imagePath) + Utility.GetHash();
@@ -128,31 +113,11 @@ namespace InvariantLearning
             foreach (var sp in poolerDict)
             {
                 sp.Value.OutputPredictFolder = predictProcessName;
-                Dictionary<string, double> predictResultOfCurrentSP = sp.Value.PredictScaledImage(inputImage, $"Predict_{kFold}");
-                allSPPredictResult.Add(predictResultOfCurrentSP);
-
-                //Write result to file
-                Utility.WriteResultOfOneSP(predictResultOfCurrentSP, Path.Combine($"Predict_{kFold}", predictProcessName, $"sp_{sp.Key}"));
+                Dictionary<string, string> predictResultOfCurrentSP = sp.Value.PredictScaledImage(inputImage, $"Predict_{kFold}");
+                predictResultOfCurrentSP.Add("CorrectLabel",inputImage.label);
+                allSPPredictResult.Add(sp.Key,predictResultOfCurrentSP);
             }
-
-            // Calculating Vote
-            Dictionary<string, double> result = new Dictionary<string, double>();
-            foreach (var label in trainingDataSet.ImageClasses)
-            {
-                result.Add(label, 0);
-            }
-
-            foreach (var spVote in allSPPredictResult)
-            {
-                foreach (var classResult in spVote)
-                {
-                    result[classResult.Key] += classResult.Value;
-                }
-            }
-            // Check highest label score
-            var predictedLabel = result.Aggregate((l, r) => l.Value > r.Value ? l : r).Key;
-
-            return (predictedLabel, inputImage.label);
+            return allSPPredictResult;
         }
     }
 }

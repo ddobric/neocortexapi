@@ -132,14 +132,14 @@ namespace InvariantLearning
         /// </summary>
         /// <param name="image"></param>
         /// <returns></returns>
-        public Dictionary<string, double> PredictScaledImage(Picture image, string predictOutputPath)
+        public Dictionary<string, string> PredictScaledImage(Picture image, string predictOutputPath)
         {
             // Create the folder for the frame extracted by InvImage
             string spFolder = Path.Combine(predictOutputPath, OutputPredictFolder, $"SP of {inputDim}x{inputDim}");
             Utility.CreateFolderIfNotExist(spFolder);
 
             // dictionary for saving result
-            Dictionary<string, double> result = new Dictionary<string, double>();
+            Dictionary<string, string> result = new Dictionary<string, string>();
 
             var frameMatrix = Frame.GetConvFramesbyPixel(image.imageWidth, image.imageHeight, inputDim, inputDim, 5);
 
@@ -171,11 +171,10 @@ namespace InvariantLearning
                         Debug.WriteLine($"label predicted as : {a.PredictedInput}");
                         Debug.WriteLine($"similarity : {a.Similarity}");
                         Debug.WriteLine($"Number of Same Bits: {a.NumOfSameBits}");
-                        result.Add(a.PredictedInput, a.Similarity);
+                        result.Add(a.PredictedInput, a.Similarity.ToString());
                     }
                 }
             }
-            Utility.WriteResultOfOneSP(result, Path.Combine(spFolder, $"SP of {inputDim}x{inputDim} detailed.csv"));
             return result;
         }
         public Dictionary<string, double> PredictWithFrameGrid(Picture image)

@@ -124,6 +124,11 @@ namespace Invariant.Entities
             };
         }
 
+        public void SaveTo(string path)
+        {
+            SaveAsImage(this.GetPixels(), path);
+        }
+
         public bool IsRegionEmpty(Frame frame)
         {
             var test = this.GetPixels(frame);
