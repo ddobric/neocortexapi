@@ -19,7 +19,7 @@
             ImageClasses = new List<string>();
             Images = new List<Picture>();
             this.Images = originDataSetPics;
-            foreach(Picture picture in originDataSetPics)
+            foreach (Picture picture in originDataSetPics)
             {
                 if (!this.ImageClasses.Contains(picture.label))
                 {
@@ -103,15 +103,56 @@
 
             this.Shuffle();
 
-            for(int kIndex = 0; kIndex< k; kIndex += 1)
+            for (int kIndex = 0; kIndex < k; kIndex += 1)
             {
                 List<Picture> tempList = new List<Picture>(this.Images);
-                int startIndex = tempList.Count/k * kIndex;
-                int count = tempList.Count/k;
+                int startIndex = tempList.Count / k * kIndex;
+                int count = tempList.Count / k;
                 testingDataSet.Add(new DataSet(tempList.GetRange(startIndex, count)));
 
-                tempList.RemoveRange(startIndex,count);
+                tempList.RemoveRange(startIndex, count);
                 trainingDataSet.Add(new DataSet(tempList));
+            }
+
+            return (trainingDataSet, testingDataSet);
+        }
+
+        /// <summary>
+        /// Original KFold take random datasample from the dataset. 
+        /// Sampling around hundreds of sample resulted in random number of training sample for each label
+        /// with the current Experiment setup of around hundreds sample, the old sampling is prone to cause uneven data distribution for samples of different labels.
+        /// the smaller the number of training sample, the more the testing samples of that class there are. This cause low sample learning of some label when practice with a small number of samples.
+        /// Thus splitting the data more evenly for all labels etablish a fairer validation for our Training model.
+        /// At the time, the images set is filtered for each label, then added one by one accross all kFold block. The blocks are then used to construct the training and testing data
+        /// </summary>
+        /// <param name="k"></param>
+        /// <returns></returns>
+        public (List<DataSet>, List<DataSet>) KFoldDataSetSplitEvenly(int k)
+        {
+            List<DataSet> trainingDataSet = new List<DataSet>();
+            List<DataSet> testingDataSet = new List<DataSet>();
+            List<List<Picture>> kFoldPicSets = new List<List<Picture>>();
+            for (int kIndex = 0; kIndex < k; kIndex += 1)
+            {
+                kFoldPicSets.Add(new List<Picture>());
+            }
+            foreach (var imageClass in ImageClasses)
+            {
+                var imageOfSameClass = new List<Picture>(Images.Where(p => (p.label == imageClass)));
+                for(int i = 0;i < imageOfSameClass.Count;i+=1)
+                {
+                    kFoldPicSets[i % k].Add(imageOfSameClass[i]);
+                }
+            }
+
+            foreach (var kFoldPicSet in kFoldPicSets)
+            {
+                
+                testingDataSet.Add(new DataSet(kFoldPicSet));
+
+                List<List<Picture>> kFoldPicSetsTemp = new List<List<Picture>>(kFoldPicSets);
+                kFoldPicSetsTemp.Remove(kFoldPicSet);
+                trainingDataSet.Add(new DataSet(kFoldPicSetsTemp.SelectMany(x => x).ToList()));
             }
 
             return (trainingDataSet, testingDataSet);
@@ -119,15 +160,15 @@
 
         public void VisualizeSet(string path)
         {
-            foreach(var imageClass in ImageClasses)
+            foreach (var imageClass in ImageClasses)
             {
-                string imageClassPath = Path.Combine(path, $"{imageClass}"))
-                if (!Directory.Exists(imageClassPath)
+                string imageClassPath = Path.Combine(path, $"{imageClass}");
+                if (!Directory.Exists(imageClassPath))
                 {
                     Directory.CreateDirectory(imageClassPath);
                 }
             }
-            foreach(var image in Images)
+            foreach (var image in Images)
             {
                 string imagePath = Path.Combine(path, image.label, Path.GetFileNameWithoutExtension(image.imagePath));
                 image.SaveTo(imagePath);
