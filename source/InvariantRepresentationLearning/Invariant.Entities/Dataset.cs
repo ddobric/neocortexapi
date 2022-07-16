@@ -170,7 +170,7 @@
             }
             foreach (var image in Images)
             {
-                string imagePath = Path.Combine(path, image.label, Path.GetFileNameWithoutExtension(image.imagePath));
+                string imagePath = Path.Combine(path, image.label, Path.GetFileName(image.imagePath));
                 image.SaveTo(imagePath);
             }
         }

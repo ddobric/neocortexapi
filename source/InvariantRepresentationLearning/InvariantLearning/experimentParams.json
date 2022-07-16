@@ -2,7 +2,7 @@
   "PathToTrainDataFolder": "TrainingFolder",
   "PathToTestDataFolder": "TestingFolder",
   "runParams": {
-    "Epoch": 50,
+    "Epoch": 20,
     "HtmConfig": {
 
     }

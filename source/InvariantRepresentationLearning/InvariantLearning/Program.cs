@@ -23,7 +23,7 @@ namespace InvariantLearning
             string pathToTrainDataFolder = config.PathToTrainDataFolder;
 
             //Mnist.DataGenAll("MnistDataset", "TrainingFolder");
-            Mnist.DataGen("MnistDataset", "TrainingFolder",40);
+            Mnist.DataGen("MnistDataset", "TrainingFolder",10);
 
             List<DataSet> testingData = new List<DataSet>();
             List<DataSet> trainingData = new List<DataSet>();
@@ -32,7 +32,7 @@ namespace InvariantLearning
 
             int k = 5;
 
-            (trainingData, testingData) = originalTrainingDataSet.KFoldDataSetSplit(k);
+            (trainingData, testingData) = originalTrainingDataSet.KFoldDataSetSplitEvenly(k);
 
             ConcurrentDictionary<string, double> foldValidationResult = new ConcurrentDictionary<string, double>();
 
@@ -64,7 +64,7 @@ namespace InvariantLearning
 
                 foreach (var testImage in testingData[i].Images)
                 {
-                    var result = experiment.Predict(testImage, i.ToString());
+                   var result = experiment.Predict(testImage, i.ToString());
 
                     string testImageID = $"{testImage.label}_{Path.GetFileNameWithoutExtension(testImage.imagePath)}";
                     UpdateResult(ref allResult, testImageID, result);

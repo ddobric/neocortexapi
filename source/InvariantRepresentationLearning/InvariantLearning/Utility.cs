@@ -83,12 +83,20 @@ namespace InvariantLearning
 
             using(StreamWriter file = new StreamWriter($"{path}.csv"))
             {
+                List<string> headers = new List<string> { "fileName", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "CorrectLabel" };
                 // Header
-                file.WriteLine(string.Join(";", allResult[0].Keys));
+                file.WriteLine(string.Join(";", headers));
                 // Info
                 foreach (var entry in allResult)
                 {
-                    file.WriteLine(string.Join(";", entry.Values));
+                    List<string> arrangedEntry = new List<string>();
+
+                    foreach(var header in headers)
+                    {
+                        arrangedEntry.Add(entry[header]);
+                    }
+
+                    file.WriteLine(string.Join(";", arrangedEntry));
                 }
             }
         }

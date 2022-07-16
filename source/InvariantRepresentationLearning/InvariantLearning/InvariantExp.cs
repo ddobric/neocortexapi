@@ -35,17 +35,17 @@ namespace InvariantLearning
 
             if(visualizeTrainingImages)
                 VisualizeTrainingImages($"TrainingSet_{Utility.GetHash()}");
-
+            
             Debug.WriteLine("Stage 1: Training in Newborn cycle");
-            var newBornCycleTasks = new List<Task>();
+
             Parallel.ForEach(poolerDict, new ParallelOptions(), (unit) =>
             {
                 unit.Value.TrainingNewbornCycle(trainingDataSet);
             });
-
+            
             
             Debug.WriteLine("Stage 2: Training of Images");
-            var trainingNormalTasks = new List<Task>();
+
             Parallel.ForEach(poolerDict, new ParallelOptions(), (unit)=>
             {
                 unit.Value.TrainingNormal(trainingDataSet,runParams.Epoch);

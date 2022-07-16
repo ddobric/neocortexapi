@@ -159,8 +159,8 @@ namespace Invariant.Entities
                     }
                 }
             }
-            double whitePixelDensity = whitePixelsCount/(frame.PixelCount);
-            return (whitePixelDensity>=pixelDensityThreshold)? true : false;
+            double whitePixelDensity = (double)whitePixelsCount/((double)frame.PixelCount);
+            return (whitePixelDensity<=pixelDensityThreshold)? true : false;
         }
     }
 }
