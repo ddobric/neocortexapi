@@ -47,6 +47,24 @@
             }
         }
 
+        public DataSet GetTestData(string outputTestData, double perCentSample)
+        {
+            List<Picture> takenImages = new List<Picture>();
+
+            foreach (var imageClass in ImageClasses)
+            {
+                var imageOfSameClass = new List<Picture>(Images.Where(p => (p.label == imageClass)));
+                int stopIndex = (int) ((double)(imageOfSameClass.Count) * perCentSample / 100);
+                for (int i = 0; i < stopIndex; i += 1)
+                {
+                    takenImages.Add(imageOfSameClass[i]);
+                    Images.Remove(imageOfSameClass[i]);
+                }
+            }
+            DataSet result = new DataSet(takenImages);
+            return result;
+        }
+
 
         /// <summary>
         /// Adding classes to the Training Data's Class(Label) List

@@ -16,17 +16,19 @@ namespace InvariantLearning
         /// <summary>
         /// Path to the the folder which contains the training images
         /// </summary>
-        public string? PathToTrainDataFolder;
+        public string? PathToTrainDataFolder { get; set; }
 
         /// <summary>
         /// Path to the folder which contains the testing image
         /// </summary>
-        public string? PathToTestDataFolder;
+        public string? PathToTestDataFolder { get; set; }
 
         /// <summary>
         /// Run Parameter of the Experiment
         /// </summary>
         public RunConfig? runParams { get; set; }
+
+        public string ExperimentFolder { get; set; }
     }
 
     /// <summary>

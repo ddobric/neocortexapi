@@ -1,6 +1,7 @@
 {
   "PathToTrainDataFolder": "TrainingFolder",
   "PathToTestDataFolder": "TestingFolder",
+  "ExperimentFolder": "ImageClassificationEvaluation",
   "runParams": {
     "Epoch": 20,
     "HtmConfig": {

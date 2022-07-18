@@ -13,7 +13,45 @@ namespace InvariantLearning
         public static void Main()
         {
             //ExperimentPredictingWithFrameGrid();
-            ExperimentNormalImageClassification();
+            //ExperimentNormalImageClassification();
+            ExperimentEvaluatateImageClassification();
+        }
+
+        private static void ExperimentEvaluatateImageClassification()
+        {
+            // reading Config from json
+            var config = Utility.ReadConfig("experimentParams.json");
+            Utility.CreateFolderIfNotExist(config.ExperimentFolder);
+            string pathToTrainDataFolder = config.PathToTrainDataFolder;
+            string pathToTestDataFolder = config.PathToTestDataFolder;
+            
+            Mnist.DataGen("MnistDataset", Path.Combine(config.ExperimentFolder, pathToTrainDataFolder), 10);
+
+            Utility.CreateFolderIfNotExist(Path.Combine(config.ExperimentFolder, pathToTrainDataFolder));
+            DataSet trainingData = new DataSet(Path.Combine(config.ExperimentFolder,pathToTrainDataFolder));
+
+            Utility.CreateFolderIfNotExist(Path.Combine(config.ExperimentFolder, pathToTestDataFolder));
+            DataSet testingData = trainingData.GetTestData(Path.Combine(config.ExperimentFolder,pathToTestDataFolder),10);
+            testingData.VisualizeSet(Path.Combine(config.ExperimentFolder, pathToTestDataFolder));
+
+            LearningUnit sp = new(trainingData.PickRandom().imageWidth, 1024);
+
+            sp.TrainingNewbornCycle(trainingData);
+
+            sp.TrainingNormal(trainingData, config.runParams.Epoch);
+
+            var allResult = new List<Dictionary<string, string>>();
+
+            foreach(var testingImage in testingData.Images)
+            {
+                Utility.CreateFolderIfNotExist("TestResult");
+                var res = sp.PredictScaledImage(testingImage, Path.Combine(config.ExperimentFolder, "TestResult"));
+                res.Add("fileName", $"Label{testingImage.label}_{Path.GetFileName(testingImage.imagePath)}");
+                res.Add("CorrectLabel", testingImage.label);
+                allResult.Add(res);
+            }
+            Utility.WriteListToCsv(Path.Combine(config.ExperimentFolder, "TestResult", "testOutput"), allResult);
+            
         }
 
         private static void ExperimentNormalImageClassification()

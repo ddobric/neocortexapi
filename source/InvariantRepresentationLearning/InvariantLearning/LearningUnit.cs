@@ -124,7 +124,7 @@ namespace InvariantLearning
             cortexLayer.Compute(sample.imagePath, true);
 
             var activeColumns = cortexLayer.GetResult("sp") as int[];
-            classifier.Learn(sample.label, activeColumns);
+            classifier.Learn($"{sample.label}_{Path.GetFileName(sample.imagePath)}", activeColumns);
         }
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace InvariantLearning
             else
             {
                 // Save frame to folder
-                string outFile = Path.Combine(spFolder, $"testImage of label {image.label}.png");
+                string outFile = Path.Combine(spFolder, $"testImage of label {image.label} index {Path.GetFileNameWithoutExtension(image.imagePath)}.png");
                 Picture.SaveAsImage(image.GetPixels(), outFile);
 
                 // Compute the SDR

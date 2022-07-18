@@ -75,7 +75,7 @@ namespace InvariantLearning
         {
             using (StreamWriter file = new StreamWriter($"{filePath}.csv"))
                 foreach (var entry in allResultForEachFrame)
-                    file.WriteLine("{0}, {1}", entry.Key, entry.Value);
+                    file.WriteLine("{0}; {1}", entry.Key, entry.Value);
         }
 
         internal static void WriteListToCsv(string path,  List<Dictionary<string, string>> allResult)
@@ -83,7 +83,18 @@ namespace InvariantLearning
 
             using(StreamWriter file = new StreamWriter($"{path}.csv"))
             {
-                List<string> headers = new List<string> { "fileName", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "CorrectLabel" };
+                List<string> headers = new List<string>();
+
+                foreach(var entry in allResult)
+                {
+                    foreach(var key in entry.Keys)
+                    {
+                        if (!headers.Contains(key))
+                        {
+                            headers.Add(key);
+                        }
+                    }
+                }
                 // Header
                 file.WriteLine(string.Join(";", headers));
                 // Info
@@ -93,7 +104,14 @@ namespace InvariantLearning
 
                     foreach(var header in headers)
                     {
-                        arrangedEntry.Add(entry[header]);
+                        if (entry.ContainsKey(header))
+                        {
+                            arrangedEntry.Add(entry[header]);
+                        }
+                        else
+                        {
+                            arrangedEntry.Add("0");
+                        }
                     }
 
                     file.WriteLine(string.Join(";", arrangedEntry));
