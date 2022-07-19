@@ -8,12 +8,12 @@
         /// <summary>
         /// List of all Image Classes/Labels
         /// </summary>
-        public List<string> ImageClasses { get; set; };
+        public List<string> ImageClasses { get; set; }
 
         /// <summary>
         /// List of all Images
         /// </summary>
-        public List<Picture> Images { get; set; };
+        public List<Picture> Images { get; set; }
 
         public Random random;
 
