@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeoCortexApi;
 using NeoCortexApi.Entities;
 using NeoCortexEntities.NeuroVisualizer;
 using System;
@@ -152,7 +153,7 @@ namespace UnitTestsProject
         public void DeserializationArrayTest()
         {
             var array = new int[] { 45, 35 };
-            
+
             using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
             {
                 HtmSerializer2.Serialize(array, null, sw);
@@ -296,6 +297,65 @@ namespace UnitTestsProject
                 var content2 = streamReader2.ReadToEnd();
                 Assert.AreEqual(content2, content1);
             }
+        }
+
+        [TestMethod]
+        public void DeserializeHomeostaticPlasticityTest()
+        {
+            int cellsPerColumnL4 = 20;
+            int numColumnsL4 = 500;
+            int cellsPerColumnL2 = 20;
+            int numColumnsL2 = 500;
+            int inputBits = 100;
+            double minOctOverlapCycles = 1.0;
+            double maxBoost = 10.0;
+            double max = 20;
+            int inputsL2 = numColumnsL4 * cellsPerColumnL4;
+            HtmConfig htmConfig_L2 = new HtmConfig(new int[] { inputsL2 }, new int[] { numColumnsL2 })
+            {
+                Random = new NeoCortexApi.ThreadSafeRandom(42),
+
+                CellsPerColumn = cellsPerColumnL2,
+                GlobalInhibition = true,
+                LocalAreaDensity = -1,
+                NumActiveColumnsPerInhArea = 0.1 * numColumnsL2,
+                PotentialRadius = inputsL2, // Every columns 
+                //InhibitionRadius = 15,
+                MaxBoost = maxBoost,
+                DutyCyclePeriod = 25,
+                MinPctOverlapDutyCycles = minOctOverlapCycles,
+                MaxSynapsesPerSegment = (int)(0.05 * numColumnsL2),
+                ActivationThreshold = 15,
+                ConnectedPermanence = 0.5,
+                PermanenceDecrement = 0.25,
+                PermanenceIncrement = 0.15,
+                PredictedSegmentDecrement = 0.1
+            };
+
+            var numInputs = 8;
+
+            var memL2 = new Connections(htmConfig_L2);
+
+            HomeostaticPlasticityController hpa_sp_L2 = new HomeostaticPlasticityController(memL2, numInputs * 50, (isStable, numPatterns, actColAvg, seenInputs) =>
+            {
+
+            }, numOfCyclesToWaitOnChange: 50);
+
+            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            {
+                HtmSerializer2.Serialize(hpa_sp_L2, null, sw);
+            }
+            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            {
+                var content = sr.ReadToEnd();
+            }
+            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            {
+                var hpa = HtmSerializer2.Deserialize<HomeostaticPlasticityController>(sr);
+
+                Assert.IsTrue(hpa_sp_L2.Equals(hpa));
+            }
+
         }
     }
 }

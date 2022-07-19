@@ -86,6 +86,9 @@ namespace NeoCortexApi.Entities
             sw.Write(ParameterDelimiter);
         }
 
+        #region NewImplementation
+        #region Serialization
+
         public static void Serialize(object obj, string name, StreamWriter sw, Type objectType = null)
         {
             if (obj == null)
@@ -119,6 +122,10 @@ namespace NeoCortexApi.Entities
                 {
                     SerializeHtmConfig(obj, name, sw);
                 }
+                //else if (type == typeof(HomeostaticPlasticityController))
+                //{
+                //    SerializeHomeostaticPlasticityController(obj, name, sw);
+                //}
                 else
                 {
                     SerializeObject(obj, name, sw);
@@ -266,6 +273,10 @@ namespace NeoCortexApi.Entities
 
             foreach (var field in fields)
             {
+                if (field.Name == "m_OnStabilityStatusChanged")
+                {
+
+                }
                 if (excludeEntries != null && excludeEntries.Contains(field.Name))
                 {
                     continue;
@@ -290,6 +301,14 @@ namespace NeoCortexApi.Entities
             Serialize(htmConfig.RandomGenSeed, nameof(HtmConfig.Random), sw);
 
         }
+
+        private static void SerializeHomeostaticPlasticityController(object obj, string name, StreamWriter sw)
+        {
+            var excludeEntries = new List<string> { "m_OnStabilityStatusChanged" };
+            SerializeObject(obj, name, sw, excludeEntries);
+        }
+        #endregion
+        #region Deserialization
 
         public static T Deserialize<T>(StreamReader sr, string propName = null)
         {
@@ -556,6 +575,7 @@ namespace NeoCortexApi.Entities
             }
             return obj;
         }
+        #endregion
 
         private static bool IsValueType(Type type)
         {
@@ -583,6 +603,8 @@ namespace NeoCortexApi.Entities
         {
             return type.IsGenericType && (typeof(ISet<>) == type.GetGenericTypeDefinition());
         }
+
+        #endregion
 
         private bool TryGetNullableType(Type type, out Type underlyingType)
         {
