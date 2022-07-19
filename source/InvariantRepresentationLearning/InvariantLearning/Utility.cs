@@ -78,6 +78,78 @@ namespace InvariantLearning
                     file.WriteLine("{0}; {1}", entry.Key, entry.Value);
         }
 
+        internal static void WriteListToOutputFile(string path, List<Dictionary<string, string>> allResult)
+        {
+            using (StreamWriter file = new StreamWriter($"{path}.txt"))
+            {
+
+                double accuracy = 0;
+                double correctCount = 0;
+                // Info
+                foreach (var entry in allResult)
+                {
+                    file.WriteLine($"Predicting image {entry["fileName"]}");
+                    List<string> arrangedEntry = new List<string>();
+                    foreach(var a in entry)
+                    {
+                        arrangedEntry.Add($"{a.Key}__{a.Value}");
+                    }
+                    file.WriteLine(string.Join(";", arrangedEntry));
+
+                    Dictionary<string, string> top3similarities = GetTop3Similarites(entry);
+                    if (GetLabelFromResult(top3similarities).Contains(entry["CorrectLabel"]))
+                    {
+                        correctCount += 1;
+                    }
+                    List<string> top3 = new List<string>(ToListResult(top3similarities));
+                    file.WriteLine(string.Join(";", top3));
+                }
+                accuracy = correctCount/ (double)allResult.Count;
+                file.WriteLine($"accuracy: {accuracy} {correctCount}/{allResult.Count}");
+            }
+        }
+
+        private static List<string> ToListResult(Dictionary<string, string> top3similarities)
+        {
+            List<string> strings = new List<string>();
+            foreach(var a in top3similarities)
+            {
+                strings.Add($" {a.Key}: {a.Value}% ");
+            }
+            return strings;
+        }
+
+        private static List<string> GetLabelFromResult(Dictionary<string, string> top3similarities)
+        {
+            List<string> result = new List<string>();
+            foreach(var a in top3similarities)
+            {
+                string label = a.Key.Split("_")[0];
+                result.Add(label);
+            }
+            return result;
+        }
+
+        private static Dictionary<string, string> GetTop3Similarites(Dictionary<string,string> result)
+        {
+            Dictionary<string, string> top3similarities = new Dictionary<string, string>();
+            foreach (var entry in result)
+            {
+                if((entry.Key == "CorrectLabel") || (entry.Key == "fileName")){
+                    continue;
+                }
+                else
+                {
+                    top3similarities.Add(entry.Key, entry.Value);
+                    if(top3similarities.Count == 4)
+                    {
+                        top3similarities.Remove(top3similarities.MinBy(kvp => kvp.Value).Key);
+                    }
+                }
+            }
+            return top3similarities;
+        }
+
         internal static void WriteListToCsv(string path,  List<Dictionary<string, string>> allResult)
         {
 

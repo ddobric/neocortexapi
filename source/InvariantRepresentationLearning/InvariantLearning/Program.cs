@@ -25,7 +25,7 @@ namespace InvariantLearning
             string pathToTrainDataFolder = config.PathToTrainDataFolder;
             string pathToTestDataFolder = config.PathToTestDataFolder;
             
-            Mnist.DataGen("MnistDataset", Path.Combine(config.ExperimentFolder, pathToTrainDataFolder), 30);
+            Mnist.DataGen("MnistDataset", Path.Combine(config.ExperimentFolder, pathToTrainDataFolder), 100);
 
             Utility.CreateFolderIfNotExist(Path.Combine(config.ExperimentFolder, pathToTrainDataFolder));
             DataSet trainingData = new DataSet(Path.Combine(config.ExperimentFolder,pathToTrainDataFolder));
@@ -46,12 +46,14 @@ namespace InvariantLearning
             {
                 Utility.CreateFolderIfNotExist("TestResult");
                 var res = sp.PredictScaledImage(testingImage, Path.Combine(config.ExperimentFolder, "TestResult"));
-                res.Add("fileName", $"Label{testingImage.label}_{Path.GetFileName(testingImage.imagePath)}");
+                res.Add("fileName", $"{testingImage.label}_{Path.GetFileName(testingImage.imagePath)}");
                 res.Add("CorrectLabel", testingImage.label);
                 allResult.Add(res);
             }
             Utility.WriteListToCsv(Path.Combine(config.ExperimentFolder, "TestResult", "testOutput"), allResult);
-            
+            Utility.WriteListToOutputFile(Path.Combine(config.ExperimentFolder, "TestResult", "testOutput"), allResult);
+
+
         }
 
         private static void ExperimentNormalImageClassification()

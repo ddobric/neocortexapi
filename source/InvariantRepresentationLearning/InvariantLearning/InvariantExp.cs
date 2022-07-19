@@ -92,7 +92,7 @@ namespace InvariantLearning
 
             foreach (var dim in spFrameSizeLst)
             {
-                poolerDict.Add(dim.ToString(), new LearningUnit(dim, 1024));
+                poolerDict.Add(dim.ToString(), new LearningUnit(dim, 2048));
             }
         }
 
