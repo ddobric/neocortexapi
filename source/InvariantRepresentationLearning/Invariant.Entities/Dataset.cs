@@ -1,33 +1,46 @@
 ﻿namespace Invariant.Entities
 {
+    /// <summary>
+    /// A collection of Images, with methods for ease of image manipulation
+    /// </summary>
     public class DataSet
     {
         /// <summary>
-        /// List of image names that represent labels in the learning process.
+        /// List of all Image Classes/Labels
         /// </summary>
-        public List<string> ImageClasses;
+        public List<string> ImageClasses { get; set; };
 
-        public List<Picture> Images;
+        /// <summary>
+        /// List of all Images
+        /// </summary>
+        public List<Picture> Images { get; set; };
 
         public Random random;
 
+        /// <summary>
+        /// Number of Images in the Dataset
+        /// </summary>
         public int Count { get { return Images.Count; } }
 
-        public DataSet(List<Picture> originDataSetPics)
+        /// <summary>
+        /// Create another dataset based on a list of Images
+        /// </summary>
+        /// <param name="originDataSetPics"></param>
+        public DataSet(List<Picture> imageList)
         {
             random = new Random(42);
             ImageClasses = new List<string>();
+
             Images = new List<Picture>();
-            this.Images = originDataSetPics;
-            foreach (Picture picture in originDataSetPics)
-            {
-                if (!this.ImageClasses.Contains(picture.label))
-                {
-                    this.ImageClasses.Add(picture.label);
-                }
-            }
+            this.Images = imageList;
+
+            this.RecalculateImagesClasses();
         }
 
+        /// <summary>
+        /// Create a Dataset from a path to the training folder
+        /// </summary>
+        /// <param name="pathToTrainingFolder">path to the training folder</param>
         public DataSet(string pathToTrainingFolder)
         {
             random = new Random(42);
@@ -47,7 +60,13 @@
             }
         }
 
-        public DataSet GetTestData(string outputTestData, double perCentSample)
+        /// <summary>
+        /// return a List of Images which was cut out from this dataset by percent
+        /// </summary>
+        /// <param name="outputTestData"></param>
+        /// <param name="perCentSample">percentage from 0 to 100</param>
+        /// <returns></returns>
+        public DataSet GetTestData(double perCentSample)
         {
             List<Picture> takenImages = new List<Picture>();
 
@@ -61,6 +80,7 @@
                     Images.Remove(imageOfSameClass[i]);
                 }
             }
+            RecalculateImagesClasses();
             DataSet result = new DataSet(takenImages);
             return result;
         }
@@ -77,6 +97,21 @@
             {
                 ImageClasses.Add(Path.GetFileNameWithoutExtension(a));
             }
+        }
+
+        /// <summary>
+        /// Calculate ImageClasses from Images list 's label
+        /// </summary>
+        private void RecalculateImagesClasses (){ 
+            List<string> imgClasses = new List<string>();
+            foreach(var image in Images)
+            {
+                if (!imgClasses.Contains(image.label))
+                {
+                    imgClasses.Add(image.label);
+                }
+            }
+            this.ImageClasses = imgClasses;
         }
 
 
@@ -176,6 +211,10 @@
             return (trainingDataSet, testingDataSet);
         }
 
+        /// <summary>
+        /// output the Dataset in the specified path
+        /// </summary>
+        /// <param name="path">path where the dataset should be drawn</param>
         public void VisualizeSet(string path)
         {
             foreach (var imageClass in ImageClasses)

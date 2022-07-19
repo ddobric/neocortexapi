@@ -31,7 +31,7 @@ namespace InvariantLearning
             DataSet trainingData = new DataSet(Path.Combine(config.ExperimentFolder,pathToTrainDataFolder));
 
             Utility.CreateFolderIfNotExist(Path.Combine(config.ExperimentFolder, pathToTestDataFolder));
-            DataSet testingData = trainingData.GetTestData(Path.Combine(config.ExperimentFolder,pathToTestDataFolder),10);
+            DataSet testingData = trainingData.GetTestData(10);
             testingData.VisualizeSet(Path.Combine(config.ExperimentFolder, pathToTestDataFolder));
 
             LearningUnit sp = new(trainingData.PickRandom().imageWidth, 1024);

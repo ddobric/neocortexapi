@@ -110,6 +110,15 @@
             return result;
         }
 
+        /// <summary>
+        /// Get a list of Frames which are positioned in a grid spaced by number of pixels from an image
+        /// </summary>
+        /// <param name="imgWidth"></param>
+        /// <param name="imgHeight"></param>
+        /// <param name="frameWidth"></param>
+        /// <param name="frameHeight"></param>
+        /// <param name="NoPixels"></param>
+        /// <returns></returns>
         public static List<Frame> GetConvFramesbyPixel(int imgWidth, int imgHeight, int frameWidth, int frameHeight, int NoPixels = 1)
         {
             List<Frame> result = new List<Frame>();
@@ -134,6 +143,12 @@
             return result;
         }
 
+        /// <summary>
+        /// Get the division indicies from start indicies to end indicies, in which the next index is shifted from the previous by 1 pixels
+        /// </summary>
+        /// <param name="head"></param>
+        /// <param name="tails"></param>
+        /// <returns></returns>
         private static List<int> GetDivisionIndexByPixel(int head, int tails)
         {
             List<int> result = new List<int>();

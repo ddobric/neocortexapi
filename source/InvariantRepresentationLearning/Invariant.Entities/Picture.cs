@@ -26,6 +26,12 @@ namespace Invariant.Entities
             int lastYIndex = SKBitmap.Decode(this.imagePath).Height - 1;
             return GetPixels(new Frame(0, 0, lastXIndex, lastYIndex));
         }
+
+        /// <summary>
+        /// Get the pixels information of an image based on a frame
+        /// </summary>
+        /// <param name="frame"></param>
+        /// <returns></returns>
         public double[,,] GetPixels(Frame frame)
         {
             using (SKBitmap inputBitmap = SKBitmap.Decode(this.imagePath))
@@ -124,6 +130,11 @@ namespace Invariant.Entities
             };
         }
 
+
+        /// <summary>
+        /// Save the Image to a path in png
+        /// </summary>
+        /// <param name="path"></param>
         public void SaveTo(string path)
         {
             SaveAsImage(this.GetPixels(), path);
@@ -145,6 +156,12 @@ namespace Invariant.Entities
             return true;
         }
 
+        /// <summary>
+        /// Check for the density of the region from this image, as low bit density may be a result of the number/symbol not presented in a frame
+        /// </summary>
+        /// <param name="frame"></param>
+        /// <param name="pixelDensityThreshold"></param>
+        /// <returns></returns>
         public bool IsRegionBelowDensity(Frame frame, double pixelDensityThreshold)
         {
             var test = this.GetPixels(frame);
