@@ -73,7 +73,6 @@ namespace UnitTestsProject
             using (StreamReader sr = new StreamReader($"ser_{nameof(Test2)}_123.txt"))
             {
                 var content = sr.ReadToEnd();
-
             }
             using (StreamReader sr = new StreamReader($"ser_{nameof(Test2)}_123.txt"))
             {
@@ -288,6 +287,14 @@ namespace UnitTestsProject
             using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
             {
                 var connection = HtmSerializer2.Deserialize<Connections>(sr);
+                var streamWriter = new StreamWriter($"1.txt");
+                HtmSerializer2.Serialize(connection, null, streamWriter);
+                streamWriter.Close();
+                var streamReader1 = new StreamReader("1.txt");
+                var streamReader2 = new StreamReader($"{TestContext.TestName}.txt");
+                var content1 = streamReader1.ReadToEnd();
+                var content2 = streamReader2.ReadToEnd();
+                Assert.AreEqual(content2, content1);
             }
         }
     }

@@ -86,7 +86,7 @@ namespace NeoCortexApi.Entities
             sw.Write(ParameterDelimiter);
         }
 
-        public static void Serialize(object obj, string name, StreamWriter sw)
+        public static void Serialize(object obj, string name, StreamWriter sw, Type objectType = null)
         {
             if (obj == null)
             {
@@ -94,11 +94,15 @@ namespace NeoCortexApi.Entities
             }
             var type = obj.GetType();
 
-            SerializeBegin(name, obj, sw);
+            SerializeBegin(name, sw, objectType);
 
             if (type.IsPrimitive || type == typeof(string))
             {
                 SerializeValue(name, obj, sw);
+            }
+            else if (IsDictionary(type))
+            {
+                SerializeDictionary(name, obj, sw);
             }
             else if (IsList(type))
             {
@@ -120,61 +124,95 @@ namespace NeoCortexApi.Entities
                     SerializeObject(obj, name, sw);
                 }
             }
-            SerializeEnd(name, obj, sw);
+            SerializeEnd(name, sw, objectType);
 
         }
 
-        private static void SerializeBegin(string propName, object obj, StreamWriter sw)
+        private static void SerializeDictionary(string name, object obj, StreamWriter sw)
         {
-            sw.Write("Begin ");
+            var type = obj.GetType();
+            if (type.IsGenericType)
+            {
+                var keyType = type.GetGenericArguments()[0];
+                var valueType = type.GetGenericArguments()[1];
+
+                var enumerable = ((IEnumerable)obj);
+
+                foreach (var item in enumerable)
+                {
+                    var properties = item.GetType().GetProperties();
+                    SerializeBegin("DictionaryItem", sw, null);
+                    foreach (var property in properties)
+                    {
+                        var value = property.GetValue(item, null);
+                        Serialize(value, property.Name, sw);
+                    }
+                    SerializeEnd("DictionaryItem", sw, null);
+                }
+            }
+        }
+
+        private static void SerializeBegin(string propName, StreamWriter sw, Type type)
+        {
+            var listString = new List<string> { "Begin" };
+
             if (string.IsNullOrEmpty(propName) == false)
             {
-                sw.Write(propName);
-                sw.Write(" ");
+                listString.Add(propName);
             }
-            sw.Write(obj.GetType().Name);
+            if (type != null)
+            {
+                listString.Add(type.Name);
+            }
+
+            sw.WriteLine(String.Join(' ', listString));
+        }
+
+        private static void SerializeEnd(string propName, StreamWriter sw, Type type)
+        {
             sw.WriteLine();
-        }
+            var listString = new List<string> { "End" };
 
-        private static void SerializeEnd(string propName, object obj, StreamWriter sw)
-        {
-            sw.WriteLine();
-            sw.Write("End ");
             if (string.IsNullOrEmpty(propName) == false)
             {
-                sw.Write(propName);
-                sw.Write(" ");
+                listString.Add(propName);
             }
-            sw.Write(obj.GetType().Name);
-            sw.WriteLine();
+            if (type != null)
+            {
+                listString.Add(type.Name);
+            }
+
+            sw.WriteLine(String.Join(' ', listString));
         }
 
-        private static string ReadGenericBegin<T>(string propName)
+        private static string ReadGenericBegin<T>(string propName, Type type = null)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("Begin ");
-            if (string.IsNullOrEmpty(propName) == false)
+            var listString = new List<string> { "Begin" };
+            if(string.IsNullOrEmpty(propName) == false)
             {
-                sb.Append(propName);
-                sb.Append(" ");
+                listString.Add(propName);
             }
-            sb.Append(typeof(T).Name);
+            if(type != null)
+            {
+                listString.Add(type.Name);
+            }
 
-            return sb.ToString();
+            return String.Join(' ', listString);
         }
 
-        private static string ReadGenericEnd<T>(string propName)
+        private static string ReadGenericEnd<T>(string propName, Type type = null)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("End ");
+            var listString = new List<string> { "End" };
             if (string.IsNullOrEmpty(propName) == false)
             {
-                sb.Append(propName);
-                sb.Append(" ");
+                listString.Add(propName);
             }
-            sb.Append(typeof(T).Name);
+            if (type != null)
+            {
+                listString.Add(type.Name);
+            }
 
-            return sb.ToString();
+            return String.Join(' ', listString);
         }
 
 
@@ -200,7 +238,7 @@ namespace NeoCortexApi.Entities
 
             foreach (var item in enumerable)
             {
-                Serialize(item, null, sw);
+                Serialize(item, "CollectionItem", sw);
             }
         }
 
@@ -347,7 +385,7 @@ namespace NeoCortexApi.Entities
 
                 var deserializeMethod = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.Deserialize)).MakeGenericMethod(elementType);
 
-                var item = deserializeMethod.Invoke(null, new object[] { sr, null });
+                var item = deserializeMethod.Invoke(null, new object[] { sr, "CollectionItem" });
 
                 enumerable.Add(item);
                 Debug.WriteLine($"Add {item.ToString()} to {propName ?? type.Name}");
@@ -380,6 +418,7 @@ namespace NeoCortexApi.Entities
             var beginValue = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.ReadGenericBegin), BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(typeValue);
             var beginKeyValuePair = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.ReadGenericBegin), BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(typeof(KeyValuePair<,>).MakeGenericType(typeKey, typeValue));
             var endKeyValuePair = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.ReadGenericEnd), BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(typeof(KeyValuePair<,>).MakeGenericType(typeKey, typeValue));
+
             var deserializeKeyMethod = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.Deserialize)).MakeGenericMethod(typeKey);
             var deserializeValueMethod = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.Deserialize)).MakeGenericMethod(typeValue);
             while (sr.Peek() > 0)
@@ -390,21 +429,21 @@ namespace NeoCortexApi.Entities
                 {
                     break;
                 }
-                if (string.IsNullOrEmpty(content) || content == (string)beginKeyValuePair.Invoke(null, new object[] { null }))
+                if (string.IsNullOrEmpty(content) || content == (string)beginKeyValuePair.Invoke(null, new object[] { "DictionaryItem", default(Type) }))
                 {
                     continue;
                 }
-                if (content == (string)endKeyValuePair.Invoke(null, new object[] { null }))
+                if (content == (string)endKeyValuePair.Invoke(null, new object[] { "DictionaryItem", default(Type) }))
                 {
                     key = null;
                     value = null;
                     continue;
                 }
-                if (content == (string)beginKey.Invoke(null, new object[] { "Key" }))
+                if (content == (string)beginKey.Invoke(null, new object[] { "Key", default(Type) }))
                 {
-                    key = deserializeKeyMethod.Invoke(null, new object[] { sr, "Key" });
+                    key = deserializeKeyMethod.Invoke(null, new object[] { sr, "Key", });
                 }
-                else if (content == (string)beginValue.Invoke(null, new object[] { "Value" }))
+                else if (content == (string)beginValue.Invoke(null, new object[] { "Value", default(Type) }))
                 {
                     value = deserializeValueMethod.Invoke(null, new object[] { sr, "Value" });
                 }
@@ -442,7 +481,7 @@ namespace NeoCortexApi.Entities
                 }
 
                 var components = content.Split(' ');
-                if (components.Length == 3)
+                if (content.StartsWith("Begin") && components.Length == 2)
                 {
                     if (excludeEntries == null || excludeEntries.Contains(components[1]) == false)
                     {
@@ -525,7 +564,7 @@ namespace NeoCortexApi.Entities
 
         private static bool IsDictionary(Type type)
         {
-            return type.IsGenericType && type.GetGenericTypeDefinition().IsAssignableFrom(typeof(Dictionary<,>));
+            return type.IsGenericType && (type.GetGenericTypeDefinition().IsAssignableFrom(typeof(Dictionary<,>)) || type.GetGenericTypeDefinition().IsAssignableFrom(typeof(ConcurrentDictionary<,>)));
         }
 
         public static StreamReader ToStreamReader(string content)
