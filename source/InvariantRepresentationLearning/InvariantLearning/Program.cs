@@ -25,7 +25,7 @@ namespace InvariantLearning
             string pathToTrainDataFolder = config.PathToTrainDataFolder;
             string pathToTestDataFolder = config.PathToTestDataFolder;
             
-            Mnist.DataGen("MnistDataset", Path.Combine(config.ExperimentFolder, pathToTrainDataFolder), 100);
+            Mnist.DataGen("MnistDataset", Path.Combine(config.ExperimentFolder, pathToTrainDataFolder), 1000);
 
             Utility.CreateFolderIfNotExist(Path.Combine(config.ExperimentFolder, pathToTrainDataFolder));
             DataSet trainingData = new DataSet(Path.Combine(config.ExperimentFolder,pathToTrainDataFolder));
