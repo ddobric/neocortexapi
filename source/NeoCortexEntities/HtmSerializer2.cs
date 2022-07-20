@@ -89,7 +89,8 @@ namespace NeoCortexApi.Entities
         #region NewImplementation
         #region Serialization
 
-        public static void Serialize(object obj, string name, StreamWriter sw, Type objectType = null)
+        public static void Serialize(object obj, string name, 
+            StreamWriter sw, Dictionary<Type, Action<object>> customSerializers = null)
         {
             if (obj == null)
             {
@@ -97,7 +98,7 @@ namespace NeoCortexApi.Entities
             }
             var type = obj.GetType();
 
-            SerializeBegin(name, sw, objectType);
+            SerializeBegin(name, sw, null);
 
             if (type.IsPrimitive || type == typeof(string))
             {
@@ -113,25 +114,33 @@ namespace NeoCortexApi.Entities
             }
             else if (type.IsClass || type.IsValueType)
             {
-                if (type == typeof(DistalDendrite))
+                if (customSerializers.ContainsKey(type))
                 {
-                    // serialize distal dendrite
-                    SerializeDistalDendrite(obj, name, sw);
+                    customSerializers[type](obj);
                 }
-                else if (type == typeof(HtmConfig))
-                {
-                    SerializeHtmConfig(obj, name, sw);
-                }
-                //else if (type == typeof(HomeostaticPlasticityController))
-                //{
-                //    SerializeHomeostaticPlasticityController(obj, name, sw);
-                //}
                 else
                 {
-                    SerializeObject(obj, name, sw);
+                    if (type == typeof(DistalDendrite))
+                    {
+                        // serialize distal dendrite
+                        SerializeDistalDendrite(obj, name, sw);
+                    }
+                    else if (type == typeof(HtmConfig))
+                    {
+                        SerializeHtmConfig(obj, name, sw);
+                    }
+                    //else if (type == typeof(HomeostaticPlasticityController))
+                    //{
+                    //    SerializeHomeostaticPlasticityController(obj, name, sw);
+                    //}
+                    else
+                    {
+                        SerializeObject(obj, name, sw);
+                    }
                 }
             }
-            SerializeEnd(name, sw, objectType);
+
+            SerializeEnd(name, sw, null);
 
         }
 

@@ -131,7 +131,7 @@ namespace NeoCortexApi.Encoders
             }
         }
 
-        #region Properties
+   
 
         /// <summary>
         /// In real cortex mode, W must be >= 21. Empirical value.
@@ -183,8 +183,6 @@ namespace NeoCortexApi.Encoders
         public string Name { get => (string)this["Name"]; set => this["Name"] = value; }
 
         public int Offset { get => (int)this["Offset"]; set => this["Offset"] = value; }
-
-        #endregion
 
 
         public double RangeInternal { get => rangeInternal; set => this.rangeInternal = value; }

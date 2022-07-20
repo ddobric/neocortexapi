@@ -531,10 +531,57 @@ namespace UnitTestsProject.EncoderTests
             Debug.WriteLine(MathHelpers.SdrMem(15, 100));
             Debug.WriteLine(MathHelpers.SdrMem(20, 100));
 
+            Debug.WriteLine("");
+            Debug.WriteLine("All encoded values. No value should be identical.");
+            Debug.WriteLine("");
+
+            for (int i = 0; i < 9; i++)
+            {
+               Debug.WriteLine(Helpers.StringifyVector( encoder.Encode((double)i)));
+            }
+
             PrintBitMap(encoder, nameof(ScalarEncodingTest));
 
         }
 
+        /// <summary>
+        /// Prints out all encoder values with their similarities.
+        /// </summary>
+        [TestMethod]
+        public void ScalarEncodingHighDensityTest()
+        {
+            ScalarEncoder encoder = new ScalarEncoder(new Dictionary<string, object>()
+            {
+                { "W", 3},
+                { "N", 10},
+                { "MinVal", (double)0},
+                { "MaxVal", (double)20},
+                { "Periodic", false},
+                { "Name", "Power Consumption in December"},
+                { "ClipInput", true},
+            });
+
+            string results = encoder.TraceSimilarities();
+
+            Debug.WriteLine(results);
+            Debug.WriteLine("");
+            Debug.WriteLine(MathHelpers.SdrMem(7, 100));
+            Debug.WriteLine(MathHelpers.SdrMem(10, 100));
+            Debug.WriteLine(MathHelpers.SdrMem(15, 100));
+            Debug.WriteLine(MathHelpers.SdrMem(20, 100));
+
+            Debug.WriteLine("");
+            Debug.WriteLine("All encoded values. Some values will have the same encoded bits.");
+            Debug.WriteLine("");
+
+            for (int i = 0; i < 20; i++)
+            {
+                Debug.WriteLine(Helpers.StringifyVector(encoder.Encode((double)i)));
+            }
+
+            PrintBitMap(encoder, nameof(ScalarEncodingHighDensityTest));
+
+        }
 
         /// <summary>
         /// Prints out all encoder values with their similarities by encoding of the Day and Time in the combined SDR.
