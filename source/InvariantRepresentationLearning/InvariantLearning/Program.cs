@@ -24,11 +24,11 @@ namespace InvariantLearning
             Utility.CreateFolderIfNotExist(config.ExperimentFolder);
             string pathToTrainDataFolder = config.PathToTrainDataFolder;
             string pathToTestDataFolder = config.PathToTestDataFolder;
-            
+
             Mnist.DataGen("MnistDataset", Path.Combine(config.ExperimentFolder, pathToTrainDataFolder), 1000);
 
             Utility.CreateFolderIfNotExist(Path.Combine(config.ExperimentFolder, pathToTrainDataFolder));
-            DataSet trainingData = new DataSet(Path.Combine(config.ExperimentFolder,pathToTrainDataFolder));
+            DataSet trainingData = new DataSet(Path.Combine(config.ExperimentFolder, pathToTrainDataFolder));
 
             Utility.CreateFolderIfNotExist(Path.Combine(config.ExperimentFolder, pathToTestDataFolder));
             DataSet testingData = trainingData.GetTestData(10);
@@ -42,7 +42,7 @@ namespace InvariantLearning
 
             var allResult = new List<Dictionary<string, string>>();
 
-            foreach(var testingImage in testingData.Images)
+            foreach (var testingImage in testingData.Images)
             {
                 Utility.CreateFolderIfNotExist("TestResult");
                 var res = sp.PredictScaledImage(testingImage, Path.Combine(config.ExperimentFolder, "TestResult"));
@@ -63,7 +63,7 @@ namespace InvariantLearning
             string pathToTrainDataFolder = config.PathToTrainDataFolder;
 
             //Mnist.DataGenAll("MnistDataset", "TrainingFolder");
-            Mnist.DataGen("MnistDataset", "TrainingFolder",10);
+            Mnist.DataGen("MnistDataset", "TrainingFolder", 10);
 
             List<DataSet> testingData = new List<DataSet>();
             List<DataSet> trainingData = new List<DataSet>();
@@ -104,14 +104,14 @@ namespace InvariantLearning
 
                 foreach (var testImage in testingData[i].Images)
                 {
-                   var result = experiment.Predict(testImage, i.ToString());
+                    var result = experiment.Predict(testImage, i.ToString());
 
                     string testImageID = $"{testImage.label}_{Path.GetFileNameWithoutExtension(testImage.imagePath)}";
                     UpdateResult(ref allResult, testImageID, result);
                 }
                 double foldValidationAccuracy = CalculateAccuracy(allResult);
 
-                foreach(var sp in allResult)
+                foreach (var sp in allResult)
                 {
                     string path = Path.Combine($"Predict_{i}", sp.Key);
                     Utility.WriteListToCsv(path, allResult[sp.Key]);
@@ -129,12 +129,12 @@ namespace InvariantLearning
         /// <returns></returns>
         private static double CalculateAccuracy(Dictionary<string, List<Dictionary<string, string>>> allResult)
         {
-            List< double> spAccuracy = new List<double>();
+            List<double> spAccuracy = new List<double>();
 
             foreach (var spResult in allResult.Values)
-            {  
+            {
                 List<double> similarityList = new List<double>();
-                foreach(var imagePredictResult in spResult)
+                foreach (var imagePredictResult in spResult)
                 {
                     if (imagePredictResult.ContainsKey(imagePredictResult["CorrectLabel"]))
                     {
@@ -152,7 +152,7 @@ namespace InvariantLearning
 
         private static void UpdateResult(ref Dictionary<string, List<Dictionary<string, string>>> allResult, string testImageID, Dictionary<string, Dictionary<string, string>> result)
         {
-            foreach(var spKey in result.Keys)
+            foreach (var spKey in result.Keys)
             {
                 if (!allResult.ContainsKey(spKey))
                 {
@@ -160,11 +160,11 @@ namespace InvariantLearning
                 }
             }
 
-            foreach(var spKey in allResult.Keys)
+            foreach (var spKey in allResult.Keys)
             {
                 Dictionary<string, string> resultEntryOfOneSP = new Dictionary<string, string>();
                 resultEntryOfOneSP.Add("fileName", testImageID);
-                foreach(var labelPred in result[spKey])
+                foreach (var labelPred in result[spKey])
                 {
                     resultEntryOfOneSP.Add(labelPred.Key, labelPred.Value);
                 }
