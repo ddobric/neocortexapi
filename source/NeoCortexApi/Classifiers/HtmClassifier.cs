@@ -491,6 +491,87 @@ namespace NeoCortexApi.Classifiers
             return same.Count();
         }
 
+        public KeyValuePair<(TIN,TIN), Dictionary<string, double>> TraceCorrelationTwoLabel(TIN Label1, TIN Label2)
+        {
+            KeyValuePair<(TIN,TIN), Dictionary<string, double>> traceCorrelationTwoLabel = new KeyValuePair<(TIN,TIN), Dictionary<string, double>>((Label1,Label2),new Dictionary<string, double>());
+            List<double> correlationValues = new List<double>();
 
+            var allEntriesLabel1 = m_AllInputs[Label1];
+            var allEntriesLabel2 = m_AllInputs[Label2];
+
+            if(allEntriesLabel1 == null && allEntriesLabel2 == null)
+            {
+                return traceCorrelationTwoLabel;
+            }
+
+            foreach (var entryLabel1 in allEntriesLabel1)
+            {
+                foreach (var entryLabel2 in allEntriesLabel2)
+                {
+                    var correlation = MathHelpers.CalcArraySimilarity(entryLabel1, entryLabel2);
+                    correlationValues.Add(correlation);
+                }
+            }
+            traceCorrelationTwoLabel.Value.Add("Min", correlationValues.Min());
+            traceCorrelationTwoLabel.Value.Add("Average", correlationValues.Average());
+            traceCorrelationTwoLabel.Value.Add("Max", correlationValues.Max());
+
+            return traceCorrelationTwoLabel;
+        }
+
+        public Dictionary<(TIN, TIN), Dictionary<string, double>> TraceCorrelationAllLabel()
+        {
+            Dictionary<(TIN, TIN), Dictionary<string, double>> correlationInfoAll = new Dictionary<(TIN, TIN), Dictionary<string, double>>();
+
+            foreach (var label1 in m_AllInputs.Keys)
+            {
+                foreach (var label2 in m_AllInputs.Keys)
+                {
+                    var res = TraceCorrelationTwoLabel(label1, label2);
+                    correlationInfoAll.Add(res.Key, res.Value);
+                }
+            }
+            return correlationInfoAll;
+        }
+
+        public List<string> RenderCorrelationMatrix()
+        {
+            var correlationInfoAll = TraceCorrelationAllLabel();
+            List<string> output = new List<string>();
+            string header = String.Format("{0,-20}"," ");
+            foreach(var key in m_AllInputs.Keys)
+            {
+                header += String.Format("{0,-20}", key.ToString());
+            }
+            output.Add(header);
+
+            var rows = new List<string>();
+
+            List<string> entities = new List<string> { "Min", "Average", "Max" };
+
+            foreach (var label1 in m_AllInputs.Keys)
+            {
+                List<string> rowForm = new List<string>();
+                foreach(var label2 in m_AllInputs.Keys)
+                {
+                    for(int i = 0; i < 3; i += 1)
+                    {
+                        rowForm.Add("");
+                        if(i == 1)
+                        {
+                            rowForm[i]+=string.Format("{0,-20}",label1);
+                        }
+                        else
+                        {
+                            rowForm[i] += string.Format("{0,-20}", " ");
+                        }
+                        rowForm[i] += string.Format("{0,-10}: {1,20}",entities[i], correlationInfoAll[(label1, label2)][entities[i]]);
+                    }
+                }
+                rows.AddRange(rowForm);
+            }
+            output.AddRange(rows);
+            return output;
+        }
     }
 }
