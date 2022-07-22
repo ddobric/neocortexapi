@@ -229,6 +229,17 @@ namespace InvariantLearning
             return result;
         }
 
+
+        public List<string> GetclassifierRes()
+        {
+            var a = classifier.RenderCorrelationMatrix();
+            foreach(var b in a)
+            {
+                Console.WriteLine(b);
+            }
+            return a;
+        }
+
         private string GetStringFromResult(List<ClassifierResult<string>> predictedLabel)
         {
             string resultString = "";
@@ -238,7 +249,7 @@ namespace InvariantLearning
             }
             return resultString;
         }
-
+        
         private void AddResult(ref Dictionary<string, double> result, List<ClassifierResult<string>> predictedLabel, int frameCount)
         {
             Dictionary<string, double> res = new Dictionary<string, double>();

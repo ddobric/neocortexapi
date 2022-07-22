@@ -25,7 +25,7 @@ namespace InvariantLearning
             string pathToTrainDataFolder = config.PathToTrainDataFolder;
             string pathToTestDataFolder = config.PathToTestDataFolder;
 
-            Mnist.DataGen("MnistDataset", Path.Combine(config.ExperimentFolder, pathToTrainDataFolder), 1000);
+            Mnist.DataGen("MnistDataset", Path.Combine(config.ExperimentFolder, pathToTrainDataFolder), 10);
 
             Utility.CreateFolderIfNotExist(Path.Combine(config.ExperimentFolder, pathToTrainDataFolder));
             DataSet trainingData = new DataSet(Path.Combine(config.ExperimentFolder, pathToTrainDataFolder));
@@ -53,7 +53,8 @@ namespace InvariantLearning
             Utility.WriteListToCsv(Path.Combine(config.ExperimentFolder, "TestResult", "testOutput"), allResult);
             Utility.WriteListToOutputFile(Path.Combine(config.ExperimentFolder, "TestResult", "testOutput"), allResult);
 
-
+            var a = sp.GetclassifierRes();
+            File.WriteAllLines(Path.Combine(config.ExperimentFolder, "correlationMat.csv"), a);
         }
 
         private static void ExperimentNormalImageClassification()

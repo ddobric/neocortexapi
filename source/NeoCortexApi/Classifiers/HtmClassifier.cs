@@ -161,7 +161,7 @@ namespace NeoCortexApi.Classifiers
         /// <param name="predictiveCells">The current set of predictive cells.</param>
         /// <param name="howMany">The number of predections to return.</param>
         /// <returns>List of predicted values with their similarities.</returns>
-        public List<ClassifierResult<TIN>> GetPredictedInputValues(int[] cellIndicies, short howMany = 1)
+        public List<ClassifierResult<TIN>> GetPredictedInputValues(Cell[] predictiveCells, short howMany = 1)
         {
             var cellIndicies = GetCellIndicies(predictiveCells);
 
@@ -538,11 +538,9 @@ namespace NeoCortexApi.Classifiers
         {
             var correlationInfoAll = TraceCorrelationAllLabel();
             List<string> output = new List<string>();
-            string header = String.Format("{0,-20}"," ");
-            foreach(var key in m_AllInputs.Keys)
-            {
-                header += String.Format("{0,-20}", key.ToString());
-            }
+            string header = " ";
+            foreach (var key in m_AllInputs.Keys)
+                header += $";{key.ToString()}";
             output.Add(header);
 
             var rows = new List<string>();
@@ -552,20 +550,21 @@ namespace NeoCortexApi.Classifiers
             foreach (var label1 in m_AllInputs.Keys)
             {
                 List<string> rowForm = new List<string>();
-                foreach(var label2 in m_AllInputs.Keys)
+
+                for (int i = 0; i < 3; i += 1)
                 {
-                    for(int i = 0; i < 3; i += 1)
+                    rowForm.Add("");
+                    if (i == 1)
                     {
-                        rowForm.Add("");
-                        if(i == 1)
-                        {
-                            rowForm[i]+=string.Format("{0,-20}",label1);
-                        }
-                        else
-                        {
-                            rowForm[i] += string.Format("{0,-20}", " ");
-                        }
-                        rowForm[i] += string.Format("{0,-10}: {1,20}",entities[i], correlationInfoAll[(label1, label2)][entities[i]]);
+                        rowForm[i] += label1;
+                    }
+                    else
+                    {
+                        rowForm[i] += " ";
+                    }
+                    foreach (var label2 in m_AllInputs.Keys)
+                    {
+                        rowForm[i] += $";{entities[i]}: {correlationInfoAll[(label1, label2)][entities[i]]}";
                     }
                 }
                 rows.AddRange(rowForm);
