@@ -35,6 +35,8 @@ namespace NeoCortexApi.Entities
 
         public const char ElementsDelimiter = ',';
 
+        private static List<int> isCellsSerialized = new List<int>();
+
         /// <summary>
         /// Serializes the begin marker of the type.
         /// </summary>
@@ -89,8 +91,52 @@ namespace NeoCortexApi.Entities
         #region NewImplementation
         #region Serialization
 
-        public static void Serialize(object obj, string name, 
-            StreamWriter sw, Dictionary<Type, Action<object>> customSerializers = null)
+        public static void Serialize(object obj, string name, StreamWriter sw, List<string> excludeEntries = null)
+        {
+            if (obj == null)
+            {
+                return;
+            }
+            var type = obj.GetType();
+
+            SerializeBegin(name, sw, null);
+
+            if (type.IsPrimitive || type == typeof(string))
+            {
+                SerializeValue(name, obj, sw);
+            }
+            else if (IsDictionary(type))
+            {
+                SerializeDictionary(name, obj, sw, excludeEntries);
+            }
+            else if (IsList(type))
+            {
+                SerializeIEnumerable(name, obj, sw, excludeEntries);
+            }
+            else if (type.IsClass || type.IsValueType)
+            {
+                if (type == typeof(DistalDendrite))
+                {
+                    // serialize distal dendrite
+                    SerializeDistalDendrite(obj, name, sw);
+                }
+                else if (type == typeof(HtmConfig))
+                {
+                    SerializeHtmConfig(obj, name, sw);
+                }
+                else
+                {
+                    SerializeObject(obj, name, sw, excludeEntries);
+                }
+
+            }
+
+            SerializeEnd(name, sw, null);
+
+        }
+
+        public static void Serialize1(object obj, string name,
+            StreamWriter sw, Dictionary<Type, Action<StreamWriter, string, object>> customSerializers = null)
         {
             if (obj == null)
             {
@@ -114,9 +160,9 @@ namespace NeoCortexApi.Entities
             }
             else if (type.IsClass || type.IsValueType)
             {
-                if (customSerializers.ContainsKey(type))
+                if (customSerializers != null && customSerializers.ContainsKey(type))
                 {
-                    customSerializers[type](obj);
+                    customSerializers[type](sw, name, obj);
                 }
                 else
                 {
@@ -129,10 +175,6 @@ namespace NeoCortexApi.Entities
                     {
                         SerializeHtmConfig(obj, name, sw);
                     }
-                    //else if (type == typeof(HomeostaticPlasticityController))
-                    //{
-                    //    SerializeHomeostaticPlasticityController(obj, name, sw);
-                    //}
                     else
                     {
                         SerializeObject(obj, name, sw);
@@ -144,7 +186,7 @@ namespace NeoCortexApi.Entities
 
         }
 
-        private static void SerializeDictionary(string name, object obj, StreamWriter sw)
+        private static void SerializeDictionary(string name, object obj, StreamWriter sw, List<string> excludeEntries = null)
         {
             var type = obj.GetType();
             if (type.IsGenericType)
@@ -161,7 +203,7 @@ namespace NeoCortexApi.Entities
                     foreach (var property in properties)
                     {
                         var value = property.GetValue(item, null);
-                        Serialize(value, property.Name, sw);
+                        Serialize(value, property.Name, sw, excludeEntries);
                     }
                     SerializeEnd("DictionaryItem", sw, null);
                 }
@@ -204,11 +246,11 @@ namespace NeoCortexApi.Entities
         private static string ReadGenericBegin<T>(string propName, Type type = null)
         {
             var listString = new List<string> { "Begin" };
-            if(string.IsNullOrEmpty(propName) == false)
+            if (string.IsNullOrEmpty(propName) == false)
             {
                 listString.Add(propName);
             }
-            if(type != null)
+            if (type != null)
             {
                 listString.Add(type.Name);
             }
@@ -248,17 +290,17 @@ namespace NeoCortexApi.Entities
         //    sw.WriteLine(begin)
         //}
 
-        private static void SerializeIEnumerable(string propertyName, object obj, StreamWriter sw)
+        private static void SerializeIEnumerable(string propertyName, object obj, StreamWriter sw, List<string> excludeEntries = null)
         {
             var enumerable = ((IEnumerable)obj);
 
             foreach (var item in enumerable)
             {
-                Serialize(item, "CollectionItem", sw);
+                Serialize(item, "CollectionItem", sw, excludeEntries);
             }
         }
 
-        private static void SerializeObject(object obj, string name, StreamWriter sw, List<string> excludeEntries = null)
+        public static void SerializeObject(object obj, string name, StreamWriter sw, List<string> excludeEntries = null)
         {
             if (obj == null)
                 return;
@@ -274,7 +316,7 @@ namespace NeoCortexApi.Entities
                 }
                 if (property.CanRead)
                 {
-                    Serialize(property.GetValue(obj, null), property.Name, sw);
+                    Serialize(property.GetValue(obj, null), property.Name, sw, excludeEntries);
                 }
             }
 
@@ -282,16 +324,12 @@ namespace NeoCortexApi.Entities
 
             foreach (var field in fields)
             {
-                if (field.Name == "m_OnStabilityStatusChanged")
-                {
-
-                }
                 if (excludeEntries != null && excludeEntries.Contains(field.Name))
                 {
                     continue;
                 }
                 var value = field.GetValue(obj);
-                Serialize(value, field.Name, sw);
+                Serialize(value, field.Name, sw, excludeEntries);
             }
         }
 
@@ -299,6 +337,14 @@ namespace NeoCortexApi.Entities
         {
             var excludeEntries = new List<string> { nameof(DistalDendrite.ParentCell) };
             SerializeObject(obj, name, sw, excludeEntries);
+
+            var cell = (obj as DistalDendrite).ParentCell;
+
+            if (isCellsSerialized.Contains(cell.Index) == false)
+            {
+                isCellsSerialized.Add(cell.Index);
+                Serialize((obj as DistalDendrite).ParentCell, nameof(DistalDendrite.ParentCell), sw, excludeEntries);
+            }
         }
 
         private static void SerializeHtmConfig(object obj, string name, StreamWriter sw)
@@ -319,16 +365,16 @@ namespace NeoCortexApi.Entities
         #endregion
         #region Deserialization
 
-        public static T Deserialize<T>(StreamReader sr, string propName = null)
+        public static T Deserialize<T>(StreamReader sr, string propName = null, Dictionary<Type, Func<StreamReader, string, T>> customDeserializer = null)
         {
             var type = typeof(T);
 
-            T obj = ReadContent<T>(sr, propName);
+            T obj = ReadContent<T>(sr, propName, customDeserializer);
 
             return obj;
         }
 
-        private static T ReadContent<T>(StreamReader sr, string propName)
+        private static T ReadContent<T>(StreamReader sr, string propName, Dictionary<Type, Func<StreamReader, string, T>> customDeserializer = null)
         {
             T obj = default;
             var type = typeof(T);
@@ -349,27 +395,43 @@ namespace NeoCortexApi.Entities
             }
             else
             {
-                if (type == typeof(HtmConfig))
+                if (customDeserializer != null && customDeserializer.ContainsKey(type))
                 {
-                    obj = (T)DeserializeHtmConfig(sr, propName);
+                    obj = customDeserializer[type](sr, propName);
                 }
                 else
                 {
-                    // deserialize object
-                    obj = DeserializeObject<T>(sr, propName);
+
+                    if (type == typeof(HtmConfig))
+                    {
+                        obj = (T)DeserializeHtmConfig(sr, propName);
+                    }
+                    else if (type == typeof(Cell))
+                    {
+                        obj = (T)DeserializeCell(sr, propName);
+                    }
+                    else
+                    {
+                        // deserialize object
+                        obj = DeserializeObject<T>(sr, propName);
+                    }
+                    //obj = DeserializeObject<T>(sr, propName, null, null, customDeserializer);
                 }
 
-                if (type == typeof(Cell))
-                {
-                    var cell = obj as Cell;
-                    foreach (var distalDentrite in cell.DistalDendrites)
-                    {
-                        distalDentrite.ParentCell = cell;
-                    }
-                }
             }
 
             return obj;
+        }
+
+        private static object DeserializeCell(StreamReader sr, string propName)
+        {
+            var cell = DeserializeObject<Cell>(sr, propName);
+
+            foreach (var distalDentrite in cell.DistalDendrites)
+            {
+                distalDentrite.ParentCell = cell;
+            }
+            return cell;
         }
 
         private static T DeserializeIEnumerable<T>(StreamReader sr, string propName)
@@ -413,7 +475,7 @@ namespace NeoCortexApi.Entities
 
                 var deserializeMethod = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.Deserialize)).MakeGenericMethod(elementType);
 
-                var item = deserializeMethod.Invoke(null, new object[] { sr, "CollectionItem" });
+                var item = deserializeMethod.Invoke(null, new object[] { sr, "CollectionItem", null });
 
                 enumerable.Add(item);
                 Debug.WriteLine($"Add {item.ToString()} to {propName ?? type.Name}");
@@ -469,11 +531,11 @@ namespace NeoCortexApi.Entities
                 }
                 if (content == (string)beginKey.Invoke(null, new object[] { "Key", default(Type) }))
                 {
-                    key = deserializeKeyMethod.Invoke(null, new object[] { sr, "Key", });
+                    key = deserializeKeyMethod.Invoke(null, new object[] { sr, "Key", null });
                 }
                 else if (content == (string)beginValue.Invoke(null, new object[] { "Value", default(Type) }))
                 {
-                    value = deserializeValueMethod.Invoke(null, new object[] { sr, "Value" });
+                    value = deserializeValueMethod.Invoke(null, new object[] { sr, "Value", null });
                 }
 
                 if (key != null && value != null)
@@ -488,7 +550,16 @@ namespace NeoCortexApi.Entities
             return obj;
         }
 
-        public static T DeserializeObject<T>(StreamReader sr, string propertyName, List<string> excludeEntries = null, Action<T, string> action = null)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sr"></param>
+        /// <param name="propertyName"></param>
+        /// <param name="excludeEntries">Fields or Properties that are skipped (action<> or func<,> type) or deserialized using <paramref name="action"/></param>
+        /// <param name="action">Method that deserialize special fields/properties</param>
+        /// <returns></returns>
+        public static T DeserializeObject<T>(StreamReader sr, string propertyName, List<string> excludeEntries = null, Action<T, string> action = null, Dictionary<Type, Func<StreamReader, string, T>> customDeserializers = null)
         {
             var type = typeof(T);
             T obj = (T)Activator.CreateInstance(type);
@@ -518,7 +589,7 @@ namespace NeoCortexApi.Entities
                         {
                             var deserializeMethod = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.Deserialize)).MakeGenericMethod(property.PropertyType);
 
-                            var propertyValue = deserializeMethod.Invoke(null, new object[] { sr, property.Name });
+                            var propertyValue = deserializeMethod.Invoke(null, new object[] { sr, property.Name, customDeserializers });
                             property.SetValue(obj, propertyValue);
                             Debug.WriteLine($"set {propertyName ?? type.Name}.{property.Name} to {propertyValue.ToString()}");
                         }
@@ -529,7 +600,7 @@ namespace NeoCortexApi.Entities
                             {
                                 var deserializeMethod = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.Deserialize)).MakeGenericMethod(field.FieldType);
 
-                                var fieldValue = deserializeMethod.Invoke(null, new object[] { sr, field.Name });
+                                var fieldValue = deserializeMethod.Invoke(null, new object[] { sr, field.Name, customDeserializers });
                                 field.SetValue(obj, fieldValue);
                             }
                         }

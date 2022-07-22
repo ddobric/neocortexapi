@@ -16,6 +16,7 @@ namespace UnitTestsProject
         public TestContext TestContext { get; set; }
 
         [TestMethod]
+        [TestCategory("working")]
         public void Test()
         {
             HtmSerializer2 serializer = new HtmSerializer2();
@@ -50,6 +51,7 @@ namespace UnitTestsProject
 
         }
         [TestMethod]
+        [TestCategory("working")]
         public void Test2()
         {
             var dict = new Dictionary<string, Cell>();
@@ -89,14 +91,22 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("working")]
         public void Test3()
         {
             HtmSerializer2 serializer = new HtmSerializer2();
 
-            DistalDendrite[] dd = new DistalDendrite[2];
-            dd[0] = new DistalDendrite(null, 1, 2, 2, 1.0, 100);
+            var cell1 = new Cell(12, 14, 16, new CellActivity());
+            var cell2 = new Cell(1, 1, 1, new CellActivity());
 
-            dd[1] = new DistalDendrite(null, 44, 24, 34, 1.0, 100);
+            DistalDendrite[] dd = new DistalDendrite[2];
+
+            dd[0] = new DistalDendrite(cell1, 1, 2, 2, 1.0, 100);
+
+            dd[1] = new DistalDendrite(cell2, 44, 24, 34, 1.0, 100);
+
+            cell1.DistalDendrites.Add(dd[0]);
+            cell2.DistalDendrites.Add(dd[1]);
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test)}_123.txt"))
             {
@@ -115,6 +125,38 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        public void Test3_1()
+        {
+            HtmSerializer2 serializer = new HtmSerializer2();
+
+            DistalDendrite[] dd = new DistalDendrite[2];
+            dd[0] = new DistalDendrite(null, 1, 2, 2, 1.0, 100);
+
+            dd[1] = new DistalDendrite(null, 44, 24, 34, 1.0, 100);
+
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test)}_123.txt"))
+            {
+                HtmSerializer2.Serialize1(dd, null, sw, new Dictionary<Type, Action<StreamWriter, string, object>>
+                {
+                    //{
+                    //    typeof(DistalDendrite), DistalDendrite.Serialize(sw, dd, null)
+                    //}
+                });
+            }
+
+            using (StreamReader sr = new StreamReader($"ser_{nameof(Test)}_123.txt"))
+            {
+                var d = HtmSerializer2.Deserialize<DistalDendrite[]>(sr);
+
+                for (int i = 0; i < dd.Length; i++)
+                {
+                    Assert.IsTrue(dd[i].Equals(d[i]));
+                }
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("working")]
         public void Test4()
         {
             HtmSerializer2 serializer = new HtmSerializer2();
@@ -150,6 +192,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("working")]
         public void DeserializationArrayTest()
         {
             var array = new int[] { 45, 35 };
@@ -166,6 +209,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("working")]
         public void DeserializeIEnumerableTest()
         {
             var array = new List<int> { 45, 34 };
@@ -182,6 +226,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("working")]
         public void DeserializeIEnumerable1Test()
         {
             var array = new List<int> { 45, 34 };
@@ -198,6 +243,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("working")]
         public void DeserializeHtmConfigTest()
         {
             int cellsPerColumnL4 = 20;
@@ -243,6 +289,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        [TestCategory("working")]
         public void DeserializeConnectionsTest()
         {
             int cellsPerColumnL4 = 20;

@@ -106,8 +106,8 @@ namespace NeoCortexApi.Entities
             }
             // We check here the cell id only! The cell as parent must be correctlly created to avoid having different cells with the same id.
             // If we would use here ParenCell.Equals method, that method would cause a cicular invoke of this.Equals etc.
-            //else if (ParentCell.CellId != other.ParentCell.CellId)
-            //    return false;
+            else if (ParentCell.Index != other.ParentCell.Index)
+                return false;
             if (m_LastUsedIteration != other.m_LastUsedIteration)
                 return false;
             if (m_Ordinal != other.m_Ordinal)
@@ -139,7 +139,7 @@ namespace NeoCortexApi.Entities
 
             return true;
         }
-        
+
 
         /// <summary>
         /// Compares by index.
@@ -157,7 +157,7 @@ namespace NeoCortexApi.Entities
         }
 
         #region Serialization
-        
+
         /// <summary>
         /// Only cell Serialize method should invoke this method!
         /// </summary>
@@ -167,7 +167,7 @@ namespace NeoCortexApi.Entities
             HtmSerializer2 ser = new HtmSerializer2();
 
             ser.SerializeBegin(nameof(DistalDendrite), writer);
-            
+
             ser.SerializeValue(this.m_LastUsedIteration, writer);
             ser.SerializeValue(this.m_Ordinal, writer);
             ser.SerializeValue(this.LastUsedIteration, writer);
@@ -186,7 +186,7 @@ namespace NeoCortexApi.Entities
             //{
             //    this.ParentCell.SerializeT(writer);
             //}
-            
+
             if (this.Synapses != null && this.Synapses.Count > 0)
                 ser.SerializeValue(this.Synapses, writer);
 
@@ -245,11 +245,11 @@ namespace NeoCortexApi.Entities
                 //{
                 //    distal.boxedIndex = Integer.Deserialize(sr);
                 //}
-                else if (data == ser.ReadBegin(nameof(Synapse)) )
+                else if (data == ser.ReadBegin(nameof(Synapse)))
                 {
                     distal.Synapses.Add(Synapse.Deserialize(sr));
                 }
-                else if ( data == ser.ReadBegin(nameof(Cell)))
+                else if (data == ser.ReadBegin(nameof(Cell)))
                 {
                     distal.ParentCell = Cell.Deserialize(sr);
                 }
@@ -299,7 +299,7 @@ namespace NeoCortexApi.Entities
                                     distal.NumInputs = ser.ReadIntValue(str[i]);
                                     break;
                                 }
-                            
+
                             default:
                                 { break; }
 
@@ -311,8 +311,20 @@ namespace NeoCortexApi.Entities
             return distal;
 
         }
-        
+
         #endregion
+
+        public static void Serialize1(StreamWriter sw, object obj, string propName)
+        {
+            HtmSerializer2.SerializeObject(obj, propName, sw, new List<string>{nameof(DistalDendrite.ParentCell)});
+        }
+
+        public static DistalDendrite Deserialize1(StreamReader sr, string propName)
+        {
+
+            var result = HtmSerializer2.DeserializeObject<DistalDendrite>(sr, propName);
+            return result;
+        }
 
     }
 }
