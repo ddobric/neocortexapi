@@ -54,8 +54,6 @@ namespace NeoCortexApi
         /// <returns>The list of expected (predicting) elements.</returns>
         public List<ClassifierResult<string>> Predict(double input)
         {
-            classifier.RenderCorrelationMatrix();
-
             var lyrOut = this.layer.Compute(input, false) as ComputeCycle;
 
             List<ClassifierResult<string>> predictedInputValues = this.classifier.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), 3);
