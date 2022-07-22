@@ -237,3 +237,25 @@ HTM Feedforward network is a multilayer based artificial neural orchestrate whic
 [Download student paper here](./Experiments/ML-20-21_20-5.2_HTM%20FeedForward_Network.pdf)
 
 [Check out implementation here](../NeoCortexApi.Experiments/FeedForwardExperiment_L4L2.cs)
+
+
+#### **Investigation of Hierarchical Temporal Memory Multiple Sequences Learning**
+
+The Hierarchical Temporal Memory (HTM) - is an AI framework, which has some applications in practice. This paper focuses on one of its applications which is multiple sequence learning and how to optimize it. The HTM model consists of an Encoder, a Spatial Pooler, and a Temporal Memory. Of the three mentioned components, Temporal Memory will be the focus of this paper as it is where the optimization takes place. For sequence learning, the Temporal Memory is responsible for creating a connection between each element in the sequence. This allows the HTM to predict what the next input element will likely be given an input element. Experiments are set up to test if it is beneficial to keep the connection between the last element of the sequence and the first element, or if severing or resetting this connection is preferable in terms of learning performance. The results gathered from the experiment show a faster learning rate in terms of the number of cycles needed with the removal of this connection.
+
+[Download student paper here] (./Experiments/IndividualProject_Investigation_of_Hierarchical_Temporal_Memory_Multiple_Sequences_Learning.pdf)
+
+[Check out implementation here](../source/Samples/NeoCortexApiSample/MultisequenceLearning.cs)
+
+## On the Importance of the Newborn Stage When Learning Patterns with the Spatial Pooler
+
+### Author
+
+Damir Dobric, Andreas Pech, Bogdan Ghita, Thomas Wennekers
+
+### Abstract
+
+Hierarchical Temporal Memory (HTM-CLA)—Spatial Pooler (SP) is a Cortical Learning Algorithm for learning inspired by the neocortex. It is designed to learn the spatial pattern by generating the Sparse Distributed Representation code (SDR) of the input. It encodes the set of active input neurons as SDR defined by the set of active neurons organized in groups called mini-columns. This paper provides additional findings extending the previous work, that demonstrates how and why the Spatial Pooler forgets learned SDRs in the training progress. The previous work introduced the newborn stage of the algorithm, which takes a control of the boosting of mini-columns by deactivating the Homeostatic Plasticity mechanism inside of the SP in layer 4. The newborn stage was inspired by findings in neurosciences that show that this plasticity mechanism is only active during the development of newborn mammals and later deactivated or shifted from cortical layer L4, where the SP is supposed to be active. The extended SP showed the stable learned state of the model. In this work, the plasticity was deactivated by disabling the homeostatic excitation of synaptic connections between input neurons and slightly inactive mini-columns. The final solution that includes disabling of boosting of inactive mini-columns and disabling excitation of synaptic connections after exiting the introduced newborn stage, shows that learned SDRs remain stable during the lifetime of the Spatial Pooler.
+
+[See paper on the publisher site](https://doi.org/10.1007/s42979-022-01066-4)
+

@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeoCortexApi;
 using NeoCortexApi.Entities;
 using NeoCortexEntities.NeuroVisualizer;
 using System;
@@ -12,6 +13,8 @@ namespace UnitTestsProject
 {
     public partial class HTMSerializationTests
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         public void Test()
         {
@@ -28,7 +31,12 @@ namespace UnitTestsProject
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test)}_123.txt"))
             {
-                HtmSerializer2.Serialize(cells, sw);
+                HtmSerializer2.Serialize(cells, null, sw);
+            }
+
+            using (StreamReader sr = new StreamReader($"ser_{nameof(Test)}_123.txt"))
+            {
+                var c = HtmSerializer2.Deserialize<Cell[]>(sr);
             }
         }
 
@@ -37,7 +45,7 @@ namespace UnitTestsProject
         {
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test1)}_123.txt"))
             {
-                HtmSerializer2.Serialize(new List<string> { "bla" }, sw);
+                HtmSerializer2.Serialize(new List<string> { "bla" }, null, sw);
             }
 
         }
@@ -54,36 +62,300 @@ namespace UnitTestsProject
             dict.Add("1", cell1);
 
             var cell2 = new Cell(12, 14, 16, new CellActivity());
-            var distSeg3 = new DistalDendrite(cell2, 44, 24, 34, 1.0, 100);
+            var distSeg3 = new DistalDendrite(cell2, 44, 24, 34, 1.0, 102);
             cell2.DistalDendrites.Add(distSeg3);
-            dict.Add("2", new Cell(12, 14, 16, new CellActivity()));
+            dict.Add("2", cell2);
 
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test2)}_123.txt"))
             {
-                HtmSerializer2.Serialize(dict, sw);
+                HtmSerializer2.Serialize(dict, null, sw);
+            }
+            using (StreamReader sr = new StreamReader($"ser_{nameof(Test2)}_123.txt"))
+            {
+                var content = sr.ReadToEnd();
+            }
+            using (StreamReader sr = new StreamReader($"ser_{nameof(Test2)}_123.txt"))
+            {
+                var dict1 = HtmSerializer2.Deserialize<Dictionary<string, Cell>>(sr);
+
+                foreach (var key in dict.Keys)
+                {
+                    dict1.TryGetValue(key, out Cell cell);
+                    Assert.IsTrue(dict[key].Equals(cell));
+                }
             }
 
         }
 
         [TestMethod]
+        public void Test3()
+        {
+            HtmSerializer2 serializer = new HtmSerializer2();
+
+            DistalDendrite[] dd = new DistalDendrite[2];
+            dd[0] = new DistalDendrite(null, 1, 2, 2, 1.0, 100);
+
+            dd[1] = new DistalDendrite(null, 44, 24, 34, 1.0, 100);
+
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test)}_123.txt"))
+            {
+                HtmSerializer2.Serialize(dd, null, sw);
+            }
+
+            using (StreamReader sr = new StreamReader($"ser_{nameof(Test)}_123.txt"))
+            {
+                var d = HtmSerializer2.Deserialize<DistalDendrite[]>(sr);
+
+                for (int i = 0; i < dd.Length; i++)
+                {
+                    Assert.IsTrue(dd[i].Equals(d[i]));
+                }
+            }
+        }
+
+        [TestMethod]
+        public void Test4()
+        {
+            HtmSerializer2 serializer = new HtmSerializer2();
+
+            Dictionary<string, Bla> dict = new Dictionary<string, Bla>
+            {
+                {"1", new Bla{ Id = 1, Name = "real", In = new List<Internal>() } },
+                {"2", new Bla{ Id = 21, Name = "real1", In = new List<Internal>{ new Internal{ Risk = 0.1f } } } },
+            };
+
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test4)}_123.txt"))
+            {
+                HtmSerializer2.Serialize(dict, null, sw);
+            }
+
+            using (StreamReader sr = new StreamReader($"ser_{nameof(Test4)}_123.txt"))
+            {
+                var d = HtmSerializer2.Deserialize<Dictionary<string, Bla>>(sr);
+            }
+        }
+
+        private class Bla
+        {
+            public string Name { get; set; }
+            public int Id { get; set; }
+
+            public List<Internal> In { get; set; }
+        }
+
+        private class Internal
+        {
+            public float Risk { get; set; }
+        }
+
+        [TestMethod]
         public void DeserializationArrayTest()
         {
-            var content = "[45, 34]";
-            var ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(content));
-            var reader = new StreamReader(ms);
+            var array = new int[] { 45, 35 };
+
+            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            {
+                HtmSerializer2.Serialize(array, null, sw);
+            }
+            var reader = new StreamReader($"{TestContext.TestName}.txt");
 
             var res = HtmSerializer2.Deserialize<int[]>(reader);
+
+            Assert.IsTrue(array.SequenceEqual(res));
         }
-    
+
         [TestMethod]
-        public void DeserializationListTest()
+        public void DeserializeIEnumerableTest()
         {
-            var content = "[45, 34]";
-            var ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(content));
-            var reader = new StreamReader(ms);
+            var array = new List<int> { 45, 34 };
+
+            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            {
+                HtmSerializer2.Serialize(array, null, sw);
+            }
+            var reader = new StreamReader($"{TestContext.TestName}.txt");
 
             var res = HtmSerializer2.Deserialize<List<int>>(reader);
+
+            Assert.IsTrue(array.SequenceEqual(res));
+        }
+
+        [TestMethod]
+        public void DeserializeIEnumerable1Test()
+        {
+            var array = new List<int> { 45, 34 };
+
+            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            {
+                HtmSerializer2.Serialize(array, null, sw);
+            }
+            var reader = new StreamReader($"{TestContext.TestName}.txt");
+
+            var res = HtmSerializer2.Deserialize<int[]>(reader);
+
+            Assert.IsTrue(array.SequenceEqual(res));
+        }
+
+        [TestMethod]
+        public void DeserializeHtmConfigTest()
+        {
+            int cellsPerColumnL4 = 20;
+            int numColumnsL4 = 500;
+            int cellsPerColumnL2 = 20;
+            int numColumnsL2 = 500;
+            int inputBits = 100;
+            double minOctOverlapCycles = 1.0;
+            double maxBoost = 10.0;
+            double max = 20;
+            int inputsL2 = numColumnsL4 * cellsPerColumnL4;
+            HtmConfig htmConfig_L2 = new HtmConfig(new int[] { inputsL2 }, new int[] { numColumnsL2 })
+            {
+                Random = new NeoCortexApi.ThreadSafeRandom(42),
+
+                CellsPerColumn = cellsPerColumnL2,
+                GlobalInhibition = true,
+                LocalAreaDensity = -1,
+                NumActiveColumnsPerInhArea = 0.1 * numColumnsL2,
+                PotentialRadius = inputsL2, // Every columns 
+                //InhibitionRadius = 15,
+                MaxBoost = maxBoost,
+                DutyCyclePeriod = 25,
+                MinPctOverlapDutyCycles = minOctOverlapCycles,
+                MaxSynapsesPerSegment = (int)(0.05 * numColumnsL2),
+                ActivationThreshold = 15,
+                ConnectedPermanence = 0.5,
+                PermanenceDecrement = 0.25,
+                PermanenceIncrement = 0.15,
+                PredictedSegmentDecrement = 0.1
+            };
+
+            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            {
+                HtmSerializer2.Serialize(htmConfig_L2, null, sw);
+            }
+            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            {
+                var htmConfig = HtmSerializer2.Deserialize<HtmConfig>(sr);
+
+                Assert.IsTrue(htmConfig_L2.Equals(htmConfig));
+            }
+        }
+
+        [TestMethod]
+        public void DeserializeConnectionsTest()
+        {
+            int cellsPerColumnL4 = 20;
+            int numColumnsL4 = 500;
+            int cellsPerColumnL2 = 20;
+            int numColumnsL2 = 500;
+            int inputBits = 100;
+            double minOctOverlapCycles = 1.0;
+            double maxBoost = 10.0;
+            double max = 20;
+            int inputsL2 = numColumnsL4 * cellsPerColumnL4;
+            HtmConfig htmConfig_L2 = new HtmConfig(new int[] { inputsL2 }, new int[] { numColumnsL2 })
+            {
+                Random = new NeoCortexApi.ThreadSafeRandom(42),
+
+                CellsPerColumn = cellsPerColumnL2,
+                GlobalInhibition = true,
+                LocalAreaDensity = -1,
+                NumActiveColumnsPerInhArea = 0.1 * numColumnsL2,
+                PotentialRadius = inputsL2, // Every columns 
+                //InhibitionRadius = 15,
+                MaxBoost = maxBoost,
+                DutyCyclePeriod = 25,
+                MinPctOverlapDutyCycles = minOctOverlapCycles,
+                MaxSynapsesPerSegment = (int)(0.05 * numColumnsL2),
+                ActivationThreshold = 15,
+                ConnectedPermanence = 0.5,
+                PermanenceDecrement = 0.25,
+                PermanenceIncrement = 0.15,
+                PredictedSegmentDecrement = 0.1
+            };
+
+            var mem = new Connections(htmConfig_L2);
+
+            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            {
+                HtmSerializer2.Serialize(mem, null, sw);
+            }
+            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            {
+                var content = sr.ReadToEnd();
+            }
+            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            {
+                var connection = HtmSerializer2.Deserialize<Connections>(sr);
+                var streamWriter = new StreamWriter($"1.txt");
+                HtmSerializer2.Serialize(connection, null, streamWriter);
+                streamWriter.Close();
+                var streamReader1 = new StreamReader("1.txt");
+                var streamReader2 = new StreamReader($"{TestContext.TestName}.txt");
+                var content1 = streamReader1.ReadToEnd();
+                var content2 = streamReader2.ReadToEnd();
+                Assert.AreEqual(content2, content1);
+            }
+        }
+
+        [TestMethod]
+        public void DeserializeHomeostaticPlasticityTest()
+        {
+            int cellsPerColumnL4 = 20;
+            int numColumnsL4 = 500;
+            int cellsPerColumnL2 = 20;
+            int numColumnsL2 = 500;
+            int inputBits = 100;
+            double minOctOverlapCycles = 1.0;
+            double maxBoost = 10.0;
+            double max = 20;
+            int inputsL2 = numColumnsL4 * cellsPerColumnL4;
+            HtmConfig htmConfig_L2 = new HtmConfig(new int[] { inputsL2 }, new int[] { numColumnsL2 })
+            {
+                Random = new NeoCortexApi.ThreadSafeRandom(42),
+
+                CellsPerColumn = cellsPerColumnL2,
+                GlobalInhibition = true,
+                LocalAreaDensity = -1,
+                NumActiveColumnsPerInhArea = 0.1 * numColumnsL2,
+                PotentialRadius = inputsL2, // Every columns 
+                //InhibitionRadius = 15,
+                MaxBoost = maxBoost,
+                DutyCyclePeriod = 25,
+                MinPctOverlapDutyCycles = minOctOverlapCycles,
+                MaxSynapsesPerSegment = (int)(0.05 * numColumnsL2),
+                ActivationThreshold = 15,
+                ConnectedPermanence = 0.5,
+                PermanenceDecrement = 0.25,
+                PermanenceIncrement = 0.15,
+                PredictedSegmentDecrement = 0.1
+            };
+
+            var numInputs = 8;
+
+            var memL2 = new Connections(htmConfig_L2);
+
+            HomeostaticPlasticityController hpa_sp_L2 = new HomeostaticPlasticityController(memL2, numInputs * 50, (isStable, numPatterns, actColAvg, seenInputs) =>
+            {
+
+            }, numOfCyclesToWaitOnChange: 50);
+
+            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            {
+                HtmSerializer2.Serialize(hpa_sp_L2, null, sw);
+            }
+            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            {
+                var content = sr.ReadToEnd();
+            }
+            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            {
+                var hpa = HtmSerializer2.Deserialize<HomeostaticPlasticityController>(sr);
+
+                Assert.IsTrue(hpa_sp_L2.Equals(hpa));
+            }
+
         }
     }
 }
