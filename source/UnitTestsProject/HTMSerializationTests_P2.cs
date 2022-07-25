@@ -138,9 +138,9 @@ namespace UnitTestsProject
             {
                 HtmSerializer2.Serialize1(dd, null, sw, new Dictionary<Type, Action<StreamWriter, string, object>>
                 {
-                    //{
-                    //    typeof(DistalDendrite), DistalDendrite.Serialize(sw, dd, null)
-                    //}
+                    {
+                        typeof(DistalDendrite), (sw, name, obj) => DistalDendrite.Serialize1(sw, obj, null)
+                    }
                 });
             }
 

@@ -12,7 +12,7 @@ namespace NeoCortexApi.Entities
     /// Segments are owned by <see cref="Cell"/>s and in turn own <see cref="Synapse"/>s which are obversely connected to by a "source cell", 
     /// which is the <see cref="Cell"/> which will activate a given <see cref="Synapse"/> owned by this <see cref="Segment"/>.
     /// </summary>
-    public class DistalDendrite : Segment, IComparable<DistalDendrite>, IEquatable<DistalDendrite>
+    public class DistalDendrite : Segment, IComparable<DistalDendrite>, IEquatable<DistalDendrite>, ISerializable
     {
         /// <summary>
         /// The cell that owns (parent) the segment.
@@ -326,6 +326,27 @@ namespace NeoCortexApi.Entities
             return result;
         }
 
+        private static List<int> isCellsSerialized = new List<int>();
+
+        public void Serialize(object obj, string name, StreamWriter sw)
+        {
+            var excludeEntries = new List<string> { nameof(DistalDendrite.ParentCell) };
+            HtmSerializer2.SerializeObject(obj, name, sw, excludeEntries);
+
+            var cell = (obj as DistalDendrite).ParentCell;
+
+            if (cell != null && isCellsSerialized.Contains(cell.Index) == false)
+            {
+                isCellsSerialized.Add(cell.Index);
+                HtmSerializer2.Serialize((obj as DistalDendrite).ParentCell, nameof(DistalDendrite.ParentCell), sw, excludeEntries);
+            }
+        }
+
+        public static object Deserialize(StreamReader sr, string name)
+        {
+            var distal = HtmSerializer2.DeserializeObject<DistalDendrite>(sr, name);
+            return distal;
+        }
     }
 }
 

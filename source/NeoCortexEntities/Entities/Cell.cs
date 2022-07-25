@@ -11,7 +11,7 @@ namespace NeoCortexApi.Entities
     /// <summary>
     /// Defines a single cell (neuron).
     /// </summary>
-    public class Cell : IEquatable<Cell>, IComparable<Cell>
+    public class Cell : IEquatable<Cell>, IComparable<Cell>, ISerializable
     {
 
         /// <summary>
@@ -201,7 +201,7 @@ namespace NeoCortexApi.Entities
                 }
                 else if (data == ser.ReadBegin(nameof(DistalDendrite)))
                 {
-                    cell.DistalDendrites.Add(DistalDendrite.Deserialize(sr));
+                    //cell.DistalDendrites.Add(DistalDendrite.Deserialize(sr));
                 }
                 else if (data == ser.ReadBegin(nameof(Synapse)))
                 {
@@ -239,6 +239,21 @@ namespace NeoCortexApi.Entities
                         }
                     }
                 }
+            }
+            return cell;
+        }
+
+        public void Serialize(object obj, string name, StreamWriter sw)
+        {
+            HtmSerializer2.SerializeObject(obj, name, sw, new List<string> { nameof(DistalDendrite.ParentCell)});
+        }
+        public static object Deserialize(StreamReader sr, string name)
+        {
+            var cell = HtmSerializer2.DeserializeObject<Cell>(sr, name);
+
+            foreach (var distalDentrite in cell.DistalDendrites)
+            {
+                distalDentrite.ParentCell = cell;
             }
             return cell;
         }

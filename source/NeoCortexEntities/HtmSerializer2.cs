@@ -91,7 +91,7 @@ namespace NeoCortexApi.Entities
         #region NewImplementation
         #region Serialization
 
-        public static void Serialize(object obj, string name, StreamWriter sw, List<string> excludeEntries = null)
+        public static void Serialize(object obj, string name, StreamWriter sw, List<string> ignorePropertiesAndFields = null)
         {
             if (obj == null)
             {
@@ -107,26 +107,21 @@ namespace NeoCortexApi.Entities
             }
             else if (IsDictionary(type))
             {
-                SerializeDictionary(name, obj, sw, excludeEntries);
+                SerializeDictionary(name, obj, sw, ignorePropertiesAndFields);
             }
             else if (IsList(type))
             {
-                SerializeIEnumerable(name, obj, sw, excludeEntries);
+                SerializeIEnumerable(name, obj, sw, ignorePropertiesAndFields);
             }
             else if (type.IsClass || type.IsValueType)
             {
-                if (type == typeof(DistalDendrite))
+                if (type.GetInterface(nameof(ISerializable)) != null)
                 {
-                    // serialize distal dendrite
-                    SerializeDistalDendrite(obj, name, sw);
-                }
-                else if (type == typeof(HtmConfig))
-                {
-                    SerializeHtmConfig(obj, name, sw);
+                    (obj as ISerializable).Serialize(obj, name, sw);
                 }
                 else
                 {
-                    SerializeObject(obj, name, sw, excludeEntries);
+                    SerializeObject(obj, name, sw, ignorePropertiesAndFields);
                 }
 
             }
@@ -166,19 +161,23 @@ namespace NeoCortexApi.Entities
                 }
                 else
                 {
-                    if (type == typeof(DistalDendrite))
-                    {
-                        // serialize distal dendrite
-                        SerializeDistalDendrite(obj, name, sw);
-                    }
-                    else if (type == typeof(HtmConfig))
-                    {
-                        SerializeHtmConfig(obj, name, sw);
-                    }
-                    else
-                    {
-                        SerializeObject(obj, name, sw);
-                    }
+                    //if (type is baseType)
+                    //{
+                    //    sert
+                    //}
+                    //if (type == typeof(DistalDendrite))
+                    //{
+                    //    // serialize distal dendrite
+                    //    SerializeDistalDendrite(obj, name, sw);
+                    //}
+                    //else if (type == typeof(HtmConfig))
+                    //{
+                    //    SerializeHtmConfig(obj, name, sw);
+                    //}
+                    //else
+                    //{
+                    //    SerializeObject(obj, name, sw);
+                    //}
                 }
             }
 
@@ -401,15 +400,24 @@ namespace NeoCortexApi.Entities
                 }
                 else
                 {
+                    if (type.GetInterface(nameof(ISerializable)) != null)
+                    {
+                        var methods = type.GetMethods();
 
-                    if (type == typeof(HtmConfig))
-                    {
-                        obj = (T)DeserializeHtmConfig(sr, propName);
+                        var deserializeMethod = methods.FirstOrDefault(m => m.Name == nameof(ISerializable.Deserialize) && m.IsStatic && m.GetParameters().Length == 2);
+                        if (deserializeMethod != null)
+                        {
+                            obj = (T)deserializeMethod.Invoke(null, new object[] { sr, propName });
+                        }
                     }
-                    else if (type == typeof(Cell))
-                    {
-                        obj = (T)DeserializeCell(sr, propName);
-                    }
+                    //if (type == typeof(HtmConfig))
+                    //{
+                    //    obj = (T)DeserializeHtmConfig(sr, propName);
+                    //}
+                    //else if (type == typeof(Cell))
+                    //{
+                    //    obj = (T)DeserializeCell(sr, propName);
+                    //}
                     else
                     {
                         // deserialize object
