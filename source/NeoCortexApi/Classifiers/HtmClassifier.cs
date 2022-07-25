@@ -491,7 +491,12 @@ namespace NeoCortexApi.Classifiers
             return same.Count();
         }
 
-
+        /// <summary>
+        /// save the correlation matrix into a file
+        /// TODO: add headers
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="data"></param>
         public void OutputSimilarityMat(string path, double[,] data)
         {
             using(StreamWriter sw = new StreamWriter(path))
@@ -507,6 +512,12 @@ namespace NeoCortexApi.Classifiers
             }
         }
 
+        /// <summary>
+        /// Calculate correlation data of 2 chosen 2 Labels
+        /// </summary>
+        /// <param name="label1"></param>
+        /// <param name="label2"></param>
+        /// <returns></returns>
         public double[,] TraceCrossSimilarity(TIN label1, TIN label2)
         {
             var entry1 = m_AllInputs[label1];
@@ -525,6 +536,11 @@ namespace NeoCortexApi.Classifiers
             return similarityMat;
         }
 
+        /// <summary>
+        /// extension method of TraceCrossSimilarity for multiple input label pairs
+        /// </summary>
+        /// <param name="labelPairs"></param>
+        /// <returns></returns>
         public Dictionary<(string,string), double[,]> TraceCrossSimilarities(List<(TIN,TIN)> labelPairs)
         {
             Dictionary<(string, string), double[,]> res = new Dictionary<(string, string), double[,]>();
@@ -535,6 +551,11 @@ namespace NeoCortexApi.Classifiers
             return res;
         }
 
+        /// <summary>
+        /// Trace correlation matrix of the specified label with itself
+        /// </summary>
+        /// <param name="label"></param>
+        /// <returns></returns>
         public double[,] TraceAutoSimilarity(TIN label)
         {
             var entry = m_AllInputs[label];
@@ -552,6 +573,11 @@ namespace NeoCortexApi.Classifiers
             return similarityMat;
         }
 
+        /// <summary>
+        /// extension method of TraceAutoSimilarity for multiple input labels
+        /// </summary>
+        /// <param name="labels"></param>
+        /// <returns></returns>
         public Dictionary<string, double[,]> TraceAutoSimilarities(List<TIN> labels)
         {
             Dictionary<string, double[,]> res = new Dictionary<string, double[,]>();
@@ -564,6 +590,12 @@ namespace NeoCortexApi.Classifiers
             return res;
         }
 
+        /// <summary>
+        /// Trace the Correlation matrix between 2 chosen label in m_AllInputs to get Max Min and Average correlation data
+        /// </summary>
+        /// <param name="Label1"></param>
+        /// <param name="Label2"></param>
+        /// <returns></returns>
         public KeyValuePair<(TIN,TIN), Dictionary<string, double>> TraceCorrelationTwoLabel(TIN Label1, TIN Label2)
         {
             KeyValuePair<(TIN,TIN), Dictionary<string, double>> traceCorrelationTwoLabel = new KeyValuePair<(TIN,TIN), Dictionary<string, double>>((Label1,Label2),new Dictionary<string, double>());
@@ -592,6 +624,10 @@ namespace NeoCortexApi.Classifiers
             return traceCorrelationTwoLabel;
         }
 
+        /// <summary>
+        /// extension of the TraceCorrelationTwoLabel to get all Correlation data
+        /// </summary>
+        /// <returns></returns>
         public Dictionary<(TIN, TIN), Dictionary<string, double>> TraceCorrelationAllLabel()
         {
             Dictionary<(TIN, TIN), Dictionary<string, double>> correlationInfoAll = new Dictionary<(TIN, TIN), Dictionary<string, double>>();
@@ -607,6 +643,10 @@ namespace NeoCortexApi.Classifiers
             return correlationInfoAll;
         }
 
+        /// <summary>
+        /// Converting the correlation matrix data from TraceCorrelationAllLabel to a List of String for saving to a file
+        /// </summary>
+        /// <returns></returns>
         public List<string> RenderCorrelationMatrix()
         {
             var correlationInfoAll = TraceCorrelationAllLabel();
