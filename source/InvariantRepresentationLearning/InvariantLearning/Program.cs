@@ -21,7 +21,7 @@ namespace InvariantLearning
         private static void LocaDimensionTest()
         {
             List<LearningUnit> sps = new List<LearningUnit>();
-            List<int> spDim = new List<int> { 28, 50, 100, 200 };
+            List<int> spDim = new List<int> { 28, 50};
             foreach(var dim in spDim)
             {
                 sps.Add(new LearningUnit(dim, 1024));
@@ -42,6 +42,9 @@ namespace InvariantLearning
                 Utility.CreateFolderIfNotExist(similarityPath);
 
                 sp.classifier.OutputSimilarityMat(Path.Combine(similarityPath, "9_4_CrossSim.csv"), sp.classifier.TraceCrossSimilarity("9", "4"));
+
+                var a = sp.classifier.TraceCorrelationTwoLabel("4", "9");
+                var j = sp.classifier.TraceCrossSimilarity("4", "9");
             }
         }
 

@@ -536,6 +536,10 @@ namespace NeoCortexApi.Classifiers
             return similarityMat;
         }
 
+
+
+        // TODO: Traces Print, reduce methods
+
         /// <summary>
         /// extension method of TraceCrossSimilarity for multiple input label pairs
         /// </summary>
