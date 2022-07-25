@@ -16,9 +16,9 @@ namespace InvariantLearning
         private CortexLayer<object, object> cortexLayer;
         private bool isInStableState;
 
-        private int inputDim;
+        public int inputDim;
         private int columnDim;
-        private HtmClassifier<string, int[]> classifier;
+        public HtmClassifier<string, int[]> classifier;
 
 
         public LearningUnit(int inputDim, int columnDim)
@@ -124,7 +124,12 @@ namespace InvariantLearning
             cortexLayer.Compute(sample.imagePath, true);
 
             var activeColumns = cortexLayer.GetResult("sp") as int[];
-            classifier.Learn($"{sample.label}_{Path.GetFileName(sample.imagePath)}", activeColumns);
+
+            // Uncomment this to learn the whole label + name
+            // classifier.Learn($"{sample.label}_{Path.GetFileName(sample.imagePath)}", activeColumns);
+
+            // Uncomment this to learn only the label
+            classifier.Learn(sample.label, activeColumns);
         }
 
         /// <summary>
@@ -220,12 +225,12 @@ namespace InvariantLearning
                         }
                     }
 
-                    allResultForEachFrame.Add(outFile,GetStringFromResult(predictedLabel));
+                    allResultForEachFrame.Add(outFile, GetStringFromResult(predictedLabel));
                     // Aggregate Label to Result
                     AddResult(ref result, predictedLabel, frameMatrix.Count);
                 }
             }
-            Utility.WriteResultOfOneSPDetailed(allResultForEachFrame, Path.Combine(spFolder,$"SP of {inputDim}x{inputDim} detailed.csv"));
+            Utility.WriteResultOfOneSPDetailed(allResultForEachFrame, Path.Combine(spFolder, $"SP of {inputDim}x{inputDim} detailed.csv"));
             return result;
         }
 
@@ -233,12 +238,14 @@ namespace InvariantLearning
         public List<string> GetclassifierRes()
         {
             var a = classifier.RenderCorrelationMatrix();
-            foreach(var b in a)
+
+            foreach (var b in a)
             {
                 Console.WriteLine(b);
             }
             return a;
         }
+
 
         private string GetStringFromResult(List<ClassifierResult<string>> predictedLabel)
         {
@@ -249,7 +256,7 @@ namespace InvariantLearning
             }
             return resultString;
         }
-        
+
         private void AddResult(ref Dictionary<string, double> result, List<ClassifierResult<string>> predictedLabel, int frameCount)
         {
             Dictionary<string, double> res = new Dictionary<string, double>();
@@ -257,11 +264,11 @@ namespace InvariantLearning
             {
                 if (result.ContainsKey(label.PredictedInput))
                 {
-                    result[label.PredictedInput] += label.Similarity/frameCount;
+                    result[label.PredictedInput] += label.Similarity / frameCount;
                 }
                 else
                 {
-                    result.Add(label.PredictedInput, label.Similarity/frameCount);
+                    result.Add(label.PredictedInput, label.Similarity / frameCount);
                 }
             }
         }

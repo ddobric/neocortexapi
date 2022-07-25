@@ -491,6 +491,79 @@ namespace NeoCortexApi.Classifiers
             return same.Count();
         }
 
+
+        public void OutputSimilarityMat(string path, double[,] data)
+        {
+            using(StreamWriter sw = new StreamWriter(path))
+            {
+                for(int i = 0; i < data.GetLength(0); i++)
+                {
+                    for(int j = 0; j < data.GetLength(1); j++)
+                    {
+                        sw.Write($"{data[i, j]};");
+                    }
+                    sw.Write("\n");
+                }
+            }
+        }
+
+        public double[,] TraceCrossSimilarity(TIN label1, TIN label2)
+        {
+            var entry1 = m_AllInputs[label1];
+            var entry2 = m_AllInputs[label2];
+            int dim = entry1.Count;
+
+            double[,] similarityMat = new double[dim, dim];
+
+            for (int i = 0; i < dim; i += 1)
+            {
+                for (int j = 0; j < dim; j += 1)
+                {
+                    similarityMat[i, j] = MathHelpers.CalcArraySimilarity(entry1[i], entry2[j]);
+                }
+            }
+            return similarityMat;
+        }
+
+        public Dictionary<(string,string), double[,]> TraceCrossSimilarities(List<(TIN,TIN)> labelPairs)
+        {
+            Dictionary<(string, string), double[,]> res = new Dictionary<(string, string), double[,]>();
+            foreach (var label in labelPairs)
+            {
+                res.Add((label.Item1.ToString(),label.Item2.ToString()), TraceCrossSimilarity(label.Item1, label.Item2));
+            }
+            return res;
+        }
+
+        public double[,] TraceAutoSimilarity(TIN label)
+        {
+            var entry = m_AllInputs[label];
+            int dim = entry.Count;
+
+            double[,] similarityMat = new double[dim, dim];
+
+            for(int i = 0; i < dim; i += 1)
+            {
+                for(int j = 0; j < dim; j += 1)
+                {
+                    similarityMat[i,j] = MathHelpers.CalcArraySimilarity(entry[i], entry[j]);
+                }
+            }
+            return similarityMat;
+        }
+
+        public Dictionary<string, double[,]> TraceAutoSimilarities(List<TIN> labels)
+        {
+            Dictionary<string, double[,]> res = new Dictionary<string, double[,]>();
+
+            foreach(var label in labels)
+            {
+                res.Add(label.ToString(),TraceAutoSimilarity(label));
+            }
+
+            return res;
+        }
+
         public KeyValuePair<(TIN,TIN), Dictionary<string, double>> TraceCorrelationTwoLabel(TIN Label1, TIN Label2)
         {
             KeyValuePair<(TIN,TIN), Dictionary<string, double>> traceCorrelationTwoLabel = new KeyValuePair<(TIN,TIN), Dictionary<string, double>>((Label1,Label2),new Dictionary<string, double>());

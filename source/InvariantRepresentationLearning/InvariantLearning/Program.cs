@@ -14,7 +14,35 @@ namespace InvariantLearning
         {
             //ExperimentPredictingWithFrameGrid();
             //ExperimentNormalImageClassification();
-            ExperimentEvaluatateImageClassification();
+            LocaDimensionTest();
+            //xperimentEvaluatateImageClassification();
+        }
+
+        private static void LocaDimensionTest()
+        {
+            List<LearningUnit> sps = new List<LearningUnit>();
+            List<int> spDim = new List<int> { 28, 50, 100, 200 };
+            foreach(var dim in spDim)
+            {
+                sps.Add(new LearningUnit(dim, 1024));
+            }
+
+
+            Picture four = new Picture(Path.Combine("LocalDimensionTest","4.png"),"4");
+            Picture nine = new Picture(Path.Combine("LocalDimensionTest", "9.png"), "9");
+
+            DataSet training = new DataSet(new List<Picture> { four, nine });
+
+            foreach (var sp in sps)
+            {
+                sp.TrainingNewbornCycle(training);
+                sp.TrainingNormal(training, 50);
+
+                string similarityPath = Path.Combine("LocalDimensionTest_Res", $"SimilaritiesCalc__{sp.inputDim}");
+                Utility.CreateFolderIfNotExist(similarityPath);
+
+                sp.classifier.OutputSimilarityMat(Path.Combine(similarityPath, "9_4_CrossSim.csv"), sp.classifier.TraceCrossSimilarity("9", "4"));
+            }
         }
 
         private static void ExperimentEvaluatateImageClassification()
@@ -34,7 +62,7 @@ namespace InvariantLearning
             DataSet testingData = trainingData.GetTestData(10);
             testingData.VisualizeSet(Path.Combine(config.ExperimentFolder, pathToTestDataFolder));
 
-            LearningUnit sp = new(trainingData.PickRandom().imageWidth, 1024);
+            LearningUnit sp = new(40, 1024);
 
             sp.TrainingNewbornCycle(trainingData);
 
@@ -55,6 +83,13 @@ namespace InvariantLearning
 
             var a = sp.GetclassifierRes();
             File.WriteAllLines(Path.Combine(config.ExperimentFolder, "correlationMat.csv"), a);
+
+            string similarityPath = Path.Combine(config.ExperimentFolder, "SimilaritiesCalc");
+            Utility.CreateFolderIfNotExist(similarityPath);
+           
+            sp.classifier.OutputSimilarityMat(Path.Combine(similarityPath,"1_autoSim.csv"),sp.classifier.TraceAutoSimilarity("1"));
+            sp.classifier.OutputSimilarityMat(Path.Combine(similarityPath, "9_4_CrossSim.csv"), sp.classifier.TraceCrossSimilarity("9","4"));
+
         }
 
         private static void ExperimentNormalImageClassification()
