@@ -51,7 +51,7 @@ namespace HtmClassifierUnitTest
 
             // testing trace sdr 
             htmClassifier.TraceSimilarities();
-            htmClassifier.TraceSimilarities(input1,input2);
+            htmClassifier.TraceSimilarities(input2,input1);
             htmClassifier.TraceSimilarities(input2);
 
             // testing cross correlation
