@@ -661,7 +661,10 @@ namespace NeoCortexApi.Classifiers
         public void TraceSimilarities(List<TIN> labels1, List<TIN> labels2)
         {
             var tableData = RenderCorrelationMatrixToCSVFormat(labels1, labels2);
-
+            foreach(var t in tableData)
+            {
+                Console.WriteLine(t);
+            }
         }
 
         public void TraceSimilarities(List<TIN> labels)
