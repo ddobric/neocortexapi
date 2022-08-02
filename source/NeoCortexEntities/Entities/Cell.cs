@@ -93,6 +93,11 @@ namespace NeoCortexApi.Entities
             return m_Hashcode;
         }
 
+        public int HashCode()
+        {
+            return base.GetHashCode();
+        }
+
 
         /// <summary>
         /// <inheritdoc/>

@@ -115,6 +115,10 @@ namespace UnitTestsProject
 
             using (StreamReader sr = new StreamReader($"ser_{nameof(Test)}_123.txt"))
             {
+                var content = sr.ReadToEnd();
+            }
+            using (StreamReader sr = new StreamReader($"ser_{nameof(Test)}_123.txt"))
+            {
                 var d = HtmSerializer2.Deserialize<DistalDendrite[]>(sr);
 
                 for (int i = 0; i < dd.Length; i++)
@@ -335,10 +339,12 @@ namespace UnitTestsProject
             using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
             {
                 var connection = HtmSerializer2.Deserialize<Connections>(sr);
-                var streamWriter = new StreamWriter($"1.txt");
+                Assert.IsTrue(mem.Equals(connection));
+
+                var streamWriter = new StreamWriter($"{TestContext.TestName}1.txt");
                 HtmSerializer2.Serialize(connection, null, streamWriter);
                 streamWriter.Close();
-                var streamReader1 = new StreamReader("1.txt");
+                var streamReader1 = new StreamReader($"{TestContext.TestName}1.txt");
                 var streamReader2 = new StreamReader($"{TestContext.TestName}.txt");
                 var content1 = streamReader1.ReadToEnd();
                 var content2 = streamReader2.ReadToEnd();
@@ -400,6 +406,10 @@ namespace UnitTestsProject
             {
                 var hpa = HtmSerializer2.Deserialize<HomeostaticPlasticityController>(sr);
 
+                hpa.OnStabilityStatusChanged = (isStable, numPatterns, actColAvg, seenInputs) =>
+                {
+
+                };
                 Assert.IsTrue(hpa_sp_L2.Equals(hpa));
             }
 

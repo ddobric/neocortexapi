@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -12,7 +13,7 @@ namespace NeoCortexApi.Entities
     /// HTM configuration.
     /// Also sent from Akka-client to Akka Actor.
     /// </summary>
-    public class HtmConfig
+    public class HtmConfig : ISerializable
     {
         /// <summary>
         /// Default constructor with the default set of parameters.
@@ -999,6 +1000,29 @@ namespace NeoCortexApi.Entities
 
                 }
             }
+            return htmConfig;
+        }
+
+        public void Serialize(object obj, string name, StreamWriter sw)
+        {
+            var excludeEntries = new List<string> { nameof(HtmConfig.Random) };
+            HtmSerializer2.SerializeObject(obj, name, sw, excludeEntries);
+
+            var htmConfig = obj as HtmConfig;
+            HtmSerializer2.Serialize(htmConfig.RandomGenSeed, nameof(HtmConfig.Random), sw);
+        }
+
+        public static object Deserialize(StreamReader sr, string name)
+        {
+            var excludeEntries = new List<string> { nameof(HtmConfig.Random) };
+            var htmConfig = HtmSerializer2.DeserializeObject<HtmConfig>(sr, name, excludeEntries, (config, propertyName) =>
+            {
+                if (propertyName == nameof(HtmConfig.Random))
+                {
+                    var seed = HtmSerializer2.Deserialize<int>(sr, propertyName);
+                    config.Random = new ThreadSafeRandom(seed);
+                }
+            });
             return htmConfig;
         }
         #endregion
