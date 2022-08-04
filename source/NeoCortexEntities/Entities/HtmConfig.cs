@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Text;
 
 namespace NeoCortexApi.Entities
@@ -534,7 +535,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (MaxBoost != obj.MaxBoost)
                 return false;
-           
+
             if (UpdatePeriod != obj.UpdatePeriod)
                 return false;
             if (OverlapDutyCycles != null && this.OverlapDutyCycles != null)
@@ -644,7 +645,7 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.PredictedSegmentDecrement, writer);
             ser.SerializeValue(this.DutyCyclePeriod, writer);
             ser.SerializeValue(this.MaxBoost, writer);
-           
+
             ser.SerializeValue(this.UpdatePeriod, writer);
             ser.SerializeValue(this.OverlapDutyCycles, writer);
             ser.SerializeValue(this.ActiveDutyCycles, writer);
@@ -1005,22 +1006,57 @@ namespace NeoCortexApi.Entities
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            var excludeEntries = new List<string> { nameof(HtmConfig.Random) };
-            HtmSerializer2.SerializeObject(obj, name, sw, excludeEntries);
+            var excludeMembers = new List<string>
+            {
+                nameof(HtmConfig.Random),
+                nameof(HtmConfig.inputMatrix),
+                nameof(HtmConfig.InputMatrix),
+                nameof(HtmConfig.memory),
+                nameof(HtmConfig.Memory)
+            };
+            HtmSerializer2.SerializeObject(obj, name, sw, excludeMembers);
 
             var htmConfig = obj as HtmConfig;
             HtmSerializer2.Serialize(htmConfig.RandomGenSeed, nameof(HtmConfig.Random), sw);
+            HtmSerializer2.Serialize(htmConfig.InputMatrix, nameof(HtmConfig.InputMatrix), sw);
+            HtmSerializer2.Serialize(htmConfig.inputMatrix, nameof(HtmConfig.inputMatrix), sw);
+            HtmSerializer2.Serialize(htmConfig.memory, nameof(HtmConfig.memory), sw);
+            HtmSerializer2.Serialize(htmConfig.Memory, nameof(HtmConfig.Memory), sw);
+
         }
 
         public static object Deserialize(StreamReader sr, string name)
         {
-            var excludeEntries = new List<string> { nameof(HtmConfig.Random) };
-            var htmConfig = HtmSerializer2.DeserializeObject<HtmConfig>(sr, name, excludeEntries, (config, propertyName) =>
+            var excludeMembers = new List<string>
+            {
+                nameof(HtmConfig.Random),
+                nameof(HtmConfig.inputMatrix),
+                nameof(HtmConfig.InputMatrix),
+                nameof(HtmConfig.memory),
+                nameof(HtmConfig.Memory)
+            };
+            var htmConfig = HtmSerializer2.DeserializeObject<HtmConfig>(sr, name, excludeMembers, (config, propertyName) =>
             {
                 if (propertyName == nameof(HtmConfig.Random))
                 {
                     var seed = HtmSerializer2.Deserialize<int>(sr, propertyName);
                     config.Random = new ThreadSafeRandom(seed);
+                }
+                else if (propertyName == nameof(HtmConfig.InputMatrix))
+                {
+                    var field = typeof(HtmConfig).GetProperty(nameof(HtmConfig.InputMatrix));
+                    var types = AppDomain.CurrentDomain.GetAssemblies()
+                        .SelectMany(a => a.GetTypes().Where(t => t.GetInterfaces().Contains(field.PropertyType)))
+                        .Where(t => t.IsAbstract == false).ToList();
+
+                    var type = types.FirstOrDefault();
+
+                    if (type != null)
+                    {
+                        var deserializeMethod = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.Deserialize)).MakeGenericMethod(type);
+                        config.InputMatrix = deserializeMethod.Invoke(null, new object[] { sr, propertyName }) as ISparseMatrix<int>;
+                    }
+
                 }
             });
             return htmConfig;

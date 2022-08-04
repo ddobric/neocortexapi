@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace NeoCortexApi.Entities
 {
@@ -9,7 +10,7 @@ namespace NeoCortexApi.Entities
     /// <summary>
     /// Provides common generic independent calculation functions.
     /// </summary>
-    public class AbstractFlatMatrix
+    public class AbstractFlatMatrix : ISerializable
     {
         public AbstractFlatMatrix()
         {
@@ -117,6 +118,16 @@ namespace NeoCortexApi.Entities
                 dimensionMultiples[len - 1 - i] = holder;
             }
             return dimensionMultiples;
+        }
+
+        public void Serialize(object obj, string name, StreamWriter sw)
+        {
+            HtmSerializer2.SerializeObject(obj, name, sw);
+        }
+
+        public static object Deserialize(StreamReader sr, string name)
+        {
+            return HtmSerializer2.DeserializeObject<AbstractFlatMatrix>(sr, name);
         }
     }
 

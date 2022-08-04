@@ -9,7 +9,7 @@ using System.IO;
 
 namespace NeoCortexApi.Entities
 {
-    public class InMemoryArray : IDistributedArray
+    public class InMemoryArray : IDistributedArray, ISerializable
     {
         public int[] dimensions;
 
@@ -277,6 +277,16 @@ namespace NeoCortexApi.Entities
             }
 
             return array;
+        }
+
+        public void Serialize(object obj, string name, StreamWriter sw)
+        {
+            HtmSerializer2.SerializeObject(obj, name, sw);
+        }
+
+        public static object Deserialize(StreamReader sr, string name)
+        {
+            return HtmSerializer2.DeserializeObject<InMemoryArray>(sr, name);
         }
         #endregion
     }

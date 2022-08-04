@@ -330,15 +330,15 @@ namespace NeoCortexApi.Entities
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            var excludeEntries = new List<string> { nameof(DistalDendrite.ParentCell) };
-            HtmSerializer2.SerializeObject(obj, name, sw, excludeEntries);
+            var ignoreMembers = new List<string> { nameof(DistalDendrite.ParentCell) };
+            HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);
 
             var cell = (obj as DistalDendrite).ParentCell;
 
             if (cell != null && isCellsSerialized.Contains(cell.HashCode()) == false)
             {
                 isCellsSerialized.Add(cell.HashCode());
-                HtmSerializer2.Serialize((obj as DistalDendrite).ParentCell, nameof(DistalDendrite.ParentCell), sw, excludeEntries);
+                HtmSerializer2.Serialize((obj as DistalDendrite).ParentCell, nameof(DistalDendrite.ParentCell), sw, ignoreMembers);
             }
         }
 

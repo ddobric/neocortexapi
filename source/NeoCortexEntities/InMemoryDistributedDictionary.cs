@@ -295,6 +295,9 @@ namespace NeoCortexApi.Entities
 
         public bool MoveNext()
         {
+            if (this.dictList == null)
+                return false;
+
             if (this.currentIndex == -1)
                 this.currentIndex = 0;
 

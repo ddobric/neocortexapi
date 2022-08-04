@@ -414,5 +414,54 @@ namespace UnitTestsProject
             }
 
         }
+
+        [TestMethod]
+        public void confirmSPConstruction1()
+        {
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            Connections mem = new Connections(htmConfig);
+
+            SpatialPooler sp = new SpatialPoolerMT();
+            sp.Init(mem);
+
+            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            {
+                HtmSerializer2.Serialize(mem, null, sw);
+            }
+            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            {
+                var content = sr.ReadToEnd();
+            }
+            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            {
+                var connection = HtmSerializer2.Deserialize<Connections>(sr);
+                Assert.IsTrue(mem.Equals(connection));
+            }
+        }
+
+
+        private HtmConfig SetupHtmConfigParameters()
+        {
+            var htmConfig = new HtmConfig(new int[] { 5 }, new int[] { 5 })
+            {
+                PotentialRadius = 5,
+                PotentialPct = 0.5,
+                GlobalInhibition = false,
+                LocalAreaDensity = -1.0,
+                NumActiveColumnsPerInhArea = 3.0,
+                StimulusThreshold = 0.0,
+                SynPermInactiveDec = 0.01,
+                SynPermActiveInc = 0.1,
+                SynPermConnected = 0.1,
+                MinPctOverlapDutyCycles = 0.1,
+                MinPctActiveDutyCycles = 0.1,
+                DutyCyclePeriod = 10,
+                MaxBoost = 10,
+                RandomGenSeed = 42,
+                Random = new ThreadSafeRandom(42),
+            };
+
+            return htmConfig;
+        }
     }
 }
