@@ -40,6 +40,47 @@ namespace HtmClassifierUnitTest
         }
 
         /// <summary>
+        /// Trace SDR test of HtmClassifier
+        /// </summary>
+        [TestMethod]
+        public void TraceTest()
+        {
+            Setup();
+            List<string> input1 = new List<string> { "S1_4-2-5-0-1-2-3", "S1_2-3-4-2-5-0-1" };
+            List<string> input2 = new List<string> { "S1_0-1-2-3-4-2-5", "S1_1-2-3-4-2-5-0", "S1_2-5-0-1-2-3-4"};
+
+            // testing trace sdr 
+            htmClassifier.TraceSimilarities();
+            htmClassifier.TraceSimilarities(input2,input1);
+            htmClassifier.TraceSimilarities(input2);
+
+            // testing cross correlation
+            htmClassifier.TraceCrossSimilarity("S1_4-2-5-0-1-2-3", "S1_2-3-4-2-5-0-1", true);
+            Debug.WriteLine("\n");
+
+            // testing csv generator
+            var a = htmClassifier.RenderCorrelationMatrixToCSVFormat();
+            foreach(string input in a)
+            {
+                Debug.WriteLine(input);
+            }
+            Debug.WriteLine("\n");
+
+            var b = htmClassifier.RenderCorrelationMatrixToCSVFormat(input1);
+            foreach (string input in b)
+            {
+                Debug.WriteLine(input);
+            }
+            Debug.WriteLine("\n");
+
+            var c = htmClassifier.RenderCorrelationMatrixToCSVFormat(input2, input1);
+            foreach (string input in c)
+            {
+                Debug.WriteLine(input);
+            }
+        }
+
+        /// <summary>
         /// Here our taget is to whether we are getting any predicted value for input we have given one sequence s1
         /// and check from this sequence each input, will we get prediction or not.
         /// </summary>
