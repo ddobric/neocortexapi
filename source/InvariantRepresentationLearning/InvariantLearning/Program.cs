@@ -39,12 +39,12 @@ namespace InvariantLearning
             {
                 string digitLabelFolder = Path.Combine(sourceMNIST_32x32, image.label);
                 Utility.CreateFolderIfNotExist(digitLabelFolder);
-                image.SaveImageWithDimension(Path.Combine(digitLabelFolder, Path.GetFileName(image.imagePath)),width,height);
+                image.SaveTo_Scaled(Path.Combine(digitLabelFolder, Path.GetFileName(image.imagePath)),width,height);
             }
             DataSet sourceSet_32x32 = new DataSet(sourceMNIST_32x32);
 
-            // create segmented frame from 32x32 dataset into 4x4 for SP to learn all pattern
-            var listOfFrame = Frame.GetConvFrames(width, height, 4, 4, 8, 8);
+            // create segmented frame from 32x32 dataset into 8x8 for SP to learn all pattern
+            var listOfFrame = Frame.GetConvFrames(width, height, 8, 8, 4, 4);
 
             string segmentedFrameFolder = Path.Combine(experimentFolder, "segmentedFrame");
             int index = 0;
@@ -52,16 +52,47 @@ namespace InvariantLearning
             {
                 foreach(var frame in listOfFrame)
                 {
-                    string savePath = Path.Combine(segmentedFrameFolder, "segmented", $"{index}.png");
-                    image.SaveTo(savePath, frame);
-                    index += 1;
+                    if(image.IsRegionOverBinarizedThreshold(frame,255/2)){
+                        Utility.CreateFolderIfNotExist(Path.Combine(segmentedFrameFolder, $"{index}"));
+                        if (!ExistImageInDataSet(image, segmentedFrameFolder, frame)) {
+                            string savePath = Path.Combine(segmentedFrameFolder, $"{index}", $"{index}.png");
+                            image.SaveTo(savePath, frame);
+                            index += 1;
+                        }
+                    }
                 }
             }
             DataSet segmentedFrameSet = new DataSet(segmentedFrameFolder);
-            LearningUnit spLayer1 = new LearningUnit(4, 1024);
+
+            //LearningFoundation with SP
+            LearningUnit spLayer1 = new LearningUnit(8, 1024);
             spLayer1.TrainingNewbornCycle(segmentedFrameSet);
             spLayer1.TrainingNormal(segmentedFrameSet);
+
+
             var cls = spLayer1.classifier;
+            var a = cls.RenderCorrelationMatrixToCSVFormat();
+            foreach (string input in a)
+            {
+                Debug.WriteLine(input);
+            }
+            Debug.WriteLine("\n");
+        }
+
+        private static bool ExistImageInDataSet(Picture image, string segmentedFrameFolder, Frame frame)
+        {
+            foreach(var dir in Directory.GetDirectories(segmentedFrameFolder))
+            {
+                foreach (var file in Directory.GetFiles(dir))
+                {
+                    Picture a = new Picture(file, "test");
+                    if (Picture.CheckArrayEqual(Picture.Binarize(image.GetPixels(frame),255/2),Picture.Binarize(a.GetPixels(), 255 / 2)))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         private static void LocaDimensionTest()
@@ -87,9 +118,7 @@ namespace InvariantLearning
                 string similarityPath = Path.Combine("LocalDimensionTest_Res", $"SimilaritiesCalc__{sp.inputDim}");
                 Utility.CreateFolderIfNotExist(similarityPath);
 
-                sp.classifier.OutputSimilarityMat(Path.Combine(similarityPath, "9_4_CrossSim.csv"), sp.classifier.TraceCrossSimilarity("9", "4"));
-
-                var a = sp.classifier.TraceCorrelationTwoLabel("4", "9");
+                var a = sp.classifier.TraceCrossSimilarity("4", "9");
                 var j = sp.classifier.TraceCrossSimilarity("4", "9");
             }
         }
@@ -130,14 +159,11 @@ namespace InvariantLearning
             Utility.WriteListToCsv(Path.Combine(config.ExperimentFolder, "TestResult", "testOutput"), allResult);
             Utility.WriteListToOutputFile(Path.Combine(config.ExperimentFolder, "TestResult", "testOutput"), allResult);
 
-            var a = sp.GetclassifierRes();
+            var a = sp.classifier.RenderCorrelationMatrixToCSVFormat();
             File.WriteAllLines(Path.Combine(config.ExperimentFolder, "correlationMat.csv"), a);
 
             string similarityPath = Path.Combine(config.ExperimentFolder, "SimilaritiesCalc");
             Utility.CreateFolderIfNotExist(similarityPath);
-           
-            sp.classifier.OutputSimilarityMat(Path.Combine(similarityPath,"1_autoSim.csv"),sp.classifier.TraceAutoSimilarity("1"));
-            sp.classifier.OutputSimilarityMat(Path.Combine(similarityPath, "9_4_CrossSim.csv"), sp.classifier.TraceCrossSimilarity("9","4"));
 
         }
 

@@ -95,7 +95,7 @@ namespace Invariant.Entities
             }
 
             //
-            // 3. Reading a Picture file in pixels
+            // 3. Writing a Picture file in pixels
             using (var image = SKImage.FromBitmap(outputBitmap))
             {
                 string encodingFormat = "Png";
@@ -113,14 +113,45 @@ namespace Invariant.Entities
             }
         }
 
+        public static bool CheckArrayEqual(bool[,,] bools1, bool[,,] bools2)
+        {
+            for (int y = 0; y < bools1.GetLength(0); y++)
+            {
+                for (int x = 0; x < bools1.GetLength(1); x++)
+                {
+                    if (bools1[x, y, 0] != bools2[x,y,0])
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        public static bool[,,] Binarize(double[,,] image, int threshold)
+        {
+            bool[,,] res = new bool[image.GetLength(1), image.GetLength(0), 1];
+            for (int y = 0; y < image.GetLength(0); y++)
+            {
+                for (int x = 0; x < image.GetLength(1); x++)
+                {
+                    if (image[x, y, 0] > threshold)
+                    {
+                        res[x,y,0] = true;
+                    }
+                }
+            }
+            return res;
+        }
+
         /// <summary>
         /// Saved the Image into a square shaped image
         /// </summary>
         /// <param name="imagePath">outputImagePath</param>
         /// <param name="dimension">pixel length of square side</param>
-        public void SaveImageWithSquareDimension(string imagePath, int dimension)
+        public void SaveTo_Scaled(string imagePath, int dimension)
         {
-            SaveImageWithDimension(imagePath, dimension, dimension);
+            SaveTo_Scaled(imagePath, dimension, dimension);
         }
 
         /// <summary>
@@ -129,7 +160,7 @@ namespace Invariant.Entities
         /// <param name="imagePath">outputImagePath</param>
         /// <param name="width">pixel length of width</param>
         /// <param name="height">pixel length of height</param>
-        public void SaveImageWithDimension(string imagePath, int width, int height)
+        public void SaveTo_Scaled(string imagePath, int width, int height)
         {
             SKBitmap output = new SKBitmap(width, height);
             using (SKBitmap inputBitmap = SKBitmap.Decode(this.imagePath))
@@ -162,12 +193,20 @@ namespace Invariant.Entities
         {
             SaveAsImage(this.GetPixels(), path);
         }
-
+        /// <summary>
+        /// Save with a smaller frame of picture
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="frame"></param>
         public void SaveTo(string path, Frame frame)
         {
             SaveAsImage(this.GetPixels(frame), path);
         }
-
+        /// <summary>
+        /// Check if the specified Region in the picture is empty or not
+        /// </summary>
+        /// <param name="frame"></param>
+        /// <returns></returns>
         public bool IsRegionEmpty(Frame frame)
         {
             var test = this.GetPixels(frame);
@@ -182,6 +221,22 @@ namespace Invariant.Entities
                 }
             }
             return true;
+        }
+
+        public bool IsRegionOverBinarizedThreshold(Frame frame, double threshold)
+        {
+            var test = this.GetPixels(frame);
+            for (int y = 0; y < test.GetLength(0); y++)
+            {
+                for (int x = 0; x < test.GetLength(1); x++)
+                {
+                    if (test[x, y, 0] > threshold)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         /// <summary>
@@ -207,5 +262,6 @@ namespace Invariant.Entities
             double whitePixelDensity = (double)whitePixelsCount / ((double)frame.PixelCount);
             return (whitePixelDensity <= pixelDensityThreshold) ? true : false;
         }
+
     }
 }

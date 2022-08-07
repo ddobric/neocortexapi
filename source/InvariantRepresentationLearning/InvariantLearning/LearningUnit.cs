@@ -257,18 +257,6 @@ namespace InvariantLearning
         }
 
 
-        public List<string> GetclassifierRes()
-        {
-            var a = classifier.RenderCorrelationMatrix();
-
-            foreach (var b in a)
-            {
-                Console.WriteLine(b);
-            }
-            return a;
-        }
-
-
         private string GetStringFromResult(List<ClassifierResult<string>> predictedLabel)
         {
             string resultString = "";

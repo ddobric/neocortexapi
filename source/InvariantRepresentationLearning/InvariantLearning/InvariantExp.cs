@@ -78,7 +78,7 @@ namespace InvariantLearning
                     foreach (var img in imagesFilteredByLabel)
                     {
                         string imagePath = Path.Combine(pathForImageInOneLabelFolder, $"{index}.png");
-                        img.SaveImageWithSquareDimension(imagePath, int.Parse(dim));
+                        img.SaveTo_Scaled(imagePath, int.Parse(dim));
                         index++;
                     }
                 }
