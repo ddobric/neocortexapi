@@ -14,8 +14,17 @@ namespace InvariantLearning
         {
             //ExperimentPredictingWithFrameGrid();
             //ExperimentNormalImageClassification();
-            LocaDimensionTest();
+            //LocaDimensionTest();
             //xperimentEvaluatateImageClassification();
+            // Invariant Learning Experiment
+            InvariantRepresentation("HtmInvariantLearning");
+        }
+
+        private static void InvariantRepresentation(string experimentFolder)
+        {
+            Utility.CreateFolderIfNotExist(experimentFolder);
+
+
         }
 
         private static void LocaDimensionTest()
