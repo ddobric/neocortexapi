@@ -95,6 +95,8 @@ namespace InvariantLearning
                 Debug.Write("\n");
                 cycle++;
             }
+
+            Console.WriteLine("Learning Unit reach stable state in newborn learning");
         }
 
 
@@ -103,15 +105,35 @@ namespace InvariantLearning
         /// </summary>
         /// <param name="trainingDataSet"></param>
         /// <param name="epoch">number of training cycle</param>
-        public void TrainingNormal(DataSet trainingDataSet, int epoch)
+        public void TrainingNormal(DataSet trainingDataSet, int epoch = 0)
         {
-            // for loop with epochs
-            for (int cycle = 1; cycle <= epoch; cycle += 1)
+            if (epoch == 0)
             {
-                // for loop with training:
-                foreach (var sample in trainingDataSet.Images)
+                // for loop with epochs
+                for (int cycle = 1; cycle <= epoch; cycle += 1)
                 {
-                    this.Learn(sample);
+                    // for loop with training:
+                    foreach (var sample in trainingDataSet.Images)
+                    {
+                        this.Learn(sample);
+                    }
+                }
+            }
+            else
+            {
+                isInStableState = false;
+                while (!isInStableState)
+                {
+                    // for loop with training:
+                    foreach (var sample in trainingDataSet.Images)
+                    {
+                        this.Learn(sample);
+                        if (isInStableState)
+                        {
+                            Console.WriteLine("Learning Unit reach stable state in normal learning");
+                            break;
+                        }
+                    }
                 }
             }
         }

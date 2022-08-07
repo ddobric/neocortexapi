@@ -4,12 +4,24 @@ namespace Invariant.Entities
 {
     public class Picture
     {
+        /// <summary>
+        /// full path of the image
+        /// </summary>
         public string imagePath;
 
+        /// <summary>
+        /// label of the image
+        /// </summary>
         public string label;
 
+        /// <summary>
+        /// image width in pixels
+        /// </summary>
         public int imageWidth;
 
+        /// <summary>
+        /// imamge height in pixels
+        /// </summary>
         public int imageHeight;
 
         public Picture(string imagePath, string label)
@@ -22,8 +34,8 @@ namespace Invariant.Entities
 
         public double[,,] GetPixels()
         {
-            int lastXIndex = SKBitmap.Decode(this.imagePath).Width - 1;
-            int lastYIndex = SKBitmap.Decode(this.imagePath).Height - 1;
+            int lastXIndex = imageWidth - 1;
+            int lastYIndex = imageHeight - 1;
             return GetPixels(new Frame(0, 0, lastXIndex, lastYIndex));
         }
 
@@ -108,7 +120,18 @@ namespace Invariant.Entities
         /// <param name="dimension">pixel length of square side</param>
         public void SaveImageWithSquareDimension(string imagePath, int dimension)
         {
-            SKBitmap output = new SKBitmap(dimension,dimension);
+            SaveImageWithDimension(imagePath, dimension, dimension);
+        }
+
+        /// <summary>
+        /// Saved the Image into a square shaped image
+        /// </summary>
+        /// <param name="imagePath">outputImagePath</param>
+        /// <param name="width">pixel length of width</param>
+        /// <param name="height">pixel length of height</param>
+        public void SaveImageWithDimension(string imagePath, int width, int height)
+        {
+            SKBitmap output = new SKBitmap(width, height);
             using (SKBitmap inputBitmap = SKBitmap.Decode(this.imagePath))
             {
                 inputBitmap.ScalePixels(output, SKFilterQuality.High);
@@ -140,6 +163,11 @@ namespace Invariant.Entities
             SaveAsImage(this.GetPixels(), path);
         }
 
+        public void SaveTo(string path, Frame frame)
+        {
+            SaveAsImage(this.GetPixels(frame), path);
+        }
+
         public bool IsRegionEmpty(Frame frame)
         {
             var test = this.GetPixels(frame);
@@ -147,7 +175,7 @@ namespace Invariant.Entities
             {
                 for (int x = 0; x < test.GetLength(1); x++)
                 {
-                    if(test[x, y, 0] > 0)
+                    if (test[x, y, 0] > 0)
                     {
                         return false;
                     }
@@ -172,12 +200,12 @@ namespace Invariant.Entities
                 {
                     if (test[x, y, 0] > 0)
                     {
-                       whitePixelsCount++;
+                        whitePixelsCount++;
                     }
                 }
             }
-            double whitePixelDensity = (double)whitePixelsCount/((double)frame.PixelCount);
-            return (whitePixelDensity<=pixelDensityThreshold)? true : false;
+            double whitePixelDensity = (double)whitePixelsCount / ((double)frame.PixelCount);
+            return (whitePixelDensity <= pixelDensityThreshold) ? true : false;
         }
     }
 }

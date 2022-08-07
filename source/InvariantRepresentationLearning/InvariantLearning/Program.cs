@@ -12,19 +12,56 @@ namespace InvariantLearning
     {
         public static void Main()
         {
+            string experimentTime = DateTime.UtcNow.ToLongDateString().ToString().Replace(',',' ') +" "+DateTime.UtcNow.ToLongTimeString().ToString().Replace(':','_');
             //ExperimentPredictingWithFrameGrid();
             //ExperimentNormalImageClassification();
             //LocaDimensionTest();
             //xperimentEvaluatateImageClassification();
             // Invariant Learning Experiment
-            InvariantRepresentation("HtmInvariantLearning");
+            InvariantRepresentation($"HtmInvariantLearning {experimentTime}");
         }
 
         private static void InvariantRepresentation(string experimentFolder)
         {
             Utility.CreateFolderIfNotExist(experimentFolder);
 
+            // Get folder of MNIST images
+            string sourceMNIST = Path.Combine(experimentFolder, "MnistSource");
+            Utility.CreateFolderIfNotExist(sourceMNIST);
+            Mnist.DataGen("MnistDataset",sourceMNIST,10);
 
+            // generate 32x32 MNISTDataSet
+            int width = 32; int height = 32;
+            DataSet sourceSet = new DataSet(sourceMNIST);
+            string sourceMNIST_32x32 = Path.Combine(experimentFolder, $"MnistSource_{width}x{height}");
+            Utility.CreateFolderIfNotExist(sourceMNIST_32x32);
+            foreach(var image in sourceSet.Images)
+            {
+                string digitLabelFolder = Path.Combine(sourceMNIST_32x32, image.label);
+                Utility.CreateFolderIfNotExist(digitLabelFolder);
+                image.SaveImageWithDimension(Path.Combine(digitLabelFolder, Path.GetFileName(image.imagePath)),width,height);
+            }
+            DataSet sourceSet_32x32 = new DataSet(sourceMNIST_32x32);
+
+            // create segmented frame from 32x32 dataset into 4x4 for SP to learn all pattern
+            var listOfFrame = Frame.GetConvFrames(width, height, 4, 4, 8, 8);
+
+            string segmentedFrameFolder = Path.Combine(experimentFolder, "segmentedFrame");
+            int index = 0;
+            foreach (var image in sourceSet_32x32.Images)
+            {
+                foreach(var frame in listOfFrame)
+                {
+                    string savePath = Path.Combine(segmentedFrameFolder, "segmented", $"{index}.png");
+                    image.SaveTo(savePath, frame);
+                    index += 1;
+                }
+            }
+            DataSet segmentedFrameSet = new DataSet(segmentedFrameFolder);
+            LearningUnit spLayer1 = new LearningUnit(4, 1024);
+            spLayer1.TrainingNewbornCycle(segmentedFrameSet);
+            spLayer1.TrainingNormal(segmentedFrameSet);
+            var cls = spLayer1.classifier;
         }
 
         private static void LocaDimensionTest()
