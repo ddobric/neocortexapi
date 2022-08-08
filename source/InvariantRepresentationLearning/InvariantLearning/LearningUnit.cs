@@ -46,7 +46,7 @@ namespace InvariantLearning
             Connections conn = new Connections(config);
 
             // HPC
-            HomeostaticPlasticityController hpc = new HomeostaticPlasticityController(conn, trainingDataSet.Count * 50, (isStable, numPatterns, actColAvg, seenInputs) =>
+            HomeostaticPlasticityController hpc = new HomeostaticPlasticityController(conn, trainingDataSet.Count, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                 if (isStable)
                     // Event should be fired when entering the stable state.
@@ -107,7 +107,7 @@ namespace InvariantLearning
         /// <param name="epoch">number of training cycle</param>
         public void TrainingNormal(DataSet trainingDataSet, int epoch = 0)
         {
-            if (epoch == 0)
+            if (epoch != 0)
             {
                 // for loop with epochs
                 for (int cycle = 1; cycle <= epoch; cycle += 1)

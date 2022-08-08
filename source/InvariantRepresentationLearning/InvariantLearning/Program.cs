@@ -65,7 +65,7 @@ namespace InvariantLearning
             DataSet segmentedFrameSet = new DataSet(segmentedFrameFolder);
 
             //LearningFoundation with SP
-            LearningUnit spLayer1 = new LearningUnit(8, 1024);
+            LearningUnit spLayer1 = new LearningUnit(8, 2048);
             spLayer1.TrainingNewbornCycle(segmentedFrameSet);
             spLayer1.TrainingNormal(segmentedFrameSet);
 
