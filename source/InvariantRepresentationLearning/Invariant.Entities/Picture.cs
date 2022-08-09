@@ -144,6 +144,24 @@ namespace Invariant.Entities
             return res;
         }
 
+        private static double[,,] BinarizeDouble(double[,,] image, int threshold)
+        {
+            double[,,] res = new double[image.GetLength(1), image.GetLength(0), 3];
+            for (int y = 0; y < image.GetLength(0); y++)
+            {
+                for (int x = 0; x < image.GetLength(1); x++)
+                {
+                    if (image[x, y, 0] > threshold)
+                    {
+                        res[x, y, 0] = 255;
+                        res[x, y, 1] = 255;
+                        res[x, y, 2] = 255;
+                    }
+                }
+            }
+            return res;
+        }
+
         /// <summary>
         /// Saved the Image into a square shaped image
         /// </summary>
@@ -192,6 +210,11 @@ namespace Invariant.Entities
         public void SaveTo(string path)
         {
             SaveAsImage(this.GetPixels(), path);
+        }
+
+        public void SaveTo(string path, Frame frame, bool binarized = true)
+        {
+            SaveAsImage(BinarizeDouble(this.GetPixels(frame),255/2), path);
         }
         /// <summary>
         /// Save with a smaller frame of picture
@@ -247,21 +270,26 @@ namespace Invariant.Entities
         /// <returns></returns>
         public bool IsRegionBelowDensity(Frame frame, double pixelDensityThreshold)
         {
+            double whitePixelDensity = CalculateImageDensity(frame, pixelDensityThreshold);
+            return (whitePixelDensity <= pixelDensityThreshold) ? true : false;
+        }
+
+        public double CalculateImageDensity(Frame frame, double pixelDensiTyThreshold)
+        {
             var test = this.GetPixels(frame);
             int whitePixelsCount = 0;
             for (int y = 0; y < test.GetLength(0); y++)
             {
                 for (int x = 0; x < test.GetLength(1); x++)
                 {
-                    if (test[x, y, 0] > 0)
+                    if (test[x, y, 0] > pixelDensiTyThreshold)
                     {
                         whitePixelsCount++;
                     }
                 }
             }
             double whitePixelDensity = (double)whitePixelsCount / ((double)frame.PixelCount);
-            return (whitePixelDensity <= pixelDensityThreshold) ? true : false;
+            return whitePixelDensity;
         }
-
     }
 }

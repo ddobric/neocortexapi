@@ -40,13 +40,16 @@ namespace InvariantLearning
         public void TrainingNewbornCycle(DataSet trainingDataSet)
         {
             // HTM CONFIG
-            HtmConfig config = new HtmConfig(new int[] { inputDim * inputDim }, new int[] { columnDim });
+            HtmConfig config = new HtmConfig(new int[] { inputDim * inputDim }, new int[] { columnDim })
+            {
+                Random = new Random(15676)
+            };
 
             // CONNECTIONS
             Connections conn = new Connections(config);
 
             // HPC
-            HomeostaticPlasticityController hpc = new HomeostaticPlasticityController(conn, trainingDataSet.Count, (isStable, numPatterns, actColAvg, seenInputs) =>
+            HomeostaticPlasticityController hpc = new HomeostaticPlasticityController(conn, trainingDataSet.Count * 100, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                 if (isStable)
                     // Event should be fired when entering the stable state.

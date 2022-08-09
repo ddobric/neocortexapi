@@ -28,7 +28,7 @@ namespace InvariantLearning
             // Get folder of MNIST images
             string sourceMNIST = Path.Combine(experimentFolder, "MnistSource");
             Utility.CreateFolderIfNotExist(sourceMNIST);
-            Mnist.DataGen("MnistDataset",sourceMNIST,10);
+            Mnist.DataGen("MnistDataset",sourceMNIST,5);
 
             // generate 32x32 MNISTDataSet
             int width = 32; int height = 32;
@@ -44,10 +44,11 @@ namespace InvariantLearning
             DataSet sourceSet_32x32 = new DataSet(sourceMNIST_32x32);
 
             // create segmented frame from 32x32 dataset into 8x8 for SP to learn all pattern
-            var listOfFrame = Frame.GetConvFrames(width, height, 8, 8, 4, 4);
+            var listOfFrame = Frame.GetConvFrames(width, height, 16, 16, 2, 2);
 
             string segmentedFrameFolder = Path.Combine(experimentFolder, "segmentedFrame");
             int index = 0;
+            List<string> frameDensityList = new List<string>();
             foreach (var image in sourceSet_32x32.Images)
             {
                 foreach(var frame in listOfFrame)
@@ -56,27 +57,29 @@ namespace InvariantLearning
                         Utility.CreateFolderIfNotExist(Path.Combine(segmentedFrameFolder, $"{index}"));
                         if (!ExistImageInDataSet(image, segmentedFrameFolder, frame)) {
                             string savePath = Path.Combine(segmentedFrameFolder, $"{index}", $"{index}.png");
-                            image.SaveTo(savePath, frame);
+                            string segmentedFrameFolderBinarized = Path.Combine(experimentFolder, "segmentedFrameBinarized");
+                            Utility.CreateFolderIfNotExist(Path.Combine(segmentedFrameFolderBinarized, $"{index}"));
+                            string savePathOri = Path.Combine(segmentedFrameFolderBinarized, $"{index}", $"{index}_ori.png");
+                            image.SaveTo(savePath, frame, true);
+                            image.SaveTo(savePathOri, frame);
+                            frameDensityList.Add($"pattern {index}, Pixel Density {image.CalculateImageDensity(frame,255/2) * 100}");
                             index += 1;
                         }
                     }
                 }
             }
+            File.WriteAllLines(Path.Combine(segmentedFrameFolder,"PixelDensity.txt"),frameDensityList.ToArray());
             DataSet segmentedFrameSet = new DataSet(segmentedFrameFolder);
 
             //LearningFoundation with SP
-            LearningUnit spLayer1 = new LearningUnit(8, 2048);
+            LearningUnit spLayer1 = new LearningUnit(20, 1024);
             spLayer1.TrainingNewbornCycle(segmentedFrameSet);
             spLayer1.TrainingNormal(segmentedFrameSet);
 
 
             var cls = spLayer1.classifier;
-            var a = cls.RenderCorrelationMatrixToCSVFormat();
-            foreach (string input in a)
-            {
-                Debug.WriteLine(input);
-            }
-            Debug.WriteLine("\n");
+            cls.TraceSimilarities();
+            
         }
 
         private static bool ExistImageInDataSet(Picture image, string segmentedFrameFolder, Frame frame)
