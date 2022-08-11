@@ -17,7 +17,7 @@ namespace InvariantLearning
         private bool isInStableState;
 
         public int inputDim;
-        private int columnDim;
+        public int columnDim;
         public HtmClassifier<string, int[]> classifier;
 
 
@@ -63,7 +63,7 @@ namespace InvariantLearning
 
                 // Clear active and predictive cells.
                 //tm.Reset(mem);
-            }, numOfCyclesToWaitOnChange: 50);
+            }, numOfCyclesToWaitOnChange: 100);
 
             // SPATIAL POOLER
             SpatialPooler sp = new SpatialPooler(hpc);
@@ -259,6 +259,29 @@ namespace InvariantLearning
             return result;
         }
 
+        public int[] Predict(string imagePath)
+        {
+            cortexLayer.Compute(imagePath, false);
+
+            var activeColumns = cortexLayer.GetResult("sp") as int[];
+            if (activeColumns == null || activeColumns.Length == 0)
+            {
+                return new int[columnDim];
+            }
+
+            return ToSDRBinArray(activeColumns);
+        }
+
+        private int[] ToSDRBinArray(int[] activeColumns)
+        {
+            int[] res = new int[columnDim];
+
+            for(int i =0; i < activeColumns.Length; i += 1)
+            {
+                    res[activeColumns[i]] = 1;
+            }
+            return res;
+        }
 
         private string GetStringFromResult(List<ClassifierResult<string>> predictedLabel)
         {

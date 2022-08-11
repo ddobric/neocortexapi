@@ -5,6 +5,7 @@ using InvariantLearning;
 using Invariant.Entities;
 using MnistDataGen;
 using System.Collections.Concurrent;
+using NeoCortexApi.Encoders;
 
 namespace InvariantLearning
 {
@@ -18,7 +19,8 @@ namespace InvariantLearning
             //LocaDimensionTest();
             //xperimentEvaluatateImageClassification();
             // Invariant Learning Experiment
-            InvariantRepresentation($"HtmInvariantLearning {experimentTime}");
+            //InvariantRepresentation($"HtmInvariantLearning {experimentTime}");
+            SPCapacityTest();
         }
 
         private static void InvariantRepresentation(string experimentFolder)
@@ -28,7 +30,7 @@ namespace InvariantLearning
             // Get folder of MNIST images
             string sourceMNIST = Path.Combine(experimentFolder, "MnistSource");
             Utility.CreateFolderIfNotExist(sourceMNIST);
-            Mnist.DataGen("MnistDataset",sourceMNIST,5);
+            Mnist.DataGen("MnistDataset",sourceMNIST,20);
 
             // generate 32x32 MNISTDataSet
             int width = 32; int height = 32;
@@ -43,8 +45,13 @@ namespace InvariantLearning
             }
             DataSet sourceSet_32x32 = new DataSet(sourceMNIST_32x32);
 
+            string MnistTestFolder = Path.Combine(experimentFolder, "TestSet");
+            Utility.CreateFolderIfNotExist(MnistTestFolder);
+            Mnist.TestDataGen("MnistDataSet", MnistTestFolder, 10);
+            DataSet testSet_32x32 = new DataSet(MnistTestFolder);
+
             // create segmented frame from 32x32 dataset into 8x8 for SP to learn all pattern
-            var listOfFrame = Frame.GetConvFrames(width, height, 16, 16, 2, 2);
+            var listOfFrame = Frame.GetConvFrames(width, height, 4, 4, 8, 8);
 
             string segmentedFrameFolder = Path.Combine(experimentFolder, "segmentedFrame");
             int index = 0;
@@ -72,14 +79,84 @@ namespace InvariantLearning
             DataSet segmentedFrameSet = new DataSet(segmentedFrameFolder);
 
             //LearningFoundation with SP
-            LearningUnit spLayer1 = new LearningUnit(20, 1024);
+            LearningUnit spLayer1 = new LearningUnit(32, 2048);
             spLayer1.TrainingNewbornCycle(segmentedFrameSet);
-            spLayer1.TrainingNormal(segmentedFrameSet);
+            //spLayer1.TrainingNormal(segmentedFrameSet, 1);
 
+            string extractedImageSource = Path.Combine(experimentFolder, "extractedSet");
+            Utility.CreateFolderIfNotExist(extractedImageSource);
 
-            var cls = spLayer1.classifier;
-            cls.TraceSimilarities();
+            //saving representation with the label
+            Dictionary<string, List<int[]>> lib = new Dictionary<string, List<int[]>>();
+
+            foreach(var image in sourceSet_32x32.Images)
+            {
+                string extractedFrameFolderofImage = Path.Combine(extractedImageSource, $"{image.label}_{Path.GetFileNameWithoutExtension(image.imagePath)}");
+                Utility.CreateFolderIfNotExist(extractedFrameFolderofImage);
+                if (!lib.ContainsKey(image.label))
+                {
+                    lib.Add(image.label, new List<int[]>());
+                }
+                int[] current = new int[spLayer1.columnDim];
+                foreach(var frame in listOfFrame)
+                {
+                    string frameImage = Path.Combine(extractedFrameFolderofImage, $"{frame.tlX}-{frame.tlY}_{frame.brX}-{frame.brY}.png");
+                    image.SaveTo(frameImage, frame, true);
+                    int[] a = spLayer1.Predict(frameImage);
+                    current = Utility.AddArray(current,a);
+                }
+                lib[image.label].Add(current);
+            }
             
+            foreach(var a in lib)
+            {
+                using(StreamWriter sw = new StreamWriter(Path.Combine(extractedImageSource, $"{a.Key}.txt")))
+                {
+                    foreach(var s in a.Value)
+                    {
+                        sw.WriteLine(string.Join(',',s));
+                    }
+                }
+            }
+            string testFolder = Path.Combine(experimentFolder, "Test");
+            Utility.CreateFolderIfNotExist(testFolder);
+            int match = 0;
+            listOfFrame = Frame.GetConvFrames(100, 100, 4, 4, 25, 25);
+            foreach (var testImage in testSet_32x32.Images)
+            {
+                string testImageFolder = Path.Combine(testFolder, $"{testImage.label}_{Path.GetFileNameWithoutExtension(testImage.imagePath)}");
+                Utility.CreateFolderIfNotExist(testImageFolder);
+                testImage.SaveTo(Path.Combine(testImageFolder, "origin.png"));
+                
+                int[] current = new int[spLayer1.columnDim];
+                foreach (var frame in listOfFrame)
+                {
+                    string frameImage = Path.Combine(testImageFolder, $"{frame.tlX}-{frame.tlY}_{frame.brX}-{frame.brY}.png");
+                    testImage.SaveTo(frameImage, frame, true);
+                    current = Utility.AddArray(current, spLayer1.Predict(frameImage));
+                }
+                string actualLabel = testImage.label;
+                string predictedLabel = "";
+                double lowestMatch = 10000;
+                foreach(var digitClass in lib)
+                {
+                    string currentLabel = digitClass.Key;
+                    foreach(var entry in digitClass.Value)
+                    {
+                        double arrayGeometricDistance = Utility.CalArrayUnion(entry, current);
+                        if(arrayGeometricDistance < lowestMatch)
+                        {
+                            predictedLabel = currentLabel;
+                            lowestMatch = arrayGeometricDistance;
+                        }
+                    }
+                }
+                if (actualLabel == predictedLabel)
+                {
+                    match += 1;
+                }
+            }
+            Debug.WriteLine($"accuracy equals {(double)(((double)match)/((double)testSet_32x32.Count))}");
         }
 
         private static bool ExistImageInDataSet(Picture image, string segmentedFrameFolder, Frame frame)
@@ -96,6 +173,52 @@ namespace InvariantLearning
                 }
             }
             return false;
+        }
+
+        private static void SPCapacityTest()
+        {
+            Dictionary<string, object> settings = new Dictionary<string, object>()
+            {
+                { "W", 15},
+                { "N", 1000},
+                { "Radius", -1.0},
+                { "MinVal", 0.0},
+                { "Periodic", false},
+                { "Name", "scalar"},
+                { "ClipInput", false},
+                { "MaxVal", (double)600}
+            };
+
+            EncoderBase encoder = new ScalarEncoder(settings);
+
+            bool isInStableState = false;
+            HtmConfig htm = new HtmConfig(new int[] { 100 },new int[] { 1024 });
+            Connections conn = new(htm);
+            HomeostaticPlasticityController hpc = new HomeostaticPlasticityController(conn, 600 * 100, (isStable, numPatterns, actColAvg, seenInputs) =>
+            {
+                if (isStable)
+                    // Event should be fired when entering the stable state.
+                    Debug.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+                else
+                    // Ideal SP should never enter unstable state after stable state.
+                    Debug.WriteLine($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+
+                // We are not learning in instable state.
+                isInStableState = isStable;
+
+                // Clear active and predictive cells.
+                //tm.Reset(mem);
+            }, numOfCyclesToWaitOnChange: 100);
+            SpatialPooler sp = new SpatialPooler(hpc);
+            sp.Init(conn);
+            while (!isInStableState)
+            {
+                for (double i = 0; i < 600; i += 1)
+                {
+                    sp.Compute(encoder.Encode(i),true);
+                }
+            }
+            hpc.TraceState();
         }
 
         private static void LocaDimensionTest()

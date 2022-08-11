@@ -150,6 +150,16 @@ namespace InvariantLearning
             return top3similarities;
         }
 
+        internal static int[] AddArray(int[] current, int[] a)
+        {
+            int[] res = new int[current.Length];
+            for(int i = 0; i< current.Length; i += 1)
+            {
+                res[i] = current[i] + a[i];
+            }
+            return res;
+        }
+
         internal static void WriteListToCsv(string path,  List<Dictionary<string, string>> allResult)
         {
 
@@ -189,6 +199,27 @@ namespace InvariantLearning
                     file.WriteLine(string.Join(";", arrangedEntry));
                 }
             }
+        }
+
+        internal static double CalcArrayDistance(int[] entry, int[] current)
+        {
+            double result = 0;
+            for(int i = 0; i < entry.Length; i += 1)
+            {
+                result += Math.Pow((entry[i] - current[i]), 2);
+            }
+            return Math.Sqrt(result);
+        }
+        internal static double CalArrayUnion(int[] entry, int[] current)
+        {
+            double result = 0;
+            for (int i = 0; i < entry.Length; i += 1)
+            {
+                int a = (entry[i] > 0) ? 1 : 0;
+                int b = (current[i] > 0) ? 1 : 0;
+                result += Math.Pow((a - b), 2);
+            }
+            return Math.Sqrt(result);
         }
     }
 }
