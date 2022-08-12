@@ -281,12 +281,14 @@ namespace NeoCortexApi.Entities
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            HtmSerializer2.SerializeObject(obj, name, sw);
+            var ignoreMembers = new List<string> { "Item" };
+            HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);
         }
 
         public static object Deserialize(StreamReader sr, string name)
         {
-            return HtmSerializer2.DeserializeObject<InMemoryArray>(sr, name);
+            var ignoreMembers = new List<string> { "Item" };
+            return HtmSerializer2.DeserializeObject<InMemoryArray>(sr, name, ignoreMembers);
         }
         #endregion
     }

@@ -16,7 +16,7 @@ namespace NeoCortexApi.Entities
     /// Contains the definition of the interconnected structural state of the SpatialPooler and
     /// TemporalMemory as well as the state of Cells, Columns, Segments, Synapses etc..
     /// </summary>
-    public class Connections
+    public class Connections : ISerializable
     {
 
         public static readonly double EPSILON = 0.00001;
@@ -1557,6 +1557,17 @@ namespace NeoCortexApi.Entities
 
             return mem;
 
+        }
+
+        public void Serialize(object obj, string name, StreamWriter sw)
+        {
+            HtmSerializer2.SerializeObject(obj, name, sw);
+        }
+
+        public static object Deserialize(StreamReader sr, string name)
+        {
+            HtmSerializer2.DeserializeObject<Connections>(sr, name);
+            return null;
         }
         #endregion
 

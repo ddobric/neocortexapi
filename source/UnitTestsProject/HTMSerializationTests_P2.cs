@@ -293,7 +293,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("working")]
+        //[TestCategory("working")]
         public void DeserializeConnectionsTest()
         {
             int cellsPerColumnL4 = 20;
@@ -416,7 +416,8 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        public void confirmSPConstruction1()
+        [TestCategory("working")]
+        public void ConnectionInitTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
             Connections mem = new Connections(htmConfig);
@@ -426,7 +427,8 @@ namespace UnitTestsProject
 
             using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
             {
-                HtmSerializer2.Serialize(mem, null, sw);
+                //HtmSerializer2.Serialize(mem, null, sw);
+                HtmSerializer2.Serialize(mem.HtmConfig.Memory, null, sw);
             }
             using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
             {
@@ -434,8 +436,35 @@ namespace UnitTestsProject
             }
             using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
             {
-                var connection = HtmSerializer2.Deserialize<Connections>(sr);
-                Assert.IsTrue(mem.Equals(connection));
+                //var connection = HtmSerializer2.Deserialize<Connections>(sr);
+                var memory = HtmSerializer2.Deserialize<SparseObjectMatrix<Column>>(sr); 
+                Assert.IsTrue((mem.HtmConfig.Memory as SparseObjectMatrix<Column>).Equals(memory));
+            }
+        }
+
+        [TestMethod]
+        public void ConnectionInitTest1()
+        {
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            Connections mem = new Connections(htmConfig);
+
+            SpatialPooler sp = new SpatialPoolerMT();
+            sp.Init(mem);
+
+            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            {
+                //HtmSerializer2.Serialize(mem, null, sw);
+                HtmSerializer2.Serialize(mem.HtmConfig, null, sw);
+            }
+            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            {
+                var content = sr.ReadToEnd();
+            }
+            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            {
+                //var connection = HtmSerializer2.Deserialize<Connections>(sr);
+                var htmConfig1 = HtmSerializer2.Deserialize<HtmConfig>(sr); 
+                Assert.IsTrue(mem.HtmConfig.Equals(htmConfig1));
             }
         }
 

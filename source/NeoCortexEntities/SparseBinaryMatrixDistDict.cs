@@ -380,6 +380,7 @@ namespace NeoCortexApi.Entities
         {
             return HtmSerializer2.DeserializeObject<SparseBinaryMatrix>(sr, name);
         }
+
         #endregion
     }
 }

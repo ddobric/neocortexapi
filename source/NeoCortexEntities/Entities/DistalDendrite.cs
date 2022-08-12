@@ -338,7 +338,7 @@ namespace NeoCortexApi.Entities
             if (cell != null && isCellsSerialized.Contains(cell.HashCode()) == false)
             {
                 isCellsSerialized.Add(cell.HashCode());
-                HtmSerializer2.Serialize((obj as DistalDendrite).ParentCell, nameof(DistalDendrite.ParentCell), sw, ignoreMembers);
+                HtmSerializer2.Serialize((obj as DistalDendrite).ParentCell, nameof(DistalDendrite.ParentCell), sw, ignoreMembers: ignoreMembers);
             }
         }
 

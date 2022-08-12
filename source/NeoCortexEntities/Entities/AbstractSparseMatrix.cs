@@ -16,7 +16,7 @@ namespace NeoCortexApi.Entities
     /// at construction time and immutable - matrix fixed size data structure.
     /// </summary>
     /// <typeparam name="T"></typeparam>    
-    public abstract class AbstractSparseMatrix<T> : AbstractFlatMatrix<T>, ISparseMatrix<T>, ISerializable
+    public abstract class AbstractSparseMatrix<T> : AbstractFlatMatrix<T>, ISparseMatrix<T>
     {
         public AbstractSparseMatrix()
         {
@@ -209,15 +209,6 @@ namespace NeoCortexApi.Entities
             throw new NotImplementedException();
         }
 
-        public new void Serialize(object obj, string name, StreamWriter sw)
-        {
-            HtmSerializer2.SerializeObject(obj, name, sw);
-        }
-
-        public static new object Deserialize(StreamReader sr, string name)
-        {
-            return HtmSerializer2.DeserializeObject<AbstractSparseMatrix<T>>(sr, name);
-        }
         #endregion
     }
 }

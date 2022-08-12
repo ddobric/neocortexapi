@@ -16,7 +16,7 @@ namespace NeoCortexApi.Entities
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
-    public class InMemoryDistributedDictionary<TKey, TValue> : IDistributedDictionary<TKey, TValue>
+    public class InMemoryDistributedDictionary<TKey, TValue> : IDistributedDictionary<TKey, TValue>, ISerializable
     {
         private Dictionary<TKey, TValue>[] dictList;
 
@@ -535,6 +535,85 @@ namespace NeoCortexApi.Entities
             }
             return newDict;
 
+        }
+
+        public void Serialize(object obj, string name, StreamWriter sw)
+        {
+            HtmSerializer2.Serialize(this.numElements, "numElements", sw);
+            HtmSerializer2.Serialize(this.currentDictIndex, "currentDictIndex", sw);
+            HtmSerializer2.Serialize(this.currentIndex, "currentIndex", sw);
+            HtmSerializer2.Serialize(this.htmConfig, "htmConfig", sw);
+
+            HtmSerializer2.Serialize(this.dictList, "dictList", sw);
+        }
+
+        public static object Deserialize(StreamReader sr, string propName)
+        {
+            int numElements = 0;
+            int currentDictIndex = 0;
+            int currentIndex = 0;
+            HtmConfig htmConfig = null;
+            Dictionary<TKey, TValue>[] dictList = null;
+
+            while (sr.Peek() > 0)
+            {
+                string content = sr.ReadLine();
+                if (content.StartsWith("Begin") && content.Contains(propName))
+                {
+                    continue;
+                }
+                if (content.StartsWith("End") && content.Contains(propName))
+                {
+                    break;
+                }
+
+                if (content.Contains("numElements"))
+                {
+                    numElements = HtmSerializer2.Deserialize<int>(sr, "numElements");
+                }
+                else if (content.Contains("currentDictIndex"))
+                {
+                    currentDictIndex = HtmSerializer2.Deserialize<int>(sr, "currentDictIndex");
+                }
+                else if (content.Contains("currentIndex"))
+                {
+                    currentIndex = HtmSerializer2.Deserialize<int>(sr, "currentIndex");
+                }
+                else if (content.Contains("htmConfig"))
+                {
+                    htmConfig = HtmSerializer2.Deserialize<HtmConfig>(sr, "htmConfig");
+                }
+                else if (content.Contains("dictList"))
+                {
+                    dictList = HtmSerializer2.Deserialize<Dictionary<TKey, TValue>[]>(sr, "dictList");
+                }
+            }
+            var inMemDict = new InMemoryDistributedDictionary<TKey, TValue>();
+            inMemDict.numElements = numElements;
+            inMemDict.currentIndex = currentIndex;
+            inMemDict.htmConfig = htmConfig;
+            inMemDict.dictList = dictList;
+
+            return inMemDict;
+
+            //var numElements = HtmSerializer2.Deserialize<int>(sr, "numElements");
+            //sr.ReadLine();
+            //var currentDictIndex = HtmSerializer2.Deserialize<int>(sr, "currentDictIndex");
+            //sr.ReadLine();
+            //var currentIndex = HtmSerializer2.Deserialize<int>(sr, "currentIndex");
+            //sr.ReadLine();
+            //var htmConfig = HtmSerializer2.Deserialize<HtmConfig>(sr, "htmConfig");
+            //sr.ReadLine();
+            //var dictList = HtmSerializer2.Deserialize<Dictionary<TKey, TValue>[]>(sr, "dictList");
+
+            //var inMemDict = new InMemoryDistributedDictionary<TKey, TValue>();
+            //inMemDict.numElements = numElements;
+            //inMemDict.currentIndex = currentIndex;
+            //inMemDict.htmConfig = htmConfig;
+            //inMemDict.dictList = dictList;
+
+
+            //return inMemDict;
         }
     }
 }
