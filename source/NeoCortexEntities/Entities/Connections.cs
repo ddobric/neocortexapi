@@ -1566,8 +1566,8 @@ namespace NeoCortexApi.Entities
 
         public static object Deserialize(StreamReader sr, string name)
         {
-            HtmSerializer2.DeserializeObject<Connections>(sr, name);
-            return null;
+            var conn = HtmSerializer2.DeserializeObject<Connections>(sr, name);
+            return conn;
         }
         #endregion
 

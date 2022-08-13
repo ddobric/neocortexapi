@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
+using NeoCortexApi.Types;
 using NeoCortexEntities.NeuroVisualizer;
 using System;
 using System.Collections.Generic;
@@ -293,7 +294,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        //[TestCategory("working")]
+        [TestCategory("working")]
         public void DeserializeConnectionsTest()
         {
             int cellsPerColumnL4 = 20;
@@ -340,19 +341,11 @@ namespace UnitTestsProject
             {
                 var connection = HtmSerializer2.Deserialize<Connections>(sr);
                 Assert.IsTrue(mem.Equals(connection));
-
-                var streamWriter = new StreamWriter($"{TestContext.TestName}1.txt");
-                HtmSerializer2.Serialize(connection, null, streamWriter);
-                streamWriter.Close();
-                var streamReader1 = new StreamReader($"{TestContext.TestName}1.txt");
-                var streamReader2 = new StreamReader($"{TestContext.TestName}.txt");
-                var content1 = streamReader1.ReadToEnd();
-                var content2 = streamReader2.ReadToEnd();
-                Assert.AreEqual(content2, content1);
             }
         }
 
         [TestMethod]
+        [TestCategory("working")]
         public void DeserializeHomeostaticPlasticityTest()
         {
             int cellsPerColumnL4 = 20;
@@ -417,7 +410,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("working")]
-        public void ConnectionInitTest()
+        public void ConnectionInitSparseObjectMatrixTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
             Connections mem = new Connections(htmConfig);
@@ -437,13 +430,14 @@ namespace UnitTestsProject
             using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
             {
                 //var connection = HtmSerializer2.Deserialize<Connections>(sr);
-                var memory = HtmSerializer2.Deserialize<SparseObjectMatrix<Column>>(sr); 
+                var memory = HtmSerializer2.Deserialize<SparseObjectMatrix<Column>>(sr);
                 Assert.IsTrue((mem.HtmConfig.Memory as SparseObjectMatrix<Column>).Equals(memory));
             }
         }
 
         [TestMethod]
-        public void ConnectionInitTest1()
+        [TestCategory("working")]
+        public void ConnectionInitHtmConfigTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
             Connections mem = new Connections(htmConfig);
@@ -463,10 +457,128 @@ namespace UnitTestsProject
             using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
             {
                 //var connection = HtmSerializer2.Deserialize<Connections>(sr);
-                var htmConfig1 = HtmSerializer2.Deserialize<HtmConfig>(sr); 
+                var htmConfig1 = HtmSerializer2.Deserialize<HtmConfig>(sr);
                 Assert.IsTrue(mem.HtmConfig.Equals(htmConfig1));
             }
         }
+
+        [TestMethod]
+        [TestCategory("working")]
+        public void ConnectionInitSPTest()
+        {
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            Connections mem = new Connections(htmConfig);
+
+            SpatialPooler sp = new SpatialPoolerMT();
+            sp.Init(mem);
+
+            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            {
+                //HtmSerializer2.Serialize(mem, null, sw);
+                HtmSerializer2.Serialize(mem, null, sw);
+            }
+            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            {
+                var content = sr.ReadToEnd();
+            }
+            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            {
+                //var connection = HtmSerializer2.Deserialize<Connections>(sr);
+                var connections = HtmSerializer2.Deserialize<Connections>(sr);
+                Assert.IsTrue(mem.Equals(connections));
+            }
+        }
+        
+        [TestMethod]
+        [TestCategory("working")]
+        public void SPTest()
+        {
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            Connections mem = new Connections(htmConfig);
+            var numInputs = 8;
+            HomeostaticPlasticityController hpa_sp_L2 = new HomeostaticPlasticityController(mem, numInputs * 50, (isStable, numPatterns, actColAvg, seenInputs) =>
+            {
+
+            }, numOfCyclesToWaitOnChange: 50);
+            SpatialPooler sp = new SpatialPooler(hpa_sp_L2);
+            sp.Init(mem);
+
+            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            {
+                //HtmSerializer2.Serialize(mem, null, sw);
+                HtmSerializer2.Serialize(sp, null, sw);
+            }
+            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            {
+                var content = sr.ReadToEnd();
+            }
+            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            {
+                //var connection = HtmSerializer2.Deserialize<Connections>(sr);
+                var sp1 = HtmSerializer2.Deserialize<SpatialPooler>(sr);
+                Assert.IsTrue(sp.Equals(sp1));
+            }
+        }
+        
+        [TestMethod]
+        [TestCategory("working")]
+        public void SPMTTest()
+        {
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            Connections mem = new Connections(htmConfig);
+            var numInputs = 8;
+            HomeostaticPlasticityController hpa_sp_L2 = new HomeostaticPlasticityController(mem, numInputs * 50, (isStable, numPatterns, actColAvg, seenInputs) =>
+            {
+
+            }, numOfCyclesToWaitOnChange: 50);
+            SpatialPoolerMT sp = new SpatialPoolerMT(hpa_sp_L2);
+            sp.Init(mem);
+
+            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            {
+                //HtmSerializer2.Serialize(mem, null, sw);
+                HtmSerializer2.Serialize(sp, null, sw);
+            }
+            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            {
+                var content = sr.ReadToEnd();
+            }
+            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            {
+                //var connection = HtmSerializer2.Deserialize<Connections>(sr);
+                var sp1 = HtmSerializer2.Deserialize<SpatialPoolerMT>(sr);
+                Assert.IsTrue(sp.Equals(sp1));
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("working")]
+        public void ConnectionInitTMTest()
+        {
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            Connections mem = new Connections(htmConfig);
+
+            TemporalMemory tm = new TemporalMemory();
+            tm.Init(mem);
+
+            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            {
+                //HtmSerializer2.Serialize(mem, null, sw);
+                HtmSerializer2.Serialize(mem, null, sw);
+            }
+            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            {
+                var content = sr.ReadToEnd();
+            }
+            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            {
+                //var connection = HtmSerializer2.Deserialize<Connections>(sr);
+                var connections = HtmSerializer2.Deserialize<Connections>(sr);
+                Assert.IsTrue(mem.Equals(connections));
+            }
+        }
+
+        
 
 
         private HtmConfig SetupHtmConfigParameters()
@@ -492,5 +604,23 @@ namespace UnitTestsProject
 
             return htmConfig;
         }
+
+        [TestMethod]
+        [DataRow(12)]
+        public void TestThreadSafeRandom(int counter)
+        {
+            var rand1 = new ThreadSafeRandom(42);
+            var rand2 = new ThreadSafeRandom(42, counter);
+
+            for (int i = 0; i < counter; i++)
+            {
+                rand1.NextDouble();
+            }
+
+            Assert.AreEqual(rand2.Next(), rand1.Next());
+
+        }
+
+
     }
 }

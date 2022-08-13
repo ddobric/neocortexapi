@@ -201,6 +201,14 @@ namespace NeoCortexApi.Entities
                 backingArray.SetValue(0, rowIndex, i);
             }
         }
+        public override bool Equals(object obj)
+        {
+            var array = obj as InMemoryArray;
+            if (array == null)
+                return false;
+            return this.Equals(array);
+        }
+
         public bool Equals(InMemoryArray obj)
         {
             if (this == obj)
@@ -208,17 +216,39 @@ namespace NeoCortexApi.Entities
 
             if (obj == null)
                 return false;
-            if (this.dimensions != obj.dimensions)
+            if (!this.dimensions.SequenceEqual(obj.dimensions))
                 return false;
-            else if (this.backingArray != obj.backingArray)
+            else if (!ArrayEquals(this.backingArray, obj.backingArray))
                 return false;
             else if (this.numOfNodes != obj.numOfNodes)
                 return false;
             else if (this.Rank != obj.Rank)
                 return false;
-            else if (this.Dimensions != obj.Dimensions)
+            else if (!this.Dimensions.SequenceEqual(obj.Dimensions))
                 return false;
 
+            return true;
+        }
+
+        private bool ArrayEquals(Array array1, Array array2)
+        {
+            if (array1 == null)
+                return array2 == null;
+            if (array2 == null)
+                return false;
+
+            if (array1.Rank != array2.Rank)
+                return false;
+            for (int r = 0; r < array1.Rank; r++)
+            {
+                if (array1.GetLength(r) != array2.GetLength(r))
+                    return false;
+            }
+            for (int i = 0; i < array1.Length; i++)
+            {
+                if (!array1.GetValue(i).Equals(array2.GetValue(i)))
+                    return false;
+            }
             return true;
         }
         #region Serialization
@@ -227,7 +257,7 @@ namespace NeoCortexApi.Entities
             HtmSerializer2 ser = new HtmSerializer2();
 
             ser.SerializeBegin(nameof(InMemoryArray), writer);
-            
+
             ser.SerializeValue(this.backingArray, writer);
             ser.SerializeValue(this.dimensions, writer);
             ser.SerializeValue(this.numOfNodes, writer);

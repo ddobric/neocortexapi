@@ -602,8 +602,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (Random != null && obj.Random != null)
             {
-
-                if (obj.Random.Next() != Random.Next())
+                if (!obj.Random.Equals(Random))
                     return false;
             }
 
@@ -1006,38 +1005,18 @@ namespace NeoCortexApi.Entities
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            var excludeMembers = new List<string>
-            {
-                nameof(HtmConfig.Random),
-                nameof(HtmConfig.inputMatrix),
-                nameof(HtmConfig.InputMatrix),
-                nameof(HtmConfig.memory),
-                nameof(HtmConfig.Memory)
-            };
-            //excludeMembers = null;
-            HtmSerializer2.SerializeObject(obj, name, sw, excludeMembers);
-
-            var htmConfig = obj as HtmConfig;
-            HtmSerializer2.Serialize(htmConfig.RandomGenSeed, nameof(HtmConfig.Random), sw);
-            //HtmSerializer2.Serialize(htmConfig.InputMatrix, nameof(HtmConfig.InputMatrix), sw);
-            //HtmSerializer2.Serialize(htmConfig.inputMatrix, nameof(HtmConfig.inputMatrix), sw);
-            //HtmSerializer2.Serialize(htmConfig.memory, nameof(HtmConfig.memory), sw);
-            //HtmSerializer2.Serialize(htmConfig.Memory, nameof(HtmConfig.Memory), sw);
-
+            HtmSerializer2.SerializeObject(obj, name, sw);
         }
 
         public static object Deserialize(StreamReader sr, string name)
         {
-            var excludeMembers = new List<string>
+            var exculdeMembers = new List<string> { nameof(HtmConfig.Random) };
+            var htmConfig = HtmSerializer2.DeserializeObject<HtmConfig>(sr, name, exculdeMembers, (config, propName) =>
             {
-                nameof(HtmConfig.Random)
-            };
-            var htmConfig = HtmSerializer2.DeserializeObject<HtmConfig>(sr, name, excludeMembers, (config, propertyName) =>
-            {
-                if (propertyName == nameof(HtmConfig.Random))
+                if (propName == nameof(HtmConfig.Random))
                 {
-                    var seed = HtmSerializer2.Deserialize<int>(sr, propertyName);
-                    config.Random = new ThreadSafeRandom(seed);
+                    var random = HtmSerializer2.Deserialize<ThreadSafeRandom>(sr, propName);
+                    config.Random = random;
                 }
             });
             return htmConfig;

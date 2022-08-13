@@ -280,6 +280,13 @@ namespace NeoCortexApi.Entities
         {
             throw new NotImplementedException();
         }
+        public override bool Equals(object obj)
+        {
+            var matrix = obj as SparseBinaryMatrix;
+            if (matrix == null)
+                return false;
+            return this.Equals(matrix);
+        }
         public bool Equals(SparseBinaryMatrix obj)
         {
             if (this == obj)
@@ -303,7 +310,7 @@ namespace NeoCortexApi.Entities
             }
             else if (!ModuleTopology.Equals(obj.ModuleTopology))
                 return false;
-            if (this.trueCounts != obj.trueCounts)
+            if (!this.trueCounts.SequenceEqual(obj.trueCounts))
                 return false;
 
             return true;

@@ -49,6 +49,11 @@ namespace NeoCortexApi
             m_HomeoPlastAct = homeostaticPlasticityActivator;
         }
 
+        public SpatialPooler()
+        {
+
+        }
+
         private Connections connections;
 
         /// <summary>
@@ -1403,6 +1408,16 @@ namespace NeoCortexApi
 
             return sp;
         }
+
+        //public void Serialize(object obj, string name, StreamWriter sw)
+        //{
+        //    HtmSerializer2.SerializeObject(obj, name, sw);
+        //}
+
+        //public static object Deserialize(StreamReader sr, string propName)
+        //{
+        //    return HtmSerializer2.DeserializeObject<SpatialPooler>(sr, propName);
+        //}
     }
 }
 

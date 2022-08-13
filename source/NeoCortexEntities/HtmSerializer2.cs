@@ -107,6 +107,11 @@ namespace NeoCortexApi.Entities
             }
             var type = obj.GetType();
 
+            if (name == "Random")
+            {
+
+            }
+
             bool isSerializeWithType = propertyType != null && (propertyType.IsInterface || propertyType.IsAbstract);
 
             SerializeBegin(name, sw, isSerializeWithType ? type : null);
@@ -386,8 +391,7 @@ namespace NeoCortexApi.Entities
                 return;
             var type = obj.GetType();
 
-            var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-
+            List<PropertyInfo> properties = GetProperties(type);
             foreach (var property in properties)
             {
                 if (ignoreMembers != null && ignoreMembers.Contains(property.Name))
@@ -402,8 +406,7 @@ namespace NeoCortexApi.Entities
                 }
             }
 
-            var fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Where(f => f.GetCustomAttribute<CompilerGeneratedAttribute>() == null);
-
+            List<FieldInfo> fields = GetFields(type);
             foreach (var field in fields)
             {
                 if (ignoreMembers != null && ignoreMembers.Contains(field.Name))
@@ -413,6 +416,28 @@ namespace NeoCortexApi.Entities
                 var value = field.GetValue(obj);
                 Serialize(value, field.Name, sw, field.FieldType, ignoreMembers: ignoreMembers);
             }
+        }
+
+        private static List<FieldInfo> GetFields(Type type)
+        {
+            var fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Where(f => f.GetCustomAttribute<CompilerGeneratedAttribute>() == null).ToList();
+            if (type.BaseType != null)
+            {
+                fields.AddRange(type.BaseType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Where(f => f.GetCustomAttribute<CompilerGeneratedAttribute>() == null));
+            }
+
+            return fields;
+        }
+
+        private static List<PropertyInfo> GetProperties(Type type)
+        {
+            var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).ToList();
+            if (type.BaseType != null)
+            {
+                properties.AddRange(type.BaseType.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic));
+            }
+
+            return properties;
         }
 
         private static void SerializeDistalDendrite(object obj, string name, StreamWriter sw)
@@ -727,8 +752,8 @@ namespace NeoCortexApi.Entities
                 return obj;
             }
 
-            var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            var fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Where(f => f.GetCustomAttribute<CompilerGeneratedAttribute>() == null);
+            var properties = GetProperties(type);
+            var fields = GetFields(type);
             while (sr.Peek() > 0)
             {
                 if (obj == null)
