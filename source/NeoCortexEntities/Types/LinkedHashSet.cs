@@ -328,8 +328,10 @@ namespace NeoCortexApi.Types
             HtmSerializer2.Serialize(this.list, null, sw);
         }
 
-        public static object Deserialize(StreamReader sr, string name)
+        public static object Deserialize<T1>(StreamReader sr, string name)
         {
+            if (typeof(T1) != typeof(LinkedHashSet<T>))
+                return null;
             var list = HtmSerializer2.Deserialize<List<T>>(sr, null);
             return new LinkedHashSet<T>(list);
         }

@@ -580,11 +580,11 @@ namespace NeoCortexApi
             HtmSerializer2.SerializeObject(obj, name, sw, excludeEntries);
         }
 
-        public static object Deserialize(StreamReader sr, string name)
+        public static object Deserialize<T>(StreamReader sr, string name)
         {
             var excludeEntries = new List<string> { nameof(m_OnStabilityStatusChanged), nameof(OnStabilityStatusChanged) };
 
-            var controller = HtmSerializer2.DeserializeObject<HomeostaticPlasticityController>(sr, name, excludeEntries);
+            var controller = HtmSerializer2.DeserializeObject<T>(sr, name, excludeEntries);
 
             return controller;
         }

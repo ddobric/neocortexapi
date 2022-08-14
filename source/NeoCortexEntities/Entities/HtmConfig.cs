@@ -14,7 +14,7 @@ namespace NeoCortexApi.Entities
     /// HTM configuration.
     /// Also sent from Akka-client to Akka Actor.
     /// </summary>
-    public class HtmConfig : ISerializable
+    public class HtmConfig /*: ISerializable*/
     {
         /// <summary>
         /// Default constructor with the default set of parameters.
@@ -1003,24 +1003,23 @@ namespace NeoCortexApi.Entities
             return htmConfig;
         }
 
-        public void Serialize(object obj, string name, StreamWriter sw)
-        {
-            HtmSerializer2.SerializeObject(obj, name, sw);
-        }
+        //public void Serialize(object obj, string name, StreamWriter sw)
+        //{
+        //    HtmSerializer2.SerializeObject(obj, name, sw);
+        //}
 
-        public static object Deserialize(StreamReader sr, string name)
-        {
-            var exculdeMembers = new List<string> { nameof(HtmConfig.Random) };
-            var htmConfig = HtmSerializer2.DeserializeObject<HtmConfig>(sr, name, exculdeMembers, (config, propName) =>
-            {
-                if (propName == nameof(HtmConfig.Random))
-                {
-                    var random = HtmSerializer2.Deserialize<ThreadSafeRandom>(sr, propName);
-                    config.Random = random;
-                }
-            });
-            return htmConfig;
-        }
+        //public static object Deserialize(StreamReader sr, string name)
+        //{
+        //    var htmConfig = HtmSerializer2.DeserializeObject<HtmConfig>(sr, name, exculdeMembers, (config, propName) =>
+        //    {
+        //        //if (propName == nameof(HtmConfig.Random))
+        //        //{
+        //        //    var random = HtmSerializer2.Deserialize<ThreadSafeRandom>(sr, propName);
+        //        //    config.Random = random;
+        //        //}
+        //    });
+        //    return htmConfig;
+        //}
         #endregion
 
     }

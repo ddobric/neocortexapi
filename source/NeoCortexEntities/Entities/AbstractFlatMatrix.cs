@@ -10,7 +10,7 @@ namespace NeoCortexApi.Entities
     /// <summary>
     /// Provides common generic independent calculation functions.
     /// </summary>
-    public class AbstractFlatMatrix : ISerializable
+    public class AbstractFlatMatrix /*: ISerializable*/
     {
         public AbstractFlatMatrix()
         {
@@ -120,15 +120,15 @@ namespace NeoCortexApi.Entities
             return dimensionMultiples;
         }
 
-        public void Serialize(object obj, string name, StreamWriter sw)
-        {
-            HtmSerializer2.SerializeObject(obj, name, sw);
-        }
+        //public void Serialize(object obj, string name, StreamWriter sw)
+        //{
+        //    HtmSerializer2.SerializeObject(obj, name, sw);
+        //}
 
-        public static object Deserialize(StreamReader sr, string name)
-        {
-            return HtmSerializer2.DeserializeObject<AbstractFlatMatrix>(sr, name);
-        }
+        //public static object Deserialize(StreamReader sr, string name)
+        //{
+        //    return HtmSerializer2.DeserializeObject<AbstractFlatMatrix>(sr, name);
+        //}
     }
 
 

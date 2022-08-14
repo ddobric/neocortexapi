@@ -252,8 +252,10 @@ namespace NeoCortexApi.Entities
         {
             HtmSerializer2.SerializeObject(obj, name, sw, new List<string> { nameof(DistalDendrite.ParentCell)});
         }
-        public static object Deserialize(StreamReader sr, string name)
+        public static object Deserialize<T>(StreamReader sr, string name)
         {
+            if (typeof(T) != typeof(Cell))
+                return null;
             var cell = HtmSerializer2.DeserializeObject<Cell>(sr, name);
 
             foreach (var distalDentrite in cell.DistalDendrites)

@@ -342,9 +342,9 @@ namespace NeoCortexApi.Entities
             }
         }
 
-        public static object Deserialize(StreamReader sr, string name)
+        public static object Deserialize<T>(StreamReader sr, string name)
         {
-            var distal = HtmSerializer2.DeserializeObject<DistalDendrite>(sr, name);
+            var distal = HtmSerializer2.DeserializeObject<T>(sr, name);
             return distal;
         }
     }

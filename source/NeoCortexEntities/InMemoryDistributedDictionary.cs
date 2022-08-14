@@ -547,7 +547,7 @@ namespace NeoCortexApi.Entities
             HtmSerializer2.Serialize(this.dictList, "dictList", sw);
         }
 
-        public static object Deserialize(StreamReader sr, string propName)
+        public static object Deserialize<T>(StreamReader sr, string propName)
         {
             int numElements = 0;
             int currentDictIndex = 0;
@@ -595,25 +595,6 @@ namespace NeoCortexApi.Entities
             inMemDict.dictList = dictList;
 
             return inMemDict;
-
-            //var numElements = HtmSerializer2.Deserialize<int>(sr, "numElements");
-            //sr.ReadLine();
-            //var currentDictIndex = HtmSerializer2.Deserialize<int>(sr, "currentDictIndex");
-            //sr.ReadLine();
-            //var currentIndex = HtmSerializer2.Deserialize<int>(sr, "currentIndex");
-            //sr.ReadLine();
-            //var htmConfig = HtmSerializer2.Deserialize<HtmConfig>(sr, "htmConfig");
-            //sr.ReadLine();
-            //var dictList = HtmSerializer2.Deserialize<Dictionary<TKey, TValue>[]>(sr, "dictList");
-
-            //var inMemDict = new InMemoryDistributedDictionary<TKey, TValue>();
-            //inMemDict.numElements = numElements;
-            //inMemDict.currentIndex = currentIndex;
-            //inMemDict.htmConfig = htmConfig;
-            //inMemDict.dictList = dictList;
-
-
-            //return inMemDict;
         }
     }
 }

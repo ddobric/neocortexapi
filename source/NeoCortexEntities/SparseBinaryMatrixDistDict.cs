@@ -17,7 +17,7 @@ namespace NeoCortexApi.Entities
     /// <remarks>
     /// Author cogmission
     /// </remarks>
-    public class SparseBinaryMatrix : AbstractSparseBinaryMatrix, ISerializable
+    public class SparseBinaryMatrix : AbstractSparseBinaryMatrix/*, ISerializable*/
     {
         /// <summary>
         /// Holds the matrix with connections between columns and inputs.
@@ -378,15 +378,15 @@ namespace NeoCortexApi.Entities
             return sparse;
         }
 
-        public new void Serialize(object obj, string name, StreamWriter sw)
-        {
-            HtmSerializer2.SerializeObject(obj, name, sw);
-        }
+        //public new void Serialize(object obj, string name, StreamWriter sw)
+        //{
+        //    HtmSerializer2.SerializeObject(obj, name, sw);
+        //}
 
-        public static new object Deserialize(StreamReader sr, string name)
-        {
-            return HtmSerializer2.DeserializeObject<SparseBinaryMatrix>(sr, name);
-        }
+        //public static new object Deserialize(StreamReader sr, string name)
+        //{
+        //    return HtmSerializer2.DeserializeObject<SparseBinaryMatrix>(sr, name);
+        //}
 
         #endregion
     }

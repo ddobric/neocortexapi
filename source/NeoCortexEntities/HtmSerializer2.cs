@@ -107,12 +107,7 @@ namespace NeoCortexApi.Entities
             }
             var type = obj.GetType();
 
-            if (name == "Random")
-            {
-
-            }
-
-            bool isSerializeWithType = propertyType != null && (propertyType.IsInterface || propertyType.IsAbstract);
+            bool isSerializeWithType = propertyType != null && (propertyType.IsInterface || propertyType.IsAbstract || propertyType != type);
 
             SerializeBegin(name, sw, isSerializeWithType ? type : null);
 
@@ -394,13 +389,23 @@ namespace NeoCortexApi.Entities
             List<PropertyInfo> properties = GetProperties(type);
             foreach (var property in properties)
             {
-                if (ignoreMembers != null && ignoreMembers.Contains(property.Name))
+                if (ignoreMembers != null && ignoreMembers.Contains(property.Name) || property.CanWrite == false)
                 {
                     continue;
                 }
                 if (property.CanRead && property.Name != "Item" && property.PropertyType != typeof(object))
                 {
-                    var value = property.GetValue(obj, null);
+                    object value = null;
+
+                    try
+                    {
+                        value = property.GetValue(obj, null);
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine($"**Warning: Type {type.Name} does not implement property {property.Name}");
+                        continue;
+                    }
 
                     Serialize(value, property.Name, sw, property.PropertyType, ignoreMembers: ignoreMembers);
                 }
@@ -413,8 +418,26 @@ namespace NeoCortexApi.Entities
                 {
                     continue;
                 }
-                var value = field.GetValue(obj);
+
+                object value = null;
+
+                try
+                {
+                    value = field.GetValue(obj);
+                }
+                catch (NotImplementedException)
+                {
+                    Console.WriteLine($"**Warning: Type {type.Name} does not implement property {field.Name}");
+                    continue;
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+
                 Serialize(value, field.Name, sw, field.FieldType, ignoreMembers: ignoreMembers);
+                //Serialize(value, property.Name, sw, property.PropertyType, ignoreMembers: ignoreMembers);
+                //var value = field.GetValue(obj);
             }
         }
 
@@ -488,13 +511,17 @@ namespace NeoCortexApi.Entities
 
             if (type.GetInterfaces().FirstOrDefault(i => i.FullName.Equals(typeof(ISerializable).FullName)) != null)
             {
-                var methods = type.GetMethods();
+                var methods = type.GetMethods().ToList();
+                if (type.BaseType != null)
+                {
+                    methods.AddRange(type.BaseType.GetMethods());
+                }
 
                 var deserializeMethod = methods.FirstOrDefault(m => m.Name == nameof(ISerializable.Deserialize) && m.IsStatic && m.GetParameters().Length == 2);
                 if (deserializeMethod == null)
                     throw new NotImplementedException($"Deserialize method is not implemented in the target type {type.Name}");
 
-                obj = (T)deserializeMethod.Invoke(null, new object[] { sr, propName });
+                obj = (T)deserializeMethod.MakeGenericMethod(type).Invoke(null, new object[] { sr, propName });
                 return obj;
             }
 
@@ -773,7 +800,7 @@ namespace NeoCortexApi.Entities
                 }
 
                 var components = content.Split(' ');
-                
+
                 if (content.StartsWith("Begin"))
                 {
                     if (components.Length == 2)

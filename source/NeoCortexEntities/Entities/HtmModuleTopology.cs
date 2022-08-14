@@ -12,7 +12,7 @@ namespace NeoCortexApi.Entities
     /// <summary>
     /// Used as container for properties, which define topology of HTM module.
     /// </summary>
-    public class HtmModuleTopology : ISerializable
+    public class HtmModuleTopology /*: ISerializable*/
     {
         public HtmModuleTopology()
         {
@@ -128,15 +128,15 @@ namespace NeoCortexApi.Entities
             return htm;
         }
 
-        public void Serialize(object obj, string name, StreamWriter sw)
-        {
-            HtmSerializer2.SerializeObject(obj, name, sw);
-        }
+        //public void Serialize(object obj, string name, StreamWriter sw)
+        //{
+        //    HtmSerializer2.SerializeObject(obj, name, sw);
+        //}
 
-        public static object Deserialize(StreamReader sr, string name)
-        {
-            return HtmSerializer2.DeserializeObject<HtmModuleTopology>(sr, name);
-        }
+        //public static object Deserialize(StreamReader sr, string name)
+        //{
+        //    return HtmSerializer2.DeserializeObject<HtmModuleTopology>(sr, name);
+        //}
         #endregion
 
     }

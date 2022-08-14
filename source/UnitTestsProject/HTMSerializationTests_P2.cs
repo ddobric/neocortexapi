@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
+using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Types;
 using NeoCortexEntities.NeuroVisualizer;
@@ -420,7 +421,6 @@ namespace UnitTestsProject
 
             using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
             {
-                //HtmSerializer2.Serialize(mem, null, sw);
                 HtmSerializer2.Serialize(mem.HtmConfig.Memory, null, sw);
             }
             using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
@@ -429,7 +429,6 @@ namespace UnitTestsProject
             }
             using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
             {
-                //var connection = HtmSerializer2.Deserialize<Connections>(sr);
                 var memory = HtmSerializer2.Deserialize<SparseObjectMatrix<Column>>(sr);
                 Assert.IsTrue((mem.HtmConfig.Memory as SparseObjectMatrix<Column>).Equals(memory));
             }
@@ -456,7 +455,6 @@ namespace UnitTestsProject
             }
             using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
             {
-                //var connection = HtmSerializer2.Deserialize<Connections>(sr);
                 var htmConfig1 = HtmSerializer2.Deserialize<HtmConfig>(sr);
                 Assert.IsTrue(mem.HtmConfig.Equals(htmConfig1));
             }
@@ -474,7 +472,6 @@ namespace UnitTestsProject
 
             using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
             {
-                //HtmSerializer2.Serialize(mem, null, sw);
                 HtmSerializer2.Serialize(mem, null, sw);
             }
             using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
@@ -483,7 +480,6 @@ namespace UnitTestsProject
             }
             using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
             {
-                //var connection = HtmSerializer2.Deserialize<Connections>(sr);
                 var connections = HtmSerializer2.Deserialize<Connections>(sr);
                 Assert.IsTrue(mem.Equals(connections));
             }
@@ -563,7 +559,6 @@ namespace UnitTestsProject
 
             using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
             {
-                //HtmSerializer2.Serialize(mem, null, sw);
                 HtmSerializer2.Serialize(mem, null, sw);
             }
             using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
@@ -572,13 +567,44 @@ namespace UnitTestsProject
             }
             using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
             {
-                //var connection = HtmSerializer2.Deserialize<Connections>(sr);
                 var connections = HtmSerializer2.Deserialize<Connections>(sr);
                 Assert.IsTrue(mem.Equals(connections));
             }
         }
 
-        
+        [TestMethod]
+        [TestCategory("working")]
+        public void EncoderTest()
+        {
+            int inputBits = 100;
+            double max = 20;
+            Dictionary<string, object> settings = new Dictionary<string, object>()
+            {
+                { "W", 15},
+                { "N", inputBits},
+                { "Radius", -1.0},
+                { "MinVal", 0.0},
+                { "Periodic", false},
+                { "Name", "scalar"},
+                { "ClipInput", false},
+                { "MaxVal", max}
+            };
+
+            ScalarEncoder encoder = new ScalarEncoder(settings);
+            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            {
+                HtmSerializer2.Serialize(encoder, null, sw);
+            }
+            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            {
+                var content = sr.ReadToEnd();
+            }
+            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            {
+                var scalarEncoder = HtmSerializer2.Deserialize<ScalarEncoder>(sr);
+                Assert.IsTrue(encoder.Equals(scalarEncoder));
+            }
+        }
 
 
         private HtmConfig SetupHtmConfigParameters()

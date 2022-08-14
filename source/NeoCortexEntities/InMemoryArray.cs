@@ -315,10 +315,10 @@ namespace NeoCortexApi.Entities
             HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);
         }
 
-        public static object Deserialize(StreamReader sr, string name)
+        public static object Deserialize<T>(StreamReader sr, string name)
         {
             var ignoreMembers = new List<string> { "Item" };
-            return HtmSerializer2.DeserializeObject<InMemoryArray>(sr, name, ignoreMembers);
+            return HtmSerializer2.DeserializeObject<T>(sr, name, ignoreMembers);
         }
         #endregion
     }

@@ -92,8 +92,10 @@ namespace NeoCortexApi
             HtmSerializer2.Serialize(random.counter, nameof(ThreadSafeRandom.counter), sw);
         }
 
-        public static object Deserialize(StreamReader sr, string name)
+        public static object Deserialize<T>(StreamReader sr, string name)
         {
+            if (typeof(T) != typeof(ThreadSafeRandom))
+                return null;
             int seed = default;
             int counter = default;
 
