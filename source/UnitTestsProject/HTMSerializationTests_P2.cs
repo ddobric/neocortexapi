@@ -2,6 +2,7 @@
 using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
+using NeoCortexApi.Network;
 using NeoCortexApi.Types;
 using NeoCortexEntities.NeuroVisualizer;
 using System;
@@ -484,7 +485,7 @@ namespace UnitTestsProject
                 Assert.IsTrue(mem.Equals(connections));
             }
         }
-        
+
         [TestMethod]
         [TestCategory("working")]
         public void SPTest()
@@ -515,7 +516,7 @@ namespace UnitTestsProject
                 Assert.IsTrue(sp.Equals(sp1));
             }
         }
-        
+
         [TestMethod]
         [TestCategory("working")]
         public void SPMTTest()
@@ -574,6 +575,31 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("working")]
+        public void TMTest()
+        {
+            HtmConfig htmConfig = SetupHtmConfigParameters();
+            Connections mem = new Connections(htmConfig);
+
+            TemporalMemory tm = new TemporalMemory();
+            tm.Init(mem);
+
+            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            {
+                HtmSerializer2.Serialize(tm, null, sw);
+            }
+            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            {
+                var content = sr.ReadToEnd();
+            }
+            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            {
+                var tm1 = HtmSerializer2.Deserialize<TemporalMemory>(sr);
+                Assert.IsTrue(tm.Equals(tm1));
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("working")]
         public void EncoderTest()
         {
             int inputBits = 100;
@@ -603,6 +629,109 @@ namespace UnitTestsProject
             {
                 var scalarEncoder = HtmSerializer2.Deserialize<ScalarEncoder>(sr);
                 Assert.IsTrue(encoder.Equals(scalarEncoder));
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("working")]
+        public void CortexLayerTest()
+        {
+            int inputBits = 100;
+            double max = 20;
+            int numColumns = 1024;
+            Dictionary<string, object> settings = new Dictionary<string, object>()
+            {
+                { "W", 15},
+                { "N", inputBits},
+                { "Radius", -1.0},
+                { "MinVal", 0.0},
+                { "Periodic", false},
+                { "Name", "scalar"},
+                { "ClipInput", false},
+                { "MaxVal", max}
+            };
+
+            EncoderBase encoder = new ScalarEncoder(settings);
+            HtmConfig cfg = new HtmConfig(new int[] { inputBits }, new int[] { numColumns })
+            {
+                Random = new ThreadSafeRandom(42),
+
+                CellsPerColumn = 25,
+                GlobalInhibition = true,
+                LocalAreaDensity = -1,
+                NumActiveColumnsPerInhArea = 0.02 * numColumns,
+                PotentialRadius = (int)(0.15 * inputBits),
+                //InhibitionRadius = 15,
+
+                MaxBoost = 10.0,
+                DutyCyclePeriod = 25,
+                MinPctOverlapDutyCycles = 0.75,
+                MaxSynapsesPerSegment = (int)(0.02 * numColumns),
+
+                ActivationThreshold = 15,
+                ConnectedPermanence = 0.5,
+
+                // Learning is slower than forgetting in this case.
+                PermanenceDecrement = 0.25,
+                PermanenceIncrement = 0.15,
+
+                // Used by punishing of segments.
+                PredictedSegmentDecrement = 0.1
+            };
+            var mem = new Connections(cfg);
+            bool isInStableState = false;
+
+            CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
+
+            //TemporalMemory tm = new TemporalMemory();
+
+            // For more information see following paper: https://www.scitepress.org/Papers/2021/103142/103142.pdf
+            HomeostaticPlasticityController hpc = new HomeostaticPlasticityController(mem, 10 * 150, (isStable, numPatterns, actColAvg, seenInputs) =>
+            {
+                if (isStable)
+                {
+                    // Event should be fired when entering the stable state.
+                    //Debug.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+
+                }
+                else
+                {
+                    // Ideal SP should never enter unstable state after stable state.
+                    //Debug.WriteLine($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+                }
+
+                // We are not learning in instable state.
+                isInStableState = isStable;
+
+                // Clear active and predictive cells.
+                //tm.Reset(mem);
+            }, numOfCyclesToWaitOnChange: 50);
+
+
+            SpatialPoolerMT sp = new SpatialPoolerMT(hpc);
+            sp.Init(mem);
+            //tm.Init(mem);
+
+            // Please note that we do not add here TM in the layer.
+            // This is omitted for practical reasons, because we first eneter the newborn-stage of the algorithm
+            // In this stage we want that SP get boosted and see all elements before we start learning with TM.
+            // All would also work fine with TM in layer, but it would work much slower.
+            // So, to improve the speed of experiment, we first ommit the TM and then after the newborn-stage we add it to the layer.
+            layer1.HtmModules.Add("encoder", encoder);
+            layer1.HtmModules.Add("sp", sp);
+
+            //using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            //{
+            //    HtmSerializer2.Serialize(layer1, null, sw);
+            //}
+            //using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            //{
+            //    var content = sr.ReadToEnd();
+            //}
+            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            {
+                var cortexLayer = HtmSerializer2.Deserialize<CortexLayer<object, object>>(sr);
+                Assert.IsTrue(layer1.Equals(cortexLayer));
             }
         }
 

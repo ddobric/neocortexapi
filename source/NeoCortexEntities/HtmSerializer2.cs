@@ -219,7 +219,7 @@ namespace NeoCortexApi.Entities
                     foreach (var property in properties)
                     {
                         var value = property.GetValue(item, null);
-                        Serialize(value, property.Name, sw, ignoreMembers: ignoreMembers);
+                        Serialize(value, property.Name, sw, property.PropertyType, ignoreMembers: ignoreMembers);
                     }
                     SerializeEnd("DictionaryItem", sw, null);
                 }
@@ -318,7 +318,7 @@ namespace NeoCortexApi.Entities
 
             foreach (var item in enumerable)
             {
-                Serialize(item, "CollectionItem", sw, ignoreMembers: ignoreMembers);
+                Serialize(item, "CollectionItem", sw, obj.GetType().GetElementType(), ignoreMembers: ignoreMembers);
             }
         }
 
@@ -354,8 +354,8 @@ namespace NeoCortexApi.Entities
                 SerializeEnd($"Dim{i}", sw, null);
             }
 
-            var defaultValue = GetDefault(array.GetType().GetElementType());
-
+            var elementType = array.GetType().GetElementType();
+            var defaultValue = GetDefault(elementType);
             for (int i = 0; i < array.GetLength(0); i++)
             {
                 for (int j = 0; j < array.GetLength(1); j++)
@@ -364,8 +364,8 @@ namespace NeoCortexApi.Entities
                     if (value.Equals(defaultValue) == false)
                     {
                         var index = new int[] { i, j };
-                        Serialize(value, "ActiveElement", sw);
-                        Serialize(index, "ActiveIndex", sw);
+                        Serialize(value, "ActiveElement", sw, elementType);
+                        Serialize(index, "ActiveIndex", sw, elementType);
                     }
                 }
             }
@@ -443,7 +443,7 @@ namespace NeoCortexApi.Entities
 
         private static List<FieldInfo> GetFields(Type type)
         {
-            var fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Where(f => f.GetCustomAttribute<CompilerGeneratedAttribute>() == null).ToList();
+            var fields = type.GetFields(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Where(f => f.GetCustomAttribute<CompilerGeneratedAttribute>() == null).ToList();
             if (type.BaseType != null)
             {
                 fields.AddRange(type.BaseType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Where(f => f.GetCustomAttribute<CompilerGeneratedAttribute>() == null));
@@ -455,10 +455,10 @@ namespace NeoCortexApi.Entities
         private static List<PropertyInfo> GetProperties(Type type)
         {
             var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).ToList();
-            if (type.BaseType != null)
-            {
-                properties.AddRange(type.BaseType.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic));
-            }
+            //if (type.BaseType != null)
+            //{
+            //    properties.AddRange(type.BaseType.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic));
+            //}
 
             return properties;
         }
@@ -621,17 +621,22 @@ namespace NeoCortexApi.Entities
 
             while (sr.Peek() > 0)
             {
+                Type specifiedType = elementType;
                 var content = sr.ReadLine().Trim();
                 if (content == ReadGenericEnd(propName) || content == ReadGenericEnd(propName, type))
                 {
                     break;
                 }
-                if (string.IsNullOrEmpty(content) || content == ReadGenericBegin(propName) || content == ReadGenericBegin(propName, type))
+                if (string.IsNullOrEmpty(content) || content.StartsWith(ReadGenericBegin(propName)))
                 {
+                    if (content.StartsWith(ReadGenericBegin(propName)))
+                    {
+                        specifiedType = GetSpecifiedTypeOrDefault(content, elementType);
+                    }
                     continue;
                 }
 
-                var deserializeMethod = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.Deserialize)).MakeGenericMethod(elementType);
+                var deserializeMethod = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.Deserialize)).MakeGenericMethod(specifiedType);
 
                 var item = deserializeMethod.Invoke(null, new object[] { sr, "CollectionItem" });
 
@@ -711,8 +716,8 @@ namespace NeoCortexApi.Entities
             var beginKeyValuePair = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.ReadGenericBegin), BindingFlags.NonPublic | BindingFlags.Static);
             var endKeyValuePair = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.ReadGenericEnd), BindingFlags.NonPublic | BindingFlags.Static);
 
-            var deserializeKeyMethod = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.Deserialize)).MakeGenericMethod(typeKey);
-            var deserializeValueMethod = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.Deserialize)).MakeGenericMethod(typeValue);
+            var deserializeMethod = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.Deserialize));
+            //var deserializeValueMethod = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.Deserialize)).MakeGenericMethod(typeValue);
             while (sr.Peek() > 0)
             {
                 var content = sr.ReadLine().Trim();
@@ -731,13 +736,15 @@ namespace NeoCortexApi.Entities
                     value = null;
                     continue;
                 }
-                if (content == (string)beginKey.Invoke(null, new object[] { "Key", default(Type) }))
+                if (content.StartsWith((string)beginKey.Invoke(null, new object[] { "Key", default(Type) })))
                 {
-                    key = deserializeKeyMethod.Invoke(null, new object[] { sr, "Key" });
+                    var specifiedType = GetSpecifiedTypeOrDefault(content, typeKey);
+                    key = deserializeMethod.MakeGenericMethod(specifiedType).Invoke(null, new object[] { sr, "Key" });
                 }
-                else if (content == (string)beginValue.Invoke(null, new object[] { "Value", default(Type) }))
+                else if (content.StartsWith((string)beginValue.Invoke(null, new object[] { "Value", default(Type) })))
                 {
-                    value = deserializeValueMethod.Invoke(null, new object[] { sr, "Value" });
+                    var specifiedType = GetSpecifiedTypeOrDefault(content, typeValue);
+                    value = deserializeMethod.MakeGenericMethod(specifiedType).Invoke(null, new object[] { sr, "Value" });
                 }
 
                 if (key != null && value != null)
@@ -753,11 +760,26 @@ namespace NeoCortexApi.Entities
                         addMethod.Invoke(obj, new object[] { key, value });
                     }
 
-                    Debug.WriteLine($"Try add {key}, {value} to {propName ?? type.Name}");
+                    //Debug.WriteLine($"Try add {key}, {value} to {propName ?? type.Name}");
                 }
             }
 
             return obj;
+        }
+
+        /// <summary>
+        /// Get specified type from Header "Begin name Type" or default Type
+        /// </summary>
+        /// <param name="content"></param>
+        /// <param name="defaultType"></param>
+        /// <returns></returns>
+        private static Type GetSpecifiedTypeOrDefault(string content, Type defaultType = null)
+        {
+            var components = content.Split(' ');
+            if (components.Length <= 2 || components.Length > 3)
+                return defaultType;
+            var type = GetType(components[2]);
+            return type;
         }
 
         /// <summary>

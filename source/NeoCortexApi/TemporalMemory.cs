@@ -849,5 +849,35 @@ namespace NeoCortexApi
         {
             return new DentriteComparer(nextSegmentOrdinal);
         }
+
+        public bool Equals(TemporalMemory obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+
+            if (this.connections == null)
+            {
+                if (obj.connections != null)
+                    return false;
+            }
+            else if (this.indxOfLastHighestSegment != obj.indxOfLastHighestSegment)
+                return false;
+            else if (this.LastActivity == null)
+            {
+                if (obj.LastActivity != null)
+                    return false;
+            }
+            else if (!this.LastActivity.Equals(obj.LastActivity))
+                return false;
+
+            return true;
+        }
+
+        public bool Equals(IHtmModule other)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

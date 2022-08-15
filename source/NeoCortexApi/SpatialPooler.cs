@@ -1409,6 +1409,19 @@ namespace NeoCortexApi
             return sp;
         }
 
+        public override bool Equals(object obj)
+        {
+            var sp = obj as SpatialPooler;
+            if (sp == null)
+                return false;
+            return this.Equals(sp);
+        }
+
+        public bool Equals(IHtmModule other)
+        {
+            return this.Equals((object)other);
+        }
+
         //public void Serialize(object obj, string name, StreamWriter sw)
         //{
         //    HtmSerializer2.SerializeObject(obj, name, sw);

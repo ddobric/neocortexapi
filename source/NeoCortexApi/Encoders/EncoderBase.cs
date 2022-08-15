@@ -321,5 +321,10 @@ namespace NeoCortexApi.Encoders
             var excludeMembers = new List<string> { nameof(EncoderBase.Properties) };
             return HtmSerializer2.DeserializeObject<T>(sr, name, excludeMembers);
         }
+
+        public bool Equals(IHtmModule other)
+        {
+            return this.Equals((object)other);
+        }
     }
 }
