@@ -16,7 +16,7 @@ namespace NeoCortexApi.Entities
     /// Contains the definition of the interconnected structural state of the SpatialPooler and
     /// TemporalMemory as well as the state of Cells, Columns, Segments, Synapses etc..
     /// </summary>
-    public class Connections
+    public class Connections /*: ISerializable*/
     {
 
         public static readonly double EPSILON = 0.00001;
@@ -500,7 +500,7 @@ namespace NeoCortexApi.Entities
             return minSegment;
         }
 
-   
+
         /// <summary>
         /// Returns the number of <see cref="DistalDendrite"/>s on a given <see cref="Cell"/> if specified, or the total number if the <see cref="Cell"/> is null.
         /// </summary>
@@ -993,7 +993,7 @@ namespace NeoCortexApi.Entities
                 cnt++;
             }
 
-            stats.AvgPermanence= permAvgSum/cnt;
+            stats.AvgPermanence = permAvgSum / cnt;
             stats.MaxPermanence = max;
             stats.MinPermanence = min;
             stats.SynapticActivity = (double)stats.ConnectedSynapses / (double)stats.Synapses;
@@ -1001,7 +1001,7 @@ namespace NeoCortexApi.Entities
             return stats;
         }
         #endregion
-      
+
         /// <summary>
         /// Used for debugging.
         /// </summary>
@@ -1235,6 +1235,127 @@ namespace NeoCortexApi.Entities
             Debug.WriteLine($"Max: {inputPotential.Max()} - Min: {inputPotential.Min()}, AVG: {inputPotential.Average()}");
         }
 
+        public bool Equals(Connections obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (AreCollectionsEqual(this.WinnerCells, obj.WinnerCells) == false)
+            {
+                return false;
+            }
+            if (AreCollectionsEqual(this.winnerCells, obj.winnerCells) == false)
+            {
+                return false;
+            }
+            if (AreCollectionsEqual(this.ActiveCells, obj.ActiveCells) == false)
+            {
+                return false;
+            }
+            if (AreCollectionsEqual(this.m_ActiveCells, obj.m_ActiveCells) == false)
+            {
+                return false;
+            }
+            if (AreCollectionsEqual(this.ActiveSegments, obj.ActiveSegments) == false)
+            {
+                return false;
+            }
+            if (AreCollectionsEqual(this.m_ActiveSegments, obj.m_ActiveSegments) == false)
+            {
+                return false;
+            }
+
+            if (AreCollectionsEqual(this.BoostedOverlaps, obj.BoostedOverlaps) == false)
+            {
+                return false;
+            }
+            if (AreCollectionsEqual(this.m_BoostedmOverlaps, obj.m_BoostedmOverlaps) == false)
+            {
+                return false;
+            }
+            if (AreCollectionsEqual(this.Cells, obj.Cells) == false)
+            {
+                return false;
+            }
+            if (AreCollectionsEqual(this.BoostFactors, obj.BoostFactors) == false)
+            {
+                return false;
+            }
+            if (AreCollectionsEqual(this.m_BoostFactors, obj.m_BoostFactors) == false)
+            {
+                return false;
+            }
+            if (AreCollectionsEqual(this.MatchingSegments, obj.MatchingSegments) == false)
+            {
+                return false;
+            }
+            if (AreCollectionsEqual(this.m_MatchingSegments, obj.m_MatchingSegments) == false)
+            {
+                return false;
+            }
+            if (AreCollectionsEqual(this.m_FreeFlatIdxs, obj.m_FreeFlatIdxs) == false)
+            {
+                return false;
+            }
+
+            if (this.HtmConfig.Equals(obj.HtmConfig) == false)
+                return false;
+            if (this.m_HtmConfig.Equals(obj.m_HtmConfig) == false)
+                return false;
+
+            if (this.m_NextFlatIdx != obj.m_NextFlatIdx)
+                return false;
+
+            if (this.m_NextSegmentOrdinal.Equals(obj.m_NextSegmentOrdinal) == false)
+                return false;
+            if (this.m_NextSynapseOrdinal.Equals(obj.m_NextSynapseOrdinal) == false)
+                return false;
+            if (this.m_NumSynapses != obj.m_NumSynapses)
+                return false;
+            if (AreCollectionsEqual(this.m_Overlaps, obj.m_Overlaps) == false)
+                return false;
+            if (AreCollectionsEqual(this.Overlaps, obj.Overlaps) == false)
+                return false;
+            if (AreCollectionsEqual(this.m_PredictiveCells, obj.m_PredictiveCells) == false)
+                return false;
+            if (AreCollectionsEqual(this.m_SegmentForFlatIdx, obj.m_SegmentForFlatIdx) == false)
+                return false;
+            if (AreCollectionsEqual(this.m_TieBreaker, obj.m_TieBreaker) == false)
+                return false;
+            if (AreCollectionsEqual(this.TieBreaker, obj.TieBreaker) == false)
+                return false;
+            if (this.m_TMIteration != obj.m_TMIteration)
+                return false;
+            if (this.NextSegmentOrdinal != obj.NextSegmentOrdinal)
+                return false;
+            if (this.SpIterationLearnNum != obj.SpIterationLearnNum)
+                return false;
+            if (this.SpIterationNum != obj.SpIterationNum)
+                return false;
+            if (this.version != obj.version)
+                return false;
+
+            return true;
+
+        }
+
+        private static bool AreCollectionsEqual<T>(IEnumerable<T> current, IEnumerable<T> target)
+        {
+            if (current == null && target != null ||
+                current != null && target == null)
+            {
+                return false;
+            }
+            else if (current == null && target == null)
+                return true;
+            else if (current.SequenceEqual(target) == false)
+            {
+                return false;
+            }
+            return true;
+        }
+
         #region Serialization
         public void Serialize(StreamWriter writer)
         {
@@ -1437,6 +1558,17 @@ namespace NeoCortexApi.Entities
             return mem;
 
         }
+
+        //public void Serialize(object obj, string name, StreamWriter sw)
+        //{
+        //    HtmSerializer2.SerializeObject(obj, name, sw);
+        //}
+
+        //public static object Deserialize(StreamReader sr, string name)
+        //{
+        //    var conn = HtmSerializer2.DeserializeObject<Connections>(sr, name);
+        //    return conn;
+        //}
         #endregion
 
     }

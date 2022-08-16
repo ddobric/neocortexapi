@@ -19,6 +19,11 @@ namespace NeoCortexApi
 
         }
 
+        public SpatialPoolerMT()
+        {
+
+        }
+
         /// <summary>
         /// Uses the same implementation as Single-Threaded.
         /// </summary>

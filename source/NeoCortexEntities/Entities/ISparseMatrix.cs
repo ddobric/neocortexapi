@@ -35,8 +35,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <returns></returns>
         int[] Get1DIndexes();
-
-     
+             
         public void Serialize(StreamWriter sw)
         {
             throw new NotImplementedException();

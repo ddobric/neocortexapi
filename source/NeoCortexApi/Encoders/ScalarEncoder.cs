@@ -1,10 +1,12 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 
 namespace NeoCortexApi.Encoders
 {
@@ -298,5 +300,11 @@ namespace NeoCortexApi.Encoders
         {
             throw new NotImplementedException();
         }
+
+        //public static object Deserialize<T>(StreamReader sr, string name)
+        //{
+        //    var excludeMembers = new List<string> { nameof(ScalarEncoder.Properties) };
+        //    return HtmSerializer2.DeserializeObject<T>(sr, name, excludeMembers);
+        //}
     }
 }

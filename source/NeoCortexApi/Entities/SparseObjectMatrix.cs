@@ -309,5 +309,16 @@ namespace NeoCortexApi.Entities
             }
             return sparse;
         }
+
+
+        public new void Serialize(object obj, string name, StreamWriter sw)
+        {
+            HtmSerializer2.SerializeObject(obj, name, sw);
+        }
+
+        public static new object Deserialize(StreamReader sr, string name)
+        {
+            return HtmSerializer2.DeserializeObject<SparseObjectMatrix<T>>(sr, name);
+        }
     }
 }

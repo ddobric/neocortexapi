@@ -1,9 +1,11 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Text;
 
 namespace NeoCortexApi.Entities
@@ -12,7 +14,7 @@ namespace NeoCortexApi.Entities
     /// HTM configuration.
     /// Also sent from Akka-client to Akka Actor.
     /// </summary>
-    public class HtmConfig
+    public class HtmConfig /*: ISerializable*/
     {
         /// <summary>
         /// Default constructor with the default set of parameters.
@@ -533,7 +535,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (MaxBoost != obj.MaxBoost)
                 return false;
-           
+
             if (UpdatePeriod != obj.UpdatePeriod)
                 return false;
             if (OverlapDutyCycles != null && this.OverlapDutyCycles != null)
@@ -600,8 +602,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (Random != null && obj.Random != null)
             {
-
-                if (obj.Random.Next() != Random.Next())
+                if (!obj.Random.Equals(Random))
                     return false;
             }
 
@@ -643,7 +644,7 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.PredictedSegmentDecrement, writer);
             ser.SerializeValue(this.DutyCyclePeriod, writer);
             ser.SerializeValue(this.MaxBoost, writer);
-           
+
             ser.SerializeValue(this.UpdatePeriod, writer);
             ser.SerializeValue(this.OverlapDutyCycles, writer);
             ser.SerializeValue(this.ActiveDutyCycles, writer);
@@ -1001,6 +1002,24 @@ namespace NeoCortexApi.Entities
             }
             return htmConfig;
         }
+
+        //public void Serialize(object obj, string name, StreamWriter sw)
+        //{
+        //    HtmSerializer2.SerializeObject(obj, name, sw);
+        //}
+
+        //public static object Deserialize(StreamReader sr, string name)
+        //{
+        //    var htmConfig = HtmSerializer2.DeserializeObject<HtmConfig>(sr, name, exculdeMembers, (config, propName) =>
+        //    {
+        //        //if (propName == nameof(HtmConfig.Random))
+        //        //{
+        //        //    var random = HtmSerializer2.Deserialize<ThreadSafeRandom>(sr, propName);
+        //        //    config.Random = random;
+        //        //}
+        //    });
+        //    return htmConfig;
+        //}
         #endregion
 
     }

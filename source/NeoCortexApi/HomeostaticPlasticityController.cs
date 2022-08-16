@@ -23,7 +23,7 @@ namespace NeoCortexApi
     /// https://www.researchgate.net/publication/358996456_On_the_Importance_of_the_Newborn_Stage_When_Learning_Patterns_with_the_Spatial_Pooler
     /// Published 2022 in Springer Nature Computer Sciences.
     /// </remarks>
-    public class HomeostaticPlasticityController
+    public class HomeostaticPlasticityController : ISerializable
     {
         private double m_RequiredSimilarityThreshold;
 
@@ -64,6 +64,7 @@ namespace NeoCortexApi
         /// </summary>
         private Action<bool, int, double, int> m_OnStabilityStatusChanged;
 
+        public Action<bool, int, double, int> OnStabilityStatusChanged { get => m_OnStabilityStatusChanged; set => m_OnStabilityStatusChanged = value; }
         /// <summary>
         /// Set on true when SP deactivates boosting and enter the stable state.
         /// Once SP enters the stable state and it becomes instable again, this value is set on false.
@@ -291,92 +292,92 @@ namespace NeoCortexApi
             }
         }
 
-        public static HomeostaticPlasticityController Deserialize(StreamReader sr, Connections htmMemory = null)
-        {
-            HomeostaticPlasticityController ctrl = new HomeostaticPlasticityController();
-            ctrl.m_HtmMemory = htmMemory;
+        //public static HomeostaticPlasticityController Deserialize(StreamReader sr, Connections htmMemory = null)
+        //{
+        //    HomeostaticPlasticityController ctrl = new HomeostaticPlasticityController();
+        //    ctrl.m_HtmMemory = htmMemory;
 
-            HtmSerializer2 ser = new HtmSerializer2();
+        //    HtmSerializer2 ser = new HtmSerializer2();
 
-            while (sr.Peek() >= 0)
-            {
-                string data = sr.ReadLine();
-                if (data == String.Empty || data == ser.ReadBegin(nameof(HomeostaticPlasticityController)))
-                {
-                    continue;
-                }
-                else if (data == ser.ReadBegin(nameof(Connections)))
-                {
-                    ctrl.m_HtmMemory = Connections.Deserialize(sr);
-                }
-                else if (data == ser.ReadEnd(nameof(HomeostaticPlasticityController)))
-                {
-                    break;
-                }
-                else
-                {
-                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
-                    for (int i = 0; i < str.Length; i++)
-                    {
-                        switch (i)
-                        {
-                            case 0:
-                                {
-                                    ctrl.m_RequiredSimilarityThreshold = ser.ReadDoubleValue(str[i]);
-                                    break;
-                                }
-                            case 1:
-                                {
-                                    ctrl.m_MaxPreviousElements = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-                            case 2:
-                                {
-                                    ctrl.m_Cycle = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-                            case 3:
-                                {
-                                    ctrl.m_MinCycles = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-                            case 4:
-                                {
-                                    ctrl.m_RequiredNumOfStableCycles = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-                            case 5:
-                                {
-                                    ctrl.m_NumOfStableCyclesForInput = ser.ReadDictSIValue(str[i]);
-                                    break;
-                                }
-                            case 6:
-                                {
-                                    ctrl.m_NumOfActiveColsForInput = ser.ReadDictSIarray(str[i]);
-                                    break;
-                                }
-                            case 7:
-                                {
-                                    ctrl.m_InOutMap = ser.ReadDictSIarray(str[i]);
-                                    break;
-                                }
+        //    while (sr.Peek() >= 0)
+        //    {
+        //        string data = sr.ReadLine();
+        //        if (data == String.Empty || data == ser.ReadBegin(nameof(HomeostaticPlasticityController)))
+        //        {
+        //            continue;
+        //        }
+        //        else if (data == ser.ReadBegin(nameof(Connections)))
+        //        {
+        //            ctrl.m_HtmMemory = Connections.Deserialize(sr);
+        //        }
+        //        else if (data == ser.ReadEnd(nameof(HomeostaticPlasticityController)))
+        //        {
+        //            break;
+        //        }
+        //        else
+        //        {
+        //            string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+        //            for (int i = 0; i < str.Length; i++)
+        //            {
+        //                switch (i)
+        //                {
+        //                    case 0:
+        //                        {
+        //                            ctrl.m_RequiredSimilarityThreshold = ser.ReadDoubleValue(str[i]);
+        //                            break;
+        //                        }
+        //                    case 1:
+        //                        {
+        //                            ctrl.m_MaxPreviousElements = ser.ReadIntValue(str[i]);
+        //                            break;
+        //                        }
+        //                    case 2:
+        //                        {
+        //                            ctrl.m_Cycle = ser.ReadIntValue(str[i]);
+        //                            break;
+        //                        }
+        //                    case 3:
+        //                        {
+        //                            ctrl.m_MinCycles = ser.ReadIntValue(str[i]);
+        //                            break;
+        //                        }
+        //                    case 4:
+        //                        {
+        //                            ctrl.m_RequiredNumOfStableCycles = ser.ReadIntValue(str[i]);
+        //                            break;
+        //                        }
+        //                    case 5:
+        //                        {
+        //                            ctrl.m_NumOfStableCyclesForInput = ser.ReadDictSIValue(str[i]);
+        //                            break;
+        //                        }
+        //                    case 6:
+        //                        {
+        //                            ctrl.m_NumOfActiveColsForInput = ser.ReadDictSIarray(str[i]);
+        //                            break;
+        //                        }
+        //                    case 7:
+        //                        {
+        //                            ctrl.m_InOutMap = ser.ReadDictSIarray(str[i]);
+        //                            break;
+        //                        }
 
-                            case 8:
-                                {
-                                    ctrl.m_IsStable = ser.ReadBoolValue(str[i]);
-                                    break;
-                                }
-                            default:
-                                { break; }
+        //                    case 8:
+        //                        {
+        //                            ctrl.m_IsStable = ser.ReadBoolValue(str[i]);
+        //                            break;
+        //                        }
+        //                    default:
+        //                        { break; }
 
-                        }
-                    }
-                }
-            }
+        //                }
+        //            }
+        //        }
+        //    }
 
-            return ctrl;
+        //    return ctrl;
 
-        }
+        //}
 
         /// <summary>
         /// Traces out all cell indicies grouped by input value.
@@ -570,6 +571,22 @@ namespace NeoCortexApi
 
             return ctrl;
 
+        }
+
+        public void Serialize(object obj, string name, StreamWriter sw)
+        {
+            var excludeEntries = new List<string> { nameof(m_OnStabilityStatusChanged), nameof(OnStabilityStatusChanged) };
+
+            HtmSerializer2.SerializeObject(obj, name, sw, excludeEntries);
+        }
+
+        public static object Deserialize<T>(StreamReader sr, string name)
+        {
+            var excludeEntries = new List<string> { nameof(m_OnStabilityStatusChanged), nameof(OnStabilityStatusChanged) };
+
+            var controller = HtmSerializer2.DeserializeObject<T>(sr, name, excludeEntries);
+
+            return controller;
         }
         #endregion
     }
