@@ -627,9 +627,9 @@ namespace NeoCortexApi.Entities
                 {
                     break;
                 }
-                if (string.IsNullOrEmpty(content) || content.StartsWith(ReadGenericBegin(propName)))
+                if (string.IsNullOrEmpty(content) || content.StartsWith(ReadGenericBegin(propName)) && content.Contains("CollectionItem") == false)
                 {
-                    if (content.StartsWith(ReadGenericBegin(propName)))
+                    if (content.StartsWith(ReadGenericBegin(propName)) && content.Contains("CollectionItem") == false)
                     {
                         specifiedType = GetSpecifiedTypeOrDefault(content, elementType);
                     }

@@ -210,6 +210,10 @@ namespace UnitTestsProject
             }
             var reader = new StreamReader($"{TestContext.TestName}.txt");
 
+            var content = reader.ReadToEnd();
+
+            reader = new StreamReader($"{TestContext.TestName}.txt");
+
             var res = HtmSerializer2.Deserialize<int[]>(reader);
 
             Assert.IsTrue(array.SequenceEqual(res));
@@ -422,7 +426,7 @@ namespace UnitTestsProject
 
             using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
             {
-                HtmSerializer2.Serialize(mem.HtmConfig.Memory, null, sw);
+                HtmSerializer2.Serialize(mem.Memory, null, sw);
             }
             using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
             {
@@ -431,7 +435,7 @@ namespace UnitTestsProject
             using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
             {
                 var memory = HtmSerializer2.Deserialize<SparseObjectMatrix<Column>>(sr);
-                Assert.IsTrue((mem.HtmConfig.Memory as SparseObjectMatrix<Column>).Equals(memory));
+                Assert.IsTrue((mem.Memory as SparseObjectMatrix<Column>).Equals(memory));
             }
         }
 
@@ -633,7 +637,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("working")]
+        //[TestCategory("working")]
         public void CortexLayerTest()
         {
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();

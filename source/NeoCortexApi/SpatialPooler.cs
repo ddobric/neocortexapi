@@ -95,8 +95,8 @@ namespace NeoCortexApi
         /// <param name="distMem">Optionally used if the paralle version of the SP should be used.</param>
         public virtual void InitMatrices(Connections conn, DistributedMemory distMem)
         {
-            if (conn.HtmConfig.Memory == null)
-                conn.HtmConfig.Memory = new SparseObjectMatrix<Column>(conn.HtmConfig.ColumnDimensions, dict: null);
+            if (conn.Memory == null)
+                conn.Memory = new SparseObjectMatrix<Column>(conn.HtmConfig.ColumnDimensions, dict: null);
 
             conn.HtmConfig.InputMatrix = new SparseBinaryMatrix(conn.HtmConfig.InputDimensions);
 
@@ -106,7 +106,7 @@ namespace NeoCortexApi
 
             //Calculate numInputs and numColumns
             int numInputs = conn.HtmConfig.InputMatrix.GetMaxIndex() + 1;
-            int numColumns = conn.HtmConfig.Memory.GetMaxIndex() + 1;
+            int numColumns = conn.Memory.GetMaxIndex() + 1;
 
             if (numColumns <= 0)
             {
@@ -133,7 +133,7 @@ namespace NeoCortexApi
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            conn.HtmConfig.Memory.set(colList);
+            conn.Memory.set(colList);
 
             sw.Stop();
 
@@ -641,7 +641,7 @@ namespace NeoCortexApi
         public virtual void BoostColsWithLowOverlap(Connections c)
         {
             // Get columns with too low overlap.
-            var weakColumns = c.HtmConfig.Memory.Get1DIndexes().Where(i => c.HtmConfig.OverlapDutyCycles[i] < c.HtmConfig.MinOverlapDutyCycles[i]).ToArray();
+            var weakColumns = c.Memory.Get1DIndexes().Where(i => c.HtmConfig.OverlapDutyCycles[i] < c.HtmConfig.MinOverlapDutyCycles[i]).ToArray();
 
             for (int i = 0; i < weakColumns.Length; i++)
             {
