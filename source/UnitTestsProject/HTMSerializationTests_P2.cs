@@ -720,14 +720,10 @@ namespace UnitTestsProject
             layer1.HtmModules.Add("encoder", encoder);
             layer1.HtmModules.Add("sp", sp);
 
-            //using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
-            //{
-            //    HtmSerializer2.Serialize(layer1, null, sw);
-            //}
-            //using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
-            //{
-            //    var content = sr.ReadToEnd();
-            //}
+            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            {
+                HtmSerializer2.Serialize(layer1, null, sw);
+            }
             using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
             {
                 var cortexLayer = HtmSerializer2.Deserialize<CortexLayer<object, object>>(sr);
