@@ -13,7 +13,7 @@ namespace NeoCortexApi.Entities
     /// <summary>
     /// Implementation of the mini-column.
     /// </summary>
-    public class Column : IEquatable<Column>, IComparable<Column>
+    public class Column : IEquatable<Column>, IComparable<Column>, ISerializable
     {
         public AbstractSparseBinaryMatrix connectedInputCounter;
 
@@ -520,6 +520,24 @@ namespace NeoCortexApi.Entities
                 }
             }
             return column;
+        }
+
+        public void Serialize(object obj, string name, StreamWriter sw)
+        {
+            var column = obj as Column;
+            if (column != null)
+            {
+                var ignoreMembers = new List<string>
+                {
+                    nameof(Column.connectedInputCounter),
+                };
+                HtmSerializer2.SerializeObject(column, name, sw, ignoreMembers);
+            }
+        }
+
+        public static object Deserialize<T>(StreamReader sr, string name)
+        {
+            return HtmSerializer2.DeserializeObject<Column>(sr, name);
         }
     }
 }

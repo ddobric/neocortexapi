@@ -728,43 +728,43 @@ namespace UnitTestsProject
             layer1.HtmModules.Add("encoder", encoder);
             layer1.HtmModules.Add("sp", sp);
 
-            int[] prevActiveCols = new int[0];
+            //int[] prevActiveCols = new int[0];
 
-            int cycle = 0;
-            int matches = 0;
+            //int cycle = 0;
+            //int matches = 0;
 
-            var lastPredictedValues = new List<string>(new string[] { "0" });
+            //var lastPredictedValues = new List<string>(new string[] { "0" });
 
-            int maxCycles = 3500;
+            //int maxCycles = 3500;
 
-            //
-            // Training SP to get stable. New-born stage.
-            //
+            ////
+            //// Training SP to get stable. New-born stage.
+            ////
 
-            for (int i = 0; i < maxCycles && isInStableState == false; i++)
-            {
-                matches = 0;
+            //for (int i = 0; i < maxCycles && isInStableState == false; i++)
+            //{
+            //    matches = 0;
 
-                cycle++;
+            //    cycle++;
 
-                //Debug.WriteLine($"-------------- Newborn Cycle {cycle} ---------------");
+            //    //Debug.WriteLine($"-------------- Newborn Cycle {cycle} ---------------");
 
-                foreach (var inputs in sequences)
-                {
-                    foreach (var input in inputs.Value)
-                    {
-                        //Debug.WriteLine($" -- {inputs.Key} - {input} --");
+            //    foreach (var inputs in sequences)
+            //    {
+            //        foreach (var input in inputs.Value)
+            //        {
+            //            //Debug.WriteLine($" -- {inputs.Key} - {input} --");
 
-                        var lyrOut = layer1.Compute(input, true);
+            //            var lyrOut = layer1.Compute(input, true);
 
-                        if (isInStableState)
-                            break;
-                    }
+            //            if (isInStableState)
+            //                break;
+            //        }
 
-                    if (isInStableState)
-                        break;
-                }
-            }
+            //        if (isInStableState)
+            //            break;
+            //    }
+            //}
 
             using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
             {

@@ -16,7 +16,7 @@ namespace NeoCortexApi.Entities
     /// Contains the definition of the interconnected structural state of the SpatialPooler and
     /// TemporalMemory as well as the state of Cells, Columns, Segments, Synapses etc..
     /// </summary>
-    public class Connections /*: ISerializable*/
+    public class Connections : ISerializable
     {
 
         public static readonly double EPSILON = 0.00001;
@@ -1567,16 +1567,39 @@ namespace NeoCortexApi.Entities
 
         }
 
-        //public void Serialize(object obj, string name, StreamWriter sw)
-        //{
-        //    HtmSerializer2.SerializeObject(obj, name, sw);
-        //}
+        public void Serialize(object obj, string name, StreamWriter sw)
+        {
+            var ignoreMembers = new List<string>
+            {
+                nameof(Connections.m_ActiveCells),
+                nameof(Connections.winnerCells),
+                nameof(Connections.memory),
+                nameof(Connections.m_HtmConfig),
+                nameof(Connections.m_NextSegmentOrdinal),
+                nameof(Connections.m_TieBreaker),
+                nameof(Connections.m_BoostedmOverlaps),
+                nameof(Connections.m_Overlaps),
+                nameof(Connections.m_BoostFactors),
+                nameof(Connections.m_ActiveSegments),
+                nameof(Connections.m_MatchingSegments),
 
-        //public static object Deserialize(StreamReader sr, string name)
-        //{
-        //    var conn = HtmSerializer2.DeserializeObject<Connections>(sr, name);
-        //    return conn;
-        //}
+                //nameof(Connections.Cells)
+            };
+            HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);
+        }
+
+        public static object Deserialize<T>(StreamReader sr, string name)
+        {
+            var conn = HtmSerializer2.DeserializeObject<Connections>(sr, name);
+
+            //var cells = new List<Cell>();
+            //for (int i = 0; i < conn.Memory.GetMaxIndex(); i++)
+            //{
+            //    cells.AddRange(conn.memory.GetColumn(i).Cells);
+            //}
+            //conn.Cells = cells.ToArray();
+            return conn;
+        }
         #endregion
 
     }

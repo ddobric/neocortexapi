@@ -170,7 +170,7 @@ namespace NeoCortexApi.Entities
         /// Serializes the cell to the stream.
         /// </summary>
         /// <param name="writer"></param>
-        public void  SerializeT(StreamWriter writer)
+        public void SerializeT(StreamWriter writer)
         {
             HtmSerializer2 ser = new HtmSerializer2();
 
@@ -188,7 +188,7 @@ namespace NeoCortexApi.Entities
 
             ser.SerializeEnd(nameof(Cell), writer);
 
-            
+
         }
 
         public static Cell Deserialize(StreamReader sr)
@@ -230,7 +230,7 @@ namespace NeoCortexApi.Entities
                                 }
                             case 1:
                                 {
-                                   // cell.CellId = ser.ReadIntValue(str[i]);
+                                    // cell.CellId = ser.ReadIntValue(str[i]);
                                     break;
                                 }
                             case 2:
@@ -250,7 +250,17 @@ namespace NeoCortexApi.Entities
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            HtmSerializer2.SerializeObject(obj, name, sw, new List<string> { nameof(DistalDendrite.ParentCell)});
+            var ignoreMembers = new List<string> 
+            { 
+                nameof(Cell.ReceptorSynapses) 
+            };
+            HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);
+            var cell = obj as Cell;
+            if (cell != null)
+            {
+                var synapses = cell.ReceptorSynapses.Select(s => new Synapse() { SynapseIndex = s.SynapseIndex });
+                HtmSerializer2.Serialize(synapses, nameof(Cell.ReceptorSynapses), sw);
+            }
         }
         public static object Deserialize<T>(StreamReader sr, string name)
         {

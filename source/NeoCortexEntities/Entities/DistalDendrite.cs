@@ -330,16 +330,22 @@ namespace NeoCortexApi.Entities
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            var ignoreMembers = new List<string> { nameof(DistalDendrite.ParentCell) };
+            var ignoreMembers = new List<string> 
+            { 
+                nameof(DistalDendrite.ParentCell),
+                nameof(Segment.Synapses)
+            };
             HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);
+            var synapses = this.Synapses.Select(s => new Synapse() { SynapseIndex = s.SynapseIndex });
+            HtmSerializer2.Serialize(synapses, nameof(Segment.Synapses), sw);
 
-            var cell = (obj as DistalDendrite).ParentCell;
+            //var cell = (obj as DistalDendrite).ParentCell;
 
-            if (cell != null && isCellsSerialized.Contains(cell.HashCode()) == false)
-            {
-                isCellsSerialized.Add(cell.HashCode());
-                HtmSerializer2.Serialize((obj as DistalDendrite).ParentCell, nameof(DistalDendrite.ParentCell), sw, ignoreMembers: ignoreMembers);
-            }
+            //if (cell != null && isCellsSerialized.Contains(cell.HashCode()) == false)
+            //{
+            //    isCellsSerialized.Add(cell.HashCode());
+            //    HtmSerializer2.Serialize((obj as DistalDendrite).ParentCell, nameof(DistalDendrite.ParentCell), sw, ignoreMembers: ignoreMembers);
+            //}
         }
 
         public static object Deserialize<T>(StreamReader sr, string name)

@@ -31,7 +31,7 @@ namespace NeoCortexApi
     /// Spatial Pooler algorithm. Single-threaded version.
     /// Original version by David Ray, migrated from HTM JAVA. Over time, more and more code has been changed.
     /// </summary>
-    public class SpatialPooler : IHtmAlgorithm<int[], int[]>
+    public class SpatialPooler : IHtmAlgorithm<int[], int[]>, ISerializable
     {
         /// <summary>
         /// The instance of the <see cref="HomeostaticPlasticityController"/>.
@@ -472,7 +472,7 @@ namespace NeoCortexApi
             // if (sourceA[i] > 0) then targetB[i] = 1;
             // This ensures that all values in overlapCycles are set to 1, if column has some overlap.
             ArrayUtils.GreaterThanXThanSetToYInB(overlaps, overlapFrequencies, 0, 1);
-          
+
             if (activeColumns.Length > 0)
             {
                 // After this step, all rows in activeCycles are set to 1 at the index of active column.
@@ -572,7 +572,7 @@ namespace NeoCortexApi
             return ArrayUtils.Average(columnsPerInput);
         }
 
- 
+
         /// <summary>
         /// It traverses all connected synapses of the column and calculates the span, which synapses
         /// span between all input bits. Then it calculates average of spans accross all dimensions. 
@@ -646,7 +646,7 @@ namespace NeoCortexApi
             for (int i = 0; i < weakColumns.Length; i++)
             {
                 Column col = c.GetColumn(weakColumns[i]);
-        
+
                 Pool pool = col.ProximalDendrite.RFPool;
                 double[] perm = pool.GetSparsePermanences();
                 ArrayUtils.RaiseValuesBy(c.HtmConfig.SynPermBelowStimulusInc, perm);
@@ -1422,15 +1422,21 @@ namespace NeoCortexApi
             return this.Equals((object)other);
         }
 
-        //public void Serialize(object obj, string name, StreamWriter sw)
-        //{
-        //    HtmSerializer2.SerializeObject(obj, name, sw);
-        //}
+        public void Serialize(object obj, string name, StreamWriter sw)
+        {
+            HtmSerializer2.SerializeObject(obj, name, sw);
+        }
 
-        //public static object Deserialize(StreamReader sr, string propName)
-        //{
-        //    return HtmSerializer2.DeserializeObject<SpatialPooler>(sr, propName);
-        //}
+        public static object Deserialize<T>(StreamReader sr, string propName)
+        {
+            var obj = HtmSerializer2.DeserializeObject<T>(sr, propName);
+
+            var sp = obj as SpatialPooler;
+            if (sp == null)
+                return obj;
+            sp.m_HomeoPlastAct.SetConnections(sp.connections);
+            return sp;
+        }
     }
 }
 

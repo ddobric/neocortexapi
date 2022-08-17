@@ -241,6 +241,10 @@ namespace NeoCortexApi
             return sum / max;
         }
 
+        public void SetConnections(Connections connections)
+        {
+            this.m_HtmMemory = connections;
+        }
 
         /// <summary>
         /// Calculates how many elements of the array are same in percents. This method is useful to compare 
@@ -575,16 +579,21 @@ namespace NeoCortexApi
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            var excludeEntries = new List<string> { nameof(m_OnStabilityStatusChanged), nameof(OnStabilityStatusChanged) };
+            var excludeEntries = new List<string> 
+            { 
+                nameof(m_OnStabilityStatusChanged), 
+                nameof(OnStabilityStatusChanged),
+                nameof(m_HtmMemory)
+            };
 
             HtmSerializer2.SerializeObject(obj, name, sw, excludeEntries);
         }
 
         public static object Deserialize<T>(StreamReader sr, string name)
         {
-            var excludeEntries = new List<string> { nameof(m_OnStabilityStatusChanged), nameof(OnStabilityStatusChanged) };
+            //var excludeEntries = new List<string> { nameof(m_OnStabilityStatusChanged), nameof(OnStabilityStatusChanged) };
 
-            var controller = HtmSerializer2.DeserializeObject<T>(sr, name, excludeEntries);
+            var controller = HtmSerializer2.DeserializeObject<T>(sr, name);
 
             return controller;
         }
