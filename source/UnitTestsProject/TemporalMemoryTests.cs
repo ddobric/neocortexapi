@@ -908,7 +908,7 @@ namespace UnitTestsProject
                     Assert.AreEqual(0.2, synapse.Permanence, 0.01);
 
                     var parentColIndx = synapse.GetPresynapticCell().ParentColumnIndex;
-                    Column column = cn.HtmConfig.Memory.GetColumn(parentColIndx);
+                    Column column = cn.Memory.GetColumn(parentColIndx);
                     Assert.IsTrue(columnCheckList.Contains(column));
                     columnCheckList.Remove(column);
                 }

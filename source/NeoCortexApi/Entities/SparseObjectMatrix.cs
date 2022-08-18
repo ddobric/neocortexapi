@@ -15,7 +15,7 @@ namespace NeoCortexApi.Entities
     /// <remarks>
     /// @author David Ray, Damir Dobric
     /// </remarks>
-    public class SparseObjectMatrix<T> : AbstractSparseMatrix<T>, IEquatable<T> where T : class
+    public class SparseObjectMatrix<T> : AbstractSparseMatrix<T>, IEquatable<T>, ISerializable where T : class
     {
 
         //private IDictionary<int, T> sparseMap = new Dictionary<int, T>();
@@ -221,7 +221,7 @@ namespace NeoCortexApi.Entities
             }
             else if (!m_SparseMap.Equals(other.m_SparseMap))
                 return false;
-            if(ModuleTopology == null)
+            if (ModuleTopology == null)
             {
                 if (other.ModuleTopology != null)
                     return false;
@@ -244,7 +244,7 @@ namespace NeoCortexApi.Entities
             throw new NotImplementedException();
         }
 
-   
+
         public override void Serialize(StreamWriter writer)
         {
             HtmSerializer2 ser = new HtmSerializer2();
@@ -285,7 +285,7 @@ namespace NeoCortexApi.Entities
                 //    sparse.m_SparseMap = InMemoryDistributedDictionary<TKey, TValue>.Deserialize(sr);
                 //}
                 else if (data == ser.ReadEnd(nameof(SparseObjectMatrix<T>)))
-                { 
+                {
                     break;
                 }
                 else
@@ -311,14 +311,80 @@ namespace NeoCortexApi.Entities
         }
 
 
-        public new void Serialize(object obj, string name, StreamWriter sw)
+        public void Serialize(object obj, string name, StreamWriter sw)
         {
             HtmSerializer2.SerializeObject(obj, name, sw);
+
+            var matrixColumns = obj as SparseObjectMatrix<Column>;
+            if (matrixColumns != null)
+            {
+                var ddSynapses = matrixColumns.m_SparseMap.Values.SelectMany(c => c.Cells).SelectMany(c => c.DistalDendrites).SelectMany(d => d.Synapses);
+                var cellSynapses = matrixColumns.m_SparseMap.Values.SelectMany(c => c.Cells).SelectMany(c => c.ReceptorSynapses);
+
+                var synapses = new List<Synapse>();
+                foreach (var synapse in ddSynapses)
+                {
+                    if (synapses.FirstOrDefault(s => s.SynapseIndex == synapse.SynapseIndex) == null)
+                    {
+                        synapses.Add(synapse);
+                    }
+                }
+
+                foreach (var synapse in cellSynapses)
+                {
+                    if (synapses.FirstOrDefault(s => s.SynapseIndex == synapse.SynapseIndex) == null)
+                    {
+                        synapses.Add(synapse);
+                    }
+                }
+
+                HtmSerializer2.Serialize(synapses, "synapsesList", sw);
+            }
         }
 
-        public static new object Deserialize(StreamReader sr, string name)
+        public static object Deserialize<TItem>(StreamReader sr, string name)
         {
-            return HtmSerializer2.DeserializeObject<SparseObjectMatrix<T>>(sr, name);
+            var ignoreMembers = new List<string>
+            {
+                "synapsesList"
+            };
+            var matrix = HtmSerializer2.DeserializeObject<SparseObjectMatrix<T>>(sr, name, ignoreMembers, (m, propName) =>
+            {
+                var matrixColumns = m as SparseObjectMatrix<Column>;
+                if (matrixColumns == null)
+                    return;
+
+                var synapses = HtmSerializer2.Deserialize<List<Synapse>>(sr, "synapsesList");
+
+                foreach (var column in matrixColumns.m_SparseMap.Values)
+                {
+                    foreach (var cell in column.Cells)
+                    {
+                        var receptorSynapses = new List<Synapse>();
+                        foreach (var synapse in cell.ReceptorSynapses)
+                        {
+                            var receptorSynapse = synapses.FirstOrDefault(s => s.SynapseIndex == synapse.SynapseIndex);
+                            if (receptorSynapse != null)
+                                receptorSynapses.Add(receptorSynapse);
+                        }
+                        cell.ReceptorSynapses = receptorSynapses;
+
+                        foreach (var distalDentrite in cell.DistalDendrites)
+                        {
+                            var ddSynapses = new List<Synapse>();
+                            foreach (var synapse in distalDentrite.Synapses)
+                            {
+                                var ddSynapse = synapses.FirstOrDefault(s => s.SynapseIndex == synapse.SynapseIndex);
+                                if (ddSynapse != null)
+                                    ddSynapses.Add(ddSynapse);
+                            }
+                            distalDentrite.Synapses = ddSynapses;
+                        }
+                    }
+                }
+            });
+
+            return matrix;
         }
     }
 }

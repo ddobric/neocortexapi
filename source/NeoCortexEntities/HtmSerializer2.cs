@@ -627,9 +627,9 @@ namespace NeoCortexApi.Entities
                 {
                     break;
                 }
-                if (string.IsNullOrEmpty(content) || content.StartsWith(ReadGenericBegin(propName)))
+                if (string.IsNullOrEmpty(content) || content.StartsWith(ReadGenericBegin(propName)) && content.Contains("CollectionItem") == false)
                 {
-                    if (content.StartsWith(ReadGenericBegin(propName)))
+                    if (content.StartsWith(ReadGenericBegin(propName)) && content.Contains("CollectionItem") == false)
                     {
                         specifiedType = GetSpecifiedTypeOrDefault(content, elementType);
                     }
@@ -825,6 +825,11 @@ namespace NeoCortexApi.Entities
 
                 if (content.StartsWith("Begin"))
                 {
+
+                    if (components[1] == "synapsesList")
+                    {
+
+                    }
                     if (components.Length == 2)
                     {
                         if (excludeEntries == null || excludeEntries.Contains(components[1]) == false)
@@ -858,11 +863,6 @@ namespace NeoCortexApi.Entities
                     }
                     else if (components.Length == 3)
                     {
-                        if (components[1] == "Memory")
-                        {
-
-                        }
-
                         if (excludeEntries == null || excludeEntries.Contains(components[1]) == false)
                         {
                             var property = properties.FirstOrDefault(p => p.Name == components[1]);

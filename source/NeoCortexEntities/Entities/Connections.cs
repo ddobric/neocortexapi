@@ -16,7 +16,7 @@ namespace NeoCortexApi.Entities
     /// Contains the definition of the interconnected structural state of the SpatialPooler and
     /// TemporalMemory as well as the state of Cells, Columns, Segments, Synapses etc..
     /// </summary>
-    public class Connections /*: ISerializable*/
+    public class Connections : ISerializable
     {
 
         public static readonly double EPSILON = 0.00001;
@@ -46,6 +46,8 @@ namespace NeoCortexApi.Entities
         /// </summary>
         private double[] m_TieBreaker;
 
+        private AbstractSparseMatrix<Column> memory;
+
         /// <summary>
         /// The cells currently active as a result of the TM compute.
         /// </summary>
@@ -62,6 +64,12 @@ namespace NeoCortexApi.Entities
         /// All cells. Initialized during initialization of the TemporalMemory.
         /// </summary>
         public Cell[] Cells { get; set; }
+
+        /// <summary>
+        /// The main data structure containing columns, cells, and synapses.
+        /// </summary>
+        public AbstractSparseMatrix<Column> Memory { get => memory; set { memory = value; this.HtmConfig.ColumnModuleTopology = value?.ModuleTopology; } }
+
 
         private double[] m_BoostFactors;
 
@@ -214,7 +222,7 @@ namespace NeoCortexApi.Entities
         {
             foreach (int idx in matrix.GetSparseIndices())
             {
-                this.HtmConfig.Memory.GetObject(idx).SetPermanences(this.HtmConfig, matrix.GetObject(idx));
+                this.Memory.GetObject(idx).SetPermanences(this.HtmConfig, matrix.GetObject(idx));
             }
         }
 
@@ -834,7 +842,7 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public Column GetColumn(int index)
         {
-            return this.HtmConfig.Memory.GetObject(index);
+            return this.Memory.GetObject(index);
         }
 
         /// <summary>
@@ -938,7 +946,7 @@ namespace NeoCortexApi.Entities
             LinkedHashSet<Column> retVal = new LinkedHashSet<Column>();
             for (int i = 0; i < indexes.Length; i++)
             {
-                retVal.Add(this.HtmConfig.Memory.GetObject(indexes[i]));
+                retVal.Add(this.Memory.GetObject(indexes[i]));
             }
             return retVal;
         }
@@ -953,7 +961,7 @@ namespace NeoCortexApi.Entities
             List<Column> retVal = new List<Column>();
             for (int i = 0; i < indexes.Length; i++)
             {
-                retVal.Add(this.HtmConfig.Memory.GetObject(indexes[i]));
+                retVal.Add(this.Memory.GetObject(indexes[i]));
             }
             return retVal;
         }
@@ -1141,7 +1149,7 @@ namespace NeoCortexApi.Entities
             temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.MaxBoost);
             result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + this.HtmConfig.MaxNewSynapseCount;
-            result = prime * result + ((this.HtmConfig.Memory == null) ? 0 : this.HtmConfig.Memory.GetHashCode());
+            result = prime * result + ((this.Memory == null) ? 0 : this.Memory.GetHashCode());
             result = prime * result + this.HtmConfig.MinActiveDutyCycles.GetHashCode();
             result = prime * result + this.HtmConfig.MinOverlapDutyCycles.GetHashCode();
             temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.MinPctActiveDutyCycles);
@@ -1559,16 +1567,39 @@ namespace NeoCortexApi.Entities
 
         }
 
-        //public void Serialize(object obj, string name, StreamWriter sw)
-        //{
-        //    HtmSerializer2.SerializeObject(obj, name, sw);
-        //}
+        public void Serialize(object obj, string name, StreamWriter sw)
+        {
+            var ignoreMembers = new List<string>
+            {
+                nameof(Connections.m_ActiveCells),
+                nameof(Connections.winnerCells),
+                nameof(Connections.memory),
+                nameof(Connections.m_HtmConfig),
+                nameof(Connections.m_NextSegmentOrdinal),
+                nameof(Connections.m_TieBreaker),
+                nameof(Connections.m_BoostedmOverlaps),
+                nameof(Connections.m_Overlaps),
+                nameof(Connections.m_BoostFactors),
+                nameof(Connections.m_ActiveSegments),
+                nameof(Connections.m_MatchingSegments),
 
-        //public static object Deserialize(StreamReader sr, string name)
-        //{
-        //    var conn = HtmSerializer2.DeserializeObject<Connections>(sr, name);
-        //    return conn;
-        //}
+                //nameof(Connections.Cells)
+            };
+            HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);
+        }
+
+        public static object Deserialize<T>(StreamReader sr, string name)
+        {
+            var conn = HtmSerializer2.DeserializeObject<Connections>(sr, name);
+
+            //var cells = new List<Cell>();
+            //for (int i = 0; i < conn.Memory.GetMaxIndex(); i++)
+            //{
+            //    cells.AddRange(conn.memory.GetColumn(i).Cells);
+            //}
+            //conn.Cells = cells.ToArray();
+            return conn;
+        }
         #endregion
 
     }

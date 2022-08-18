@@ -14,7 +14,7 @@ namespace NeoCortexApi.Entities
     /// HTM configuration.
     /// Also sent from Akka-client to Akka Actor.
     /// </summary>
-    public class HtmConfig /*: ISerializable*/
+    public class HtmConfig : ISerializable
     {
         /// <summary>
         /// Default constructor with the default set of parameters.
@@ -47,7 +47,7 @@ namespace NeoCortexApi.Entities
 
         private double synPermActiveInc;
         private double synPermConnected;
-        private AbstractSparseMatrix<Column> memory;
+        
         private ISparseMatrix<int> inputMatrix;
 
         public TemporalMemoryConfig TemporalMemory { get; set; } = new TemporalMemoryConfig();
@@ -321,11 +321,6 @@ namespace NeoCortexApi.Entities
         public HtmModuleTopology InputModuleTopology { get; set; }
 
         /// <summary>
-        /// The main data structure containing columns, cells, and synapses.
-        /// </summary>
-        public AbstractSparseMatrix<Column> Memory { get => memory; set { memory = value; ColumnModuleTopology = value?.ModuleTopology; } }
-
-        /// <summary>
         /// Activation threshold used in sequence learning. If the number of active connected synapses on a distal segment is at least this threshold, the segment is declared as active one.
         /// </summary>
         public int ActivationThreshold { get; set; } = 13;
@@ -419,7 +414,6 @@ namespace NeoCortexApi.Entities
 
         public void ClearModuleTopology()
         {
-            this.Memory = null;
             this.InputMatrix = null;
         }
         public bool Equals(HtmConfig obj)
@@ -429,13 +423,13 @@ namespace NeoCortexApi.Entities
             if (obj == null)
                 return false;
 
-            if (memory == null)
-            {
-                if (obj.memory != null)
-                    return false;
-            }
-            else if (!memory.Equals(obj.memory))
-                return false;
+            //if (memory == null)
+            //{
+            //    if (obj.memory != null)
+            //        return false;
+            //}
+            //else if (!memory.Equals(obj.memory))
+            //    return false;
             if (inputMatrix == null)
             {
                 if (obj.inputMatrix != null)
@@ -478,13 +472,13 @@ namespace NeoCortexApi.Entities
             }
             else if (!InputModuleTopology.Equals(obj.InputModuleTopology))
                 return false;
-            if (Memory == null)
-            {
-                if (obj.Memory != null)
-                    return false;
-            }
-            else if (!Memory.Equals(obj.Memory))
-                return false;
+            //if (Memory == null)
+            //{
+            //    if (obj.Memory != null)
+            //        return false;
+            //}
+            //else if (!Memory.Equals(obj.Memory))
+            //    return false;
             if (synPermActiveInc != obj.SynPermActiveInc)
                 return false;
             if (synPermConnected != obj.synPermConnected)
@@ -668,10 +662,10 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.Name, writer);
             ser.SerializeValue(this.RandomGenSeed, writer);
 
-            if (this.memory != null)
-            {
-                this.memory.Serialize(writer);
-            }
+            //if (this.memory != null)
+            //{
+            //    this.memory.Serialize(writer);
+            //}
             if (this.inputMatrix != null)
             {
                 this.inputMatrix.Serialize(writer);
@@ -697,10 +691,10 @@ namespace NeoCortexApi.Entities
             {
                 this.InputMatrix.Serialize(writer);
             }
-            if (this.Memory != null)
-            {
-                this.Memory.Serialize(writer);
-            }
+            //if (this.Memory != null)
+            //{
+            //    this.Memory.Serialize(writer);
+            //}
 
             ser.SerializeEnd(nameof(HtmConfig), writer);
         }
@@ -1003,23 +997,20 @@ namespace NeoCortexApi.Entities
             return htmConfig;
         }
 
-        //public void Serialize(object obj, string name, StreamWriter sw)
-        //{
-        //    HtmSerializer2.SerializeObject(obj, name, sw);
-        //}
+        public void Serialize(object obj, string name, StreamWriter sw)
+        {
+            var excludeMembers = new List<string>
+            {
+                nameof(HtmConfig.inputMatrix)
+            };
+            HtmSerializer2.SerializeObject(obj, name, sw);
+        }
 
-        //public static object Deserialize(StreamReader sr, string name)
-        //{
-        //    var htmConfig = HtmSerializer2.DeserializeObject<HtmConfig>(sr, name, exculdeMembers, (config, propName) =>
-        //    {
-        //        //if (propName == nameof(HtmConfig.Random))
-        //        //{
-        //        //    var random = HtmSerializer2.Deserialize<ThreadSafeRandom>(sr, propName);
-        //        //    config.Random = random;
-        //        //}
-        //    });
-        //    return htmConfig;
-        //}
+        public static object Deserialize<T>(StreamReader sr, string name)
+        {
+            var htmConfig = HtmSerializer2.DeserializeObject<HtmConfig>(sr, name);
+            return htmConfig;
+        }
         #endregion
 
     }

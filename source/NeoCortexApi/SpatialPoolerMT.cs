@@ -129,7 +129,7 @@ namespace NeoCortexApi
                 colList.Add(new KeyPair() { Key = i, Value = data.Column });
             }
 
-            SparseObjectMatrix<Column> mem = (SparseObjectMatrix<Column>)c.HtmConfig.Memory;
+            SparseObjectMatrix<Column> mem = (SparseObjectMatrix<Column>)c.Memory;
 
             if (mem.IsRemotelyDistributed)
             {

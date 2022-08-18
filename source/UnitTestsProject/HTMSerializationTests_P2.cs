@@ -210,6 +210,10 @@ namespace UnitTestsProject
             }
             var reader = new StreamReader($"{TestContext.TestName}.txt");
 
+            var content = reader.ReadToEnd();
+
+            reader = new StreamReader($"{TestContext.TestName}.txt");
+
             var res = HtmSerializer2.Deserialize<int[]>(reader);
 
             Assert.IsTrue(array.SequenceEqual(res));
@@ -422,7 +426,7 @@ namespace UnitTestsProject
 
             using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
             {
-                HtmSerializer2.Serialize(mem.HtmConfig.Memory, null, sw);
+                HtmSerializer2.Serialize(mem.Memory, null, sw);
             }
             using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
             {
@@ -431,7 +435,7 @@ namespace UnitTestsProject
             using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
             {
                 var memory = HtmSerializer2.Deserialize<SparseObjectMatrix<Column>>(sr);
-                Assert.IsTrue((mem.HtmConfig.Memory as SparseObjectMatrix<Column>).Equals(memory));
+                Assert.IsTrue((mem.Memory as SparseObjectMatrix<Column>).Equals(memory));
             }
         }
 
@@ -633,9 +637,13 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("working")]
+        //[TestCategory("working")]
         public void CortexLayerTest()
         {
+            Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
+            sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, }));
+            sequences.Add("S2", new List<double>(new double[] { 8.0, 1.0, 2.0, 9.0, 10.0, 7.0, 11.00 }));
+
             int inputBits = 100;
             double max = 20;
             int numColumns = 1024;
@@ -719,6 +727,44 @@ namespace UnitTestsProject
             // So, to improve the speed of experiment, we first ommit the TM and then after the newborn-stage we add it to the layer.
             layer1.HtmModules.Add("encoder", encoder);
             layer1.HtmModules.Add("sp", sp);
+
+            //int[] prevActiveCols = new int[0];
+
+            //int cycle = 0;
+            //int matches = 0;
+
+            //var lastPredictedValues = new List<string>(new string[] { "0" });
+
+            //int maxCycles = 3500;
+
+            ////
+            //// Training SP to get stable. New-born stage.
+            ////
+
+            //for (int i = 0; i < maxCycles && isInStableState == false; i++)
+            //{
+            //    matches = 0;
+
+            //    cycle++;
+
+            //    //Debug.WriteLine($"-------------- Newborn Cycle {cycle} ---------------");
+
+            //    foreach (var inputs in sequences)
+            //    {
+            //        foreach (var input in inputs.Value)
+            //        {
+            //            //Debug.WriteLine($" -- {inputs.Key} - {input} --");
+
+            //            var lyrOut = layer1.Compute(input, true);
+
+            //            if (isInStableState)
+            //                break;
+            //        }
+
+            //        if (isInStableState)
+            //            break;
+            //    }
+            //}
 
             using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
             {
