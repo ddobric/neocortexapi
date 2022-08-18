@@ -42,7 +42,8 @@ namespace InvariantLearning
             // HTM CONFIG
             HtmConfig config = new HtmConfig(new int[] { inputDim * inputDim }, new int[] { columnDim })
             {
-                Random = new Random(15676)
+                Random = new Random(15676),
+                DutyCyclePeriod = 20
             };
 
             // CONNECTIONS

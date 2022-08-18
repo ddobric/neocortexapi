@@ -19,8 +19,8 @@ namespace InvariantLearning
             //LocaDimensionTest();
             //xperimentEvaluatateImageClassification();
             // Invariant Learning Experiment
-            //InvariantRepresentation($"HtmInvariantLearning {experimentTime}");
-            SPCapacityTest();
+            InvariantRepresentation($"HtmInvariantLearning {experimentTime}");
+            //SPCapacityTest();
         }
 
         private static void InvariantRepresentation(string experimentFolder)
@@ -50,10 +50,10 @@ namespace InvariantLearning
             Mnist.TestDataGen("MnistDataSet", MnistTestFolder, 10);
             DataSet testSet_32x32 = new DataSet(MnistTestFolder);
 
-            // create segmented frame from 32x32 dataset into 8x8 for SP to learn all pattern
+            // write extracted/filtered frame from 32x32 dataset into 4x4 for SP to learn all pattern
             var listOfFrame = Frame.GetConvFrames(width, height, 4, 4, 8, 8);
 
-            string segmentedFrameFolder = Path.Combine(experimentFolder, "segmentedFrame");
+            string extractedFrameFolder = Path.Combine(experimentFolder, "extractedFrame");
             int index = 0;
             List<string> frameDensityList = new List<string>();
             foreach (var image in sourceSet_32x32.Images)
@@ -61,32 +61,34 @@ namespace InvariantLearning
                 foreach(var frame in listOfFrame)
                 {
                     if(image.IsRegionOverBinarizedThreshold(frame,255/2)){
-                        Utility.CreateFolderIfNotExist(Path.Combine(segmentedFrameFolder, $"{index}"));
-                        if (!ExistImageInDataSet(image, segmentedFrameFolder, frame)) {
-                            string savePath = Path.Combine(segmentedFrameFolder, $"{index}", $"{index}.png");
-                            string segmentedFrameFolderBinarized = Path.Combine(experimentFolder, "segmentedFrameBinarized");
-                            Utility.CreateFolderIfNotExist(Path.Combine(segmentedFrameFolderBinarized, $"{index}"));
-                            string savePathOri = Path.Combine(segmentedFrameFolderBinarized, $"{index}", $"{index}_ori.png");
+                        Utility.CreateFolderIfNotExist(Path.Combine(extractedFrameFolder, $"{index}"));
+                        if (!ExistImageInDataSet(image, extractedFrameFolder, frame)) {
+                            string savePath = Path.Combine(extractedFrameFolder, $"{index}", $"{index}.png");
+                            string extractedFrameFolderBinarized = Path.Combine(experimentFolder, "extractedFrameBinarized");
+                            Utility.CreateFolderIfNotExist(Path.Combine(extractedFrameFolderBinarized, $"{index}"));
+                            string savePathOri = Path.Combine(extractedFrameFolderBinarized, $"{index}", $"{index}_ori.png");
+
                             image.SaveTo(savePath, frame, true);
                             image.SaveTo(savePathOri, frame);
+
                             frameDensityList.Add($"pattern {index}, Pixel Density {image.CalculateImageDensity(frame,255/2) * 100}");
                             index += 1;
                         }
                     }
                 }
             }
-            File.WriteAllLines(Path.Combine(segmentedFrameFolder,"PixelDensity.txt"),frameDensityList.ToArray());
-            DataSet segmentedFrameSet = new DataSet(segmentedFrameFolder);
+            File.WriteAllLines(Path.Combine(extractedFrameFolder,"PixelDensity.txt"),frameDensityList.ToArray());
+            DataSet extractedFrameSet = new DataSet(extractedFrameFolder);
 
-            //LearningFoundation with SP
+            // Learning the filtered frame set with SP
             LearningUnit spLayer1 = new LearningUnit(32, 2048);
-            spLayer1.TrainingNewbornCycle(segmentedFrameSet);
-            //spLayer1.TrainingNormal(segmentedFrameSet, 1);
+            spLayer1.TrainingNewbornCycle(extractedFrameSet);
+            // spLayer1.TrainingNormal(extractedFrameSet, 1);
 
             string extractedImageSource = Path.Combine(experimentFolder, "extractedSet");
             Utility.CreateFolderIfNotExist(extractedImageSource);
 
-            //saving representation with the label
+            // Saving representation/semantic array with its label in files
             Dictionary<string, List<int[]>> lib = new Dictionary<string, List<int[]>>();
 
             foreach(var image in sourceSet_32x32.Images)
@@ -118,6 +120,8 @@ namespace InvariantLearning
                     }
                 }
             }
+
+            // Testing section, caculate accuracy
             string testFolder = Path.Combine(experimentFolder, "Test");
             Utility.CreateFolderIfNotExist(testFolder);
             int match = 0;
@@ -159,9 +163,9 @@ namespace InvariantLearning
             Debug.WriteLine($"accuracy equals {(double)(((double)match)/((double)testSet_32x32.Count))}");
         }
 
-        private static bool ExistImageInDataSet(Picture image, string segmentedFrameFolder, Frame frame)
+        private static bool ExistImageInDataSet(Picture image, string extractedFrameFolder, Frame frame)
         {
-            foreach(var dir in Directory.GetDirectories(segmentedFrameFolder))
+            foreach(var dir in Directory.GetDirectories(extractedFrameFolder))
             {
                 foreach (var file in Directory.GetFiles(dir))
                 {
@@ -180,7 +184,7 @@ namespace InvariantLearning
             Dictionary<string, object> settings = new Dictionary<string, object>()
             {
                 { "W", 15},
-                { "N", 1000},
+                { "N", 100},
                 { "Radius", -1.0},
                 { "MinVal", 0.0},
                 { "Periodic", false},
