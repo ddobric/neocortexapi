@@ -353,7 +353,7 @@ namespace NeoCortexApi.Entities
          */
         //@SuppressWarnings("rawtypes")
         //@Override
-        public bool Equals(AbstractFlatMatrix<T> obj)
+        public virtual bool Equals(AbstractFlatMatrix<T> obj)
         {
             if (this == obj)
                 return true;

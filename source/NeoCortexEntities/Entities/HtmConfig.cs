@@ -1001,7 +1001,9 @@ namespace NeoCortexApi.Entities
         {
             var excludeMembers = new List<string>
             {
-                nameof(HtmConfig.inputMatrix)
+                nameof(HtmConfig.inputMatrix),
+                nameof(HtmConfig.synPermActiveInc),
+                nameof(HtmConfig.synPermConnected)
             };
             HtmSerializer2.SerializeObject(obj, name, sw);
         }

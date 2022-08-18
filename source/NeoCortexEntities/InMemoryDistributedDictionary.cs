@@ -364,6 +364,15 @@ namespace NeoCortexApi.Entities
 
 
         #endregion
+
+        public override bool Equals(object obj)
+        {
+            var dict = obj as InMemoryDistributedDictionary<TKey, TValue>;
+            if (dict == null)
+                return false;
+
+            return this.Equals(dict);
+        }
         public bool Equals (InMemoryDistributedDictionary<TKey, TValue> obj)
         {
             if (this == obj)
@@ -378,8 +387,23 @@ namespace NeoCortexApi.Entities
             }
             else if (!htmConfig.Equals(obj.htmConfig))
                 return false;
-            if (!dictList.SequenceEqual(obj.dictList))
+
+            if (dictList.Length != obj.dictList.Length)
                 return false;
+            for (int i = 0; i < dictList.Length; i++)
+            {
+                var dict = dictList[i];
+                var otherDict = obj.dictList[i];
+
+                foreach (var key in dict.Keys)
+                {
+                    if (otherDict.TryGetValue(key, out var value) == false)
+                        return false;
+                    if (dict[key].Equals(value) == false)
+                        return false;
+                }
+            }
+
             if (numElements != obj.numElements)
                 return false;
             if (IsReadOnly != obj.IsReadOnly)
@@ -394,12 +418,15 @@ namespace NeoCortexApi.Entities
                 return false;
             if (currentIndex != obj.currentIndex)
                 return false;
-            if (Current != obj.Current)
-                return false;
+            //if (Current != obj.Current)
+            //    return false;
 
             return true;
 
         }
+
+        
+
         public void Serialize(StreamWriter writer)
         {
             HtmSerializer2 ser = new HtmSerializer2();

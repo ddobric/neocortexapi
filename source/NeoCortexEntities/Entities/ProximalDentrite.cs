@@ -13,7 +13,7 @@ namespace NeoCortexApi.Entities
     /// Defines th eproximal dentritte segment. Note the segment is used during SP compute operation.
     /// TM does not use this segment.
     /// </summary>
-    public class ProximalDendrite : Segment
+    public class ProximalDendrite : Segment, ISerializable
     {
         /// <summary>
         /// The pool of synapses in the receptive field.
@@ -261,6 +261,24 @@ namespace NeoCortexApi.Entities
                     }
                 }
             }
+            return proximal;
+        }
+
+        public void Serialize(object obj, string name, StreamWriter sw)
+        {
+            var ignoreMembers = new List<string>
+            {
+                nameof(ProximalDendrite.)
+                //nameof(Segment.Synapses)
+            };
+            HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);
+            //var synapses = this.Synapses.Select(s => new Synapse() { SynapseIndex = s.SynapseIndex });
+            //HtmSerializer2.Serialize(synapses, nameof(Segment.Synapses), sw);
+        }
+
+        public static object Deserialize<T>(StreamReader sr, string name)
+        {
+            var proximal = HtmSerializer2.DeserializeObject<T>(sr, name);
             return proximal;
         }
 

@@ -1312,6 +1312,11 @@ namespace NeoCortexApi.Entities
             if (this.m_HtmConfig.Equals(obj.m_HtmConfig) == false)
                 return false;
 
+            if (this.Memory.Equals(obj.Memory) == false)
+                return false;
+            if (this.memory.Equals(obj.memory) == false)
+                return false;
+
             if (this.m_NextFlatIdx != obj.m_NextFlatIdx)
                 return false;
 

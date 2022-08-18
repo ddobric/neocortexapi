@@ -216,8 +216,8 @@ namespace NeoCortexApi.Entities
 
             if (obj == null)
                 return false;
-            if (!this.dimensions.SequenceEqual(obj.dimensions))
-                return false;
+            //if (!this.dimensions.SequenceEqual(obj.dimensions))
+            //    return false;
             else if (!ArrayEquals(this.backingArray, obj.backingArray))
                 return false;
             else if (this.numOfNodes != obj.numOfNodes)
@@ -311,7 +311,13 @@ namespace NeoCortexApi.Entities
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            var ignoreMembers = new List<string> { "Item" };
+            var ignoreMembers = new List<string> 
+            { 
+                "Item",
+                nameof(Dimensions),
+                nameof(IDistributedArray.Count),
+                nameof(Rank)
+            };
             HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);
         }
 

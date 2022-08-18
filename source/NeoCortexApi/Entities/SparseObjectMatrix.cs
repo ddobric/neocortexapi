@@ -197,12 +197,20 @@ namespace NeoCortexApi.Entities
             return result;
         }
 
+        public override bool Equals(object obj)
+        {
+            var matrix = obj as SparseObjectMatrix<T>;
+            if (matrix == null)
+                return false;
+            return this.Equals(matrix);
+        }
+
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
         /// <param name="obj"><inheritdoc/></param>
         /// <returns><inheritdoc/></returns>
-        public override bool Equals(Object obj)
+        public override bool Equals(AbstractFlatMatrix<T> obj)
         {
             if (this == obj)
                 return true;
@@ -211,6 +219,11 @@ namespace NeoCortexApi.Entities
             if (this.GetType() != obj.GetType())
                 return false;
             SparseObjectMatrix<T> other = obj as SparseObjectMatrix<T>;
+            return this.Equals(other);
+        }
+
+        public bool Equals(SparseObjectMatrix<T> other)
+        {
             if (other == null)
                 return false;
 
@@ -320,6 +333,7 @@ namespace NeoCortexApi.Entities
             {
                 var ddSynapses = matrixColumns.m_SparseMap.Values.SelectMany(c => c.Cells).SelectMany(c => c.DistalDendrites).SelectMany(d => d.Synapses);
                 var cellSynapses = matrixColumns.m_SparseMap.Values.SelectMany(c => c.Cells).SelectMany(c => c.ReceptorSynapses);
+                var columnSynapses = matrixColumns.m_SparseMap.Values.Select(c => c.ProximalDendrite).SelectMany(d => d.Synapses);
 
                 var synapses = new List<Synapse>();
                 foreach (var synapse in ddSynapses)
@@ -331,6 +345,14 @@ namespace NeoCortexApi.Entities
                 }
 
                 foreach (var synapse in cellSynapses)
+                {
+                    if (synapses.FirstOrDefault(s => s.SynapseIndex == synapse.SynapseIndex) == null)
+                    {
+                        synapses.Add(synapse);
+                    }
+                }
+
+                foreach (var synapse in columnSynapses)
                 {
                     if (synapses.FirstOrDefault(s => s.SynapseIndex == synapse.SynapseIndex) == null)
                     {
@@ -380,6 +402,15 @@ namespace NeoCortexApi.Entities
                             }
                             distalDentrite.Synapses = ddSynapses;
                         }
+
+                        //var pdSynapses = new List<Synapse>();
+                        //foreach (var synapse in column.ProximalDendrite.Synapses)
+                        //{
+                        //    var pdSynapse = synapses.FirstOrDefault(s => s.SynapseIndex == synapse.SynapseIndex);
+                        //    if (pdSynapse != null)
+                        //        pdSynapses.Add(pdSynapse);
+                        //}
+                        //column.ProximalDendrite.Synapses = pdSynapses;
                     }
                 }
             });

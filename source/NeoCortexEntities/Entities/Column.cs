@@ -374,6 +374,13 @@ namespace NeoCortexApi.Entities
             return m_Hashcode;
         }
 
+        public override bool Equals(object obj)
+        {
+            var col = obj as Column;
+            if (col == null)
+                return false;
+            return this.Equals(col);
+        }
         public bool Equals(Column obj)
         {
             if (this == obj)
