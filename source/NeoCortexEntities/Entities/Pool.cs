@@ -12,7 +12,7 @@ namespace NeoCortexApi.Entities
     /// All Synapses will have a reference to a <see cref="Pool"/> to retrieve relevant values. In addition, same pool can be referenced from the Connections 
     /// object externally which will update the Synapse's internal reference.
     /// </summary>
-    public class Pool
+    public class Pool : ISerializable
     {
         private int size;
 
@@ -265,10 +265,10 @@ namespace NeoCortexApi.Entities
             HtmSerializer2 ser = new HtmSerializer2();
 
             ser.SerializeBegin(nameof(Pool), writer);
-            
+
             ser.SerializeValue(this.size, writer);
             ser.SerializeValue(this.NumInputs, writer);
-            ser.SerializeValue(this.m_SynapseConnections, writer); 
+            ser.SerializeValue(this.m_SynapseConnections, writer);
             ser.SerializeValue(this.m_SynapsesBySourceIndex, writer);
 
             ser.SerializeEnd(nameof(Pool), writer);
@@ -298,7 +298,7 @@ namespace NeoCortexApi.Entities
                     int val = ser.ReadKeyISValue(data);
                     data = sr.ReadLine();
                     pool.m_SynapsesBySourceIndex.Add(val, Synapse.Deserialize(sr));
-                    
+
                 }
                 else
                 {
@@ -330,6 +330,36 @@ namespace NeoCortexApi.Entities
                 }
             }
             return pool;
+        }
+
+        public void Serialize(object obj, string name, StreamWriter sw)
+        {
+            var ignoreMembers = new List<string>
+            {
+                nameof(Pool.size),
+                nameof(Pool.m_SynapsesBySourceIndex)
+            };
+            if (obj is Pool pool)
+            {
+
+                HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);
+
+                var synapses = pool.m_SynapsesBySourceIndex.Values.ToList();
+                HtmSerializer2.Serialize(synapses, "synapses", sw, null, ignoreMembers: new List<string> { nameof(Synapse.SegmentIndex) });
+            }
+        }
+
+        public static object Deserialize<T>(StreamReader sr, string name)
+        {
+            return HtmSerializer2.DeserializeObject<Pool>(sr, name, new List<string> { "synapses" }, (pool, propName) =>
+            {
+                if (propName == "synapses")
+                {
+                    var synapses = HtmSerializer2.Deserialize<List<Synapse>>(sr, propName);
+                    pool.m_SynapsesBySourceIndex = synapses.ToDictionary(s => s.InputIndex);
+                    pool.size = synapses.Count;
+                }
+            });
         }
         #endregion
     }

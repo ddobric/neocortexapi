@@ -31,7 +31,7 @@ namespace NeoCortexApi.Encoders
 
 
         protected int nInternal;
-        
+
         protected double rangeInternal;
         
         protected bool encLearningEnabled;
@@ -312,7 +312,20 @@ namespace NeoCortexApi.Encoders
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            var excludeMembers = new List<string> { nameof(EncoderBase.Properties) };
+            var excludeMembers = new List<string> 
+            { 
+                nameof(EncoderBase.Properties),
+                nameof(EncoderBase.halfWidth),
+                nameof(EncoderBase.rangeInternal),
+                nameof(EncoderBase.nInternal),
+                nameof(EncoderBase.encLearningEnabled),
+                nameof(EncoderBase.flattenedFieldTypeList),
+                nameof(EncoderBase.decoderFieldTypes),
+                nameof(EncoderBase.topDownValues),
+                nameof(EncoderBase.bucketValues),
+                nameof(EncoderBase.topDownMapping),
+
+            };
             HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers: excludeMembers);
         }
 

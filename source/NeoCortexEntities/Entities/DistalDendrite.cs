@@ -333,11 +333,11 @@ namespace NeoCortexApi.Entities
             var ignoreMembers = new List<string> 
             { 
                 nameof(DistalDendrite.ParentCell),
-                nameof(Segment.Synapses)
+                //nameof(Segment.Synapses)
             };
             HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);
-            var synapses = this.Synapses.Select(s => new Synapse() { SynapseIndex = s.SynapseIndex });
-            HtmSerializer2.Serialize(synapses, nameof(Segment.Synapses), sw);
+            //var synapses = this.Synapses.Select(s => new Synapse() { SynapseIndex = s.SynapseIndex });
+            //HtmSerializer2.Serialize(synapses, nameof(Segment.Synapses), sw);
 
             //var cell = (obj as DistalDendrite).ParentCell;
 

@@ -460,7 +460,7 @@ namespace NeoCortexApi
                 return false;
             else if (m_IsStable != obj.m_IsStable)
                 return false;
-           
+
             return true;
 
         }
@@ -471,7 +471,7 @@ namespace NeoCortexApi
             HtmSerializer2 ser = new HtmSerializer2();
 
             ser.SerializeBegin(nameof(HomeostaticPlasticityController), writer);
-            
+
             ser.SerializeValue(this.m_RequiredSimilarityThreshold, writer);
             ser.SerializeValue(this.m_MaxPreviousElements, writer);
             ser.SerializeValue(this.m_Cycle, writer);
@@ -481,14 +481,14 @@ namespace NeoCortexApi
             ser.SerializeValue(this.m_NumOfActiveColsForInput, writer);
             ser.SerializeValue(this.m_InOutMap, writer);
             ser.SerializeValue(this.m_IsStable, writer);
-            
+
             if (this.m_HtmMemory != null)
             {
                 this.m_HtmMemory.Serialize(writer);
             }
-            
+
             ser.SerializeEnd(nameof(HomeostaticPlasticityController), writer);
-            
+
         }
 
         public static HomeostaticPlasticityController Deserialize(StreamReader sr)
@@ -559,7 +559,7 @@ namespace NeoCortexApi
                                     ctrl.m_InOutMap = ser.ReadDictSIarray(str[i]);
                                     break;
                                 }
-                            
+
                             case 8:
                                 {
                                     ctrl.m_IsStable = ser.ReadBoolValue(str[i]);
@@ -579,21 +579,48 @@ namespace NeoCortexApi
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            var excludeEntries = new List<string> 
-            { 
-                nameof(m_OnStabilityStatusChanged), 
+            var excludeEntries = new List<string>
+            {
+                nameof(m_OnStabilityStatusChanged),
                 nameof(OnStabilityStatusChanged),
-                nameof(m_HtmMemory)
+                nameof(m_HtmMemory),
+                nameof(m_InOutMap)
             };
 
-            HtmSerializer2.SerializeObject(obj, name, sw, excludeEntries);
+            if (obj is HomeostaticPlasticityController controller)
+            {
+                HtmSerializer2.SerializeObject(obj, name, sw, excludeEntries);
+                var convertInOutMap = controller.m_InOutMap.ToDictionary(kv => kv.Key, kv => new KeyValuePair<int, int[]>(kv.Value.Length, ArrayUtils.IndexesWithNonZeros(kv.Value)));
+                HtmSerializer2.Serialize(convertInOutMap, "convertInOutMap", sw);
+            }
+
+
         }
 
         public static object Deserialize<T>(StreamReader sr, string name)
         {
-            //var excludeEntries = new List<string> { nameof(m_OnStabilityStatusChanged), nameof(OnStabilityStatusChanged) };
+            var excludeEntries = new List<string> { "convertInOutMap" };
 
-            var controller = HtmSerializer2.DeserializeObject<T>(sr, name);
+            var controller = HtmSerializer2.DeserializeObject<T>(sr, name, excludeEntries, (obj, propName) =>
+            {
+                if (obj is HomeostaticPlasticityController hpc)
+                {
+                    if (propName == "convertInOutMap")
+                    {
+                        var convertInOutMap = HtmSerializer2.Deserialize<Dictionary<string, KeyValuePair<int, int[]>>>(sr, propName);
+
+                        Dictionary<string, int[]> inOutMap = new Dictionary<string, int[]>();
+                        foreach (var map in convertInOutMap)
+                        {
+                            var array = new int[map.Value.Key];
+                            ArrayUtils.FillArray(array, 0);
+                            ArrayUtils.SetIndexesTo(array, map.Value.Value, 1);
+                            inOutMap[map.Key] = array;
+                        }
+                        hpc.m_InOutMap = inOutMap;
+                    }
+                }
+            });
 
             return controller;
         }

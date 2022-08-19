@@ -268,17 +268,19 @@ namespace NeoCortexApi.Entities
         {
             var ignoreMembers = new List<string>
             {
-                nameof(ProximalDendrite.)
-                //nameof(Segment.Synapses)
+                nameof(Segment.Synapses)
             };
             HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);
-            //var synapses = this.Synapses.Select(s => new Synapse() { SynapseIndex = s.SynapseIndex });
-            //HtmSerializer2.Serialize(synapses, nameof(Segment.Synapses), sw);
         }
 
         public static object Deserialize<T>(StreamReader sr, string name)
         {
-            var proximal = HtmSerializer2.DeserializeObject<T>(sr, name);
+            var proximal = HtmSerializer2.DeserializeObject<ProximalDendrite>(sr, name);
+            proximal.Synapses = proximal.RFPool.m_SynapsesBySourceIndex.Select(kv => kv.Value).ToList();
+            foreach (var synapse in proximal.Synapses)
+            {
+                synapse.SegmentIndex = proximal.SegmentIndex;
+            }
             return proximal;
         }
 

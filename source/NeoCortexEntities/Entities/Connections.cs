@@ -1312,9 +1312,19 @@ namespace NeoCortexApi.Entities
             if (this.m_HtmConfig.Equals(obj.m_HtmConfig) == false)
                 return false;
 
-            if (this.Memory.Equals(obj.Memory) == false)
+            if (this.Memory == null)
+            {
+                if (obj.Memory != null)
+                    return false;
+            }
+            else if (this.Memory.Equals(obj.Memory) == false)
                 return false;
-            if (this.memory.Equals(obj.memory) == false)
+            if (this.memory == null)
+            {
+                if (obj.memory != null)
+                    return false;
+            }
+            else if (this.memory.Equals(obj.memory) == false)
                 return false;
 
             if (this.m_NextFlatIdx != obj.m_NextFlatIdx)

@@ -333,12 +333,11 @@ namespace NeoCortexApi.Entities
             {
                 var ddSynapses = matrixColumns.m_SparseMap.Values.SelectMany(c => c.Cells).SelectMany(c => c.DistalDendrites).SelectMany(d => d.Synapses);
                 var cellSynapses = matrixColumns.m_SparseMap.Values.SelectMany(c => c.Cells).SelectMany(c => c.ReceptorSynapses);
-                var columnSynapses = matrixColumns.m_SparseMap.Values.Select(c => c.ProximalDendrite).SelectMany(d => d.Synapses);
 
                 var synapses = new List<Synapse>();
                 foreach (var synapse in ddSynapses)
                 {
-                    if (synapses.FirstOrDefault(s => s.SynapseIndex == synapse.SynapseIndex) == null)
+                    if (synapses.Contains(synapse) == false)
                     {
                         synapses.Add(synapse);
                     }
@@ -346,15 +345,7 @@ namespace NeoCortexApi.Entities
 
                 foreach (var synapse in cellSynapses)
                 {
-                    if (synapses.FirstOrDefault(s => s.SynapseIndex == synapse.SynapseIndex) == null)
-                    {
-                        synapses.Add(synapse);
-                    }
-                }
-
-                foreach (var synapse in columnSynapses)
-                {
-                    if (synapses.FirstOrDefault(s => s.SynapseIndex == synapse.SynapseIndex) == null)
+                    if (synapses.Contains(synapse) == false)
                     {
                         synapses.Add(synapse);
                     }
@@ -382,35 +373,34 @@ namespace NeoCortexApi.Entities
                 {
                     foreach (var cell in column.Cells)
                     {
-                        var receptorSynapses = new List<Synapse>();
+                        cell.ReceptorSynapses = synapses.Where(s => s.InputIndex == cell.Index).ToList();
                         foreach (var synapse in cell.ReceptorSynapses)
                         {
-                            var receptorSynapse = synapses.FirstOrDefault(s => s.SynapseIndex == synapse.SynapseIndex);
-                            if (receptorSynapse != null)
-                                receptorSynapses.Add(receptorSynapse);
+                            synapse.SourceCell = cell;
                         }
-                        cell.ReceptorSynapses = receptorSynapses;
+
+
+                        //var receptorSynapses = new List<Synapse>();
+                        //foreach (var synapse in cell.ReceptorSynapses)
+                        //{
+                        //    var receptorSynapse = synapses.FirstOrDefault(s => s.SynapseIndex == synapse.SynapseIndex);
+                        //    if (receptorSynapse != null)
+                        //        receptorSynapses.Add(receptorSynapse);
+                        //}
+                        //cell.ReceptorSynapses = receptorSynapses;
 
                         foreach (var distalDentrite in cell.DistalDendrites)
                         {
-                            var ddSynapses = new List<Synapse>();
-                            foreach (var synapse in distalDentrite.Synapses)
-                            {
-                                var ddSynapse = synapses.FirstOrDefault(s => s.SynapseIndex == synapse.SynapseIndex);
-                                if (ddSynapse != null)
-                                    ddSynapses.Add(ddSynapse);
-                            }
-                            distalDentrite.Synapses = ddSynapses;
+                            distalDentrite.Synapses = synapses.Where(s => s.SegmentIndex == distalDentrite.SegmentIndex).ToList();
+                            //var ddSynapses = new List<Synapse>();
+                            //foreach (var synapse in distalDentrite.Synapses)
+                            //{
+                            //    var ddSynapse = synapses.FirstOrDefault(s => s.SynapseIndex == synapse.SynapseIndex);
+                            //    if (ddSynapse != null)
+                            //        ddSynapses.Add(ddSynapse);
+                            //}
+                            //distalDentrite.Synapses = ddSynapses;
                         }
-
-                        //var pdSynapses = new List<Synapse>();
-                        //foreach (var synapse in column.ProximalDendrite.Synapses)
-                        //{
-                        //    var pdSynapse = synapses.FirstOrDefault(s => s.SynapseIndex == synapse.SynapseIndex);
-                        //    if (pdSynapse != null)
-                        //        pdSynapses.Add(pdSynapse);
-                        //}
-                        //column.ProximalDendrite.Synapses = pdSynapses;
                     }
                 }
             });

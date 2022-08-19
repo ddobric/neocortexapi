@@ -5,6 +5,7 @@ using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 namespace NeoCortexApi
@@ -12,7 +13,7 @@ namespace NeoCortexApi
     /// <summary>
     /// Implementation of Temporal Memory algorithm.
     /// </summary>
-    public class TemporalMemory : IHtmAlgorithm<int[], ComputeCycle>//: IComputeDecorator
+    public class TemporalMemory : IHtmAlgorithm<int[], ComputeCycle>, ISerializable//: IComputeDecorator
     {
         private static readonly double EPSILON = 0.00001;
 
@@ -878,6 +879,20 @@ namespace NeoCortexApi
         public bool Equals(IHtmModule other)
         {
             throw new NotImplementedException();
+        }
+
+        public void Serialize(object obj, string name, StreamWriter sw)
+        {
+            var ignoreMembers = new List<string>
+            {
+                //nameof(TemporalMemory.connections)
+            };
+            HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);  
+        }
+
+        public static object Deserialize<T>(StreamReader sr, string name)
+        {
+            return HtmSerializer2.DeserializeObject<T>(sr, name);
         }
     }
 }

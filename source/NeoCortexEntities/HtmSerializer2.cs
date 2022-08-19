@@ -131,7 +131,14 @@ namespace NeoCortexApi.Entities
                 }
                 else if (type.IsClass || type.IsValueType)
                 {
-                    SerializeObject(obj, name, sw, ignoreMembers);
+                    if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
+                    {
+                        SerializeKeyValuePair(name, obj, sw);
+                    }
+                    else
+                    {
+                        SerializeObject(obj, name, sw, ignoreMembers);
+                    }
 
                     //if (type.GetInterface(nameof(ISerializable)) != null)
                     //{
@@ -145,6 +152,24 @@ namespace NeoCortexApi.Entities
             }
             SerializeEnd(name, sw, isSerializeWithType ? type : null);
 
+        }
+
+        private static void SerializeKeyValuePair(string name, object obj, StreamWriter sw)
+        {
+            var type = obj.GetType();
+
+            var keyField = GetFields(type).FirstOrDefault(f => f.Name == "key");
+            if (keyField != null)
+            {
+                var key = keyField.GetValue(obj);
+                Serialize(key, "key", sw);
+            }
+            var valueField = GetFields(type).FirstOrDefault(f => f.Name == "value");
+            if (valueField != null)
+            {
+                var value = valueField.GetValue(obj);
+                Serialize(value, "value", sw);
+            }
         }
 
         public static void Serialize1(object obj, string name,
@@ -495,16 +520,16 @@ namespace NeoCortexApi.Entities
         #endregion
         #region Deserialization
 
+        //public static T Deserialize<T>(StreamReader sr, string propName = null)
+        //{
+        //    var type = typeof(T);
+
+        //    T obj = ReadContent<T>(sr, propName);
+
+        //    return obj;
+        //}
+
         public static T Deserialize<T>(StreamReader sr, string propName = null)
-        {
-            var type = typeof(T);
-
-            T obj = ReadContent<T>(sr, propName);
-
-            return obj;
-        }
-
-        private static T ReadContent<T>(StreamReader sr, string propName)
         {
             T obj = default;
             var type = typeof(T);
@@ -542,8 +567,13 @@ namespace NeoCortexApi.Entities
             }
             else
             {
-                // deserialize object
-                obj = DeserializeObject<T>(sr, propName);
+                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
+                {
+                    obj = DeserializeKeyValuePair<T>(sr, propName);
+                }
+                else
+                    // deserialize object
+                    obj = DeserializeObject<T>(sr, propName);
 
                 //if (type.GetInterface(nameof(ISerializable)) != null)
                 //{
@@ -572,6 +602,26 @@ namespace NeoCortexApi.Entities
             }
 
             return obj;
+        }
+
+        private static T DeserializeKeyValuePair<T>(StreamReader sr, string propName)
+        {
+            var type = typeof(T);
+
+            var keyType = type.GetGenericArguments()[0];
+            var valueType = type.GetGenericArguments()[1];
+
+
+            var deserializeMethod = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.Deserialize));
+
+            var content = sr.ReadLine();
+            var key = deserializeMethod.MakeGenericMethod(keyType).Invoke(null, new object[] { sr, "key" });
+            content = sr.ReadLine();
+            var value = deserializeMethod.MakeGenericMethod(valueType).Invoke(null, new object[] { sr, "value" });
+            var keyValuePair = (T)Activator.CreateInstance(type, new[] { key, value });
+
+            return keyValuePair;
+
         }
 
         private static object DeserializeCell(StreamReader sr, string propName)
@@ -660,11 +710,11 @@ namespace NeoCortexApi.Entities
             if (sr.Peek() > 0)
             {
                 sr.ReadLine();
-                var rank = ReadContent<int>(sr, nameof(Array.Rank));
+                var rank = Deserialize<int>(sr, nameof(Array.Rank));
                 for (int i = 0; i < rank; i++)
                 {
                     sr.ReadLine();
-                    var dim = ReadContent<int>(sr, $"Dim{i}");
+                    var dim = Deserialize<int>(sr, $"Dim{i}");
                     dimList.Add(dim);
                 }
 
@@ -674,7 +724,7 @@ namespace NeoCortexApi.Entities
             while (sr.Peek() > 0)
             {
                 var content = sr.ReadLine();
-                var readContentMethod = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.ReadContent), BindingFlags.Static | BindingFlags.NonPublic).MakeGenericMethod(elementType);
+                var deserializeMethod = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.Deserialize)).MakeGenericMethod(elementType);
 
                 if (content == ReadGenericEnd(propName) || content == ReadGenericEnd(propName, arrayType))
                 {
@@ -684,7 +734,7 @@ namespace NeoCortexApi.Entities
                 {
                     continue;
                 }
-                var activeElement = readContentMethod.Invoke(null, new object[] { sr, "ActiveElement" });
+                var activeElement = deserializeMethod.Invoke(null, new object[] { sr, "ActiveElement" });
                 var activeIndex = Deserialize<int[]>(sr, "ActiveIndex");
 
                 array.SetValue(activeElement, activeIndex);
@@ -708,8 +758,8 @@ namespace NeoCortexApi.Entities
             var type = typeof(T);
             object key = null;
             object value = null;
-            var typeKey = type.GetGenericArguments()[0];
-            var typeValue = type.GetGenericArguments()[1];
+            var keyType = type.GetGenericArguments()[0];
+            var valueType = type.GetGenericArguments()[1];
 
             var beginKey = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.ReadGenericBegin), BindingFlags.NonPublic | BindingFlags.Static);
             var beginValue = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.ReadGenericBegin), BindingFlags.NonPublic | BindingFlags.Static);
@@ -738,12 +788,12 @@ namespace NeoCortexApi.Entities
                 }
                 if (content.StartsWith((string)beginKey.Invoke(null, new object[] { "Key", default(Type) })))
                 {
-                    var specifiedType = GetSpecifiedTypeOrDefault(content, typeKey);
+                    var specifiedType = GetSpecifiedTypeOrDefault(content, keyType);
                     key = deserializeMethod.MakeGenericMethod(specifiedType).Invoke(null, new object[] { sr, "Key" });
                 }
                 else if (content.StartsWith((string)beginValue.Invoke(null, new object[] { "Value", default(Type) })))
                 {
-                    var specifiedType = GetSpecifiedTypeOrDefault(content, typeValue);
+                    var specifiedType = GetSpecifiedTypeOrDefault(content, valueType);
                     value = deserializeMethod.MakeGenericMethod(specifiedType).Invoke(null, new object[] { sr, "Value" });
                 }
 
@@ -751,12 +801,12 @@ namespace NeoCortexApi.Entities
                 {
                     if (type.GetGenericTypeDefinition().IsAssignableFrom(typeof(Dictionary<,>)))
                     {
-                        var tryAddMethod = typeof(Dictionary<,>).MakeGenericType(typeKey, typeValue).GetMethod("TryAdd");
+                        var tryAddMethod = typeof(Dictionary<,>).MakeGenericType(keyType, valueType).GetMethod("TryAdd");
                         tryAddMethod.Invoke(obj, new object[] { key, value });
                     }
                     else
                     {
-                        var addMethod = typeof(IDictionary<,>).MakeGenericType(typeKey, typeValue).GetMethod("Add");
+                        var addMethod = typeof(IDictionary<,>).MakeGenericType(keyType, valueType).GetMethod("Add");
                         addMethod.Invoke(obj, new object[] { key, value });
                     }
 
@@ -986,7 +1036,7 @@ namespace NeoCortexApi.Entities
 
         private static bool IsSet(Type type)
         {
-            return type.IsGenericType && (typeof(ISet<>) == type.GetGenericTypeDefinition());
+            return type.IsGenericType && (typeof(ISet<>) == type.GetGenericTypeDefinition() || type.GetInterface("ISet`1")!= null) ;
         }
 
         #endregion
