@@ -125,13 +125,13 @@ namespace NeoCortexApi.Entities
                 {
                     //if (!Enumerable.SequenceEqual(obj.DistalDendrites, this.DistalDendrites))
                     //    return false;
-                    if (!obj.DistalDendrites.SequenceEqual(this.DistalDendrites))
+                    if (!obj.DistalDendrites.ElementsEqual(this.DistalDendrites))
                         return false;
                 }
 
                 if (obj.ReceptorSynapses != null && this.ReceptorSynapses != null)
                 {
-                    if (!obj.ReceptorSynapses.SequenceEqual(this.ReceptorSynapses))
+                    if (!obj.ReceptorSynapses.ElementsEqual(this.ReceptorSynapses))
                         return false;
                 }
 
@@ -252,7 +252,7 @@ namespace NeoCortexApi.Entities
         {
             var ignoreMembers = new List<string> 
             { 
-                nameof(Cell.ReceptorSynapses) 
+                nameof(Cell.ReceptorSynapses),
             };
             HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);
             var cell = obj as Cell;

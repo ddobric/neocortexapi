@@ -59,7 +59,9 @@ namespace NeoCortexApi
             Column colZero = matrix.GetObject(0);
             for (int i = 0; i < numColumns; i++)
             {
-                Column column = colZero == null ? new Column(cellsPerColumn, i, this.connections.HtmConfig.SynPermConnected, this.connections.HtmConfig.NumInputs) : matrix.GetObject(i);
+                Column column = colZero == null ? 
+                    new Column(cellsPerColumn, i, this.connections.HtmConfig.SynPermConnected, this.connections.HtmConfig.NumInputs) : matrix.GetObject(i);
+
                 for (int j = 0; j < cellsPerColumn; j++)
                 {
                     cells[i * cellsPerColumn + j] = column.Cells[j];
@@ -878,7 +880,9 @@ namespace NeoCortexApi
 
         public bool Equals(IHtmModule other)
         {
-            throw new NotImplementedException();
+            if (!(other is TemporalMemory tm))
+                return false;
+            return this.Equals(tm);
         }
 
         public void Serialize(object obj, string name, StreamWriter sw)

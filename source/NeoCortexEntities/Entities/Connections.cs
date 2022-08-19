@@ -197,20 +197,20 @@ namespace NeoCortexApi.Entities
             return retVal;
         }
 
-        /// <summary>
-        /// Returns a <see cref="LinkedHashSet{T}"/> containing the <see cref="Cell"/>s specified by the passed in indexes.
-        /// </summary>
-        /// <param name="cellIndexes">indexes of the Cells to return</param>
-        /// <returns></returns>
-        public List<Cell> GetCellSet(int[] cellIndexes)
-        {
-            List<Cell> retVal = new List<Cell>();
-            for (int i = 0; i < cellIndexes.Length; i++)
-            {
-                retVal.Add(Cells[cellIndexes[i]]);
-            }
-            return retVal;
-        }
+        ///// <summary>
+        ///// Returns a <see cref="LinkedHashSet{T}"/> containing the <see cref="Cell"/>s specified by the passed in indexes.
+        ///// </summary>
+        ///// <param name="cellIndexes">indexes of the Cells to return</param>
+        ///// <returns></returns>
+        //public List<Cell> GetCellSet(int[] cellIndexes)
+        //{
+        //    List<Cell> retVal = new List<Cell>();
+        //    for (int i = 0; i < cellIndexes.Length; i++)
+        //    {
+        //        retVal.Add(Cells[cellIndexes[i]]);
+        //    }
+        //    return retVal;
+        //}
 
 
         /// <summary>
@@ -1274,23 +1274,23 @@ namespace NeoCortexApi.Entities
                 return false;
             }
 
-            if (AreCollectionsEqual(this.BoostedOverlaps, obj.BoostedOverlaps) == false)
+            if (this.BoostedOverlaps.TryIfSequenceEqual(obj.BoostedOverlaps) == false)
             {
                 return false;
             }
-            if (AreCollectionsEqual(this.m_BoostedmOverlaps, obj.m_BoostedmOverlaps) == false)
+            if (this.m_BoostedmOverlaps.TryIfSequenceEqual(obj.m_BoostedmOverlaps) == false)
             {
                 return false;
             }
-            if (AreCollectionsEqual(this.Cells, obj.Cells) == false)
+            //if (AreCollectionsEqual(this.Cells, obj.Cells) == false)
+            //{
+            //    return false;
+            //}
+            if (this.BoostFactors.TryIfSequenceEqual(obj.BoostFactors) == false)
             {
                 return false;
             }
-            if (AreCollectionsEqual(this.BoostFactors, obj.BoostFactors) == false)
-            {
-                return false;
-            }
-            if (AreCollectionsEqual(this.m_BoostFactors, obj.m_BoostFactors) == false)
+            if (this.m_BoostFactors.TryIfSequenceEqual(obj.m_BoostFactors) == false)
             {
                 return false;
             }
@@ -1302,7 +1302,7 @@ namespace NeoCortexApi.Entities
             {
                 return false;
             }
-            if (AreCollectionsEqual(this.m_FreeFlatIdxs, obj.m_FreeFlatIdxs) == false)
+            if (this.m_FreeFlatIdxs.TryIfSequenceEqual(obj.m_FreeFlatIdxs) == false)
             {
                 return false;
             }
@@ -1336,17 +1336,17 @@ namespace NeoCortexApi.Entities
                 return false;
             if (this.m_NumSynapses != obj.m_NumSynapses)
                 return false;
-            if (AreCollectionsEqual(this.m_Overlaps, obj.m_Overlaps) == false)
+            if (this.m_Overlaps.TryIfSequenceEqual(obj.m_Overlaps) == false)
                 return false;
-            if (AreCollectionsEqual(this.Overlaps, obj.Overlaps) == false)
+            if (this.Overlaps.TryIfSequenceEqual(obj.Overlaps) == false)
                 return false;
             if (AreCollectionsEqual(this.m_PredictiveCells, obj.m_PredictiveCells) == false)
                 return false;
-            if (AreCollectionsEqual(this.m_SegmentForFlatIdx, obj.m_SegmentForFlatIdx) == false)
+            if (this.m_SegmentForFlatIdx.KeyValuesEqual(obj.m_SegmentForFlatIdx) == false)
                 return false;
-            if (AreCollectionsEqual(this.m_TieBreaker, obj.m_TieBreaker) == false)
+            if (this.m_TieBreaker.TryIfSequenceEqual(obj.m_TieBreaker) == false)
                 return false;
-            if (AreCollectionsEqual(this.TieBreaker, obj.TieBreaker) == false)
+            if (this.TieBreaker.TryIfSequenceEqual(obj.TieBreaker) == false)
                 return false;
             if (this.m_TMIteration != obj.m_TMIteration)
                 return false;
@@ -1372,7 +1372,9 @@ namespace NeoCortexApi.Entities
             }
             else if (current == null && target == null)
                 return true;
-            else if (current.SequenceEqual(target) == false)
+            else if (current.Count() == 0)
+                return target.Count() == 0;
+            else if (current.ElementsEqual(target) == false)
             {
                 return false;
             }
@@ -1408,7 +1410,7 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.ActiveSegments, writer);
             ser.SerializeValue(this.MatchingSegments, writer);
             ser.SerializeValue(this.m_SegmentForFlatIdx, writer);
-            ser.SerializeValue(this.Cells, writer);
+            //ser.SerializeValue(this.Cells, writer);
             if (this.ActiveCells != null)
             {
                 //this.ActiveCells.Serialize(writer);
@@ -1455,10 +1457,10 @@ namespace NeoCortexApi.Entities
                 {
                     continue;
                 }
-                else if (data == ser.ReadBegin("CellArray"))
-                {
-                    mem.Cells = ser.DeserializeCellArray(data, sr);
-                }
+                //else if (data == ser.ReadBegin("CellArray"))
+                //{
+                //    mem.Cells = ser.DeserializeCellArray(data, sr);
+                //}
                 else if (data == ser.ReadBegin(nameof(DistalDendrite)))
                 {
                     //mem.m_ActiveSegments.Add(DistalDendrite.Deserialize(sr));
@@ -1584,28 +1586,123 @@ namespace NeoCortexApi.Entities
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            var ignoreMembers = new List<string>
+            if (obj is Connections connections)
             {
-                nameof(Connections.m_ActiveCells),
-                nameof(Connections.winnerCells),
-                nameof(Connections.memory),
-                nameof(Connections.m_HtmConfig),
-                nameof(Connections.m_NextSegmentOrdinal),
-                nameof(Connections.m_TieBreaker),
-                nameof(Connections.m_BoostedmOverlaps),
-                nameof(Connections.m_Overlaps),
-                nameof(Connections.m_BoostFactors),
-                nameof(Connections.m_ActiveSegments),
-                nameof(Connections.m_MatchingSegments),
 
-                //nameof(Connections.Cells)
-            };
-            HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);
+                var ignoreMembers = new List<string>
+                {
+                    nameof(Connections.m_ActiveCells),
+                    nameof(Connections.winnerCells),
+                    nameof(Connections.memory),
+                    nameof(Connections.m_HtmConfig),
+                    nameof(Connections.m_TieBreaker),
+                    nameof(Connections.m_BoostedmOverlaps),
+                    nameof(Connections.m_Overlaps),
+                    nameof(Connections.m_BoostFactors),
+                    nameof(Connections.m_ActiveSegments),
+                    nameof(Connections.m_MatchingSegments),
+                    nameof(Connections.ActiveCells),
+                    nameof(Connections.WinnerCells),
+                    nameof(Connections.m_SegmentForFlatIdx),
+                    nameof(Connections.Cells)
+
+                    //nameof(Connections.Cells)
+                };
+                HtmSerializer2.SerializeObject(connections, name, sw, ignoreMembers);
+                var cells = connections.GetColumns().SelectMany(c => c.Cells);
+                HtmSerializer2.Serialize(cells, "cellsList", sw);
+
+                var ddSynapses = cells.SelectMany(c => c.DistalDendrites).SelectMany(dd => dd.Synapses).ToList();
+                var cellSynapses = cells.SelectMany(c => c.ReceptorSynapses).ToList();
+                var synapses = ddSynapses.Union(cellSynapses).ToList();
+
+                HtmSerializer2.Serialize(synapses, "synapsesList", sw);
+
+                var activeCellIds = connections.ActiveCells.Select(c => c.Index);
+                HtmSerializer2.Serialize(activeCellIds, "activeCellIds", sw);
+
+                var winnerCellIds = connections.WinnerCells.Select(c => c.Index);
+                HtmSerializer2.Serialize(winnerCellIds, "winnerCellIds", sw);
+            }
         }
 
         public static object Deserialize<T>(StreamReader sr, string name)
         {
-            var conn = HtmSerializer2.DeserializeObject<Connections>(sr, name);
+            var ignoreMembers = new List<string>
+            {
+                "activeCellIds",
+                "winnerCellIds",
+                "synapsesList",
+                "cellsList"
+            };
+            var cells = new List<Cell>();
+            var conn = HtmSerializer2.DeserializeObject<Connections>(sr, name, ignoreMembers, (conn, propName) =>
+            {
+                if (propName == "cellsList")
+                {
+                    cells = HtmSerializer2.Deserialize<List<Cell>>(sr, "cellsList");
+                }
+                else if (propName == "activeCellIds")
+                {
+                    var activeCellIds = HtmSerializer2.Deserialize<List<int>>(sr, "activeCellIds");
+                    foreach (var cellId in activeCellIds)
+                    {
+                        var cell = cells.FirstOrDefault(c => c.Index == cellId);
+                        if (cell != null)
+                            conn.ActiveCells.Add(cell);
+                    }
+                }
+                else if (propName == "winnerCellIds")
+                {
+                    var winnerCellIds = HtmSerializer2.Deserialize<List<int>>(sr, "winnerCellIds");
+                    foreach (var cellId in winnerCellIds)
+                    {
+                        var cell = cells.FirstOrDefault(c => c.Index == cellId);
+                        if (cell != null)
+                            conn.WinnerCells.Add(cell);
+                    }
+                }
+                else if (propName == "synapsesList")
+                {
+                    var synapses = HtmSerializer2.Deserialize<List<Synapse>>(sr, "synapsesList");
+                    foreach (var synapse in synapses)
+                    {
+                        synapse.SourceCell = cells.FirstOrDefault(c => c.Index == synapse.InputIndex);
+                    }
+
+                    foreach (var cell in cells)
+                    {
+                        cell.ReceptorSynapses = synapses.Where(s => s.InputIndex == cell.Index).ToList();
+
+                        foreach (var distalDendrite in cell.DistalDendrites)
+                        {
+                            distalDendrite.Synapses = synapses.Where(s => s.SegmentIndex == distalDendrite.SegmentIndex).ToList();
+                        }
+                    }
+
+                    var columnIndexes = conn.Memory.GetSparseIndices();
+
+                    var columns = new List<Column>();
+
+                    foreach (var index in columnIndexes)
+                    {
+                        var col = conn.Memory.GetColumn(index);
+                        if (col != null)
+                            columns.Add(col);
+                    }
+                    foreach (var column in columns)
+                    {
+                        column.Cells = cells.Where(c => c.ParentColumnIndex == column.Index).ToArray();
+                    }
+
+                    var distalDendrites = cells.SelectMany(c => c.DistalDendrites).Distinct().OrderBy(dd => dd.SegmentIndex);
+                    conn.m_SegmentForFlatIdx = new ConcurrentDictionary<int, DistalDendrite>();
+                    foreach (var distalDendrite in distalDendrites)
+                    {
+                        conn.m_SegmentForFlatIdx.TryAdd(distalDendrite.SegmentIndex, distalDendrite);
+                    }
+                }
+            });
 
             //var cells = new List<Cell>();
             //for (int i = 0; i < conn.Memory.GetMaxIndex(); i++)

@@ -85,6 +85,13 @@ namespace NeoCortexApi.Entities
             return result;
         }
 
+        public override bool Equals(object obj)
+        {
+            if (!(obj is DistalDendrite distalDendrite))
+                return false;
+            return this.Equals(distalDendrite);
+        }
+
         /// <summary>
         /// Compares this segment with the given one.
         /// </summary>
@@ -123,7 +130,7 @@ namespace NeoCortexApi.Entities
                 if (obj.Synapses != null)
                     return false;
             }
-            else if (!Synapses.SequenceEqual(obj.Synapses))
+            else if (!Synapses.ElementsEqual(obj.Synapses))
                 return false;
             //if (boxedIndex == null)
             //{
@@ -333,7 +340,7 @@ namespace NeoCortexApi.Entities
             var ignoreMembers = new List<string> 
             { 
                 nameof(DistalDendrite.ParentCell),
-                //nameof(Segment.Synapses)
+                nameof(Segment.Synapses)
             };
             HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);
             //var synapses = this.Synapses.Select(s => new Synapse() { SynapseIndex = s.SynapseIndex });

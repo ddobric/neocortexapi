@@ -328,81 +328,72 @@ namespace NeoCortexApi.Entities
         {
             HtmSerializer2.SerializeObject(obj, name, sw);
 
-            var matrixColumns = obj as SparseObjectMatrix<Column>;
-            if (matrixColumns != null)
-            {
-                var ddSynapses = matrixColumns.m_SparseMap.Values.SelectMany(c => c.Cells).SelectMany(c => c.DistalDendrites).SelectMany(d => d.Synapses);
-                var cellSynapses = matrixColumns.m_SparseMap.Values.SelectMany(c => c.Cells).SelectMany(c => c.ReceptorSynapses);
+            //var matrixColumns = obj as SparseObjectMatrix<Column>;
+            //if (matrixColumns != null)
+            //{
+            //    var ddSynapses = matrixColumns.m_SparseMap.Values.SelectMany(c => c.Cells).SelectMany(c => c.DistalDendrites).SelectMany(d => d.Synapses);
+            //    var cellSynapses = matrixColumns.m_SparseMap.Values.SelectMany(c => c.Cells).SelectMany(c => c.ReceptorSynapses);
 
-                var synapses = new List<Synapse>();
-                foreach (var synapse in ddSynapses)
-                {
-                    if (synapses.Contains(synapse) == false)
-                    {
-                        synapses.Add(synapse);
-                    }
-                }
+            //    var synapses = new List<Synapse>();
+            //    foreach (var synapse in ddSynapses)
+            //    {
+            //        if (synapses.Contains(synapse) == false)
+            //        {
+            //            synapses.Add(synapse);
+            //        }
+            //    }
 
-                foreach (var synapse in cellSynapses)
-                {
-                    if (synapses.Contains(synapse) == false)
-                    {
-                        synapses.Add(synapse);
-                    }
-                }
+            //    foreach (var synapse in cellSynapses)
+            //    {
+            //        if (synapses.Contains(synapse) == false)
+            //        {
+            //            synapses.Add(synapse);
+            //        }
+            //    }
 
-                HtmSerializer2.Serialize(synapses, "synapsesList", sw);
-            }
+            //    HtmSerializer2.Serialize(synapses, "synapsesList", sw);
+            //}
         }
 
         public static object Deserialize<TItem>(StreamReader sr, string name)
         {
             var ignoreMembers = new List<string>
             {
-                "synapsesList"
+                //"synapsesList"
             };
             var matrix = HtmSerializer2.DeserializeObject<SparseObjectMatrix<T>>(sr, name, ignoreMembers, (m, propName) =>
             {
-                var matrixColumns = m as SparseObjectMatrix<Column>;
-                if (matrixColumns == null)
-                    return;
+                //var matrixColumns = m as SparseObjectMatrix<Column>;
+                //if (matrixColumns == null)
+                //    return;
 
-                var synapses = HtmSerializer2.Deserialize<List<Synapse>>(sr, "synapsesList");
+                //var synapses = HtmSerializer2.Deserialize<List<Synapse>>(sr, "synapsesList");
 
-                foreach (var column in matrixColumns.m_SparseMap.Values)
-                {
-                    foreach (var cell in column.Cells)
-                    {
-                        cell.ReceptorSynapses = synapses.Where(s => s.InputIndex == cell.Index).ToList();
-                        foreach (var synapse in cell.ReceptorSynapses)
-                        {
-                            synapse.SourceCell = cell;
-                        }
+                //foreach (var column in matrixColumns.m_SparseMap.Values)
+                //{
+                //    foreach (var cell in column.Cells)
+                //    {
+                //        var cellSynapses = synapses.Where(s => s.InputIndex == cell.Index).ToList();
+                //        foreach (var synapse in cellSynapses)
+                //        {
+                //            synapse.SourceCell = cell;
+                //        }
+                //    }
+                //}
 
 
-                        //var receptorSynapses = new List<Synapse>();
-                        //foreach (var synapse in cell.ReceptorSynapses)
-                        //{
-                        //    var receptorSynapse = synapses.FirstOrDefault(s => s.SynapseIndex == synapse.SynapseIndex);
-                        //    if (receptorSynapse != null)
-                        //        receptorSynapses.Add(receptorSynapse);
-                        //}
-                        //cell.ReceptorSynapses = receptorSynapses;
+                //foreach (var column in matrixColumns.m_SparseMap.Values)
+                //{
+                //    foreach (var cell in column.Cells)
+                //    {
+                //        cell.ReceptorSynapses = synapses.Where(s => s.InputIndex == cell.Index).ToList();
 
-                        foreach (var distalDentrite in cell.DistalDendrites)
-                        {
-                            distalDentrite.Synapses = synapses.Where(s => s.SegmentIndex == distalDentrite.SegmentIndex).ToList();
-                            //var ddSynapses = new List<Synapse>();
-                            //foreach (var synapse in distalDentrite.Synapses)
-                            //{
-                            //    var ddSynapse = synapses.FirstOrDefault(s => s.SynapseIndex == synapse.SynapseIndex);
-                            //    if (ddSynapse != null)
-                            //        ddSynapses.Add(ddSynapse);
-                            //}
-                            //distalDentrite.Synapses = ddSynapses;
-                        }
-                    }
-                }
+                //        foreach (var distalDentrite in cell.DistalDendrites)
+                //        {
+                //            distalDentrite.Synapses = synapses.Where(s => s.SegmentIndex == distalDentrite.SegmentIndex).ToList();
+                //        }
+                //    }
+                //}
             });
 
             return matrix;

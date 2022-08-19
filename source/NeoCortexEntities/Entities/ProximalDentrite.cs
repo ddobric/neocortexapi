@@ -55,7 +55,7 @@ namespace NeoCortexApi.Entities
             return synapse;
         }
 
-        
+
 
         /// <summary>
         /// Array of indicies of connected inputs. Defines RF. Sometimes also called 'Potential Pool'.
@@ -160,8 +160,8 @@ namespace NeoCortexApi.Entities
                 if (other.Synapses != null)
                     return false;
             }
-            else if (!Synapses.SequenceEqual(other.Synapses))
-                    return false;
+            else if (!Synapses.ElementsEqual(other.Synapses))
+                return false;
 
             //if (boxedIndex == null)
             //{
@@ -175,7 +175,7 @@ namespace NeoCortexApi.Entities
                 return false;
             if (NumInputs != other.NumInputs)
                 return false;
-            
+
             return true;
         }
         #region Serialization
@@ -199,7 +199,7 @@ namespace NeoCortexApi.Entities
             //    this.boxedIndex.Serialize(writer);
             //}
             ser.SerializeValue(this.Synapses, writer);
-            
+
             ser.SerializeEnd(nameof(ProximalDendrite), writer);
         }
 

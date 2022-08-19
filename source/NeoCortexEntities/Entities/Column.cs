@@ -412,7 +412,7 @@ namespace NeoCortexApi.Entities
             if (obj.Cells != null && Cells != null)
             {
 
-                if (!obj.Cells.SequenceEqual(Cells))
+                if (!obj.Cells.ElementsEqual(Cells))
                     return false;
             }
             if (Index != obj.Index)
@@ -537,6 +537,7 @@ namespace NeoCortexApi.Entities
                 var ignoreMembers = new List<string>
                 {
                     nameof(Column.connectedInputCounter),
+                    nameof(Column.Cells)
                 };
                 HtmSerializer2.SerializeObject(column, name, sw, ignoreMembers);
             }
