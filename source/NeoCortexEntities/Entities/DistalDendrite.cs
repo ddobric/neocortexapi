@@ -79,7 +79,7 @@ namespace NeoCortexApi.Entities
         public override int GetHashCode()
         {
             int prime = 31;
-            int result = base.GetHashCode();
+            int result = 1;
             result = prime * result + ((ParentCell == null) ? 0 : ParentCell.GetHashCode());
             result *= this.SegmentIndex;
             return result;
@@ -339,7 +339,7 @@ namespace NeoCortexApi.Entities
         {
             var ignoreMembers = new List<string> 
             { 
-                nameof(DistalDendrite.ParentCell),
+                //nameof(DistalDendrite.ParentCell),
                 nameof(Segment.Synapses)
             };
             HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);

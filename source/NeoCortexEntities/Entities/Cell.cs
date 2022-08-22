@@ -83,21 +83,21 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public override int GetHashCode()
         {
-            if (m_Hashcode == 0)
-            {
-                int prime = 31;
-                int result = 1;
-                result = prime * result + Index;
-                return result;
-            }
-            return m_Hashcode;
+            int prime = 31;
+            int result = 1;
+            result = prime * result + ParentColumnIndex;
+            result = prime * result + Index;
+            return result;
+            //if (m_Hashcode == 0)
+            //{
+            //    int prime = 31;
+            //    int result = 1;
+            //    result = prime * result + ParentColumnIndex;
+            //    result = prime * result + Index;
+            //    return result;
+            //}
+            //return m_Hashcode;
         }
-
-        public int HashCode()
-        {
-            return base.GetHashCode();
-        }
-
 
         /// <summary>
         /// <inheritdoc/>
@@ -253,6 +253,7 @@ namespace NeoCortexApi.Entities
             var ignoreMembers = new List<string> 
             { 
                 nameof(Cell.ReceptorSynapses),
+                nameof(m_Hashcode)
             };
             HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);
             var cell = obj as Cell;
@@ -268,10 +269,10 @@ namespace NeoCortexApi.Entities
                 return null;
             var cell = HtmSerializer2.DeserializeObject<Cell>(sr, name);
 
-            foreach (var distalDentrite in cell.DistalDendrites)
-            {
-                distalDentrite.ParentCell = cell;
-            }
+            //foreach (var distalDentrite in cell.DistalDendrites)
+            //{
+            //    distalDentrite.ParentCell = cell;
+            //}
             return cell;
         }
         #endregion

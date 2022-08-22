@@ -18,6 +18,10 @@ namespace NeoCortexApi.Entities
     /// </summary>
     public class HtmSerializer2
     {
+        private static int Id = 0;
+        private static Dictionary<object, int> SerializedHashCodes = new Dictionary<object, int>();
+        private static Dictionary<int, object> MapObjectHashCode = new Dictionary<int, object>();
+
         //SP
         public string tab = "\t";
 
@@ -34,7 +38,8 @@ namespace NeoCortexApi.Entities
         public static string KeyValueDelimiter = ": ";
 
         public const char ElementsDelimiter = ',';
-
+        private const string cReplaceId = "ReplaceId";
+        private const string cIdString = "Id";
         private static List<int> isCellsSerialized = new List<int>();
 
         /// <summary>
@@ -56,6 +61,13 @@ namespace NeoCortexApi.Entities
         {
             string val = ($"{TypeDelimiter} BEGIN '{typeName}' {TypeDelimiter}");
             return val;
+        }
+
+        public static void Reset()
+        {
+            SerializedHashCodes.Clear();
+            MapObjectHashCode.Clear();
+            Id = 0;
         }
 
         /// <summary>
@@ -105,23 +117,51 @@ namespace NeoCortexApi.Entities
             {
                 return;
             }
+            if (name == nameof(DistalDendrite.ParentCell))
+            {
+
+            }
             var type = obj.GetType();
 
             bool isSerializeWithType = propertyType != null && (propertyType.IsInterface || propertyType.IsAbstract || propertyType != type);
 
             SerializeBegin(name, sw, isSerializeWithType ? type : null);
 
+            var objHashCode = obj.GetHashCode();
+
+
             if (type.GetInterfaces().FirstOrDefault(i => i.FullName.Equals(typeof(ISerializable).FullName)) != null)
             {
-                (obj as ISerializable).Serialize(obj, name, sw);
+                if (SerializedHashCodes.TryGetValue(obj, out int serializedId))
+                {
+                    Serialize(serializedId, cReplaceId, sw);
+                }
+
+                //if (HtmSerializer2.SerializedHashCodes.ContainsKey(objHashCode))
+                //{
+                //    if (type == typeof(Synapse))
+                //    {
+                //        var synapse = SerializedHashCodes[objHashCode] as Synapse;
+                //        if (synapse != null && synapse.SegmentIndex == 31)
+                //        {
+
+                //        }
+                //    }
+                //}
+                else
+                {
+                    Serialize(Id, cIdString, sw);
+                    HtmSerializer2.SerializedHashCodes.Add(obj, Id++);
+                    (obj as ISerializable).Serialize(obj, name, sw);
+                }
+            }
+            else if (type.IsPrimitive || type == typeof(string))
+            {
+                SerializeValue(name, obj, sw);
             }
             else
             {
-                if (type.IsPrimitive || type == typeof(string))
-                {
-                    SerializeValue(name, obj, sw);
-                }
-                else if (IsDictionary(type))
+                if (IsDictionary(type))
                 {
                     SerializeDictionary(name, obj, sw, ignoreMembers);
                 }
@@ -137,21 +177,20 @@ namespace NeoCortexApi.Entities
                     }
                     else
                     {
-                        SerializeObject(obj, name, sw, ignoreMembers);
+                        if (SerializedHashCodes.TryGetValue(obj, out int serializedId))
+                        {
+                            Serialize(serializedId, cReplaceId, sw);
+                        }
+                        else
+                        {
+                            Serialize(Id, cIdString, sw);
+                            HtmSerializer2.SerializedHashCodes.Add(obj, Id++);
+                            SerializeObject(obj, name, sw, ignoreMembers);
+                        }
                     }
-
-                    //if (type.GetInterface(nameof(ISerializable)) != null)
-                    //{
-                    //    (obj as ISerializable).Serialize(obj, name, sw);
-                    //}
-                    //else
-                    //{
-                    //    SerializeObject(obj, name, sw, ignoreMembers);
-                    //}
                 }
             }
             SerializeEnd(name, sw, isSerializeWithType ? type : null);
-
         }
 
         private static void SerializeKeyValuePair(string name, object obj, StreamWriter sw)
@@ -574,31 +613,6 @@ namespace NeoCortexApi.Entities
                 else
                     // deserialize object
                     obj = DeserializeObject<T>(sr, propName);
-
-                //if (type.GetInterface(nameof(ISerializable)) != null)
-                //{
-                //    var methods = type.GetMethods();
-
-                //    var deserializeMethod = methods.FirstOrDefault(m => m.Name == nameof(ISerializable.Deserialize) && m.IsStatic && m.GetParameters().Length == 2);
-                //    if (deserializeMethod != null)
-                //    {
-                //        obj = (T)deserializeMethod.Invoke(null, new object[] { sr, propName });
-                //    }
-                //}
-                ////if (type == typeof(HtmConfig))
-                ////{
-                ////    obj = (T)DeserializeHtmConfig(sr, propName);
-                ////}
-                ////else if (type == typeof(Cell))
-                ////{
-                ////    obj = (T)DeserializeCell(sr, propName);
-                ////}
-                //else
-                //{
-                // deserialize object
-                //obj = DeserializeObject<T>(sr, propName);
-                //}
-                ////obj = DeserializeObject<T>(sr, propName, null, null, customDeserializer);
             }
 
             return obj;
@@ -875,10 +889,23 @@ namespace NeoCortexApi.Entities
 
                 if (content.StartsWith("Begin"))
                 {
-
-                    if (components[1] == "synapsesList")
+                    if (content == ReadGenericBegin(cReplaceId))
                     {
-
+                        var replaceHashCode = Deserialize<int>(sr, cReplaceId);
+                        if (MapObjectHashCode.TryGetValue(replaceHashCode, out object replaceedObj))
+                        {
+                            obj = (T)replaceedObj;
+                        }
+                        else
+                        {
+                            throw new KeyNotFoundException($"Object with hash code {replaceHashCode} cannot be found!");
+                        }
+                    }
+                    if (content == ReadGenericBegin(cIdString))
+                    {
+                        var hashcode = Deserialize<int>(sr, cIdString);
+                        MapObjectHashCode.TryAdd(hashcode, obj);
+                        continue;
                     }
                     if (components.Length == 2)
                     {
@@ -891,7 +918,6 @@ namespace NeoCortexApi.Entities
 
                                 var propertyValue = deserializeMethod.Invoke(null, new object[] { sr, property.Name });
                                 property.SetValue(obj, propertyValue);
-                                //Debug.WriteLine($"set {propertyName ?? type.Name}.{property.Name} to {propertyValue.ToString()}");
                             }
                             else
                             {
@@ -913,6 +939,10 @@ namespace NeoCortexApi.Entities
                     }
                     else if (components.Length == 3)
                     {
+                        if (components[1] == "m_PredictiveCells")
+                        {
+
+                        }
                         if (excludeEntries == null || excludeEntries.Contains(components[1]) == false)
                         {
                             var property = properties.FirstOrDefault(p => p.Name == components[1]);
@@ -1036,7 +1066,7 @@ namespace NeoCortexApi.Entities
 
         private static bool IsSet(Type type)
         {
-            return type.IsGenericType && (typeof(ISet<>) == type.GetGenericTypeDefinition() || type.GetInterface("ISet`1")!= null) ;
+            return type.IsGenericType && (typeof(ISet<>) == type.GetGenericTypeDefinition() || type.GetInterface("ISet`1") != null);
         }
 
         #endregion

@@ -135,6 +135,19 @@ namespace NeoCortexApi.Entities
             return this.RFPool.GetSparsePotential();
         }
 
+        public override int GetHashCode()
+        {
+            var prime = 31;
+            var result = 1;
+
+            result = prime * result + this.SegmentIndex;
+            result = prime * result + this.NumInputs;
+            result = prime * result + ((RFPool == null) ? 0 : RFPool.GetHashCode());
+            result = prime * result + ((ConnectedInputs == null) ? 0 : ConnectedInputs.GetHashCode());
+
+            return result;
+        }
+
         public bool Equals(ProximalDendrite obj)
         {
             if (this == obj)
@@ -276,10 +289,13 @@ namespace NeoCortexApi.Entities
         public static object Deserialize<T>(StreamReader sr, string name)
         {
             var proximal = HtmSerializer2.DeserializeObject<ProximalDendrite>(sr, name);
-            proximal.Synapses = proximal.RFPool.m_SynapsesBySourceIndex.Select(kv => kv.Value).ToList();
-            foreach (var synapse in proximal.Synapses)
+            if (proximal.RFPool != null)
             {
-                synapse.SegmentIndex = proximal.SegmentIndex;
+                proximal.Synapses = proximal.RFPool?.m_SynapsesBySourceIndex.Select(kv => kv.Value).ToList();
+                foreach (var synapse in proximal.Synapses)
+                {
+                    synapse.SegmentIndex = proximal.SegmentIndex;
+                }
             }
             return proximal;
         }

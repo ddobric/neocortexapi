@@ -1121,11 +1121,15 @@ namespace NeoCortexApi.Entities
             int result = 1;
             result = prime * result + this.HtmConfig.ActivationThreshold;
             result = prime * result + ((m_ActiveCells == null) ? 0 : m_ActiveCells.GetHashCode());
-            result = prime * result + this.HtmConfig.ActiveDutyCycles.GetHashCode();
-            result = prime * result + m_BoostFactors.GetHashCode();
-            result = prime * result + Cells.GetHashCode();
+            if (this.HtmConfig.ActiveDutyCycles != null)
+                result = prime * result + this.HtmConfig.ActiveDutyCycles.GetHashCode();
+            if (this.m_BoostFactors != null)
+                result = prime * result + m_BoostFactors.GetHashCode();
+            if (this.Cells != null)
+                result = prime * result + Cells.GetHashCode();
             result = prime * result + this.HtmConfig.CellsPerColumn;
-            result = prime * result + this.HtmConfig.ColumnDimensions.GetHashCode();
+            if (this.HtmConfig.ColumnDimensions != null)
+                result = prime * result + this.HtmConfig.ColumnDimensions.GetHashCode();
             //result = prime * result + ((connectedCounts == null) ? 0 : connectedCounts.GetHashCode());
             long temp;
             temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.ConnectedPermanence);
@@ -1137,7 +1141,8 @@ namespace NeoCortexApi.Entities
             result = prime * result + (int)(temp ^ (temp >> 32));
             temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.InitialPermanence);
             result = prime * result + (int)(temp ^ (temp >> 32));
-            result = prime * result + this.HtmConfig.InputDimensions.GetHashCode();
+            if (this.HtmConfig.InputDimensions != null)
+                result = prime * result + this.HtmConfig.InputDimensions.GetHashCode();
             result = prime * result + ((this.HtmConfig.InputMatrix == null) ? 0 : this.HtmConfig.InputMatrix.GetHashCode());
             result = prime * result + SpIterationLearnNum;
             result = prime * result + SpIterationNum;
@@ -1150,8 +1155,10 @@ namespace NeoCortexApi.Entities
             result = prime * result + (int)(temp ^ (temp >> 32));
             result = prime * result + this.HtmConfig.MaxNewSynapseCount;
             result = prime * result + ((this.Memory == null) ? 0 : this.Memory.GetHashCode());
-            result = prime * result + this.HtmConfig.MinActiveDutyCycles.GetHashCode();
-            result = prime * result + this.HtmConfig.MinOverlapDutyCycles.GetHashCode();
+            if (this.HtmConfig.MinActiveDutyCycles != null)
+                result = prime * result + this.HtmConfig.MinActiveDutyCycles.GetHashCode();
+            if (this.HtmConfig.MinOverlapDutyCycles != null)
+                result = prime * result + this.HtmConfig.MinOverlapDutyCycles.GetHashCode();
             temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.MinPctActiveDutyCycles);
             result = prime * result + (int)(temp ^ (temp >> 32));
             temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.MinPctOverlapDutyCycles);
@@ -1163,7 +1170,8 @@ namespace NeoCortexApi.Entities
             result = prime * result + this.HtmConfig.NumInputs;
             temp = m_NumSynapses;
             result = prime * result + (int)(temp ^ (temp >> 32));
-            result = prime * result + this.HtmConfig.OverlapDutyCycles.GetHashCode();
+            if (this.HtmConfig.OverlapDutyCycles != null)
+                result = prime * result + this.HtmConfig.OverlapDutyCycles.GetHashCode();
             temp = this.HtmConfig.PermanenceDecrement.GetHashCode();
             result = prime * result + (int)(temp ^ (temp >> 32));
             temp = BitConverter.DoubleToInt64Bits(this.HtmConfig.PermanenceIncrement);
@@ -1198,7 +1206,10 @@ namespace NeoCortexApi.Entities
             //result = prime * result + proximalSynapseCounter;
             //result = prime * result + ((proximalSynapses == null) ? 0 : proximalSynapses.GetHashCode());
             //DD result = prime * result + ((m_DistalSynapses == null) ? 0 : m_DistalSynapses.GetHashCode());
-            result = prime * result + m_TieBreaker.GetHashCode();
+
+            if (m_TieBreaker != null)
+                result = prime * result + m_TieBreaker.GetHashCode();
+
             result = prime * result + this.HtmConfig.UpdatePeriod;
             temp = BitConverter.DoubleToInt64Bits(version);
             result = prime * result + (int)(temp ^ (temp >> 32));
@@ -1604,7 +1615,8 @@ namespace NeoCortexApi.Entities
                     nameof(Connections.ActiveCells),
                     nameof(Connections.WinnerCells),
                     nameof(Connections.m_SegmentForFlatIdx),
-                    nameof(Connections.Cells)
+                    nameof(Connections.Cells),
+                    nameof(Connections.m_PredictiveCells)
 
                     //nameof(Connections.Cells)
                 };
@@ -1623,6 +1635,9 @@ namespace NeoCortexApi.Entities
 
                 var winnerCellIds = connections.WinnerCells.Select(c => c.Index);
                 HtmSerializer2.Serialize(winnerCellIds, "winnerCellIds", sw);
+
+                var predictiveCellIds = connections.m_PredictiveCells.Select(c => c.Index);
+                HtmSerializer2.Serialize(predictiveCellIds, "predictiveCellIds", sw);
             }
         }
 
@@ -1633,7 +1648,8 @@ namespace NeoCortexApi.Entities
                 "activeCellIds",
                 "winnerCellIds",
                 "synapsesList",
-                "cellsList"
+                "cellsList",
+                "predictiveCellIds"
             };
             var cells = new List<Cell>();
             var conn = HtmSerializer2.DeserializeObject<Connections>(sr, name, ignoreMembers, (conn, propName) =>
@@ -1662,6 +1678,16 @@ namespace NeoCortexApi.Entities
                             conn.WinnerCells.Add(cell);
                     }
                 }
+                else if (propName == "predictiveCellIds")
+                {
+                    var predictiveCellIds = HtmSerializer2.Deserialize<List<int>>(sr, "predictiveCellIds");
+                    foreach (var cellId in predictiveCellIds)
+                    {
+                        var cell = cells.FirstOrDefault(c => c.Index == cellId);
+                        if (cell != null)
+                            conn.m_PredictiveCells.Add(cell);
+                    }
+                }
                 else if (propName == "synapsesList")
                 {
                     var synapses = HtmSerializer2.Deserialize<List<Synapse>>(sr, "synapsesList");
@@ -1680,26 +1706,30 @@ namespace NeoCortexApi.Entities
                         }
                     }
 
-                    var columnIndexes = conn.Memory.GetSparseIndices();
-
-                    var columns = new List<Column>();
-
-                    foreach (var index in columnIndexes)
+                    if (conn.Memory != null)
                     {
-                        var col = conn.Memory.GetColumn(index);
-                        if (col != null)
-                            columns.Add(col);
-                    }
-                    foreach (var column in columns)
-                    {
-                        column.Cells = cells.Where(c => c.ParentColumnIndex == column.Index).ToArray();
-                    }
 
-                    var distalDendrites = cells.SelectMany(c => c.DistalDendrites).Distinct().OrderBy(dd => dd.SegmentIndex);
-                    conn.m_SegmentForFlatIdx = new ConcurrentDictionary<int, DistalDendrite>();
-                    foreach (var distalDendrite in distalDendrites)
-                    {
-                        conn.m_SegmentForFlatIdx.TryAdd(distalDendrite.SegmentIndex, distalDendrite);
+                        var columnIndexes = conn.Memory.GetSparseIndices();
+
+                        var columns = new List<Column>();
+
+                        foreach (var index in columnIndexes)
+                        {
+                            var col = conn.Memory.GetColumn(index);
+                            if (col != null)
+                                columns.Add(col);
+                        }
+                        foreach (var column in columns)
+                        {
+                            column.Cells = cells.Where(c => c.ParentColumnIndex == column.Index).ToArray();
+                        }
+
+                        var distalDendrites = cells.SelectMany(c => c.DistalDendrites).Distinct().OrderBy(dd => dd.SegmentIndex);
+                        conn.m_SegmentForFlatIdx = new ConcurrentDictionary<int, DistalDendrite>();
+                        foreach (var distalDendrite in distalDendrites)
+                        {
+                            conn.m_SegmentForFlatIdx.TryAdd(distalDendrite.SegmentIndex, distalDendrite);
+                        }
                     }
                 }
             });

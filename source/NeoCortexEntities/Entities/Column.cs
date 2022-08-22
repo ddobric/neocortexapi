@@ -48,8 +48,6 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public Cell[] Cells { get; set; }
 
-        private readonly int hashcode;
-
         public Column()
         {
 
@@ -65,8 +63,6 @@ namespace NeoCortexApi.Entities
         public Column(int numCells, int colIndx, double synapsePermConnected, int numInputs)
         {
             this.Index = colIndx;
-
-            this.hashcode = GetHashCode();
 
             Cells = new Cell[numCells];
 
@@ -537,7 +533,8 @@ namespace NeoCortexApi.Entities
                 var ignoreMembers = new List<string>
                 {
                     nameof(Column.connectedInputCounter),
-                    nameof(Column.Cells)
+                    nameof(Column.Cells),
+                    nameof(Column.m_Hashcode)
                 };
                 HtmSerializer2.SerializeObject(column, name, sw, ignoreMembers);
             }
