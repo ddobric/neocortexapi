@@ -23,9 +23,14 @@ namespace UnitTestsProject
 
             Cell cell = new Cell(12, 14, 16, new CellActivity());
 
-            var distDend = new DistalDendrite(cell, 1, 2, 2, 1.0, 100);
+            DistalDendrite distDend = new DistalDendrite(cell, 1, 2, 2, 1.0, 100);
             cell.DistalDendrites.Add(distDend);
 
+            Cell preSynapticcell = new Cell(1, 1, 2, new CellActivity());
+
+            Synapse synapse = new Synapse(preSynapticcell, distDend.SegmentIndex, 2, 2.0);
+
+            cell.ReceptorSynapses.Add(synapse);
             
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test_Cell)}_cell.txt"))
             {
@@ -84,7 +89,7 @@ namespace UnitTestsProject
 
 
         [TestMethod]
-        [TestCategory("Serialization")]
+        [TestCategory("serialize_test")]
         public void Test_ComputeCycle()
         {
             int[] inputDims = { 100, 100 };
@@ -141,7 +146,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("Serialization")]
+        [TestCategory("serialize_test")]
         public void Test_HtmConfig()
         {
             int[] inputDims = { 10, 12,14 };
@@ -162,7 +167,7 @@ namespace UnitTestsProject
 
 
         [TestMethod]
-        [TestCategory("Serialization")]
+        [TestCategory("serialize_test")]
         public void Test_BurstingResult()
         {
             Cell[] cells = new Cell[2];
@@ -172,16 +177,60 @@ namespace UnitTestsProject
 
             BurstingResult burstingResult = new BurstingResult(cells, cells[0]);
 
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test_HtmConfig)}_config.txt"))
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test_BurstingResult)}_bursting.txt"))
             {
                 HtmSerializer2.Serialize(burstingResult, null, sw);
             }
-            using (StreamReader sr = new StreamReader($"ser_{nameof(Test_HtmConfig)}_config.txt"))
+            using (StreamReader sr = new StreamReader($"ser_{nameof(Test_BurstingResult)}_bursting.txt"))
             {
                 BurstingResult burstingResultD = HtmSerializer2.Deserialize<BurstingResult>(sr);
                 Assert.IsTrue(burstingResult.Equals(burstingResultD));
             }
         }
+
+        [TestMethod]
+        [TestCategory("serialize_test")]
+        public void Test_DistalDendrite()
+        {
+           
+            Cell cell = new Cell(12, 14, 16, new CellActivity());
+
+            DistalDendrite distalDendrite = new DistalDendrite(cell, 1, 2, 2, 2.0, 100);
+
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test_DistalDendrite)}_dd.txt"))
+            {
+                HtmSerializer2.Serialize(distalDendrite, null, sw);
+            }
+            using (StreamReader sr = new StreamReader($"ser_{nameof(Test_DistalDendrite)}_dd.txt"))
+            {
+                DistalDendrite distalDendriteD = HtmSerializer2.Deserialize<DistalDendrite>(sr);
+                Assert.IsTrue(distalDendrite.Equals(distalDendriteD));
+            }
+        }
+
+
+        [TestMethod]
+        [TestCategory("serialize_test")]
+        public void Test_DistributedMemory()
+        {
+
+            Column column = new Column(2, 12, 12.2, 2);
+
+            DistributedMemory distributedMemory = new DistributedMemory();
+
+            distributedMemory.ColumnDictionary.Add(1, column);
+
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test_DistributedMemory)}_dm.txt"))
+            {
+                HtmSerializer2.Serialize(distributedMemory, null, sw);
+            }
+            using (StreamReader sr = new StreamReader($"ser_{nameof(Test_DistributedMemory)}_dm.txt"))
+            {
+                DistributedMemory distributedMemoryD = HtmSerializer2.Deserialize<DistributedMemory>(sr);
+                Assert.IsTrue(distributedMemory.Equals(distributedMemoryD));
+            }
+        }
+
 
     }
 }
