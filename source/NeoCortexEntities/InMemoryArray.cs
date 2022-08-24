@@ -244,11 +244,27 @@ namespace NeoCortexApi.Entities
                 if (array1.GetLength(r) != array2.GetLength(r))
                     return false;
             }
-            for (int i = 0; i < array1.Length; i++)
+
+            var arrayType = array1.GetType();
+            var elementType = arrayType.GetElementType();
+
+            var castMethod = typeof(Enumerable).GetMethod(nameof(Enumerable.Cast))?.MakeGenericMethod(elementType);
+            if (castMethod == null)
             {
-                if (!array1.GetValue(i).Equals(array2.GetValue(i)))
-                    return false;
+                throw new Exception("No cast method. This should not happen!");
             }
+
+            var list1 = castMethod.Invoke(null, new object[] { array1 });
+            var list2 = castMethod.Invoke(null, new object[] { array2 });
+
+
+            var sequenceEqualMethod = typeof(Enumerable).GetMethods().FirstOrDefault(m => m.Name == nameof(Enumerable.SequenceEqual) && m.GetParameters().Length == 2)?.MakeGenericMethod(elementType);
+
+            var isSequenceEqual = (bool)sequenceEqualMethod.Invoke(null, new object[] { list1, list2 });
+
+            if (!isSequenceEqual)
+                return false;
+
             return true;
         }
         #region Serialization
