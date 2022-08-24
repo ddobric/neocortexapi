@@ -20,6 +20,12 @@ namespace UnitTestsProject
     {
         public TestContext TestContext { get; set; }
 
+        [TestInitialize]
+        public void TestInit()
+        {
+            HtmSerializer2.Reset();
+        }
+
         [TestMethod]
         [TestCategory("working")]
         public void Test()
@@ -43,6 +49,8 @@ namespace UnitTestsProject
             using (StreamReader sr = new StreamReader($"ser_{nameof(Test)}_123.txt"))
             {
                 var c = HtmSerializer2.Deserialize<Cell[]>(sr);
+
+                Assert.IsTrue(cells.Where(c => c != null).TryIfSequenceEqual(c));
             }
         }
 
@@ -68,7 +76,7 @@ namespace UnitTestsProject
             cell1.DistalDendrites.Add(distSeg2);
             dict.Add("1", cell1);
 
-            var cell2 = new Cell(12, 14, 16, new CellActivity());
+            var cell2 = new Cell(12, 15, 16, new CellActivity());
             var distSeg3 = new DistalDendrite(cell2, 44, 24, 34, 1.0, 102);
             cell2.DistalDendrites.Add(distSeg3);
             dict.Add("2", cell2);
