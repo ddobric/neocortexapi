@@ -17,35 +17,6 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("serialize_test")]
-        public void Test_Cell()
-        {
-            HtmSerializer2 serializer = new HtmSerializer2();
-
-            Cell cell = new Cell(12, 14, 16, new CellActivity());
-
-            DistalDendrite distDend = new DistalDendrite(cell, 1, 2, 2, 1.0, 100);
-            cell.DistalDendrites.Add(distDend);
-
-            Cell preSynapticcell = new Cell(1, 1, 2, new CellActivity());
-
-            Synapse synapse = new Synapse(preSynapticcell, distDend.SegmentIndex, 2, 2.0);
-
-            cell.ReceptorSynapses.Add(synapse);
-            
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test_Cell)}_cell.txt"))
-            {
-                HtmSerializer2.Serialize(cell, null, sw);
-            }
-
-            using (StreamReader sr = new StreamReader($"ser_{nameof(Test_Cell)}_cell.txt"))
-            {
-                var cellD = HtmSerializer2.Deserialize<Cell>(sr);
-                Assert.IsTrue(cell.Equals(cellD));
-            }
-        }
-
-        [TestMethod]
-        [TestCategory("serialize_test")]
         public void Test_Column()
         {
             HtmSerializer2 serializer = new HtmSerializer2();
@@ -230,6 +201,7 @@ namespace UnitTestsProject
                 Assert.IsTrue(distributedMemory.Equals(distributedMemoryD));
             }
         }
+
 
 
     }
