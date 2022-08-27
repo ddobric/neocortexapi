@@ -28,7 +28,10 @@ namespace InvariantLearning
         /// </summary>
         public RunConfig? runParams { get; set; }
 
-        public string ExperimentFolder { get; set; }
+        /// <summary>
+        /// The Folder path which contains the experiment
+        /// </summary>
+        public string? ExperimentFolder { get; set; }
     }
 
     /// <summary>
@@ -45,7 +48,5 @@ namespace InvariantLearning
         /// Iteration through whole dataset
         /// </summary>
         public int Epoch { get; set; }
-
-
     }
 }

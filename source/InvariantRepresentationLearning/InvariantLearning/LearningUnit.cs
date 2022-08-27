@@ -79,14 +79,14 @@ namespace InvariantLearning
                 GreyScale = true,
             });
 
-            // CORTEX LAYER
+            // Cortex Layer
             cortexLayer.AddModule("encoder", imgEncoder);
             cortexLayer.AddModule("sp", sp);
 
-            // STABLE STATE
+            // Stable State
             isInStableState = false;
 
-            // New Born Cycle Loop
+            // Training In New Born State
             int cycle = 0;
             while (!this.isInStableState)
             {
@@ -99,7 +99,6 @@ namespace InvariantLearning
                 Debug.Write("\n");
                 cycle++;
             }
-
             Console.WriteLine("Learning Unit reach stable state in newborn learning");
         }
 
@@ -277,9 +276,9 @@ namespace InvariantLearning
         {
             int[] res = new int[columnDim];
 
-            for(int i =0; i < activeColumns.Length; i += 1)
+            for (int i = 0; i < activeColumns.Length; i += 1)
             {
-                    res[activeColumns[i]] = 1;
+                res[activeColumns[i]] = 1;
             }
             return res;
         }

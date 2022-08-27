@@ -291,5 +291,20 @@ namespace Invariant.Entities
             double whitePixelDensity = (double)whitePixelsCount / ((double)frame.PixelCount);
             return whitePixelDensity;
         }
+
+        internal static double[,,] ApplyPixels(double[,,] pixelFromImage, double[,,] outputPixels, Frame selectedFrame)
+        {
+            double[,,] resultOutputPixels = outputPixels;
+            for(int i = selectedFrame.tlX; i <= selectedFrame.brX; i += 1)
+            {
+                for(int j = selectedFrame.tlY; j <= selectedFrame.brY; j += 1)
+                {
+                    outputPixels[i, j, 0] = pixelFromImage[i - selectedFrame.tlX, j - selectedFrame.tlY, 0];
+                    outputPixels[i, j, 1] = pixelFromImage[i - selectedFrame.tlX, j - selectedFrame.tlY, 1];
+                    outputPixels[i, j, 2] = pixelFromImage[i - selectedFrame.tlX, j - selectedFrame.tlY, 2];
+                }
+            }
+            return resultOutputPixels;
+        }
     }
 }

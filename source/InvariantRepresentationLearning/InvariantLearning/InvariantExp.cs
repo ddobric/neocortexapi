@@ -65,7 +65,7 @@ namespace InvariantLearning
 
                 Utility.CreateFolderIfNotExist(pathForTrainDataOfOneSpatialPooler);
 
-                foreach (var label in trainingDataSet.ImageClasses)
+                foreach (var label in trainingDataSet.Labels)
                 {
                     string pathForImageInOneLabelFolder = Path.Combine(trainDataFolder, $"SP dim {dim.ToString()}", label);
 

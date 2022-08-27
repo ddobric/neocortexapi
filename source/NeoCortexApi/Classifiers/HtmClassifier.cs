@@ -41,7 +41,7 @@ namespace NeoCortexApi.Classifiers
     /// <typeparam name="TOUT"></typeparam>
     public class HtmClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>
     {
-        private int maxRecordedElements = 10;
+        private int maxRecordedElements = 20;
 
         private List<TIN> inputSequence = new List<TIN>();
 
@@ -491,7 +491,7 @@ namespace NeoCortexApi.Classifiers
             return same.Count();
         }
 
-        // TODO: Traces Print, reduce methods
+        #region Trace Method
 
         /// <summary>
         /// Calculate correlations from every saved SDRs of 2 selected Labels in to a 2D double matrix 
@@ -737,5 +737,7 @@ namespace NeoCortexApi.Classifiers
         {
             TraceSimilarities(m_AllInputs.Keys.ToList<TIN>(), m_AllInputs.Keys.ToList<TIN>());
         }
+
+        #endregion
     }
 }

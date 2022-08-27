@@ -1,14 +1,19 @@
-﻿namespace Invariant.Entities
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+
+namespace Invariant.Entities
 {
     /// <summary>
     /// A collection of Images, with methods for ease of image manipulation
     /// </summary>
-    public class DataSet
+    public class DataSet:IList
     {
         /// <summary>
         /// List of all Image Classes/Labels
         /// </summary>
-        public List<string> ImageClasses { get; set; }
+        public List<string> Labels { get; set; }
 
         /// <summary>
         /// List of all Images
@@ -22,6 +27,16 @@
         /// </summary>
         public int Count { get { return Images.Count; } }
 
+        public bool IsFixedSize => throw new NotImplementedException();
+
+        public bool IsReadOnly => throw new NotImplementedException();
+
+        public bool IsSynchronized => throw new NotImplementedException();
+
+        public object SyncRoot => throw new NotImplementedException();
+
+        public object? this[int index] { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
         /// <summary>
         /// Create another dataset based on a list of Images
         /// </summary>
@@ -29,7 +44,7 @@
         public DataSet(List<Picture> imageList)
         {
             random = new Random(42);
-            ImageClasses = new List<string>();
+            Labels = new List<string>();
 
             Images = new List<Picture>();
             this.Images = imageList;
@@ -44,7 +59,7 @@
         public DataSet(string pathToTrainingFolder)
         {
             random = new Random(42);
-            ImageClasses = new List<string>();
+            Labels = new List<string>();
             Images = new List<Picture>();
             // Getting the classes
             InitImageClasses(pathToTrainingFolder);
@@ -70,7 +85,7 @@
         {
             List<Picture> takenImages = new List<Picture>();
 
-            foreach (var imageClass in ImageClasses)
+            foreach (var imageClass in Labels)
             {
                 var imageOfSameClass = new List<Picture>(Images.Where(p => (p.label == imageClass)));
                 int stopIndex = (int) ((double)(imageOfSameClass.Count) * perCentSample / 100);
@@ -94,7 +109,7 @@
 
             foreach (var a in Directory.GetDirectories(pathToTrainingFolder))
             {
-                ImageClasses.Add(Path.GetFileNameWithoutExtension(a));
+                Labels.Add(Path.GetFileNameWithoutExtension(a));
             }
         }
 
@@ -110,7 +125,7 @@
                     imgClasses.Add(image.label);
                 }
             }
-            this.ImageClasses = imgClasses;
+            this.Labels = imgClasses;
         }
 
 
@@ -188,7 +203,7 @@
             {
                 kFoldPicSets.Add(new List<Picture>());
             }
-            foreach (var imageClass in ImageClasses)
+            foreach (var imageClass in Labels)
             {
                 var imageOfSameClass = new List<Picture>(Images.Where(p => (p.label == imageClass)));
                 for(int i = 0;i < imageOfSameClass.Count;i+=1)
@@ -216,7 +231,7 @@
         /// <param name="path">path where the dataset should be drawn</param>
         public void VisualizeSet(string path)
         {
-            foreach (var imageClass in ImageClasses)
+            foreach (var imageClass in Labels)
             {
                 string imageClassPath = Path.Combine(path, $"{imageClass}");
                 if (!Directory.Exists(imageClassPath))
@@ -230,5 +245,147 @@
                 image.SaveTo(imagePath);
             }
         }
+
+        public static DataSet CreateTestSet(DataSet sourceSet_32x32, int samples, int width, int height, string fileName)
+        {
+            if (!Directory.Exists(fileName))
+            {
+                Directory.CreateDirectory(fileName);
+            }
+
+            List<Picture> testImages = new List<Picture>();
+
+            int[] checkIndicies = new int[10];
+            Random random = new Random(42);
+            foreach (var image in sourceSet_32x32.Images)
+            {
+                double[,,] outputPixels = new double[width, height, 3];
+                double[,,] pixelFromImage = image.GetPixels();
+                if(!Directory.Exists(Path.Combine(fileName, image.label.ToString())))
+                {
+                    Directory.CreateDirectory(Path.Combine(fileName, image.label.ToString()));
+                }
+                string testImagePath = Path.Combine(fileName, image.label.ToString(), $"{checkIndicies[Int64.Parse(image.label)]}");
+                checkIndicies[Int64.Parse(image.label)] += 1;
+                List<Frame> listFrames = Frame.GetConvFramesbyPixel(width, height, sourceSet_32x32.Images[0].imageWidth, sourceSet_32x32.Images[0].imageHeight);
+
+                
+                var selectedFrame = listFrames[random.Next() % listFrames.Count];
+
+                outputPixels = Picture.ApplyPixels(pixelFromImage, outputPixels, selectedFrame);
+
+                Picture.SaveAsImage(outputPixels, $"{testImagePath}.png");
+
+                Picture testImage = new Picture($"{testImagePath}.png", image.label);
+                testImages.Add(testImage);
+            }
+            DataSet outputSet = new DataSet(testImages);
+            return outputSet;
+        }
+
+        #region Implement List Iteration
+        public int Add(object? pic)
+        {
+            if (pic != null)
+            {
+                Images.Add((Picture)pic);
+                return this.Count;
+            }
+            return -1;
+        }
+
+        public void Clear()
+        {
+            Images.Clear();
+        }
+
+        public bool Contains(object? pic)
+        {
+            if(pic is Picture)
+            {
+                return Images.Contains(pic);
+            }
+            return false;
+        }
+
+        public int IndexOf(object? pic)
+        {
+            if (pic is Picture)
+            {
+                return Images.IndexOf((Picture)pic);
+            }
+            return -1;
+        }
+
+        public void Insert(int index, object? pic)
+        {
+            if (pic is Picture)
+            {
+                Images.Insert(index,(Picture)pic);
+            }
+        }
+
+        public void Remove(object? pic)
+        {
+            if (pic is Picture)
+            {
+                Images.Remove((Picture)pic);
+            }
+        }
+
+        public void RemoveAt(int index)
+        {
+            Images.RemoveAt(index);
+        }
+
+        public void CopyTo(Array array, int index)
+        {
+            Images.CopyTo((Picture[])array, index);
+        }
+
+        public IEnumerator GetEnumerator()
+        {
+            return new DataSetEnumerator(Images);
+        }
+
+        private class DataSetEnumerator : IEnumerator
+        {
+            private List<Picture> Images;
+            int position = -1;
+            private IEnumerator getEnumerator()
+            {
+                return (IEnumerator)this;
+            }
+            public DataSetEnumerator(List<Picture> images)
+            {
+                this.Images = images;
+            }
+
+            public object Current {
+                get
+                {
+                    try
+                    {
+                        return Images[position];
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        throw new InvalidOperationException();
+                    }
+                }
+            }
+
+            public bool MoveNext()
+            {
+                position++;
+                return (position < Images.Count);
+            }
+
+            public void Reset()
+            {
+                position = -1;
+            }
+        }
+        #endregion
     }
 }
