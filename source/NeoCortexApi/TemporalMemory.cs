@@ -5,6 +5,7 @@ using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 namespace NeoCortexApi
@@ -12,7 +13,7 @@ namespace NeoCortexApi
     /// <summary>
     /// Implementation of Temporal Memory algorithm.
     /// </summary>
-    public class TemporalMemory : IHtmAlgorithm<int[], ComputeCycle>//: IComputeDecorator
+    public class TemporalMemory : IHtmAlgorithm<int[], ComputeCycle>, ISerializable//: IComputeDecorator
     {
         private static readonly double EPSILON = 0.00001;
 
@@ -43,11 +44,11 @@ namespace NeoCortexApi
         {
             this.connections = conn;
 
-            SparseObjectMatrix<Column> matrix = this.connections.HtmConfig.Memory == null ?
+            SparseObjectMatrix<Column> matrix = this.connections.Memory == null ?
                 new SparseObjectMatrix<Column>(this.connections.HtmConfig.ColumnDimensions) :
-                    (SparseObjectMatrix<Column>)this.connections.HtmConfig.Memory;
+                    (SparseObjectMatrix<Column>)this.connections.Memory;
 
-            this.connections.HtmConfig.Memory = matrix;
+            this.connections.Memory = matrix;
 
             int numColumns = matrix.GetMaxIndex() + 1;
             this.connections.HtmConfig.NumColumns = numColumns;
@@ -58,7 +59,9 @@ namespace NeoCortexApi
             Column colZero = matrix.GetObject(0);
             for (int i = 0; i < numColumns; i++)
             {
-                Column column = colZero == null ? new Column(cellsPerColumn, i, this.connections.HtmConfig.SynPermConnected, this.connections.HtmConfig.NumInputs) : matrix.GetObject(i);
+                Column column = colZero == null ? 
+                    new Column(cellsPerColumn, i, this.connections.HtmConfig.SynPermConnected, this.connections.HtmConfig.NumInputs) : matrix.GetObject(i);
+
                 for (int j = 0; j < cellsPerColumn; j++)
                 {
                     cells[i * cellsPerColumn + j] = column.Cells[j];
@@ -200,7 +203,7 @@ namespace NeoCortexApi
             Func<Object, Column> segToCol = (segment) =>
             {
                 var colIndx = ((DistalDendrite)segment).ParentCell.ParentColumnIndex;
-                var parentCol = this.connections.HtmConfig.Memory.GetColumn(colIndx);
+                var parentCol = this.connections.Memory.GetColumn(colIndx);
                 return parentCol;
             };
 
@@ -848,6 +851,52 @@ namespace NeoCortexApi
         public DentriteComparer GetComparer(int nextSegmentOrdinal)
         {
             return new DentriteComparer(nextSegmentOrdinal);
+        }
+
+        public bool Equals(TemporalMemory obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+
+            if (this.connections == null)
+            {
+                if (obj.connections != null)
+                    return false;
+            }
+            else if (this.indxOfLastHighestSegment != obj.indxOfLastHighestSegment)
+                return false;
+            else if (this.LastActivity == null)
+            {
+                if (obj.LastActivity != null)
+                    return false;
+            }
+            else if (!this.LastActivity.Equals(obj.LastActivity))
+                return false;
+
+            return true;
+        }
+
+        public bool Equals(IHtmModule other)
+        {
+            if (!(other is TemporalMemory tm))
+                return false;
+            return this.Equals(tm);
+        }
+
+        public void Serialize(object obj, string name, StreamWriter sw)
+        {
+            var ignoreMembers = new List<string>
+            {
+                //nameof(TemporalMemory.connections)
+            };
+            HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);  
+        }
+
+        public static object Deserialize<T>(StreamReader sr, string name)
+        {
+            return HtmSerializer2.DeserializeObject<T>(sr, name);
         }
     }
 }

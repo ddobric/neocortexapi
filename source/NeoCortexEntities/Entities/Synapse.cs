@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 
@@ -30,7 +31,7 @@ namespace NeoCortexApi.Entities
     /// ProximalDendrites hold many synapses, which connect columns to the sensory input.
     /// DistalDendrites build synaptic connections to cells inside of columns.
     /// </summary>
-    public class Synapse : IEquatable<Synapse>, IComparable<Synapse>
+    public class Synapse : IEquatable<Synapse>, IComparable<Synapse>, ISerializable
     {
         /// <summary>
         /// Cell which activates this synapse. On proximal dendrite is this set on NULL. That means proximal dentrites have no presynaptic cell.
@@ -47,7 +48,7 @@ namespace NeoCortexApi.Entities
 
         public int SynapseIndex { get; set; }
 
-        public Integer BoxedIndex { get; set; }
+        //private Integer boxedIndex { get; set; }
 
         /// <summary>
         /// Index of pre-synaptic cell.
@@ -82,7 +83,7 @@ namespace NeoCortexApi.Entities
             this.SourceCell = presynapticCell;
             this.SegmentIndex = distalSegmentIndex;
             this.SynapseIndex = synapseIndex;
-            this.BoxedIndex = new Integer(synapseIndex);
+           // this.boxedIndex = new Integer(synapseIndex);
             this.InputIndex = presynapticCell.Index;
             this.Permanence = permanence;
         }
@@ -98,7 +99,7 @@ namespace NeoCortexApi.Entities
             this.SourceCell = null;
             this.SegmentIndex = segmentIndex;
             this.SynapseIndex = synapseIndex;
-            this.BoxedIndex = new Integer(synapseIndex);
+            //this.boxedIndex = new Integer(synapseIndex);
             this.InputIndex = inputIndex;
         }
 
@@ -222,13 +223,13 @@ namespace NeoCortexApi.Entities
                 return false;
             if (IsDestroyed != obj.IsDestroyed)
                 return false;
-            if (BoxedIndex == null)
-            {
-                if (obj.BoxedIndex != null)
-                    return false;
-            }
-            else if (BoxedIndex != obj.BoxedIndex)
-                return false;
+            //if (boxedIndex == null)
+            //{
+            //    if (obj.boxedIndex != null)
+            //        return false;
+            //}
+            //else if (boxedIndex != obj.boxedIndex)
+            //    return false;
 
             return true;
         }
@@ -265,10 +266,10 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.Permanence, writer);
             ser.SerializeValue(this.IsDestroyed, writer);
 
-            if (this.BoxedIndex != null)
-            {
-                this.BoxedIndex.Serialize(writer);
-            }
+            //if (this.boxedIndex != null)
+            //{
+            //    this.boxedIndex.Serialize(writer);
+            //}
 
             // If we use this, we will get a cirular serialization.
             //if (this.SourceCell != null)
@@ -295,10 +296,10 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.Permanence, writer);
             ser.SerializeValue(this.IsDestroyed, writer);
 
-            if (this.BoxedIndex != null)
-            {
-                this.BoxedIndex.Serialize(writer);
-            }
+            //if (this.boxedIndex != null)
+            //{
+            //    this.boxedIndex.Serialize(writer);
+            //}
 
             if (this.SourceCell != null)
             {
@@ -321,10 +322,10 @@ namespace NeoCortexApi.Entities
                 {
                     continue;
                 }
-                else if (data == ser.ReadBegin(nameof(Integer)))
-                {
-                    synapse.BoxedIndex = Integer.Deserialize(sr);
-                }
+                //else if (data == ser.ReadBegin(nameof(Integer)))
+                //{
+                //    synapse.boxedIndex = Integer.Deserialize(sr);
+                //}
                 else if (data == ser.ReadBegin(nameof(Cell)))
                 {
                     synapse.SourceCell = Cell.Deserialize(sr);
@@ -373,6 +374,23 @@ namespace NeoCortexApi.Entities
                 }
             }
             return synapse;
+        }
+
+        public void Serialize(object obj, string name, StreamWriter sw)
+        {
+            if (obj is Synapse synapse)
+            {
+                var ignoreMembers = new List<string>
+                {
+                    nameof(Synapse.SourceCell),
+                };
+                HtmSerializer2.SerializeObject(synapse, name, sw, ignoreMembers);
+            }
+        }
+
+        public static object Deserialize<T>(StreamReader sr, string name)
+        {
+            return HtmSerializer2.DeserializeObject<T>(sr, name);
         }
         #endregion
     }

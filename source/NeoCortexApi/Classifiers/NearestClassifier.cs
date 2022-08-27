@@ -111,5 +111,30 @@ namespace NeoCortexApi.Classifiers
             return null;
         }
 
+        public bool Equals(IHtmModule other)
+        {
+            return this.Equals((object)other);
+        }
+
+        public override bool Equals(object obj)
+        {
+            var classifier = obj as NearestClassifier<TIN, TOUT>;
+            if (classifier == null)
+                return false;
+            return this.Equals(classifier);
+        }
+
+        public bool Equals(NearestClassifier<TIN, TOUT> classifier)
+        {
+            foreach (var item in this.activeMap.Keys)
+            {
+                if (classifier.activeMap.TryGetValue(item, out int[] value))
+                {
+                    if (!this.activeMap[item].Equals(value))
+                        return false;
+                }
+            }
+            return true;
+        }
     }
 }

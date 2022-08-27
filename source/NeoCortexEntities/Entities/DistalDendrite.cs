@@ -79,10 +79,17 @@ namespace NeoCortexApi.Entities
         public override int GetHashCode()
         {
             int prime = 31;
-            int result = base.GetHashCode();
+            int result = 1;
             result = prime * result + ((ParentCell == null) ? 0 : ParentCell.GetHashCode());
             result *= this.SegmentIndex;
             return result;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is DistalDendrite distalDendrite))
+                return false;
+            return this.Equals(distalDendrite);
         }
 
         /// <summary>
@@ -123,7 +130,7 @@ namespace NeoCortexApi.Entities
                 if (obj.Synapses != null)
                     return false;
             }
-            else if (!Synapses.SequenceEqual(obj.Synapses))
+            else if (!Synapses.ElementsEqual(obj.Synapses))
                 return false;
             //if (boxedIndex == null)
             //{
@@ -330,21 +337,27 @@ namespace NeoCortexApi.Entities
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            var excludeEntries = new List<string> { nameof(DistalDendrite.ParentCell) };
-            HtmSerializer2.SerializeObject(obj, name, sw, excludeEntries);
+            var ignoreMembers = new List<string> 
+            { 
+                //nameof(DistalDendrite.ParentCell),
+                nameof(Segment.Synapses)
+            };
+            HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);
+            //var synapses = this.Synapses.Select(s => new Synapse() { SynapseIndex = s.SynapseIndex });
+            //HtmSerializer2.Serialize(synapses, nameof(Segment.Synapses), sw);
 
-            var cell = (obj as DistalDendrite).ParentCell;
+            //var cell = (obj as DistalDendrite).ParentCell;
 
-            if (cell != null && isCellsSerialized.Contains(cell.Index) == false)
-            {
-                isCellsSerialized.Add(cell.Index);
-                HtmSerializer2.Serialize((obj as DistalDendrite).ParentCell, nameof(DistalDendrite.ParentCell), sw, excludeEntries);
-            }
+            //if (cell != null && isCellsSerialized.Contains(cell.HashCode()) == false)
+            //{
+            //    isCellsSerialized.Add(cell.HashCode());
+            //    HtmSerializer2.Serialize((obj as DistalDendrite).ParentCell, nameof(DistalDendrite.ParentCell), sw, ignoreMembers: ignoreMembers);
+            //}
         }
 
-        public static object Deserialize(StreamReader sr, string name)
+        public static object Deserialize<T>(StreamReader sr, string name)
         {
-            var distal = HtmSerializer2.DeserializeObject<DistalDendrite>(sr, name);
+            var distal = HtmSerializer2.DeserializeObject<T>(sr, name);
             return distal;
         }
     }

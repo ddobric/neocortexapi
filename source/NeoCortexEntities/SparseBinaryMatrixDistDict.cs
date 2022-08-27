@@ -17,7 +17,7 @@ namespace NeoCortexApi.Entities
     /// <remarks>
     /// Author cogmission
     /// </remarks>
-    public class SparseBinaryMatrix : AbstractSparseBinaryMatrix
+    public class SparseBinaryMatrix : AbstractSparseBinaryMatrix/*, ISerializable*/
     {
         /// <summary>
         /// Holds the matrix with connections between columns and inputs.
@@ -280,6 +280,13 @@ namespace NeoCortexApi.Entities
         {
             throw new NotImplementedException();
         }
+        public override bool Equals(object obj)
+        {
+            var matrix = obj as SparseBinaryMatrix;
+            if (matrix == null)
+                return false;
+            return this.Equals(matrix);
+        }
         public bool Equals(SparseBinaryMatrix obj)
         {
             if (this == obj)
@@ -303,7 +310,7 @@ namespace NeoCortexApi.Entities
             }
             else if (!ModuleTopology.Equals(obj.ModuleTopology))
                 return false;
-            if (this.trueCounts != obj.trueCounts)
+            if (!this.trueCounts.SequenceEqual(obj.trueCounts))
                 return false;
 
             return true;
@@ -370,6 +377,17 @@ namespace NeoCortexApi.Entities
             }
             return sparse;
         }
+
+        //public new void Serialize(object obj, string name, StreamWriter sw)
+        //{
+        //    HtmSerializer2.SerializeObject(obj, name, sw);
+        //}
+
+        //public static new object Deserialize(StreamReader sr, string name)
+        //{
+        //    return HtmSerializer2.DeserializeObject<SparseBinaryMatrix>(sr, name);
+        //}
+
         #endregion
     }
 }

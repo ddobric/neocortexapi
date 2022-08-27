@@ -8,6 +8,6 @@ namespace NeoCortexApi.Entities
     public interface ISerializable
     {
         void Serialize(object obj, string name, StreamWriter sw);
-        static object Deserialize(StreamReader sr, string name) => throw new NotImplementedException();
+        static object Deserialize<T>(StreamReader sr, string name) => throw new NotImplementedException();
     }
 }

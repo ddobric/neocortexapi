@@ -15,7 +15,7 @@ namespace NeoCortexApi.Entities
     /// <remarks>
     /// @author David Ray, Damir Dobric
     /// </remarks>
-    public class SparseObjectMatrix<T> : AbstractSparseMatrix<T>, IEquatable<T> where T : class
+    public class SparseObjectMatrix<T> : AbstractSparseMatrix<T>, IEquatable<T>, ISerializable where T : class
     {
 
         //private IDictionary<int, T> sparseMap = new Dictionary<int, T>();
@@ -197,12 +197,20 @@ namespace NeoCortexApi.Entities
             return result;
         }
 
+        public override bool Equals(object obj)
+        {
+            var matrix = obj as SparseObjectMatrix<T>;
+            if (matrix == null)
+                return false;
+            return this.Equals(matrix);
+        }
+
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
         /// <param name="obj"><inheritdoc/></param>
         /// <returns><inheritdoc/></returns>
-        public override bool Equals(Object obj)
+        public override bool Equals(AbstractFlatMatrix<T> obj)
         {
             if (this == obj)
                 return true;
@@ -211,6 +219,11 @@ namespace NeoCortexApi.Entities
             if (this.GetType() != obj.GetType())
                 return false;
             SparseObjectMatrix<T> other = obj as SparseObjectMatrix<T>;
+            return this.Equals(other);
+        }
+
+        public bool Equals(SparseObjectMatrix<T> other)
+        {
             if (other == null)
                 return false;
 
@@ -221,7 +234,7 @@ namespace NeoCortexApi.Entities
             }
             else if (!m_SparseMap.Equals(other.m_SparseMap))
                 return false;
-            if(ModuleTopology == null)
+            if (ModuleTopology == null)
             {
                 if (other.ModuleTopology != null)
                     return false;
@@ -244,7 +257,7 @@ namespace NeoCortexApi.Entities
             throw new NotImplementedException();
         }
 
-   
+
         public override void Serialize(StreamWriter writer)
         {
             HtmSerializer2 ser = new HtmSerializer2();
@@ -285,7 +298,7 @@ namespace NeoCortexApi.Entities
                 //    sparse.m_SparseMap = InMemoryDistributedDictionary<TKey, TValue>.Deserialize(sr);
                 //}
                 else if (data == ser.ReadEnd(nameof(SparseObjectMatrix<T>)))
-                { 
+                {
                     break;
                 }
                 else
@@ -308,6 +321,82 @@ namespace NeoCortexApi.Entities
                 }
             }
             return sparse;
+        }
+
+
+        public void Serialize(object obj, string name, StreamWriter sw)
+        {
+            HtmSerializer2.SerializeObject(obj, name, sw);
+
+            //var matrixColumns = obj as SparseObjectMatrix<Column>;
+            //if (matrixColumns != null)
+            //{
+            //    var ddSynapses = matrixColumns.m_SparseMap.Values.SelectMany(c => c.Cells).SelectMany(c => c.DistalDendrites).SelectMany(d => d.Synapses);
+            //    var cellSynapses = matrixColumns.m_SparseMap.Values.SelectMany(c => c.Cells).SelectMany(c => c.ReceptorSynapses);
+
+            //    var synapses = new List<Synapse>();
+            //    foreach (var synapse in ddSynapses)
+            //    {
+            //        if (synapses.Contains(synapse) == false)
+            //        {
+            //            synapses.Add(synapse);
+            //        }
+            //    }
+
+            //    foreach (var synapse in cellSynapses)
+            //    {
+            //        if (synapses.Contains(synapse) == false)
+            //        {
+            //            synapses.Add(synapse);
+            //        }
+            //    }
+
+            //    HtmSerializer2.Serialize(synapses, "synapsesList", sw);
+            //}
+        }
+
+        public static object Deserialize<TItem>(StreamReader sr, string name)
+        {
+            var ignoreMembers = new List<string>
+            {
+                //"synapsesList"
+            };
+            var matrix = HtmSerializer2.DeserializeObject<SparseObjectMatrix<T>>(sr, name, ignoreMembers, (m, propName) =>
+            {
+                //var matrixColumns = m as SparseObjectMatrix<Column>;
+                //if (matrixColumns == null)
+                //    return;
+
+                //var synapses = HtmSerializer2.Deserialize<List<Synapse>>(sr, "synapsesList");
+
+                //foreach (var column in matrixColumns.m_SparseMap.Values)
+                //{
+                //    foreach (var cell in column.Cells)
+                //    {
+                //        var cellSynapses = synapses.Where(s => s.InputIndex == cell.Index).ToList();
+                //        foreach (var synapse in cellSynapses)
+                //        {
+                //            synapse.SourceCell = cell;
+                //        }
+                //    }
+                //}
+
+
+                //foreach (var column in matrixColumns.m_SparseMap.Values)
+                //{
+                //    foreach (var cell in column.Cells)
+                //    {
+                //        cell.ReceptorSynapses = synapses.Where(s => s.InputIndex == cell.Index).ToList();
+
+                //        foreach (var distalDentrite in cell.DistalDendrites)
+                //        {
+                //            distalDentrite.Synapses = synapses.Where(s => s.SegmentIndex == distalDentrite.SegmentIndex).ToList();
+                //        }
+                //    }
+                //}
+            });
+
+            return matrix;
         }
     }
 }

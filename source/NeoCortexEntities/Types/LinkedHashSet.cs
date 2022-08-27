@@ -10,7 +10,7 @@ using NeoCortexApi.Entities;
 namespace NeoCortexApi.Types
 {
     //[Serializable]
-    public class LinkedHashSet<T> : ISet<T>
+    public class LinkedHashSet<T> : ISet<T>, ISerializable
     {
        // [field: NonSerializedAttribute()]
         private IDictionary<T, LinkedListNode<T>> dict;
@@ -321,6 +321,19 @@ namespace NeoCortexApi.Types
             //ser.SerializeValue(this.list, writer);
 
             ser.SerializeEnd(nameof(LinkedHashSet<T>), writer);
+        }
+
+        public void Serialize(object obj, string name, StreamWriter sw)
+        {
+            HtmSerializer2.Serialize(this.list, null, sw);
+        }
+
+        public static object Deserialize<T1>(StreamReader sr, string name)
+        {
+            if (typeof(T1) != typeof(LinkedHashSet<T>))
+                return null;
+            var list = HtmSerializer2.Deserialize<List<T>>(sr, null);
+            return new LinkedHashSet<T>(list);
         }
         #endregion
 

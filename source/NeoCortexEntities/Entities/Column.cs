@@ -13,7 +13,7 @@ namespace NeoCortexApi.Entities
     /// <summary>
     /// Implementation of the mini-column.
     /// </summary>
-    public class Column : IEquatable<Column>, IComparable<Column>
+    public class Column : IEquatable<Column>, IComparable<Column>, ISerializable
     {
         public AbstractSparseBinaryMatrix connectedInputCounter;
 
@@ -48,8 +48,6 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public Cell[] Cells { get; set; }
 
-        private readonly int hashcode;
-
         public Column()
         {
 
@@ -65,8 +63,6 @@ namespace NeoCortexApi.Entities
         public Column(int numCells, int colIndx, double synapsePermConnected, int numInputs)
         {
             this.Index = colIndx;
-
-            this.hashcode = GetHashCode();
 
             Cells = new Cell[numCells];
 
@@ -374,6 +370,13 @@ namespace NeoCortexApi.Entities
             return m_Hashcode;
         }
 
+        public override bool Equals(object obj)
+        {
+            var col = obj as Column;
+            if (col == null)
+                return false;
+            return this.Equals(col);
+        }
         public bool Equals(Column obj)
         {
             if (this == obj)
@@ -405,7 +408,7 @@ namespace NeoCortexApi.Entities
             if (obj.Cells != null && Cells != null)
             {
 
-                if (!obj.Cells.SequenceEqual(Cells))
+                if (!obj.Cells.ElementsEqual(Cells))
                     return false;
             }
             if (Index != obj.Index)
@@ -520,6 +523,26 @@ namespace NeoCortexApi.Entities
                 }
             }
             return column;
+        }
+
+        public void Serialize(object obj, string name, StreamWriter sw)
+        {
+            var column = obj as Column;
+            if (column != null)
+            {
+                var ignoreMembers = new List<string>
+                {
+                    nameof(Column.connectedInputCounter),
+                    nameof(Column.Cells),
+                    nameof(Column.m_Hashcode)
+                };
+                HtmSerializer2.SerializeObject(column, name, sw, ignoreMembers);
+            }
+        }
+
+        public static object Deserialize<T>(StreamReader sr, string name)
+        {
+            return HtmSerializer2.DeserializeObject<Column>(sr, name);
         }
     }
 }

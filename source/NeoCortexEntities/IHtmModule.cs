@@ -6,7 +6,7 @@ namespace NeoCortexApi
     public interface IHtmModule
     {
         string Name { get; set; }
-
+        bool Equals(IHtmModule other);
     }
 
     /// <summary>

@@ -86,7 +86,7 @@ namespace NeoCortexApi.Entities
                 if (obj.Synapses != null)
                     return false;
             }
-            else if (!Synapses.SequenceEqual(obj.Synapses))
+            else if (!Synapses.ElementsEqual(obj.Synapses))
                 return false;
 
             if (SynapsePermConnected != obj.SynapsePermConnected)

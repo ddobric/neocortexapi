@@ -83,16 +83,21 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public override int GetHashCode()
         {
-            if (m_Hashcode == 0)
-            {
-                int prime = 31;
-                int result = 1;
-                result = prime * result + Index;
-                return result;
-            }
-            return m_Hashcode;
+            int prime = 31;
+            int result = 1;
+            result = prime * result + ParentColumnIndex;
+            result = prime * result + Index;
+            return result;
+            //if (m_Hashcode == 0)
+            //{
+            //    int prime = 31;
+            //    int result = 1;
+            //    result = prime * result + ParentColumnIndex;
+            //    result = prime * result + Index;
+            //    return result;
+            //}
+            //return m_Hashcode;
         }
-
 
         /// <summary>
         /// <inheritdoc/>
@@ -120,13 +125,13 @@ namespace NeoCortexApi.Entities
                 {
                     //if (!Enumerable.SequenceEqual(obj.DistalDendrites, this.DistalDendrites))
                     //    return false;
-                    if (!obj.DistalDendrites.SequenceEqual(this.DistalDendrites))
+                    if (!obj.DistalDendrites.ElementsEqual(this.DistalDendrites))
                         return false;
                 }
 
                 if (obj.ReceptorSynapses != null && this.ReceptorSynapses != null)
                 {
-                    if (!obj.ReceptorSynapses.SequenceEqual(this.ReceptorSynapses))
+                    if (!obj.ReceptorSynapses.ElementsEqual(this.ReceptorSynapses))
                         return false;
                 }
 
@@ -165,7 +170,7 @@ namespace NeoCortexApi.Entities
         /// Serializes the cell to the stream.
         /// </summary>
         /// <param name="writer"></param>
-        public void  SerializeT(StreamWriter writer)
+        public void SerializeT(StreamWriter writer)
         {
             HtmSerializer2 ser = new HtmSerializer2();
 
@@ -183,7 +188,7 @@ namespace NeoCortexApi.Entities
 
             ser.SerializeEnd(nameof(Cell), writer);
 
-            
+
         }
 
         public static Cell Deserialize(StreamReader sr)
@@ -225,7 +230,7 @@ namespace NeoCortexApi.Entities
                                 }
                             case 1:
                                 {
-                                   // cell.CellId = ser.ReadIntValue(str[i]);
+                                    // cell.CellId = ser.ReadIntValue(str[i]);
                                     break;
                                 }
                             case 2:
@@ -245,16 +250,29 @@ namespace NeoCortexApi.Entities
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            HtmSerializer2.SerializeObject(obj, name, sw, new List<string> { nameof(DistalDendrite.ParentCell)});
+            var ignoreMembers = new List<string> 
+            { 
+                nameof(Cell.ReceptorSynapses),
+                nameof(m_Hashcode)
+            };
+            HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);
+            var cell = obj as Cell;
+            if (cell != null)
+            {
+                var synapses = cell.ReceptorSynapses.Select(s => new Synapse() { SynapseIndex = s.SynapseIndex });
+                HtmSerializer2.Serialize(synapses, nameof(Cell.ReceptorSynapses), sw);
+            }
         }
-        public static object Deserialize(StreamReader sr, string name)
+        public static object Deserialize<T>(StreamReader sr, string name)
         {
+            if (typeof(T) != typeof(Cell))
+                return null;
             var cell = HtmSerializer2.DeserializeObject<Cell>(sr, name);
 
-            foreach (var distalDentrite in cell.DistalDendrites)
-            {
-                distalDentrite.ParentCell = cell;
-            }
+            //foreach (var distalDentrite in cell.DistalDendrites)
+            //{
+            //    distalDentrite.ParentCell = cell;
+            //}
             return cell;
         }
         #endregion

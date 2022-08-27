@@ -15,6 +15,11 @@ namespace NeoCortexApi.Network
         #endregion
 
         #region Constructors and Initialization
+        public CortexLayer()
+        {
+
+        }
+
         public CortexLayer(string name) : this(name, new Dictionary<string, IHtmModule>())
         {
 
@@ -114,6 +119,40 @@ namespace NeoCortexApi.Network
 
         #endregion
 
+        public override bool Equals(object obj)
+        {
+            var layer = obj as CortexLayer<TIN, TOUT>;
+            if (layer == null)
+                return false;
+            return this.Equals(layer);
+        }
+
+        public bool Equals(CortexLayer<TIN, TOUT> other)
+        {
+            if (Name != other.Name)
+                return false;
+            if (this.HtmModules == null)
+                return other.HtmModules == null;
+
+            foreach (var item in this.HtmModules.Keys)
+            {
+                if (other.HtmModules.TryGetValue(item, out var value))
+                {
+                    if (!this.HtmModules[item].Equals(value))
+                        return false;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public bool Equals(IHtmModule other)
+        {
+            return this.Equals((object)other);
+        }
         #region Private Methods
 
         #endregion
