@@ -27,5 +27,54 @@ namespace NeoCortexApi.Entities
         /// Chosen as the active cell.
         /// </summary>
         public Cell BestCell { get; set; }
+
+        
+        public override bool Equals(object obj)
+        {
+            
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            var br = obj as BurstingResult;
+            
+            return this.Equals(br);
+        }
+
+        public bool Equals(BurstingResult obj)
+        {
+            if (ReferenceEquals(this, obj))            
+               return true;
+
+            if (obj == null)
+                return false;
+
+            if (Cells == null)
+            {
+                if (obj.Cells != null)
+                    return false;
+            }
+
+            if (BestCell == null)
+            {
+                if (obj.BestCell != null)
+                    return false;
+            }
+
+            if (obj.Cells.ElementsEqual(Cells) && obj.BestCell.Equals(BestCell))
+                return true;
+            else
+                return false;            
+
+        }
+
+        
+        public override int GetHashCode()
+        {
+            // TODO: write implementation of GetHashCode() here
+            throw new System.NotImplementedException();
+            return base.GetHashCode();
+        }
     }
 }
