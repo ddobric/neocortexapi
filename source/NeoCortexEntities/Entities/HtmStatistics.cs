@@ -66,5 +66,10 @@ namespace NeoCortexApi.Entities
 
             return true;
         }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(SynapticActivity, Synapses, ConnectedSynapses, MinPermanence, MaxPermanence, AvgPermanence);
+        }
     }
 }

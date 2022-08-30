@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using System;
 using System.Collections.Generic;
 
 namespace NeoCortexApi.Entities
@@ -19,5 +20,27 @@ namespace NeoCortexApi.Entities
         public List<DistalDendrite> ActiveSegments { get; set; }
 
         public List<DistalDendrite> MathichngSegments { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+
+            return Equals(obj as TemporalTuple);
+        }
+
+        public bool Equals(TemporalTuple tt)
+        {
+            if (ReferenceEquals(this, tt))
+                return true;
+
+            return Column.Equals(tt.Column) && ActiveColumns.ElementsEqual(tt.ActiveColumns)
+                && ActiveSegments.ElementsEqual(tt.ActiveSegments) && MathichngSegments.ElementsEqual(tt.MathichngSegments);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Column, ActiveColumns, ActiveSegments, MathichngSegments);
+        }
     }
 }

@@ -31,14 +31,11 @@ namespace NeoCortexApi.Entities
         
         public override bool Equals(object obj)
         {
-            
-            if (obj == null || GetType() != obj.GetType())
-            {
-                return false;
-            }
-
             var br = obj as BurstingResult;
-            
+
+            if (br == null)            
+                return false; 
+                      
             return this.Equals(br);
         }
 
@@ -71,10 +68,8 @@ namespace NeoCortexApi.Entities
 
         
         public override int GetHashCode()
-        {
-            // TODO: write implementation of GetHashCode() here
-            throw new System.NotImplementedException();
-            return base.GetHashCode();
+        {           
+            return System.HashCode.Combine(Cells, BestCell);
         }
     }
 }
