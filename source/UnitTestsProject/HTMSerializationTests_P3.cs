@@ -58,37 +58,7 @@ namespace UnitTestsProject
             }
         }
 
-
-        [TestMethod]
-        [TestCategory("serialize_test")]
-        public void Test_ComputeCycle()
-        {
-            int[] inputDims = { 100, 100 };
-            int[] columnDims = { 10, 10 };
-            HtmConfig config = new HtmConfig(inputDims, columnDims);
-
-            Connections connections = new Connections(config);
-
-            Cell cell = new Cell(12, 14, 16, new CellActivity());
-
-            var distDend = new DistalDendrite(cell, 1, 2, 2, 1.0, 100);
-
-            connections.ActiveSegments.Add(distDend);
-
-            ComputeCycle computeCycle = new ComputeCycle(connections);
-
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test_ComputeCycle)}_compute.txt"))
-            {
-                HtmSerializer2.Serialize(computeCycle, null, sw);
-            }
-            using (StreamReader sr = new StreamReader($"ser_{nameof(Test_ComputeCycle)}_compute.txt"))
-            {
-                ComputeCycle computeCycleD = HtmSerializer2.Deserialize<ComputeCycle>(sr);
-                Assert.IsTrue(computeCycle.Equals(computeCycleD));
-            }
-        }
-
-
+  
         [TestMethod]
         [TestCategory("serialize_test")]
         public void Test_Connections()
@@ -134,30 +104,7 @@ namespace UnitTestsProject
                 HtmConfig configD = HtmSerializer2.Deserialize<HtmConfig>(sr);
                 Assert.IsTrue(config.Equals(configD));
             }
-        }
-
-
-        [TestMethod]
-        [TestCategory("serialize_test")]
-        public void Test_BurstingResult()
-        {
-            Cell[] cells = new Cell[2];
-
-            cells[0] = new Cell(12, 14, 16, new CellActivity());
-            cells[1] = new Cell(22, 33, 44, new CellActivity());             
-
-            BurstingResult burstingResult = new BurstingResult(cells, cells[0]);
-
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test_BurstingResult)}_bursting.txt"))
-            {
-                HtmSerializer2.Serialize(burstingResult, null, sw);
-            }
-            using (StreamReader sr = new StreamReader($"ser_{nameof(Test_BurstingResult)}_bursting.txt"))
-            {
-                BurstingResult burstingResultD = HtmSerializer2.Deserialize<BurstingResult>(sr);
-                Assert.IsTrue(burstingResult.Equals(burstingResultD));
-            }
-        }
+        }      
 
         [TestMethod]
         [TestCategory("serialize_test")]
