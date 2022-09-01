@@ -273,6 +273,12 @@ namespace Invariant.Entities
             double whitePixelDensity = CalculateImageDensity(frame, pixelDensityThreshold);
             return (whitePixelDensity <= pixelDensityThreshold) ? true : false;
         }
+        public bool IsRegionBelowDensity(double pixelDensityThreshold)
+        {
+            Frame frame = new Frame(0,0,this.imageWidth-1,this.imageHeight-1);
+            double whitePixelDensity = CalculateImageDensity(frame, pixelDensityThreshold);
+            return (whitePixelDensity <= pixelDensityThreshold) ? true : false;
+        }
 
         public double CalculateImageDensity(Frame frame, double pixelDensiTyThreshold)
         {

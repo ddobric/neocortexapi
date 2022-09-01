@@ -92,7 +92,7 @@ namespace InvariantLearning
 
             foreach (var dim in spFrameSizeLst)
             {
-                poolerDict.Add(dim.ToString(), new LearningUnit(dim, 2048));
+                poolerDict.Add(dim.ToString(), new LearningUnit(dim, dim, 2048, "placeholder"));
             }
         }
 
@@ -112,7 +112,7 @@ namespace InvariantLearning
             // Collecting Vote
             foreach (var sp in poolerDict)
             {
-                sp.Value.OutputPredictFolder = predictProcessName;
+                sp.Value.OutFolder = predictProcessName;
                 Dictionary<string, string> predictResultOfCurrentSP = sp.Value.PredictScaledImage(inputImage, $"Predict_{kFold}");
                 predictResultOfCurrentSP.Add("CorrectLabel",inputImage.label);
                 allSPPredictResult.Add(sp.Key,predictResultOfCurrentSP);

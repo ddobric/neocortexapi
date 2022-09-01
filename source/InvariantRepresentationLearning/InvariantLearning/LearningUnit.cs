@@ -10,37 +10,57 @@ using SkiaSharp;
 
 namespace InvariantLearning
 {
+    /// <summary>
+    /// <br>Learning Unit is a Combination of Image Encoder, Spatial Pooler and Classifier in one Place</br>
+    /// <br></br>
+    /// </summary>
     public class LearningUnit
     {
-        public string OutputPredictFolder = "";
+        public string OutFolder;
         private CortexLayer<object, object> cortexLayer;
+
         private bool isInStableState;
 
-        public int inputDim;
+        public int width;
+        public int height;
+        
         public int columnDim;
+        
         public HtmClassifier<string, int[]> classifier;
 
+        public object Id { get => $"_{width}x{height}_";}
 
-        public LearningUnit(int inputDim, int columnDim)
+        public LearningUnit(int width, int height, int numColumn, string outFolder)
         {
-            this.inputDim = inputDim;
-            this.columnDim = columnDim;
+            this.width = width;
+            this.height = height;
+            this.columnDim = numColumn;
+            this.OutFolder = outFolder;
 
-            // CortexLayer
-            cortexLayer = new CortexLayer<object, object>("Invariant");
+            cortexLayer = new CortexLayer<object, object>();
 
-            // HTM CLASSIFIER
             classifier = new HtmClassifier<string, int[]>();
         }
 
         /// <summary>
-        /// Training with newborn cycle before Real Learning of DataSet
+        /// <br>start training in Newborn Cycle to reach stable state of SP with the training dataset.</br>
+        /// <br>after the stable state, LearningUnit spends 2 more cycles to learn all labels for each images from the DataSet</br>
+        /// </summary>
+        /// <param name="trainingDataSet"></param>
+        public void TrainAndLearn(DataSet trainingDataSet)
+        {
+            TrainingNewbornCycle(trainingDataSet);
+            TrainingNormal(trainingDataSet, 2);
+        }
+
+        /// <summary>
+        /// Training in newborn cycle
         /// </summary>
         /// <param name="trainingDataSet">the Training Dataset</param>
         public void TrainingNewbornCycle(DataSet trainingDataSet)
         {
             // HTM CONFIG
-            HtmConfig config = new HtmConfig(new int[] { inputDim * inputDim }, new int[] { columnDim })
+            HtmConfig config = new HtmConfig(new int[] { width * height }, new int[] { columnDim })
             {
                 Random = new Random(15676),
                 DutyCyclePeriod = 20
@@ -59,11 +79,9 @@ namespace InvariantLearning
                     // Ideal SP should never enter unstable state after stable state.
                     Debug.WriteLine($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
 
-                // We are not learning in instable state.
+                // Toggle Stability
                 this.isInStableState = isStable;
 
-                // Clear active and predictive cells.
-                //tm.Reset(mem);
             }, numOfCyclesToWaitOnChange: 100);
 
             // SPATIAL POOLER
@@ -74,16 +92,16 @@ namespace InvariantLearning
             ImageEncoder imgEncoder = new(new Daenet.ImageBinarizerLib.Entities.BinarizerParams()
             {
                 Inverse = false,
-                ImageHeight = inputDim,
-                ImageWidth = inputDim,
+                ImageHeight = height,
+                ImageWidth = width,
                 GreyScale = true,
             });
 
-            // Cortex Layer
+            // Building Cortex Layer
             cortexLayer.AddModule("encoder", imgEncoder);
             cortexLayer.AddModule("sp", sp);
 
-            // Stable State
+            // Stable State Check
             isInStableState = false;
 
             // Training In New Born State
@@ -165,13 +183,13 @@ namespace InvariantLearning
         public Dictionary<string, string> PredictScaledImage(Picture image, string predictOutputPath)
         {
             // Create the folder for the frame extracted by InvImage
-            string spFolder = Path.Combine(predictOutputPath, OutputPredictFolder, $"SP of {inputDim}x{inputDim}");
+            string spFolder = Path.Combine(predictOutputPath, OutFolder, $"SP of {width}x{height}");
             Utility.CreateFolderIfNotExist(spFolder);
 
             // dictionary for saving result
             Dictionary<string, string> result = new Dictionary<string, string>();
 
-            var frameMatrix = Frame.GetConvFramesbyPixel(image.imageWidth, image.imageHeight, inputDim, inputDim, 5);
+            var frameMatrix = Frame.GetConvFramesbyPixel(image.imageWidth, image.imageHeight, width, height, 5);
 
             int lastXIndex = image.imageWidth - 1;
             int lastYIndex = image.imageHeight - 1;
@@ -210,14 +228,14 @@ namespace InvariantLearning
         public Dictionary<string, double> PredictWithFrameGrid(Picture image)
         {
             // Create the folder for the frame extracted by InvImage
-            string spFolder = Path.Combine("Predict", OutputPredictFolder, $"SP of {inputDim}x{inputDim}");
+            string spFolder = Path.Combine("Predict", OutFolder, $"SP of {width}x{height}");
             Utility.CreateFolderIfNotExist(spFolder);
 
             // dictionary for saving result
             Dictionary<string, double> result = new Dictionary<string, double>();
             Dictionary<string, string> allResultForEachFrame = new Dictionary<string, string>();
 
-            var frameMatrix = Frame.GetConvFramesbyPixel(image.imageWidth, image.imageHeight, inputDim, inputDim, 5);
+            var frameMatrix = Frame.GetConvFramesbyPixel(image.imageWidth, image.imageHeight, width, height, 5);
 
 
             foreach (var frame in frameMatrix)
@@ -255,7 +273,7 @@ namespace InvariantLearning
                     AddResult(ref result, predictedLabel, frameMatrix.Count);
                 }
             }
-            Utility.WriteResultOfOneSPDetailed(allResultForEachFrame, Path.Combine(spFolder, $"SP of {inputDim}x{inputDim} detailed.csv"));
+            Utility.WriteResultOfOneSPDetailed(allResultForEachFrame, Path.Combine(spFolder, $"SP of {width}x{height} detailed.csv"));
             return result;
         }
 

@@ -17,12 +17,16 @@ namespace InvariantLearning
             //ExperimentPredictingWithFrameGrid();
             //ExperimentNormalImageClassification();
             //LocaDimensionTest();
-            ExperimentEvaluatateImageClassification();
+            //ExperimentEvaluatateImageClassification($"EvaluateImageClassification {experimentTime}");
             // Invariant Learning Experiment
             InvariantRepresentation($"HtmInvariantLearning {experimentTime}");
             //SPCapacityTest();
         }
 
+        /// <summary>
+        /// Latest Experiment
+        /// </summary>
+        /// <param name="experimentFolder"></param>
         private static void InvariantRepresentation(string experimentFolder)
         {
             Utility.CreateFolderIfNotExist(experimentFolder);
@@ -53,29 +57,32 @@ namespace InvariantLearning
                 foreach (var frame in listOfFrame)
                 {
                     if (image.IsRegionOverBinarizedThreshold(frame, 255 / 2))
-                    {
-                        Utility.CreateFolderIfNotExist(Path.Combine(extractedFrameFolder, $"{index}"));
-                        if (!ExistImageInDataSet(image, extractedFrameFolder, frame))
+                        if (image.IsRegionBelowDensity(50))
                         {
-                            string savePath = Path.Combine(extractedFrameFolder, $"{index}", $"{index}.png");
-                            string extractedFrameFolderBinarized = Path.Combine(experimentFolder, "extractedFrameBinarized");
-                            Utility.CreateFolderIfNotExist(Path.Combine(extractedFrameFolderBinarized, $"{index}"));
-                            string savePathOri = Path.Combine(extractedFrameFolderBinarized, $"{index}", $"{index}_ori.png");
+                            {
+                                Utility.CreateFolderIfNotExist(Path.Combine(extractedFrameFolder, $"{index}"));
+                                if (!DataSet.ExistImageInDataSet(image, extractedFrameFolder, frame))
+                                {
+                                    string savePath = Path.Combine(extractedFrameFolder, $"{index}", $"{index}.png");
+                                    string extractedFrameFolderBinarized = Path.Combine(experimentFolder, "extractedFrameBinarized");
+                                    Utility.CreateFolderIfNotExist(Path.Combine(extractedFrameFolderBinarized, $"{index}"));
+                                    string savePathOri = Path.Combine(extractedFrameFolderBinarized, $"{index}", $"{index}_ori.png");
 
-                            image.SaveTo(savePath, frame, true);
-                            image.SaveTo(savePathOri, frame);
+                                    image.SaveTo(savePath, frame, true);
+                                    image.SaveTo(savePathOri, frame);
 
-                            frameDensityList.Add($"pattern {index}, Pixel Density {image.CalculateImageDensity(frame, 255 / 2) * 100}");
-                            index += 1;
+                                    frameDensityList.Add($"pattern {index}, Pixel Density {image.CalculateImageDensity(frame, 255 / 2) * 100}");
+                                    index += 1;
+                                }
+                            }
                         }
-                    }
                 }
             }
             File.WriteAllLines(Path.Combine(extractedFrameFolder, "PixelDensity.txt"), frameDensityList.ToArray());
             DataSet extractedFrameSet = new DataSet(extractedFrameFolder);
 
             // Learning the filtered frame set with SP
-            LearningUnit spLayer1 = new LearningUnit(32, 2048);
+            LearningUnit spLayer1 = new LearningUnit(32,32,2048,experimentFolder);
             spLayer1.TrainingNewbornCycle(extractedFrameSet);
             // spLayer1.TrainingNormal(extractedFrameSet, 1);
 
@@ -171,22 +178,6 @@ namespace InvariantLearning
             return sourceSet_32x32;
         }
 
-        private static bool ExistImageInDataSet(Picture image, string extractedFrameFolder, Frame frame)
-        {
-            foreach(var dir in Directory.GetDirectories(extractedFrameFolder))
-            {
-                foreach (var file in Directory.GetFiles(dir))
-                {
-                    Picture a = new Picture(file, "test");
-                    if (Picture.CheckArrayEqual(Picture.Binarize(image.GetPixels(frame),255/2),Picture.Binarize(a.GetPixels(), 255 / 2)))
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
         private static void SPCapacityTest()
         {
             Dictionary<string, object> settings = new Dictionary<string, object>()
@@ -233,13 +224,13 @@ namespace InvariantLearning
             hpc.TraceState();
         }
 
-        private static void LocaDimensionTest()
+        private static void LocaDimensionTest(string outFolder)
         {
             List<LearningUnit> sps = new List<LearningUnit>();
             List<int> spDim = new List<int> { 28, 50};
             foreach(var dim in spDim)
             {
-                sps.Add(new LearningUnit(dim, 1024));
+                sps.Add(new LearningUnit(dim,dim, 1024, outFolder));
             }
 
 
@@ -253,7 +244,7 @@ namespace InvariantLearning
                 sp.TrainingNewbornCycle(training);
                 sp.TrainingNormal(training, 50);
 
-                string similarityPath = Path.Combine("LocalDimensionTest_Res", $"SimilaritiesCalc__{sp.inputDim}");
+                string similarityPath = Path.Combine("LocalDimensionTest_Res", $"SimilaritiesCalc__{sp.Id}");
                 Utility.CreateFolderIfNotExist(similarityPath);
 
                 var a = sp.classifier.TraceCrossSimilarity("4", "9");
@@ -261,7 +252,7 @@ namespace InvariantLearning
             }
         }
 
-        private static void ExperimentEvaluatateImageClassification()
+        private static void ExperimentEvaluatateImageClassification(string outFolder)
         {
             // reading Config from json
             var config = Utility.ReadConfig("experimentParams.json");
@@ -278,7 +269,7 @@ namespace InvariantLearning
             DataSet testingData = trainingData.GetTestData(10);
             testingData.VisualizeSet(Path.Combine(config.ExperimentFolder, pathToTestDataFolder));
 
-            LearningUnit sp = new(40, 1024);
+            LearningUnit sp = new(40,40, 1024,outFolder);
 
             sp.TrainingNewbornCycle(trainingData);
 

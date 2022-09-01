@@ -246,6 +246,28 @@ namespace Invariant.Entities
             }
         }
 
+        /// <summary>
+        /// <br>Check by pixels if an image is already presented in a specified training folder</br>
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="imageSet"></param>
+        /// <param name="frame"></param>
+        /// <returns></returns>
+        public static bool ExistImageInDataSet(Picture image, string imageSet, Frame frame)
+        {
+            foreach (var dir in Directory.GetDirectories(imageSet))
+            {
+                foreach (var file in Directory.GetFiles(dir))
+                {
+                    Picture a = new Picture(file, "test");
+                    if (Picture.CheckArrayEqual(Picture.Binarize(image.GetPixels(frame), 255 / 2), Picture.Binarize(a.GetPixels(), 255 / 2)))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
         public static DataSet CreateTestSet(DataSet sourceSet_32x32, int samples, int width, int height, string fileName)
         {
             if (!Directory.Exists(fileName))
