@@ -149,6 +149,26 @@ namespace UnitTestsProject
             }
         }
 
+        [TestMethod]
+        [TestCategory("serialize_test")]
+        public void Test_HtmModuleTopology()
+        {
+            int[] dimension = { 10, 12, 14 };
+
+            HtmModuleTopology topology = new HtmModuleTopology(dimension, true);
+
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test_HtmModuleTopology)}_topology.txt"))
+            {
+                HtmSerializer2.Serialize(topology, null, sw);
+            }
+            using (StreamReader sr = new StreamReader($"ser_{nameof(Test_HtmModuleTopology)}_topology.txt"))
+            {
+                HtmModuleTopology topologyD = HtmSerializer2.Deserialize<HtmModuleTopology>(sr);
+                Assert.IsTrue(topology.Equals(topologyD));
+            }
+        }
+
+        
 
 
     }
