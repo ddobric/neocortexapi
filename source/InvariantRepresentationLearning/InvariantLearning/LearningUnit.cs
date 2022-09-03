@@ -6,7 +6,6 @@ using HtmImageEncoder;
 using NeoCortexApi.Classifiers;
 
 using Invariant.Entities;
-using SkiaSharp;
 
 namespace InvariantLearning
 {
@@ -28,7 +27,7 @@ namespace InvariantLearning
         
         public HtmClassifier<string, int[]> classifier;
 
-        public object Id { get => $"_{width}x{height}_";}
+        public string Id { get => $"_{width}x{height}_";}
 
         public LearningUnit(int width, int height, int numColumn, string outFolder)
         {
@@ -37,7 +36,7 @@ namespace InvariantLearning
             this.columnDim = numColumn;
             this.OutFolder = outFolder;
 
-            cortexLayer = new CortexLayer<object, object>();
+            cortexLayer = new CortexLayer<object, object>(this.Id);
 
             classifier = new HtmClassifier<string, int[]>();
         }
@@ -70,7 +69,7 @@ namespace InvariantLearning
             Connections conn = new Connections(config);
 
             // HPC
-            HomeostaticPlasticityController hpc = new HomeostaticPlasticityController(conn, trainingDataSet.Count * 100, (isStable, numPatterns, actColAvg, seenInputs) =>
+            HomeostaticPlasticityController hpc = new HomeostaticPlasticityController(conn, trainingDataSet.Count * 10, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                 if (isStable)
                     // Event should be fired when entering the stable state.
@@ -82,7 +81,7 @@ namespace InvariantLearning
                 // Toggle Stability
                 this.isInStableState = isStable;
 
-            }, numOfCyclesToWaitOnChange: 100);
+            }, numOfCyclesToWaitOnChange: 50);
 
             // SPATIAL POOLER
             SpatialPooler sp = new SpatialPooler(hpc);
@@ -106,15 +105,21 @@ namespace InvariantLearning
 
             // Training In New Born State
             int cycle = 0;
-            while (!this.isInStableState)
+            int maxCycle = 500;
+            while (cycle < maxCycle)
             {
                 Debug.Write($"Cycle {cycle}: ");
                 foreach (var sample in trainingDataSet.Images)
                 {
                     Debug.Write(".");
-                    cortexLayer.Compute(sample.imagePath, true);
+                    //.Compute(sample.ImagePath, true);
                 }
                 Debug.Write("\n");
+
+                if (this.isInStableState)
+                {
+                    break;
+                }
                 cycle++;
             }
             Console.WriteLine("Learning Unit reach stable state in newborn learning");
@@ -159,12 +164,12 @@ namespace InvariantLearning
             }
         }
 
-        public void Learn(Picture sample)
+        public void Learn(Image sample)
         {
-            Debug.WriteLine($"Label: {sample.label}___{Path.GetFileNameWithoutExtension(sample.imagePath)}");
+            Debug.WriteLine($"Label: {sample.Label}___{Path.GetFileNameWithoutExtension(sample.ImagePath)}");
 
             // Claculates the SDR of Active Columns.
-            cortexLayer.Compute(sample.imagePath, true);
+            cortexLayer.Compute(sample.ImagePath, true);
 
             var activeColumns = cortexLayer.GetResult("sp") as int[];
 
@@ -172,7 +177,7 @@ namespace InvariantLearning
             // classifier.Learn($"{sample.label}_{Path.GetFileName(sample.imagePath)}", activeColumns);
 
             // Uncomment this to learn only the label
-            classifier.Learn(sample.label, activeColumns);
+            classifier.Learn(sample.Label, activeColumns);
         }
 
         /// <summary>
@@ -180,7 +185,7 @@ namespace InvariantLearning
         /// </summary>
         /// <param name="image"></param>
         /// <returns></returns>
-        public Dictionary<string, string> PredictScaledImage(Picture image, string predictOutputPath)
+        public Dictionary<string, string> PredictScaledImage(Image image, string predictOutputPath)
         {
             // Create the folder for the frame extracted by InvImage
             string spFolder = Path.Combine(predictOutputPath, OutFolder, $"SP of {width}x{height}");
@@ -189,10 +194,10 @@ namespace InvariantLearning
             // dictionary for saving result
             Dictionary<string, string> result = new Dictionary<string, string>();
 
-            var frameMatrix = Frame.GetConvFramesbyPixel(image.imageWidth, image.imageHeight, width, height, 5);
+            var frameMatrix = Frame.GetConvFramesbyPixel(image.ImageWidth, image.ImageHeight, width, height, 5);
 
-            int lastXIndex = image.imageWidth - 1;
-            int lastYIndex = image.imageHeight - 1;
+            int lastXIndex = image.ImageWidth - 1;
+            int lastYIndex = image.ImageHeight - 1;
             Frame frame = new Frame(0, 0, lastXIndex, lastYIndex);
             if (image.IsRegionBelowDensity(frame, 0.05))
             {
@@ -201,8 +206,8 @@ namespace InvariantLearning
             else
             {
                 // Save frame to folder
-                string outFile = Path.Combine(spFolder, $"testImage of label {image.label} index {Path.GetFileNameWithoutExtension(image.imagePath)}.png");
-                Picture.SaveAsImage(image.GetPixels(), outFile);
+                string outFile = Path.Combine(spFolder, $"testImage of label {image.Label} index {Path.GetFileNameWithoutExtension(image.ImagePath)}.png");
+                Image.SaveTo(image.GetPixels(), outFile);
 
                 // Compute the SDR
                 var sdr = cortexLayer.Compute(outFile, false) as int[];
@@ -215,7 +220,7 @@ namespace InvariantLearning
                 {
                     foreach (var a in predictedLabel)
                     {
-                        Debug.WriteLine($"Predicting image: {image.imagePath}");
+                        Debug.WriteLine($"Predicting image: {image.ImagePath}");
                         Debug.WriteLine($"label predicted as : {a.PredictedInput}");
                         Debug.WriteLine($"similarity : {a.Similarity}");
                         Debug.WriteLine($"Number of Same Bits: {a.NumOfSameBits}");
@@ -225,7 +230,7 @@ namespace InvariantLearning
             }
             return result;
         }
-        public Dictionary<string, double> PredictWithFrameGrid(Picture image)
+        public Dictionary<string, double> PredictWithFrameGrid(Image image)
         {
             // Create the folder for the frame extracted by InvImage
             string spFolder = Path.Combine("Predict", OutFolder, $"SP of {width}x{height}");
@@ -235,7 +240,7 @@ namespace InvariantLearning
             Dictionary<string, double> result = new Dictionary<string, double>();
             Dictionary<string, string> allResultForEachFrame = new Dictionary<string, string>();
 
-            var frameMatrix = Frame.GetConvFramesbyPixel(image.imageWidth, image.imageHeight, width, height, 5);
+            var frameMatrix = Frame.GetConvFramesbyPixel(image.ImageWidth, image.ImageHeight, width, height, 5);
 
 
             foreach (var frame in frameMatrix)
@@ -248,7 +253,7 @@ namespace InvariantLearning
                 {
                     // Save frame to folder
                     string outFile = Path.Combine(spFolder, $"frame__{frame.tlX}_{frame.tlY}.png");
-                    Picture.SaveAsImage(image.GetPixels(frame), outFile);
+                    Image.SaveTo(image.GetPixels(frame), outFile);
 
                     // Compute the SDR
                     var sdr = cortexLayer.Compute(outFile, false) as int[];
@@ -261,7 +266,7 @@ namespace InvariantLearning
                     {
                         foreach (var a in predictedLabel)
                         {
-                            Debug.WriteLine($"Predicting image: {image.imagePath}");
+                            Debug.WriteLine($"Predicting image: {image.ImagePath}");
                             Debug.WriteLine($"label predicted as : {a.PredictedInput}");
                             Debug.WriteLine($"similarity : {a.Similarity}");
                             Debug.WriteLine($"Number of Same Bits: {a.NumOfSameBits}");

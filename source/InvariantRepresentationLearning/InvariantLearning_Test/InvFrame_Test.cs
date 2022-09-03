@@ -56,18 +56,18 @@ namespace InvariantLearning_Test
             Utility.CreateFolderIfNotExist(Path.Combine("TEST_OUTPUT", testName, folderName));
             #endregion
 
-            Picture invImage = new Picture(imagePath, "test");
-            Debug.WriteLine($"{invImage.label}");
+            Image invImage = new Image(imagePath, "test");
+            Debug.WriteLine($"{invImage.Label}");
 
-            var a = invImage.GetPixels();
-            Picture.SaveAsImage(a, "out_apple2.png");
-            var b = Frame.GetConvFrames(invImage.imageWidth, invImage.imageHeight, frameWidth, frameHeight, NoX, NoY);
+            var a = invImage.Pixels();
+            Image.SaveTo(a, "out_apple2.png");
+            var b = Frame.GetConvFrames(invImage.ImageWidth, invImage.ImageHeight, frameWidth, frameHeight, NoX, NoY);
             int count = 0;
             foreach(var frame in b)
             {
                 count += 1;
                 string imgPath = Path.Combine("TEST_OUTPUT",testName,folderName,$"{Path.GetFileNameWithoutExtension(imagePath)}{frame.brX}{frame.brY}_i.png");
-                Picture.SaveAsImage(invImage.GetPixels(frame),imgPath);
+                Image.SaveTo(invImage.GetPixels(frame),imgPath);
             }
         }
     }

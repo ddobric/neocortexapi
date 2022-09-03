@@ -18,7 +18,7 @@ namespace Invariant.Entities
         /// <summary>
         /// List of all Images
         /// </summary>
-        public List<Picture> Images { get; set; }
+        public List<Image> Images { get; set; }
 
         public Random random;
 
@@ -41,12 +41,12 @@ namespace Invariant.Entities
         /// Create another dataset based on a list of Images
         /// </summary>
         /// <param name="originDataSetPics"></param>
-        public DataSet(List<Picture> imageList)
+        public DataSet(List<Image> imageList)
         {
             random = new Random(42);
             Labels = new List<string>();
 
-            Images = new List<Picture>();
+            Images = new List<Image>();
             this.Images = imageList;
 
             this.RecalculateImagesClasses();
@@ -60,7 +60,7 @@ namespace Invariant.Entities
         {
             random = new Random(42);
             Labels = new List<string>();
-            Images = new List<Picture>();
+            Images = new List<Image>();
             // Getting the classes
             InitImageClasses(pathToTrainingFolder);
 
@@ -70,7 +70,7 @@ namespace Invariant.Entities
                 string label = Path.GetFileName(classFolder);
                 foreach (var imagePath in Directory.GetFiles(classFolder))
                 {
-                    Images.Add(new Picture(imagePath, label));
+                    Images.Add(new Image(imagePath, label));
                 }
             }
         }
@@ -83,11 +83,11 @@ namespace Invariant.Entities
         /// <returns></returns>
         public DataSet GetTestData(double perCentSample)
         {
-            List<Picture> takenImages = new List<Picture>();
+            List<Image> takenImages = new List<Image>();
 
             foreach (var imageClass in Labels)
             {
-                var imageOfSameClass = new List<Picture>(Images.Where(p => (p.label == imageClass)));
+                var imageOfSameClass = new List<Image>(Images.Where(p => (p.Label == imageClass)));
                 int stopIndex = (int) ((double)(imageOfSameClass.Count) * perCentSample / 100);
                 for (int i = 0; i < stopIndex; i += 1)
                 {
@@ -120,9 +120,9 @@ namespace Invariant.Entities
             List<string> imgClasses = new List<string>();
             foreach(var image in Images)
             {
-                if (!imgClasses.Contains(image.label))
+                if (!imgClasses.Contains(image.Label))
                 {
-                    imgClasses.Add(image.label);
+                    imgClasses.Add(image.Label);
                 }
             }
             this.Labels = imgClasses;
@@ -134,7 +134,7 @@ namespace Invariant.Entities
         /// </summary>
         /// <param name="seed"></param>
         /// <returns></returns>
-        public Picture PickRandom(int seed = 42)
+        public Image PickRandom(int seed = 42)
         {
             int index = random.Next(this.Count);
             return Images[index];
@@ -172,7 +172,7 @@ namespace Invariant.Entities
 
             for (int kIndex = 0; kIndex < k; kIndex += 1)
             {
-                List<Picture> tempList = new List<Picture>(this.Images);
+                List<Image> tempList = new List<Image>(this.Images);
                 int startIndex = tempList.Count / k * kIndex;
                 int count = tempList.Count / k;
                 testingDataSet.Add(new DataSet(tempList.GetRange(startIndex, count)));
@@ -198,14 +198,14 @@ namespace Invariant.Entities
         {
             List<DataSet> trainingDataSet = new List<DataSet>();
             List<DataSet> testingDataSet = new List<DataSet>();
-            List<List<Picture>> kFoldPicSets = new List<List<Picture>>();
+            List<List<Image>> kFoldPicSets = new List<List<Image>>();
             for (int kIndex = 0; kIndex < k; kIndex += 1)
             {
-                kFoldPicSets.Add(new List<Picture>());
+                kFoldPicSets.Add(new List<Image>());
             }
             foreach (var imageClass in Labels)
             {
-                var imageOfSameClass = new List<Picture>(Images.Where(p => (p.label == imageClass)));
+                var imageOfSameClass = new List<Image>(Images.Where(p => (p.Label == imageClass)));
                 for(int i = 0;i < imageOfSameClass.Count;i+=1)
                 {
                     kFoldPicSets[i % k].Add(imageOfSameClass[i]);
@@ -217,7 +217,7 @@ namespace Invariant.Entities
                 
                 testingDataSet.Add(new DataSet(kFoldPicSet));
 
-                List<List<Picture>> kFoldPicSetsTemp = new List<List<Picture>>(kFoldPicSets);
+                List<List<Image>> kFoldPicSetsTemp = new List<List<Image>>(kFoldPicSets);
                 kFoldPicSetsTemp.Remove(kFoldPicSet);
                 trainingDataSet.Add(new DataSet(kFoldPicSetsTemp.SelectMany(x => x).ToList()));
             }
@@ -241,7 +241,7 @@ namespace Invariant.Entities
             }
             foreach (var image in Images)
             {
-                string imagePath = Path.Combine(path, image.label, Path.GetFileName(image.imagePath));
+                string imagePath = Path.Combine(path, image.Label, Path.GetFileName(image.ImagePath));
                 image.SaveTo(imagePath);
             }
         }
@@ -253,14 +253,14 @@ namespace Invariant.Entities
         /// <param name="imageSet"></param>
         /// <param name="frame"></param>
         /// <returns></returns>
-        public static bool ExistImageInDataSet(Picture image, string imageSet, Frame frame)
+        public static bool ExistImageInDataSet(Image image, string imageSet, Frame frame)
         {
             foreach (var dir in Directory.GetDirectories(imageSet))
             {
                 foreach (var file in Directory.GetFiles(dir))
                 {
-                    Picture a = new Picture(file, "test");
-                    if (Picture.CheckArrayEqual(Picture.Binarize(image.GetPixels(frame), 255 / 2), Picture.Binarize(a.GetPixels(), 255 / 2)))
+                    Image a = new Image(file, "test");
+                    if (Image.AreSamePixels(Image.Binarize(image.GetPixels(frame)), Image.Binarize(a.GetPixels())))
                     {
                         return true;
                     }
@@ -275,7 +275,7 @@ namespace Invariant.Entities
                 Directory.CreateDirectory(fileName);
             }
 
-            List<Picture> testImages = new List<Picture>();
+            List<Image> testImages = new List<Image>();
 
             int[] checkIndicies = new int[10];
             Random random = new Random(42);
@@ -283,22 +283,22 @@ namespace Invariant.Entities
             {
                 double[,,] outputPixels = new double[width, height, 3];
                 double[,,] pixelFromImage = image.GetPixels();
-                if(!Directory.Exists(Path.Combine(fileName, image.label.ToString())))
+                if(!Directory.Exists(Path.Combine(fileName, image.Label.ToString())))
                 {
-                    Directory.CreateDirectory(Path.Combine(fileName, image.label.ToString()));
+                    Directory.CreateDirectory(Path.Combine(fileName, image.Label.ToString()));
                 }
-                string testImagePath = Path.Combine(fileName, image.label.ToString(), $"{checkIndicies[Int64.Parse(image.label)]}");
-                checkIndicies[Int64.Parse(image.label)] += 1;
-                List<Frame> listFrames = Frame.GetConvFramesbyPixel(width, height, sourceSet_32x32.Images[0].imageWidth, sourceSet_32x32.Images[0].imageHeight);
+                string testImagePath = Path.Combine(fileName, image.Label.ToString(), $"{checkIndicies[Int64.Parse(image.Label)]}");
+                checkIndicies[Int64.Parse(image.Label)] += 1;
+                List<Frame> listFrames = Frame.GetConvFramesbyPixel(width, height, sourceSet_32x32.Images[0].ImageWidth, sourceSet_32x32.Images[0].ImageHeight);
 
                 
                 var selectedFrame = listFrames[random.Next() % listFrames.Count];
 
-                outputPixels = Picture.ApplyPixels(pixelFromImage, outputPixels, selectedFrame);
+                outputPixels = Image.ApplyPixels(pixelFromImage, outputPixels, selectedFrame);
 
-                Picture.SaveAsImage(outputPixels, $"{testImagePath}.png");
+                Image.SaveTo(outputPixels, $"{testImagePath}.png");
 
-                Picture testImage = new Picture($"{testImagePath}.png", image.label);
+                Image testImage = new Image($"{testImagePath}.png", image.Label);
                 testImages.Add(testImage);
             }
             DataSet outputSet = new DataSet(testImages);
@@ -310,7 +310,7 @@ namespace Invariant.Entities
         {
             if (pic != null)
             {
-                Images.Add((Picture)pic);
+                Images.Add((Image)pic);
                 return this.Count;
             }
             return -1;
@@ -323,7 +323,7 @@ namespace Invariant.Entities
 
         public bool Contains(object? pic)
         {
-            if(pic is Picture)
+            if(pic is Image)
             {
                 return Images.Contains(pic);
             }
@@ -332,26 +332,26 @@ namespace Invariant.Entities
 
         public int IndexOf(object? pic)
         {
-            if (pic is Picture)
+            if (pic is Image)
             {
-                return Images.IndexOf((Picture)pic);
+                return Images.IndexOf((Image)pic);
             }
             return -1;
         }
 
         public void Insert(int index, object? pic)
         {
-            if (pic is Picture)
+            if (pic is Image)
             {
-                Images.Insert(index,(Picture)pic);
+                Images.Insert(index,(Image)pic);
             }
         }
 
         public void Remove(object? pic)
         {
-            if (pic is Picture)
+            if (pic is Image)
             {
-                Images.Remove((Picture)pic);
+                Images.Remove((Image)pic);
             }
         }
 
@@ -362,7 +362,7 @@ namespace Invariant.Entities
 
         public void CopyTo(Array array, int index)
         {
-            Images.CopyTo((Picture[])array, index);
+            Images.CopyTo((Image[])array, index);
         }
 
         public IEnumerator GetEnumerator()
@@ -372,13 +372,13 @@ namespace Invariant.Entities
 
         private class DataSetEnumerator : IEnumerator
         {
-            private List<Picture> Images;
+            private List<Image> Images;
             int position = -1;
             private IEnumerator getEnumerator()
             {
                 return (IEnumerator)this;
             }
-            public DataSetEnumerator(List<Picture> images)
+            public DataSetEnumerator(List<Image> images)
             {
                 this.Images = images;
             }

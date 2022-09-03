@@ -71,7 +71,7 @@ namespace InvariantLearning
 
                     Utility.CreateFolderIfNotExist(pathForImageInOneLabelFolder);
 
-                    var imagesFilteredByLabel = trainingDataSet.Images.Where(a => (a.label == label));
+                    var imagesFilteredByLabel = trainingDataSet.Images.Where(a => (a.Label == label));
 
                     int index = 0;
 
@@ -101,12 +101,12 @@ namespace InvariantLearning
         /// </summary>
         /// <param name="v">input image in InvImage</param>
         /// <returns></returns>
-        internal Dictionary<string, Dictionary<string, string>> Predict(Picture inputImage, string kFold = "")
+        internal Dictionary<string, Dictionary<string, string>> Predict(Image inputImage, string kFold = "")
         {
             Dictionary<string, Dictionary<string, string>> allSPPredictResult = new Dictionary<string, Dictionary<string, string>>();
 
             // Prepare Output Folder
-            string predictProcessName = Path.GetFileNameWithoutExtension(inputImage.imagePath) + Utility.GetHash();
+            string predictProcessName = Path.GetFileNameWithoutExtension(inputImage.ImagePath) + Utility.GetHash();
             Utility.CreateFolderIfNotExist(Path.Combine($"Predict_{kFold}", predictProcessName));
 
             // Collecting Vote
@@ -114,7 +114,7 @@ namespace InvariantLearning
             {
                 sp.Value.OutFolder = predictProcessName;
                 Dictionary<string, string> predictResultOfCurrentSP = sp.Value.PredictScaledImage(inputImage, $"Predict_{kFold}");
-                predictResultOfCurrentSP.Add("CorrectLabel",inputImage.label);
+                predictResultOfCurrentSP.Add("CorrectLabel",inputImage.Label);
                 allSPPredictResult.Add(sp.Key,predictResultOfCurrentSP);
             }
             return allSPPredictResult;
