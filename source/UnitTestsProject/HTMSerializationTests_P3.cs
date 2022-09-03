@@ -168,7 +168,43 @@ namespace UnitTestsProject
             }
         }
 
-        
+        //Currently fail because the created proDent's Synapses is an empty list (after added Pool). The Deserialize object is correct.
+        [TestMethod]
+        [TestCategory("serialize_test")]
+        public void Test_ProximalDentrite()
+        {
+            Pool rfPool = new Pool(size: 2, numInputs: 100);
+
+            Cell cell = new Cell(parentColumnIndx: 1, colSeq: 20, numCellsPerColumn: 16, new CellActivity());
+            Cell preSynapticCell = new Cell(parentColumnIndx: 2, colSeq: 22, numCellsPerColumn: 26, new CellActivity());
+
+            DistalDendrite dd = new DistalDendrite(parentCell: cell, flatIdx: 10, lastUsedIteration: 20, ordinal: 10, synapsePermConnected: 15, numInputs: 100);
+            cell.DistalDendrites.Add(dd);
+
+            Synapse synapse = new Synapse(presynapticCell: cell, distalSegmentIndex: dd.SegmentIndex, synapseIndex: 23, permanence: 1.0);
+            preSynapticCell.ReceptorSynapses.Add(synapse);
+
+            rfPool.m_SynapsesBySourceIndex = new Dictionary<int, Synapse>();
+            rfPool.m_SynapsesBySourceIndex.Add(1, synapse);
+
+            int colIndx = 10;
+            double synapsePermConnected = 20.5;
+            int numInputs = 30;
+
+            ProximalDendrite proDend = new ProximalDendrite(colIndx, synapsePermConnected, numInputs);
+            proDend.RFPool = rfPool;
+
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test_ProximalDentrite)}_prodent.txt"))
+            {
+                HtmSerializer2.Serialize(proDend, null, sw);
+            }
+            using (StreamReader sr = new StreamReader($"ser_{nameof(Test_ProximalDentrite)}_prodent.txt"))
+            {
+                ProximalDendrite proDendD = HtmSerializer2.Deserialize<ProximalDendrite>(sr);
+                Assert.IsTrue(proDend.Equals(proDendD));
+            }
+
+        }
 
 
     }
