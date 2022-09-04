@@ -9,8 +9,10 @@
 
   <ItemGroup>
     <None Remove="NumSharp" />
+    <None Remove="ScottPlot" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NumSharp" Version="0.30.0" />
+    <PackageReference Include="ScottPlot" Version="4.1.57" />
   </ItemGroup>
 </Project>
