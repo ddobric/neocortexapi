@@ -203,9 +203,32 @@ namespace UnitTestsProject
                 ProximalDendrite proDendD = HtmSerializer2.Deserialize<ProximalDendrite>(sr);
                 Assert.IsTrue(proDend.Equals(proDendD));
             }
-
         }
 
+
+        [TestMethod]
+        [TestCategory("serialize_test")]
+        public void Test_Synapse()
+        {  
+            Cell cell = new Cell(parentColumnIndx: 1, colSeq: 20, numCellsPerColumn: 16, new CellActivity());
+            Cell presynapticCell = new Cell(parentColumnIndx: 8, colSeq: 36, numCellsPerColumn: 46, new CellActivity());
+
+            DistalDendrite dd = new DistalDendrite(parentCell: cell, flatIdx: 10, lastUsedIteration: 20, ordinal: 10, synapsePermConnected: 15, numInputs: 100);
+            cell.DistalDendrites.Add(dd);
+
+            Synapse synapse = new Synapse(presynapticCell: cell, distalSegmentIndex: dd.SegmentIndex, synapseIndex: 23, permanence: 1.0);
+            presynapticCell.ReceptorSynapses.Add(synapse);
+           
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test_Synapse)}_synapse.txt"))
+            {
+                HtmSerializer2.Serialize(synapse, null, sw);
+            }
+            using (StreamReader sr = new StreamReader($"ser_{nameof(Test_Synapse)}_synapse.txt"))
+            {
+                Synapse synapseD = HtmSerializer2.Deserialize<Synapse>(sr);
+                Assert.IsTrue(synapse.Equals(synapseD));
+            }
+        }
 
     }
 }
