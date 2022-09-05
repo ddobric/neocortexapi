@@ -1,7 +1,6 @@
-﻿using System;
-using NumSharp;
+﻿using NumSharp;
 
-namespace gridcells
+namespace GridCell
 {
     public class SpatialNavigation
     {

@@ -1,8 +1,7 @@
-﻿using System;
-using System.Numerics;
+﻿using System.Numerics;
 using NumSharp;
 
-namespace gridcells
+namespace GridCell
 {
     public class Simulation
     {
@@ -27,7 +26,6 @@ namespace gridcells
             logGridCells = np.ndarray((txx.Count - 1,  grid.mm * grid.nn * grid.gridLayers));
         }
 
-
         public void run()
         {
             for (int i = 1; i < txx.Count; i++) {
@@ -36,6 +34,7 @@ namespace gridcells
                 logGridCells[i-1] = grid.GridActivity.flatten();
             }
         }
+
     }
 }
 

@@ -15,4 +15,9 @@
     <PackageReference Include="NumSharp" Version="0.30.0" />
     <PackageReference Include="ScottPlot" Version="4.1.57" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NeoCortexUtils\NeoCortexUtils.csproj" />
+    <ProjectReference Include="..\NeoCortexEntities\NeoCortexEntities.csproj" />
+    <ProjectReference Include="..\NeoCortexApi\NeoCortexApi.csproj" />
+  </ItemGroup>
 </Project>

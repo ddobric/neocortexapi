@@ -1,8 +1,7 @@
-﻿using System;
-using System.Numerics;
+﻿using System.Numerics;
 using NumSharp;
 
-namespace gridcells
+namespace GridCell
 {
     public class Grid
     {
@@ -28,8 +27,8 @@ namespace gridcells
 
         public Grid()
         {
-            mm = 20;
-            nn = 20;
+            mm = 5;
+            nn = 5;
             tao = 0.9;
             ii = 0.3;
             sigma = 0.24;
