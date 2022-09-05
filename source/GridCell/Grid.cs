@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using NeoCortexApi.Entities;
 using NumSharp;
 
 namespace GridCell
@@ -42,9 +43,10 @@ namespace GridCell
             distTri = buildTopology(mm, nn);
         }
 
-        
 
-        public void update(Complex speedVector) {
+
+        public void Compute(Complex speedVector, bool learn = true)
+        {
             this.speedVector = speedVector;
 
             for (int jj = 0; jj < gridLayers; jj++)
@@ -72,7 +74,45 @@ namespace GridCell
             }
         }
 
-        public NDArray updateWeight(Tuple<NDArray, NDArray> topology, Complex rrr) {
+        private List<List<Cell>> activeCells = new();
+
+        public List<List<Cell>> GridCells
+        {
+            get
+            {
+                return activeCells;
+            }
+        }
+
+        /// <summary>
+        /// CalculateActiveCells
+        /// </summary>
+        /// <param name="level"></param>
+        private void run(int level)
+        {
+            //activeCells.Clear();
+
+            //for (int cellNum = 0; cellNum < level; cellNum++)
+            //{
+            //    var celula = logGridCells[Slice.All, cellNum];
+            //    var max = (celula.max() * .9).GetDouble();
+
+            //    var i = 0;
+            //    var activeGridCells = new List<Cell>();
+            //    foreach (float val in celula)
+            //    {
+            //        if (val > max)
+            //        {
+            //            activeGridCells.Add(new Cell(0, i, 0, CellActivity.ActiveCell));
+            //        }
+            //    }
+
+            //    activeCells.Add(activeGridCells);
+            //}
+        }
+
+        public NDArray updateWeight(Tuple<NDArray, NDArray> topology, Complex rrr)
+        {
 
             var topologyAbs = topology.Item1;
             var topologyImg = topology.Item2;
@@ -84,7 +124,7 @@ namespace GridCell
                 for (int j = 0; j < matWeights.shape[1]; j++)
                 {
                     var mult = Complex.Multiply(rrr, this.speedVector);
-                    var abs = new Complex (Math.Pow(topologyAbs[i, j] - mult.Real, 2), Math.Pow(topologyImg[i, j] - mult.Imaginary, 2)).Magnitude;
+                    var abs = new Complex(Math.Pow(topologyAbs[i, j] - mult.Real, 2), Math.Pow(topologyImg[i, j] - mult.Imaginary, 2)).Magnitude;
 
                     matWeights[i, j] = this.ii + np.exp(abs / this.sigma2) - this.tt;
                 }
@@ -166,7 +206,8 @@ namespace GridCell
                 {
                     for (int l = 0; aaa2Abs.size < nn; l++)
                     {
-                        if (aaa2Abs[k, l] < aaa1Abs[k, l]) {
+                        if (aaa2Abs[k, l] < aaa1Abs[k, l])
+                        {
                             distMatAbs[k, l] = aaa2Abs[k, l];
                             distMatImg[k, l] = aaa2Img[k, l];
                         }

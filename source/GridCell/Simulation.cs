@@ -30,7 +30,7 @@ namespace GridCell
         {
             for (int i = 1; i < txx.Count; i++) {
                 var speedVector = new Complex((txx[i] - txx[i - 1]), (tyy[i] - tyy[i - 1]));
-                grid.update(speedVector);
+                grid.Compute(speedVector);
                 logGridCells[i-1] = grid.GridActivity.flatten();
             }
         }
