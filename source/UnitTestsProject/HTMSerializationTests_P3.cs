@@ -230,5 +230,54 @@ namespace UnitTestsProject
             }
         }
 
+
+        [TestMethod]
+        [TestCategory("serialize_test")]
+        public void Test_Topology()
+        {
+            int[] shape = { 1, 2, 3 };
+            bool useColumnMajorOrdering = true;
+            Topology topology = new Topology(shape, useColumnMajorOrdering);
+
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test_Topology)}_topology.txt"))
+            {
+                HtmSerializer2.Serialize(topology, null, sw);
+            }
+            using (StreamReader sr = new StreamReader($"ser_{nameof(Test_Topology)}_topology.txt"))
+            {
+                Topology topologyD = HtmSerializer2.Deserialize<Topology>(sr);
+                Assert.IsTrue(topology.Equals(topologyD));
+            }
+        }
+
+
+        //Currently fail. Deserialize object is not correct.
+        [TestMethod]
+        [TestCategory("serialize_test")]
+        public void Test_HomeostaticPlasticityController()
+        {
+            int[] inputDims = { 100, 100 };
+            int[] columnDims = { 10, 10 };
+            HtmConfig config = new HtmConfig(inputDims, columnDims);
+
+            Connections htmMemory = new Connections();
+            int minCycles = 50;
+            Action<bool, int, double, int> onStabilityStatusChanged = (isStable, numPatterns, actColAvg, seenInputs) => { };
+            int numOfCyclesToWaitOnChange = 50;
+            double requiredSimilarityThreshold = 0.97;
+
+            HomeostaticPlasticityController controller = new HomeostaticPlasticityController(htmMemory, minCycles, onStabilityStatusChanged, numOfCyclesToWaitOnChange, requiredSimilarityThreshold);
+                        
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test_HomeostaticPlasticityController)}_hpc.txt"))
+            {
+                HtmSerializer2.Serialize(controller, null, sw);
+            }
+            using (StreamReader sr = new StreamReader($"ser_{nameof(Test_HomeostaticPlasticityController)}_hpc.txt"))
+            {
+                HomeostaticPlasticityController controllerD = HtmSerializer2.Deserialize<HomeostaticPlasticityController>(sr);
+                Assert.IsTrue(controller.Equals(controllerD));
+            }
+        }
+
     }
 }
