@@ -279,5 +279,54 @@ namespace UnitTestsProject
             }
         }
 
+        [TestMethod]
+        [TestCategory("serialize_test")]
+        public void Test_SparseObjectMatrix()
+        {
+            int[] dimensions = { 10, 20, 30 };
+            bool useColumnMajorOrdering = false;
+
+            SparseObjectMatrix<Column> matrix = new SparseObjectMatrix<Column>(dimensions, useColumnMajorOrdering, dict: null);
+            
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test_HomeostaticPlasticityController)}_hpc.txt"))
+            {
+                HtmSerializer2.Serialize(matrix, null, sw);
+            }
+            using (StreamReader sr = new StreamReader($"ser_{nameof(Test_HomeostaticPlasticityController)}_hpc.txt"))
+            {
+                SparseObjectMatrix<Column> matrixD = HtmSerializer2.Deserialize<SparseObjectMatrix<Column>>(sr);
+                Assert.IsTrue(matrix.Equals(matrixD));
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("serialize_test")]
+        public void Test_Pool()
+        {
+            Pool pool = new Pool(size: 1, numInputs: 200);
+
+            Cell cell = new Cell(parentColumnIndx: 1, colSeq: 20, numCellsPerColumn: 16, new CellActivity());
+            Cell preSynapticCell = new Cell(parentColumnIndx: 2, colSeq: 22, numCellsPerColumn: 26, new CellActivity());
+
+            DistalDendrite dd = new DistalDendrite(parentCell: cell, flatIdx: 10, lastUsedIteration: 20, ordinal: 10, synapsePermConnected: 15, numInputs: 100);
+            cell.DistalDendrites.Add(dd);
+
+            Synapse synapse = new Synapse(presynapticCell: cell, distalSegmentIndex: dd.SegmentIndex, synapseIndex: 23, permanence: 1.0);
+            preSynapticCell.ReceptorSynapses.Add(synapse);
+
+            pool.m_SynapsesBySourceIndex = new Dictionary<int, Synapse>();
+            pool.m_SynapsesBySourceIndex.Add(2, synapse);
+
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test_Pool)}_pool.txt"))
+            {
+                HtmSerializer2.Serialize(pool, null, sw);
+            }
+            using (StreamReader sr = new StreamReader($"ser_{nameof(Test_Pool)}_pool.txt"))
+            {
+                Pool poolD = HtmSerializer2.Deserialize<Pool>(sr);
+                Assert.IsTrue(pool.Equals(poolD));
+            }
+        }
+
     }
 }
