@@ -328,5 +328,35 @@ namespace UnitTestsProject
             }
         }
 
+        //Test failed. Possible cause: equal method of ComputeCycle object. ActiveCells.equal checks for reference equality, so it'll return false everytime. (even if both list are empty)
+        [TestMethod]
+        [TestCategory("serialize_test")]
+        public void Test_ComputeCycle()
+        {
+            int[] inputDims = { 100, 100 };
+            int[] columnDims = { 10, 10 };
+            HtmConfig config = new HtmConfig(inputDims, columnDims);
+
+            Connections connections = new Connections(config);
+
+            Cell cell = new Cell(12, 14, 16, new CellActivity());
+
+            var distDend = new DistalDendrite(cell, 1, 2, 2, 1.0, 100);
+
+            connections.ActiveSegments.Add(distDend);
+
+            ComputeCycle computeCycle = new ComputeCycle(connections);
+
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test_ComputeCycle)}_compute.txt"))
+            {
+                HtmSerializer2.Serialize(computeCycle, null, sw);
+            }
+            using (StreamReader sr = new StreamReader($"ser_{nameof(Test_ComputeCycle)}_compute.txt"))
+            {
+                ComputeCycle computeCycleD = HtmSerializer2.Deserialize<ComputeCycle>(sr);
+                Assert.IsTrue(computeCycle.Equals(computeCycleD));
+            }
+        }
+
     }
 }
