@@ -16,7 +16,6 @@
     <ProjectReference Include="..\..\NeoCortexApi\NeoCortexApi.csproj" />
     <ProjectReference Include="..\..\NeoCortexEntities\NeoCortexEntities.csproj" />
     <ProjectReference Include="..\Invariant.Entities\Invariant.Entities.csproj" />
-    <ProjectReference Include="..\MnistDataGen\MnistDataGen.csproj" />
   </ItemGroup>
 
   <ItemGroup>

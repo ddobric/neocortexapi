@@ -62,7 +62,7 @@ namespace InvariantLearning
             HtmConfig config = new HtmConfig(new int[] { width * height }, new int[] { columnDim })
             {
                 Random = new Random(15676),
-                DutyCyclePeriod = 20
+                DutyCyclePeriod = 1000
             };
 
             // CONNECTIONS
@@ -112,7 +112,7 @@ namespace InvariantLearning
                 foreach (var sample in trainingDataSet.Images)
                 {
                     Debug.Write(".");
-                    //.Compute(sample.ImagePath, true);
+                    cortexLayer.Compute(sample.ImagePath, true);
                 }
                 Debug.Write("\n");
 

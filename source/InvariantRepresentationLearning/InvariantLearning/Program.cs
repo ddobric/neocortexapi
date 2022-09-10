@@ -3,7 +3,6 @@ using NeoCortexApi.Entities;
 using System.Diagnostics;
 using InvariantLearning;
 using Invariant.Entities;
-using MnistDataGen;
 using System.Collections.Concurrent;
 using NeoCortexApi.Encoders;
 
@@ -17,9 +16,9 @@ namespace InvariantLearning
             //ExperimentPredictingWithFrameGrid();
             //ExperimentNormalImageClassification();
             //LocaDimensionTest();
-            //ExperimentEvaluatateImageClassification($"EvaluateImageClassification {experimentTime}");
+            ExperimentEvaluatateImageClassification($"EvaluateImageClassification {experimentTime}");
             // Invariant Learning Experiment
-            InvariantRepresentation($"HtmInvariantLearning {experimentTime}");
+            //InvariantRepresentation($"HtmInvariantLearning {experimentTime}");
             //SPCapacityTest();
         }
 
@@ -31,24 +30,23 @@ namespace InvariantLearning
         {
             Utility.CreateFolderIfNotExist(experimentFolder);
 
-            // Get folder of MNIST images
+            // Get the folder of MNIST archives tar.gz files.
             string sourceMNIST = Path.Combine(experimentFolder, "MnistSource");
             Utility.CreateFolderIfNotExist(sourceMNIST);
-            Mnist.DataGen("MnistDataset", sourceMNIST, 1000);
+            Mnist.DataGen("MnistDataset", sourceMNIST, 10);
 
-            // generate 32x32 MNISTDataSet
+            // generate 32x32 source MNISTDataSet
             int width = 32; int height = 32;
             DataSet sourceSet = new DataSet(sourceMNIST);
-            DataSet sourceSet_32x32 = ScaleSet(experimentFolder, width, height, sourceSet);
+        
+            DataSet sourceSet_32x32 = DataSet.ScaleSet(experimentFolder, width, height, sourceSet , "sourceSet");
+            DataSet testSet_32x32 = sourceSet_32x32.GetTestData(20);
 
-            string MnistTestFolder = Path.Combine(experimentFolder, "TestSet");
-            Utility.CreateFolderIfNotExist(MnistTestFolder);
-            Mnist.TestDataGen("MnistDataSet", MnistTestFolder, 100);
+            DataSet scaledTestSet = DataSet.CreateTestSet(testSet_32x32, 100, 100, Path.Combine(experimentFolder,"testSet_32x32"));
 
-            DataSet scaledTestSet = DataSet.CreateTestSet(sourceSet_32x32, 10, 100, 100, Path.Combine(experimentFolder,"testSet_32x32"));
             // write extracted/filtered frame from 32x32 dataset into 4x4 for SP to learn all pattern
-            var listOfFrame = Frame.GetConvFrames(width, height, 4, 4, 8, 8);
-
+            //var listOfFrame = Frame.GetConvFrames(width, height, 4, 4, 8, 8);
+            var listOfFrame = Frame.GetConvFramesbyPixel(32, 32, 4, 4);
             string extractedFrameFolder = Path.Combine(experimentFolder, "extractedFrame");
             int index = 0;
             List<string> frameDensityList = new List<string>();
@@ -89,7 +87,7 @@ namespace InvariantLearning
             // Saving representation/semantic array with its label in files
             Dictionary<string, List<int[]>> lib = new Dictionary<string, List<int[]>>();
 
-            foreach (var image in sourceSet_32x32.Images)
+            foreach (var image in testSet_32x32.Images)
             {
                 string extractedFrameFolderofImage = Path.Combine(extractedImageSource, $"{image.Label}_{Path.GetFileNameWithoutExtension(image.ImagePath)}");
                 Utility.CreateFolderIfNotExist(extractedFrameFolderofImage);
@@ -126,7 +124,8 @@ namespace InvariantLearning
             string testFolder = Path.Combine(experimentFolder, "Test");
             Utility.CreateFolderIfNotExist(testFolder);
             int match = 0;
-            listOfFrame = Frame.GetConvFrames(100, 100, 4, 4, 25, 25);
+            //listOfFrame = Frame.GetConvFrames(100, 100, 4, 4, 25, 25);
+            listOfFrame = Frame.GetConvFramesbyPixel(100, 100, 4, 4,2);
             foreach (var testImage in scaledTestSet.Images)
             {
                 string testImageFolder = Path.Combine(testFolder, $"{testImage.Label}_{Path.GetFileNameWithoutExtension(testImage.ImagePath)}");
@@ -159,26 +158,14 @@ namespace InvariantLearning
                         }
                     }
                 }
+
                 if (actualLabel == predictedLabel)
                 {
                     match += 1;
                 }
+                Debug.WriteLine($"{actualLabel} predicted as {predictedLabel}");
             }
             Debug.WriteLine($"accuracy equals {(double)(((double)match) / ((double)scaledTestSet.Count))}");
-        }
-
-        private static DataSet ScaleSet(string experimentFolder, int width, int height, DataSet sourceSet)
-        {
-            string sourceMNIST_32x32 = Path.Combine(experimentFolder, $"MnistSource_{width}x{height}");
-            Utility.CreateFolderIfNotExist(sourceMNIST_32x32);
-            foreach (var image in sourceSet.Images)
-            {
-                string digitLabelFolder = Path.Combine(sourceMNIST_32x32, image.Label);
-                Utility.CreateFolderIfNotExist(digitLabelFolder);
-                image.SaveTo_Scaled(Path.Combine(digitLabelFolder, Path.GetFileName(image.ImagePath)), width, height);
-            }
-            DataSet sourceSet_32x32 = new DataSet(sourceMNIST_32x32);
-            return sourceSet_32x32;
         }
 
         private static void SPCapacityTest()
@@ -227,6 +214,10 @@ namespace InvariantLearning
             hpc.TraceState();
         }
 
+        /// <summary>
+        /// SP of different sizes create SDR from images, this test checks the sparsity of the 2 patterns to see if bigger numCol ~ larger different from a pair
+        /// </summary>
+        /// <param name="outFolder"></param>
         private static void LocaDimensionTest(string outFolder)
         {
             List<LearningUnit> sps = new List<LearningUnit>();

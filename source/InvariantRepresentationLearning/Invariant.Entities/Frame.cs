@@ -54,9 +54,12 @@
         /// <param name="lastIndex">last index of output series</param>
         /// <param name="No"></param>
         /// <returns></returns>
-        public static List<int> GetIndexes(int firstIndex, int lastIndex, int No)
+        public static List<int> GetIndexes(
+            int firstIndex, 
+            int lastIndex, 
+            int No)
         {
-            #region error input
+            #region error input handling
             if (lastIndex <= firstIndex)
             {
                 throw new Exception("head index cannot be larger than tail index");
@@ -70,7 +73,9 @@
                 throw new Exception("None of the input params can be negative");
             }
             #endregion
+
             List<int> result = new List<int>();
+
             result.Add(firstIndex);
             if (No > 2)
             {
@@ -104,7 +109,14 @@
             {
                 for (int j = 0; j < yIndicies.Count; j++)
                 {
-                    result.Add(new Frame(xIndicies[i], yIndicies[j], xIndicies[i] + frameWidth - 1, yIndicies[j] + frameHeight - 1));
+                    result.Add(
+                        new Frame(
+                            xIndicies[i], 
+                            yIndicies[j], 
+                            xIndicies[i] + frameWidth - 1, 
+                            yIndicies[j] + frameHeight - 1
+                            )
+                        );
                 }
             }
             return result;

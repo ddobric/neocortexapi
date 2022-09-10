@@ -74,7 +74,26 @@ namespace Invariant.Entities
                 }
             }
         }
-
+        public static DataSet ScaleSet(string experimentFolder, int width, int height, DataSet sourceSet, string name)
+        {
+            string sourceMNIST_32x32 = Path.Combine(experimentFolder, $"{name}_{width}x{height}");
+            if (!Directory.Exists(sourceMNIST_32x32)) 
+            {
+                Directory.CreateDirectory((sourceMNIST_32x32));
+            }
+            
+            foreach (var image in sourceSet.Images)
+            {
+                string digitLabelFolder = Path.Combine(sourceMNIST_32x32, image.Label);
+                if (!Directory.Exists(digitLabelFolder))
+                {
+                    Directory.CreateDirectory((digitLabelFolder));
+                }
+                image.SaveTo_Scaled(Path.Combine(digitLabelFolder, Path.GetFileName(image.ImagePath)), width, height);
+            }
+            DataSet sourceSet_32x32 = new DataSet(sourceMNIST_32x32);
+            return sourceSet_32x32;
+        }
         /// <summary>
         /// return a List of Images which was cut out from this dataset by percent
         /// </summary>
@@ -268,7 +287,7 @@ namespace Invariant.Entities
             }
             return false;
         }
-        public static DataSet CreateTestSet(DataSet sourceSet_32x32, int samples, int width, int height, string fileName)
+        public static DataSet CreateTestSet(DataSet sourceSet_32x32, int width, int height, string fileName)
         {
             if (!Directory.Exists(fileName))
             {
