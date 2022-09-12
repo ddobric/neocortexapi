@@ -26,11 +26,11 @@ namespace GridCell
             logGridCells = np.ndarray((txx.Count - 1,  grid.mm * grid.nn * grid.gridLayers));
         }
 
-        public void run()
+        public void Run()
         {
             for (int i = 1; i < txx.Count; i++) {
-                var speedVector = new Complex((txx[i] - txx[i - 1]), (tyy[i] - tyy[i - 1]));
-                grid.Compute(speedVector);
+                var speed = new Tuple<double, double>((txx[i] - txx[i - 1]), (tyy[i] - tyy[i - 1]));
+                grid.Compute(speed);
                 logGridCells[i-1] = grid.GridActivity.flatten();
             }
         }

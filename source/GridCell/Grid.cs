@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using NeoCortexApi.Entities;
+using NeoCortexEntities.NeuroVisualizer;
 using NumSharp;
 
 namespace GridCell
@@ -23,36 +24,35 @@ namespace GridCell
             get { return gridActivity; }
         }
         private Tuple<NDArray, NDArray> distTri;
-        private Complex speedVector;
 
+        public NDArray logGridCells;
 
-        public Grid()
+        public Grid(GridConfig config)
         {
-            mm = 5;
-            nn = 5;
-            tao = 0.9;
-            ii = 0.3;
-            sigma = 0.24;
-            sigma2 = Math.Pow(sigma, 2);
-            tt = 0.05;
-            gridGain = new double[] { 0.04, 0.05, 0.06, 0.07, 0.08 };
-            gridLayers = gridGain.Length;
+            mm = config.mm;
+            nn = config.nn;
+            tao = config.tao;
+            ii = config.ii;
+            sigma = config.sigma;
+            sigma2 = config.sigma2;
+            tt = config.tt;
+            gridGain = config.gridGain;
+            gridLayers = config.gridLayers;
+            logGridCells = np.ndarray((config.spatialNavigationSize.Item1 - 1, mm * nn * gridLayers));
 
             gridActivity = np.random.uniform(0, 1, (mm, nn, gridLayers));
-
-            distTri = buildTopology(mm, nn);
+            distTri = BuildTopology(mm, nn);
+            
         }
 
 
 
-        public void Compute(Complex speedVector, bool learn = true)
+        public void Compute(Tuple<double, double> speed, bool learn = true)
         {
-            this.speedVector = speedVector;
-
             for (int jj = 0; jj < gridLayers; jj++)
             {
                 var rrr = new Complex(gridGain[jj], 0);
-                NDArray matWeights = updateWeight(this.distTri, rrr);
+                NDArray matWeights = UpdateWeight(speed, rrr);
 
                 // self.grid_activity[:,:,jj] == In 3d array, get all fro outer 2 array but get only the item in the jj index
                 // so, 3d becomes 2d array
@@ -88,34 +88,34 @@ namespace GridCell
         /// CalculateActiveCells
         /// </summary>
         /// <param name="level"></param>
-        private void run(int level)
+        public void CalculateActiveCells(int level)
         {
-            //activeCells.Clear();
+            activeCells.Clear();
 
-            //for (int cellNum = 0; cellNum < level; cellNum++)
-            //{
-            //    var celula = logGridCells[Slice.All, cellNum];
-            //    var max = (celula.max() * .9).GetDouble();
+            for (int cellNum = 0; cellNum < level; cellNum++)
+            {
+                var celula = logGridCells[Slice.All, cellNum];
+                var max = (celula.max() * .9).GetDouble();
 
-            //    var i = 0;
-            //    var activeGridCells = new List<Cell>();
-            //    foreach (float val in celula)
-            //    {
-            //        if (val > max)
-            //        {
-            //            activeGridCells.Add(new Cell(0, i, 0, CellActivity.ActiveCell));
-            //        }
-            //    }
+                var i = 0;
+                var activeGridCells = new List<Cell>();
+                foreach (float val in celula)
+                {
+                    if (val > max)
+                    {
+                        activeGridCells.Add(new Cell(0, i, 0, CellActivity.ActiveCell));
+                    }
+                }
 
-            //    activeCells.Add(activeGridCells);
-            //}
+                activeCells.Add(activeGridCells);
+            }
         }
 
-        public NDArray updateWeight(Tuple<NDArray, NDArray> topology, Complex rrr)
+        public NDArray UpdateWeight(Tuple<double, double> speed, Complex rrr)
         {
 
-            var topologyAbs = topology.Item1;
-            var topologyImg = topology.Item2;
+            var topologyAbs = distTri.Item1;
+            var topologyImg = distTri.Item2;
 
             NDArray matWeights = np.ndarray(topologyAbs.shape);
 
@@ -123,10 +123,10 @@ namespace GridCell
             {
                 for (int j = 0; j < matWeights.shape[1]; j++)
                 {
-                    var mult = Complex.Multiply(rrr, this.speedVector);
+                    var mult = Complex.Multiply(rrr, new Complex(speed.Item1, speed.Item2));
                     var abs = new Complex(Math.Pow(topologyAbs[i, j] - mult.Real, 2), Math.Pow(topologyImg[i, j] - mult.Imaginary, 2)).Magnitude;
 
-                    matWeights[i, j] = this.ii + np.exp(abs / this.sigma2) - this.tt;
+                    matWeights[i, j] = ii + np.exp(abs / sigma2) - tt;
                 }
             }
             return matWeights;
@@ -141,7 +141,7 @@ namespace GridCell
         }
 
 
-        private Tuple<NDArray, NDArray> buildTopology(int mm, int nn)
+        private Tuple<NDArray, NDArray> BuildTopology(int mm, int nn)
         {
             var mmm = (np.arange(mm) + (0.5 / mm)) / mm;
             var nnn = ((np.arange(nn) + (0.5 / nn)) / nn) * np.sqrt(3) / 2;
@@ -149,16 +149,6 @@ namespace GridCell
             // The purpose of meshgrid is to create a rectangular grid out of an array of x values and an array of y values.
             // xx && yy is 20x20 array
             var (xx, yy) = np.meshgrid(mmm, nnn);
-
-            //Complex[] sdist = {
-            //    new Complex(0, 0),
-            //    new Complex(-0.5, Math.Sqrt(3) / 2),
-            //    new Complex(-0.5, -Math.Sqrt(3) / 2),
-            //    new Complex(0.5, Math.Sqrt(3) / 2),
-            //    new Complex(0.5, -Math.Sqrt(3) / 2),
-            //    new Complex(-1, 0),
-            //    new Complex(1, 0),
-            //};
 
             Tuple<double, double>[] sdist = {
                 Tuple.Create(0.0, 0.0),
