@@ -4,14 +4,17 @@ namespace GridCell
 {
     public class SpatialNavigation
     {
-        public const int arenaSize = 50;
+        public readonly int arenaSize;
 
-        public List<double> txx = new() { arenaSize / 2 };
-        public List<double> tyy = new() { arenaSize / 2 };
+        public List<double> txx;
+        public List<double> tyy;
 
-        public SpatialNavigation()
+        public SpatialNavigation(int arenaSize)
         {
-        }
+            this.arenaSize = arenaSize;
+            txx = new() { arenaSize / 2 };
+            tyy = new() { arenaSize / 2 };
+    }
 
         public Tuple<double, double> Conv(double degree)
         {
