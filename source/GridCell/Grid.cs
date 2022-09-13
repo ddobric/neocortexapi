@@ -7,7 +7,7 @@ using NumSharp;
 
 namespace GridCell
 {
-    public class Grid
+    public class Grid //IHtmModule<TIN, TOUT>
     {
         public readonly int mm;
         public readonly int nn;

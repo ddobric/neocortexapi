@@ -9,8 +9,10 @@ namespace GridCell
     {
         private NDArray logGridCells;
 
-        public NDArray GridCellsLog {
-            get {
+        public NDArray GridCellsLog
+        {
+            get
+            {
                 return logGridCells;
             }
         }
@@ -25,15 +27,20 @@ namespace GridCell
             this.tyy = tyy;
             this.grid = grid;
 
-            logGridCells = np.ndarray((txx.Count - 1,  grid.mm * grid.nn * grid.gridLayers));
+            logGridCells = np.ndarray((txx.Count - 1, grid.mm * grid.nn * grid.gridLayers));
         }
 
         public void Run()
         {
-            for (int i = 1; i < txx.Count; i++) {
-                var speed = new Tuple<double, double>((txx[i] - txx[i - 1]), (tyy[i] - tyy[i - 1]));
-                grid.Compute(speed);
-                logGridCells[i-1] = grid.GridActivity.flatten();
+            for (int i = 1; i < txx.Count; i++)
+            {
+                var deltaMove = new Tuple<double, double>((txx[i] - txx[i - 1]), (tyy[i] - tyy[i - 1]));
+
+                grid.Compute(deltaMove);
+
+                grid.CalculateActiveCells(10);
+
+                logGridCells[i - 1] = grid.GridActivity.flatten();
             }
         }
 
