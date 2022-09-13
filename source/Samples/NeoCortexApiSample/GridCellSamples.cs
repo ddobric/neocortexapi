@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GridCell;
+using Org.BouncyCastle.Math.EC.Rfc7748;
 
 namespace NeoCortexApiSample
 {
@@ -22,6 +23,8 @@ namespace NeoCortexApiSample
             var grid = new Grid(config);
             var simulation = new Simulation(grid, spatial.txx, spatial.tyy);
             simulation.Run();
+
+           //setOfActCells = grid(x,y);
 
             grid.CalculateActiveCells(10);
 
