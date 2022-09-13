@@ -218,35 +218,35 @@ namespace NeoCortexApi.Entities
                 if (other.ActiveCells != null)
                     return false;
             }
-            else if (!ActiveCells.Equals(other.ActiveCells))
+            else if (!ActiveCells.ElementsEqual(other.ActiveCells))
                 return false;
             if (PredictiveCells == null)
             {
                 if (other.PredictiveCells != null)
                     return false;
             }
-            else if (!PredictiveCells.Equals(other.PredictiveCells))
+            else if (!PredictiveCells.ElementsEqual(other.PredictiveCells))
                 return false;
             if (WinnerCells == null)
             {
                 if (other.WinnerCells != null)
                     return false;
             }
-            else if (!WinnerCells.Equals(other.WinnerCells))
+            else if (!WinnerCells.ElementsEqual(other.WinnerCells))
                 return false;
             if (ActiveSegments == null)
             {
                 if (other.ActiveSegments != null)
                     return false;
             }
-            else if (!ActiveSegments.Equals(other.ActiveSegments))
+            else if (!ActiveSegments.ElementsEqual(other.ActiveSegments))
                 return false;
             if (MatchingSegments == null)
             {
                 if (other.MatchingSegments != null)
                     return false;
             }
-            else if (!MatchingSegments.Equals(other.MatchingSegments))
+            else if (!MatchingSegments.ElementsEqual(other.MatchingSegments))
                 return false;
             return true;
         }
