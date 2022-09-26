@@ -29,6 +29,8 @@ namespace GridCell
 
         public NDArray logGridCells;
 
+        private int index = 0;
+
         public Grid(GridConfig config)
         {
             mm = config.mm;
@@ -49,7 +51,7 @@ namespace GridCell
 
 
 
-        public void Compute(Tuple<double, double> speed, bool learn = true)
+        public List<Cell> Compute(Tuple<double, double> speed, bool learn = true)
         {
             for (int jj = 0; jj < gridLayers; jj++)
             {
@@ -74,11 +76,20 @@ namespace GridCell
 
                 gridActivity[Slice.All, Slice.All, jj] = (activityTemp - np.min(activityTemp)) / (np.max(activityTemp) - np.min(activityTemp)) * 30;
             }
+
+            CalculateActiveCells();
+            return activeCells;
         }
 
-        private List<List<Cell>> activeCells = new();
+        public void Reset()
+        {
+            activeCells.Clear();
+            index = 0;
+        }
 
-        public List<List<Cell>> GridCells
+        private List<Cell> activeCells = new();
+
+        public List<Cell> GridCells
         {
             get
             {
@@ -90,30 +101,49 @@ namespace GridCell
         /// CalculateActiveCells
         /// </summary>
         /// <param name="level"></param>
-        public void CalculateActiveCells(int level)
+        private void CalculateActiveCells()
         {
             activeCells.Clear();
 
-            for (int cellNum = 0; cellNum < level; cellNum++)
+            var currentGridState = GridActivity.flatten();
+            logGridCells[index] = currentGridState;
+
+            var i = 0;
+            var max = (currentGridState.max() * .9).GetDouble();
+
+            //for (int cellNum = 0; cellNum < currentGridState.Shape[0]; cellNum++)
+            foreach (double val in currentGridState)
             {
-                var celula = logGridCells[Slice.All, cellNum];
-                var max = (celula.max() * .9).GetDouble();
+                //var celula = logGridCells[Slice.All, cellNum];
+                //var max = (celula.max() * .9).GetDouble();
 
-                var i = 0;
-                var activeGridCells = new List<Cell>();
-                foreach (float val in celula)
+                //var i = 0;
+                //var activeGridCells = new List<Cell>();
+                //foreach (double val in celula)
+                //{
+                //    if (val >= max)
+                //    {
+                //        //activeGridCells.Add(new Cell(0, i, 0, CellActivity.ActiveCell));
+                //        activeCells.Add(new Cell(0, i, 0, CellActivity.ActiveCell));
+                //    }
+                //    i++;
+                //}
+
+               
+                if (val >= max)
                 {
-                    if (val > max)
-                    {
-                        activeGridCells.Add(new Cell(0, i, 0, CellActivity.ActiveCell));
-                    }
+                    //activeGridCells.Add(new Cell(0, i, 0, CellActivity.ActiveCell));
+                    activeCells.Add(new Cell(0, i, 0, CellActivity.ActiveCell));
                 }
+                i++;
+               
 
-                activeCells.Add(activeGridCells);
+                //activeCells.Add(activeGridCells);
             }
+            index++;
         }
 
-        public NDArray UpdateWeight(Tuple<double, double> speed, Complex rrr)
+        private NDArray UpdateWeight(Tuple<double, double> speed, Complex rrr)
         {
 
             var topologyAbs = distTri.Item1;
@@ -128,7 +158,7 @@ namespace GridCell
                     var mult = Complex.Multiply(rrr, new Complex(speed.Item1, speed.Item2));
                     var abs = new Complex(Math.Pow(topologyAbs[i, j] - mult.Real, 2), Math.Pow(topologyImg[i, j] - mult.Imaginary, 2)).Magnitude;
 
-                    matWeights[i, j] = ii + np.exp(abs / sigma2) - tt;
+                    matWeights[i, j] = ii + np.exp(-abs / sigma2) - tt;
                 }
             }
             return matWeights;
@@ -136,7 +166,7 @@ namespace GridCell
 
 
         /// Perform matrix multiplaction of the activity with weight
-        NDArray Bfunc(NDArray activity, NDArray matWeights)
+        private NDArray Bfunc(NDArray activity, NDArray matWeights)
         {  //Eq 1
             activity += np.multiply(activity, matWeights)[0];
             return activity;
@@ -165,43 +195,47 @@ namespace GridCell
             var (xxAbs, yyAbs) = np.meshgrid(np.ravel(xx), np.ravel(xx));
             var (xxImg, yyImg) = np.meshgrid(np.ravel(yy), np.ravel(yy));
 
-            var distMatAbs = np.ndarray((xx.size, xx.size));
-            var distMatImg = np.ndarray((yy.size, yy.size));
+            var distMatAbs = xxAbs - yyAbs; // np.ndarray((xx.size, xx.size));
+            var distMatImg = xxImg - yyImg; //np.ndarray((yy.size, yy.size));
 
-            for (int i = 0; i < distMatAbs.size; i++)
-            {
-                for (int j = 0; distMatAbs.size < nn; j++)
-                {
-                    distMatAbs[i, j] = xxAbs - yyAbs;
-                    distMatImg[i, j] = xxImg - yyImg;
-                }
-            }
+            //for (int i = 0; i < distMatAbs.size; i++)
+            //{
+            //    for (int j = 0; distMatAbs.size < nn; j++)
+            //    {
+            //        distMatAbs[i, j] = xxAbs - yyAbs;
+            //        distMatImg[i, j] = xxImg - yyImg;
+            //    }
+            //}
 
             for (int i = 0; i < sdist.Length; i++)
             {
-                var aaa1Abs = distMatAbs;
+                var aaa1 = distMatAbs;
 
-                var aaa2Abs = np.ndarray((xx.size, xx.size));
-                var aaa2Img = np.ndarray((yy.size, yy.size));
+                var rrrAbs = distMatAbs - sdist[i].Item1;
+                var rrrImg = distMatImg - sdist[i].Item2;
 
-                for (int k = 0; k < aaa2Abs.size; k++)
+                //var aaa2Abs = np.ndarray((xx.size, xx.size));
+                //var aaa2Img = np.ndarray((yy.size, yy.size));
+
+                //for (int k = 0; k < aaa2Abs.size; k++)
+                //{
+                //    for (int l = 0; aaa2Abs.size < nn; l++)
+                //    {
+                //        aaa2Abs[k, l] = distMatAbs[k, l] + sdist[i].Item1;
+                //        aaa2Img[k, l] = distMatAbs[k, l] + sdist[i].Item2;
+                //    }
+                //}
+
+                var aaa2 = rrrAbs;
+
+                for (int k = 0; k < aaa2.size; k++)
                 {
-                    for (int l = 0; aaa2Abs.size < nn; l++)
+                    for (int l = 0; aaa2.size < nn; l++)
                     {
-                        aaa2Abs[k, l] = distMatAbs[k, l] + sdist[i].Item1;
-                        aaa2Img[k, l] = distMatAbs[k, l] + sdist[i].Item2;
-                    }
-                }
-
-
-                for (int k = 0; k < aaa2Abs.size; k++)
-                {
-                    for (int l = 0; aaa2Abs.size < nn; l++)
-                    {
-                        if (aaa2Abs[k, l] < aaa1Abs[k, l])
+                        if (aaa2[k, l] < aaa1[k, l])
                         {
-                            distMatAbs[k, l] = aaa2Abs[k, l];
-                            distMatImg[k, l] = aaa2Img[k, l];
+                            distMatAbs[k, l] = rrrAbs[k, l];
+                            distMatImg[k, l] = rrrImg[k, l];
                         }
                     }
                 }

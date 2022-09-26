@@ -12,9 +12,11 @@ namespace NeoCortexApiSample
     {
         public void Run()
         {
+            int walk = 5;
             int arenaSize = 50;
+
             var spatial = new SpatialNavigation(arenaSize);
-            spatial.RandomNavigation(10);
+            spatial.RandomNavigation(walk);
             spatial.Plot();
 
             var config = new GridConfig();
@@ -25,8 +27,6 @@ namespace NeoCortexApiSample
             simulation.Run();
 
            //setOfActCells = grid(x,y);
-
-            grid.CalculateActiveCells(10);
 
             Console.WriteLine(grid.GridCells);
         }

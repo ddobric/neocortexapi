@@ -36,11 +36,9 @@ namespace GridCell
             {
                 var deltaMove = new Tuple<double, double>((txx[i] - txx[i - 1]), (tyy[i] - tyy[i - 1]));
 
-                grid.Compute(deltaMove);
+                var currentActiveCells = grid.Compute(deltaMove);
 
-                grid.CalculateActiveCells(10);
-
-                logGridCells[i - 1] = grid.GridActivity.flatten();
+                Console.WriteLine(currentActiveCells);
             }
         }
 
