@@ -27,8 +27,8 @@ namespace GridCell
         /// </summary>
         public void SetGridConfigDefaultParameters(Tuple<int, int> spatialNavigationSize)
         {
-            mm = 5;
-            nn = 5;
+            mm = 3;
+            nn = 3;
             tao = 0.9;
             ii = 0.3;
             sigma = 0.24;
