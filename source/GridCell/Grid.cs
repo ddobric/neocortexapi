@@ -49,7 +49,7 @@ namespace GridCell
             gridGain = config.gridGain;
             gridLayers = config.gridLayers;
             activeCellThreshold = config.activeCellThreshold;
-            logGridCells = np.ndarray((config.spatialNavigationSize.Item1 - 1, mm * nn * gridLayers));
+            logGridCells = np.ndarray(((config.arenaSize / 2) - 1, mm * nn * gridLayers));
 
             gridActivity = np.random.uniform(0, 1, (mm, nn, gridLayers));
             distTri = BuildTopology(mm, nn);

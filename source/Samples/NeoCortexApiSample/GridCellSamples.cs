@@ -18,7 +18,7 @@ namespace NeoCortexApiSample
             var spatial = new SpatialNavigation(arenaSize);
             spatial.RandomNavigation(walk);
 
-            var gridConfig = new GridConfig(new Tuple<int, int>(spatial.txx.Count, spatial.tyy.Count));
+            var gridConfig = new GridConfig(arenaSize);
             var grid = new Grid(gridConfig);
             var simulation = new Simulation(grid, spatial.txx, spatial.tyy);
             simulation.Run();

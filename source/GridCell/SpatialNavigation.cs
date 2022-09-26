@@ -17,15 +17,6 @@ namespace GridCell
             this.arenaSize = arenaSize;
             txx = new() { arenaSize / 2 };
             tyy = new() { arenaSize / 2 };
-    }
-
-        public Tuple<double, double> Conv(double degree)
-        {
-            var radians = Math.PI * degree / 180.0;
-            var cos = Math.Cos(radians);
-            var sin = Math.Sin(radians);
-
-            return Tuple.Create(cos, sin);
         }
 
         public void RandomNavigation(int length)
@@ -61,6 +52,15 @@ namespace GridCell
             }
 
             //Console.WriteLine(string.Join("\t", txx));
+        }
+
+        private Tuple<double, double> Conv(double degree)
+        {
+            var radians = Math.PI * degree / 180.0;
+            var cos = Math.Cos(radians);
+            var sin = Math.Sin(radians);
+
+            return Tuple.Create(cos, sin);
         }
 
         public void Plot()
