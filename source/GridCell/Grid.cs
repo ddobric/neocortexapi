@@ -145,7 +145,6 @@ namespace GridCell
 
         private NDArray UpdateWeight(Tuple<double, double> speed, Complex rrr)
         {
-
             var topologyAbs = distTri.Item1;
             var topologyImg = distTri.Item2;
 
@@ -158,7 +157,7 @@ namespace GridCell
                     var mult = Complex.Multiply(rrr, new Complex(speed.Item1, speed.Item2));
                     var abs = new Complex(Math.Pow(topologyAbs[i, j] - mult.Real, 2), Math.Pow(topologyImg[i, j] - mult.Imaginary, 2)).Magnitude;
 
-                    matWeights[i, j] = ii + np.exp(-abs / sigma2) - tt;
+                    matWeights[i, j] = ii * np.exp(-abs / sigma2) - tt;
                 }
             }
             return matWeights;
