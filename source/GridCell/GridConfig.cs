@@ -15,10 +15,10 @@ namespace GridCell
         public double tt;
         public double[] gridGain;
         public int gridLayers;
-        public Tuple<int, int> spatialNavigationSize;
+        public int arenaSize;
         public double activeCellThreshold;
 
-        public GridConfig(Tuple<int, int> spatialNavigationSize)
+        public GridConfig(int arenaSize)
         {
             mm = 10;
             nn = 10;
@@ -30,10 +30,10 @@ namespace GridCell
             gridGain = new double[] { 0.04, 0.05, 0.06, 0.07, 0.08 };
             gridLayers = gridGain.Length;
             activeCellThreshold = 0.9;
-            this.spatialNavigationSize = spatialNavigationSize;
+            this.arenaSize = arenaSize;
         }
 
-        public GridConfig(int mm, int nn, double tao, double ii, double sigma, double tt, double activeCellThreshold, Tuple<int, int> spatialNavigationSize)
+        public GridConfig(int mm, int nn, double tao, double ii, double sigma, double tt, double activeCellThreshold, int arenaSize)
         {
             this.mm = mm;
             this.nn = nn;
@@ -45,7 +45,7 @@ namespace GridCell
             gridGain = new double[] { 0.04, 0.05, 0.06, 0.07, 0.08 };
             gridLayers = gridGain.Length;
             this.activeCellThreshold = activeCellThreshold;
-            this.spatialNavigationSize = spatialNavigationSize;
+            this.arenaSize = arenaSize;
         }
 
         public void Serialize(object obj, string name, StreamWriter sw)
