@@ -9,14 +9,19 @@ namespace GridCell
 {
     public class Grid //IHtmModule<TIN, TOUT>
     {
+        // Horizontal size of the grid
         public readonly int mm;
+
+        // Vertical size of the grid
         public readonly int nn;
+
         private readonly double tao;
         private readonly double ii;
-        private readonly double sigma;
         private readonly double sigma2;
         private readonly double tt;
         private readonly double[] gridGain;
+
+        // Number of grid stacked on top of each other
         public readonly int gridLayers;
 
         private NDArray gridActivity;
@@ -29,6 +34,8 @@ namespace GridCell
 
         public NDArray logGridCells;
 
+        private double activeCellThreshold;
+
         private int index = 0;
 
         public Grid(GridConfig config)
@@ -37,16 +44,15 @@ namespace GridCell
             nn = config.nn;
             tao = config.tao;
             ii = config.ii;
-            sigma = config.sigma;
             sigma2 = config.sigma2;
             tt = config.tt;
             gridGain = config.gridGain;
             gridLayers = config.gridLayers;
+            activeCellThreshold = config.activeCellThreshold;
             logGridCells = np.ndarray((config.spatialNavigationSize.Item1 - 1, mm * nn * gridLayers));
 
             gridActivity = np.random.uniform(0, 1, (mm, nn, gridLayers));
             distTri = BuildTopology(mm, nn);
-            
         }
 
 
@@ -109,7 +115,7 @@ namespace GridCell
             logGridCells[index] = currentGridState;
 
             var i = 0;
-            var max = (currentGridState.max() * .9).GetDouble();
+            var max = (currentGridState.max() * activeCellThreshold).GetDouble();
 
             //for (int cellNum = 0; cellNum < currentGridState.Shape[0]; cellNum++)
             foreach (double val in currentGridState)
