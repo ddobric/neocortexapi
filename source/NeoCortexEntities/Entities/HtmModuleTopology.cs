@@ -62,6 +62,28 @@ namespace NeoCortexApi.Entities
 
         }
 
+        public override int GetHashCode()
+        {
+            int prime = 31;
+            int result = 1;
+
+            for (var i = 0; i < Dimensions.Length; i++)
+            {
+                result = HashCode.Combine(this.Dimensions[i],result);
+            }
+
+            result = prime * result + IsMajorOrdering.GetHashCode();
+
+            for (var i = 0; i < DimensionMultiplies.Length; i++)
+            {
+                result = HashCode.Combine(this.DimensionMultiplies[i], result);
+            }
+
+            result = prime * result + Dimensions.Length;
+            result = prime * result + NumDimensions.GetHashCode();
+            return result;
+        }
+
         #region Serialization
         public void Serialize(StreamWriter writer)
         {
