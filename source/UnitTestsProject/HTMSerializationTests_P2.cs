@@ -51,7 +51,7 @@ namespace UnitTestsProject
             {
                 var c = HtmSerializer2.Deserialize<Cell[]>(sr);
 
-                Assert.IsTrue(cells.Where(c => c != null).TryIfSequenceEqual(c));
+                Assert.IsTrue(cells.Where(c => c != null).ElementsEqual(c));
             }
         }
 
@@ -194,6 +194,15 @@ namespace UnitTestsProject
             {
                 var d = HtmSerializer2.Deserialize<Dictionary<string, Bla>>(sr);
             }
+        }
+
+        private abstract class Animal
+        {
+            public int Legs { get; set; }
+        }
+        private class Cat : Animal
+        {
+            public bool Fur { get; set; }
         }
 
         private class Bla
@@ -936,6 +945,123 @@ namespace UnitTestsProject
             }
 
             return $"{sequence}_{key}";
+        }
+
+        [TestMethod]
+        public void KeyValuePairSerializationTest()
+        {
+            var kv = new KeyValuePair<int, Animal>(1, new Cat { Fur = true, Legs = 4 });
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(KeyValuePairSerializationTest)}_123.txt"))
+            {
+                HtmSerializer2.Serialize(kv, null, sw);
+            }
+
+            using (StreamReader sr = new StreamReader($"ser_{nameof(KeyValuePairSerializationTest)}_123.txt"))
+            {
+                var kv1 = HtmSerializer2.Deserialize<KeyValuePair<int, Animal>>(sr);
+            }
+        }
+
+        [TestMethod]
+        public void AbstractClassSerializationTest()
+        {
+            Animal a = new Cat { Fur = true, Legs = 4 };
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(AbstractClassSerializationTest)}_123.txt"))
+            {
+                HtmSerializer2.Serialize((Animal)a, "bla", sw, typeof(Animal));
+            }
+            using (StreamReader sr = new StreamReader($"ser_{nameof(AbstractClassSerializationTest)}_123.txt"))
+            {
+                var kv1 = HtmSerializer2.Deserialize<Cat>(sr);
+            }
+        }
+
+        [TestMethod]
+        public void MultiDimArraySerializationTest()
+        {
+            Animal[,] cats = new Animal[1, 2];
+            cats[0, 0] = new Cat { Fur = false, Legs = 2 };
+            cats[0, 1] = new Cat { Fur = true, Legs = 3 };
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(MultiDimArraySerializationTest)}_123.txt"))
+            {
+                HtmSerializer2.Serialize(cats, null, sw);
+            }
+
+            using (StreamReader sr = new StreamReader($"ser_{nameof(MultiDimArraySerializationTest)}_123.txt"))
+            {
+                var cats1 = HtmSerializer2.Deserialize<Animal[,]>(sr);
+            }
+        }
+
+        [TestMethod]
+        public void PolymorphismListSerializationTest()
+        {
+            var cats = new List<Animal>()
+            {
+                new Cat { Fur = false, Legs = 2 },
+                new Cat { Fur = true, Legs = 3 },
+            };
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(PolymorphismListSerializationTest)}_123.txt"))
+            {
+                HtmSerializer2.Serialize(cats, null, sw);
+            }
+
+            using (StreamReader sr = new StreamReader($"ser_{nameof(PolymorphismListSerializationTest)}_123.txt"))
+            {
+                var cats1 = HtmSerializer2.Deserialize<List<Animal>>(sr);
+            }
+        }
+
+        [TestMethod]
+        public void IterateMultiDimArrayTest()
+        {
+            var array = new int[4, 5, 3];
+
+            var listIndexes = HtmSerializer2.IterateMultiDimArray(array);
+        }
+
+        [TestMethod]
+        public void RandomTest()
+        {
+            var r = new Random();
+            using (StreamWriter sw = new StreamWriter("RandomTest.txt"))
+            {
+                HtmSerializer2.Serialize(r, null, sw);
+            }
+            using (StreamReader sr = new StreamReader("RandomTest.txt"))
+            {
+                var r1 = HtmSerializer2.Deserialize<Random>(sr);
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("Serialization")]
+
+        public void SerializeConnectionsTest1()
+        {
+            int[] inputDims = { 3, 4, 5 };
+            int[] columnDims = { 35, 43, 52 };
+            HtmConfig cfg = new HtmConfig(inputDims, columnDims);
+
+            Connections connections = new Connections(cfg);
+
+            Cell cells = new Cell(12, 14, 16, new CellActivity());
+
+            var distSeg1 = new DistalDendrite(cells, 1, 2, 2, 1.0, 100);
+
+            var distSeg2 = new DistalDendrite(cells, 44, 24, 34, 1.0, 100);
+
+            connections.ActiveSegments.Add(distSeg1);
+
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeConnectionsTest1)}.txt"))
+            {
+                HtmSerializer2.Serialize(connections, null, sw);
+            }
+            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeConnectionsTest1)}.txt"))
+            {
+                Connections connections1 = HtmSerializer2.Deserialize<Connections>(sr);
+                Assert.IsTrue(connections.Equals(connections1));
+            }
         }
 
         [TestMethod]

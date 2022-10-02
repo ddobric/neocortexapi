@@ -256,12 +256,12 @@ namespace NeoCortexApi.Entities
                 nameof(m_Hashcode)
             };
             HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);
-            var cell = obj as Cell;
-            if (cell != null)
-            {
-                var synapses = cell.ReceptorSynapses.Select(s => new Synapse() { SynapseIndex = s.SynapseIndex });
-                HtmSerializer2.Serialize(synapses, nameof(Cell.ReceptorSynapses), sw);
-            }
+            //var cell = obj as Cell;
+            //if (cell != null)
+            //{
+            //    var synapses = cell.ReceptorSynapses.Select(s => new Synapse() { SynapseIndex = s.SynapseIndex });
+            //    HtmSerializer2.Serialize(synapses, nameof(Cell.ReceptorSynapses), sw);
+            //}
         }
         public static object Deserialize<T>(StreamReader sr, string name)
         {

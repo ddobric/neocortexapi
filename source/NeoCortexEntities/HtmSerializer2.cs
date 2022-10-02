@@ -159,55 +159,52 @@ namespace NeoCortexApi.Entities
             {
                 SerializeValue(name, obj, sw);
             }
-            else
+            else if (IsDictionary(type))
             {
-                if (IsDictionary(type))
+                SerializeDictionary(name, obj, sw, ignoreMembers);
+            }
+            else if (IsList(type))
+            {
+                SerializeIEnumerable(name, obj, sw, ignoreMembers);
+            }
+            else if (type.IsValueType && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
+            {
+                SerializeKeyValuePair(name, obj, sw);
+            }
+            else if (type.IsClass)
+            {
+                if (SerializedHashCodes.TryGetValue(obj, out int serializedId))
                 {
-                    SerializeDictionary(name, obj, sw, ignoreMembers);
+                    Serialize(serializedId, cReplaceId, sw);
                 }
-                else if (IsList(type))
+                else
                 {
-                    SerializeIEnumerable(name, obj, sw, ignoreMembers);
-                }
-                else if (type.IsClass || type.IsValueType)
-                {
-                    if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
-                    {
-                        SerializeKeyValuePair(name, obj, sw);
-                    }
-                    else
-                    {
-                        if (SerializedHashCodes.TryGetValue(obj, out int serializedId))
-                        {
-                            Serialize(serializedId, cReplaceId, sw);
-                        }
-                        else
-                        {
-                            Serialize(Id, cIdString, sw);
-                            HtmSerializer2.SerializedHashCodes.Add(obj, Id++);
-                            SerializeObject(obj, name, sw, ignoreMembers);
-                        }
-                    }
+                    Serialize(Id, cIdString, sw);
+                    HtmSerializer2.SerializedHashCodes.Add(obj, Id++);
+                    SerializeObject(obj, name, sw, ignoreMembers);
                 }
             }
+
             SerializeEnd(name, sw, isSerializeWithType ? type : null);
         }
 
         private static void SerializeKeyValuePair(string name, object obj, StreamWriter sw)
         {
             var type = obj.GetType();
+            var keyType = type.GetGenericArguments()[0];
+            var valueType = type.GetGenericArguments()[1];
 
             var keyField = GetFields(type).FirstOrDefault(f => f.Name == "key");
             if (keyField != null)
             {
                 var key = keyField.GetValue(obj);
-                Serialize(key, "key", sw);
+                Serialize(key, "Key", sw, keyType);
             }
             var valueField = GetFields(type).FirstOrDefault(f => f.Name == "value");
             if (valueField != null)
             {
                 var value = valueField.GetValue(obj);
-                Serialize(value, "value", sw);
+                Serialize(value, "Value", sw, valueType);
             }
         }
 
@@ -273,6 +270,11 @@ namespace NeoCortexApi.Entities
             {
                 var keyType = type.GetGenericArguments()[0];
                 var valueType = type.GetGenericArguments()[1];
+
+                if (keyType != typeof(string))
+                {
+
+                }
 
                 var enumerable = ((IEnumerable)obj);
 
@@ -360,7 +362,7 @@ namespace NeoCortexApi.Entities
             var content = val.ToString();
             if (val.GetType() == typeof(string))
             {
-                content = $"\"{val}\"";
+                content = content.Replace("\n", "\\n");
             }
             sw.Write(content);
         }
@@ -372,6 +374,7 @@ namespace NeoCortexApi.Entities
 
         private static void SerializeIEnumerable(string propertyName, object obj, StreamWriter sw, List<string> ignoreMembers = null)
         {
+            var type = obj.GetType();
             if (IsMultiDimensionalArray(obj))
             {
                 SerializeMultidimensionalArray(obj, propertyName, sw);
@@ -380,9 +383,33 @@ namespace NeoCortexApi.Entities
 
             var enumerable = ((IEnumerable)obj);
 
+            if (type.GetElementType() == typeof(int) || (type.IsGenericType && type.GetGenericArguments()[0] == typeof(int)))
+            {
+                StringBuilder sb = new StringBuilder();
+                foreach (var item in enumerable)
+                {
+                    sb.Append(item.ToString());
+                    sb.Append(',');
+                }
+                string arrayStringContent = sb.ToString().TrimEnd(',');
+
+                Serialize(arrayStringContent, "ArrayContent", sw);
+                return;
+            }
+
+            var elementType = default(Type);
+            if (type.IsGenericType)
+            {
+                elementType = type.GetGenericArguments()[0];
+            }
+            else
+            {
+                elementType = type.GetElementType();
+            }
+
             foreach (var item in enumerable)
             {
-                Serialize(item, "CollectionItem", sw, obj.GetType().GetElementType(), ignoreMembers: ignoreMembers);
+                Serialize(item, "CollectionItem", sw, elementType, ignoreMembers: ignoreMembers);
             }
         }
 
@@ -400,8 +427,8 @@ namespace NeoCortexApi.Entities
         {
             var array = obj as Array;
 
-            if (array.Rank > 2)
-                throw new NotSupportedException("Serialize does not support array with rank greater than 2!");
+            //if (array.Rank > 2)
+            //    throw new NotSupportedException("Serialize does not support array with rank greater than 2!");
 
             SerializeBegin(nameof(Array.Rank), sw, null);
             SerializeValue(nameof(Array.Rank), array.Rank, sw);
@@ -420,19 +447,79 @@ namespace NeoCortexApi.Entities
 
             var elementType = array.GetType().GetElementType();
             var defaultValue = GetDefault(elementType);
-            for (int i = 0; i < array.GetLength(0); i++)
+
+            var totalElement = 1;
+            foreach (var dim in dimensions)
             {
-                for (int j = 0; j < array.GetLength(1); j++)
+                totalElement *= dim;
+            }
+            for (int i = 0; i < totalElement; i++)
+            {
+                var indexes = GetIndexesFromFlatIndex(i, dimensions);
+                var value = array.GetValue(indexes);
+                if (value.Equals(defaultValue) == false)
                 {
-                    var value = array.GetValue(i, j);
-                    if (value.Equals(defaultValue) == false)
-                    {
-                        var index = new int[] { i, j };
-                        Serialize(value, "ActiveElement", sw, elementType);
-                        Serialize(index, "ActiveIndex", sw, elementType);
-                    }
+                    Serialize(value, "ActiveElement", sw, elementType);
+                    var indexesString = string.Join(',', indexes);
+                    Serialize(indexesString, "ActiveIndex", sw);
                 }
             }
+
+            //for (int i = 0; i < array.GetLength(0); i++)
+            //{
+            //    for (int j = 0; j < array.GetLength(1); j++)
+            //    {
+            //        var value = array.GetValue(i, j);
+            //        if (value.Equals(defaultValue) == false)
+            //        {
+            //            var index = new int[] { i, j };
+            //            Serialize(value, "ActiveElement", sw, elementType);
+            //            Serialize(index, "ActiveIndex", sw, elementType);
+            //        }
+            //    }
+            //}
+        }
+
+        public static List<string> IterateMultiDimArray(Array array)
+        {
+            var result = new List<string>();
+            var dimensions = new List<int>();
+            for (int i = 0; i < array.Rank; i++)
+            {
+                dimensions.Add(array.GetLength(i));
+            }
+            var reversedDims = dimensions.Reverse<int>().ToList();
+            var totalElement = 1;
+            foreach (var dim in dimensions)
+            {
+                totalElement *= dim;
+            }
+
+            for (int i = 0; i < totalElement; i++)
+            {
+                var indexes = new List<int>();
+                var curVal = i;
+                foreach (var dim in reversedDims)
+                {
+                    indexes.Insert(0, curVal % dim);
+                    curVal = curVal / dim;
+                }
+                result.Add(string.Join(',', indexes.Select(i => i.ToString()).ToArray()));
+            }
+            return result;
+        }
+
+        private static int[] GetIndexesFromFlatIndex(int flatIndex, List<int> dimensions)
+        {
+            var result = new List<int>();
+            var reversedDims = dimensions.Reverse<int>().ToList();
+            var curVal = flatIndex;
+            foreach (var dim in reversedDims)
+            {
+                result.Insert(0, curVal % dim);
+                curVal /= dim;
+            }
+            return result.ToArray();
         }
 
         public static object GetDefault(Type type)
@@ -459,8 +546,7 @@ namespace NeoCortexApi.Entities
                 }
                 if (property.CanRead && property.Name != "Item" && property.PropertyType != typeof(object))
                 {
-                    object value = null;
-
+                    object value;
                     try
                     {
                         value = property.GetValue(obj, null);
@@ -483,20 +569,15 @@ namespace NeoCortexApi.Entities
                     continue;
                 }
 
-                object value = null;
-
+                object value;
                 try
                 {
                     value = field.GetValue(obj);
                 }
                 catch (NotImplementedException)
                 {
-                    Console.WriteLine($"**Warning: Type {type.Name} does not implement property {field.Name}");
+                    Console.WriteLine($"**Warning: Type {type.Name} does not implement field {field.Name}");
                     continue;
-                }
-                catch (Exception)
-                {
-                    throw;
                 }
 
                 Serialize(value, field.Name, sw, field.FieldType, ignoreMembers: ignoreMembers);
@@ -620,19 +701,64 @@ namespace NeoCortexApi.Entities
 
         private static T DeserializeKeyValuePair<T>(StreamReader sr, string propName)
         {
+            T keyValuePair = default;
             var type = typeof(T);
+            object key = null;
+            object value = null;
 
             var keyType = type.GetGenericArguments()[0];
             var valueType = type.GetGenericArguments()[1];
-
+            var beginKey = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.ReadGenericBegin), BindingFlags.NonPublic | BindingFlags.Static);
+            var beginValue = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.ReadGenericBegin), BindingFlags.NonPublic | BindingFlags.Static);
 
             var deserializeMethod = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.Deserialize));
 
-            var content = sr.ReadLine();
-            var key = deserializeMethod.MakeGenericMethod(keyType).Invoke(null, new object[] { sr, "key" });
-            content = sr.ReadLine();
-            var value = deserializeMethod.MakeGenericMethod(valueType).Invoke(null, new object[] { sr, "value" });
-            var keyValuePair = (T)Activator.CreateInstance(type, new[] { key, value });
+
+            //var content = sr.ReadLine().Trim();
+            //if (content.StartsWith((string)beginKey.Invoke(null, new object[] { "Key", default(Type) })))
+            //{
+            //    var specifiedType = GetSpecifiedTypeOrDefault(content, keyType);
+            //    key = deserializeMethod.MakeGenericMethod(specifiedType).Invoke(null, new object[] { sr, "Key" });
+            //}
+            //content = sr.ReadLine().Trim();
+            //if (content.StartsWith((string)beginValue.Invoke(null, new object[] { "Value", default(Type) })))
+            //{
+            //    var specifiedType = GetSpecifiedTypeOrDefault(content, valueType);
+            //    value = deserializeMethod.MakeGenericMethod(specifiedType).Invoke(null, new object[] { sr, "Value" });
+            //}
+            //var keyValuePair = (T)Activator.CreateInstance(type, new[] { key, value });
+            //var key = deserializeMethod.MakeGenericMethod(keyType).Invoke(null, new object[] { sr, "key" });
+            //content = sr.ReadLine();
+            //var value = deserializeMethod.MakeGenericMethod(valueType).Invoke(null, new object[] { sr, "value" });
+
+            while (sr.Peek() > 0)
+            {
+                var content = sr.ReadLine().Trim();
+
+                if (content == ReadGenericEnd(propName))
+                {
+                    break;
+                }
+                if (content.StartsWith((string)beginKey.Invoke(null, new object[] { "Key", default(Type) })))
+                {
+                    var specifiedType = GetSpecifiedTypeOrDefault(content, keyType);
+                    key = deserializeMethod.MakeGenericMethod(specifiedType).Invoke(null, new object[] { sr, "Key" });
+                }
+                else if (content.StartsWith((string)beginValue.Invoke(null, new object[] { "Value", default(Type) })))
+                {
+                    var specifiedType = GetSpecifiedTypeOrDefault(content, valueType);
+                    value = deserializeMethod.MakeGenericMethod(specifiedType).Invoke(null, new object[] { sr, "Value" });
+                }
+
+                if (key != null && value != null)
+                {
+                    keyValuePair = (T)Activator.CreateInstance(type, new[] { key, value });
+                }
+                if (string.IsNullOrEmpty(content) || content == ReadGenericBegin(propName))
+                {
+                    continue;
+                }
+            }
 
             return keyValuePair;
 
@@ -652,7 +778,7 @@ namespace NeoCortexApi.Entities
         private static T DeserializeIEnumerable<T>(StreamReader sr, string propName)
         {
             var type = typeof(T);
-
+            T obj = default;
             if (type.IsArray && type.GetArrayRank() > 1)
             {
                 var array = DeserializeMultidimensionalArray(sr, propName, type);
@@ -683,34 +809,40 @@ namespace NeoCortexApi.Entities
                 convertMethodName = nameof(System.Linq.Enumerable.ToArray);
             }
 
+            Type specifiedType = elementType;
             while (sr.Peek() > 0)
             {
-                Type specifiedType = elementType;
                 var content = sr.ReadLine().Trim();
                 if (content == ReadGenericEnd(propName) || content == ReadGenericEnd(propName, type))
                 {
                     break;
                 }
-                if (string.IsNullOrEmpty(content) || content.StartsWith(ReadGenericBegin(propName)) && content.Contains("CollectionItem") == false)
+                if (string.IsNullOrEmpty(content) || content == ReadGenericBegin(propName))
                 {
-                    if (content.StartsWith(ReadGenericBegin(propName)) && content.Contains("CollectionItem") == false)
-                    {
-                        specifiedType = GetSpecifiedTypeOrDefault(content, elementType);
-                    }
                     continue;
                 }
 
-                var deserializeMethod = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.Deserialize)).MakeGenericMethod(specifiedType);
+                if (elementType == typeof(int))
+                {
+                    var arrayStringContent = Deserialize<string>(sr, "ArrayContent");
+                    if (string.IsNullOrEmpty(arrayStringContent) == false)
+                        enumerable = arrayStringContent.Split(',').Select(i => (object)int.Parse(i)).ToList();
+                }
+                else if (content.StartsWith(ReadGenericBegin("CollectionItem")))
+                {
+                    specifiedType = GetSpecifiedTypeOrDefault(content, elementType);
+                    var deserializeMethod = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.Deserialize)).MakeGenericMethod(specifiedType);
 
-                var item = deserializeMethod.Invoke(null, new object[] { sr, "CollectionItem" });
+                    var item = deserializeMethod.Invoke(null, new object[] { sr, "CollectionItem" });
 
-                enumerable.Add(item);
-                //Debug.WriteLine($"Add {item.ToString()} to {propName ?? type.Name}");
+                    enumerable.Add(item);
+                    //Debug.WriteLine($"Add {item.ToString()} to {propName ?? type.Name}");
+                }
             }
             object enumerableCast = CastListToType(enumerable, elementType);
 
             var convertMethod = typeof(Enumerable).GetMethods().FirstOrDefault(m => m.Name == convertMethodName)?.MakeGenericMethod(elementType);
-            T obj = (T)convertMethod?.Invoke(null, new object[] { enumerableCast });
+            obj = (T)convertMethod?.Invoke(null, new object[] { enumerableCast });
 
             return obj;
         }
@@ -735,10 +867,13 @@ namespace NeoCortexApi.Entities
                 array = Array.CreateInstance(elementType, dimList.ToArray());
             }
 
+            var readBeginMethod = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.ReadGenericBegin), BindingFlags.NonPublic | BindingFlags.Static);
+            object activeElement = default;
+            int[] activeIndex = default;
             while (sr.Peek() > 0)
             {
                 var content = sr.ReadLine();
-                var deserializeMethod = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.Deserialize)).MakeGenericMethod(elementType);
+                var deserializeMethod = typeof(HtmSerializer2).GetMethod(nameof(HtmSerializer2.Deserialize));
 
                 if (content == ReadGenericEnd(propName) || content == ReadGenericEnd(propName, arrayType))
                 {
@@ -748,10 +883,26 @@ namespace NeoCortexApi.Entities
                 {
                     continue;
                 }
-                var activeElement = deserializeMethod.Invoke(null, new object[] { sr, "ActiveElement" });
-                var activeIndex = Deserialize<int[]>(sr, "ActiveIndex");
+                if (content.StartsWith((string)readBeginMethod.Invoke(null, new object[] { "ActiveElement", default(Type) })))
+                {
+                    var specifiedType = GetSpecifiedTypeOrDefault(content, elementType);
+                    activeElement = deserializeMethod.MakeGenericMethod(specifiedType).Invoke(null, new object[] { sr, "ActiveElement" });
+                }
+                else if (content.StartsWith((string)readBeginMethod.Invoke(null, new object[] { "ActiveIndex", default(Type) })))
+                {
+                    var activeIndexString = Deserialize<string>(sr, "ActiveIndex");
+                    activeIndex = activeIndexString.Split(',').Select(i => int.Parse(i)).ToArray();
+                }
+                //var activeElement = deserializeMethod.Invoke(null, new object[] { sr, "ActiveElement" });
+                //var activeIndexString = Deserialize<string>(sr, "ActiveIndex");
+                //var activeIndex = activeIndexString.Split(',').Select(i => int.Parse(i)).ToArray();
 
-                array.SetValue(activeElement, activeIndex);
+                if (activeElement != default && activeIndex != default)
+                {
+                    array.SetValue(activeElement, activeIndex);
+                    activeElement = default;
+                    activeIndex = default;
+                }
             }
 
 
@@ -865,14 +1016,13 @@ namespace NeoCortexApi.Entities
                 return obj;
             }
 
+            obj = (T)Activator.CreateInstance(type);
+
             var properties = GetProperties(type);
             var fields = GetFields(type);
             while (sr.Peek() > 0)
             {
-                if (obj == null)
-                {
-                    obj = (T)Activator.CreateInstance(type);
-                }
+
                 var content = sr.ReadLine().Trim();
                 //Debug.WriteLine(content);
                 if (content == ReadGenericBegin(propertyName))
@@ -1028,14 +1178,17 @@ namespace NeoCortexApi.Entities
                 {
                     break;
                 }
+                if (content == ReadGenericBegin(propertyName))
+                {
+                    continue;
+                }
 
                 var type = typeof(T);
 
                 if (type == typeof(string))
                 {
-                    content = content.Trim('"');
+                    content = content.Replace("\\n", "\n");
                 }
-
                 obj = (T)Convert.ChangeType(content, type);
             }
             return obj;

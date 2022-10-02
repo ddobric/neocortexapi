@@ -1621,7 +1621,7 @@ namespace NeoCortexApi.Entities
                     //nameof(Connections.Cells)
                 };
                 HtmSerializer2.SerializeObject(connections, name, sw, ignoreMembers);
-                var cells = connections.GetColumns().SelectMany(c => c.Cells);
+                var cells = connections.GetColumns().SelectMany(c => c.Cells).ToList();
                 HtmSerializer2.Serialize(cells, "cellsList", sw);
 
                 var ddSynapses = cells.SelectMany(c => c.DistalDendrites).SelectMany(dd => dd.Synapses).ToList();
@@ -1630,13 +1630,13 @@ namespace NeoCortexApi.Entities
 
                 HtmSerializer2.Serialize(synapses, "synapsesList", sw);
 
-                var activeCellIds = connections.ActiveCells.Select(c => c.Index);
+                var activeCellIds = connections.ActiveCells.Select(c => c.Index).ToList();
                 HtmSerializer2.Serialize(activeCellIds, "activeCellIds", sw);
 
-                var winnerCellIds = connections.WinnerCells.Select(c => c.Index);
+                var winnerCellIds = connections.WinnerCells.Select(c => c.Index).ToList();
                 HtmSerializer2.Serialize(winnerCellIds, "winnerCellIds", sw);
 
-                var predictiveCellIds = connections.m_PredictiveCells.Select(c => c.Index);
+                var predictiveCellIds = connections.m_PredictiveCells.Select(c => c.Index).ToList();
                 HtmSerializer2.Serialize(predictiveCellIds, "predictiveCellIds", sw);
             }
         }

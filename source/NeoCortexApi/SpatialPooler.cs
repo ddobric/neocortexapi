@@ -31,7 +31,7 @@ namespace NeoCortexApi
     /// Spatial Pooler algorithm. Single-threaded version.
     /// Original version by David Ray, migrated from HTM JAVA. Over time, more and more code has been changed.
     /// </summary>
-    public class SpatialPooler : IHtmAlgorithm<int[], int[]>, ISerializable
+    public class SpatialPooler : IHtmAlgorithm<int[], int[]>/*, ISerializable*/
     {
         /// <summary>
         /// The instance of the <see cref="HomeostaticPlasticityController"/>.
@@ -1434,7 +1434,7 @@ namespace NeoCortexApi
             var sp = obj as SpatialPooler;
             if (sp == null)
                 return obj;
-            sp.m_HomeoPlastAct.SetConnections(sp.connections);
+            //sp.m_HomeoPlastAct.SetConnections(sp.connections);
             return sp;
         }
     }
