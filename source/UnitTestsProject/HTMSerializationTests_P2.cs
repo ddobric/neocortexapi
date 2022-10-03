@@ -21,15 +21,18 @@ namespace UnitTestsProject
     {
         public TestContext TestContext { get; set; }
 
+        private string fileName;
+
         [TestInitialize]
         public void TestInit()
         {
+            fileName = $"{TestContext.TestName}.txt";
             HtmSerializer2.Reset();
         }
 
         [TestMethod]
         [TestCategory("working")]
-        public void Test()
+        public void SerializationCellArrayTest()
         {
             HtmSerializer2 serializer = new HtmSerializer2();
 
@@ -42,12 +45,12 @@ namespace UnitTestsProject
             var distSeg2 = new DistalDendrite(cells[0], 44, 24, 34, 1.0, 100);
             cells[0].DistalDendrites.Add(distSeg2);
 
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test)}_123.txt"))
+            using (StreamWriter sw = new StreamWriter(fileName))
             {
                 HtmSerializer2.Serialize(cells, null, sw);
             }
 
-            using (StreamReader sr = new StreamReader($"ser_{nameof(Test)}_123.txt"))
+            using (StreamReader sr = new StreamReader(fileName))
             {
                 var c = HtmSerializer2.Deserialize<Cell[]>(sr);
 
@@ -58,7 +61,7 @@ namespace UnitTestsProject
         [TestMethod]
         public void Test1()
         {
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test1)}_123.txt"))
+            using (StreamWriter sw = new StreamWriter(fileName))
             {
                 HtmSerializer2.Serialize(new List<string> { "bla" }, null, sw);
             }
@@ -66,7 +69,7 @@ namespace UnitTestsProject
         }
         [TestMethod]
         [TestCategory("working")]
-        public void Test2()
+        public void SerializationDictionaryStringCellTest()
         {
             var dict = new Dictionary<string, Cell>();
 
@@ -83,15 +86,11 @@ namespace UnitTestsProject
             dict.Add("2", cell2);
 
 
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test2)}_123.txt"))
+            using (StreamWriter sw = new StreamWriter(fileName))
             {
                 HtmSerializer2.Serialize(dict, null, sw);
             }
-            using (StreamReader sr = new StreamReader($"ser_{nameof(Test2)}_123.txt"))
-            {
-                var content = sr.ReadToEnd();
-            }
-            using (StreamReader sr = new StreamReader($"ser_{nameof(Test2)}_123.txt"))
+            using (StreamReader sr = new StreamReader(fileName))
             {
                 var dict1 = HtmSerializer2.Deserialize<Dictionary<string, Cell>>(sr);
 
@@ -106,10 +105,8 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("working")]
-        public void Test3()
+        public void SerializationDistalDendriteArrayTest()
         {
-            HtmSerializer2 serializer = new HtmSerializer2();
-
             var cell1 = new Cell(12, 14, 16, new CellActivity());
             var cell2 = new Cell(1, 1, 1, new CellActivity());
 
@@ -122,16 +119,11 @@ namespace UnitTestsProject
             cell1.DistalDendrites.Add(dd[0]);
             cell2.DistalDendrites.Add(dd[1]);
 
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test)}_123.txt"))
+            using (StreamWriter sw = new StreamWriter(fileName))
             {
                 HtmSerializer2.Serialize(dd, null, sw);
             }
-
-            using (StreamReader sr = new StreamReader($"ser_{nameof(Test)}_123.txt"))
-            {
-                var content = sr.ReadToEnd();
-            }
-            using (StreamReader sr = new StreamReader($"ser_{nameof(Test)}_123.txt"))
+            using (StreamReader sr = new StreamReader(fileName))
             {
                 var d = HtmSerializer2.Deserialize<DistalDendrite[]>(sr);
 
@@ -152,7 +144,7 @@ namespace UnitTestsProject
 
             dd[1] = new DistalDendrite(null, 44, 24, 34, 1.0, 100);
 
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test)}_123.txt"))
+            using (StreamWriter sw = new StreamWriter(fileName))
             {
                 HtmSerializer2.Serialize1(dd, null, sw, new Dictionary<Type, Action<StreamWriter, string, object>>
                 {
@@ -162,7 +154,7 @@ namespace UnitTestsProject
                 });
             }
 
-            using (StreamReader sr = new StreamReader($"ser_{nameof(Test)}_123.txt"))
+            using (StreamReader sr = new StreamReader(fileName))
             {
                 var d = HtmSerializer2.Deserialize<DistalDendrite[]>(sr);
 
@@ -174,8 +166,8 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("working")]
-        public void Test4()
+        //[TestCategory("working")]
+        public void SerializationAbitraryTypeTest()
         {
             HtmSerializer2 serializer = new HtmSerializer2();
 
@@ -185,12 +177,12 @@ namespace UnitTestsProject
                 {"2", new Bla{ Id = 21, Name = "real1", In = new List<Internal>{ new Internal{ Risk = 0.1f } } } },
             };
 
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test4)}_123.txt"))
+            using (StreamWriter sw = new StreamWriter(fileName))
             {
                 HtmSerializer2.Serialize(dict, null, sw);
             }
 
-            using (StreamReader sr = new StreamReader($"ser_{nameof(Test4)}_123.txt"))
+            using (StreamReader sr = new StreamReader(fileName))
             {
                 var d = HtmSerializer2.Deserialize<Dictionary<string, Bla>>(sr);
             }
@@ -220,19 +212,19 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("working")]
-        public void DeserializationArrayTest()
+        public void SerializationIntegerArrayTest()
         {
             var array = new int[] { 45, 35 };
 
-            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var sw = new StreamWriter(fileName))
             {
                 HtmSerializer2.Serialize(array, null, sw);
             }
-            var reader = new StreamReader($"{TestContext.TestName}.txt");
+            var reader = new StreamReader(fileName);
 
             var content = reader.ReadToEnd();
 
-            reader = new StreamReader($"{TestContext.TestName}.txt");
+            reader = new StreamReader(fileName);
 
             var res = HtmSerializer2.Deserialize<int[]>(reader);
 
@@ -241,15 +233,15 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("working")]
-        public void DeserializeIEnumerableTest()
+        public void SerializationIntegerListTest()
         {
             var array = new List<int> { 45, 34 };
 
-            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var sw = new StreamWriter(fileName))
             {
                 HtmSerializer2.Serialize(array, null, sw);
             }
-            var reader = new StreamReader($"{TestContext.TestName}.txt");
+            var reader = new StreamReader(fileName);
 
             var res = HtmSerializer2.Deserialize<List<int>>(reader);
 
@@ -258,15 +250,15 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("working")]
-        public void DeserializeIEnumerable1Test()
+        public void SerializationIntegerListToIntegerArrayTest()
         {
             var array = new List<int> { 45, 34 };
 
-            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var sw = new StreamWriter(fileName))
             {
                 HtmSerializer2.Serialize(array, null, sw);
             }
-            var reader = new StreamReader($"{TestContext.TestName}.txt");
+            var reader = new StreamReader(fileName);
 
             var res = HtmSerializer2.Deserialize<int[]>(reader);
 
@@ -275,7 +267,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("working")]
-        public void DeserializeHtmConfigTest()
+        public void SerializationHtmConfigTest()
         {
             int cellsPerColumnL4 = 20;
             int numColumnsL4 = 500;
@@ -307,11 +299,11 @@ namespace UnitTestsProject
                 PredictedSegmentDecrement = 0.1
             };
 
-            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var sw = new StreamWriter(fileName))
             {
                 HtmSerializer2.Serialize(htmConfig_L2, null, sw);
             }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            using (var sr = new StreamReader(fileName))
             {
                 var htmConfig = HtmSerializer2.Deserialize<HtmConfig>(sr);
 
@@ -321,7 +313,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("working")]
-        public void DeserializeConnectionsTest()
+        public void SerializationConnectionsTest()
         {
             int cellsPerColumnL4 = 20;
             int numColumnsL4 = 500;
@@ -355,15 +347,11 @@ namespace UnitTestsProject
 
             var mem = new Connections(htmConfig_L2);
 
-            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var sw = new StreamWriter(fileName))
             {
                 HtmSerializer2.Serialize(mem, null, sw);
             }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
-            {
-                var content = sr.ReadToEnd();
-            }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            using (var sr = new StreamReader(fileName))
             {
                 var connection = HtmSerializer2.Deserialize<Connections>(sr);
                 Assert.IsTrue(mem.Equals(connection));
@@ -371,8 +359,8 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        //[TestCategory("working")]
-        public void DeserializeHomeostaticPlasticityTest()
+        [TestCategory("working")]
+        public void SerializationHomeostaticPlasticityControllerTest()
         {
             int cellsPerColumnL4 = 20;
             int numColumnsL4 = 500;
@@ -413,15 +401,11 @@ namespace UnitTestsProject
 
             }, numOfCyclesToWaitOnChange: 50);
 
-            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var sw = new StreamWriter(fileName))
             {
                 HtmSerializer2.Serialize(hpa_sp_L2, null, sw);
             }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
-            {
-                var content = sr.ReadToEnd();
-            }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            using (var sr = new StreamReader(fileName))
             {
                 var hpa = HtmSerializer2.Deserialize<HomeostaticPlasticityController>(sr);
 
@@ -429,14 +413,13 @@ namespace UnitTestsProject
                 {
 
                 };
-                //Assert.IsTrue(hpa_sp_L2.Equals(hpa));
+                Assert.IsTrue(hpa_sp_L2.Equals(hpa));
             }
-
         }
 
         [TestMethod]
         [TestCategory("working")]
-        public void ConnectionInitSparseObjectMatrixTest()
+        public void SerializationSparseObjectMatrixInSpatialPoolerMTInitializedByConnectionsTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
             Connections mem = new Connections(htmConfig);
@@ -444,15 +427,11 @@ namespace UnitTestsProject
             SpatialPooler sp = new SpatialPoolerMT();
             sp.Init(mem);
 
-            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var sw = new StreamWriter(fileName))
             {
                 HtmSerializer2.Serialize(mem.Memory, null, sw);
             }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
-            {
-                var content = sr.ReadToEnd();
-            }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            using (var sr = new StreamReader(fileName))
             {
                 var memory = HtmSerializer2.Deserialize<SparseObjectMatrix<Column>>(sr);
                 Assert.IsTrue((mem.Memory as SparseObjectMatrix<Column>).Equals(memory));
@@ -460,8 +439,8 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("working")]
-        public void ConnectionInitHtmConfigTest()
+        //[TestCategory("working")]
+        public void SerializationHtmConfigSpatialPoolerMTInitializedByConnectionsTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
             Connections mem = new Connections(htmConfig);
@@ -469,16 +448,11 @@ namespace UnitTestsProject
             SpatialPooler sp = new SpatialPoolerMT();
             sp.Init(mem);
 
-            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var sw = new StreamWriter(fileName))
             {
-                //HtmSerializer2.Serialize(mem, null, sw);
                 HtmSerializer2.Serialize(mem.HtmConfig, null, sw);
             }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
-            {
-                var content = sr.ReadToEnd();
-            }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            using (var sr = new StreamReader(fileName))
             {
                 var htmConfig1 = HtmSerializer2.Deserialize<HtmConfig>(sr);
                 Assert.IsTrue(mem.HtmConfig.Equals(htmConfig1));
@@ -487,7 +461,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("working")]
-        public void ConnectionInitSPTest()
+        public void SerializationConnectionsSpatialPoolerMTInitializedByConnectionsTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
             Connections mem = new Connections(htmConfig);
@@ -495,15 +469,11 @@ namespace UnitTestsProject
             SpatialPooler sp = new SpatialPoolerMT();
             sp.Init(mem);
 
-            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var sw = new StreamWriter(fileName))
             {
                 HtmSerializer2.Serialize(mem, null, sw);
             }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
-            {
-                var content = sr.ReadToEnd();
-            }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            using (var sr = new StreamReader(fileName))
             {
                 var connections = HtmSerializer2.Deserialize<Connections>(sr);
                 Assert.IsTrue(mem.Equals(connections));
@@ -512,7 +482,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("working")]
-        public void SPTest()
+        public void SerializationSpatialPoolerInitialzedByConnectionsTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
             Connections mem = new Connections(htmConfig);
@@ -524,18 +494,12 @@ namespace UnitTestsProject
             SpatialPooler sp = new SpatialPooler(hpa_sp_L2);
             sp.Init(mem);
 
-            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var sw = new StreamWriter(fileName))
             {
-                //HtmSerializer2.Serialize(mem, null, sw);
                 HtmSerializer2.Serialize(sp, null, sw);
             }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            using (var sr = new StreamReader(fileName))
             {
-                var content = sr.ReadToEnd();
-            }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
-            {
-                //var connection = HtmSerializer2.Deserialize<Connections>(sr);
                 var sp1 = HtmSerializer2.Deserialize<SpatialPooler>(sr);
                 Assert.IsTrue(sp.Equals(sp1));
             }
@@ -543,7 +507,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("working")]
-        public void SPMTTest()
+        public void SerializationSpatialPoolerMTInitialzedByConnectionsTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
             Connections mem = new Connections(htmConfig);
@@ -555,18 +519,12 @@ namespace UnitTestsProject
             SpatialPoolerMT sp = new SpatialPoolerMT(hpa_sp_L2);
             sp.Init(mem);
 
-            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var sw = new StreamWriter(fileName))
             {
-                //HtmSerializer2.Serialize(mem, null, sw);
                 HtmSerializer2.Serialize(sp, null, sw);
             }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            using (var sr = new StreamReader(fileName))
             {
-                var content = sr.ReadToEnd();
-            }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
-            {
-                //var connection = HtmSerializer2.Deserialize<Connections>(sr);
                 var sp1 = HtmSerializer2.Deserialize<SpatialPoolerMT>(sr);
                 Assert.IsTrue(sp.Equals(sp1));
             }
@@ -574,7 +532,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("working")]
-        public void ConnectionInitTMTest()
+        public void SerializationConnectionTemporalMemoryInitializedByConnectionsTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
             Connections mem = new Connections(htmConfig);
@@ -582,15 +540,11 @@ namespace UnitTestsProject
             TemporalMemory tm = new TemporalMemory();
             tm.Init(mem);
 
-            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var sw = new StreamWriter(fileName))
             {
                 HtmSerializer2.Serialize(mem, null, sw);
             }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
-            {
-                var content = sr.ReadToEnd();
-            }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            using (var sr = new StreamReader(fileName))
             {
                 var connections = HtmSerializer2.Deserialize<Connections>(sr);
                 Assert.IsTrue(mem.Equals(connections));
@@ -599,7 +553,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("working")]
-        public void TMTest()
+        public void SerializationTemporalMemoryInitializedByConnectionsTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
             Connections mem = new Connections(htmConfig);
@@ -607,15 +561,11 @@ namespace UnitTestsProject
             TemporalMemory tm = new TemporalMemory();
             tm.Init(mem);
 
-            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var sw = new StreamWriter(fileName))
             {
                 HtmSerializer2.Serialize(tm, null, sw);
             }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
-            {
-                var content = sr.ReadToEnd();
-            }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            using (var sr = new StreamReader(fileName))
             {
                 var tm1 = HtmSerializer2.Deserialize<TemporalMemory>(sr);
                 Assert.IsTrue(tm.Equals(tm1));
@@ -624,7 +574,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("working")]
-        public void EncoderTest()
+        public void SerializationScalarEncoderTest()
         {
             int inputBits = 100;
             double max = 20;
@@ -641,15 +591,15 @@ namespace UnitTestsProject
             };
 
             ScalarEncoder encoder = new ScalarEncoder(settings);
-            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var sw = new StreamWriter(fileName))
             {
                 HtmSerializer2.Serialize(encoder, null, sw);
             }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            using (var sr = new StreamReader(fileName))
             {
                 var content = sr.ReadToEnd();
             }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            using (var sr = new StreamReader(fileName))
             {
                 var scalarEncoder = HtmSerializer2.Deserialize<ScalarEncoder>(sr);
                 Assert.IsTrue(encoder.Equals(scalarEncoder));
@@ -657,8 +607,8 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        //[TestCategory("working")]
-        public void CortexLayerTest()
+        [TestCategory("working-experiment")]
+        public void SerializationCortexLayerTest()
         {
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
             sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, }));
@@ -922,11 +872,11 @@ namespace UnitTestsProject
 
             Debug.WriteLine("------------ END ------------");
 
-            using (var swrt = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var swrt = new StreamWriter(fileName))
             {
                 HtmSerializer2.Serialize(layer1, null, swrt);
             }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            using (var sr = new StreamReader(fileName))
             {
                 var cortexLayer = HtmSerializer2.Deserialize<CortexLayer<object, object>>(sr);
                 Assert.IsTrue(layer1.Equals(cortexLayer));
@@ -948,65 +898,65 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        public void KeyValuePairSerializationTest()
+        public void SerializationKeyValuePairTest()
         {
             var kv = new KeyValuePair<int, Animal>(1, new Cat { Fur = true, Legs = 4 });
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(KeyValuePairSerializationTest)}_123.txt"))
+            using (StreamWriter sw = new StreamWriter(fileName))
             {
                 HtmSerializer2.Serialize(kv, null, sw);
             }
 
-            using (StreamReader sr = new StreamReader($"ser_{nameof(KeyValuePairSerializationTest)}_123.txt"))
+            using (StreamReader sr = new StreamReader(fileName))
             {
                 var kv1 = HtmSerializer2.Deserialize<KeyValuePair<int, Animal>>(sr);
             }
         }
 
         [TestMethod]
-        public void AbstractClassSerializationTest()
+        public void SerializationAbstractClassTest()
         {
             Animal a = new Cat { Fur = true, Legs = 4 };
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(AbstractClassSerializationTest)}_123.txt"))
+            using (StreamWriter sw = new StreamWriter(fileName))
             {
                 HtmSerializer2.Serialize((Animal)a, "bla", sw, typeof(Animal));
             }
-            using (StreamReader sr = new StreamReader($"ser_{nameof(AbstractClassSerializationTest)}_123.txt"))
+            using (StreamReader sr = new StreamReader(fileName))
             {
                 var kv1 = HtmSerializer2.Deserialize<Cat>(sr);
             }
         }
 
         [TestMethod]
-        public void MultiDimArraySerializationTest()
+        public void SerializationMultiDimArrayTest()
         {
             Animal[,] cats = new Animal[1, 2];
             cats[0, 0] = new Cat { Fur = false, Legs = 2 };
             cats[0, 1] = new Cat { Fur = true, Legs = 3 };
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(MultiDimArraySerializationTest)}_123.txt"))
+            using (StreamWriter sw = new StreamWriter(fileName))
             {
                 HtmSerializer2.Serialize(cats, null, sw);
             }
 
-            using (StreamReader sr = new StreamReader($"ser_{nameof(MultiDimArraySerializationTest)}_123.txt"))
+            using (StreamReader sr = new StreamReader(fileName))
             {
                 var cats1 = HtmSerializer2.Deserialize<Animal[,]>(sr);
             }
         }
 
         [TestMethod]
-        public void PolymorphismListSerializationTest()
+        public void SerializationPolymorphismListTest()
         {
             var cats = new List<Animal>()
             {
                 new Cat { Fur = false, Legs = 2 },
                 new Cat { Fur = true, Legs = 3 },
             };
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(PolymorphismListSerializationTest)}_123.txt"))
+            using (StreamWriter sw = new StreamWriter(fileName))
             {
                 HtmSerializer2.Serialize(cats, null, sw);
             }
 
-            using (StreamReader sr = new StreamReader($"ser_{nameof(PolymorphismListSerializationTest)}_123.txt"))
+            using (StreamReader sr = new StreamReader(fileName))
             {
                 var cats1 = HtmSerializer2.Deserialize<List<Animal>>(sr);
             }
@@ -1024,20 +974,20 @@ namespace UnitTestsProject
         public void RandomTest()
         {
             var r = new Random();
-            using (StreamWriter sw = new StreamWriter("RandomTest.txt"))
+            using (StreamWriter sw = new StreamWriter(fileName))
             {
                 HtmSerializer2.Serialize(r, null, sw);
             }
-            using (StreamReader sr = new StreamReader("RandomTest.txt"))
+            using (StreamReader sr = new StreamReader(fileName))
             {
                 var r1 = HtmSerializer2.Deserialize<Random>(sr);
             }
         }
 
         [TestMethod]
-        [TestCategory("Serialization")]
+        [TestCategory("working")]
 
-        public void SerializeConnectionsTest1()
+        public void SerializeConnectionsWithActiveSegmentTest()
         {
             int[] inputDims = { 3, 4, 5 };
             int[] columnDims = { 35, 43, 52 };
@@ -1053,11 +1003,11 @@ namespace UnitTestsProject
 
             connections.ActiveSegments.Add(distSeg1);
 
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeConnectionsTest1)}.txt"))
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeConnectionsWithActiveSegmentTest)}.txt"))
             {
                 HtmSerializer2.Serialize(connections, null, sw);
             }
-            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeConnectionsTest1)}.txt"))
+            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeConnectionsWithActiveSegmentTest)}.txt"))
             {
                 Connections connections1 = HtmSerializer2.Deserialize<Connections>(sr);
                 Assert.IsTrue(connections.Equals(connections1));
@@ -1065,7 +1015,8 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        public void ActiveColumnsTest()
+        [TestCategory("working-experiment")]
+        public void SerializationCortexLayerSpatialPoolerCompareOutputTest()
         {
             // Used as a boosting parameters
             // that ensure homeostatic plasticity effect.
@@ -1250,12 +1201,12 @@ namespace UnitTestsProject
                 }
             }
 
-            using (var swrt = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var swrt = new StreamWriter(fileName))
             {
                 HtmSerializer2.Serialize(cortexLayer, null, swrt);
             }
 
-            using var sr = new StreamReader($"{TestContext.TestName}.txt");
+            using var sr = new StreamReader(fileName);
 
             var cortexLayer1 = HtmSerializer2.Deserialize<CortexLayer<object, object>>(sr);
             Assert.IsTrue(cortexLayer.Equals(cortexLayer1));
