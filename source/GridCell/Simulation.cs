@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
+using NeoCortexApi;
 using NumSharp;
 
 namespace GridCell
@@ -38,7 +40,9 @@ namespace GridCell
 
                 var currentActiveCells = grid.Compute(deltaMove);
 
-                Console.WriteLine(currentActiveCells);
+                var indexes = currentActiveCells.Select(cell => cell.Index).ToArray();
+                
+                Console.WriteLine(Helpers.StringifyVector(indexes));
             }
         }
 
