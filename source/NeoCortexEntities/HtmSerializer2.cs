@@ -70,6 +70,25 @@ namespace NeoCortexApi.Entities
             Id = 0;
         }
 
+        public static void Save(string fileName, object obj)
+        {
+            Reset();
+            using (var writer = new StreamWriter(fileName))
+            {
+                Serialize(obj, null, writer);
+            }
+        }
+
+        public static T Load<T>(string fileName)
+        {
+            Reset();
+            using (var reader = new StreamReader(fileName))
+            {
+                return Deserialize<T>(reader);
+            }
+        }
+
+
         /// <summary>
         /// Serialize the end marker of the type.
         /// </summary>

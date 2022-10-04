@@ -119,19 +119,27 @@ namespace UnitTestsProject
             cell1.DistalDendrites.Add(dd[0]);
             cell2.DistalDendrites.Add(dd[1]);
 
-            using (StreamWriter sw = new StreamWriter(fileName))
-            {
-                HtmSerializer2.Serialize(dd, null, sw);
-            }
-            using (StreamReader sr = new StreamReader(fileName))
-            {
-                var d = HtmSerializer2.Deserialize<DistalDendrite[]>(sr);
+            //using (StreamWriter sw = new StreamWriter(fileName))
+            //{
+            //    HtmSerializer2.Serialize(dd, null, sw);
+            //}
+            //using (StreamReader sr = new StreamReader(fileName))
+            //{
+            //    var d = HtmSerializer2.Deserialize<DistalDendrite[]>(sr);
 
-                for (int i = 0; i < dd.Length; i++)
-                {
-                    Assert.IsTrue(dd[i].Equals(d[i]));
-                }
+            //    for (int i = 0; i < dd.Length; i++)
+            //    {
+            //        Assert.IsTrue(dd[i].Equals(d[i]));
+            //    }
+            //}
+            HtmSerializer2.Save(fileName, dd);
+
+            var d = HtmSerializer2.Load<DistalDendrite[]>(fileName);
+            for (int i = 0; i < dd.Length; i++)
+            {
+                Assert.IsTrue(dd[i].Equals(d[i]));
             }
+
         }
 
         [TestMethod]
