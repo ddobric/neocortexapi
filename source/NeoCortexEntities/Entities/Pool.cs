@@ -99,7 +99,7 @@ namespace NeoCortexApi.Entities
         /// Returns an array of permanence values.
         /// </summary>
         /// <returns></returns>
-        public double[] GetSparsePermanences()
+        public double[] GetSparsePermanencesOLD()
         {
             double[] retVal = new double[size];
             int[] keys = GetSynapseKeys();// synapsesBySourceIndex.Keys;
@@ -108,6 +108,27 @@ namespace NeoCortexApi.Entities
                 retVal[j] = this.m_SynapsesBySourceIndex[keys[size - x - 1]].Permanence;
             }
 
+            return retVal;
+        }
+
+        public double[] GetSparsePermanences()
+        {
+            double[] retVal = new double[size];
+            int[] keys = GetSynapseKeys();// synapsesBySourceIndex.Keys;
+            
+            for (int x = 0, j = size - 1; x < size; x++, j--)
+            {
+                retVal[j] = this.m_SynapsesBySourceIndex[keys[size - x - 1]].Permanence;
+            }
+                        
+
+            List<double> retVal2 = new List<double>();
+            foreach (var key in keys)
+            {
+                retVal2.Add(this.m_SynapsesBySourceIndex[key].Permanence);
+            }
+
+            //TODO. Sequence Equal...
             return retVal;
         }
 
