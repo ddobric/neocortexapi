@@ -57,12 +57,12 @@ namespace GridCell
 
 
 
-        public List<Cell> Compute(Tuple<double, double> speed, bool learn = true)
+        public List<Cell> Compute(Tuple<double, double> deltaMove, bool learn = true)
         {
             for (int jj = 0; jj < gridLayers; jj++)
             {
                 var rrr = new Complex(gridGain[jj], 0);
-                NDArray matWeights = UpdateWeight(speed, rrr);
+                NDArray matWeights = UpdateWeight(deltaMove, rrr);
 
                 // self.grid_activity[:,:,jj] == In 3d array, get all fro outer 2 array but get only the item in the jj index
                 // so, 3d becomes 2d array
