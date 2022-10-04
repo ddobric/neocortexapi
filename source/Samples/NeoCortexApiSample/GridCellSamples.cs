@@ -12,23 +12,16 @@ namespace NeoCortexApiSample
     {
         public void Run()
         {
+            int walk = 20;
             int arenaSize = 50;
+
             var spatial = new SpatialNavigation(arenaSize);
-            spatial.RandomNavigation(10);
-            spatial.Plot();
+            spatial.RandomNavigation(walk);
 
-            var config = new GridConfig();
-            config.SetGridConfigDefaultParameters(new Tuple<int, int>(spatial.txx.Count, spatial.tyy.Count));
-
-            var grid = new Grid(config);
+            var gridConfig = new GridConfig(arenaSize);
+            var grid = new Grid(gridConfig);
             var simulation = new Simulation(grid, spatial.txx, spatial.tyy);
             simulation.Run();
-
-           //setOfActCells = grid(x,y);
-
-            grid.CalculateActiveCells(10);
-
-            Console.WriteLine(grid.GridCells);
         }
     }
 }
