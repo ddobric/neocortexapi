@@ -88,6 +88,17 @@ namespace NeoCortexApi.Entities
             }
         }
 
+        public static bool TryLoad<T>(string fileName, out T obj)
+        {
+            if (File.Exists(fileName) == false)
+            {
+                obj = default;
+                return false;
+            }
+            obj = Load<T>(fileName);
+            return true;
+        }
+
 
         /// <summary>
         /// Serialize the end marker of the type.

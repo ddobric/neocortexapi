@@ -310,6 +310,11 @@ namespace NeoCortexApi
             //Debug.WriteLine($"SP-OUT: {Helpers.StringifyVector(activeColumns.OrderBy(c=>c).ToArray())}");
         }
 
+        public void SetOnStableStatusChanged(Action<bool, int, double, int> onStable)
+        {
+            this.m_HomeoPlastAct.OnStabilityStatusChanged = onStable;
+        }
+
         /// <summary>
         /// Removes the set of columns who have never been active from the set of active columns selected in the inhibition round. Such columns cannot
         /// represent learned pattern and are therefore meaningless if only inference is required. This should not be done when using a random, unlearned SP
