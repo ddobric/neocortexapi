@@ -21,11 +21,15 @@ namespace UnitTestsProject
         /// </summary>
         [TestMethod]
         [TestCategory("serialization")]
-        public void Serializationtest_COLUMN()
+        [DataRow(1, 2, 1.0, 1)]
+        [DataRow(2, 5, 18.3, 20)]
+        [DataRow(10, 25, 12.0, 100)]
+        [DataRow(12, 14, 18.7, 1000)]
+        public void Serializationtest_COLUMN(int numCells, int colIndx, double synapsePermConnected, int numInputs)
         {
             HtmSerializer2 serializer = new HtmSerializer2();
 
-            Column column = new Column(2,12,12.2,2);
+            Column column = new Column(numCells, colIndx, synapsePermConnected, numInputs);
             
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_COLUMN)}_column.txt"))
             {
@@ -113,13 +117,15 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("serialization")]
+        [DataRow(1, 2, 4, 1, 2, 2, 2.0, 100)]
+        [DataRow(11, 12, 22, 10, 20, 20, 1.0, 100)]
+        [DataRow(12, 14, 16, 1, 4, 8, 4.0, 1000)]
+        [DataRow(100, 200, 400, 10, 20, 20, 20.0, 1000)]
         //TODO: [DataRow] We need many more different params to be sure that the serialization works well. You use currentlly single set of params = cell, 1, 2, 2, 2.0, 100
-        public void Serializationtest_DISTALDENDRITE()
+        public void Serializationtest_DISTALDENDRITE(int parentColumnIndx, int colSeq, int numCellsPerColumn,int flatIdx, long lastUsedIteration, int ordinal, double synapsePermConnected, int numInputs)
         {
-           
-            Cell cell = new Cell(12, 14, 16, new CellActivity());
-
-            DistalDendrite distalDendrite = new DistalDendrite(cell, 1, 2, 2, 2.0, 100);
+            Cell cell = new Cell(parentColumnIndx, colSeq, numCellsPerColumn, new CellActivity());
+            DistalDendrite distalDendrite = new DistalDendrite(cell, flatIdx, lastUsedIteration, ordinal, synapsePermConnected, numInputs);
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_DISTALDENDRITE)}_dd.txt"))
             {
@@ -135,10 +141,14 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("serialization")]
-        public void Serializationtest_DISTRIBUTEDMEMORY()
+        [DataRow(1, 1, 1.0, 1)]        
+        [DataRow(2, 5, 8.3, 2)]
+        [DataRow(10, 25, 10.0, 100)]
+        [DataRow(12, 14, 8.7, 1000)]
+        public void Serializationtest_DISTRIBUTEDMEMORY(int numCells, int colIndx, double synapsePermConnected, int numInputs)
         {
             //TODO: Need more parameter sets. use DataRow.
-            Column column = new Column(2, 12, 12.2, 2);
+            Column column = new Column(numCells, colIndx, synapsePermConnected, numInputs);
 
             DistributedMemory distributedMemory = new DistributedMemory();
 
