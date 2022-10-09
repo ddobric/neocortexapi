@@ -58,6 +58,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SequenceLearningExperiment"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtmImageEncoder", "ImageEncoder\HtmImageEncoder.csproj", "{18560247-0A1A-4B91-AE90-B8949B9EDDFA}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexApiPersistenceSample", "Samples\NeoCortexApiPersistenceSample\NeoCortexApiPersistenceSample.csproj", "{7B07D7B1-7437-4101-9B6D-DF2F0F78E73B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -112,6 +114,10 @@ Global
 		{18560247-0A1A-4B91-AE90-B8949B9EDDFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18560247-0A1A-4B91-AE90-B8949B9EDDFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18560247-0A1A-4B91-AE90-B8949B9EDDFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B07D7B1-7437-4101-9B6D-DF2F0F78E73B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B07D7B1-7437-4101-9B6D-DF2F0F78E73B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B07D7B1-7437-4101-9B6D-DF2F0F78E73B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B07D7B1-7437-4101-9B6D-DF2F0F78E73B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -119,6 +125,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{4D9AD5E0-8F00-494E-8BEF-8041C003F4E6} = {D9879A38-CCF8-4440-B939-D066196AC775}
 		{15375C28-1424-4A29-B2AF-11ED92F6134C} = {99AE2313-7D07-4905-A0BB-52D304FCC2F7}
+		{7B07D7B1-7437-4101-9B6D-DF2F0F78E73B} = {99AE2313-7D07-4905-A0BB-52D304FCC2F7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {71185BAD-1342-4836-BCDA-6EC97118F92D}

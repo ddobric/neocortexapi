@@ -20,6 +20,8 @@ namespace NeoCortexApi.Entities
         {
             return DefaultCheck(source, dest, () =>
             {
+                if (source.Count != dest.Count)
+                    return false;
                 foreach (var key in source.Keys)
                 {
                     if (dest.TryGetValue(key, out TValue value) == false)
@@ -45,8 +47,8 @@ namespace NeoCortexApi.Entities
             }
             else if (source == null && dest == null)
                 return true;
-            else if (source.Count() == 0)
-                return dest.Count() == 0;
+            else if (source.Count() != dest.Count())
+                return false;
             else
             {
                 return compareMethod();

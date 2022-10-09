@@ -278,7 +278,7 @@ namespace NeoCortexApi
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        internal static string GetHash(int[] input)
+        public static string GetHash(int[] input)
         {
             List<byte> buff = new List<byte>();
 
@@ -456,7 +456,7 @@ namespace NeoCortexApi
                 return false;
             else if (m_RequiredNumOfStableCycles != obj.m_RequiredNumOfStableCycles)
                 return false;
-            else if (!m_NumOfStableCyclesForInput.SequenceEqual(obj.m_NumOfStableCyclesForInput) && !m_NumOfActiveColsForInput.SequenceEqual(m_NumOfActiveColsForInput) && !m_InOutMap.SequenceEqual(m_InOutMap))
+            else if (!m_NumOfStableCyclesForInput.ElementsEqual(obj.m_NumOfStableCyclesForInput) && !m_NumOfActiveColsForInput.ElementsEqual(m_NumOfActiveColsForInput) && !m_InOutMap.ElementsEqual(m_InOutMap))
                 return false;
             else if (m_IsStable != obj.m_IsStable)
                 return false;
@@ -583,7 +583,6 @@ namespace NeoCortexApi
             {
                 nameof(m_OnStabilityStatusChanged),
                 nameof(OnStabilityStatusChanged),
-                nameof(m_HtmMemory),
                 nameof(m_InOutMap)
             };
 

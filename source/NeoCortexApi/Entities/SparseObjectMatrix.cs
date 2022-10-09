@@ -15,7 +15,7 @@ namespace NeoCortexApi.Entities
     /// <remarks>
     /// @author David Ray, Damir Dobric
     /// </remarks>
-    public class SparseObjectMatrix<T> : AbstractSparseMatrix<T>, IEquatable<T>, ISerializable where T : class
+    public class SparseObjectMatrix<T> : AbstractSparseMatrix<T>, IEquatable<T>/*, ISerializable*/ where T : class
     {
 
         //private IDictionary<int, T> sparseMap = new Dictionary<int, T>();
