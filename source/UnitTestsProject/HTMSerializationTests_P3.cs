@@ -46,13 +46,15 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("serialization")]
-        public void Serializationtest_SPARSEBINARYMATRIXS()
+        [DataRow(new int[] { 100, 100}, true)]
+        [DataRow(new int[] { 10, 100, 1000 }, true)]
+        [DataRow(new int[] { 12, 14, 16, 18 }, false)]
+        [DataRow(new int[] { 100, 1000, 10000, 100000, 1000000 }, false)]
+        public void Serializationtest_SPARSEBINARYMATRIXS(int[] dimensions, bool useColumnMajorOrdering)
         {
             HtmSerializer2 serializer = new HtmSerializer2();
 
-            int[] dimension = { 100, 100 };
-
-            SparseBinaryMatrix matrix = new SparseBinaryMatrix(dimension,false);            
+            SparseBinaryMatrix matrix = new SparseBinaryMatrix(dimensions,useColumnMajorOrdering);            
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_SPARSEBINARYMATRIXS)}_sbmatrix.txt"))
             {
@@ -66,18 +68,20 @@ namespace UnitTestsProject
             }
         }
 
-  
         [TestMethod]
         [TestCategory("serialization")]
-        public void Serializationtest_CONNECTIONS()
+        [DataRow(new int[] { 100, 100 }, new int[] { 10, 10 }, 12, 14, 16, 1, 2, 2, 2.0, 100)]
+        [DataRow(new int[] { 100, 100 }, new int[] { 10, 10 }, 100, 256, 1000, 10, 20, 20, 1.0, 100)]
+        [DataRow(new int[] { 2, 4, 8 }, new int[] { 128, 256, 512 }, 12, 14, 16, 1, 4, 8, 4.0, 1000)]
+        [DataRow(new int[] { 2, 4, 8 }, new int[] { 128, 256, 512 }, 1, 1, 2, 1, 2, 2, 2.0, 100)]
+        public void Serializationtest_CONNECTIONS(int[] inputDims, int[] columnDims, int parentColumnIndx, int colSeq, int numCellsPerColumn,
+            int flatIdx, long lastUsedIteration, int ordinal, double synapsePermConnected, int numInputs)
         {
-            int[] inputDims = { 100,100 };
-            int[] columnDims = { 10,10 };
             HtmConfig config = new HtmConfig(inputDims, columnDims);
 
             Connections connections = new Connections(config);
 
-            Cell cell = new Cell(12, 14, 16, new CellActivity());
+            Cell cell = new Cell(parentColumnIndx, colSeq, numCellsPerColumn, new CellActivity());
 
             var distDend = new DistalDendrite(cell, 1, 2, 2, 1.0, 100);
 
@@ -96,11 +100,12 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("serialization")]
-        public void Serializationtest_HTMCONFIG()
+        [DataRow(new int[] { 8000 }, new int[] { 100 })]
+        [DataRow(new int[] { 100, 100 }, new int[] { 10, 10 })]
+        [DataRow(new int[] { 2, 4, 8 }, new int[] { 128, 256, 512 })]
+        [DataRow(new int[] { 256 }, new int[] { 10, 15 })]
+        public void Serializationtest_HTMCONFIG(int[] inputDims, int[] columnDims)
         {
-            int[] inputDims = { 10, 12,14 };
-            int[] columnDims = { 1, 2, 3 };
-
             HtmConfig config = new HtmConfig(inputDims, columnDims);
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_HTMCONFIG)}_config.txt"))
@@ -147,7 +152,6 @@ namespace UnitTestsProject
         [DataRow(12, 14, 8.7, 1000)]
         public void Serializationtest_DISTRIBUTEDMEMORY(int numCells, int colIndx, double synapsePermConnected, int numInputs)
         {
-            //TODO: Need more parameter sets. use DataRow.
             Column column = new Column(numCells, colIndx, synapsePermConnected, numInputs);
 
             DistributedMemory distributedMemory = new DistributedMemory();
@@ -168,11 +172,14 @@ namespace UnitTestsProject
         // TODO: Implement HtmModuleTopologyTests class that tests Equals() method.
         [TestMethod]
         [TestCategory("serialization")]
-        public void Serializationtest_HTMMODULETOPOLOGY()
+        [DataRow(new int[] {1, 2, 4}, true)]
+        [DataRow(new int[] {10, 12, 14}, false)]
+        [DataRow(new int[] { 1028 }, true)]
+        [DataRow(new int[] { 100, 1000, 10000, 100000 }, false)]
+        public void Serializationtest_HTMMODULETOPOLOGY(int[] dimension, bool isMajorOrdering)
         {
-            int[] dimension = { 10, 12, 14 };
-
-            HtmModuleTopology topology = new HtmModuleTopology(dimension, true);
+            
+            HtmModuleTopology topology = new HtmModuleTopology(dimension, isMajorOrdering);
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_HTMMODULETOPOLOGY)}_topology.txt"))
             {
@@ -251,10 +258,12 @@ namespace UnitTestsProject
         //TODO: See previous comments.
         [TestMethod]
         [TestCategory("serialization")]
-        public void Serializationtest_TOPOLOGY()
+        [DataRow(new int[] { 1, 2, 4 }, true)]
+        [DataRow(new int[] { 10, 12, 14 }, false)]
+        [DataRow(new int[] { 1028 }, true)]
+        [DataRow(new int[] { 100, 1000, 10000, 100000 }, false)]
+        public void Serializationtest_TOPOLOGY(int[] shape, bool useColumnMajorOrdering)
         {
-            int[] shape = { 1, 2, 3 };
-            bool useColumnMajorOrdering = true;
             Topology topology = new Topology(shape, useColumnMajorOrdering);
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_TOPOLOGY)}_topology.txt"))
