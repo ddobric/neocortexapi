@@ -20,9 +20,7 @@ namespace UnitTestsProject
         public void CompareHtmModuleTopology()
         {
             int[] dimensions1 = { 1, 2, 3 };
-            int[] dimensions2 = { 1, 2, 3 };
-            int[] dimensions3 = { 1, 2, 3 };
-            int[] dimensions4 = { 1, 2, 3 };
+            int[] dimensions2 = { 10, 14, 16 };
 
             bool isMajorOrdering1 = true;
             bool isMajorOrdering2 = false;
