@@ -20,10 +20,10 @@ namespace UnitTestsProject
         /// <param name="period"></param>
         [TestMethod]
         [TestCategory("Prod")]
-        // [DataRow(100)]
-        // [DataRow(200)]
+        [DataRow(100)]
+        [DataRow(200)]
         [DataRow(500)]
-        //  [DataRow(50000)]
+        [DataRow(50000)]
         public void BoostTest50Pct(int period)
         {
             int numCols = 1;
@@ -33,7 +33,7 @@ namespace UnitTestsProject
 
             double max = 0.0;
 
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < period*100; i++)
             {
                 // Active in every cycle.
                 currentAtivity[0] = currentAtivity[0] == 1 ? 0 : 1;
