@@ -32,7 +32,7 @@ namespace NeoCortexApiSample
                 Random = new ThreadSafeRandom(42),
 
                 CellsPerColumn = 25,
-                GlobalInhibition = true,
+                GlobalInhibition = false,
                 LocalAreaDensity = -1,
                 NumActiveColumnsPerInhArea = 0.02 * numColumns,
                 PotentialRadius = (int)(0.15 * inputBits),

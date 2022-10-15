@@ -4,6 +4,7 @@ using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,23 +20,23 @@ namespace UnitTestsProject
         /// <param name="period"></param>
         [TestMethod]
         [TestCategory("Prod")]
-        [DataRow(100)]
-        [DataRow(200)]
+        // [DataRow(100)]
+        // [DataRow(200)]
         [DataRow(500)]
-        [DataRow(50000)]
+        //  [DataRow(50000)]
         public void BoostTest50Pct(int period)
-        { 
+        {
             int numCols = 1;
-        
+
             double[] overallActivity = new double[numCols];
             double[] currentAtivity = new double[numCols];
 
             double max = 0.0;
 
-            for (int i = 0; i < period*100; i++)
+            for (int i = 0; i < 1000; i++)
             {
                 // Active in every cycle.
-                currentAtivity[0] = currentAtivity[0] ==1? 0:1;
+                currentAtivity[0] = currentAtivity[0] == 1 ? 0 : 1;
 
                 // Calculate boost result by boosting formel.
                 overallActivity = SpatialPooler.CalcEventFrequency(overallActivity, currentAtivity, period);
@@ -43,7 +44,9 @@ namespace UnitTestsProject
                 if (overallActivity[0] > max)
                     max = overallActivity[0];
 
-                //Trace.WriteLine(Helpers.StringifyVector(overallActivity));
+                //Trace.WriteLine($"{Helpers.StringifyVector(overallActivity).Replace(",", ".").Substring(0,4)}");
+                Trace.WriteLine($"{Helpers.StringifyVector(overallActivity).Substring(0, 4)}");
+                //Trace.WriteLine($"{i}");
             }
 
             Assert.IsTrue(max <= 0.51);
@@ -65,7 +68,7 @@ namespace UnitTestsProject
 
             double max = 0.0;
 
-            for (int i = 0; i < period*100; i++)
+            for (int i = 0; i < period * 100; i++)
             {
                 // Active in every cycle.
                 currentAtivity[0] = 1;

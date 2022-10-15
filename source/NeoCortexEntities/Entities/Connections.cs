@@ -227,6 +227,10 @@ namespace NeoCortexApi.Entities
         }
 
 
+        /// <summary>
+        /// Used by UnitTests only.
+        /// </summary>
+        /// <returns></returns>
         public int[] GetTrueCounts()
         {
             int[] counts = new int[this.HtmConfig.NumColumns];

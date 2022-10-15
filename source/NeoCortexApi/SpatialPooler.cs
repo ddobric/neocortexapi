@@ -653,7 +653,6 @@ namespace NeoCortexApi
                 int[] indexes = pool.GetSparsePotential();
 
                 col.UpdatePermanencesForColumnSparse(c.HtmConfig, perm, indexes, true);
-                //UpdatePermanencesForColumnSparse(c, perm, col, indexes, true);
             }
         }
 
@@ -1224,6 +1223,7 @@ namespace NeoCortexApi
         /// </summary>
         /// <param name="c"></param>
         /// <param name="overlaps"></param>
+        /// <remarks>Used by UnitTests only.</remarks>
         /// <returns></returns>
         public double[] CalculateOverlapPct(Connections c, int[] overlaps)
         {

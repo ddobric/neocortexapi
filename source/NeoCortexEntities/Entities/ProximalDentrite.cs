@@ -87,7 +87,7 @@ namespace NeoCortexApi.Entities
 
 
         /// <summary>
-        /// Sets the permanences for each {@link Synapse} specified by the indexes passed in which identify the input vector indexes associated with the
+        /// Sets the permanences for each <see cref="Synapse"/> specified by the indexes passed in which identify the input vector indexes associated with the
         /// <see cref="Synapse"/>. The permanences passed in are understood to be in "sparse" format and therefore require the int array identify their 
         /// corresponding indexes.
         /// </summary>
