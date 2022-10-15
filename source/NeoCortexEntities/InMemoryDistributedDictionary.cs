@@ -566,6 +566,8 @@ namespace NeoCortexApi.Entities
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
+            HtmSerializer2.SerializeObject(obj, name, sw, new List<string> { "Item" });
+            return;
             HtmSerializer2.Serialize(this.numElements, "numElements", sw);
             HtmSerializer2.Serialize(this.currentDictIndex, "currentDictIndex", sw);
             HtmSerializer2.Serialize(this.currentIndex, "currentIndex", sw);
@@ -576,6 +578,7 @@ namespace NeoCortexApi.Entities
 
         public static object Deserialize<T>(StreamReader sr, string propName)
         {
+            return HtmSerializer2.DeserializeObject<InMemoryDistributedDictionary<TKey, TValue>>(sr, propName);
             int numElements = 0;
             int currentDictIndex = 0;
             int currentIndex = 0;
@@ -617,6 +620,7 @@ namespace NeoCortexApi.Entities
             }
             var inMemDict = new InMemoryDistributedDictionary<TKey, TValue>();
             inMemDict.numElements = numElements;
+            inMemDict.currentDictIndex = currentDictIndex;
             inMemDict.currentIndex = currentIndex;
             inMemDict.htmConfig = htmConfig;
             inMemDict.dictList = dictList;

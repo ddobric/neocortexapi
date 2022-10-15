@@ -31,7 +31,7 @@ namespace NeoCortexApi.Entities
     /// ProximalDendrites hold many synapses, which connect columns to the sensory input.
     /// DistalDendrites build synaptic connections to cells inside of columns.
     /// </summary>
-    public class Synapse : IEquatable<Synapse>, IComparable<Synapse>, ISerializable
+    public class Synapse : IEquatable<Synapse>, IComparable<Synapse>/*, ISerializable*/
     {
         /// <summary>
         /// Cell which activates this synapse. On proximal dendrite is this set on NULL. That means proximal dentrites have no presynaptic cell.
@@ -382,7 +382,7 @@ namespace NeoCortexApi.Entities
             {
                 var ignoreMembers = new List<string>
                 {
-                    nameof(Synapse.SourceCell),
+                    //nameof(Synapse.SourceCell),
                 };
                 HtmSerializer2.SerializeObject(synapse, name, sw, ignoreMembers);
             }

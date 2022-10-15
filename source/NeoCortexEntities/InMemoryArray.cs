@@ -330,16 +330,16 @@ namespace NeoCortexApi.Entities
             var ignoreMembers = new List<string> 
             { 
                 "Item",
-                nameof(Dimensions),
-                nameof(IDistributedArray.Count),
-                nameof(Rank)
+                //nameof(Dimensions),
+                //nameof(IDistributedArray.Count),
+                //nameof(Rank)
             };
             HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);
         }
 
         public static object Deserialize<T>(StreamReader sr, string name)
         {
-            var ignoreMembers = new List<string> { "Item" };
+            var ignoreMembers = new List<string> { /*"Item"*/ };
             return HtmSerializer2.DeserializeObject<T>(sr, name, ignoreMembers);
         }
         #endregion
