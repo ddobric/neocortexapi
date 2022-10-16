@@ -674,25 +674,21 @@ namespace NeoCortexApi
         }
 
         /// <summary>
-        /// Creates nDesiredNewSynapes synapses on the segment passed in if possible, choosing random cells from the previous winner cells that are
-        /// not already on the segment.
+        /// Creates requiredNewSynapses synapses on the segment, choosing random cells from the previous winner cells that are
+        /// not already synaptically connected to the segment.
         /// </summary>
         /// <param name="conn">Connections instance for the <see cref="TemporalMemory"/></param>
         /// <param name="prevWinnerCells">Winner cells in `t-1`</param>
         /// <param name="segment">Segment to grow synapses on. </param>
         /// <param name="initialPermanence">Initial permanence of a new synapse.</param>
-        /// <param name="nDesiredNewSynapses">Desired number of synapses to grow</param>
+        /// <param name="requiredNewSynapses">Desired number of synapses to grow</param>
         /// <param name="random"><see cref="TemporalMemory"/> object used to generate random numbers</param>
-        /// <remarks>
-        /// <b>Notes:</b> The process of writing the last value into the index in the array that was most recently changed is to ensure the same results that 
-        /// we get in the c++ implementation using iter_swap with vectors.
-        /// </remarks>
         public void GrowSynapses(Connections conn, ICollection<Cell> prevWinnerCells, DistalDendrite segment,
-            double initialPermanence, int nDesiredNewSynapses, Random random)
+            double initialPermanence, int requiredNewSynapses, Random random)
         {
             random = new Random();
-            List<Cell> removingCandidates = new List<Cell>(prevWinnerCells);
-            removingCandidates = removingCandidates.OrderBy(c => c).ToList();
+            List<Cell> winnersWithoutSynapticConnecctionToSegment = new List<Cell>(prevWinnerCells);
+            winnersWithoutSynapticConnecctionToSegment = winnersWithoutSynapticConnecctionToSegment.OrderBy(c => c).ToList();
 
             //
             // Enumarates all synapses in a segment and remove winner-cells from
@@ -702,27 +698,32 @@ namespace NeoCortexApi
             // This should be investigated.
             foreach (Synapse synapse in segment.Synapses)
             {
+                // Gets the cell that connects to the segment and forms this synapse.
                 Cell presynapticCell = synapse.GetPresynapticCell();
-                int index = removingCandidates.IndexOf(presynapticCell);
+
+                // Lookup that cell in the list of currentlly active=winner cells.
+                int index = winnersWithoutSynapticConnecctionToSegment.IndexOf(presynapticCell);
                 if (index != -1)
                 {
-                    removingCandidates.RemoveAt(index); ;
+                    // If the cell already has a synaptic connection, the we do not need to create the synapse again.
+                    // We anly want here currentlly active cells. which do not form synaptic conenctions to the segment.
+                    winnersWithoutSynapticConnecctionToSegment.RemoveAt(index); ;
                 }
             }
 
-            int candidatesLength = removingCandidates.Count;
+            int candidatesLength = winnersWithoutSynapticConnecctionToSegment.Count;
 
             // We take here eather wanted growing number of desired synapes or num of candidates
             // if too many growing synapses requested.
-            int numMissingSynapses = nDesiredNewSynapses < candidatesLength ? nDesiredNewSynapses : candidatesLength;
+            int numMissingSynapses = requiredNewSynapses < candidatesLength ? requiredNewSynapses : candidatesLength;
 
             //
             // Finally we randomly create new synapses. 
             for (int i = 0; i < numMissingSynapses; i++)
             {
-                int rndIndex = random.Next(removingCandidates.Count);
-                conn.CreateSynapse(segment, removingCandidates[rndIndex], initialPermanence);
-                removingCandidates.RemoveAt(rndIndex);
+                int rndIndex = random.Next(winnersWithoutSynapticConnecctionToSegment.Count);
+                conn.CreateSynapse(segment, winnersWithoutSynapticConnecctionToSegment[rndIndex], initialPermanence);
+                winnersWithoutSynapticConnecctionToSegment.RemoveAt(rndIndex);
             }
         }
 
