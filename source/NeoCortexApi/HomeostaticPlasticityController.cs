@@ -278,7 +278,7 @@ namespace NeoCortexApi
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        internal static string GetHash(int[] input)
+        public static string GetHash(int[] input)
         {
             List<byte> buff = new List<byte>();
 

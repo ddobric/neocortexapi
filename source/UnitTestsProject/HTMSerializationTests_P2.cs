@@ -119,19 +119,27 @@ namespace UnitTestsProject
             cell1.DistalDendrites.Add(dd[0]);
             cell2.DistalDendrites.Add(dd[1]);
 
-            using (StreamWriter sw = new StreamWriter(fileName))
-            {
-                HtmSerializer2.Serialize(dd, null, sw);
-            }
-            using (StreamReader sr = new StreamReader(fileName))
-            {
-                var d = HtmSerializer2.Deserialize<DistalDendrite[]>(sr);
+            //using (StreamWriter sw = new StreamWriter(fileName))
+            //{
+            //    HtmSerializer2.Serialize(dd, null, sw);
+            //}
+            //using (StreamReader sr = new StreamReader(fileName))
+            //{
+            //    var d = HtmSerializer2.Deserialize<DistalDendrite[]>(sr);
 
-                for (int i = 0; i < dd.Length; i++)
-                {
-                    Assert.IsTrue(dd[i].Equals(d[i]));
-                }
+            //    for (int i = 0; i < dd.Length; i++)
+            //    {
+            //        Assert.IsTrue(dd[i].Equals(d[i]));
+            //    }
+            //}
+            HtmSerializer2.Save(fileName, dd);
+
+            var d = HtmSerializer2.Load<DistalDendrite[]>(fileName);
+            for (int i = 0; i < dd.Length; i++)
+            {
+                Assert.IsTrue(dd[i].Equals(d[i]));
             }
+
         }
 
         [TestMethod]
@@ -1428,6 +1436,209 @@ namespace UnitTestsProject
 
                 FileInfo fileInfo = new FileInfo(fileName);
                 Console.WriteLine(fileInfo.Length);
+            }        
+        }
+        
+        [TestMethod]
+        [TestCategory("working-experiment")]
+        [DataRow(128, 50)]
+        [DataRow(256, 50)]
+        [DataRow(512, 50)]
+        public void SerializationCortexLayerSpatialPoolerDurationTest(int numColumns, int numIterations)
+        {
+            // Used as a boosting parameters
+            // that ensure homeostatic plasticity effect.
+            double minOctOverlapCycles = 1.0;
+            double maxBoost = 5.0;
+
+            // We will use 50 bits to represent an input vector (pattern).
+            int inputBits = 50;
+
+            // We will build a slice of the cortex with the given number of mini-columns
+            //int numColumns = 1024;
+
+            //
+            // This is a set of configuration parameters used in the experiment.
+            HtmConfig cfg = new HtmConfig(new int[] { inputBits }, new int[] { numColumns })
+            {
+                CellsPerColumn = 10,
+                MaxBoost = maxBoost,
+                DutyCyclePeriod = 100,
+                MinPctOverlapDutyCycles = minOctOverlapCycles,
+
+                GlobalInhibition = false,
+                NumActiveColumnsPerInhArea = 0.02 * numColumns,
+                PotentialRadius = (int)(0.15 * inputBits),
+                LocalAreaDensity = -1,
+                ActivationThreshold = 10,
+
+                MaxSynapsesPerSegment = (int)(0.01 * numColumns),
+                Random = new ThreadSafeRandom(42),
+                StimulusThreshold = 10,
+            };
+
+            double max = 50;
+
+            //
+            // This dictionary defines a set of typical encoder parameters.
+            Dictionary<string, object> settings = new Dictionary<string, object>()
+            {
+                { "W", 15},
+                { "N", inputBits},
+                { "Radius", -1.0},
+                { "MinVal", 0.0},
+                { "Periodic", false},
+                { "Name", "scalar"},
+                { "ClipInput", false},
+                { "MaxVal", max}
+            };
+
+
+            EncoderBase encoder = new ScalarEncoder(settings);
+
+            //
+            // We create here 100 random input values.
+            List<double> inputValues = new List<double>();
+
+            var rand = new Random();
+
+            for (int i = 0; i < (int)max; i++)
+            {
+                inputValues.Add((double)i);
+            }
+
+            List<double> inputTrainValues = new List<double>();
+
+            for (int i = 0; i < (int)(max * 0.2); i++)
+            {
+                var value = rand.Next(0, (int)max);
+                while (inputTrainValues.Contains(value))
+                {
+                    value = rand.Next(0, (int)max);
+                }
+
+                inputTrainValues.Add(value);
+            }
+
+            var outs = new List<int[]>();
+            foreach (var input in inputValues)
+            {
+                var output = encoder.Encode(input);
+                outs.Add(output);
+            }
+
+            for (int i = 0; i < numIterations; i++)
+            {
+
+
+                // Creates the htm memory.
+                var mem = new Connections(cfg);
+
+                bool isInStableState = false;
+
+                //
+                // HPC extends the default Spatial Pooler algorithm.
+                // The purpose of HPC is to set the SP in the new-born stage at the begining of the learning process.
+                // In this stage the boosting is very active, but the SP behaves instable. After this stage is over
+                // (defined by the second argument) the HPC is controlling the learning process of the SP.
+                // Once the SDR generated for every input gets stable, the HPC will fire event that notifies your code
+                // that SP is stable now.
+                HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, inputValues.Count * 40,
+                    (isStable, numPatterns, actColAvg, seenInputs) =>
+                    {
+                        // Event should only be fired when entering the stable state.
+                        // Ideal SP should never enter unstable state after stable state.
+                        if (isStable == false)
+                        {
+                            Debug.WriteLine($"INSTABLE STATE");
+                            // This should usually not happen.
+                            isInStableState = false;
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"STABLE STATE");
+                            // Here you can perform any action if required.
+                            isInStableState = true;
+                        }
+                    });
+
+                // It creates the instance of Spatial Pooler Multithreaded version.
+                SpatialPoolerMT sp = new SpatialPoolerMT(hpa);
+
+                // Initializes the 
+                sp.Init(mem, new DistributedMemory() { ColumnDictionary = new InMemoryDistributedDictionary<int, NeoCortexApi.Entities.Column>(1) });
+
+                // mem.TraceProximalDendritePotential(true);
+
+                // It creates the instance of the neo-cortex layer.
+                // Algorithm will be performed inside of that layer.
+                CortexLayer<object, object> cortexLayer = new CortexLayer<object, object>("L1");
+
+                // Add encoder as the very first module. This model is connected to the sensory input cells
+                // that receive the input. Encoder will receive the input and forward the encoded signal
+                // to the next module.
+                cortexLayer.HtmModules.Add("encoder", encoder);
+
+                // The next module in the layer is Spatial Pooler. This module will receive the output of the
+                // encoder.
+                cortexLayer.HtmModules.Add("sp", sp);
+
+                double[] inputs = inputTrainValues.ToArray();
+
+                // Will hold the SDR of every inputs.
+                Dictionary<double, int[]> prevActiveCols = new Dictionary<double, int[]>();
+
+                // Will hold the similarity of SDKk and SDRk-1 fro every input.
+                Dictionary<double, double> prevSimilarity = new Dictionary<double, double>();
+
+                //
+                // Initiaize start similarity to zero.
+                foreach (var input in inputs)
+                {
+                    prevSimilarity.Add(input, 0.0);
+                    prevActiveCols.Add(input, new int[0]);
+                }
+
+                // Learning process will take 1000 iterations (cycles)
+                int maxSPLearningCycles = 3500;
+
+                for (int cycle = 0; cycle < maxSPLearningCycles; cycle++)
+                {
+                    Debug.WriteLine($"Cycle  ** {cycle} ** Stability: {isInStableState}");
+                    if (isInStableState)
+                        break;
+                    //
+                    // This trains the layer on input pattern.
+                    foreach (var input in inputs)
+                    {
+                        double similarity;
+
+                        // Learn the input pattern.
+                        // Output lyrOut is the output of the last module in the layer.
+                        // 
+                        var lyrOut = cortexLayer.Compute((object)input, true) as int[];
+
+                        // This is a general way to get the SpatialPooler result from the layer.
+                        var activeColumns = cortexLayer.GetResult("sp") as int[];
+
+                        var actCols = activeColumns.OrderBy(c => c).ToArray();
+
+                        similarity = MathHelpers.CalcArraySimilarity(activeColumns, prevActiveCols[input]);
+
+                        //Debug.WriteLine($"[cycle={cycle.ToString("D4")}, i={input}, cols=:{actCols.Length} s={similarity}] SDR: {Helpers.StringifyVector(actCols)}");
+
+                        prevActiveCols[input] = activeColumns;
+                        prevSimilarity[input] = similarity;
+                    }
+                }
+
+                Stopwatch stopwatch = Stopwatch.StartNew();
+                using (var swrt = new StreamWriter(fileName))
+                {
+                    HtmSerializer2.Serialize(cortexLayer, null, swrt);
+                }
+                stopwatch.Stop();
+                Console.WriteLine(stopwatch.ElapsedMilliseconds);
             }        
         }
 
