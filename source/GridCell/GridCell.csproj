@@ -8,6 +8,7 @@
 	<ItemGroup>
 		<None Remove="NumSharp" />
 		<None Remove="ScottPlot" />
+		<None Remove="js\" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="NumSharp" Version="0.30.0" />
@@ -17,5 +18,8 @@
 		<ProjectReference Include="..\NeoCortexUtils\NeoCortexUtils.csproj" />
 		<ProjectReference Include="..\NeoCortexEntities\NeoCortexEntities.csproj" />
 		<ProjectReference Include="..\NeoCortexApi\NeoCortexApi.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="js\" />
 	</ItemGroup>
 </Project>

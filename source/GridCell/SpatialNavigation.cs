@@ -12,6 +12,11 @@ namespace GridCell
         public List<double> txx;
         public List<double> tyy;
 
+        public bool add = true;
+
+        private int directionX = 2;
+        private int directionY = 2;
+
         public SpatialNavigation(int arenaSize)
         {
             this.arenaSize = arenaSize;
@@ -21,34 +26,67 @@ namespace GridCell
 
         public void RandomNavigation(int length)
         {
-            var theta = 90.0;
+            //var theta = 90.0;
 
             for (int i = 0; i < length; i++)
             {
+                //if (txx.Last() < 2)
+                //{
+                //    theta = np.random.randint(-85, 85);
+                //}
+
+                //if (txx.Last() > arenaSize - 2)
+                //{
+                //    theta = np.random.randint(95, 260);
+                //}
+
+                //if (tyy.Last() < 2)
+                //{
+                //    theta = np.random.randint(10, 170);
+                //}
+
+                //if (tyy.Last() > arenaSize - 2)
+                //{
+                //    theta = np.random.randint(190, 350);
+                //}
+
+                //var (cosine, sine) = Conv(theta);
+
+                //txx.Add(txx.Last() + cosine + np.random.uniform(-0.5, 0.5).GetDouble());
+                //tyy.Add(tyy.Last() + sine + np.random.uniform(-0.5, 0.5).GetDouble());
+
+                //if (add) {
+                //    txx.Add(txx.Last() + 30);
+                //    tyy.Add(tyy.Last() + 30);
+                //} else {
+                //    txx.Add(txx.Last() - 30);
+                //    tyy.Add(tyy.Last() - 30);
+                //}
+
+                //add = !add;
+
                 if (txx.Last() < 2)
                 {
-                    theta = np.random.randint(-85, 85);
+                    directionX = 2;
                 }
 
                 if (txx.Last() > arenaSize - 2)
                 {
-                    theta = np.random.randint(95, 260);
+                    directionX = -2;
                 }
 
                 if (tyy.Last() < 2)
                 {
-                    theta = np.random.randint(10, 170);
+                    directionY = 2;
                 }
 
                 if (tyy.Last() > arenaSize - 2)
                 {
-                    theta = np.random.randint(190, 350);
+                    directionY = -2;
                 }
 
-                var (cosine, sine) = Conv(theta);
-
-                txx.Add(txx.Last() + cosine + np.random.uniform(-0.5, 0.5).GetDouble());
-                tyy.Add(tyy.Last() + sine + np.random.uniform(-0.5, 0.5).GetDouble());
+                txx.Add(txx.Last() + directionX + new Random().NextDouble() * 2 - 2);
+                tyy.Add(tyy.Last() + directionY + new Random().NextDouble() * 2 - 2);
             }
 
             //Console.WriteLine(string.Join("\t", txx));
