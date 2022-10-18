@@ -29,7 +29,7 @@ namespace UnitTestsProject
             HtmModuleTopology top2 = new HtmModuleTopology(dimensions1, isMajorOrdering1);
             HtmModuleTopology top3 = new HtmModuleTopology(dimensions2, isMajorOrdering1);
             HtmModuleTopology top4 = new HtmModuleTopology(dimensions1, isMajorOrdering2);
-
+            
             //Not same by reference
             Assert.IsFalse(top1 == top2);
             Assert.IsFalse(top1 == top3);

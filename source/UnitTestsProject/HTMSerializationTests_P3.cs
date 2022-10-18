@@ -116,7 +116,7 @@ namespace UnitTestsProject
             {
                 HtmConfig configD = HtmSerializer2.Deserialize<HtmConfig>(sr);
                 Assert.IsTrue(config.Equals(configD));
-                //TODO: Implement HtmConfigTests, that make sure the HtmConfig.Equals() Method works well. Implement many CompareMethods that make sure that ALL HtmConfig parameters are used in th eequal method.
+                //DONE: Implement HtmConfigTests, that make sure the HtmConfig.Equals() Method works well. Implement many CompareMethods that make sure that ALL HtmConfig parameters are used in th eequal method. 
             }
         }      
 
@@ -126,7 +126,7 @@ namespace UnitTestsProject
         [DataRow(11, 12, 22, 10, 20, 20, 1.0, 100)]
         [DataRow(12, 14, 16, 1, 4, 8, 4.0, 1000)]
         [DataRow(100, 200, 400, 10, 20, 20, 20.0, 1000)]
-        //TODO: [DataRow] We need many more different params to be sure that the serialization works well. You use currentlly single set of params = cell, 1, 2, 2, 2.0, 100
+        //DONE: [DataRow] We need many more different params to be sure that the serialization works well. You use currentlly single set of params = cell, 1, 2, 2, 2.0, 100
         public void Serializationtest_DISTALDENDRITE(int parentColumnIndx, int colSeq, int numCellsPerColumn,int flatIdx, long lastUsedIteration, int ordinal, double synapsePermConnected, int numInputs)
         {
             Cell cell = new Cell(parentColumnIndx, colSeq, numCellsPerColumn, new CellActivity());
@@ -169,7 +169,7 @@ namespace UnitTestsProject
             }
         }
 
-        // TODO: Implement HtmModuleTopologyTests class that tests Equals() method.
+        // DONE: Implement HtmModuleTopologyTests class that tests Equals() method.
         [TestMethod]
         [TestCategory("serialization")]
         [DataRow(new int[] {1, 2, 4}, true)]
@@ -192,7 +192,7 @@ namespace UnitTestsProject
             }
         }
 
-        // TODO: Implement ProximalDentriteTests class that tests Equals() method.
+        // DONE: Implement ProximalDentriteTests class that tests Equals() method.
         //Currently fail because the created proDent's Synapses is an empty list (after added Pool). The Deserialize object is correct.
         [TestMethod]
         [TestCategory("serialization")]
