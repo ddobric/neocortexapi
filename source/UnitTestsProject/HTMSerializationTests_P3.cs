@@ -398,7 +398,7 @@ namespace UnitTestsProject
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_COMPUTECYCLE)}_compute.txt"))
             {
                 ComputeCycle computeCycleD = HtmSerializer2.Deserialize<ComputeCycle>(sr);
-                Assert.IsTrue(computeCycle.Equals(computeCycleD)); //TODO: Implement ComputeCycleTest.cs
+                Assert.IsTrue(computeCycle.Equals(computeCycleD)); //DONE: Implement ComputeCycleTest.cs
             }
         }
 
