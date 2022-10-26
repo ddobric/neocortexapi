@@ -30,6 +30,9 @@ namespace GridCell.js
         {
             var agent = new RealTimeNavigation(50);
 
+            HeatMap hm = new HeatMap();
+
+            var index = 0;
             while(true)
             {
                 agent.Move();
@@ -39,11 +42,17 @@ namespace GridCell.js
 
                 var indexes = currentActiveCells.Select(cell => cell.Index).ToArray();
 
-                Console.WriteLine(Helpers.StringifyVector(indexes));
+                //Console.WriteLine(Helpers.StringifyVector(indexes));
 
-                //Console.WriteLine(StringifySdr(grid.networkActivity));
+                Console.WriteLine(StringifySdr(grid.networkActivity));
                 //Console.WriteLine("-----------------------------------");
 
+                
+
+
+                hm.Generate("heatmap_" + index, grid.GetHeatMapValues());
+
+                index++;
                 //await Task.Delay(400);
             }
         }
@@ -66,6 +75,15 @@ namespace GridCell.js
                 //Console.WriteLine(StringifySdr(grid.networkActivity));
                 //Console.WriteLine("-----------------------------------");
             }
+        }
+
+        private void moveTo(double[] deltaMove)
+        {
+            var currentActiveCells = grid.Compute(deltaMove);
+
+            var indexes = currentActiveCells.Select(cell => cell.Index).ToArray();
+
+            Console.WriteLine(Helpers.StringifyVector(indexes));
         }
 
         public static string StringifySdr(List<double[]> sdrs)

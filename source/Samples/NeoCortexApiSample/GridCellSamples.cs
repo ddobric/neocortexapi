@@ -26,7 +26,7 @@ namespace NeoCortexApiSample
 
         public void Run()
         {
-            int walk = 200;
+            int walk = 1000;
             int arenaSize = 100;
 
             var spatial = new SpatialNavigation(arenaSize);
@@ -36,9 +36,7 @@ namespace NeoCortexApiSample
             var grid = new GCell(gridConfig);
 
             var simulation = new GSimulation(grid, spatial.txx, spatial.tyy);
-
-            //var simulation = new GSimulation(grid);
-            simulation.Run();
+            simulation.RunContinuous();
         }
     }
 }
