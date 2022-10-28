@@ -28,7 +28,7 @@ namespace GridCell.js
 
         public void RunContinuous()
         {
-            var agent = new RealTimeNavigation(50);
+            var agent = new RealTimeNavigation(grid.config.arenaSize);
 
             HeatMap hm = new HeatMap();
 
@@ -42,18 +42,12 @@ namespace GridCell.js
 
                 var indexes = currentActiveCells.Select(cell => cell.Index).ToArray();
 
-                //Console.WriteLine(Helpers.StringifyVector(indexes));
 
                 Console.WriteLine(StringifySdr(grid.networkActivity));
-                //Console.WriteLine("-----------------------------------");
-
-                
-
 
                 hm.Generate("heatmap_" + index, grid.GetHeatMapValues());
 
                 index++;
-                //await Task.Delay(400);
             }
         }
 
