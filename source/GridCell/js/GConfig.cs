@@ -15,10 +15,11 @@ namespace GridCell.js
         public double tt;
         public List<double[]> sdist;
         public double bias;
-
+        public int arenaSize;
 
         public GConfig(int arenaSize)
         {
+            this.arenaSize = arenaSize;
             rowNum = 10;
             colNum = 10;
             tao = 0.8 / 2;
