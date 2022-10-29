@@ -9,17 +9,22 @@
 		<None Remove="NumSharp" />
 		<None Remove="ScottPlot" />
 		<None Remove="js\" />
+		<None Remove="Numpy" />
+		<None Remove="encoder\" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="NumSharp" Version="0.30.0" />
 		<PackageReference Include="ScottPlot" Version="4.1.57" />
+		<PackageReference Include="Numpy" Version="3.10.1.30" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\NeoCortexUtils\NeoCortexUtils.csproj" />
 		<ProjectReference Include="..\NeoCortexEntities\NeoCortexEntities.csproj" />
 		<ProjectReference Include="..\NeoCortexApi\NeoCortexApi.csproj" />
+		<ProjectReference Include="..\HexagonalLib\HexagonalLib.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="js\" />
+	  <Folder Include="encoder\" />
 	</ItemGroup>
 </Project>
