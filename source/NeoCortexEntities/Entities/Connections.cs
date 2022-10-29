@@ -865,14 +865,14 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Traces permanences of all columns.
         /// </summary>
-        public void TraceColumnPermanences()
+        public void TraceColumnPermanences(string fileName)
         {
+            using var sw = new StreamWriter(fileName);
             foreach (var col in GetColumns())
             {
-                col.Trace();
+                sw.WriteLine(col.Trace());
             }
         }
-
 
         /// <summary>
         /// Converts a <see cref="Collection{T}"/> of <see cref="Cell"/>s to a list of cell indexes.

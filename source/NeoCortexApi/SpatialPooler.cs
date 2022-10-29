@@ -147,6 +147,11 @@ namespace NeoCortexApi
             ArrayUtils.FillArray(conn.BoostFactors, 1);
         }
 
+        public void TraceColumnPermenances(string fileName)
+        {
+            this.connections.TraceColumnPermanences(fileName);
+        }
+            
 
         /// <summary>
         /// Implements single threaded initialization of SP.

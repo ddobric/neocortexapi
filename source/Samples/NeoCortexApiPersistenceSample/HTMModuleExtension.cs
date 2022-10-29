@@ -70,7 +70,7 @@ namespace NeoCortexApiPersistenceSample
 
                     similarity = MathHelpers.CalcArraySimilarity(activeColumns, prevActiveCols[input]);
 
-                    Debug.WriteLine($"[cycle={cycle.ToString("D4")}, i={input}, cols=:{actCols.Length} s={similarity}] SDR: {Helpers.StringifyVector(actCols)}");
+                    Debug.WriteLine($"[cycle={cycle:D4}, i={input}, cols=:{actCols.Length} s={similarity}] SDR: {Helpers.StringifyVector(actCols)}");
 
                     prevActiveCols[input] = activeColumns;
                     prevSimilarity[input] = similarity;

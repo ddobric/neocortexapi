@@ -1,13 +1,16 @@
-﻿// See https://aka.ms/new-console-template for more information
-using NeoCortexApi;
+﻿using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Network;
 using NeoCortexApiPersistenceSample;
 
+bool overwrite = true;
+
+//
+// Prepare input values for the HTM system by randomly choose from the sequence of integer.
 List<double> values = new List<double>();
 int max = 20;
-for (int i = 0; i < (int)max; i++)
+for (int i = 0; i < max; i++)
 {
     values.Add((double)i);
 }
@@ -18,38 +21,61 @@ var random = new Random(seed);
 List<double> inputValues = new List<double>();
 for (int i = 0; i < max * 0.5; i++)
 {
-    inputValues.Add(values[i]);
+    var index = random.Next(0, max);
+    while (inputValues.Contains(values[index]))
+    {
+        index = random.Next(0, max);
+    }
+    inputValues.Add(values[index]);
 }
 
+//
+// Split the input values into two sequences and train separately.
 List<double> testValues = values.Except(inputValues).ToList();
 
+//
+// Train the first set.
 var model1Name = "Model1.txt";
+var model1Trace = "Model1trace.txt";
 CortexLayer<object, object> model1;
 if (HtmSerializer2.TryLoad<CortexLayer<object, object>>(model1Name, out model1) == false)
 {
     var experiment = new SpatialPatternLearning();
     model1 = experiment.Train(max, inputValues);
+    
+    // persist the state of the model.
     HtmSerializer2.Save(model1Name, model1);
 }
-var model2Name = "Model2.txt";
-CortexLayer<object, object> model2;
-if (HtmSerializer2.TryLoad<CortexLayer<object, object>>(model2Name, out model2) == false)
-{
+var sp1 = (SpatialPooler)model1.HtmModules["sp"];
 
+// Trace the persistence value of every column.
+sp1.TraceColumnPermenances(model1Trace);
+
+//
+// Recreate the model from the persisted state and train it with the second set.
+var model2Name = "Model2.txt";
+var model2Trace = "Model2trace.txt";
+CortexLayer<object, object> model2;
+if (HtmSerializer2.TryLoad<CortexLayer<object, object>>(model2Name, out model2) == false || overwrite)
+{
     model2 = HtmSerializer2.Load<CortexLayer<object, object>>(model1Name);
     model2.Train(testValues, 1000, "sp");
 
     HtmSerializer2.Save(model2Name, model2); 
 }
+var sp2 = (SpatialPooler)model2.HtmModules["sp"];
 
-foreach (var input in testValues)
-{
-    var encoder = (ScalarEncoder)model1.HtmModules["encoder"];
+// Trace the persistence value of every column.
+sp2.TraceColumnPermenances(model2Trace);
 
-    var sdr = encoder.Encode(input);
+//foreach (var input in testValues)
+//{
+//    var encoder = (ScalarEncoder)model1.HtmModules["encoder"];
 
-    var inputHash = HomeostaticPlasticityController.GetHash(sdr);
-    var res1 = model1.Compute(input, false);
-    var res2 = model2.Compute(input, false);
+//    var sdr = encoder.Encode(input);
+
+//    var inputHash = HomeostaticPlasticityController.GetHash(sdr);
+//    var res1 = model1.Compute(input, false);
+//    var res2 = model2.Compute(input, false);
     
-}
+//}
