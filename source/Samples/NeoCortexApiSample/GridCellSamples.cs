@@ -36,13 +36,17 @@ namespace NeoCortexApiSample
             //var simulation = new GSimulation(grid);
             //simulation.RunContinuous();
 
-            var gc = new GridCellEncoder(100);
+            var size = 100;
+            var sdr = new GridCellSDR(size);
+            var gc = new GridCellEncoder(size);
 
             var coordinates = new double[,] {
                 {1, 1},
                 {5, 6},
                 {10, 10},
-                {50, 50}
+                {50, 50},
+                {1000, 50},
+                {5000, 99990},
             };
 
             for (int i = 0; i < coordinates.GetLength(0); i++)
@@ -50,6 +54,18 @@ namespace NeoCortexApiSample
                 var activatedCells = gc.Encode(coordinates[i,0], coordinates[i,1]);
 
                 Console.WriteLine(Helpers.StringifyVector(activatedCells.ToArray()));
+
+                sdr.SetSparse(activatedCells.ToArray());
+
+                Console.WriteLine(Helpers.StringifyVector(sdr.GetDense()));
+                //Console.WriteLine(Helpers.StringifyVector(sdr.GetSparse()));
+
+                var indexes = sdr.CalculateActiveCells().Select(cell => cell.Index).ToArray();
+
+                Console.WriteLine(Helpers.StringifyVector(indexes));
+                Console.WriteLine("---------------------------------------");
+
+                //sdr.saveSDRImage($"x_{coordinates[i, 0]}_y_{coordinates[i, 1]}");
             }
 
         }
