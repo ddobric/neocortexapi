@@ -38,17 +38,20 @@ namespace NeoCortexApiSample
 
             var size = 100;
             var sdr = new GridCellSDR(size);
-            var gc = new GridCellEncoder(size, sparsity: 0.15);
+            var gc = new GridCellEncoder(size, sparsity: 0.25);
 
             var coordinates = new double[,] {
-                {1, 1},
-                {5, 6},
+                {100, 100},
+                {100, 101},
                 {10, 10},
                 {50, 50},
                 {1000, 50},
-                {5000, 99990},
+                {5000, 9999},
+                {100, 100},
             };
 
+
+            Dictionary<string, int[]> encodedValues = new ();
             for (int i = 0; i < coordinates.GetLength(0); i++)
             {
                 var activatedCells = gc.Encode(coordinates[i,0], coordinates[i,1]);
@@ -66,8 +69,11 @@ namespace NeoCortexApiSample
                 Console.WriteLine("---------------------------------------");
 
                 //sdr.saveSDRImage($"x_{coordinates[i, 0]}_y_{coordinates[i, 1]}");
+
+                encodedValues.Add($"x_{coordinates[i, 0]}_y_{coordinates[i, 1]}_({i})", (int[]) sdr.GetDense().Clone());
             }
 
+            Console.WriteLine(Helpers.TraceSimilarities(encodedValues));
         }
     }
 }
