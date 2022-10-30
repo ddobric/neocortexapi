@@ -134,7 +134,7 @@ namespace GridCell.encoder
                 var z = (int) (Math.Round(sparsity * (stop - start)));
                 
 
-                var indexes = distances
+                var indexes = distances[start..stop]
                 .Select((x, i) => new KeyValuePair<double, int>(x, i))
                 .OrderBy(x => x.Key)
                 .Take(z)
