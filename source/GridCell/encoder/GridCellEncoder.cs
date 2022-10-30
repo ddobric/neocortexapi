@@ -144,6 +144,7 @@ namespace GridCell.encoder
                 activatedCells.AddRange(indexes);
             }
 
+            activatedCells.Sort();
             return activatedCells;
         }
     }
