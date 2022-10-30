@@ -15,7 +15,6 @@
 	<ItemGroup>
 		<PackageReference Include="NumSharp" Version="0.30.0" />
 		<PackageReference Include="ScottPlot" Version="4.1.57" />
-		<PackageReference Include="Numpy" Version="3.10.1.30" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\NeoCortexUtils\NeoCortexUtils.csproj" />
