@@ -23,11 +23,13 @@ namespace GridCell.encoder
 
         // Argument sparsity is fraction of bits which this encoder activates in
         // the output SDR.
-        private double sparsity = 0.15;
+        private double sparsity;
 
-        public GridCellEncoder(int size)
+        public GridCellEncoder(int size, double sparsity = 0.15)
         {
             this.size = size;
+            this.sparsity = sparsity;
+
             // should be passed as input
             for (var i = 0; i < 5; i++)
             {
