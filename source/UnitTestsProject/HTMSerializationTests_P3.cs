@@ -255,7 +255,8 @@ namespace UnitTestsProject
             }
         }
 
-        //TODO: See previous comments.
+        //DONE: More [DataRow].
+        //DONE: Implement TopologyTests class that tests Equals() method.
         [TestMethod]
         [TestCategory("serialization")]
         [DataRow(new int[] { 1, 2, 4 }, true)]
