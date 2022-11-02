@@ -12,7 +12,9 @@ using NeoCortexEntities.NeuroVisualizer;
 
 namespace UnitTestsProject
 {
-    // All test shouyld have a prefix 'Serializationtest_TESTNAME'
+    //DONE: All test should have a prefix 'Serializationtest_TESTNAME'
+    //DONE:[DataRow] Added more different params to be sure that the serialization works well.
+    //DONE: Implement HtmConfigTests, HtmModuleTopologyTests, ProximalDentriteTests, TopologyTests, ComputeCycleTests that make sure the .Equals() Method works well.
     [TestClass]
     public class HTMSerializationTests_P3
     {
@@ -115,8 +117,7 @@ namespace UnitTestsProject
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_HTMCONFIG)}_config.txt"))
             {
                 HtmConfig configD = HtmSerializer2.Deserialize<HtmConfig>(sr);
-                Assert.IsTrue(config.Equals(configD));
-                //DONE: Implement HtmConfigTests, that make sure the HtmConfig.Equals() Method works well. Implement many CompareMethods that make sure that ALL HtmConfig parameters are used in th eequal method. 
+                Assert.IsTrue(config.Equals(configD));                 
             }
         }      
 
@@ -126,7 +127,6 @@ namespace UnitTestsProject
         [DataRow(11, 12, 22, 10, 20, 20, 1.0, 100)]
         [DataRow(12, 14, 16, 1, 4, 8, 4.0, 1000)]
         [DataRow(100, 200, 400, 10, 20, 20, 20.0, 1000)]
-        //DONE: [DataRow] We need many more different params to be sure that the serialization works well. You use currentlly single set of params = cell, 1, 2, 2, 2.0, 100
         public void Serializationtest_DISTALDENDRITE(int parentColumnIndx, int colSeq, int numCellsPerColumn,int flatIdx, long lastUsedIteration, int ordinal, double synapsePermConnected, int numInputs)
         {
             Cell cell = new Cell(parentColumnIndx, colSeq, numCellsPerColumn, new CellActivity());
@@ -169,7 +169,7 @@ namespace UnitTestsProject
             }
         }
 
-        // DONE: Implement HtmModuleTopologyTests class that tests Equals() method.
+        
         [TestMethod]
         [TestCategory("serialization")]
         [DataRow(new int[] {1, 2, 4}, true)]
@@ -192,8 +192,9 @@ namespace UnitTestsProject
             }
         }
 
-        // DONE: Implement ProximalDentriteTests class that tests Equals() method.
+        
         //Currently fail because the created proDent's Synapses is an empty list (after added Pool). The Deserialize object is correct.
+        //Equal() method tested.
         [TestMethod]
         [TestCategory("serialization")]
         public void Serializationtest_PROXIMALDENTRITE()
@@ -255,8 +256,7 @@ namespace UnitTestsProject
             }
         }
 
-        //DONE: More [DataRow].
-        //DONE: Implement TopologyTests class that tests Equals() method.
+        
         [TestMethod]
         [TestCategory("serialization")]
         [DataRow(new int[] { 1, 2, 4 }, true)]
@@ -317,8 +317,8 @@ namespace UnitTestsProject
             SparseObjectMatrix<Column> matrix = new SparseObjectMatrix<Column>(dimensions, useColumnMajorOrdering, dict: null);
 
             // TODO: This test must initialize a full set of columns.
-            /*
-            for (int i = 0; i < numColumns; i++)
+
+            /*for (int i = 0; i < numColumns; i++)
             {
                 Column column = colZero == null ?
                     new Column(cellsPerColumn, i, this.connections.HtmConfig.SynPermConnected, this.connections.HtmConfig.NumInputs) : matrix.GetObject(i);
@@ -332,6 +332,7 @@ namespace UnitTestsProject
                     matrix.set(i, column);
 
             }*/
+
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_SPARSEOBJECTMATRIX)}_hpc.txt"))
             {
@@ -373,7 +374,7 @@ namespace UnitTestsProject
             }
         }
 
-        //Test failed. Possible cause: equal method of ComputeCycle object. ActiveCells.equal checks for reference equality, so it'll return false everytime. (even if both list are empty)
+        //Test passed. Equal method of ComputeCycle object fixed.
         [TestMethod]
         [TestCategory("serialization")]
         public void Serializationtest_COMPUTECYCLE()
@@ -399,7 +400,7 @@ namespace UnitTestsProject
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_COMPUTECYCLE)}_compute.txt"))
             {
                 ComputeCycle computeCycleD = HtmSerializer2.Deserialize<ComputeCycle>(sr);
-                Assert.IsTrue(computeCycle.Equals(computeCycleD)); //DONE: Implement ComputeCycleTest.cs
+                Assert.IsTrue(computeCycle.Equals(computeCycleD)); 
             }
         }
 
