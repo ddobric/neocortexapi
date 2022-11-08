@@ -311,12 +311,7 @@ namespace UnitTestsProject
         [TestCategory("serialization")]
         public void Serializationtest_SPARSEOBJECTMATRIX()
         {
-            int[] dimensions = { 10, 20, 30 };
-            bool useColumnMajorOrdering = false;
-
-            SparseObjectMatrix<Column> matrix = new SparseObjectMatrix<Column>(dimensions, useColumnMajorOrdering, dict: null);
-
-            // TODO: This test must initialize a full set of columns.
+            // This test must initialize a full set of columns.
 
             /*for (int i = 0; i < numColumns; i++)
             {
@@ -333,6 +328,27 @@ namespace UnitTestsProject
 
             }*/
 
+            //Setup SparseObjectMatrix
+            int[] dimensions = { 20, 10 };
+            bool useColumnMajorOrdering = false;
+
+            SparseObjectMatrix<Column> matrix = new SparseObjectMatrix<Column>(dimensions, useColumnMajorOrdering, dict: null);
+
+            //Setup connection
+            int[] inputDims = { 20, 10 };
+            int[] columnDims = { 10, 100 };
+            HtmConfig config = new HtmConfig(inputDims, columnDims);
+            Connections connections = new Connections(config);
+
+            //Setup columns
+            int numColumns = 20;
+            int cellsPerColumn = 10;
+
+            for (int i =0; i< numColumns; i++)
+            {
+                Column column = new Column(cellsPerColumn, i, connections.HtmConfig.SynPermConnected, connections.HtmConfig.NumInputs);
+                matrix.set(i, column);
+            }
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_SPARSEOBJECTMATRIX)}_hpc.txt"))
             {
@@ -377,17 +393,20 @@ namespace UnitTestsProject
         //Test passed. Equal method of ComputeCycle object fixed.
         [TestMethod]
         [TestCategory("serialization")]
-        public void Serializationtest_COMPUTECYCLE()
+        [DataRow(new int[] { 100, 100 }, new int[] { 10, 10 }, 11, 12, 22, 10, 20, 20, 1.0, 100)]
+        [DataRow(new int[] { 2, 14, 128 }, new int[] { 8, 8 }, 2, 4, 6, 100, 256, 256, 4.0, 1000)]
+        [DataRow(new int[] { 10 }, new int[] { 12 }, 1, 1, 1, 2, 2, 2, 4.0, 40)]
+        [DataRow(new int[] { 12, 14, 16 }, new int[] { 10, 100 }, 12, 14, 16, 18, 20, 20,8.9, 10)]
+        public void Serializationtest_COMPUTECYCLE(int[] inputDims, int[] columnDims, int parentColumnIndx, int colSeq, int numCellsPerColumn, int flatIdx, long lastUsedIteration, int ordinal, double synapsePermConnected, int numInputs)
         {
-            int[] inputDims = { 100, 100 };
-            int[] columnDims = { 10, 10 };
+            
             HtmConfig config = new HtmConfig(inputDims, columnDims);
 
             Connections connections = new Connections(config);
 
-            Cell cell = new Cell(12, 14, 16, new CellActivity());
+            Cell cell = new Cell(parentColumnIndx, colSeq, numCellsPerColumn, new CellActivity());
 
-            var distDend = new DistalDendrite(cell, 1, 2, 2, 1.0, 100);
+            var distDend = new DistalDendrite(cell, flatIdx, lastUsedIteration, ordinal, synapsePermConnected, numInputs);
 
             connections.ActiveSegments.Add(distDend);
 
