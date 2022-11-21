@@ -42,11 +42,11 @@ namespace NeoCortexApi
             }
         }
 
-        public Cell[] AllCells
+        public List<Cell> AllCells
         {
             get
             {
-                return this.Columns.SelectMany(c => c.Cells).ToArray();             
+                return this.Columns.SelectMany(c => c.Cells).ToList();             
             }
         }
 
