@@ -151,7 +151,7 @@ namespace NeoCortexApi
         {
             this.connections.TraceColumnPermanences(fileName);
         }
-            
+
 
         /// <summary>
         /// Implements single threaded initialization of SP.
@@ -317,6 +317,7 @@ namespace NeoCortexApi
 
         public void SetOnStableStatusChanged(Action<bool, int, double, int> onStable)
         {
+            //if (this.m_HomeoPlastAct.OnStabilityStatusChanged == null)
             this.m_HomeoPlastAct.OnStabilityStatusChanged = onStable;
         }
 

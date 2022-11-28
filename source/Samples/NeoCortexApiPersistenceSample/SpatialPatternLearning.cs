@@ -14,10 +14,8 @@ namespace NeoCortexApiPersistenceSample
 {
     public class SpatialPatternLearning
     {
-        public CortexLayer<object, object> Train(double max, List<double> inputValues)
+        public CortexLayer<object, object> Initialize(double max, List<double> inputValues)
         {
-            Console.WriteLine($"Hello NeocortexApi! Experiment {nameof(SpatialPatternLearning)}");
-
             // Used as a boosting parameters
             // that ensure homeostatic plasticity effect.
             double minOctOverlapCycles = 1.0;
@@ -69,7 +67,7 @@ namespace NeoCortexApiPersistenceSample
             // Creates the htm memory.
             var mem = new Connections(cfg);
 
-            bool isInStableState = false;
+            //bool isInStableState = false;
 
             //
             // HPC extends the default Spatial Pooler algorithm.
@@ -79,23 +77,24 @@ namespace NeoCortexApiPersistenceSample
             // Once the SDR generated for every input gets stable, the HPC will fire event that notifies your code
             // that SP is stable now.
             HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, inputValues.Count * 40,
-                (isStable, numPatterns, actColAvg, seenInputs) =>
-                {
-                    // Event should only be fired when entering the stable state.
-                    // Ideal SP should never enter unstable state after stable state.
-                    if (isStable == false)
-                    {
-                        Debug.WriteLine($"INSTABLE STATE");
-                        // This should usually not happen.
-                        isInStableState = false;
-                    }
-                    else
-                    {
-                        Debug.WriteLine($"STABLE STATE");
-                        // Here you can perform any action if required.
-                        isInStableState = true;
-                    }
-                });
+                //(isStable, numPatterns, actColAvg, seenInputs) =>
+                //{
+                //    // Event should only be fired when entering the stable state.
+                //    // Ideal SP should never enter unstable state after stable state.
+                //    if (isStable == false)
+                //    {
+                //        Debug.WriteLine($"INSTABLE STATE");
+                //        // This should usually not happen.
+                //        isInStableState = false;
+                //    }
+                //    else
+                //    {
+                //        Debug.WriteLine($"STABLE STATE");
+                //        // Here you can perform any action if required.
+                //        isInStableState = true;
+                //    }
+                //});
+            null);
 
             // It creates the instance of Spatial Pooler Multithreaded version.
             SpatialPooler sp = new SpatialPooler(hpa);
@@ -118,58 +117,67 @@ namespace NeoCortexApiPersistenceSample
             // encoder.
             cortexLayer.HtmModules.Add("sp", sp);
 
-            double[] inputs = inputValues.ToArray();
-
-            // Will hold the SDR of every inputs.
-            Dictionary<double, int[]> prevActiveCols = new Dictionary<double, int[]>();
-
-            // Will hold the similarity of SDKk and SDRk-1 fro every input.
-            Dictionary<double, double> prevSimilarity = new Dictionary<double, double>();
-
-            //
-            // Initiaize start similarity to zero.
-            foreach (var input in inputs)
-            {
-                prevSimilarity.Add(input, 0.0);
-                prevActiveCols.Add(input, new int[0]);
-            }
-
-            // Learning process will take 1000 iterations (cycles)
-            int maxSPLearningCycles = 1000;
-
-            for (int cycle = 0; cycle < maxSPLearningCycles; cycle++)
-            {
-                Debug.WriteLine($"Cycle  ** {cycle} ** Stability: {isInStableState}");
-
-                //
-                // This trains the layer on input pattern.
-                foreach (var input in inputs)
-                {
-                    double similarity;
-
-                    // Learn the input pattern.
-                    // Output lyrOut is the output of the last module in the layer.
-                    // 
-                    var lyrOut = cortexLayer.Compute((object)input, true) as int[];
-
-                    // This is a general way to get the SpatialPooler result from the layer.
-                    var activeColumns = cortexLayer.GetResult("sp") as int[];
-
-                    var actCols = activeColumns.OrderBy(c => c).ToArray();
-
-                    similarity = MathHelpers.CalcArraySimilarity(activeColumns, prevActiveCols[input]);
-
-                    Debug.WriteLine($"[cycle={cycle.ToString("D4")}, i={input}, cols=:{actCols.Length} s={similarity}] SDR: {Helpers.StringifyVector(actCols)}");
-
-                    prevActiveCols[input] = activeColumns;
-                    prevSimilarity[input] = similarity;
-                }
-
-                if (isInStableState)
-                    break;
-            }
-
             return cortexLayer;
         }
+        
+        //public CortexLayer<object, object> Train(double max, List<double> inputValues)
+        //{
+            
+
+        //    cortexLayer.Train(inputValues, 1000, "sp");
+
+        //    //double[] inputs = inputValues.ToArray();
+
+        //    //// Will hold the SDR of every inputs.
+        //    //Dictionary<double, int[]> prevActiveCols = new Dictionary<double, int[]>();
+
+        //    //// Will hold the similarity of SDKk and SDRk-1 fro every input.
+        //    //Dictionary<double, double> prevSimilarity = new Dictionary<double, double>();
+
+        //    ////
+        //    //// Initiaize start similarity to zero.
+        //    //foreach (var input in inputs)
+        //    //{
+        //    //    prevSimilarity.Add(input, 0.0);
+        //    //    prevActiveCols.Add(input, new int[0]);
+        //    //}
+
+        //    //// Learning process will take 1000 iterations (cycles)
+        //    //int maxSPLearningCycles = 1000;
+
+        //    //for (int cycle = 0; cycle < maxSPLearningCycles; cycle++)
+        //    //{
+        //    //    Debug.WriteLine($"Cycle  ** {cycle} ** Stability: {isInStableState}");
+
+        //    //    //
+        //    //    // This trains the layer on input pattern.
+        //    //    foreach (var input in inputs)
+        //    //    {
+        //    //        double similarity;
+
+        //    //        // Learn the input pattern.
+        //    //        // Output lyrOut is the output of the last module in the layer.
+        //    //        // 
+        //    //        var lyrOut = cortexLayer.Compute((object)input, true) as int[];
+
+        //    //        // This is a general way to get the SpatialPooler result from the layer.
+        //    //        var activeColumns = cortexLayer.GetResult("sp") as int[];
+
+        //    //        var actCols = activeColumns.OrderBy(c => c).ToArray();
+
+        //    //        similarity = MathHelpers.CalcArraySimilarity(activeColumns, prevActiveCols[input]);
+
+        //    //        Debug.WriteLine($"[cycle={cycle.ToString("D4")}, i={input}, cols=:{actCols.Length} s={similarity}] SDR: {Helpers.StringifyVector(actCols)}");
+
+        //    //        prevActiveCols[input] = activeColumns;
+        //    //        prevSimilarity[input] = similarity;
+        //    //    }
+
+        //    //    if (isInStableState)
+        //    //        break;
+        //    //}
+
+        //    return cortexLayer;
+        //}
     }
 }

@@ -4,6 +4,8 @@ using NeoCortexApi.Entities;
 using NeoCortexApi.Network;
 using NeoCortexApiPersistenceSample;
 
+Console.WriteLine($"Hello NeocortexApi! Experiment {nameof(SpatialPatternLearning)}");
+
 bool overwrite = true;
 
 //
@@ -38,17 +40,23 @@ List<double> testValues = values.Except(inputValues).ToList();
 var model1Name = "Model1.txt";
 var model1Trace = "Model1trace.txt";
 CortexLayer<object, object> model1;
-if (HtmSerializer2.TryLoad<CortexLayer<object, object>>(model1Name, out model1) == false)
+if (HtmSerializer2.TryLoad<CortexLayer<object, object>>(model1Name, out model1) == false || overwrite)
 {
+    Console.WriteLine($"Training the first set of values: {string.Join(',', inputValues)}");
     var experiment = new SpatialPatternLearning();
-    model1 = experiment.Train(max, inputValues);
-    
+    model1 = experiment.Initialize(max, inputValues);
+    model1.Train(inputValues, 1000, "sp");
+    Console.WriteLine("Saving the model...");
     // persist the state of the model.
     HtmSerializer2.Save(model1Name, model1);
 }
+else
+{
+    Console.WriteLine("The model already exists. Loading the model...");
+}
 var sp1 = (SpatialPooler)model1.HtmModules["sp"];
 
-// Trace the persistence value of every column.
+// Trace the permanence value of every column.
 sp1.TraceColumnPermenances(model1Trace);
 
 //
@@ -58,14 +66,20 @@ var model2Trace = "Model2trace.txt";
 CortexLayer<object, object> model2;
 if (HtmSerializer2.TryLoad<CortexLayer<object, object>>(model2Name, out model2) == false || overwrite)
 {
+    Console.WriteLine($"Training the second set of values: {string.Join(',', testValues)}");
     model2 = HtmSerializer2.Load<CortexLayer<object, object>>(model1Name);
     model2.Train(testValues, 1000, "sp");
+    Console.WriteLine("Saving the model...");
 
-    HtmSerializer2.Save(model2Name, model2); 
+    HtmSerializer2.Save(model2Name, model2);
+}
+else
+{
+    Console.WriteLine("The model already exists. Loading the model...");
 }
 var sp2 = (SpatialPooler)model2.HtmModules["sp"];
 
-// Trace the persistence value of every column.
+// Trace the permanence value of every column.
 sp2.TraceColumnPermenances(model2Trace);
 
 //foreach (var input in testValues)
@@ -77,5 +91,5 @@ sp2.TraceColumnPermenances(model2Trace);
 //    var inputHash = HomeostaticPlasticityController.GetHash(sdr);
 //    var res1 = model1.Compute(input, false);
 //    var res2 = model2.Compute(input, false);
-    
+
 //}
