@@ -533,7 +533,7 @@ namespace NeoCortexApi
         /// calculations are averaged over all dimensions of inputs and columns. This value is meaningless if global inhibition is enabled.
         /// </summary>
         /// <param name="c">the <see cref="Connections"/> (spatial pooler memory)</param>
-        /// <param name="avgCollected"></param>
+        /// <param name="avgCollected">Number of connected synapses.</param>
         public void UpdateInhibitionRadius(Connections c, List<double> avgCollected = null)
         {
             if (c.HtmConfig.GlobalInhibition)
@@ -567,7 +567,7 @@ namespace NeoCortexApi
         /// </summary>
         /// <param name="c"></param>
         /// <returns>Average ratio numOfCols/numOfInputs across all dimensions.</returns>
-        public virtual double CalcAvgColumnsPerInput(Connections c)
+        internal virtual double CalcAvgColumnsPerInput(Connections c)
         {
             //int[] colDim = Array.Copy(c.getColumnDimensions(), c.getColumnDimensions().Length);
             int[] colDim = new int[c.HtmConfig.ColumnDimensions.Length];
