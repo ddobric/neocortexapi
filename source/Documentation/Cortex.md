@@ -4,7 +4,7 @@ The human cerebral cortex is divided into multiple layers, according to neurosci
 
 The Cortex Layers is a pipeline that combines all the components of HTM which are encoder, spatial pooler and temporal memory. All the components in the pipeline are chained together in the added sequence and run one after another. This provide an intuitive way to run the HTM algorithm. Also, it helps to separate the preparation region and execution region.
 
-The following code snippet illustrates the usage of `CortexNetwork`, `CortexRegion` and `CortexLayer`.
+The following code snippet illustrates the usage of `CortexNetwork` and `CortexLayer`.
 
 ```cs
 CortexNetwork net = new CortexNetwork("my cortex");
