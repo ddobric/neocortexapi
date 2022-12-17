@@ -9,25 +9,6 @@ The code published here is experimental code implemented during my research at d
 ## Getting started
 To get started, please see <a href="https://github.com/ddobric/neocortexapi/blob/master/source/Documentation/gettingStarted.md">this document.</a>
 
-|Parameter Name  |  Meaning|
-|--|--|
-|POTENTIAL_RADIUS  | Defines the radius in number of input cells visible to column cells. It is important to choose this value, so every input neuron is connected to at least a single column. For example, if the input has 50000 bits and the column topology is 500, then you must choose some value larger than 50000/500 > 100.  |
-|POTENTIAL_PCT  | Defines the percent of of inputs withing potential radius, which can/should be connected to the column. |
-|GLOBAL_INHIBITION  | If TRUE global inhibition algorithm will be used. If FALSE local inhibition algorithm will be used. |
-|GLOBAL_INHIBITION  | If TRUE global inhibition algorithm will be used. If FALSE local inhibition algorithm will be used. |
-|INHIBITION_RADIUS  | Defines neighbourhood radius of a column. |
-|LOCAL_AREA_DENSITY  | Density of active columns inside of local inhibition radius. If set on value < 0, explicit number of active columns (NUM_ACTIVE_COLUMNS_PER_INH_AREA) will be used.|
-|NUM_ACTIVE_COLUMNS_PER_INH_AREA | An alternate way to control the density of the active columns. If this value is specified then LOCAL_AREA_DENSITY must be less than 0, and vice versa.
-|STIMULUS_THRESHOLD| One mini-column is active if its overlap exceeds _overlap threshold_ **θo** of connected synapses.  |
-|SYN_PERM_INACTIVE_DEC| Decrement step of synapse permanence value withing every inactive cycle. It defines how fats the NeoCortex will forget learned patterns.|
-|SYN_PERM_ACTIVE_INC| Increment step of connected synapse during learning process  |
-|SYN_PERM_CONNECTED| Defines _Connected Permanence Threshold_ **θp**, which is a float value, which must be exceeded to declare synapse as connected.  |
-|DUTY_CYCLE_PERIOD| Number of iterations. The period used to calculate duty cycles. Higher values make it take longer to respond to changes in boost. Shorter values make it more unstable and likely to oscillate.  |
-|MAX_BOOST| Maximum boost factor of a column.  |
-
-
-Please note, for full list of parameters and their meaning are not a part of this document.
-
 Following images show how **SpatialPooler** creates (encodes) Sparse Distributed Representation of MNIST images.
 
 SDR code of digit '3' by using of local inhibition and various receptive field (radius)
