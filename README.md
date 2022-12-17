@@ -9,17 +9,6 @@ The code published here is experimental code implemented during my research at d
 ## Getting started
 To get started, please see <a href="https://github.com/ddobric/neocortexapi/blob/master/source/Documentation/gettingStarted.md">this document.</a>
 
-Following images show how **SpatialPooler** creates (encodes) Sparse Distributed Representation of MNIST images.
-
-SDR code of digit '3' by using of local inhibition and various receptive field (radius)
-![image.png](/.attachments/image-494af819-a46e-43ef-bf88-d39a2d8e8ca6.png)
-
-Same example by using of global inhibition mechanism:
-![image.png](/.attachments/image-6bb495b4-84a7-45dc-9199-37fc629b8e55.png)
-
-Following example shows encoding of different representations of digit '1' by using same set of parameters shown in code snippet above.
-![image.png](/.attachments/image-da7ddc5c-ff0a-493a-a0d7-54b765b0aaa1.png)
-
 # References
 
 HTM School:
