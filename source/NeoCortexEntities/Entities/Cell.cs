@@ -187,7 +187,7 @@ namespace NeoCortexApi.Entities
         /// <param name="writer"></param>
         public void SerializeT(StreamWriter writer)
         {
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
             ser.SerializeBegin(nameof(Cell), writer);
 
@@ -210,12 +210,12 @@ namespace NeoCortexApi.Entities
         {
             Cell cell = new Cell();
 
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
             while (sr.Peek() >= 0)
             {
                 string data = sr.ReadLine();
-                if (data == String.Empty || data == ser.ReadBegin(nameof(Cell)) || data.ToCharArray()[0] == HtmSerializer2.ElementsDelimiter || (data.ToCharArray()[0] == HtmSerializer2.ElementsDelimiter && data.ToCharArray()[1] == HtmSerializer2.ParameterDelimiter))
+                if (data == String.Empty || data == ser.ReadBegin(nameof(Cell)) || data.ToCharArray()[0] == HtmSerializer.ElementsDelimiter || (data.ToCharArray()[0] == HtmSerializer.ElementsDelimiter && data.ToCharArray()[1] == HtmSerializer.ParameterDelimiter))
                 {
                     continue;
                 }
@@ -233,7 +233,7 @@ namespace NeoCortexApi.Entities
                 }
                 else
                 {
-                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                    string[] str = data.Split(HtmSerializer.ParameterDelimiter);
                     for (int i = 0; i < str.Length; i++)
                     {
                         switch (i)
@@ -270,7 +270,7 @@ namespace NeoCortexApi.Entities
                 nameof(Cell.ReceptorSynapses),
                 nameof(m_Hashcode)
             };
-            HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);
+            HtmSerializer.SerializeObject(obj, name, sw, ignoreMembers);
             //var cell = obj as Cell;
             //if (cell != null)
             //{
@@ -282,7 +282,7 @@ namespace NeoCortexApi.Entities
         {
             if (typeof(T) != typeof(Cell))
                 return null;
-            var cell = HtmSerializer2.DeserializeObject<Cell>(sr, name);
+            var cell = HtmSerializer.DeserializeObject<Cell>(sr, name);
 
             //foreach (var distalDentrite in cell.DistalDendrites)
             //{

@@ -42,13 +42,13 @@ internal class Program
         var model1Name = "Model1.txt";
         var model1Trace = "Model1trace.txt";
         CortexLayer<object, object> model1;
-        if (HtmSerializer2.TryLoad(model1Name, out model1) == false)
+        if (HtmSerializer.TryLoad(model1Name, out model1) == false)
         {
             var experiment = new SpatialPatternLearning();
             model1 = experiment.Train(max, inputValues);
 
             // persist the state of the model.
-            HtmSerializer2.Save(model1Name, model1);
+            HtmSerializer.Save(model1Name, model1);
         }
         var sp1 = (SpatialPooler)model1.HtmModules["sp"];
 
@@ -60,12 +60,12 @@ internal class Program
         var model2Name = "Model2.txt";
         var model2Trace = "Model2trace.txt";
         CortexLayer<object, object> model2;
-        if (HtmSerializer2.TryLoad(model2Name, out model2) == false || overwrite)
+        if (HtmSerializer.TryLoad(model2Name, out model2) == false || overwrite)
         {
-            model2 = HtmSerializer2.Load<CortexLayer<object, object>>(model1Name);
+            model2 = HtmSerializer.Load<CortexLayer<object, object>>(model1Name);
             model2.Train(testValues, 1000, "sp");
 
-            HtmSerializer2.Save(model2Name, model2);
+            HtmSerializer.Save(model2Name, model2);
         }
         var sp2 = (SpatialPooler)model2.HtmModules["sp"];
 

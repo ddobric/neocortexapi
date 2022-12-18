@@ -262,7 +262,7 @@ namespace NeoCortexApi.Entities
         #region Serialization
         public void Serialize(StreamWriter writer)
         {
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
             ser.SerializeBegin(nameof(Pool), writer);
 
@@ -279,12 +279,12 @@ namespace NeoCortexApi.Entities
         {
             Pool pool = new Pool();
 
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
             while (sr.Peek() >= 0)
             {
                 string data = sr.ReadLine();
-                if (data == String.Empty || data == ser.ReadBegin(nameof(Pool)) || (data.ToCharArray()[0] == HtmSerializer2.ElementsDelimiter && data.ToCharArray()[1] == HtmSerializer2.ParameterDelimiter))
+                if (data == String.Empty || data == ser.ReadBegin(nameof(Pool)) || (data.ToCharArray()[0] == HtmSerializer.ElementsDelimiter && data.ToCharArray()[1] == HtmSerializer.ParameterDelimiter))
                 {
                     continue;
                 }
@@ -293,7 +293,7 @@ namespace NeoCortexApi.Entities
                     break;
                 }
 
-                else if (data.Contains(HtmSerializer2.KeyValueDelimiter))
+                else if (data.Contains(HtmSerializer.KeyValueDelimiter))
                 {
                     int val = ser.ReadKeyISValue(data);
                     data = sr.ReadLine();
@@ -302,7 +302,7 @@ namespace NeoCortexApi.Entities
                 }
                 else
                 {
-                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                    string[] str = data.Split(HtmSerializer.ParameterDelimiter);
                     for (int i = 0; i < str.Length; i++)
                     {
                         switch (i)
@@ -342,20 +342,20 @@ namespace NeoCortexApi.Entities
             if (obj is Pool pool)
             {
 
-                HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);
+                HtmSerializer.SerializeObject(obj, name, sw, ignoreMembers);
 
                 var synapses = pool.m_SynapsesBySourceIndex.Values.ToList();
-                HtmSerializer2.Serialize(synapses, "synapses", sw, null, ignoreMembers: new List<string> { nameof(Synapse.SegmentIndex) });
+                HtmSerializer.Serialize(synapses, "synapses", sw, null, ignoreMembers: new List<string> { nameof(Synapse.SegmentIndex) });
             }
         }
 
         public static object Deserialize<T>(StreamReader sr, string name)
         {
-            return HtmSerializer2.DeserializeObject<Pool>(sr, name, new List<string> { "synapses" }, (pool, propName) =>
+            return HtmSerializer.DeserializeObject<Pool>(sr, name, new List<string> { "synapses" }, (pool, propName) =>
             {
                 if (propName == "synapses")
                 {
-                    var synapses = HtmSerializer2.Deserialize<List<Synapse>>(sr, propName);
+                    var synapses = HtmSerializer.Deserialize<List<Synapse>>(sr, propName);
                     pool.m_SynapsesBySourceIndex = synapses.ToDictionary(s => s.InputIndex);
                     pool.size = synapses.Count;
                 }

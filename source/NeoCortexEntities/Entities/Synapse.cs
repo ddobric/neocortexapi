@@ -256,7 +256,7 @@ namespace NeoCortexApi.Entities
         /// <param name="writer"></param>
         internal void SerializeT(StreamWriter writer)
         {
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
             ser.SerializeBegin(nameof(Synapse), writer);
 
@@ -286,7 +286,7 @@ namespace NeoCortexApi.Entities
         /// <param name="writer"></param>
         public void Serialize(StreamWriter writer)
         {
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
             ser.SerializeBegin(nameof(Synapse), writer);
 
@@ -313,7 +313,7 @@ namespace NeoCortexApi.Entities
         {
             Synapse synapse = new Synapse();
 
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
             while (sr.Peek() >= 0)
             {
@@ -336,7 +336,7 @@ namespace NeoCortexApi.Entities
                 }
                 else
                 {
-                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                    string[] str = data.Split(HtmSerializer.ParameterDelimiter);
                     for (int i = 0; i < str.Length; i++)
                     {
                         switch (i)
@@ -384,13 +384,13 @@ namespace NeoCortexApi.Entities
                 {
                     //nameof(Synapse.SourceCell),
                 };
-                HtmSerializer2.SerializeObject(synapse, name, sw, ignoreMembers);
+                HtmSerializer.SerializeObject(synapse, name, sw, ignoreMembers);
             }
         }
 
         public static object Deserialize<T>(StreamReader sr, string name)
         {
-            return HtmSerializer2.DeserializeObject<T>(sr, name);
+            return HtmSerializer.DeserializeObject<T>(sr, name);
         }
         #endregion
     }

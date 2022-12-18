@@ -892,12 +892,12 @@ namespace NeoCortexApi
             {
                 //nameof(TemporalMemory.connections)
             };
-            HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);  
+            HtmSerializer.SerializeObject(obj, name, sw, ignoreMembers);  
         }
 
         public static object Deserialize<T>(StreamReader sr, string name)
         {
-            return HtmSerializer2.DeserializeObject<T>(sr, name);
+            return HtmSerializer.DeserializeObject<T>(sr, name);
         }
     }
 }
