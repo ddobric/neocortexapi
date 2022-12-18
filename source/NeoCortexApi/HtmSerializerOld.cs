@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using NeoCortexApi.Entities;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,7 +14,8 @@ namespace NeoCortexApi
     /**
    * Contains methods for Serialization and Deserialization and is applicable to Spatial Pooler and Temoral Memory Class
    */
-    public class HtmSerializer
+    [Obsolete("Use the new HtmSerializer")]
+    public class HtmSerializerOld
     {
         /**
        *  Method for Serialization of an object. Can serialize properties and fields o the particular Object to 

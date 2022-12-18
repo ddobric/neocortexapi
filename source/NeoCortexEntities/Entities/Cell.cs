@@ -24,9 +24,15 @@ namespace NeoCortexApi.Entities
         /// </summary>
         //public int CellId { get; private set; }
 
+        /// <summary>
+        /// The mini-column, which owns this cell.
+        /// </summary>
+        public int ParentArea { get; set; }
+
 
         /// <summary>
-        /// The column, which owns this cell.
+        /// Optional. The mini-column, which owns this cell.
+        /// A cell can be owned by area explicitely if mini-columns are not used.
         /// </summary>
         public int ParentColumnIndex { get; set; }
 
@@ -76,6 +82,15 @@ namespace NeoCortexApi.Entities
 
             //this.CellId = cellId;
         }
+
+        //public Cell2(int parentAreaIndx, int colSeq, int numCellsPerColumn, CellActivity cellActivity)
+        //{
+        //    this.ParentColumnIndex = parentColumnIndx;
+
+        //    this.Index = parentColumnIndx * numCellsPerColumn + colSeq;
+
+        //    //this.CellId = cellId;
+        //}
 
         /// <summary>
         /// Gets the hashcode of the cell.

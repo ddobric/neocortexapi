@@ -160,7 +160,7 @@ namespace UnitTestsProject
             Debug.WriteLine($"Learning Cycles: {maxSPLearningCycles}");
             Debug.WriteLine($"MAX_BOOST={p[KEY.MAX_BOOST]}, DUTY ={p[KEY.DUTY_CYCLE_PERIOD]}");
 
-            HtmSerializer ser = new HtmSerializer();
+            HtmSerializerOld ser = new HtmSerializerOld();
 
             for (int cycle = 0; cycle < maxSPLearningCycles; cycle++)
             {
@@ -261,7 +261,7 @@ namespace UnitTestsProject
 
             var x = new { DistalSegments = distalSegments };
 
-            HtmSerializer ser = new HtmSerializer();
+            HtmSerializerOld ser = new HtmSerializerOld();
             ser.Serialize(x, "distalsegment.json");
         }
 

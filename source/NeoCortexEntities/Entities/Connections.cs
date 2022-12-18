@@ -460,9 +460,9 @@ namespace NeoCortexApi.Entities
                 {
                     //getSynapses(segment).stream().forEach(s->removeSynapseFromPresynapticMap(s));
                     //DD foreach (var s in GetSynapses(segment))
-                    foreach (var s in segment.Synapses)
+                    foreach (var syn in segment.Synapses)
                     {
-                        RemoveSynapseFromPresynapticMap(s);
+                        RemoveSynapseFromPresynapticMap(syn);
                     }
 
                     m_NumSynapses -= len;
