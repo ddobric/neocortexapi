@@ -48,10 +48,10 @@ namespace NeoCortexApi.Experiments
                 GlobalInhibition = false,
                 NumActiveColumnsPerInhArea = 0.02 * numColumns,
                 PotentialRadius = (int)(0.15 * inputBits),
-                LocalAreaDensity = 0.9,
+                LocalAreaDensity = 0.02,
                 ActivationThreshold = 10,
                 MaxSynapsesPerSegment = (int)(0.01 * numColumns),
-                Random = new ThreadSafeRandom(42)
+                Random = new ThreadSafeRandom(42),
             };
 
             double max = 100;
