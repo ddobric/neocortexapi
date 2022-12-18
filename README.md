@@ -33,28 +33,34 @@ Continious Online Sequence Learning with HTM:
 https://www.mitpressjournals.org/doi/full/10.1162/NECO_a_00893#.WMBBGBLytE6
 
 # Papers and conference proceedings
+
 #### International Journal of Artificial Intelligence and Applications
 Scaling the HTM Spatial Pooler
-https://aircconline.com/abstract/ijaia/v11n4/11420ijaia07.html
+
+Dobric, Pech, Ghita, Wennekers 2020. 2020 International Journal of Artificial Intelligence and Applications. Scaling the HTM Spatial Pooler. doi:10.5121/ijaia .2020.11407
 
 #### AIS 2020 - 6th International Conference on Artificial Intelligence and Soft Computing (AIS 2020), Helsinki
 The Parallel HTM Spatial Pooler with Actor Model
-https://aircconline.com/csit/csit1006.pdf
+
+Dobric, Pech, Ghita, Wennekers 2020. 2020 AIS 2020 - 6th International Conference on Artificial Intelligence and Soft Computing, Helsinki. The Parallel HTM Spatial Pooler with Actor Model. https://aircconline.com/csit/csit1006.pdf, doi:10.5121/csit.2020.100606
 
 #### Symposium on Pattern Recognition and Applications - Rome, Italy
 On the Relationship Between Input Sparsity and Noise Robustness in Hierarchical Temporal Memory Spatial Pooler 
-https://doi.org/10.1145/3393822.3432317
+
+Dobric, Pech, Ghita, Wennekers 2020. 2020 Symposium on Pattern Recognition and Applications. On the Relationship Between Input Sparsity and Noise Robustness in Hierarchical Temporal Memory Spatial Pooler. https://dl.acm.org/doi/10.1145/3393822.3432317. doi:10.1145/3393822.3432317
 
 #### International Conference on Pattern Recognition Applications and Methods - ICPRAM 2021
-
 Improved HTM Spatial Pooler with Homeostatic Plasticity Control (Awarded with: *Best Industrial Paper*)
-https://www.insticc.org/node/TechnicalProgram/icpram/2021/presentationDetails/103142
+
+Dobric, Pech, Ghita, Wennekers 2021. ICPRAM Vienna Improved HTM Spatial Pooler with Homeostatic Plasticity control. doi:10.5220/0010314200980106
 
 #### Springer Nature - Computer Sciences
 On the Importance of the Newborn Stage When Learning Patterns with the Spatial Pooler
-https://rdcu.be/cIcoc
+
+Dobric, Pech, Ghita, Wennekers 2022. Springer Nature Computer Science Journal
+On the Importance of the Newborn Stage When Learning Patterns with the Spatial Pooler. https://rdcu.be/cIcoc. doi:10.1007/s42979-022-01066-4
 
 # Contribute
-If your want to contribute on this project please contact us. 
+If your want to contribute on this project please contact us by opening an issue. 
 
 
