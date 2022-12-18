@@ -133,91 +133,7 @@ namespace NeoCortexApi.Entities
         #region NewImplementation
         #region Serialization
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="name"></param>
-        /// <param name="sw"></param>
-        /// <param name="propertyType"></param>
-        /// <param name="ignoreMembers"></param>
-        public static void Serialize(object obj, string name, StreamWriter sw, Type propertyType = null, List<string> ignoreMembers = null)
-        {
-            if (obj == null)
-            {
-                return;
-            }
-            if (name == nameof(DistalDendrite.ParentCell))
-            {
-
-            }
-            var type = obj.GetType();
-
-            bool isSerializeWithType = propertyType != null && (propertyType.IsInterface || propertyType.IsAbstract || propertyType != type);
-
-            SerializeBegin(name, sw, isSerializeWithType ? type : null);
-
-            var objHashCode = obj.GetHashCode();
-
-
-            if (type.GetInterfaces().FirstOrDefault(i => i.FullName.Equals(typeof(ISerializable).FullName)) != null)
-            {
-                if (SerializedHashCodes.TryGetValue(obj, out int serializedId))
-                {
-                    Serialize(serializedId, cReplaceId, sw);
-                }
-
-                //if (HtmSerializer2.SerializedHashCodes.ContainsKey(objHashCode))
-                //{
-                //    if (type == typeof(Synapse))
-                //    {
-                //        var synapse = SerializedHashCodes[objHashCode] as Synapse;
-                //        if (synapse != null && synapse.SegmentIndex == 31)
-                //        {
-
-                //        }
-                //    }
-                //}
-                else
-                {
-                    Serialize(Id, cIdString, sw);
-                    HtmSerializer.SerializedHashCodes.Add(obj, Id++);
-                    (obj as ISerializable).Serialize(obj, name, sw);
-                }
-            }
-            else if (type.IsPrimitive || type == typeof(string))
-            {
-                SerializeValue(name, obj, sw);
-            }
-            else if (IsDictionary(type))
-            {
-                SerializeDictionary(name, obj, sw, ignoreMembers);
-            }
-            else if (IsList(type))
-            {
-                SerializeIEnumerable(name, obj, sw, ignoreMembers);
-            }
-            else if (type.IsValueType && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
-            {
-                SerializeKeyValuePair(name, obj, sw);
-            }
-            else if (type.IsClass)
-            {
-                if (SerializedHashCodes.TryGetValue(obj, out int serializedId))
-                {
-                    Serialize(serializedId, cReplaceId, sw);
-                }
-                else
-                {
-                    Serialize(Id, cIdString, sw);
-                    HtmSerializer.SerializedHashCodes.Add(obj, Id++);
-                    SerializeObject(obj, name, sw, ignoreMembers);
-                }
-            }
-
-            SerializeEnd(name, sw, isSerializeWithType ? type : null);
-        }
-
+        
         private static void SerializeKeyValuePair(string name, object obj, StreamWriter sw)
         {
             var type = obj.GetType();
@@ -390,18 +306,16 @@ namespace NeoCortexApi.Entities
         {
 
             var content = val.ToString();
+
             if (val.GetType() == typeof(string))
             {
                 content = content.Replace("\n", "\\n");
             }
+
             sw.Write(content);
         }
 
-        //private static void SerializeBegin<T>(string propName, StreamWriter sw)
-        //{
-        //    sw.WriteLine(begin)
-        //}
-
+ 
         private static void SerializeIEnumerable(string propertyName, object obj, StreamWriter sw, List<string> ignoreMembers = null)
         {
             var type = obj.GetType();
@@ -560,6 +474,82 @@ namespace NeoCortexApi.Entities
             }
             return null;
         }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="name"></param>
+        /// <param name="sw"></param>
+        /// <param name="propertyType"></param>
+        /// <param name="ignoreMembers"></param>
+        public static void Serialize(object obj, string name, StreamWriter sw, Type propertyType = null, List<string> ignoreMembers = null)
+        {
+            if (obj == null)
+            {
+                return;
+            }
+            if (name == nameof(DistalDendrite.ParentCell))
+            {
+
+            }
+            var type = obj.GetType();
+
+            bool isSerializeWithType = propertyType != null && (propertyType.IsInterface || propertyType.IsAbstract || propertyType != type);
+
+            SerializeBegin(name, sw, isSerializeWithType ? type : null);
+
+            var objHashCode = obj.GetHashCode();
+
+
+            if (type.GetInterfaces().FirstOrDefault(i => i.FullName.Equals(typeof(ISerializable).FullName)) != null)
+            {
+                if (SerializedHashCodes.TryGetValue(obj, out int serializedId))
+                {
+                    Serialize(serializedId, cReplaceId, sw);
+                }
+                else
+                {
+                    Serialize(Id, cIdString, sw);
+                    HtmSerializer.SerializedHashCodes.Add(obj, Id++);
+                    (obj as ISerializable).Serialize(obj, name, sw);
+                }
+            }
+            else if (type.IsPrimitive || type == typeof(string))
+            {
+                SerializeValue(name, obj, sw);
+            }
+            else if (IsDictionary(type))
+            {
+                SerializeDictionary(name, obj, sw, ignoreMembers);
+            }
+            else if (IsList(type))
+            {
+                SerializeIEnumerable(name, obj, sw, ignoreMembers);
+            }
+            else if (type.IsValueType && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
+            {
+                SerializeKeyValuePair(name, obj, sw);
+            }
+            else if (type.IsClass)
+            {
+                if (SerializedHashCodes.TryGetValue(obj, out int serializedId))
+                {
+                    Serialize(serializedId, cReplaceId, sw);
+                }
+                else
+                {
+                    Serialize(Id, cIdString, sw);
+                    HtmSerializer.SerializedHashCodes.Add(obj, Id++);
+                    SerializeObject(obj, name, sw, ignoreMembers);
+                }
+            }
+
+            SerializeEnd(name, sw, isSerializeWithType ? type : null);
+        }
+
+        
 
         public static void SerializeObject(object obj, string name, StreamWriter sw, List<string> ignoreMembers = null)
         {
@@ -1496,6 +1486,7 @@ namespace NeoCortexApi.Entities
             return rnd;
 
         }
+
         public void SerializeValue(Array array, StreamWriter sw)
         {
             sw.Write(ValueDelimiter);
@@ -1512,6 +1503,7 @@ namespace NeoCortexApi.Entities
             sw.Write(ValueDelimiter);
             sw.Write(ParameterDelimiter);
         }
+
         /// <summary>
         /// Serialize the array of type Double.
         /// </summary>

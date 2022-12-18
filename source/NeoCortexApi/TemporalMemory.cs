@@ -744,13 +744,13 @@ namespace NeoCortexApi
             // Destroying a synapse modifies the set that we're iterating through.
             List<Synapse> synapsesToDestroy = new List<Synapse>();
 
-            foreach (Synapse presynapticCellSynapse in segment.Synapses)
+            foreach (Synapse synapse in segment.Synapses)
             {
-                double permanence = presynapticCellSynapse.Permanence;
+                double permanence = synapse.Permanence;
 
                 //
                 // If synapse's presynaptic cell was active in the previous cycle then streng it.
-                if (prevActiveCells.Contains(presynapticCellSynapse.GetPresynapticCell()))
+                if (prevActiveCells.Contains(synapse.GetPresynapticCell()))
                 {
                     permanence += permanenceIncrement;
                 }
@@ -770,11 +770,11 @@ namespace NeoCortexApi
 
                 if (permanence < EPSILON)
                 {
-                    synapsesToDestroy.Add(presynapticCellSynapse);
+                    synapsesToDestroy.Add(synapse);
                 }
                 else
                 {
-                    presynapticCellSynapse.Permanence = permanence;
+                    synapse.Permanence = permanence;
                 }
             }
 
