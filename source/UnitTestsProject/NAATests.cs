@@ -43,7 +43,7 @@ namespace UnitTestsProject
         {
             var cfg = GetHtmConfig(100, 1024);
 
-            CorticalArea caX = new CorticalArea("X", cfg);
+            MinicolumnArea caX = new MinicolumnArea("X", cfg);
 
             Assert.IsTrue(1024 == caX.Columns.Count);
 
