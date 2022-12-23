@@ -13,22 +13,15 @@ namespace NeoCortexApi.Entities
     /// </summary>
     public class Cell : IEquatable<Cell>, IComparable<Cell>, ISerializable
     {
-
         /// <summary>
         /// Index of the cell.
         /// </summary>
         public int Index { get; set; }
-
+             
         /// <summary>
-        /// The identifier of the cell.
-        /// </summary>
-        //public int CellId { get; private set; }
-
-        /// <summary>
-        /// The mini-column, which owns this cell.
+        /// The mini-column or cortical column, which owns this cell.
         /// </summary>
         public int ParentArea { get; set; }
-
 
         /// <summary>
         /// Optional. The mini-column, which owns this cell.
@@ -83,15 +76,7 @@ namespace NeoCortexApi.Entities
             //this.CellId = cellId;
         }
 
-        //public Cell2(int parentAreaIndx, int colSeq, int numCellsPerColumn, CellActivity cellActivity)
-        //{
-        //    this.ParentColumnIndex = parentColumnIndx;
-
-        //    this.Index = parentColumnIndx * numCellsPerColumn + colSeq;
-
-        //    //this.CellId = cellId;
-        //}
-
+      
         /// <summary>
         /// Gets the hashcode of the cell.
         /// </summary>
@@ -102,16 +87,8 @@ namespace NeoCortexApi.Entities
             int result = 1;
             result = prime * result + ParentColumnIndex;
             result = prime * result + Index;
-            return result;
-            //if (m_Hashcode == 0)
-            //{
-            //    int prime = 31;
-            //    int result = 1;
-            //    result = prime * result + ParentColumnIndex;
-            //    result = prime * result + Index;
-            //    return result;
-            //}
-            //return m_Hashcode;
+
+            return result;        
         }
 
         /// <summary>
@@ -202,8 +179,6 @@ namespace NeoCortexApi.Entities
                 ser.SerializeValue(this.ReceptorSynapses, writer);
 
             ser.SerializeEnd(nameof(Cell), writer);
-
-
         }
 
         public static Cell Deserialize(StreamReader sr)

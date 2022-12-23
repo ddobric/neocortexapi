@@ -6,13 +6,13 @@ using System.Text;
 
 namespace NeoCortexApi
 {
-    public class CorticalArea
+    public class MinicolumnArea
     {
         public List<Column> Columns { get; set; } = new List<Column>();
 
         public string Name { get; private set; }
 
-        public CorticalArea(string name, HtmConfig config)
+        public MinicolumnArea(string name, HtmConfig config)
         {
             this.Name = name;
             Init(config);
