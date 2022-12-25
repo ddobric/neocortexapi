@@ -11,26 +11,18 @@ namespace NeoCortexApi.Entities
     /// </summary>
     public class ApicalDendrite : Segment, IComparable<ApicalDendrite>, IEquatable<ApicalDendrite>
     {
-        private long m_LastUsedIteration;
-
-
         private int m_Ordinal = -1;
-
-
-        /// <summary>
-        /// The cell that owns (parent) the segment.
-        /// </summary>        
-        public Cell ParentCell;
-
-        /// <summary>
-        /// the last iteration in which this segment was active.
-        /// </summary>
-        public long LastUsedIteration { get => m_LastUsedIteration; set => m_LastUsedIteration = value; }
 
         /// <summary>
         /// The seqence number of the segment. Specifies the order of the segment of the <see cref="Connections"/> instance.
         /// </summary>
         public int Ordinal { get => m_Ordinal; set => m_Ordinal = value; }
+
+        public ApicalDendrite(Cell parentCell, int flatIdx, long lastUsedIteration, int ordinal, double synapsePermConnected, int numInputs) : base(flatIdx, lastUsedIteration, synapsePermConnected, numInputs)
+        {
+            this.ParentCell = parentCell;
+            this.m_Ordinal = ordinal;
+        }
 
 
         /// <summary>
@@ -71,7 +63,7 @@ namespace NeoCortexApi.Entities
             // If we would use here ParenCell.Equals method, that method would cause a cicular invoke of this.Equals etc.
             //else if (ParentCell.CellId != other.ParentCell.CellId)
             //    return false;
-            if (m_LastUsedIteration != other.m_LastUsedIteration)
+            if (LastUsedIteration != other.LastUsedIteration)
                 return false;
             if (m_Ordinal != other.m_Ordinal)
                 return false;

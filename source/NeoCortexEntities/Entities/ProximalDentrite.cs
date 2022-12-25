@@ -26,7 +26,7 @@ namespace NeoCortexApi.Entities
         /// <param name="colIndx">The global index of the segment.</param>
         /// <param name="synapsePermConnected">Permanence threshold value to declare synapse as connected.</param>
         /// <param name="numInputs">Number of input neorn cells.</param>
-        public ProximalDendrite(int colIndx, double synapsePermConnected, int numInputs) : base(colIndx, synapsePermConnected, numInputs)
+        public ProximalDendrite(int colIndx, double synapsePermConnected, int numInputs) : base(colIndx, -1, synapsePermConnected, numInputs)
         {
 
         }

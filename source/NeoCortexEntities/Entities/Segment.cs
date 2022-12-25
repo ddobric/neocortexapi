@@ -17,6 +17,19 @@ namespace NeoCortexApi.Entities
     /// </summary>
     public abstract class Segment : IEquatable<Segment>
     {
+        private long m_LastUsedIteration;
+
+        /// <summary>
+        /// the last iteration in which this segment was active.
+        /// </summary>
+        public long LastUsedIteration { get => m_LastUsedIteration; set => m_LastUsedIteration = value; }
+
+
+        /// <summary>
+        /// The cell that owns (parent) the segment.
+        /// </summary>        
+        public Cell ParentCell;
+
         /// <summary>
         /// The index of the segment.
         /// </summary>
@@ -53,13 +66,13 @@ namespace NeoCortexApi.Entities
         /// <param name="synapsePermConnected">Permanence threshold value to declare synapse as connected.</param>
         /// <param name="index">Index of segment.</param>
         /// <param name="numInputs">Number of input neorn cells.</param>
-        public Segment(int index, double synapsePermConnected, int numInputs)
+        public Segment(int index, long lastUsedIteration, double synapsePermConnected, int numInputs)
         {
             this.NumInputs = numInputs;
             this.SynapsePermConnected = synapsePermConnected;
             this.Synapses = new List<Synapse>();
             this.SegmentIndex = index;
-            //this.boxedIndex = new Integer(index);
+            this.m_LastUsedIteration = lastUsedIteration;
         }
 
         /// <summary>
@@ -90,6 +103,32 @@ namespace NeoCortexApi.Entities
                 return false;
             else
                 return true;
+        }
+
+        /// <summary>
+        /// Used internally to find the synapse with the smallest permanence
+        /// on the given segment.
+        /// </summary>
+        /// <param name="seg">Segment object to search for synapses on</param>
+        /// <returns>Synapse object on the segment with the minimal permanence</returns>
+        public Synapse GetMinPermanenceSynapse()
+        {
+            List<Synapse> synapses = this.Synapses;
+
+            Synapse min = null;
+
+            double minPermanence = Double.MaxValue;
+
+            foreach (Synapse synapse in synapses)
+            {
+                if (!synapse.IsDestroyed && synapse.Permanence < minPermanence - 0.00001)
+                {
+                    min = synapse;
+                    minPermanence = synapse.Permanence;
+                }
+            }
+
+            return min;
         }
 
         /// <summary>

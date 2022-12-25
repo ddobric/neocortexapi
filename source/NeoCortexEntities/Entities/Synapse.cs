@@ -48,8 +48,6 @@ namespace NeoCortexApi.Entities
 
         public int SynapseIndex { get; set; }
 
-        //private Integer boxedIndex { get; set; }
-
         /// <summary>
         /// Index of pre-synaptic cell.
         /// </summary>
@@ -105,7 +103,7 @@ namespace NeoCortexApi.Entities
 
       
         /// <summary>
-        /// Called by <see cref="Connections.DestroySynapse(Synapse, DistalDendrite)"/> to assign a reused Synapse to another presynaptic Cell
+        /// Called by <see cref="Connections.DestroySynapse(Synapse, Segment)"/> to assign a reused Synapse to another presynaptic Cell
         /// </summary>
         /// <param name="cell">the new presynaptic cell</param>
         public void SetPresynapticCell(Cell cell)

@@ -50,7 +50,7 @@ namespace NeoCortexApi
             }
         }
 
-        public DistalDendrite[] AllDistalDendrites
+        public Segment[] AllDistalDendrites
         {
             get
             {

@@ -90,7 +90,7 @@ namespace NeoCortexApi.Entities
         }
 
         /// <summary>
-        /// Returns the <see cref="Cell"/> with the least number of <see cref="DistalDendrite"/>s.
+        /// Returns the <see cref="Cell"/> with the least number of <see cref="Segment"/>s.
         /// </summary>
         /// <param name="c">the connections state of the temporal memory</param>
         /// <param name="random"></param>

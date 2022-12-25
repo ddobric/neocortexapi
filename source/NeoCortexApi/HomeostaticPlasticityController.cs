@@ -20,8 +20,8 @@ namespace NeoCortexApi
     /// </summary>
     /// <remarks>
     /// The research related to this component can be found here:
-    /// https://www.researchgate.net/publication/358996456_On_the_Importance_of_the_Newborn_Stage_When_Learning_Patterns_with_the_Spatial_Pooler
-    /// Published 2022 in Springer Nature Computer Sciences.
+    /// https://rdcu.be/cIcoc published 2022 in Springer Nature Computer Sciences.
+    /// The first part of this research can be found here: https://pdfs.semanticscholar.org/be3e/97813b6cbcbdbba591e84b610fced628eb22.pdf
     /// </remarks>
     public class HomeostaticPlasticityController : ISerializable
     {

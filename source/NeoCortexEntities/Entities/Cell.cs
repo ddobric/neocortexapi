@@ -14,6 +14,11 @@ namespace NeoCortexApi.Entities
     public class Cell : IEquatable<Cell>, IComparable<Cell>, ISerializable
     {
         /// <summary>
+        /// If the cell has a meaning like a Grand-Mather cell, the meaning value is set.
+        /// </summary>
+        public string Label { get; set; }
+
+        /// <summary>
         /// Index of the cell.
         /// </summary>
         public int Index { get; set; }
@@ -21,7 +26,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// The mini-column or cortical column, which owns this cell.
         /// </summary>
-        public int ParentArea { get; set; }
+        public string ParentAreaName { get; set; }
 
         /// <summary>
         /// Optional. The mini-column, which owns this cell.
