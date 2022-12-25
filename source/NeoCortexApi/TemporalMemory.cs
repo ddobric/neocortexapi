@@ -234,7 +234,7 @@ namespace NeoCortexApi
 
                         List<Cell> cellsOwnersOfActSegs = ActivatePredictedColumn(conn, activeColumnData.ActiveSegments,
                             activeColumnData.MatchingSegments, prevActiveCells, prevWinnerCells,
-                                permanenceIncrement, permanenceDecrement, learn, cycle.ActiveSynapses);
+                                permanenceIncrement, permanenceDecrement, learn);
 
                         foreach (var item in cellsOwnersOfActSegs)
                         {
@@ -420,7 +420,7 @@ namespace NeoCortexApi
         /// <returns>Cells which own active column segments as calculated in the previous step.</returns>
         protected List<Cell> ActivatePredictedColumn(Connections conn, List<DistalDendrite> columnActiveSegments,
             List<DistalDendrite> matchingSegments, ICollection<Cell> prevActiveCells, ICollection<Cell> prevWinnerCells,
-                double permanenceIncrement, double permanenceDecrement, bool learn, IList<Synapse> activeSynapses)
+                double permanenceIncrement, double permanenceDecrement, bool learn)
         {
             // List of cells that owns active segments. These cells will be activated in this cycle.
             // In previous cycle they are depolarized.
