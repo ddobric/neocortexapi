@@ -48,8 +48,6 @@ namespace NeoCortexApi.Entities
 
         public int SynapseIndex { get; set; }
 
-        //private Integer boxedIndex { get; set; }
-
         /// <summary>
         /// Index of pre-synaptic cell.
         /// </summary>
@@ -105,7 +103,7 @@ namespace NeoCortexApi.Entities
 
       
         /// <summary>
-        /// Called by <see cref="Connections.DestroySynapse(Synapse, DistalDendrite)"/> to assign a reused Synapse to another presynaptic Cell
+        /// Called by <see cref="Connections.DestroySynapse(Synapse, Segment)"/> to assign a reused Synapse to another presynaptic Cell
         /// </summary>
         /// <param name="cell">the new presynaptic cell</param>
         public void SetPresynapticCell(Cell cell)
@@ -256,7 +254,7 @@ namespace NeoCortexApi.Entities
         /// <param name="writer"></param>
         internal void SerializeT(StreamWriter writer)
         {
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
             ser.SerializeBegin(nameof(Synapse), writer);
 
@@ -286,7 +284,7 @@ namespace NeoCortexApi.Entities
         /// <param name="writer"></param>
         public void Serialize(StreamWriter writer)
         {
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
             ser.SerializeBegin(nameof(Synapse), writer);
 
@@ -313,7 +311,7 @@ namespace NeoCortexApi.Entities
         {
             Synapse synapse = new Synapse();
 
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
             while (sr.Peek() >= 0)
             {
@@ -336,7 +334,7 @@ namespace NeoCortexApi.Entities
                 }
                 else
                 {
-                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                    string[] str = data.Split(HtmSerializer.ParameterDelimiter);
                     for (int i = 0; i < str.Length; i++)
                     {
                         switch (i)
@@ -384,13 +382,13 @@ namespace NeoCortexApi.Entities
                 {
                     //nameof(Synapse.SourceCell),
                 };
-                HtmSerializer2.SerializeObject(synapse, name, sw, ignoreMembers);
+                HtmSerializer.SerializeObject(synapse, name, sw, ignoreMembers);
             }
         }
 
         public static object Deserialize<T>(StreamReader sr, string name)
         {
-            return HtmSerializer2.DeserializeObject<T>(sr, name);
+            return HtmSerializer.DeserializeObject<T>(sr, name);
         }
         #endregion
     }

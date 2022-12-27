@@ -8,32 +8,32 @@ Console.WriteLine($"Hello NeocortexApi! Experiment {nameof(SpatialPatternLearnin
 
 bool overwrite = true;
 
-//
-// Prepare input values for the HTM system by randomly choose from the sequence of integer.
-List<double> values = new List<double>();
-int max = 20;
-for (int i = 0; i < max; i++)
-{
-    values.Add((double)i);
-}
+        //
+        // Prepare input values for the HTM system by randomly choose from the sequence of integer.
+        List<double> values = new List<double>();
+        int max = 20;
+        for (int i = 0; i < max; i++)
+        {
+            values.Add(i);
+        }
 
-int seed = 42;
-var random = new Random(seed);
+        int seed = 42;
+        var random = new Random(seed);
 
-List<double> inputValues = new List<double>();
-for (int i = 0; i < max * 0.5; i++)
-{
-    var index = random.Next(0, max);
-    while (inputValues.Contains(values[index]))
-    {
-        index = random.Next(0, max);
-    }
-    inputValues.Add(values[index]);
-}
+        List<double> inputValues = new List<double>();
+        for (int i = 0; i < max * 0.5; i++)
+        {
+            var index = random.Next(0, max);
+            while (inputValues.Contains(values[index]))
+            {
+                index = random.Next(0, max);
+            }
+            inputValues.Add(values[index]);
+        }
 
-//
-// Split the input values into two sequences and train separately.
-List<double> testValues = values.Except(inputValues).ToList();
+        //
+        // Split the input values into two sequences and train separately.
+        List<double> testValues = values.Except(inputValues).ToList();
 
 //
 // Train the first set.

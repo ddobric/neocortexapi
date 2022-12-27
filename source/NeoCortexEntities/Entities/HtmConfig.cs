@@ -606,7 +606,7 @@ namespace NeoCortexApi.Entities
         #region Serialization
         public void Serialize(StreamWriter writer)
         {
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
             ser.SerializeBegin(nameof(HtmConfig), writer);
 
@@ -701,7 +701,7 @@ namespace NeoCortexApi.Entities
         public static HtmConfig Deserialize(StreamReader sr)
         {
             HtmConfig htmConfig = new HtmConfig();
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
             while (sr.Peek() >= 0)
             {
@@ -726,10 +726,10 @@ namespace NeoCortexApi.Entities
                 }
                 else
                 {
-                    int count = data.Count(ch => ch == HtmSerializer2.ParameterDelimiter);
+                    int count = data.Count(ch => ch == HtmSerializer.ParameterDelimiter);
                     if (count == 20)
                     {
-                        string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                        string[] str = data.Split(HtmSerializer.ParameterDelimiter);
                         for (int i = 0; i < str.Length; i++)
                         {
                             switch (i)
@@ -840,7 +840,7 @@ namespace NeoCortexApi.Entities
                     }
                     else
                     {
-                        string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                        string[] str = data.Split(HtmSerializer.ParameterDelimiter);
                         for (int i = 0; i < str.Length; i++)
                         {
                             switch (i)
@@ -1005,12 +1005,12 @@ namespace NeoCortexApi.Entities
                 nameof(HtmConfig.synPermActiveInc),
                 nameof(HtmConfig.synPermConnected)
             };
-            HtmSerializer2.SerializeObject(obj, name, sw, excludeMembers);
+            HtmSerializer.SerializeObject(obj, name, sw, excludeMembers);
         }
 
         public static object Deserialize<T>(StreamReader sr, string name)
         {
-            var htmConfig = HtmSerializer2.DeserializeObject<HtmConfig>(sr, name);
+            var htmConfig = HtmSerializer.DeserializeObject<HtmConfig>(sr, name);
             return htmConfig;
         }
         #endregion

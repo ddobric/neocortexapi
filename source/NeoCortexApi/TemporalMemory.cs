@@ -234,7 +234,7 @@ namespace NeoCortexApi
 
                         List<Cell> cellsOwnersOfActSegs = ActivatePredictedColumn(conn, activeColumnData.ActiveSegments,
                             activeColumnData.MatchingSegments, prevActiveCells, prevWinnerCells,
-                                permanenceIncrement, permanenceDecrement, learn, cycle.ActiveSynapses);
+                                permanenceIncrement, permanenceDecrement, learn);
 
                         foreach (var item in cellsOwnersOfActSegs)
                         {
@@ -420,7 +420,7 @@ namespace NeoCortexApi
         /// <returns>Cells which own active column segments as calculated in the previous step.</returns>
         protected List<Cell> ActivatePredictedColumn(Connections conn, List<DistalDendrite> columnActiveSegments,
             List<DistalDendrite> matchingSegments, ICollection<Cell> prevActiveCells, ICollection<Cell> prevWinnerCells,
-                double permanenceIncrement, double permanenceDecrement, bool learn, IList<Synapse> activeSynapses)
+                double permanenceIncrement, double permanenceDecrement, bool learn)
         {
             // List of cells that owns active segments. These cells will be activated in this cycle.
             // In previous cycle they are depolarized.
@@ -744,13 +744,13 @@ namespace NeoCortexApi
             // Destroying a synapse modifies the set that we're iterating through.
             List<Synapse> synapsesToDestroy = new List<Synapse>();
 
-            foreach (Synapse presynapticCellSynapse in segment.Synapses)
+            foreach (Synapse synapse in segment.Synapses)
             {
-                double permanence = presynapticCellSynapse.Permanence;
+                double permanence = synapse.Permanence;
 
                 //
                 // If synapse's presynaptic cell was active in the previous cycle then streng it.
-                if (prevActiveCells.Contains(presynapticCellSynapse.GetPresynapticCell()))
+                if (prevActiveCells.Contains(synapse.GetPresynapticCell()))
                 {
                     permanence += permanenceIncrement;
                 }
@@ -770,11 +770,11 @@ namespace NeoCortexApi
 
                 if (permanence < EPSILON)
                 {
-                    synapsesToDestroy.Add(presynapticCellSynapse);
+                    synapsesToDestroy.Add(synapse);
                 }
                 else
                 {
-                    presynapticCellSynapse.Permanence = permanence;
+                    synapse.Permanence = permanence;
                 }
             }
 
@@ -892,12 +892,12 @@ namespace NeoCortexApi
             {
                 //nameof(TemporalMemory.connections)
             };
-            HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);  
+            HtmSerializer.SerializeObject(obj, name, sw, ignoreMembers);  
         }
 
         public static object Deserialize<T>(StreamReader sr, string name)
         {
-            return HtmSerializer2.DeserializeObject<T>(sr, name);
+            return HtmSerializer.DeserializeObject<T>(sr, name);
         }
     }
 }

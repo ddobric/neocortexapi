@@ -12,7 +12,7 @@ namespace NeoCortexApi
         public int[] ExternalPredictiveInputsWinners { get; set; }
 
         /// <summary>
-        /// Gets the list of active cells.
+        /// Gets the list of active cells inside the calculating area.
         /// </summary>
         public List<Cell> ActiveCells { get; set; }
 
@@ -25,12 +25,12 @@ namespace NeoCortexApi
         /// Segment is understood as active one if the number of connected synapses (with permanence value higher than specified connected permanence threshold) 
         /// of active cells on that segment, is higher than segment activation threshold.
         /// </summary>
-        public List<DistalDendrite> ActiveSegments = new List<DistalDendrite>();
+        public List<Segment> ActiveSegments = new List<Segment>();
 
         /// <summary>
         /// Segment is understood as matching one if number of synapses of active cells on that segment 
         /// is higher than specified segment minimum threshold value.
         /// </summary>
-        public List<DistalDendrite> MatchingSegments = new List<DistalDendrite>();
+        public List<Segment> MatchingSegments = new List<Segment>();
     }
 }

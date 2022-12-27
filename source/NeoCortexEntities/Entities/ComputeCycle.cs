@@ -170,7 +170,7 @@ namespace NeoCortexApi.Entities
                     Cell previousCell = null;
                     Cell currCell = null;
 
-                    foreach (DistalDendrite activeSegment in ActiveSegments)
+                    foreach (Segment activeSegment in ActiveSegments)
                     {
                         if ((currCell = activeSegment.ParentCell) != previousCell)
                         {

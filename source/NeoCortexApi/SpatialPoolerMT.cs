@@ -173,31 +173,31 @@ namespace NeoCortexApi
             return sortedOverlap.Values.ToArray();
         }
 
-        public override void AdaptSynapses(Connections c, int[] inputVector, int[] activeColumns)
+        public override void AdaptSynapses(Connections conn, int[] inputVector, int[] activeColumns)
         {
 
             // Get all indicies of input vector, which are set on '1'.
             var inputIndices = ArrayUtils.IndexWhere(inputVector, inpBit => inpBit > 0);
 
-            double[] permChanges = new double[c.HtmConfig.NumInputs];
+            double[] permChanges = new double[conn.HtmConfig.NumInputs];
 
             // First we initialize all permChanges to minimum decrement values,
             // which are used in a case of none-connections to input.
-            ArrayUtils.InitArray(permChanges, -1 * c.HtmConfig.SynPermInactiveDec);
+            ArrayUtils.InitArray(permChanges, -1 * conn.HtmConfig.SynPermInactiveDec);
 
             // Then we update all connected permChanges to increment values for connected values.
             // Permanences are set in conencted input bits to default incremental value.
-            ArrayUtils.SetIndexesTo(permChanges, inputIndices.ToArray(), c.HtmConfig.SynPermActiveInc);
+            ArrayUtils.SetIndexesTo(permChanges, inputIndices.ToArray(), conn.HtmConfig.SynPermActiveInc);
 
             Parallel.For(0, activeColumns.Length, (i) =>
             {
                 //Pool pool = c.getPotentialPools().get(activeColumns[i]);
-                Pool pool = c.GetColumn(activeColumns[i]).ProximalDendrite.RFPool;
-                double[] perm = pool.GetDensePermanences(c.HtmConfig.NumInputs);
+                Pool pool = conn.GetColumn(activeColumns[i]).ProximalDendrite.RFPool;
+                double[] perm = pool.GetDensePermanences(conn.HtmConfig.NumInputs);
                 int[] indexes = pool.GetSparsePotential();
                 ArrayUtils.RaiseValuesBy(permChanges, perm);
-                Column col = c.GetColumn(activeColumns[i]);
-                HtmCompute.UpdatePermanencesForColumn(c.HtmConfig, perm, col, indexes, true);
+                Column col = conn.GetColumn(activeColumns[i]);
+                HtmCompute.UpdatePermanencesForColumn(conn.HtmConfig, perm, col, indexes, true);
             });
         }
 

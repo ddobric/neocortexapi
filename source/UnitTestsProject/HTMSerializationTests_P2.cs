@@ -27,14 +27,14 @@ namespace UnitTestsProject
         public void TestInit()
         {
             fileName = $"{TestContext.TestName}.txt";
-            HtmSerializer2.Reset();
+            HtmSerializer.Reset();
         }
 
         [TestMethod]
-        [TestCategory("working")]
+        [TestCategory("prod")]
         public void SerializationCellArrayTest()
         {
-            HtmSerializer2 serializer = new HtmSerializer2();
+            HtmSerializer serializer = new HtmSerializer();
 
             Cell[] cells = new Cell[2];
             cells[0] = new Cell(12, 14, 16, new CellActivity());
@@ -47,12 +47,12 @@ namespace UnitTestsProject
 
             using (StreamWriter sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(cells, null, sw);
+                HtmSerializer.Serialize(cells, null, sw);
             }
 
             using (StreamReader sr = new StreamReader(fileName))
             {
-                var c = HtmSerializer2.Deserialize<Cell[]>(sr);
+                var c = HtmSerializer.Deserialize<Cell[]>(sr);
 
                 Assert.IsTrue(cells.Where(c => c != null).ElementsEqual(c));
             }
@@ -63,12 +63,12 @@ namespace UnitTestsProject
         {
             using (StreamWriter sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(new List<string> { "bla" }, null, sw);
+                HtmSerializer.Serialize(new List<string> { "bla" }, null, sw);
             }
 
         }
         [TestMethod]
-        [TestCategory("working")]
+        [TestCategory("prod")]
         public void SerializationDictionaryStringCellTest()
         {
             var dict = new Dictionary<string, Cell>();
@@ -88,11 +88,11 @@ namespace UnitTestsProject
 
             using (StreamWriter sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(dict, null, sw);
+                HtmSerializer.Serialize(dict, null, sw);
             }
             using (StreamReader sr = new StreamReader(fileName))
             {
-                var dict1 = HtmSerializer2.Deserialize<Dictionary<string, Cell>>(sr);
+                var dict1 = HtmSerializer.Deserialize<Dictionary<string, Cell>>(sr);
 
                 foreach (var key in dict.Keys)
                 {
@@ -104,7 +104,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("working")]
+        [TestCategory("prod")]
         public void SerializationDistalDendriteArrayTest()
         {
             var cell1 = new Cell(12, 14, 16, new CellActivity());
@@ -132,9 +132,9 @@ namespace UnitTestsProject
             //        Assert.IsTrue(dd[i].Equals(d[i]));
             //    }
             //}
-            HtmSerializer2.Save(fileName, dd);
+            HtmSerializer.Save(fileName, dd);
 
-            var d = HtmSerializer2.Load<DistalDendrite[]>(fileName);
+            var d = HtmSerializer.Load<DistalDendrite[]>(fileName);
             for (int i = 0; i < dd.Length; i++)
             {
                 Assert.IsTrue(dd[i].Equals(d[i]));
@@ -145,7 +145,7 @@ namespace UnitTestsProject
         [TestMethod]
         public void Test3_1()
         {
-            HtmSerializer2 serializer = new HtmSerializer2();
+            HtmSerializer serializer = new HtmSerializer();
 
             DistalDendrite[] dd = new DistalDendrite[2];
             dd[0] = new DistalDendrite(null, 1, 2, 2, 1.0, 100);
@@ -154,7 +154,7 @@ namespace UnitTestsProject
 
             using (StreamWriter sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize1(dd, null, sw, new Dictionary<Type, Action<StreamWriter, string, object>>
+                HtmSerializer.Serialize1(dd, null, sw, new Dictionary<Type, Action<StreamWriter, string, object>>
                 {
                     {
                         typeof(DistalDendrite), (sw, name, obj) => DistalDendrite.Serialize1(sw, obj, null)
@@ -164,7 +164,7 @@ namespace UnitTestsProject
 
             using (StreamReader sr = new StreamReader(fileName))
             {
-                var d = HtmSerializer2.Deserialize<DistalDendrite[]>(sr);
+                var d = HtmSerializer.Deserialize<DistalDendrite[]>(sr);
 
                 for (int i = 0; i < dd.Length; i++)
                 {
@@ -174,10 +174,10 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        //[TestCategory("working")]
+        //[TestCategory("prod")]
         public void SerializationAbitraryTypeTest()
         {
-            HtmSerializer2 serializer = new HtmSerializer2();
+            HtmSerializer serializer = new HtmSerializer();
 
             Dictionary<string, Bla> dict = new Dictionary<string, Bla>
             {
@@ -187,12 +187,12 @@ namespace UnitTestsProject
 
             using (StreamWriter sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(dict, null, sw);
+                HtmSerializer.Serialize(dict, null, sw);
             }
 
             using (StreamReader sr = new StreamReader(fileName))
             {
-                var d = HtmSerializer2.Deserialize<Dictionary<string, Bla>>(sr);
+                var d = HtmSerializer.Deserialize<Dictionary<string, Bla>>(sr);
             }
         }
 
@@ -219,14 +219,14 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("working")]
+        [TestCategory("prod")]
         public void SerializationIntegerArrayTest()
         {
             var array = new int[] { 45, 35 };
 
             using (var sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(array, null, sw);
+                HtmSerializer.Serialize(array, null, sw);
             }
             var reader = new StreamReader(fileName);
 
@@ -234,47 +234,47 @@ namespace UnitTestsProject
 
             reader = new StreamReader(fileName);
 
-            var res = HtmSerializer2.Deserialize<int[]>(reader);
+            var res = HtmSerializer.Deserialize<int[]>(reader);
 
             Assert.IsTrue(array.SequenceEqual(res));
         }
 
         [TestMethod]
-        [TestCategory("working")]
+        [TestCategory("prod")]
         public void SerializationIntegerListTest()
         {
             var array = new List<int> { 45, 34 };
 
             using (var sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(array, null, sw);
+                HtmSerializer.Serialize(array, null, sw);
             }
             var reader = new StreamReader(fileName);
 
-            var res = HtmSerializer2.Deserialize<List<int>>(reader);
+            var res = HtmSerializer.Deserialize<List<int>>(reader);
 
             Assert.IsTrue(array.SequenceEqual(res));
         }
 
         [TestMethod]
-        [TestCategory("working")]
+        [TestCategory("prod")]
         public void SerializationIntegerListToIntegerArrayTest()
         {
             var array = new List<int> { 45, 34 };
 
             using (var sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(array, null, sw);
+                HtmSerializer.Serialize(array, null, sw);
             }
             var reader = new StreamReader(fileName);
 
-            var res = HtmSerializer2.Deserialize<int[]>(reader);
+            var res = HtmSerializer.Deserialize<int[]>(reader);
 
             Assert.IsTrue(array.SequenceEqual(res));
         }
 
         [TestMethod]
-        [TestCategory("working")]
+        [TestCategory("prod")]
         public void SerializationHtmConfigTest()
         {
             int cellsPerColumnL4 = 20;
@@ -309,18 +309,18 @@ namespace UnitTestsProject
 
             using (var sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(htmConfig_L2, null, sw);
+                HtmSerializer.Serialize(htmConfig_L2, null, sw);
             }
             using (var sr = new StreamReader(fileName))
             {
-                var htmConfig = HtmSerializer2.Deserialize<HtmConfig>(sr);
+                var htmConfig = HtmSerializer.Deserialize<HtmConfig>(sr);
 
                 Assert.IsTrue(htmConfig_L2.Equals(htmConfig));
             }
         }
 
         [TestMethod]
-        [TestCategory("working")]
+        [TestCategory("prod")]
         public void SerializationConnectionsTest()
         {
             int cellsPerColumnL4 = 20;
@@ -357,17 +357,17 @@ namespace UnitTestsProject
 
             using (var sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(mem, null, sw);
+                HtmSerializer.Serialize(mem, null, sw);
             }
             using (var sr = new StreamReader(fileName))
             {
-                var connection = HtmSerializer2.Deserialize<Connections>(sr);
+                var connection = HtmSerializer.Deserialize<Connections>(sr);
                 Assert.IsTrue(mem.Equals(connection));
             }
         }
 
         [TestMethod]
-        [TestCategory("working")]
+        [TestCategory("prod")]
         public void SerializationHomeostaticPlasticityControllerTest()
         {
             int cellsPerColumnL4 = 20;
@@ -411,11 +411,11 @@ namespace UnitTestsProject
 
             using (var sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(hpa_sp_L2, null, sw);
+                HtmSerializer.Serialize(hpa_sp_L2, null, sw);
             }
             using (var sr = new StreamReader(fileName))
             {
-                var hpa = HtmSerializer2.Deserialize<HomeostaticPlasticityController>(sr);
+                var hpa = HtmSerializer.Deserialize<HomeostaticPlasticityController>(sr);
 
                 hpa.OnStabilityStatusChanged = (isStable, numPatterns, actColAvg, seenInputs) =>
                 {
@@ -426,7 +426,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("working")]
+        [TestCategory("prod")]
         public void SerializationSparseObjectMatrixInSpatialPoolerMTInitializedByConnectionsTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
@@ -437,17 +437,17 @@ namespace UnitTestsProject
 
             using (var sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(mem.Memory, null, sw);
+                HtmSerializer.Serialize(mem.Memory, null, sw);
             }
             using (var sr = new StreamReader(fileName))
             {
-                var memory = HtmSerializer2.Deserialize<SparseObjectMatrix<Column>>(sr);
+                var memory = HtmSerializer.Deserialize<SparseObjectMatrix<Column>>(sr);
                 Assert.IsTrue((mem.Memory as SparseObjectMatrix<Column>).Equals(memory));
             }
         }
 
         [TestMethod]
-        //[TestCategory("working")]
+        //[TestCategory("prod")]
         public void SerializationHtmConfigSpatialPoolerMTInitializedByConnectionsTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
@@ -458,17 +458,17 @@ namespace UnitTestsProject
 
             using (var sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(mem.HtmConfig, null, sw);
+                HtmSerializer.Serialize(mem.HtmConfig, null, sw);
             }
             using (var sr = new StreamReader(fileName))
             {
-                var htmConfig1 = HtmSerializer2.Deserialize<HtmConfig>(sr);
+                var htmConfig1 = HtmSerializer.Deserialize<HtmConfig>(sr);
                 Assert.IsTrue(mem.HtmConfig.Equals(htmConfig1));
             }
         }
 
         [TestMethod]
-        [TestCategory("working")]
+        [TestCategory("prod")]
         public void SerializationConnectionsSpatialPoolerMTInitializedByConnectionsTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
@@ -479,17 +479,17 @@ namespace UnitTestsProject
 
             using (var sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(mem, null, sw);
+                HtmSerializer.Serialize(mem, null, sw);
             }
             using (var sr = new StreamReader(fileName))
             {
-                var connections = HtmSerializer2.Deserialize<Connections>(sr);
+                var connections = HtmSerializer.Deserialize<Connections>(sr);
                 Assert.IsTrue(mem.Equals(connections));
             }
         }
 
         [TestMethod]
-        [TestCategory("working")]
+        [TestCategory("prod")]
         public void SerializationSpatialPoolerInitialzedByConnectionsTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
@@ -504,17 +504,17 @@ namespace UnitTestsProject
 
             using (var sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(sp, null, sw);
+                HtmSerializer.Serialize(sp, null, sw);
             }
             using (var sr = new StreamReader(fileName))
             {
-                var sp1 = HtmSerializer2.Deserialize<SpatialPooler>(sr);
+                var sp1 = HtmSerializer.Deserialize<SpatialPooler>(sr);
                 Assert.IsTrue(sp.Equals(sp1));
             }
         }
 
         [TestMethod]
-        [TestCategory("working")]
+        [TestCategory("prod")]
         public void SerializationSpatialPoolerMTInitialzedByConnectionsTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
@@ -529,17 +529,17 @@ namespace UnitTestsProject
 
             using (var sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(sp, null, sw);
+                HtmSerializer.Serialize(sp, null, sw);
             }
             using (var sr = new StreamReader(fileName))
             {
-                var sp1 = HtmSerializer2.Deserialize<SpatialPoolerMT>(sr);
+                var sp1 = HtmSerializer.Deserialize<SpatialPoolerMT>(sr);
                 Assert.IsTrue(sp.Equals(sp1));
             }
         }
 
         [TestMethod]
-        [TestCategory("working")]
+        [TestCategory("prod")]
         public void SerializationConnectionTemporalMemoryInitializedByConnectionsTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
@@ -550,17 +550,17 @@ namespace UnitTestsProject
 
             using (var sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(mem, null, sw);
+                HtmSerializer.Serialize(mem, null, sw);
             }
             using (var sr = new StreamReader(fileName))
             {
-                var connections = HtmSerializer2.Deserialize<Connections>(sr);
+                var connections = HtmSerializer.Deserialize<Connections>(sr);
                 Assert.IsTrue(mem.Equals(connections));
             }
         }
 
         [TestMethod]
-        [TestCategory("working")]
+        [TestCategory("prod")]
         public void SerializationTemporalMemoryInitializedByConnectionsTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
@@ -571,17 +571,17 @@ namespace UnitTestsProject
 
             using (var sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(tm, null, sw);
+                HtmSerializer.Serialize(tm, null, sw);
             }
             using (var sr = new StreamReader(fileName))
             {
-                var tm1 = HtmSerializer2.Deserialize<TemporalMemory>(sr);
+                var tm1 = HtmSerializer.Deserialize<TemporalMemory>(sr);
                 Assert.IsTrue(tm.Equals(tm1));
             }
         }
 
         [TestMethod]
-        [TestCategory("working")]
+        [TestCategory("prod")]
         public void SerializationScalarEncoderTest()
         {
             int inputBits = 100;
@@ -601,7 +601,7 @@ namespace UnitTestsProject
             ScalarEncoder encoder = new ScalarEncoder(settings);
             using (var sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(encoder, null, sw);
+                HtmSerializer.Serialize(encoder, null, sw);
             }
             using (var sr = new StreamReader(fileName))
             {
@@ -609,7 +609,7 @@ namespace UnitTestsProject
             }
             using (var sr = new StreamReader(fileName))
             {
-                var scalarEncoder = HtmSerializer2.Deserialize<ScalarEncoder>(sr);
+                var scalarEncoder = HtmSerializer.Deserialize<ScalarEncoder>(sr);
                 Assert.IsTrue(encoder.Equals(scalarEncoder));
             }
         }
@@ -882,11 +882,11 @@ namespace UnitTestsProject
 
             using (var swrt = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(layer1, null, swrt);
+                HtmSerializer.Serialize(layer1, null, swrt);
             }
             using (var sr = new StreamReader(fileName))
             {
-                var cortexLayer = HtmSerializer2.Deserialize<CortexLayer<object, object>>(sr);
+                var cortexLayer = HtmSerializer.Deserialize<CortexLayer<object, object>>(sr);
                 Assert.IsTrue(layer1.Equals(cortexLayer));
             }
         }
@@ -911,12 +911,12 @@ namespace UnitTestsProject
             var kv = new KeyValuePair<int, Animal>(1, new Cat { Fur = true, Legs = 4 });
             using (StreamWriter sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(kv, null, sw);
+                HtmSerializer.Serialize(kv, null, sw);
             }
 
             using (StreamReader sr = new StreamReader(fileName))
             {
-                var kv1 = HtmSerializer2.Deserialize<KeyValuePair<int, Animal>>(sr);
+                var kv1 = HtmSerializer.Deserialize<KeyValuePair<int, Animal>>(sr);
             }
         }
 
@@ -926,11 +926,11 @@ namespace UnitTestsProject
             Animal a = new Cat { Fur = true, Legs = 4 };
             using (StreamWriter sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize((Animal)a, "bla", sw, typeof(Animal));
+                HtmSerializer.Serialize((Animal)a, "bla", sw, typeof(Animal));
             }
             using (StreamReader sr = new StreamReader(fileName))
             {
-                var kv1 = HtmSerializer2.Deserialize<Cat>(sr);
+                var kv1 = HtmSerializer.Deserialize<Cat>(sr);
             }
         }
 
@@ -942,12 +942,12 @@ namespace UnitTestsProject
             cats[0, 1] = new Cat { Fur = true, Legs = 3 };
             using (StreamWriter sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(cats, null, sw);
+                HtmSerializer.Serialize(cats, null, sw);
             }
 
             using (StreamReader sr = new StreamReader(fileName))
             {
-                var cats1 = HtmSerializer2.Deserialize<Animal[,]>(sr);
+                var cats1 = HtmSerializer.Deserialize<Animal[,]>(sr);
             }
         }
 
@@ -961,12 +961,12 @@ namespace UnitTestsProject
             };
             using (StreamWriter sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(cats, null, sw);
+                HtmSerializer.Serialize(cats, null, sw);
             }
 
             using (StreamReader sr = new StreamReader(fileName))
             {
-                var cats1 = HtmSerializer2.Deserialize<List<Animal>>(sr);
+                var cats1 = HtmSerializer.Deserialize<List<Animal>>(sr);
             }
         }
 
@@ -975,7 +975,7 @@ namespace UnitTestsProject
         {
             var array = new int[4, 5, 3];
 
-            var listIndexes = HtmSerializer2.IterateMultiDimArray(array);
+            var listIndexes = HtmSerializer.IterateMultiDimArray(array);
         }
 
         [TestMethod]
@@ -984,16 +984,16 @@ namespace UnitTestsProject
             var r = new Random();
             using (StreamWriter sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(r, null, sw);
+                HtmSerializer.Serialize(r, null, sw);
             }
             using (StreamReader sr = new StreamReader(fileName))
             {
-                var r1 = HtmSerializer2.Deserialize<Random>(sr);
+                var r1 = HtmSerializer.Deserialize<Random>(sr);
             }
         }
 
         [TestMethod]
-        [TestCategory("working")]
+        [TestCategory("prod")]
 
         public void SerializeConnectionsWithActiveSegmentTest()
         {
@@ -1013,11 +1013,11 @@ namespace UnitTestsProject
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeConnectionsWithActiveSegmentTest)}.txt"))
             {
-                HtmSerializer2.Serialize(connections, null, sw);
+                HtmSerializer.Serialize(connections, null, sw);
             }
             using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeConnectionsWithActiveSegmentTest)}.txt"))
             {
-                Connections connections1 = HtmSerializer2.Deserialize<Connections>(sr);
+                Connections connections1 = HtmSerializer.Deserialize<Connections>(sr);
                 Assert.IsTrue(connections.Equals(connections1));
             }
         }
@@ -1211,12 +1211,12 @@ namespace UnitTestsProject
 
             using (var swrt = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(cortexLayer, null, swrt);
+                HtmSerializer.Serialize(cortexLayer, null, swrt);
             }
 
             using var sr = new StreamReader(fileName);
 
-            var cortexLayer1 = HtmSerializer2.Deserialize<CortexLayer<object, object>>(sr);
+            var cortexLayer1 = HtmSerializer.Deserialize<CortexLayer<object, object>>(sr);
             Assert.IsTrue(cortexLayer.Equals(cortexLayer1));
 
             var testInputs = inputValues.Except(inputTrainValues).ToList();
@@ -1431,7 +1431,7 @@ namespace UnitTestsProject
 
                 using (var swrt = new StreamWriter(fileName))
                 {
-                    HtmSerializer2.Serialize(cortexLayer, null, swrt);
+                    HtmSerializer.Serialize(cortexLayer, null, swrt);
                 }
 
                 FileInfo fileInfo = new FileInfo(fileName);
@@ -1635,7 +1635,7 @@ namespace UnitTestsProject
                 Stopwatch stopwatch = Stopwatch.StartNew();
                 using (var swrt = new StreamWriter(fileName))
                 {
-                    HtmSerializer2.Serialize(cortexLayer, null, swrt);
+                    HtmSerializer.Serialize(cortexLayer, null, swrt);
                 }
                 stopwatch.Stop();
                 Console.WriteLine(stopwatch.ElapsedMilliseconds);

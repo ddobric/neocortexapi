@@ -13,20 +13,24 @@ namespace NeoCortexApi.Entities
     /// </summary>
     public class Cell : IEquatable<Cell>, IComparable<Cell>, ISerializable
     {
+        /// <summary>
+        /// If the cell has a meaning like a Grand-Mather cell, the meaning value is set.
+        /// </summary>
+        public string Label { get; set; }
 
         /// <summary>
         /// Index of the cell.
         /// </summary>
         public int Index { get; set; }
-
+             
         /// <summary>
-        /// The identifier of the cell.
+        /// The mini-column or cortical column, which owns this cell.
         /// </summary>
-        //public int CellId { get; private set; }
-
+        public string ParentAreaName { get; set; }
 
         /// <summary>
-        /// The column, which owns this cell.
+        /// Optional. The mini-column, which owns this cell.
+        /// A cell can be owned by area explicitely if mini-columns are not used.
         /// </summary>
         public int ParentColumnIndex { get; set; }
 
@@ -77,6 +81,7 @@ namespace NeoCortexApi.Entities
             //this.CellId = cellId;
         }
 
+      
         /// <summary>
         /// Gets the hashcode of the cell.
         /// </summary>
@@ -87,16 +92,8 @@ namespace NeoCortexApi.Entities
             int result = 1;
             result = prime * result + ParentColumnIndex;
             result = prime * result + Index;
-            return result;
-            //if (m_Hashcode == 0)
-            //{
-            //    int prime = 31;
-            //    int result = 1;
-            //    result = prime * result + ParentColumnIndex;
-            //    result = prime * result + Index;
-            //    return result;
-            //}
-            //return m_Hashcode;
+
+            return result;        
         }
 
         /// <summary>
@@ -172,7 +169,7 @@ namespace NeoCortexApi.Entities
         /// <param name="writer"></param>
         public void SerializeT(StreamWriter writer)
         {
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
             ser.SerializeBegin(nameof(Cell), writer);
 
@@ -187,24 +184,22 @@ namespace NeoCortexApi.Entities
                 ser.SerializeValue(this.ReceptorSynapses, writer);
 
             ser.SerializeEnd(nameof(Cell), writer);
-
-
         }
 
         public static Cell Deserialize(StreamReader sr)
         {
             Cell cell = new Cell();
 
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
             while (sr.Peek() >= 0)
             {
                 string data = sr.ReadLine();
-                if (data == String.Empty || data == ser.ReadBegin(nameof(Cell)) || data.ToCharArray()[0] == HtmSerializer2.ElementsDelimiter || (data.ToCharArray()[0] == HtmSerializer2.ElementsDelimiter && data.ToCharArray()[1] == HtmSerializer2.ParameterDelimiter))
+                if (data == String.Empty || data == ser.ReadBegin(nameof(Cell)) || data.ToCharArray()[0] == HtmSerializer.ElementsDelimiter || (data.ToCharArray()[0] == HtmSerializer.ElementsDelimiter && data.ToCharArray()[1] == HtmSerializer.ParameterDelimiter))
                 {
                     continue;
                 }
-                else if (data == ser.ReadBegin(nameof(DistalDendrite)))
+                else if (data == ser.ReadBegin(nameof(Segment)))
                 {
                     //cell.DistalDendrites.Add(DistalDendrite.Deserialize(sr));
                 }
@@ -218,7 +213,7 @@ namespace NeoCortexApi.Entities
                 }
                 else
                 {
-                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                    string[] str = data.Split(HtmSerializer.ParameterDelimiter);
                     for (int i = 0; i < str.Length; i++)
                     {
                         switch (i)
@@ -255,7 +250,7 @@ namespace NeoCortexApi.Entities
                 nameof(Cell.ReceptorSynapses),
                 nameof(m_Hashcode)
             };
-            HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);
+            HtmSerializer.SerializeObject(obj, name, sw, ignoreMembers);
             //var cell = obj as Cell;
             //if (cell != null)
             //{
@@ -267,7 +262,7 @@ namespace NeoCortexApi.Entities
         {
             if (typeof(T) != typeof(Cell))
                 return null;
-            var cell = HtmSerializer2.DeserializeObject<Cell>(sr, name);
+            var cell = HtmSerializer.DeserializeObject<Cell>(sr, name);
 
             //foreach (var distalDentrite in cell.DistalDendrites)
             //{

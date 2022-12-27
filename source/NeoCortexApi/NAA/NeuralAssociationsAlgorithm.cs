@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using static NeoCortexApi.TemporalMemory;
 
 namespace NeoCortexApi
@@ -13,96 +14,96 @@ namespace NeoCortexApi
     /// See PhD Chapter Neural Associations Algorithm.
     /// </summary>
     public class NeuralAssociationsAlgorithm
-    { 
+    {
 
-        private int m_TMIteration;
+
+        private int _iteration;
 
         private CorticalArea area;
 
         private HtmConfig cfg;
+
+        private Random _rnd;
 
         /// <summary>
         /// Stores each cycle's most recent activity
         /// </summary>
         public SegmentActivity LastActivity { get; set; }
 
-        public NeuralAssociationsAlgorithm(HtmConfig cfg, CorticalArea area)
+        public NeuralAssociationsAlgorithm(HtmConfig cfg, CorticalArea area, Random random = null)
         {
             this.cfg = cfg;
             this.area = area;
+            if (random == null)
+            {
+                this._rnd = new Random();
+            }
+            else
+                _rnd = random;
         }
 
 
-        public ComputeCycle Compute(int[] activeColumns, ComputeCycleInput inp, bool learn)
+        public ComputeCycle Compute(Cell[] activeCells, ComputeCycleInput inp, bool learn)
         {
-            ComputeCycle cycle = ActivateCells(activeColumns, inp, learn: learn);
+            ComputeCycle cycle = ActivateCells(activeCells, inp, learn: learn);
 
             return cycle;
         }
 
-        private Column GetColumnFromIndex(int index)
+        protected virtual ComputeCycle ActivateCells(Cell[] contextualActiveCells, ComputeCycleInput inp, bool learn)
         {
-            var col = this.area.Columns.FirstOrDefault(i => i.Index == index);
-
-            if (col == null)
-                throw new ArgumentException($"The column with the index {index} does not exist in the area {area}");
-
-            return col;
-        }
-
-        protected virtual ComputeCycle ActivateCells(int[] activeColumnIndices, ComputeCycleInput inp, bool learn)
-        {
-            ColumnData activeColumnData = new ColumnData();
-
             ComputeCycle newComputeCycle = new ComputeCycle
             {
-                ActivColumnIndicies = activeColumnIndices
+                ActivColumnIndicies = null,
             };
 
 
             // The list of active columns.
-            List<Column> activeColumns = new List<Column>();
+            //List<Column> activeColumns = new List<Column>();
 
-            foreach (var indx in activeColumnIndices.OrderBy(i => i))
-            {
-                activeColumns.Add(GetColumnFromIndex(indx));
-            }
+            //foreach (var indx in activeCells.OrderBy(i => i))
+            //{
+            //    activeColumns.Add(GetColumnFromIndex(indx));
+            //}
 
-            //
-            // Gets the mini-columns that owns the segment.
-            Func<object, Column> segToCol = (segment) =>
-            {
-                var colIndx = ((DistalDendrite)segment).ParentCell.ParentColumnIndex;
-                var parentCol = GetColumnFromIndex(colIndx);
-                return parentCol;
-            };
+            ////
+            //// Gets the mini-columns that owns the segment.
+            //Func<object, Column> segToCol = (segment) =>
+            //{
+            //    var colIndx = ((DistalDendrite)segment).ParentCell.ParentColumnIndex;
+            //    var parentCol = GetColumnFromIndex(colIndx);
+            //    return parentCol;
+            //};
 
-            Func<object, Column> times1Fnc = x => (Column)x;
+            //Func<object, Column> times1Fnc = x => (Column)x;
 
-            var list = new Pair<List<object>, Func<object, Column>>[3];
-            list[0] = new Pair<List<object>, Func<object, Column>>(Array.ConvertAll(activeColumns.ToArray(), item => (object)item).ToList(), times1Fnc);
-            list[1] = new Pair<List<object>, Func<object, Column>>(Array.ConvertAll(inp.ActiveSegments.ToArray(), item => (object)item).ToList(), segToCol);
-            list[2] = new Pair<List<object>, Func<object, Column>>(Array.ConvertAll(inp.MatchingSegments.ToArray(), item => (object)item).ToList(), segToCol);
+            //var list = new Pair<List<object>, Func<object, Column>>[3];
+            //list[0] = new Pair<List<object>, Func<object, Column>>(Array.ConvertAll(activeColumns.ToArray(), item => (object)item).ToList(), times1Fnc);
+            //list[1] = new Pair<List<object>, Func<object, Column>>(Array.ConvertAll(inp.ActiveSegments.ToArray(), item => (object)item).ToList(), segToCol);
+            //list[2] = new Pair<List<object>, Func<object, Column>>(Array.ConvertAll(inp.MatchingSegments.ToArray(), item => (object)item).ToList(), segToCol);
 
-            GroupBy2<Column> grouper = GroupBy2<Column>.Of(list);
+            //GroupBy2<Column> grouper = GroupBy2<Column>.Of(list);
 
             double permanenceIncrement = this.cfg.PermanenceIncrement;
             double permanenceDecrement = this.cfg.PermanenceDecrement;
 
+            //ColumnData segmentState = CalcSegementState();
+
             //
             // Grouping by columns, which have active and matching segments.
-            foreach (var tuple in grouper)
+            //foreach (var tuple in grouper)
+            // foreach (var actCell in contextualActiveCells)
             {
-                activeColumnData.Set(tuple);
 
-                if (activeColumnData.IsExistAnyActiveCol(0))
+                //activeColumnData.Set(tuple);
+
+                //if (activeColumnData.IsExistAnyActiveCol(0))
                 {
                     // If there are some active segments on the column already...
-                    if (activeColumnData.ActiveSegments != null && activeColumnData.ActiveSegments.Count > 0)
+                    if (inp.ActiveSegments != null && inp.ActiveSegments.Count > 0)
                     {
-
-                        List<Cell> cellsOwnersOfActSegs = ActivatePredictedColumn(activeColumnData.ActiveSegments,
-                            activeColumnData.MatchingSegments, inp.ActiveCells, inp.WinnerCells,
+                        List<Cell> cellsOwnersOfActSegs = ActivatePredictedColumn(inp.ActiveSegments,
+                            inp.MatchingSegments, inp.ActiveCells, inp.WinnerCells,
                                 permanenceIncrement, permanenceDecrement, learn, newComputeCycle.ActiveSynapses);
 
                         foreach (var item in cellsOwnersOfActSegs)
@@ -111,37 +112,94 @@ namespace NeoCortexApi
                             newComputeCycle.WinnerCells.Add(item);
                         }
                     }
+
+                    //
+                    // Matching segments result from number of potential synapses. These are segments with number of potential
+                    // synapses permanence higher than some minimum threshold value.
+                    // Potential synapses are synapses from presynaptc cells connected to the active cell.
+                    // In other words, synapse permanence between presynaptic cell and the active cell defines a statistical prediction that active cell will become the active in the next cycle.
+                    // Bursting will create new segments if there are no matching segments until some matching segments appear. 
+                    // Once that happen, segment adoption will start.
+                    // If some matching segments exist, bursting will grab the segment with most potential synapses and adapt it.
+                    else if (inp.MatchingSegments != null && inp.MatchingSegments.Count > 0)
+                    {
+                        // Debug.Write($"B.({matchingSegments.Count})");
+
+                        Segment maxPotentialSeg = HtmCompute.GetSegmentwithHighesPotential(inp.MatchingSegments.ToArray(), inp.ActiveCells, this.LastActivity.PotentialSynapses);
+
+                        var bestSeg = maxPotentialSeg.ParentCell;
+
+                        if (learn)
+                        {
+                            AdaptSegment(maxPotentialSeg, inp.ActiveCells, permanenceIncrement, permanenceDecrement);
+
+                            int nGrowDesired = this.cfg.MaxNewSynapseCount - this.LastActivity.PotentialSynapses[maxPotentialSeg.SegmentIndex];
+
+                            if (nGrowDesired > 0)
+                            {
+                                GrowSynapses(contextualActiveCells, maxPotentialSeg, this.cfg.InitialPermanence, nGrowDesired, this.cfg.MaxSynapsesPerSegment, _rnd);
+                            }
+                        }
+                    }
                     else
                     {
-                        //
-                        // If no active segments are detected (start of learning) then all cells are activated
-                        // and a random single cell is chosen as a winner.
-                        BurstingResult burstingResult = BurstColumn(activeColumnData.Column(), activeColumnData.MatchingSegments,
-                            inp.ActiveCells, inp.WinnerCells, permanenceIncrement, permanenceDecrement, this.cfg.Random,
-                               learn);
+                        ////
+                        //// If no active segments are detected (start of learning) then all cells are activated
+                        //// and a random single cell is chosen as a winner.
+                        //BurstingResult burstingResult = BurstArea(this.area, activeColumnData.MatchingSegments,
+                        //    inp.ActiveCells, inp.WinnerCells, permanenceIncrement, permanenceDecrement, this.cfg.Random,
+                        //       learn);
+
+                        var leastUsedPotentialCell = HtmCompute.GetLeastUsedCell(inp.ActiveCells, _rnd);
+
+                        if (learn)
+                        {
+                            // This can be optimized. Right now, we assume that every winner cell has a single synaptic connection to the segment.
+                            // This is why we substract number of cells from the MaxNewSynapseCount.
+                            int nGrowExact = Math.Min(this.cfg.MaxNewSynapseCount, contextualActiveCells.Length);
+
+                            if (nGrowExact > 0)
+                            {
+                                Segment newSegment;
+                                if (leastUsedPotentialCell.ParentAreaName == contextualActiveCells.First().ParentAreaName)
+                                    newSegment = CreateDistalSegment(leastUsedPotentialCell);
+                                else
+                                    newSegment = CreateDistalSegment(leastUsedPotentialCell);//apical
+
+                                GrowSynapses(contextualActiveCells, newSegment, this.cfg.InitialPermanence, nGrowExact, this.cfg.MaxSynapsesPerSegment, _rnd);
+                            }
+                        }
 
                         // Here we activate all cells by putting them to list of active cells.
-                        newComputeCycle.ActiveCells.AddRange(burstingResult.Cells);
+                        newComputeCycle.ActiveCells.AddRange(inp.ActiveCells);
 
                         // Test was done. Better performance is when BestCell is used only instead of adding all cells.
                         //cycle.WinnerCells.AddRange(burstingResult.Cells);
 
-                        // The winner cell is added to th elots of winner cells in the cycle.
-                        newComputeCycle.WinnerCells.Add(burstingResult.BestCell);
+                        // The winner cell is added to the list of winner cells in the cycle.
+                        newComputeCycle.WinnerCells.Add(leastUsedPotentialCell);
                     }
                 }
-                else
-                {
-                    if (learn)
-                    {
-                        PunishPredictedColumn(activeColumnData.ActiveSegments, activeColumnData.MatchingSegments,
-                            inp.ActiveCells, inp.WinnerCells, this.cfg.PredictedSegmentDecrement);
-                    }
-                }
+                //else
+                //{
+                //    if (learn)
+                //    {
+                //        PunishPredictedColumn(activeColumnData.ActiveSegments, activeColumnData.MatchingSegments,
+                //            inp.ActiveCells, inp.WinnerCells, this.cfg.PredictedSegmentDecrement);
+                //    }
+                //}
             }
 
             return newComputeCycle;
         }
+
+        //private ColumnData CalcSegementState()
+        //{
+        //    ColumnData segmentState = CalcSegementState();
+
+        //    segmentState.MatchingSegments
+        //    return segmentState;
+        //}
 
 
         /// <summary>
@@ -169,12 +227,12 @@ namespace NeoCortexApi
 
             SegmentActivity activity = Connections.ComputeActivity(cycle.ActiveCells, conn.HtmConfig.ConnectedPermanence);
 
-            var activeSegments = new List<DistalDendrite>();
+            var activeSegments = new List<ApicalDendrite>();
             foreach (var item in activity.ActiveSynapses)
             {
                 if (item.Value >= conn.HtmConfig.ActivationThreshold)
                 {
-                    var seg = conn.GetSegmentForFlatIdx(item.Key);
+                    var seg = area.GetSegmentFromIndex<ApicalDendrite>(item.Key);
                     if (seg != null)
                         activeSegments.Add(seg);
                 }
@@ -182,7 +240,7 @@ namespace NeoCortexApi
 
             //
             // Step through all synapses on active cells and find involved segments.         
-            var matchingSegments = new List<DistalDendrite>();
+            var matchingSegments = new List<Segment>();
             foreach (var item in activity.PotentialSynapses)
             {
                 var seg = conn.GetSegmentForFlatIdx(item.Key);
@@ -225,11 +283,11 @@ namespace NeoCortexApi
             Debug.WriteLine($"\nActive segments: {activeSegments.Count}, Matching segments: {matchingSegments.Count}");
         }
 
-        protected BurstingResult BurstColumn(Column column, List<DistalDendrite> matchingSegments,
+        protected BurstingResult BurstArea(CorticalArea area, List<Segment> matchingSegments,
          ICollection<Cell> prevActiveCells, ICollection<Cell> prevWinnerCells, double permanenceIncrement, double permanenceDecrement,
              Random random, bool learn)
         {
-            IList<Cell> cells = column.Cells;
+            IList<Cell> cells = area.Cells;
             Cell leastUsedOrMaxPotentialCell = null;
 
             //
@@ -244,7 +302,7 @@ namespace NeoCortexApi
             {
                 // Debug.Write($"B.({matchingSegments.Count})");
 
-                DistalDendrite maxPotentialSeg = HtmCompute.GetSegmentwithHighesPotential(matchingSegments, prevActiveCells, this.LastActivity.PotentialSynapses);
+                Segment maxPotentialSeg = HtmCompute.GetSegmentwithHighesPotential(matchingSegments, prevActiveCells, this.LastActivity.PotentialSynapses);
 
                 leastUsedOrMaxPotentialCell = maxPotentialSeg.ParentCell;
 
@@ -256,7 +314,7 @@ namespace NeoCortexApi
 
                     if (nGrowDesired > 0)
                     {
-                        GrowSynapses(prevWinnerCells, maxPotentialSeg, this.cfg.InitialPermanence, nGrowDesired, random);
+                        GrowSynapses(prevWinnerCells, maxPotentialSeg, this.cfg.InitialPermanence, nGrowDesired, this.cfg.MaxSynapsesPerSegment, random);
                     }
                 }
             }
@@ -272,9 +330,13 @@ namespace NeoCortexApi
                     int nGrowExact = Math.Min(this.cfg.MaxNewSynapseCount, prevWinnerCells.Count);
                     if (nGrowExact > 0)
                     {
-                        DistalDendrite newSegment = CreateDistalSegment(leastUsedOrMaxPotentialCell);
-                        GrowSynapses(prevWinnerCells, newSegment, this.cfg.InitialPermanence,
-                            nGrowExact, random);
+                        Segment newSegment;
+                        if (leastUsedOrMaxPotentialCell.ParentAreaName == prevWinnerCells.First().ParentAreaName)
+                            newSegment = CreateDistalSegment(leastUsedOrMaxPotentialCell);
+                        else
+                            newSegment = CreateDistalSegment(leastUsedOrMaxPotentialCell);//apical
+
+                        GrowSynapses(prevWinnerCells, newSegment, this.cfg.InitialPermanence, nGrowExact, this.cfg.MaxSynapsesPerSegment, random);
                     }
                 }
             }
@@ -283,7 +345,7 @@ namespace NeoCortexApi
         }
 
         /// <summary>
-        /// Returns the number of <see cref="DistalDendrite"/>s on a given <see cref="Cell"/> if specified, or the total number if the <see cref="Cell"/> is null.
+        /// Returns the number of <see cref="Segment"/>s on a given <see cref="Cell"/> if specified, or the total number if the <see cref="Cell"/> is null.
         /// </summary>
         /// <param name="cell">an optional Cell to specify the context of the segment count.</param>
         /// <returns>either the total number of segments or the number on a specified cell.</returns>
@@ -296,7 +358,7 @@ namespace NeoCortexApi
                 return cell.DistalDendrites.Count;
             }
 
-         
+
             lock ("segmentindex")
             {
                 return this.area.AllDistalDendrites.Length;
@@ -304,19 +366,31 @@ namespace NeoCortexApi
             }
         }
 
+
+        private Column GetColumnFromIndex(int index)
+        {
+            var col = this.area.Columns.FirstOrDefault(i => i.Index == index);
+
+            if (col == null)
+                throw new ArgumentException($"The column with the index {index} does not exist in the area {area}");
+
+            return col;
+        }
+
+
         /// <summary>
         /// Used internally to return the least recently activated segment on the specified cell
         /// </summary>
         /// <param name="cell">cell to search for segments on.</param>
         /// <returns>the least recently activated segment on the specified cell.</returns>
-        private DistalDendrite LeastRecentlyUsedSegment(Cell cell)
+        private Segment LeastRecentlyUsedSegment(Cell cell)
         {
-            List<DistalDendrite> segments = cell.DistalDendrites;
+            List<Segment> segments = cell.DistalDendrites;
 
-            DistalDendrite minSegment = null;
+            Segment minSegment = null;
             long minIteration = long.MaxValue;
 
-            foreach (DistalDendrite dd in segments)
+            foreach (Segment dd in segments)
             {
                 if (dd.LastUsedIteration < minIteration)
                 {
@@ -330,13 +404,16 @@ namespace NeoCortexApi
 
 
 
+
         /// <summary>
-        /// Adds a new <see cref="DistalDendrite"/> segment on the specified <see cref="Cell"/>, or reuses an existing one.
+        /// Adds a new <see cref="Segment"/> segment on the specified <see cref="Cell"/>, or reuses an existing one.
         /// </summary>
         /// <param name="segmentParentCell">the Cell to which a segment is added.</param>
         /// <returns>the newly created segment or a reused segment.</returns>
-        public DistalDendrite CreateDistalSegment(Cell segmentParentCell)
+        public Segment CreateDistalSegment(Cell segmentParentCell)
         {
+            // using (await m_lock.LockAsync())
+
             //
             // If there are more segments than maximal allowed number of segments per cell,
             // least used segments will be destroyed.
@@ -369,7 +446,7 @@ namespace NeoCortexApi
                 int ordinal = m_NextSegmentOrdinal;
                 ++m_NextSegmentOrdinal;
 
-                DistalDendrite segment = new DistalDendrite(segmentParentCell, flatIdx, m_TMIteration, ordinal, this.HtmConfig.SynPermConnected, this.HtmConfig.NumInputs);
+                Segment segment = new DistalDendrite(segmentParentCell, flatIdx, _iteration, ordinal, this.HtmConfig.SynPermConnected, this.HtmConfig.NumInputs);
                 segmentParentCell.DistalDendrites.Add(segment);
                 //GetSegments(segmentParentCell, true).Add(segment);
                 m_SegmentForFlatIdx[flatIdx] = segment;
@@ -389,7 +466,7 @@ namespace NeoCortexApi
         /// <param name="prevActiveCells">List of active cells in the current cycle (calculated in the previous cycle).</param>
         /// <param name="permanenceIncrement"></param>
         /// <param name="permanenceDecrement"></param>
-        public void AdaptSegment(DistalDendrite segment, ICollection<Cell> prevActiveCells,
+        public void AdaptSegment(Segment segment, ICollection<Cell> prevActiveCells,
             double permanenceIncrement, double permanenceDecrement)
         {
 
@@ -444,14 +521,14 @@ namespace NeoCortexApi
         }
 
         /// <summary>
-        /// Destroys the specified <see cref="Synapse"/> in specific <see cref="DistalDendrite"/> segment and in the source cell.
+        /// Destroys the specified <see cref="Synapse"/> in specific <see cref="Segment"/> segment and in the source cell.
         /// Every synapse instance is stored at two places: The source cell (receptor synapse) and the segment.
         /// </summary>
         /// <param name="synapse">the Synapse to destroy</param>
         /// <param name="segment"></param>
-        private void DestroySynapse(Synapse synapse, DistalDendrite segment)
+        private static void DestroySynapse(Synapse synapse, Segment segment)
         {
-            lock ("synapses")
+            // lock ("synapses")
             {
                 synapse.SourceCell.ReceptorSynapses.Remove(synapse);
 
@@ -460,10 +537,10 @@ namespace NeoCortexApi
         }
 
         /// <summary>
-        /// Destroys a segment <see cref="DistalDendrite"/>
+        /// Destroys a segment <see cref="Segment"/>
         /// </summary>
         /// <param name="segment">the segment to destroy</param>
-        public void DestroyDistalDendrite(DistalDendrite segment)
+        public void DestroyDistalDendrite(Segment segment)
         {
             lock ("segmentindex")
             {
@@ -506,23 +583,23 @@ namespace NeoCortexApi
         /// adapts them and return owner cells of active segments.
         /// </summary>
         /// <param name="conn"></param>
-        /// <param name="columnActiveSegments">Active segments as calculated (activated) in the previous step.</param>
+        /// <param name="activeSegments">Active segments as calculated (activated) in the previous step.</param>
         /// <param name="matchingSegments"></param>
-        /// <param name="prevActiveCells">Cells active in the current cycle.</param>
+        /// <param name="associatingCells">Cells active in the current cycle.</param>
         /// <param name="prevWinnerCells"></param>
         /// <param name="permanenceIncrement"></param>
         /// <param name="permanenceDecrement"></param>
         /// <param name="learn"></param>
-        /// <returns>Cells which own active column segments as calculated in the previous step.</returns>
-        protected List<Cell> ActivatePredictedColumn(List<DistalDendrite> columnActiveSegments,
-            List<DistalDendrite> matchingSegments, ICollection<Cell> prevActiveCells, ICollection<Cell> prevWinnerCells,
+        /// <returns>Cells which owns active column segments as calculated in the previous step.</returns>
+        protected List<Cell> ActivatePredictedColumn(List<Segment> activeSegments,
+            List<Segment> matchingSegments, ICollection<Cell> associatingCells, ICollection<Cell> prevWinnerCells,
                 double permanenceIncrement, double permanenceDecrement, bool learn, IList<Synapse> activeSynapses)
         {
             // List of cells that owns active segments. These cells will be activated in this cycle.
             // In previous cycle they are depolarized.
             List<Cell> cellsOwnersOfActiveSegments = new List<Cell>();
 
-            foreach (DistalDendrite segment in columnActiveSegments)
+            foreach (Segment segment in activeSegments)
             {
                 if (!cellsOwnersOfActiveSegments.Contains(segment.ParentCell))
                 {
@@ -531,7 +608,7 @@ namespace NeoCortexApi
 
                 if (learn)
                 {
-                    AdaptSegment(segment, prevActiveCells, permanenceIncrement, permanenceDecrement);
+                    AdaptSegment(segment, associatingCells, permanenceIncrement, permanenceDecrement);
 
                     //
                     // Even if the segment is active, new synapses can be added that connect previously active cells with the segment.
@@ -542,7 +619,7 @@ namespace NeoCortexApi
                     {
                         // Create new synapses on the segment from winner (pre-synaptic cells) cells.
                         GrowSynapses(prevWinnerCells, segment, this.cfg.InitialPermanence,
-                            nGrowDesired, this.cfg.Random);
+                            nGrowDesired, this.cfg.MaxSynapsesPerSegment, this.cfg.Random);
                     }
                     else
                     {
@@ -558,7 +635,7 @@ namespace NeoCortexApi
         /// Creates nDesiredNewSynapes synapses on the segment passed in if possible, choosing random cells from the previous winner cells that are
         /// not already on the segment.
         /// </summary>
-        /// <param name="prevWinnerCells">Winner cells in `t-1`</param>
+        /// <param name="contextualActiveCells">Winner cells in `t-1`</param>
         /// <param name="segment">Segment to grow synapses on. </param>
         /// <param name="initialPermanence">Initial permanence of a new synapse.</param>
         /// <param name="nDesiredNewSynapses">Desired number of synapses to grow</param>
@@ -567,19 +644,17 @@ namespace NeoCortexApi
         /// <b>Notes:</b> The process of writing the last value into the index in the array that was most recently changed is to ensure the same results that 
         /// we get in the c++ implementation using iter_swap with vectors.
         /// </remarks>
-        public void GrowSynapses(ICollection<Cell> prevWinnerCells, DistalDendrite segment,
-            double initialPermanence, int nDesiredNewSynapses, Random random)
+        public static void GrowSynapses(ICollection<Cell> contextualActiveCells, Segment segment,
+            double initialPermanence, int nDesiredNewSynapses, int maxSynapsesPerSegment, Random random)
         {
-            random = new Random();
-            List<Cell> removingCandidates = new List<Cell>(prevWinnerCells);
+
+            List<Cell> removingCandidates = new List<Cell>(contextualActiveCells);
             removingCandidates = removingCandidates.OrderBy(c => c).ToList();
 
             //
             // Enumarates all synapses in a segment and remove winner-cells from
             // list of removingCandidates if they are presynaptic winners cells.
-            // So, we will create synapses only from cells, which do not already have synaptic connection to the segment. 
-            // DD: Removing of this loop creates same result as with the loop.
-            // This should be investigated.
+            // So, we will create synapses only from cells, which do not already have synaptic connection to the segment.          
             foreach (Synapse synapse in segment.Synapses)
             {
                 Cell presynapticCell = synapse.GetPresynapticCell();
@@ -601,37 +676,32 @@ namespace NeoCortexApi
             for (int i = 0; i < numMissingSynapses; i++)
             {
                 int rndIndex = random.Next(removingCandidates.Count);
-                CreateSynapse(segment, removingCandidates[rndIndex], initialPermanence);
+                CreateSynapse(segment, removingCandidates[rndIndex], initialPermanence, maxSynapsesPerSegment);
                 removingCandidates.RemoveAt(rndIndex);
             }
         }
 
         /// <summary>
-        /// Creates a new synapse on a distal segment.
+        /// Creates a new synapse on a segment.
         /// </summary>
-        /// <param name="segment">the <see cref="DistalDendrite"/> segment to which a <see cref="Synapse"/> is being created.</param>
+        /// <param name="segment">the <see cref="Segment"/> segment to which a <see cref="Synapse"/> is being created.</param>
         /// <param name="presynapticCell">the source <see cref="Cell"/>.</param>
         /// <param name="permanence">the initial permanence.</param>
         /// <returns>the created <see cref="Synapse"/>.</returns>
-        public Synapse CreateSynapse(DistalDendrite segment, Cell presynapticCell, double permanence)
+        public static Synapse CreateSynapse(Segment segment, Cell presynapticCell, double permanence, int maxSynapsesPerSegment)
         {
-            while (segment.Synapses.Count >= this.cfg.MaxSynapsesPerSegment)
+            while (segment.Synapses.Count >= maxSynapsesPerSegment)
             {
-                DestroySynapse(MinPermanenceSynapse(segment), segment);
+                DestroySynapse(segment.GetMinPermanenceSynapse(), segment);
             }
 
-            lock ("synapses")
+            //lock ("synapses")
             {
                 Synapse synapse = null;
-                //DD GetSynapses(segment).Add(
-                segment.Synapses.Add(synapse = new Synapse(presynapticCell, segment.SegmentIndex, -1, permanence));
+
+                segment.Synapses.Add(synapse = new Synapse(presynapticCell, segment.SegmentIndex, segment.Synapses.Count, permanence));
 
                 presynapticCell.ReceptorSynapses.Add(synapse);
-                //DD GetReceptorSynapses(presynapticCell, true).Add(synapse);
-
-                //++m_NextSynapseOrdinal;
-
-                //++m_NumSynapses;
 
                 return synapse;
             }

@@ -497,7 +497,7 @@ namespace NeoCortexApi
         }
 
         /// <summary>
-        /// Returns the <see cref="Cell"/> with the least number of <see cref="DistalDendrite"/>s.
+        /// Returns the <see cref="Cell"/> with the least number of <see cref="Segment"/>s.
         /// </summary>
         /// <param name="random"></param>
         /// <param name="cells"></param>
@@ -537,15 +537,16 @@ namespace NeoCortexApi
         /// </summary>
         /// <param name="matchingSegments"></param>
         /// <returns></returns>
-        public static DistalDendrite GetSegmentwithHighesPotential(
-            List<DistalDendrite> matchingSegments, 
+        public static Segment GetSegmentwithHighesPotential(
+            Segment[] matchingSegments, 
             ICollection<Cell> prevActiveCells,
              Dictionary<int, int> potentialSynapses)
         {
-            DistalDendrite maxSeg = matchingSegments[0];
+            Segment maxSeg = matchingSegments[0];
+
             int indxOfLastHighestSegment = -1;
 
-            for (int i = 0; i < matchingSegments.Count - 1; i++)
+            for (int i = 0; i < matchingSegments.Length - 1; i++)
             {
                 var potSynsPlus1 = potentialSynapses[matchingSegments[i + 1].SegmentIndex];
 

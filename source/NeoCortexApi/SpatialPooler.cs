@@ -216,7 +216,7 @@ namespace NeoCortexApi
 
 
         /// <summary>
-        /// Performs SPatialPooler compute algorithm.
+        /// Performs SpatialPooler compute algorithm.
         /// </summary>
         /// <param name="input">Input vector</param>
         /// <param name="learn">Learn or Predict.</param>
@@ -534,7 +534,7 @@ namespace NeoCortexApi
         /// calculations are averaged over all dimensions of inputs and columns. This value is meaningless if global inhibition is enabled.
         /// </summary>
         /// <param name="c">the <see cref="Connections"/> (spatial pooler memory)</param>
-        /// <param name="avgCollected"></param>
+        /// <param name="avgCollected">Number of connected synapses.</param>
         public void UpdateInhibitionRadius(Connections c, List<double> avgCollected = null)
         {
             if (c.HtmConfig.GlobalInhibition)
@@ -568,7 +568,7 @@ namespace NeoCortexApi
         /// </summary>
         /// <param name="c"></param>
         /// <returns>Average ratio numOfCols/numOfInputs across all dimensions.</returns>
-        public virtual double CalcAvgColumnsPerInput(Connections c)
+        internal virtual double CalcAvgColumnsPerInput(Connections c)
         {
             //int[] colDim = Array.Copy(c.getColumnDimensions(), c.getColumnDimensions().Length);
             int[] colDim = new int[c.HtmConfig.ColumnDimensions.Length];
@@ -1348,7 +1348,7 @@ namespace NeoCortexApi
 
         public void Serialize(StreamWriter writer)
         {
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
             ser.SerializeBegin(nameof(SpatialPooler), writer);
 
@@ -1371,7 +1371,7 @@ namespace NeoCortexApi
         {
             SpatialPooler sp = new SpatialPooler();
 
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
             while (sr.Peek() >= 0)
             {
@@ -1394,7 +1394,7 @@ namespace NeoCortexApi
                 }
                 else
                 {
-                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                    string[] str = data.Split(HtmSerializer.ParameterDelimiter);
                     for (int i = 0; i < str.Length; i++)
                     {
                         switch (i)
@@ -1435,12 +1435,12 @@ namespace NeoCortexApi
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            HtmSerializer2.SerializeObject(obj, name, sw);
+            HtmSerializer.SerializeObject(obj, name, sw);
         }
 
         public static object Deserialize<T>(StreamReader sr, string propName)
         {
-            var obj = HtmSerializer2.DeserializeObject<T>(sr, propName);
+            var obj = HtmSerializer.DeserializeObject<T>(sr, propName);
 
             var sp = obj as SpatialPooler;
             if (sp == null)
