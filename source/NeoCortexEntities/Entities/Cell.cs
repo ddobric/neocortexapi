@@ -22,9 +22,10 @@ namespace NeoCortexApi.Entities
         /// Index of the cell.
         /// </summary>
         public int Index { get; set; }
-             
+
         /// <summary>
         /// The mini-column or cortical column, which owns this cell.
+        /// Used by <see cref="nameof(NeuralAssociationsAlgorithm)." />
         /// </summary>
         public string ParentAreaName { get; set; }
 

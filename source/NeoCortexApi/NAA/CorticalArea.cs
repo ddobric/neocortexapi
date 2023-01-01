@@ -19,18 +19,23 @@ namespace NeoCortexApi
 
         public string Name { get; private set; }
 
-        //public List<Cell> ActiveCells
-        //{
-        //    get
-        //    {
-        //        List<Cell> activeCells = new List<Cell>();
 
-        //        foreach (var item in Cells)
-        //        {
-        //            if(item.)
-        //        }
-        //    }
-        //}
+        /// <summary>
+        /// Get the list of active cells from indicies.
+        /// </summary>
+        public ICollection<Cell> ActiveCells
+        {
+            get
+            {
+                var actCells = Cells.Where(c=> ActiveCellsIndicies.Contains(c.Index));
+
+                return actCells.ToList();
+            }
+        }
+
+
+        public long[] ActiveCellsIndicies { get; set; }
+
 
         public CorticalArea(string name, int numCells)
         {
@@ -38,6 +43,7 @@ namespace NeoCortexApi
 
             Cells = new Cell[numCells];
         }
+
 
         public override string ToString()
         {
@@ -56,5 +62,6 @@ namespace NeoCortexApi
         {
             return (TSeg)_segmentMap[segIndx];
         }
+
     }
 }

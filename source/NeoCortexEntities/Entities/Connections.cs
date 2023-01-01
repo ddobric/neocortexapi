@@ -19,8 +19,6 @@ namespace NeoCortexApi.Entities
     public class Connections : ISerializable
     {
 
-        public static readonly double EPSILON = 0.00001;
-
         //Internal state
         private double version = 1.0;
 
@@ -331,7 +329,7 @@ namespace NeoCortexApi.Entities
             Dictionary<int, int> numOfActiveSynapses = new Dictionary<int, int>();
             Dictionary<int, int> numOfPotentialSynapses = new Dictionary<int, int>();
 
-            double threshold = connectedPermanence - EPSILON;
+            double threshold = connectedPermanence - HtmConfig.EPSILON;
 
             //
             // Step through all currently active cells.
@@ -702,7 +700,7 @@ namespace NeoCortexApi.Entities
 
             foreach (Synapse synapse in synapses)
             {
-                if (!synapse.IsDestroyed && synapse.Permanence < minPermanence - EPSILON)
+                if (!synapse.IsDestroyed && synapse.Permanence < minPermanence - HtmConfig.EPSILON)
                 {
                     min = synapse;
                     minPermanence = synapse.Permanence;

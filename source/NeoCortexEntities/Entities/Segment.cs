@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace NeoCortexApi.Entities
 {
@@ -51,6 +52,17 @@ namespace NeoCortexApi.Entities
         public int NumInputs { get; set; }
 
         /// <summary>
+        /// Gets the number of connected (active) synapses.These are synapses with premanence value greather than <see cref="HtmConfig.SynapsePermConnected"/>.
+        /// </summary>
+        public int NumConnectedSynapses
+        {
+            get
+            {
+                return this.Synapses.Count(s=>s.Permanence >= this.SynapsePermConnected);
+            }
+        }
+
+        /// <summary>
         /// Default constructor used by serialization.
         /// </summary>
         protected Segment()
@@ -58,7 +70,6 @@ namespace NeoCortexApi.Entities
             this.Synapses = new List<Synapse>();
         }
 
- 
 
         /// <summary>
         /// Creates the proximal dentrite segment with specified index.

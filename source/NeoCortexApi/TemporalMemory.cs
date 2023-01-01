@@ -15,7 +15,6 @@ namespace NeoCortexApi
     /// </summary>
     public class TemporalMemory : IHtmAlgorithm<int[], ComputeCycle>/*, ISerializable*///: IComputeDecorator
     {
-        private static readonly double EPSILON = 0.00001;
 
         /// <summary>
         /// Stores each cycle's most recent activity

@@ -16,6 +16,8 @@ namespace NeoCortexApi.Entities
     /// </summary>
     public class HtmConfig : ISerializable
     {
+        public static readonly double EPSILON = 0.00001;
+
         /// <summary>
         /// Default constructor with the default set of parameters.
         /// </summary>
