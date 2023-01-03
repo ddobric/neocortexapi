@@ -29,18 +29,18 @@ namespace UnitTestsProject
         [DataRow(12, 14, 18.7, 1000)]
         public void Serializationtest_COLUMN(int numCells, int colIndx, double synapsePermConnected, int numInputs)
         {
-            HtmSerializer2 serializer = new HtmSerializer2();
+            HtmSerializer serializer = new HtmSerializer();
 
             Column column = new Column(numCells, colIndx, synapsePermConnected, numInputs);
             
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_COLUMN)}_column.txt"))
             {
-                HtmSerializer2.Serialize(column, null, sw);
+                HtmSerializer.Serialize(column, null, sw);
             }
 
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_COLUMN)}_column.txt"))
             {
-                var columnD = HtmSerializer2.Deserialize<Column>(sr);
+                var columnD = HtmSerializer.Deserialize<Column>(sr);
                 Assert.IsTrue(column.Equals(columnD));
             }
         }
@@ -54,18 +54,18 @@ namespace UnitTestsProject
         [DataRow(new int[] { 100, 1000, 10000, 100000, 1000000 }, false)]
         public void Serializationtest_SPARSEBINARYMATRIXS(int[] dimensions, bool useColumnMajorOrdering)
         {
-            HtmSerializer2 serializer = new HtmSerializer2();
+            HtmSerializer serializer = new HtmSerializer();
 
             SparseBinaryMatrix matrix = new SparseBinaryMatrix(dimensions,useColumnMajorOrdering);            
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_SPARSEBINARYMATRIXS)}_sbmatrix.txt"))
             {
-                HtmSerializer2.Serialize(matrix, null, sw);
+                HtmSerializer.Serialize(matrix, null, sw);
             }
 
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_SPARSEBINARYMATRIXS)}_sbmatrix.txt"))
             {
-                var matrixD = HtmSerializer2.Deserialize<SparseBinaryMatrix>(sr);
+                var matrixD = HtmSerializer.Deserialize<SparseBinaryMatrix>(sr);
                 Assert.IsTrue(matrix.Equals(matrixD));
             }
         }
@@ -91,11 +91,11 @@ namespace UnitTestsProject
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_CONNECTIONS)}_connections.txt"))
             {
-                HtmSerializer2.Serialize(connections, null, sw);
+                HtmSerializer.Serialize(connections, null, sw);
             }
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_CONNECTIONS)}_connections.txt"))
             {
-                Connections connectionsD = HtmSerializer2.Deserialize<Connections>(sr);
+                Connections connectionsD = HtmSerializer.Deserialize<Connections>(sr);
                 Assert.IsTrue(connections.Equals(connectionsD));
             }
         }
@@ -112,11 +112,11 @@ namespace UnitTestsProject
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_HTMCONFIG)}_config.txt"))
             {
-                HtmSerializer2.Serialize(config, null, sw);
+                HtmSerializer.Serialize(config, null, sw);
             }
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_HTMCONFIG)}_config.txt"))
             {
-                HtmConfig configD = HtmSerializer2.Deserialize<HtmConfig>(sr);
+                HtmConfig configD = HtmSerializer.Deserialize<HtmConfig>(sr);
                 Assert.IsTrue(config.Equals(configD));                 
             }
         }      
@@ -134,11 +134,11 @@ namespace UnitTestsProject
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_DISTALDENDRITE)}_dd.txt"))
             {
-                HtmSerializer2.Serialize(distalDendrite, null, sw);
+                HtmSerializer.Serialize(distalDendrite, null, sw);
             }
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_DISTALDENDRITE)}_dd.txt"))
             {
-                DistalDendrite distalDendriteD = HtmSerializer2.Deserialize<DistalDendrite>(sr);
+                DistalDendrite distalDendriteD = HtmSerializer.Deserialize<DistalDendrite>(sr);
                 Assert.IsTrue(distalDendrite.Equals(distalDendriteD));
             }
         }
@@ -156,15 +156,16 @@ namespace UnitTestsProject
 
             DistributedMemory distributedMemory = new DistributedMemory();
 
+            distributedMemory.ColumnDictionary = new InMemoryDistributedDictionary<int, Column>(1);
             distributedMemory.ColumnDictionary.Add(1, column);
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_DISTRIBUTEDMEMORY)}_dm.txt"))
             {
-                HtmSerializer2.Serialize(distributedMemory, null, sw);
+                HtmSerializer.Serialize(distributedMemory, null, sw);
             }
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_DISTRIBUTEDMEMORY)}_dm.txt"))
             {
-                DistributedMemory distributedMemoryD = HtmSerializer2.Deserialize<DistributedMemory>(sr);
+                DistributedMemory distributedMemoryD = HtmSerializer.Deserialize<DistributedMemory>(sr);
                 Assert.IsTrue(distributedMemory.Equals(distributedMemoryD));
             }
         }
@@ -183,11 +184,11 @@ namespace UnitTestsProject
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_HTMMODULETOPOLOGY)}_topology.txt"))
             {
-                HtmSerializer2.Serialize(topology, null, sw);
+                HtmSerializer.Serialize(topology, null, sw);
             }
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_HTMMODULETOPOLOGY)}_topology.txt"))
             {
-                HtmModuleTopology topologyD = HtmSerializer2.Deserialize<HtmModuleTopology>(sr);
+                HtmModuleTopology topologyD = HtmSerializer.Deserialize<HtmModuleTopology>(sr);
                 Assert.IsTrue(topology.Equals(topologyD));
             }
         }
@@ -222,11 +223,11 @@ namespace UnitTestsProject
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_PROXIMALDENTRITE)}_prodent.txt"))
             {
-                HtmSerializer2.Serialize(proDend, null, sw);
+                HtmSerializer.Serialize(proDend, null, sw);
             }
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_PROXIMALDENTRITE)}_prodent.txt"))
             {
-                ProximalDendrite proDendD = HtmSerializer2.Deserialize<ProximalDendrite>(sr);
+                ProximalDendrite proDendD = HtmSerializer.Deserialize<ProximalDendrite>(sr);
                 Assert.IsTrue(proDend.Equals(proDendD));
             }
         }
@@ -247,11 +248,11 @@ namespace UnitTestsProject
            
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_SYNAPSE)}_synapse.txt"))
             {
-                HtmSerializer2.Serialize(synapse, null, sw);
+                HtmSerializer.Serialize(synapse, null, sw);
             }
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_SYNAPSE)}_synapse.txt"))
             {
-                Synapse synapseD = HtmSerializer2.Deserialize<Synapse>(sr);
+                Synapse synapseD = HtmSerializer.Deserialize<Synapse>(sr);
                 Assert.IsTrue(synapse.Equals(synapseD));
             }
         }
@@ -269,11 +270,11 @@ namespace UnitTestsProject
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_TOPOLOGY)}_topology.txt"))
             {
-                HtmSerializer2.Serialize(topology, null, sw);
+                HtmSerializer.Serialize(topology, null, sw);
             }
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_TOPOLOGY)}_topology.txt"))
             {
-                Topology topologyD = HtmSerializer2.Deserialize<Topology>(sr);
+                Topology topologyD = HtmSerializer.Deserialize<Topology>(sr);
                 Assert.IsTrue(topology.Equals(topologyD));
             }
         }
@@ -298,11 +299,11 @@ namespace UnitTestsProject
                         
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_HOMEOSTATICPLASTICITYCONTROLLER)}_hpc.txt"))
             {
-                HtmSerializer2.Serialize(controller, null, sw);
+                HtmSerializer.Serialize(controller, null, sw);
             }
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_HOMEOSTATICPLASTICITYCONTROLLER)}_hpc.txt"))
             {
-                HomeostaticPlasticityController controllerD = HtmSerializer2.Deserialize<HomeostaticPlasticityController>(sr);
+                HomeostaticPlasticityController controllerD = HtmSerializer.Deserialize<HomeostaticPlasticityController>(sr);
                 Assert.IsTrue(controller.Equals(controllerD));
             }
         }
@@ -352,11 +353,11 @@ namespace UnitTestsProject
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_SPARSEOBJECTMATRIX)}_hpc.txt"))
             {
-                HtmSerializer2.Serialize(matrix, null, sw);
+                HtmSerializer.Serialize(matrix, null, sw);
             }
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_SPARSEOBJECTMATRIX)}_hpc.txt"))
             {
-                SparseObjectMatrix<Column> matrixD = HtmSerializer2.Deserialize<SparseObjectMatrix<Column>>(sr);
+                SparseObjectMatrix<Column> matrixD = HtmSerializer.Deserialize<SparseObjectMatrix<Column>>(sr);
                 Assert.IsTrue(matrix.Equals(matrixD));
             }
         }
@@ -381,11 +382,11 @@ namespace UnitTestsProject
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_POOL)}_pool.txt"))
             {
-                HtmSerializer2.Serialize(pool, null, sw);
+                HtmSerializer.Serialize(pool, null, sw);
             }
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_POOL)}_pool.txt"))
             {
-                Pool poolD = HtmSerializer2.Deserialize<Pool>(sr);
+                Pool poolD = HtmSerializer.Deserialize<Pool>(sr);
                 Assert.IsTrue(pool.Equals(poolD));
             }
         }
@@ -414,11 +415,11 @@ namespace UnitTestsProject
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_COMPUTECYCLE)}_compute.txt"))
             {
-                HtmSerializer2.Serialize(computeCycle, null, sw);
+                HtmSerializer.Serialize(computeCycle, null, sw);
             }
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_COMPUTECYCLE)}_compute.txt"))
             {
-                ComputeCycle computeCycleD = HtmSerializer2.Deserialize<ComputeCycle>(sr);
+                ComputeCycle computeCycleD = HtmSerializer.Deserialize<ComputeCycle>(sr);
                 Assert.IsTrue(computeCycle.Equals(computeCycleD)); 
             }
         }
