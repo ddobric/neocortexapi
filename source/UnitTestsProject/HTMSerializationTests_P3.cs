@@ -32,7 +32,7 @@ namespace UnitTestsProject
             HtmSerializer serializer = new HtmSerializer();
 
             Column column = new Column(numCells, colIndx, synapsePermConnected, numInputs);
-            
+
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_COLUMN)}_column.txt"))
             {
                 HtmSerializer.Serialize(column, null, sw);
@@ -48,7 +48,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("serialization")]
-        [DataRow(new int[] { 100, 100}, true)]
+        [DataRow(new int[] { 100, 100 }, true)]
         [DataRow(new int[] { 10, 100, 1000 }, true)]
         [DataRow(new int[] { 12, 14, 16, 18 }, false)]
         [DataRow(new int[] { 100, 1000, 10000, 100000, 1000000 }, false)]
@@ -56,8 +56,13 @@ namespace UnitTestsProject
         {
             HtmSerializer serializer = new HtmSerializer();
 
-            SparseBinaryMatrix matrix = new SparseBinaryMatrix(dimensions,useColumnMajorOrdering);            
+            SparseBinaryMatrix matrix = new SparseBinaryMatrix(dimensions, useColumnMajorOrdering);
 
+            for (int i = 0; i < 20; i++)
+            {
+                matrix.set(7, new int[] { i, 1 });
+            }
+        
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_SPARSEBINARYMATRIXS)}_sbmatrix.txt"))
             {
                 HtmSerializer.Serialize(matrix, null, sw);
@@ -67,6 +72,7 @@ namespace UnitTestsProject
             {
                 var matrixD = HtmSerializer.Deserialize<SparseBinaryMatrix>(sr);
                 Assert.IsTrue(matrix.Equals(matrixD));
+                Assert.IsTrue(matrix.get(new int[] { 1, 2 }).Value == 7);
             }
         }
 
@@ -117,9 +123,9 @@ namespace UnitTestsProject
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_HTMCONFIG)}_config.txt"))
             {
                 HtmConfig configD = HtmSerializer.Deserialize<HtmConfig>(sr);
-                Assert.IsTrue(config.Equals(configD));                 
+                Assert.IsTrue(config.Equals(configD));
             }
-        }      
+        }
 
         [TestMethod]
         [TestCategory("serialization")]
@@ -127,7 +133,7 @@ namespace UnitTestsProject
         [DataRow(11, 12, 22, 10, 20, 20, 1.0, 100)]
         [DataRow(12, 14, 16, 1, 4, 8, 4.0, 1000)]
         [DataRow(100, 200, 400, 10, 20, 20, 20.0, 1000)]
-        public void Serializationtest_DISTALDENDRITE(int parentColumnIndx, int colSeq, int numCellsPerColumn,int flatIdx, long lastUsedIteration, int ordinal, double synapsePermConnected, int numInputs)
+        public void Serializationtest_DISTALDENDRITE(int parentColumnIndx, int colSeq, int numCellsPerColumn, int flatIdx, long lastUsedIteration, int ordinal, double synapsePermConnected, int numInputs)
         {
             Cell cell = new Cell(parentColumnIndx, colSeq, numCellsPerColumn, new CellActivity());
             DistalDendrite distalDendrite = new DistalDendrite(cell, flatIdx, lastUsedIteration, ordinal, synapsePermConnected, numInputs);
@@ -146,7 +152,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("serialization")]
-        [DataRow(1, 1, 1.0, 1)]        
+        [DataRow(1, 1, 1.0, 1)]
         [DataRow(2, 5, 8.3, 2)]
         [DataRow(10, 25, 10.0, 100)]
         [DataRow(12, 14, 8.7, 1000)]
@@ -170,16 +176,16 @@ namespace UnitTestsProject
             }
         }
 
-        
+
         [TestMethod]
         [TestCategory("serialization")]
-        [DataRow(new int[] {1, 2, 4}, true)]
-        [DataRow(new int[] {10, 12, 14}, false)]
+        [DataRow(new int[] { 1, 2, 4 }, true)]
+        [DataRow(new int[] { 10, 12, 14 }, false)]
         [DataRow(new int[] { 1028 }, true)]
         [DataRow(new int[] { 100, 1000, 10000, 100000 }, false)]
         public void Serializationtest_HTMMODULETOPOLOGY(int[] dimension, bool isMajorOrdering)
         {
-            
+
             HtmModuleTopology topology = new HtmModuleTopology(dimension, isMajorOrdering);
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_HTMMODULETOPOLOGY)}_topology.txt"))
@@ -193,7 +199,7 @@ namespace UnitTestsProject
             }
         }
 
-        
+
         //Currently fail because the created proDent's Synapses is an empty list (after added Pool). The Deserialize object is correct.
         //Equal() method tested.
         [TestMethod]
@@ -236,7 +242,7 @@ namespace UnitTestsProject
         [TestMethod]
         [TestCategory("serialization")]
         public void Serializationtest_SYNAPSE()
-        {  
+        {
             Cell cell = new Cell(parentColumnIndx: 1, colSeq: 20, numCellsPerColumn: 16, new CellActivity());
             Cell presynapticCell = new Cell(parentColumnIndx: 8, colSeq: 36, numCellsPerColumn: 46, new CellActivity());
 
@@ -245,7 +251,7 @@ namespace UnitTestsProject
 
             Synapse synapse = new Synapse(presynapticCell: cell, distalSegmentIndex: dd.SegmentIndex, synapseIndex: 23, permanence: 1.0);
             presynapticCell.ReceptorSynapses.Add(synapse);
-           
+
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_SYNAPSE)}_synapse.txt"))
             {
                 HtmSerializer.Serialize(synapse, null, sw);
@@ -257,7 +263,7 @@ namespace UnitTestsProject
             }
         }
 
-        
+
         [TestMethod]
         [TestCategory("serialization")]
         [DataRow(new int[] { 1, 2, 4 }, true)]
@@ -296,7 +302,7 @@ namespace UnitTestsProject
             double requiredSimilarityThreshold = 0.97;
 
             HomeostaticPlasticityController controller = new HomeostaticPlasticityController(htmMemory, minCycles, onStabilityStatusChanged, numOfCyclesToWaitOnChange, requiredSimilarityThreshold);
-                        
+
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_HOMEOSTATICPLASTICITYCONTROLLER)}_hpc.txt"))
             {
                 HtmSerializer.Serialize(controller, null, sw);
@@ -345,7 +351,7 @@ namespace UnitTestsProject
             int numColumns = 20;
             int cellsPerColumn = 10;
 
-            for (int i =0; i< numColumns; i++)
+            for (int i = 0; i < numColumns; i++)
             {
                 Column column = new Column(cellsPerColumn, i, connections.HtmConfig.SynPermConnected, connections.HtmConfig.NumInputs);
                 matrix.set(i, column);
@@ -397,10 +403,10 @@ namespace UnitTestsProject
         [DataRow(new int[] { 100, 100 }, new int[] { 10, 10 }, 11, 12, 22, 10, 20, 20, 1.0, 100)]
         [DataRow(new int[] { 2, 14, 128 }, new int[] { 8, 8 }, 2, 4, 6, 100, 256, 256, 4.0, 1000)]
         [DataRow(new int[] { 10 }, new int[] { 12 }, 1, 1, 1, 2, 2, 2, 4.0, 40)]
-        [DataRow(new int[] { 12, 14, 16 }, new int[] { 10, 100 }, 12, 14, 16, 18, 20, 20,8.9, 10)]
+        [DataRow(new int[] { 12, 14, 16 }, new int[] { 10, 100 }, 12, 14, 16, 18, 20, 20, 8.9, 10)]
         public void Serializationtest_COMPUTECYCLE(int[] inputDims, int[] columnDims, int parentColumnIndx, int colSeq, int numCellsPerColumn, int flatIdx, long lastUsedIteration, int ordinal, double synapsePermConnected, int numInputs)
         {
-            
+
             HtmConfig config = new HtmConfig(inputDims, columnDims);
 
             Connections connections = new Connections(config);
@@ -420,10 +426,10 @@ namespace UnitTestsProject
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_COMPUTECYCLE)}_compute.txt"))
             {
                 ComputeCycle computeCycleD = HtmSerializer.Deserialize<ComputeCycle>(sr);
-                Assert.IsTrue(computeCycle.Equals(computeCycleD)); 
+                Assert.IsTrue(computeCycle.Equals(computeCycleD));
             }
         }
 
-        
+
     }
 }

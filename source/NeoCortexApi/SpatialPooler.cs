@@ -317,7 +317,6 @@ namespace NeoCortexApi
 
         public void SetOnStableStatusChanged(Action<bool, int, double, int> onStable)
         {
-            //if (this.m_HomeoPlastAct.OnStabilityStatusChanged == null)
             this.m_HomeoPlastAct.OnStabilityStatusChanged = onStable;
         }
 
@@ -664,6 +663,7 @@ namespace NeoCortexApi
                 int[] indexes = pool.GetSparsePotential();
 
                 col.UpdatePermanencesForColumnSparse(c.HtmConfig, perm, indexes, true);
+                //UpdatePermanencesForColumnSparse(c, perm, col, indexes, true);
             }
         }
 
@@ -1234,7 +1234,6 @@ namespace NeoCortexApi
         /// </summary>
         /// <param name="c"></param>
         /// <param name="overlaps"></param>
-        /// <remarks>Used by UnitTests only.</remarks>
         /// <returns></returns>
         public double[] CalculateOverlapPct(Connections c, int[] overlaps)
         {
