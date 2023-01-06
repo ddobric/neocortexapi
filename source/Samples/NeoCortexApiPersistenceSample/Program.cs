@@ -40,7 +40,7 @@ bool overwrite = true;
 var model1Name = "Model1.txt";
 var model1Trace = "Model1trace.txt";
 CortexLayer<object, object> model1;
-if (HtmSerializer2.TryLoad<CortexLayer<object, object>>(model1Name, out model1) == false || overwrite)
+if (HtmSerializer.TryLoad<CortexLayer<object, object>>(model1Name, out model1) == false || overwrite)
 {
     Console.WriteLine($"Training the first set of values: {string.Join(',', inputValues)}");
     var experiment = new SpatialPatternLearning();
@@ -48,7 +48,7 @@ if (HtmSerializer2.TryLoad<CortexLayer<object, object>>(model1Name, out model1) 
     model1.Train(inputValues, 1000, "sp");
     Console.WriteLine("Saving the model...");
     // persist the state of the model.
-    HtmSerializer2.Save(model1Name, model1);
+    HtmSerializer.Save(model1Name, model1);
 }
 else
 {
@@ -64,14 +64,14 @@ sp1.TraceColumnPermenances(model1Trace);
 var model2Name = "Model2.txt";
 var model2Trace = "Model2trace.txt";
 CortexLayer<object, object> model2;
-if (HtmSerializer2.TryLoad<CortexLayer<object, object>>(model2Name, out model2) == false || overwrite)
+if (HtmSerializer.TryLoad<CortexLayer<object, object>>(model2Name, out model2) == false || overwrite)
 {
     Console.WriteLine($"Training the second set of values: {string.Join(',', testValues)}");
-    model2 = HtmSerializer2.Load<CortexLayer<object, object>>(model1Name);
+    model2 = HtmSerializer.Load<CortexLayer<object, object>>(model1Name);
     model2.Train(testValues, 1000, "sp");
     Console.WriteLine("Saving the model...");
 
-    HtmSerializer2.Save(model2Name, model2);
+    HtmSerializer.Save(model2Name, model2);
 }
 else
 {
